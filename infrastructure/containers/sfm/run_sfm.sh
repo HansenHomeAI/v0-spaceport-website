@@ -48,7 +48,13 @@ OUTPUT_DIR="/opt/ml/processing/output"
 
 echo "📁 Input directory: $INPUT_DIR"
 echo "📁 Output directory: $OUTPUT_DIR"
-[ -d "$INPUT_DIR" ] || error_exit "Input directory not found: $INPUT_DIR"
+[ -d "$INPUT_DIR" ] || {
+    if [ "${SFM_CAPABILITY_SNAPSHOT_ONLY:-0}" = "1" ]; then
+        mkdir -p "$INPUT_DIR"
+    else
+        error_exit "Input directory not found: $INPUT_DIR"
+    fi
+}
 mkdir -p "$OUTPUT_DIR" || error_exit "Cannot create output directory"
 
 echo "🔍 Input directory contents:"
@@ -56,7 +62,9 @@ ls -la "$INPUT_DIR" || error_exit "Cannot list input directory"
 
 ZIP_COUNT=$(find "$INPUT_DIR" -name "*.zip" | wc -l | tr -d ' ')
 echo "📦 ZIP files found: $ZIP_COUNT"
-[ "$ZIP_COUNT" -gt 0 ] || error_exit "No ZIP archive found in input directory"
+if [ "${SFM_CAPABILITY_SNAPSHOT_ONLY:-0}" != "1" ]; then
+    [ "$ZIP_COUNT" -gt 0 ] || error_exit "No ZIP archive found in input directory"
+fi
 
 echo ""
 echo "============================================================"
@@ -68,6 +76,30 @@ python3 /opt/ml/code/run_colmap_sfm.py "$INPUT_DIR" "$OUTPUT_DIR"
 PYTHON_EXIT_CODE=$?
 log_mem "after_python"
 [ "$PYTHON_EXIT_CODE" -eq 0 ] || error_exit "COLMAP processing failed with exit code: $PYTHON_EXIT_CODE"
+
+if [ "${SFM_CAPABILITY_SNAPSHOT_ONLY:-0}" = "1" ] || [ "${SFM_PLANNER_SNAPSHOT_ONLY:-0}" = "1" ]; then
+    echo ""
+    echo "============================================================"
+    echo "📦 SNAPSHOT ARTIFACTS"
+    echo "============================================================"
+    find "$OUTPUT_DIR" -maxdepth 3 -type f | sort || true
+    python3 - <<'PY'
+import json
+from pathlib import Path
+metadata_path = Path("/opt/ml/processing/output/sfm_metadata.json")
+if metadata_path.exists():
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    print(json.dumps({
+        "capability_snapshot_only": metadata.get("capability_snapshot_only"),
+        "planner_snapshot_only": metadata.get("planner_snapshot_only"),
+        "chunk_planner": metadata.get("chunk_planner"),
+        "chunk_matcher_strategy": metadata.get("chunk_matcher_strategy"),
+        "probe_subsets": metadata.get("probe_subsets"),
+        "colmap_capabilities": metadata.get("colmap_capabilities"),
+    }, indent=2))
+PY
+    exit 0
+fi
 
 echo ""
 echo "============================================================"

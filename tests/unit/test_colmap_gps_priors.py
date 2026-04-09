@@ -575,6 +575,161 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertTrue(all(len(chunk.core_names) >= 120 for chunk in chunks))
             self.assertEqual(sum(len(chunk.core_names) for chunk in chunks), 250)
 
+    def test_build_view_geometries_prefers_relative_altitude_and_camera_metadata(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.exif_records = {
+                "IMG_001.jpg": {
+                    "local_x_m": 0.0,
+                    "local_y_m": 0.0,
+                    "local_z_m": 4.0,
+                    "relative_altitude": 42.0,
+                    "absolute_altitude": 980.0,
+                    "heading_deg": 30.0,
+                    "pitch_deg": -35.0,
+                    "focal_length_mm": 10.3,
+                    "focal_length_35mm_mm": 24.0,
+                    "image_width_px": 4000,
+                    "image_height_px": 3000,
+                }
+            }
+
+            geometries = pipeline.build_view_geometries()
+
+            self.assertIn("IMG_001.jpg", geometries)
+            self.assertEqual(geometries["IMG_001.jpg"].effective_altitude_m, 42.0)
+            self.assertGreater(geometries["IMG_001.jpg"].horizontal_fov_deg, 0.0)
+            self.assertFalse(geometries["IMG_001.jpg"].is_shallow_view)
+
+    def test_build_footprint_graph_chunks_creates_probe_subsets(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {"COLMAP_CHUNK_PLANNER": "footprint_graph_v1"},
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.chunk_target_images = 3
+            pipeline.chunk_min_images = 2
+            pipeline.chunk_hard_max_images = 4
+            pipeline.capture_ordered_names = [
+                "A1.jpg",
+                "A2.jpg",
+                "A3.jpg",
+                "B1.jpg",
+                "B2.jpg",
+                "B3.jpg",
+            ]
+            pipeline.colmap_capabilities["supports_matches_importer"] = False
+            pipeline.exif_records = {
+                "A1.jpg": {"local_x_m": 0.0, "local_y_m": 0.0, "local_z_m": 0.0, "relative_altitude": 30.0, "heading_deg": 5.0, "pitch_deg": -25.0, "capture_time_s": 1.0, "focal_length_mm": 10.0, "focal_length_35mm_mm": 24.0, "image_width_px": 4000, "image_height_px": 3000},
+                "A2.jpg": {"local_x_m": 2.0, "local_y_m": 1.0, "local_z_m": 0.0, "relative_altitude": 32.0, "heading_deg": 15.0, "pitch_deg": -45.0, "capture_time_s": 2.0, "focal_length_mm": 10.0, "focal_length_35mm_mm": 24.0, "image_width_px": 4000, "image_height_px": 3000},
+                "A3.jpg": {"local_x_m": 4.0, "local_y_m": 1.0, "local_z_m": 0.0, "relative_altitude": 34.0, "heading_deg": 20.0, "pitch_deg": -6.0, "capture_time_s": 3.0, "focal_length_mm": 10.0, "focal_length_35mm_mm": 24.0, "image_width_px": 4000, "image_height_px": 3000},
+                "B1.jpg": {"local_x_m": 120.0, "local_y_m": 0.0, "local_z_m": 0.0, "relative_altitude": 28.0, "heading_deg": 182.0, "pitch_deg": -20.0, "capture_time_s": 4.0, "focal_length_mm": 10.0, "focal_length_35mm_mm": 24.0, "image_width_px": 4000, "image_height_px": 3000},
+                "B2.jpg": {"local_x_m": 122.0, "local_y_m": 1.0, "local_z_m": 0.0, "relative_altitude": 29.0, "heading_deg": 190.0, "pitch_deg": -40.0, "capture_time_s": 5.0, "focal_length_mm": 10.0, "focal_length_35mm_mm": 24.0, "image_width_px": 4000, "image_height_px": 3000},
+                "B3.jpg": {"local_x_m": 124.0, "local_y_m": 1.0, "local_z_m": 0.0, "relative_altitude": 31.0, "heading_deg": 195.0, "pitch_deg": -8.0, "capture_time_s": 6.0, "focal_length_mm": 10.0, "focal_length_35mm_mm": 24.0, "image_width_px": 4000, "image_height_px": 3000},
+            }
+
+            chunks = pipeline.build_chunk_plans()
+
+            self.assertGreaterEqual(len(chunks), 2)
+            self.assertEqual(pipeline.chunk_matcher_strategy, "exhaustive")
+            self.assertEqual(set(pipeline.probe_subsets), {"geometry_mix", "cross_pass", "horizon_context"})
+            self.assertTrue(all(pipeline.probe_subsets.values()))
+
+    def test_build_retry_chunk_plan_footprint_graph_adds_graph_neighbors(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {"COLMAP_CHUNK_PLANNER": "footprint_graph_v1"},
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.capture_ordered_names = ["A.jpg", "B.jpg", "C.jpg"]
+            pipeline.image_group_indices = {"A.jpg": 0, "B.jpg": 1, "C.jpg": 2}
+            pipeline.graph_neighbors = {
+                "A.jpg": [
+                    run_colmap_sfm.CandidateEdge(
+                        first_name="A.jpg",
+                        second_name="C.jpg",
+                        score=0.9,
+                        footprint_overlap=0.9,
+                        scale_similarity=0.9,
+                        viewpoint_complementarity=0.9,
+                        distance_consistency=0.9,
+                        temporal_bonus=0.0,
+                        xy_distance_m=5.0,
+                        xyz_distance_m=5.0,
+                        view_delta_deg=15.0,
+                    )
+                ]
+            }
+            chunk_plan = run_colmap_sfm.ChunkPlan(
+                index=0,
+                core_names=["A.jpg", "B.jpg"],
+                image_names=["A.jpg", "B.jpg"],
+                overlap_names=[],
+                core_group_indices=[0, 1],
+                group_indices=[0, 1],
+                overlap_group_indices=[],
+                segment_indices=[],
+            )
+
+            retry_chunk = pipeline.build_retry_chunk_plan(chunk_plan, ["A.jpg"])
+
+            self.assertEqual(retry_chunk.core_names, ["A.jpg", "B.jpg"])
+            self.assertIn("C.jpg", retry_chunk.image_names)
+
+    def test_run_chunk_matchers_uses_matches_importer_for_footprint_graph(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {"COLMAP_CHUNK_PLANNER": "footprint_graph_v1"},
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.colmap_capabilities["supports_matches_importer"] = True
+            pipeline.graph_neighbors = {
+                "A.jpg": [
+                    run_colmap_sfm.CandidateEdge(
+                        first_name="A.jpg",
+                        second_name="B.jpg",
+                        score=0.9,
+                        footprint_overlap=0.9,
+                        scale_similarity=0.9,
+                        viewpoint_complementarity=0.9,
+                        distance_consistency=0.9,
+                        temporal_bonus=0.0,
+                        xy_distance_m=5.0,
+                        xyz_distance_m=5.0,
+                        view_delta_deg=15.0,
+                    )
+                ],
+                "B.jpg": [],
+            }
+            chunk_plan = run_colmap_sfm.ChunkPlan(
+                index=0,
+                core_names=["A.jpg", "B.jpg"],
+                image_names=["A.jpg", "B.jpg"],
+                overlap_names=[],
+            )
+            chunk_dir = root / "chunk"
+            chunk_dir.mkdir(parents=True, exist_ok=True)
+
+            with mock.patch.object(pipeline, "run_matches_importer") as importer_mock, mock.patch.object(
+                pipeline, "run_exhaustive_matcher"
+            ) as exhaustive_mock:
+                pipeline.run_chunk_matchers(
+                    chunk_plan,
+                    chunk_database_path=root / "chunk.db",
+                    chunk_dir=chunk_dir,
+                    stage_prefix="chunk_00",
+                )
+
+            importer_mock.assert_called_once()
+            exhaustive_mock.assert_not_called()
+
     def test_run_chunk_pipeline_triggers_boundary_recovery_for_weak_chunk(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -911,12 +1066,30 @@ class ColmapGpsPriorTests(unittest.TestCase):
             pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
             first_model_dir = root / "chunk_00" / "sparse_initial" / "0"
             second_model_dir = root / "chunk_01" / "sparse_initial" / "0"
+            first_text_dir = root / "text_00"
+            second_text_dir = root / "text_01"
+            merged_text_dir = root / "merged_text"
             first_model_dir.mkdir(parents=True, exist_ok=True)
             second_model_dir.mkdir(parents=True, exist_ok=True)
+            first_text_dir.mkdir(parents=True, exist_ok=True)
+            second_text_dir.mkdir(parents=True, exist_ok=True)
+            merged_text_dir.mkdir(parents=True, exist_ok=True)
+            (first_text_dir / "images.txt").write_text(
+                "1 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n2 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (second_text_dir / "images.txt").write_text(
+                "3 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n4 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (merged_text_dir / "images.txt").write_text(
+                "5 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n6 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n7 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
             chunk_models = [
                 run_colmap_sfm.ModelSummary(
                     stage="chunk_00_mapper_initial",
-                    text_dir=root / "text_00",
+                    text_dir=first_text_dir,
                     cameras_registered=1,
                     images_registered=10,
                     points_3d=1000,
@@ -924,7 +1097,7 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 ),
                 run_colmap_sfm.ModelSummary(
                     stage="chunk_01_mapper_initial",
-                    text_dir=root / "text_01",
+                    text_dir=second_text_dir,
                     cameras_registered=1,
                     images_registered=10,
                     points_3d=1000,
@@ -934,7 +1107,7 @@ class ColmapGpsPriorTests(unittest.TestCase):
             output_path = pipeline.work_dir / "merged_chunk_model_01"
             merged_model = run_colmap_sfm.ModelSummary(
                 stage="chunk_bundle_adjuster",
-                text_dir=root / "merged_text",
+                text_dir=merged_text_dir,
                 cameras_registered=1,
                 images_registered=20,
                 points_3d=2000,
@@ -953,6 +1126,9 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertIn("model_merger", merger_command)
             self.assertIn(str(output_path), merger_command)
             self.assertEqual(result.images_registered, 20)
+            self.assertEqual(pipeline.chunk_merge_proof["pre_merge_unique_registered_images"], 3)
+            self.assertEqual(pipeline.chunk_merge_proof["final_merged_registered_images"], 3)
+            self.assertEqual(pipeline.chunk_merge_proof["pre_merge_retention_ratio"], 1.0)
 
     def test_run_spatial_heading_chunked_path_accepts_merged_ratio_at_gps_threshold(self):
         with tempfile.TemporaryDirectory() as tmp:

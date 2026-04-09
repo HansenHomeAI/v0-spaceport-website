@@ -19,10 +19,11 @@ import tempfile
 import threading
 import time
 import zipfile
+from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Iterable, List, Sequence, Set
+from typing import Dict, Iterable, List, Sequence, Set, Tuple
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -73,6 +74,39 @@ class ChunkPlan:
     group_indices: List[int] = field(default_factory=list)
     overlap_group_indices: List[int] = field(default_factory=list)
     segment_indices: List[int] = field(default_factory=list)
+
+
+@dataclass
+class ImageViewGeometry:
+    file_name: str
+    local_x_m: float
+    local_y_m: float
+    local_z_m: float
+    heading_deg: float | None
+    pitch_deg: float | None
+    effective_altitude_m: float
+    focal_length_mm: float | None
+    focal_length_35mm_mm: float | None
+    image_width_px: int | None
+    image_height_px: int | None
+    horizontal_fov_deg: float
+    vertical_fov_deg: float
+    is_shallow_view: bool
+
+
+@dataclass
+class CandidateEdge:
+    first_name: str
+    second_name: str
+    score: float
+    footprint_overlap: float
+    scale_similarity: float
+    viewpoint_complementarity: float
+    distance_consistency: float
+    temporal_bonus: float
+    xy_distance_m: float
+    xyz_distance_m: float
+    view_delta_deg: float
 
 
 @dataclass
@@ -335,6 +369,32 @@ def angular_distance_between_vectors(
     return math.degrees(math.acos(dot_product))
 
 
+def clamp(value: float, lower: float, upper: float) -> float:
+    return max(lower, min(upper, value))
+
+
+def normalize_unit_interval(value: float) -> float:
+    return clamp(value, 0.0, 1.0)
+
+
+def circle_overlap_score(
+    first_center: tuple[float, float],
+    first_radius: float,
+    second_center: tuple[float, float],
+    second_radius: float,
+) -> float:
+    if first_radius <= 0.0 or second_radius <= 0.0:
+        return 0.0
+    center_distance = math.hypot(first_center[0] - second_center[0], first_center[1] - second_center[1])
+    return normalize_unit_interval(1.0 - (center_distance / max(first_radius + second_radius, 1e-6)))
+
+
+def log_ratio_similarity(first_value: float, second_value: float) -> float:
+    if first_value <= 0.0 or second_value <= 0.0:
+        return 0.0
+    return normalize_unit_interval(1.0 - abs(math.log(first_value / second_value)) / math.log(2.0))
+
+
 class ColmapPipeline:
     def __init__(self, input_dir: Path, output_dir: Path) -> None:
         self.input_dir = Path(input_dir)
@@ -368,6 +428,15 @@ class ColmapPipeline:
         self.enable_spatial_chunking = (
             os.environ.get("COLMAP_ENABLE_SPATIAL_CHUNKING", "0") != "0"
         )
+        self.chunk_planner = (
+            os.environ.get("COLMAP_CHUNK_PLANNER", "legacy_spatial_heading").strip().lower()
+            or "legacy_spatial_heading"
+        )
+        if self.chunk_planner not in {"legacy_spatial_heading", "footprint_graph_v1"}:
+            raise RuntimeError(
+                "Unsupported COLMAP_CHUNK_PLANNER="
+                f"{self.chunk_planner}; expected one of legacy_spatial_heading, footprint_graph_v1"
+            )
         self.force_gps_first = os.environ.get("COLMAP_FORCE_GPS_FIRST", "1") != "0"
         requested_match_profile = os.environ.get("COLMAP_MATCH_PROFILE", "P1").strip().upper() or "P1"
         if requested_match_profile not in MATCH_PROFILES:
@@ -410,6 +479,12 @@ class ColmapPipeline:
         self.chunk_overlap_images = int(os.environ.get("COLMAP_CHUNK_OVERLAP_IMAGES", "30"))
         self.chunk_max_radius_m = float(os.environ.get("COLMAP_CHUNK_MAX_RADIUS_METERS", "300.0"))
         self.chunk_heading_weight = float(os.environ.get("COLMAP_CHUNK_HEADING_WEIGHT", "0.6"))
+        self.chunk_hard_max_images = int(os.environ.get("COLMAP_CHUNK_HARD_MAX_IMAGES", "220"))
+        self.chunk_pair_budget = int(os.environ.get("COLMAP_CHUNK_PAIR_BUDGET", "25000"))
+        self.chunk_overlap_anchor_count = int(os.environ.get("COLMAP_CHUNK_OVERLAP_ANCHOR_COUNT", "20"))
+        self.chunk_cross_edge_min_count = int(os.environ.get("COLMAP_CHUNK_CROSS_EDGE_MIN_COUNT", "12"))
+        self.graph_xy_neighbor_limit = int(os.environ.get("COLMAP_GRAPH_XY_NEIGHBOR_LIMIT", "60"))
+        self.graph_xyz_neighbor_limit = int(os.environ.get("COLMAP_GRAPH_XYZ_NEIGHBOR_LIMIT", "20"))
         self.chunk_boundary_max_neighbors = int(
             os.environ.get(
                 "COLMAP_CHUNK_BOUNDARY_MAX_NEIGHBORS",
@@ -507,6 +582,7 @@ class ColmapPipeline:
         self.fallback_triggered = False
         self.fallback_reason = "not_needed"
         self.final_matcher_mode = "uninitialized"
+        self.chunk_matcher_strategy = "uninitialized"
         self.gps_first_attempted = False
         self.gps_first_skipped_reason = "uninitialized"
         self.chunking_attempted = False
@@ -535,6 +611,8 @@ class ColmapPipeline:
         self.failed_chunk_core_registered_ratio = 0.0
         self.timed_out = False
         self.chunk_execution_image_count = 0
+        self.capability_snapshot_only = os.environ.get("SFM_CAPABILITY_SNAPSHOT_ONLY", "0") == "1"
+        self.planner_snapshot_only = os.environ.get("SFM_PLANNER_SNAPSHOT_ONLY", "0") == "1"
         self.heading_source_min_dispersion_deg = float(
             os.environ.get("COLMAP_HEADING_SOURCE_MIN_DISPERSION_DEGREES", "5.0")
         )
@@ -545,6 +623,19 @@ class ColmapPipeline:
         self.pitch_prior_source = "uninitialized"
         self.heading_prior_dispersion_deg = 0.0
         self.pitch_prior_dispersion_deg = 0.0
+        self.colmap_commands = self.detect_colmap_commands()
+        self.colmap_capabilities = self.build_colmap_capabilities()
+        self.view_geometries: Dict[str, ImageViewGeometry] = {}
+        self.graph_neighbors: Dict[str, List[CandidateEdge]] = {}
+        self.graph_edges_by_pair: Dict[Tuple[str, str], CandidateEdge] = {}
+        self.chunk_role_by_image: Dict[str, str] = {}
+        self.chunk_graph_probe_manifest: dict[str, object] = {}
+        self.chunk_run_metrics: List[dict[str, object]] = []
+        self.chunk_merge_proof: dict[str, object] = {}
+        self.chunk_centroids: Dict[int, tuple[float, float]] = {}
+        self.chunk_plans_by_index: Dict[int, ChunkPlan] = {}
+        self.chunk_cross_edge_counts: Dict[Tuple[int, int], int] = {}
+        self.probe_subsets: Dict[str, List[str]] = {}
         self.images_dir.mkdir(parents=True, exist_ok=True)
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -552,6 +643,45 @@ class ColmapPipeline:
         if timeout_seconds is None or timeout_seconds <= 0:
             return None
         return timeout_seconds
+
+    def detect_colmap_commands(self) -> List[str]:
+        try:
+            result = subprocess.run(
+                ["colmap", "help"],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+        except Exception as exc:
+            logger.warning("Unable to inspect COLMAP commands: %s", exc)
+            return []
+        commands: List[str] = []
+        capture = False
+        for line in result.stdout.splitlines():
+            stripped = line.strip()
+            if stripped == "Available commands:":
+                capture = True
+                continue
+            if not capture or not stripped:
+                continue
+            if stripped.endswith(":"):
+                continue
+            if line.startswith("  "):
+                commands.append(stripped.split()[0])
+                continue
+            break
+        return sorted(set(commands))
+
+    def build_colmap_capabilities(self) -> dict[str, object]:
+        commands = set(self.colmap_commands)
+        return {
+            "available_commands": self.colmap_commands,
+            "supports_matches_importer": "matches_importer" in commands,
+            "supports_exhaustive_matcher": "exhaustive_matcher" in commands,
+            "supports_pose_prior_mapper": "pose_prior_mapper" in commands,
+            "supports_hierarchical_mapper": "hierarchical_mapper" in commands,
+            "supports_global_mapper": "global_mapper" in commands,
+        }
 
     def mark_failure(
         self,
@@ -574,6 +704,8 @@ class ColmapPipeline:
             self.failed_chunk_core_registered_ratio = round(core_registered_ratio, 4)
 
     def write_failure_metadata(self) -> None:
+        if self.chunk_planner == "footprint_graph_v1" and self.exif_records:
+            self.write_chunk_planner_manifest()
         metadata = self.build_metadata(
             best_model=None,
             quality_check_passed=False,
@@ -594,6 +726,13 @@ class ColmapPipeline:
 
     def run(self) -> int:
         try:
+            if self.capability_snapshot_only:
+                metadata = self.build_metadata(best_model=None, quality_check_passed=True)
+                metadata["capability_snapshot_only"] = True
+                metadata["planner_snapshot_only"] = False
+                with open(self.output_dir / "sfm_metadata.json", "w", encoding="utf-8") as handle:
+                    json.dump(metadata, handle, indent=2)
+                return 0
             self.extract_images()
             self.exif_records = self.load_exif_records()
             self.gps_image_count = len(self.exif_records)
@@ -601,6 +740,14 @@ class ColmapPipeline:
                 1 for record in self.exif_records.values() if record.get("heading_deg") is not None
             )
             self.prepare_capture_ordered_image_list()
+            if self.planner_snapshot_only:
+                self.write_chunk_planner_manifest()
+                metadata = self.build_metadata(best_model=None, quality_check_passed=True)
+                metadata["capability_snapshot_only"] = False
+                metadata["planner_snapshot_only"] = True
+                with open(self.output_dir / "sfm_metadata.json", "w", encoding="utf-8") as handle:
+                    json.dump(metadata, handle, indent=2)
+                return 0
             self.run_feature_extraction()
             self.log_pose_prior_schema()
             self.validate_or_backfill_pose_priors()
@@ -680,6 +827,8 @@ class ColmapPipeline:
             "-GPSLatitude",
             "-GPSLongitude",
             "-GPSAltitude",
+            "-AbsoluteAltitude",
+            "-RelativeAltitude",
             "-GPSImgDirection",
             "-GimbalYawDegree",
             "-GimbalPitchDegree",
@@ -687,6 +836,10 @@ class ColmapPipeline:
             "-FlightYawDegree",
             "-FlightPitchDegree",
             "-FlightRollDegree",
+            "-FocalLength",
+            "-FocalLengthIn35mmFormat",
+            "-ExifImageWidth",
+            "-ExifImageHeight",
             str(self.images_dir),
         ]
         result = subprocess.run(command, capture_output=True, text=True, check=True)
@@ -708,6 +861,8 @@ class ColmapPipeline:
                 "gps_latitude": float(record["GPSLatitude"]),
                 "gps_longitude": float(record["GPSLongitude"]),
                 "gps_altitude": float(record.get("GPSAltitude", 0.0)),
+                "absolute_altitude": parse_optional_float(record, ["AbsoluteAltitude"]),
+                "relative_altitude": parse_optional_float(record, ["RelativeAltitude"]),
                 "capture_time": (
                     record.get("SubSecDateTimeOriginal")
                     or record.get("DateTimeOriginal")
@@ -722,6 +877,18 @@ class ColmapPipeline:
                 "gimbal_roll_deg": parse_optional_float(record, ["GimbalRollDegree"]),
                 "flight_pitch_deg": flight_pitch_deg,
                 "flight_roll_deg": parse_optional_float(record, ["FlightRollDegree"]),
+                "focal_length_mm": parse_optional_float(record, ["FocalLength"]),
+                "focal_length_35mm_mm": parse_optional_float(record, ["FocalLengthIn35mmFormat"]),
+                "image_width_px": (
+                    int(record["ExifImageWidth"])
+                    if record.get("ExifImageWidth") not in (None, "")
+                    else None
+                ),
+                "image_height_px": (
+                    int(record["ExifImageHeight"])
+                    if record.get("ExifImageHeight") not in (None, "")
+                    else None
+                ),
                 "pitch_deg": None,
             }
             exif_records[file_name]["capture_time_s"] = parse_capture_time_seconds(
@@ -865,6 +1032,285 @@ class ColmapPipeline:
             "Prepared image list with %s entries ordered by capture time then filename",
             len(self.capture_ordered_names),
         )
+
+    def estimate_field_of_view(
+        self,
+        *,
+        focal_length_mm: float | None,
+        focal_length_35mm_mm: float | None,
+        sensor_extent_mm: float,
+        image_extent_px: int | None,
+    ) -> float:
+        if focal_length_mm and focal_length_mm > 0.0:
+            return math.degrees(2.0 * math.atan(sensor_extent_mm / (2.0 * focal_length_mm)))
+        if focal_length_35mm_mm and focal_length_35mm_mm > 0.0:
+            return math.degrees(2.0 * math.atan(36.0 / (2.0 * focal_length_35mm_mm)))
+        if image_extent_px and image_extent_px > 0:
+            return 73.74
+        return 73.74
+
+    def effective_altitude_for_record(self, record: Dict[str, float | str | None]) -> float:
+        relative_altitude = record.get("relative_altitude")
+        if relative_altitude is not None:
+            return max(abs(float(relative_altitude)), 1.0)
+        local_z_m = record.get("local_z_m")
+        if local_z_m is not None:
+            return max(abs(float(local_z_m)), 1.0)
+        absolute_altitude = record.get("absolute_altitude")
+        if absolute_altitude is not None:
+            return max(abs(float(absolute_altitude)), 1.0)
+        return 30.0
+
+    def build_view_geometries(self) -> Dict[str, ImageViewGeometry]:
+        if self.view_geometries:
+            return self.view_geometries
+        geometries: Dict[str, ImageViewGeometry] = {}
+        for file_name, record in self.exif_records.items():
+            focal_length_mm = (
+                float(record["focal_length_mm"])
+                if record.get("focal_length_mm") is not None
+                else None
+            )
+            focal_length_35mm_mm = (
+                float(record["focal_length_35mm_mm"])
+                if record.get("focal_length_35mm_mm") is not None
+                else None
+            )
+            image_width_px = (
+                int(record["image_width_px"])
+                if record.get("image_width_px") is not None
+                else None
+            )
+            image_height_px = (
+                int(record["image_height_px"])
+                if record.get("image_height_px") is not None
+                else None
+            )
+            horizontal_fov_deg = self.estimate_field_of_view(
+                focal_length_mm=focal_length_mm,
+                focal_length_35mm_mm=focal_length_35mm_mm,
+                sensor_extent_mm=13.2,
+                image_extent_px=image_width_px,
+            )
+            vertical_fov_deg = self.estimate_field_of_view(
+                focal_length_mm=focal_length_mm,
+                focal_length_35mm_mm=(
+                    focal_length_35mm_mm * (24.0 / 36.0)
+                    if focal_length_35mm_mm is not None
+                    else None
+                ),
+                sensor_extent_mm=8.8,
+                image_extent_px=image_height_px,
+            )
+            pitch_deg = float(record["pitch_deg"]) if record.get("pitch_deg") is not None else None
+            geometries[file_name] = ImageViewGeometry(
+                file_name=file_name,
+                local_x_m=float(record["local_x_m"]),
+                local_y_m=float(record["local_y_m"]),
+                local_z_m=float(record.get("local_z_m", 0.0)),
+                heading_deg=float(record["heading_deg"]) if record.get("heading_deg") is not None else None,
+                pitch_deg=pitch_deg,
+                effective_altitude_m=self.effective_altitude_for_record(record),
+                focal_length_mm=focal_length_mm,
+                focal_length_35mm_mm=focal_length_35mm_mm,
+                image_width_px=image_width_px,
+                image_height_px=image_height_px,
+                horizontal_fov_deg=horizontal_fov_deg,
+                vertical_fov_deg=vertical_fov_deg,
+                is_shallow_view=(pitch_deg is not None and pitch_deg > -10.0),
+            )
+        self.view_geometries = geometries
+        return geometries
+
+    def footprint_circle_for_geometry(
+        self,
+        geometry: ImageViewGeometry,
+        *,
+        depth_factor: float,
+    ) -> tuple[tuple[float, float], float]:
+        effective_altitude_m = max(geometry.effective_altitude_m * depth_factor, 1.0)
+        heading_radians = math.radians(normalize_heading(geometry.heading_deg) or 0.0)
+        pitch_deg = geometry.pitch_deg if geometry.pitch_deg is not None else -35.0
+        downward_pitch_deg = max(1.0, -pitch_deg) if pitch_deg <= -1.0 else 1.0
+        shallow_cap_factor = 6.0 if geometry.is_shallow_view else 4.0
+        forward_distance_m = min(
+            effective_altitude_m / math.tan(math.radians(downward_pitch_deg)),
+            geometry.effective_altitude_m * shallow_cap_factor,
+        )
+        center = (
+            geometry.local_x_m + math.cos(heading_radians) * forward_distance_m,
+            geometry.local_y_m + math.sin(heading_radians) * forward_distance_m,
+        )
+        radius_m = max(
+            effective_altitude_m
+            * math.tan(math.radians(max(geometry.horizontal_fov_deg, geometry.vertical_fov_deg) / 2.0)),
+            geometry.effective_altitude_m * (2.0 if geometry.is_shallow_view else 0.75),
+        )
+        return center, radius_m
+
+    def temporal_bonus_for_pair(
+        self,
+        first_name: str,
+        second_name: str,
+        *,
+        view_delta_deg: float,
+    ) -> float:
+        first_record = self.exif_records[first_name]
+        second_record = self.exif_records[second_name]
+        first_time = first_record.get("capture_time_s")
+        second_time = second_record.get("capture_time_s")
+        if first_time is None or second_time is None:
+            return 0.0
+        time_gap_s = abs(float(first_time) - float(second_time))
+        if time_gap_s > 2.0:
+            return 0.0
+        angular_velocity = view_delta_deg / max(time_gap_s, 0.1)
+        if angular_velocity > 25.0:
+            return 0.0
+        return normalize_unit_interval(1.0 - time_gap_s / 2.0)
+
+    def candidate_edge_for_names(
+        self,
+        first_name: str,
+        second_name: str,
+    ) -> CandidateEdge:
+        pair_key = tuple(sorted((first_name, second_name)))
+        cached = self.graph_edges_by_pair.get(pair_key)
+        if cached is not None:
+            return cached
+        geometries = self.build_view_geometries()
+        first_geometry = geometries[first_name]
+        second_geometry = geometries[second_name]
+        xy_distance_m = math.hypot(
+            first_geometry.local_x_m - second_geometry.local_x_m,
+            first_geometry.local_y_m - second_geometry.local_y_m,
+        )
+        xyz_distance_m = math.sqrt(
+            (first_geometry.local_x_m - second_geometry.local_x_m) ** 2
+            + (first_geometry.local_y_m - second_geometry.local_y_m) ** 2
+            + (first_geometry.local_z_m - second_geometry.local_z_m) ** 2
+        )
+        footprint_overlap = max(
+            circle_overlap_score(
+                *self.footprint_circle_for_geometry(first_geometry, depth_factor=depth_factor),
+                *self.footprint_circle_for_geometry(second_geometry, depth_factor=depth_factor),
+            )
+            for depth_factor in (0.75, 1.0, 1.5)
+        )
+        scale_similarity = log_ratio_similarity(
+            max(first_geometry.effective_altitude_m, 1.0),
+            max(second_geometry.effective_altitude_m, 1.0),
+        )
+        view_delta_deg = angular_distance_between_vectors(
+            view_vector(first_geometry.heading_deg, first_geometry.pitch_deg),
+            view_vector(second_geometry.heading_deg, second_geometry.pitch_deg),
+        )
+        if view_delta_deg <= 12.0:
+            viewpoint_complementarity = 0.55 + 0.45 * (view_delta_deg / 12.0)
+        elif view_delta_deg <= 70.0:
+            viewpoint_complementarity = 1.0
+        elif view_delta_deg <= 140.0:
+            viewpoint_complementarity = max(0.15, 1.0 - ((view_delta_deg - 70.0) / 70.0))
+        else:
+            viewpoint_complementarity = 0.0
+        target_distance_m = min(
+            (first_geometry.effective_altitude_m + second_geometry.effective_altitude_m) / 2.0,
+            120.0,
+        )
+        distance_consistency = normalize_unit_interval(
+            1.0 - abs(xy_distance_m - target_distance_m) / max(target_distance_m, 1.0)
+        )
+        temporal_bonus = self.temporal_bonus_for_pair(first_name, second_name, view_delta_deg=view_delta_deg)
+        score = (
+            0.45 * footprint_overlap
+            + 0.20 * scale_similarity
+            + 0.20 * viewpoint_complementarity
+            + 0.10 * distance_consistency
+            + 0.05 * temporal_bonus
+        )
+        edge = CandidateEdge(
+            first_name=pair_key[0],
+            second_name=pair_key[1],
+            score=round(score, 6),
+            footprint_overlap=round(footprint_overlap, 6),
+            scale_similarity=round(scale_similarity, 6),
+            viewpoint_complementarity=round(viewpoint_complementarity, 6),
+            distance_consistency=round(distance_consistency, 6),
+            temporal_bonus=round(temporal_bonus, 6),
+            xy_distance_m=round(xy_distance_m, 3),
+            xyz_distance_m=round(xyz_distance_m, 3),
+            view_delta_deg=round(view_delta_deg, 3),
+        )
+        self.graph_edges_by_pair[pair_key] = edge
+        return edge
+
+    def build_candidate_graph(self) -> Dict[str, List[CandidateEdge]]:
+        if self.graph_neighbors:
+            return self.graph_neighbors
+        geometries = self.build_view_geometries()
+        names = [name for name in self.capture_ordered_names if name in geometries]
+        if not names:
+            self.graph_neighbors = {}
+            return self.graph_neighbors
+        neighbors: Dict[str, List[CandidateEdge]] = {}
+        for first_name in names:
+            distances_xy: List[tuple[float, str]] = []
+            distances_xyz: List[tuple[float, str]] = []
+            first_geometry = geometries[first_name]
+            for second_name in names:
+                if second_name == first_name:
+                    continue
+                second_geometry = geometries[second_name]
+                xy_distance_m = math.hypot(
+                    first_geometry.local_x_m - second_geometry.local_x_m,
+                    first_geometry.local_y_m - second_geometry.local_y_m,
+                )
+                xyz_distance_m = math.sqrt(
+                    (first_geometry.local_x_m - second_geometry.local_x_m) ** 2
+                    + (first_geometry.local_y_m - second_geometry.local_y_m) ** 2
+                    + (first_geometry.local_z_m - second_geometry.local_z_m) ** 2
+                )
+                distances_xy.append((xy_distance_m, second_name))
+                distances_xyz.append((xyz_distance_m, second_name))
+            candidate_names = {
+                second_name
+                for _, second_name in sorted(distances_xy, key=lambda item: item[0])[: self.graph_xy_neighbor_limit]
+            }
+            candidate_names.update(
+                second_name
+                for _, second_name in sorted(distances_xyz, key=lambda item: item[0])[: self.graph_xyz_neighbor_limit]
+            )
+            candidate_edges = [
+                self.candidate_edge_for_names(first_name, second_name)
+                for second_name in sorted(candidate_names)
+            ]
+            neighbors[first_name] = sorted(candidate_edges, key=lambda edge: (-edge.score, edge.second_name, edge.first_name))
+        self.graph_neighbors = neighbors
+        return neighbors
+
+    def classify_graph_roles(self) -> Dict[str, str]:
+        if self.chunk_role_by_image:
+            return self.chunk_role_by_image
+        roles: Dict[str, str] = {}
+        for image_name, edges in self.build_candidate_graph().items():
+            strong_edges = [edge for edge in edges if edge.score >= 0.45]
+            very_close_edges = [
+                edge
+                for edge in edges[:6]
+                if edge.score >= 0.8 and edge.xy_distance_m <= 15.0 and edge.view_delta_deg <= 8.0
+            ]
+            max_view_delta = max((edge.view_delta_deg for edge in strong_edges), default=0.0)
+            geometry = self.view_geometries[image_name]
+            if len(very_close_edges) >= 3:
+                roles[image_name] = "burst_redundant"
+            elif len(strong_edges) >= 4 and max_view_delta >= 10.0:
+                roles[image_name] = "geometry_anchor"
+            elif geometry.is_shallow_view and len(strong_edges) < 3:
+                roles[image_name] = "bridge_context"
+            else:
+                roles[image_name] = "bridge_context"
+        self.chunk_role_by_image = roles
+        return roles
 
     def count_verified_pairs(self, database_path: Path | None = None) -> int:
         active_database_path = database_path or self.database_path
@@ -1399,6 +1845,170 @@ class ColmapPipeline:
         self.record_matcher_delta(label, pairs_after - pairs_before)
         self.verified_pairs_total = max(self.verified_pairs_total, pairs_after)
         logger.info("%s added %s verified image pairs", stage, pairs_after - pairs_before)
+
+    def run_exhaustive_matcher(
+        self,
+        *,
+        database_path: Path | None = None,
+        stage: str = "exhaustive_matcher",
+        label: str = "exhaustive_matcher",
+    ) -> None:
+        active_database_path = database_path or self.database_path
+        started = time.time()
+        pairs_before = self.count_verified_pairs(active_database_path)
+        try:
+            stream_command(
+                [
+                    "colmap",
+                    "exhaustive_matcher",
+                    "--database_path",
+                    str(active_database_path),
+                    "--SiftMatching.use_gpu",
+                    "1" if self.use_gpu else "0",
+                    "--SiftMatching.guided_matching",
+                    "1",
+                ],
+                stage=stage,
+                timeout_seconds=self.resolve_timeout_seconds(self.matcher_timeout_seconds),
+                heartbeat_seconds=self.command_heartbeat_seconds,
+            )
+        except RuntimeError as error:
+            self.handle_stage_runtime_error(stage, error)
+            raise
+        pairs_after = self.count_verified_pairs(active_database_path)
+        self.timings[f"{stage}_seconds"] = round(time.time() - started, 2)
+        self.record_matcher_delta(label, pairs_after - pairs_before)
+        self.verified_pairs_total = max(self.verified_pairs_total, pairs_after)
+        logger.info("%s added %s verified image pairs", stage, pairs_after - pairs_before)
+
+    def write_chunk_match_list(
+        self,
+        chunk_plan: ChunkPlan,
+        *,
+        chunk_dir: Path,
+    ) -> Path:
+        pair_list_path = chunk_dir / "match_list.txt"
+        image_name_set = set(chunk_plan.image_names)
+        seen_pairs: Set[tuple[str, str]] = set()
+        with open(pair_list_path, "w", encoding="utf-8") as handle:
+            for image_name in chunk_plan.image_names:
+                for edge in self.graph_neighbors.get(image_name, []):
+                    neighbor_name = edge.second_name if edge.first_name == image_name else edge.first_name
+                    if neighbor_name not in image_name_set:
+                        continue
+                    pair_key = tuple(sorted((image_name, neighbor_name)))
+                    if pair_key in seen_pairs:
+                        continue
+                    seen_pairs.add(pair_key)
+                    handle.write(f"{pair_key[0]} {pair_key[1]}\n")
+        return pair_list_path
+
+    def run_matches_importer(
+        self,
+        *,
+        database_path: Path | None = None,
+        match_list_path: Path,
+        stage: str = "matches_importer",
+        label: str = "matches_importer",
+    ) -> None:
+        active_database_path = database_path or self.database_path
+        started = time.time()
+        pairs_before = self.count_verified_pairs(active_database_path)
+        try:
+            stream_command(
+                [
+                    "colmap",
+                    "matches_importer",
+                    "--database_path",
+                    str(active_database_path),
+                    "--match_list_path",
+                    str(match_list_path),
+                    "--match_type",
+                    "pairs",
+                    "--SiftMatching.use_gpu",
+                    "1" if self.use_gpu else "0",
+                    "--SiftMatching.guided_matching",
+                    "1",
+                ],
+                stage=stage,
+                timeout_seconds=self.resolve_timeout_seconds(self.matcher_timeout_seconds),
+                heartbeat_seconds=self.command_heartbeat_seconds,
+            )
+        except RuntimeError as error:
+            self.handle_stage_runtime_error(stage, error)
+            raise
+        pairs_after = self.count_verified_pairs(active_database_path)
+        self.timings[f"{stage}_seconds"] = round(time.time() - started, 2)
+        self.record_matcher_delta(label, pairs_after - pairs_before)
+        self.verified_pairs_total = max(self.verified_pairs_total, pairs_after)
+        logger.info("%s added %s verified image pairs", stage, pairs_after - pairs_before)
+
+    def run_chunk_matchers(
+        self,
+        chunk_plan: ChunkPlan,
+        *,
+        chunk_database_path: Path,
+        chunk_dir: Path,
+        stage_prefix: str,
+    ) -> None:
+        if self.chunk_planner == "footprint_graph_v1":
+            if self.colmap_capabilities.get("supports_matches_importer"):
+                pair_list_path = self.write_chunk_match_list(chunk_plan, chunk_dir=chunk_dir)
+                self.run_matches_importer(
+                    database_path=chunk_database_path,
+                    match_list_path=pair_list_path,
+                    stage=f"{stage_prefix}_matches_importer",
+                    label="chunk_matches_importer",
+                )
+                return
+            self.run_exhaustive_matcher(
+                database_path=chunk_database_path,
+                stage=f"{stage_prefix}_exhaustive_matcher",
+                label="chunk_exhaustive_matcher",
+            )
+            return
+        self.run_spatial_matcher(
+            database_path=chunk_database_path,
+            stage=f"{stage_prefix}_spatial_matcher",
+            label="chunk_spatial_matcher",
+        )
+        if self.enable_sequential_matcher:
+            self.run_sequential_matcher(
+                database_path=chunk_database_path,
+                stage=f"{stage_prefix}_sequential_matcher",
+                label="chunk_sequential_matcher",
+            )
+
+    def run_chunk_recovery_matchers(
+        self,
+        *,
+        chunk_database_path: Path,
+        chunk_dir: Path,
+        chunk_plan: ChunkPlan,
+        stage_prefix: str,
+    ) -> None:
+        if self.chunk_planner == "footprint_graph_v1":
+            self.run_chunk_matchers(
+                chunk_plan,
+                chunk_database_path=chunk_database_path,
+                chunk_dir=chunk_dir,
+                stage_prefix=f"{stage_prefix}_recovery",
+            )
+            return
+        self.run_spatial_matcher(
+            database_path=chunk_database_path,
+            stage=f"{stage_prefix}_spatial_matcher_recovery",
+            label="chunk_spatial_matcher",
+            max_neighbors=self.chunk_boundary_max_neighbors,
+            max_distance_m=max(self.spatial_distance_m * 1.5, self.chunk_max_radius_m),
+        )
+        if self.enable_sequential_matcher:
+            self.run_sequential_matcher(
+                database_path=chunk_database_path,
+                stage=f"{stage_prefix}_sequential_matcher_recovery",
+                label="chunk_sequential_matcher",
+                overlap=max(self.sequential_overlap, 12),
+            )
 
     def run_vocab_matching(
         self,
@@ -2088,6 +2698,363 @@ class ColmapPipeline:
         self.chunk_sizes = [len(chunk_plan.image_names) for chunk_plan in chunk_plans]
         return chunk_plans
 
+    def build_single_image_groups(self) -> List[CaptureGroup]:
+        groups: List[CaptureGroup] = []
+        self.image_group_indices = {}
+        for index, image_name in enumerate(self.capture_ordered_names):
+            if image_name not in self.exif_records:
+                continue
+            record = self.exif_records[image_name]
+            group = CaptureGroup(
+                index=len(groups),
+                image_names=[image_name],
+                centroid_x_m=float(record["local_x_m"]),
+                centroid_y_m=float(record["local_y_m"]),
+                centroid_z_m=float(record.get("local_z_m", 0.0)),
+                heading_deg=float(record["heading_deg"]) if record.get("heading_deg") is not None else None,
+                pitch_deg=float(record["pitch_deg"]) if record.get("pitch_deg") is not None else None,
+                start_capture_time_s=(
+                    float(record["capture_time_s"])
+                    if record.get("capture_time_s") is not None
+                    else None
+                ),
+                end_capture_time_s=(
+                    float(record["capture_time_s"])
+                    if record.get("capture_time_s") is not None
+                    else None
+                ),
+            )
+            groups.append(group)
+            self.image_group_indices[image_name] = group.index
+        self.chunk_groups = groups
+        self.chunk_group_count = len(groups)
+        self.flight_segments = []
+        self.chunk_segment_count = 0
+        return groups
+
+    def chunk_plan_centroid_xy(self, chunk_plan: ChunkPlan) -> tuple[float, float]:
+        if not chunk_plan.image_names:
+            return (0.0, 0.0)
+        centroid_x = sum(self.exif_records[name]["local_x_m"] for name in chunk_plan.image_names) / len(chunk_plan.image_names)
+        centroid_y = sum(self.exif_records[name]["local_y_m"] for name in chunk_plan.image_names) / len(chunk_plan.image_names)
+        return (float(centroid_x), float(centroid_y))
+
+    def cross_chunk_edge_count(self, first_names: Sequence[str], second_names: Sequence[str]) -> int:
+        second_set = set(second_names)
+        count = 0
+        for image_name in first_names:
+            for edge in self.graph_neighbors.get(image_name, []):
+                neighbor_name = edge.second_name if edge.first_name == image_name else edge.first_name
+                if edge.score >= 0.45 and neighbor_name in second_set:
+                    count += 1
+        return count
+
+    def build_footprint_graph_chunks(self) -> List[ChunkPlan]:
+        self.build_single_image_groups()
+        self.build_view_geometries()
+        self.build_candidate_graph()
+        roles = self.classify_graph_roles()
+        image_membership_count: Dict[str, int] = defaultdict(int)
+        assigned_core_names: Set[str] = set()
+        core_chunks: List[List[str]] = []
+        anchor_candidates = sorted(
+            self.capture_ordered_names,
+            key=lambda name: (
+                0 if roles.get(name) == "geometry_anchor" else 1,
+                -sum(edge.score for edge in self.graph_neighbors.get(name, [])[:12]),
+                name,
+            ),
+        )
+        for seed_name in anchor_candidates:
+            if seed_name not in self.exif_records or seed_name in assigned_core_names:
+                continue
+            if roles.get(seed_name) == "burst_redundant":
+                continue
+            chunk_names: List[str] = [seed_name]
+            chunk_name_set = {seed_name}
+            frontier = [seed_name]
+            while frontier:
+                current_name = frontier.pop(0)
+                for edge in self.graph_neighbors.get(current_name, []):
+                    neighbor_name = edge.second_name if edge.first_name == current_name else edge.first_name
+                    if neighbor_name in chunk_name_set or neighbor_name in assigned_core_names:
+                        continue
+                    if roles.get(neighbor_name) == "burst_redundant" and len(chunk_names) >= self.chunk_min_images:
+                        continue
+                    predicted_pair_count = (
+                        len(chunk_names) * (len(chunk_names) - 1) // 2
+                        if self.colmap_capabilities.get("supports_matches_importer") is not True
+                        else sum(
+                            1
+                            for name in chunk_name_set
+                            for candidate_edge in self.graph_neighbors.get(name, [])
+                            if (
+                                (candidate_edge.second_name if candidate_edge.first_name == name else candidate_edge.first_name)
+                                in chunk_name_set
+                            )
+                        ) // 2
+                    )
+                    if (
+                        len(chunk_names) >= self.chunk_hard_max_images
+                        or predicted_pair_count >= self.chunk_pair_budget
+                    ):
+                        frontier = []
+                        break
+                    chunk_names.append(neighbor_name)
+                    chunk_name_set.add(neighbor_name)
+                    if len(chunk_names) < self.chunk_target_images:
+                        frontier.append(neighbor_name)
+            if len(chunk_names) < self.chunk_min_images:
+                additional_names = [
+                    name
+                    for name in anchor_candidates
+                    if name not in chunk_name_set and name not in assigned_core_names and roles.get(name) != "burst_redundant"
+                ]
+                for additional_name in additional_names:
+                    if len(chunk_names) >= self.chunk_min_images:
+                        break
+                    chunk_names.append(additional_name)
+                    chunk_name_set.add(additional_name)
+            for image_name in chunk_names:
+                assigned_core_names.add(image_name)
+                image_membership_count[image_name] += 1
+            core_chunks.append(sorted(chunk_names, key=lambda name: self.capture_ordered_names.index(name)))
+
+        remaining_names = [
+            name for name in self.capture_ordered_names
+            if name in self.exif_records and name not in assigned_core_names
+        ]
+        if remaining_names:
+            if core_chunks and len(remaining_names) < self.chunk_min_images:
+                core_chunks[-1].extend(remaining_names)
+            else:
+                core_chunks.append(remaining_names)
+
+        overlap_assignments: Dict[int, Set[str]] = defaultdict(set)
+        self.chunk_cross_edge_counts = {}
+        for left_index in range(len(core_chunks)):
+            for right_index in range(left_index + 1, len(core_chunks)):
+                cross_edge_count = self.cross_chunk_edge_count(core_chunks[left_index], core_chunks[right_index])
+                if cross_edge_count < self.chunk_cross_edge_min_count:
+                    continue
+                self.chunk_cross_edge_counts[(left_index, right_index)] = cross_edge_count
+                candidate_scores: List[tuple[float, str]] = []
+                for image_name in core_chunks[left_index]:
+                    if roles.get(image_name) == "burst_redundant":
+                        continue
+                    score = sum(
+                        edge.score
+                        for edge in self.graph_neighbors.get(image_name, [])
+                        if (edge.second_name if edge.first_name == image_name else edge.first_name) in set(core_chunks[right_index])
+                    )
+                    if score > 0.0:
+                        candidate_scores.append((score, image_name))
+                for image_name in core_chunks[right_index]:
+                    if roles.get(image_name) == "burst_redundant":
+                        continue
+                    score = sum(
+                        edge.score
+                        for edge in self.graph_neighbors.get(image_name, [])
+                        if (edge.second_name if edge.first_name == image_name else edge.first_name) in set(core_chunks[left_index])
+                    )
+                    if score > 0.0:
+                        candidate_scores.append((score, image_name))
+                for _, image_name in sorted(candidate_scores, key=lambda item: (-item[0], item[1])):
+                    if len(overlap_assignments[left_index].union(overlap_assignments[right_index])) >= self.chunk_overlap_anchor_count:
+                        break
+                    if image_membership_count[image_name] >= 3:
+                        continue
+                    overlap_assignments[left_index].add(image_name)
+                    overlap_assignments[right_index].add(image_name)
+                    image_membership_count[image_name] += 1
+
+        chunk_plans: List[ChunkPlan] = []
+        self.chunk_centroids = {}
+        total_overlap_assignments = 0
+        for index, chunk_names in enumerate(core_chunks):
+            core_names = [
+                image_name
+                for image_name in sorted(set(chunk_names), key=lambda name: self.capture_ordered_names.index(name))
+            ]
+            overlap_names = [
+                image_name
+                for image_name in sorted(
+                    overlap_assignments.get(index, set()).difference(core_names),
+                    key=lambda name: self.capture_ordered_names.index(name),
+                )
+            ]
+            core_group_indices = [self.image_group_indices[name] for name in core_names if name in self.image_group_indices]
+            overlap_group_indices = [
+                self.image_group_indices[name] for name in overlap_names if name in self.image_group_indices
+            ]
+            chunk_plan = self.build_chunk_plan_from_groups(
+                index=index,
+                core_group_indices=core_group_indices,
+                overlap_group_indices=overlap_group_indices,
+                segment_indices=[],
+            )
+            chunk_plans.append(chunk_plan)
+            self.chunk_centroids[index] = self.chunk_plan_centroid_xy(chunk_plan)
+            total_overlap_assignments += len(overlap_names)
+        chunk_plans.sort(key=lambda plan: (self.chunk_centroids.get(plan.index, (0.0, 0.0))[0], self.chunk_centroids.get(plan.index, (0.0, 0.0))[1], plan.index))
+        reindexed_chunk_plans: List[ChunkPlan] = []
+        old_to_new = {chunk_plan.index: new_index for new_index, chunk_plan in enumerate(chunk_plans)}
+        for new_index, chunk_plan in enumerate(chunk_plans):
+            reindexed_chunk_plans.append(
+                ChunkPlan(
+                    index=new_index,
+                    core_names=chunk_plan.core_names,
+                    image_names=chunk_plan.image_names,
+                    overlap_names=chunk_plan.overlap_names,
+                    core_group_indices=chunk_plan.core_group_indices,
+                    group_indices=chunk_plan.group_indices,
+                    overlap_group_indices=chunk_plan.overlap_group_indices,
+                    segment_indices=chunk_plan.segment_indices,
+                )
+            )
+        self.chunk_plans_by_index = {chunk_plan.index: chunk_plan for chunk_plan in reindexed_chunk_plans}
+        self.chunk_sizes = [len(chunk_plan.image_names) for chunk_plan in reindexed_chunk_plans]
+        self.chunk_overlap_image_count = total_overlap_assignments
+        role_counts = defaultdict(int)
+        for role in roles.values():
+            role_counts[role] += 1
+        self.chunk_graph_probe_manifest = {
+            "planner": self.chunk_planner,
+            "role_counts": dict(role_counts),
+            "chunk_pair_budget": self.chunk_pair_budget,
+            "chunk_count": len(reindexed_chunk_plans),
+            "chunk_sizes": self.chunk_sizes,
+            "image_roles": roles,
+            "candidate_neighbor_count": {
+                image_name: len(edges)
+                for image_name, edges in self.graph_neighbors.items()
+            },
+            "chunks": [
+                {
+                    "index": chunk_plan.index,
+                    "core_names": chunk_plan.core_names,
+                    "overlap_names": chunk_plan.overlap_names,
+                    "image_names": chunk_plan.image_names,
+                    "predicted_pair_count": (
+                        len(chunk_plan.image_names) * (len(chunk_plan.image_names) - 1) // 2
+                        if self.colmap_capabilities.get("supports_matches_importer") is not True
+                        else sum(
+                            1
+                            for image_name in chunk_plan.image_names
+                            for edge in self.graph_neighbors.get(image_name, [])
+                            if (edge.second_name if edge.first_name == image_name else edge.first_name) in set(chunk_plan.image_names)
+                        ) // 2
+                    ),
+                }
+                for chunk_plan in reindexed_chunk_plans
+            ],
+        }
+        self.probe_subsets = self.select_probe_subsets(reindexed_chunk_plans)
+        return reindexed_chunk_plans
+
+    def select_probe_subsets(self, chunk_plans: Sequence[ChunkPlan]) -> Dict[str, List[str]]:
+        if not chunk_plans:
+            return {}
+        geometries = self.build_view_geometries()
+
+        def pitch_values_for_names(image_names: Sequence[str]) -> List[float]:
+            return [
+                float(geometries[name].pitch_deg)
+                for name in image_names
+                if name in geometries and geometries[name].pitch_deg is not None
+            ]
+
+        geometry_mix = max(
+            chunk_plans,
+            key=lambda plan: (
+                len(plan.image_names),
+                len({round(value, 1) for value in pitch_values_for_names(plan.image_names)}),
+            ),
+        )
+        cross_pass = max(
+            chunk_plans,
+            key=lambda plan: (
+                max(
+                    (
+                        abs(float(self.exif_records[left]["capture_time_s"]) - float(self.exif_records[right]["capture_time_s"]))
+                        for left in plan.image_names
+                        for right in plan.image_names
+                        if self.exif_records[left].get("capture_time_s") is not None
+                        and self.exif_records[right].get("capture_time_s") is not None
+                    ),
+                    default=0.0,
+                ),
+                len(plan.image_names),
+            ),
+        )
+        horizon_context = max(
+            chunk_plans,
+            key=lambda plan: (
+                sum(
+                    1
+                    for image_name in plan.image_names
+                    if image_name in geometries and geometries[image_name].is_shallow_view
+                ),
+                len(plan.image_names),
+            ),
+        )
+        return {
+            "geometry_mix": list(geometry_mix.image_names),
+            "cross_pass": list(cross_pass.image_names),
+            "horizon_context": list(horizon_context.image_names),
+        }
+
+    def build_chunk_plans(self) -> List[ChunkPlan]:
+        if self.chunk_planner == "footprint_graph_v1":
+            self.chunk_matcher_strategy = (
+                "pair_list" if self.colmap_capabilities.get("supports_matches_importer") else "exhaustive"
+            )
+            return self.build_footprint_graph_chunks()
+        self.chunk_matcher_strategy = "spatial_sequential"
+        return self.build_spatial_heading_chunks()
+
+    def write_chunk_planner_manifest(self) -> None:
+        if self.chunk_planner == "footprint_graph_v1":
+            chunk_plans = self.build_chunk_plans()
+        else:
+            chunk_plans = self.build_chunk_plans()
+        manifest = {
+            "planner": self.chunk_planner,
+            "chunk_matcher_strategy": self.chunk_matcher_strategy,
+            "colmap_capabilities": self.colmap_capabilities,
+            "chunk_count": len(chunk_plans),
+            "chunk_sizes": self.chunk_sizes,
+            "chunk_overlap_image_count": self.chunk_overlap_image_count,
+            "chunk_group_count": self.chunk_group_count,
+            "chunk_segment_count": self.chunk_segment_count,
+            "image_roles": self.chunk_role_by_image,
+            "probe_subsets": self.probe_subsets,
+            "chunks": [
+                {
+                    "index": chunk_plan.index,
+                    "core_names": chunk_plan.core_names,
+                    "overlap_names": chunk_plan.overlap_names,
+                    "image_names": chunk_plan.image_names,
+                }
+                for chunk_plan in chunk_plans
+            ],
+        }
+        if self.chunk_graph_probe_manifest:
+            manifest["footprint_graph_manifest"] = self.chunk_graph_probe_manifest
+        with open(self.output_dir / "chunk_planner_manifest.json", "w", encoding="utf-8") as handle:
+            json.dump(manifest, handle, indent=2)
+        if not self.probe_subsets:
+            return
+        probes_dir = self.output_dir / "probes"
+        probes_dir.mkdir(parents=True, exist_ok=True)
+        for probe_name, image_names in self.probe_subsets.items():
+            probe_path = probes_dir / f"{probe_name}.zip"
+            with zipfile.ZipFile(probe_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+                for image_name in image_names:
+                    image_path = self.images_dir / image_name
+                    if image_path.exists():
+                        archive.write(image_path, arcname=image_name)
+
     def write_chunk_image_list(self, chunk_plan: ChunkPlan) -> Path:
         chunk_dir = self.work_dir / f"chunk_{chunk_plan.index:02d}"
         chunk_dir.mkdir(parents=True, exist_ok=True)
@@ -2193,6 +3160,40 @@ class ColmapPipeline:
         chunk_plan: ChunkPlan,
         missing_core_names: Sequence[str],
     ) -> ChunkPlan:
+        if self.chunk_planner == "footprint_graph_v1":
+            retry_names = set(chunk_plan.image_names)
+            candidate_names: List[tuple[float, str]] = []
+            for missing_name in missing_core_names:
+                for edge in self.graph_neighbors.get(missing_name, []):
+                    neighbor_name = edge.second_name if edge.first_name == missing_name else edge.first_name
+                    if neighbor_name in retry_names:
+                        continue
+                    candidate_names.append((edge.score, neighbor_name))
+            for _, neighbor_name in sorted(candidate_names, key=lambda item: (-item[0], item[1])):
+                retry_names.add(neighbor_name)
+                if len(retry_names) >= min(self.chunk_hard_max_images, len(chunk_plan.image_names) + 24):
+                    break
+            if retry_names == set(chunk_plan.image_names):
+                return chunk_plan
+            retry_ordered_names = sorted(retry_names, key=lambda name: self.capture_ordered_names.index(name))
+            retry_core_names = list(chunk_plan.core_names)
+            retry_overlap_names = [name for name in retry_ordered_names if name not in set(retry_core_names)]
+            return ChunkPlan(
+                index=chunk_plan.index,
+                core_names=retry_core_names,
+                image_names=retry_ordered_names,
+                overlap_names=retry_overlap_names,
+                core_group_indices=[
+                    self.image_group_indices[name] for name in retry_core_names if name in self.image_group_indices
+                ],
+                group_indices=[
+                    self.image_group_indices[name] for name in retry_ordered_names if name in self.image_group_indices
+                ],
+                overlap_group_indices=[
+                    self.image_group_indices[name] for name in retry_overlap_names if name in self.image_group_indices
+                ],
+                segment_indices=list(chunk_plan.segment_indices),
+            )
         retry_group_indices = sorted(
             set(chunk_plan.group_indices).union(self.retry_group_indices_for_missing_core_names(missing_core_names))
         )
@@ -2228,6 +3229,35 @@ class ColmapPipeline:
         *,
         index: int,
     ) -> ChunkPlan:
+        if self.chunk_planner == "footprint_graph_v1":
+            merged_core_names = sorted(
+                set(first_chunk_plan.core_names).union(second_chunk_plan.core_names),
+                key=lambda name: self.capture_ordered_names.index(name),
+            )
+            merged_overlap_names = sorted(
+                set(first_chunk_plan.overlap_names).union(second_chunk_plan.overlap_names).difference(merged_core_names),
+                key=lambda name: self.capture_ordered_names.index(name),
+            )
+            merged_image_names = sorted(
+                set(merged_core_names).union(merged_overlap_names),
+                key=lambda name: self.capture_ordered_names.index(name),
+            )
+            return ChunkPlan(
+                index=index,
+                core_names=merged_core_names,
+                image_names=merged_image_names,
+                overlap_names=merged_overlap_names,
+                core_group_indices=[
+                    self.image_group_indices[name] for name in merged_core_names if name in self.image_group_indices
+                ],
+                group_indices=[
+                    self.image_group_indices[name] for name in merged_image_names if name in self.image_group_indices
+                ],
+                overlap_group_indices=[
+                    self.image_group_indices[name] for name in merged_overlap_names if name in self.image_group_indices
+                ],
+                segment_indices=[],
+            )
         merged_core_group_indices = sorted(
             set(first_chunk_plan.core_group_indices).union(second_chunk_plan.core_group_indices)
         )
@@ -2257,17 +3287,12 @@ class ColmapPipeline:
         chunk_dir = self.work_dir / (dir_name or chunk_stage_prefix)
         chunk_dir.mkdir(parents=True, exist_ok=True)
         chunk_database_path = self.prepare_chunk_database(chunk_plan, dir_name=dir_name or chunk_stage_prefix)
-        self.run_spatial_matcher(
-            database_path=chunk_database_path,
-            stage=f"{chunk_stage_prefix}_spatial_matcher",
-            label="chunk_spatial_matcher",
+        self.run_chunk_matchers(
+            chunk_plan,
+            chunk_database_path=chunk_database_path,
+            chunk_dir=chunk_dir,
+            stage_prefix=chunk_stage_prefix,
         )
-        if self.enable_sequential_matcher:
-            self.run_sequential_matcher(
-                database_path=chunk_database_path,
-                stage=f"{chunk_stage_prefix}_sequential_matcher",
-                label="chunk_sequential_matcher",
-            )
         initial_model = self.run_mapper(
             database_path=chunk_database_path,
             stage=f"{chunk_stage_prefix}_mapper_initial",
@@ -2286,6 +3311,17 @@ class ColmapPipeline:
         )
         core_missing_names = sorted(set(chunk_plan.core_names).difference(registered_names))
         if registered_ratio >= self.chunk_registered_ratio_threshold():
+            self.chunk_run_metrics.append(
+                {
+                    "chunk_index": chunk_plan.index,
+                    "image_count": len(chunk_plan.image_names),
+                    "registered_ratio": round(registered_ratio, 4),
+                    "core_registered_ratio": round(core_registered_ratio, 4),
+                    "recovered_registered_ratio": None,
+                    "recovered_core_registered_ratio": None,
+                    "failure": False,
+                }
+            )
             return initial_model
         if core_registered_ratio >= self.chunk_min_core_registered_ratio:
             logger.info(
@@ -2297,6 +3333,17 @@ class ColmapPipeline:
                 core_registered_count,
                 len(chunk_plan.core_names),
                 core_registered_ratio * 100.0,
+            )
+            self.chunk_run_metrics.append(
+                {
+                    "chunk_index": chunk_plan.index,
+                    "image_count": len(chunk_plan.image_names),
+                    "registered_ratio": round(registered_ratio, 4),
+                    "core_registered_ratio": round(core_registered_ratio, 4),
+                    "recovered_registered_ratio": None,
+                    "recovered_core_registered_ratio": None,
+                    "failure": False,
+                }
             )
             return initial_model
 
@@ -2325,20 +3372,12 @@ class ColmapPipeline:
                 retry_chunk_plan,
                 dir_name=dir_name or chunk_stage_prefix,
             )
-        self.run_spatial_matcher(
-            database_path=chunk_database_path,
-            stage=f"{chunk_stage_prefix}_spatial_matcher_recovery",
-            label="chunk_spatial_matcher",
-            max_neighbors=self.chunk_boundary_max_neighbors,
-            max_distance_m=max(self.spatial_distance_m * 1.5, self.chunk_max_radius_m),
+        self.run_chunk_recovery_matchers(
+            chunk_database_path=chunk_database_path,
+            chunk_dir=chunk_dir,
+            chunk_plan=retry_chunk_plan,
+            stage_prefix=chunk_stage_prefix,
         )
-        if self.enable_sequential_matcher:
-            self.run_sequential_matcher(
-                database_path=chunk_database_path,
-                stage=f"{chunk_stage_prefix}_sequential_matcher_recovery",
-                label="chunk_sequential_matcher",
-                overlap=max(self.sequential_overlap, 12),
-            )
         recovered_model = self.run_mapper(
             database_path=chunk_database_path,
             stage=f"{chunk_stage_prefix}_mapper_recovery",
@@ -2356,6 +3395,17 @@ class ColmapPipeline:
             recovered_model,
         )
         if recovered_ratio >= self.chunk_registered_ratio_threshold():
+            self.chunk_run_metrics.append(
+                {
+                    "chunk_index": chunk_plan.index,
+                    "image_count": len(chunk_plan.image_names),
+                    "registered_ratio": round(registered_ratio, 4),
+                    "core_registered_ratio": round(core_registered_ratio, 4),
+                    "recovered_registered_ratio": round(recovered_ratio, 4),
+                    "recovered_core_registered_ratio": round(recovered_core_ratio, 4),
+                    "failure": False,
+                }
+            )
             return recovered_model
         if recovered_core_ratio >= self.chunk_min_core_registered_ratio:
             logger.info(
@@ -2367,6 +3417,17 @@ class ColmapPipeline:
                 recovered_core_count,
                 len(retry_chunk_plan.core_names),
                 recovered_core_ratio * 100.0,
+            )
+            self.chunk_run_metrics.append(
+                {
+                    "chunk_index": chunk_plan.index,
+                    "image_count": len(chunk_plan.image_names),
+                    "registered_ratio": round(registered_ratio, 4),
+                    "core_registered_ratio": round(core_registered_ratio, 4),
+                    "recovered_registered_ratio": round(recovered_ratio, 4),
+                    "recovered_core_registered_ratio": round(recovered_core_ratio, 4),
+                    "failure": False,
+                }
             )
             return recovered_model
         self.mark_failure(
@@ -2381,6 +3442,17 @@ class ColmapPipeline:
             registered_ratio=recovered_ratio,
             core_registered_ratio=recovered_core_ratio,
         )
+        self.chunk_run_metrics.append(
+            {
+                "chunk_index": chunk_plan.index,
+                "image_count": len(chunk_plan.image_names),
+                "registered_ratio": round(registered_ratio, 4),
+                "core_registered_ratio": round(core_registered_ratio, 4),
+                "recovered_registered_ratio": round(recovered_ratio, 4),
+                "recovered_core_registered_ratio": round(recovered_core_ratio, 4),
+                "failure": True,
+            }
+        )
         raise RuntimeError(self.failure_reason_detail)
 
     def merge_chunk_models(self, chunk_models: Sequence[ModelSummary]) -> ModelSummary:
@@ -2388,6 +3460,12 @@ class ColmapPipeline:
             raise RuntimeError("No chunk models available to merge")
         if len(chunk_models) == 1:
             self.merged_component_count = 1
+            self.chunk_merge_proof = {
+                "chunk_model_count": 1,
+                "pre_merge_unique_registered_images": chunk_models[0].images_registered,
+                "final_merged_registered_images": chunk_models[0].images_registered,
+                "pre_merge_retention_ratio": 1.0,
+            }
             return chunk_models[0]
 
         merge_started = time.time()
@@ -2424,7 +3502,26 @@ class ColmapPipeline:
         self.timings["chunk_model_merge_seconds"] = self.chunk_merge_seconds
         self.merged_component_count = 1
         self.pipeline_name = "colmap_gpu_spatial_heading_chunked"
-        return self.run_bundle_adjuster(input_path=merged_path, stage="chunk_bundle_adjuster")
+        adjusted_model = self.run_bundle_adjuster(input_path=merged_path, stage="chunk_bundle_adjuster")
+        pre_merge_registered_names: Set[str] = set()
+        for chunk_model in chunk_models:
+            pre_merge_registered_names.update(load_registered_image_names(chunk_model.text_dir / "images.txt"))
+        merged_registered_names = load_registered_image_names(adjusted_model.text_dir / "images.txt")
+        retained_registered_names = pre_merge_registered_names.intersection(merged_registered_names)
+        pre_merge_registered_count = len(pre_merge_registered_names)
+        self.chunk_merge_proof = {
+            "chunk_model_count": len(chunk_models),
+            "pre_merge_unique_registered_images": pre_merge_registered_count,
+            "final_merged_registered_images": len(merged_registered_names),
+            "retained_registered_images": len(retained_registered_names),
+            "pre_merge_retention_ratio": round(
+                len(retained_registered_names) / pre_merge_registered_count,
+                4,
+            )
+            if pre_merge_registered_count
+            else 0.0,
+        }
+        return adjusted_model
 
     def run_vocab_only_path(self) -> ModelSummary:
         self.run_vocab_matching()
@@ -2528,8 +3625,15 @@ class ColmapPipeline:
 
     def run_spatial_heading_chunked_path(self) -> ModelSummary:
         self.chunking_attempted = True
-        self.pipeline_name = "colmap_gpu_spatial_heading_chunked"
-        self.chunk_plans = self.build_spatial_heading_chunks()
+        self.pipeline_name = (
+            "colmap_gpu_footprint_graph_chunked"
+            if self.chunk_planner == "footprint_graph_v1"
+            else "colmap_gpu_spatial_heading_chunked"
+        )
+        if self.chunk_planner == "footprint_graph_v1":
+            self.enable_sequential_matcher = False
+        self.chunk_plans = self.build_chunk_plans()
+        self.chunk_plans_by_index = {chunk_plan.index: chunk_plan for chunk_plan in self.chunk_plans}
         if self.only_chunk_indexes:
             self.chunk_plans = [
                 chunk_plan for chunk_plan in self.chunk_plans if chunk_plan.index in self.only_chunk_indexes
@@ -2570,9 +3674,13 @@ class ColmapPipeline:
                     previous_chunk_plan = self.chunk_plans[chunk_index - 1]
                     merge_candidates.append(
                         (
-                            self.chunk_unit_boundary_score(
-                                previous_chunk_plan.core_group_indices,
-                                chunk_plan.core_group_indices,
+                            (
+                                -self.cross_chunk_edge_count(previous_chunk_plan.image_names, chunk_plan.image_names)
+                                if self.chunk_planner == "footprint_graph_v1"
+                                else self.chunk_unit_boundary_score(
+                                    previous_chunk_plan.core_group_indices,
+                                    chunk_plan.core_group_indices,
+                                )
                             ),
                             "previous",
                             previous_chunk_plan,
@@ -2582,9 +3690,13 @@ class ColmapPipeline:
                     next_chunk_plan = self.chunk_plans[chunk_index + 1]
                     merge_candidates.append(
                         (
-                            self.chunk_unit_boundary_score(
-                                chunk_plan.core_group_indices,
-                                next_chunk_plan.core_group_indices,
+                            (
+                                -self.cross_chunk_edge_count(chunk_plan.image_names, next_chunk_plan.image_names)
+                                if self.chunk_planner == "footprint_graph_v1"
+                                else self.chunk_unit_boundary_score(
+                                    chunk_plan.core_group_indices,
+                                    next_chunk_plan.core_group_indices,
+                                )
                             ),
                             "next",
                             next_chunk_plan,
@@ -2639,7 +3751,15 @@ class ColmapPipeline:
             )
             raise RuntimeError(self.failure_reason_detail)
         self.final_matcher_mode = (
-            "spatial_heading_chunked_subset" if self.only_chunk_indexes else "spatial_heading_chunked"
+            (
+                "footprint_graph_chunked_subset"
+                if self.only_chunk_indexes
+                else "footprint_graph_chunked"
+            )
+            if self.chunk_planner == "footprint_graph_v1"
+            else (
+                "spatial_heading_chunked_subset" if self.only_chunk_indexes else "spatial_heading_chunked"
+            )
         )
         return merged_model
 
@@ -2683,6 +3803,9 @@ class ColmapPipeline:
             if best_model is not None and best_model.images_registered
             else 0.0
         )
+        role_counts = defaultdict(int)
+        for role in self.chunk_role_by_image.values():
+            role_counts[role] += 1
         return {
             "pipeline": self.pipeline_name,
             "processing_time_seconds": round(time.time() - self.start_time, 2),
@@ -2716,14 +3839,20 @@ class ColmapPipeline:
             "chunking_enabled": self.enable_spatial_chunking,
             "chunking_attempted": self.chunking_attempted,
             "chunking_skipped_reason": self.chunking_skipped_reason,
+            "chunk_planner": self.chunk_planner,
+            "chunk_matcher_strategy": self.chunk_matcher_strategy,
             "chunk_count": len(self.chunk_plans),
             "chunk_sizes": self.chunk_sizes,
             "chunk_overlap_image_count": self.chunk_overlap_image_count,
             "chunk_group_count": self.chunk_group_count,
             "chunk_segment_count": self.chunk_segment_count,
+            "chunk_pair_budget": self.chunk_pair_budget,
+            "chunk_role_counts": dict(role_counts),
             "chunk_mapper_seconds": round(self.chunk_mapper_seconds, 2),
             "chunk_merge_seconds": round(self.chunk_merge_seconds, 2),
+            "chunk_merge_proof": self.chunk_merge_proof,
             "chunk_recovery_mode": self.chunk_recovery_mode,
+            "chunk_run_metrics": self.chunk_run_metrics,
             "boundary_recovery_triggered": self.boundary_recovery_triggered,
             "adjacent_chunk_merge_triggered": self.adjacent_chunk_merge_triggered,
             "merged_component_count": self.merged_component_count,
@@ -2747,6 +3876,7 @@ class ColmapPipeline:
             "vocab_tree_num_visual_words": self.vocab_num_visual_words,
             "vocab_tree_max_num_descriptors": self.vocab_max_num_descriptors,
             "benchmark_subset_strategy": self.benchmark_subset_strategy,
+            "colmap_capabilities": self.colmap_capabilities,
             "failure_stage": self.failure_stage,
             "failure_reason_detail": self.failure_reason_detail,
             "failed_chunk_index": self.failed_chunk_index,
@@ -2754,6 +3884,12 @@ class ColmapPipeline:
             "failed_chunk_core_registered_ratio": self.failed_chunk_core_registered_ratio,
             "timed_out": self.timed_out,
             "selected_chunk_indexes": sorted(self.only_chunk_indexes),
+            "planner_snapshot_only": self.planner_snapshot_only,
+            "capability_snapshot_only": self.capability_snapshot_only,
+            "probe_subsets": {
+                probe_name: len(image_names)
+                for probe_name, image_names in self.probe_subsets.items()
+            },
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         }
 
@@ -2781,6 +3917,8 @@ class ColmapPipeline:
         )
         with open(self.output_dir / "sfm_metadata.json", "w", encoding="utf-8") as handle:
             json.dump(metadata, handle, indent=2)
+        if self.chunk_planner == "footprint_graph_v1":
+            self.write_chunk_planner_manifest()
 
         if not metadata["quality_check_passed"]:
             raise RuntimeError(

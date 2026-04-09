@@ -178,6 +178,12 @@ def build_summary_row(
         "merged_component_count": metadata.get("merged_component_count"),
         "chunk_count": metadata.get("chunk_count"),
         "chunk_sizes": metadata.get("chunk_sizes"),
+        "chunk_planner": metadata.get("chunk_planner"),
+        "chunk_matcher_strategy": metadata.get("chunk_matcher_strategy"),
+        "chunk_role_counts": metadata.get("chunk_role_counts"),
+        "planner_snapshot_only": metadata.get("planner_snapshot_only"),
+        "capability_snapshot_only": metadata.get("capability_snapshot_only"),
+        "probe_subsets": metadata.get("probe_subsets"),
     }
 
 
