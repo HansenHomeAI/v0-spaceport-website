@@ -1120,6 +1120,67 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(matches_count, 0)
             self.assertEqual(geometry_count, 0)
 
+    def test_prepare_chunk_database_rebuilds_clean_copy_when_retry_dir_has_stale_sqlite_sidecars(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.database_path = root / "database.db"
+            chunk = run_colmap_sfm.ChunkPlan(
+                index=1,
+                core_names=["IMG_01.jpg", "IMG_02.jpg"],
+                image_names=["IMG_01.jpg", "IMG_02.jpg"],
+                overlap_names=[],
+            )
+
+            with sqlite3.connect(pipeline.database_path) as connection:
+                connection.execute(
+                    "CREATE TABLE cameras(camera_id INTEGER PRIMARY KEY, model INTEGER, width INTEGER, height INTEGER, params BLOB, prior_focal_length INTEGER)"
+                )
+                connection.execute("INSERT INTO cameras(camera_id, model, width, height, params, prior_focal_length) VALUES (1, 0, 100, 100, X'00', 1)")
+                connection.execute("INSERT INTO cameras(camera_id, model, width, height, params, prior_focal_length) VALUES (2, 0, 100, 100, X'00', 1)")
+                connection.execute("CREATE TABLE images(image_id INTEGER PRIMARY KEY, name TEXT, camera_id INTEGER)")
+                connection.execute("CREATE TABLE keypoints(image_id INTEGER PRIMARY KEY, rows INTEGER, cols INTEGER, data BLOB)")
+                connection.execute("CREATE TABLE descriptors(image_id INTEGER PRIMARY KEY, rows INTEGER, cols INTEGER, data BLOB)")
+                connection.execute(
+                    "CREATE TABLE pose_priors(image_id INTEGER PRIMARY KEY, position BLOB, coordinate_system INTEGER, position_covariance BLOB)"
+                )
+                connection.execute("CREATE TABLE matches(pair_id INTEGER PRIMARY KEY, rows INTEGER, cols INTEGER, data BLOB)")
+                connection.execute(
+                    "CREATE TABLE two_view_geometries(pair_id INTEGER PRIMARY KEY, rows INTEGER, cols INTEGER, data BLOB, config INTEGER, F BLOB, E BLOB, H BLOB, qvec BLOB, tvec BLOB)"
+                )
+                connection.executemany(
+                    "INSERT INTO images(image_id, name, camera_id) VALUES (?, ?, ?)",
+                    [(1, "IMG_01.jpg", 1), (2, "IMG_02.jpg", 1), (3, "IMG_03.jpg", 2)],
+                )
+                connection.executemany(
+                    "INSERT INTO keypoints(image_id, rows, cols, data) VALUES (?, 1, 1, X'00')",
+                    [(1,), (2,), (3,)],
+                )
+                connection.executemany(
+                    "INSERT INTO descriptors(image_id, rows, cols, data) VALUES (?, 1, 1, X'00')",
+                    [(1,), (2,), (3,)],
+                )
+                connection.executemany(
+                    "INSERT INTO pose_priors(image_id, position, coordinate_system, position_covariance) VALUES (?, X'00', 0, X'00')",
+                    [(1,), (2,), (3,)],
+                )
+                connection.commit()
+
+            first_chunk_db = pipeline.prepare_chunk_database(chunk, dir_name="chunk_retry")
+            Path(f"{first_chunk_db}-wal").write_bytes(b"stale wal")
+            Path(f"{first_chunk_db}-shm").write_bytes(b"stale shm")
+
+            second_chunk_db = pipeline.prepare_chunk_database(chunk, dir_name="chunk_retry")
+
+            with sqlite3.connect(second_chunk_db) as connection:
+                image_names = [row[0] for row in connection.execute("SELECT name FROM images ORDER BY image_id").fetchall()]
+                keypoint_ids = [row[0] for row in connection.execute("SELECT image_id FROM keypoints ORDER BY image_id").fetchall()]
+
+            self.assertEqual(image_names, ["IMG_01.jpg", "IMG_02.jpg"])
+            self.assertEqual(keypoint_ids, [1, 2])
+            self.assertFalse(Path(f"{second_chunk_db}-wal").exists())
+            self.assertFalse(Path(f"{second_chunk_db}-shm").exists())
+
     def test_merge_chunk_models_creates_output_directory_before_merger(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

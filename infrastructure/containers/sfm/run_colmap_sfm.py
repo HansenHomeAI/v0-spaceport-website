@@ -3125,14 +3125,36 @@ class ColmapPipeline:
                 handle.write(f"{image_name}\n")
         return image_list_path
 
+    def sqlite_sidecar_paths(self, database_path: Path) -> List[Path]:
+        return [Path(f"{database_path}{suffix}") for suffix in ("-wal", "-shm", "-journal")]
+
+    def remove_sqlite_database_artifacts(self, database_path: Path) -> None:
+        for path in [database_path, *self.sqlite_sidecar_paths(database_path)]:
+            try:
+                path.unlink()
+            except FileNotFoundError:
+                continue
+
+    def clone_database_for_chunk(self, destination_path: Path) -> None:
+        destination_path.parent.mkdir(parents=True, exist_ok=True)
+        self.remove_sqlite_database_artifacts(destination_path)
+        source_uri = f"file:{self.database_path.as_posix()}?mode=ro"
+        with sqlite3.connect(source_uri, uri=True) as source_connection:
+            with sqlite3.connect(destination_path) as destination_connection:
+                source_connection.backup(destination_connection)
+                destination_connection.commit()
+
     def prepare_chunk_database(self, chunk_plan: ChunkPlan, *, dir_name: str | None = None) -> Path:
         chunk_dir = self.work_dir / (dir_name or f"chunk_{chunk_plan.index:02d}")
         chunk_dir.mkdir(parents=True, exist_ok=True)
         chunk_database_path = chunk_dir / "database.db"
-        shutil.copy2(self.database_path, chunk_database_path)
+        # Chunk retries can reuse the same directory name; create a fresh SQLite clone so
+        # stale WAL/SHM files from the previous attempt cannot corrupt the next retry.
+        self.clone_database_for_chunk(chunk_database_path)
 
         keep_image_names = set(chunk_plan.image_names)
         with sqlite3.connect(chunk_database_path) as connection:
+            connection.execute("PRAGMA journal_mode=DELETE")
             rows = connection.execute("SELECT image_id, name, camera_id FROM images").fetchall()
             remove_image_ids = [int(image_id) for image_id, name, _ in rows if str(name) not in keep_image_names]
             if remove_image_ids:
@@ -3160,6 +3182,9 @@ class ColmapPipeline:
             connection.execute("DELETE FROM matches")
             connection.execute("DELETE FROM two_view_geometries")
             connection.commit()
+        for sidecar_path in self.sqlite_sidecar_paths(chunk_database_path):
+            if sidecar_path.exists():
+                sidecar_path.unlink()
 
         logger.info(
             "Prepared chunk %s database by pruning global features down to %s images",
