@@ -859,6 +859,12 @@ class MLPipelineStack(Stack):
                 allow_methods=apigw.Cors.ALL_METHODS,
                 allow_headers=["Content-Type", "Authorization"]
             ),
+            binary_media_types=[
+                "image/webp",
+                "image/png",
+                "image/jpeg",
+                "application/octet-stream",
+            ],
             **ml_api_kwargs,
         )
 
