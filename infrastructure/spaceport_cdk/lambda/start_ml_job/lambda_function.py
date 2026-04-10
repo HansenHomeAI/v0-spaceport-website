@@ -261,6 +261,7 @@ def lambda_handler(event, context):
             "FLOATER_PRUNING_MAX_COLOR_DISTANCE": "0.18",
             "FLOATER_PRUNING_MIN_EDGE_SUPPORT": "1",
             "TRAINING_TIMEOUT_SECONDS": "14400",
+            "TRAINING_INSTANCE_TYPE": "ml.g5.2xlarge",
             
             # NerfStudio Framework Configuration
             "FRAMEWORK": "nerfstudio",

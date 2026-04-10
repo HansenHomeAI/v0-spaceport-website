@@ -1118,6 +1118,7 @@ class NerfStudioTrainer:
             'enable_alpha_loss': self.config.get('model', {}).get('enable_alpha_loss', True),
             'enable_robust_mask': self.config.get('model', {}).get('enable_robust_mask', True),
             'max_iterations': self.config.get('training', {}).get('max_iterations', 30000),
+            'training_instance_type': os.environ.get('TRAINING_INSTANCE_TYPE', 'ml.g5.2xlarge'),
             'commercial_license': 'Apache 2.0',
             'sogs_compatible': True,
             'playcanvas_ready': True,

@@ -455,7 +455,7 @@ class MLPipelineStack(Stack):
                 },
                 "ResourceConfig": {
                     "InstanceCount": 1,
-                    "InstanceType": "ml.g5.2xlarge",  # A10G GPU with 32GB RAM - supports Vincent Woo's full methodology
+                    "InstanceType": sfn.JsonPath.string_at("$.TRAINING_INSTANCE_TYPE"),
                     "VolumeSizeInGB": 100
                 },
                 "StoppingCondition": {
@@ -530,6 +530,7 @@ class MLPipelineStack(Stack):
                     "FLOATER_PRUNING_MAX_COLOR_DISTANCE": sfn.JsonPath.string_at("$.FLOATER_PRUNING_MAX_COLOR_DISTANCE"),
                     "FLOATER_PRUNING_MIN_EDGE_SUPPORT": sfn.JsonPath.string_at("$.FLOATER_PRUNING_MIN_EDGE_SUPPORT"),
                     "TRAINING_TIMEOUT_SECONDS": sfn.JsonPath.string_at("$.TRAINING_TIMEOUT_SECONDS"),
+                    "TRAINING_INSTANCE_TYPE": sfn.JsonPath.string_at("$.TRAINING_INSTANCE_TYPE"),
                     
                     # NerfStudio Framework Configuration
                     "FRAMEWORK": "nerfstudio",
