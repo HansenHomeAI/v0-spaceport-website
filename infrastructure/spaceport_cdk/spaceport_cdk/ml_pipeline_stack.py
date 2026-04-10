@@ -553,6 +553,12 @@ class MLPipelineStack(Stack):
             ],
             result_path="$.gaussianResult"
         )
+        gaussian_job.add_retry(
+            errors=["SageMaker.ResourceLimitExceededException"],
+            interval=Duration.minutes(5),
+            backoff_rate=1.0,
+            max_attempts=72,
+        )
 
         # Wait for Gaussian training job to complete
         wait_for_gaussian = sfn_tasks.CallAwsService(
