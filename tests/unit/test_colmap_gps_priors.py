@@ -1022,6 +1022,37 @@ class ColmapGpsPriorTests(unittest.TestCase):
             importer_mock.assert_called_once()
             exhaustive_mock.assert_not_called()
 
+    def test_run_chunk_matchers_uses_exhaustive_matcher_for_bridge_chunks_under_footprint_graph(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {"COLMAP_CHUNK_PLANNER": "footprint_graph_v1"},
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.colmap_capabilities["supports_matches_importer"] = True
+            chunk_plan = run_colmap_sfm.ChunkPlan(
+                index=1,
+                core_names=["A.jpg", "B.jpg"],
+                image_names=["A.jpg", "B.jpg"],
+                overlap_names=[],
+            )
+            chunk_dir = root / "chunk"
+            chunk_dir.mkdir(parents=True, exist_ok=True)
+
+            with mock.patch.object(pipeline, "run_matches_importer") as importer_mock, mock.patch.object(
+                pipeline, "run_exhaustive_matcher"
+            ) as exhaustive_mock:
+                pipeline.run_chunk_matchers(
+                    chunk_plan,
+                    chunk_database_path=root / "chunk.db",
+                    chunk_dir=chunk_dir,
+                    stage_prefix="chunk_01_02_merge_bridge",
+                )
+
+            importer_mock.assert_not_called()
+            exhaustive_mock.assert_called_once()
+
     def test_run_chunk_pipeline_triggers_boundary_recovery_for_weak_chunk(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -2345,6 +2376,107 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(len(repaired_models), 5)
             self.assertIs(repaired_models[-1], bridge_model)
             self.assertEqual(pipeline.merged_component_count, 1)
+
+    def test_repair_disconnected_chunk_model_components_keeps_auxiliary_bridge_model(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.chunk_planner = "footprint_graph_v1"
+            pipeline.chunk_bridge_recovery_max_attempts = 1
+            pipeline.chunk_bridge_recovery_max_images = 500
+            pipeline.capture_ordered_names = [
+                "IMG_00.jpg",
+                "IMG_01.jpg",
+                "IMG_02.jpg",
+                "IMG_03.jpg",
+                "IMG_04.jpg",
+                "IMG_05.jpg",
+                "IMG_06.jpg",
+            ]
+            chunk_plans = [
+                run_colmap_sfm.ChunkPlan(
+                    index=0,
+                    core_names=["IMG_00.jpg", "IMG_01.jpg"],
+                    image_names=["IMG_00.jpg", "IMG_01.jpg", "IMG_02.jpg"],
+                    overlap_names=[],
+                ),
+                run_colmap_sfm.ChunkPlan(
+                    index=1,
+                    core_names=["IMG_03.jpg", "IMG_04.jpg"],
+                    image_names=["IMG_03.jpg", "IMG_04.jpg", "IMG_05.jpg"],
+                    overlap_names=[],
+                ),
+                run_colmap_sfm.ChunkPlan(
+                    index=2,
+                    core_names=["IMG_05.jpg", "IMG_06.jpg"],
+                    image_names=["IMG_05.jpg", "IMG_06.jpg"],
+                    overlap_names=[],
+                ),
+            ]
+            chunk_models = [
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_00_mapper_initial",
+                    text_dir=root / "chunk0_text",
+                    cameras_registered=1,
+                    images_registered=3,
+                    points_3d=100,
+                    binary_dir=root / "chunk0_bin",
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_01_mapper_initial",
+                    text_dir=root / "chunk1_text",
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=100,
+                    binary_dir=root / "chunk1_bin",
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_02_mapper_initial",
+                    text_dir=root / "chunk2_text",
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=100,
+                    binary_dir=root / "chunk2_bin",
+                ),
+            ]
+            bridge_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_00_01_merge_bridge_mapper_initial",
+                text_dir=root / "bridge_text",
+                cameras_registered=1,
+                images_registered=4,
+                points_3d=200,
+                binary_dir=root / "bridge_bin",
+            )
+            registered_names_by_stage = {
+                "chunk_00_mapper_initial": {"IMG_00.jpg", "IMG_01.jpg", "IMG_02.jpg"},
+                "chunk_01_mapper_initial": {"IMG_03.jpg", "IMG_04.jpg"},
+                "chunk_02_mapper_initial": {"IMG_05.jpg", "IMG_06.jpg"},
+                "chunk_00_01_merge_bridge_mapper_initial": {
+                    "IMG_00.jpg",
+                    "IMG_01.jpg",
+                    "IMG_02.jpg",
+                    "IMG_05.jpg",
+                },
+            }
+
+            with mock.patch.object(
+                pipeline,
+                "merged_image_names",
+                side_effect=lambda model: registered_names_by_stage[model.stage],
+            ), mock.patch.object(
+                pipeline,
+                "run_chunk_pipeline",
+                return_value=bridge_model,
+            ):
+                repaired_plans, repaired_models = pipeline.repair_disconnected_chunk_model_components(
+                    chunk_plans=chunk_plans,
+                    chunk_models=chunk_models,
+                )
+
+            self.assertEqual(len(repaired_plans), 4)
+            self.assertEqual(len(repaired_models), 4)
+            self.assertIs(repaired_models[-1], bridge_model)
+            self.assertEqual(pipeline.merged_component_count, 2)
 
     def test_run_spatial_heading_chunked_path_accepts_merged_ratio_at_gps_threshold(self):
         with tempfile.TemporaryDirectory() as tmp:

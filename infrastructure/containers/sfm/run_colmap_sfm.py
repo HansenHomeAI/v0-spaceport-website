@@ -303,6 +303,10 @@ def is_bridge_model_stage(stage: str) -> bool:
     return "_merge_bridge_" in stage
 
 
+def is_bridge_stage_prefix(stage_prefix: str) -> bool:
+    return "_merge_bridge" in stage_prefix
+
+
 def sort_capture_records(records: Iterable[dict[str, str]]) -> List[dict[str, str]]:
     def record_key(record: dict[str, str]) -> tuple[int, str, str]:
         capture_time = record.get("capture_time", "")
@@ -2158,6 +2162,13 @@ class ColmapPipeline:
         stage_prefix: str,
     ) -> None:
         if self.chunk_planner == "footprint_graph_v1":
+            if is_bridge_stage_prefix(stage_prefix):
+                self.run_exhaustive_matcher(
+                    database_path=chunk_database_path,
+                    stage=f"{stage_prefix}_exhaustive_matcher",
+                    label="chunk_bridge_exhaustive_matcher",
+                )
+                return
             if self.colmap_capabilities.get("supports_matches_importer"):
                 pair_list_path = self.write_chunk_match_list(chunk_plan, chunk_dir=chunk_dir)
                 self.run_matches_importer(
@@ -4081,6 +4092,23 @@ class ColmapPipeline:
         connector_unique_retained = len(merged_names.intersection(connector_unique_names))
         return primary_retained_ratio >= 0.95 and connector_unique_retained > 0
 
+    def auxiliary_bridge_model_is_usable(
+        self,
+        *,
+        model: ModelSummary,
+        target_name_sets: Sequence[Set[str]],
+    ) -> bool:
+        registered_names = self.merged_image_names(model)
+        touched_name_sets = [
+            target_name_set
+            for target_name_set in target_name_sets
+            if registered_names.intersection(target_name_set)
+        ]
+        if not touched_name_sets:
+            return False
+        touched_union = set().union(*touched_name_sets)
+        return len(registered_names.difference(touched_union)) > 0
+
     def merge_chunk_models(self, chunk_models: Sequence[ModelSummary]) -> ModelSummary:
         if not chunk_models:
             raise RuntimeError("No chunk models available to merge")
@@ -4390,6 +4418,20 @@ class ColmapPipeline:
                 model=merged_model,
                 target_name_sets=bridge_target_name_sets,
             ):
+                if self.auxiliary_bridge_model_is_usable(
+                    model=merged_model,
+                    target_name_sets=bridge_target_name_sets,
+                ):
+                    logger.info(
+                        "Bridge chunk %s-%s produced %s registered images with one-sided but unique connector coverage; keeping it as an auxiliary connector",
+                        first_chunk_plan.index,
+                        second_chunk_plan.index,
+                        merged_model.images_registered,
+                    )
+                    repaired_chunk_plans.append(merged_chunk_plan)
+                    repaired_chunk_models.append(merged_model)
+                    attempts_remaining -= 1
+                    continue
                 logger.warning(
                     "Bridge chunk %s-%s produced %s registered images but did not overlap both target components; keeping original chunk models",
                     first_chunk_plan.index,
