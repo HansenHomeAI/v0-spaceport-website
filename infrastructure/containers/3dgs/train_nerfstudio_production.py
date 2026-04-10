@@ -1057,13 +1057,15 @@ class NerfStudioTrainer:
         
         logger.info(f"🔄 Executing export command:")
         logger.info(f"   {' '.join(export_cmd)}")
+        export_timeout_seconds = int(os.environ.get("MODEL_EXPORT_TIMEOUT_SECONDS", "1800"))
+        logger.info(f"⏱️  Model export timeout: {export_timeout_seconds} seconds")
         
         try:
             result = subprocess.run(
                 export_cmd,
                 capture_output=True,
                 text=True,
-                timeout=600  # 10 minute timeout
+                timeout=export_timeout_seconds,
             )
             
             if result.returncode != 0:
@@ -1098,7 +1100,7 @@ class NerfStudioTrainer:
             return True
             
         except subprocess.TimeoutExpired:
-            logger.error("❌ Export timeout (10 minutes exceeded)")
+            logger.error(f"❌ Export timeout ({export_timeout_seconds} seconds exceeded)")
             return False
         except Exception as e:
             logger.error(f"❌ Export execution failed: {e}")
