@@ -860,6 +860,7 @@ class MLPipelineStack(Stack):
                 allow_headers=["Content-Type", "Authorization"]
             ),
             binary_media_types=[
+                "*/*",
                 "image/webp",
                 "image/png",
                 "image/jpeg",
