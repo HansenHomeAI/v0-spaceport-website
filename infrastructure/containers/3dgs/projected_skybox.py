@@ -162,12 +162,14 @@ def build_projection_basis(frames: list[dict[str, Any]]) -> dict[str, Any]:
     if not frames:
         raise RuntimeError("No frames available for projected skybox composition")
 
+    positions: list[np.ndarray] = []
     up_vectors: list[np.ndarray] = []
     forward_vectors: list[np.ndarray] = []
     up_reference: Optional[np.ndarray] = None
 
     for frame in frames:
         c2w = np.asarray(frame["transform_matrix"], dtype=np.float32)
+        positions.append(np.asarray(c2w[:3, 3], dtype=np.float32))
         up = _normalize(c2w[:3, 1])
         if up_reference is None:
             up_reference = up
@@ -175,7 +177,21 @@ def build_projection_basis(frames: list[dict[str, Any]]) -> dict[str, Any]:
             up = -up
         up_vectors.append(up)
 
-    up_consensus = _normalize(np.mean(np.stack(up_vectors, axis=0), axis=0))
+    camera_up_consensus = _normalize(np.mean(np.stack(up_vectors, axis=0), axis=0))
+    up_consensus = camera_up_consensus
+
+    if len(positions) >= 3:
+        positions_array = np.stack(positions, axis=0).astype(np.float32)
+        centered_positions = positions_array - np.mean(positions_array, axis=0, keepdims=True)
+        covariance = np.cov(centered_positions.T)
+        eigenvalues, eigenvectors = np.linalg.eigh(covariance)
+        if eigenvalues.shape[0] >= 2 and float(eigenvalues[1]) > 1e-8:
+            planarity_confidence = 1.0 - (float(eigenvalues[0]) / float(eigenvalues[1]))
+            if planarity_confidence >= 0.15:
+                position_normal = _normalize(eigenvectors[:, 0].astype(np.float32))
+                if float(np.dot(position_normal, camera_up_consensus)) < 0.0:
+                    position_normal = -position_normal
+                up_consensus = position_normal
 
     forward_reference: Optional[np.ndarray] = None
     for frame in frames:

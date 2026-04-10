@@ -15,6 +15,7 @@ if str(CONTAINER_DIR) not in sys.path:
 
 from projected_skybox import (  # noqa: E402
     ProjectedSkyboxSettings,
+    build_projection_basis,
     build_projected_photo_skybox,
     derive_projection_sky_mask,
     derive_sky_mask_from_training_mask,
@@ -23,6 +24,56 @@ from projected_skybox import (  # noqa: E402
 
 
 class ProjectedSkyboxTests(unittest.TestCase):
+    @staticmethod
+    def _rotation_x(angle_radians: float) -> np.ndarray:
+        return np.array(
+            [
+                [1.0, 0.0, 0.0],
+                [0.0, np.cos(angle_radians), -np.sin(angle_radians)],
+                [0.0, np.sin(angle_radians), np.cos(angle_radians)],
+            ],
+            dtype=np.float32,
+        )
+
+    @staticmethod
+    def _rotation_y(angle_radians: float) -> np.ndarray:
+        return np.array(
+            [
+                [np.cos(angle_radians), 0.0, np.sin(angle_radians)],
+                [0.0, 1.0, 0.0],
+                [-np.sin(angle_radians), 0.0, np.cos(angle_radians)],
+            ],
+            dtype=np.float32,
+        )
+
+    def _make_pitched_ring_frames(self, pitch_degrees: float = 55.0) -> list[dict]:
+        frames: list[dict] = []
+        world_up = np.array([0.0, 1.0, 0.0], dtype=np.float32)
+        pitch = np.deg2rad(pitch_degrees)
+        base_rotation = self._rotation_x(pitch)
+        radius = 3.0
+
+        for yaw_degrees in (0.0, 90.0, 180.0, 270.0):
+            yaw = np.deg2rad(yaw_degrees)
+            yaw_rotation = self._rotation_y(yaw)
+            c2w = np.eye(4, dtype=np.float32)
+            c2w[:3, :3] = yaw_rotation @ base_rotation
+            c2w[:3, 3] = np.array(
+                [
+                    radius * np.sin(yaw),
+                    0.0,
+                    radius * np.cos(yaw),
+                ],
+                dtype=np.float32,
+            )
+            frames.append({"transform_matrix": c2w.tolist()})
+
+        self.assertLess(
+            float(np.dot(np.asarray(frames[0]["transform_matrix"], dtype=np.float32)[:3, 1], world_up)),
+            0.7,
+        )
+        return frames
+
     def test_derive_sky_mask_from_training_mask_exclude_sky(self):
         training_mask = np.array([[0, 0], [255, 255]], dtype=np.uint8)
         sky_mask = derive_sky_mask_from_training_mask(training_mask, "exclude_sky")
@@ -48,6 +99,30 @@ class ProjectedSkyboxTests(unittest.TestCase):
         self.assertAlmostEqual(float(xs[1]), 199.5, delta=1.0)
         self.assertAlmostEqual(float(ys[1]), -0.5, delta=1.0)
         self.assertAlmostEqual(float(xs[2]), 299.5, delta=1.0)
+
+    def test_build_projection_basis_uses_camera_ring_normal_for_world_up(self):
+        frames = self._make_pitched_ring_frames()
+        basis = build_projection_basis(frames)
+        world_up = np.array([0.0, 1.0, 0.0], dtype=np.float32)
+
+        self.assertGreater(float(np.dot(basis["up"], world_up)), 0.95)
+
+        sky_proxy_dirs = []
+        for frame in frames:
+            c2w = np.asarray(frame["transform_matrix"], dtype=np.float32)
+            proxy = (-c2w[:3, 2]) + (0.75 * c2w[:3, 1])
+            proxy = proxy / np.linalg.norm(proxy)
+            sky_proxy_dirs.append(proxy)
+
+        xs, ys = world_dirs_to_equirectangular(
+            world_directions=np.stack(sky_proxy_dirs, axis=0),
+            world_to_sky=basis["world_to_sky"],
+            width=400,
+            height=200,
+        )
+
+        self.assertTrue(np.all(ys < 70.0), msg=f"Projected sky rows were not near the zenith: {ys.tolist()}")
+        self.assertTrue(np.all((xs >= -0.5) & (xs <= 399.5)))
 
     def test_derive_projection_sky_mask_fills_above_horizon(self):
         sky_mask = np.array(

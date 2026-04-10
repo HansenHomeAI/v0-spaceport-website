@@ -20,3 +20,4 @@
 2026-04-10T00:30:00Z expand projected skybox horizon fill and raw semantic confidence for Horsetail AWS rerun
 2026-04-10T00:58:00Z retry gaussian training job on SageMaker quota contention
 2026-04-10T01:08:00Z add training instance override to bypass occupied g5.2xlarge quota
+2026-04-10T09:10:00Z switch projected skybox world-up estimation to camera-ring normal for Horsetail rerun
