@@ -62,6 +62,8 @@ class ModelSummary:
     points_3d: int
     binary_dir: Path = Path(".")
     image_count: int = 0
+    partial_result: bool = False
+    timed_out: bool = False
 
 
 @dataclass
@@ -295,6 +297,10 @@ def bridge_model_sort_key(
         model.images_registered,
         model.points_3d,
     )
+
+
+def is_bridge_model_stage(stage: str) -> bool:
+    return "_merge_bridge_" in stage
 
 
 def sort_capture_records(records: Iterable[dict[str, str]]) -> List[dict[str, str]]:
@@ -2294,11 +2300,14 @@ class ColmapPipeline:
         sparse_root: Path,
         image_count: int | None = None,
         bridge_target_name_sets: Sequence[Set[str]] | None = None,
+        allow_partial_timeout_result: bool = False,
     ) -> ModelSummary:
         active_database_path = database_path or self.database_path
         active_image_count = image_count if image_count is not None else self.dataset_image_count
         started = time.time()
         sparse_root.mkdir(parents=True, exist_ok=True)
+        mapper_error: RuntimeError | None = None
+        timed_out_error = False
         try:
             stream_command(
                 [
@@ -2324,18 +2333,39 @@ class ColmapPipeline:
                 heartbeat_seconds=self.command_heartbeat_seconds,
             )
         except RuntimeError as error:
-            self.handle_stage_runtime_error(stage, error)
-            raise
+            mapper_error = error
+            timed_out_error = "timed out" in str(error).lower()
+            if not allow_partial_timeout_result or not timed_out_error:
+                self.handle_stage_runtime_error(stage, error)
+                raise
         self.timings[f"{stage}_seconds"] = round(time.time() - started, 2)
 
         candidate_dirs = [path for path in sorted(sparse_root.iterdir()) if path.is_dir()]
         if not candidate_dirs:
+            if mapper_error is not None:
+                self.handle_stage_runtime_error(stage, mapper_error)
+                raise mapper_error
             raise RuntimeError(f"{stage} did not produce any sparse models")
 
         best_model: ModelSummary | None = None
         best_sort_key: tuple[int, ...] | None = None
         for candidate_dir in candidate_dirs:
-            model = self.summarize_model(stage=stage, binary_dir=candidate_dir, image_count=active_image_count)
+            try:
+                model = self.summarize_model(
+                    stage=stage,
+                    binary_dir=candidate_dir,
+                    image_count=active_image_count,
+                )
+            except RuntimeError as exc:
+                if mapper_error is None:
+                    raise
+                logger.warning(
+                    "Skipping incomplete partial mapper output for %s at %s after timeout: %s",
+                    stage,
+                    candidate_dir,
+                    exc,
+                )
+                continue
             logger.info(
                 "%s model %s registered %s/%s images and %s points",
                 stage,
@@ -2369,7 +2399,24 @@ class ColmapPipeline:
                 best_model = model
                 best_sort_key = current_sort_key
         if best_model is None:
+            if mapper_error is not None:
+                self.handle_stage_runtime_error(stage, mapper_error)
+                raise mapper_error
             raise RuntimeError(f"Unable to choose a sparse model for {stage}")
+        if mapper_error is not None:
+            if best_model.images_registered <= 0:
+                self.handle_stage_runtime_error(stage, mapper_error)
+                raise mapper_error
+            best_model.partial_result = True
+            best_model.timed_out = timed_out_error
+            logger.warning(
+                "%s timed out after %.2fs but produced a partial sparse model with %s/%s registered images; continuing with the best available partial result",
+                stage,
+                self.timings.get(f"{stage}_seconds", 0.0),
+                best_model.images_registered,
+                active_image_count,
+            )
+            self.clear_failure()
         self.model_summaries.append(
             {
                 "stage": best_model.stage,
@@ -3759,6 +3806,7 @@ class ColmapPipeline:
             sparse_root=chunk_dir / "sparse_initial",
             image_count=len(chunk_plan.image_names),
             bridge_target_name_sets=bridge_target_name_sets,
+            allow_partial_timeout_result=allow_partial_result,
         )
         self.chunk_mapper_seconds += self.timings[f"{chunk_stage_prefix}_mapper_initial_seconds"]
         registered_ratio = (
@@ -3807,6 +3855,38 @@ class ColmapPipeline:
                 }
             )
             return initial_model
+        if allow_partial_result and initial_model.partial_result and initial_model.images_registered > 0:
+            bridge_target_count = len(bridge_target_name_sets or [])
+            touched_targets = 0
+            if bridge_target_name_sets:
+                touched_targets, _ = bridge_overlap_counts(
+                    self.merged_image_names(initial_model),
+                    bridge_target_name_sets,
+                )
+            logger.info(
+                "Chunk %s mapper timed out after registering %s/%s images; returning the partial initial result for bridge evaluation (%s/%s target components touched)",
+                chunk_plan.index,
+                initial_model.images_registered,
+                len(chunk_plan.image_names),
+                touched_targets,
+                bridge_target_count,
+            )
+            self.clear_failure()
+            self.chunk_run_metrics.append(
+                {
+                    "chunk_index": chunk_plan.index,
+                    "image_count": len(chunk_plan.image_names),
+                    "registered_ratio": round(registered_ratio, 4),
+                    "core_registered_ratio": round(core_registered_ratio, 4),
+                    "recovered_registered_ratio": None,
+                    "recovered_core_registered_ratio": None,
+                    "failure": False,
+                    "partial_result_accepted": True,
+                    "partial_result_stage": "initial",
+                    "partial_result_timed_out": True,
+                }
+            )
+            return initial_model
 
         logger.info(
             "Chunk %s registered %s/%s images (%.2f%%) with %s/%s core images (%.2f%%); running targeted boundary recovery. Missing core images: %s",
@@ -3845,6 +3925,7 @@ class ColmapPipeline:
             sparse_root=chunk_dir / "sparse_recovery",
             image_count=len(retry_chunk_plan.image_names),
             bridge_target_name_sets=bridge_target_name_sets,
+            allow_partial_timeout_result=allow_partial_result,
         )
         self.chunk_mapper_seconds += self.timings[f"{chunk_stage_prefix}_mapper_recovery_seconds"]
         recovered_ratio = (
@@ -3910,6 +3991,7 @@ class ColmapPipeline:
                 touched_targets,
                 bridge_target_count,
             )
+            self.clear_failure()
             self.chunk_run_metrics.append(
                 {
                     "chunk_index": chunk_plan.index,
@@ -3920,6 +4002,8 @@ class ColmapPipeline:
                     "recovered_core_registered_ratio": round(recovered_core_ratio, 4),
                     "failure": False,
                     "partial_result_accepted": True,
+                    "partial_result_stage": "recovery",
+                    "partial_result_timed_out": recovered_model.timed_out,
                 }
             )
             return recovered_model
@@ -3976,6 +4060,26 @@ class ColmapPipeline:
         if next_names.difference(existing_names) and new_from_next == 0:
             return False
         return next_retained_ratio >= 0.5
+
+    def connector_merge_is_usable(
+        self,
+        *,
+        merged_names: Set[str],
+        first_model: ModelSummary,
+        first_names: Set[str],
+        second_model: ModelSummary,
+        second_names: Set[str],
+    ) -> bool:
+        if is_bridge_model_stage(first_model.stage) == is_bridge_model_stage(second_model.stage):
+            return False
+        connector_names = first_names if is_bridge_model_stage(first_model.stage) else second_names
+        primary_names = second_names if connector_names is first_names else first_names
+        if not primary_names:
+            return False
+        primary_retained_ratio = len(merged_names.intersection(primary_names)) / len(primary_names)
+        connector_unique_names = connector_names.difference(primary_names)
+        connector_unique_retained = len(merged_names.intersection(connector_unique_names))
+        return primary_retained_ratio >= 0.95 and connector_unique_retained > 0
 
     def merge_chunk_models(self, chunk_models: Sequence[ModelSummary]) -> ModelSummary:
         if not chunk_models:
@@ -4066,10 +4170,25 @@ class ColmapPipeline:
                         binary_dir=output_path,
                         image_count=self.dataset_image_count,
                     )
-                    if self.merge_result_is_usable(
-                        merged_names=self.merged_image_names(merged_candidate),
-                        existing_names=existing_names,
-                        next_names=next_names,
+                    merged_names = self.merged_image_names(merged_candidate)
+                    if (
+                        self.merge_result_is_usable(
+                            merged_names=merged_names,
+                            existing_names=existing_names,
+                            next_names=next_names,
+                        )
+                        or self.merge_result_is_usable(
+                            merged_names=merged_names,
+                            existing_names=next_names,
+                            next_names=existing_names,
+                        )
+                        or self.connector_merge_is_usable(
+                            merged_names=merged_names,
+                            first_model=current_model,
+                            first_names=existing_names,
+                            second_model=next_model,
+                            second_names=next_names,
+                        )
                     ):
                         merged_pair_indexes = (first_index, second_index)
                         break
