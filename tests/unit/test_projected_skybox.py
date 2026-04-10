@@ -15,6 +15,7 @@ if str(CONTAINER_DIR) not in sys.path:
 
 from projected_skybox import (  # noqa: E402
     ProjectedSkyboxSettings,
+    build_photo_guided_fill,
     build_projection_basis,
     build_projected_photo_skybox,
     derive_projection_sky_mask,
@@ -160,6 +161,29 @@ class ProjectedSkyboxTests(unittest.TestCase):
         self.assertTrue(projection_mask[2, 3])
         self.assertFalse(projection_mask[4, 2])
 
+    def test_build_photo_guided_fill_prefers_projected_sky_over_dark_fallback(self):
+        height = 128
+        width = 256
+        observed_rgb = np.zeros((height, width, 3), dtype=np.float32)
+        observed_mask = np.zeros((height, width), dtype=bool)
+        observed_mask[64:80, :] = True
+        observed_rgb[observed_mask] = np.array([0.62, 0.81, 1.0], dtype=np.float32)
+        weight_accum = observed_mask.astype(np.float32)
+        fallback_fill_rgb = np.full((height, width, 3), [0.12, 0.04, 0.04], dtype=np.float32)
+
+        fill_rgb, metadata = build_photo_guided_fill(
+            observed_rgb=observed_rgb,
+            observed_mask=observed_mask,
+            weight_accum=weight_accum,
+            fallback_fill_rgb=fallback_fill_rgb,
+        )
+
+        zenith = fill_rgb[: height // 10]
+        self.assertTrue(metadata["fill_used_observed_projection"])
+        self.assertEqual(metadata["fill_strategy"], "observed_projection_spherical_regression")
+        self.assertGreater(float(zenith[..., 2].mean()), float(zenith[..., 0].mean()) + 0.2)
+        self.assertGreater(float(zenith.mean()), float(fallback_fill_rgb[: height // 10].mean()) + 0.2)
+
     def test_build_projected_photo_skybox_uses_observed_sky_before_fill(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             data_dir = Path(temp_dir) / "converted_data"
@@ -221,13 +245,15 @@ class ProjectedSkyboxTests(unittest.TestCase):
             self.assertEqual(manifest["contributing_frame_count"], 1)
             self.assertGreater(manifest["observed_coverage_ratio"], 0.0)
             self.assertGreater(manifest["mean_projection_mask_ratio"], manifest["mean_semantic_mask_ratio"])
+            self.assertEqual(manifest["fill_strategy"], "observed_projection_spherical_regression")
             observed_skybox = np.asarray(
                 Image.open(output_dir / "background_skybox_observed.webp").convert("RGB"),
                 dtype=np.uint8,
             )
             skybox = np.asarray(Image.open(output_dir / "background_skybox.webp").convert("RGB"), dtype=np.uint8)
             self.assertTrue(np.any(observed_skybox[..., 2] > observed_skybox[..., 0] + 20))
-            self.assertTrue(np.any(skybox[..., 0] > skybox[..., 2] + 20))
+            zenith = skybox[: max(1, skybox.shape[0] // 10), :, :]
+            self.assertGreater(float(zenith[..., 2].mean()), float(zenith[..., 0].mean()) + 20.0)
 
 
 if __name__ == "__main__":

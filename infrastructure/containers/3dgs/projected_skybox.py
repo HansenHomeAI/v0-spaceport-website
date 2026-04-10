@@ -252,6 +252,81 @@ def build_low_frequency_fill(fill_rgb: np.ndarray) -> np.ndarray:
     return np.asarray(expanded, dtype=np.float32) / 255.0
 
 
+def _equirectangular_local_directions(width: int, height: int) -> np.ndarray:
+    xs = (np.arange(width, dtype=np.float32) + 0.5) / max(width, 1)
+    ys = (np.arange(height, dtype=np.float32) + 0.5) / max(height, 1)
+    theta = (xs - 0.5) * (2.0 * np.pi)
+    phi = (0.5 - ys) * np.pi
+    cos_theta = np.cos(theta)[None, :]
+    sin_theta = np.sin(theta)[None, :]
+    cos_phi = np.cos(phi)[:, None]
+    sin_phi = np.sin(phi)[:, None]
+    x = sin_theta * cos_phi
+    y = sin_phi * np.ones((1, width), dtype=np.float32)
+    z = cos_theta * cos_phi
+    return np.stack([x, y, z], axis=-1).astype(np.float32)
+
+
+def build_photo_guided_fill(
+    observed_rgb: np.ndarray,
+    observed_mask: np.ndarray,
+    weight_accum: np.ndarray,
+    fallback_fill_rgb: np.ndarray,
+) -> tuple[np.ndarray, dict[str, Any]]:
+    if not np.any(observed_mask):
+        return build_low_frequency_fill(fallback_fill_rgb), {
+            "fill_strategy": "learned_background_low_frequency",
+            "fill_used_observed_projection": False,
+        }
+
+    height, width, _ = observed_rgb.shape
+    local_dirs = _equirectangular_local_directions(width=width, height=height)
+    x = local_dirs[..., 0]
+    y = local_dirs[..., 1]
+    z = local_dirs[..., 2]
+    feature_grid = np.stack(
+        [
+            np.ones((height, width), dtype=np.float32),
+            x,
+            y,
+            z,
+            x * y,
+            y * z,
+            z * x,
+            x * x,
+            y * y,
+            z * z,
+        ],
+        axis=-1,
+    )
+
+    flat_mask = observed_mask.reshape(-1)
+    flat_weights = np.clip(weight_accum.reshape(-1)[flat_mask], 1e-3, None).astype(np.float32)
+    features = feature_grid.reshape(-1, feature_grid.shape[-1])[flat_mask]
+    targets = observed_rgb.reshape(-1, 3)[flat_mask]
+
+    if features.shape[0] < feature_grid.shape[-1]:
+        return build_low_frequency_fill(fallback_fill_rgb), {
+            "fill_strategy": "learned_background_low_frequency",
+            "fill_used_observed_projection": False,
+            "fill_regression_reason": "insufficient_observed_samples",
+        }
+
+    weighted_features = features * flat_weights[:, None]
+    weighted_targets = targets * flat_weights[:, None]
+    coefficients, *_ = np.linalg.lstsq(weighted_features, weighted_targets, rcond=None)
+    predicted = feature_grid.reshape(-1, feature_grid.shape[-1]) @ coefficients
+    predicted = predicted.reshape(height, width, 3).astype(np.float32)
+    predicted = np.clip(predicted, 0.0, 1.0)
+
+    return predicted, {
+        "fill_strategy": "observed_projection_spherical_regression",
+        "fill_used_observed_projection": True,
+        "fill_regression_feature_count": int(feature_grid.shape[-1]),
+        "fill_regression_sample_count": int(features.shape[0]),
+    }
+
+
 def _resize_for_projection(
     rgb: np.ndarray,
     sky_mask: np.ndarray,
@@ -488,7 +563,19 @@ def build_projected_photo_skybox(
     observed_mask = support_accum >= float(max(settings.min_observations_per_pixel, 1))
     safe_weights = np.clip(weight_accum[..., None], 1e-6, None)
     observed_rgb = color_accum / safe_weights
-    fill_base = build_low_frequency_fill(fill_rgb) if settings.low_frequency_fill else np.clip(fill_rgb, 0.0, 1.0)
+    if settings.low_frequency_fill:
+        fill_base, fill_metadata = build_photo_guided_fill(
+            observed_rgb=np.clip(observed_rgb, 0.0, 1.0),
+            observed_mask=observed_mask,
+            weight_accum=weight_accum,
+            fallback_fill_rgb=fill_rgb,
+        )
+    else:
+        fill_base = np.clip(fill_rgb, 0.0, 1.0)
+        fill_metadata = {
+            "fill_strategy": "learned_background_direct",
+            "fill_used_observed_projection": False,
+        }
     final_rgb = fill_base.copy()
     final_rgb[observed_mask] = np.clip(observed_rgb[observed_mask], 0.0, 1.0)
 
@@ -539,6 +626,7 @@ def build_projected_photo_skybox(
         "sampled_frame_count": int(sampled_frames),
         "mean_semantic_mask_ratio": float(np.mean(semantic_mask_ratios)) if semantic_mask_ratios else 0.0,
         "mean_projection_mask_ratio": float(np.mean(projection_mask_ratios)) if projection_mask_ratios else 0.0,
+        **fill_metadata,
         "alignment_basis": {
             "right": basis["right"].tolist(),
             "up": basis["up"].tolist(),
