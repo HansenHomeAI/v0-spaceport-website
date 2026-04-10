@@ -23,7 +23,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Iterable, List, Sequence, Set, Tuple
+from typing import Dict, Iterable, List, Sequence, Set, TextIO, Tuple
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -525,6 +525,21 @@ class ColmapPipeline:
                 "COLMAP_CHUNK_BRIDGE_RECOVERY_MAX_IMAGES",
                 str(max(self.chunk_target_images * 3, 480)),
             )
+        )
+        self.chunk_bridge_representative_images = int(
+            os.environ.get("COLMAP_CHUNK_BRIDGE_REPRESENTATIVE_IMAGES", "40")
+        )
+        self.chunk_bridge_cross_pairs_per_image = int(
+            os.environ.get("COLMAP_CHUNK_BRIDGE_CROSS_PAIRS_PER_IMAGE", "6")
+        )
+        self.chunk_bridge_connector_images = int(
+            os.environ.get("COLMAP_CHUNK_BRIDGE_CONNECTOR_IMAGES", "40")
+        )
+        self.chunk_bridge_connector_pairs_per_side = int(
+            os.environ.get("COLMAP_CHUNK_BRIDGE_CONNECTOR_PAIRS_PER_SIDE", "4")
+        )
+        self.chunk_bridge_pair_score_threshold = float(
+            os.environ.get("COLMAP_CHUNK_BRIDGE_PAIR_SCORE_THRESHOLD", "0.15")
         )
         self.graph_xy_neighbor_limit = int(os.environ.get("COLMAP_GRAPH_XY_NEIGHBOR_LIMIT", "60"))
         self.graph_xyz_neighbor_limit = int(os.environ.get("COLMAP_GRAPH_XYZ_NEIGHBOR_LIMIT", "20"))
@@ -2090,11 +2105,137 @@ class ColmapPipeline:
         self.verified_pairs_total = max(self.verified_pairs_total, pairs_after)
         logger.info("%s added %s verified image pairs", stage, pairs_after - pairs_before)
 
+    def sorted_capture_names(self, names: Iterable[str]) -> List[str]:
+        capture_order_index = {
+            image_name: position for position, image_name in enumerate(self.capture_ordered_names)
+        }
+        return sorted(
+            {name for name in names if name in self.exif_records},
+            key=lambda image_name: capture_order_index.get(image_name, sys.maxsize),
+        )
+
+    def write_match_pair(
+        self,
+        handle: TextIO,
+        seen_pairs: Set[tuple[str, str]],
+        first_name: str,
+        second_name: str,
+    ) -> bool:
+        if first_name == second_name:
+            return False
+        pair_key = tuple(sorted((first_name, second_name)))
+        if pair_key in seen_pairs:
+            return False
+        seen_pairs.add(pair_key)
+        handle.write(f"{pair_key[0]} {pair_key[1]}\n")
+        return True
+
+    def bridge_pair_candidates_for_source(
+        self,
+        source_name: str,
+        target_names: Sequence[str],
+        *,
+        limit: int,
+    ) -> List[tuple[float, str]]:
+        if source_name not in self.exif_records:
+            return []
+        ranked_candidates = sorted(
+            (
+                (
+                    self.candidate_edge_for_names(source_name, target_name).score,
+                    target_name,
+                )
+                for target_name in target_names
+                if target_name != source_name and target_name in self.exif_records
+            ),
+            key=lambda item: (-item[0], item[1]),
+        )
+        if not ranked_candidates:
+            return []
+        threshold = self.chunk_bridge_pair_score_threshold
+        selected = [candidate for candidate in ranked_candidates[:limit] if candidate[0] >= threshold]
+        if selected:
+            return selected
+        return ranked_candidates[: min(limit, 1)]
+
+    def write_bridge_target_pairs(
+        self,
+        handle: TextIO,
+        *,
+        seen_pairs: Set[tuple[str, str]],
+        chunk_name_set: Set[str],
+        bridge_target_name_sets: Sequence[Set[str]],
+    ) -> int:
+        filtered_target_sets = [
+            self.sorted_capture_names(set(target_names).intersection(chunk_name_set))
+            for target_names in bridge_target_name_sets
+        ]
+        filtered_target_sets = [target_names for target_names in filtered_target_sets if target_names]
+        if len(filtered_target_sets) < 2:
+            return 0
+
+        roles = self.classify_graph_roles()
+        representative_sets = [
+            self.representative_chunk_names(
+                target_names,
+                roles,
+                limit=max(self.chunk_bridge_representative_images, 1),
+            )
+            for target_names in filtered_target_sets
+        ]
+        representative_sets = [target_names for target_names in representative_sets if target_names]
+        if len(representative_sets) < 2:
+            return 0
+
+        added_pairs = 0
+        pair_limit = max(self.chunk_bridge_cross_pairs_per_image, 1)
+        for first_index, source_names in enumerate(representative_sets):
+            for target_names in representative_sets[first_index + 1 :]:
+                for source_name in source_names:
+                    for _, target_name in self.bridge_pair_candidates_for_source(
+                        source_name,
+                        target_names,
+                        limit=pair_limit,
+                    ):
+                        if self.write_match_pair(handle, seen_pairs, source_name, target_name):
+                            added_pairs += 1
+                for source_name in target_names:
+                    for _, target_name in self.bridge_pair_candidates_for_source(
+                        source_name,
+                        source_names,
+                        limit=pair_limit,
+                    ):
+                        if self.write_match_pair(handle, seen_pairs, source_name, target_name):
+                            added_pairs += 1
+
+        connector_names = self.sorted_capture_names(
+            chunk_name_set.difference(set().union(*(set(target_names) for target_names in filtered_target_sets)))
+        )
+        if not connector_names:
+            return added_pairs
+        connector_representatives = self.representative_chunk_names(
+            connector_names,
+            roles,
+            limit=max(self.chunk_bridge_connector_images, 1),
+        )
+        connector_pair_limit = max(self.chunk_bridge_connector_pairs_per_side, 1)
+        for connector_name in connector_representatives:
+            for target_names in representative_sets:
+                for _, target_name in self.bridge_pair_candidates_for_source(
+                    connector_name,
+                    target_names,
+                    limit=connector_pair_limit,
+                ):
+                    if self.write_match_pair(handle, seen_pairs, connector_name, target_name):
+                        added_pairs += 1
+        return added_pairs
+
     def write_chunk_match_list(
         self,
         chunk_plan: ChunkPlan,
         *,
         chunk_dir: Path,
+        bridge_target_name_sets: Sequence[Set[str]] | None = None,
     ) -> Path:
         pair_list_path = chunk_dir / "match_list.txt"
         image_name_set = set(chunk_plan.image_names)
@@ -2106,10 +2247,21 @@ class ColmapPipeline:
                     if neighbor_name not in image_name_set:
                         continue
                     pair_key = tuple(sorted((image_name, neighbor_name)))
-                    if pair_key in seen_pairs:
-                        continue
-                    seen_pairs.add(pair_key)
-                    handle.write(f"{pair_key[0]} {pair_key[1]}\n")
+                    self.write_match_pair(handle, seen_pairs, pair_key[0], pair_key[1])
+            bridge_pairs_added = 0
+            if bridge_target_name_sets:
+                bridge_pairs_added = self.write_bridge_target_pairs(
+                    handle,
+                    seen_pairs=seen_pairs,
+                    chunk_name_set=image_name_set,
+                    bridge_target_name_sets=bridge_target_name_sets,
+                )
+        if bridge_pairs_added > 0:
+            logger.info(
+                "Added %s bridge-target pairs to chunk %s match list",
+                bridge_pairs_added,
+                chunk_plan.index,
+            )
         return pair_list_path
 
     def run_matches_importer(
@@ -2160,28 +2312,30 @@ class ColmapPipeline:
         chunk_database_path: Path,
         chunk_dir: Path,
         stage_prefix: str,
+        bridge_target_name_sets: Sequence[Set[str]] | None = None,
     ) -> None:
         if self.chunk_planner == "footprint_graph_v1":
-            if is_bridge_stage_prefix(stage_prefix):
-                self.run_exhaustive_matcher(
-                    database_path=chunk_database_path,
-                    stage=f"{stage_prefix}_exhaustive_matcher",
-                    label="chunk_bridge_exhaustive_matcher",
-                )
-                return
             if self.colmap_capabilities.get("supports_matches_importer"):
-                pair_list_path = self.write_chunk_match_list(chunk_plan, chunk_dir=chunk_dir)
+                pair_list_path = self.write_chunk_match_list(
+                    chunk_plan,
+                    chunk_dir=chunk_dir,
+                    bridge_target_name_sets=bridge_target_name_sets if is_bridge_stage_prefix(stage_prefix) else None,
+                )
                 self.run_matches_importer(
                     database_path=chunk_database_path,
                     match_list_path=pair_list_path,
                     stage=f"{stage_prefix}_matches_importer",
-                    label="chunk_matches_importer",
+                    label="chunk_bridge_matches_importer"
+                    if is_bridge_stage_prefix(stage_prefix)
+                    else "chunk_matches_importer",
                 )
                 return
             self.run_exhaustive_matcher(
                 database_path=chunk_database_path,
                 stage=f"{stage_prefix}_exhaustive_matcher",
-                label="chunk_exhaustive_matcher",
+                label="chunk_bridge_exhaustive_matcher"
+                if is_bridge_stage_prefix(stage_prefix)
+                else "chunk_exhaustive_matcher",
             )
             return
         self.run_spatial_matcher(
@@ -3810,6 +3964,7 @@ class ColmapPipeline:
             chunk_database_path=chunk_database_path,
             chunk_dir=chunk_dir,
             stage_prefix=chunk_stage_prefix,
+            bridge_target_name_sets=bridge_target_name_sets,
         )
         initial_model = self.run_mapper(
             database_path=chunk_database_path,

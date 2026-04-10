@@ -1022,7 +1022,116 @@ class ColmapGpsPriorTests(unittest.TestCase):
             importer_mock.assert_called_once()
             exhaustive_mock.assert_not_called()
 
-    def test_run_chunk_matchers_uses_exhaustive_matcher_for_bridge_chunks_under_footprint_graph(self):
+    def test_write_chunk_match_list_adds_bridge_target_pairs(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {"COLMAP_CHUNK_PLANNER": "footprint_graph_v1"},
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.capture_ordered_names = ["A.jpg", "B.jpg", "C.jpg", "D.jpg", "E.jpg"]
+            pipeline.exif_records = {
+                name: {"local_x_m": float(index), "local_y_m": 0.0, "heading_deg": 0.0}
+                for index, name in enumerate(pipeline.capture_ordered_names)
+            }
+            pipeline.graph_neighbors = {
+                "A.jpg": [
+                    run_colmap_sfm.CandidateEdge(
+                        first_name="A.jpg",
+                        second_name="B.jpg",
+                        score=0.9,
+                        footprint_overlap=0.9,
+                        scale_similarity=0.9,
+                        viewpoint_complementarity=0.9,
+                        distance_consistency=0.9,
+                        temporal_bonus=0.0,
+                        xy_distance_m=5.0,
+                        xyz_distance_m=5.0,
+                        view_delta_deg=10.0,
+                    )
+                ],
+                "B.jpg": [],
+                "C.jpg": [
+                    run_colmap_sfm.CandidateEdge(
+                        first_name="C.jpg",
+                        second_name="D.jpg",
+                        score=0.9,
+                        footprint_overlap=0.9,
+                        scale_similarity=0.9,
+                        viewpoint_complementarity=0.9,
+                        distance_consistency=0.9,
+                        temporal_bonus=0.0,
+                        xy_distance_m=5.0,
+                        xyz_distance_m=5.0,
+                        view_delta_deg=10.0,
+                    )
+                ],
+                "D.jpg": [],
+                "E.jpg": [],
+            }
+            chunk_plan = run_colmap_sfm.ChunkPlan(
+                index=1,
+                core_names=["A.jpg", "B.jpg", "C.jpg", "D.jpg"],
+                image_names=["A.jpg", "B.jpg", "C.jpg", "D.jpg", "E.jpg"],
+                overlap_names=["E.jpg"],
+            )
+            chunk_dir = root / "chunk"
+            chunk_dir.mkdir(parents=True, exist_ok=True)
+
+            def candidate_edge(first_name: str, second_name: str) -> run_colmap_sfm.CandidateEdge:
+                pair_key = tuple(sorted((first_name, second_name)))
+                score_map = {
+                    ("A.jpg", "C.jpg"): 0.82,
+                    ("A.jpg", "D.jpg"): 0.76,
+                    ("B.jpg", "C.jpg"): 0.78,
+                    ("B.jpg", "D.jpg"): 0.74,
+                    ("C.jpg", "E.jpg"): 0.71,
+                    ("D.jpg", "E.jpg"): 0.69,
+                    ("A.jpg", "E.jpg"): 0.68,
+                    ("B.jpg", "E.jpg"): 0.67,
+                }
+                score = score_map.get(pair_key, 0.2)
+                return run_colmap_sfm.CandidateEdge(
+                    first_name=pair_key[0],
+                    second_name=pair_key[1],
+                    score=score,
+                    footprint_overlap=score,
+                    scale_similarity=score,
+                    viewpoint_complementarity=score,
+                    distance_consistency=score,
+                    temporal_bonus=0.0,
+                    xy_distance_m=5.0,
+                    xyz_distance_m=5.0,
+                    view_delta_deg=15.0,
+                )
+
+            with mock.patch.object(
+                pipeline,
+                "classify_graph_roles",
+                return_value={name: "geometry_anchor" for name in pipeline.capture_ordered_names},
+            ), mock.patch.object(
+                pipeline,
+                "candidate_edge_for_names",
+                side_effect=candidate_edge,
+            ):
+                pair_list_path = pipeline.write_chunk_match_list(
+                    chunk_plan,
+                    chunk_dir=chunk_dir,
+                    bridge_target_name_sets=[{"A.jpg", "B.jpg"}, {"C.jpg", "D.jpg"}],
+                )
+
+            pair_lines = set(pair_list_path.read_text().splitlines())
+            self.assertIn("A.jpg B.jpg", pair_lines)
+            self.assertIn("C.jpg D.jpg", pair_lines)
+            self.assertTrue(
+                {"A.jpg C.jpg", "A.jpg D.jpg", "B.jpg C.jpg", "B.jpg D.jpg"}.intersection(pair_lines)
+            )
+            self.assertTrue(
+                {"A.jpg E.jpg", "B.jpg E.jpg", "C.jpg E.jpg", "D.jpg E.jpg"}.intersection(pair_lines)
+            )
+
+    def test_run_chunk_matchers_uses_matches_importer_for_bridge_chunks_under_footprint_graph(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
             os.environ,
             {"COLMAP_CHUNK_PLANNER": "footprint_graph_v1"},
@@ -1048,10 +1157,11 @@ class ColmapGpsPriorTests(unittest.TestCase):
                     chunk_database_path=root / "chunk.db",
                     chunk_dir=chunk_dir,
                     stage_prefix="chunk_01_02_merge_bridge",
+                    bridge_target_name_sets=[{"A.jpg"}, {"B.jpg"}],
                 )
 
-            importer_mock.assert_not_called()
-            exhaustive_mock.assert_called_once()
+            importer_mock.assert_called_once()
+            exhaustive_mock.assert_not_called()
 
     def test_run_chunk_pipeline_triggers_boundary_recovery_for_weak_chunk(self):
         with tempfile.TemporaryDirectory() as tmp:
