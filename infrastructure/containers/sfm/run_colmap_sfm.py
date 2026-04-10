@@ -551,6 +551,15 @@ class ColmapPipeline:
         self.vocab_builder_timeout_seconds = float(
             os.environ.get("COLMAP_VOCAB_BUILDER_TIMEOUT_SECONDS", "900")
         )
+        self.sqlite_busy_timeout_seconds = float(
+            os.environ.get("COLMAP_SQLITE_BUSY_TIMEOUT_SECONDS", "60.0")
+        )
+        self.sqlite_lock_retry_count = int(
+            os.environ.get("COLMAP_SQLITE_LOCK_RETRY_COUNT", "5")
+        )
+        self.sqlite_lock_retry_sleep_seconds = float(
+            os.environ.get("COLMAP_SQLITE_LOCK_RETRY_SLEEP_SECONDS", "2.0")
+        )
         if (
             self.enable_sequential_matcher
             and self.spatial_neighbors == profile_defaults["spatial_neighbors"]
@@ -3128,6 +3137,47 @@ class ColmapPipeline:
     def sqlite_sidecar_paths(self, database_path: Path) -> List[Path]:
         return [Path(f"{database_path}{suffix}") for suffix in ("-wal", "-shm", "-journal")]
 
+    def sqlite_connect(
+        self,
+        database: str | os.PathLike[str],
+        *,
+        uri: bool = False,
+    ) -> sqlite3.Connection:
+        connection = sqlite3.connect(
+            database,
+            uri=uri,
+            timeout=self.sqlite_busy_timeout_seconds,
+        )
+        connection.execute(f"PRAGMA busy_timeout={int(self.sqlite_busy_timeout_seconds * 1000)}")
+        return connection
+
+    def is_sqlite_lock_error(self, error: sqlite3.OperationalError) -> bool:
+        return "database is locked" in str(error).lower()
+
+    def run_sqlite_operation_with_retry(self, stage: str, operation):
+        attempts = max(1, self.sqlite_lock_retry_count + 1)
+        last_error: sqlite3.OperationalError | None = None
+        for attempt_index in range(attempts):
+            try:
+                return operation()
+            except sqlite3.OperationalError as error:
+                if not self.is_sqlite_lock_error(error) or attempt_index == attempts - 1:
+                    raise
+                last_error = error
+                sleep_seconds = self.sqlite_lock_retry_sleep_seconds * (attempt_index + 1)
+                logger.warning(
+                    "SQLite reported a transient lock during %s (attempt %s/%s): %s; retrying in %.1fs",
+                    stage,
+                    attempt_index + 1,
+                    attempts,
+                    error,
+                    sleep_seconds,
+                )
+                time.sleep(sleep_seconds)
+        if last_error is not None:
+            raise last_error
+        raise RuntimeError(f"SQLite operation {stage} exhausted retries without an error")
+
     def remove_sqlite_database_artifacts(self, database_path: Path) -> None:
         for path in [database_path, *self.sqlite_sidecar_paths(database_path)]:
             try:
@@ -3135,28 +3185,56 @@ class ColmapPipeline:
             except FileNotFoundError:
                 continue
 
+    def normalize_sqlite_database_for_chunking(self, database_path: Path) -> None:
+        if not database_path.exists():
+            return
+
+        def normalize() -> None:
+            with self.sqlite_connect(database_path) as connection:
+                current_mode_row = connection.execute("PRAGMA journal_mode").fetchone()
+                current_mode = str(current_mode_row[0]).lower() if current_mode_row else "delete"
+                if current_mode == "wal":
+                    connection.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+                connection.execute("PRAGMA journal_mode=DELETE")
+                connection.commit()
+
+        self.run_sqlite_operation_with_retry(
+            f"normalize_sqlite_database:{database_path.name}",
+            normalize,
+        )
+        for sidecar_path in self.sqlite_sidecar_paths(database_path):
+            try:
+                sidecar_path.unlink()
+            except FileNotFoundError:
+                continue
+
     def clone_database_for_chunk(self, destination_path: Path) -> None:
         destination_path.parent.mkdir(parents=True, exist_ok=True)
         self.remove_sqlite_database_artifacts(destination_path)
         source_uri = f"file:{self.database_path.as_posix()}?mode=ro"
-        with sqlite3.connect(source_uri, uri=True) as source_connection:
-            with sqlite3.connect(destination_path) as destination_connection:
-                source_connection.backup(destination_connection)
-                destination_connection.commit()
 
-    def prepare_chunk_database(self, chunk_plan: ChunkPlan, *, dir_name: str | None = None) -> Path:
-        chunk_dir = self.work_dir / (dir_name or f"chunk_{chunk_plan.index:02d}")
-        chunk_dir.mkdir(parents=True, exist_ok=True)
-        chunk_database_path = chunk_dir / "database.db"
-        # Chunk retries can reuse the same directory name; create a fresh SQLite clone so
-        # stale WAL/SHM files from the previous attempt cannot corrupt the next retry.
-        self.clone_database_for_chunk(chunk_database_path)
-        supports_pose_prior_image_backfill = self.supports_pose_prior_image_backfill(
-            database_path=chunk_database_path
+        def backup_database() -> None:
+            with self.sqlite_connect(source_uri, uri=True) as source_connection:
+                source_connection.execute("PRAGMA query_only=1")
+                with self.sqlite_connect(destination_path) as destination_connection:
+                    source_connection.backup(destination_connection, pages=2048, sleep=0.05)
+                    destination_connection.execute("PRAGMA journal_mode=DELETE")
+                    destination_connection.commit()
+
+        self.run_sqlite_operation_with_retry(
+            f"clone_database_for_chunk:{destination_path.parent.name}",
+            backup_database,
         )
+        self.normalize_sqlite_database_for_chunking(destination_path)
 
-        keep_image_names = set(chunk_plan.image_names)
-        with sqlite3.connect(chunk_database_path) as connection:
+    def prune_chunk_database(
+        self,
+        chunk_database_path: Path,
+        *,
+        keep_image_names: Set[str],
+        supports_pose_prior_image_backfill: bool,
+    ) -> None:
+        with self.sqlite_connect(chunk_database_path) as connection:
             connection.execute("PRAGMA journal_mode=DELETE")
             rows = connection.execute("SELECT image_id, name, camera_id FROM images").fetchall()
             remove_image_ids = [int(image_id) for image_id, name, _ in rows if str(name) not in keep_image_names]
@@ -3185,6 +3263,28 @@ class ColmapPipeline:
             connection.execute("DELETE FROM matches")
             connection.execute("DELETE FROM two_view_geometries")
             connection.commit()
+
+    def prepare_chunk_database(self, chunk_plan: ChunkPlan, *, dir_name: str | None = None) -> Path:
+        chunk_dir = self.work_dir / (dir_name or f"chunk_{chunk_plan.index:02d}")
+        chunk_dir.mkdir(parents=True, exist_ok=True)
+        chunk_database_path = chunk_dir / "database.db"
+        # Chunk retries can reuse the same directory name; create a fresh SQLite clone so
+        # stale WAL/SHM files from the previous attempt cannot corrupt the next retry.
+        self.clone_database_for_chunk(chunk_database_path)
+        supports_pose_prior_image_backfill = self.run_sqlite_operation_with_retry(
+            f"inspect_chunk_database_schema:{chunk_plan.index:02d}",
+            lambda: self.supports_pose_prior_image_backfill(database_path=chunk_database_path),
+        )
+
+        keep_image_names = set(chunk_plan.image_names)
+        self.run_sqlite_operation_with_retry(
+            f"prune_chunk_database:{chunk_plan.index:02d}",
+            lambda: self.prune_chunk_database(
+                chunk_database_path,
+                keep_image_names=keep_image_names,
+                supports_pose_prior_image_backfill=supports_pose_prior_image_backfill,
+            ),
+        )
         for sidecar_path in self.sqlite_sidecar_paths(chunk_database_path):
             if sidecar_path.exists():
                 sidecar_path.unlink()
