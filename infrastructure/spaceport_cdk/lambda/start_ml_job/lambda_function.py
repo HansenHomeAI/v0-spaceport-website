@@ -55,7 +55,7 @@ def validate_ml_bucket_name(bucket_name):
 
 
 def guess_content_type(key, metadata_content_type):
-    if metadata_content_type and metadata_content_type != 'binary/octet-stream':
+    if metadata_content_type and metadata_content_type not in {'binary/octet-stream', 'application/octet-stream'}:
         return metadata_content_type
     lower_key = key.lower()
     if lower_key.endswith('.json'):
