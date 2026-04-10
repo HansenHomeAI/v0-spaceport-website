@@ -333,7 +333,6 @@ class MLPipelineStack(Stack):
                 "SFM_ECR_REPO_FALLBACK": sfm_repo_fallback_name,
                 "GAUSSIAN_ECR_REPO_FALLBACK": gaussian_repo_fallback_name,
                 "COMPRESSOR_ECR_REPO_FALLBACK": compressor_repo_fallback_name,
-                "ML_PIPELINE_API_URL": "",
             }
         )
 
@@ -920,8 +919,6 @@ class MLPipelineStack(Stack):
             value=ml_api.url,
             description="ML Pipeline API Gateway URL"
         )
-
-        start_job_lambda.add_environment("ML_PIPELINE_API_URL", ml_api.url)
 
         CfnOutput(
             self, "MLBucketName", 
