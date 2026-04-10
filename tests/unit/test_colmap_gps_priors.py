@@ -741,6 +741,102 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(retry_chunk.core_names, ["A.jpg", "B.jpg"])
             self.assertIn("C.jpg", retry_chunk.image_names)
 
+    def test_build_footprint_graph_chunks_expands_small_tail_chunk_with_support_images(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {"COLMAP_CHUNK_PLANNER": "footprint_graph_v1"},
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.chunk_target_images = 3
+            pipeline.chunk_min_images = 3
+            pipeline.chunk_hard_max_images = 4
+            pipeline.capture_ordered_names = ["A1.jpg", "A2.jpg", "A3.jpg", "B1.jpg"]
+            pipeline.exif_records = {
+                "A1.jpg": {"local_x_m": 0.0, "local_y_m": 0.0, "local_z_m": 0.0, "heading_deg": 0.0, "pitch_deg": -30.0},
+                "A2.jpg": {"local_x_m": 1.0, "local_y_m": 0.0, "local_z_m": 0.0, "heading_deg": 0.0, "pitch_deg": -30.0},
+                "A3.jpg": {"local_x_m": 2.0, "local_y_m": 0.0, "local_z_m": 0.0, "heading_deg": 0.0, "pitch_deg": -30.0},
+                "B1.jpg": {"local_x_m": 8.0, "local_y_m": 0.0, "local_z_m": 0.0, "heading_deg": 5.0, "pitch_deg": -30.0},
+            }
+            pipeline.graph_neighbors = {
+                "A1.jpg": [
+                    run_colmap_sfm.CandidateEdge(
+                        first_name="A1.jpg",
+                        second_name="A2.jpg",
+                        score=0.9,
+                        footprint_overlap=0.9,
+                        scale_similarity=0.9,
+                        viewpoint_complementarity=0.9,
+                        distance_consistency=0.9,
+                        temporal_bonus=0.0,
+                        xy_distance_m=1.0,
+                        xyz_distance_m=1.0,
+                        view_delta_deg=5.0,
+                    )
+                ],
+                "A2.jpg": [
+                    run_colmap_sfm.CandidateEdge(
+                        first_name="A2.jpg",
+                        second_name="A3.jpg",
+                        score=0.9,
+                        footprint_overlap=0.9,
+                        scale_similarity=0.9,
+                        viewpoint_complementarity=0.9,
+                        distance_consistency=0.9,
+                        temporal_bonus=0.0,
+                        xy_distance_m=1.0,
+                        xyz_distance_m=1.0,
+                        view_delta_deg=5.0,
+                    )
+                ],
+                "A3.jpg": [
+                    run_colmap_sfm.CandidateEdge(
+                        first_name="A3.jpg",
+                        second_name="B1.jpg",
+                        score=0.6,
+                        footprint_overlap=0.6,
+                        scale_similarity=0.6,
+                        viewpoint_complementarity=0.6,
+                        distance_consistency=0.6,
+                        temporal_bonus=0.0,
+                        xy_distance_m=6.0,
+                        xyz_distance_m=6.0,
+                        view_delta_deg=10.0,
+                    )
+                ],
+                "B1.jpg": [
+                    run_colmap_sfm.CandidateEdge(
+                        first_name="B1.jpg",
+                        second_name="A3.jpg",
+                        score=0.6,
+                        footprint_overlap=0.6,
+                        scale_similarity=0.6,
+                        viewpoint_complementarity=0.6,
+                        distance_consistency=0.6,
+                        temporal_bonus=0.0,
+                        xy_distance_m=6.0,
+                        xyz_distance_m=6.0,
+                        view_delta_deg=10.0,
+                    )
+                ],
+            }
+
+            with mock.patch.object(pipeline, "build_view_geometries"), mock.patch.object(
+                pipeline, "build_candidate_graph"
+            ), mock.patch.object(
+                pipeline,
+                "classify_graph_roles",
+                return_value={name: "geometry_anchor" for name in pipeline.capture_ordered_names},
+            ):
+                chunks = pipeline.build_footprint_graph_chunks()
+
+            self.assertGreaterEqual(len(chunks), 2)
+            self.assertTrue(all(len(chunk.image_names) >= 3 for chunk in chunks))
+            self.assertTrue(
+                any("B1.jpg" in chunk.image_names and len(chunk.image_names) >= 3 for chunk in chunks)
+            )
+
     def test_run_chunk_matchers_uses_matches_importer_for_footprint_graph(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
             os.environ,
@@ -1420,8 +1516,16 @@ class ColmapGpsPriorTests(unittest.TestCase):
                     binary_dir=second_model_dir,
                 ),
             ]
-            output_path = pipeline.work_dir / "merged_chunk_model_01"
-            merged_model = run_colmap_sfm.ModelSummary(
+            output_path = pipeline.work_dir / "merged_chunk_model_01_attempt_01"
+            merged_candidate = run_colmap_sfm.ModelSummary(
+                stage="chunk_model_merger_01_output_attempt_01",
+                text_dir=merged_text_dir,
+                cameras_registered=1,
+                images_registered=3,
+                points_3d=1500,
+                binary_dir=output_path,
+            )
+            adjusted_model = run_colmap_sfm.ModelSummary(
                 stage="chunk_bundle_adjuster",
                 text_dir=merged_text_dir,
                 cameras_registered=1,
@@ -1432,8 +1536,12 @@ class ColmapGpsPriorTests(unittest.TestCase):
 
             with mock.patch.object(run_colmap_sfm, "stream_command") as stream_command_mock, mock.patch.object(
                 pipeline,
+                "summarize_model",
+                return_value=merged_candidate,
+            ), mock.patch.object(
+                pipeline,
                 "run_bundle_adjuster",
-                return_value=merged_model,
+                return_value=adjusted_model,
             ):
                 result = pipeline.merge_chunk_models(chunk_models)
 
@@ -1445,6 +1553,106 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(pipeline.chunk_merge_proof["pre_merge_unique_registered_images"], 3)
             self.assertEqual(pipeline.chunk_merge_proof["final_merged_registered_images"], 3)
             self.assertEqual(pipeline.chunk_merge_proof["pre_merge_retention_ratio"], 1.0)
+
+    def test_merge_chunk_models_retries_with_swapped_inputs_after_partial_merge(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            first_model_dir = root / "chunk_00" / "sparse_initial" / "0"
+            second_model_dir = root / "chunk_01" / "sparse_initial" / "0"
+            first_text_dir = root / "text_00"
+            second_text_dir = root / "text_01"
+            failed_merge_text_dir = root / "failed_merge_text"
+            swapped_merge_text_dir = root / "swapped_merge_text"
+            first_model_dir.mkdir(parents=True, exist_ok=True)
+            second_model_dir.mkdir(parents=True, exist_ok=True)
+            first_text_dir.mkdir(parents=True, exist_ok=True)
+            second_text_dir.mkdir(parents=True, exist_ok=True)
+            failed_merge_text_dir.mkdir(parents=True, exist_ok=True)
+            swapped_merge_text_dir.mkdir(parents=True, exist_ok=True)
+            (first_text_dir / "images.txt").write_text(
+                "1 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n2 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (second_text_dir / "images.txt").write_text(
+                "3 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n4 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (failed_merge_text_dir / "images.txt").write_text(
+                "5 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n6 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (swapped_merge_text_dir / "images.txt").write_text(
+                "7 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n8 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n9 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            chunk_models = [
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_00_mapper_initial",
+                    text_dir=first_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=1000,
+                    binary_dir=first_model_dir,
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_01_mapper_initial",
+                    text_dir=second_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=1000,
+                    binary_dir=second_model_dir,
+                ),
+            ]
+            final_output_path = pipeline.work_dir / "merged_chunk_model_01_attempt_02"
+            merged_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_bundle_adjuster",
+                text_dir=swapped_merge_text_dir,
+                cameras_registered=1,
+                images_registered=3,
+                points_3d=2000,
+                binary_dir=final_output_path,
+            )
+
+            summarize_side_effects = [
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_model_merger_01_output_attempt_01",
+                    text_dir=failed_merge_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=1100,
+                    binary_dir=pipeline.work_dir / "merged_chunk_model_01_attempt_01",
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_model_merger_01_output_attempt_02",
+                    text_dir=swapped_merge_text_dir,
+                    cameras_registered=1,
+                    images_registered=3,
+                    points_3d=1500,
+                    binary_dir=final_output_path,
+                ),
+            ]
+
+            with mock.patch.object(run_colmap_sfm, "stream_command") as stream_command_mock, mock.patch.object(
+                pipeline,
+                "summarize_model",
+                side_effect=summarize_side_effects,
+            ), mock.patch.object(
+                pipeline,
+                "run_bundle_adjuster",
+                return_value=merged_model,
+            ):
+                result = pipeline.merge_chunk_models(chunk_models)
+
+            merger_commands = [call.args[0] for call in stream_command_mock.call_args_list]
+            self.assertEqual(len(merger_commands), 2)
+            self.assertEqual(merger_commands[0][3], str(first_model_dir))
+            self.assertEqual(merger_commands[0][5], str(second_model_dir))
+            self.assertEqual(merger_commands[1][3], str(second_model_dir))
+            self.assertEqual(merger_commands[1][5], str(first_model_dir))
+            self.assertEqual(result.images_registered, 3)
+            self.assertEqual(pipeline.chunk_merge_proof["pre_merge_unique_registered_images"], 3)
+            self.assertEqual(pipeline.chunk_merge_proof["final_merged_registered_images"], 3)
 
     def test_run_spatial_heading_chunked_path_accepts_merged_ratio_at_gps_threshold(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -2827,6 +2827,50 @@ class ColmapPipeline:
                         break
                     chunk_names.append(additional_name)
                     chunk_name_set.add(additional_name)
+            if len(chunk_names) < self.chunk_min_images:
+                supplemental_scores: Dict[str, float] = {}
+                for image_name in list(chunk_names):
+                    for edge in self.graph_neighbors.get(image_name, []):
+                        neighbor_name = edge.second_name if edge.first_name == image_name else edge.first_name
+                        if neighbor_name in chunk_name_set or roles.get(neighbor_name) == "burst_redundant":
+                            continue
+                        supplemental_scores[neighbor_name] = supplemental_scores.get(neighbor_name, 0.0) + edge.score
+                if len(chunk_names) < self.chunk_min_images:
+                    centroid_x, centroid_y = self.centroid_for_names(chunk_names)
+                    for candidate_name in self.capture_ordered_names:
+                        if candidate_name not in self.exif_records or candidate_name in chunk_name_set:
+                            continue
+                        if roles.get(candidate_name) == "burst_redundant":
+                            continue
+                        candidate_record = self.exif_records[candidate_name]
+                        distance_m = math.hypot(
+                            float(candidate_record["local_x_m"]) - centroid_x,
+                            float(candidate_record["local_y_m"]) - centroid_y,
+                        )
+                        view_delta_deg = angular_distance_between_vectors(
+                            view_vector(
+                                self.mean_heading_for_names(chunk_names),
+                                self.mean_pitch_for_names(chunk_names),
+                            ),
+                            view_vector(
+                                candidate_record.get("heading_deg"),
+                                candidate_record.get("pitch_deg"),
+                            ),
+                        )
+                        supplemental_scores.setdefault(
+                            candidate_name,
+                            1.0 / max(distance_m + view_delta_deg * self.chunk_heading_weight + 1.0, 1.0),
+                        )
+                for _, supplemental_name in sorted(
+                    ((score, name) for name, score in supplemental_scores.items()),
+                    key=lambda item: (-item[0], item[1]),
+                ):
+                    if len(chunk_names) >= min(self.chunk_min_images, self.chunk_hard_max_images):
+                        break
+                    if supplemental_name in chunk_name_set:
+                        continue
+                    chunk_names.append(supplemental_name)
+                    chunk_name_set.add(supplemental_name)
             for image_name in chunk_names:
                 assigned_core_names.add(image_name)
                 image_membership_count[image_name] += 1
@@ -2871,8 +2915,14 @@ class ColmapPipeline:
                     )
                     if score > 0.0:
                         candidate_scores.append((score, image_name))
+                pair_anchor_target = self.chunk_overlap_anchor_count
+                if self.chunk_planner == "footprint_graph_v1":
+                    pair_anchor_target = max(
+                        self.chunk_overlap_anchor_count,
+                        min(max(min(len(core_chunks[left_index]), len(core_chunks[right_index])) // 3, 24), 60),
+                    )
                 for _, image_name in sorted(candidate_scores, key=lambda item: (-item[0], item[1])):
-                    if len(overlap_assignments[left_index].union(overlap_assignments[right_index])) >= self.chunk_overlap_anchor_count:
+                    if len(overlap_assignments[left_index].union(overlap_assignments[right_index])) >= pair_anchor_target:
                         break
                     if image_membership_count[image_name] >= 3:
                         continue
@@ -3644,6 +3694,35 @@ class ColmapPipeline:
         )
         raise RuntimeError(self.failure_reason_detail)
 
+    def merged_image_names(self, model: ModelSummary) -> Set[str]:
+        return load_registered_image_names(model.text_dir / "images.txt")
+
+    def merge_result_is_usable(
+        self,
+        *,
+        merged_names: Set[str],
+        existing_names: Set[str],
+        next_names: Set[str],
+    ) -> bool:
+        if not merged_names or len(merged_names) < max(len(existing_names), len(next_names)):
+            return False
+        existing_retained_ratio = (
+            len(merged_names.intersection(existing_names)) / len(existing_names)
+            if existing_names
+            else 1.0
+        )
+        next_retained_ratio = (
+            len(merged_names.intersection(next_names)) / len(next_names)
+            if next_names
+            else 1.0
+        )
+        new_from_next = len(merged_names.intersection(next_names.difference(existing_names)))
+        if existing_retained_ratio < 0.95:
+            return False
+        if next_names.difference(existing_names) and new_from_next == 0:
+            return False
+        return next_retained_ratio >= 0.5
+
     def merge_chunk_models(self, chunk_models: Sequence[ModelSummary]) -> ModelSummary:
         if not chunk_models:
             raise RuntimeError("No chunk models available to merge")
@@ -3658,40 +3737,76 @@ class ColmapPipeline:
             return chunk_models[0]
 
         merge_started = time.time()
-        merged_path = chunk_models[0].binary_dir
+        current_model = chunk_models[0]
         merged_components = 1
         for index, next_model in enumerate(chunk_models[1:], start=1):
-            output_path = self.work_dir / f"merged_chunk_model_{index:02d}"
-            output_path.mkdir(parents=True, exist_ok=True)
-            try:
-                stream_command(
-                    [
-                        "colmap",
-                        "model_merger",
-                        "--input_path1",
-                        str(merged_path),
-                        "--input_path2",
-                        str(next_model.binary_dir),
-                        "--output_path",
-                        str(output_path),
-                        "--max_reproj_error",
-                        "64",
-                    ],
-                    stage=f"chunk_model_merger_{index:02d}",
-                    timeout_seconds=self.resolve_timeout_seconds(self.matcher_timeout_seconds),
-                    heartbeat_seconds=self.command_heartbeat_seconds,
+            existing_names = self.merged_image_names(current_model)
+            next_names = self.merged_image_names(next_model)
+            merged_candidate: ModelSummary | None = None
+            merge_error: RuntimeError | None = None
+            for attempt_index, (input_one, input_two) in enumerate(
+                (
+                    (current_model, next_model),
+                    (next_model, current_model),
+                ),
+                start=1,
+            ):
+                output_path = self.work_dir / f"merged_chunk_model_{index:02d}_attempt_{attempt_index:02d}"
+                output_path.mkdir(parents=True, exist_ok=True)
+                stage_name = f"chunk_model_merger_{index:02d}"
+                if attempt_index > 1:
+                    logger.warning(
+                        "Retrying chunk model merge %s with swapped input order after weak merge retention",
+                        index,
+                    )
+                try:
+                    stream_command(
+                        [
+                            "colmap",
+                            "model_merger",
+                            "--input_path1",
+                            str(input_one.binary_dir),
+                            "--input_path2",
+                            str(input_two.binary_dir),
+                            "--output_path",
+                            str(output_path),
+                            "--max_reproj_error",
+                            "64",
+                        ],
+                        stage=stage_name,
+                        timeout_seconds=self.resolve_timeout_seconds(self.matcher_timeout_seconds),
+                        heartbeat_seconds=self.command_heartbeat_seconds,
+                    )
+                except RuntimeError as exc:
+                    merge_error = exc
+                    continue
+                merged_candidate = self.summarize_model(
+                    stage=f"{stage_name}_output_attempt_{attempt_index:02d}",
+                    binary_dir=output_path,
+                    image_count=self.dataset_image_count,
                 )
-            except RuntimeError as exc:
+                if self.merge_result_is_usable(
+                    merged_names=self.merged_image_names(merged_candidate),
+                    existing_names=existing_names,
+                    next_names=next_names,
+                ):
+                    current_model = merged_candidate
+                    break
+                merged_candidate = None
+            if merged_candidate is None:
                 merged_components += 1
                 self.merged_component_count = merged_components
-                self.handle_stage_runtime_error(f"chunk_model_merger_{index:02d}", exc)
-                raise RuntimeError(f"Failed to merge chunk model {index}: {exc}") from exc
-            merged_path = output_path
+                if merge_error is not None:
+                    self.handle_stage_runtime_error(f"chunk_model_merger_{index:02d}", merge_error)
+                    raise RuntimeError(f"Failed to merge chunk model {index}: {merge_error}") from merge_error
+                raise RuntimeError(
+                    f"Failed to merge chunk model {index}: model_merger did not retain enough registered images"
+                )
         self.chunk_merge_seconds = round(time.time() - merge_started, 2)
         self.timings["chunk_model_merge_seconds"] = self.chunk_merge_seconds
         self.merged_component_count = 1
         self.pipeline_name = "colmap_gpu_spatial_heading_chunked"
-        adjusted_model = self.run_bundle_adjuster(input_path=merged_path, stage="chunk_bundle_adjuster")
+        adjusted_model = self.run_bundle_adjuster(input_path=current_model.binary_dir, stage="chunk_bundle_adjuster")
         pre_merge_registered_names: Set[str] = set()
         for chunk_model in chunk_models:
             pre_merge_registered_names.update(load_registered_image_names(chunk_model.text_dir / "images.txt"))
