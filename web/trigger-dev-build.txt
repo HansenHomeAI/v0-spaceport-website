@@ -18,6 +18,7 @@
 2026-04-09T19:11:00Z projected skybox container packaging fix for Horsetail AWS validation
 2026-04-09T22:00:00Z compression quota retry and real failure propagation for Horsetail AWS validation
 2026-04-10T00:30:00Z expand projected skybox horizon fill and raw semantic confidence for Horsetail AWS rerun
+2026-04-10T20:01:28Z preserve meta filenames while proxying private bundle assets through the preview viewer
 2026-04-10T00:58:00Z retry gaussian training job on SageMaker quota contention
 2026-04-10T01:08:00Z add training instance override to bypass occupied g5.2xlarge quota
 2026-04-10T09:10:00Z switch projected skybox world-up estimation to camera-ring normal for Horsetail rerun

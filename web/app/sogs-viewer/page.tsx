@@ -156,18 +156,6 @@ export default function SogsViewerPage() {
     return `/api/sogs-proxy/${encodedBase}${url.pathname}${url.search}`;
   };
 
-  const convertToManagedBundlePath = (url: URL) => {
-    const params = new URLSearchParams({
-      url: url.toString(),
-    });
-
-    if (url.pathname.endsWith("/meta.json") || url.pathname === "/meta.json") {
-      params.set("rewriteMeta", "true");
-    }
-
-    return `${ML_PIPELINE_API_URL}/bundle-resource?${params.toString()}`;
-  };
-
   const normalizeAssetUrl = (rawValue: string, defaultFilename: string | null): string | null => {
     const trimmed = rawValue.trim();
     if (!trimmed) {
@@ -189,9 +177,6 @@ export default function SogsViewerPage() {
       }
 
       if (SPACEPORT_S3_HOST.test(parsed.host)) {
-        if (ML_PIPELINE_API_URL) {
-          return convertToManagedBundlePath(parsed);
-        }
         return convertToProxyPath(parsed);
       }
 

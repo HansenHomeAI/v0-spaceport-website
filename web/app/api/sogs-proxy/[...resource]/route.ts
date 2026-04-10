@@ -2,6 +2,8 @@ import { NextRequest } from "next/server";
 
 export const runtime = "edge";
 
+const ML_PIPELINE_API_URL = process.env.NEXT_PUBLIC_ML_PIPELINE_API_URL?.replace(/\/$/, "") || "";
+
 const ALLOWED_HOST_PATTERNS = [
   /^spaceport-ml-processing(?:-[a-z0-9-]+)?\.s3\.amazonaws\.com$/i,
   /^spaceport-ml-processing(?:-[a-z0-9-]+)?\.s3\.us-west-2\.amazonaws\.com$/i,
@@ -41,7 +43,15 @@ export async function GET(request: NextRequest, { params }: { params: { resource
     return new Response("Invalid or disallowed upstream resource", { status: 400 });
   }
 
-  const upstreamResponse = await fetch(upstreamUrl, {
+  const proxyTarget = (() => {
+    if (!ML_PIPELINE_API_URL) {
+      return upstreamUrl.toString();
+    }
+    const params = new URLSearchParams({ url: upstreamUrl.toString() });
+    return `${ML_PIPELINE_API_URL}/bundle-resource?${params.toString()}`;
+  })();
+
+  const upstreamResponse = await fetch(proxyTarget, {
     headers: {
       "Accept": request.headers.get("accept") ?? "*/*",
     },
