@@ -1322,6 +1322,160 @@ class ColmapPipeline:
         self.chunk_role_by_image = roles
         return roles
 
+    def representative_chunk_names(
+        self,
+        chunk_names: Sequence[str],
+        roles: Dict[str, str],
+        *,
+        limit: int = 24,
+    ) -> List[str]:
+        if not chunk_names:
+            return []
+        centroid_x, centroid_y = self.centroid_for_names(chunk_names)
+        ranked_names: List[tuple[int, float, float, int, str]] = []
+        for image_name in chunk_names:
+            if image_name not in self.exif_records or roles.get(image_name) == "burst_redundant":
+                continue
+            record = self.exif_records[image_name]
+            edge_score = sum(edge.score for edge in self.graph_neighbors.get(image_name, [])[:12])
+            distance_m = math.hypot(
+                float(record["local_x_m"]) - centroid_x,
+                float(record["local_y_m"]) - centroid_y,
+            )
+            ranked_names.append(
+                (
+                    0 if roles.get(image_name) == "geometry_anchor" else 1,
+                    -edge_score,
+                    distance_m,
+                    self.capture_ordered_names.index(image_name),
+                    image_name,
+                )
+            )
+        if not ranked_names:
+            return list(chunk_names[:limit])
+        return [image_name for _, _, _, _, image_name in sorted(ranked_names)[:limit]]
+
+    def bridge_anchor_scores(
+        self,
+        source_names: Sequence[str],
+        target_names: Sequence[str],
+        roles: Dict[str, str],
+        *,
+        limit: int = 24,
+    ) -> List[tuple[float, str]]:
+        if not source_names or not target_names:
+            return []
+        source_candidates = self.representative_chunk_names(source_names, roles, limit=max(limit * 2, 24))
+        target_candidates = self.representative_chunk_names(target_names, roles, limit=max(limit * 2, 24))
+        if not source_candidates or not target_candidates:
+            return []
+        ranked_scores: List[tuple[float, str]] = []
+        for source_name in source_candidates:
+            strongest_scores = sorted(
+                (
+                    self.candidate_edge_for_names(source_name, target_name).score
+                    for target_name in target_candidates
+                    if target_name != source_name
+                ),
+                reverse=True,
+            )[:4]
+            if not strongest_scores:
+                continue
+            ranked_scores.append((round(sum(strongest_scores), 6), source_name))
+        return sorted(ranked_scores, key=lambda item: (-item[0], item[1]))
+
+    def best_bridge_neighbor_index(
+        self,
+        *,
+        chunk_index: int,
+        core_chunks: Sequence[Sequence[str]],
+        roles: Dict[str, str],
+    ) -> int | None:
+        if len(core_chunks) <= 1:
+            return None
+        source_names = core_chunks[chunk_index]
+        source_centroid = self.centroid_for_names(source_names)
+        ranked_neighbors: List[tuple[float, float, int]] = []
+        for candidate_index, candidate_names in enumerate(core_chunks):
+            if candidate_index == chunk_index:
+                continue
+            bridge_scores = self.bridge_anchor_scores(source_names, candidate_names, roles, limit=8)
+            bridge_score = bridge_scores[0][0] if bridge_scores else 0.0
+            candidate_centroid = self.centroid_for_names(candidate_names)
+            centroid_distance = math.hypot(
+                source_centroid[0] - candidate_centroid[0],
+                source_centroid[1] - candidate_centroid[1],
+            )
+            ranked_neighbors.append((-bridge_score, centroid_distance, candidate_index))
+        if not ranked_neighbors:
+            return None
+        return min(ranked_neighbors)[2]
+
+    def ensure_chunk_overlap_connectivity(
+        self,
+        *,
+        core_chunks: Sequence[Sequence[str]],
+        overlap_assignments: Dict[int, Set[str]],
+        image_membership_count: Dict[str, int],
+        roles: Dict[str, str],
+    ) -> None:
+        if len(core_chunks) <= 1:
+            return
+
+        def chunk_image_name_sets() -> List[Set[str]]:
+            return [set(chunk_names).union(overlap_assignments.get(index, set())) for index, chunk_names in enumerate(core_chunks)]
+
+        iteration_budget = max(len(core_chunks) * 2, 1)
+        while iteration_budget > 0:
+            image_name_sets = chunk_image_name_sets()
+            isolated_indexes = [
+                index
+                for index, image_names in enumerate(image_name_sets)
+                if not any(image_names.intersection(other_names) for other_index, other_names in enumerate(image_name_sets) if other_index != index)
+            ]
+            if not isolated_indexes:
+                return
+            changed = False
+            for chunk_index in isolated_indexes:
+                neighbor_index = self.best_bridge_neighbor_index(
+                    chunk_index=chunk_index,
+                    core_chunks=core_chunks,
+                    roles=roles,
+                )
+                if neighbor_index is None:
+                    continue
+                pair_anchor_target = max(
+                    self.chunk_overlap_anchor_count,
+                    min(max(min(len(core_chunks[chunk_index]), len(core_chunks[neighbor_index])) // 3, 24), 60),
+                )
+                candidate_sets = (
+                    (
+                        chunk_index,
+                        neighbor_index,
+                        self.bridge_anchor_scores(core_chunks[chunk_index], image_name_sets[neighbor_index], roles, limit=pair_anchor_target),
+                    ),
+                    (
+                        neighbor_index,
+                        chunk_index,
+                        self.bridge_anchor_scores(core_chunks[neighbor_index], image_name_sets[chunk_index], roles, limit=pair_anchor_target),
+                    ),
+                )
+                for source_index, target_index, candidate_scores in candidate_sets:
+                    for _, image_name in candidate_scores:
+                        if len(image_name_sets[chunk_index].intersection(image_name_sets[neighbor_index])) >= pair_anchor_target:
+                            break
+                        if image_membership_count[image_name] >= 3:
+                            continue
+                        if image_name in image_name_sets[target_index]:
+                            continue
+                        overlap_assignments[target_index].add(image_name)
+                        image_membership_count[image_name] += 1
+                        image_name_sets[target_index].add(image_name)
+                        changed = True
+            if not changed:
+                return
+            iteration_budget -= 1
+
     def count_verified_pairs(self, database_path: Path | None = None) -> int:
         active_database_path = database_path or self.database_path
         if not active_database_path.exists():
@@ -2929,6 +3083,13 @@ class ColmapPipeline:
                     overlap_assignments[left_index].add(image_name)
                     overlap_assignments[right_index].add(image_name)
                     image_membership_count[image_name] += 1
+        if self.chunk_planner == "footprint_graph_v1":
+            self.ensure_chunk_overlap_connectivity(
+                core_chunks=core_chunks,
+                overlap_assignments=overlap_assignments,
+                image_membership_count=image_membership_count,
+                roles=roles,
+            )
 
         chunk_plans: List[ChunkPlan] = []
         self.chunk_centroids = {}
@@ -3737,75 +3898,109 @@ class ColmapPipeline:
             return chunk_models[0]
 
         merge_started = time.time()
-        current_model = chunk_models[0]
-        merged_components = 1
-        for index, next_model in enumerate(chunk_models[1:], start=1):
-            existing_names = self.merged_image_names(current_model)
-            next_names = self.merged_image_names(next_model)
-            merged_candidate: ModelSummary | None = None
+        pending_models = list(chunk_models)
+        registered_names_by_stage = {
+            model.stage: self.merged_image_names(model)
+            for model in pending_models
+        }
+        merge_sequence = 1
+        while len(pending_models) > 1:
+            ranked_pairs: List[tuple[int, int, int, int, int]] = []
+            for first_index, first_model in enumerate(pending_models):
+                first_names = registered_names_by_stage[first_model.stage]
+                for second_index in range(first_index + 1, len(pending_models)):
+                    second_model = pending_models[second_index]
+                    second_names = registered_names_by_stage[second_model.stage]
+                    shared_count = len(first_names.intersection(second_names))
+                    ranked_pairs.append(
+                        (
+                            -shared_count,
+                            -min(len(first_names), len(second_names)),
+                            -(len(first_names) + len(second_names)),
+                            first_index,
+                            second_index,
+                        )
+                    )
+            ranked_pairs.sort()
             merge_error: RuntimeError | None = None
-            for attempt_index, (input_one, input_two) in enumerate(
-                (
-                    (current_model, next_model),
-                    (next_model, current_model),
-                ),
-                start=1,
-            ):
-                output_path = self.work_dir / f"merged_chunk_model_{index:02d}_attempt_{attempt_index:02d}"
-                output_path.mkdir(parents=True, exist_ok=True)
-                stage_name = f"chunk_model_merger_{index:02d}"
-                if attempt_index > 1:
-                    logger.warning(
-                        "Retrying chunk model merge %s with swapped input order after weak merge retention",
-                        index,
-                    )
-                try:
-                    stream_command(
-                        [
-                            "colmap",
-                            "model_merger",
-                            "--input_path1",
-                            str(input_one.binary_dir),
-                            "--input_path2",
-                            str(input_two.binary_dir),
-                            "--output_path",
-                            str(output_path),
-                            "--max_reproj_error",
-                            "64",
-                        ],
-                        stage=stage_name,
-                        timeout_seconds=self.resolve_timeout_seconds(self.matcher_timeout_seconds),
-                        heartbeat_seconds=self.command_heartbeat_seconds,
-                    )
-                except RuntimeError as exc:
-                    merge_error = exc
+            merged_candidate: ModelSummary | None = None
+            merged_pair_indexes: tuple[int, int] | None = None
+            for _, _, _, first_index, second_index in ranked_pairs:
+                current_model = pending_models[first_index]
+                next_model = pending_models[second_index]
+                existing_names = registered_names_by_stage[current_model.stage]
+                next_names = registered_names_by_stage[next_model.stage]
+                if not existing_names.intersection(next_names):
                     continue
-                merged_candidate = self.summarize_model(
-                    stage=f"{stage_name}_output_attempt_{attempt_index:02d}",
-                    binary_dir=output_path,
-                    image_count=self.dataset_image_count,
-                )
-                if self.merge_result_is_usable(
-                    merged_names=self.merged_image_names(merged_candidate),
-                    existing_names=existing_names,
-                    next_names=next_names,
+                for attempt_index, (input_one, input_two) in enumerate(
+                    (
+                        (current_model, next_model),
+                        (next_model, current_model),
+                    ),
+                    start=1,
                 ):
-                    current_model = merged_candidate
+                    output_path = self.work_dir / f"merged_chunk_model_{merge_sequence:02d}_attempt_{attempt_index:02d}"
+                    output_path.mkdir(parents=True, exist_ok=True)
+                    stage_name = f"chunk_model_merger_{merge_sequence:02d}"
+                    if attempt_index > 1:
+                        logger.warning(
+                            "Retrying chunk model merge %s with swapped input order after weak merge retention",
+                            merge_sequence,
+                        )
+                    try:
+                        stream_command(
+                            [
+                                "colmap",
+                                "model_merger",
+                                "--input_path1",
+                                str(input_one.binary_dir),
+                                "--input_path2",
+                                str(input_two.binary_dir),
+                                "--output_path",
+                                str(output_path),
+                                "--max_reproj_error",
+                                "64",
+                            ],
+                            stage=stage_name,
+                            timeout_seconds=self.resolve_timeout_seconds(self.matcher_timeout_seconds),
+                            heartbeat_seconds=self.command_heartbeat_seconds,
+                        )
+                    except RuntimeError as exc:
+                        merge_error = exc
+                        continue
+                    merged_candidate = self.summarize_model(
+                        stage=f"{stage_name}_output_attempt_{attempt_index:02d}",
+                        binary_dir=output_path,
+                        image_count=self.dataset_image_count,
+                    )
+                    if self.merge_result_is_usable(
+                        merged_names=self.merged_image_names(merged_candidate),
+                        existing_names=existing_names,
+                        next_names=next_names,
+                    ):
+                        merged_pair_indexes = (first_index, second_index)
+                        break
+                    merged_candidate = None
+                if merged_candidate is not None:
                     break
-                merged_candidate = None
-            if merged_candidate is None:
-                merged_components += 1
-                self.merged_component_count = merged_components
+            if merged_candidate is None or merged_pair_indexes is None:
+                self.merged_component_count = len(pending_models)
                 if merge_error is not None:
-                    self.handle_stage_runtime_error(f"chunk_model_merger_{index:02d}", merge_error)
-                    raise RuntimeError(f"Failed to merge chunk model {index}: {merge_error}") from merge_error
+                    self.handle_stage_runtime_error(f"chunk_model_merger_{merge_sequence:02d}", merge_error)
+                    raise RuntimeError(f"Failed to merge chunk model {merge_sequence}: {merge_error}") from merge_error
                 raise RuntimeError(
-                    f"Failed to merge chunk model {index}: model_merger did not retain enough registered images"
+                    "Failed to merge chunk models: no overlapping registered images produced a usable merge"
                 )
+            for removal_index in sorted(merged_pair_indexes, reverse=True):
+                pending_models.pop(removal_index)
+            pending_models.append(merged_candidate)
+            registered_names_by_stage[merged_candidate.stage] = self.merged_image_names(merged_candidate)
+            merge_sequence += 1
         self.chunk_merge_seconds = round(time.time() - merge_started, 2)
         self.timings["chunk_model_merge_seconds"] = self.chunk_merge_seconds
         self.merged_component_count = 1
         self.pipeline_name = "colmap_gpu_spatial_heading_chunked"
+        current_model = pending_models[0]
         adjusted_model = self.run_bundle_adjuster(input_path=current_model.binary_dir, stage="chunk_bundle_adjuster")
         pre_merge_registered_names: Set[str] = set()
         for chunk_model in chunk_models:

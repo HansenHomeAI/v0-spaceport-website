@@ -837,6 +837,142 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 any("B1.jpg" in chunk.image_names and len(chunk.image_names) >= 3 for chunk in chunks)
             )
 
+    def test_build_footprint_graph_chunks_connects_isolated_chunks_with_bridge_overlap(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {"COLMAP_CHUNK_PLANNER": "footprint_graph_v1"},
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.chunk_target_images = 2
+            pipeline.chunk_min_images = 2
+            pipeline.chunk_hard_max_images = 2
+            pipeline.capture_ordered_names = [
+                "A1.jpg",
+                "A2.jpg",
+                "B1.jpg",
+                "B2.jpg",
+                "C1.jpg",
+                "C2.jpg",
+            ]
+            pipeline.exif_records = {
+                "A1.jpg": {"local_x_m": 0.0, "local_y_m": 0.0, "local_z_m": 0.0, "relative_altitude": 30.0, "heading_deg": 0.0, "pitch_deg": -30.0, "focal_length_mm": 10.0, "focal_length_35mm_mm": 24.0, "image_width_px": 4000, "image_height_px": 3000},
+                "A2.jpg": {"local_x_m": 1.0, "local_y_m": 0.0, "local_z_m": 0.0, "relative_altitude": 30.0, "heading_deg": 5.0, "pitch_deg": -32.0, "focal_length_mm": 10.0, "focal_length_35mm_mm": 24.0, "image_width_px": 4000, "image_height_px": 3000},
+                "B1.jpg": {"local_x_m": 60.0, "local_y_m": 0.0, "local_z_m": 0.0, "relative_altitude": 32.0, "heading_deg": 8.0, "pitch_deg": -28.0, "focal_length_mm": 10.0, "focal_length_35mm_mm": 24.0, "image_width_px": 4000, "image_height_px": 3000},
+                "B2.jpg": {"local_x_m": 61.0, "local_y_m": 0.0, "local_z_m": 0.0, "relative_altitude": 32.0, "heading_deg": 10.0, "pitch_deg": -30.0, "focal_length_mm": 10.0, "focal_length_35mm_mm": 24.0, "image_width_px": 4000, "image_height_px": 3000},
+                "C1.jpg": {"local_x_m": 120.0, "local_y_m": 0.0, "local_z_m": 0.0, "relative_altitude": 34.0, "heading_deg": 12.0, "pitch_deg": -26.0, "focal_length_mm": 10.0, "focal_length_35mm_mm": 24.0, "image_width_px": 4000, "image_height_px": 3000},
+                "C2.jpg": {"local_x_m": 121.0, "local_y_m": 0.0, "local_z_m": 0.0, "relative_altitude": 34.0, "heading_deg": 14.0, "pitch_deg": -28.0, "focal_length_mm": 10.0, "focal_length_35mm_mm": 24.0, "image_width_px": 4000, "image_height_px": 3000},
+            }
+            pipeline.graph_neighbors = {
+                "A1.jpg": [
+                    run_colmap_sfm.CandidateEdge(
+                        first_name="A1.jpg",
+                        second_name="A2.jpg",
+                        score=0.95,
+                        footprint_overlap=0.95,
+                        scale_similarity=0.95,
+                        viewpoint_complementarity=0.95,
+                        distance_consistency=0.95,
+                        temporal_bonus=0.0,
+                        xy_distance_m=1.0,
+                        xyz_distance_m=1.0,
+                        view_delta_deg=5.0,
+                    )
+                ],
+                "A2.jpg": [
+                    run_colmap_sfm.CandidateEdge(
+                        first_name="A2.jpg",
+                        second_name="A1.jpg",
+                        score=0.95,
+                        footprint_overlap=0.95,
+                        scale_similarity=0.95,
+                        viewpoint_complementarity=0.95,
+                        distance_consistency=0.95,
+                        temporal_bonus=0.0,
+                        xy_distance_m=1.0,
+                        xyz_distance_m=1.0,
+                        view_delta_deg=5.0,
+                    )
+                ],
+                "B1.jpg": [
+                    run_colmap_sfm.CandidateEdge(
+                        first_name="B1.jpg",
+                        second_name="B2.jpg",
+                        score=0.95,
+                        footprint_overlap=0.95,
+                        scale_similarity=0.95,
+                        viewpoint_complementarity=0.95,
+                        distance_consistency=0.95,
+                        temporal_bonus=0.0,
+                        xy_distance_m=1.0,
+                        xyz_distance_m=1.0,
+                        view_delta_deg=4.0,
+                    )
+                ],
+                "B2.jpg": [
+                    run_colmap_sfm.CandidateEdge(
+                        first_name="B2.jpg",
+                        second_name="B1.jpg",
+                        score=0.95,
+                        footprint_overlap=0.95,
+                        scale_similarity=0.95,
+                        viewpoint_complementarity=0.95,
+                        distance_consistency=0.95,
+                        temporal_bonus=0.0,
+                        xy_distance_m=1.0,
+                        xyz_distance_m=1.0,
+                        view_delta_deg=4.0,
+                    )
+                ],
+                "C1.jpg": [
+                    run_colmap_sfm.CandidateEdge(
+                        first_name="C1.jpg",
+                        second_name="C2.jpg",
+                        score=0.95,
+                        footprint_overlap=0.95,
+                        scale_similarity=0.95,
+                        viewpoint_complementarity=0.95,
+                        distance_consistency=0.95,
+                        temporal_bonus=0.0,
+                        xy_distance_m=1.0,
+                        xyz_distance_m=1.0,
+                        view_delta_deg=4.0,
+                    )
+                ],
+                "C2.jpg": [
+                    run_colmap_sfm.CandidateEdge(
+                        first_name="C2.jpg",
+                        second_name="C1.jpg",
+                        score=0.95,
+                        footprint_overlap=0.95,
+                        scale_similarity=0.95,
+                        viewpoint_complementarity=0.95,
+                        distance_consistency=0.95,
+                        temporal_bonus=0.0,
+                        xy_distance_m=1.0,
+                        xyz_distance_m=1.0,
+                        view_delta_deg=4.0,
+                    )
+                ],
+            }
+
+            with mock.patch.object(
+                pipeline,
+                "classify_graph_roles",
+                return_value={name: "geometry_anchor" for name in pipeline.capture_ordered_names},
+            ):
+                chunks = pipeline.build_footprint_graph_chunks()
+
+            self.assertEqual(len(chunks), 3)
+            chunk_sets = [set(chunk.image_names) for chunk in chunks]
+            self.assertTrue(
+                all(
+                    any(chunk_sets[index].intersection(chunk_sets[other_index]) for other_index in range(len(chunk_sets)) if other_index != index)
+                    for index in range(len(chunk_sets))
+                )
+            )
+
     def test_run_chunk_matchers_uses_matches_importer_for_footprint_graph(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
             os.environ,
@@ -1653,6 +1789,120 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(result.images_registered, 3)
             self.assertEqual(pipeline.chunk_merge_proof["pre_merge_unique_registered_images"], 3)
             self.assertEqual(pipeline.chunk_merge_proof["final_merged_registered_images"], 3)
+
+    def test_merge_chunk_models_prefers_highest_overlap_pair_first(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            first_model_dir = root / "chunk_00" / "sparse_initial" / "0"
+            second_model_dir = root / "chunk_01" / "sparse_initial" / "0"
+            third_model_dir = root / "chunk_02" / "sparse_initial" / "0"
+            first_text_dir = root / "text_00"
+            second_text_dir = root / "text_01"
+            third_text_dir = root / "text_02"
+            merged_first_text_dir = root / "merged_first_text"
+            merged_final_text_dir = root / "merged_final_text"
+            for directory in (
+                first_model_dir,
+                second_model_dir,
+                third_model_dir,
+                first_text_dir,
+                second_text_dir,
+                third_text_dir,
+                merged_first_text_dir,
+                merged_final_text_dir,
+            ):
+                directory.mkdir(parents=True, exist_ok=True)
+            (first_text_dir / "images.txt").write_text(
+                "1 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n2 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (second_text_dir / "images.txt").write_text(
+                "3 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n4 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (third_text_dir / "images.txt").write_text(
+                "5 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n6 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n7 1 0 0 0 0 0 0 1 IMG_04.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (merged_first_text_dir / "images.txt").write_text(
+                "8 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n9 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n10 1 0 0 0 0 0 0 1 IMG_04.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (merged_final_text_dir / "images.txt").write_text(
+                "11 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n12 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n13 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n14 1 0 0 0 0 0 0 1 IMG_04.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            chunk_models = [
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_00_mapper_initial",
+                    text_dir=first_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=1000,
+                    binary_dir=first_model_dir,
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_01_mapper_initial",
+                    text_dir=second_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=1000,
+                    binary_dir=second_model_dir,
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_02_mapper_initial",
+                    text_dir=third_text_dir,
+                    cameras_registered=1,
+                    images_registered=3,
+                    points_3d=1200,
+                    binary_dir=third_model_dir,
+                ),
+            ]
+            summarize_side_effects = [
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_model_merger_01_output_attempt_01",
+                    text_dir=merged_first_text_dir,
+                    cameras_registered=1,
+                    images_registered=3,
+                    points_3d=1600,
+                    binary_dir=pipeline.work_dir / "merged_chunk_model_01_attempt_01",
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_model_merger_02_output_attempt_01",
+                    text_dir=merged_final_text_dir,
+                    cameras_registered=1,
+                    images_registered=4,
+                    points_3d=2000,
+                    binary_dir=pipeline.work_dir / "merged_chunk_model_02_attempt_01",
+                ),
+            ]
+            adjusted_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_bundle_adjuster",
+                text_dir=merged_final_text_dir,
+                cameras_registered=1,
+                images_registered=4,
+                points_3d=2200,
+                binary_dir=pipeline.work_dir / "merged_chunk_model_02_attempt_01",
+            )
+
+            with mock.patch.object(run_colmap_sfm, "stream_command") as stream_command_mock, mock.patch.object(
+                pipeline,
+                "summarize_model",
+                side_effect=summarize_side_effects,
+            ), mock.patch.object(
+                pipeline,
+                "run_bundle_adjuster",
+                return_value=adjusted_model,
+            ):
+                result = pipeline.merge_chunk_models(chunk_models)
+
+            merger_commands = [call.args[0] for call in stream_command_mock.call_args_list]
+            self.assertEqual(merger_commands[0][3], str(second_model_dir))
+            self.assertEqual(merger_commands[0][5], str(third_model_dir))
+            self.assertEqual(result.images_registered, 4)
+            self.assertEqual(pipeline.chunk_merge_proof["pre_merge_unique_registered_images"], 4)
+            self.assertEqual(pipeline.chunk_merge_proof["final_merged_registered_images"], 4)
 
     def test_run_spatial_heading_chunked_path_accepts_merged_ratio_at_gps_threshold(self):
         with tempfile.TemporaryDirectory() as tmp:
