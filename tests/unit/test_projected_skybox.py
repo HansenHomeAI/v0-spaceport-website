@@ -16,6 +16,7 @@ if str(CONTAINER_DIR) not in sys.path:
 from projected_skybox import (  # noqa: E402
     ProjectedSkyboxSettings,
     build_projected_photo_skybox,
+    derive_projection_sky_mask,
     derive_sky_mask_from_training_mask,
     world_dirs_to_equirectangular,
 )
@@ -48,6 +49,42 @@ class ProjectedSkyboxTests(unittest.TestCase):
         self.assertAlmostEqual(float(ys[1]), -0.5, delta=1.0)
         self.assertAlmostEqual(float(xs[2]), 299.5, delta=1.0)
 
+    def test_derive_projection_sky_mask_fills_above_horizon(self):
+        sky_mask = np.array(
+            [
+                [0, 1, 0, 0, 1, 0],
+                [0, 1, 1, 0, 1, 0],
+                [0, 0, 1, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0],
+            ],
+            dtype=bool,
+        )
+        confidence = np.array(
+            [
+                [0.0, 0.9, 0.8, 0.7, 0.9, 0.0],
+                [0.0, 0.9, 0.8, 0.7, 0.9, 0.0],
+                [0.0, 0.1, 0.7, 0.6, 0.1, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            ],
+            dtype=np.float32,
+        )
+
+        projection_mask = derive_projection_sky_mask(
+            sky_mask=sky_mask,
+            confidence=confidence,
+            confidence_threshold=0.6,
+            horizon_smoothing_px=1,
+            projection_mask_mode="semantic_horizon_fill",
+        )
+
+        self.assertGreater(float(projection_mask.mean()), float(sky_mask.mean()))
+        self.assertTrue(np.all(projection_mask[:2, 1:5]))
+        self.assertTrue(projection_mask[2, 2])
+        self.assertTrue(projection_mask[2, 3])
+        self.assertFalse(projection_mask[4, 2])
+
     def test_build_projected_photo_skybox_uses_observed_sky_before_fill(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             data_dir = Path(temp_dir) / "converted_data"
@@ -66,7 +103,7 @@ class ProjectedSkyboxTests(unittest.TestCase):
             Image.fromarray(rgb, mode="RGB").save(images_dir / "frame_00001.png")
 
             training_mask = np.zeros((4, 4), dtype=np.uint8)
-            training_mask[2:, :] = 255
+            training_mask[1:, :] = 255
             Image.fromarray(training_mask, mode="L").save(masks_dir / "frame_00001.png")
             confidence = np.zeros((4, 4), dtype=np.uint8)
             confidence[:2, :] = 255
@@ -100,11 +137,15 @@ class ProjectedSkyboxTests(unittest.TestCase):
                 settings=ProjectedSkyboxSettings(
                     min_sky_mask_ratio=0.05,
                     projection_max_long_side=256,
+                    projection_mask_mode="semantic_horizon_fill",
+                    projection_confidence_threshold=0.6,
+                    projection_horizon_smoothing_px=1,
                 ),
             )
 
             self.assertEqual(manifest["contributing_frame_count"], 1)
             self.assertGreater(manifest["observed_coverage_ratio"], 0.0)
+            self.assertGreater(manifest["mean_projection_mask_ratio"], manifest["mean_semantic_mask_ratio"])
             observed_skybox = np.asarray(
                 Image.open(output_dir / "background_skybox_observed.webp").convert("RGB"),
                 dtype=np.uint8,

@@ -225,6 +225,9 @@ def main() -> None:
     parser.add_argument("--skybox-blend-edge-feather-px", type=int, default=24)
     parser.add_argument("--skybox-low-frequency-fill", choices=("true", "false"), default="true")
     parser.add_argument("--skybox-projection-max-long-side", type=int, default=1024)
+    parser.add_argument("--skybox-projection-mask-mode", default="semantic_horizon_fill")
+    parser.add_argument("--skybox-projection-confidence-threshold", type=float, default=0.25)
+    parser.add_argument("--skybox-projection-horizon-smoothing-px", type=int, default=31)
     parser.add_argument("--training-mask-mode", choices=("exclude_sky", "keep_sky"), default="exclude_sky")
     args = parser.parse_args()
 
@@ -247,6 +250,9 @@ def main() -> None:
         low_frequency_fill=args.skybox_low_frequency_fill == "true",
         training_mask_mode=str(args.training_mask_mode),
         projection_max_long_side=int(args.skybox_projection_max_long_side),
+        projection_mask_mode=str(args.skybox_projection_mask_mode),
+        projection_confidence_threshold=float(args.skybox_projection_confidence_threshold),
+        projection_horizon_smoothing_px=int(args.skybox_projection_horizon_smoothing_px),
     )
     skybox_path = build_background_skybox(
         model=model,

@@ -18,6 +18,8 @@ from typing import Any, Optional
 import numpy as np
 from PIL import Image, ImageFilter
 
+from semantic_sky_masks import keep_top_connected_components
+
 try:
     import cv2
 except ImportError:  # pragma: no cover - exercised in container/runtime.
@@ -35,6 +37,9 @@ class ProjectedSkyboxSettings:
     low_frequency_fill: bool = True
     training_mask_mode: str = "exclude_sky"
     projection_max_long_side: int = 1024
+    projection_mask_mode: str = "semantic_horizon_fill"
+    projection_confidence_threshold: float = 0.25
+    projection_horizon_smoothing_px: int = 31
 
 
 def _normalize(vector: np.ndarray) -> np.ndarray:
@@ -77,6 +82,80 @@ def derive_sky_mask_from_training_mask(training_mask: np.ndarray, training_mask_
     if training_mask_mode == "keep_sky":
         return binary_keep
     raise ValueError(f"Unsupported training mask mode: {training_mask_mode}")
+
+
+def _odd_kernel_size(kernel_size: int, max_size: int) -> int:
+    kernel = max(1, int(kernel_size))
+    limit = max(1, int(max_size))
+    if limit % 2 == 0:
+        limit = max(1, limit - 1)
+    kernel = min(kernel, limit)
+    if kernel % 2 == 0:
+        kernel = max(1, kernel - 1)
+    return kernel
+
+
+def _smooth_horizon_series(values: np.ndarray, kernel_size: int) -> np.ndarray:
+    if values.size <= 1:
+        return values.astype(np.float32)
+    kernel = _odd_kernel_size(kernel_size, values.size)
+    if kernel <= 1:
+        return values.astype(np.float32)
+    pad = kernel // 2
+    padded = np.pad(values.astype(np.float32), (pad, pad), mode="edge")
+    weights = np.full(kernel, 1.0 / float(kernel), dtype=np.float32)
+    return np.convolve(padded, weights, mode="valid").astype(np.float32)
+
+
+def derive_projection_sky_mask(
+    sky_mask: np.ndarray,
+    confidence: Optional[np.ndarray],
+    confidence_threshold: float,
+    horizon_smoothing_px: int,
+    projection_mask_mode: str,
+) -> np.ndarray:
+    binary_sky = np.asarray(sky_mask, dtype=bool)
+    normalized_mode = str(projection_mask_mode).strip().lower()
+    if normalized_mode == "semantic_mask_only":
+        return binary_sky
+    if normalized_mode != "semantic_horizon_fill":
+        raise ValueError(f"Unsupported projection mask mode: {projection_mask_mode}")
+
+    seed_mask = binary_sky.copy()
+    if confidence is not None:
+        seed_mask |= np.asarray(confidence, dtype=np.float32) >= float(confidence_threshold)
+    seed_mask = keep_top_connected_components(seed_mask).astype(bool)
+    if not np.any(seed_mask):
+        return binary_sky
+
+    height, width = seed_mask.shape
+    horizon_rows = np.full(width, np.nan, dtype=np.float32)
+    active_columns = np.flatnonzero(seed_mask.any(axis=0))
+    if active_columns.size == 0:
+        return binary_sky
+
+    for column in active_columns:
+        ys = np.flatnonzero(seed_mask[:, column])
+        if ys.size == 0:
+            continue
+        horizon_rows[column] = float(np.quantile(ys.astype(np.float32), 0.95))
+
+    start_column = int(active_columns[0])
+    end_column = int(active_columns[-1])
+    interpolated_columns = np.arange(start_column, end_column + 1, dtype=np.float32)
+    interpolated_rows = np.interp(
+        interpolated_columns,
+        active_columns.astype(np.float32),
+        horizon_rows[active_columns].astype(np.float32),
+    )
+    smoothed_rows = _smooth_horizon_series(interpolated_rows, int(horizon_smoothing_px))
+
+    projection_mask = np.zeros_like(seed_mask, dtype=bool)
+    row_indices = np.arange(height, dtype=np.float32)[:, None]
+    projection_mask[:, start_column : end_column + 1] = row_indices <= smoothed_rows[None, :]
+    projection_mask |= seed_mask
+    projection_mask = keep_top_connected_components(projection_mask).astype(bool)
+    return projection_mask
 
 
 def build_projection_basis(frames: list[dict[str, Any]]) -> dict[str, Any]:
@@ -248,9 +327,6 @@ def _accumulate_bilinear(
     y0 = np.floor(ys).astype(np.int32)
     dx = (xs - x0).astype(np.float32)
     dy = (ys - y0).astype(np.float32)
-    nearest_x = np.mod(np.round(xs).astype(np.int32), width)
-    nearest_y = np.clip(np.round(ys).astype(np.int32), 0, height - 1)
-    np.add.at(support_accum, (nearest_y, nearest_x), 1.0)
 
     for offset_x, offset_y, contribution in (
         (0, 0, (1.0 - dx) * (1.0 - dy)),
@@ -264,6 +340,7 @@ def _accumulate_bilinear(
         if not np.any(valid):
             continue
         weighted = weights[valid] * contribution[valid]
+        np.add.at(support_accum, (dest_y[valid], dest_x[valid]), 1.0)
         np.add.at(weight_accum, (dest_y[valid], dest_x[valid]), weighted)
         for channel in range(3):
             np.add.at(
@@ -292,6 +369,8 @@ def build_projected_photo_skybox(
     support_accum = np.zeros((height, width), dtype=np.float32)
     contributing_frames = 0
     sampled_frames = 0
+    semantic_mask_ratios: list[float] = []
+    projection_mask_ratios: list[float] = []
 
     for frame in frames:
         mask_path = frame.get("mask_path")
@@ -305,9 +384,6 @@ def build_projected_photo_skybox(
         rgb = np.asarray(Image.open(image_path).convert("RGB"), dtype=np.float32) / 255.0
         training_mask = np.asarray(Image.open(training_mask_path).convert("L"), dtype=np.uint8)
         sky_mask = derive_sky_mask_from_training_mask(training_mask, settings.training_mask_mode)
-        sky_ratio = float(sky_mask.mean()) if sky_mask.size else 0.0
-        if sky_ratio < float(settings.min_sky_mask_ratio):
-            continue
 
         confidence = None
         confidence_path = frame.get("semantic_sky_confidence_path")
@@ -327,12 +403,26 @@ def build_projected_photo_skybox(
             intrinsics=intrinsics,
             max_long_side=int(settings.projection_max_long_side),
         )
+        semantic_mask_ratio = float(sky_mask.mean()) if sky_mask.size else 0.0
+        projection_mask = derive_projection_sky_mask(
+            sky_mask=sky_mask,
+            confidence=confidence,
+            confidence_threshold=float(settings.projection_confidence_threshold),
+            horizon_smoothing_px=int(settings.projection_horizon_smoothing_px),
+            projection_mask_mode=str(settings.projection_mask_mode),
+        )
+        projection_mask_ratio = float(projection_mask.mean()) if projection_mask.size else 0.0
+        semantic_mask_ratios.append(semantic_mask_ratio)
+        projection_mask_ratios.append(projection_mask_ratio)
+        if projection_mask_ratio < float(settings.min_sky_mask_ratio):
+            continue
+
         sampled_frames += 1
-        active = np.flatnonzero(sky_mask.reshape(-1))
+        active = np.flatnonzero(projection_mask.reshape(-1))
         if active.size == 0:
             continue
 
-        height_local, width_local = sky_mask.shape
+        height_local, width_local = projection_mask.shape
         grid_x, grid_y = np.meshgrid(
             np.arange(width_local, dtype=np.float32) + 0.5,
             np.arange(height_local, dtype=np.float32) + 0.5,
@@ -342,14 +432,14 @@ def build_projected_photo_skybox(
         pixel_y = grid_y.reshape(-1)[active]
         colors = rgb.reshape(-1, 3)[active]
 
-        edge_weights = _edge_feather_weights(sky_mask, int(settings.blend_edge_feather_px)).reshape(-1)[active]
+        edge_weights = _edge_feather_weights(projection_mask, int(settings.blend_edge_feather_px)).reshape(-1)[active]
         center_weights = _center_weights(width_local, height_local).reshape(-1)[active]
         if confidence is not None:
             confidence_weights = np.clip(confidence.reshape(-1)[active], 0.0, 1.0)
         else:
             confidence_weights = np.ones_like(center_weights, dtype=np.float32)
 
-        combined_weights = edge_weights * center_weights * np.clip(confidence_weights, 0.05, 1.0)
+        combined_weights = edge_weights * center_weights * np.clip(confidence_weights, 0.25, 1.0)
         active_weight_mask = combined_weights > 1e-4
         if not np.any(active_weight_mask):
             continue
@@ -423,11 +513,16 @@ def build_projected_photo_skybox(
         "min_observations_per_pixel": int(settings.min_observations_per_pixel),
         "blend_edge_feather_px": int(settings.blend_edge_feather_px),
         "projection_max_long_side": int(settings.projection_max_long_side),
+        "projection_mask_mode": str(settings.projection_mask_mode),
+        "projection_confidence_threshold": float(settings.projection_confidence_threshold),
+        "projection_horizon_smoothing_px": int(settings.projection_horizon_smoothing_px),
         "low_frequency_fill": bool(settings.low_frequency_fill),
         "observed_coverage_ratio": float(observed_mask.mean()) if observed_mask.size else 0.0,
         "filled_coverage_ratio": float(1.0 - observed_mask.mean()) if observed_mask.size else 1.0,
         "contributing_frame_count": int(contributing_frames),
         "sampled_frame_count": int(sampled_frames),
+        "mean_semantic_mask_ratio": float(np.mean(semantic_mask_ratios)) if semantic_mask_ratios else 0.0,
+        "mean_projection_mask_ratio": float(np.mean(projection_mask_ratios)) if projection_mask_ratios else 0.0,
         "alignment_basis": {
             "right": basis["right"].tolist(),
             "up": basis["up"].tolist(),

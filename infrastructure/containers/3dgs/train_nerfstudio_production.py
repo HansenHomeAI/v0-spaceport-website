@@ -155,6 +155,9 @@ class NerfStudioTrainer:
             'SKYBOX_BLEND_EDGE_FEATHER_PX': 'output.background_skybox.blend_edge_feather_px',
             'SKYBOX_LOW_FREQUENCY_FILL': 'output.background_skybox.low_frequency_fill',
             'SKYBOX_PROJECTION_MAX_LONG_SIDE': 'output.background_skybox.projection_max_long_side',
+            'SKYBOX_PROJECTION_MASK_MODE': 'output.background_skybox.projection_mask_mode',
+            'SKYBOX_PROJECTION_CONFIDENCE_THRESHOLD': 'output.background_skybox.projection_confidence_threshold',
+            'SKYBOX_PROJECTION_HORIZON_SMOOTHING_PX': 'output.background_skybox.projection_horizon_smoothing_px',
             'FLOATER_PRUNING_ENABLED': 'output.floater_pruning.enabled',
             'FLOATER_PRUNING_MIN_VIEWS': 'output.floater_pruning.min_views',
             'FLOATER_PRUNING_TOP_REGION_RATIO': 'output.floater_pruning.top_region_ratio',
@@ -194,6 +197,7 @@ class NerfStudioTrainer:
             'SKYBOX_MIN_OBSERVATIONS_PER_PIXEL',
             'SKYBOX_BLEND_EDGE_FEATHER_PX',
             'SKYBOX_PROJECTION_MAX_LONG_SIDE',
+            'SKYBOX_PROJECTION_HORIZON_SMOOTHING_PX',
             'FLOATER_PRUNING_MIN_VIEWS',
             'FLOATER_PRUNING_MIN_SKY_VIEWS',
             'FLOATER_PRUNING_MIN_EDGE_SUPPORT',
@@ -207,6 +211,7 @@ class NerfStudioTrainer:
             'SEMANTIC_SKY_MIN_COMPONENT_AREA',
             'SEMANTIC_SKY_FILL_HOLE_AREA',
             'SKYBOX_MIN_SKY_MASK_RATIO',
+            'SKYBOX_PROJECTION_CONFIDENCE_THRESHOLD',
             'FLOATER_PRUNING_TOP_REGION_RATIO',
             'FLOATER_PRUNING_TOP_VIEW_FRACTION',
             'FLOATER_PRUNING_SKY_MIN_LUMINANCE',
@@ -1038,6 +1043,9 @@ class NerfStudioTrainer:
                 "--skybox-blend-edge-feather-px", str(skybox_config.get('blend_edge_feather_px', 24)),
                 "--skybox-low-frequency-fill", str(skybox_config.get('low_frequency_fill', True)).lower(),
                 "--skybox-projection-max-long-side", str(skybox_config.get('projection_max_long_side', 1024)),
+                "--skybox-projection-mask-mode", str(skybox_config.get('projection_mask_mode', 'semantic_horizon_fill')),
+                "--skybox-projection-confidence-threshold", str(skybox_config.get('projection_confidence_threshold', 0.25)),
+                "--skybox-projection-horizon-smoothing-px", str(skybox_config.get('projection_horizon_smoothing_px', 31)),
                 "--training-mask-mode", str(semantic_mask_settings.training_mask_mode),
             ]
         else:
@@ -1137,6 +1145,9 @@ class NerfStudioTrainer:
                 'blend_edge_feather_px': int(skybox_settings.get('blend_edge_feather_px', 24)),
                 'low_frequency_fill': bool(skybox_settings.get('low_frequency_fill', True)),
                 'projection_max_long_side': int(skybox_settings.get('projection_max_long_side', 1024)),
+                'projection_mask_mode': str(skybox_settings.get('projection_mask_mode', 'semantic_horizon_fill')),
+                'projection_confidence_threshold': float(skybox_settings.get('projection_confidence_threshold', 0.25)),
+                'projection_horizon_smoothing_px': int(skybox_settings.get('projection_horizon_smoothing_px', 31)),
             },
         }
         

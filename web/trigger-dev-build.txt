@@ -17,3 +17,4 @@
 2026-04-09T11:25:00Z unify projected-photo skybox composition and invert training masks for Horsetail AWS validation
 2026-04-09T19:11:00Z projected skybox container packaging fix for Horsetail AWS validation
 2026-04-09T22:00:00Z compression quota retry and real failure propagation for Horsetail AWS validation
+2026-04-10T00:30:00Z expand projected skybox horizon fill and raw semantic confidence for Horsetail AWS rerun

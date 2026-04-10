@@ -72,6 +72,9 @@ output:
     blend_edge_feather_px: 24
     low_frequency_fill: true
     projection_max_long_side: 1024
+    projection_mask_mode: "semantic_horizon_fill"
+    projection_confidence_threshold: 0.25
+    projection_horizon_smoothing_px: 31
   floater_pruning:
     enabled: true
     min_views: 6

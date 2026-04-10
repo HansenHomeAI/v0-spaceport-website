@@ -478,7 +478,7 @@ class SemanticSkyMaskGenerator:
                 keep_top_connected_only=self.settings.keep_top_connected_only,
             )
             confidence_output_path = output_path.with_name(f"{output_path.stem}__confidence.png")
-            final_confidence = confidence_mask * final_mask.astype(np.float32)
+            final_confidence = confidence_mask
 
             output_path.parent.mkdir(parents=True, exist_ok=True)
             Image.fromarray((final_mask.astype(np.uint8) * 255), mode="L").save(output_path)
