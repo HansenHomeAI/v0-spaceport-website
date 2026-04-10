@@ -1,14 +1,173 @@
+import base64
 import json
 import boto3
 import os
+import posixpath
 import re
 import uuid
+from botocore.exceptions import ClientError
 from datetime import datetime
-from urllib.parse import urlparse
+from urllib.parse import quote, urlparse
 
 # Initialize AWS clients (ECR client will be initialized per-region in resolve_ecr_uri)
 stepfunctions = boto3.client('stepfunctions')
 s3 = boto3.client('s3')
+
+ALLOWED_ML_BUCKET_PATTERN = re.compile(r'^spaceport-ml-processing(?:-[a-z0-9-]+)?$')
+
+
+def build_headers(extra_headers=None):
+    headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    }
+    if extra_headers:
+        headers.update(extra_headers)
+    return headers
+
+
+def build_json_response(status_code, payload):
+    return {
+        'statusCode': status_code,
+        'headers': build_headers({'Content-Type': 'application/json'}),
+        'body': json.dumps(payload),
+    }
+
+
+def get_api_base_url(event):
+    request_context = event.get('requestContext') or {}
+    domain_name = request_context.get('domainName')
+    stage = request_context.get('stage')
+    if not domain_name:
+        return os.environ.get('ML_PIPELINE_API_URL', '').rstrip('/')
+    if stage and stage not in {'$default', '(none)'}:
+        return f"https://{domain_name}/{stage}"
+    return f"https://{domain_name}"
+
+
+def is_truthy(raw_value):
+    return str(raw_value).strip().lower() in {'1', 'true', 'yes', 'on'}
+
+
+def validate_ml_bucket_name(bucket_name):
+    return ALLOWED_ML_BUCKET_PATTERN.match(bucket_name or '') is not None
+
+
+def guess_content_type(key, metadata_content_type):
+    if metadata_content_type and metadata_content_type != 'binary/octet-stream':
+        return metadata_content_type
+    lower_key = key.lower()
+    if lower_key.endswith('.json'):
+        return 'application/json'
+    if lower_key.endswith('.webp'):
+        return 'image/webp'
+    if lower_key.endswith('.png'):
+        return 'image/png'
+    if lower_key.endswith('.jpg') or lower_key.endswith('.jpeg'):
+        return 'image/jpeg'
+    if lower_key.endswith('.txt'):
+        return 'text/plain; charset=utf-8'
+    return 'application/octet-stream'
+
+
+def build_bundle_resource_url(api_base_url, bucket_name, object_key, rewrite_meta=False):
+    query = f"url={quote(f's3://{bucket_name}/{object_key}', safe='')}"
+    if rewrite_meta:
+        query += '&rewriteMeta=true'
+    return f"{api_base_url.rstrip('/')}/bundle-resource?{query}"
+
+
+def rewrite_bundle_meta(meta_payload, bucket_name, object_key, api_base_url):
+    bundle_prefix = posixpath.dirname(object_key)
+
+    def rewrite_files(node):
+        if isinstance(node, dict):
+            rewritten = {}
+            for key, value in node.items():
+                if key == 'files' and isinstance(value, list):
+                    rewritten[key] = [
+                        build_bundle_resource_url(api_base_url, bucket_name, posixpath.join(bundle_prefix, entry))
+                        if isinstance(entry, str)
+                        else entry
+                        for entry in value
+                    ]
+                else:
+                    rewritten[key] = rewrite_files(value)
+            return rewritten
+        if isinstance(node, list):
+            return [rewrite_files(item) for item in node]
+        return node
+
+    return rewrite_files(meta_payload)
+
+
+def handle_bundle_resource(event):
+    query = event.get('queryStringParameters') or {}
+    raw_url = (query.get('url') or query.get('s3Url') or '').strip()
+    if not raw_url:
+        return build_json_response(400, {'error': 'Missing required query parameter: url'})
+
+    try:
+        bucket_name, object_key = parse_s3_url(raw_url)
+    except ValueError as exc:
+        return build_json_response(400, {'error': str(exc)})
+
+    if not validate_ml_bucket_name(bucket_name):
+        return build_json_response(403, {'error': 'Bucket is not allowed for bundle access'})
+
+    try:
+        response = s3.get_object(Bucket=bucket_name, Key=object_key)
+        payload = response['Body'].read()
+        content_type = guess_content_type(object_key, response.get('ContentType'))
+
+        if is_truthy(query.get('rewriteMeta')) and object_key.endswith('meta.json'):
+            meta_payload = json.loads(payload.decode('utf-8'))
+            rewritten_payload = rewrite_bundle_meta(
+                meta_payload=meta_payload,
+                bucket_name=bucket_name,
+                object_key=object_key,
+                api_base_url=get_api_base_url(event),
+            )
+            return {
+                'statusCode': 200,
+                'headers': build_headers({
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'no-store',
+                }),
+                'body': json.dumps(rewritten_payload),
+            }
+
+        if content_type.startswith('application/json') or content_type.startswith('text/'):
+            return {
+                'statusCode': 200,
+                'headers': build_headers({
+                    'Content-Type': content_type,
+                    'Cache-Control': 'public, max-age=300',
+                }),
+                'body': payload.decode('utf-8'),
+            }
+
+        return {
+            'statusCode': 200,
+            'headers': build_headers({
+                'Content-Type': content_type,
+                'Cache-Control': 'public, max-age=300',
+            }),
+            'body': base64.b64encode(payload).decode('ascii'),
+            'isBase64Encoded': True,
+        }
+    except ClientError as exc:
+        error_code = exc.response.get('Error', {}).get('Code', '')
+        if error_code in {'NoSuchKey', '404', 'NotFound'}:
+            return build_json_response(404, {'error': 'S3 object not found'})
+        if error_code in {'AccessDenied', 'KMS.AccessDeniedException'}:
+            return build_json_response(403, {'error': f'Failed to read bundle resource: {error_code}'})
+        print(f"ClientError serving bundle resource {raw_url}: {exc}")
+        return build_json_response(500, {'error': f'Failed to read bundle resource: {error_code or str(exc)}'})
+    except Exception as exc:
+        print(f"Error serving bundle resource {raw_url}: {exc}")
+        return build_json_response(500, {'error': f'Failed to read bundle resource: {str(exc)}'})
 
 def lambda_handler(event, context):
     """
@@ -18,6 +177,19 @@ def lambda_handler(event, context):
     """
     
     try:
+        http_method = (event.get('httpMethod') or '').upper()
+        raw_path = event.get('path') or event.get('resource') or ''
+
+        if http_method == 'OPTIONS':
+            return {
+                'statusCode': 200,
+                'headers': build_headers(),
+                'body': '',
+            }
+
+        if raw_path.endswith('/bundle-resource'):
+            return handle_bundle_resource(event)
+
         # Parse request body
         if isinstance(event.get('body'), str):
             body = json.loads(event['body'])
@@ -31,31 +203,11 @@ def lambda_handler(event, context):
         existing_colmap_uri = body.get('existingColmapUri')  # Optional: use existing SfM data
         
         if not s3_url:
-            return {
-                'statusCode': 400,
-                'headers': {
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Methods': 'POST, OPTIONS'
-                },
-                'body': json.dumps({
-                    'error': 'Missing required field: s3Url'
-                })
-            }
+            return build_json_response(400, {'error': 'Missing required field: s3Url'})
         
         # Validate S3 URL format
         if not validate_s3_url(s3_url):
-            return {
-                'statusCode': 400,
-                'headers': {
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Methods': 'POST, OPTIONS'
-                },
-                'body': json.dumps({
-                    'error': 'Invalid S3 URL format'
-                })
-            }
+            return build_json_response(400, {'error': 'Invalid S3 URL format'})
         
         # Parse S3 URL to get bucket and key
         bucket_name, object_key = parse_s3_url(s3_url)
@@ -65,29 +217,9 @@ def lambda_handler(event, context):
             try:
                 s3.head_object(Bucket=bucket_name, Key=object_key)
             except s3.exceptions.NoSuchKey:
-                return {
-                    'statusCode': 404,
-                    'headers': {
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Headers': 'Content-Type',
-                        'Access-Control-Allow-Methods': 'POST, OPTIONS'
-                    },
-                    'body': json.dumps({
-                        'error': 'S3 object not found'
-                    })
-                }
+                return build_json_response(404, {'error': 'S3 object not found'})
             except Exception as e:
-                return {
-                    'statusCode': 403,
-                    'headers': {
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Headers': 'Content-Type',
-                        'Access-Control-Allow-Methods': 'POST, OPTIONS'
-                    },
-                    'body': json.dumps({
-                        'error': f'Cannot access S3 object: {str(e)}'
-                    })
-                }
+                return build_json_response(403, {'error': f'Cannot access S3 object: {str(e)}'})
         
         # Generate unique job ID early so it can be used for CSV storage
         job_id = str(uuid.uuid4())
@@ -335,33 +467,15 @@ def lambda_handler(event, context):
             input=json.dumps(step_function_input)
         )
         
-        return {
-            'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Methods': 'POST, OPTIONS'
-            },
-            'body': json.dumps({
-                'jobId': job_id,
-                'executionArn': response['executionArn'],
-                'message': 'ML processing job started successfully'
-            })
-        }
+        return build_json_response(200, {
+            'jobId': job_id,
+            'executionArn': response['executionArn'],
+            'message': 'ML processing job started successfully'
+        })
         
     except Exception as e:
         print(f"Error: {str(e)}")
-        return {
-            'statusCode': 500,
-            'headers': {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Methods': 'POST, OPTIONS'
-            },
-            'body': json.dumps({
-                'error': f'Internal server error: {str(e)}'
-            })
-        }
+        return build_json_response(500, {'error': f'Internal server error: {str(e)}'})
 
 
 def validate_s3_url(url):
@@ -375,7 +489,7 @@ def validate_s3_url(url):
     # S3 protocol format
     s3_protocol_pattern = r'^s3://([a-z0-9.-]+)/(.+)$'
     # HTTPS format
-    https_pattern = r'^https://(?:([a-z0-9.-]+)\.s3\.amazonaws\.com/(.+)|s3\.amazonaws\.com/([a-z0-9.-]+)/(.+))$'
+    https_pattern = r'^https://(?:([a-z0-9.-]+)\.s3(?:\.[a-z0-9-]+)?\.amazonaws\.com/(.+)|s3(?:\.[a-z0-9-]+)?\.amazonaws\.com/([a-z0-9.-]+)/(.+))$'
     
     return re.match(s3_protocol_pattern, url) is not None or re.match(https_pattern, url) is not None
 
@@ -395,12 +509,12 @@ def parse_s3_url(url):
     # Fall back to HTTPS format parsing
     parsed = urlparse(url)
     
-    if parsed.netloc.endswith('.s3.amazonaws.com'):
-        # Format: https://bucket-name.s3.amazonaws.com/key
-        bucket_name = parsed.netloc.replace('.s3.amazonaws.com', '')
+    if re.match(r'^[a-z0-9.-]+\.s3(?:\.[a-z0-9-]+)?\.amazonaws\.com$', parsed.netloc):
+        # Format: https://bucket-name.s3.amazonaws.com/key or regional virtual-hosted style
+        bucket_name = parsed.netloc.split('.s3', 1)[0]
         object_key = parsed.path.lstrip('/')
-    elif parsed.netloc == 's3.amazonaws.com':
-        # Format: https://s3.amazonaws.com/bucket-name/key
+    elif re.match(r'^s3(?:\.[a-z0-9-]+)?\.amazonaws\.com$', parsed.netloc):
+        # Format: https://s3.amazonaws.com/bucket-name/key or regional path-style
         path_parts = parsed.path.lstrip('/').split('/', 1)
         bucket_name = path_parts[0]
         object_key = path_parts[1] if len(path_parts) > 1 else ''

@@ -7,6 +7,7 @@ const REMOTE_S3_BUNDLE =
 const LOCAL_MIRROR_BUNDLE = "/test-sogs-1763664401/meta.json";
 const DEFAULT_BUNDLE_URL = REMOTE_S3_BUNDLE;
 const VIEWER_BASE = "/supersplat-viewer/index.html";
+const ML_PIPELINE_API_URL = process.env.NEXT_PUBLIC_ML_PIPELINE_API_URL?.replace(/\/$/, "") || "";
 const SPACEPORT_S3_HOST = /^spaceport-ml-processing(?:-[a-z0-9-]+)?\.s3(?:\.us-west-2)?\.amazonaws\.com$/i;
 const SAMPLE_BUNDLES = [
   {
@@ -155,6 +156,18 @@ export default function SogsViewerPage() {
     return `/api/sogs-proxy/${encodedBase}${url.pathname}${url.search}`;
   };
 
+  const convertToManagedBundlePath = (url: URL) => {
+    const params = new URLSearchParams({
+      url: url.toString(),
+    });
+
+    if (url.pathname.endsWith("/meta.json") || url.pathname === "/meta.json") {
+      params.set("rewriteMeta", "true");
+    }
+
+    return `${ML_PIPELINE_API_URL}/bundle-resource?${params.toString()}`;
+  };
+
   const normalizeAssetUrl = (rawValue: string, defaultFilename: string | null): string | null => {
     const trimmed = rawValue.trim();
     if (!trimmed) {
@@ -176,6 +189,9 @@ export default function SogsViewerPage() {
       }
 
       if (SPACEPORT_S3_HOST.test(parsed.host)) {
+        if (ML_PIPELINE_API_URL) {
+          return convertToManagedBundlePath(parsed);
+        }
         return convertToProxyPath(parsed);
       }
 
@@ -458,8 +474,8 @@ export default function SogsViewerPage() {
             </p>
             <div style={samplesWrapStyles}>
               <p style={{ ...helperTextStyles, marginTop: 0 }}>
-                Quick samples (Spaceport buckets auto-route through the proxy to bypass CORS; keep the local mirror
-                handy if you need an offline fallback):
+                Quick samples (Spaceport buckets auto-route through the managed bundle API so preview builds can load
+                private compressed artifacts; keep the local mirror handy if you need an offline fallback):
               </p>
               <div style={samplesListStyles}>
                 {SAMPLE_BUNDLES.map((sample) => (

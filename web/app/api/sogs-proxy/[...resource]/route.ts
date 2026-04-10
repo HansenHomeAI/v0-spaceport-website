@@ -7,7 +7,7 @@ const ALLOWED_HOST_PATTERNS = [
   /^spaceport-ml-processing(?:-[a-z0-9-]+)?\.s3\.us-west-2\.amazonaws\.com$/i,
 ];
 
-const normalizeUpstreamUrl = (segments: string[]): URL | null => {
+const normalizeUpstreamUrl = (segments: string[], search: string): URL | null => {
   if (!segments.length) {
     return null;
   }
@@ -23,6 +23,9 @@ const normalizeUpstreamUrl = (segments: string[]): URL | null => {
   urlString = urlString.replace(/^https:\/\//, "https://").replace(/^http:\/\//, "http://");
   try {
     const url = new URL(urlString);
+    if (search) {
+      url.search = search;
+    }
     if (!ALLOWED_HOST_PATTERNS.some((pattern) => pattern.test(url.host))) {
       return null;
     }
@@ -33,7 +36,7 @@ const normalizeUpstreamUrl = (segments: string[]): URL | null => {
 };
 
 export async function GET(request: NextRequest, { params }: { params: { resource: string[] } }) {
-  const upstreamUrl = normalizeUpstreamUrl(params.resource ?? []);
+  const upstreamUrl = normalizeUpstreamUrl(params.resource ?? [], request.nextUrl.search);
   if (!upstreamUrl) {
     return new Response("Invalid or disallowed upstream resource", { status: 400 });
   }

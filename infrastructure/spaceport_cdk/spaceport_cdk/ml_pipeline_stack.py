@@ -234,6 +234,13 @@ class MLPipelineStack(Stack):
                                 f"{upload_bucket.bucket_arn}/*",
                                 f"{ml_bucket.bucket_arn}/*"
                             ]
+                        ),
+                        iam.PolicyStatement(
+                            actions=[
+                                "kms:Decrypt",
+                                "kms:DescribeKey"
+                            ],
+                            resources=["*"]
                         )
                     ]
                 )
@@ -326,6 +333,7 @@ class MLPipelineStack(Stack):
                 "SFM_ECR_REPO_FALLBACK": sfm_repo_fallback_name,
                 "GAUSSIAN_ECR_REPO_FALLBACK": gaussian_repo_fallback_name,
                 "COMPRESSOR_ECR_REPO_FALLBACK": compressor_repo_fallback_name,
+                "ML_PIPELINE_API_URL": "",
             }
         )
 
@@ -865,6 +873,15 @@ class MLPipelineStack(Stack):
             )
         )
 
+        bundle_resource = ml_api.root.add_resource("bundle-resource")
+        bundle_resource.add_method(
+            "GET",
+            apigw.LambdaIntegration(
+                start_job_lambda,
+                proxy=True
+            )
+        )
+
         # Add /stop-job endpoint
         stop_job_resource = ml_api.root.add_resource("stop-job")
         stop_job_resource.add_method(
@@ -903,6 +920,8 @@ class MLPipelineStack(Stack):
             value=ml_api.url,
             description="ML Pipeline API Gateway URL"
         )
+
+        start_job_lambda.add_environment("ML_PIPELINE_API_URL", ml_api.url)
 
         CfnOutput(
             self, "MLBucketName", 
