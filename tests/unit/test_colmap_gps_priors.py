@@ -1904,6 +1904,130 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(pipeline.chunk_merge_proof["pre_merge_unique_registered_images"], 4)
             self.assertEqual(pipeline.chunk_merge_proof["final_merged_registered_images"], 4)
 
+    def test_repair_disconnected_chunk_model_components_reruns_best_bridge_pair(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.chunk_planner = "footprint_graph_v1"
+            pipeline.chunk_bridge_recovery_max_images = 500
+            pipeline.capture_ordered_names = [
+                "IMG_00.jpg",
+                "IMG_01.jpg",
+                "IMG_02.jpg",
+                "IMG_03.jpg",
+                "IMG_04.jpg",
+                "IMG_05.jpg",
+                "IMG_06.jpg",
+                "IMG_07.jpg",
+                "IMG_08.jpg",
+            ]
+            chunk_plans = [
+                run_colmap_sfm.ChunkPlan(
+                    index=0,
+                    core_names=["IMG_00.jpg", "IMG_01.jpg"],
+                    image_names=["IMG_00.jpg", "IMG_01.jpg", "IMG_02.jpg"],
+                    overlap_names=["IMG_02.jpg"],
+                ),
+                run_colmap_sfm.ChunkPlan(
+                    index=1,
+                    core_names=["IMG_02.jpg", "IMG_03.jpg"],
+                    image_names=["IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg"],
+                    overlap_names=["IMG_04.jpg"],
+                ),
+                run_colmap_sfm.ChunkPlan(
+                    index=2,
+                    core_names=["IMG_04.jpg", "IMG_05.jpg"],
+                    image_names=["IMG_04.jpg", "IMG_05.jpg", "IMG_06.jpg"],
+                    overlap_names=["IMG_06.jpg"],
+                ),
+                run_colmap_sfm.ChunkPlan(
+                    index=3,
+                    core_names=["IMG_06.jpg", "IMG_07.jpg"],
+                    image_names=["IMG_06.jpg", "IMG_07.jpg", "IMG_08.jpg"],
+                    overlap_names=[],
+                ),
+            ]
+            chunk_models = [
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_00_mapper_initial",
+                    text_dir=root / "chunk0_text",
+                    cameras_registered=1,
+                    images_registered=3,
+                    points_3d=100,
+                    binary_dir=root / "chunk0_bin",
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_01_mapper_initial",
+                    text_dir=root / "chunk1_text",
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=100,
+                    binary_dir=root / "chunk1_bin",
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_02_mapper_initial",
+                    text_dir=root / "chunk2_text",
+                    cameras_registered=1,
+                    images_registered=3,
+                    points_3d=100,
+                    binary_dir=root / "chunk2_bin",
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_03_mapper_initial",
+                    text_dir=root / "chunk3_text",
+                    cameras_registered=1,
+                    images_registered=3,
+                    points_3d=100,
+                    binary_dir=root / "chunk3_bin",
+                ),
+            ]
+            bridge_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_01_02_merge_bridge_mapper_initial",
+                text_dir=root / "bridge_text",
+                cameras_registered=1,
+                images_registered=5,
+                points_3d=200,
+                binary_dir=root / "bridge_bin",
+            )
+            registered_names_by_stage = {
+                "chunk_00_mapper_initial": {"IMG_00.jpg", "IMG_01.jpg", "IMG_02.jpg"},
+                "chunk_01_mapper_initial": {"IMG_02.jpg", "IMG_03.jpg"},
+                "chunk_02_mapper_initial": {"IMG_04.jpg", "IMG_05.jpg", "IMG_06.jpg"},
+                "chunk_03_mapper_initial": {"IMG_05.jpg", "IMG_06.jpg", "IMG_07.jpg"},
+                "chunk_01_02_merge_bridge_mapper_initial": {
+                    "IMG_02.jpg",
+                    "IMG_03.jpg",
+                    "IMG_04.jpg",
+                    "IMG_05.jpg",
+                    "IMG_06.jpg",
+                },
+            }
+
+            with mock.patch.object(
+                pipeline,
+                "merged_image_names",
+                side_effect=lambda model: registered_names_by_stage[model.stage],
+            ), mock.patch.object(
+                pipeline,
+                "run_chunk_pipeline",
+                return_value=bridge_model,
+            ) as run_chunk_mock:
+                repaired_plans, repaired_models = pipeline.repair_disconnected_chunk_model_components(
+                    chunk_plans=chunk_plans,
+                    chunk_models=chunk_models,
+                )
+
+            bridge_plan = run_chunk_mock.call_args.args[0]
+            self.assertEqual(bridge_plan.index, 1)
+            self.assertEqual(set(bridge_plan.image_names), {"IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg", "IMG_05.jpg", "IMG_06.jpg"})
+            self.assertEqual(run_chunk_mock.call_args.kwargs["stage_prefix"], "chunk_01_02_merge_bridge")
+            self.assertTrue(pipeline.merge_bridge_recovery_triggered)
+            self.assertEqual(pipeline.chunk_recovery_mode, "prior_aware_retry_merge_bridge_no_vocab")
+            self.assertEqual(len(repaired_plans), 3)
+            self.assertEqual([plan.index for plan in repaired_plans], [0, 1, 3])
+            self.assertEqual(len(repaired_models), 3)
+            self.assertEqual(pipeline.merged_component_count, 1)
+
     def test_run_spatial_heading_chunked_path_accepts_merged_ratio_at_gps_threshold(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

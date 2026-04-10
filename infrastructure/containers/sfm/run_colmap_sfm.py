@@ -483,6 +483,15 @@ class ColmapPipeline:
         self.chunk_pair_budget = int(os.environ.get("COLMAP_CHUNK_PAIR_BUDGET", "25000"))
         self.chunk_overlap_anchor_count = int(os.environ.get("COLMAP_CHUNK_OVERLAP_ANCHOR_COUNT", "20"))
         self.chunk_cross_edge_min_count = int(os.environ.get("COLMAP_CHUNK_CROSS_EDGE_MIN_COUNT", "12"))
+        self.chunk_bridge_recovery_max_attempts = int(
+            os.environ.get("COLMAP_CHUNK_BRIDGE_RECOVERY_MAX_ATTEMPTS", "2")
+        )
+        self.chunk_bridge_recovery_max_images = int(
+            os.environ.get(
+                "COLMAP_CHUNK_BRIDGE_RECOVERY_MAX_IMAGES",
+                str(max(self.chunk_target_images * 3, 480)),
+            )
+        )
         self.graph_xy_neighbor_limit = int(os.environ.get("COLMAP_GRAPH_XY_NEIGHBOR_LIMIT", "60"))
         self.graph_xyz_neighbor_limit = int(os.environ.get("COLMAP_GRAPH_XYZ_NEIGHBOR_LIMIT", "20"))
         self.chunk_boundary_max_neighbors = int(
@@ -606,6 +615,7 @@ class ColmapPipeline:
         self.chunk_merge_seconds = 0.0
         self.boundary_recovery_triggered = False
         self.adjacent_chunk_merge_triggered = False
+        self.merge_bridge_recovery_triggered = False
         self.merged_component_count = 0
         self.chunk_groups: List[CaptureGroup] = []
         self.flight_segments: List[FlightSegment] = []
@@ -4022,6 +4032,131 @@ class ColmapPipeline:
         }
         return adjusted_model
 
+    def registered_overlap_components(
+        self,
+        chunk_models: Sequence[ModelSummary],
+    ) -> tuple[List[Set[int]], List[Set[str]]]:
+        registered_name_sets = [self.merged_image_names(model) for model in chunk_models]
+        unvisited = set(range(len(chunk_models)))
+        components: List[Set[int]] = []
+        while unvisited:
+            seed_index = min(unvisited)
+            unvisited.remove(seed_index)
+            component = {seed_index}
+            pending = [seed_index]
+            while pending:
+                current_index = pending.pop()
+                current_names = registered_name_sets[current_index]
+                for candidate_index in list(unvisited):
+                    if current_names.intersection(registered_name_sets[candidate_index]):
+                        unvisited.remove(candidate_index)
+                        component.add(candidate_index)
+                        pending.append(candidate_index)
+            components.append(component)
+        return components, registered_name_sets
+
+    def best_bridge_chunk_pair(
+        self,
+        *,
+        chunk_plans: Sequence[ChunkPlan],
+        components: Sequence[Set[int]],
+    ) -> tuple[int, int] | None:
+        ranked_candidates: List[tuple[int, int, int, int, int, int]] = []
+        for first_component_index, first_component in enumerate(components):
+            for second_component in components[first_component_index + 1 :]:
+                for first_index in sorted(first_component):
+                    first_plan = chunk_plans[first_index]
+                    first_names = set(first_plan.image_names)
+                    for second_index in sorted(second_component):
+                        second_plan = chunk_plans[second_index]
+                        planned_shared_images = len(first_names.intersection(second_plan.image_names))
+                        cross_edge_count = (
+                            self.cross_chunk_edge_count(first_plan.image_names, second_plan.image_names)
+                            + self.cross_chunk_edge_count(second_plan.image_names, first_plan.image_names)
+                        )
+                        if planned_shared_images <= 0 and cross_edge_count <= 0:
+                            continue
+                        combined_image_count = len(first_names.union(second_plan.image_names))
+                        if combined_image_count > self.chunk_bridge_recovery_max_images:
+                            continue
+                        ranked_candidates.append(
+                            (
+                                -planned_shared_images,
+                                -cross_edge_count,
+                                combined_image_count,
+                                abs(first_plan.index - second_plan.index),
+                                first_index,
+                                second_index,
+                            )
+                        )
+        if not ranked_candidates:
+            return None
+        _, _, _, _, first_index, second_index = min(ranked_candidates)
+        return (first_index, second_index)
+
+    def repair_disconnected_chunk_model_components(
+        self,
+        *,
+        chunk_plans: Sequence[ChunkPlan],
+        chunk_models: Sequence[ModelSummary],
+    ) -> tuple[List[ChunkPlan], List[ModelSummary]]:
+        if self.chunk_planner != "footprint_graph_v1" or len(chunk_models) <= 1:
+            return list(chunk_plans), list(chunk_models)
+
+        repaired_chunk_plans = list(chunk_plans)
+        repaired_chunk_models = list(chunk_models)
+        attempts_remaining = max(self.chunk_bridge_recovery_max_attempts, 0)
+        while attempts_remaining > 0:
+            components, _ = self.registered_overlap_components(repaired_chunk_models)
+            if len(components) <= 1:
+                self.merged_component_count = 1
+                return repaired_chunk_plans, repaired_chunk_models
+            bridge_pair = self.best_bridge_chunk_pair(
+                chunk_plans=repaired_chunk_plans,
+                components=components,
+            )
+            if bridge_pair is None:
+                self.merged_component_count = len(components)
+                return repaired_chunk_plans, repaired_chunk_models
+            first_index, second_index = bridge_pair
+            first_chunk_plan = repaired_chunk_plans[first_index]
+            second_chunk_plan = repaired_chunk_plans[second_index]
+            merged_chunk_plan = self.build_adjacent_merged_chunk_plan(
+                first_chunk_plan,
+                second_chunk_plan,
+                index=min(first_chunk_plan.index, second_chunk_plan.index),
+            )
+            logger.info(
+                "Registered chunk overlap graph has %s components; rerunning bridge chunk %s-%s across %s images",
+                len(components),
+                first_chunk_plan.index,
+                second_chunk_plan.index,
+                len(merged_chunk_plan.image_names),
+            )
+            merged_stage_prefix = (
+                f"chunk_{min(first_chunk_plan.index, second_chunk_plan.index):02d}_"
+                f"{max(first_chunk_plan.index, second_chunk_plan.index):02d}_merge_bridge"
+            )
+            self.merge_bridge_recovery_triggered = True
+            if self.chunk_recovery_mode == "prior_aware_retry_no_vocab":
+                self.chunk_recovery_mode = "prior_aware_retry_merge_bridge_no_vocab"
+            self.clear_failure()
+            merged_model = self.run_chunk_pipeline(
+                merged_chunk_plan,
+                stage_prefix=merged_stage_prefix,
+                dir_name=merged_stage_prefix,
+            )
+            for removal_index in sorted((first_index, second_index), reverse=True):
+                repaired_chunk_plans.pop(removal_index)
+                repaired_chunk_models.pop(removal_index)
+            insert_index = min(first_index, second_index)
+            repaired_chunk_plans.insert(insert_index, merged_chunk_plan)
+            repaired_chunk_models.insert(insert_index, merged_model)
+            attempts_remaining -= 1
+        components, _ = self.registered_overlap_components(repaired_chunk_models)
+        self.merged_component_count = len(components)
+        return repaired_chunk_plans, repaired_chunk_models
+
     def run_vocab_only_path(self) -> ModelSummary:
         self.run_vocab_matching()
         self.final_matcher_mode = "vocab_only"
@@ -4154,12 +4289,14 @@ class ColmapPipeline:
         if len(self.chunk_plans) <= 1:
             self.chunking_skipped_reason = "single_chunk_only" if not self.only_chunk_indexes else "single_chunk_selected"
         chunk_models: List[ModelSummary] = []
+        executed_chunk_plans: List[ChunkPlan] = []
         chunk_index = 0
         while chunk_index < len(self.chunk_plans):
             chunk_plan = self.chunk_plans[chunk_index]
             try:
                 chunk_model = self.run_chunk_pipeline(chunk_plan)
                 chunk_models.append(chunk_model)
+                executed_chunk_plans.append(chunk_plan)
                 chunk_index += 1
                 continue
             except RuntimeError:
@@ -4225,13 +4362,19 @@ class ColmapPipeline:
                 self.clear_failure()
                 if merge_side == "previous":
                     chunk_models.pop()
+                    executed_chunk_plans.pop()
                 merged_model = self.run_chunk_pipeline(
                     merged_chunk_plan,
                     stage_prefix=merged_stage_prefix,
                     dir_name=merged_stage_prefix,
                 )
                 chunk_models.append(merged_model)
+                executed_chunk_plans.append(merged_chunk_plan)
                 chunk_index += 1 if merge_side == "previous" else 2
+        executed_chunk_plans, chunk_models = self.repair_disconnected_chunk_model_components(
+            chunk_plans=executed_chunk_plans,
+            chunk_models=chunk_models,
+        )
         merged_model = self.merge_chunk_models(chunk_models)
         merged_ratio = (
             merged_model.images_registered / self.chunk_execution_image_count
@@ -4354,6 +4497,7 @@ class ColmapPipeline:
             "chunk_run_metrics": self.chunk_run_metrics,
             "boundary_recovery_triggered": self.boundary_recovery_triggered,
             "adjacent_chunk_merge_triggered": self.adjacent_chunk_merge_triggered,
+            "merge_bridge_recovery_triggered": self.merge_bridge_recovery_triggered,
             "merged_component_count": self.merged_component_count,
             "final_points_per_registered_image": final_points_per_registered_image,
             "mapper_seconds_per_registered_image": mapper_seconds_per_registered_image,
