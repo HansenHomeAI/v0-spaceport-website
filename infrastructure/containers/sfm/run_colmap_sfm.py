@@ -273,6 +273,30 @@ def model_sort_key(model: ModelSummary) -> tuple[int, int, int]:
     return (model.images_registered, model.points_3d, model.cameras_registered)
 
 
+def bridge_overlap_counts(
+    registered_names: Set[str],
+    target_name_sets: Sequence[Set[str]],
+) -> tuple[int, int]:
+    overlap_counts = [len(registered_names.intersection(target_names)) for target_names in target_name_sets]
+    return (sum(1 for count in overlap_counts if count > 0), sum(overlap_counts))
+
+
+def bridge_model_sort_key(
+    model: ModelSummary,
+    registered_names: Set[str],
+    target_name_sets: Sequence[Set[str]],
+) -> tuple[int, int, int, int, int]:
+    target_count = len(target_name_sets)
+    touched_targets, total_overlap = bridge_overlap_counts(registered_names, target_name_sets)
+    return (
+        1 if target_count > 0 and touched_targets >= target_count else 0,
+        touched_targets,
+        total_overlap,
+        model.images_registered,
+        model.points_3d,
+    )
+
+
 def sort_capture_records(records: Iterable[dict[str, str]]) -> List[dict[str, str]]:
     def record_key(record: dict[str, str]) -> tuple[int, str, str]:
         capture_time = record.get("capture_time", "")
@@ -2269,6 +2293,7 @@ class ColmapPipeline:
         stage: str,
         sparse_root: Path,
         image_count: int | None = None,
+        bridge_target_name_sets: Sequence[Set[str]] | None = None,
     ) -> ModelSummary:
         active_database_path = database_path or self.database_path
         active_image_count = image_count if image_count is not None else self.dataset_image_count
@@ -2308,6 +2333,7 @@ class ColmapPipeline:
             raise RuntimeError(f"{stage} did not produce any sparse models")
 
         best_model: ModelSummary | None = None
+        best_sort_key: tuple[int, ...] | None = None
         for candidate_dir in candidate_dirs:
             model = self.summarize_model(stage=stage, binary_dir=candidate_dir, image_count=active_image_count)
             logger.info(
@@ -2318,8 +2344,30 @@ class ColmapPipeline:
                 active_image_count,
                 model.points_3d,
             )
-            if best_model is None or model_sort_key(model) > model_sort_key(best_model):
+            if bridge_target_name_sets:
+                registered_names = load_registered_image_names(model.text_dir / "images.txt")
+                touched_targets, total_overlap = bridge_overlap_counts(
+                    registered_names,
+                    bridge_target_name_sets,
+                )
+                logger.info(
+                    "%s model %s overlaps %s/%s bridge targets with %s shared registered images",
+                    stage,
+                    candidate_dir.name,
+                    touched_targets,
+                    len(bridge_target_name_sets),
+                    total_overlap,
+                )
+                current_sort_key = bridge_model_sort_key(
+                    model,
+                    registered_names,
+                    bridge_target_name_sets,
+                )
+            else:
+                current_sort_key = model_sort_key(model)
+            if best_model is None or best_sort_key is None or current_sort_key > best_sort_key:
                 best_model = model
+                best_sort_key = current_sort_key
         if best_model is None:
             raise RuntimeError(f"Unable to choose a sparse model for {stage}")
         self.model_summaries.append(
@@ -3692,6 +3740,8 @@ class ColmapPipeline:
         *,
         stage_prefix: str | None = None,
         dir_name: str | None = None,
+        allow_partial_result: bool = False,
+        bridge_target_name_sets: Sequence[Set[str]] | None = None,
     ) -> ModelSummary:
         chunk_stage_prefix = stage_prefix or f"chunk_{chunk_plan.index:02d}"
         chunk_dir = self.work_dir / (dir_name or chunk_stage_prefix)
@@ -3708,6 +3758,7 @@ class ColmapPipeline:
             stage=f"{chunk_stage_prefix}_mapper_initial",
             sparse_root=chunk_dir / "sparse_initial",
             image_count=len(chunk_plan.image_names),
+            bridge_target_name_sets=bridge_target_name_sets,
         )
         self.chunk_mapper_seconds += self.timings[f"{chunk_stage_prefix}_mapper_initial_seconds"]
         registered_ratio = (
@@ -3793,6 +3844,7 @@ class ColmapPipeline:
             stage=f"{chunk_stage_prefix}_mapper_recovery",
             sparse_root=chunk_dir / "sparse_recovery",
             image_count=len(retry_chunk_plan.image_names),
+            bridge_target_name_sets=bridge_target_name_sets,
         )
         self.chunk_mapper_seconds += self.timings[f"{chunk_stage_prefix}_mapper_recovery_seconds"]
         recovered_ratio = (
@@ -3837,6 +3889,37 @@ class ColmapPipeline:
                     "recovered_registered_ratio": round(recovered_ratio, 4),
                     "recovered_core_registered_ratio": round(recovered_core_ratio, 4),
                     "failure": False,
+                }
+            )
+            return recovered_model
+        if allow_partial_result and recovered_model.images_registered > 0:
+            bridge_target_count = len(bridge_target_name_sets or [])
+            touched_targets = 0
+            if bridge_target_name_sets:
+                touched_targets, _ = bridge_overlap_counts(
+                    self.merged_image_names(recovered_model),
+                    bridge_target_name_sets,
+                )
+            logger.info(
+                "Chunk %s remained below the standard retry threshold at %s/%s images and %s/%s core images; returning partial result for bridge evaluation (%s/%s target components touched)",
+                retry_chunk_plan.index,
+                recovered_model.images_registered,
+                len(retry_chunk_plan.image_names),
+                recovered_core_count,
+                len(retry_chunk_plan.core_names),
+                touched_targets,
+                bridge_target_count,
+            )
+            self.chunk_run_metrics.append(
+                {
+                    "chunk_index": chunk_plan.index,
+                    "image_count": len(chunk_plan.image_names),
+                    "registered_ratio": round(registered_ratio, 4),
+                    "core_registered_ratio": round(core_registered_ratio, 4),
+                    "recovered_registered_ratio": round(recovered_ratio, 4),
+                    "recovered_core_registered_ratio": round(recovered_core_ratio, 4),
+                    "failure": False,
+                    "partial_result_accepted": True,
                 }
             )
             return recovered_model
@@ -4055,19 +4138,46 @@ class ColmapPipeline:
             components.append(component)
         return components, registered_name_sets
 
+    def component_registered_names(
+        self,
+        *,
+        component: Set[int],
+        registered_name_sets: Sequence[Set[str]],
+    ) -> Set[str]:
+        combined_names: Set[str] = set()
+        for chunk_index in component:
+            combined_names.update(registered_name_sets[chunk_index])
+        return combined_names
+
+    def model_connects_target_name_sets(
+        self,
+        *,
+        model: ModelSummary,
+        target_name_sets: Sequence[Set[str]],
+    ) -> bool:
+        if not target_name_sets:
+            return False
+        touched_targets, _ = bridge_overlap_counts(self.merged_image_names(model), target_name_sets)
+        return touched_targets >= len(target_name_sets)
+
     def best_bridge_chunk_pair(
         self,
         *,
         chunk_plans: Sequence[ChunkPlan],
         components: Sequence[Set[int]],
+        excluded_pairs: Set[tuple[int, int]] | None = None,
     ) -> tuple[int, int] | None:
         ranked_candidates: List[tuple[int, int, int, int, int, int]] = []
+        excluded_pairs = excluded_pairs or set()
         for first_component_index, first_component in enumerate(components):
             for second_component in components[first_component_index + 1 :]:
                 for first_index in sorted(first_component):
                     first_plan = chunk_plans[first_index]
                     first_names = set(first_plan.image_names)
                     for second_index in sorted(second_component):
+                        pair_key = (min(first_index, second_index), max(first_index, second_index))
+                        if pair_key in excluded_pairs:
+                            continue
                         second_plan = chunk_plans[second_index]
                         planned_shared_images = len(first_names.intersection(second_plan.image_names))
                         cross_edge_count = (
@@ -4106,21 +4216,30 @@ class ColmapPipeline:
         repaired_chunk_plans = list(chunk_plans)
         repaired_chunk_models = list(chunk_models)
         attempts_remaining = max(self.chunk_bridge_recovery_max_attempts, 0)
+        attempted_bridge_pairs: Set[tuple[int, int]] = set()
         while attempts_remaining > 0:
-            components, _ = self.registered_overlap_components(repaired_chunk_models)
+            components, registered_name_sets = self.registered_overlap_components(repaired_chunk_models)
             if len(components) <= 1:
                 self.merged_component_count = 1
                 return repaired_chunk_plans, repaired_chunk_models
             bridge_pair = self.best_bridge_chunk_pair(
                 chunk_plans=repaired_chunk_plans,
                 components=components,
+                excluded_pairs=attempted_bridge_pairs,
             )
             if bridge_pair is None:
                 self.merged_component_count = len(components)
                 return repaired_chunk_plans, repaired_chunk_models
             first_index, second_index = bridge_pair
+            attempted_bridge_pairs.add((min(first_index, second_index), max(first_index, second_index)))
             first_chunk_plan = repaired_chunk_plans[first_index]
             second_chunk_plan = repaired_chunk_plans[second_index]
+            first_component = next(component for component in components if first_index in component)
+            second_component = next(component for component in components if second_index in component)
+            bridge_target_name_sets = [
+                self.component_registered_names(component=first_component, registered_name_sets=registered_name_sets),
+                self.component_registered_names(component=second_component, registered_name_sets=registered_name_sets),
+            ]
             merged_chunk_plan = self.build_adjacent_merged_chunk_plan(
                 first_chunk_plan,
                 second_chunk_plan,
@@ -4145,13 +4264,23 @@ class ColmapPipeline:
                 merged_chunk_plan,
                 stage_prefix=merged_stage_prefix,
                 dir_name=merged_stage_prefix,
+                allow_partial_result=True,
+                bridge_target_name_sets=bridge_target_name_sets,
             )
-            for removal_index in sorted((first_index, second_index), reverse=True):
-                repaired_chunk_plans.pop(removal_index)
-                repaired_chunk_models.pop(removal_index)
-            insert_index = min(first_index, second_index)
-            repaired_chunk_plans.insert(insert_index, merged_chunk_plan)
-            repaired_chunk_models.insert(insert_index, merged_model)
+            if not self.model_connects_target_name_sets(
+                model=merged_model,
+                target_name_sets=bridge_target_name_sets,
+            ):
+                logger.warning(
+                    "Bridge chunk %s-%s produced %s registered images but did not overlap both target components; keeping original chunk models",
+                    first_chunk_plan.index,
+                    second_chunk_plan.index,
+                    merged_model.images_registered,
+                )
+                attempts_remaining -= 1
+                continue
+            repaired_chunk_plans.append(merged_chunk_plan)
+            repaired_chunk_models.append(merged_model)
             attempts_remaining -= 1
         components, _ = self.registered_overlap_components(repaired_chunk_models)
         self.merged_component_count = len(components)

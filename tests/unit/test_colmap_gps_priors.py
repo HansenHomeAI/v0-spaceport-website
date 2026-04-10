@@ -1283,6 +1283,95 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(pipeline.failed_chunk_index, 0)
             self.assertEqual(pipeline.failure_stage, "chunk_00_recovery_failed")
 
+    def test_run_chunk_pipeline_returns_partial_bridge_result_for_connector_evaluation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.enable_sequential_matcher = True
+            pipeline.exif_records = {
+                "IMG_01.jpg": {"local_x_m": 0.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_02.jpg": {"local_x_m": 1.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_03.jpg": {"local_x_m": 2.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_04.jpg": {"local_x_m": 3.0, "local_y_m": 0.0, "heading_deg": 0.0},
+            }
+            chunk = run_colmap_sfm.ChunkPlan(
+                index=0,
+                core_names=["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg"],
+                image_names=["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg"],
+                overlap_names=["IMG_03.jpg", "IMG_04.jpg"],
+            )
+            initial_dir = root / "initial_text"
+            initial_dir.mkdir()
+            (initial_dir / "images.txt").write_text(
+                "\n".join(
+                    [
+                        "1 1 0 0 0 0 0 0 1 IMG_01.jpg",
+                        "0 0 -1",
+                        "2 1 0 0 0 0 0 0 1 IMG_02.jpg",
+                        "0 0 -1",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            recovered_dir = root / "recovered_text"
+            recovered_dir.mkdir()
+            (recovered_dir / "images.txt").write_text(
+                "\n".join(
+                    [
+                        "1 1 0 0 0 0 0 0 1 IMG_02.jpg",
+                        "0 0 -1",
+                        "2 1 0 0 0 0 0 0 1 IMG_03.jpg",
+                        "0 0 -1",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            initial_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_00_mapper_initial",
+                text_dir=initial_dir,
+                cameras_registered=1,
+                images_registered=2,
+                points_3d=1000,
+                binary_dir=root / "initial_bin",
+                image_count=4,
+            )
+            recovered_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_00_mapper_recovery",
+                text_dir=recovered_dir,
+                cameras_registered=1,
+                images_registered=2,
+                points_3d=1100,
+                binary_dir=root / "recovered_bin",
+                image_count=4,
+            )
+
+            with mock.patch.object(
+                pipeline,
+                "prepare_chunk_database",
+                return_value=root / "chunk.db",
+            ), mock.patch.object(pipeline, "run_spatial_matcher"), mock.patch.object(
+                pipeline, "run_sequential_matcher"
+            ), mock.patch.object(
+                pipeline,
+                "run_mapper",
+                side_effect=[initial_model, recovered_model],
+            ) as mapper_mock:
+                pipeline.timings["chunk_00_mapper_initial_seconds"] = 10.0
+                pipeline.timings["chunk_00_mapper_recovery_seconds"] = 6.0
+                best_model = pipeline.run_chunk_pipeline(
+                    chunk,
+                    allow_partial_result=True,
+                    bridge_target_name_sets=[{"IMG_02.jpg"}, {"IMG_03.jpg"}],
+                )
+
+            self.assertIs(best_model, recovered_model)
+            self.assertEqual(mapper_mock.call_count, 2)
+            self.assertTrue(pipeline.boundary_recovery_triggered)
+            self.assertEqual(pipeline.failure_stage, "")
+            self.assertEqual(pipeline.failure_reason_detail, "")
+            self.assertIsNone(pipeline.failed_chunk_index)
+            self.assertTrue(pipeline.chunk_run_metrics[-1]["partial_result_accepted"])
+
     def test_prepare_chunk_database_prunes_global_features_without_reextracting(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -2021,11 +2110,20 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(bridge_plan.index, 1)
             self.assertEqual(set(bridge_plan.image_names), {"IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg", "IMG_05.jpg", "IMG_06.jpg"})
             self.assertEqual(run_chunk_mock.call_args.kwargs["stage_prefix"], "chunk_01_02_merge_bridge")
+            self.assertTrue(run_chunk_mock.call_args.kwargs["allow_partial_result"])
+            self.assertEqual(
+                run_chunk_mock.call_args.kwargs["bridge_target_name_sets"],
+                [
+                    {"IMG_00.jpg", "IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg"},
+                    {"IMG_04.jpg", "IMG_05.jpg", "IMG_06.jpg", "IMG_07.jpg"},
+                ],
+            )
             self.assertTrue(pipeline.merge_bridge_recovery_triggered)
             self.assertEqual(pipeline.chunk_recovery_mode, "prior_aware_retry_merge_bridge_no_vocab")
-            self.assertEqual(len(repaired_plans), 3)
-            self.assertEqual([plan.index for plan in repaired_plans], [0, 1, 3])
-            self.assertEqual(len(repaired_models), 3)
+            self.assertEqual(len(repaired_plans), 5)
+            self.assertEqual([plan.index for plan in repaired_plans], [0, 1, 2, 3, 1])
+            self.assertEqual(len(repaired_models), 5)
+            self.assertIs(repaired_models[-1], bridge_model)
             self.assertEqual(pipeline.merged_component_count, 1)
 
     def test_run_spatial_heading_chunked_path_accepts_merged_ratio_at_gps_threshold(self):
