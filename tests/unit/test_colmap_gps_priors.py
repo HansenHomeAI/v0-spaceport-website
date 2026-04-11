@@ -1513,6 +1513,84 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertIsNone(pipeline.failed_chunk_index)
             self.assertTrue(pipeline.chunk_run_metrics[-1]["partial_result_accepted"])
 
+    def test_run_chunk_pipeline_accepts_partial_leaf_result_in_seam_only_mode(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {
+                "COLMAP_CHUNK_PLANNER": "footprint_graph_v1",
+                "COLMAP_PARENT_MERGE_MODE": "seam_only_v1",
+            },
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.exif_records = {
+                "IMG_01.jpg": {"local_x_m": 0.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_02.jpg": {"local_x_m": 1.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_03.jpg": {"local_x_m": 2.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_04.jpg": {"local_x_m": 3.0, "local_y_m": 0.0, "heading_deg": 0.0},
+            }
+            chunk = run_colmap_sfm.ChunkPlan(
+                index=0,
+                core_names=["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg"],
+                image_names=["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg"],
+                overlap_names=[],
+            )
+            recovered_dir = root / "recovered_text"
+            recovered_dir.mkdir()
+            (recovered_dir / "images.txt").write_text(
+                "\n".join(
+                    [
+                        "1 1 0 0 0 0 0 0 1 IMG_01.jpg",
+                        "0 0 -1",
+                        "2 1 0 0 0 0 0 0 1 IMG_02.jpg",
+                        "0 0 -1",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            initial_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_00_mapper_initial",
+                text_dir=root / "initial_text",
+                cameras_registered=1,
+                images_registered=1,
+                points_3d=1000,
+                binary_dir=root / "initial_bin",
+                image_count=4,
+            )
+            recovered_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_00_mapper_recovery",
+                text_dir=recovered_dir,
+                cameras_registered=1,
+                images_registered=2,
+                points_3d=1100,
+                binary_dir=root / "recovered_bin",
+                image_count=4,
+            )
+
+            with mock.patch.object(
+                pipeline,
+                "prepare_chunk_database",
+                return_value=root / "chunk.db",
+            ), mock.patch.object(pipeline, "run_chunk_matchers"), mock.patch.object(
+                pipeline, "run_chunk_recovery_matchers"
+            ), mock.patch.object(
+                pipeline,
+                "run_mapper",
+                side_effect=[initial_model, recovered_model],
+            ):
+                pipeline.timings["chunk_00_mapper_initial_seconds"] = 10.0
+                pipeline.timings["chunk_00_mapper_recovery_seconds"] = 6.0
+                best_model = pipeline.run_chunk_pipeline(chunk)
+
+            self.assertIs(best_model, recovered_model)
+            self.assertEqual(pipeline.chunk_recovery_mode, "seam_only_leaf_partial")
+            self.assertTrue(pipeline.chunk_run_metrics[-1]["partial_result_accepted"])
+            self.assertEqual(
+                pipeline.chunk_run_metrics[-1]["partial_result_reason"],
+                "seam_only_leaf_seed",
+            )
+
     def test_run_mapper_salvages_partial_sparse_model_after_timeout(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -2769,6 +2847,114 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(seam_mock.call_args.kwargs["stage_prefix"], "chunk_01_02_merge_bridge")
             self.assertTrue(seam_mock.call_args.kwargs.get("run_final_bundle_adjustment", True))
             run_chunk_mock.assert_not_called()
+
+    def test_run_spatial_heading_chunked_path_uses_seam_registration_for_adjacent_retry(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {
+                "COLMAP_CHUNK_PLANNER": "footprint_graph_v1",
+                "COLMAP_PARENT_MERGE_MODE": "seam_only_v1",
+            },
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.capture_ordered_names = [
+                "IMG_00.jpg",
+                "IMG_01.jpg",
+                "IMG_02.jpg",
+                "IMG_03.jpg",
+                "IMG_04.jpg",
+            ]
+            pipeline.gps_min_registered_ratio = 0.8
+            chunk_plan_0 = run_colmap_sfm.ChunkPlan(
+                index=0,
+                core_names=["IMG_00.jpg", "IMG_01.jpg"],
+                image_names=["IMG_00.jpg", "IMG_01.jpg", "IMG_02.jpg"],
+                overlap_names=["IMG_02.jpg"],
+            )
+            chunk_plan_1 = run_colmap_sfm.ChunkPlan(
+                index=1,
+                core_names=["IMG_02.jpg", "IMG_03.jpg"],
+                image_names=["IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg"],
+                overlap_names=["IMG_04.jpg"],
+            )
+            seed_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_00_mapper_initial",
+                text_dir=root / "chunk0_text",
+                cameras_registered=1,
+                images_registered=3,
+                points_3d=100,
+                binary_dir=root / "chunk0_bin",
+                image_names=chunk_plan_0.image_names,
+            )
+            merged_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_00_01_adjacent_merge_point_triangulator_01",
+                text_dir=root / "adjacent_text",
+                cameras_registered=1,
+                images_registered=4,
+                points_3d=120,
+                binary_dir=root / "adjacent_bin",
+                image_names=chunk_plan_0.image_names + ["IMG_03.jpg"],
+            )
+            run_chunk_results = iter([seed_model, RuntimeError("chunk 1 remained below threshold")])
+
+            def fake_run_chunk_pipeline(chunk_plan, *args, **kwargs):
+                result = next(run_chunk_results)
+                if isinstance(result, Exception):
+                    pipeline.failure_stage = "chunk_01_recovery_failed"
+                    pipeline.failure_reason_detail = str(result)
+                    pipeline.failed_chunk_index = chunk_plan.index
+                    raise result
+                return result
+
+            with mock.patch.object(
+                pipeline,
+                "build_chunk_plans",
+                return_value=[chunk_plan_0, chunk_plan_1],
+            ), mock.patch.object(
+                pipeline,
+                "run_chunk_pipeline",
+                side_effect=fake_run_chunk_pipeline,
+            ) as run_chunk_mock, mock.patch.object(
+                pipeline,
+                "cross_chunk_edge_count",
+                side_effect=[5, 5],
+            ), mock.patch.object(
+                pipeline,
+                "run_parent_seam_registration",
+                return_value=merged_model,
+            ) as seam_mock, mock.patch.object(
+                pipeline,
+                "merged_image_names",
+                side_effect=lambda model: {
+                    "chunk_00_mapper_initial": {"IMG_00.jpg", "IMG_01.jpg", "IMG_02.jpg"},
+                    "chunk_00_01_adjacent_merge_point_triangulator_01": {
+                        "IMG_00.jpg",
+                        "IMG_01.jpg",
+                        "IMG_02.jpg",
+                        "IMG_03.jpg",
+                    },
+                }[model.stage],
+            ), mock.patch.object(
+                pipeline,
+                "repair_disconnected_chunk_model_components",
+                return_value=([chunk_plan_0], [merged_model]),
+            ) as repair_mock, mock.patch.object(
+                pipeline,
+                "merge_chunk_models",
+                return_value=merged_model,
+            ) as merge_mock:
+                pipeline.dataset_image_count = 5
+                pipeline.run_spatial_heading_chunked_path()
+
+            self.assertEqual(run_chunk_mock.call_count, 2)
+            seam_mock.assert_called_once()
+            self.assertEqual(seam_mock.call_args.kwargs["stage_prefix"], "chunk_00_01_adjacent_merge")
+            self.assertFalse(seam_mock.call_args.kwargs["run_final_bundle_adjustment"])
+            repair_mock.assert_called_once()
+            merge_mock.assert_called_once()
+            self.assertEqual(pipeline.chunk_recovery_mode, "seam_only_adjacent_registration")
 
     def test_repair_disconnected_chunk_model_components_keeps_auxiliary_bridge_model(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -4440,6 +4440,37 @@ class ColmapPipeline:
                 }
             )
             return recovered_model
+        if (
+            self.parent_merge_mode == "seam_only_v1"
+            and self.chunk_planner == "footprint_graph_v1"
+            and recovered_model.images_registered > 0
+        ):
+            logger.info(
+                "Chunk %s remained below the standard retry threshold at %s/%s images and %s/%s core images; carrying the recovery model forward as a seam-only leaf seed instead of triggering an adjacent mapper rerun",
+                retry_chunk_plan.index,
+                recovered_model.images_registered,
+                len(retry_chunk_plan.image_names),
+                recovered_core_count,
+                len(retry_chunk_plan.core_names),
+            )
+            self.chunk_recovery_mode = "seam_only_leaf_partial"
+            self.clear_failure()
+            self.chunk_run_metrics.append(
+                {
+                    "chunk_index": chunk_plan.index,
+                    "image_count": len(chunk_plan.image_names),
+                    "registered_ratio": round(registered_ratio, 4),
+                    "core_registered_ratio": round(core_registered_ratio, 4),
+                    "recovered_registered_ratio": round(recovered_ratio, 4),
+                    "recovered_core_registered_ratio": round(recovered_core_ratio, 4),
+                    "failure": False,
+                    "partial_result_accepted": True,
+                    "partial_result_stage": "recovery",
+                    "partial_result_timed_out": recovered_model.timed_out,
+                    "partial_result_reason": "seam_only_leaf_seed",
+                }
+            )
+            return recovered_model
         self.mark_failure(
             stage=f"{chunk_stage_prefix}_recovery_failed",
             reason=(
@@ -5103,6 +5134,10 @@ class ColmapPipeline:
                     )
                 if not merge_candidates:
                     raise
+                if self.parent_merge_mode == "seam_only_v1" and chunk_models:
+                    merge_candidates = [
+                        candidate for candidate in merge_candidates if candidate[1] == "previous"
+                    ] or merge_candidates
                 _, merge_side, neighbor_chunk_plan = min(merge_candidates, key=lambda item: item[0])
                 merged_chunk_plan = self.build_adjacent_merged_chunk_plan(
                     neighbor_chunk_plan if merge_side == "previous" else chunk_plan,
@@ -5121,16 +5156,52 @@ class ColmapPipeline:
                     len(merged_chunk_plan.image_names),
                 )
                 self.adjacent_chunk_merge_triggered = True
-                self.chunk_recovery_mode = "prior_aware_retry_adjacent_merge_no_vocab"
                 self.clear_failure()
-                if merge_side == "previous":
-                    chunk_models.pop()
+                if self.parent_merge_mode == "seam_only_v1" and merge_side == "previous" and chunk_models:
+                    self.chunk_recovery_mode = "seam_only_adjacent_registration"
+                    seed_model = chunk_models.pop()
                     executed_chunk_plans.pop()
-                merged_model = self.run_chunk_pipeline(
-                    merged_chunk_plan,
-                    stage_prefix=merged_stage_prefix,
-                    dir_name=merged_stage_prefix,
-                )
+                    merged_model = self.run_parent_seam_registration(
+                        seed_model=seed_model,
+                        chunk_plan=merged_chunk_plan,
+                        stage_prefix=merged_stage_prefix,
+                        dir_name=merged_stage_prefix,
+                        run_final_bundle_adjustment=False,
+                    )
+                    merged_model.image_names = list(merged_chunk_plan.image_names)
+                    merged_names = self.merged_image_names(merged_model)
+                    seed_names = self.merged_image_names(seed_model)
+                    if not (
+                        (
+                            len(merged_names.intersection(seed_names)) / len(seed_names)
+                            if seed_names
+                            else 1.0
+                        )
+                        >= 0.95
+                        and merged_names.intersection(set(chunk_plan.core_names))
+                    ):
+                        self.mark_failure(
+                            stage=f"{merged_stage_prefix}_seam_registration_failed",
+                            reason=(
+                                f"seam-only adjacent registration retained "
+                                f"{len(merged_names.intersection(seed_names))}/{len(seed_names)} prior images "
+                                f"and registered "
+                                f"{len(merged_names.intersection(set(chunk_plan.core_names)))}/"
+                                f"{len(set(chunk_plan.core_names))} current core images"
+                            ),
+                            chunk_index=chunk_plan.index,
+                        )
+                        raise RuntimeError(self.failure_reason_detail)
+                else:
+                    self.chunk_recovery_mode = "prior_aware_retry_adjacent_merge_no_vocab"
+                    if merge_side == "previous":
+                        chunk_models.pop()
+                        executed_chunk_plans.pop()
+                    merged_model = self.run_chunk_pipeline(
+                        merged_chunk_plan,
+                        stage_prefix=merged_stage_prefix,
+                        dir_name=merged_stage_prefix,
+                    )
                 chunk_models.append(merged_model)
                 executed_chunk_plans.append(merged_chunk_plan)
                 chunk_index += 1 if merge_side == "previous" else 2
