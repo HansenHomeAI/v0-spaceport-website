@@ -1,5 +1,5 @@
-reason: completed implementation and hard-proof validation for Meadow prior-source selection, fast-fail recovery, and corrected chunked registration
-last_step: validated the corrected Meadow chunk-4 rebuild at 343/343 registration, stopped the auxiliary full-dataset probe to save compute, and captured the final proof in docs/sfm_meadow_recovery_investigation.md
-next_unblocked_step: optional future iteration would benchmark future Meadow changes against the corrected chunk-4 rebuild subset and then rerun the full dataset only if those cheaper checks regress
+reason: completed MD1 phase-1 footprint-graph validation with a passing geometry probe and verified probe-level hard proof
+last_step: finished SageMaker job md1candg15-1775878097 at 467/467 registration, verified the bridge-timeout fix cleared the old geometry failure stage, and recorded the baseline-vs-candidate proof in docs/md1_phase1_footprint_graph_validation.md
+next_unblocked_step: optimize pair density and bridge cost before attempting the full MD1 dataset, because phase 1 proved robustness/quality but not compute efficiency
 owner_action_needed: none
-updated: 2026-04-09T16:36:00Z
+updated: 2026-04-11T06:40:00Z
