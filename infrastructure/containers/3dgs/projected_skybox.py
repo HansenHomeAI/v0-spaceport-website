@@ -49,6 +49,11 @@ class ProjectedSkyboxSettings:
     min_projected_elevation: float = 0.0
     observed_blur_radius_px: int = 20
     detail_blur_radius_px: int = 10
+    fill_edge_horizontal_blur_px: int = 40
+    fill_edge_vertical_blur_px: int = 120
+    seam_blend_width_px: int = 56
+    detail_boundary_fade_px: int = 32
+    detail_negative_luma_scale: float = 0.18
 
 
 @dataclass
@@ -374,6 +379,27 @@ def _gaussian_blur_array(array: np.ndarray, radius_px: int) -> np.ndarray:
     return (blurred * scale).astype(np.float32)
 
 
+def _gaussian_blur_array_anisotropic(
+    array: np.ndarray,
+    radius_x_px: int,
+    radius_y_px: int,
+) -> np.ndarray:
+    array_f32 = np.asarray(array, dtype=np.float32)
+    sigma_x = max(0, int(radius_x_px))
+    sigma_y = max(0, int(radius_y_px))
+    if sigma_x <= 0 and sigma_y <= 0:
+        return array_f32
+    if cv2 is not None:
+        return cv2.GaussianBlur(
+            array_f32,
+            ksize=(0, 0),
+            sigmaX=float(max(sigma_x, 1e-6)),
+            sigmaY=float(max(sigma_y, 1e-6)),
+            borderType=cv2.BORDER_REPLICATE,
+        ).astype(np.float32)
+    return _gaussian_blur_array(array_f32, max(sigma_x, sigma_y))
+
+
 def _pad_equirectangular(array: np.ndarray, pad: int) -> np.ndarray:
     if pad <= 0:
         return np.asarray(array, dtype=np.float32)
@@ -388,9 +414,31 @@ def _blur_scalar_equirectangular(values: np.ndarray, radius_px: int) -> np.ndarr
     scalar = np.asarray(values, dtype=np.float32)
     if radius_px <= 0:
         return scalar
-    pad = max(2, int(np.ceil(float(radius_px) * 2.5)))
+    pad = min(
+        scalar.shape[1],
+        max(2, int(np.ceil(float(radius_px) * 2.5))),
+    )
     padded = _pad_equirectangular(scalar, pad)
     blurred = _gaussian_blur_array(padded, radius_px)
+    return blurred[pad:-pad, pad:-pad].astype(np.float32)
+
+
+def _blur_equirectangular_anisotropic(
+    values: np.ndarray,
+    radius_x_px: int,
+    radius_y_px: int,
+) -> np.ndarray:
+    scalar_or_rgb = np.asarray(values, dtype=np.float32)
+    sigma_x = max(0, int(radius_x_px))
+    sigma_y = max(0, int(radius_y_px))
+    if sigma_x <= 0 and sigma_y <= 0:
+        return scalar_or_rgb
+    pad = min(
+        scalar_or_rgb.shape[1],
+        max(2, int(np.ceil(float(max(sigma_x, sigma_y, 1)) * 2.5))),
+    )
+    padded = _pad_equirectangular(scalar_or_rgb, pad)
+    blurred = _gaussian_blur_array_anisotropic(padded, sigma_x, sigma_y)
     return blurred[pad:-pad, pad:-pad].astype(np.float32)
 
 
@@ -404,7 +452,10 @@ def _weighted_equirectangular_blur(
     if radius_px <= 0:
         return np.clip(rgb_f32, 0.0, 1.0).astype(np.float32), weight_f32
 
-    pad = max(2, int(np.ceil(float(radius_px) * 2.5)))
+    pad = min(
+        rgb_f32.shape[1],
+        max(2, int(np.ceil(float(radius_px) * 2.5))),
+    )
     padded_rgb = _pad_equirectangular(rgb_f32 * weight_f32[..., None], pad)
     padded_weights = _pad_equirectangular(weight_f32, pad)
     blurred_rgb = _gaussian_blur_array(padded_rgb, radius_px)
@@ -413,6 +464,44 @@ def _weighted_equirectangular_blur(
     cropped_weights = blurred_weights[pad:-pad, pad:-pad]
     normalized_rgb = cropped_rgb / np.clip(cropped_weights[..., None], 1e-6, None)
     return np.clip(normalized_rgb, 0.0, 1.0).astype(np.float32), np.clip(cropped_weights, 0.0, None).astype(np.float32)
+
+
+def _nearest_valid_columns(valid_columns: np.ndarray, width: int) -> np.ndarray:
+    all_columns = np.arange(width, dtype=np.int32)
+    valid = np.asarray(valid_columns, dtype=np.int32)
+    if valid.size == 0:
+        return np.full(width, -1, dtype=np.int32)
+
+    valid = np.unique(np.mod(valid, width))
+    insert_left = np.searchsorted(valid, all_columns, side="left")
+    next_columns = valid[np.mod(insert_left, valid.size)]
+    previous_columns = valid[np.mod(insert_left - 1, valid.size)]
+    next_distance = np.mod(next_columns - all_columns, width)
+    previous_distance = np.mod(all_columns - previous_columns, width)
+    choose_next = next_distance < previous_distance
+    return np.where(choose_next, next_columns, previous_columns).astype(np.int32)
+
+
+def _interior_distance_fade(binary_mask: np.ndarray, fade_px: int) -> np.ndarray:
+    mask = np.asarray(binary_mask, dtype=bool)
+    if fade_px <= 0:
+        return mask.astype(np.float32)
+    if not np.any(mask):
+        return np.zeros_like(mask, dtype=np.float32)
+
+    if cv2 is not None:
+        distance = cv2.distanceTransform(mask.astype(np.uint8), cv2.DIST_L2, 3)
+        return np.clip(distance / float(max(fade_px, 1)), 0.0, 1.0).astype(np.float32)
+
+    eroded = mask.copy()
+    fade = np.zeros_like(mask, dtype=np.float32)
+    for step in range(1, max(1, int(fade_px)) + 1):
+        eroded = _erode_binary_mask(eroded, 1)
+        if not np.any(eroded):
+            break
+        fade[eroded] = np.maximum(fade[eroded], step / float(max(fade_px, 1)))
+    fade[mask] = np.maximum(fade[mask], 1e-3)
+    return np.clip(fade, 0.0, 1.0).astype(np.float32)
 
 
 def _robust_median_rgb(rgb: np.ndarray, mask: np.ndarray) -> Optional[np.ndarray]:
@@ -469,6 +558,9 @@ def build_photo_guided_fill(
     observed_mask: np.ndarray,
     weight_accum: np.ndarray,
     fallback_fill_rgb: np.ndarray,
+    horizontal_blur_px: int,
+    vertical_blur_px: int,
+    seam_blend_width_px: int,
 ) -> tuple[np.ndarray, dict[str, Any]]:
     if not np.any(observed_mask):
         return build_low_frequency_fill(fallback_fill_rgb), {
@@ -477,50 +569,80 @@ def build_photo_guided_fill(
         }
 
     height, width, _ = observed_rgb.shape
-    local_dirs = _equirectangular_local_directions(width=width, height=height)
-    x = local_dirs[..., 0]
-    y = local_dirs[..., 1]
-    z = local_dirs[..., 2]
-    feature_grid = np.stack(
-        [
-            np.ones((height, width), dtype=np.float32),
-            x,
-            y,
-            z,
-            x * y,
-            y * z,
-            z * x,
-            x * x,
-            y * y,
-            z * z,
-        ],
-        axis=-1,
-    )
-
-    flat_mask = observed_mask.reshape(-1)
-    flat_weights = np.clip(weight_accum.reshape(-1)[flat_mask], 1e-3, None).astype(np.float32)
-    features = feature_grid.reshape(-1, feature_grid.shape[-1])[flat_mask]
-    targets = observed_rgb.reshape(-1, 3)[flat_mask]
-
-    if features.shape[0] < feature_grid.shape[-1]:
+    valid_columns = np.flatnonzero(np.any(observed_mask, axis=0))
+    if valid_columns.size == 0:
         return build_low_frequency_fill(fallback_fill_rgb), {
             "fill_strategy": "learned_background_low_frequency",
             "fill_used_observed_projection": False,
-            "fill_regression_reason": "insufficient_observed_samples",
+            "fill_edge_reason": "no_valid_columns",
         }
 
-    weighted_features = features * flat_weights[:, None]
-    weighted_targets = targets * flat_weights[:, None]
-    coefficients, *_ = np.linalg.lstsq(weighted_features, weighted_targets, rcond=None)
-    predicted = feature_grid.reshape(-1, feature_grid.shape[-1]) @ coefficients
-    predicted = predicted.reshape(height, width, 3).astype(np.float32)
-    predicted = np.clip(predicted, 0.0, 1.0)
+    source_rgb = np.clip(np.asarray(observed_rgb, dtype=np.float32), 0.0, 1.0)
+    extended_rgb = np.zeros_like(source_rgb, dtype=np.float32)
+    top_rows = np.full(width, -1, dtype=np.int32)
+    bottom_rows = np.full(width, -1, dtype=np.int32)
+
+    for column in valid_columns.tolist():
+        column_mask = observed_mask[:, column]
+        observed_rows = np.flatnonzero(column_mask)
+        if observed_rows.size == 0:
+            continue
+        top_row = int(observed_rows[0])
+        bottom_row = int(observed_rows[-1])
+        top_rows[column] = top_row
+        bottom_rows[column] = bottom_row
+
+        interior_margin = min(8, max(1, observed_rows.size // 6))
+        if observed_rows.size > ((interior_margin * 2) + 2):
+            interior_rows = observed_rows[interior_margin : observed_rows.size - interior_margin]
+        else:
+            interior_rows = observed_rows
+        upper_interior_rows = interior_rows[: max(1, int(np.ceil(interior_rows.size * 0.65)))]
+        anchor_samples = source_rgb[upper_interior_rows, column, :]
+        anchor_luma = _luminance(anchor_samples)
+        anchor_threshold = float(np.quantile(anchor_luma, 0.55)) if anchor_luma.size else 0.0
+        bright_anchor_samples = anchor_samples[anchor_luma >= anchor_threshold]
+        if bright_anchor_samples.size == 0:
+            bright_anchor_samples = anchor_samples
+        anchor_color = np.median(bright_anchor_samples, axis=0).astype(np.float32)
+
+        if top_row > 0:
+            extended_rgb[:top_row, column, :] = anchor_color
+        extended_rgb[top_row : bottom_row + 1, column, :] = source_rgb[top_row : bottom_row + 1, column, :]
+        if bottom_row + 1 < height:
+            extended_rgb[bottom_row + 1 :, column, :] = anchor_color
+
+    nearest_columns = _nearest_valid_columns(valid_columns, width)
+    invalid_columns = np.setdiff1d(np.arange(width, dtype=np.int32), valid_columns, assume_unique=True)
+    if invalid_columns.size > 0:
+        extended_rgb[:, invalid_columns, :] = extended_rgb[:, nearest_columns[invalid_columns], :]
+        top_rows[invalid_columns] = top_rows[nearest_columns[invalid_columns]]
+        bottom_rows[invalid_columns] = bottom_rows[nearest_columns[invalid_columns]]
+
+    if np.any(top_rows < 0) or np.any(bottom_rows < 0):
+        return build_low_frequency_fill(fallback_fill_rgb), {
+            "fill_strategy": "learned_background_low_frequency",
+            "fill_used_observed_projection": False,
+            "fill_edge_reason": "invalid_column_extension",
+        }
+
+    smoothed_extension = _blur_equirectangular_anisotropic(
+        extended_rgb,
+        radius_x_px=max(0, int(horizontal_blur_px)),
+        radius_y_px=max(0, int(vertical_blur_px)),
+    )
+    predicted = np.clip(smoothed_extension, 0.0, 1.0).astype(np.float32)
 
     return predicted, {
-        "fill_strategy": "observed_projection_spherical_regression",
+        "fill_strategy": "observed_edge_extension_blur",
         "fill_used_observed_projection": True,
-        "fill_regression_feature_count": int(feature_grid.shape[-1]),
-        "fill_regression_sample_count": int(features.shape[0]),
+        "fill_edge_horizontal_blur_px": int(horizontal_blur_px),
+        "fill_edge_vertical_blur_px": int(vertical_blur_px),
+        "fill_seam_blend_width_px": int(seam_blend_width_px),
+        "fill_observed_column_count": int(valid_columns.size),
+        "fill_observed_sample_count": int(np.count_nonzero(np.clip(weight_accum, 0.0, None))),
+        "fill_top_row_mean": float(np.mean(top_rows.astype(np.float32))),
+        "fill_bottom_row_mean": float(np.mean(bottom_rows.astype(np.float32))),
     }
 
 
@@ -933,12 +1055,20 @@ def build_projected_photo_skybox(
     observed_mask = base_support_accum >= float(max(settings.min_observations_per_pixel, 1))
     safe_weights = np.clip(base_weight_accum[..., None], 1e-6, None)
     observed_rgb = base_color_accum / safe_weights
+    smoothed_observed_rgb, smoothed_observed_support = _weighted_equirectangular_blur(
+        rgb=np.clip(observed_rgb, 0.0, 1.0),
+        weights=base_weight_accum,
+        radius_px=int(settings.observed_blur_radius_px),
+    )
     if settings.low_frequency_fill:
         fill_base, fill_metadata = build_photo_guided_fill(
-            observed_rgb=np.clip(observed_rgb, 0.0, 1.0),
+            observed_rgb=smoothed_observed_rgb,
             observed_mask=observed_mask,
             weight_accum=base_weight_accum,
             fallback_fill_rgb=fill_rgb,
+            horizontal_blur_px=int(settings.fill_edge_horizontal_blur_px),
+            vertical_blur_px=int(settings.fill_edge_vertical_blur_px),
+            seam_blend_width_px=int(settings.seam_blend_width_px),
         )
     else:
         fill_base = np.clip(fill_rgb, 0.0, 1.0)
@@ -947,16 +1077,20 @@ def build_projected_photo_skybox(
             "fill_used_observed_projection": False,
         }
 
-    smoothed_observed_rgb, smoothed_observed_support = _weighted_equirectangular_blur(
-        rgb=np.clip(observed_rgb, 0.0, 1.0),
-        weights=base_weight_accum,
-        radius_px=int(settings.observed_blur_radius_px),
-    )
     if np.any(smoothed_observed_support > 1e-6):
         support_reference = float(np.percentile(smoothed_observed_support[smoothed_observed_support > 1e-6], 80))
     else:
         support_reference = 1.0
-    base_mix = np.clip(smoothed_observed_support / max(support_reference, 1e-6), 0.0, 1.0)[..., None]
+    interior_mix = _interior_distance_fade(
+        observed_mask,
+        fade_px=max(1, int(settings.seam_blend_width_px)),
+    )
+    interior_mix = _blur_scalar_equirectangular(
+        interior_mix,
+        radius_px=max(1, int(settings.seam_blend_width_px) // 3),
+    )
+    support_mix = np.clip(smoothed_observed_support / max(support_reference, 1e-6), 0.0, 1.0)
+    base_mix = np.clip(interior_mix + (0.15 * support_mix), 0.0, 1.0)[..., None]
     base_rgb = (fill_base * (1.0 - base_mix)) + (smoothed_observed_rgb * base_mix)
     base_rgb = _scale_saturation(base_rgb, float(settings.base_saturation_scale))
     base_rgb, _ = _weighted_equirectangular_blur(
@@ -981,10 +1115,20 @@ def build_projected_photo_skybox(
     else:
         detail_support_reference = 1.0
     detail_support = np.clip(detail_support / max(detail_support_reference, 1e-6), 0.0, 1.0)
+    detail_support *= _interior_distance_fade(
+        detail_observed_mask,
+        fade_px=max(1, int(settings.detail_boundary_fade_px)),
+    )
 
     detail_observed_luma = _luminance(detail_rgb)
     detail_smoothed_luma = _luminance(detail_smoothed_rgb)
     detail_luma_residual = (detail_observed_luma - detail_smoothed_luma)[..., None]
+    negative_luma_scale = float(np.clip(settings.detail_negative_luma_scale, 0.0, 1.0))
+    detail_luma_residual = np.where(
+        detail_luma_residual < 0.0,
+        detail_luma_residual * negative_luma_scale,
+        detail_luma_residual,
+    ).astype(np.float32)
     detail_observed_chroma = detail_rgb - detail_observed_luma[..., None]
     detail_smoothed_chroma = detail_smoothed_rgb - detail_smoothed_luma[..., None]
     detail_chroma_residual = detail_observed_chroma - detail_smoothed_chroma
@@ -1070,6 +1214,11 @@ def build_projected_photo_skybox(
         "min_projected_elevation": float(settings.min_projected_elevation),
         "observed_blur_radius_px": int(settings.observed_blur_radius_px),
         "detail_blur_radius_px": int(settings.detail_blur_radius_px),
+        "fill_edge_horizontal_blur_px": int(settings.fill_edge_horizontal_blur_px),
+        "fill_edge_vertical_blur_px": int(settings.fill_edge_vertical_blur_px),
+        "seam_blend_width_px": int(settings.seam_blend_width_px),
+        "detail_boundary_fade_px": int(settings.detail_boundary_fade_px),
+        "detail_negative_luma_scale": float(settings.detail_negative_luma_scale),
         "projection_elevation_mode_counts": elevation_mode_counts,
         "detail_projection_elevation_mode_counts": detail_elevation_mode_counts,
         "low_frequency_fill": bool(settings.low_frequency_fill),

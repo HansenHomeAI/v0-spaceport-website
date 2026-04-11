@@ -240,13 +240,42 @@ class ProjectedSkyboxTests(unittest.TestCase):
             observed_mask=observed_mask,
             weight_accum=weight_accum,
             fallback_fill_rgb=fallback_fill_rgb,
+            horizontal_blur_px=12,
+            vertical_blur_px=32,
+            seam_blend_width_px=12,
         )
 
         zenith = fill_rgb[: height // 10]
         self.assertTrue(metadata["fill_used_observed_projection"])
-        self.assertEqual(metadata["fill_strategy"], "observed_projection_spherical_regression")
+        self.assertEqual(metadata["fill_strategy"], "observed_edge_extension_blur")
         self.assertGreater(float(zenith[..., 2].mean()), float(zenith[..., 0].mean()) + 0.2)
         self.assertGreater(float(zenith.mean()), float(fallback_fill_rgb[: height // 10].mean()) + 0.2)
+
+    def test_build_photo_guided_fill_wraps_sparse_columns_without_dark_gap(self):
+        height = 96
+        width = 192
+        observed_rgb = np.zeros((height, width, 3), dtype=np.float32)
+        observed_mask = np.zeros((height, width), dtype=bool)
+        observed_mask[40:56, 8:24] = True
+        observed_mask[40:56, 164:180] = True
+        observed_rgb[observed_mask] = np.array([0.58, 0.78, 0.97], dtype=np.float32)
+        weight_accum = observed_mask.astype(np.float32)
+        fallback_fill_rgb = np.full((height, width, 3), [0.08, 0.04, 0.04], dtype=np.float32)
+
+        fill_rgb, metadata = build_photo_guided_fill(
+            observed_rgb=observed_rgb,
+            observed_mask=observed_mask,
+            weight_accum=weight_accum,
+            fallback_fill_rgb=fallback_fill_rgb,
+            horizontal_blur_px=16,
+            vertical_blur_px=48,
+            seam_blend_width_px=12,
+        )
+
+        self.assertEqual(metadata["fill_strategy"], "observed_edge_extension_blur")
+        center_column = fill_rgb[:, width // 2, :]
+        self.assertGreater(float(center_column[:, 2].mean()), float(center_column[:, 0].mean()) + 0.12)
+        self.assertGreater(float(center_column.mean()), float(fallback_fill_rgb[:, width // 2, :].mean()) + 0.15)
 
     def test_build_projected_photo_skybox_uses_observed_sky_before_fill(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -299,21 +328,29 @@ class ProjectedSkyboxTests(unittest.TestCase):
                 fill_rgb=np.full((128, 256, 3), [0.7, 0.2, 0.2], dtype=np.float32),
                 settings=ProjectedSkyboxSettings(
                     min_sky_mask_ratio=0.05,
+                    blend_edge_feather_px=0,
                     projection_max_long_side=256,
                     projection_mask_mode="semantic_horizon_fill",
                     projection_confidence_threshold=0.6,
                     projection_horizon_smoothing_px=1,
                     min_projected_elevation=-1.0,
+                    observed_blur_radius_px=4,
+                    detail_blur_radius_px=2,
+                    fill_edge_horizontal_blur_px=4,
+                    fill_edge_vertical_blur_px=10,
+                    seam_blend_width_px=4,
                 ),
             )
 
             self.assertEqual(manifest["contributing_frame_count"], 1)
             self.assertGreater(manifest["observed_coverage_ratio"], 0.0)
             self.assertGreater(manifest["mean_projection_mask_ratio"], manifest["mean_semantic_mask_ratio"])
-            self.assertEqual(manifest["fill_strategy"], "observed_projection_spherical_regression")
+            self.assertEqual(manifest["fill_strategy"], "observed_edge_extension_blur")
             self.assertIn("detail_coverage_ratio", manifest)
             self.assertIn("base_saturation_scale", manifest)
             self.assertIn("projection_elevation_mode_counts", manifest)
+            self.assertIn("fill_edge_horizontal_blur_px", manifest)
+            self.assertIn("detail_boundary_fade_px", manifest)
             self.assertTrue((output_dir / "background_skybox_base.webp").exists())
             self.assertTrue((output_dir / "background_skybox_detail.webp").exists())
             self.assertTrue((output_dir / "background_skybox_detail_support.png").exists())

@@ -75,6 +75,20 @@ output:
     projection_mask_mode: "semantic_horizon_fill"
     projection_confidence_threshold: 0.25
     projection_horizon_smoothing_px: 31
+    photometric_alignment_strength: 0.65
+    base_saturation_scale: 0.76
+    detail_luma_strength: 0.7
+    detail_chroma_strength: 0.08
+    detail_horizon_margin_px: 24
+    detail_mask_erosion_px: 3
+    min_projected_elevation: 0.0
+    observed_blur_radius_px: 20
+    detail_blur_radius_px: 10
+    fill_edge_horizontal_blur_px: 40
+    fill_edge_vertical_blur_px: 120
+    seam_blend_width_px: 56
+    detail_boundary_fade_px: 32
+    detail_negative_luma_scale: 0.18
   floater_pruning:
     enabled: true
     min_views: 6

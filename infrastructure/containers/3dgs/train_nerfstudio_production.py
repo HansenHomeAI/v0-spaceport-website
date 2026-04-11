@@ -167,6 +167,11 @@ class NerfStudioTrainer:
             'SKYBOX_MIN_PROJECTED_ELEVATION': 'output.background_skybox.min_projected_elevation',
             'SKYBOX_OBSERVED_BLUR_RADIUS_PX': 'output.background_skybox.observed_blur_radius_px',
             'SKYBOX_DETAIL_BLUR_RADIUS_PX': 'output.background_skybox.detail_blur_radius_px',
+            'SKYBOX_FILL_EDGE_HORIZONTAL_BLUR_PX': 'output.background_skybox.fill_edge_horizontal_blur_px',
+            'SKYBOX_FILL_EDGE_VERTICAL_BLUR_PX': 'output.background_skybox.fill_edge_vertical_blur_px',
+            'SKYBOX_SEAM_BLEND_WIDTH_PX': 'output.background_skybox.seam_blend_width_px',
+            'SKYBOX_DETAIL_BOUNDARY_FADE_PX': 'output.background_skybox.detail_boundary_fade_px',
+            'SKYBOX_DETAIL_NEGATIVE_LUMA_SCALE': 'output.background_skybox.detail_negative_luma_scale',
             'FLOATER_PRUNING_ENABLED': 'output.floater_pruning.enabled',
             'FLOATER_PRUNING_MIN_VIEWS': 'output.floater_pruning.min_views',
             'FLOATER_PRUNING_TOP_REGION_RATIO': 'output.floater_pruning.top_region_ratio',
@@ -1073,6 +1078,11 @@ class NerfStudioTrainer:
                 "--skybox-min-projected-elevation", str(skybox_config.get('min_projected_elevation', 0.0)),
                 "--skybox-observed-blur-radius-px", str(skybox_config.get('observed_blur_radius_px', 20)),
                 "--skybox-detail-blur-radius-px", str(skybox_config.get('detail_blur_radius_px', 10)),
+                "--skybox-fill-edge-horizontal-blur-px", str(skybox_config.get('fill_edge_horizontal_blur_px', 40)),
+                "--skybox-fill-edge-vertical-blur-px", str(skybox_config.get('fill_edge_vertical_blur_px', 120)),
+                "--skybox-seam-blend-width-px", str(skybox_config.get('seam_blend_width_px', 56)),
+                "--skybox-detail-boundary-fade-px", str(skybox_config.get('detail_boundary_fade_px', 32)),
+                "--skybox-detail-negative-luma-scale", str(skybox_config.get('detail_negative_luma_scale', 0.18)),
                 "--training-mask-mode", str(semantic_mask_settings.training_mask_mode),
             ]
         else:
@@ -1187,6 +1197,11 @@ class NerfStudioTrainer:
                 'min_projected_elevation': float(skybox_settings.get('min_projected_elevation', 0.0)),
                 'observed_blur_radius_px': int(skybox_settings.get('observed_blur_radius_px', 20)),
                 'detail_blur_radius_px': int(skybox_settings.get('detail_blur_radius_px', 10)),
+                'fill_edge_horizontal_blur_px': int(skybox_settings.get('fill_edge_horizontal_blur_px', 40)),
+                'fill_edge_vertical_blur_px': int(skybox_settings.get('fill_edge_vertical_blur_px', 120)),
+                'seam_blend_width_px': int(skybox_settings.get('seam_blend_width_px', 56)),
+                'detail_boundary_fade_px': int(skybox_settings.get('detail_boundary_fade_px', 32)),
+                'detail_negative_luma_scale': float(skybox_settings.get('detail_negative_luma_scale', 0.18)),
             },
         }
         

@@ -94,6 +94,11 @@ def build_projected_settings(trainer: NerfStudioTrainer) -> ProjectedSkyboxSetti
         min_projected_elevation=float(skybox_settings.get("min_projected_elevation", 0.0)),
         observed_blur_radius_px=int(skybox_settings.get("observed_blur_radius_px", 20)),
         detail_blur_radius_px=int(skybox_settings.get("detail_blur_radius_px", 10)),
+        fill_edge_horizontal_blur_px=int(skybox_settings.get("fill_edge_horizontal_blur_px", 40)),
+        fill_edge_vertical_blur_px=int(skybox_settings.get("fill_edge_vertical_blur_px", 120)),
+        seam_blend_width_px=int(skybox_settings.get("seam_blend_width_px", 56)),
+        detail_boundary_fade_px=int(skybox_settings.get("detail_boundary_fade_px", 32)),
+        detail_negative_luma_scale=float(skybox_settings.get("detail_negative_luma_scale", 0.18)),
     )
 
 

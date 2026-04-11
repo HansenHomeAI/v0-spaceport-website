@@ -237,6 +237,11 @@ def main() -> None:
     parser.add_argument("--skybox-min-projected-elevation", type=float, default=0.0)
     parser.add_argument("--skybox-observed-blur-radius-px", type=int, default=20)
     parser.add_argument("--skybox-detail-blur-radius-px", type=int, default=10)
+    parser.add_argument("--skybox-fill-edge-horizontal-blur-px", type=int, default=40)
+    parser.add_argument("--skybox-fill-edge-vertical-blur-px", type=int, default=120)
+    parser.add_argument("--skybox-seam-blend-width-px", type=int, default=56)
+    parser.add_argument("--skybox-detail-boundary-fade-px", type=int, default=32)
+    parser.add_argument("--skybox-detail-negative-luma-scale", type=float, default=0.18)
     parser.add_argument("--training-mask-mode", choices=("exclude_sky", "keep_sky"), default="exclude_sky")
     args = parser.parse_args()
 
@@ -271,6 +276,11 @@ def main() -> None:
         min_projected_elevation=float(args.skybox_min_projected_elevation),
         observed_blur_radius_px=int(args.skybox_observed_blur_radius_px),
         detail_blur_radius_px=int(args.skybox_detail_blur_radius_px),
+        fill_edge_horizontal_blur_px=int(args.skybox_fill_edge_horizontal_blur_px),
+        fill_edge_vertical_blur_px=int(args.skybox_fill_edge_vertical_blur_px),
+        seam_blend_width_px=int(args.skybox_seam_blend_width_px),
+        detail_boundary_fade_px=int(args.skybox_detail_boundary_fade_px),
+        detail_negative_luma_scale=float(args.skybox_detail_negative_luma_scale),
     )
     skybox_path = build_background_skybox(
         model=model,
