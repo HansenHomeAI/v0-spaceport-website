@@ -11,13 +11,15 @@ import os
 import shutil
 import tarfile
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, TYPE_CHECKING
 
 import numpy as np
 import yaml
 
 from projected_skybox import ProjectedSkyboxSettings, build_projected_photo_skybox
-from train_nerfstudio_production import NerfStudioTrainer
+
+if TYPE_CHECKING:
+    from train_nerfstudio_production import NerfStudioTrainer
 
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -83,6 +85,15 @@ def build_projected_settings(trainer: NerfStudioTrainer) -> ProjectedSkyboxSetti
         projection_mask_mode=str(skybox_settings.get("projection_mask_mode", "semantic_horizon_fill")),
         projection_confidence_threshold=float(skybox_settings.get("projection_confidence_threshold", 0.25)),
         projection_horizon_smoothing_px=int(skybox_settings.get("projection_horizon_smoothing_px", 31)),
+        photometric_alignment_strength=float(skybox_settings.get("photometric_alignment_strength", 0.65)),
+        base_saturation_scale=float(skybox_settings.get("base_saturation_scale", 0.78)),
+        detail_luma_strength=float(skybox_settings.get("detail_luma_strength", 0.85)),
+        detail_chroma_strength=float(skybox_settings.get("detail_chroma_strength", 0.12)),
+        detail_horizon_margin_px=int(skybox_settings.get("detail_horizon_margin_px", 24)),
+        detail_mask_erosion_px=int(skybox_settings.get("detail_mask_erosion_px", 3)),
+        min_projected_elevation=float(skybox_settings.get("min_projected_elevation", 0.0)),
+        observed_blur_radius_px=int(skybox_settings.get("observed_blur_radius_px", 20)),
+        detail_blur_radius_px=int(skybox_settings.get("detail_blur_radius_px", 10)),
     )
 
 
@@ -92,6 +103,9 @@ def create_repaired_artifact_tarball(output_dir: Path, tarball_path: Path) -> Pa
         "background_skybox.webp",
         "background_skybox_observed.webp",
         "background_skybox_fill.webp",
+        "background_skybox_base.webp",
+        "background_skybox_detail.webp",
+        "background_skybox_detail_support.png",
         "background_skybox_coverage.png",
         "background_manifest.json",
         "export_manifest.json",

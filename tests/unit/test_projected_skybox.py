@@ -14,10 +14,12 @@ if str(CONTAINER_DIR) not in sys.path:
     sys.path.insert(0, str(CONTAINER_DIR))
 
 from projected_skybox import (  # noqa: E402
+    _apply_frame_alignment,
     ProjectedSkyboxSettings,
     build_photo_guided_fill,
     build_projection_basis,
     build_projected_photo_skybox,
+    derive_detail_sky_mask,
     derive_projection_sky_mask,
     derive_sky_mask_from_training_mask,
     world_dirs_to_equirectangular,
@@ -161,6 +163,49 @@ class ProjectedSkyboxTests(unittest.TestCase):
         self.assertTrue(projection_mask[2, 3])
         self.assertFalse(projection_mask[4, 2])
 
+    def test_derive_detail_sky_mask_removes_horizon_band(self):
+        sky_mask = np.array(
+            [
+                [0, 1, 1, 1, 1, 0],
+                [0, 1, 1, 1, 1, 0],
+                [0, 1, 1, 1, 1, 0],
+                [0, 1, 1, 1, 1, 0],
+                [0, 0, 0, 0, 0, 0],
+            ],
+            dtype=bool,
+        )
+        projection_mask = sky_mask.copy()
+        confidence = np.ones_like(sky_mask, dtype=np.float32)
+
+        detail_mask = derive_detail_sky_mask(
+            sky_mask=sky_mask,
+            projection_mask=projection_mask,
+            confidence=confidence,
+            confidence_threshold=0.5,
+            horizon_margin_px=2,
+            erosion_px=0,
+        )
+
+        self.assertTrue(np.all(detail_mask[0:2, 1:5]))
+        self.assertFalse(np.any(detail_mask[2:, :]))
+
+    def test_apply_frame_alignment_moves_frame_toward_target(self):
+        rgb = np.full((4, 4, 3), [0.30, 0.60, 0.95], dtype=np.float32)
+        mask = np.ones((4, 4), dtype=bool)
+        target = np.array([0.45, 0.62, 0.88], dtype=np.float32)
+
+        aligned, metadata = _apply_frame_alignment(
+            rgb=rgb,
+            reference_mask=mask,
+            target_rgb=target,
+            strength=0.8,
+        )
+
+        self.assertIsNotNone(metadata)
+        before_error = float(np.abs(rgb[0, 0] - target).mean())
+        after_error = float(np.abs(aligned[0, 0] - target).mean())
+        self.assertLess(after_error, before_error)
+
     def test_build_photo_guided_fill_prefers_projected_sky_over_dark_fallback(self):
         height = 128
         width = 256
@@ -239,6 +284,7 @@ class ProjectedSkyboxTests(unittest.TestCase):
                     projection_mask_mode="semantic_horizon_fill",
                     projection_confidence_threshold=0.6,
                     projection_horizon_smoothing_px=1,
+                    min_projected_elevation=-1.0,
                 ),
             )
 
@@ -246,6 +292,11 @@ class ProjectedSkyboxTests(unittest.TestCase):
             self.assertGreater(manifest["observed_coverage_ratio"], 0.0)
             self.assertGreater(manifest["mean_projection_mask_ratio"], manifest["mean_semantic_mask_ratio"])
             self.assertEqual(manifest["fill_strategy"], "observed_projection_spherical_regression")
+            self.assertIn("detail_coverage_ratio", manifest)
+            self.assertIn("base_saturation_scale", manifest)
+            self.assertTrue((output_dir / "background_skybox_base.webp").exists())
+            self.assertTrue((output_dir / "background_skybox_detail.webp").exists())
+            self.assertTrue((output_dir / "background_skybox_detail_support.png").exists())
             observed_skybox = np.asarray(
                 Image.open(output_dir / "background_skybox_observed.webp").convert("RGB"),
                 dtype=np.uint8,
@@ -254,6 +305,7 @@ class ProjectedSkyboxTests(unittest.TestCase):
             self.assertTrue(np.any(observed_skybox[..., 2] > observed_skybox[..., 0] + 20))
             zenith = skybox[: max(1, skybox.shape[0] // 10), :, :]
             self.assertGreater(float(zenith[..., 2].mean()), float(zenith[..., 0].mean()) + 20.0)
+            self.assertFalse(np.array_equal(skybox, observed_skybox))
 
 
 if __name__ == "__main__":

@@ -228,6 +228,15 @@ def main() -> None:
     parser.add_argument("--skybox-projection-mask-mode", default="semantic_horizon_fill")
     parser.add_argument("--skybox-projection-confidence-threshold", type=float, default=0.25)
     parser.add_argument("--skybox-projection-horizon-smoothing-px", type=int, default=31)
+    parser.add_argument("--skybox-photometric-alignment-strength", type=float, default=0.65)
+    parser.add_argument("--skybox-base-saturation-scale", type=float, default=0.78)
+    parser.add_argument("--skybox-detail-luma-strength", type=float, default=0.85)
+    parser.add_argument("--skybox-detail-chroma-strength", type=float, default=0.12)
+    parser.add_argument("--skybox-detail-horizon-margin-px", type=int, default=24)
+    parser.add_argument("--skybox-detail-mask-erosion-px", type=int, default=3)
+    parser.add_argument("--skybox-min-projected-elevation", type=float, default=0.0)
+    parser.add_argument("--skybox-observed-blur-radius-px", type=int, default=20)
+    parser.add_argument("--skybox-detail-blur-radius-px", type=int, default=10)
     parser.add_argument("--training-mask-mode", choices=("exclude_sky", "keep_sky"), default="exclude_sky")
     args = parser.parse_args()
 
@@ -253,6 +262,15 @@ def main() -> None:
         projection_mask_mode=str(args.skybox_projection_mask_mode),
         projection_confidence_threshold=float(args.skybox_projection_confidence_threshold),
         projection_horizon_smoothing_px=int(args.skybox_projection_horizon_smoothing_px),
+        photometric_alignment_strength=float(args.skybox_photometric_alignment_strength),
+        base_saturation_scale=float(args.skybox_base_saturation_scale),
+        detail_luma_strength=float(args.skybox_detail_luma_strength),
+        detail_chroma_strength=float(args.skybox_detail_chroma_strength),
+        detail_horizon_margin_px=int(args.skybox_detail_horizon_margin_px),
+        detail_mask_erosion_px=int(args.skybox_detail_mask_erosion_px),
+        min_projected_elevation=float(args.skybox_min_projected_elevation),
+        observed_blur_radius_px=int(args.skybox_observed_blur_radius_px),
+        detail_blur_radius_px=int(args.skybox_detail_blur_radius_px),
     )
     skybox_path = build_background_skybox(
         model=model,
