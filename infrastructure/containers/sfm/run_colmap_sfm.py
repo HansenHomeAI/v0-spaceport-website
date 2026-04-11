@@ -4120,6 +4120,7 @@ class ColmapPipeline:
         input_path: Path,
         stage: str,
         image_count: int,
+        clear_points: bool = True,
     ) -> ModelSummary:
         started = time.time()
         output_path = self.work_dir / stage
@@ -4137,7 +4138,7 @@ class ColmapPipeline:
                 "--output_path",
                 str(output_path),
                 "--clear_points",
-                "1",
+                "1" if clear_points else "0",
                 "--Mapper.num_threads",
                 str(self.mapper_threads),
                 "--Mapper.ba_refine_principal_point",
@@ -4191,6 +4192,7 @@ class ColmapPipeline:
                 input_path=registrator_model.binary_dir,
                 stage=f"{stage_prefix}_point_triangulator_{cycle:02d}",
                 image_count=len(chunk_plan.image_names),
+                clear_points=False,
             )
             triangulated_model.image_names = list(chunk_plan.image_names)
             current_model = triangulated_model
@@ -4667,28 +4669,37 @@ class ColmapPipeline:
                             second_names=next_names,
                         )
                     ):
-                        merged_candidate.image_names = self.sorted_capture_names(
+                        source_union_names = self.sorted_capture_names(
                             set(self.model_source_image_names(input_one)).union(
                                 self.model_source_image_names(input_two)
                             )
                         )
+                        merged_candidate.image_names = list(source_union_names)
                         if self.parent_merge_mode == "seam_only_v1" and merged_candidate.image_names:
-                            try:
-                                merged_candidate = self.run_parent_seam_registration(
-                                    seed_model=merged_candidate,
-                                    chunk_plan=self.build_chunk_plan_from_image_names(
-                                        index=merge_sequence,
-                                        image_names=merged_candidate.image_names,
-                                    ),
-                                    stage_prefix=f"chunk_model_seam_{merge_sequence:02d}",
-                                    dir_name=f"merged_chunk_model_{merge_sequence:02d}_seam",
-                                    run_final_bundle_adjustment=False,
-                                )
-                            except RuntimeError as seam_error:
-                                logger.warning(
-                                    "Parent seam refinement failed for merge %s; keeping raw model_merger result: %s",
+                            missing_source_names = set(source_union_names).difference(merged_names)
+                            if missing_source_names:
+                                try:
+                                    merged_candidate = self.run_parent_seam_registration(
+                                        seed_model=merged_candidate,
+                                        chunk_plan=self.build_chunk_plan_from_image_names(
+                                            index=merge_sequence,
+                                            image_names=merged_candidate.image_names,
+                                        ),
+                                        stage_prefix=f"chunk_model_seam_{merge_sequence:02d}",
+                                        dir_name=f"merged_chunk_model_{merge_sequence:02d}_seam",
+                                        run_final_bundle_adjustment=False,
+                                    )
+                                except RuntimeError as seam_error:
+                                    logger.warning(
+                                        "Parent seam refinement failed for merge %s; keeping raw model_merger result: %s",
+                                        merge_sequence,
+                                        seam_error,
+                                    )
+                            else:
+                                logger.info(
+                                    "Skipping parent seam refinement for merge %s; raw model_merger retained all %s source images",
                                     merge_sequence,
-                                    seam_error,
+                                    len(source_union_names),
                                 )
                         merged_pair_indexes = (first_index, second_index)
                         break

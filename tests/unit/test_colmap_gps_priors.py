@@ -2484,7 +2484,7 @@ class ColmapGpsPriorTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
-            pipeline.capture_ordered_names = ["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg"]
+            pipeline.capture_ordered_names = ["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg"]
             pipeline.exif_records = {name: {} for name in pipeline.capture_ordered_names}
             first_model_dir = root / "chunk_00" / "sparse_initial" / "0"
             second_model_dir = root / "chunk_01" / "sparse_initial" / "0"
@@ -2525,7 +2525,7 @@ class ColmapGpsPriorTests(unittest.TestCase):
                     images_registered=2,
                     points_3d=1000,
                     binary_dir=first_model_dir,
-                    image_names=["IMG_01.jpg", "IMG_02.jpg"],
+                    image_names=["IMG_01.jpg", "IMG_02.jpg", "IMG_04.jpg"],
                 ),
                 run_colmap_sfm.ModelSummary(
                     stage="chunk_01_mapper_initial",
@@ -2584,6 +2584,94 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertFalse(seam_mock.call_args.kwargs["run_final_bundle_adjustment"])
             self.assertEqual(seam_mock.call_args.kwargs["stage_prefix"], "chunk_model_seam_01")
 
+    def test_merge_chunk_models_skips_parent_seam_when_raw_merge_retains_all_source_images(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.capture_ordered_names = ["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg"]
+            pipeline.exif_records = {name: {} for name in pipeline.capture_ordered_names}
+            first_model_dir = root / "chunk_00" / "sparse_initial" / "0"
+            second_model_dir = root / "chunk_01" / "sparse_initial" / "0"
+            first_text_dir = root / "text_00"
+            second_text_dir = root / "text_01"
+            merged_text_dir = root / "merged_text"
+            refined_text_dir = root / "refined_text"
+            for directory in (
+                first_model_dir,
+                second_model_dir,
+                first_text_dir,
+                second_text_dir,
+                merged_text_dir,
+                refined_text_dir,
+            ):
+                directory.mkdir(parents=True, exist_ok=True)
+            (first_text_dir / "images.txt").write_text(
+                "1 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n2 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (second_text_dir / "images.txt").write_text(
+                "3 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n4 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (merged_text_dir / "images.txt").write_text(
+                "5 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n6 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n7 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            chunk_models = [
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_00_mapper_initial",
+                    text_dir=first_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=1000,
+                    binary_dir=first_model_dir,
+                    image_names=["IMG_01.jpg", "IMG_02.jpg"],
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_01_mapper_initial",
+                    text_dir=second_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=1000,
+                    binary_dir=second_model_dir,
+                    image_names=["IMG_02.jpg", "IMG_03.jpg"],
+                ),
+            ]
+            merged_candidate = run_colmap_sfm.ModelSummary(
+                stage="chunk_model_merger_01_output_attempt_01",
+                text_dir=merged_text_dir,
+                cameras_registered=1,
+                images_registered=3,
+                points_3d=1500,
+                binary_dir=pipeline.work_dir / "merged_chunk_model_01_attempt_01",
+            )
+            adjusted_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_bundle_adjuster",
+                text_dir=refined_text_dir,
+                cameras_registered=1,
+                images_registered=3,
+                points_3d=1800,
+                binary_dir=pipeline.work_dir / "merged_chunk_model_01_attempt_01",
+                image_names=["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg"],
+            )
+
+            with mock.patch.object(run_colmap_sfm, "stream_command"), mock.patch.object(
+                pipeline,
+                "summarize_model",
+                return_value=merged_candidate,
+            ), mock.patch.object(
+                pipeline,
+                "run_parent_seam_registration",
+            ) as seam_mock, mock.patch.object(
+                pipeline,
+                "run_bundle_adjuster",
+                return_value=adjusted_model,
+            ):
+                result = pipeline.merge_chunk_models(chunk_models)
+
+            self.assertEqual(result.images_registered, 3)
+            seam_mock.assert_not_called()
+
     def test_parent_seam_helpers_omit_fix_existing_images_flag(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -2616,6 +2704,7 @@ class ColmapGpsPriorTests(unittest.TestCase):
                     input_path=input_model_dir,
                     stage="parent_seam_point_triangulator_01",
                     image_count=10,
+                    clear_points=False,
                 )
 
             registrator_command = stream_command_mock.call_args_list[0].args[0]
@@ -2624,6 +2713,8 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertIn("point_triangulator", triangulator_command)
             self.assertNotIn("--Mapper.fix_existing_images", registrator_command)
             self.assertNotIn("--Mapper.fix_existing_images", triangulator_command)
+            triangulator_clear_points_index = triangulator_command.index("--clear_points")
+            self.assertEqual(triangulator_command[triangulator_clear_points_index + 1], "0")
 
     def test_repair_disconnected_chunk_model_components_reruns_best_bridge_pair(self):
         with tempfile.TemporaryDirectory() as tmp:
