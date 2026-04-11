@@ -64,6 +64,7 @@ class ModelSummary:
     image_count: int = 0
     partial_result: bool = False
     timed_out: bool = False
+    image_names: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -178,6 +179,52 @@ def load_registered_image_names(images_txt: Path) -> Set[str]:
                 registered_names.add(parts[9])
             image_line = not image_line
     return registered_names
+
+
+def percentile(values: Sequence[float], ratio: float) -> float:
+    if not values:
+        return 0.0
+    ordered_values = sorted(values)
+    index = int(clamp(ratio, 0.0, 1.0) * (len(ordered_values) - 1))
+    return float(ordered_values[index])
+
+
+def point_track_length(parts: Sequence[str]) -> int:
+    if len(parts) <= 8:
+        return 0
+    return max((len(parts) - 8) // 2, 0)
+
+
+def rewrite_images_with_filtered_points(
+    source_path: Path,
+    output_path: Path,
+    *,
+    keep_point_ids: Set[int],
+) -> None:
+    image_line = True
+    with open(source_path, "r", encoding="utf-8") as source, open(output_path, "w", encoding="utf-8") as target:
+        for line in source:
+            stripped = line.strip()
+            if not stripped or stripped.startswith("#"):
+                target.write(line)
+                continue
+            if image_line:
+                target.write(line)
+                image_line = False
+                continue
+            parts = stripped.split()
+            if len(parts) % 3 != 0:
+                target.write(line)
+                image_line = True
+                continue
+            rewritten_parts: List[str] = []
+            for index in range(0, len(parts), 3):
+                rewritten_parts.extend(parts[index : index + 2])
+                point_id_token = parts[index + 2]
+                point_id = int(point_id_token)
+                rewritten_parts.append(point_id_token if point_id < 0 or point_id in keep_point_ids else "-1")
+            target.write(" ".join(rewritten_parts) + "\n")
+            image_line = True
 
 
 def stream_command(
@@ -552,6 +599,42 @@ class ColmapPipeline:
         self.chunk_bridge_pair_score_threshold = float(
             os.environ.get("COLMAP_CHUNK_BRIDGE_PAIR_SCORE_THRESHOLD", "0.15")
         )
+        self.parent_merge_mode = (
+            os.environ.get("COLMAP_PARENT_MERGE_MODE", "seam_only_v1").strip().lower()
+            or "seam_only_v1"
+        )
+        if self.parent_merge_mode not in {"legacy_rerun", "seam_only_v1"}:
+            raise RuntimeError(
+                "Unsupported COLMAP_PARENT_MERGE_MODE="
+                f"{self.parent_merge_mode}; expected one of legacy_rerun, seam_only_v1"
+            )
+        self.parent_seam_registration_cycles = int(
+            os.environ.get("COLMAP_PARENT_SEAM_REGISTRATION_CYCLES", "2")
+        )
+        self.parent_registrator_timeout_seconds = float(
+            os.environ.get("COLMAP_PARENT_REGISTRATOR_TIMEOUT_SECONDS", "1800")
+        )
+        self.parent_triangulator_timeout_seconds = float(
+            os.environ.get("COLMAP_PARENT_TRIANGULATOR_TIMEOUT_SECONDS", "3600")
+        )
+        self.filtered_sparse_core_min_track_len = int(
+            os.environ.get("COLMAP_FILTERED_SPARSE_CORE_MIN_TRACK_LEN", "3")
+        )
+        self.filtered_sparse_core_max_reproj_error = float(
+            os.environ.get("COLMAP_FILTERED_SPARSE_CORE_MAX_REPROJ_ERROR", "2.0")
+        )
+        self.filtered_sparse_far_context_max_reproj_error = float(
+            os.environ.get("COLMAP_FILTERED_SPARSE_FAR_CONTEXT_MAX_REPROJ_ERROR", "1.0")
+        )
+        self.filtered_sparse_far_context_track_len = int(
+            os.environ.get("COLMAP_FILTERED_SPARSE_FAR_CONTEXT_TRACK_LEN", "2")
+        )
+        self.filtered_sparse_absurd_outlier_multiplier = float(
+            os.environ.get("COLMAP_FILTERED_SPARSE_ABSURD_OUTLIER_MULTIPLIER", "20.0")
+        )
+        self.filtered_sparse_absurd_outlier_floor = float(
+            os.environ.get("COLMAP_FILTERED_SPARSE_ABSURD_OUTLIER_FLOOR", "1000.0")
+        )
         self.graph_xy_neighbor_limit = int(os.environ.get("COLMAP_GRAPH_XY_NEIGHBOR_LIMIT", "60"))
         self.graph_xyz_neighbor_limit = int(os.environ.get("COLMAP_GRAPH_XYZ_NEIGHBOR_LIMIT", "20"))
         self.chunk_boundary_max_neighbors = int(
@@ -714,6 +797,7 @@ class ColmapPipeline:
         self.chunk_graph_probe_manifest: dict[str, object] = {}
         self.chunk_run_metrics: List[dict[str, object]] = []
         self.chunk_merge_proof: dict[str, object] = {}
+        self.filtered_sparse_summary: dict[str, object] = {}
         self.probe_subset_details: Dict[str, dict[str, object]] = {}
         self.chunk_centroids: Dict[int, tuple[float, float]] = {}
         self.chunk_plans_by_index: Dict[int, ChunkPlan] = {}
@@ -3964,6 +4048,169 @@ class ColmapPipeline:
             segment_indices=merged_segment_indices,
         )
 
+    def build_chunk_plan_from_image_names(
+        self,
+        *,
+        index: int,
+        image_names: Sequence[str],
+    ) -> ChunkPlan:
+        ordered_names = self.sorted_capture_names(image_names)
+        group_indices = [
+            self.image_group_indices[name]
+            for name in ordered_names
+            if name in self.image_group_indices
+        ]
+        return ChunkPlan(
+            index=index,
+            core_names=list(ordered_names),
+            image_names=list(ordered_names),
+            overlap_names=[],
+            core_group_indices=list(group_indices),
+            group_indices=list(group_indices),
+            overlap_group_indices=[],
+            segment_indices=[],
+        )
+
+    def model_source_image_names(self, model: ModelSummary) -> List[str]:
+        if model.image_names:
+            return self.sorted_capture_names(model.image_names)
+        return self.sorted_capture_names(self.merged_image_names(model))
+
+    def run_image_registrator(
+        self,
+        *,
+        database_path: Path,
+        input_path: Path,
+        stage: str,
+        image_count: int,
+    ) -> ModelSummary:
+        started = time.time()
+        output_path = self.work_dir / stage
+        output_path.mkdir(parents=True, exist_ok=True)
+        stream_command(
+            [
+                "colmap",
+                "image_registrator",
+                "--database_path",
+                str(database_path),
+                "--input_path",
+                str(input_path),
+                "--output_path",
+                str(output_path),
+                "--Mapper.num_threads",
+                str(self.mapper_threads),
+                "--Mapper.ba_refine_principal_point",
+                "0",
+                "--Mapper.fix_existing_images",
+                "1",
+            ],
+            stage=stage,
+            timeout_seconds=self.resolve_timeout_seconds(self.parent_registrator_timeout_seconds),
+            heartbeat_seconds=self.command_heartbeat_seconds,
+        )
+        self.timings[f"{stage}_seconds"] = round(time.time() - started, 2)
+        return self.summarize_model(
+            stage=stage,
+            binary_dir=output_path,
+            image_count=image_count,
+        )
+
+    def run_point_triangulator(
+        self,
+        *,
+        database_path: Path,
+        input_path: Path,
+        stage: str,
+        image_count: int,
+    ) -> ModelSummary:
+        started = time.time()
+        output_path = self.work_dir / stage
+        output_path.mkdir(parents=True, exist_ok=True)
+        stream_command(
+            [
+                "colmap",
+                "point_triangulator",
+                "--database_path",
+                str(database_path),
+                "--image_path",
+                str(self.images_dir),
+                "--input_path",
+                str(input_path),
+                "--output_path",
+                str(output_path),
+                "--clear_points",
+                "1",
+                "--Mapper.num_threads",
+                str(self.mapper_threads),
+                "--Mapper.ba_refine_principal_point",
+                "0",
+                "--Mapper.fix_existing_images",
+                "1",
+            ],
+            stage=stage,
+            timeout_seconds=self.resolve_timeout_seconds(self.parent_triangulator_timeout_seconds),
+            heartbeat_seconds=self.command_heartbeat_seconds,
+        )
+        self.timings[f"{stage}_seconds"] = round(time.time() - started, 2)
+        return self.summarize_model(
+            stage=stage,
+            binary_dir=output_path,
+            image_count=image_count,
+        )
+
+    def run_parent_seam_registration(
+        self,
+        *,
+        seed_model: ModelSummary,
+        chunk_plan: ChunkPlan,
+        stage_prefix: str,
+        dir_name: str | None = None,
+        bridge_target_name_sets: Sequence[Set[str]] | None = None,
+        run_final_bundle_adjustment: bool = True,
+    ) -> ModelSummary:
+        seam_dir_name = dir_name or f"{stage_prefix}_seam"
+        seam_dir = self.work_dir / seam_dir_name
+        seam_dir.mkdir(parents=True, exist_ok=True)
+        seam_database_path = self.prepare_chunk_database(chunk_plan, dir_name=seam_dir_name)
+        self.run_chunk_matchers(
+            chunk_plan,
+            chunk_database_path=seam_database_path,
+            chunk_dir=seam_dir,
+            stage_prefix=stage_prefix,
+            bridge_target_name_sets=bridge_target_name_sets,
+        )
+        current_model = seed_model
+        current_model.image_names = list(chunk_plan.image_names)
+        previous_registered_count = current_model.images_registered
+        for cycle in range(1, max(self.parent_seam_registration_cycles, 0) + 1):
+            registrator_model = self.run_image_registrator(
+                database_path=seam_database_path,
+                input_path=current_model.binary_dir,
+                stage=f"{stage_prefix}_image_registrator_{cycle:02d}",
+                image_count=len(chunk_plan.image_names),
+            )
+            registrator_model.image_names = list(chunk_plan.image_names)
+            triangulated_model = self.run_point_triangulator(
+                database_path=seam_database_path,
+                input_path=registrator_model.binary_dir,
+                stage=f"{stage_prefix}_point_triangulator_{cycle:02d}",
+                image_count=len(chunk_plan.image_names),
+            )
+            triangulated_model.image_names = list(chunk_plan.image_names)
+            current_model = triangulated_model
+            if current_model.images_registered <= previous_registered_count:
+                break
+            previous_registered_count = current_model.images_registered
+        if not run_final_bundle_adjustment:
+            current_model.image_names = list(chunk_plan.image_names)
+            return current_model
+        adjusted_model = self.run_bundle_adjuster(
+            input_path=current_model.binary_dir,
+            stage=f"{stage_prefix}_bundle_adjuster",
+        )
+        adjusted_model.image_names = list(chunk_plan.image_names)
+        return adjusted_model
+
     def run_chunk_pipeline(
         self,
         chunk_plan: ChunkPlan,
@@ -3993,6 +4240,7 @@ class ColmapPipeline:
             allow_partial_timeout_result=allow_partial_result,
         )
         self.chunk_mapper_seconds += self.timings[f"{chunk_stage_prefix}_mapper_initial_seconds"]
+        initial_model.image_names = list(chunk_plan.image_names)
         registered_ratio = (
             initial_model.images_registered / len(chunk_plan.image_names)
             if chunk_plan.image_names
@@ -4112,6 +4360,7 @@ class ColmapPipeline:
             allow_partial_timeout_result=allow_partial_result,
         )
         self.chunk_mapper_seconds += self.timings[f"{chunk_stage_prefix}_mapper_recovery_seconds"]
+        recovered_model.image_names = list(retry_chunk_plan.image_names)
         recovered_ratio = (
             recovered_model.images_registered / len(retry_chunk_plan.image_names)
             if retry_chunk_plan.image_names
@@ -4391,6 +4640,29 @@ class ColmapPipeline:
                             second_names=next_names,
                         )
                     ):
+                        merged_candidate.image_names = self.sorted_capture_names(
+                            set(self.model_source_image_names(input_one)).union(
+                                self.model_source_image_names(input_two)
+                            )
+                        )
+                        if self.parent_merge_mode == "seam_only_v1" and merged_candidate.image_names:
+                            try:
+                                merged_candidate = self.run_parent_seam_registration(
+                                    seed_model=merged_candidate,
+                                    chunk_plan=self.build_chunk_plan_from_image_names(
+                                        index=merge_sequence,
+                                        image_names=merged_candidate.image_names,
+                                    ),
+                                    stage_prefix=f"chunk_model_seam_{merge_sequence:02d}",
+                                    dir_name=f"merged_chunk_model_{merge_sequence:02d}_seam",
+                                    run_final_bundle_adjustment=False,
+                                )
+                            except RuntimeError as seam_error:
+                                logger.warning(
+                                    "Parent seam refinement failed for merge %s; keeping raw model_merger result: %s",
+                                    merge_sequence,
+                                    seam_error,
+                                )
                         merged_pair_indexes = (first_index, second_index)
                         break
                     merged_candidate = None
@@ -4578,15 +4850,43 @@ class ColmapPipeline:
             )
             self.merge_bridge_recovery_triggered = True
             if self.chunk_recovery_mode == "prior_aware_retry_no_vocab":
-                self.chunk_recovery_mode = "prior_aware_retry_merge_bridge_no_vocab"
+                self.chunk_recovery_mode = (
+                    "seam_only_bridge_registration"
+                    if self.parent_merge_mode == "seam_only_v1"
+                    else "prior_aware_retry_merge_bridge_no_vocab"
+                )
             self.clear_failure()
-            merged_model = self.run_chunk_pipeline(
-                merged_chunk_plan,
-                stage_prefix=merged_stage_prefix,
-                dir_name=merged_stage_prefix,
-                allow_partial_result=True,
-                bridge_target_name_sets=bridge_target_name_sets,
-            )
+            if self.parent_merge_mode == "seam_only_v1":
+                seed_models = [repaired_chunk_models[first_index], repaired_chunk_models[second_index]]
+                seed_models.sort(key=lambda model: (-model.images_registered, model.stage))
+                merged_model = None
+                for seed_attempt, seed_model in enumerate(seed_models, start=1):
+                    candidate_model = self.run_parent_seam_registration(
+                        seed_model=seed_model,
+                        chunk_plan=merged_chunk_plan,
+                        stage_prefix=merged_stage_prefix,
+                        dir_name=f"{merged_stage_prefix}_seed_{seed_attempt:02d}",
+                        bridge_target_name_sets=bridge_target_name_sets,
+                    )
+                    if self.model_connects_target_name_sets(
+                        model=candidate_model,
+                        target_name_sets=bridge_target_name_sets,
+                    ) or self.auxiliary_bridge_model_is_usable(
+                        model=candidate_model,
+                        target_name_sets=bridge_target_name_sets,
+                    ):
+                        merged_model = candidate_model
+                        break
+                if merged_model is None:
+                    merged_model = candidate_model
+            else:
+                merged_model = self.run_chunk_pipeline(
+                    merged_chunk_plan,
+                    stage_prefix=merged_stage_prefix,
+                    dir_name=merged_stage_prefix,
+                    allow_partial_result=True,
+                    bridge_target_name_sets=bridge_target_name_sets,
+                )
             if not self.model_connects_target_name_sets(
                 model=merged_model,
                 target_name_sets=bridge_target_name_sets,
@@ -4884,12 +5184,99 @@ class ColmapPipeline:
         return self.run_monolithic_gps_first_path()
 
     def resolve_mapper_seconds(self) -> float:
-        if self.final_matcher_mode in {"spatial_heading_chunked", "spatial_heading_chunked_subset"}:
+        if self.final_matcher_mode in {
+            "spatial_heading_chunked",
+            "spatial_heading_chunked_subset",
+            "footprint_graph_chunked",
+            "footprint_graph_chunked_subset",
+        }:
             return round(self.chunk_mapper_seconds, 2)
         mapper_timings = [
             value for key, value in self.timings.items() if key.startswith("mapper_") and key.endswith("_seconds")
         ]
         return round(max(mapper_timings), 2) if mapper_timings else 0.0
+
+    def write_filtered_sparse_model(self, *, source_text_dir: Path, output_dir: Path) -> dict[str, object]:
+        output_dir.mkdir(parents=True, exist_ok=True)
+        points_path = source_text_dir / "points3D.txt"
+        points_lines: List[str] = []
+        point_scales: List[float] = []
+        if points_path.exists():
+            with open(points_path, "r", encoding="utf-8") as handle:
+                for line in handle:
+                    stripped = line.strip()
+                    if not stripped or stripped.startswith("#"):
+                        continue
+                    points_lines.append(line)
+                    parts = stripped.split()
+                    if len(parts) >= 4:
+                        point_scales.append(max(abs(float(parts[1])), abs(float(parts[2])), abs(float(parts[3]))))
+
+        outlier_limit = max(
+            self.filtered_sparse_absurd_outlier_floor,
+            percentile(point_scales, 0.95) * self.filtered_sparse_absurd_outlier_multiplier,
+        )
+        keep_point_ids: Set[int] = set()
+        core_point_count = 0
+        far_context_point_count = 0
+        absurd_outlier_count = 0
+        kept_lines: List[str] = []
+        for line in points_lines:
+            parts = line.strip().split()
+            point_id = int(parts[0])
+            max_abs_coordinate = max(abs(float(parts[1])), abs(float(parts[2])), abs(float(parts[3])))
+            reprojection_error = float(parts[7]) if len(parts) > 7 else 0.0
+            track_len = point_track_length(parts)
+            if max_abs_coordinate > outlier_limit:
+                absurd_outlier_count += 1
+                continue
+            if (
+                track_len >= self.filtered_sparse_core_min_track_len
+                and reprojection_error <= self.filtered_sparse_core_max_reproj_error
+            ):
+                keep_point_ids.add(point_id)
+                core_point_count += 1
+                kept_lines.append(line)
+                continue
+            if (
+                track_len == self.filtered_sparse_far_context_track_len
+                and reprojection_error <= self.filtered_sparse_far_context_max_reproj_error
+            ):
+                keep_point_ids.add(point_id)
+                far_context_point_count += 1
+                kept_lines.append(line)
+
+        for source_file in source_text_dir.iterdir():
+            if source_file.name in {"images.txt", "points3D.txt"}:
+                continue
+            if source_file.is_file():
+                shutil.copy2(source_file, output_dir / source_file.name)
+        rewrite_images_with_filtered_points(
+            source_text_dir / "images.txt",
+            output_dir / "images.txt",
+            keep_point_ids=keep_point_ids,
+        )
+        with open(output_dir / "points3D.txt", "w", encoding="utf-8") as target:
+            if points_path.exists():
+                with open(points_path, "r", encoding="utf-8") as source:
+                    for line in source:
+                        stripped = line.strip()
+                        if not stripped or stripped.startswith("#"):
+                            target.write(line)
+                for line in kept_lines:
+                    target.write(line)
+        return {
+            "raw_points_3d": len(points_lines),
+            "filtered_points_3d": len(keep_point_ids),
+            "core_filtered_points_3d": core_point_count,
+            "far_context_points_3d": far_context_point_count,
+            "absurd_outlier_points_removed": absurd_outlier_count,
+            "outlier_limit": round(outlier_limit, 3),
+            "core_min_track_len": self.filtered_sparse_core_min_track_len,
+            "core_max_reproj_error": self.filtered_sparse_core_max_reproj_error,
+            "far_context_track_len": self.filtered_sparse_far_context_track_len,
+            "far_context_max_reproj_error": self.filtered_sparse_far_context_max_reproj_error,
+        }
 
     def build_metadata(
         self,
@@ -4956,12 +5343,15 @@ class ColmapPipeline:
             "chunk_mapper_seconds": round(self.chunk_mapper_seconds, 2),
             "chunk_merge_seconds": round(self.chunk_merge_seconds, 2),
             "chunk_merge_proof": self.chunk_merge_proof,
+            "parent_merge_mode": self.parent_merge_mode,
+            "parent_seam_registration_cycles": self.parent_seam_registration_cycles,
             "chunk_recovery_mode": self.chunk_recovery_mode,
             "chunk_run_metrics": self.chunk_run_metrics,
             "boundary_recovery_triggered": self.boundary_recovery_triggered,
             "adjacent_chunk_merge_triggered": self.adjacent_chunk_merge_triggered,
             "merge_bridge_recovery_triggered": self.merge_bridge_recovery_triggered,
             "merged_component_count": self.merged_component_count,
+            "filtered_sparse_summary": self.filtered_sparse_summary,
             "final_points_per_registered_image": final_points_per_registered_image,
             "mapper_seconds_per_registered_image": mapper_seconds_per_registered_image,
             "fallback_triggered": self.fallback_triggered,
@@ -5002,15 +5392,23 @@ class ColmapPipeline:
 
     def export_output(self, best_model: ModelSummary) -> None:
         sparse_output = self.output_dir / "sparse" / "0"
+        raw_sparse_output = self.output_dir / "sparse_raw" / "0"
         images_output = self.output_dir / "images"
 
         if sparse_output.exists():
             shutil.rmtree(sparse_output)
+        if raw_sparse_output.exists():
+            shutil.rmtree(raw_sparse_output)
         if images_output.exists():
             shutil.rmtree(images_output)
 
         sparse_output.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copytree(best_model.text_dir, sparse_output)
+        raw_sparse_output.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(best_model.text_dir, raw_sparse_output)
+        self.filtered_sparse_summary = self.write_filtered_sparse_model(
+            source_text_dir=best_model.text_dir,
+            output_dir=sparse_output,
+        )
         shutil.copytree(self.images_dir, images_output)
         shutil.copy2(self.database_path, self.output_dir / "database.db")
         quality_check_passed = (
