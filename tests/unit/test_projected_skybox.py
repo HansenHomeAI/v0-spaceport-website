@@ -15,6 +15,7 @@ if str(CONTAINER_DIR) not in sys.path:
 
 from projected_skybox import (  # noqa: E402
     _apply_frame_alignment,
+    harmonize_skybox_rgb,
     _select_projected_elevation_mask,
     ProjectedSkyboxSettings,
     build_photo_guided_fill,
@@ -247,7 +248,7 @@ class ProjectedSkyboxTests(unittest.TestCase):
 
         zenith = fill_rgb[: height // 10]
         self.assertTrue(metadata["fill_used_observed_projection"])
-        self.assertEqual(metadata["fill_strategy"], "observed_edge_extension_blur")
+        self.assertEqual(metadata["fill_strategy"], "observed_edge_profile_smear")
         self.assertGreater(float(zenith[..., 2].mean()), float(zenith[..., 0].mean()) + 0.2)
         self.assertGreater(float(zenith.mean()), float(fallback_fill_rgb[: height // 10].mean()) + 0.2)
 
@@ -272,10 +273,96 @@ class ProjectedSkyboxTests(unittest.TestCase):
             seam_blend_width_px=12,
         )
 
-        self.assertEqual(metadata["fill_strategy"], "observed_edge_extension_blur")
+        self.assertEqual(metadata["fill_strategy"], "observed_edge_profile_smear")
         center_column = fill_rgb[:, width // 2, :]
         self.assertGreater(float(center_column[:, 2].mean()), float(center_column[:, 0].mean()) + 0.12)
         self.assertGreater(float(center_column.mean()), float(fallback_fill_rgb[:, width // 2, :].mean()) + 0.15)
+
+    def test_build_photo_guided_fill_blends_anchor_profiles_across_missing_columns(self):
+        height = 80
+        width = 160
+        observed_rgb = np.zeros((height, width, 3), dtype=np.float32)
+        observed_mask = np.zeros((height, width), dtype=bool)
+        observed_mask[24:40, 0:36] = True
+        observed_mask[24:40, 124:160] = True
+        observed_rgb[24:40, 0:36] = np.array([0.42, 0.65, 0.92], dtype=np.float32)
+        observed_rgb[24:40, 124:160] = np.array([0.78, 0.86, 0.98], dtype=np.float32)
+        weight_accum = observed_mask.astype(np.float32)
+        fallback_fill_rgb = np.full((height, width, 3), [0.02, 0.02, 0.02], dtype=np.float32)
+
+        fill_rgb, metadata = build_photo_guided_fill(
+            observed_rgb=observed_rgb,
+            observed_mask=observed_mask,
+            weight_accum=weight_accum,
+            fallback_fill_rgb=fallback_fill_rgb,
+            horizontal_blur_px=18,
+            vertical_blur_px=36,
+            seam_blend_width_px=12,
+        )
+
+        self.assertEqual(metadata["fill_strategy"], "observed_edge_profile_smear")
+        center_pixel = fill_rgb[height // 2, width // 2, :]
+        self.assertGreater(float(center_pixel[0]), 0.50)
+        self.assertLess(float(center_pixel[0]), 0.72)
+        self.assertGreater(float(center_pixel[2]), float(center_pixel[0]) + 0.12)
+
+    def test_build_photo_guided_fill_uses_separate_upper_and_lower_edge_colors(self):
+        height = 96
+        width = 144
+        observed_rgb = np.zeros((height, width, 3), dtype=np.float32)
+        observed_mask = np.zeros((height, width), dtype=bool)
+        observed_mask[28:56, :] = True
+        observed_rgb[28:40, :, :] = np.array([0.30, 0.56, 0.92], dtype=np.float32)
+        observed_rgb[40:56, :, :] = np.array([0.86, 0.90, 0.98], dtype=np.float32)
+        weight_accum = observed_mask.astype(np.float32)
+        fallback_fill_rgb = np.full((height, width, 3), [0.04, 0.03, 0.03], dtype=np.float32)
+
+        fill_rgb, metadata = build_photo_guided_fill(
+            observed_rgb=observed_rgb,
+            observed_mask=observed_mask,
+            weight_accum=weight_accum,
+            fallback_fill_rgb=fallback_fill_rgb,
+            horizontal_blur_px=16,
+            vertical_blur_px=28,
+            seam_blend_width_px=12,
+        )
+
+        self.assertEqual(metadata["fill_strategy"], "observed_edge_profile_smear")
+        upper_fill = float(fill_rgb[8:16, :, :].mean())
+        lower_fill = float(fill_rgb[-16:-8, :, :].mean())
+        self.assertGreater(lower_fill, upper_fill + 0.12)
+        self.assertGreater(float(fill_rgb[-12, width // 2, 0]), float(fill_rgb[12, width // 2, 0]) + 0.25)
+
+    def test_harmonize_skybox_rgb_reduces_column_banding(self):
+        height = 80
+        width = 192
+        base_gradient = np.linspace(0.84, 0.94, height, dtype=np.float32)[:, None, None]
+        rgb = np.repeat(base_gradient, width, axis=1)
+        rgb = np.repeat(rgb, 3, axis=2)
+        for column in range(0, width, 12):
+            rgb[:, column : column + 4, :] *= np.array([0.94, 0.96, 0.98], dtype=np.float32)
+        rgb[18:26, 72:104, :] += np.array([0.015, 0.012, 0.008], dtype=np.float32)
+        rgb = np.clip(rgb, 0.0, 1.0)
+        detail_support = np.zeros((height, width), dtype=np.float32)
+        detail_support[14:34, 68:108] = 1.0
+
+        harmonized, metadata = harmonize_skybox_rgb(
+            rgb=rgb,
+            detail_support=detail_support,
+            low_frequency_horizontal_blur_px=96,
+            low_frequency_vertical_blur_px=24,
+            detail_residual_strength=0.2,
+            detail_support_blur_px=24,
+        )
+
+        before_banding = float(np.mean(np.abs(np.diff(rgb[: height // 2], axis=1))))
+        after_banding = float(np.mean(np.abs(np.diff(harmonized[: height // 2], axis=1))))
+        before_patch = float(rgb[20:24, 80:96, :].mean() - rgb[20:24, 112:128, :].mean())
+        after_patch = float(harmonized[20:24, 80:96, :].mean() - harmonized[20:24, 112:128, :].mean())
+
+        self.assertTrue(metadata["sky_harmonization_enabled"])
+        self.assertLess(after_banding, before_banding * 0.45)
+        self.assertGreater(after_patch, before_patch * 0.02)
 
     def test_build_projected_photo_skybox_uses_observed_sky_before_fill(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -345,14 +432,19 @@ class ProjectedSkyboxTests(unittest.TestCase):
             self.assertEqual(manifest["contributing_frame_count"], 1)
             self.assertGreater(manifest["observed_coverage_ratio"], 0.0)
             self.assertGreater(manifest["mean_projection_mask_ratio"], manifest["mean_semantic_mask_ratio"])
-            self.assertEqual(manifest["fill_strategy"], "observed_edge_extension_blur")
+            self.assertEqual(manifest["fill_strategy"], "observed_edge_profile_smear")
             self.assertIn("detail_coverage_ratio", manifest)
             self.assertIn("base_saturation_scale", manifest)
             self.assertIn("projection_elevation_mode_counts", manifest)
             self.assertIn("fill_edge_horizontal_blur_px", manifest)
             self.assertIn("detail_boundary_fade_px", manifest)
+            self.assertIn("fill_profile_horizontal_blur_px", manifest)
+            self.assertIn("base_observed_horizontal_blur_px", manifest)
+            self.assertIn("base_observed_vertical_blur_px", manifest)
+            self.assertIn("sky_harmonization_low_frequency_horizontal_blur_px", manifest)
             self.assertTrue((output_dir / "background_skybox_base.webp").exists())
             self.assertTrue((output_dir / "background_skybox_detail.webp").exists())
+            self.assertTrue((output_dir / "background_skybox_pre_harmonize.webp").exists())
             self.assertTrue((output_dir / "background_skybox_detail_support.png").exists())
             observed_skybox = np.asarray(
                 Image.open(output_dir / "background_skybox_observed.webp").convert("RGB"),

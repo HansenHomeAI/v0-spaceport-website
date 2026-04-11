@@ -106,6 +106,7 @@ def create_repaired_artifact_tarball(output_dir: Path, tarball_path: Path) -> Pa
     artifact_names = [
         "splat.ply",
         "background_skybox.webp",
+        "background_skybox_pre_harmonize.webp",
         "background_skybox_observed.webp",
         "background_skybox_fill.webp",
         "background_skybox_base.webp",

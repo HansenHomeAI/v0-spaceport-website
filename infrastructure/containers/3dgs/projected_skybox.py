@@ -482,6 +482,62 @@ def _nearest_valid_columns(valid_columns: np.ndarray, width: int) -> np.ndarray:
     return np.where(choose_next, next_columns, previous_columns).astype(np.int32)
 
 
+def _interpolate_circular_profile(
+    profile: np.ndarray,
+    valid_columns: np.ndarray,
+    width: int,
+) -> np.ndarray:
+    valid = np.unique(np.mod(np.asarray(valid_columns, dtype=np.int32), max(width, 1)))
+    profile_f32 = np.asarray(profile, dtype=np.float32)
+    if valid.size == 0:
+        raise ValueError("At least one valid column is required for circular interpolation")
+    if valid.size == 1:
+        if profile_f32.ndim == 1:
+            return np.full(width, float(profile_f32[valid[0]]), dtype=np.float32)
+        return np.repeat(profile_f32[valid[0] : valid[0] + 1, :], width, axis=0).astype(np.float32)
+
+    sample_positions = valid.astype(np.float32)
+    interp_positions = np.arange(width, dtype=np.float32)
+    extended_positions = np.concatenate(
+        [
+            sample_positions[-1:] - float(width),
+            sample_positions,
+            sample_positions[:1] + float(width),
+        ]
+    ).astype(np.float32)
+
+    if profile_f32.ndim == 1:
+        samples = profile_f32[valid]
+        extended_samples = np.concatenate([samples[-1:], samples, samples[:1]], axis=0)
+        return np.interp(interp_positions, extended_positions, extended_samples).astype(np.float32)
+
+    channels = profile_f32.shape[1]
+    interpolated = np.zeros((width, channels), dtype=np.float32)
+    for channel in range(channels):
+        samples = profile_f32[valid, channel]
+        extended_samples = np.concatenate([samples[-1:], samples, samples[:1]], axis=0)
+        interpolated[:, channel] = np.interp(interp_positions, extended_positions, extended_samples).astype(np.float32)
+    return interpolated.astype(np.float32)
+
+
+def _smooth_circular_scalar_profile(values: np.ndarray, radius_px: int) -> np.ndarray:
+    profile = np.asarray(values, dtype=np.float32)
+    if profile.size <= 1 or radius_px <= 0:
+        return profile
+    return _blur_scalar_equirectangular(profile[None, :], radius_px=int(radius_px))[0].astype(np.float32)
+
+
+def _smooth_circular_rgb_profile(values: np.ndarray, radius_px: int) -> np.ndarray:
+    profile = np.asarray(values, dtype=np.float32)
+    if profile.shape[0] <= 1 or radius_px <= 0:
+        return profile
+    return _blur_equirectangular_anisotropic(
+        profile[None, :, :],
+        radius_x_px=int(radius_px),
+        radius_y_px=0,
+    )[0].astype(np.float32)
+
+
 def _interior_distance_fade(binary_mask: np.ndarray, fade_px: int) -> np.ndarray:
     mask = np.asarray(binary_mask, dtype=bool)
     if fade_px <= 0:
@@ -578,9 +634,10 @@ def build_photo_guided_fill(
         }
 
     source_rgb = np.clip(np.asarray(observed_rgb, dtype=np.float32), 0.0, 1.0)
-    extended_rgb = np.zeros_like(source_rgb, dtype=np.float32)
-    top_rows = np.full(width, -1, dtype=np.int32)
-    bottom_rows = np.full(width, -1, dtype=np.int32)
+    top_rows = np.full(width, np.nan, dtype=np.float32)
+    bottom_rows = np.full(width, np.nan, dtype=np.float32)
+    top_anchor_rgb = np.zeros((width, 3), dtype=np.float32)
+    bottom_anchor_rgb = np.zeros((width, 3), dtype=np.float32)
 
     for column in valid_columns.tolist():
         column_mask = observed_mask[:, column]
@@ -589,42 +646,56 @@ def build_photo_guided_fill(
             continue
         top_row = int(observed_rows[0])
         bottom_row = int(observed_rows[-1])
-        top_rows[column] = top_row
-        bottom_rows[column] = bottom_row
+        top_rows[column] = float(top_row)
+        bottom_rows[column] = float(bottom_row)
 
-        interior_margin = min(8, max(1, observed_rows.size // 6))
-        if observed_rows.size > ((interior_margin * 2) + 2):
-            interior_rows = observed_rows[interior_margin : observed_rows.size - interior_margin]
-        else:
-            interior_rows = observed_rows
-        upper_interior_rows = interior_rows[: max(1, int(np.ceil(interior_rows.size * 0.65)))]
-        anchor_samples = source_rgb[upper_interior_rows, column, :]
-        anchor_luma = _luminance(anchor_samples)
-        anchor_threshold = float(np.quantile(anchor_luma, 0.55)) if anchor_luma.size else 0.0
-        bright_anchor_samples = anchor_samples[anchor_luma >= anchor_threshold]
-        if bright_anchor_samples.size == 0:
-            bright_anchor_samples = anchor_samples
-        anchor_color = np.median(bright_anchor_samples, axis=0).astype(np.float32)
+        edge_band = min(12, max(2, observed_rows.size // 4))
+        top_samples = source_rgb[observed_rows[:edge_band], column, :]
+        bottom_samples = source_rgb[observed_rows[-edge_band:], column, :]
+        top_anchor_rgb[column, :] = np.median(top_samples, axis=0).astype(np.float32)
+        bottom_anchor_rgb[column, :] = np.median(bottom_samples, axis=0).astype(np.float32)
 
-        if top_row > 0:
-            extended_rgb[:top_row, column, :] = anchor_color
-        extended_rgb[top_row : bottom_row + 1, column, :] = source_rgb[top_row : bottom_row + 1, column, :]
-        if bottom_row + 1 < height:
-            extended_rgb[bottom_row + 1 :, column, :] = anchor_color
-
-    nearest_columns = _nearest_valid_columns(valid_columns, width)
-    invalid_columns = np.setdiff1d(np.arange(width, dtype=np.int32), valid_columns, assume_unique=True)
-    if invalid_columns.size > 0:
-        extended_rgb[:, invalid_columns, :] = extended_rgb[:, nearest_columns[invalid_columns], :]
-        top_rows[invalid_columns] = top_rows[nearest_columns[invalid_columns]]
-        bottom_rows[invalid_columns] = bottom_rows[nearest_columns[invalid_columns]]
-
-    if np.any(top_rows < 0) or np.any(bottom_rows < 0):
+    valid_profile_columns = np.flatnonzero(~np.isnan(top_rows))
+    if valid_profile_columns.size == 0:
         return build_low_frequency_fill(fallback_fill_rgb), {
             "fill_strategy": "learned_background_low_frequency",
             "fill_used_observed_projection": False,
             "fill_edge_reason": "invalid_column_extension",
         }
+
+    interpolated_top_rows = _interpolate_circular_profile(top_rows, valid_profile_columns, width)
+    interpolated_bottom_rows = _interpolate_circular_profile(bottom_rows, valid_profile_columns, width)
+    interpolated_top_rgb = _interpolate_circular_profile(top_anchor_rgb, valid_profile_columns, width)
+    interpolated_bottom_rgb = _interpolate_circular_profile(bottom_anchor_rgb, valid_profile_columns, width)
+
+    row_profile_blur_px = max(8, int(horizontal_blur_px) // 2)
+    color_profile_blur_px = max(12, int(horizontal_blur_px))
+    smoothed_top_rows = _smooth_circular_scalar_profile(interpolated_top_rows, row_profile_blur_px)
+    smoothed_bottom_rows = _smooth_circular_scalar_profile(interpolated_bottom_rows, row_profile_blur_px)
+    smoothed_top_rgb = _smooth_circular_rgb_profile(interpolated_top_rgb, color_profile_blur_px)
+    smoothed_bottom_rgb = _smooth_circular_rgb_profile(interpolated_bottom_rgb, color_profile_blur_px)
+
+    smoothed_top_rows = np.clip(smoothed_top_rows, 0.0, float(max(height - 1, 0)))
+    smoothed_bottom_rows = np.clip(smoothed_bottom_rows, smoothed_top_rows, float(max(height - 1, 0)))
+    vertical_mix = np.linspace(0.0, 1.0, height, dtype=np.float32)[:, None, None]
+    vertical_mix = (0.5 - (0.5 * np.cos(np.pi * vertical_mix))).astype(np.float32)
+    gradient_field = (
+        (1.0 - vertical_mix) * smoothed_top_rgb[None, :, :]
+        + vertical_mix * smoothed_bottom_rgb[None, :, :]
+    ).astype(np.float32)
+    extended_rgb = gradient_field.copy()
+
+    for column in range(width):
+        top_row = int(round(float(smoothed_top_rows[column])))
+        bottom_row = int(round(float(smoothed_bottom_rows[column])))
+        top_row = max(0, min(height - 1, top_row))
+        bottom_row = max(top_row, min(height - 1, bottom_row))
+        if top_row > 0:
+            extended_rgb[:top_row, column, :] = smoothed_top_rgb[column, :]
+        if bottom_row + 1 < height:
+            extended_rgb[bottom_row + 1 :, column, :] = smoothed_bottom_rgb[column, :]
+
+    extended_rgb[observed_mask] = source_rgb[observed_mask]
 
     smoothed_extension = _blur_equirectangular_anisotropic(
         extended_rgb,
@@ -634,15 +705,61 @@ def build_photo_guided_fill(
     predicted = np.clip(smoothed_extension, 0.0, 1.0).astype(np.float32)
 
     return predicted, {
-        "fill_strategy": "observed_edge_extension_blur",
+        "fill_strategy": "observed_edge_profile_smear",
         "fill_used_observed_projection": True,
         "fill_edge_horizontal_blur_px": int(horizontal_blur_px),
         "fill_edge_vertical_blur_px": int(vertical_blur_px),
+        "fill_profile_horizontal_blur_px": int(color_profile_blur_px),
+        "fill_profile_row_blur_px": int(row_profile_blur_px),
         "fill_seam_blend_width_px": int(seam_blend_width_px),
         "fill_observed_column_count": int(valid_columns.size),
         "fill_observed_sample_count": int(np.count_nonzero(np.clip(weight_accum, 0.0, None))),
-        "fill_top_row_mean": float(np.mean(top_rows.astype(np.float32))),
-        "fill_bottom_row_mean": float(np.mean(bottom_rows.astype(np.float32))),
+        "fill_top_row_mean": float(np.mean(smoothed_top_rows.astype(np.float32))),
+        "fill_bottom_row_mean": float(np.mean(smoothed_bottom_rows.astype(np.float32))),
+    }
+
+
+def harmonize_skybox_rgb(
+    rgb: np.ndarray,
+    detail_support: np.ndarray,
+    low_frequency_horizontal_blur_px: int,
+    low_frequency_vertical_blur_px: int,
+    detail_residual_strength: float,
+    detail_support_blur_px: int,
+    detail_support_gamma: float = 1.6,
+) -> tuple[np.ndarray, dict[str, Any]]:
+    rgb_f32 = np.clip(np.asarray(rgb, dtype=np.float32), 0.0, 1.0)
+    support_f32 = np.clip(np.asarray(detail_support, dtype=np.float32), 0.0, 1.0)
+    low_x = max(1, int(low_frequency_horizontal_blur_px))
+    low_y = max(1, int(low_frequency_vertical_blur_px))
+    support_blur = max(1, int(detail_support_blur_px))
+    residual_strength = float(np.clip(detail_residual_strength, 0.0, 1.0))
+    gamma = float(max(detail_support_gamma, 1.0))
+
+    low_frequency = _blur_equirectangular_anisotropic(
+        rgb_f32,
+        radius_x_px=low_x,
+        radius_y_px=low_y,
+    )
+    medium_frequency = _blur_equirectangular_anisotropic(
+        rgb_f32,
+        radius_x_px=max(1, low_x // 8),
+        radius_y_px=max(1, low_y // 4),
+    )
+    residual = rgb_f32 - medium_frequency
+    harmonized_support = _blur_scalar_equirectangular(np.power(support_f32, gamma), radius_px=support_blur)
+    harmonized = np.clip(
+        low_frequency + (residual_strength * harmonized_support[..., None] * residual),
+        0.0,
+        1.0,
+    ).astype(np.float32)
+    return harmonized, {
+        "sky_harmonization_enabled": True,
+        "sky_harmonization_low_frequency_horizontal_blur_px": int(low_x),
+        "sky_harmonization_low_frequency_vertical_blur_px": int(low_y),
+        "sky_harmonization_detail_support_blur_px": int(support_blur),
+        "sky_harmonization_detail_support_gamma": float(gamma),
+        "sky_harmonization_detail_residual_strength": float(residual_strength),
     }
 
 
@@ -1060,6 +1177,19 @@ def build_projected_photo_skybox(
         weights=base_weight_accum,
         radius_px=int(settings.observed_blur_radius_px),
     )
+    base_observed_horizontal_blur_px = max(
+        int(settings.observed_blur_radius_px) * 2,
+        int(settings.fill_edge_horizontal_blur_px),
+    )
+    base_observed_vertical_blur_px = max(
+        int(settings.observed_blur_radius_px),
+        min(int(settings.fill_edge_vertical_blur_px) // 6, 48),
+    )
+    base_observed_rgb = _blur_equirectangular_anisotropic(
+        smoothed_observed_rgb,
+        radius_x_px=base_observed_horizontal_blur_px,
+        radius_y_px=base_observed_vertical_blur_px,
+    )
     if settings.low_frequency_fill:
         fill_base, fill_metadata = build_photo_guided_fill(
             observed_rgb=smoothed_observed_rgb,
@@ -1091,7 +1221,7 @@ def build_projected_photo_skybox(
     )
     support_mix = np.clip(smoothed_observed_support / max(support_reference, 1e-6), 0.0, 1.0)
     base_mix = np.clip(interior_mix + (0.15 * support_mix), 0.0, 1.0)[..., None]
-    base_rgb = (fill_base * (1.0 - base_mix)) + (smoothed_observed_rgb * base_mix)
+    base_rgb = (fill_base * (1.0 - base_mix)) + (base_observed_rgb * base_mix)
     base_rgb = _scale_saturation(base_rgb, float(settings.base_saturation_scale))
     base_rgb, _ = _weighted_equirectangular_blur(
         rgb=base_rgb,
@@ -1141,12 +1271,27 @@ def build_projected_photo_skybox(
         )
     )
     final_rgb = np.clip(final_rgb, 0.0, 1.0).astype(np.float32)
+    pre_harmonize_rgb = final_rgb.copy()
+    final_rgb, harmonization_metadata = harmonize_skybox_rgb(
+        rgb=final_rgb,
+        detail_support=detail_support,
+        low_frequency_horizontal_blur_px=max(128, int(settings.fill_edge_horizontal_blur_px) * 4),
+        low_frequency_vertical_blur_px=max(24, min(int(settings.fill_edge_vertical_blur_px) // 3, 64)),
+        detail_residual_strength=float(np.clip(float(settings.detail_luma_strength) * 0.3, 0.1, 0.25)),
+        detail_support_blur_px=max(24, min(int(settings.detail_boundary_fade_px), 48)),
+    )
 
     skybox_path = output_dir / "background_skybox.webp"
     Image.fromarray((final_rgb * 255.0).round().astype(np.uint8), mode="RGB").save(
         skybox_path,
         format="WEBP",
         quality=quality,
+        method=6,
+    )
+    Image.fromarray((pre_harmonize_rgb * 255.0).round().astype(np.uint8), mode="RGB").save(
+        output_dir / "background_skybox_pre_harmonize.webp",
+        format="WEBP",
+        quality=min(quality, 92),
         method=6,
     )
     Image.fromarray((np.clip(observed_rgb, 0.0, 1.0) * 255.0).round().astype(np.uint8), mode="RGB").save(
@@ -1231,9 +1376,12 @@ def build_projected_photo_skybox(
         "mean_projection_mask_ratio": float(np.mean(projection_mask_ratios)) if projection_mask_ratios else 0.0,
         "mean_detail_mask_ratio": float(np.mean(detail_mask_ratios)) if detail_mask_ratios else 0.0,
         "detail_coverage_ratio": float(detail_observed_mask.mean()) if detail_observed_mask.size else 0.0,
+        "base_observed_horizontal_blur_px": int(base_observed_horizontal_blur_px),
+        "base_observed_vertical_blur_px": int(base_observed_vertical_blur_px),
         "alignment_target_rgb": alignment_target_rgb.tolist() if alignment_target_rgb is not None else None,
         "alignment_frame_count": int(len(alignment_gains)),
         "mean_alignment_gain_rgb": mean_alignment_gain_rgb,
+        **harmonization_metadata,
         **fill_metadata,
         "alignment_basis": {
             "right": basis["right"].tolist(),
