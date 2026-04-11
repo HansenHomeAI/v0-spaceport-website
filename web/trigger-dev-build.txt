@@ -34,3 +34,4 @@
 2026-04-07T15:31:58Z trigger preview for prior-aware Meadow fast-fail SfM validation
 2026-04-11T16:19:45Z trigger preview for seam-only parent SfM merge validation
 2026-04-11T17:59:15Z trigger preview for seam-only leaf-seed and adjacent-registration fix
+2026-04-11T19:50:00Z trigger preview for seam-only image_registrator option compatibility fix

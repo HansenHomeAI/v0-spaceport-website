@@ -2584,6 +2584,47 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertFalse(seam_mock.call_args.kwargs["run_final_bundle_adjustment"])
             self.assertEqual(seam_mock.call_args.kwargs["stage_prefix"], "chunk_model_seam_01")
 
+    def test_parent_seam_helpers_omit_fix_existing_images_flag(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.images_dir.mkdir(parents=True, exist_ok=True)
+            input_model_dir = root / "seed_model"
+            input_model_dir.mkdir(parents=True, exist_ok=True)
+            summarized = run_colmap_sfm.ModelSummary(
+                stage="seed",
+                text_dir=root / "text",
+                cameras_registered=1,
+                images_registered=1,
+                points_3d=1,
+                binary_dir=root / "binary",
+            )
+
+            with mock.patch.object(run_colmap_sfm, "stream_command") as stream_command_mock, mock.patch.object(
+                pipeline,
+                "summarize_model",
+                return_value=summarized,
+            ):
+                pipeline.run_image_registrator(
+                    database_path=root / "db.db",
+                    input_path=input_model_dir,
+                    stage="parent_seam_image_registrator_01",
+                    image_count=10,
+                )
+                pipeline.run_point_triangulator(
+                    database_path=root / "db.db",
+                    input_path=input_model_dir,
+                    stage="parent_seam_point_triangulator_01",
+                    image_count=10,
+                )
+
+            registrator_command = stream_command_mock.call_args_list[0].args[0]
+            triangulator_command = stream_command_mock.call_args_list[1].args[0]
+            self.assertIn("image_registrator", registrator_command)
+            self.assertIn("point_triangulator", triangulator_command)
+            self.assertNotIn("--Mapper.fix_existing_images", registrator_command)
+            self.assertNotIn("--Mapper.fix_existing_images", triangulator_command)
+
     def test_repair_disconnected_chunk_model_components_reruns_best_bridge_pair(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
