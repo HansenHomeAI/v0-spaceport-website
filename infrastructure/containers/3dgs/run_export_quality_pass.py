@@ -202,6 +202,8 @@ def repair_artifact_without_checkpoint(
 
 
 def main() -> None:
+    from train_nerfstudio_production import NerfStudioTrainer
+
     model_input_dir = Path(os.environ.get("MODEL_INPUT_DIR", "/opt/ml/processing/input/model"))
     colmap_input_dir = Path(os.environ.get("COLMAP_INPUT_DIR", "/opt/ml/processing/input/colmap"))
     output_dir = Path(os.environ.get("OUTPUT_DIR", "/opt/ml/processing/output"))
