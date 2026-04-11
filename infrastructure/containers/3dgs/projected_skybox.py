@@ -600,6 +600,31 @@ def _camera_rays_for_pixels(
     return (c2w[:3, :3] @ camera_dirs.T).T.astype(np.float32)
 
 
+def _select_projected_elevation_mask(
+    local_dirs: np.ndarray,
+    min_projected_elevation: float,
+) -> tuple[np.ndarray, str]:
+    local_y = np.asarray(local_dirs, dtype=np.float32)[:, 1]
+    if local_y.size == 0:
+        return np.zeros((0,), dtype=bool), "empty"
+
+    threshold = float(min_projected_elevation)
+    if threshold <= -0.999:
+        return np.ones(local_y.shape[0], dtype=bool), "disabled"
+
+    positive_mask = local_y >= threshold
+    positive_ratio = float(np.mean(positive_mask))
+    if positive_ratio >= 0.02:
+        return positive_mask, "positive"
+
+    flipped_mask = local_y <= -threshold
+    flipped_ratio = float(np.mean(flipped_mask))
+    if flipped_ratio >= max(0.05, positive_ratio * 4.0):
+        return flipped_mask, "flipped"
+
+    return np.ones(local_y.shape[0], dtype=bool), "disabled_low_support"
+
+
 def _prepare_projection_frame(
     data_dir: Path,
     transforms: dict[str, Any],
@@ -738,6 +763,20 @@ def build_projected_photo_skybox(
     frame_medians: list[np.ndarray] = []
     alignment_gains: list[np.ndarray] = []
     prepared_frames: list[PreparedProjectionFrame] = []
+    elevation_mode_counts = {
+        "positive": 0,
+        "flipped": 0,
+        "disabled": 0,
+        "disabled_low_support": 0,
+        "empty": 0,
+    }
+    detail_elevation_mode_counts = {
+        "positive": 0,
+        "flipped": 0,
+        "disabled": 0,
+        "disabled_low_support": 0,
+        "empty": 0,
+    }
 
     for frame in frames:
         prepared = _prepare_projection_frame(
@@ -806,7 +845,11 @@ def build_projected_photo_skybox(
             c2w=prepared.c2w,
         )
         local_dirs = (world_to_sky @ world_dirs.T).T
-        projected_elevation_mask = local_dirs[:, 1] >= float(settings.min_projected_elevation)
+        projected_elevation_mask, elevation_mode = _select_projected_elevation_mask(
+            local_dirs=local_dirs,
+            min_projected_elevation=float(settings.min_projected_elevation),
+        )
+        elevation_mode_counts[elevation_mode] = elevation_mode_counts.get(elevation_mode, 0) + 1
         if not np.any(projected_elevation_mask):
             continue
         eq_x, eq_y = world_dirs_to_equirectangular(
@@ -857,7 +900,14 @@ def build_projected_photo_skybox(
             c2w=prepared.c2w,
         )
         detail_local_dirs = (world_to_sky @ detail_world_dirs.T).T
-        detail_elevation_mask = detail_local_dirs[:, 1] >= float(settings.min_projected_elevation)
+        detail_elevation_mask, detail_elevation_mode = _select_projected_elevation_mask(
+            local_dirs=detail_local_dirs,
+            min_projected_elevation=float(settings.min_projected_elevation),
+        )
+        detail_elevation_mode_counts[detail_elevation_mode] = detail_elevation_mode_counts.get(
+            detail_elevation_mode,
+            0,
+        )
         if not np.any(detail_elevation_mask):
             continue
 
@@ -1020,6 +1070,8 @@ def build_projected_photo_skybox(
         "min_projected_elevation": float(settings.min_projected_elevation),
         "observed_blur_radius_px": int(settings.observed_blur_radius_px),
         "detail_blur_radius_px": int(settings.detail_blur_radius_px),
+        "projection_elevation_mode_counts": elevation_mode_counts,
+        "detail_projection_elevation_mode_counts": detail_elevation_mode_counts,
         "low_frequency_fill": bool(settings.low_frequency_fill),
         "observed_coverage_ratio": float(observed_mask.mean()) if observed_mask.size else 0.0,
         "filled_coverage_ratio": float(1.0 - observed_mask.mean()) if observed_mask.size else 1.0,

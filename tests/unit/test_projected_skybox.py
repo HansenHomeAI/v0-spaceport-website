@@ -15,6 +15,7 @@ if str(CONTAINER_DIR) not in sys.path:
 
 from projected_skybox import (  # noqa: E402
     _apply_frame_alignment,
+    _select_projected_elevation_mask,
     ProjectedSkyboxSettings,
     build_photo_guided_fill,
     build_projection_basis,
@@ -206,6 +207,24 @@ class ProjectedSkyboxTests(unittest.TestCase):
         after_error = float(np.abs(aligned[0, 0] - target).mean())
         self.assertLess(after_error, before_error)
 
+    def test_select_projected_elevation_mask_flips_when_positive_gate_rejects_all(self):
+        local_dirs = np.array(
+            [
+                [0.0, -0.35, 0.9],
+                [0.1, -0.20, 0.97],
+                [-0.1, -0.12, 0.98],
+            ],
+            dtype=np.float32,
+        )
+
+        elevation_mask, mode = _select_projected_elevation_mask(
+            local_dirs=local_dirs,
+            min_projected_elevation=0.0,
+        )
+
+        self.assertEqual(mode, "flipped")
+        self.assertTrue(np.all(elevation_mask))
+
     def test_build_photo_guided_fill_prefers_projected_sky_over_dark_fallback(self):
         height = 128
         width = 256
@@ -294,6 +313,7 @@ class ProjectedSkyboxTests(unittest.TestCase):
             self.assertEqual(manifest["fill_strategy"], "observed_projection_spherical_regression")
             self.assertIn("detail_coverage_ratio", manifest)
             self.assertIn("base_saturation_scale", manifest)
+            self.assertIn("projection_elevation_mode_counts", manifest)
             self.assertTrue((output_dir / "background_skybox_base.webp").exists())
             self.assertTrue((output_dir / "background_skybox_detail.webp").exists())
             self.assertTrue((output_dir / "background_skybox_detail_support.png").exists())
