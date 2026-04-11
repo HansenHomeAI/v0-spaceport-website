@@ -9,3 +9,14 @@
   - c6i.4xlarge (processes=4) stopped at 286 shots due to 60m cap before validation.
   - c6i.8xlarge benchmark aborted mid-run (Amdahl’s Law: serial reconstruction limited gains; higher hourly rate not justified without >50% speedup).
 - **Recommendation**: continue with `ml.c6i.4xlarge` + processes up to 8–10; keep 60m cap. Only retest larger instances if targeting <30m wall time and willing to pay ~2× hourly for potential ~2× speedup.
+
+## MD1 Seam-Only Follow-Up (Apr 2026)
+
+- Hard geometry probe: `467` images from MD1 `geometry_mix`
+- Control passing run: `md1candg15-1775878097` in `11116.88s`
+- Seam-only passing run: `md1seamgeomcost-1775942924` in `6761.67s`
+- Improvement on the same dataset slice: `39.18%` faster
+- Same registration outcome: `467/467`
+- Important architectural proof: the seam-only run removed the old parent `adjacent_merge_mapper` and `merge_bridge_mapper` reruns and replaced them with `model_merger` + seam registration / triangulation / BA
+- Remaining bottlenecks: leaf mapper time and the final global bundle adjustment
+- Detailed note: `docs/sfm_seam_only_cost_validation.md`
