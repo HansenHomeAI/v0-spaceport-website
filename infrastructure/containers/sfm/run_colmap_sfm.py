@@ -216,6 +216,7 @@ def stream_command(
     next_heartbeat_at = (
         started + heartbeat_seconds if heartbeat_seconds is not None and heartbeat_seconds > 0 else None
     )
+    timed_out_force_kill = False
     while True:
         now = time.monotonic()
         if timeout_seconds is not None and now - started > timeout_seconds:
@@ -230,8 +231,18 @@ def stream_command(
                     os.killpg(process.pid, signal.SIGKILL)
                 except ProcessLookupError:
                     pass
-                process.wait()
+                timed_out_force_kill = True
+                try:
+                    process.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    pass
             tail = "\n".join(lines[-50:])
+            if timed_out_force_kill:
+                tail = (
+                    f"{tail}\n{stage} required SIGKILL after timeout and did not exit within the post-kill wait window"
+                    if tail
+                    else f"{stage} required SIGKILL after timeout and did not exit within the post-kill wait window"
+                )
             raise RuntimeError(
                 f"{stage} timed out after {timeout_seconds:.0f}s\n{tail}"
             )
@@ -600,6 +611,9 @@ class ColmapPipeline:
         self.chunk_mapper_timeout_seconds = float(
             os.environ.get("COLMAP_CHUNK_MAPPER_TIMEOUT_SECONDS", "2700")
         )
+        self.bridge_mapper_timeout_seconds = float(
+            os.environ.get("COLMAP_BRIDGE_MAPPER_TIMEOUT_SECONDS", "3600")
+        )
         self.monolithic_mapper_timeout_seconds = float(
             os.environ.get("COLMAP_MONOLITHIC_MAPPER_TIMEOUT_SECONDS", "21600")
         )
@@ -712,6 +726,14 @@ class ColmapPipeline:
         if timeout_seconds is None or timeout_seconds <= 0:
             return None
         return timeout_seconds
+
+    def mapper_timeout_seconds_for_stage(self, stage: str) -> float | None:
+        if not stage.startswith("chunk_"):
+            return self.resolve_timeout_seconds(self.monolithic_mapper_timeout_seconds)
+        timeout_seconds = self.chunk_mapper_timeout_seconds
+        if is_bridge_model_stage(stage):
+            timeout_seconds = max(timeout_seconds, self.bridge_mapper_timeout_seconds)
+        return self.resolve_timeout_seconds(timeout_seconds)
 
     def detect_colmap_commands(self) -> List[str]:
         try:
@@ -2490,11 +2512,7 @@ class ColmapPipeline:
                     "0",
                 ],
                 stage=stage,
-                timeout_seconds=self.resolve_timeout_seconds(
-                    self.chunk_mapper_timeout_seconds
-                    if stage.startswith("chunk_")
-                    else self.monolithic_mapper_timeout_seconds
-                ),
+                timeout_seconds=self.mapper_timeout_seconds_for_stage(stage),
                 heartbeat_seconds=self.command_heartbeat_seconds,
             )
         except RuntimeError as error:

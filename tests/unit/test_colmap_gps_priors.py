@@ -1552,6 +1552,50 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(pipeline.failure_stage, "")
             self.assertFalse(pipeline.timed_out)
 
+    def test_run_mapper_uses_extended_timeout_for_bridge_stage(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {
+                "COLMAP_CHUNK_MAPPER_TIMEOUT_SECONDS": "2700",
+                "COLMAP_BRIDGE_MAPPER_TIMEOUT_SECONDS": "3600",
+            },
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            sparse_root = root / "sparse"
+            candidate_dir = sparse_root / "0"
+            candidate_dir.mkdir(parents=True, exist_ok=True)
+            captured_timeout_seconds: list[float | None] = []
+
+            def fake_stream_command(command, *, stage, env=None, timeout_seconds=None, heartbeat_seconds=None):
+                captured_timeout_seconds.append(timeout_seconds)
+
+            with mock.patch.object(
+                run_colmap_sfm,
+                "stream_command",
+                side_effect=fake_stream_command,
+            ), mock.patch.object(
+                pipeline,
+                "summarize_model",
+                return_value=run_colmap_sfm.ModelSummary(
+                    stage="chunk_01_02_merge_bridge_mapper_initial",
+                    text_dir=root / "text",
+                    cameras_registered=1,
+                    images_registered=5,
+                    points_3d=1500,
+                    binary_dir=candidate_dir,
+                    image_count=10,
+                ),
+            ):
+                pipeline.run_mapper(
+                    stage="chunk_01_02_merge_bridge_mapper_initial",
+                    sparse_root=sparse_root,
+                    image_count=10,
+                )
+
+        self.assertEqual(captured_timeout_seconds, [3600.0])
+
     def test_run_chunk_pipeline_returns_timed_out_initial_bridge_result_without_recovery(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -2750,6 +2794,54 @@ class ColmapGpsPriorTests(unittest.TestCase):
 
         self.assertIn("timed out", str(raised.exception).lower())
         self.assertLess(time.time() - started, 2.0)
+
+    def test_stream_command_timeout_does_not_block_on_post_kill_wait(self):
+        class BlockingStdout:
+            def __iter__(self):
+                return self
+
+            def __next__(self):
+                time.sleep(60)
+                raise StopIteration
+
+        class HungProcess:
+            def __init__(self):
+                self.pid = 12345
+                self.stdout = BlockingStdout()
+
+            def wait(self, timeout=None):
+                if timeout is None:
+                    raise AssertionError("stream_command should not call wait() without a timeout after SIGKILL")
+                raise subprocess.TimeoutExpired(cmd="fake-colmap", timeout=timeout)
+
+            def poll(self):
+                return None
+
+        monotonic_values = iter([0.0, 1.0])
+
+        with mock.patch.object(
+            run_colmap_sfm.subprocess,
+            "Popen",
+            return_value=HungProcess(),
+        ), mock.patch.object(
+            run_colmap_sfm.os,
+            "killpg",
+        ), mock.patch.object(
+            run_colmap_sfm.time,
+            "monotonic",
+            side_effect=lambda: next(monotonic_values, 1.0),
+        ):
+            with self.assertRaises(RuntimeError) as raised:
+                run_colmap_sfm.stream_command(
+                    ["fake-colmap"],
+                    stage="timeout_post_kill_test",
+                    timeout_seconds=0.1,
+                    heartbeat_seconds=0.1,
+                )
+
+        message = str(raised.exception)
+        self.assertIn("timed out", message.lower())
+        self.assertIn("required SIGKILL after timeout", message)
 
     def test_orientation_source_selection_prefers_flight_when_gimbal_is_degenerate(self):
         with tempfile.TemporaryDirectory() as tmp:
