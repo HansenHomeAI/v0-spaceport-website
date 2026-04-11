@@ -26,3 +26,4 @@
 2026-04-10T19:15:40Z load KMS-backed supersplat bundles through managed ML API access in branch preview viewer
 2026-04-11T15:05:00Z rebuild preview for seam-softened projected skybox export validation
 2026-04-11T15:22:00Z harmonize projected skybox low-frequency field for branch preview validation
+2026-04-11T23:18:00Z switch projected skybox export to row-gradient residual blend for natural-sky validation

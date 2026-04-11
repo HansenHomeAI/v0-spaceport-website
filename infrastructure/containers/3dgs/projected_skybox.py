@@ -719,47 +719,153 @@ def build_photo_guided_fill(
     }
 
 
-def harmonize_skybox_rgb(
-    rgb: np.ndarray,
-    detail_support: np.ndarray,
-    low_frequency_horizontal_blur_px: int,
-    low_frequency_vertical_blur_px: int,
-    detail_residual_strength: float,
-    detail_support_blur_px: int,
-    detail_support_gamma: float = 1.6,
-) -> tuple[np.ndarray, dict[str, Any]]:
-    rgb_f32 = np.clip(np.asarray(rgb, dtype=np.float32), 0.0, 1.0)
-    support_f32 = np.clip(np.asarray(detail_support, dtype=np.float32), 0.0, 1.0)
-    low_x = max(1, int(low_frequency_horizontal_blur_px))
-    low_y = max(1, int(low_frequency_vertical_blur_px))
-    support_blur = max(1, int(detail_support_blur_px))
-    residual_strength = float(np.clip(detail_residual_strength, 0.0, 1.0))
-    gamma = float(max(detail_support_gamma, 1.0))
+def _build_observed_row_band_mask(
+    observed_mask: np.ndarray,
+    threshold_fraction: float,
+    top_padding_px: int,
+    bottom_padding_px: int,
+) -> tuple[np.ndarray, int, int]:
+    observed_f32 = np.asarray(observed_mask, dtype=np.float32)
+    height = observed_f32.shape[0]
+    row_coverage = observed_f32.sum(axis=1)
+    if row_coverage.size == 0 or float(row_coverage.max()) <= 1e-6:
+        return np.zeros_like(observed_f32, dtype=bool), 0, max(height - 1, 0)
 
-    low_frequency = _blur_equirectangular_anisotropic(
-        rgb_f32,
-        radius_x_px=low_x,
-        radius_y_px=low_y,
+    active_rows = np.flatnonzero(row_coverage >= float(row_coverage.max()) * float(np.clip(threshold_fraction, 0.0, 1.0)))
+    if active_rows.size == 0:
+        active_rows = np.flatnonzero(row_coverage > 0.0)
+    if active_rows.size == 0:
+        return np.zeros_like(observed_f32, dtype=bool), 0, max(height - 1, 0)
+
+    row_start = max(0, int(active_rows[0]) - max(0, int(top_padding_px)))
+    row_end = min(height - 1, int(active_rows[-1]) + max(0, int(bottom_padding_px)))
+    band_mask = np.zeros_like(observed_f32, dtype=bool)
+    band_mask[row_start : row_end + 1, :] = True
+    return band_mask, row_start, row_end
+
+
+def harmonize_skybox_rgb(
+    fill_rgb: np.ndarray,
+    observed_rgb: np.ndarray,
+    observed_mask: np.ndarray,
+    glow_reference_rgb: np.ndarray,
+    row_band_threshold_fraction: float,
+    row_band_top_padding_px: int,
+    row_band_bottom_padding_px: int,
+    row_mean_blur_horizontal_px: int,
+    row_mean_blur_vertical_px: int,
+    glow_strength: float,
+    glow_sigma_x_fraction: float,
+    glow_sigma_y_fraction: float,
+    zenith_lift_strength: float,
+    observed_detail_blur_px: int,
+    observed_alpha_blur_px: int,
+    observed_alpha_gamma: float,
+    observed_detail_mix: float,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, dict[str, Any]]:
+    fill_f32 = np.clip(np.asarray(fill_rgb, dtype=np.float32), 0.0, 1.0)
+    observed_f32 = np.clip(np.asarray(observed_rgb, dtype=np.float32), 0.0, 1.0)
+    observed_mask_bool = np.asarray(observed_mask, dtype=bool)
+    reference_f32 = np.clip(np.asarray(glow_reference_rgb, dtype=np.float32), 0.0, 1.0)
+    height, width = fill_f32.shape[:2]
+
+    row_band_mask, row_start, row_end = _build_observed_row_band_mask(
+        observed_mask=observed_mask_bool,
+        threshold_fraction=float(row_band_threshold_fraction),
+        top_padding_px=int(row_band_top_padding_px),
+        bottom_padding_px=int(row_band_bottom_padding_px),
     )
-    medium_frequency = _blur_equirectangular_anisotropic(
-        rgb_f32,
-        radius_x_px=max(1, low_x // 8),
-        radius_y_px=max(1, low_y // 4),
+    clean_observed_mask = observed_mask_bool & row_band_mask
+
+    smoothed_fill = _blur_equirectangular_anisotropic(
+        fill_f32,
+        radius_x_px=max(1, int(row_mean_blur_horizontal_px)),
+        radius_y_px=max(1, int(row_mean_blur_vertical_px)),
     )
-    residual = rgb_f32 - medium_frequency
-    harmonized_support = _blur_scalar_equirectangular(np.power(support_f32, gamma), radius_px=support_blur)
-    harmonized = np.clip(
-        low_frequency + (residual_strength * harmonized_support[..., None] * residual),
+    row_mean = np.mean(smoothed_fill, axis=1, keepdims=True).astype(np.float32)
+    row_gradient_base = np.repeat(row_mean, width, axis=1).astype(np.float32)
+
+    reference_luma = _luminance(reference_f32)
+    search_rows = max(1, height // 2)
+    glow_index = np.unravel_index(int(np.argmax(reference_luma[:search_rows, :])), (search_rows, width))
+    glow_y = float(glow_index[0]) / float(max(height - 1, 1))
+    glow_x = float(glow_index[1]) / float(max(width - 1, 1))
+
+    ys = np.linspace(0.0, 1.0, height, dtype=np.float32)[:, None]
+    xs = np.linspace(0.0, 1.0, width, dtype=np.float32)[None, :]
+    glow_sigma_x = max(float(glow_sigma_x_fraction), 1e-3)
+    glow_sigma_y = max(float(glow_sigma_y_fraction), 1e-3)
+    glow = np.exp(
+        -(
+            (((xs - glow_x) ** 2) / (2.0 * glow_sigma_x * glow_sigma_x))
+            + (((ys - glow_y) ** 2) / (2.0 * glow_sigma_y * glow_sigma_y))
+        )
+    ).astype(np.float32)
+    row_gradient_base = np.clip(
+        row_gradient_base + (float(glow_strength) * glow[..., None]),
         0.0,
         1.0,
     ).astype(np.float32)
-    return harmonized, {
+    row_gradient_base = np.clip(
+        row_gradient_base * (1.0 - 0.03 + (float(zenith_lift_strength) * (1.0 - ys[..., None]))),
+        0.0,
+        1.0,
+    ).astype(np.float32)
+    row_gradient_base = _blur_equirectangular_anisotropic(
+        row_gradient_base,
+        radius_x_px=max(8, int(observed_detail_blur_px) // 2),
+        radius_y_px=max(8, int(observed_detail_blur_px) // 2),
+    )
+
+    if np.any(clean_observed_mask):
+        band_weights = clean_observed_mask.astype(np.float32)
+        soft_detail_rgb, blurred_support = _weighted_equirectangular_blur(
+            rgb=observed_f32,
+            weights=band_weights,
+            radius_px=max(1, int(observed_detail_blur_px)),
+        )
+        soft_alpha = _blur_scalar_equirectangular(
+            blurred_support,
+            radius_px=max(1, int(observed_alpha_blur_px)),
+        )
+        if np.any(soft_alpha > 1e-6):
+            alpha_reference = float(np.percentile(soft_alpha[soft_alpha > 1e-6], 85))
+        else:
+            alpha_reference = 1.0
+        soft_alpha = np.clip(soft_alpha / max(alpha_reference, 1e-6), 0.0, 1.0)
+        soft_alpha = np.power(soft_alpha, float(max(observed_alpha_gamma, 1.0))).astype(np.float32)
+    else:
+        soft_detail_rgb = row_gradient_base.copy()
+        soft_alpha = np.zeros((height, width), dtype=np.float32)
+
+    detail_mix = float(np.clip(observed_detail_mix, 0.0, 1.0))
+    positive_residual = np.clip(soft_detail_rgb - row_gradient_base, 0.0, 1.0).astype(np.float32)
+    final_rgb = row_gradient_base + (soft_alpha[..., None] * detail_mix * positive_residual)
+    final_rgb = _blur_equirectangular_anisotropic(
+        np.clip(final_rgb, 0.0, 1.0),
+        radius_x_px=8,
+        radius_y_px=8,
+    ).astype(np.float32)
+
+    return final_rgb, row_gradient_base, soft_detail_rgb, soft_alpha.astype(np.float32), {
         "sky_harmonization_enabled": True,
-        "sky_harmonization_low_frequency_horizontal_blur_px": int(low_x),
-        "sky_harmonization_low_frequency_vertical_blur_px": int(low_y),
-        "sky_harmonization_detail_support_blur_px": int(support_blur),
-        "sky_harmonization_detail_support_gamma": float(gamma),
-        "sky_harmonization_detail_residual_strength": float(residual_strength),
+        "sky_harmonization_mode": "row_gradient_observed_band",
+        "sky_harmonization_row_band_threshold_fraction": float(row_band_threshold_fraction),
+        "sky_harmonization_row_band_start": int(row_start),
+        "sky_harmonization_row_band_end": int(row_end),
+        "sky_harmonization_clean_observed_coverage_ratio": float(clean_observed_mask.mean()) if clean_observed_mask.size else 0.0,
+        "sky_harmonization_row_mean_blur_horizontal_px": int(row_mean_blur_horizontal_px),
+        "sky_harmonization_row_mean_blur_vertical_px": int(row_mean_blur_vertical_px),
+        "sky_harmonization_glow_center_x": float(glow_x),
+        "sky_harmonization_glow_center_y": float(glow_y),
+        "sky_harmonization_glow_strength": float(glow_strength),
+        "sky_harmonization_glow_sigma_x_fraction": float(glow_sigma_x_fraction),
+        "sky_harmonization_glow_sigma_y_fraction": float(glow_sigma_y_fraction),
+        "sky_harmonization_zenith_lift_strength": float(zenith_lift_strength),
+        "sky_harmonization_observed_detail_blur_px": int(observed_detail_blur_px),
+        "sky_harmonization_observed_alpha_blur_px": int(observed_alpha_blur_px),
+        "sky_harmonization_observed_alpha_gamma": float(observed_alpha_gamma),
+        "sky_harmonization_observed_detail_mix": float(detail_mix),
     }
 
 
@@ -1172,23 +1278,10 @@ def build_projected_photo_skybox(
     observed_mask = base_support_accum >= float(max(settings.min_observations_per_pixel, 1))
     safe_weights = np.clip(base_weight_accum[..., None], 1e-6, None)
     observed_rgb = base_color_accum / safe_weights
-    smoothed_observed_rgb, smoothed_observed_support = _weighted_equirectangular_blur(
+    smoothed_observed_rgb, _ = _weighted_equirectangular_blur(
         rgb=np.clip(observed_rgb, 0.0, 1.0),
         weights=base_weight_accum,
         radius_px=int(settings.observed_blur_radius_px),
-    )
-    base_observed_horizontal_blur_px = max(
-        int(settings.observed_blur_radius_px) * 2,
-        int(settings.fill_edge_horizontal_blur_px),
-    )
-    base_observed_vertical_blur_px = max(
-        int(settings.observed_blur_radius_px),
-        min(int(settings.fill_edge_vertical_blur_px) // 6, 48),
-    )
-    base_observed_rgb = _blur_equirectangular_anisotropic(
-        smoothed_observed_rgb,
-        radius_x_px=base_observed_horizontal_blur_px,
-        radius_y_px=base_observed_vertical_blur_px,
     )
     if settings.low_frequency_fill:
         fill_base, fill_metadata = build_photo_guided_fill(
@@ -1207,78 +1300,24 @@ def build_projected_photo_skybox(
             "fill_used_observed_projection": False,
         }
 
-    if np.any(smoothed_observed_support > 1e-6):
-        support_reference = float(np.percentile(smoothed_observed_support[smoothed_observed_support > 1e-6], 80))
-    else:
-        support_reference = 1.0
-    interior_mix = _interior_distance_fade(
-        observed_mask,
-        fade_px=max(1, int(settings.seam_blend_width_px)),
-    )
-    interior_mix = _blur_scalar_equirectangular(
-        interior_mix,
-        radius_px=max(1, int(settings.seam_blend_width_px) // 3),
-    )
-    support_mix = np.clip(smoothed_observed_support / max(support_reference, 1e-6), 0.0, 1.0)
-    base_mix = np.clip(interior_mix + (0.15 * support_mix), 0.0, 1.0)[..., None]
-    base_rgb = (fill_base * (1.0 - base_mix)) + (base_observed_rgb * base_mix)
-    base_rgb = _scale_saturation(base_rgb, float(settings.base_saturation_scale))
-    base_rgb, _ = _weighted_equirectangular_blur(
-        rgb=base_rgb,
-        weights=np.ones((height, width), dtype=np.float32),
-        radius_px=max(1, int(settings.observed_blur_radius_px) // 3),
-    )
-
-    detail_observed_mask = detail_support_accum >= float(max(settings.min_observations_per_pixel, 1))
-    detail_rgb = detail_color_accum / np.clip(detail_weight_accum[..., None], 1e-6, None)
-    detail_smoothed_rgb, _ = _weighted_equirectangular_blur(
-        rgb=np.clip(detail_rgb, 0.0, 1.0),
-        weights=detail_weight_accum,
-        radius_px=int(settings.detail_blur_radius_px),
-    )
-    detail_support = _blur_scalar_equirectangular(
-        detail_observed_mask.astype(np.float32),
-        radius_px=max(1, int(settings.detail_blur_radius_px)),
-    )
-    if np.any(detail_support > 1e-6):
-        detail_support_reference = float(np.percentile(detail_support[detail_support > 1e-6], 80))
-    else:
-        detail_support_reference = 1.0
-    detail_support = np.clip(detail_support / max(detail_support_reference, 1e-6), 0.0, 1.0)
-    detail_support *= _interior_distance_fade(
-        detail_observed_mask,
-        fade_px=max(1, int(settings.detail_boundary_fade_px)),
-    )
-
-    detail_observed_luma = _luminance(detail_rgb)
-    detail_smoothed_luma = _luminance(detail_smoothed_rgb)
-    detail_luma_residual = (detail_observed_luma - detail_smoothed_luma)[..., None]
-    negative_luma_scale = float(np.clip(settings.detail_negative_luma_scale, 0.0, 1.0))
-    detail_luma_residual = np.where(
-        detail_luma_residual < 0.0,
-        detail_luma_residual * negative_luma_scale,
-        detail_luma_residual,
-    ).astype(np.float32)
-    detail_observed_chroma = detail_rgb - detail_observed_luma[..., None]
-    detail_smoothed_chroma = detail_smoothed_rgb - detail_smoothed_luma[..., None]
-    detail_chroma_residual = detail_observed_chroma - detail_smoothed_chroma
-
-    final_rgb = base_rgb + (
-        detail_support[..., None]
-        * (
-            (float(settings.detail_luma_strength) * detail_luma_residual)
-            + (float(settings.detail_chroma_strength) * detail_chroma_residual)
-        )
-    )
-    final_rgb = np.clip(final_rgb, 0.0, 1.0).astype(np.float32)
-    pre_harmonize_rgb = final_rgb.copy()
-    final_rgb, harmonization_metadata = harmonize_skybox_rgb(
-        rgb=final_rgb,
-        detail_support=detail_support,
-        low_frequency_horizontal_blur_px=max(128, int(settings.fill_edge_horizontal_blur_px) * 4),
-        low_frequency_vertical_blur_px=max(24, min(int(settings.fill_edge_vertical_blur_px) // 3, 64)),
-        detail_residual_strength=float(np.clip(float(settings.detail_luma_strength) * 0.3, 0.1, 0.25)),
-        detail_support_blur_px=max(24, min(int(settings.detail_boundary_fade_px), 48)),
+    final_rgb, pre_harmonize_rgb, detail_rgb, detail_support, harmonization_metadata = harmonize_skybox_rgb(
+        fill_rgb=fill_base,
+        observed_rgb=smoothed_observed_rgb,
+        observed_mask=observed_mask,
+        glow_reference_rgb=fill_base,
+        row_band_threshold_fraction=0.12,
+        row_band_top_padding_px=max(16, int(settings.detail_boundary_fade_px) // 3),
+        row_band_bottom_padding_px=max(16, int(settings.detail_boundary_fade_px) // 3),
+        row_mean_blur_horizontal_px=max(128, int(settings.fill_edge_horizontal_blur_px) * 2),
+        row_mean_blur_vertical_px=max(90, int(settings.fill_edge_vertical_blur_px) // 2),
+        glow_strength=0.06,
+        glow_sigma_x_fraction=0.16,
+        glow_sigma_y_fraction=0.24,
+        zenith_lift_strength=0.05,
+        observed_detail_blur_px=max(72, int(settings.detail_blur_radius_px) * 4),
+        observed_alpha_blur_px=max(128, int(settings.seam_blend_width_px)),
+        observed_alpha_gamma=2.0,
+        observed_detail_mix=0.10,
     )
 
     skybox_path = output_dir / "background_skybox.webp"
@@ -1306,17 +1345,13 @@ def build_projected_photo_skybox(
         quality=min(quality, 90),
         method=6,
     )
-    Image.fromarray((np.clip(base_rgb, 0.0, 1.0) * 255.0).round().astype(np.uint8), mode="RGB").save(
+    Image.fromarray((np.clip(pre_harmonize_rgb, 0.0, 1.0) * 255.0).round().astype(np.uint8), mode="RGB").save(
         output_dir / "background_skybox_base.webp",
         format="WEBP",
         quality=min(quality, 92),
         method=6,
     )
-    detail_preview = np.clip(0.5 + (
-        (float(settings.detail_luma_strength) * detail_luma_residual)
-        + (float(settings.detail_chroma_strength) * detail_chroma_residual)
-    ), 0.0, 1.0)
-    Image.fromarray((detail_preview * 255.0).round().astype(np.uint8), mode="RGB").save(
+    Image.fromarray((np.clip(detail_rgb, 0.0, 1.0) * 255.0).round().astype(np.uint8), mode="RGB").save(
         output_dir / "background_skybox_detail.webp",
         format="WEBP",
         quality=min(quality, 90),
@@ -1375,9 +1410,7 @@ def build_projected_photo_skybox(
         "mean_semantic_mask_ratio": float(np.mean(semantic_mask_ratios)) if semantic_mask_ratios else 0.0,
         "mean_projection_mask_ratio": float(np.mean(projection_mask_ratios)) if projection_mask_ratios else 0.0,
         "mean_detail_mask_ratio": float(np.mean(detail_mask_ratios)) if detail_mask_ratios else 0.0,
-        "detail_coverage_ratio": float(detail_observed_mask.mean()) if detail_observed_mask.size else 0.0,
-        "base_observed_horizontal_blur_px": int(base_observed_horizontal_blur_px),
-        "base_observed_vertical_blur_px": int(base_observed_vertical_blur_px),
+        "detail_coverage_ratio": float(detail_support.mean()) if detail_support.size else 0.0,
         "alignment_target_rgb": alignment_target_rgb.tolist() if alignment_target_rgb is not None else None,
         "alignment_frame_count": int(len(alignment_gains)),
         "mean_alignment_gain_rgb": mean_alignment_gain_rgb,

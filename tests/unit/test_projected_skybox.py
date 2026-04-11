@@ -337,32 +337,51 @@ class ProjectedSkyboxTests(unittest.TestCase):
         height = 80
         width = 192
         base_gradient = np.linspace(0.84, 0.94, height, dtype=np.float32)[:, None, None]
-        rgb = np.repeat(base_gradient, width, axis=1)
-        rgb = np.repeat(rgb, 3, axis=2)
+        fill_rgb = np.repeat(base_gradient, width, axis=1)
+        fill_rgb = np.repeat(fill_rgb, 3, axis=2)
         for column in range(0, width, 12):
-            rgb[:, column : column + 4, :] *= np.array([0.94, 0.96, 0.98], dtype=np.float32)
-        rgb[18:26, 72:104, :] += np.array([0.015, 0.012, 0.008], dtype=np.float32)
-        rgb = np.clip(rgb, 0.0, 1.0)
-        detail_support = np.zeros((height, width), dtype=np.float32)
-        detail_support[14:34, 68:108] = 1.0
+            fill_rgb[:, column : column + 4, :] *= np.array([0.94, 0.96, 0.98], dtype=np.float32)
+        fill_rgb[18:68, 132:168, :] *= np.array([0.82, 0.84, 0.88], dtype=np.float32)
+        fill_rgb = np.clip(fill_rgb, 0.0, 1.0)
 
-        harmonized, metadata = harmonize_skybox_rgb(
-            rgb=rgb,
-            detail_support=detail_support,
-            low_frequency_horizontal_blur_px=96,
-            low_frequency_vertical_blur_px=24,
-            detail_residual_strength=0.2,
-            detail_support_blur_px=24,
+        observed_rgb = np.zeros((height, width, 3), dtype=np.float32)
+        observed_mask = np.zeros((height, width), dtype=bool)
+        observed_mask[44:58, :] = True
+        observed_rgb[44:58, :, :] = np.array([0.78, 0.87, 0.98], dtype=np.float32)
+
+        harmonized, row_gradient_base, detail_rgb, detail_support, metadata = harmonize_skybox_rgb(
+            fill_rgb=fill_rgb,
+            observed_rgb=observed_rgb,
+            observed_mask=observed_mask,
+            glow_reference_rgb=fill_rgb,
+            row_band_threshold_fraction=0.12,
+            row_band_top_padding_px=12,
+            row_band_bottom_padding_px=12,
+            row_mean_blur_horizontal_px=96,
+            row_mean_blur_vertical_px=48,
+            glow_strength=0.06,
+            glow_sigma_x_fraction=0.16,
+            glow_sigma_y_fraction=0.24,
+            zenith_lift_strength=0.05,
+            observed_detail_blur_px=20,
+            observed_alpha_blur_px=40,
+            observed_alpha_gamma=1.35,
+            observed_detail_mix=0.18,
         )
 
-        before_banding = float(np.mean(np.abs(np.diff(rgb[: height // 2], axis=1))))
+        before_banding = float(np.mean(np.abs(np.diff(fill_rgb[: height // 2], axis=1))))
         after_banding = float(np.mean(np.abs(np.diff(harmonized[: height // 2], axis=1))))
-        before_patch = float(rgb[20:24, 80:96, :].mean() - rgb[20:24, 112:128, :].mean())
-        after_patch = float(harmonized[20:24, 80:96, :].mean() - harmonized[20:24, 112:128, :].mean())
+        before_patch = float(fill_rgb[24:40, 136:152, :].mean() - fill_rgb[24:40, 104:120, :].mean())
+        after_patch = float(harmonized[24:40, 136:152, :].mean() - harmonized[24:40, 104:120, :].mean())
 
         self.assertTrue(metadata["sky_harmonization_enabled"])
+        self.assertEqual(metadata["sky_harmonization_mode"], "row_gradient_observed_band")
         self.assertLess(after_banding, before_banding * 0.45)
-        self.assertGreater(after_patch, before_patch * 0.02)
+        self.assertLess(abs(after_patch), abs(before_patch) * 0.3)
+        self.assertEqual(row_gradient_base.shape, fill_rgb.shape)
+        self.assertEqual(detail_rgb.shape, fill_rgb.shape)
+        self.assertEqual(detail_support.shape, observed_mask.shape)
+        self.assertGreater(float(detail_support.mean()), 0.0)
 
     def test_build_projected_photo_skybox_uses_observed_sky_before_fill(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -439,9 +458,9 @@ class ProjectedSkyboxTests(unittest.TestCase):
             self.assertIn("fill_edge_horizontal_blur_px", manifest)
             self.assertIn("detail_boundary_fade_px", manifest)
             self.assertIn("fill_profile_horizontal_blur_px", manifest)
-            self.assertIn("base_observed_horizontal_blur_px", manifest)
-            self.assertIn("base_observed_vertical_blur_px", manifest)
-            self.assertIn("sky_harmonization_low_frequency_horizontal_blur_px", manifest)
+            self.assertIn("sky_harmonization_mode", manifest)
+            self.assertIn("sky_harmonization_row_band_start", manifest)
+            self.assertIn("sky_harmonization_observed_alpha_blur_px", manifest)
             self.assertTrue((output_dir / "background_skybox_base.webp").exists())
             self.assertTrue((output_dir / "background_skybox_detail.webp").exists())
             self.assertTrue((output_dir / "background_skybox_pre_harmonize.webp").exists())
