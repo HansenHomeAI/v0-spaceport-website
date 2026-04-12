@@ -2522,6 +2522,90 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(pipeline.chunk_merge_proof["pre_merge_unique_registered_images"], 3)
             self.assertEqual(pipeline.chunk_merge_proof["final_merged_registered_images"], 3)
 
+    def test_merge_chunk_models_raises_when_no_usable_merge_candidate_is_produced(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.parent_merge_mode = "legacy_rerun"
+            first_model_dir = root / "chunk_00" / "sparse_initial" / "0"
+            second_model_dir = root / "chunk_01" / "sparse_initial" / "0"
+            first_text_dir = root / "text_00"
+            second_text_dir = root / "text_01"
+            failed_merge_text_dir = root / "failed_merge_text"
+            swapped_failed_merge_text_dir = root / "swapped_failed_merge_text"
+            for directory in (
+                first_model_dir,
+                second_model_dir,
+                first_text_dir,
+                second_text_dir,
+                failed_merge_text_dir,
+                swapped_failed_merge_text_dir,
+            ):
+                directory.mkdir(parents=True, exist_ok=True)
+            (first_text_dir / "images.txt").write_text(
+                "1 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n2 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (second_text_dir / "images.txt").write_text(
+                "3 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n4 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (failed_merge_text_dir / "images.txt").write_text(
+                "5 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n6 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (swapped_failed_merge_text_dir / "images.txt").write_text(
+                "7 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n8 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            chunk_models = [
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_00_mapper_initial",
+                    text_dir=first_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=1000,
+                    binary_dir=first_model_dir,
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_01_mapper_initial",
+                    text_dir=second_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=1000,
+                    binary_dir=second_model_dir,
+                ),
+            ]
+            summarize_side_effects = [
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_model_merger_01_output_attempt_01",
+                    text_dir=failed_merge_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=1100,
+                    binary_dir=pipeline.work_dir / "merged_chunk_model_01_attempt_01",
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_model_merger_01_output_attempt_02",
+                    text_dir=swapped_failed_merge_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=1100,
+                    binary_dir=pipeline.work_dir / "merged_chunk_model_01_attempt_02",
+                ),
+            ]
+
+            with mock.patch.object(run_colmap_sfm, "stream_command"), mock.patch.object(
+                pipeline,
+                "summarize_model",
+                side_effect=summarize_side_effects,
+            ):
+                with self.assertRaisesRegex(
+                    RuntimeError,
+                    "Failed to merge chunk models: no overlapping registered images produced a usable merge",
+                ):
+                    pipeline.merge_chunk_models(chunk_models)
+
     def test_merge_chunk_models_prefers_highest_overlap_pair_first(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

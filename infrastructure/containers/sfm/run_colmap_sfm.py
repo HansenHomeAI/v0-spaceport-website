@@ -5624,8 +5624,10 @@ class ColmapPipeline:
                 if merge_error is not None:
                     self.handle_stage_runtime_error(f"chunk_model_merger_{merge_sequence:02d}", merge_error)
                     raise RuntimeError(f"Failed to merge chunk model {merge_sequence}: {merge_error}") from merge_error
-                    raise RuntimeError(
-                    "Failed to merge chunk models: no overlapping registered images produced a usable merge"
+                pending_stages = [model.stage for model in pending_models]
+                raise RuntimeError(
+                    "Failed to merge chunk models: no overlapping registered images produced "
+                    f"a usable merge among pending stages {pending_stages}"
                 )
             for removal_index in sorted(merged_pair_indexes, reverse=True):
                 pending_models.pop(removal_index)
