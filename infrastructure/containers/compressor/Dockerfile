@@ -16,8 +16,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /opt/ml/code
 
 COPY requirements.txt .
-RUN pip3 install --no-cache-dir --upgrade pip && \
-    pip3 install --no-cache-dir -r requirements.txt
+RUN python3 -m pip install --break-system-packages --no-cache-dir --upgrade pip && \
+    python3 -m pip install --break-system-packages --no-cache-dir -r requirements.txt
 
 RUN npm install -g @playcanvas/splat-transform@1.10.2
 
