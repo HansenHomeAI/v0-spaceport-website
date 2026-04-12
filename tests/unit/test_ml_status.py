@@ -65,7 +65,8 @@ class MLStatusLambdaTests(unittest.TestCase):
                 "output": json.dumps(
                     {
                         "publishResult": {
-                            "edgeBundleUrl": "https://d111111abcdef8.cloudfront.net/models/job-123/supersplat_bundle/meta.json"
+                            "edgeBundleUrl": "https://d111111abcdef8.cloudfront.net/models/job-123/supersplat_bundle/meta.json",
+                            "edgeLodBundleUrl": "https://d111111abcdef8.cloudfront.net/models/job-123/supersplat_bundle/lod-meta.json",
                         }
                     }
                 ),
@@ -82,6 +83,10 @@ class MLStatusLambdaTests(unittest.TestCase):
             body["edgeBundleUrl"],
             "https://d111111abcdef8.cloudfront.net/models/job-123/supersplat_bundle/meta.json",
         )
+        self.assertEqual(
+            body["edgeLodBundleUrl"],
+            "https://d111111abcdef8.cloudfront.net/models/job-123/supersplat_bundle/lod-meta.json",
+        )
 
     def test_omits_edge_bundle_url_while_execution_is_running(self):
         start_time = datetime.now(timezone.utc) - timedelta(minutes=1)
@@ -96,3 +101,4 @@ class MLStatusLambdaTests(unittest.TestCase):
         body = json.loads(response["body"])
         self.assertEqual(response["statusCode"], 200)
         self.assertNotIn("edgeBundleUrl", body)
+        self.assertNotIn("edgeLodBundleUrl", body)

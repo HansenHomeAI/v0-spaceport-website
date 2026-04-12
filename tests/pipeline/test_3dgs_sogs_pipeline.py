@@ -305,7 +305,7 @@ class GaussianSOGSTester:
                 },
                 ProcessingResources={
                     'ClusterConfig': {
-                        'InstanceType': 'ml.g4dn.xlarge',  # GPU instance for SOGS
+                        'InstanceType': 'ml.c6i.2xlarge',  # CPU-first splat-transform compression
                         'InstanceCount': 1,
                         'VolumeSizeInGB': 30
                     }
