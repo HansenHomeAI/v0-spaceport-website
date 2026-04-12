@@ -4816,12 +4816,15 @@ class ColmapPipeline:
             attempt_specs,
             start=1,
         ):
+            seam_scope_names = self.sorted_capture_names(
+                set(raw_merged_names).union(frontier_names)
+            ) or list(source_union_names)
             try:
                 refined_model = self.run_parent_seam_registration(
                     seed_model=seed_model,
                     chunk_plan=self.build_chunk_plan_from_image_names(
                         index=max(source_index_list, default=0),
-                        image_names=source_union_names,
+                        image_names=seam_scope_names,
                         source_chunk_indexes=source_index_list,
                     ),
                     stage_prefix=attempt_stage_prefix,
@@ -4840,6 +4843,7 @@ class ColmapPipeline:
                 or len(refined_names) > len(raw_merged_names)
                 or attempt_index == len(attempt_specs)
             ):
+                refined_model.image_names = list(source_union_names)
                 refined_model.source_chunk_indexes = list(source_index_list)
                 return (
                     refined_model,

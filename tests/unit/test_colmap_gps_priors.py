@@ -2924,7 +2924,7 @@ class ColmapGpsPriorTests(unittest.TestCase):
                     images_registered=2,
                     points_3d=1000,
                     binary_dir=first_model_dir,
-                    image_names=["IMG_01.jpg", "IMG_02.jpg", "IMG_04.jpg"],
+                    image_names=["IMG_01.jpg", "IMG_02.jpg", "IMG_04.jpg", "IMG_05.jpg"],
                     source_chunk_indexes=[0],
                 ),
                 run_colmap_sfm.ModelSummary(
@@ -2984,6 +2984,10 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(seam_mock.call_count, 2)
             self.assertEqual(seam_mock.call_args_list[1].kwargs["stage_prefix"], "chunk_model_seam_01_retry")
             self.assertEqual(seam_mock.call_args_list[1].kwargs["frontier_pair_cap"], 9)
+            self.assertEqual(
+                seam_mock.call_args_list[1].kwargs["chunk_plan"].image_names,
+                ["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg"],
+            )
 
     def test_merge_chunk_models_skips_final_bundle_adjustment_above_threshold(self):
         with tempfile.TemporaryDirectory() as tmp:
