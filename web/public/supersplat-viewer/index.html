@@ -21,6 +21,13 @@
             const settingsUrl = url.searchParams.has('settings') ? url.searchParams.get('settings') : './settings.json';
             const contentUrl = url.searchParams.has('content') ? url.searchParams.get('content') : './scene.compressed.ply';
             const loadStartedAt = performance.now();
+            const parseVector = (value) => {
+                if (!value) {
+                    return null;
+                }
+                const parts = value.split(',').map(part => Number.parseFloat(part.trim()));
+                return parts.length === 3 && parts.every(Number.isFinite) ? parts : null;
+            };
 
             const resolveAbsoluteUrl = (value) => {
                 try {
@@ -133,6 +140,20 @@
                 lodRangeMin: url.searchParams.has('lodMin') ? Number.parseInt(url.searchParams.get('lodMin'), 10) : null,
                 lodRangeMax: url.searchParams.has('lodMax') ? Number.parseInt(url.searchParams.get('lodMax'), 10) : null
             };
+            window.__sogsInitialCameraPose = (() => {
+                const position = parseVector(url.searchParams.get('camPos'));
+                const target = parseVector(url.searchParams.get('camTarget'));
+                if (!position || !target) {
+                    return null;
+                }
+                const fovRaw = url.searchParams.get('camFov');
+                const fov = fovRaw == null ? null : Number.parseFloat(fovRaw);
+                return {
+                    position,
+                    target,
+                    fov: Number.isFinite(fov) ? fov : null
+                };
+            })();
 
             const sseConfig = {
                 poster: posterUrl && createImage(posterUrl),

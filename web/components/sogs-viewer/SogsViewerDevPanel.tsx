@@ -110,7 +110,6 @@ export default function SogsViewerDevPanel() {
   const ignoreNextSogsStateRef = useRef(false);
   const loadRequestRef = useRef(0);
   const initialCameraPoseRef = useRef<ViewerCameraPose | null>(null);
-  const initialCameraAppliedRef = useRef(false);
   const latestCameraPoseRef = useRef<ViewerCameraPose | null>(null);
 
   const [inputUrl, setInputUrl] = useState(DEFAULT_SOGS_BUNDLE_URL);
@@ -121,6 +120,7 @@ export default function SogsViewerDevPanel() {
   const [iframeKey, setIframeKey] = useState(0);
   const [viewerState, setViewerState] = useState<ViewerLoadState>("idle");
   const [telemetry, setTelemetry] = useState<ViewerTelemetry>(EMPTY_TELEMETRY);
+  const [initialCameraPose, setInitialCameraPose] = useState<ViewerCameraPose | null>(null);
 
   const [streamingConfig, setStreamingConfig] = useState<StreamingConfig>({
     budget: "",
@@ -210,8 +210,15 @@ export default function SogsViewerDevPanel() {
     if (parsed.lodRangeMax != null) {
       params.set("lodMax", String(parsed.lodRangeMax));
     }
+    if (initialCameraPose) {
+      params.set("camPos", formatVectorParam(initialCameraPose.position));
+      params.set("camTarget", formatVectorParam(initialCameraPose.target));
+      if (initialCameraPose.fov != null) {
+        params.set("camFov", String(Math.round(initialCameraPose.fov)));
+      }
+    }
     return `${VIEWER_BASE}?${params.toString()}`;
-  }, [activeUrl, resolvedBundle, streamingConfig]);
+  }, [activeUrl, initialCameraPose, resolvedBundle, streamingConfig]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -226,37 +233,37 @@ export default function SogsViewerDevPanel() {
 
       if (event.data.type === "supersplat:firstFrame") {
         const defaults = createDefaultScenePayload();
-        try {
-          (event.source as Window).postMessage(
-            {
-              type: "sogs:apply",
-              position: defaults.position,
-              rotation: defaults.rotation,
-              scale: defaults.scale,
-              fov: defaults.fov,
-            },
-            "*",
-          );
-        } catch {
-          /* ignore */
-        }
         setForm(defaults);
         setViewerState("ready");
-        applyStreamingConfigToIframe();
-        const initialCameraPose = initialCameraPoseRef.current;
-        if (initialCameraPose && !initialCameraAppliedRef.current) {
-          initialCameraAppliedRef.current = true;
-          postToIframe({ type: "sogs:cameraMode", mode: "scripted" });
-          postToIframe({
-            type: "sogs:cameraLookAt",
-            position: initialCameraPose.position,
-            target: initialCameraPose.target,
-            fov: initialCameraPose.fov ?? defaults.fov,
-          });
-          window.setTimeout(() => postToIframe({ type: "sogs:cameraMode", mode: "orbit" }), 80);
-        }
-        postToIframe({ type: "sogs:guides", enabled: guides });
-        postToIframe({ type: "sogs:requestState" });
+        const targetWindow = event.source as Window;
+        window.setTimeout(() => {
+          try {
+            targetWindow.postMessage(
+              {
+                type: "sogs:apply",
+                position: defaults.position,
+                rotation: defaults.rotation,
+                scale: defaults.scale,
+                fov: defaults.fov,
+              },
+              "*",
+            );
+            const parsed = parseStreamingConfig(streamingConfig);
+            targetWindow.postMessage(
+              {
+                type: "sogs:config",
+                splatBudget: parsed.splatBudget,
+                lodRangeMin: parsed.lodRangeMin,
+                lodRangeMax: parsed.lodRangeMax,
+              },
+              "*",
+            );
+            targetWindow.postMessage({ type: "sogs:guides", enabled: guides }, "*");
+            targetWindow.postMessage({ type: "sogs:requestState" }, "*");
+          } catch {
+            /* ignore */
+          }
+        }, 120);
       }
 
       if (event.data.type === "sogs:state") {
@@ -358,8 +365,7 @@ export default function SogsViewerDevPanel() {
       lodMin,
       lodMax,
     });
-    initialCameraAppliedRef.current = false;
-    initialCameraPoseRef.current =
+    const nextInitialCameraPose =
       cameraPosition && cameraTarget
         ? {
             position: cameraPosition,
@@ -367,6 +373,8 @@ export default function SogsViewerDevPanel() {
             fov: cameraFov,
           }
         : null;
+    initialCameraPoseRef.current = nextInitialCameraPose;
+    setInitialCameraPose(nextInitialCameraPose);
     void attemptLoad(raw);
   }, [attemptLoad]);
 

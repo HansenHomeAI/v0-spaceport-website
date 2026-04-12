@@ -1,3 +1,4 @@
+2026-04-11T22:27:00Z sogs-viewer initial camera share links hold pose until first interaction
 2026-04-11T22:18:00Z sogs-viewer shareable initial camera params for spatial LOD proof
 2026-03-30T16:16:32Z optimize bundled skybox payload for cold edge delivery validation
 2026-03-30 http3 edge delivery validation rerun

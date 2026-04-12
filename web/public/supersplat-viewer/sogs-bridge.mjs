@@ -202,6 +202,23 @@ function setupCameraManagerBridge(cameraManager, app) {
   };
 }
 
+function installInitialCameraRelease(app) {
+  if (window.__sogsInitialCameraReleaseInstalled) {
+    return;
+  }
+  const release = () => {
+    if (!window.__sogsScriptedCamera) {
+      return;
+    }
+    window.__sogsScriptedCamera = false;
+    app.renderNextFrame = true;
+  };
+  window.addEventListener("pointerdown", release, { capture: true });
+  window.addEventListener("wheel", release, { capture: true, passive: true });
+  window.addEventListener("keydown", release, { capture: true });
+  window.__sogsInitialCameraReleaseInstalled = true;
+}
+
 function axisMaterial(rgb) {
   const material = new StandardMaterial();
   material.diffuse = new Color(0, 0, 0);
@@ -327,6 +344,27 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   applyViewerConfig(app, window.__sogsInitialViewerConfig ?? {});
   setupCameraManagerBridge(viewer.cameraManager, app);
+  const initialCameraPose = window.__sogsInitialCameraPose;
+  if (
+    initialCameraPose?.position?.length === 3 &&
+    initialCameraPose?.target?.length === 3
+  ) {
+    window.__sogsCameraPose = {
+      position: initialCameraPose.position,
+      target: initialCameraPose.target,
+      fov: initialCameraPose.fov ?? null,
+    };
+    window.__sogsScriptedCamera = true;
+    tmpFrom.set(initialCameraPose.position[0], initialCameraPose.position[1], initialCameraPose.position[2]);
+    tmpTo.set(initialCameraPose.target[0], initialCameraPose.target[1], initialCameraPose.target[2]);
+    viewer.cameraManager.camera.look(tmpFrom, tmpTo);
+    if (finiteNumber(initialCameraPose.fov)) {
+      viewer.cameraManager.camera.fov = initialCameraPose.fov;
+      window.__sogsUserFov = initialCameraPose.fov;
+    }
+    installInitialCameraRelease(app);
+    app.renderNextFrame = true;
+  }
   window.__sogsSplatXzDragReady = true;
 
   window.addEventListener("message", (event) => {
@@ -377,6 +415,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         target: data.target,
         fov: data.fov,
       };
+      if (
+        Array.isArray(data.position) &&
+        data.position.length === 3 &&
+        Array.isArray(data.target) &&
+        data.target.length === 3
+      ) {
+        tmpFrom.set(data.position[0], data.position[1], data.position[2]);
+        tmpTo.set(data.target[0], data.target[1], data.target[2]);
+        viewer.cameraManager.camera.look(tmpFrom, tmpTo);
+        if (finiteNumber(data.fov)) {
+          viewer.cameraManager.camera.fov = data.fov;
+          window.__sogsUserFov = data.fov;
+        }
+      }
       app.renderNextFrame = true;
       postSogsState();
     }
