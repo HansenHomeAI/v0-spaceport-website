@@ -65,6 +65,7 @@ class ModelSummary:
     partial_result: bool = False
     timed_out: bool = False
     image_names: List[str] = field(default_factory=list)
+    source_chunk_indexes: List[int] = field(default_factory=list)
 
 
 @dataclass
@@ -77,6 +78,7 @@ class ChunkPlan:
     group_indices: List[int] = field(default_factory=list)
     overlap_group_indices: List[int] = field(default_factory=list)
     segment_indices: List[int] = field(default_factory=list)
+    source_chunk_indexes: List[int] = field(default_factory=list)
 
 
 @dataclass
@@ -668,8 +670,14 @@ class ColmapPipeline:
         self.seam_frontier_max_images = int(
             os.environ.get("COLMAP_SEAM_FRONTIER_MAX_IMAGES", "192")
         )
+        self.seam_frontier_retry_max_images = int(
+            os.environ.get("COLMAP_SEAM_FRONTIER_RETRY_MAX_IMAGES", "320")
+        )
         self.parent_seam_registration_cycles = int(
             os.environ.get("COLMAP_PARENT_SEAM_REGISTRATION_CYCLES", "2")
+        )
+        self.parent_seam_retry_pair_cap = int(
+            os.environ.get("COLMAP_PARENT_SEAM_RETRY_PAIR_CAP", str(max(self.pair_cap_local, 8)))
         )
         self.parent_registrator_timeout_seconds = float(
             os.environ.get("COLMAP_PARENT_REGISTRATOR_TIMEOUT_SECONDS", "1800")
@@ -2444,6 +2452,7 @@ class ColmapPipeline:
         *,
         image_name_set: Set[str],
         frontier_name_set: Set[str] | None = None,
+        frontier_pair_cap: int | None = None,
     ) -> List[CandidateEdge]:
         selected_edges: List[CandidateEdge] = []
         local_count = 0
@@ -2457,7 +2466,8 @@ class ColmapPipeline:
             if frontier_name_set and (image_name not in frontier_name_set and neighbor_name not in frontier_name_set):
                 continue
             if frontier_name_set:
-                if seam_count >= max(self.pair_cap_seam, 1):
+                active_frontier_pair_cap = frontier_pair_cap if frontier_pair_cap is not None else self.pair_cap_seam
+                if seam_count >= max(active_frontier_pair_cap, 1):
                     continue
                 seam_count += 1
                 selected_edges.append(edge)
@@ -2599,6 +2609,7 @@ class ColmapPipeline:
         chunk_dir: Path,
         bridge_target_name_sets: Sequence[Set[str]] | None = None,
         frontier_names: Sequence[str] | None = None,
+        frontier_pair_cap: int | None = None,
     ) -> Path:
         pair_list_path = chunk_dir / "match_list.txt"
         image_name_set = set(chunk_plan.image_names)
@@ -2610,6 +2621,7 @@ class ColmapPipeline:
                     image_name,
                     image_name_set=image_name_set,
                     frontier_name_set=frontier_name_set or None,
+                    frontier_pair_cap=frontier_pair_cap,
                 ):
                     neighbor_name = edge.second_name if edge.first_name == image_name else edge.first_name
                     if neighbor_name not in image_name_set:
@@ -2682,6 +2694,7 @@ class ColmapPipeline:
         stage_prefix: str,
         bridge_target_name_sets: Sequence[Set[str]] | None = None,
         frontier_names: Sequence[str] | None = None,
+        frontier_pair_cap: int | None = None,
     ) -> None:
         if self.chunk_planner == "footprint_graph_v1":
             if self.colmap_capabilities.get("supports_matches_importer"):
@@ -2690,6 +2703,7 @@ class ColmapPipeline:
                     chunk_dir=chunk_dir,
                     bridge_target_name_sets=bridge_target_name_sets if is_bridge_stage_prefix(stage_prefix) else None,
                     frontier_names=frontier_names,
+                    frontier_pair_cap=frontier_pair_cap,
                 )
                 self.run_matches_importer(
                     database_path=chunk_database_path,
@@ -3399,6 +3413,7 @@ class ColmapPipeline:
             group_indices=sorted(set(core_group_indices).union(overlap_group_indices)),
             overlap_group_indices=sorted(set(overlap_group_indices)),
             segment_indices=sorted(set(segment_indices)),
+            source_chunk_indexes=[index],
         )
 
     def build_spatial_heading_chunks(self) -> List[ChunkPlan]:
@@ -3771,6 +3786,7 @@ class ColmapPipeline:
                     group_indices=chunk_plan.group_indices,
                     overlap_group_indices=chunk_plan.overlap_group_indices,
                     segment_indices=chunk_plan.segment_indices,
+                    source_chunk_indexes=list(chunk_plan.source_chunk_indexes or [chunk_plan.index]),
                 )
             )
         self.chunk_plans_by_index = {chunk_plan.index: chunk_plan for chunk_plan in reindexed_chunk_plans}
@@ -4309,6 +4325,7 @@ class ColmapPipeline:
                     self.image_group_indices[name] for name in retry_overlap_names if name in self.image_group_indices
                 ],
                 segment_indices=list(chunk_plan.segment_indices),
+                source_chunk_indexes=list(chunk_plan.source_chunk_indexes or [chunk_plan.index]),
             )
         retry_group_indices = sorted(
             set(chunk_plan.group_indices).union(self.retry_group_indices_for_missing_core_names(missing_core_names))
@@ -4373,6 +4390,11 @@ class ColmapPipeline:
                     self.image_group_indices[name] for name in merged_overlap_names if name in self.image_group_indices
                 ],
                 segment_indices=[],
+                source_chunk_indexes=sorted(
+                    set(first_chunk_plan.source_chunk_indexes or [first_chunk_plan.index]).union(
+                        second_chunk_plan.source_chunk_indexes or [second_chunk_plan.index]
+                    )
+                ),
             )
         merged_core_group_indices = sorted(
             set(first_chunk_plan.core_group_indices).union(second_chunk_plan.core_group_indices)
@@ -4397,6 +4419,7 @@ class ColmapPipeline:
         *,
         index: int,
         image_names: Sequence[str],
+        source_chunk_indexes: Sequence[int] | None = None,
     ) -> ChunkPlan:
         ordered_names = self.sorted_capture_names(image_names)
         group_indices = [
@@ -4413,6 +4436,7 @@ class ColmapPipeline:
             group_indices=list(group_indices),
             overlap_group_indices=[],
             segment_indices=[],
+            source_chunk_indexes=list(source_chunk_indexes or [index]),
         )
 
     def model_source_image_names(self, model: ModelSummary) -> List[str]:
@@ -4420,13 +4444,51 @@ class ColmapPipeline:
             return self.sorted_capture_names(model.image_names)
         return self.sorted_capture_names(self.merged_image_names(model))
 
-    def select_merge_frontier_names(
+    def model_source_chunk_indexes(self, model: ModelSummary) -> List[int]:
+        if model.source_chunk_indexes:
+            return sorted(set(model.source_chunk_indexes))
+        return []
+
+    def chunk_span_gap_count(
+        self,
+        first_chunk_indexes: Sequence[int],
+        second_chunk_indexes: Sequence[int],
+    ) -> int:
+        combined_indexes = sorted(set(first_chunk_indexes).union(second_chunk_indexes))
+        if len(combined_indexes) <= 1:
+            return 0
+        span_width = combined_indexes[-1] - combined_indexes[0] + 1
+        return max(span_width - len(combined_indexes), 0)
+
+    def boundary_cross_edge_strength(
+        self,
+        first_chunk_indexes: Sequence[int],
+        second_chunk_indexes: Sequence[int],
+    ) -> int:
+        best_strength = 0
+        for first_index in first_chunk_indexes:
+            for second_index in second_chunk_indexes:
+                if first_index == second_index:
+                    continue
+                best_strength = max(
+                    best_strength,
+                    self.chunk_cross_edge_counts.get(
+                        (min(first_index, second_index), max(first_index, second_index)),
+                        0,
+                    ),
+                )
+        return best_strength
+
+    def select_ranked_merge_frontier_names(
         self,
         *,
         left_source_names: Sequence[str],
         right_source_names: Sequence[str],
         raw_merged_names: Set[str],
+        max_images: int,
+        preferred_names: Set[str] | None = None,
     ) -> List[str]:
+        preferred_names = preferred_names or set()
         source_union = self.sorted_capture_names(set(left_source_names).union(right_source_names))
         if self.seam_frontier_mode != "frontier_only":
             return source_union
@@ -4436,7 +4498,7 @@ class ColmapPipeline:
             or "local_y_m" not in self.exif_records[image_name]
             for image_name in source_union
         ):
-            return source_union[: max(self.seam_frontier_max_images, 1)]
+            return source_union[: max(max_images, 1)]
         left_set = set(left_source_names)
         right_set = set(right_source_names)
         source_union_set = set(source_union)
@@ -4460,6 +4522,8 @@ class ColmapPipeline:
                 score += 100.0
             if image_name in missing_source_names:
                 score += 120.0
+            if image_name in preferred_names:
+                score += 200.0
             if left_score > 0.0 and right_score > 0.0:
                 score += left_score + right_score + 10.0
             elif image_name in missing_source_names:
@@ -4474,10 +4538,10 @@ class ColmapPipeline:
             for _, image_name in sorted(
                 ((score, image_name) for image_name, score in candidate_scores.items()),
                 key=lambda item: (-item[0], item[1]),
-            )[: max(self.seam_frontier_max_images, 1)]
+            )[: max(max_images, 1)]
         ]
         frontier_set = set(frontier_names)
-        if len(frontier_names) < self.seam_frontier_max_images:
+        if len(frontier_names) < max_images:
             halo_candidates: Dict[str, float] = {}
             for image_name in list(frontier_names):
                 for edge in self.graph_neighbors.get(image_name, []):
@@ -4491,11 +4555,43 @@ class ColmapPipeline:
             ):
                 frontier_names.append(neighbor_name)
                 frontier_set.add(neighbor_name)
-                if len(frontier_names) >= self.seam_frontier_max_images:
+                if len(frontier_names) >= max_images:
                     break
         if not frontier_names:
             return source_union[: max(self.pair_cap_local + self.pair_cap_revisit, 16)]
         return self.sorted_capture_names(frontier_names)
+
+    def select_merge_frontier_names(
+        self,
+        *,
+        left_source_names: Sequence[str],
+        right_source_names: Sequence[str],
+        raw_merged_names: Set[str],
+    ) -> List[str]:
+        return self.select_ranked_merge_frontier_names(
+            left_source_names=left_source_names,
+            right_source_names=right_source_names,
+            raw_merged_names=raw_merged_names,
+            max_images=max(self.seam_frontier_max_images, 1),
+        )
+
+    def expand_merge_frontier_names(
+        self,
+        *,
+        left_source_names: Sequence[str],
+        right_source_names: Sequence[str],
+        raw_merged_names: Set[str],
+        preferred_names: Sequence[str],
+    ) -> List[str]:
+        source_union = self.sorted_capture_names(set(left_source_names).union(right_source_names))
+        retry_cap = min(max(self.seam_frontier_retry_max_images, len(preferred_names)), len(source_union))
+        return self.select_ranked_merge_frontier_names(
+            left_source_names=left_source_names,
+            right_source_names=right_source_names,
+            raw_merged_names=raw_merged_names,
+            max_images=max(retry_cap, 1),
+            preferred_names=set(preferred_names).union(set(source_union).difference(raw_merged_names)),
+        )
 
     def run_image_registrator(
         self,
@@ -4586,6 +4682,7 @@ class ColmapPipeline:
         bridge_target_name_sets: Sequence[Set[str]] | None = None,
         run_final_bundle_adjustment: bool = True,
         frontier_names: Sequence[str] | None = None,
+        frontier_pair_cap: int | None = None,
     ) -> ModelSummary:
         seam_dir_name = dir_name or f"{stage_prefix}_seam"
         seam_dir = self.work_dir / seam_dir_name
@@ -4598,9 +4695,13 @@ class ColmapPipeline:
             stage_prefix=stage_prefix,
             bridge_target_name_sets=bridge_target_name_sets,
             frontier_names=frontier_names,
+            frontier_pair_cap=frontier_pair_cap,
         )
         current_model = seed_model
         current_model.image_names = list(chunk_plan.image_names)
+        current_model.source_chunk_indexes = list(
+            chunk_plan.source_chunk_indexes or seed_model.source_chunk_indexes
+        )
         previous_registered_count = current_model.images_registered
         for cycle in range(1, max(self.parent_seam_registration_cycles, 0) + 1):
             registrator_model = self.run_image_registrator(
@@ -4610,6 +4711,7 @@ class ColmapPipeline:
                 image_count=len(chunk_plan.image_names),
             )
             registrator_model.image_names = list(chunk_plan.image_names)
+            registrator_model.source_chunk_indexes = list(current_model.source_chunk_indexes)
             triangulated_model = self.run_point_triangulator(
                 database_path=seam_database_path,
                 input_path=registrator_model.binary_dir,
@@ -4618,16 +4720,19 @@ class ColmapPipeline:
                 clear_points=False,
             )
             triangulated_model.image_names = list(chunk_plan.image_names)
+            triangulated_model.source_chunk_indexes = list(current_model.source_chunk_indexes)
             current_model = triangulated_model
             if current_model.images_registered <= previous_registered_count:
                 break
             previous_registered_count = current_model.images_registered
         if not run_final_bundle_adjustment:
             current_model.image_names = list(chunk_plan.image_names)
+            current_model.source_chunk_indexes = list(chunk_plan.source_chunk_indexes or current_model.source_chunk_indexes)
             return current_model
         should_run_ba, _ = self.should_run_parent_bundle_adjustment(current_model.images_registered)
         if not should_run_ba:
             current_model.image_names = list(chunk_plan.image_names)
+            current_model.source_chunk_indexes = list(chunk_plan.source_chunk_indexes or current_model.source_chunk_indexes)
             return current_model
         adjusted_model = self.run_bundle_adjuster(
             input_path=current_model.binary_dir,
@@ -4639,7 +4744,94 @@ class ColmapPipeline:
             adjusted_model.images_registered,
         )
         adjusted_model.image_names = list(chunk_plan.image_names)
+        adjusted_model.source_chunk_indexes = list(
+            chunk_plan.source_chunk_indexes or current_model.source_chunk_indexes
+        )
         return adjusted_model
+
+    def run_parent_seam_registration_with_retry(
+        self,
+        *,
+        seed_model: ModelSummary,
+        left_source_names: Sequence[str],
+        right_source_names: Sequence[str],
+        source_chunk_indexes: Sequence[int],
+        stage_prefix: str,
+        dir_name: str,
+        bridge_target_name_sets: Sequence[Set[str]] | None = None,
+        run_final_bundle_adjustment: bool = False,
+    ) -> tuple[ModelSummary, List[str], bool, str]:
+        source_union_names = self.sorted_capture_names(set(left_source_names).union(right_source_names))
+        raw_merged_names = self.merged_image_names(seed_model)
+        source_index_list = sorted(set(source_chunk_indexes))
+        initial_frontier_names = self.select_merge_frontier_names(
+            left_source_names=left_source_names,
+            right_source_names=right_source_names,
+            raw_merged_names=raw_merged_names,
+        )
+        attempt_specs: List[tuple[str, str, List[str], int | None]] = [
+            (
+                stage_prefix,
+                dir_name,
+                initial_frontier_names,
+                None,
+            )
+        ]
+        expanded_frontier_names = self.expand_merge_frontier_names(
+            left_source_names=left_source_names,
+            right_source_names=right_source_names,
+            raw_merged_names=raw_merged_names,
+            preferred_names=initial_frontier_names,
+        )
+        if expanded_frontier_names != initial_frontier_names:
+            attempt_specs.append(
+                (
+                    f"{stage_prefix}_retry",
+                    f"{dir_name}_retry",
+                    expanded_frontier_names,
+                    max(self.parent_seam_retry_pair_cap, self.pair_cap_seam),
+                )
+            )
+
+        last_error: RuntimeError | None = None
+        for attempt_index, (attempt_stage_prefix, attempt_dir_name, frontier_names, frontier_pair_cap) in enumerate(
+            attempt_specs,
+            start=1,
+        ):
+            try:
+                refined_model = self.run_parent_seam_registration(
+                    seed_model=seed_model,
+                    chunk_plan=self.build_chunk_plan_from_image_names(
+                        index=max(source_index_list, default=0),
+                        image_names=source_union_names,
+                        source_chunk_indexes=source_index_list,
+                    ),
+                    stage_prefix=attempt_stage_prefix,
+                    dir_name=attempt_dir_name,
+                    bridge_target_name_sets=bridge_target_name_sets,
+                    run_final_bundle_adjustment=run_final_bundle_adjustment,
+                    frontier_names=frontier_names,
+                    frontier_pair_cap=frontier_pair_cap,
+                )
+            except RuntimeError as seam_error:
+                last_error = seam_error
+                continue
+            refined_names = self.merged_image_names(refined_model)
+            if (
+                not set(source_union_names).difference(refined_names)
+                or len(refined_names) > len(raw_merged_names)
+                or attempt_index == len(attempt_specs)
+            ):
+                refined_model.source_chunk_indexes = list(source_index_list)
+                return (
+                    refined_model,
+                    frontier_names,
+                    False,
+                    "expanded_frontier" if attempt_index > 1 else "frontier_only",
+                )
+        if last_error is None:
+            raise RuntimeError("Parent seam refinement produced no usable result")
+        raise last_error
 
     def run_chunk_pipeline(
         self,
@@ -4671,6 +4863,7 @@ class ColmapPipeline:
         )
         self.chunk_mapper_seconds += self.timings[f"{chunk_stage_prefix}_mapper_initial_seconds"]
         initial_model.image_names = list(chunk_plan.image_names)
+        initial_model.source_chunk_indexes = list(chunk_plan.source_chunk_indexes or [chunk_plan.index])
         registered_ratio = (
             initial_model.images_registered / len(chunk_plan.image_names)
             if chunk_plan.image_names
@@ -4791,6 +4984,9 @@ class ColmapPipeline:
         )
         self.chunk_mapper_seconds += self.timings[f"{chunk_stage_prefix}_mapper_recovery_seconds"]
         recovered_model.image_names = list(retry_chunk_plan.image_names)
+        recovered_model.source_chunk_indexes = list(
+            retry_chunk_plan.source_chunk_indexes or [retry_chunk_plan.index]
+        )
         recovered_ratio = (
             recovered_model.images_registered / len(retry_chunk_plan.image_names)
             if retry_chunk_plan.image_names
@@ -5014,22 +5210,34 @@ class ColmapPipeline:
         }
         merge_sequence = 1
         while len(pending_models) > 1:
-            ranked_pairs: List[tuple[int, int, int, int, int, int]] = []
+            ranked_pairs: List[tuple[int, int, int, int, int, int, int, int]] = []
             for first_index, first_model in enumerate(pending_models):
                 first_names = registered_names_by_stage[first_model.stage]
                 first_source_names = self.model_source_image_names(first_model)
+                first_source_chunk_indexes = self.model_source_chunk_indexes(first_model)
                 for second_index in range(first_index + 1, len(pending_models)):
                     second_model = pending_models[second_index]
                     second_names = registered_names_by_stage[second_model.stage]
                     second_source_names = self.model_source_image_names(second_model)
+                    second_source_chunk_indexes = self.model_source_chunk_indexes(second_model)
                     shared_count = len(first_names.intersection(second_names))
                     cross_edge_count = self.cross_chunk_edge_count(first_source_names, second_source_names) + self.cross_chunk_edge_count(second_source_names, first_source_names)
                     size_delta = abs(len(first_source_names) - len(second_source_names))
                     combined_size = len(set(first_source_names).union(second_source_names))
                     if self.hierarchy_mode == "balanced_tree_v1":
+                        gap_count = self.chunk_span_gap_count(
+                            first_source_chunk_indexes,
+                            second_source_chunk_indexes,
+                        )
+                        boundary_strength = self.boundary_cross_edge_strength(
+                            first_source_chunk_indexes,
+                            second_source_chunk_indexes,
+                        )
                         ranked_pairs.append(
                             (
+                                gap_count,
                                 -shared_count,
+                                -boundary_strength,
                                 -cross_edge_count,
                                 size_delta,
                                 combined_size,
@@ -5040,7 +5248,9 @@ class ColmapPipeline:
                     else:
                         ranked_pairs.append(
                             (
+                                0,
                                 -shared_count,
+                                -min(len(first_names), len(second_names)),
                                 -min(len(first_names), len(second_names)),
                                 -(len(first_names) + len(second_names)),
                                 combined_size,
@@ -5053,7 +5263,7 @@ class ColmapPipeline:
             merged_candidate: ModelSummary | None = None
             merged_pair_indexes: tuple[int, int] | None = None
             merge_record: MergeNodeRecord | None = None
-            for _, _, _, _, first_index, second_index in ranked_pairs:
+            for _, _, _, _, _, _, first_index, second_index in ranked_pairs:
                 current_model = pending_models[first_index]
                 next_model = pending_models[second_index]
                 existing_names = registered_names_by_stage[current_model.stage]
@@ -5062,6 +5272,11 @@ class ColmapPipeline:
                     continue
                 current_source_names = self.model_source_image_names(current_model)
                 next_source_names = self.model_source_image_names(next_model)
+                source_chunk_indexes = sorted(
+                    set(self.model_source_chunk_indexes(current_model)).union(
+                        self.model_source_chunk_indexes(next_model)
+                    )
+                )
                 cross_edge_count = self.cross_chunk_edge_count(current_source_names, next_source_names) + self.cross_chunk_edge_count(next_source_names, current_source_names)
                 for attempt_index, (input_one, input_two) in enumerate(
                     (
@@ -5104,6 +5319,7 @@ class ColmapPipeline:
                         binary_dir=output_path,
                         image_count=self.dataset_image_count,
                     )
+                    merged_candidate.source_chunk_indexes = list(source_chunk_indexes)
                     merged_names = self.merged_image_names(merged_candidate)
                     if (
                         self.merge_result_is_usable(
@@ -5130,28 +5346,22 @@ class ColmapPipeline:
                             )
                         )
                         merged_candidate.image_names = list(source_union_names)
+                        merged_candidate.source_chunk_indexes = list(source_chunk_indexes)
                         seam_frontier_names: List[str] = []
                         seam_refinement_skipped = False
                         seam_refinement_reason = "not_needed"
                         if self.parent_merge_mode == "seam_only_v1" and merged_candidate.image_names:
                             missing_source_names = set(source_union_names).difference(merged_names)
                             if missing_source_names:
-                                seam_frontier_names = self.select_merge_frontier_names(
-                                    left_source_names=self.model_source_image_names(current_model),
-                                    right_source_names=self.model_source_image_names(next_model),
-                                    raw_merged_names=merged_names,
-                                )
                                 try:
-                                    merged_candidate = self.run_parent_seam_registration(
+                                    merged_candidate, seam_frontier_names, seam_refinement_skipped, seam_refinement_reason = self.run_parent_seam_registration_with_retry(
                                         seed_model=merged_candidate,
-                                        chunk_plan=self.build_chunk_plan_from_image_names(
-                                            index=merge_sequence,
-                                            image_names=merged_candidate.image_names,
-                                        ),
+                                        left_source_names=self.model_source_image_names(current_model),
+                                        right_source_names=self.model_source_image_names(next_model),
+                                        source_chunk_indexes=source_chunk_indexes,
                                         stage_prefix=f"chunk_model_seam_{merge_sequence:02d}",
                                         dir_name=f"merged_chunk_model_{merge_sequence:02d}_seam",
                                         run_final_bundle_adjustment=False,
-                                        frontier_names=seam_frontier_names,
                                     )
                                 except RuntimeError as seam_error:
                                     seam_refinement_skipped = True
@@ -5225,6 +5435,7 @@ class ColmapPipeline:
                 self.max_bundle_adjusted_image_count,
                 adjusted_model.images_registered,
             )
+            adjusted_model.source_chunk_indexes = list(current_model.source_chunk_indexes)
         self.timings["chunk_bundle_adjuster_skipped"] = 0.0 if should_run_ba else 1.0
         pre_merge_registered_names: Set[str] = set()
         for chunk_model in chunk_models:

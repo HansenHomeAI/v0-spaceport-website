@@ -46,6 +46,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--instance-type", default="ml.g4dn.xlarge")
     parser.add_argument("--volume-size-gb", default="120")
     parser.add_argument("--poll-seconds", type=int, default=60)
+    parser.add_argument(
+        "--subset-name",
+        action="append",
+        default=[],
+        help="Optional subset filter. Repeat to run only selected subsets.",
+    )
     return parser.parse_args()
 
 
@@ -157,6 +163,9 @@ def main() -> int:
         for name in ("geometry_mix", "cross_pass", "horizon_context", "ladder_1000", "ladder_2000")
         if name in probe_subsets or name in ladder_subsets
     ]
+    if args.subset_name:
+        requested = {name.strip() for name in args.subset_name if name.strip()}
+        ordered_subset_names = [name for name in ordered_subset_names if name in requested]
     if not ordered_subset_names:
         raise RuntimeError("Manifest does not contain any probe_subsets or ladder_subsets")
 
