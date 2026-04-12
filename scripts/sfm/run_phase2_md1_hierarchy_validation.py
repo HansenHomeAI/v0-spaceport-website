@@ -52,6 +52,22 @@ def parse_args() -> argparse.Namespace:
         default=[],
         help="Optional subset filter. Repeat to run only selected subsets.",
     )
+    parser.add_argument(
+        "--reuse-existing",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Reuse existing successful summary/metadata pairs when present.",
+    )
+    parser.add_argument(
+        "--baseline-only",
+        action="store_true",
+        help="Run or reuse only baseline rows.",
+    )
+    parser.add_argument(
+        "--candidate-only",
+        action="store_true",
+        help="Run or reuse only candidate rows. Requires an existing baseline row for comparison output.",
+    )
     return parser.parse_args()
 
 
@@ -61,6 +77,22 @@ def subset_input_uri(manifest_uri: str, subset_name: str) -> str:
     if manifest_uri.startswith("s3://"):
         return manifest_uri.rsplit("/", 1)[0] + f"/{subset_directory}/{subset_name}.zip"
     return str(Path(manifest_uri).expanduser().resolve().parent / subset_directory / f"{subset_name}.zip")
+
+
+def s3_object_exists(uri: str) -> bool:
+    result = subprocess.run(
+        ["aws", "s3", "ls", uri],
+        check=False,
+        text=True,
+        capture_output=True,
+    )
+    return result.returncode == 0 and bool(result.stdout.strip())
+
+
+def subset_archive_exists(uri: str) -> bool:
+    if uri.startswith("s3://"):
+        return s3_object_exists(uri)
+    return Path(uri).expanduser().resolve().exists()
 
 
 def subset_image_count(manifest_section: dict, subset_name: str) -> int:
@@ -121,6 +153,25 @@ def run_benchmark(
     return json.loads(summary_json_output.read_text(encoding="utf-8"))
 
 
+def existing_run_is_usable(summary: dict, metadata: dict) -> bool:
+    failure_stage = metadata.get("failure_stage")
+    return bool(summary.get("job_name")) and not failure_stage and (metadata.get("images_registered") or 0) > 0
+
+
+def maybe_load_existing_run(
+    *,
+    summary_json_output: Path,
+    metadata_output_path: Path,
+) -> tuple[dict, dict] | None:
+    if not summary_json_output.exists() or not metadata_output_path.exists():
+        return None
+    summary = json.loads(summary_json_output.read_text(encoding="utf-8"))
+    metadata = json.loads(metadata_output_path.read_text(encoding="utf-8"))
+    if not existing_run_is_usable(summary, metadata):
+        return None
+    return summary, metadata
+
+
 def fetch_job_metadata(job_name: str, metadata_output_path: Path) -> Tuple[dict, str]:
     job = aws_json("sagemaker", "describe-processing-job", "--processing-job-name", job_name)
     output_s3_uri = job["ProcessingOutputConfig"]["Outputs"][0]["S3Output"]["S3Uri"].rstrip("/")
@@ -152,6 +203,8 @@ def summarize_row(summary: dict, metadata: dict) -> dict:
 
 def main() -> int:
     args = parse_args()
+    if args.baseline_only and args.candidate_only:
+        raise RuntimeError("Choose at most one of --baseline-only or --candidate-only")
     output_dir = Path(args.output_dir).expanduser().resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -191,9 +244,12 @@ def main() -> int:
         "subsets": {},
     }
     for subset_name in ordered_subset_names:
+        subset_uri = subset_input_uri(args.manifest, subset_name)
         baseline_env: Dict[str, str] | None = None
         candidate_subset_env = dict(candidate_env)
-        if full_input_uri:
+        if subset_archive_exists(subset_uri):
+            input_uri = subset_uri
+        elif full_input_uri:
             input_uri = full_input_uri
             baseline_env = {
                 "COLMAP_INPUT_SUBSET_MANIFEST_URI": args.manifest,
@@ -201,55 +257,94 @@ def main() -> int:
             }
             candidate_subset_env.update(baseline_env)
         else:
-            input_uri = subset_input_uri(args.manifest, subset_name)
-        baseline_summary = run_benchmark(
-            branch=args.branch,
-            input_s3_uri=input_uri,
-            image_uri=args.baseline_image_uri,
-            subset_strategy=f"md1_phase2_baseline_{subset_name}",
-            summary_json_output=output_dir / f"baseline-{subset_name}-summary.json",
-            job_prefix=f"{args.job_prefix}base{subset_name[:5]}",
-            instance_type=args.instance_type,
-            volume_size_gb=args.volume_size_gb,
-            poll_seconds=args.poll_seconds,
-            env=baseline_env,
-        )
-        baseline_metadata, baseline_output_s3_uri = fetch_job_metadata(
-            baseline_summary["job_name"],
-            output_dir / f"baseline-{subset_name}-sfm_metadata.json",
-        )
-        baseline_summary["output_s3_uri"] = baseline_output_s3_uri
+            input_uri = subset_uri
+        baseline_summary_path = output_dir / f"baseline-{subset_name}-summary.json"
+        baseline_metadata_path = output_dir / f"baseline-{subset_name}-sfm_metadata.json"
+        candidate_summary_path = output_dir / f"candidate-{subset_name}-summary.json"
+        candidate_metadata_path = output_dir / f"candidate-{subset_name}-sfm_metadata.json"
 
-        candidate_summary = run_benchmark(
-            branch=args.branch,
-            input_s3_uri=input_uri,
-            image_uri=args.candidate_image_uri,
-            subset_strategy=f"md1_phase2_candidate_{subset_name}",
-            summary_json_output=output_dir / f"candidate-{subset_name}-summary.json",
-            job_prefix=f"{args.job_prefix}cand{subset_name[:5]}",
-            instance_type=args.instance_type,
-            volume_size_gb=args.volume_size_gb,
-            poll_seconds=args.poll_seconds,
-            env=candidate_subset_env,
-        )
-        candidate_metadata, candidate_output_s3_uri = fetch_job_metadata(
-            candidate_summary["job_name"],
-            output_dir / f"candidate-{subset_name}-sfm_metadata.json",
-        )
-        candidate_summary["output_s3_uri"] = candidate_output_s3_uri
+        baseline_summary: dict | None = None
+        baseline_metadata: dict | None = None
+        if not args.candidate_only:
+            if args.reuse_existing:
+                existing_baseline = maybe_load_existing_run(
+                    summary_json_output=baseline_summary_path,
+                    metadata_output_path=baseline_metadata_path,
+                )
+                if existing_baseline is not None:
+                    baseline_summary, baseline_metadata = existing_baseline
+            if baseline_summary is None or baseline_metadata is None:
+                baseline_summary = run_benchmark(
+                    branch=args.branch,
+                    input_s3_uri=input_uri,
+                    image_uri=args.baseline_image_uri,
+                    subset_strategy=f"md1_phase2_baseline_{subset_name}",
+                    summary_json_output=baseline_summary_path,
+                    job_prefix=f"{args.job_prefix}base{subset_name[:5]}",
+                    instance_type=args.instance_type,
+                    volume_size_gb=args.volume_size_gb,
+                    poll_seconds=args.poll_seconds,
+                    env=baseline_env,
+                )
+                baseline_metadata, baseline_output_s3_uri = fetch_job_metadata(
+                    baseline_summary["job_name"],
+                    baseline_metadata_path,
+                )
+                baseline_summary["output_s3_uri"] = baseline_output_s3_uri
+                baseline_summary_path.write_text(json.dumps(baseline_summary, indent=2) + "\n", encoding="utf-8")
+        else:
+            existing_baseline = maybe_load_existing_run(
+                summary_json_output=baseline_summary_path,
+                metadata_output_path=baseline_metadata_path,
+            )
+            if existing_baseline is None:
+                raise RuntimeError(
+                    f"--candidate-only requested but no reusable baseline artifacts were found for {subset_name}"
+                )
+            baseline_summary, baseline_metadata = existing_baseline
 
-        baseline_row = summarize_row(baseline_summary, baseline_metadata)
-        candidate_row = summarize_row(candidate_summary, candidate_metadata)
+        candidate_summary: dict | None = None
+        candidate_metadata: dict | None = None
+        if not args.baseline_only:
+            if args.reuse_existing:
+                existing_candidate = maybe_load_existing_run(
+                    summary_json_output=candidate_summary_path,
+                    metadata_output_path=candidate_metadata_path,
+                )
+                if existing_candidate is not None:
+                    candidate_summary, candidate_metadata = existing_candidate
+            if candidate_summary is None or candidate_metadata is None:
+                candidate_summary = run_benchmark(
+                    branch=args.branch,
+                    input_s3_uri=input_uri,
+                    image_uri=args.candidate_image_uri,
+                    subset_strategy=f"md1_phase2_candidate_{subset_name}",
+                    summary_json_output=candidate_summary_path,
+                    job_prefix=f"{args.job_prefix}cand{subset_name[:5]}",
+                    instance_type=args.instance_type,
+                    volume_size_gb=args.volume_size_gb,
+                    poll_seconds=args.poll_seconds,
+                    env=candidate_subset_env,
+                )
+                candidate_metadata, candidate_output_s3_uri = fetch_job_metadata(
+                    candidate_summary["job_name"],
+                    candidate_metadata_path,
+                )
+                candidate_summary["output_s3_uri"] = candidate_output_s3_uri
+                candidate_summary_path.write_text(json.dumps(candidate_summary, indent=2) + "\n", encoding="utf-8")
+
+        baseline_row = summarize_row(baseline_summary, baseline_metadata) if baseline_summary and baseline_metadata else {}
+        candidate_row = summarize_row(candidate_summary, candidate_metadata) if candidate_summary and candidate_metadata else {}
         subset_size = subset_image_count(probe_subsets if subset_name in probe_subsets else ladder_subsets, subset_name)
         comparison["subsets"][subset_name] = {
             "image_count": subset_size,
             "baseline": baseline_row,
             "candidate": candidate_row,
             "runtime_delta_seconds": (
-                (candidate_row["processing_time_seconds"] or 0) - (baseline_row["processing_time_seconds"] or 0)
+                (candidate_row.get("processing_time_seconds") or 0) - (baseline_row.get("processing_time_seconds") or 0)
             ),
             "registration_delta": (
-                (candidate_row["images_registered"] or 0) - (baseline_row["images_registered"] or 0)
+                (candidate_row.get("images_registered") or 0) - (baseline_row.get("images_registered") or 0)
             ),
         }
 
