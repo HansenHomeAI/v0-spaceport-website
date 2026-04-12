@@ -778,6 +778,8 @@ class ColmapPipeline:
         self.sqlite_lock_retry_sleep_seconds = float(
             os.environ.get("COLMAP_SQLITE_LOCK_RETRY_SLEEP_SECONDS", "2.0")
         )
+        self.input_subset_manifest_uri = os.environ.get("COLMAP_INPUT_SUBSET_MANIFEST_URI", "").strip()
+        self.input_subset_name = os.environ.get("COLMAP_INPUT_SUBSET_NAME", "").strip()
         if (
             self.enable_sequential_matcher
             and self.spatial_neighbors == profile_defaults["spatial_neighbors"]
@@ -802,6 +804,8 @@ class ColmapPipeline:
         self.pose_priors_source = "none"
         self.exif_records: Dict[str, Dict[str, float | str | None]] = {}
         self.capture_ordered_names: List[str] = []
+        self.selected_input_image_names: Set[str] = set()
+        self.selected_input_images_requested = False
         self.matchers_run: List[str] = []
         self.matcher_pair_deltas: Dict[str, int] = {}
         self.verified_pairs_total = 0
@@ -1013,6 +1017,8 @@ class ColmapPipeline:
 
     def extract_images(self) -> None:
         started = time.time()
+        self.selected_input_image_names = self.load_requested_input_subset_names()
+        self.selected_input_images_requested = bool(self.selected_input_image_names)
         zip_files = sorted(self.input_dir.glob("*.zip"))
         image_count = 0
         if zip_files:
@@ -1022,7 +1028,10 @@ class ColmapPipeline:
                 for member in archive.namelist():
                     if not member.lower().endswith((".jpg", ".jpeg", ".png")):
                         continue
-                    target_path = self.images_dir / Path(member).name
+                    file_name = Path(member).name
+                    if self.selected_input_image_names and file_name not in self.selected_input_image_names:
+                        continue
+                    target_path = self.images_dir / file_name
                     with archive.open(member) as source, open(target_path, "wb") as target:
                         shutil.copyfileobj(source, target)
                     image_count += 1
@@ -1030,13 +1039,69 @@ class ColmapPipeline:
             for image_path in self.input_dir.rglob("*"):
                 if image_path.suffix.lower() not in {".jpg", ".jpeg", ".png"}:
                     continue
+                if self.selected_input_image_names and image_path.name not in self.selected_input_image_names:
+                    continue
                 shutil.copy2(image_path, self.images_dir / image_path.name)
                 image_count += 1
         if image_count == 0:
             raise RuntimeError("No images were found in the SfM input")
+        if self.selected_input_image_names and image_count != len(self.selected_input_image_names):
+            extracted_names = {
+                path.name
+                for path in self.images_dir.iterdir()
+                if path.is_file() and path.suffix.lower() in {".jpg", ".jpeg", ".png"}
+            }
+            missing_names = sorted(self.selected_input_image_names - extracted_names)
+            raise RuntimeError(
+                "Requested subset images were missing from the SfM input: "
+                + ", ".join(missing_names[:10])
+                + (" ..." if len(missing_names) > 10 else "")
+            )
         self.dataset_image_count = image_count
         self.timings["extract_images_seconds"] = round(time.time() - started, 2)
         logger.info("Extracted %s images", image_count)
+
+    def load_requested_input_subset_names(self) -> Set[str]:
+        if not self.input_subset_name:
+            return set()
+        if not self.input_subset_manifest_uri:
+            raise RuntimeError(
+                "COLMAP_INPUT_SUBSET_NAME was provided without COLMAP_INPUT_SUBSET_MANIFEST_URI"
+            )
+        manifest_uri = self.input_subset_manifest_uri
+        if manifest_uri.startswith("s3://"):
+            result = subprocess.run(
+                ["aws", "s3", "cp", manifest_uri, "-"],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            manifest = json.loads(result.stdout or "{}")
+        else:
+            manifest = json.loads(Path(manifest_uri).expanduser().resolve().read_text(encoding="utf-8"))
+        subset_payload = None
+        for section_name in ("probe_subsets", "ladder_subsets"):
+            section = manifest.get(section_name, {})
+            if isinstance(section, dict) and self.input_subset_name in section:
+                subset_payload = section[self.input_subset_name]
+                break
+        if subset_payload is None:
+            raise RuntimeError(
+                f"Subset {self.input_subset_name} was not found in manifest {manifest_uri}"
+            )
+        if isinstance(subset_payload, dict):
+            image_names = subset_payload.get("images", [])
+        else:
+            image_names = subset_payload
+        if not isinstance(image_names, list) or not image_names:
+            raise RuntimeError(
+                f"Subset {self.input_subset_name} in manifest {manifest_uri} does not contain images"
+            )
+        return {
+            str(image_name).strip()
+            for image_name in image_names
+            if str(image_name).strip()
+        }
 
     def populate_local_coordinates(
         self, exif_records: Dict[str, Dict[str, float | str | None]]
@@ -5929,6 +5994,10 @@ class ColmapPipeline:
             "vocab_tree_num_visual_words": self.vocab_num_visual_words,
             "vocab_tree_max_num_descriptors": self.vocab_max_num_descriptors,
             "benchmark_subset_strategy": self.benchmark_subset_strategy,
+            "input_subset_manifest_uri": self.input_subset_manifest_uri,
+            "input_subset_name": self.input_subset_name,
+            "input_subset_requested": self.selected_input_images_requested,
+            "input_subset_requested_image_count": len(self.selected_input_image_names),
             "colmap_capabilities": self.colmap_capabilities,
             "leaf_target_images": self.active_leaf_target_images(),
             "leaf_hard_cap_images": self.active_leaf_hard_cap_images(),

@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import os
 import sqlite3
 import subprocess
@@ -6,6 +7,7 @@ import sys
 import tempfile
 import time
 import unittest
+import zipfile
 from pathlib import Path
 from unittest import mock
 
@@ -3350,6 +3352,89 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(summary["far_context_points_3d"], 0)
             self.assertEqual(summary["weak_far_context_points_rejected"], 1)
             self.assertNotIn("1 20 0 0 255 255 255 0.8", filtered_points)
+
+    def test_extract_images_respects_manifest_selected_subset(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            input_dir = root / "input"
+            output_dir = root / "output"
+            input_dir.mkdir(parents=True, exist_ok=True)
+            archive_path = input_dir / "images.zip"
+            with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+                archive.writestr("IMG_01.jpg", b"one")
+                archive.writestr("IMG_02.jpg", b"two")
+                archive.writestr("IMG_03.jpg", b"three")
+            manifest_path = root / "probe_manifest.json"
+            manifest_path.write_text(
+                json.dumps(
+                    {
+                        "input": "s3://example/dataset.zip",
+                        "probe_subsets": {
+                            "geometry_mix": {
+                                "image_count": 2,
+                                "images": ["IMG_01.jpg", "IMG_03.jpg"],
+                            }
+                        },
+                        "ladder_subsets": {},
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with mock.patch.dict(
+                os.environ,
+                {
+                    "COLMAP_INPUT_SUBSET_MANIFEST_URI": str(manifest_path),
+                    "COLMAP_INPUT_SUBSET_NAME": "geometry_mix",
+                },
+                clear=False,
+            ):
+                pipeline = run_colmap_sfm.ColmapPipeline(input_dir, output_dir)
+                pipeline.extract_images()
+
+            self.assertEqual(pipeline.dataset_image_count, 2)
+            self.assertEqual(
+                sorted(path.name for path in pipeline.images_dir.iterdir()),
+                ["IMG_01.jpg", "IMG_03.jpg"],
+            )
+            self.assertTrue(pipeline.selected_input_images_requested)
+
+    def test_extract_images_fails_when_manifest_selected_subset_is_missing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            input_dir = root / "input"
+            output_dir = root / "output"
+            input_dir.mkdir(parents=True, exist_ok=True)
+            archive_path = input_dir / "images.zip"
+            with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+                archive.writestr("IMG_01.jpg", b"one")
+            manifest_path = root / "probe_manifest.json"
+            manifest_path.write_text(
+                json.dumps(
+                    {
+                        "probe_subsets": {
+                            "geometry_mix": {
+                                "image_count": 2,
+                                "images": ["IMG_01.jpg", "IMG_02.jpg"],
+                            }
+                        },
+                        "ladder_subsets": {},
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with mock.patch.dict(
+                os.environ,
+                {
+                    "COLMAP_INPUT_SUBSET_MANIFEST_URI": str(manifest_path),
+                    "COLMAP_INPUT_SUBSET_NAME": "geometry_mix",
+                },
+                clear=False,
+            ):
+                pipeline = run_colmap_sfm.ColmapPipeline(input_dir, output_dir)
+                with self.assertRaisesRegex(RuntimeError, "Requested subset images were missing"):
+                    pipeline.extract_images()
 
     def test_run_spatial_heading_chunked_path_accepts_merged_ratio_at_gps_threshold(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -173,6 +173,7 @@ def main() -> int:
         "COLMAP_PAIR_CAP_REVISIT": "3",
         "COLMAP_PAIR_CAP_SEAM": "3",
     }
+    full_input_uri = str(manifest.get("input") or "").strip()
 
     comparison: Dict[str, object] = {
         "manifest": args.manifest,
@@ -181,7 +182,17 @@ def main() -> int:
         "subsets": {},
     }
     for subset_name in ordered_subset_names:
-        input_uri = subset_input_uri(args.manifest, subset_name)
+        baseline_env: Dict[str, str] | None = None
+        candidate_subset_env = dict(candidate_env)
+        if full_input_uri:
+            input_uri = full_input_uri
+            baseline_env = {
+                "COLMAP_INPUT_SUBSET_MANIFEST_URI": args.manifest,
+                "COLMAP_INPUT_SUBSET_NAME": subset_name,
+            }
+            candidate_subset_env.update(baseline_env)
+        else:
+            input_uri = subset_input_uri(args.manifest, subset_name)
         baseline_summary = run_benchmark(
             branch=args.branch,
             input_s3_uri=input_uri,
@@ -192,6 +203,7 @@ def main() -> int:
             instance_type=args.instance_type,
             volume_size_gb=args.volume_size_gb,
             poll_seconds=args.poll_seconds,
+            env=baseline_env,
         )
         baseline_metadata, baseline_output_s3_uri = fetch_job_metadata(
             baseline_summary["job_name"],
@@ -209,7 +221,7 @@ def main() -> int:
             instance_type=args.instance_type,
             volume_size_gb=args.volume_size_gb,
             poll_seconds=args.poll_seconds,
-            env=candidate_env,
+            env=candidate_subset_env,
         )
         candidate_metadata, candidate_output_s3_uri = fetch_job_metadata(
             candidate_summary["job_name"],
