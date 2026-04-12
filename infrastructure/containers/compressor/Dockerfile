@@ -33,13 +33,15 @@ ENV CUDA_HOME=/usr/local/cuda
 ENV PATH=${CUDA_HOME}/bin:${PATH}
 ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
 
+# Install Node.js 20 for the official PlayCanvas CLI.
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-dev \
     python3-pip \
     git \
     nodejs \
-    npm \
     build-essential \
     cmake \
     wget \
