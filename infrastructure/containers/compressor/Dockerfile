@@ -38,6 +38,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-dev \
     python3-pip \
     git \
+    nodejs \
+    npm \
     build-essential \
     cmake \
     wget \
@@ -67,8 +69,8 @@ RUN pip3 install --no-cache-dir torchpq
 # Install PLAS (Parallel Linear Assignment Sorting) from GitHub
 RUN pip3 install --no-cache-dir git+https://github.com/fraunhoferhhi/PLAS.git
 
-# Install official PlayCanvas SOGS package from GitHub
-RUN pip3 install --no-cache-dir git+https://github.com/playcanvas/sogs.git
+# Install the official current PlayCanvas SOG transform CLI.
+RUN npm install -g @playcanvas/splat-transform
 
 # Force reinstall NumPy 1.26.4 AFTER all packages (better compatibility with PyTorch 2.1.0)
 RUN pip3 install --no-cache-dir --force-reinstall "numpy==1.26.4"
@@ -91,8 +93,8 @@ RUN python3 -c "import cupy; print('CuPy installed successfully')"
 # Skip TorchPQ import test during build (CUDA initialization issue)
 RUN python3 -c "print('TorchPQ package installed (CUDA test skipped during build)')"
 RUN python3 -c "from plas import sort_with_plas; print('PLAS installed successfully')"
-# Skip SOGS CLI test during build (imports TorchPQ which requires CUDA)
-RUN python3 -c "print('SOGS CLI installed (CUDA test skipped during build)')"
+# Verify the SOG transform CLI is installed.
+RUN splat-transform --version
 
 # Health check to verify SOGS CLI is working (runtime only)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
