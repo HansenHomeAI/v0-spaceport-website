@@ -42,6 +42,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-pip \
     git \
     nodejs \
+    libvulkan1 \
+    vulkan-tools \
     build-essential \
     cmake \
     wget \
