@@ -1748,7 +1748,16 @@ class ColmapPipeline:
             return
 
         def chunk_image_name_sets() -> List[Set[str]]:
-            return [set(chunk_names).union(overlap_assignments.get(index, set())) for index, chunk_names in enumerate(core_chunks)]
+            return [
+                set(chunk_names).union(
+                    self.effective_overlap_names_for_chunk(
+                        chunk_index=index,
+                        core_chunks=core_chunks,
+                        overlap_assignments=overlap_assignments,
+                    )
+                )
+                for index, chunk_names in enumerate(core_chunks)
+            ]
 
         iteration_budget = max(len(core_chunks) * 2, 1)
         while iteration_budget > 0:
@@ -1775,28 +1784,39 @@ class ColmapPipeline:
                 )
                 candidate_sets = (
                     (
-                        chunk_index,
                         neighbor_index,
                         self.bridge_anchor_scores(core_chunks[chunk_index], image_name_sets[neighbor_index], roles, limit=pair_anchor_target),
                     ),
                     (
-                        neighbor_index,
                         chunk_index,
                         self.bridge_anchor_scores(core_chunks[neighbor_index], image_name_sets[chunk_index], roles, limit=pair_anchor_target),
                     ),
                 )
-                for source_index, target_index, candidate_scores in candidate_sets:
+                for target_index, candidate_scores in candidate_sets:
                     for _, image_name in candidate_scores:
-                        if len(image_name_sets[chunk_index].intersection(image_name_sets[neighbor_index])) >= pair_anchor_target:
+                        if (
+                            self.shared_chunk_image_count(
+                                left_index=chunk_index,
+                                right_index=neighbor_index,
+                                core_chunks=core_chunks,
+                                overlap_assignments=overlap_assignments,
+                            )
+                            >= pair_anchor_target
+                        ):
                             break
                         if image_membership_count[image_name] >= 3:
                             continue
                         if image_name in image_name_sets[target_index]:
                             continue
-                        overlap_assignments[target_index].add(image_name)
-                        image_membership_count[image_name] += 1
-                        image_name_sets[target_index].add(image_name)
-                        changed = True
+                        if self.try_add_overlap_assignment(
+                            target_index=target_index,
+                            image_name=image_name,
+                            core_chunks=core_chunks,
+                            overlap_assignments=overlap_assignments,
+                            image_membership_count=image_membership_count,
+                        ):
+                            image_name_sets[target_index].add(image_name)
+                            changed = True
             if not changed:
                 return
             iteration_budget -= 1
@@ -3584,6 +3604,113 @@ class ColmapPipeline:
                     count += 1
         return count
 
+    def effective_overlap_names_for_chunk(
+        self,
+        *,
+        chunk_index: int,
+        core_chunks: Sequence[Sequence[str]],
+        overlap_assignments: Dict[int, Set[str]],
+    ) -> Set[str]:
+        return set(overlap_assignments.get(chunk_index, set())).difference(core_chunks[chunk_index])
+
+    def planned_chunk_image_count(
+        self,
+        *,
+        chunk_index: int,
+        core_chunks: Sequence[Sequence[str]],
+        overlap_assignments: Dict[int, Set[str]],
+    ) -> int:
+        return len(core_chunks[chunk_index]) + len(
+            self.effective_overlap_names_for_chunk(
+                chunk_index=chunk_index,
+                core_chunks=core_chunks,
+                overlap_assignments=overlap_assignments,
+            )
+        )
+
+    def shared_chunk_image_count(
+        self,
+        *,
+        left_index: int,
+        right_index: int,
+        core_chunks: Sequence[Sequence[str]],
+        overlap_assignments: Dict[int, Set[str]],
+    ) -> int:
+        left_images = set(core_chunks[left_index]).union(
+            self.effective_overlap_names_for_chunk(
+                chunk_index=left_index,
+                core_chunks=core_chunks,
+                overlap_assignments=overlap_assignments,
+            )
+        )
+        right_images = set(core_chunks[right_index]).union(
+            self.effective_overlap_names_for_chunk(
+                chunk_index=right_index,
+                core_chunks=core_chunks,
+                overlap_assignments=overlap_assignments,
+            )
+        )
+        return len(left_images.intersection(right_images))
+
+    def try_add_overlap_assignment(
+        self,
+        *,
+        target_index: int,
+        image_name: str,
+        core_chunks: Sequence[Sequence[str]],
+        overlap_assignments: Dict[int, Set[str]],
+        image_membership_count: Dict[str, int],
+    ) -> bool:
+        if image_name in core_chunks[target_index] or image_name in overlap_assignments[target_index]:
+            return False
+        if (
+            self.planned_chunk_image_count(
+                chunk_index=target_index,
+                core_chunks=core_chunks,
+                overlap_assignments=overlap_assignments,
+            )
+            >= self.active_leaf_hard_cap_images()
+        ):
+            return False
+        overlap_assignments[target_index].add(image_name)
+        image_membership_count[image_name] += 1
+        return True
+
+    def assign_remaining_core_names(
+        self,
+        *,
+        core_chunks: List[List[str]],
+        remaining_names: Sequence[str],
+        image_membership_count: Dict[str, int],
+    ) -> None:
+        if not remaining_names:
+            return
+
+        spillover_names: List[str] = []
+        for image_name in remaining_names:
+            candidate_chunks: List[tuple[float, int, int]] = []
+            for chunk_index, chunk_names in enumerate(core_chunks):
+                if len(chunk_names) >= self.active_leaf_hard_cap_images():
+                    continue
+                chunk_name_set = set(chunk_names)
+                edge_score = sum(
+                    edge.score
+                    for edge in self.graph_neighbors.get(image_name, [])
+                    if (edge.second_name if edge.first_name == image_name else edge.first_name) in chunk_name_set
+                )
+                candidate_chunks.append((-edge_score, len(chunk_names), chunk_index))
+            if not candidate_chunks:
+                spillover_names.append(image_name)
+                continue
+            _, _, selected_chunk_index = min(candidate_chunks)
+            core_chunks[selected_chunk_index].append(image_name)
+            image_membership_count[image_name] += 1
+
+        if spillover_names:
+            core_chunks.append(list(spillover_names))
+            for image_name in spillover_names:
+                image_membership_count[image_name] += 1
+
     def build_footprint_graph_chunks(self) -> List[ChunkPlan]:
         self.build_single_image_groups()
         self.build_view_geometries()
@@ -3707,9 +3834,15 @@ class ColmapPipeline:
         ]
         if remaining_names:
             if core_chunks and len(remaining_names) < self.chunk_min_images:
-                core_chunks[-1].extend(remaining_names)
+                self.assign_remaining_core_names(
+                    core_chunks=core_chunks,
+                    remaining_names=remaining_names,
+                    image_membership_count=image_membership_count,
+                )
             else:
                 core_chunks.append(remaining_names)
+                for image_name in remaining_names:
+                    image_membership_count[image_name] += 1
 
         overlap_assignments: Dict[int, Set[str]] = defaultdict(set)
         self.chunk_cross_edge_counts = {}
@@ -3719,7 +3852,7 @@ class ColmapPipeline:
                 if cross_edge_count < self.chunk_cross_edge_min_count:
                     continue
                 self.chunk_cross_edge_counts[(left_index, right_index)] = cross_edge_count
-                candidate_scores: List[tuple[float, str]] = []
+                candidate_scores: List[tuple[float, str, int]] = []
                 for image_name in core_chunks[left_index]:
                     if roles.get(image_name) == "burst_redundant":
                         continue
@@ -3729,7 +3862,7 @@ class ColmapPipeline:
                         if (edge.second_name if edge.first_name == image_name else edge.first_name) in set(core_chunks[right_index])
                     )
                     if score > 0.0:
-                        candidate_scores.append((score, image_name))
+                        candidate_scores.append((score, image_name, right_index))
                 for image_name in core_chunks[right_index]:
                     if roles.get(image_name) == "burst_redundant":
                         continue
@@ -3739,21 +3872,33 @@ class ColmapPipeline:
                         if (edge.second_name if edge.first_name == image_name else edge.first_name) in set(core_chunks[left_index])
                     )
                     if score > 0.0:
-                        candidate_scores.append((score, image_name))
+                        candidate_scores.append((score, image_name, left_index))
                 pair_anchor_target = self.chunk_overlap_anchor_count
                 if self.chunk_planner == "footprint_graph_v1":
                     pair_anchor_target = max(
                         self.chunk_overlap_anchor_count,
                         min(max(min(len(core_chunks[left_index]), len(core_chunks[right_index])) // 3, 24), 60),
                     )
-                for _, image_name in sorted(candidate_scores, key=lambda item: (-item[0], item[1])):
-                    if len(overlap_assignments[left_index].union(overlap_assignments[right_index])) >= pair_anchor_target:
+                for _, image_name, target_index in sorted(
+                    candidate_scores,
+                    key=lambda item: (-item[0], item[1], item[2]),
+                ):
+                    if self.shared_chunk_image_count(
+                        left_index=left_index,
+                        right_index=right_index,
+                        core_chunks=core_chunks,
+                        overlap_assignments=overlap_assignments,
+                    ) >= pair_anchor_target:
                         break
                     if image_membership_count[image_name] >= 3:
                         continue
-                    overlap_assignments[left_index].add(image_name)
-                    overlap_assignments[right_index].add(image_name)
-                    image_membership_count[image_name] += 1
+                    self.try_add_overlap_assignment(
+                        target_index=target_index,
+                        image_name=image_name,
+                        core_chunks=core_chunks,
+                        overlap_assignments=overlap_assignments,
+                        image_membership_count=image_membership_count,
+                    )
         if self.chunk_planner == "footprint_graph_v1":
             self.ensure_chunk_overlap_connectivity(
                 core_chunks=core_chunks,
