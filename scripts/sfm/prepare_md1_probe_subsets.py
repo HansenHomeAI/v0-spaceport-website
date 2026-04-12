@@ -183,6 +183,14 @@ def main() -> int:
                 }
                 for probe_name, image_names in pipeline.probe_subsets.items()
             },
+            "ladder_subsets": {
+                subset_name: {
+                    "image_count": len(image_names),
+                    "images": image_names,
+                    "details": pipeline.ladder_subset_details.get(subset_name, {}),
+                }
+                for subset_name, image_names in pipeline.ladder_subsets.items()
+            },
             "colmap_capabilities": pipeline.colmap_capabilities,
             "role_counts": pipeline.chunk_graph_probe_manifest.get("role_counts", {}),
         }
@@ -198,6 +206,16 @@ def main() -> int:
                 args.subset_output_prefix.rstrip("/") + f"/{probe_name}.zip"
                 if args.subset_output_prefix.startswith("s3://")
                 else str(Path(args.subset_output_prefix).expanduser().resolve() / f"{probe_name}.zip")
+            )
+            upload_output_file(subset_zip_path, destination)
+            subset_zip_path.unlink(missing_ok=True)
+        for subset_name, image_names in pipeline.ladder_subsets.items():
+            subset_zip_path = workspace / f"{subset_name}.zip"
+            write_subset_archive_from_members(archive_path, member_by_file_name, image_names, subset_zip_path)
+            destination = (
+                args.subset_output_prefix.rstrip("/") + f"/{subset_name}.zip"
+                if args.subset_output_prefix.startswith("s3://")
+                else str(Path(args.subset_output_prefix).expanduser().resolve() / f"{subset_name}.zip")
             )
             upload_output_file(subset_zip_path, destination)
             subset_zip_path.unlink(missing_ok=True)

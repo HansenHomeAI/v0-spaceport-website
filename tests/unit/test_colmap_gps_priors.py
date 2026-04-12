@@ -667,6 +667,8 @@ class ColmapGpsPriorTests(unittest.TestCase):
             pipeline.chunk_target_images = 3
             pipeline.chunk_min_images = 2
             pipeline.chunk_hard_max_images = 4
+            pipeline.leaf_target_images = 3
+            pipeline.leaf_hard_cap_images = 4
             pipeline.capture_ordered_names = [
                 "A1.jpg",
                 "A2.jpg",
@@ -690,7 +692,9 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertGreaterEqual(len(chunks), 2)
             self.assertEqual(pipeline.chunk_matcher_strategy, "exhaustive")
             self.assertEqual(set(pipeline.probe_subsets), {"geometry_mix", "cross_pass", "horizon_context"})
+            self.assertEqual(set(pipeline.ladder_subsets), {"ladder_1000", "ladder_2000"})
             self.assertTrue(all(pipeline.probe_subsets.values()))
+            self.assertTrue(all(pipeline.ladder_subsets.values()))
             self.assertTrue(
                 any(
                     len(details.get("source_chunk_indexes", [])) >= 2
@@ -752,6 +756,8 @@ class ColmapGpsPriorTests(unittest.TestCase):
             pipeline.chunk_target_images = 3
             pipeline.chunk_min_images = 3
             pipeline.chunk_hard_max_images = 4
+            pipeline.leaf_target_images = 3
+            pipeline.leaf_hard_cap_images = 4
             pipeline.capture_ordered_names = ["A1.jpg", "A2.jpg", "A3.jpg", "B1.jpg"]
             pipeline.exif_records = {
                 "A1.jpg": {"local_x_m": 0.0, "local_y_m": 0.0, "local_z_m": 0.0, "heading_deg": 0.0, "pitch_deg": -30.0},
@@ -848,6 +854,8 @@ class ColmapGpsPriorTests(unittest.TestCase):
             pipeline.chunk_target_images = 2
             pipeline.chunk_min_images = 2
             pipeline.chunk_hard_max_images = 2
+            pipeline.leaf_target_images = 2
+            pipeline.leaf_hard_cap_images = 2
             pipeline.capture_ordered_names = [
                 "A1.jpg",
                 "A2.jpg",
@@ -2672,6 +2680,83 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(result.images_registered, 3)
             seam_mock.assert_not_called()
 
+    def test_merge_chunk_models_skips_final_bundle_adjustment_above_threshold(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.parent_merge_mode = "legacy_rerun"
+            pipeline.top_level_ba_mode = "below_threshold"
+            pipeline.top_level_ba_image_threshold = 2
+            first_model_dir = root / "chunk_00" / "sparse_initial" / "0"
+            second_model_dir = root / "chunk_01" / "sparse_initial" / "0"
+            first_text_dir = root / "text_00"
+            second_text_dir = root / "text_01"
+            merged_text_dir = root / "merged_text"
+            for directory in (
+                first_model_dir,
+                second_model_dir,
+                first_text_dir,
+                second_text_dir,
+                merged_text_dir,
+            ):
+                directory.mkdir(parents=True, exist_ok=True)
+            (first_text_dir / "images.txt").write_text(
+                "1 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n2 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (second_text_dir / "images.txt").write_text(
+                "3 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n4 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (merged_text_dir / "images.txt").write_text(
+                "5 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n6 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n7 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            chunk_models = [
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_00_mapper_initial",
+                    text_dir=first_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=1000,
+                    binary_dir=first_model_dir,
+                    image_names=["IMG_01.jpg", "IMG_02.jpg"],
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_01_mapper_initial",
+                    text_dir=second_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=1000,
+                    binary_dir=second_model_dir,
+                    image_names=["IMG_02.jpg", "IMG_03.jpg"],
+                ),
+            ]
+            merged_candidate = run_colmap_sfm.ModelSummary(
+                stage="chunk_model_merger_01_output_attempt_01",
+                text_dir=merged_text_dir,
+                cameras_registered=1,
+                images_registered=3,
+                points_3d=1500,
+                binary_dir=pipeline.work_dir / "merged_chunk_model_01_attempt_01",
+                image_names=["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg"],
+            )
+
+            with mock.patch.object(run_colmap_sfm, "stream_command"), mock.patch.object(
+                pipeline,
+                "summarize_model",
+                return_value=merged_candidate,
+            ), mock.patch.object(
+                pipeline,
+                "run_bundle_adjuster",
+            ) as ba_mock:
+                result = pipeline.merge_chunk_models(chunk_models)
+
+            ba_mock.assert_not_called()
+            self.assertEqual(result.images_registered, 3)
+            self.assertFalse(pipeline.chunk_merge_proof["top_level_ba_ran"])
+            self.assertEqual(pipeline.chunk_merge_proof["top_level_ba_reason"], "above_threshold:2")
+
     def test_parent_seam_helpers_omit_fix_existing_images_flag(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -3194,6 +3279,10 @@ class ColmapGpsPriorTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.exif_records = {
+                "IMG_01.jpg": {"local_x_m": 0.0, "local_y_m": 0.0, "local_z_m": 0.0},
+                "IMG_02.jpg": {"local_x_m": 20.0, "local_y_m": 0.0, "local_z_m": 0.0},
+            }
             source_dir = root / "source_model"
             filtered_dir = root / "filtered_model"
             source_dir.mkdir(parents=True, exist_ok=True)
@@ -3227,6 +3316,40 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertNotIn("3 5 0 0 255 255 255 2.5", filtered_points)
             self.assertNotIn("4 100000 0 0 255 255 255 0.1", filtered_points)
             self.assertIn("0 0 1 1 1 2 2 2 -1 3 3 -1", filtered_images)
+
+    def test_write_filtered_sparse_model_rejects_weak_far_context_without_baseline(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.filtered_sparse_far_context_min_baseline_m = 12.0
+            pipeline.exif_records = {
+                "IMG_01.jpg": {"local_x_m": 0.0, "local_y_m": 0.0, "local_z_m": 0.0},
+                "IMG_02.jpg": {"local_x_m": 5.0, "local_y_m": 0.0, "local_z_m": 0.0},
+            }
+            source_dir = root / "source_model"
+            filtered_dir = root / "filtered_model"
+            source_dir.mkdir(parents=True, exist_ok=True)
+            (source_dir / "cameras.txt").write_text("# cameras\n", encoding="utf-8")
+            (source_dir / "images.txt").write_text(
+                "1 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 1 1\n"
+                "2 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 1 1\n",
+                encoding="utf-8",
+            )
+            (source_dir / "points3D.txt").write_text(
+                "# points\n"
+                "1 20 0 0 255 255 255 0.8 1 1 2 1\n",
+                encoding="utf-8",
+            )
+
+            summary = pipeline.write_filtered_sparse_model(
+                source_text_dir=source_dir,
+                output_dir=filtered_dir,
+            )
+
+            filtered_points = (filtered_dir / "points3D.txt").read_text(encoding="utf-8")
+            self.assertEqual(summary["far_context_points_3d"], 0)
+            self.assertEqual(summary["weak_far_context_points_rejected"], 1)
+            self.assertNotIn("1 20 0 0 255 255 255 0.8", filtered_points)
 
     def test_run_spatial_heading_chunked_path_accepts_merged_ratio_at_gps_threshold(self):
         with tempfile.TemporaryDirectory() as tmp:
