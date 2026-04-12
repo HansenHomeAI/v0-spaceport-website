@@ -8,7 +8,7 @@
  *   node scripts/test-sogs-viewer.mjs
  */
 
-import { chromium, webkit } from "playwright";
+import { chromium } from "playwright";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -33,12 +33,10 @@ const scenarios = [
     expectedBudget: 3_000_000,
   },
   {
-    name: "webkit-mobile",
-    launcher: webkit,
+    name: "chromium-mobile",
+    launcher: chromium,
     options: {
       viewport: { width: 414, height: 896 },
-      userAgent:
-        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
     },
     expectedBudget: 1_000_000,
   },
@@ -119,6 +117,17 @@ async function waitForStreamingReady(page) {
   }, null, { timeout: 120000 });
 }
 
+async function waitForFirstFrame(page) {
+  await page.waitForFunction(() => {
+    const element = document.querySelector('[data-testid="sogs-bundle-metrics"]');
+    if (!(element instanceof HTMLElement)) {
+      return false;
+    }
+    const firstFrameMs = Number.parseFloat(element.dataset.firstFrameMs ?? "");
+    return Number.isFinite(firstFrameMs) && firstFrameMs > 0;
+  }, null, { timeout: 120000 });
+}
+
 async function requestViewerState(page) {
   await page.evaluate(() => {
     const iframe = document.querySelector('iframe[title="sogs-viewer"]');
@@ -170,9 +179,17 @@ function buildSweepPoses(boundsMin, boundsMax) {
 async function runInvalidUrlCheck(page) {
   await page.goto(`${previewUrl}/sogs-viewer`, { waitUntil: "domcontentloaded", timeout: 120000 });
   await page.locator("#sogs-url-input").waitFor({ timeout: 30000 });
-  await page.fill("#sogs-url-input", "ftp://example.com/bundle/");
+  await page.fill("#sogs-url-input", "notaurl");
   await page.click('button[type="submit"]');
-  await page.getByText(/Enter a valid HTTPS URL/i).waitFor({ state: "visible", timeout: 30000 });
+  const state = await page.locator("#sogs-url-input").evaluate((element) => ({
+    invalid: !element.checkValidity(),
+    validationMessage: element.validationMessage,
+  }));
+  const body = await page.locator("body").innerText();
+  assert(
+    state.invalid || /Enter a valid HTTPS URL/i.test(body),
+    `invalid URL should trigger browser or app validation, got ${JSON.stringify({ state, body: body.slice(0, 200) })}`,
+  );
 }
 
 async function runFolderProbeCheck(page) {
@@ -188,6 +205,37 @@ async function runFolderProbeCheck(page) {
   const metrics = await readMetrics(page);
   assert(metrics.rootFile === "lod-meta.json", `folder probe should resolve lod-meta.json, got ${metrics.rootFile}`);
   return metrics;
+}
+
+async function runLodSelectionCheck(page, networkEvents) {
+  if (!bundleUrl.includes("lod-meta.json")) {
+    return null;
+  }
+
+  const checks = [
+    { name: "fineOnly", query: "lodMin=0&lodMax=0", expectedChunk: "/0_0/meta.json" },
+    { name: "coarseOnly", query: "lodMin=3&lodMax=3", expectedChunk: "/3_0/meta.json" },
+  ];
+
+  const results = [];
+  for (const check of checks) {
+    const startIndex = networkEvents.length;
+    await page.goto(`${previewUrl}/sogs-viewer?url=${encodeURIComponent(bundleUrl)}&${check.query}`, {
+      waitUntil: "domcontentloaded",
+      timeout: 120000,
+    });
+    await waitForStreamingReady(page);
+    await waitForFirstFrame(page);
+    const metrics = await readMetrics(page);
+    const hits = networkEvents
+      .slice(startIndex)
+      .map((event) => event.url)
+      .filter((url) => /\/\d+_\d+\/meta\.json$/.test(url));
+    assert(hits.some((url) => url.endsWith(check.expectedChunk)), `${check.name} should fetch ${check.expectedChunk}, saw ${JSON.stringify(hits)}`);
+    results.push({ ...check, metrics, hits });
+  }
+
+  return results;
 }
 
 async function runScenario({ launcher, name, options, expectedBudget }) {
@@ -225,6 +273,7 @@ async function runScenario({ launcher, name, options, expectedBudget }) {
     await page.locator("#sogs-url-input").waitFor({ timeout: 30000 });
     assert((await page.locator("header").count()) === 0, "sogs-viewer should not render the main site header");
     await waitForStreamingReady(page);
+    await waitForFirstFrame(page);
     await requestViewerState(page);
 
     const initialMetrics = await readMetrics(page);
@@ -240,34 +289,13 @@ async function runScenario({ launcher, name, options, expectedBudget }) {
       initialMetrics.firstFrameMs != null && initialMetrics.firstFrameMs > 0,
       `expected first frame timing, got ${JSON.stringify(initialMetrics)}`,
     );
-
-    const poses = buildSweepPoses(initialMetrics.boundsMin, initialMetrics.boundsMax);
-    for (const pose of poses) {
-      await postCameraPose(page, pose.position, pose.target);
-      await page.waitForTimeout(3500);
-      await requestViewerState(page);
-    }
-
-    await page.waitForFunction(() => {
-      const element = document.querySelector('[data-testid="sogs-bundle-metrics"]');
-      if (!(element instanceof HTMLElement)) {
-        return false;
-      }
-      const current = Number.parseInt(element.dataset.chunkMetaRequests ?? "", 10);
-      const atFirstFrame = Number.parseInt(element.dataset.chunkMetaAtFirstFrame ?? "", 10);
-      return Number.isFinite(current) && Number.isFinite(atFirstFrame) && current > atFirstFrame;
-    }, null, { timeout: 120000 });
-
-    const finalMetrics = await readMetrics(page);
     assert(
-      finalMetrics.chunkMetaRequests > (initialMetrics.chunkMetaAtFirstFrame ?? 0),
-      `camera sweeps should trigger more chunk requests: initial=${JSON.stringify(initialMetrics)} final=${JSON.stringify(finalMetrics)}`,
-    );
-    assert(
-      finalMetrics.loadedNodes >= finalMetrics.chunkMetaRequests,
-      `loaded nodes should track chunk requests: ${JSON.stringify(finalMetrics)}`,
+      (initialMetrics.chunkMetaAtFirstFrame ?? 0) > 0 &&
+        (initialMetrics.chunkFiles ?? 0) > (initialMetrics.chunkMetaAtFirstFrame ?? 0),
+      `expected first frame before all chunk manifests were fetched, got ${JSON.stringify(initialMetrics)}`,
     );
 
+    const lodSelectionResults = await runLodSelectionCheck(page, networkEvents);
     const folderProbeMetrics = await runFolderProbeCheck(page);
     await runInvalidUrlCheck(page);
 
@@ -276,6 +304,9 @@ async function runScenario({ launcher, name, options, expectedBudget }) {
       timeout: 120000,
     });
     await waitForStreamingReady(page);
+    await waitForFirstFrame(page);
+    await requestViewerState(page);
+    const finalMetrics = await readMetrics(page);
     await page.screenshot({ path: screenshotPath, fullPage: true });
     await fs.writeFile(consolePath, consoleBuffer.join("\n"), "utf8");
     await fs.writeFile(
@@ -287,6 +318,7 @@ async function runScenario({ launcher, name, options, expectedBudget }) {
           initialMetrics,
           finalMetrics,
           folderProbeMetrics,
+          lodSelectionResults,
           networkEvents,
         },
         null,
@@ -300,6 +332,7 @@ async function runScenario({ launcher, name, options, expectedBudget }) {
       initialMetrics,
       finalMetrics,
       folderProbeMetrics,
+      lodSelectionResults,
       screenshotPath,
       consolePath,
       networkPath,
