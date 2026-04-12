@@ -738,6 +738,12 @@ class ColmapPipeline:
         self.chunk_min_core_registered_ratio = float(
             os.environ.get("COLMAP_CHUNK_MIN_CORE_REGISTERED_RATIO", "0.90")
         )
+        self.seam_only_leaf_min_registered_ratio = float(
+            os.environ.get("COLMAP_SEAM_ONLY_LEAF_MIN_REGISTERED_RATIO", "0.0")
+        )
+        self.seam_only_leaf_min_core_ratio = float(
+            os.environ.get("COLMAP_SEAM_ONLY_LEAF_MIN_CORE_RATIO", "0.0")
+        )
         self.chunk_retry_group_context = int(
             os.environ.get("COLMAP_CHUNK_RETRY_GROUP_CONTEXT", "2")
         )
@@ -4954,6 +4960,52 @@ class ColmapPipeline:
                 }
             )
             return initial_model
+        seam_only_initial_seed_enabled = (
+            self.seam_only_leaf_min_registered_ratio > 0.0
+            or self.seam_only_leaf_min_core_ratio > 0.0
+        )
+        if (
+            self.parent_merge_mode == "seam_only_v1"
+            and self.chunk_planner == "footprint_graph_v1"
+            and seam_only_initial_seed_enabled
+            and initial_model.images_registered > 0
+            and (
+                self.seam_only_leaf_min_registered_ratio <= 0.0
+                or registered_ratio >= self.seam_only_leaf_min_registered_ratio
+            )
+            and (
+                self.seam_only_leaf_min_core_ratio <= 0.0
+                or core_registered_ratio >= self.seam_only_leaf_min_core_ratio
+            )
+        ):
+            logger.info(
+                "Chunk %s registered %s/%s images (%.2f%%) with %s/%s core images (%.2f%%); keeping the initial model as a seam-only leaf seed and skipping boundary recovery",
+                chunk_plan.index,
+                initial_model.images_registered,
+                len(chunk_plan.image_names),
+                registered_ratio * 100.0,
+                core_registered_count,
+                len(chunk_plan.core_names),
+                core_registered_ratio * 100.0,
+            )
+            self.chunk_recovery_mode = "seam_only_leaf_initial"
+            self.clear_failure()
+            self.chunk_run_metrics.append(
+                {
+                    "chunk_index": chunk_plan.index,
+                    "image_count": len(chunk_plan.image_names),
+                    "registered_ratio": round(registered_ratio, 4),
+                    "core_registered_ratio": round(core_registered_ratio, 4),
+                    "recovered_registered_ratio": None,
+                    "recovered_core_registered_ratio": None,
+                    "failure": False,
+                    "partial_result_accepted": True,
+                    "partial_result_stage": "initial",
+                    "partial_result_timed_out": initial_model.timed_out,
+                    "partial_result_reason": "seam_only_initial_seed",
+                }
+            )
+            return initial_model
 
         logger.info(
             "Chunk %s registered %s/%s images (%.2f%%) with %s/%s core images (%.2f%%); running targeted boundary recovery. Missing core images: %s",
@@ -6186,6 +6238,8 @@ class ColmapPipeline:
             "parent_seam_registration_cycles": self.parent_seam_registration_cycles,
             "top_level_ba_mode": self.top_level_ba_mode,
             "top_level_ba_image_threshold": self.top_level_ba_image_threshold,
+            "seam_only_leaf_min_registered_ratio": self.seam_only_leaf_min_registered_ratio,
+            "seam_only_leaf_min_core_ratio": self.seam_only_leaf_min_core_ratio,
             "bundle_adjusted_node_count": self.bundle_adjusted_node_count,
             "max_bundle_adjusted_image_count": self.max_bundle_adjusted_image_count,
             "skipped_seam_merge_count": self.skipped_seam_merge_count,

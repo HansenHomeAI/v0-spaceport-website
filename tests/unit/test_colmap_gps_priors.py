@@ -1602,6 +1602,79 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 "seam_only_leaf_seed",
             )
 
+    def test_run_chunk_pipeline_accepts_good_enough_initial_leaf_in_seam_only_mode(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {
+                "COLMAP_CHUNK_PLANNER": "footprint_graph_v1",
+                "COLMAP_PARENT_MERGE_MODE": "seam_only_v1",
+                "COLMAP_SEAM_ONLY_LEAF_MIN_REGISTERED_RATIO": "0.70",
+                "COLMAP_SEAM_ONLY_LEAF_MIN_CORE_RATIO": "0.70",
+            },
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.exif_records = {
+                "IMG_01.jpg": {"local_x_m": 0.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_02.jpg": {"local_x_m": 1.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_03.jpg": {"local_x_m": 2.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_04.jpg": {"local_x_m": 3.0, "local_y_m": 0.0, "heading_deg": 0.0},
+            }
+            chunk = run_colmap_sfm.ChunkPlan(
+                index=0,
+                core_names=["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg"],
+                image_names=["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg"],
+                overlap_names=[],
+            )
+            initial_dir = root / "initial_text"
+            initial_dir.mkdir()
+            (initial_dir / "images.txt").write_text(
+                "\n".join(
+                    [
+                        "1 1 0 0 0 0 0 0 1 IMG_01.jpg",
+                        "0 0 -1",
+                        "2 1 0 0 0 0 0 0 1 IMG_02.jpg",
+                        "0 0 -1",
+                        "3 1 0 0 0 0 0 0 1 IMG_03.jpg",
+                        "0 0 -1",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            initial_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_00_mapper_initial",
+                text_dir=initial_dir,
+                cameras_registered=1,
+                images_registered=3,
+                points_3d=1000,
+                binary_dir=root / "initial_bin",
+                image_count=4,
+            )
+
+            with mock.patch.object(
+                pipeline,
+                "prepare_chunk_database",
+                return_value=root / "chunk.db",
+            ), mock.patch.object(pipeline, "run_chunk_matchers"), mock.patch.object(
+                pipeline, "run_chunk_recovery_matchers"
+            ), mock.patch.object(
+                pipeline,
+                "run_mapper",
+                return_value=initial_model,
+            ) as mapper_mock:
+                pipeline.timings["chunk_00_mapper_initial_seconds"] = 10.0
+                best_model = pipeline.run_chunk_pipeline(chunk)
+
+            self.assertIs(best_model, initial_model)
+            self.assertEqual(mapper_mock.call_count, 1)
+            self.assertEqual(pipeline.chunk_recovery_mode, "seam_only_leaf_initial")
+            self.assertTrue(pipeline.chunk_run_metrics[-1]["partial_result_accepted"])
+            self.assertEqual(
+                pipeline.chunk_run_metrics[-1]["partial_result_reason"],
+                "seam_only_initial_seed",
+            )
+
     def test_run_mapper_salvages_partial_sparse_model_after_timeout(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
