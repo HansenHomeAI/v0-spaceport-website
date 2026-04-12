@@ -16,6 +16,7 @@ import tarfile
 import tempfile
 import zipfile
 import subprocess
+import shutil
 from pathlib import Path
 from typing import Dict, List, Any
 import boto3
@@ -96,17 +97,31 @@ class PlayCanvasSOGSCompressor:
             logger.error("PyTorch not available")
             sys.exit(1)
         
-        # Verify the official compression CLI is available.
+        # Verify the official compression CLI is installed and can start.
+        splat_transform_path = shutil.which('splat-transform')
+        if not splat_transform_path:
+            logger.error("❌ splat-transform CLI tool not found on PATH")
+            sys.exit(1)
+        logger.info(f"✅ splat-transform CLI found at {splat_transform_path}")
+
         try:
-            result = subprocess.run(['splat-transform', '--help'],
-                                  capture_output=True, text=True, timeout=10)
+            result = subprocess.run(
+                [splat_transform_path, '--version'],
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
             if result.returncode == 0:
-                logger.info("✅ splat-transform CLI tool available")
+                logger.info(f"✅ splat-transform CLI tool available: {result.stdout.strip()}")
             else:
-                logger.error("❌ splat-transform CLI tool not working properly")
+                logger.error("❌ splat-transform CLI tool failed version check")
+                if result.stdout:
+                    logger.error(f"splat-transform stdout: {result.stdout.strip()}")
+                if result.stderr:
+                    logger.error(f"splat-transform stderr: {result.stderr.strip()}")
                 sys.exit(1)
-        except (subprocess.TimeoutExpired, FileNotFoundError) as e:
-            logger.error(f"❌ splat-transform CLI tool not found: {e}")
+        except subprocess.TimeoutExpired as e:
+            logger.error(f"❌ splat-transform CLI version check timed out: {e}")
             sys.exit(1)
 
     def _discover_sidecar_assets(self, ply_file: str) -> List[str]:
