@@ -38,6 +38,12 @@ type ViewerTelemetry = {
   rootManifestUrl: string | null;
 };
 
+type ViewerCameraPose = {
+  position: [number, number, number];
+  target: [number, number, number];
+  fov: number | null;
+};
+
 const EMPTY_TELEMETRY: ViewerTelemetry = {
   loadedNodeCount: 0,
   chunkMetaRequestCount: 0,
@@ -50,6 +56,21 @@ const EMPTY_TELEMETRY: ViewerTelemetry = {
   rootManifestType: null,
   rootManifestUrl: null,
 };
+
+function parseVectorParam(value: string | null): [number, number, number] | null {
+  if (!value) {
+    return null;
+  }
+  const parts = value
+    .split(",")
+    .map((part) => Number.parseFloat(part.trim()))
+    .filter((part) => Number.isFinite(part));
+  return parts.length === 3 ? ([parts[0], parts[1], parts[2]] as [number, number, number]) : null;
+}
+
+function formatVectorParam(value: [number, number, number]): string {
+  return value.map((part) => part.toFixed(4)).join(",");
+}
 
 function getDefaultBudget(): number {
   if (typeof window === "undefined") {
@@ -88,6 +109,9 @@ export default function SogsViewerDevPanel() {
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const ignoreNextSogsStateRef = useRef(false);
   const loadRequestRef = useRef(0);
+  const initialCameraPoseRef = useRef<ViewerCameraPose | null>(null);
+  const initialCameraAppliedRef = useRef(false);
+  const latestCameraPoseRef = useRef<ViewerCameraPose | null>(null);
 
   const [inputUrl, setInputUrl] = useState(DEFAULT_SOGS_BUNDLE_URL);
   const [loadedInputUrl, setLoadedInputUrl] = useState(DEFAULT_SOGS_BUNDLE_URL);
@@ -219,6 +243,18 @@ export default function SogsViewerDevPanel() {
         setForm(defaults);
         setViewerState("ready");
         applyStreamingConfigToIframe();
+        const initialCameraPose = initialCameraPoseRef.current;
+        if (initialCameraPose && !initialCameraAppliedRef.current) {
+          initialCameraAppliedRef.current = true;
+          postToIframe({ type: "sogs:cameraMode", mode: "scripted" });
+          postToIframe({
+            type: "sogs:cameraLookAt",
+            position: initialCameraPose.position,
+            target: initialCameraPose.target,
+            fov: initialCameraPose.fov ?? defaults.fov,
+          });
+          window.setTimeout(() => postToIframe({ type: "sogs:cameraMode", mode: "orbit" }), 80);
+        }
         postToIframe({ type: "sogs:guides", enabled: guides });
         postToIframe({ type: "sogs:requestState" });
       }
@@ -279,6 +315,22 @@ export default function SogsViewerDevPanel() {
           rootManifestUrl: typeof data.rootManifestUrl === "string" ? data.rootManifestUrl : null,
         });
       }
+
+      if (event.data.type === "sogs:cameraPose") {
+        const data = event.data as { position?: number[]; target?: number[]; fov?: number | null };
+        if (
+          Array.isArray(data.position) &&
+          data.position.length === 3 &&
+          Array.isArray(data.target) &&
+          data.target.length === 3
+        ) {
+          latestCameraPoseRef.current = {
+            position: [data.position[0], data.position[1], data.position[2]],
+            target: [data.target[0], data.target[1], data.target[2]],
+            fov: typeof data.fov === "number" && Number.isFinite(data.fov) ? data.fov : null,
+          };
+        }
+      }
     };
 
     window.addEventListener("message", onMessage);
@@ -295,6 +347,9 @@ export default function SogsViewerDevPanel() {
     const defaultBudget = String(parseOptionalInteger(params.get("budget") ?? "") ?? getDefaultBudget());
     const lodMin = params.get("lodMin")?.trim() || "0";
     const lodMax = params.get("lodMax")?.trim() || "";
+    const cameraPosition = parseVectorParam(params.get("camPos"));
+    const cameraTarget = parseVectorParam(params.get("camTarget"));
+    const cameraFov = parseOptionalInteger(params.get("camFov") ?? "");
 
     setInputUrl(raw);
     setLoadedInputUrl(raw);
@@ -303,6 +358,15 @@ export default function SogsViewerDevPanel() {
       lodMin,
       lodMax,
     });
+    initialCameraAppliedRef.current = false;
+    initialCameraPoseRef.current =
+      cameraPosition && cameraTarget
+        ? {
+            position: cameraPosition,
+            target: cameraTarget,
+            fov: cameraFov,
+          }
+        : null;
     void attemptLoad(raw);
   }, [attemptLoad]);
 
@@ -410,8 +474,35 @@ export default function SogsViewerDevPanel() {
   };
 
   const copyShareLink = async () => {
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
+    params.set("url", loadedInputUrl.trim());
+    const parsed = parseStreamingConfig(streamingConfig);
+    if (parsed.splatBudget != null) {
+      params.set("budget", String(parsed.splatBudget));
+    }
+    if (parsed.lodRangeMin != null) {
+      params.set("lodMin", String(parsed.lodRangeMin));
+    }
+    if (parsed.lodRangeMax != null) {
+      params.set("lodMax", String(parsed.lodRangeMax));
+    }
+    const pose = latestCameraPoseRef.current;
+    if (pose) {
+      params.set("camPos", formatVectorParam(pose.position));
+      params.set("camTarget", formatVectorParam(pose.target));
+      if (pose.fov != null) {
+        params.set("camFov", String(Math.round(pose.fov)));
+      } else {
+        params.delete("camFov");
+      }
+    } else {
+      params.delete("camPos");
+      params.delete("camTarget");
+      params.delete("camFov");
+    }
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(url.toString());
       setCopyFeedback("Share link copied");
     } catch {
       setCopyFeedback("Copy failed");
