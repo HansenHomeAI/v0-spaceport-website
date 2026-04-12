@@ -1,0 +1,182 @@
+import type { PathCheckpoint, V3 } from "./types";
+
+export type ViewerSceneManifest = {
+  position: [number, number, number];
+  rotation: [number, number, number];
+  scale: number;
+  fov: number;
+  skyboxRotation?: [number, number, number];
+  showWorldAxes?: boolean;
+  focusTarget?: V3;
+};
+
+export type ViewerSkyboxManifest =
+  | {
+      type: "explicit";
+      url: string | null;
+      pitch?: number;
+      vOffset?: number;
+    }
+  | {
+      type: "adjacent-file";
+      fileName: string;
+      pitch?: number;
+      vOffset?: number;
+    }
+  | {
+      type: "spaceport-config";
+      configFileName?: string;
+      fallbackUrl?: string | null;
+      pitch?: number;
+      vOffset?: number;
+    };
+
+export type ViewerBundleManifest = {
+  defaultUrl: string;
+  skybox?: ViewerSkyboxManifest;
+  viewerBase?: string;
+  viewerSettingsPath?: string;
+  useProxy?: boolean;
+};
+
+export type ViewerHoleViewManifest = {
+  startPosition: V3;
+  target: V3;
+  minDistance?: number;
+  maxDistance?: number;
+  minPolarAngle?: number;
+  maxPolarAngle?: number;
+  northDirection: number;
+};
+
+export type ViewerHoleManifest = {
+  id: string;
+  label: string;
+  bundleUrl?: string;
+  holeView?: Partial<ViewerHoleViewManifest>;
+};
+
+export type ViewerOrbitManifest = {
+  autoRotateDefault?: boolean;
+  speed: number;
+  startRadius: number;
+  initialAngle: number;
+  center: V3;
+};
+
+export type ViewerIntroManifest = {
+  revealDurationMs?: number;
+  autoPlayPathOnFirstReady?: boolean;
+  autoPlayDelayMs?: number;
+};
+
+export type ViewerCompassManifest = {
+  mode?: "faceNorth" | "animationStart";
+};
+
+export type ViewerToggleDefaultsManifest = {
+  showTapDots?: boolean;
+  showLotLines?: boolean;
+  showSoldLabels?: boolean;
+};
+
+export type ViewerTapDotManifest = {
+  position: V3;
+  scale: number;
+  icon: "camera" | "info";
+  caption: string;
+  photos: string[];
+};
+
+export type ViewerBorderDotManifest = {
+  name: string;
+  position: V3;
+};
+
+export type ViewerBorderLineManifest = {
+  start: string;
+  end: string;
+};
+
+export type ViewerSoldHotspotManifest = {
+  text: string;
+  position: V3;
+  scale: number;
+  verticalOffset: number;
+};
+
+export type ViewerOverlaysManifest = {
+  tapDots?: ViewerTapDotManifest[];
+  borderDots?: ViewerBorderDotManifest[];
+  borderLines?: ViewerBorderLineManifest[];
+  soldHotspots?: ViewerSoldHotspotManifest[];
+};
+
+export type ViewerTextManifest = {
+  pageTitle: string;
+  pageDescription: string;
+  hiddenTitle: string;
+  iframeTitle: string;
+};
+
+export type ViewerCameraBoundsManifest = {
+  yMin: number;
+  maxRadiusFromOrigin: number;
+};
+
+export type ViewerManifest = {
+  slug: string;
+  text: ViewerTextManifest;
+  bundle: ViewerBundleManifest;
+  scene: ViewerSceneManifest;
+  holeView: ViewerHoleViewManifest;
+  holes: ViewerHoleManifest[];
+  orbit: ViewerOrbitManifest;
+  intro?: ViewerIntroManifest;
+  compass?: ViewerCompassManifest;
+  cameraBounds?: ViewerCameraBoundsManifest;
+  path: {
+    enabled?: boolean;
+    loop?: boolean;
+    speed?: number;
+    checkpoints: PathCheckpoint[];
+  };
+  overlays?: ViewerOverlaysManifest;
+  defaults?: ViewerToggleDefaultsManifest;
+};
+
+export function resolveHoleView(
+  base: ViewerHoleViewManifest,
+  hole: ViewerHoleManifest | undefined,
+): ViewerHoleViewManifest {
+  const override = hole?.holeView;
+  if (!override) {
+    return {
+      ...base,
+      startPosition: { ...base.startPosition },
+      target: { ...base.target },
+    };
+  }
+
+  return {
+    ...base,
+    ...override,
+    startPosition: {
+      ...base.startPosition,
+      ...override.startPosition,
+    },
+    target: {
+      ...base.target,
+      ...override.target,
+    },
+  };
+}
+
+export function buildScenePayload(scene: ViewerSceneManifest) {
+  return {
+    position: [...scene.position] as [number, number, number],
+    rotation: [...scene.rotation] as [number, number, number],
+    scale: scene.scale,
+    fov: scene.fov,
+  };
+}
