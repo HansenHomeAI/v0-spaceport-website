@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Production PlayCanvas SOGS Compression Container
-Real implementation using the official PlayCanvas SOGS package from:
-https://github.com/playcanvas/sogs
+Production PlayCanvas SOGS Compression Container.
 
-This container uses the actual `sogs-compress` CLI tool to compress 3D Gaussian splats
-into WebP textures and metadata for use with SuperSplat viewer.
+The archived `playcanvas/sogs` package now shells out to `splat-transform` and can
+fall back to CPU compression, which times out on large Brass artifacts with our
+available processing quota. This container calls `splat-transform` directly so the
+official compression path stays on GPU.
 """
 
 import os
@@ -78,7 +78,7 @@ def _diagnose_gpu_environment():
     logger.info("=== End GPU Diagnosis ===")
 
 class PlayCanvasSOGSCompressor:
-    """Real PlayCanvas SOGS Compression Implementation using official package"""
+    """Compress Gaussian splats into a SuperSplat-compatible bundle."""
     
     def __init__(self):
         self.s3_client = boto3.client('s3')
@@ -96,17 +96,17 @@ class PlayCanvasSOGSCompressor:
             logger.error("PyTorch not available")
             sys.exit(1)
         
-        # Verify SOGS CLI is available
+        # Verify the official compression CLI is available.
         try:
-            result = subprocess.run(['sogs-compress', '--help'], 
+            result = subprocess.run(['splat-transform', '--help'],
                                   capture_output=True, text=True, timeout=10)
             if result.returncode == 0:
-                logger.info("✅ SOGS CLI tool available")
+                logger.info("✅ splat-transform CLI tool available")
             else:
-                logger.error("❌ SOGS CLI tool not working properly")
+                logger.error("❌ splat-transform CLI tool not working properly")
                 sys.exit(1)
         except (subprocess.TimeoutExpired, FileNotFoundError) as e:
-            logger.error(f"❌ SOGS CLI tool not found: {e}")
+            logger.error(f"❌ splat-transform CLI tool not found: {e}")
             sys.exit(1)
 
     def _discover_sidecar_assets(self, ply_file: str) -> List[str]:
@@ -216,11 +216,21 @@ class PlayCanvasSOGSCompressor:
         return results
 
     def _run_sogs_compression(self, ply_file: str, output_dir: str) -> Dict[str, Any]:
-        """Run the official PlayCanvas SOGS compression CLI tool"""
+        """Run the official PlayCanvas SOG compression CLI tool."""
         logger.info(f"🔧 Running SOGS compression: {ply_file} -> {output_dir}")
-        
-        # Run the official SOGS CLI command
-        cmd = ['sogs-compress', '--ply', ply_file, '--output-dir', output_dir]
+
+        meta_file = Path(output_dir) / 'meta.json'
+        timeout_seconds = int(os.environ.get('SPLAT_TRANSFORM_TIMEOUT_SECONDS', '21600'))
+
+        # Generate an unbundled SOG bundle directly on GPU. Using the legacy
+        # `sogs-compress` wrapper can silently pick CPU mode for `splat-transform`.
+        cmd = [
+            'splat-transform',
+            '-w',
+            '-g', os.environ.get('SPLAT_TRANSFORM_GPU', '0'),
+            ply_file,
+            str(meta_file),
+        ]
         
         logger.info(f"Executing: {' '.join(cmd)}")
         
@@ -229,7 +239,7 @@ class PlayCanvasSOGSCompressor:
                 cmd,
                 capture_output=True,
                 text=True,
-                timeout=1800,  # 30 minutes timeout
+                timeout=timeout_seconds,
                 cwd=output_dir
             )
             
@@ -242,8 +252,6 @@ class PlayCanvasSOGSCompressor:
                 # Check for expected output files
                 output_files = list(Path(output_dir).glob('*'))
                 webp_files = [f for f in output_files if f.suffix == '.webp']
-                meta_file = Path(output_dir) / 'meta.json'
-                
                 logger.info(f"Generated {len(webp_files)} WebP files: {[f.name for f in webp_files]}")
                 
                 if meta_file.exists():
@@ -267,21 +275,19 @@ class PlayCanvasSOGSCompressor:
                 raise RuntimeError(f"SOGS compression failed: {result.stderr}")
                 
         except subprocess.TimeoutExpired:
-            logger.error("❌ SOGS compression timed out after 30 minutes")
-            raise RuntimeError("SOGS compression timed out")
+            logger.error(f"❌ SOGS compression timed out after {timeout_seconds} seconds")
+            raise RuntimeError(f"SOGS compression timed out after {timeout_seconds} seconds")
         except Exception as e:
             logger.error(f"❌ SOGS compression failed: {e}")
             raise
 
     def _get_sogs_version(self) -> str:
-        """Get the version of the SOGS package"""
+        """Get the installed `splat-transform` version."""
         try:
-            result = subprocess.run(['pip', 'show', 'sogs'], 
+            result = subprocess.run(['splat-transform', '--version'],
                                   capture_output=True, text=True, timeout=10)
             if result.returncode == 0:
-                for line in result.stdout.split('\n'):
-                    if line.startswith('Version:'):
-                        return line.split(':', 1)[1].strip()
+                return result.stdout.strip() or "unknown"
             return "unknown"
         except:
             return "unknown"
