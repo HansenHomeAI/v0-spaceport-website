@@ -40,7 +40,7 @@ class ContainerDiagnostics:
                 ProcessingResources={
                     'ClusterConfig': {
                         'InstanceCount': 1,
-                        'InstanceType': 'ml.g4dn.xlarge',
+                        'InstanceType': 'ml.c6i.2xlarge',
                         'VolumeSizeInGB': 30
                     }
                 },

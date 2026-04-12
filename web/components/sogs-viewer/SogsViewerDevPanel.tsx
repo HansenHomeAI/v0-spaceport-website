@@ -1,27 +1,132 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   buildSogsSceneExport,
   createDefaultScenePayload,
   type SogsScenePayload,
 } from "../../lib/sogsViewerSceneDefaults";
-import { DEFAULT_SOGS_BUNDLE_URL, normalizeBundleUrl } from "../../lib/sogsViewerBundle";
+import {
+  DEFAULT_SOGS_BUNDLE_URL,
+  normalizeBundleUrl,
+  resolveSogsViewerBundle,
+  type ResolvedSogsViewerBundle,
+} from "../../lib/sogsViewerBundle";
 import "./sogs-viewer.css";
 
 const VIEWER_BASE = "/supersplat-viewer/index.html";
+const REQUEST_STATE_INTERVAL_MS = 1500;
+
+type ViewerLoadState = "idle" | "loading" | "ready";
+
+type StreamingConfig = {
+  budget: string;
+  lodMin: string;
+  lodMax: string;
+};
+
+type ViewerTelemetry = {
+  loadedNodeCount: number;
+  chunkMetaRequestCount: number;
+  chunkMetaAtFirstFrame: number | null;
+  totalRequestCount: number;
+  firstFrameMs: number | null;
+  splatBudget: number | null;
+  lodRangeMin: number | null;
+  lodRangeMax: number | null;
+  rootManifestType: string | null;
+  rootManifestUrl: string | null;
+};
+
+type ViewerCameraPose = {
+  position: [number, number, number];
+  target: [number, number, number];
+  fov: number | null;
+};
+
+const EMPTY_TELEMETRY: ViewerTelemetry = {
+  loadedNodeCount: 0,
+  chunkMetaRequestCount: 0,
+  chunkMetaAtFirstFrame: null,
+  totalRequestCount: 0,
+  firstFrameMs: null,
+  splatBudget: null,
+  lodRangeMin: null,
+  lodRangeMax: null,
+  rootManifestType: null,
+  rootManifestUrl: null,
+};
+
+function parseVectorParam(value: string | null): [number, number, number] | null {
+  if (!value) {
+    return null;
+  }
+  const parts = value
+    .split(",")
+    .map((part) => Number.parseFloat(part.trim()))
+    .filter((part) => Number.isFinite(part));
+  return parts.length === 3 ? ([parts[0], parts[1], parts[2]] as [number, number, number]) : null;
+}
+
+function formatVectorParam(value: [number, number, number]): string {
+  return value.map((part) => part.toFixed(4)).join(",");
+}
+
+function getDefaultBudget(): number {
+  if (typeof window === "undefined") {
+    return 3_000_000;
+  }
+
+  const ua = window.navigator.userAgent.toLowerCase();
+  const isMobileUa = /iphone|ipad|android|mobile|touch/.test(ua);
+  const isNarrowViewport = window.innerWidth <= 768;
+  return isMobileUa || isNarrowViewport ? 1_000_000 : 3_000_000;
+}
+
+function parseOptionalInteger(value: string): number | null {
+  const parsed = Number.parseInt(value.trim(), 10);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function formatInteger(value: number | null | undefined): string {
+  return typeof value === "number" && Number.isFinite(value) ? value.toLocaleString() : "auto";
+}
+
+function formatDurationMs(value: number | null | undefined): string {
+  return typeof value === "number" && Number.isFinite(value) ? `${(value / 1000).toFixed(1)}s` : "—";
+}
+
+function parseStreamingConfig(config: StreamingConfig) {
+  return {
+    splatBudget: parseOptionalInteger(config.budget),
+    lodRangeMin: parseOptionalInteger(config.lodMin),
+    lodRangeMax: parseOptionalInteger(config.lodMax),
+  };
+}
 
 export default function SogsViewerDevPanel() {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
-  /** Skip first sogs:state after each iframe load — it reflects viewer defaults before SOGS_DEFAULT_SCENE is applied. */
   const ignoreNextSogsStateRef = useRef(false);
+  const loadRequestRef = useRef(0);
+  const initialCameraPoseRef = useRef<ViewerCameraPose | null>(null);
+  const latestCameraPoseRef = useRef<ViewerCameraPose | null>(null);
 
   const [inputUrl, setInputUrl] = useState(DEFAULT_SOGS_BUNDLE_URL);
+  const [loadedInputUrl, setLoadedInputUrl] = useState(DEFAULT_SOGS_BUNDLE_URL);
   const [activeUrl, setActiveUrl] = useState("");
+  const [resolvedBundle, setResolvedBundle] = useState<ResolvedSogsViewerBundle | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [iframeKey, setIframeKey] = useState(0);
-  const [viewerState, setViewerState] = useState<"idle" | "loading" | "ready">("idle");
+  const [viewerState, setViewerState] = useState<ViewerLoadState>("idle");
+  const [telemetry, setTelemetry] = useState<ViewerTelemetry>(EMPTY_TELEMETRY);
+  const [initialCameraPose, setInitialCameraPose] = useState<ViewerCameraPose | null>(null);
+
+  const [streamingConfig, setStreamingConfig] = useState<StreamingConfig>({
+    budget: "",
+    lodMin: "0",
+    lodMax: "",
+  });
 
   const [devOpen, setDevOpen] = useState(false);
   const [guides, setGuides] = useState(false);
@@ -41,23 +146,50 @@ export default function SogsViewerDevPanel() {
     }
   }, []);
 
-  const attemptLoad = useCallback((rawValue: string) => {
-    setError(null);
-    const normalized = normalizeBundleUrl(rawValue);
-    if (!normalized) {
-      setError("Enter a valid HTTPS URL to the SOGS bundle (folder or meta.json).");
+  const applyStreamingConfigToIframe = useCallback(() => {
+    const parsed = parseStreamingConfig(streamingConfig);
+    postToIframe({
+      type: "sogs:config",
+      splatBudget: parsed.splatBudget,
+      lodRangeMin: parsed.lodRangeMin,
+      lodRangeMax: parsed.lodRangeMax,
+    });
+  }, [postToIframe, streamingConfig]);
+
+  const attemptLoad = useCallback(async (rawValue: string) => {
+    const normalizedInput = normalizeBundleUrl(rawValue);
+    if (!normalizedInput) {
+      setError("Enter a valid HTTPS URL to the SOGS bundle (folder, meta.json, or lod-meta.json).");
       setViewerState("idle");
       return false;
     }
 
+    const requestId = loadRequestRef.current + 1;
+    loadRequestRef.current = requestId;
+    setError(null);
     setViewerState("loading");
-    setActiveUrl(normalized);
+    setTelemetry(EMPTY_TELEMETRY);
+
+    const resolved = await resolveSogsViewerBundle(normalizedInput);
+    if (requestId !== loadRequestRef.current) {
+      return false;
+    }
+
+    if (!resolved) {
+      setError("Could not fetch a valid SuperSplat bundle from that URL.");
+      setViewerState("idle");
+      return false;
+    }
+
+    setResolvedBundle(resolved);
+    setLoadedInputUrl(normalizedInput);
+    setActiveUrl(resolved.contentUrl);
     setIframeKey((prev) => prev + 1);
     ignoreNextSogsStateRef.current = true;
     return true;
   }, []);
 
-  const viewerSrc = (() => {
+  const viewerSrc = useMemo(() => {
     if (!activeUrl) {
       return null;
     }
@@ -65,72 +197,235 @@ export default function SogsViewerDevPanel() {
       settings: "/supersplat-viewer/settings.json",
       content: activeUrl,
     });
+    if (resolvedBundle?.skyboxUrl?.trim()) {
+      params.set("skybox", resolvedBundle.skyboxUrl.trim());
+    }
+    const parsed = parseStreamingConfig(streamingConfig);
+    if (parsed.splatBudget != null) {
+      params.set("budget", String(parsed.splatBudget));
+    }
+    if (parsed.lodRangeMin != null) {
+      params.set("lodMin", String(parsed.lodRangeMin));
+    }
+    if (parsed.lodRangeMax != null) {
+      params.set("lodMax", String(parsed.lodRangeMax));
+    }
+    if (initialCameraPose) {
+      params.set("camPos", formatVectorParam(initialCameraPose.position));
+      params.set("camTarget", formatVectorParam(initialCameraPose.target));
+      if (initialCameraPose.fov != null) {
+        params.set("camFov", String(Math.round(initialCameraPose.fov)));
+      }
+    }
     return `${VIEWER_BASE}?${params.toString()}`;
-  })();
+  }, [activeUrl, initialCameraPose, resolvedBundle, streamingConfig]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    attemptLoad(inputUrl);
+    void attemptLoad(inputUrl);
   };
 
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
-      if (event.data?.type === "supersplat:firstFrame" && event.source === iframeRef.current?.contentWindow) {
-        const d = createDefaultScenePayload();
-        try {
-          (event.source as Window).postMessage(
-            {
-              type: "sogs:apply",
-              position: d.position,
-              rotation: d.rotation,
-              scale: d.scale,
-              fov: d.fov,
-            },
-            "*",
-          );
-        } catch {
-          /* ignore */
-        }
-        setForm(d);
-        setViewerState("ready");
+      if (event.source !== iframeRef.current?.contentWindow || !event.data || typeof event.data !== "object") {
+        return;
       }
-      if (event.data?.type === "sogs:state" && event.source === iframeRef.current?.contentWindow) {
+
+      if (event.data.type === "supersplat:firstFrame") {
+        const defaults = createDefaultScenePayload();
+        setForm(defaults);
+        setViewerState("ready");
+        const targetWindow = event.source as Window;
+        window.setTimeout(() => {
+          try {
+            targetWindow.postMessage(
+              {
+                type: "sogs:apply",
+                position: defaults.position,
+                rotation: defaults.rotation,
+                scale: defaults.scale,
+                fov: defaults.fov,
+              },
+              "*",
+            );
+            const parsed = parseStreamingConfig(streamingConfig);
+            targetWindow.postMessage(
+              {
+                type: "sogs:config",
+                splatBudget: parsed.splatBudget,
+                lodRangeMin: parsed.lodRangeMin,
+                lodRangeMax: parsed.lodRangeMax,
+              },
+              "*",
+            );
+            targetWindow.postMessage({ type: "sogs:guides", enabled: guides }, "*");
+            targetWindow.postMessage({ type: "sogs:requestState" }, "*");
+          } catch {
+            /* ignore */
+          }
+        }, 120);
+      }
+
+      if (event.data.type === "sogs:state") {
         if (ignoreNextSogsStateRef.current) {
           ignoreNextSogsStateRef.current = false;
           return;
         }
-        const d = event.data as { position?: number[] };
-        if (Array.isArray(d.position) && d.position.length === 3) {
-          setForm((f) => ({
-            ...f,
-            position: [d.position[0], d.position[1], d.position[2]] as [number, number, number],
+
+        const data = event.data as {
+          position?: number[];
+          loadedNodeCount?: number;
+          chunkMetaRequestCount?: number;
+          chunkMetaAtFirstFrame?: number | null;
+          totalRequestCount?: number;
+          firstFrameMs?: number | null;
+          splatBudget?: number | null;
+          lodRangeMin?: number | null;
+          lodRangeMax?: number | null;
+          rootManifestType?: string | null;
+          rootManifestUrl?: string | null;
+        };
+
+        if (Array.isArray(data.position) && data.position.length === 3) {
+          setForm((current) => ({
+            ...current,
+            position: [data.position[0], data.position[1], data.position[2]] as [number, number, number],
           }));
+        }
+
+        setTelemetry({
+          loadedNodeCount:
+            typeof data.loadedNodeCount === "number" && Number.isFinite(data.loadedNodeCount)
+              ? data.loadedNodeCount
+              : 0,
+          chunkMetaRequestCount:
+            typeof data.chunkMetaRequestCount === "number" && Number.isFinite(data.chunkMetaRequestCount)
+              ? data.chunkMetaRequestCount
+              : 0,
+          chunkMetaAtFirstFrame:
+            typeof data.chunkMetaAtFirstFrame === "number" && Number.isFinite(data.chunkMetaAtFirstFrame)
+              ? data.chunkMetaAtFirstFrame
+              : null,
+          totalRequestCount:
+            typeof data.totalRequestCount === "number" && Number.isFinite(data.totalRequestCount)
+              ? data.totalRequestCount
+              : 0,
+          firstFrameMs:
+            typeof data.firstFrameMs === "number" && Number.isFinite(data.firstFrameMs) ? data.firstFrameMs : null,
+          splatBudget:
+            typeof data.splatBudget === "number" && Number.isFinite(data.splatBudget) ? data.splatBudget : null,
+          lodRangeMin:
+            typeof data.lodRangeMin === "number" && Number.isFinite(data.lodRangeMin) ? data.lodRangeMin : null,
+          lodRangeMax:
+            typeof data.lodRangeMax === "number" && Number.isFinite(data.lodRangeMax) ? data.lodRangeMax : null,
+          rootManifestType: typeof data.rootManifestType === "string" ? data.rootManifestType : null,
+          rootManifestUrl: typeof data.rootManifestUrl === "string" ? data.rootManifestUrl : null,
+        });
+      }
+
+      if (event.data.type === "sogs:cameraPose") {
+        const data = event.data as { position?: number[]; target?: number[]; fov?: number | null };
+        if (
+          Array.isArray(data.position) &&
+          data.position.length === 3 &&
+          Array.isArray(data.target) &&
+          data.target.length === 3
+        ) {
+          latestCameraPoseRef.current = {
+            position: [data.position[0], data.position[1], data.position[2]],
+            target: [data.target[0], data.target[1], data.target[2]],
+            fov: typeof data.fov === "number" && Number.isFinite(data.fov) ? data.fov : null,
+          };
         }
       }
     };
+
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, []);
+  }, [applyStreamingConfigToIframe, guides, postToIframe]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
+
     const params = new URLSearchParams(window.location.search);
-    const q = params.get("url");
-    const raw = q?.trim() ? q.trim() : DEFAULT_SOGS_BUNDLE_URL;
+    const raw = params.get("url")?.trim() || DEFAULT_SOGS_BUNDLE_URL;
+    const defaultBudget = String(parseOptionalInteger(params.get("budget") ?? "") ?? getDefaultBudget());
+    const lodMin = params.get("lodMin")?.trim() || "0";
+    const lodMax = params.get("lodMax")?.trim() || "";
+    const cameraPosition = parseVectorParam(params.get("camPos"));
+    const cameraTarget = parseVectorParam(params.get("camTarget"));
+    const cameraFov = parseOptionalInteger(params.get("camFov") ?? "");
+
     setInputUrl(raw);
-    attemptLoad(raw);
+    setLoadedInputUrl(raw);
+    setStreamingConfig({
+      budget: defaultBudget,
+      lodMin,
+      lodMax,
+    });
+    const nextInitialCameraPose =
+      cameraPosition && cameraTarget
+        ? {
+            position: cameraPosition,
+            target: cameraTarget,
+            fov: cameraFov,
+          }
+        : null;
+    initialCameraPoseRef.current = nextInitialCameraPose;
+    setInitialCameraPose(nextInitialCameraPose);
+    void attemptLoad(raw);
   }, [attemptLoad]);
+
+  useEffect(() => {
+    if (!activeUrl || viewerState !== "ready") {
+      return;
+    }
+    applyStreamingConfigToIframe();
+    postToIframe({ type: "sogs:requestState" });
+  }, [activeUrl, applyStreamingConfigToIframe, postToIframe, viewerState, iframeKey]);
 
   useEffect(() => {
     if (!activeUrl) {
       return;
     }
     postToIframe({ type: "sogs:guides", enabled: guides });
-  }, [guides, postToIframe, activeUrl, iframeKey]);
+  }, [activeUrl, guides, iframeKey, postToIframe]);
 
-  /** Push splat/camera to iframe whenever values change (panel open + viewer ready). */
+  useEffect(() => {
+    if (!activeUrl || viewerState !== "ready") {
+      return;
+    }
+    const interval = window.setInterval(() => postToIframe({ type: "sogs:requestState" }), REQUEST_STATE_INTERVAL_MS);
+    return () => window.clearInterval(interval);
+  }, [activeUrl, postToIframe, viewerState]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !loadedInputUrl.trim()) {
+      return;
+    }
+    const params = new URLSearchParams(window.location.search);
+    params.set("url", loadedInputUrl.trim());
+    const parsed = parseStreamingConfig(streamingConfig);
+    if (parsed.splatBudget != null) {
+      params.set("budget", String(parsed.splatBudget));
+    } else {
+      params.delete("budget");
+    }
+    if (parsed.lodRangeMin != null) {
+      params.set("lodMin", String(parsed.lodRangeMin));
+    } else {
+      params.delete("lodMin");
+    }
+    if (parsed.lodRangeMax != null) {
+      params.set("lodMax", String(parsed.lodRangeMax));
+    } else {
+      params.delete("lodMax");
+    }
+    window.history.replaceState({}, "", `${window.location.pathname}?${params.toString()}`);
+  }, [loadedInputUrl, streamingConfig]);
+
   useEffect(() => {
     if (!activeUrl || viewerState !== "ready" || !devOpen) {
       return;
@@ -148,17 +443,17 @@ export default function SogsViewerDevPanel() {
     if (!devOpen) {
       return;
     }
-    const onDoc = (e: MouseEvent) => {
-      const el = dropdownRef.current;
-      if (!el) {
+    const onDoc = (event: MouseEvent) => {
+      const element = dropdownRef.current;
+      if (!element) {
         return;
       }
-      if (e.target instanceof Node && !el.contains(e.target)) {
+      if (event.target instanceof Node && !element.contains(event.target)) {
         setDevOpen(false);
       }
     };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
         setDevOpen(false);
       }
     };
@@ -172,21 +467,70 @@ export default function SogsViewerDevPanel() {
 
   const copySceneJson = async () => {
     const payload = buildSogsSceneExport({
-      bundleUrl: activeUrl || inputUrl.trim() || "",
+      bundleUrl: resolvedBundle?.summary.sourceUrl || loadedInputUrl.trim() || "",
       scene: form,
       guides,
     });
     const text = JSON.stringify(payload, null, 2);
     try {
       await navigator.clipboard.writeText(text);
-      setCopyFeedback("Copied");
+      setCopyFeedback("Scene JSON copied");
     } catch {
-      setCopyFeedback("Copy failed — try a secure context (HTTPS).");
+      setCopyFeedback("Copy failed");
+    }
+    window.setTimeout(() => setCopyFeedback(null), 2200);
+  };
+
+  const copyShareLink = async () => {
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
+    params.set("url", loadedInputUrl.trim());
+    const parsed = parseStreamingConfig(streamingConfig);
+    if (parsed.splatBudget != null) {
+      params.set("budget", String(parsed.splatBudget));
+    }
+    if (parsed.lodRangeMin != null) {
+      params.set("lodMin", String(parsed.lodRangeMin));
+    }
+    if (parsed.lodRangeMax != null) {
+      params.set("lodMax", String(parsed.lodRangeMax));
+    }
+    const pose = latestCameraPoseRef.current;
+    if (pose) {
+      params.set("camPos", formatVectorParam(pose.position));
+      params.set("camTarget", formatVectorParam(pose.target));
+      if (pose.fov != null) {
+        params.set("camFov", String(Math.round(pose.fov)));
+      } else {
+        params.delete("camFov");
+      }
+    } else {
+      params.delete("camPos");
+      params.delete("camTarget");
+      params.delete("camFov");
+    }
+    try {
+      await navigator.clipboard.writeText(url.toString());
+      setCopyFeedback("Share link copied");
+    } catch {
+      setCopyFeedback("Copy failed");
     }
     window.setTimeout(() => setCopyFeedback(null), 2200);
   };
 
   const isSubmitDisabled = !inputUrl.trim();
+  const parsedStreaming = parseStreamingConfig(streamingConfig);
+  const totalNodes = resolvedBundle?.summary.chunkFiles ?? 0;
+  const statusText =
+    viewerState === "ready" && resolvedBundle
+      ? resolvedBundle.bundleKind === "lod-streaming"
+        ? `Ready — Streaming LOD · ${formatInteger(resolvedBundle.summary.lodLevels)} levels · ${formatInteger(totalNodes)} chunk files`
+        : `Ready — Single SOG · ${formatInteger(resolvedBundle.summary.splatCount)} splats`
+      : viewerState === "loading" && inputUrl
+        ? "Loading bundle…"
+        : activeUrl
+          ? "Idle"
+          : "Paste a public HTTPS URL, then Load.";
 
   return (
     <main className="sogs-shell">
@@ -204,22 +548,75 @@ export default function SogsViewerDevPanel() {
       )}
 
       <form className="sogs-url-panel" onSubmit={handleSubmit}>
-        <label htmlFor="sogs-url-input">S3 bundle URL</label>
+        <label htmlFor="sogs-url-input">Bundle URL</label>
         <div className="sogs-url-row">
           <input
             id="sogs-url-input"
             type="url"
             inputMode="url"
             autoComplete="off"
-            placeholder="https://…/supersplat_bundle/ or …/meta.json"
+            placeholder="https://…/supersplat_bundle/ or …/lod-meta.json"
             value={inputUrl}
-            onChange={(e) => setInputUrl(e.target.value)}
+            onChange={(event) => setInputUrl(event.target.value)}
             className={error ? "sogs-input-error" : undefined}
           />
           <button type="submit" className="sogs-btn-primary" disabled={isSubmitDisabled}>
             {viewerState === "loading" ? "…" : "Load"}
           </button>
         </div>
+
+        <div className="sogs-stream-row">
+          <div className="sogs-stream-field">
+            <label htmlFor="sogs-budget-input">Budget</label>
+            <input
+              id="sogs-budget-input"
+              type="number"
+              min={1}
+              step={1000}
+              value={streamingConfig.budget}
+              onChange={(event) =>
+                setStreamingConfig((current) => ({
+                  ...current,
+                  budget: event.target.value,
+                }))
+              }
+            />
+          </div>
+          <div className="sogs-stream-field">
+            <label htmlFor="sogs-lod-min-input">LOD min</label>
+            <input
+              id="sogs-lod-min-input"
+              type="number"
+              min={0}
+              step={1}
+              value={streamingConfig.lodMin}
+              onChange={(event) =>
+                setStreamingConfig((current) => ({
+                  ...current,
+                  lodMin: event.target.value,
+                }))
+              }
+            />
+          </div>
+          <div className="sogs-stream-field">
+            <label htmlFor="sogs-lod-max-input">LOD max</label>
+            <input
+              id="sogs-lod-max-input"
+              type="number"
+              min={0}
+              step={1}
+              placeholder="auto"
+              value={streamingConfig.lodMax}
+              onChange={(event) =>
+                setStreamingConfig((current) => ({
+                  ...current,
+                  lodMax: event.target.value,
+                }))
+              }
+            />
+          </div>
+        </div>
+
         <div className="sogs-toolbar-row">
           <div className="sogs-dropdown-wrap" ref={dropdownRef}>
             <button
@@ -228,7 +625,7 @@ export default function SogsViewerDevPanel() {
               aria-expanded={devOpen}
               aria-haspopup="dialog"
               aria-controls="sogs-scene-panel"
-              onClick={() => setDevOpen((o) => !o)}
+              onClick={() => setDevOpen((open) => !open)}
             >
               Scene & lens
               <span className={`sogs-dropdown-chevron${devOpen ? " sogs-open" : ""}`} aria-hidden>
@@ -241,7 +638,7 @@ export default function SogsViewerDevPanel() {
                 className="sogs-dropdown-panel"
                 role="dialog"
                 aria-labelledby="sogs-dev-title"
-                onClick={(e) => e.stopPropagation()}
+                onClick={(event) => event.stopPropagation()}
               >
                 <div className="sogs-dev-header">
                   <div id="sogs-dev-title" className="sogs-dev-title">
@@ -258,91 +655,95 @@ export default function SogsViewerDevPanel() {
                 </div>
 
                 <div className="sogs-dev-section">
-                  <div className="sogs-dev-section-label">Position</div>
+                  <div className="sogs-dev-section-label">Transform</div>
                   <div className="sogs-dev-grid sogs-dev-grid-3">
-                    {(["x", "y", "z"] as const).map((axis, i) => (
-                      <div key={`p-${axis}`} className="sogs-dev-field">
-                        <label htmlFor={`pos-${axis}`}>{axis.toUpperCase()}</label>
+                    {(["x", "y", "z"] as const).map((axis, index) => (
+                      <div className="sogs-dev-field" key={`pos-${axis}`}>
+                        <label htmlFor={`pos-${axis}`}>Pos {axis.toUpperCase()}</label>
                         <input
                           id={`pos-${axis}`}
                           type="number"
                           step="0.001"
-                          value={form.position[i]}
-                          onChange={(e) => {
-                            const v = parseFloat(e.target.value);
-                            const next = [...form.position] as [number, number, number];
-                            next[i] = Number.isFinite(v) ? v : 0;
-                            setForm((f) => ({ ...f, position: next }));
+                          value={form.position[index]}
+                          onChange={(event) => {
+                            const value = Number.parseFloat(event.target.value);
+                            setForm((current) => {
+                              const next = [...current.position] as [number, number, number];
+                              next[index] = Number.isFinite(value) ? value : 0;
+                              return { ...current, position: next };
+                            });
                           }}
                         />
                       </div>
                     ))}
                   </div>
-                </div>
 
-                <div className="sogs-dev-section">
-                  <div className="sogs-dev-section-label">Rotation (°)</div>
                   <div className="sogs-dev-grid sogs-dev-grid-3">
-                    {(["x", "y", "z"] as const).map((axis, i) => (
-                      <div key={`r-${axis}`} className="sogs-dev-field">
-                        <label htmlFor={`rot-${axis}`}>{axis.toUpperCase()}</label>
+                    {(["x", "y", "z"] as const).map((axis, index) => (
+                      <div className="sogs-dev-field" key={`rot-${axis}`}>
+                        <label htmlFor={`rot-${axis}`}>Rot {axis.toUpperCase()}</label>
                         <input
                           id={`rot-${axis}`}
                           type="number"
                           step="0.1"
-                          value={form.rotation[i]}
-                          onChange={(e) => {
-                            const v = parseFloat(e.target.value);
-                            const next = [...form.rotation] as [number, number, number];
-                            next[i] = Number.isFinite(v) ? v : 0;
-                            setForm((f) => ({ ...f, rotation: next }));
+                          value={form.rotation[index]}
+                          onChange={(event) => {
+                            const value = Number.parseFloat(event.target.value);
+                            setForm((current) => {
+                              const next = [...current.rotation] as [number, number, number];
+                              next[index] = Number.isFinite(value) ? value : 0;
+                              return { ...current, rotation: next };
+                            });
                           }}
                         />
                       </div>
                     ))}
                   </div>
-                </div>
 
-                <div className="sogs-dev-grid sogs-dev-grid-2">
-                  <div className="sogs-dev-field">
-                    <label htmlFor="splat-scale">Scale</label>
-                    <input
-                      id="splat-scale"
-                      type="number"
-                      step="0.01"
-                      min={0.01}
-                      value={form.scale}
-                      onChange={(e) => {
-                        const v = parseFloat(e.target.value);
-                        setForm((f) => ({ ...f, scale: Number.isFinite(v) ? Math.max(0.01, v) : 1 }));
-                      }}
-                    />
-                  </div>
-                  <div className="sogs-dev-field">
-                    <label htmlFor="cam-fov">FOV°</label>
-                    <input
-                      id="cam-fov"
-                      type="number"
-                      step="0.5"
-                      min={10}
-                      max={120}
-                      value={form.fov}
-                      onChange={(e) => {
-                        const v = parseFloat(e.target.value);
-                        setForm((f) => ({ ...f, fov: Number.isFinite(v) ? v : 60 }));
-                      }}
-                    />
+                  <div className="sogs-dev-grid sogs-dev-grid-2">
+                    <div className="sogs-dev-field">
+                      <label htmlFor="splat-scale">Scale</label>
+                      <input
+                        id="splat-scale"
+                        type="number"
+                        step="0.001"
+                        min={0.0001}
+                        value={form.scale}
+                        onChange={(event) => {
+                          const value = Number.parseFloat(event.target.value);
+                          setForm((current) => ({ ...current, scale: Number.isFinite(value) ? value : 1 }));
+                        }}
+                      />
+                    </div>
+                    <div className="sogs-dev-field">
+                      <label htmlFor="cam-fov">FOV°</label>
+                      <input
+                        id="cam-fov"
+                        type="number"
+                        step="0.5"
+                        min={10}
+                        max={120}
+                        value={form.fov}
+                        onChange={(event) => {
+                          const value = Number.parseFloat(event.target.value);
+                          setForm((current) => ({ ...current, fov: Number.isFinite(value) ? value : 60 }));
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
 
                 <label className="sogs-dev-toggle-row">
-                  <input type="checkbox" checked={guides} onChange={(e) => setGuides(e.target.checked)} />
+                  <input type="checkbox" checked={guides} onChange={(event) => setGuides(event.target.checked)} />
                   RGB axes (world, at splat origin)
                 </label>
 
                 <div className="sogs-dev-actions">
                   <button type="button" className="sogs-btn-ghost" onClick={copySceneJson}>
                     Copy JSON
+                  </button>
+                  <button type="button" className="sogs-btn-ghost" onClick={copyShareLink}>
+                    Copy link
                   </button>
                   {copyFeedback ? (
                     <div className="sogs-copy-row">
@@ -353,28 +754,77 @@ export default function SogsViewerDevPanel() {
                 <details className="sogs-dev-details">
                   <summary>Notes</summary>
                   <p className="sogs-dev-details-body">
-                    Rotation fields stay as you type them; the engine can represent the same pose with different Euler
-                    triples, so we do not overwrite the inputs from the iframe. Defaults match{" "}
-                    <code className="sogs-dev-code">SOGS_DEFAULT_SCENE</code>.                     FOV applies after the orbit camera
-                    updates. On a touchscreen use two fingers; on a trackpad use a two-finger scroll (not
-                    vertical-only, which zooms). Middle mouse on desktop. Position is synced from
-                    the viewer. Paste copied JSON for maintainers to update{" "}
-                    <code className="sogs-dev-code">web/lib/sogsViewerSceneDefaults.ts</code>.
+                    The loader probes <code className="sogs-dev-code">lod-meta.json</code> before{" "}
+                    <code className="sogs-dev-code">meta.json</code> when you paste a folder URL. Rotation fields stay
+                    as you type them; the engine can represent the same pose with different Euler triples, so the form
+                    is not overwritten from the iframe. The streaming controls apply the viewer&apos;s{" "}
+                    <code className="sogs-dev-code">splatBudget</code> and LOD range live.
                   </p>
                 </details>
               </div>
             ) : null}
           </div>
         </div>
-        <p className="sogs-hint">
-          {viewerState === "ready" && activeUrl
-            ? "Ready — two-finger touch or two-finger trackpad scroll moves the splat on X/Z (middle mouse on desktop); left-drag orbits."
-            : viewerState === "loading" && activeUrl
-              ? "Loading bundle…"
-              : activeUrl
-                ? "Idle"
-                : "Paste a public HTTPS URL, then Load."}
-        </p>
+
+        <div className="sogs-status-card">
+          <p className="sogs-hint">{statusText}</p>
+          {resolvedBundle ? (
+            <div className="sogs-status-grid">
+              <div>
+                <span className="sogs-status-label">Transport</span>
+                <strong>{resolvedBundle.summary.transport}</strong>
+              </div>
+              <div>
+                <span className="sogs-status-label">Manifest</span>
+                <strong>{resolvedBundle.summary.rootFile}</strong>
+              </div>
+              <div>
+                <span className="sogs-status-label">Budget</span>
+                <strong>{formatInteger(telemetry.splatBudget ?? parsedStreaming.splatBudget)}</strong>
+              </div>
+              <div>
+                <span className="sogs-status-label">Loaded nodes</span>
+                <strong>
+                  {resolvedBundle.bundleKind === "lod-streaming"
+                    ? `${formatInteger(telemetry.loadedNodeCount)}/${formatInteger(totalNodes)}`
+                    : "n/a"}
+                </strong>
+              </div>
+              <div>
+                <span className="sogs-status-label">First frame</span>
+                <strong>{formatDurationMs(telemetry.firstFrameMs)}</strong>
+              </div>
+              <div>
+                <span className="sogs-status-label">Chunk requests</span>
+                <strong>{formatInteger(telemetry.chunkMetaRequestCount)}</strong>
+              </div>
+            </div>
+          ) : null}
+          {resolvedBundle?.summary.sourceUrl ? (
+            <p className="sogs-source-url">{resolvedBundle.summary.sourceUrl}</p>
+          ) : null}
+        </div>
+
+        <div
+          data-testid="sogs-bundle-metrics"
+          className="sogs-hidden-metrics"
+          data-bundle-kind={resolvedBundle?.bundleKind ?? ""}
+          data-transport={resolvedBundle?.summary.transport ?? ""}
+          data-root-file={resolvedBundle?.summary.rootFile ?? ""}
+          data-source-url={resolvedBundle?.summary.sourceUrl ?? ""}
+          data-lod-levels={resolvedBundle?.summary.lodLevels ?? ""}
+          data-chunk-files={resolvedBundle?.summary.chunkFiles ?? ""}
+          data-loaded-nodes={telemetry.loadedNodeCount}
+          data-chunk-meta-requests={telemetry.chunkMetaRequestCount}
+          data-chunk-meta-at-first-frame={telemetry.chunkMetaAtFirstFrame ?? ""}
+          data-first-frame-ms={telemetry.firstFrameMs ?? ""}
+          data-splat-budget={telemetry.splatBudget ?? parsedStreaming.splatBudget ?? ""}
+          data-lod-min={telemetry.lodRangeMin ?? parsedStreaming.lodRangeMin ?? ""}
+          data-lod-max={telemetry.lodRangeMax ?? parsedStreaming.lodRangeMax ?? ""}
+          data-bounds-min={resolvedBundle?.summary.bounds ? resolvedBundle.summary.bounds.min.join(",") : ""}
+          data-bounds-max={resolvedBundle?.summary.bounds ? resolvedBundle.summary.bounds.max.join(",") : ""}
+        />
+
         {error ? <p className="sogs-error">{error}</p> : null}
       </form>
     </main>

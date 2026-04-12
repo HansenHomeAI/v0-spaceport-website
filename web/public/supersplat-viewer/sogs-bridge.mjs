@@ -1,6 +1,3 @@
-/**
- * Spaceport SOGS bridge: postMessage API for parent page + optional RGB world axes (mesh, not drawLine overlay).
- */
 import { main } from "./index.js";
 import {
   Color,
@@ -11,27 +8,39 @@ import {
   Quat,
   StandardMaterial,
   Vec3,
-} from "https://esm.sh/playcanvas@2.13.2";
+} from "https://esm.sh/playcanvas@2.17.1";
 
-/** Parent-driven camera (position + look-at). When `sogs:cameraMode` is `scripted`, orbit input is skipped. */
 const tmpFrom = new Vec3();
 const tmpTo = new Vec3();
-/** Orbit focus point for `sogs:cameraPose` (parent overlays / Three.js projection). */
 const tmpFocus = new Vec3();
-
-/** PlayCanvas: camera looks down -Z; matches supersplat Camera.calcFocusPoint. */
 const CAM_FORWARD = new Vec3(0, 0, -1);
 
 const FOCUS_XZ_MAX = 10;
 const FOCUS_Y = 0;
-
 const AXIS_LEN = 45;
 const AXIS_RADIUS = 0.28;
 
-window.firstFrame = function sogsFirstFrameHook() {
-  window.parent.postMessage({ type: "supersplat:firstFrame" }, "*");
-  queueMicrotask(() => postSogsState());
-};
+function finiteNumber(value) {
+  return typeof value === "number" && Number.isFinite(value);
+}
+
+function metricsSnapshot() {
+  const metrics = window.__sogsNetworkMetrics ?? {};
+  const firstFrame = metrics.firstFrame ?? null;
+  return {
+    loadedNodeCount: Array.isArray(metrics.uniqueChunkMetaUrls) ? metrics.uniqueChunkMetaUrls.length : 0,
+    chunkMetaRequestCount: Array.isArray(metrics.uniqueChunkMetaUrls) ? metrics.uniqueChunkMetaUrls.length : 0,
+    chunkMetaAtFirstFrame:
+      firstFrame && finiteNumber(firstFrame.chunkMetaRequestCount) ? firstFrame.chunkMetaRequestCount : null,
+    totalRequestCount: Array.isArray(metrics.events) ? metrics.events.length : 0,
+    firstFrameMs:
+      firstFrame && finiteNumber(firstFrame.at) && finiteNumber(metrics.loadStartedAt)
+        ? firstFrame.at - metrics.loadStartedAt
+        : null,
+    rootManifestType: typeof metrics.rootManifestType === "string" ? metrics.rootManifestType : null,
+    rootManifestUrl: typeof metrics.rootManifestUrl === "string" ? metrics.rootManifestUrl : null,
+  };
+}
 
 function postSogsState() {
   try {
@@ -39,20 +48,28 @@ function postSogsState() {
     if (!ctx?.app || !ctx.camera) {
       return;
     }
-    const g = ctx.app.root.findByName("gsplat");
-    if (!g) {
+    const gsplatEntity = ctx.app.root.findByName("gsplat");
+    if (!gsplatEntity) {
       return;
     }
-    const p = g.getLocalPosition();
-    const e = g.getLocalEulerAngles();
-    const sc = g.getLocalScale();
+
+    const sceneGsplat = ctx.app.scene?.gsplat;
+    const position = gsplatEntity.getLocalPosition();
+    const rotation = gsplatEntity.getLocalEulerAngles();
+    const scale = gsplatEntity.getLocalScale();
+    const telemetry = metricsSnapshot();
+
     window.parent.postMessage(
       {
         type: "sogs:state",
-        position: [p.x, p.y, p.z],
-        rotation: [e.x, e.y, e.z],
-        scale: sc.x,
+        position: [position.x, position.y, position.z],
+        rotation: [rotation.x, rotation.y, rotation.z],
+        scale: scale.x,
         fov: ctx.camera.camera.fov,
+        splatBudget: finiteNumber(sceneGsplat?.splatBudget) ? sceneGsplat.splatBudget : null,
+        lodRangeMin: finiteNumber(sceneGsplat?.lodRangeMin) ? sceneGsplat.lodRangeMin : null,
+        lodRangeMax: finiteNumber(sceneGsplat?.lodRangeMax) ? sceneGsplat.lodRangeMax : null,
+        ...telemetry,
       },
       "*",
     );
@@ -61,10 +78,55 @@ function postSogsState() {
   }
 }
 
-/**
- * Wraps CameraManager.update: free orbit vs scripted pose from `window.__sogsCameraPose`.
- * `sogs:cameraMode` sets `window.__sogsScriptedCamera` (true = scripted).
- */
+window.firstFrame = function sogsFirstFrameHook() {
+  const metrics = window.__sogsNetworkMetrics;
+  if (metrics && !metrics.firstFrame) {
+    metrics.firstFrame = {
+      at: performance.now(),
+      chunkMetaRequestCount: Array.isArray(metrics.uniqueChunkMetaUrls) ? metrics.uniqueChunkMetaUrls.length : 0,
+      totalRequestCount: Array.isArray(metrics.events) ? metrics.events.length : 0,
+    };
+  }
+  window.parent.postMessage({ type: "supersplat:firstFrame" }, "*");
+  queueMicrotask(() => postSogsState());
+};
+
+function applyViewerConfig(app, incomingConfig) {
+  if (!app?.scene?.gsplat || !incomingConfig || typeof incomingConfig !== "object") {
+    return;
+  }
+
+  const current = window.__sogsViewerConfig ?? {};
+  const merged = {
+    splatBudget:
+      finiteNumber(incomingConfig.splatBudget) && incomingConfig.splatBudget > 0
+        ? Math.trunc(incomingConfig.splatBudget)
+        : current.splatBudget ?? null,
+    lodRangeMin:
+      finiteNumber(incomingConfig.lodRangeMin) && incomingConfig.lodRangeMin >= 0
+        ? Math.trunc(incomingConfig.lodRangeMin)
+        : current.lodRangeMin ?? null,
+    lodRangeMax:
+      finiteNumber(incomingConfig.lodRangeMax) && incomingConfig.lodRangeMax >= 0
+        ? Math.trunc(incomingConfig.lodRangeMax)
+        : current.lodRangeMax ?? null,
+  };
+
+  window.__sogsViewerConfig = merged;
+
+  const sceneGsplat = app.scene.gsplat;
+  if (finiteNumber(merged.splatBudget) && merged.splatBudget > 0) {
+    sceneGsplat.splatBudget = merged.splatBudget;
+  }
+  if (finiteNumber(merged.lodRangeMin) && merged.lodRangeMin >= 0) {
+    sceneGsplat.lodRangeMin = merged.lodRangeMin;
+  }
+  if (finiteNumber(merged.lodRangeMax) && merged.lodRangeMax >= 0) {
+    sceneGsplat.lodRangeMax = merged.lodRangeMax;
+  }
+  app.renderNextFrame = true;
+}
+
 function postCameraPoseFromViewer(cameraManager) {
   try {
     if (window.__sogsScriptedCamera) {
@@ -86,25 +148,24 @@ function postCameraPoseFromViewer(cameraManager) {
   }
 }
 
-function setupCameraManagerBridge(cameraManager) {
+function setupCameraManagerBridge(cameraManager, app) {
   const origUpdate = cameraManager.update.bind(cameraManager);
-  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+  const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 
   const getFocusPoint = (cam) => {
-    // `cam.angles` comes from the bundled viewer build, not the esm.sh Vec3 class.
-    const q = new Quat().setFromEulerAngles(cam.angles.x, cam.angles.y, cam.angles.z);
-    const dir = new Vec3();
-    q.transformVector(CAM_FORWARD, dir);
-    dir.mulScalar(cam.distance);
-    return new Vec3().copy(cam.position).add(dir);
+    const quat = new Quat().setFromEulerAngles(cam.angles.x, cam.angles.y, cam.angles.z);
+    const direction = new Vec3();
+    quat.transformVector(CAM_FORWARD, direction);
+    direction.mulScalar(cam.distance);
+    return new Vec3().copy(cam.position).add(direction);
   };
 
   const setCameraFromFocus = (cam, focus) => {
-    const q = new Quat().setFromEulerAngles(cam.angles.x, cam.angles.y, cam.angles.z);
-    const dir = new Vec3();
-    q.transformVector(CAM_FORWARD, dir);
-    dir.mulScalar(cam.distance);
-    cam.position.copy(focus).sub(dir);
+    const quat = new Quat().setFromEulerAngles(cam.angles.x, cam.angles.y, cam.angles.z);
+    const direction = new Vec3();
+    quat.transformVector(CAM_FORWARD, direction);
+    direction.mulScalar(cam.distance);
+    cam.position.copy(focus).sub(direction);
   };
 
   const clampCameraFocus = (cam) => {
@@ -125,14 +186,14 @@ function setupCameraManagerBridge(cameraManager) {
         tmpFrom.set(pose.position[0], pose.position[1], pose.position[2]);
         tmpTo.set(pose.target[0], pose.target[1], pose.target[2]);
         cameraManager.camera.look(tmpFrom, tmpTo);
-        if (typeof pose.fov === "number" && Number.isFinite(pose.fov)) {
+        if (finiteNumber(pose.fov)) {
           cameraManager.camera.fov = pose.fov;
           window.__sogsUserFov = pose.fov;
         }
       }
     } else {
       origUpdate(dt, frame);
-      if (typeof window.__sogsUserFov === "number" && Number.isFinite(window.__sogsUserFov)) {
+      if (finiteNumber(window.__sogsUserFov)) {
         cameraManager.camera.fov = window.__sogsUserFov;
       }
       clampCameraFocus(cameraManager.camera);
@@ -141,13 +202,30 @@ function setupCameraManagerBridge(cameraManager) {
   };
 }
 
+function installInitialCameraRelease(app) {
+  if (window.__sogsInitialCameraReleaseInstalled) {
+    return;
+  }
+  const release = () => {
+    if (!window.__sogsScriptedCamera) {
+      return;
+    }
+    window.__sogsScriptedCamera = false;
+    app.renderNextFrame = true;
+  };
+  window.addEventListener("pointerdown", release, { capture: true });
+  window.addEventListener("wheel", release, { capture: true, passive: true });
+  window.addEventListener("keydown", release, { capture: true });
+  window.__sogsInitialCameraReleaseInstalled = true;
+}
+
 function axisMaterial(rgb) {
-  const m = new StandardMaterial();
-  m.diffuse = new Color(0, 0, 0);
-  m.emissive = new Color(rgb[0], rgb[1], rgb[2]);
-  m.emissiveIntensity = 1;
-  m.useLighting = false;
-  return m;
+  const material = new StandardMaterial();
+  material.diffuse = new Color(0, 0, 0);
+  material.emissive = new Color(rgb[0], rgb[1], rgb[2]);
+  material.emissiveIntensity = 1;
+  material.useLighting = false;
+  return material;
 }
 
 function copyRenderLayers(fromEntity, toEntity) {
@@ -161,10 +239,6 @@ function copyRenderLayers(fromEntity, toEntity) {
   }
 }
 
-/**
- * Thin cylinders along local +X / +Y / +Z at the splat origin, parented to gsplat.
- * Renders in the normal forward pass (depth-tested), not as immediate drawLine overlay.
- */
 function setupSogsAxesGuides(app, gsplatEntity) {
   if (window.__sogsAxesRoot) {
     try {
@@ -175,15 +249,13 @@ function setupSogsAxesGuides(app, gsplatEntity) {
     window.__sogsAxesRoot = null;
   }
 
-  const device = app.graphicsDevice;
-  const geom = new CylinderGeometry({
+  const geometry = new CylinderGeometry({
     height: AXIS_LEN,
     radius: AXIS_RADIUS,
     heightSegments: 1,
     capSegments: 18,
   });
-  const mesh = Mesh.fromGeometry(device, geom);
-
+  const mesh = Mesh.fromGeometry(app.graphicsDevice, geometry);
   const root = new Entity("sogsAxes");
   gsplatEntity.addChild(root);
 
@@ -193,19 +265,19 @@ function setupSogsAxesGuides(app, gsplatEntity) {
     { name: "sogsAxisZ", ex: 90, ey: 0, ez: 0, px: 0, py: 0, pz: AXIS_LEN / 2, rgb: [0.32, 0.52, 0.98] },
   ];
 
-  for (const c of configs) {
-    const mat = axisMaterial(c.rgb);
-    const ent = new Entity(c.name);
-    ent.setLocalEulerAngles(c.ex, c.ey, c.ez);
-    ent.setLocalPosition(c.px, c.py, c.pz);
-    const mi = new MeshInstance(mesh, mat, ent);
-    ent.addComponent("render", {
-      meshInstances: [mi],
+  for (const config of configs) {
+    const material = axisMaterial(config.rgb);
+    const entity = new Entity(config.name);
+    entity.setLocalEulerAngles(config.ex, config.ey, config.ez);
+    entity.setLocalPosition(config.px, config.py, config.pz);
+    const meshInstance = new MeshInstance(mesh, material, entity);
+    entity.addComponent("render", {
+      meshInstances: [meshInstance],
       castShadows: false,
       receiveShadows: false,
     });
-    copyRenderLayers(gsplatEntity, ent);
-    root.addChild(ent);
+    copyRenderLayers(gsplatEntity, entity);
+    root.addChild(entity);
   }
 
   window.__sogsAxesRoot = root;
@@ -213,17 +285,35 @@ function setupSogsAxesGuides(app, gsplatEntity) {
 }
 
 function syncSogsAxesGuides(app) {
-  const g = app.root.findByName("gsplat");
-  if (!g) {
+  const gsplatEntity = app.root.findByName("gsplat");
+  if (!gsplatEntity) {
     return;
   }
   if (window.__sogsGuidesEnabled && !window.__sogsAxesRoot) {
-    setupSogsAxesGuides(app, g);
+    setupSogsAxesGuides(app, gsplatEntity);
   }
   if (window.__sogsAxesRoot) {
     window.__sogsAxesRoot.enabled = !!window.__sogsGuidesEnabled;
   }
   app.renderNextFrame = true;
+}
+
+function waitFor(predicate, intervalMs = 30, timeoutMs = 30000) {
+  return new Promise((resolve, reject) => {
+    const startedAt = performance.now();
+    const timer = window.setInterval(() => {
+      const value = predicate();
+      if (value) {
+        window.clearInterval(timer);
+        resolve(value);
+        return;
+      }
+      if (performance.now() - startedAt > timeoutMs) {
+        window.clearInterval(timer);
+        reject(new Error("Timed out waiting for viewer resource"));
+      }
+    }, intervalMs);
+  });
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -232,93 +322,124 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (poster) {
     const element = document.getElementById("poster");
-    element.style.backgroundImage = `url(${poster.src})`;
+    element.style.setProperty("--poster-url", `url(${poster.src})`);
     element.style.display = "block";
     element.style.filter = "blur(40px)";
+    document.documentElement.style.setProperty("--canvas-opacity", "0");
   }
 
-  const [appElement, cameraElement, settingsJson] = await Promise.all([
-    document.querySelector("pc-app").ready(),
-    document.querySelector('pc-entity[name="camera"]').ready(),
-    settings,
-  ]);
-
-  const app = appElement.app;
-  const camera = cameraElement.entity;
-  const viewer = await main(app, camera, settingsJson, config);
+  const canvas = document.getElementById("application-canvas");
+  const settingsJson = await settings;
+  const viewer = await main(canvas, settingsJson, config);
+  const app = viewer?.global?.app;
+  const camera = viewer?.global?.camera;
+  if (!app || !camera) {
+    throw new Error("SuperSplat viewer failed to expose app/camera");
+  }
 
   window.__sogsCtx = { viewer, app, camera };
 
-  const waitGsplat = () =>
-    new Promise((resolve) => {
-      const id = setInterval(() => {
-        const e = app.root.findByName("gsplat");
-        if (e) {
-          clearInterval(id);
-          resolve(e);
-        }
-      }, 30);
-    });
+  await waitFor(() => app.root.findByName("gsplat"));
+  await waitFor(() => viewer.cameraManager);
 
-  await waitGsplat();
-
-  await new Promise((resolve) => {
-    const id = setInterval(() => {
-      if (viewer.cameraManager) {
-        clearInterval(id);
-        resolve(undefined);
-      }
-    }, 30);
-  });
-
-  setupCameraManagerBridge(viewer.cameraManager);
-  /** Primary pointer + pointermove pan was removed: it fought orbit/touch and caused bounce. */
+  applyViewerConfig(app, window.__sogsInitialViewerConfig ?? {});
+  setupCameraManagerBridge(viewer.cameraManager, app);
+  const initialCameraPose = window.__sogsInitialCameraPose;
+  if (
+    initialCameraPose?.position?.length === 3 &&
+    initialCameraPose?.target?.length === 3
+  ) {
+    window.__sogsCameraPose = {
+      position: initialCameraPose.position,
+      target: initialCameraPose.target,
+      fov: initialCameraPose.fov ?? null,
+    };
+    window.__sogsScriptedCamera = true;
+    tmpFrom.set(initialCameraPose.position[0], initialCameraPose.position[1], initialCameraPose.position[2]);
+    tmpTo.set(initialCameraPose.target[0], initialCameraPose.target[1], initialCameraPose.target[2]);
+    viewer.cameraManager.camera.look(tmpFrom, tmpTo);
+    if (finiteNumber(initialCameraPose.fov)) {
+      viewer.cameraManager.camera.fov = initialCameraPose.fov;
+      window.__sogsUserFov = initialCameraPose.fov;
+    }
+    installInitialCameraRelease(app);
+    app.renderNextFrame = true;
+  }
   window.__sogsSplatXzDragReady = true;
 
   window.addEventListener("message", (event) => {
-    const d = event.data;
-    if (!d || typeof d !== "object") {
+    const data = event.data;
+    if (!data || typeof data !== "object") {
       return;
     }
-    if (d.type === "sogs:apply") {
-      const g = app.root.findByName("gsplat");
-      if (!g) {
+
+    if (data.type === "sogs:apply") {
+      const gsplatEntity = app.root.findByName("gsplat");
+      if (!gsplatEntity) {
         return;
       }
-      if (Array.isArray(d.position) && d.position.length === 3) {
-        g.setLocalPosition(d.position[0], d.position[1], d.position[2]);
+      if (Array.isArray(data.position) && data.position.length === 3) {
+        gsplatEntity.setLocalPosition(data.position[0], data.position[1], data.position[2]);
       }
-      if (Array.isArray(d.rotation) && d.rotation.length === 3) {
-        g.setLocalEulerAngles(d.rotation[0], d.rotation[1], d.rotation[2]);
+      if (Array.isArray(data.rotation) && data.rotation.length === 3) {
+        gsplatEntity.setLocalEulerAngles(data.rotation[0], data.rotation[1], data.rotation[2]);
       }
-      if (typeof d.scale === "number" && Number.isFinite(d.scale)) {
-        g.setLocalScale(d.scale, d.scale, d.scale);
+      if (finiteNumber(data.scale)) {
+        gsplatEntity.setLocalScale(data.scale, data.scale, data.scale);
       }
-      if (typeof d.fov === "number" && Number.isFinite(d.fov)) {
-        window.__sogsUserFov = d.fov;
+      if (finiteNumber(data.fov)) {
+        window.__sogsUserFov = data.fov;
       }
       app.renderNextFrame = true;
       postSogsState();
     }
-    if (d.type === "sogs:guides") {
-      window.__sogsGuidesEnabled = !!d.enabled;
+
+    if (data.type === "sogs:guides") {
+      window.__sogsGuidesEnabled = !!data.enabled;
       syncSogsAxesGuides(app);
-    }
-    if (d.type === "sogs:requestState") {
       postSogsState();
     }
-    if (d.type === "sogs:cameraLookAt") {
-      window.__sogsCameraPose = {
-        position: d.position,
-        target: d.target,
-        fov: d.fov,
-      };
-      app.renderNextFrame = true;
+
+    if (data.type === "sogs:config") {
+      applyViewerConfig(app, data);
+      postSogsState();
     }
-    if (d.type === "sogs:cameraMode") {
-      const scripted = d.mode === "scripted" || d.scripted === true;
+
+    if (data.type === "sogs:requestState") {
+      postSogsState();
+    }
+
+    if (data.type === "sogs:cameraLookAt") {
+      window.__sogsCameraPose = {
+        position: data.position,
+        target: data.target,
+        fov: data.fov,
+      };
+      if (
+        Array.isArray(data.position) &&
+        data.position.length === 3 &&
+        Array.isArray(data.target) &&
+        data.target.length === 3
+      ) {
+        tmpFrom.set(data.position[0], data.position[1], data.position[2]);
+        tmpTo.set(data.target[0], data.target[1], data.target[2]);
+        viewer.cameraManager.camera.look(tmpFrom, tmpTo);
+        if (finiteNumber(data.fov)) {
+          viewer.cameraManager.camera.fov = data.fov;
+          window.__sogsUserFov = data.fov;
+        }
+      }
+      app.renderNextFrame = true;
+      postSogsState();
+    }
+
+    if (data.type === "sogs:cameraMode") {
+      const scripted = data.mode === "scripted" || data.scripted === true;
       window.__sogsScriptedCamera = !!scripted;
       app.renderNextFrame = true;
+      postSogsState();
     }
   });
+
+  postSogsState();
 });
