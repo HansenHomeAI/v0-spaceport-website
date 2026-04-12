@@ -339,6 +339,27 @@ def stream_command(
         raise RuntimeError(f"{stage} failed with exit code {return_code}\n{tail}")
 
 
+def parse_s3_uri(uri: str) -> tuple[str, str]:
+    if not uri.startswith("s3://"):
+        raise ValueError(f"Unsupported S3 URI: {uri}")
+    bucket, _, key = uri[5:].partition("/")
+    if not bucket or not key:
+        raise ValueError(f"Unsupported S3 URI: {uri}")
+    return bucket, key
+
+
+def load_json_uri(uri: str) -> dict:
+    if uri.startswith("s3://"):
+        try:
+            import boto3  # type: ignore
+        except ImportError as exc:
+            raise RuntimeError("boto3 is required to load S3-backed JSON manifests") from exc
+        bucket, key = parse_s3_uri(uri)
+        body = boto3.client("s3").get_object(Bucket=bucket, Key=key)["Body"].read()
+        return json.loads(body.decode("utf-8") or "{}")
+    return json.loads(Path(uri).expanduser().resolve().read_text(encoding="utf-8"))
+
+
 def unrecognized_option_error(error: RuntimeError, option_markers: Sequence[str]) -> bool:
     message = str(error)
     return "unrecognised option" in message and any(marker in message for marker in option_markers)
@@ -1077,16 +1098,7 @@ class ColmapPipeline:
                 "COLMAP_INPUT_SUBSET_NAME was provided without COLMAP_INPUT_SUBSET_MANIFEST_URI"
             )
         manifest_uri = self.input_subset_manifest_uri
-        if manifest_uri.startswith("s3://"):
-            result = subprocess.run(
-                ["aws", "s3", "cp", manifest_uri, "-"],
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-            manifest = json.loads(result.stdout or "{}")
-        else:
-            manifest = json.loads(Path(manifest_uri).expanduser().resolve().read_text(encoding="utf-8"))
+        manifest = load_json_uri(manifest_uri)
         subset_payload = None
         for section_name in ("probe_subsets", "ladder_subsets"):
             section = manifest.get(section_name, {})

@@ -1,4 +1,5 @@
 import importlib.util
+import io
 import json
 import os
 import sqlite3
@@ -3627,6 +3628,56 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 ["IMG_01.jpg", "IMG_03.jpg"],
             )
             self.assertTrue(pipeline.selected_input_images_requested)
+
+    def test_extract_images_respects_s3_manifest_selected_subset(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            input_dir = root / "input"
+            output_dir = root / "output"
+            input_dir.mkdir(parents=True, exist_ok=True)
+            archive_path = input_dir / "images.zip"
+            with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+                archive.writestr("IMG_01.jpg", b"one")
+                archive.writestr("IMG_02.jpg", b"two")
+                archive.writestr("IMG_03.jpg", b"three")
+            manifest_payload = {
+                "input": "s3://example/dataset.zip",
+                "probe_subsets": {
+                    "geometry_mix": {
+                        "image_count": 2,
+                        "images": ["IMG_02.jpg", "IMG_03.jpg"],
+                    }
+                },
+                "ladder_subsets": {},
+            }
+            s3_client = mock.Mock()
+            s3_client.get_object.return_value = {
+                "Body": io.BytesIO(json.dumps(manifest_payload).encode("utf-8"))
+            }
+
+            fake_boto3 = mock.Mock()
+            fake_boto3.client.return_value = s3_client
+
+            with mock.patch.dict(
+                os.environ,
+                {
+                    "COLMAP_INPUT_SUBSET_MANIFEST_URI": "s3://bucket/probe_manifest.json",
+                    "COLMAP_INPUT_SUBSET_NAME": "geometry_mix",
+                },
+                clear=False,
+            ), mock.patch.dict(sys.modules, {"boto3": fake_boto3}):
+                pipeline = run_colmap_sfm.ColmapPipeline(input_dir, output_dir)
+                pipeline.extract_images()
+
+            s3_client.get_object.assert_called_once_with(
+                Bucket="bucket",
+                Key="probe_manifest.json",
+            )
+            self.assertEqual(pipeline.dataset_image_count, 2)
+            self.assertEqual(
+                sorted(path.name for path in pipeline.images_dir.iterdir()),
+                ["IMG_02.jpg", "IMG_03.jpg"],
+            )
 
     def test_extract_images_fails_when_manifest_selected_subset_is_missing(self):
         with tempfile.TemporaryDirectory() as tmp:
