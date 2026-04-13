@@ -4851,9 +4851,13 @@ class ColmapPipeline:
         raw_merged_names: Set[str],
         max_images: int,
         preferred_names: Set[str] | None = None,
+        required_names: Sequence[str] | None = None,
     ) -> List[str]:
         preferred_names = preferred_names or set()
         source_union = self.sorted_capture_names(set(left_source_names).union(right_source_names))
+        source_union_set = set(source_union)
+        required_name_set = source_union_set.intersection(set(required_names or []))
+        effective_max_images = max(max_images, len(required_name_set), 1)
         if self.seam_frontier_mode != "frontier_only":
             return source_union
         if any(
@@ -4862,10 +4866,9 @@ class ColmapPipeline:
             or "local_y_m" not in self.exif_records[image_name]
             for image_name in source_union
         ):
-            return source_union[: max(max_images, 1)]
+            return source_union[:effective_max_images]
         left_set = set(left_source_names)
         right_set = set(right_source_names)
-        source_union_set = set(source_union)
         overlap_names = left_set.intersection(right_set)
         missing_source_names = source_union_set.difference(raw_merged_names)
         roles = self.classify_graph_roles()
@@ -4888,6 +4891,8 @@ class ColmapPipeline:
                 score += 120.0
             if image_name in preferred_names:
                 score += 200.0
+            if image_name in required_name_set:
+                score += 400.0
             if left_score > 0.0 and right_score > 0.0:
                 score += left_score + right_score + 10.0
             elif image_name in missing_source_names:
@@ -4902,10 +4907,10 @@ class ColmapPipeline:
             for _, image_name in sorted(
                 ((score, image_name) for image_name, score in candidate_scores.items()),
                 key=lambda item: (-item[0], item[1]),
-            )[: max(max_images, 1)]
+            )[:effective_max_images]
         ]
         frontier_set = set(frontier_names)
-        if len(frontier_names) < max_images:
+        if len(frontier_names) < effective_max_images:
             halo_candidates: Dict[str, float] = {}
             for image_name in list(frontier_names):
                 for edge in self.graph_neighbors.get(image_name, []):
@@ -4919,10 +4924,10 @@ class ColmapPipeline:
             ):
                 frontier_names.append(neighbor_name)
                 frontier_set.add(neighbor_name)
-                if len(frontier_names) >= max_images:
+                if len(frontier_names) >= effective_max_images:
                     break
         if not frontier_names:
-            return source_union[: max(self.pair_cap_local + self.pair_cap_revisit, 16)]
+            return source_union[: max(self.pair_cap_local + self.pair_cap_revisit, 16, len(required_name_set))]
         return self.sorted_capture_names(frontier_names)
 
     def select_merge_frontier_names(
@@ -4931,12 +4936,14 @@ class ColmapPipeline:
         left_source_names: Sequence[str],
         right_source_names: Sequence[str],
         raw_merged_names: Set[str],
+        required_names: Sequence[str] | None = None,
     ) -> List[str]:
         return self.select_ranked_merge_frontier_names(
             left_source_names=left_source_names,
             right_source_names=right_source_names,
             raw_merged_names=raw_merged_names,
             max_images=max(self.seam_frontier_max_images, 1),
+            required_names=required_names,
         )
 
     def expand_merge_frontier_names(
@@ -4946,6 +4953,7 @@ class ColmapPipeline:
         right_source_names: Sequence[str],
         raw_merged_names: Set[str],
         preferred_names: Sequence[str],
+        required_names: Sequence[str] | None = None,
     ) -> List[str]:
         source_union = self.sorted_capture_names(set(left_source_names).union(right_source_names))
         retry_cap = min(max(self.seam_frontier_retry_max_images, len(preferred_names)), len(source_union))
@@ -4955,6 +4963,7 @@ class ColmapPipeline:
             raw_merged_names=raw_merged_names,
             max_images=max(retry_cap, 1),
             preferred_names=set(preferred_names).union(set(source_union).difference(raw_merged_names)),
+            required_names=required_names,
         )
 
     def run_image_registrator(
@@ -5135,15 +5144,20 @@ class ColmapPipeline:
         stage_prefix: str,
         dir_name: str,
         bridge_target_name_sets: Sequence[Set[str]] | None = None,
+        required_names: Sequence[str] | None = None,
         run_final_bundle_adjustment: bool = False,
     ) -> tuple[ModelSummary, List[str], bool, str]:
         source_union_names = self.sorted_capture_names(set(left_source_names).union(right_source_names))
+        required_scope_names = self.sorted_capture_names(
+            set(source_union_names).intersection(set(required_names or []))
+        )
         raw_merged_names = self.merged_image_names(seed_model)
         source_index_list = sorted(set(source_chunk_indexes))
         initial_frontier_names = self.select_merge_frontier_names(
             left_source_names=left_source_names,
             right_source_names=right_source_names,
             raw_merged_names=raw_merged_names,
+            required_names=required_scope_names,
         )
         attempt_specs: List[tuple[str, str, List[str], int | None]] = [
             (
@@ -5158,6 +5172,7 @@ class ColmapPipeline:
             right_source_names=right_source_names,
             raw_merged_names=raw_merged_names,
             preferred_names=initial_frontier_names,
+            required_names=required_scope_names,
         )
         if expanded_frontier_names != initial_frontier_names:
             attempt_specs.append(
@@ -5175,7 +5190,7 @@ class ColmapPipeline:
             start=1,
         ):
             seam_scope_names = self.sorted_capture_names(
-                set(raw_merged_names).union(frontier_names)
+                set(raw_merged_names).union(frontier_names).union(required_scope_names)
             ) or list(source_union_names)
             try:
                 refined_model = self.run_parent_seam_registration(
@@ -6059,6 +6074,13 @@ class ColmapPipeline:
                             stage_prefix=f"{merged_stage_prefix}_seed_{seed_attempt:02d}",
                             dir_name=f"{merged_stage_prefix}_seed_{seed_attempt:02d}",
                             bridge_target_name_sets=bridge_target_name_sets,
+                            required_names=self.sorted_capture_names(
+                                {
+                                    image_name
+                                    for target_name_set in bridge_target_name_sets
+                                    for image_name in target_name_set
+                                }
+                            ),
                             run_final_bundle_adjustment=False,
                         )
                     except RuntimeError as seam_error:
