@@ -287,6 +287,26 @@ def _patch_sky_presence(
     return blue_dominant & (luminance >= min_luminance) & (saturation >= min_saturation)
 
 
+def _nanmedian_rows(values: np.ndarray) -> np.ndarray:
+    medians = np.full(values.shape[0], np.inf, dtype=np.float32)
+    finite_mask = np.isfinite(values).any(axis=1)
+    if finite_mask.any():
+        medians[finite_mask] = np.nanmedian(values[finite_mask], axis=1)
+    return medians
+
+
+def _resolve_color_distance_medians(
+    all_view_distances: np.ndarray,
+    sky_view_distances: np.ndarray,
+    prefer_sky_mask: np.ndarray,
+) -> np.ndarray:
+    resolved = _nanmedian_rows(all_view_distances)
+    sky_medians = _nanmedian_rows(sky_view_distances)
+    use_sky = prefer_sky_mask & np.isfinite(sky_medians)
+    resolved[use_sky] = sky_medians[use_sky]
+    return resolved
+
+
 def prune_foreground_floaters(
     ply_path: Path,
     data_dir: Path,
@@ -369,7 +389,8 @@ def prune_foreground_floaters(
     sky_support_counts = np.zeros(candidate_indices.shape[0], dtype=np.int32)
     edge_support_counts = np.zeros(candidate_indices.shape[0], dtype=np.int32)
     sky_edge_support_counts = np.zeros(candidate_indices.shape[0], dtype=np.int32)
-    color_distances = np.full((candidate_indices.shape[0], sampled_frame_indices.shape[0]), np.nan, dtype=np.float32)
+    color_distances_all = np.full((candidate_indices.shape[0], sampled_frame_indices.shape[0]), np.nan, dtype=np.float32)
+    color_distances_sky = np.full((candidate_indices.shape[0], sampled_frame_indices.shape[0]), np.nan, dtype=np.float32)
 
     for sample_slot, frame_idx in enumerate(sampled_frame_indices):
         frame = frames[int(frame_idx)]
@@ -415,12 +436,11 @@ def prune_foreground_floaters(
         sky_edge_support_counts[active_visible] += (patch_edges & patch_sky).astype(np.int32)
 
         rgb_delta = candidate_colors[active_visible] - patch_means
-        color_distances[active_visible, sample_slot] = np.linalg.norm(rgb_delta, axis=1)
-
-    finite_color_mask = np.isfinite(color_distances).any(axis=1)
-    median_color_distance = np.full(candidate_indices.shape[0], np.inf, dtype=np.float32)
-    if finite_color_mask.any():
-        median_color_distance[finite_color_mask] = np.nanmedian(color_distances[finite_color_mask], axis=1)
+        distances = np.linalg.norm(rgb_delta, axis=1)
+        color_distances_all[active_visible, sample_slot] = distances
+        sky_active = active_visible[patch_sky]
+        if sky_active.size > 0:
+            color_distances_sky[sky_active, sample_slot] = distances[patch_sky]
 
     top_fraction = np.divide(
         top_counts,
@@ -433,6 +453,11 @@ def prune_foreground_floaters(
         sky_support_counts >= min_sky_views
         if min_sky_views > 0
         else np.zeros_like(sky_support_counts, dtype=bool)
+    )
+    median_color_distance = _resolve_color_distance_medians(
+        all_view_distances=color_distances_all,
+        sky_view_distances=color_distances_sky,
+        prefer_sky_mask=meets_sky_support,
     )
     removal_local_mask = (
         (visible_counts >= min_views)

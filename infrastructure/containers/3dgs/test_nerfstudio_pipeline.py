@@ -12,6 +12,7 @@ import shutil
 import logging
 import subprocess
 from pathlib import Path
+import numpy as np
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -256,6 +257,43 @@ class NerfStudioPipelineTest:
             return False
 
         return True
+
+    def test_sky_color_distance_resolution(self) -> bool:
+        """Prefer sky-view color statistics when sky support exists."""
+        logger.info("🌤️ Testing sky-only color distance resolution...")
+
+        sys.path.insert(0, str(Path(__file__).parent))
+        from sky_quality import _resolve_color_distance_medians
+
+        all_view_distances = np.array([
+            [0.30, 0.32, np.nan],
+            [0.24, 0.22, np.nan],
+            [0.16, 0.17, np.nan],
+        ], dtype=np.float32)
+        sky_view_distances = np.array([
+            [0.10, 0.12, np.nan],
+            [np.nan, np.nan, np.nan],
+            [0.14, np.nan, np.nan],
+        ], dtype=np.float32)
+        prefer_sky_mask = np.array([True, True, False], dtype=bool)
+
+        resolved = _resolve_color_distance_medians(
+            all_view_distances=all_view_distances,
+            sky_view_distances=sky_view_distances,
+            prefer_sky_mask=prefer_sky_mask,
+        )
+
+        checks = [
+            np.isclose(resolved[0], 0.11, atol=1e-6),
+            np.isclose(resolved[1], 0.23, atol=1e-6),
+            np.isclose(resolved[2], 0.165, atol=1e-6),
+        ]
+        if all(checks):
+            logger.info("✅ Sky-only color median fallback behaves as expected")
+            return True
+
+        logger.error(f"❌ Unexpected resolved color medians: {resolved.tolist()}")
+        return False
     
     def run_comprehensive_test(self) -> bool:
         """Run all tests"""
@@ -267,7 +305,8 @@ class NerfStudioPipelineTest:
             ("Container Build", self.test_container_build),
             ("Training Script", self.test_training_script),
             ("Vincent Woo Parameters", self.test_vincent_woo_parameters),
-            ("Quality Expectations", self.test_quality_expectations)
+            ("Quality Expectations", self.test_quality_expectations),
+            ("Sky Color Distance Resolution", self.test_sky_color_distance_resolution),
         ]
         
         results = {}
