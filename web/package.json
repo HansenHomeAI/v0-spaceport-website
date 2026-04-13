@@ -25,6 +25,7 @@
     "@sentry/nextjs": "^10.12.0",
     "@stripe/stripe-js": "^7.8.0",
     "aws-amplify": "^5.3.14",
+    "aws4fetch": "^1.0.20",
     "cesium": "^1.129.0",
     "copy-webpack-plugin": "^13.0.1",
     "fast-xml-parser": "^5.2.5",
@@ -45,6 +46,7 @@
     "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.31",
     "playwright": "^1.48.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.2",
     "wrangler": "^4.28.1"
   },

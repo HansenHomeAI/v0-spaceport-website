@@ -204,20 +204,47 @@ def lambda_handler(event, context):
         # Special handling for 3DGS-only tests with existing SfM data
         existing_colmap_uri = body.get('existingColmapUri')  # Optional: use existing SfM data
         
-        # Define Vincent Woo's NerfStudio hyperparameters for Sutro Tower methodology
-        # Updated to use NerfStudio environment variable format for the container
+        # Default to splatfacto-w-light with the background model enabled so the
+        # pipeline produces a foreground PLY for SOGS plus a lightweight skybox.
         default_hyperparameters = {
-            # Vincent Woo's Core Parameters (NerfStudio Environment Variable Format)
-            "MAX_ITERATIONS": "30000",          # Vincent's exact iteration count
-            "TARGET_PSNR": "35.0",              # Vincent's quality target
-            "MODEL_VARIANT": "splatfacto-big",  # Vincent's model choice
-            "SH_DEGREE": "3",                   # Industry standard (16 coefficients)
-            "BILATERAL_PROCESSING": "true",     # Vincent's exposure correction innovation
-            "LOG_INTERVAL": "100",              # Progress logging frequency
+            "MAX_ITERATIONS": "30000",
+            "TARGET_PSNR": "35.0",
+            "MODEL_VARIANT": "splatfacto-w-light",
+            "SH_DEGREE": "3",
+            "BILATERAL_PROCESSING": "false",
+            "LOG_INTERVAL": "100",
+            "RASTERIZE_MODE": "classic",
+            "USE_SCALE_REGULARIZATION": "true",
+            "CULL_ALPHA_THRESH": "0.12",
+            "CULL_SCALE_THRESH": "0.35",
+            "ENABLE_BG_MODEL": "true",
+            "ENABLE_ALPHA_LOSS": "true",
+            "ENABLE_ROBUST_MASK": "true",
+            "BG_SH_DEGREE": "8",
+            "APPEARANCE_EMBED_DIM": "64",
+            "NEVER_MASK_UPPER": "0.4",
+            "BACKGROUND_APPEARANCE_MODE": "auto_camera",
+            "BACKGROUND_SKYBOX_WIDTH": "2048",
+            "BACKGROUND_SKYBOX_HEIGHT": "1024",
+            "BACKGROUND_SKYBOX_QUALITY": "95",
+            "BACKGROUND_SELECTION_STRIDE": "5",
+            "BACKGROUND_SELECTION_MAX_FRAMES": "32",
+            "FLOATER_PRUNING_ENABLED": "true",
+            "FLOATER_PRUNING_MIN_VIEWS": "6",
+            "FLOATER_PRUNING_TOP_REGION_RATIO": "0.35",
+            "FLOATER_PRUNING_TOP_VIEW_FRACTION": "0.9",
+            "FLOATER_PRUNING_MIN_SKY_VIEWS": "2",
+            "FLOATER_PRUNING_SKY_MIN_LUMINANCE": "0.3",
+            "FLOATER_PRUNING_SKY_MIN_SATURATION": "0.08",
+            "FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN": "0.02",
+            "FLOATER_PRUNING_MAX_OPACITY": "0.75",
+            "FLOATER_PRUNING_MAX_COLOR_DISTANCE": "0.18",
+            "FLOATER_PRUNING_MIN_EDGE_SUPPORT": "1",
+            "TRAINING_TIMEOUT_SECONDS": "14400",
             
             # NerfStudio Framework Configuration
             "FRAMEWORK": "nerfstudio",
-            "METHODOLOGY": "vincent_woo_sutro_tower",
+            "METHODOLOGY": "spaceport_splatfacto_w_light_skybox",
             "LICENSE": "apache_2_0",
             "COMMERCIAL_LICENSE": "true",
             

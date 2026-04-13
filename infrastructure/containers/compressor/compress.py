@@ -108,6 +108,31 @@ class PlayCanvasSOGSCompressor:
         except (subprocess.TimeoutExpired, FileNotFoundError) as e:
             logger.error(f"❌ SOGS CLI tool not found: {e}")
             sys.exit(1)
+
+    def _discover_sidecar_assets(self, ply_file: str) -> List[str]:
+        """Locate viewer sidecars exported alongside the training artifact."""
+        sidecar_names = (
+            "background_skybox.webp",
+            "background_manifest.json",
+            "training_metadata.json",
+            "export_manifest.json",
+        )
+        search_roots = [Path(ply_file).parent]
+        search_roots.extend(Path(ply_file).parents[:2])
+
+        assets: List[str] = []
+        seen = set()
+        for root in search_roots:
+            for name in sidecar_names:
+                candidate = root / name
+                if candidate.exists() and candidate.is_file():
+                    resolved = str(candidate.resolve())
+                    if resolved not in seen:
+                        seen.add(resolved)
+                        assets.append(resolved)
+        if assets:
+            logger.info(f"✅ Found sidecar assets for bundle: {[Path(path).name for path in assets]}")
+        return assets
     
     def compress_gaussian_splats(self, input_ply_files: List[str], output_dir: str) -> Dict[str, Any]:
         """
@@ -157,7 +182,8 @@ class PlayCanvasSOGSCompressor:
                     'compressed_size_mb': compressed_size / (1024 * 1024),
                     'compression_ratio': compression_ratio,
                     'webp_files': [str(f) for f in output_files if f.suffix == '.webp'],
-                    'metadata_file': str(Path(compress_dir) / 'meta.json') if (Path(compress_dir) / 'meta.json').exists() else None
+                    'metadata_file': str(Path(compress_dir) / 'meta.json') if (Path(compress_dir) / 'meta.json').exists() else None,
+                    'sidecar_files': self._discover_sidecar_assets(ply_file),
                 }
                 
                 results['compressed_outputs'].append(file_result)
@@ -357,6 +383,14 @@ class PlayCanvasSOGSCompressor:
                 import shutil
                 shutil.copy2(file_path, dest_path)
                 logger.info(f"Copied {file_path.name} to SuperSplat bundle")
+
+        for sidecar_path in best_result.get('sidecar_files', []):
+            src = Path(sidecar_path)
+            if src.is_file():
+                dest_path = bundle_dir / src.name
+                import shutil
+                shutil.copy2(src, dest_path)
+                logger.info(f"Copied sidecar asset {src.name} to SuperSplat bundle")
         
         # Create viewer settings file for SuperSplat
         settings = {

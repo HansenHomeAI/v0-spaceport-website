@@ -101028,12 +101028,12 @@ class CameraManager {
         // set the global animation flag
         state.hasAnimation = !!controllers.anim;
         state.animationDuration = controllers.anim ? controllers.anim.animState.cursor.duration : 0;
-        // initialize camera mode and initial camera position
-        state.cameraMode = state.hasAnimation ? 'anim' : (isObjectExperience ? 'orbit' : 'fly');
+        // initialize camera mode and initial camera position (Spaceport: always orbit when not anim — no fly)
+        state.cameraMode = state.hasAnimation ? 'anim' : 'orbit';
         this.camera.copy(resetCamera);
         const target = new Camera(this.camera); // the active controller updates this
         const from = new Camera(this.camera); // stores the previous camera state during transition
-        let fromMode = isObjectExperience ? 'orbit' : 'fly';
+        let fromMode = 'orbit';
         // enter the initial controller
         getController(state.cameraMode).onEnter(this.camera);
         // transition time between cameras
@@ -101111,15 +101111,8 @@ class CameraManager {
             // set time
             controllers.anim.animState.cursor.value = time;
         });
-        // handle user picking in the scene
-        events.on('pick', (position) => {
-            // switch to orbit camera on pick
-            state.cameraMode = 'orbit';
-            // construct camera
-            tmpCamera.copy(this.camera);
-            tmpCamera.look(this.camera.position, position);
-            controllers.orbit.goto(tmpCamera);
-        });
+        // Spaceport: no double-click refocus — orbit pivot stays at scene origin / initial target
+        events.on('pick', () => {});
         events.on('annotation.activate', (annotation) => {
             // switch to orbit camera on pick
             state.cameraMode = 'orbit';
@@ -101353,13 +101346,10 @@ class InputController {
         }
         this._state.shift += key[keyCode.SHIFT];
         this._state.ctrl += key[keyCode.CTRL];
-        if (state.cameraMode !== 'fly' && this._state.axis.length() > 0) {
-            state.cameraMode = 'fly';
-        }
         const orbit = +(state.cameraMode === 'orbit');
         const fly = +(state.cameraMode === 'fly');
         const double = +(this._state.touches > 1);
-        const pan = this._state.mouse[2] || +(button[2] === -1) || double;
+        const pan = 0;
         const orbitFactor = fly ? camera.fov / 120 : 1;
         const { deltas } = this.frame;
         // desktop move
@@ -101393,10 +101383,10 @@ class InputController {
         const flyRotate = new Vec3(rightInput[0], rightInput[1], 0);
         v.add(flyRotate.mulScalar(fly * this.orbitSpeed * orbitFactor * dt));
         deltas.rotate.append([v.x, v.y, v.z]);
-        // gamepad move
+        // gamepad move (Spaceport: no pan in orbit — only fly used stick pan)
         v.set(0, 0, 0);
         const stickMove = new Vec3(leftStick[0], 0, -leftStick[1]);
-        v.add(stickMove.mulScalar(this.moveSpeed * dt));
+        v.add(stickMove.mulScalar(fly * this.moveSpeed * dt));
         deltas.move.append([v.x, v.y, v.z]);
         // gamepad rotate
         v.set(0, 0, 0);

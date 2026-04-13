@@ -1,0 +1,90 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import {
+  canyonAssetUrl,
+  type TapDotConfig,
+} from "../../lib/canyon-vista/canyonVistaOverlays";
+import {
+  createOverlayPerspectiveCamera,
+  projectWorldToScreen,
+  syncOverlayCamera,
+  type CameraPose,
+} from "../../lib/canyon-vista/worldProjection";
+
+type ProjectedDot = {
+  x: number;
+  y: number;
+  visible: boolean;
+  caption: string;
+  dot: TapDotConfig;
+};
+
+type Props = {
+  enabled: boolean;
+  tapDots: TapDotConfig[];
+  poseRef: React.MutableRefObject<CameraPose | null>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  onOpenPhotos: (dot: TapDotConfig) => void;
+};
+
+export function TapDotsOverlay({ enabled, tapDots, poseRef, containerRef, onOpenPhotos }: Props) {
+  const cameraRef = useRef(createOverlayPerspectiveCamera());
+  const [projected, setProjected] = useState<ProjectedDot[]>([]);
+
+  useEffect(() => {
+    if (!enabled) {
+      setProjected([]);
+      return;
+    }
+    let raf = 0;
+    const tick = () => {
+      const el = containerRef.current;
+      const pose = poseRef.current;
+      if (el && pose) {
+        const w = el.clientWidth;
+        const h = el.clientHeight;
+        const cam = cameraRef.current;
+        syncOverlayCamera(cam, pose, w, h);
+        const next: ProjectedDot[] = tapDots.map((td) => {
+          const p = projectWorldToScreen(td.position, cam, w, h);
+          return { ...p, caption: td.caption, dot: td };
+        });
+        setProjected(next);
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [enabled, tapDots, poseRef, containerRef]);
+
+  if (!enabled) {
+    return null;
+  }
+
+  return (
+    <div className="tapdot-layer" aria-hidden={!projected.length}>
+      {projected.map((d, i) => {
+        if (!d.visible) {
+          return null;
+        }
+        return (
+          <button
+            key={`${d.caption}-${i}`}
+            type="button"
+            className="tapdot-label-bubble"
+            style={{
+              left: d.x,
+              top: d.y,
+              opacity: 1,
+            }}
+            onClick={() => onOpenPhotos(d.dot)}
+            aria-label={d.caption}
+          >
+            <span className="tapdot-label-text">{d.caption}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}

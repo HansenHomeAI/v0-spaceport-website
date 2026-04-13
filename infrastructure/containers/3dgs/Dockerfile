@@ -54,16 +54,21 @@ ENV CMAKE_BUILD_PARALLEL_LEVEL=1
 # Ensure latest pybind11 to satisfy fpsample build requirements
 RUN pip install --no-cache-dir "pybind11>=2.13.0"
 
-# Install NerfStudio - this automatically includes gsplat as a dependency
-# gsplat will use JIT (Just-In-Time) compilation on first execution
-# Build parallelism is limited globally via MAX_JOBS and CMAKE_BUILD_PARALLEL_LEVEL env vars
-# This matches the past fix for gsplat compilation (commit 5c864e1a)
-RUN pip install --no-cache-dir "nerfstudio[all]>=1.0.0"
+# Install the latest NerfStudio mainline plus the Splatfacto-W plugin.
+# The plugin provides splatfacto-w-light, which adds the learned background
+# model we bake into a lightweight skybox for the final viewer.
+RUN git clone --depth 1 https://github.com/nerfstudio-project/nerfstudio.git /tmp/nerfstudio && \
+    pip install --no-cache-dir /tmp/nerfstudio && \
+    rm -rf /tmp/nerfstudio
+
+RUN pip install --no-cache-dir git+https://github.com/KevinXu02/splatfacto-w.git && \
+    ns-install-cli
 
 # Verify installations
 RUN python -c "import nerfstudio; print('✅ NerfStudio installed successfully')"
 RUN python -c "import gsplat; print('✅ gsplat backend available (will JIT compile on first use)')"
 RUN ns-install-cli --help > /dev/null && echo "✅ NerfStudio CLI available"
+RUN ns-train splatfacto-w-light --help > /dev/null && echo "✅ splatfacto-w-light CLI available"
 
 # ---------------------------------------------------------------
 # 2. AWS and Production Dependencies
@@ -72,14 +77,20 @@ RUN ns-install-cli --help > /dev/null && echo "✅ NerfStudio CLI available"
 RUN pip install --no-cache-dir \
     boto3>=1.26.0 \
     psutil>=5.9.0 \
-    plyfile>=0.7.4
+    plyfile>=0.7.4 \
+    Pillow>=10.0.0 \
+    opencv-python-headless>=4.10.0
 
 # ---------------------------------------------------------------
 # 3. Copy Training Code and Configuration
 # ---------------------------------------------------------------
 
 COPY train_nerfstudio_production.py /opt/ml/code/
+COPY export_splatfacto_w_assets.py /opt/ml/code/
+COPY run_export_quality_pass.py /opt/ml/code/
+COPY sky_quality.py /opt/ml/code/
 COPY nerfstudio_config.yaml /opt/ml/code/
+COPY sitecustomize.py /opt/ml/code/
 COPY utils/ /opt/ml/code/utils/
 
 # Set Python path

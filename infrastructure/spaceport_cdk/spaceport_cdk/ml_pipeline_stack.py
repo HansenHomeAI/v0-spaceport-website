@@ -459,7 +459,7 @@ class MLPipelineStack(Stack):
                     "VolumeSizeInGB": 100
                 },
                 "StoppingCondition": {
-                    "MaxRuntimeInSeconds": 7200  # 2 hours for real training
+                    "MaxRuntimeInSeconds": 14400  # 4 hours for real training with splatfacto-w-light skyboxes
                 },
                 "RoleArn": sagemaker_role.role_arn,
                 # Enable comprehensive CloudWatch logging for training
@@ -475,21 +475,47 @@ class MLPipelineStack(Stack):
                     "PYTHONUNBUFFERED": "1",
                     "SAGEMAKER_PROGRAM": "train.py",
                     
-                    # Vincent Woo's NerfStudio Methodology - Core Parameters
-                    # Note: All values must be strings for SageMaker environment variables
-                    # Using JsonPath.string_at() directly - CDK will convert to Step Functions intrinsic functions
+                    # Note: All values must be strings for SageMaker environment variables.
                     "MAX_ITERATIONS": sfn.JsonPath.string_at("$.MAX_ITERATIONS"),
                     "TARGET_PSNR": sfn.JsonPath.string_at("$.TARGET_PSNR"),
                     "LOG_INTERVAL": sfn.JsonPath.string_at("$.LOG_INTERVAL"),
                     
-                    # Vincent Woo's Key Features
-                    "MODEL_VARIANT": sfn.JsonPath.string_at("$.MODEL_VARIANT"),  # splatfacto vs splatfacto-big
-                    "SH_DEGREE": sfn.JsonPath.string_at("$.SH_DEGREE"),          # Industry standard: 3
-                    "BILATERAL_PROCESSING": sfn.JsonPath.string_at("$.BILATERAL_PROCESSING"),  # Vincent's innovation
+                    # Model configuration
+                    "MODEL_VARIANT": sfn.JsonPath.string_at("$.MODEL_VARIANT"),
+                    "SH_DEGREE": sfn.JsonPath.string_at("$.SH_DEGREE"),
+                    "BILATERAL_PROCESSING": sfn.JsonPath.string_at("$.BILATERAL_PROCESSING"),
+                    "RASTERIZE_MODE": sfn.JsonPath.string_at("$.RASTERIZE_MODE"),
+                    "USE_SCALE_REGULARIZATION": sfn.JsonPath.string_at("$.USE_SCALE_REGULARIZATION"),
+                    "CULL_ALPHA_THRESH": sfn.JsonPath.string_at("$.CULL_ALPHA_THRESH"),
+                    "CULL_SCALE_THRESH": sfn.JsonPath.string_at("$.CULL_SCALE_THRESH"),
+                    "ENABLE_BG_MODEL": sfn.JsonPath.string_at("$.ENABLE_BG_MODEL"),
+                    "ENABLE_ALPHA_LOSS": sfn.JsonPath.string_at("$.ENABLE_ALPHA_LOSS"),
+                    "ENABLE_ROBUST_MASK": sfn.JsonPath.string_at("$.ENABLE_ROBUST_MASK"),
+                    "BG_SH_DEGREE": sfn.JsonPath.string_at("$.BG_SH_DEGREE"),
+                    "APPEARANCE_EMBED_DIM": sfn.JsonPath.string_at("$.APPEARANCE_EMBED_DIM"),
+                    "NEVER_MASK_UPPER": sfn.JsonPath.string_at("$.NEVER_MASK_UPPER"),
+                    "BACKGROUND_APPEARANCE_MODE": sfn.JsonPath.string_at("$.BACKGROUND_APPEARANCE_MODE"),
+                    "BACKGROUND_SKYBOX_WIDTH": sfn.JsonPath.string_at("$.BACKGROUND_SKYBOX_WIDTH"),
+                    "BACKGROUND_SKYBOX_HEIGHT": sfn.JsonPath.string_at("$.BACKGROUND_SKYBOX_HEIGHT"),
+                    "BACKGROUND_SKYBOX_QUALITY": sfn.JsonPath.string_at("$.BACKGROUND_SKYBOX_QUALITY"),
+                    "BACKGROUND_SELECTION_STRIDE": sfn.JsonPath.string_at("$.BACKGROUND_SELECTION_STRIDE"),
+                    "BACKGROUND_SELECTION_MAX_FRAMES": sfn.JsonPath.string_at("$.BACKGROUND_SELECTION_MAX_FRAMES"),
+                    "FLOATER_PRUNING_ENABLED": sfn.JsonPath.string_at("$.FLOATER_PRUNING_ENABLED"),
+                    "FLOATER_PRUNING_MIN_VIEWS": sfn.JsonPath.string_at("$.FLOATER_PRUNING_MIN_VIEWS"),
+                    "FLOATER_PRUNING_TOP_REGION_RATIO": sfn.JsonPath.string_at("$.FLOATER_PRUNING_TOP_REGION_RATIO"),
+                    "FLOATER_PRUNING_TOP_VIEW_FRACTION": sfn.JsonPath.string_at("$.FLOATER_PRUNING_TOP_VIEW_FRACTION"),
+                    "FLOATER_PRUNING_MIN_SKY_VIEWS": sfn.JsonPath.string_at("$.FLOATER_PRUNING_MIN_SKY_VIEWS"),
+                    "FLOATER_PRUNING_SKY_MIN_LUMINANCE": sfn.JsonPath.string_at("$.FLOATER_PRUNING_SKY_MIN_LUMINANCE"),
+                    "FLOATER_PRUNING_SKY_MIN_SATURATION": sfn.JsonPath.string_at("$.FLOATER_PRUNING_SKY_MIN_SATURATION"),
+                    "FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN": sfn.JsonPath.string_at("$.FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN"),
+                    "FLOATER_PRUNING_MAX_OPACITY": sfn.JsonPath.string_at("$.FLOATER_PRUNING_MAX_OPACITY"),
+                    "FLOATER_PRUNING_MAX_COLOR_DISTANCE": sfn.JsonPath.string_at("$.FLOATER_PRUNING_MAX_COLOR_DISTANCE"),
+                    "FLOATER_PRUNING_MIN_EDGE_SUPPORT": sfn.JsonPath.string_at("$.FLOATER_PRUNING_MIN_EDGE_SUPPORT"),
+                    "TRAINING_TIMEOUT_SECONDS": sfn.JsonPath.string_at("$.TRAINING_TIMEOUT_SECONDS"),
                     
                     # NerfStudio Framework Configuration
                     "FRAMEWORK": "nerfstudio",
-                    "METHODOLOGY": "vincent_woo_sutro_tower",
+                    "METHODOLOGY": "spaceport_splatfacto_w_light_skybox",
                     "LICENSE": "apache_2_0",
                     
                     # Quality and Performance Settings
