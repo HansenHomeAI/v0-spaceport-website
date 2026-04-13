@@ -1119,8 +1119,29 @@ class ColmapPipeline:
     def run_bundle_adjuster(self, *, input_path: Path, stage: str) -> ModelSummary:
         started = time.time()
         output_path = self.work_dir / stage
-        stream_command(
-            [
+        output_path.mkdir(parents=True, exist_ok=True)
+        command = [
+            "colmap",
+            "bundle_adjuster",
+            "--input_path",
+            str(input_path),
+            "--output_path",
+            str(output_path),
+            "--BundleAdjustment.refine_principal_point",
+            "0",
+            "--BundleAdjustment.use_gpu",
+            "1" if self.use_gpu else "0",
+        ]
+        try:
+            stream_command(command, stage=stage)
+        except RuntimeError as exc:
+            error_text = str(exc)
+            if "unrecognised option '--BundleAdjustment.use_gpu'" not in error_text:
+                raise
+            logger.warning(
+                "bundle_adjuster rejected BundleAdjustment.use_gpu; retrying with older COLMAP-compatible flags"
+            )
+            fallback_command = [
                 "colmap",
                 "bundle_adjuster",
                 "--input_path",
@@ -1129,11 +1150,8 @@ class ColmapPipeline:
                 str(output_path),
                 "--BundleAdjustment.refine_principal_point",
                 "0",
-                "--BundleAdjustment.use_gpu",
-                "1" if self.use_gpu else "0",
-            ],
-            stage=stage,
-        )
+            ]
+            stream_command(fallback_command, stage=stage)
         self.timings[f"{stage}_seconds"] = round(time.time() - started, 2)
         return self.summarize_model(
             stage=stage,

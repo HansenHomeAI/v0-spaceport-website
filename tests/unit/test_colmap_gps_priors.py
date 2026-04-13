@@ -436,6 +436,42 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertIn("--SiftMatching.use_gpu", second_command)
             self.assertEqual(pipeline.matching_option_family, "SiftMatching")
 
+    def test_run_bundle_adjuster_retries_without_gpu_flag_for_older_colmap(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            input_path = root / "merged"
+            input_path.mkdir(parents=True, exist_ok=True)
+            summary = run_colmap_sfm.ModelSummary(
+                stage="chunk_bundle_adjuster",
+                text_dir=root / "text",
+                cameras_registered=1,
+                images_registered=10,
+                points_3d=1000,
+                binary_dir=root / "chunk_bundle_adjuster",
+            )
+            error = RuntimeError(
+                "chunk_bundle_adjuster failed with exit code 1\n"
+                "Failed to parse options - unrecognised option '--BundleAdjustment.use_gpu'."
+            )
+            with mock.patch.object(
+                run_colmap_sfm,
+                "stream_command",
+                side_effect=[error, None],
+            ) as stream_command_mock, mock.patch.object(
+                pipeline,
+                "summarize_model",
+                return_value=summary,
+            ):
+                result = pipeline.run_bundle_adjuster(input_path=input_path, stage="chunk_bundle_adjuster")
+
+            first_command = stream_command_mock.call_args_list[0].args[0]
+            second_command = stream_command_mock.call_args_list[1].args[0]
+            self.assertIn("--BundleAdjustment.use_gpu", first_command)
+            self.assertNotIn("--BundleAdjustment.use_gpu", second_command)
+            self.assertTrue((pipeline.work_dir / "chunk_bundle_adjuster").is_dir())
+            self.assertEqual(result.images_registered, 10)
+
     def test_build_spatial_heading_chunks_groups_by_spatial_proximity_not_capture_time(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
