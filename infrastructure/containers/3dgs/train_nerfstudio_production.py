@@ -602,10 +602,19 @@ class NerfStudioTrainer:
         
         # Execute training
         try:
+            train_env = os.environ.copy()
+            pythonpath_parts = ["/opt/ml/code"]
+            existing_pythonpath = train_env.get("PYTHONPATH", "")
+            if existing_pythonpath:
+                pythonpath_parts.append(existing_pythonpath)
+            train_env["PYTHONPATH"] = ":".join(part for part in pythonpath_parts if part)
+            logger.info(f"🐍 PYTHONPATH for ns-train: {train_env['PYTHONPATH']}")
+
             result = subprocess.run(
                 cmd,
                 capture_output=True,
                 text=True,
+                env=train_env,
                 timeout=7200  # 2 hour timeout
             )
             
