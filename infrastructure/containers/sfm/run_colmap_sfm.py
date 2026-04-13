@@ -260,6 +260,9 @@ class ColmapPipeline:
         self.chunk_boundary_vocab_num_images = int(
             os.environ.get("COLMAP_CHUNK_BOUNDARY_VOCAB_NUM_IMAGES", "12")
         )
+        self.chunk_min_core_registered_ratio = float(
+            os.environ.get("COLMAP_CHUNK_MIN_CORE_REGISTERED_RATIO", "0.90")
+        )
         if (
             self.enable_sequential_matcher
             and self.spatial_neighbors == profile_defaults["spatial_neighbors"]
@@ -1455,7 +1458,7 @@ class ColmapPipeline:
         core_missing_names = sorted(set(chunk_plan.core_names).difference(registered_names))
         if registered_ratio >= self.chunk_registered_ratio_threshold():
             return initial_model
-        if core_registered_ratio >= self.chunk_registered_ratio_threshold():
+        if core_registered_ratio >= self.chunk_min_core_registered_ratio:
             logger.info(
                 "Chunk %s registered %s/%s total images (%.2f%%) but %s/%s core images (%.2f%%); skipping boundary recovery",
                 chunk_plan.index,
