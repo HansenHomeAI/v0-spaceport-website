@@ -62,6 +62,44 @@ def write_test_ply(path: Path, vertices: list[tuple[float, float, float, float]]
 
 
 class GaussianTilePipelineTests(unittest.TestCase):
+    def test_select_manifest_tile_ids_supports_subset_and_caps(self):
+        manifest = {
+            "tiles": [
+                {"tile_id": "tile_00"},
+                {"tile_id": "tile_01"},
+                {"tile_id": "tile_02"},
+            ]
+        }
+
+        self.assertEqual(
+            tile_pipeline.select_manifest_tile_ids(manifest, max_tiles=2),
+            ["tile_00", "tile_01"],
+        )
+        self.assertEqual(
+            tile_pipeline.select_manifest_tile_ids(
+                manifest,
+                explicit_tile_ids=["tile_02", "tile_00"],
+            ),
+            ["tile_02", "tile_00"],
+        )
+
+    def test_subset_tile_manifest_keeps_only_selected_tiles(self):
+        manifest = {
+            "all_image_names": ["a.jpg", "b.jpg"],
+            "tiles": [
+                {"tile_id": "tile_00", "base_camera_ids": ["a.jpg"]},
+                {"tile_id": "tile_01", "base_camera_ids": ["b.jpg"]},
+            ],
+        }
+
+        subset = tile_pipeline.subset_tile_manifest(
+            manifest,
+            selected_tile_ids=["tile_01"],
+        )
+
+        self.assertEqual([tile["tile_id"] for tile in subset["tiles"]], ["tile_01"])
+        self.assertEqual(subset["all_image_names"], ["a.jpg", "b.jpg"])
+
     def test_select_training_image_names_scaffold_and_leaf_tile(self):
         manifest = {
             "all_image_names": ["a.jpg", "b.jpg", "c.jpg", "d.jpg"],

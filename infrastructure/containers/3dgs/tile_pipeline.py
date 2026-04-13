@@ -81,6 +81,39 @@ def resolve_tile_entry(tile_manifest: Mapping[str, Any], tile_id: str) -> Mappin
     raise KeyError(f"Unknown tile_id={tile_id}")
 
 
+def select_manifest_tile_ids(
+    tile_manifest: Mapping[str, Any],
+    *,
+    explicit_tile_ids: Sequence[str] | None = None,
+    max_tiles: int | None = None,
+) -> list[str]:
+    tile_ids = [str(tile.get("tile_id")) for tile in tile_manifest.get("tiles", []) if tile.get("tile_id")]
+    if explicit_tile_ids:
+        requested = [str(tile_id).strip() for tile_id in explicit_tile_ids if str(tile_id).strip()]
+        missing = [tile_id for tile_id in requested if tile_id not in tile_ids]
+        if missing:
+            raise ValueError(f"Unknown tile ids requested: {', '.join(missing)}")
+        tile_ids = requested
+    if max_tiles is not None and max_tiles > 0:
+        tile_ids = tile_ids[:max_tiles]
+    return tile_ids
+
+
+def subset_tile_manifest(
+    tile_manifest: Mapping[str, Any],
+    *,
+    selected_tile_ids: Sequence[str],
+) -> dict[str, Any]:
+    selected = {str(tile_id) for tile_id in selected_tile_ids}
+    subset = dict(tile_manifest)
+    subset["tiles"] = [
+        dict(tile)
+        for tile in tile_manifest.get("tiles", [])
+        if str(tile.get("tile_id")) in selected
+    ]
+    return subset
+
+
 def select_training_image_names(
     *,
     training_mode: str,

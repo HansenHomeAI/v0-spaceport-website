@@ -21,6 +21,7 @@ import sys
 import json
 import yaml
 import time
+import hashlib
 import logging
 import argparse
 import subprocess
@@ -74,8 +75,11 @@ from sky_quality import (
 from tile_pipeline import (
     filter_transforms_frames,
     load_json,
+    merge_tile_outputs,
     selection_counts_for_buckets,
+    select_manifest_tile_ids,
     select_training_image_names,
+    subset_tile_manifest,
 )
 
 # Configure production logging
@@ -90,6 +94,7 @@ class NerfStudioTrainer:
     
     def __init__(self, config_path: str):
         """Initialize trainer with configuration"""
+        self.config_path = config_path
         with open(config_path, 'r') as f:
             self.config = yaml.safe_load(f)
         
@@ -159,15 +164,20 @@ class NerfStudioTrainer:
             'GLOBAL_SCAFFOLD_MAX_ITERATIONS': 'tiling.global_scaffold.max_iterations',
             'GLOBAL_SCAFFOLD_SH_DEGREE': 'tiling.global_scaffold.sh_degree',
             'GLOBAL_SCAFFOLD_MAX_GAUSS_RATIO': 'tiling.global_scaffold.max_gauss_ratio',
+            'TILED_MAX_TILES': 'tiling.pipeline.max_tiles',
+            'TILED_TILE_IDS': 'tiling.pipeline.tile_ids',
+            'TILED_INCLUDE_SCAFFOLD': 'tiling.pipeline.include_scaffold',
+            'TILED_INCLUDE_MERGE': 'tiling.pipeline.include_merge',
+            'TILED_RESUME_EXISTING': 'tiling.pipeline.resume_existing',
         }
         
         for env_var, config_path in env_params.items():
             value = os.environ.get(env_var)
             if value is not None:
                 # Convert string values to appropriate types
-                if env_var in ['BILATERAL_PROCESSING', 'USE_SCALE_REGULARIZATION', 'ENABLE_BG_MODEL', 'ENABLE_ALPHA_LOSS', 'ENABLE_ROBUST_MASK', 'FLOATER_PRUNING_ENABLED']:
+                if env_var in ['BILATERAL_PROCESSING', 'USE_SCALE_REGULARIZATION', 'ENABLE_BG_MODEL', 'ENABLE_ALPHA_LOSS', 'ENABLE_ROBUST_MASK', 'FLOATER_PRUNING_ENABLED', 'TILED_INCLUDE_SCAFFOLD', 'TILED_INCLUDE_MERGE', 'TILED_RESUME_EXISTING']:
                     value = value.lower() in ('true', '1', 'yes', 'on')
-                elif env_var in ['MAX_ITERATIONS', 'SH_DEGREE', 'LOG_INTERVAL', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT', 'GLOBAL_SCAFFOLD_MAX_IMAGES', 'GLOBAL_SCAFFOLD_FRAME_STRIDE', 'GLOBAL_SCAFFOLD_MAX_ITERATIONS', 'GLOBAL_SCAFFOLD_SH_DEGREE']:
+                elif env_var in ['MAX_ITERATIONS', 'SH_DEGREE', 'LOG_INTERVAL', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT', 'GLOBAL_SCAFFOLD_MAX_IMAGES', 'GLOBAL_SCAFFOLD_FRAME_STRIDE', 'GLOBAL_SCAFFOLD_MAX_ITERATIONS', 'GLOBAL_SCAFFOLD_SH_DEGREE', 'TILED_MAX_TILES']:
                     value = int(value)
                 elif env_var in ['TARGET_PSNR', 'CULL_ALPHA_THRESH', 'CULL_SCALE_THRESH', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_SKY_MIN_LUMINANCE', 'FLOATER_PRUNING_SKY_MIN_SATURATION', 'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE', 'GLOBAL_SCAFFOLD_MAX_GAUSS_RATIO']:
                     value = float(value)
@@ -287,11 +297,15 @@ class NerfStudioTrainer:
         
         # Create converted data directory
         converted_dir = self.temp_dir / "converted_data"
+        if converted_dir.exists():
+            shutil.rmtree(converted_dir)
         converted_dir.mkdir(exist_ok=True, parents=True)
         
         # Convert COLMAP TXT to BIN into a dedicated directory (industry-standard for NerfStudio)
         sparse_txt_dir = self.input_dir / "sparse" / "0"
         sparse_bin_dir = self.temp_dir / "colmap_bin" / "0"
+        if sparse_bin_dir.parent.exists():
+            shutil.rmtree(sparse_bin_dir.parent)
         sparse_bin_dir.mkdir(parents=True, exist_ok=True)
 
         if not self.convert_colmap_text_to_binary(sparse_txt_dir, sparse_bin_dir):
@@ -594,6 +608,338 @@ class NerfStudioTrainer:
         tile_manifest = load_json(tile_manifest_resolved) if tile_manifest_resolved else None
         view_buckets = load_json(view_bucket_manifest_resolved) if view_bucket_manifest_resolved else None
         return tile_manifest, view_buckets
+
+    def resolve_tiled_pipeline_options(self, tile_manifest: dict[str, Any]) -> dict[str, Any]:
+        tiling_config = self.config.get('tiling', {})
+        pipeline_config = tiling_config.get('pipeline', {})
+        raw_tile_ids = pipeline_config.get('tile_ids', '')
+        if isinstance(raw_tile_ids, str):
+            explicit_tile_ids = [value.strip() for value in raw_tile_ids.split(',') if value.strip()]
+        elif isinstance(raw_tile_ids, list):
+            explicit_tile_ids = [str(value).strip() for value in raw_tile_ids if str(value).strip()]
+        else:
+            explicit_tile_ids = []
+        max_tiles = int(pipeline_config.get('max_tiles', 0) or 0)
+        selected_tile_ids = select_manifest_tile_ids(
+            tile_manifest,
+            explicit_tile_ids=explicit_tile_ids,
+            max_tiles=max_tiles or None,
+        )
+        return {
+            'selected_tile_ids': selected_tile_ids,
+            'include_scaffold': bool(pipeline_config.get('include_scaffold', True)),
+            'include_merge': bool(pipeline_config.get('include_merge', True)),
+            'resume_existing': bool(pipeline_config.get('resume_existing', True)),
+        }
+
+    def resolve_source_input_path(self, source_root: Path, raw_path: str, default_name: str) -> Path:
+        candidate = Path(raw_path.strip()) if raw_path.strip() else Path(default_name)
+        return candidate if candidate.is_absolute() else source_root / candidate
+
+    @staticmethod
+    def build_resume_fingerprint(payload: Dict[str, Any]) -> str:
+        normalized = json.dumps(payload, sort_keys=True, default=str).encode('utf-8')
+        return hashlib.sha256(normalized).hexdigest()
+
+    @staticmethod
+    def resume_artifacts_present(stage_output_dir: Path, summary_payload: Dict[str, Any]) -> bool:
+        metadata_path = stage_output_dir / "training_metadata.json"
+        if not metadata_path.exists():
+            return False
+        training_metadata = summary_payload.get('training_metadata') or {}
+        output_file = str(training_metadata.get('output_file', '')).strip()
+        if output_file and not (stage_output_dir / output_file).exists():
+            return False
+        return True
+
+    def prepare_tiled_stage_dataset(
+        self,
+        *,
+        canonical_input_dir: Path,
+        stage_input_dir: Path,
+        tile_manifest: dict[str, Any],
+        view_buckets: dict[str, Any],
+        tile_manifest_name: str,
+        view_bucket_name: str,
+    ) -> None:
+        if stage_input_dir.exists():
+            shutil.rmtree(stage_input_dir)
+        stage_input_dir.mkdir(parents=True, exist_ok=True)
+
+        canonical_images_dir = canonical_input_dir / "images"
+        if canonical_images_dir.exists():
+            os.symlink(canonical_images_dir, stage_input_dir / "images")
+
+        transforms_source = canonical_input_dir / "transforms.full.json"
+        if not transforms_source.exists():
+            transforms_source = canonical_input_dir / "transforms.json"
+        shutil.copy2(transforms_source, stage_input_dir / "transforms.json")
+
+        with open(stage_input_dir / tile_manifest_name, 'w', encoding='utf-8') as f:
+            json.dump(tile_manifest, f, indent=2)
+        with open(stage_input_dir / view_bucket_name, 'w', encoding='utf-8') as f:
+            json.dump(view_buckets, f, indent=2)
+
+    def run_prepared_training_stage(
+        self,
+        *,
+        stage_name: str,
+        stage_input_dir: Path,
+        stage_output_dir: Path,
+        stage_temp_dir: Path,
+        training_mode: str,
+        tile_id: str | None = None,
+        resume_existing: bool = True,
+        resume_fingerprint: str | None = None,
+    ) -> dict[str, Any]:
+        original_input_dir = self.input_dir
+        original_output_dir = self.output_dir
+        original_temp_dir = self.temp_dir
+        tiling_config = self.config.setdefault('tiling', {})
+        original_training_mode = tiling_config.get('training_mode', 'monolithic')
+        original_tile_id = tiling_config.get('tile_id', '')
+
+        started_at = time.time()
+        try:
+            stage_summary_path = stage_output_dir / "stage_summary.json"
+            if resume_existing and stage_summary_path.exists():
+                with open(stage_summary_path, 'r', encoding='utf-8') as f:
+                    cached_summary = json.load(f)
+                cached_fingerprint = str(cached_summary.get('resume_fingerprint', ''))
+                if (
+                    resume_fingerprint
+                    and cached_fingerprint == resume_fingerprint
+                    and self.resume_artifacts_present(stage_output_dir, cached_summary)
+                ):
+                    return cached_summary
+
+            self.input_dir = stage_input_dir
+            self.output_dir = stage_output_dir
+            self.temp_dir = stage_temp_dir
+            if self.output_dir.exists():
+                shutil.rmtree(self.output_dir)
+            self.output_dir.mkdir(parents=True, exist_ok=True)
+            self.temp_dir.mkdir(parents=True, exist_ok=True)
+            tiling_config['training_mode'] = training_mode
+            tiling_config['tile_id'] = tile_id or ""
+            self.background_selection_result = None
+            self.floater_pruning_result = None
+            self.training_selection_result = None
+
+            if not self.apply_training_selection():
+                raise RuntimeError(f"Manifest-driven selection failed for {stage_name}")
+            if not self.run_nerfstudio_training():
+                raise RuntimeError(f"NerfStudio training failed for {stage_name}")
+            if not self.export_trained_model():
+                raise RuntimeError(f"Model export failed for {stage_name}")
+            metadata = self.generate_training_metadata()
+            elapsed_seconds = round(time.time() - started_at, 3)
+            stage_summary = {
+                'stage_name': stage_name,
+                'training_mode': training_mode,
+                'tile_id': tile_id,
+                'output_dir': str(stage_output_dir),
+                'elapsed_seconds': elapsed_seconds,
+                'resume_fingerprint': resume_fingerprint,
+                'training_metadata': metadata,
+                'training_selection': self.training_selection_result,
+            }
+            with open(stage_summary_path, 'w', encoding='utf-8') as f:
+                json.dump(stage_summary, f, indent=2)
+            return stage_summary
+        finally:
+            try:
+                if self.temp_dir == stage_temp_dir:
+                    self.cleanup_temp_files()
+            finally:
+                self.input_dir = original_input_dir
+                self.output_dir = original_output_dir
+                self.temp_dir = original_temp_dir
+                self.background_selection_result = None
+                self.floater_pruning_result = None
+                self.training_selection_result = None
+                tiling_config['training_mode'] = original_training_mode
+                tiling_config['tile_id'] = original_tile_id
+
+    def run_tiled_training_pipeline(self) -> bool:
+        source_input_dir = self.input_dir
+        tiling_config = self.config.get('tiling', {})
+        tile_manifest_source = self.resolve_source_input_path(
+            source_input_dir,
+            str(tiling_config.get('tile_manifest_path', '')),
+            "3dgs_tile_manifest.json",
+        )
+        view_bucket_source = self.resolve_source_input_path(
+            source_input_dir,
+            str(tiling_config.get('view_bucket_manifest_path', '')),
+            "3dgs_view_buckets.json",
+        )
+        if not tile_manifest_source.exists() or not view_bucket_source.exists():
+            logger.error("❌ Tiled pipeline requires 3DGS tile manifests from the SfM stage")
+            logger.error(f"   tile_manifest: {tile_manifest_source}")
+            logger.error(f"   view_buckets: {view_bucket_source}")
+            return False
+
+        tile_manifest = load_json(tile_manifest_source)
+        view_buckets = load_json(view_bucket_source)
+        pipeline_options = self.resolve_tiled_pipeline_options(tile_manifest)
+        selected_tile_ids = pipeline_options['selected_tile_ids']
+        selected_tile_manifest = subset_tile_manifest(
+            tile_manifest,
+            selected_tile_ids=selected_tile_ids,
+        )
+        if not selected_tile_ids:
+            logger.error("❌ Tiled pipeline resolved zero selected tiles")
+            return False
+
+        if not self.validate_input_data():
+            logger.error("❌ Input data validation failed")
+            return False
+
+        canonical_input_dir = self.input_dir
+        pipeline_root = self.output_dir / "tiled_pipeline"
+        pipeline_root.mkdir(parents=True, exist_ok=True)
+        tile_manifest_name = tile_manifest_source.name
+        view_bucket_name = view_bucket_source.name
+
+        summary: dict[str, Any] = {
+            'mode': 'tiled_pipeline',
+            'selected_tile_ids': selected_tile_ids,
+            'include_scaffold': pipeline_options['include_scaffold'],
+            'include_merge': pipeline_options['include_merge'],
+            'resume_existing': pipeline_options['resume_existing'],
+            'source_tile_manifest': str(tile_manifest_source),
+            'source_view_bucket_manifest': str(view_bucket_source),
+            'stages': [],
+        }
+        config_fingerprint = self.build_resume_fingerprint(
+            {
+                'config': self.config,
+                'selected_tile_manifest': selected_tile_manifest,
+                'view_buckets': view_buckets,
+            }
+        )
+
+        try:
+            if pipeline_options['include_scaffold']:
+                scaffold_input_dir = pipeline_root / "inputs" / "scaffold"
+                self.prepare_tiled_stage_dataset(
+                    canonical_input_dir=canonical_input_dir,
+                    stage_input_dir=scaffold_input_dir,
+                    tile_manifest=selected_tile_manifest,
+                    view_buckets=view_buckets,
+                    tile_manifest_name=tile_manifest_name,
+                    view_bucket_name=view_bucket_name,
+                )
+                scaffold_summary = self.run_prepared_training_stage(
+                    stage_name="scaffold",
+                    stage_input_dir=scaffold_input_dir,
+                    stage_output_dir=self.output_dir / "scaffold",
+                    stage_temp_dir=pipeline_root / "tmp" / "scaffold",
+                    training_mode='global_scaffold',
+                    resume_existing=pipeline_options['resume_existing'],
+                    resume_fingerprint=self.build_resume_fingerprint(
+                        {
+                            'stage_name': 'scaffold',
+                            'training_mode': 'global_scaffold',
+                            'config_fingerprint': config_fingerprint,
+                        }
+                    ),
+                )
+                summary['stages'].append(scaffold_summary)
+
+            tile_output_dirs: Dict[str, Path] = {}
+            for tile_id in selected_tile_ids:
+                tile_input_dir = pipeline_root / "inputs" / tile_id
+                self.prepare_tiled_stage_dataset(
+                    canonical_input_dir=canonical_input_dir,
+                    stage_input_dir=tile_input_dir,
+                    tile_manifest=selected_tile_manifest,
+                    view_buckets=view_buckets,
+                    tile_manifest_name=tile_manifest_name,
+                    view_bucket_name=view_bucket_name,
+                )
+                tile_output_dir = self.output_dir / "tiles" / tile_id
+                tile_summary = self.run_prepared_training_stage(
+                    stage_name=tile_id,
+                    stage_input_dir=tile_input_dir,
+                    stage_output_dir=tile_output_dir,
+                    stage_temp_dir=pipeline_root / "tmp" / tile_id,
+                    training_mode='leaf_tile',
+                    tile_id=tile_id,
+                    resume_existing=pipeline_options['resume_existing'],
+                    resume_fingerprint=self.build_resume_fingerprint(
+                        {
+                            'stage_name': tile_id,
+                            'training_mode': 'leaf_tile',
+                            'tile_id': tile_id,
+                            'config_fingerprint': config_fingerprint,
+                        }
+                    ),
+                )
+                summary['stages'].append(tile_summary)
+                tile_output_dirs[tile_id] = tile_output_dir
+
+            if pipeline_options['include_merge']:
+                merge_output_dir = self.output_dir / "merged"
+                merge_output_dir.mkdir(parents=True, exist_ok=True)
+                merge_report_path = merge_output_dir / "merge_report.json"
+                merge_fingerprint = self.build_resume_fingerprint(
+                    {
+                        'merge_mode': str(tiling_config.get('merge', {}).get('mode', 'strict_core')),
+                        'selected_tile_ids': selected_tile_ids,
+                        'config_fingerprint': config_fingerprint,
+                    }
+                )
+                merged_splat_path = merge_output_dir / "merged_splat.ply"
+                if pipeline_options['resume_existing'] and merge_report_path.exists() and merged_splat_path.exists():
+                    merge_report = load_json(merge_report_path)
+                    if str(merge_report.get('resume_fingerprint', '')) != merge_fingerprint:
+                        merge_report = merge_tile_outputs(
+                            tile_manifest=selected_tile_manifest,
+                            tile_output_dirs=tile_output_dirs,
+                            output_dir=merge_output_dir,
+                            merge_mode=str(tiling_config.get('merge', {}).get('mode', 'strict_core')),
+                        )
+                        merge_report['resume_fingerprint'] = merge_fingerprint
+                        with open(merge_report_path, 'w', encoding='utf-8') as f:
+                            json.dump(merge_report, f, indent=2)
+                else:
+                    merge_report = merge_tile_outputs(
+                        tile_manifest=selected_tile_manifest,
+                        tile_output_dirs=tile_output_dirs,
+                        output_dir=merge_output_dir,
+                        merge_mode=str(tiling_config.get('merge', {}).get('mode', 'strict_core')),
+                    )
+                    merge_report['resume_fingerprint'] = merge_fingerprint
+                    with open(merge_report_path, 'w', encoding='utf-8') as f:
+                        json.dump(merge_report, f, indent=2)
+                summary['merge'] = merge_report
+
+            with open(self.output_dir / "tiled_pipeline_summary.json", 'w', encoding='utf-8') as f:
+                json.dump(summary, f, indent=2)
+            with open(self.output_dir / "training_metadata.json", 'w', encoding='utf-8') as f:
+                json.dump(
+                    {
+                        'training_methodology': 'Spaceport tiled splatfacto-w-light pipeline',
+                        'framework': 'NerfStudio',
+                        'training_mode': 'tiled_pipeline',
+                        'selected_tile_ids': selected_tile_ids,
+                        'include_scaffold': pipeline_options['include_scaffold'],
+                        'include_merge': pipeline_options['include_merge'],
+                        'resume_existing': pipeline_options['resume_existing'],
+                        'merge': summary.get('merge'),
+                        'stages': summary['stages'],
+                        'training_completed': True,
+                        'timestamp': time.time(),
+                        'version': '1.0.0',
+                    },
+                    f,
+                    indent=2,
+                )
+            return True
+        finally:
+            self.input_dir = canonical_input_dir
 
     def apply_training_selection(self) -> bool:
         training_mode = self.resolve_training_mode()
@@ -1085,6 +1431,9 @@ class NerfStudioTrainer:
         logger.info("=" * 80)
         
         try:
+            if self.resolve_training_mode() == 'tiled_pipeline':
+                return self.run_tiled_training_pipeline()
+
             # Step 1: Validate input data
             if not self.validate_input_data():
                 logger.error("❌ Input data validation failed")

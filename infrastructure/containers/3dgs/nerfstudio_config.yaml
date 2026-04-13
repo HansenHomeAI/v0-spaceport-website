@@ -32,7 +32,7 @@ training:
 
 # Tile / Scaffold Controls
 tiling:
-  training_mode: "monolithic"        # monolithic, global_scaffold, or leaf_tile
+  training_mode: "monolithic"        # monolithic, global_scaffold, leaf_tile, or tiled_pipeline
   tile_manifest_path: ""
   view_bucket_manifest_path: ""
   tile_id: ""
@@ -44,6 +44,12 @@ tiling:
     max_iterations: 4000
     sh_degree: 1
     max_gauss_ratio: 4.0
+  pipeline:
+    max_tiles: 4
+    tile_ids: ""
+    include_scaffold: true
+    include_merge: true
+    resume_existing: true
 
 # Hardware Optimization (A10G GPU specific)
 hardware:

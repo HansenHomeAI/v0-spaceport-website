@@ -10,3 +10,4 @@
 [2026-04-13T18:11:27Z] pages-green -> Pages deploy succeeded -> resolve preview alias from workflow log
 [2026-04-13T19:31:00Z] implementation -> added tile manifest export, trainer selection path, strict-core merge CLI, and config/container wiring -> add targeted tests
 [2026-04-13T19:43:00Z] unit-tests -> py_compile passed, gaussian tile tests passed, targeted colmap manifest tests passed -> update state and trigger preview build
+[2026-04-13T20:46:02Z] dry-run-smoke -> unit suite + live AWS tiled benchmark dry-runs passed -> commit and push branch
