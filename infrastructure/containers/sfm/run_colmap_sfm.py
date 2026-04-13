@@ -1139,81 +1139,74 @@ class ColmapPipeline:
             return None
         return normalize_heading(math.degrees(math.atan2(y_sum, x_sum)))
 
-    def select_seed_names(self, ordered_names: Sequence[str], cluster_count: int) -> List[str]:
-        if cluster_count <= 1:
-            return [ordered_names[0]]
-        centroid_x, centroid_y = self.centroid_for_names(ordered_names)
-        first_seed = min(
-            ordered_names,
-            key=lambda image_name: math.hypot(
-                float(self.exif_records[image_name]["local_x_m"]) - centroid_x,
-                float(self.exif_records[image_name]["local_y_m"]) - centroid_y,
-            ),
-        )
-        seeds = [first_seed]
-        while len(seeds) < cluster_count:
-            next_seed = max(
-                ordered_names,
-                key=lambda image_name: min(
-                    math.hypot(
-                        float(self.exif_records[image_name]["local_x_m"])
-                        - float(self.exif_records[seed_name]["local_x_m"]),
-                        float(self.exif_records[image_name]["local_y_m"])
-                        - float(self.exif_records[seed_name]["local_y_m"]),
-                    )
-                    for seed_name in seeds
-                ),
-            )
-            if next_seed in seeds:
-                break
-            seeds.append(next_seed)
-        return seeds
-
-    def assign_clusters(self, ordered_names: Sequence[str], cluster_count: int) -> List[List[str]]:
-        seed_names = self.select_seed_names(ordered_names, cluster_count)
-        clusters = {index: [seed_name] for index, seed_name in enumerate(seed_names)}
-        assignments = {seed_name: index for index, seed_name in enumerate(seed_names)}
-        centers = []
-        for seed_name in seed_names:
-            seed_record = self.exif_records[seed_name]
-            centers.append(
-                (
-                    float(seed_record["local_x_m"]),
-                    float(seed_record["local_y_m"]),
-                    seed_record.get("heading_deg"),
-                )
-            )
-        for image_name in ordered_names:
-            if image_name in assignments:
-                continue
+    def dominant_spatial_axis(self, image_names: Sequence[str]) -> tuple[float, float]:
+        if len(image_names) <= 1:
+            return (1.0, 0.0)
+        centroid_x, centroid_y = self.centroid_for_names(image_names)
+        xx = 0.0
+        xy = 0.0
+        yy = 0.0
+        for image_name in image_names:
             record = self.exif_records[image_name]
-            best_index = min(
-                range(len(centers)),
-                key=lambda center_index: self.cluster_score(
-                    record,
-                    centers[center_index][0],
-                    centers[center_index][1],
-                    centers[center_index][2],
-                ),
-            )
-            clusters.setdefault(best_index, []).append(image_name)
-        cluster_lists = [sorted(image_names) for _, image_names in sorted(clusters.items())]
-        while len(cluster_lists) > 1:
-            smallest_index = min(range(len(cluster_lists)), key=lambda index: len(cluster_lists[index]))
-            if len(cluster_lists[smallest_index]) >= self.chunk_min_images:
+            delta_x = float(record["local_x_m"]) - centroid_x
+            delta_y = float(record["local_y_m"]) - centroid_y
+            xx += delta_x * delta_x
+            xy += delta_x * delta_y
+            yy += delta_y * delta_y
+        if abs(xy) < 1e-9 and abs(xx - yy) < 1e-9:
+            return (1.0, 0.0)
+        trace = xx + yy
+        determinant = xx * yy - xy * xy
+        eigenvalue = trace / 2.0 + math.sqrt(max((trace * trace) / 4.0 - determinant, 0.0))
+        axis_x = xy
+        axis_y = eigenvalue - xx
+        if abs(axis_x) < 1e-9 and abs(axis_y) < 1e-9:
+            return (1.0, 0.0) if xx >= yy else (0.0, 1.0)
+        length = math.hypot(axis_x, axis_y)
+        return (axis_x / length, axis_y / length)
+
+    def spatial_projection(self, image_name: str, axis_x: float, axis_y: float) -> tuple[float, float, float]:
+        record = self.exif_records[image_name]
+        x_coord = float(record["local_x_m"])
+        y_coord = float(record["local_y_m"])
+        along_axis = x_coord * axis_x + y_coord * axis_y
+        across_axis = (-axis_y * x_coord) + (axis_x * y_coord)
+        heading_deg = record.get("heading_deg")
+        return (
+            along_axis,
+            across_axis,
+            normalize_heading(float(heading_deg)) if heading_deg is not None else -1.0,
+        )
+
+    def split_projection_clusters(
+        self, ordered_names: Sequence[str], cluster_count: int
+    ) -> List[List[str]]:
+        if cluster_count <= 1:
+            return [list(ordered_names)]
+        max_cluster_count = max(1, len(ordered_names) // max(self.chunk_min_images, 1))
+        effective_cluster_count = max(1, min(cluster_count, max_cluster_count, len(ordered_names)))
+        axis_x, axis_y = self.dominant_spatial_axis(ordered_names)
+        spatially_sorted_names = sorted(
+            ordered_names,
+            key=lambda image_name: self.spatial_projection(image_name, axis_x, axis_y),
+        )
+        base_size = len(spatially_sorted_names) // effective_cluster_count
+        remainder = len(spatially_sorted_names) % effective_cluster_count
+        clusters: List[List[str]] = []
+        start = 0
+        for index in range(effective_cluster_count):
+            cluster_size = base_size + (1 if index < remainder else 0)
+            end = start + cluster_size
+            if end > len(spatially_sorted_names):
                 break
-            smallest_centroid = self.centroid_for_names(cluster_lists[smallest_index])
-            merge_target_index = min(
-                [index for index in range(len(cluster_lists)) if index != smallest_index],
-                key=lambda index: math.hypot(
-                    self.centroid_for_names(cluster_lists[index])[0] - smallest_centroid[0],
-                    self.centroid_for_names(cluster_lists[index])[1] - smallest_centroid[1],
-                ),
-            )
-            cluster_lists[merge_target_index].extend(cluster_lists[smallest_index])
-            cluster_lists[merge_target_index] = sorted(set(cluster_lists[merge_target_index]))
-            cluster_lists.pop(smallest_index)
-        return cluster_lists
+            clusters.append(spatially_sorted_names[start:end])
+            start = end
+        if start < len(spatially_sorted_names):
+            if clusters:
+                clusters[-1].extend(spatially_sorted_names[start:])
+            else:
+                clusters.append(spatially_sorted_names[start:])
+        return [cluster for cluster in clusters if cluster]
 
     def boundary_candidate_score(
         self, image_name: str, midpoint_x: float, midpoint_y: float, boundary_heading: float
@@ -1250,7 +1243,7 @@ class ColmapPipeline:
             math.ceil(len(ordered_names) / core_chunk_size),
             math.ceil(max_spatial_span / max(self.chunk_max_radius_m, 1.0)),
         )
-        core_clusters = self.assign_clusters(ordered_names, cluster_count)
+        core_clusters = self.split_projection_clusters(ordered_names, cluster_count)
         if len(core_clusters) <= 1:
             self.chunk_overlap_image_count = 0
             self.chunk_sizes = [len(core_clusters[0])] if core_clusters else []
