@@ -171,12 +171,40 @@
                 return xhrSend.apply(this, args);
             };
 
+            const parseOptionalInteger = (value) => {
+                const parsed = Number.parseInt(value ?? '', 10);
+                return Number.isFinite(parsed) ? parsed : null;
+            };
+            const parseOptionalNumber = (value) => {
+                const parsed = Number.parseFloat(value ?? '');
+                return Number.isFinite(parsed) ? parsed : null;
+            };
+            const parseOptionalNumberList = (value) => {
+                if (!value) {
+                    return null;
+                }
+                const parsed = value
+                    .split(',')
+                    .map((entry) => Number.parseFloat(entry.trim()))
+                    .filter((entry) => Number.isFinite(entry));
+                return parsed.length > 0 ? parsed : null;
+            };
+
             window.__sogsLoadStartedAt = loadStartedAt;
             window.__sogsNetworkMetrics = networkMetrics;
             window.__sogsInitialViewerConfig = {
-                splatBudget: url.searchParams.has('budget') ? Number.parseInt(url.searchParams.get('budget'), 10) : null,
-                lodRangeMin: url.searchParams.has('lodMin') ? Number.parseInt(url.searchParams.get('lodMin'), 10) : null,
-                lodRangeMax: url.searchParams.has('lodMax') ? Number.parseInt(url.searchParams.get('lodMax'), 10) : null
+                splatBudget: parseOptionalInteger(url.searchParams.get('budget')),
+                lodRangeMin: parseOptionalInteger(url.searchParams.get('lodMin')),
+                lodRangeMax: parseOptionalInteger(url.searchParams.get('lodMax')),
+                lodDistances: parseOptionalNumberList(url.searchParams.get('lodDistances')),
+                lodUnderfillLimit: parseOptionalInteger(url.searchParams.get('lodUnderfillLimit')),
+                lodBehindPenalty: parseOptionalNumber(url.searchParams.get('lodBehindPenalty')),
+                lodUpdateDistance: parseOptionalNumber(url.searchParams.get('lodUpdateDistance')),
+                lodUpdateAngle: parseOptionalNumber(url.searchParams.get('lodUpdateAngle')),
+                colorUpdateDistance: parseOptionalNumber(url.searchParams.get('colorUpdateDistance')),
+                colorUpdateAngle: parseOptionalNumber(url.searchParams.get('colorUpdateAngle')),
+                colorUpdateDistanceLodScale: parseOptionalNumber(url.searchParams.get('colorUpdateDistanceLodScale')),
+                colorUpdateAngleLodScale: parseOptionalNumber(url.searchParams.get('colorUpdateAngleLodScale'))
             };
             window.__sogsInitialCameraPose = (() => {
                 const position = parseVector(url.searchParams.get('camPos'));

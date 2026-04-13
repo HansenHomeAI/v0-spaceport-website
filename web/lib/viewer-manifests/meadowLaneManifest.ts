@@ -8,7 +8,7 @@ import {
 import type { ViewerManifest } from "../manifest-viewer/manifest";
 
 const DEFAULT_BUNDLE_URL =
-  "https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/meadow-brassmatch-compress-20260413-lod-streaming-public/supersplat_bundle/";
+  "https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/meadow-brassmatch-compress-20260413-lod-streaming-hqsh-horizon-public/supersplat_bundle/";
 
 export const meadowLaneManifest: ViewerManifest = {
   slug: "meadow-ln",
@@ -31,10 +31,20 @@ export const meadowLaneManifest: ViewerManifest = {
     viewerSettingsPath: "/supersplat-viewer/settings.json",
     useProxy: false,
     streaming: {
-      budgetDesktop: 3000000,
-      budgetMobile: 1000000,
+      budgetDesktop: 0,
+      budgetMobile: 250000,
       lodMin: 0,
-      lodMax: null,
+      lodMaxDesktop: 2,
+      lodMaxMobile: 3,
+      lodDistancesDesktop: [30, 140, 320, 640],
+      lodDistancesMobile: [12, 48, 120, 280],
+      lodUnderfillLimit: 0,
+      lodUpdateDistance: 0.5,
+      lodUpdateAngle: 1,
+      colorUpdateDistance: 0.1,
+      colorUpdateAngle: 1,
+      colorUpdateDistanceLodScale: 1.4,
+      colorUpdateAngleLodScale: 1.4,
     },
   },
   scene: {

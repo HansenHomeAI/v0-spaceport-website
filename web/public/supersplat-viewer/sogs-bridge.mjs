@@ -28,6 +28,32 @@ function finiteNumber(value) {
   return typeof value === "number" && Number.isFinite(value);
 }
 
+function finiteInteger(value) {
+  return finiteNumber(value) ? Math.trunc(value) : null;
+}
+
+function sanitizeNumberList(value) {
+  if (!Array.isArray(value) || value.length === 0) {
+    return null;
+  }
+  const parsed = value.map((entry) => Number(entry));
+  return parsed.every((entry) => Number.isFinite(entry)) ? parsed : null;
+}
+
+function resolveIntegerConfig(currentValue, incomingValue, min = 0) {
+  if (finiteNumber(incomingValue) && incomingValue >= min) {
+    return Math.trunc(incomingValue);
+  }
+  return currentValue ?? null;
+}
+
+function resolveNumberConfig(currentValue, incomingValue, min = 0) {
+  if (finiteNumber(incomingValue) && incomingValue >= min) {
+    return Number(incomingValue);
+  }
+  return currentValue ?? null;
+}
+
 function getBootOptions() {
   if (typeof window === "undefined") {
     return { quality: "hq", lowQuality: false };
@@ -154,6 +180,7 @@ function postSogsState() {
     const p = g.getLocalPosition();
     const e = g.getLocalEulerAngles();
     const sc = g.getLocalScale();
+    const gsplatComponent = g.gsplat ?? null;
     const sceneGsplat = ctx.app.scene?.gsplat;
     const telemetry = metricsSnapshot();
     let skyboxRotation = [0, 0, 0];
@@ -176,6 +203,19 @@ function postSogsState() {
         splatBudget: finiteNumber(sceneGsplat?.splatBudget) ? sceneGsplat.splatBudget : null,
         lodRangeMin: finiteNumber(sceneGsplat?.lodRangeMin) ? sceneGsplat.lodRangeMin : null,
         lodRangeMax: finiteNumber(sceneGsplat?.lodRangeMax) ? sceneGsplat.lodRangeMax : null,
+        lodDistances: sanitizeNumberList(gsplatComponent?.lodDistances),
+        lodUnderfillLimit: finiteNumber(sceneGsplat?.lodUnderfillLimit) ? sceneGsplat.lodUnderfillLimit : null,
+        lodBehindPenalty: finiteNumber(sceneGsplat?.lodBehindPenalty) ? sceneGsplat.lodBehindPenalty : null,
+        lodUpdateDistance: finiteNumber(sceneGsplat?.lodUpdateDistance) ? sceneGsplat.lodUpdateDistance : null,
+        lodUpdateAngle: finiteNumber(sceneGsplat?.lodUpdateAngle) ? sceneGsplat.lodUpdateAngle : null,
+        colorUpdateDistance: finiteNumber(sceneGsplat?.colorUpdateDistance) ? sceneGsplat.colorUpdateDistance : null,
+        colorUpdateAngle: finiteNumber(sceneGsplat?.colorUpdateAngle) ? sceneGsplat.colorUpdateAngle : null,
+        colorUpdateDistanceLodScale: finiteNumber(sceneGsplat?.colorUpdateDistanceLodScale)
+          ? sceneGsplat.colorUpdateDistanceLodScale
+          : null,
+        colorUpdateAngleLodScale: finiteNumber(sceneGsplat?.colorUpdateAngleLodScale)
+          ? sceneGsplat.colorUpdateAngleLodScale
+          : null,
         skyboxRotation,
         ...telemetry,
       },
@@ -193,24 +233,32 @@ function applyViewerConfig(app, incomingConfig) {
 
   const current = window.__sogsViewerConfig ?? {};
   const merged = {
-    splatBudget:
-      finiteNumber(incomingConfig.splatBudget) && incomingConfig.splatBudget > 0
-        ? Math.trunc(incomingConfig.splatBudget)
-        : current.splatBudget ?? null,
-    lodRangeMin:
-      finiteNumber(incomingConfig.lodRangeMin) && incomingConfig.lodRangeMin >= 0
-        ? Math.trunc(incomingConfig.lodRangeMin)
-        : current.lodRangeMin ?? null,
-    lodRangeMax:
-      finiteNumber(incomingConfig.lodRangeMax) && incomingConfig.lodRangeMax >= 0
-        ? Math.trunc(incomingConfig.lodRangeMax)
-        : current.lodRangeMax ?? null,
+    splatBudget: resolveIntegerConfig(current.splatBudget, incomingConfig.splatBudget, 0),
+    lodRangeMin: resolveIntegerConfig(current.lodRangeMin, incomingConfig.lodRangeMin, 0),
+    lodRangeMax: resolveIntegerConfig(current.lodRangeMax, incomingConfig.lodRangeMax, 0),
+    lodDistances: sanitizeNumberList(incomingConfig.lodDistances) ?? current.lodDistances ?? null,
+    lodUnderfillLimit: resolveIntegerConfig(current.lodUnderfillLimit, incomingConfig.lodUnderfillLimit, 0),
+    lodBehindPenalty: resolveNumberConfig(current.lodBehindPenalty, incomingConfig.lodBehindPenalty, 0),
+    lodUpdateDistance: resolveNumberConfig(current.lodUpdateDistance, incomingConfig.lodUpdateDistance, 0),
+    lodUpdateAngle: resolveNumberConfig(current.lodUpdateAngle, incomingConfig.lodUpdateAngle, 0),
+    colorUpdateDistance: resolveNumberConfig(current.colorUpdateDistance, incomingConfig.colorUpdateDistance, 0),
+    colorUpdateAngle: resolveNumberConfig(current.colorUpdateAngle, incomingConfig.colorUpdateAngle, 0),
+    colorUpdateDistanceLodScale: resolveNumberConfig(
+      current.colorUpdateDistanceLodScale,
+      incomingConfig.colorUpdateDistanceLodScale,
+      0,
+    ),
+    colorUpdateAngleLodScale: resolveNumberConfig(
+      current.colorUpdateAngleLodScale,
+      incomingConfig.colorUpdateAngleLodScale,
+      0,
+    ),
   };
 
   window.__sogsViewerConfig = merged;
 
   const sceneGsplat = app.scene.gsplat;
-  if (finiteNumber(merged.splatBudget) && merged.splatBudget > 0) {
+  if (finiteNumber(merged.splatBudget) && merged.splatBudget >= 0) {
     sceneGsplat.splatBudget = merged.splatBudget;
   }
   if (finiteNumber(merged.lodRangeMin) && merged.lodRangeMin >= 0) {
@@ -218,6 +266,37 @@ function applyViewerConfig(app, incomingConfig) {
   }
   if (finiteNumber(merged.lodRangeMax) && merged.lodRangeMax >= 0) {
     sceneGsplat.lodRangeMax = merged.lodRangeMax;
+  }
+  if (finiteNumber(merged.lodUnderfillLimit) && merged.lodUnderfillLimit >= 0) {
+    sceneGsplat.lodUnderfillLimit = merged.lodUnderfillLimit;
+  }
+  if (finiteNumber(merged.lodBehindPenalty) && merged.lodBehindPenalty >= 0) {
+    sceneGsplat.lodBehindPenalty = merged.lodBehindPenalty;
+  }
+  if (finiteNumber(merged.lodUpdateDistance) && merged.lodUpdateDistance >= 0) {
+    sceneGsplat.lodUpdateDistance = merged.lodUpdateDistance;
+  }
+  if (finiteNumber(merged.lodUpdateAngle) && merged.lodUpdateAngle >= 0) {
+    sceneGsplat.lodUpdateAngle = merged.lodUpdateAngle;
+  }
+  if (finiteNumber(merged.colorUpdateDistance) && merged.colorUpdateDistance >= 0) {
+    sceneGsplat.colorUpdateDistance = merged.colorUpdateDistance;
+  }
+  if (finiteNumber(merged.colorUpdateAngle) && merged.colorUpdateAngle >= 0) {
+    sceneGsplat.colorUpdateAngle = merged.colorUpdateAngle;
+  }
+  if (finiteNumber(merged.colorUpdateDistanceLodScale) && merged.colorUpdateDistanceLodScale >= 0) {
+    sceneGsplat.colorUpdateDistanceLodScale = merged.colorUpdateDistanceLodScale;
+  }
+  if (finiteNumber(merged.colorUpdateAngleLodScale) && merged.colorUpdateAngleLodScale >= 0) {
+    sceneGsplat.colorUpdateAngleLodScale = merged.colorUpdateAngleLodScale;
+  }
+  const gsplatEntity = app.root.findByName("gsplat");
+  if (gsplatEntity?.gsplat) {
+    gsplatEntity.gsplat.highQualitySH = true;
+    if (Array.isArray(merged.lodDistances) && merged.lodDistances.length > 0) {
+      gsplatEntity.gsplat.lodDistances = merged.lodDistances;
+    }
   }
   app.renderNextFrame = true;
 }

@@ -1,3 +1,4 @@
+2026-04-13T20:27:30Z Meadow full-SH streamed horizon bundle + manifest bridge tuning validation
 2026-04-12T04:17:32Z manifest-driven viewer route + meadow-ln manifest smoke validation
 2026-03-30T16:16:32Z optimize bundled skybox payload for cold edge delivery validation
 2026-03-30 http3 edge delivery validation rerun

@@ -11,7 +11,12 @@ import { SoldOverlays } from "./SoldOverlays";
 import { TapPickFeedback } from "./TapPickFeedback";
 import { TapDotsOverlay } from "./TapDotsOverlay";
 import { resolveViewerBundle, type ResolvedViewerBundle } from "../../lib/manifest-viewer/bundle";
-import { buildScenePayload, resolveHoleView, type ViewerManifest } from "../../lib/manifest-viewer/manifest";
+import {
+  buildScenePayload,
+  resolveHoleView,
+  type ViewerManifest,
+  type ViewerStreamingManifest,
+} from "../../lib/manifest-viewer/manifest";
 import {
   createInitialPathState,
   jumpToPathStart,
@@ -80,6 +85,15 @@ type ViewerTelemetry = {
   splatBudget: number | null;
   lodRangeMin: number | null;
   lodRangeMax: number | null;
+  lodDistances: number[] | null;
+  lodUnderfillLimit: number | null;
+  lodBehindPenalty: number | null;
+  lodUpdateDistance: number | null;
+  lodUpdateAngle: number | null;
+  colorUpdateDistance: number | null;
+  colorUpdateAngle: number | null;
+  colorUpdateDistanceLodScale: number | null;
+  colorUpdateAngleLodScale: number | null;
   rootManifestType: string | null;
   rootManifestUrl: string | null;
 };
@@ -93,6 +107,15 @@ const EMPTY_VIEWER_TELEMETRY: ViewerTelemetry = {
   splatBudget: null,
   lodRangeMin: null,
   lodRangeMax: null,
+  lodDistances: null,
+  lodUnderfillLimit: null,
+  lodBehindPenalty: null,
+  lodUpdateDistance: null,
+  lodUpdateAngle: null,
+  colorUpdateDistance: null,
+  colorUpdateAngle: null,
+  colorUpdateDistanceLodScale: null,
+  colorUpdateAngleLodScale: null,
   rootManifestType: null,
   rootManifestUrl: null,
 };
@@ -102,45 +125,117 @@ function parseOptionalInteger(value: string | null | undefined): number | null {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-function defaultStreamingBudget(
-  streaming: ViewerManifest["bundle"]["streaming"] | undefined,
-): number | null {
-  if (!streaming) {
+function parseOptionalNumber(value: string | null | undefined): number | null {
+  const parsed = Number.parseFloat(value?.trim() ?? "");
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function sanitizeNumberList(value: unknown): number[] | null {
+  if (!Array.isArray(value) || value.length === 0) {
     return null;
   }
+  const parsed = value.map((entry) => Number(entry));
+  return parsed.length > 0 && parsed.every((entry) => Number.isFinite(entry)) ? parsed : null;
+}
+
+function parseOptionalNumberList(value: string | null | undefined): number[] | null {
+  const parts = (value ?? "")
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+  return sanitizeNumberList(parts);
+}
+
+function prefersMobileStreamingProfile() {
   if (typeof window === "undefined") {
-    return streaming.budgetDesktop ?? streaming.budgetMobile ?? null;
+    return false;
   }
 
   const ua = window.navigator.userAgent.toLowerCase();
   const isMobileUa = /iphone|ipad|android|mobile|touch/.test(ua);
   const isNarrowViewport = window.innerWidth <= 768;
-  if (isMobileUa || isNarrowViewport) {
-    return streaming.budgetMobile ?? streaming.budgetDesktop ?? null;
-  }
-  return streaming.budgetDesktop ?? streaming.budgetMobile ?? null;
+  return isMobileUa || isNarrowViewport;
+}
+
+function resolveStreamingDefault<T>(
+  shared: T | null | undefined,
+  desktop: T | null | undefined,
+  mobile: T | null | undefined,
+): T | null {
+  return (prefersMobileStreamingProfile() ? mobile ?? shared ?? desktop : desktop ?? shared ?? mobile) ?? null;
 }
 
 function resolveStreamingConfig(
-  streaming: ViewerManifest["bundle"]["streaming"] | undefined,
+  streaming: ViewerStreamingManifest | undefined,
 ): {
   splatBudget: number | null;
   lodRangeMin: number | null;
   lodRangeMax: number | null;
+  lodDistances: number[] | null;
+  lodUnderfillLimit: number | null;
+  lodBehindPenalty: number | null;
+  lodUpdateDistance: number | null;
+  lodUpdateAngle: number | null;
+  colorUpdateDistance: number | null;
+  colorUpdateAngle: number | null;
+  colorUpdateDistanceLodScale: number | null;
+  colorUpdateAngleLodScale: number | null;
 } {
+  const defaults = {
+    splatBudget: resolveStreamingDefault(streaming?.budget, streaming?.budgetDesktop, streaming?.budgetMobile),
+    lodRangeMin: resolveStreamingDefault(streaming?.lodMin, streaming?.lodMinDesktop, streaming?.lodMinMobile),
+    lodRangeMax: resolveStreamingDefault(streaming?.lodMax, streaming?.lodMaxDesktop, streaming?.lodMaxMobile),
+    lodDistances: sanitizeNumberList(
+      resolveStreamingDefault(streaming?.lodDistances, streaming?.lodDistancesDesktop, streaming?.lodDistancesMobile),
+    ),
+    lodUnderfillLimit: streaming?.lodUnderfillLimit ?? null,
+    lodBehindPenalty: streaming?.lodBehindPenalty ?? null,
+    lodUpdateDistance: streaming?.lodUpdateDistance ?? null,
+    lodUpdateAngle: streaming?.lodUpdateAngle ?? null,
+    colorUpdateDistance: streaming?.colorUpdateDistance ?? null,
+    colorUpdateAngle: streaming?.colorUpdateAngle ?? null,
+    colorUpdateDistanceLodScale: streaming?.colorUpdateDistanceLodScale ?? null,
+    colorUpdateAngleLodScale: streaming?.colorUpdateAngleLodScale ?? null,
+  };
+
   if (typeof window === "undefined") {
-    return {
-      splatBudget: defaultStreamingBudget(streaming),
-      lodRangeMin: streaming?.lodMin ?? null,
-      lodRangeMax: streaming?.lodMax ?? null,
-    };
+    return defaults;
   }
 
   const params = new URLSearchParams(window.location.search);
   return {
-    splatBudget: parseOptionalInteger(params.get("budget")) ?? defaultStreamingBudget(streaming),
-    lodRangeMin: parseOptionalInteger(params.get("lodMin")) ?? streaming?.lodMin ?? null,
-    lodRangeMax: parseOptionalInteger(params.get("lodMax")) ?? streaming?.lodMax ?? null,
+    splatBudget: parseOptionalInteger(params.get("budget")) ?? defaults.splatBudget,
+    lodRangeMin: parseOptionalInteger(params.get("lodMin")) ?? defaults.lodRangeMin,
+    lodRangeMax: parseOptionalInteger(params.get("lodMax")) ?? defaults.lodRangeMax,
+    lodDistances: parseOptionalNumberList(params.get("lodDistances")) ?? defaults.lodDistances,
+    lodUnderfillLimit: parseOptionalInteger(params.get("lodUnderfillLimit")) ?? defaults.lodUnderfillLimit,
+    lodBehindPenalty: parseOptionalNumber(params.get("lodBehindPenalty")) ?? defaults.lodBehindPenalty,
+    lodUpdateDistance: parseOptionalNumber(params.get("lodUpdateDistance")) ?? defaults.lodUpdateDistance,
+    lodUpdateAngle: parseOptionalNumber(params.get("lodUpdateAngle")) ?? defaults.lodUpdateAngle,
+    colorUpdateDistance: parseOptionalNumber(params.get("colorUpdateDistance")) ?? defaults.colorUpdateDistance,
+    colorUpdateAngle: parseOptionalNumber(params.get("colorUpdateAngle")) ?? defaults.colorUpdateAngle,
+    colorUpdateDistanceLodScale:
+      parseOptionalNumber(params.get("colorUpdateDistanceLodScale")) ?? defaults.colorUpdateDistanceLodScale,
+    colorUpdateAngleLodScale:
+      parseOptionalNumber(params.get("colorUpdateAngleLodScale")) ?? defaults.colorUpdateAngleLodScale,
+  };
+}
+
+function buildViewerConfigPayload(streamingConfig: ReturnType<typeof resolveStreamingConfig>) {
+  return {
+    type: "sogs:config" as const,
+    splatBudget: streamingConfig.splatBudget,
+    lodRangeMin: streamingConfig.lodRangeMin,
+    lodRangeMax: streamingConfig.lodRangeMax,
+    lodDistances: streamingConfig.lodDistances,
+    lodUnderfillLimit: streamingConfig.lodUnderfillLimit,
+    lodBehindPenalty: streamingConfig.lodBehindPenalty,
+    lodUpdateDistance: streamingConfig.lodUpdateDistance,
+    lodUpdateAngle: streamingConfig.lodUpdateAngle,
+    colorUpdateDistance: streamingConfig.colorUpdateDistance,
+    colorUpdateAngle: streamingConfig.colorUpdateAngle,
+    colorUpdateDistanceLodScale: streamingConfig.colorUpdateDistanceLodScale,
+    colorUpdateAngleLodScale: streamingConfig.colorUpdateAngleLodScale,
   };
 }
 
@@ -410,6 +505,33 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
     if (streamingConfig.lodRangeMax != null) {
       params.set("lodMax", String(streamingConfig.lodRangeMax));
     }
+    if (streamingConfig.lodDistances?.length) {
+      params.set("lodDistances", streamingConfig.lodDistances.join(","));
+    }
+    if (streamingConfig.lodUnderfillLimit != null) {
+      params.set("lodUnderfillLimit", String(streamingConfig.lodUnderfillLimit));
+    }
+    if (streamingConfig.lodBehindPenalty != null) {
+      params.set("lodBehindPenalty", String(streamingConfig.lodBehindPenalty));
+    }
+    if (streamingConfig.lodUpdateDistance != null) {
+      params.set("lodUpdateDistance", String(streamingConfig.lodUpdateDistance));
+    }
+    if (streamingConfig.lodUpdateAngle != null) {
+      params.set("lodUpdateAngle", String(streamingConfig.lodUpdateAngle));
+    }
+    if (streamingConfig.colorUpdateDistance != null) {
+      params.set("colorUpdateDistance", String(streamingConfig.colorUpdateDistance));
+    }
+    if (streamingConfig.colorUpdateAngle != null) {
+      params.set("colorUpdateAngle", String(streamingConfig.colorUpdateAngle));
+    }
+    if (streamingConfig.colorUpdateDistanceLodScale != null) {
+      params.set("colorUpdateDistanceLodScale", String(streamingConfig.colorUpdateDistanceLodScale));
+    }
+    if (streamingConfig.colorUpdateAngleLodScale != null) {
+      params.set("colorUpdateAngleLodScale", String(streamingConfig.colorUpdateAngleLodScale));
+    }
     if (!developerToolsEnabled) {
       params.set("noui", "1");
     }
@@ -447,12 +569,7 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
           target: [holeView.target.x, holeView.target.y, holeView.target.z],
           fov: scene.fov,
         });
-        postToWindow(event.source as Window, {
-          type: "sogs:config",
-          splatBudget: streamingConfig.splatBudget,
-          lodRangeMin: streamingConfig.lodRangeMin,
-          lodRangeMax: streamingConfig.lodRangeMax,
-        });
+        postToWindow(event.source as Window, buildViewerConfigPayload(streamingConfig));
         postToWindow(event.source as Window, { type: "sogs:cameraMode", mode: "free" });
         if (manifest.cameraBounds) {
           postToWindow(event.source as Window, {
@@ -561,6 +678,15 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
           splatBudget?: number | null;
           lodRangeMin?: number | null;
           lodRangeMax?: number | null;
+          lodDistances?: number[] | null;
+          lodUnderfillLimit?: number | null;
+          lodBehindPenalty?: number | null;
+          lodUpdateDistance?: number | null;
+          lodUpdateAngle?: number | null;
+          colorUpdateDistance?: number | null;
+          colorUpdateAngle?: number | null;
+          colorUpdateDistanceLodScale?: number | null;
+          colorUpdateAngleLodScale?: number | null;
           rootManifestType?: string | null;
           rootManifestUrl?: string | null;
         };
@@ -589,6 +715,39 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
             typeof data.lodRangeMin === "number" && Number.isFinite(data.lodRangeMin) ? data.lodRangeMin : null,
           lodRangeMax:
             typeof data.lodRangeMax === "number" && Number.isFinite(data.lodRangeMax) ? data.lodRangeMax : null,
+          lodDistances: sanitizeNumberList(data.lodDistances),
+          lodUnderfillLimit:
+            typeof data.lodUnderfillLimit === "number" && Number.isFinite(data.lodUnderfillLimit)
+              ? data.lodUnderfillLimit
+              : null,
+          lodBehindPenalty:
+            typeof data.lodBehindPenalty === "number" && Number.isFinite(data.lodBehindPenalty)
+              ? data.lodBehindPenalty
+              : null,
+          lodUpdateDistance:
+            typeof data.lodUpdateDistance === "number" && Number.isFinite(data.lodUpdateDistance)
+              ? data.lodUpdateDistance
+              : null,
+          lodUpdateAngle:
+            typeof data.lodUpdateAngle === "number" && Number.isFinite(data.lodUpdateAngle)
+              ? data.lodUpdateAngle
+              : null,
+          colorUpdateDistance:
+            typeof data.colorUpdateDistance === "number" && Number.isFinite(data.colorUpdateDistance)
+              ? data.colorUpdateDistance
+              : null,
+          colorUpdateAngle:
+            typeof data.colorUpdateAngle === "number" && Number.isFinite(data.colorUpdateAngle)
+              ? data.colorUpdateAngle
+              : null,
+          colorUpdateDistanceLodScale:
+            typeof data.colorUpdateDistanceLodScale === "number" && Number.isFinite(data.colorUpdateDistanceLodScale)
+              ? data.colorUpdateDistanceLodScale
+              : null,
+          colorUpdateAngleLodScale:
+            typeof data.colorUpdateAngleLodScale === "number" && Number.isFinite(data.colorUpdateAngleLodScale)
+              ? data.colorUpdateAngleLodScale
+              : null,
           rootManifestType: typeof data.rootManifestType === "string" ? data.rootManifestType : null,
           rootManifestUrl: typeof data.rootManifestUrl === "string" ? data.rootManifestUrl : null,
         });
@@ -606,9 +765,7 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
     manifest.scene.skyboxRotation,
     requestMobileBootFallback,
     scene,
-    streamingConfig.lodRangeMax,
-    streamingConfig.lodRangeMin,
-    streamingConfig.splatBudget,
+    streamingConfig,
   ]);
 
   useEffect(() => {
@@ -616,12 +773,7 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
       return;
     }
     const targetWindow = iframeRef.current?.contentWindow;
-    postToWindow(targetWindow, {
-      type: "sogs:config",
-      splatBudget: streamingConfig.splatBudget,
-      lodRangeMin: streamingConfig.lodRangeMin,
-      lodRangeMax: streamingConfig.lodRangeMax,
-    });
+    postToWindow(targetWindow, buildViewerConfigPayload(streamingConfig));
     postToWindow(targetWindow, { type: "sogs:requestState" });
   }, [activeUrl, iframeKey, streamingConfig, viewerState]);
 
@@ -1090,6 +1242,19 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
         data-splat-budget={telemetry.splatBudget ?? streamingConfig.splatBudget ?? ""}
         data-lod-min={telemetry.lodRangeMin ?? streamingConfig.lodRangeMin ?? ""}
         data-lod-max={telemetry.lodRangeMax ?? streamingConfig.lodRangeMax ?? ""}
+        data-lod-distances={(telemetry.lodDistances ?? streamingConfig.lodDistances ?? []).join(",")}
+        data-lod-underfill-limit={telemetry.lodUnderfillLimit ?? streamingConfig.lodUnderfillLimit ?? ""}
+        data-lod-behind-penalty={telemetry.lodBehindPenalty ?? streamingConfig.lodBehindPenalty ?? ""}
+        data-lod-update-distance={telemetry.lodUpdateDistance ?? streamingConfig.lodUpdateDistance ?? ""}
+        data-lod-update-angle={telemetry.lodUpdateAngle ?? streamingConfig.lodUpdateAngle ?? ""}
+        data-color-update-distance={telemetry.colorUpdateDistance ?? streamingConfig.colorUpdateDistance ?? ""}
+        data-color-update-angle={telemetry.colorUpdateAngle ?? streamingConfig.colorUpdateAngle ?? ""}
+        data-color-update-distance-lod-scale={
+          telemetry.colorUpdateDistanceLodScale ?? streamingConfig.colorUpdateDistanceLodScale ?? ""
+        }
+        data-color-update-angle-lod-scale={
+          telemetry.colorUpdateAngleLodScale ?? streamingConfig.colorUpdateAngleLodScale ?? ""
+        }
         data-bounds-min={resolvedBundle?.summary.bounds ? resolvedBundle.summary.bounds.min.join(",") : ""}
         data-bounds-max={resolvedBundle?.summary.bounds ? resolvedBundle.summary.bounds.max.join(",") : ""}
       />

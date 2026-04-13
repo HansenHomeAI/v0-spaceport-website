@@ -37,12 +37,30 @@ export type ViewerBundleManifest = {
   viewerBase?: string;
   viewerSettingsPath?: string;
   useProxy?: boolean;
-  streaming?: {
-    budgetDesktop?: number;
-    budgetMobile?: number;
-    lodMin?: number;
-    lodMax?: number | null;
-  };
+  streaming?: ViewerStreamingManifest;
+};
+
+export type ViewerStreamingManifest = {
+  budget?: number;
+  budgetDesktop?: number;
+  budgetMobile?: number;
+  lodMin?: number;
+  lodMinDesktop?: number;
+  lodMinMobile?: number;
+  lodMax?: number | null;
+  lodMaxDesktop?: number | null;
+  lodMaxMobile?: number | null;
+  lodDistances?: number[];
+  lodDistancesDesktop?: number[];
+  lodDistancesMobile?: number[];
+  lodUnderfillLimit?: number;
+  lodBehindPenalty?: number;
+  lodUpdateDistance?: number;
+  lodUpdateAngle?: number;
+  colorUpdateDistance?: number;
+  colorUpdateAngle?: number;
+  colorUpdateDistanceLodScale?: number;
+  colorUpdateAngleLodScale?: number;
 };
 
 export type ViewerHoleViewManifest = {

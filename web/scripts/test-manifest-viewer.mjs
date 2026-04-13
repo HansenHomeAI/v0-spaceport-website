@@ -28,6 +28,10 @@ const expectedDetailsLead =
   process.env.VIEWER_EXPECT_DETAILS_LEAD?.trim() || "Tucked into nearly 30 acres beneath the Bridger Mountains";
 const expectedBundleKind = process.env.VIEWER_EXPECT_BUNDLE_KIND ?? "lod-streaming";
 const expectedRootFile = process.env.VIEWER_EXPECT_ROOT_FILE ?? "lod-meta.json";
+const expectedHigherOrderSh = (process.env.VIEWER_EXPECT_HIGHER_ORDER_SH ?? "1") !== "0";
+const expectedChunkFilesMin = parseIntOrNull(process.env.VIEWER_EXPECT_CHUNK_FILES_MIN ?? "");
+const expectedLodMax = parseIntOrNull(process.env.VIEWER_EXPECT_LOD_MAX ?? "");
+const expectedLodDistances = parseVector(process.env.VIEWER_EXPECT_LOD_DISTANCES ?? "");
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -228,9 +232,39 @@ async function readStreamingMetrics(page) {
     splatBudget: parseIntOrNull(dataset.splatBudget),
     lodMin: parseIntOrNull(dataset.lodMin),
     lodMax: parseIntOrNull(dataset.lodMax),
+    lodDistances: parseVector(dataset.lodDistances),
     boundsMin: parseVector(dataset.boundsMin),
     boundsMax: parseVector(dataset.boundsMax),
   };
+}
+
+async function fetchJson(url) {
+  const response = await fetch(url, { cache: "no-store" });
+  assert(response.ok, `expected ${url} to return 200, got ${response.status}`);
+  return response.json();
+}
+
+async function inspectStreamedChunkMetadata(bundleMetrics) {
+  const lodMeta = await fetchJson(bundleMetrics.sourceUrl);
+  const chunkFiles = Array.isArray(lodMeta.filenames) ? lodMeta.filenames.filter((value) => typeof value === "string") : [];
+  assert(chunkFiles.length > 0, `expected chunk filenames in ${bundleMetrics.sourceUrl}`);
+  const inspected = [];
+  for (const relativePath of chunkFiles.slice(0, Math.min(chunkFiles.length, 6))) {
+    const url = new URL(relativePath, bundleMetrics.sourceUrl).toString();
+    const meta = await fetchJson(url);
+    inspected.push({
+      relativePath,
+      keys: Object.keys(meta).sort(),
+      hasHigherOrderSh: !!meta.shN,
+    });
+  }
+  if (expectedHigherOrderSh) {
+    assert(
+      inspected.some((entry) => entry.hasHigherOrderSh),
+      `expected streamed chunk metadata with shN, inspected ${JSON.stringify(inspected)}`,
+    );
+  }
+  return inspected;
 }
 
 (async () => {
@@ -283,6 +317,12 @@ async function readStreamingMetrics(page) {
   assert(bundleMetrics.bundleKind === expectedBundleKind, `expected ${expectedBundleKind}, got ${bundleMetrics.bundleKind}`);
   assert(bundleMetrics.rootFile === expectedRootFile, `expected ${expectedRootFile}, got ${bundleMetrics.rootFile}`);
   assert((bundleMetrics.chunkFiles ?? 0) > 0, `expected streamed bundle chunk files, got ${JSON.stringify(bundleMetrics)}`);
+  if (expectedChunkFilesMin != null) {
+    assert(
+      (bundleMetrics.chunkFiles ?? 0) >= expectedChunkFilesMin,
+      `expected at least ${expectedChunkFilesMin} chunk files, got ${bundleMetrics.chunkFiles}`,
+    );
+  }
   assert(
     bundleMetrics.firstFrameMs != null && bundleMetrics.firstFrameMs > 0,
     `expected first-frame timing, got ${JSON.stringify(bundleMetrics)}`,
@@ -295,6 +335,17 @@ async function readStreamingMetrics(page) {
     bundleMetrics.boundsMin.length === 3 && bundleMetrics.boundsMax.length === 3,
     `expected streamed bounds metadata, got ${JSON.stringify(bundleMetrics)}`,
   );
+  if (expectedLodMax != null) {
+    assert(bundleMetrics.lodMax === expectedLodMax, `expected lodMax ${expectedLodMax}, got ${bundleMetrics.lodMax}`);
+  }
+  if (expectedLodDistances.length > 0) {
+    assert(
+      bundleMetrics.lodDistances.length === expectedLodDistances.length &&
+        bundleMetrics.lodDistances.every((value, index) => Math.abs(value - expectedLodDistances[index]) < 1e-6),
+      `expected lodDistances ${expectedLodDistances.join(",")}, got ${bundleMetrics.lodDistances.join(",")}`,
+    );
+  }
+  const chunkMetadata = await inspectStreamedChunkMetadata(bundleMetrics);
   await page.waitForFunction(() => {
     const button = document.querySelector("#detailsButton");
     return button instanceof HTMLButtonElement && !button.disabled;
@@ -388,6 +439,7 @@ async function readStreamingMetrics(page) {
   await page.screenshot({ path: shot, fullPage: true });
   console.log(`Render stats: ${JSON.stringify(renderStats)}`);
   console.log(`Bundle metrics: ${JSON.stringify(bundleMetrics)}`);
+  console.log(`Chunk metadata: ${JSON.stringify(chunkMetadata)}`);
   console.log(`Skybox responses: ${JSON.stringify(skyboxResponses)}`);
   console.log(`LOD responses: ${JSON.stringify(lodResponses.slice(0, 20))}`);
   console.log(`OK — screenshot ${shot}`);
