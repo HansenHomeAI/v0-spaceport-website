@@ -138,6 +138,28 @@ function cameraDelta(a, b) {
   );
 }
 
+async function clickUntilTapRing(page, frameLocator) {
+  const positions = [
+    { x: 720, y: 450 },
+    { x: 600, y: 450 },
+    { x: 840, y: 450 },
+    { x: 720, y: 330 },
+    { x: 720, y: 570 },
+  ];
+
+  for (const position of positions) {
+    await frameLocator.click({ position });
+    try {
+      await page.waitForSelector(".sogs-tap-pick-feedback", { timeout: 1500 });
+      return position;
+    } catch {
+      /* try the next likely hit point */
+    }
+  }
+
+  throw new Error("expected tap ring feedback after clicking a focusable point in the viewer");
+}
+
 (async () => {
   await fs.mkdir(logsDir, { recursive: true });
   const browser = await chromium.launch();
@@ -216,7 +238,7 @@ function cameraDelta(a, b) {
     `expected intro animation to move camera before interaction, got delta ${cameraDelta(motionStart, motionMid)}`,
   );
 
-  await viewerFrame.locator("canvas").click({ position: { x: 120, y: 120 } });
+  await clickUntilTapRing(page, viewerFrame.locator("canvas"));
   await page.waitForTimeout(300);
   const stopStart = await readCameraPosition();
   await page.waitForTimeout(900);

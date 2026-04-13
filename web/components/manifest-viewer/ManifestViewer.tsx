@@ -8,6 +8,7 @@ import { DetailsMenuButton, DetailsPanel } from "./DetailsPanel";
 import { LotLinesOverlay } from "./LotLinesOverlay";
 import { PhotoModal } from "./PhotoModal";
 import { SoldOverlays } from "./SoldOverlays";
+import { TapPickFeedback } from "./TapPickFeedback";
 import { TapDotsOverlay } from "./TapDotsOverlay";
 import { resolveViewerBundle } from "../../lib/manifest-viewer/bundle";
 import { buildScenePayload, resolveHoleView, type ViewerManifest } from "../../lib/manifest-viewer/manifest";
@@ -70,6 +71,12 @@ function getDeveloperToolsEnabled() {
 }
 
 type BootMode = "default" | "mobile-fallback";
+type PickFeedbackScreen = {
+  x: number;
+  y: number;
+  t: number;
+  ringSeq: number;
+};
 
 export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
   const scene = useMemo(() => buildScenePayload(manifest.scene), [manifest.scene]);
@@ -124,6 +131,7 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
   const [pathPanelOpen, setPathPanelOpen] = useState(false);
   const [bundlePanelOpen, setBundlePanelOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [pickFeedbackScreen, setPickFeedbackScreen] = useState<PickFeedbackScreen | null>(null);
   const [photoDot, setPhotoDot] = useState<(typeof manifest.overlays)["tapDots"] extends Array<infer T> ? T | null : null>(null);
   const [selectedHoleId, setSelectedHoleId] = useState(manifest.holes[0]?.id ?? manifest.slug);
   const [developerToolsEnabled] = useState(getDeveloperToolsEnabled);
@@ -387,6 +395,39 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
         lastScriptedRef.current = false;
       }
 
+      if (event.data?.type === "sogs:pickFocus") {
+        const data = event.data as {
+          world?: number[];
+          clientX?: number;
+          clientY?: number;
+          ringSeq?: number;
+          ringT?: number;
+        };
+        if (Array.isArray(data.world) && data.world.length >= 3) {
+          orbitFocusRef.current = {
+            x: data.world[0],
+            y: data.world[1],
+            z: data.world[2],
+          };
+        }
+        if (typeof data.clientX === "number" && typeof data.clientY === "number") {
+          const iframeBounds = iframeRef.current?.getBoundingClientRect() ?? { left: 0, top: 0 };
+          const ringSeq = typeof data.ringSeq === "number" ? data.ringSeq : null;
+          const ringT = typeof data.ringT === "number" ? data.ringT : Date.now();
+          setPickFeedbackScreen((previous) => {
+            if (ringSeq !== null && previous && previous.ringSeq === ringSeq) {
+              return { ...previous, x: iframeBounds.left + data.clientX, y: iframeBounds.top + data.clientY };
+            }
+            return {
+              x: iframeBounds.left + data.clientX,
+              y: iframeBounds.top + data.clientY,
+              t: ringT,
+              ringSeq: ringSeq ?? ringT,
+            };
+          });
+        }
+      }
+
       if (event.data?.type === "sogs:cameraPose") {
         const data = event.data as { position?: number[]; target?: number[]; fov?: number };
         if (!Array.isArray(data.position) || data.position.length < 3) return;
@@ -592,13 +633,17 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
           <div className="sogs-migrated-placeholder" aria-hidden />
         )}
         <CanyonVignette />
+        <TapPickFeedback screen={pickFeedbackScreen} />
         {manifest.overlays?.tapDots?.length ? (
           <TapDotsOverlay
             enabled={viewerState === "ready" && showTapDots}
             tapDots={manifest.overlays.tapDots}
             poseRef={poseRef}
             containerRef={containerRef}
-            onOpenPhotos={setPhotoDot}
+            onOpenPhotos={(dot) => {
+              setDetailsOpen(false);
+              setPhotoDot(dot);
+            }}
           />
         ) : null}
         {manifest.overlays?.borderDots?.length && manifest.overlays?.borderLines?.length ? (
