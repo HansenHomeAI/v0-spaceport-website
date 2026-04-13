@@ -4851,13 +4851,21 @@ class ColmapPipeline:
         seam_dir = self.work_dir / seam_dir_name
         seam_dir.mkdir(parents=True, exist_ok=True)
         seam_database_path = self.prepare_chunk_database(chunk_plan, dir_name=seam_dir_name)
+        seed_registered_names = self.sorted_capture_names(
+            self.merged_image_names(seed_model).intersection(set(chunk_plan.image_names))
+        )
+        active_frontier_names = (
+            self.sorted_capture_names(set(frontier_names or []).union(seed_registered_names))
+            if frontier_names is not None
+            else None
+        )
         self.run_chunk_matchers(
             chunk_plan,
             chunk_database_path=seam_database_path,
             chunk_dir=seam_dir,
             stage_prefix=stage_prefix,
             bridge_target_name_sets=bridge_target_name_sets,
-            frontier_names=frontier_names,
+            frontier_names=active_frontier_names,
             frontier_pair_cap=frontier_pair_cap,
         )
         current_model = seed_model
@@ -5834,20 +5842,33 @@ class ColmapPipeline:
                 seed_models = [repaired_chunk_models[first_index], repaired_chunk_models[second_index]]
                 seed_models.sort(key=lambda model: (-model.images_registered, model.stage))
                 merged_model = None
+                last_seam_error: RuntimeError | None = None
+                last_candidate_model: ModelSummary | None = None
                 for seed_attempt, seed_model in enumerate(seed_models, start=1):
-                    seam_frontier_names = self.select_merge_frontier_names(
-                        left_source_names=self.model_source_image_names(repaired_chunk_models[first_index]),
-                        right_source_names=self.model_source_image_names(repaired_chunk_models[second_index]),
-                        raw_merged_names=self.merged_image_names(seed_model),
-                    )
-                    candidate_model = self.run_parent_seam_registration(
-                        seed_model=seed_model,
-                        chunk_plan=merged_chunk_plan,
-                        stage_prefix=merged_stage_prefix,
-                        dir_name=f"{merged_stage_prefix}_seed_{seed_attempt:02d}",
-                        bridge_target_name_sets=bridge_target_name_sets,
-                        frontier_names=seam_frontier_names,
-                    )
+                    try:
+                        candidate_model, _, _, _ = self.run_parent_seam_registration_with_retry(
+                            seed_model=seed_model,
+                            left_source_names=self.model_source_image_names(repaired_chunk_models[first_index]),
+                            right_source_names=self.model_source_image_names(repaired_chunk_models[second_index]),
+                            source_chunk_indexes=merged_chunk_plan.source_chunk_indexes or [first_index, second_index],
+                            stage_prefix=f"{merged_stage_prefix}_seed_{seed_attempt:02d}",
+                            dir_name=f"{merged_stage_prefix}_seed_{seed_attempt:02d}",
+                            bridge_target_name_sets=bridge_target_name_sets,
+                            run_final_bundle_adjustment=False,
+                        )
+                    except RuntimeError as seam_error:
+                        last_seam_error = seam_error
+                        logger.warning(
+                            "Bridge seam registration for chunk pair %s-%s failed with seed %s (%s/%s): %s",
+                            first_chunk_plan.index,
+                            second_chunk_plan.index,
+                            seed_model.stage,
+                            seed_attempt,
+                            len(seed_models),
+                            seam_error,
+                        )
+                        continue
+                    last_candidate_model = candidate_model
                     if self.model_connects_target_name_sets(
                         model=candidate_model,
                         target_name_sets=bridge_target_name_sets,
@@ -5858,7 +5879,23 @@ class ColmapPipeline:
                         merged_model = candidate_model
                         break
                 if merged_model is None:
-                    merged_model = candidate_model
+                    if last_candidate_model is not None:
+                        merged_model = last_candidate_model
+                    else:
+                        logger.warning(
+                            "Bridge seam registration for chunk pair %s-%s produced no usable seed result; keeping original chunk models",
+                            first_chunk_plan.index,
+                            second_chunk_plan.index,
+                        )
+                        if last_seam_error is not None:
+                            logger.warning(
+                                "Last bridge seam failure for chunk pair %s-%s: %s",
+                                first_chunk_plan.index,
+                                second_chunk_plan.index,
+                                last_seam_error,
+                            )
+                        attempts_remaining -= 1
+                        continue
             else:
                 merged_model = self.run_chunk_pipeline(
                     merged_chunk_plan,
