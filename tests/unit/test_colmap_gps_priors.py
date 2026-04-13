@@ -924,6 +924,60 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertIn(str(output_path), merger_command)
             self.assertEqual(result.images_registered, 20)
 
+    def test_run_spatial_heading_chunked_path_accepts_merged_ratio_at_gps_threshold(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.dataset_image_count = 250
+            pipeline.gps_min_registered_ratio = 0.98
+            pipeline.chunk_plans = [
+                run_colmap_sfm.ChunkPlan(index=0, core_names=["a"], image_names=["a"], overlap_names=[]),
+                run_colmap_sfm.ChunkPlan(index=1, core_names=["b"], image_names=["b"], overlap_names=[]),
+            ]
+            merged_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_bundle_adjuster",
+                text_dir=root / "merged_text",
+                cameras_registered=1,
+                images_registered=247,
+                points_3d=202435,
+                binary_dir=root / "merged_chunk_model_01",
+            )
+
+            with mock.patch.object(
+                pipeline,
+                "build_spatial_heading_chunks",
+                return_value=pipeline.chunk_plans,
+            ), mock.patch.object(
+                pipeline,
+                "run_chunk_pipeline",
+                side_effect=[
+                    run_colmap_sfm.ModelSummary(
+                        stage="chunk_00_mapper_initial",
+                        text_dir=root / "chunk0",
+                        cameras_registered=1,
+                        images_registered=134,
+                        points_3d=100000,
+                        binary_dir=root / "chunk0",
+                    ),
+                    run_colmap_sfm.ModelSummary(
+                        stage="chunk_01_mapper_initial",
+                        text_dir=root / "chunk1",
+                        cameras_registered=1,
+                        images_registered=138,
+                        points_3d=100000,
+                        binary_dir=root / "chunk1",
+                    ),
+                ],
+            ), mock.patch.object(
+                pipeline,
+                "merge_chunk_models",
+                return_value=merged_model,
+            ):
+                result = pipeline.run_spatial_heading_chunked_path()
+
+            self.assertEqual(result.images_registered, 247)
+            self.assertEqual(pipeline.final_matcher_mode, "spatial_heading_chunked")
+
     def test_build_vocab_tree_retries_without_max_num_images_for_older_colmap(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
