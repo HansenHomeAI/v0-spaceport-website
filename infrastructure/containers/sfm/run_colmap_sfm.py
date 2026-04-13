@@ -43,6 +43,8 @@ MATCH_PROFILES = {
         "sequential_overlap": 10,
     },
 }
+FEATURE_OPTION_FAMILIES = ("FeatureExtraction", "SiftExtraction")
+MATCHING_OPTION_FAMILIES = ("FeatureMatching", "SiftMatching")
 
 
 @dataclass
@@ -105,6 +107,11 @@ def stream_command(command: List[str], *, stage: str, env: Dict[str, str] | None
     if return_code != 0:
         tail = "\n".join(lines[-50:])
         raise RuntimeError(f"{stage} failed with exit code {return_code}\n{tail}")
+
+
+def unrecognized_option_error(error: RuntimeError, option_markers: Sequence[str]) -> bool:
+    message = str(error)
+    return "unrecognised option" in message and any(marker in message for marker in option_markers)
 
 
 def pack_float64_blob(values: Iterable[float]) -> bytes:
@@ -170,6 +177,14 @@ class ColmapPipeline:
         self.active_vocab_tree_path: Path | None = None
         self.vocab_tree_url = os.environ.get("COLMAP_VOCAB_TREE_URL", "")
         self.use_gpu = os.environ.get("COLMAP_USE_GPU", "1") != "0"
+        self.feature_option_family = os.environ.get(
+            "COLMAP_FEATURE_OPTION_FAMILY",
+            FEATURE_OPTION_FAMILIES[0],
+        )
+        self.matching_option_family = os.environ.get(
+            "COLMAP_MATCHING_OPTION_FAMILY",
+            MATCHING_OPTION_FAMILIES[0],
+        )
         self.enable_spatial_matcher = os.environ.get("COLMAP_ENABLE_SPATIAL_MATCHER", "1") != "0"
         self.enable_sequential_matcher = (
             os.environ.get("COLMAP_ENABLE_SEQUENTIAL_MATCHER", "1") != "0"
@@ -716,26 +731,35 @@ class ColmapPipeline:
         self, *, database_path: Path, stage: str, num_images: int | None = None
     ) -> None:
         self.ensure_vocab_tree()
-        command = [
-            "colmap",
-            "vocab_tree_matcher",
-            "--database_path",
-            str(database_path),
-            "--SiftMatching.use_gpu",
-            "1" if self.use_gpu else "0",
-            "--SiftMatching.guided_matching",
-            "1",
-            "--VocabTreeMatching.num_images",
-            str(num_images if num_images is not None else self.vocab_num_images),
-        ]
-        if self.active_vocab_tree_path is not None:
-            command.extend(
+        matching_family = self.run_with_option_family_fallback(
+            stage=stage,
+            families=MATCHING_OPTION_FAMILIES,
+            preferred_family=self.matching_option_family,
+            build_command=lambda family: (
                 [
-                    "--VocabTreeMatching.vocab_tree_path",
-                    str(self.active_vocab_tree_path),
-                ]
-            )
-        stream_command(command, stage=stage)
+                    "colmap",
+                    "vocab_tree_matcher",
+                    "--database_path",
+                    str(database_path),
+                    f"--{family}.use_gpu",
+                    "1" if self.use_gpu else "0",
+                    f"--{family}.guided_matching",
+                    "1",
+                    "--VocabTreeMatching.num_images",
+                    str(num_images if num_images is not None else self.vocab_num_images),
+                    *(
+                        [
+                            "--VocabTreeMatching.vocab_tree_path",
+                            str(self.active_vocab_tree_path),
+                        ]
+                        if self.active_vocab_tree_path is not None
+                        else []
+                    ),
+                ],
+                [f"--{family}.use_gpu", f"--{family}.guided_matching"],
+            ),
+        )
+        self.matching_option_family = matching_family
 
     def run_feature_extraction(
         self,
@@ -746,28 +770,34 @@ class ColmapPipeline:
     ) -> None:
         active_database_path = database_path or self.database_path
         started = time.time()
-        command = [
-            "colmap",
-            "feature_extractor",
-            "--database_path",
-            str(active_database_path),
-            "--image_path",
-            str(self.images_dir),
-            "--ImageReader.single_camera",
-            "1",
-            "--ImageReader.camera_model",
-            "SIMPLE_RADIAL",
-            "--SiftExtraction.use_gpu",
-            "1" if self.use_gpu else "0",
-            "--SiftExtraction.max_num_features",
-            str(self.max_features),
-        ]
-        if image_list_path is not None:
-            command.extend(["--image_list_path", str(image_list_path)])
         max_image_size = os.environ.get("COLMAP_FEATURE_MAX_IMAGE_SIZE")
-        if max_image_size:
-            command.extend(["--FeatureExtraction.max_image_size", max_image_size])
-        stream_command(command, stage=stage)
+        feature_family = self.run_with_option_family_fallback(
+            stage=stage,
+            families=FEATURE_OPTION_FAMILIES,
+            preferred_family=self.feature_option_family,
+            build_command=lambda family: (
+                [
+                    "colmap",
+                    "feature_extractor",
+                    "--database_path",
+                    str(active_database_path),
+                    "--image_path",
+                    str(self.images_dir),
+                    "--ImageReader.single_camera",
+                    "1",
+                    "--ImageReader.camera_model",
+                    "SIMPLE_RADIAL",
+                    f"--{family}.use_gpu",
+                    "1" if self.use_gpu else "0",
+                    "--SiftExtraction.max_num_features",
+                    str(self.max_features),
+                    *(["--image_list_path", str(image_list_path)] if image_list_path is not None else []),
+                    *([f"--{family}.max_image_size", max_image_size] if max_image_size else []),
+                ],
+                [f"--{family}.use_gpu", f"--{family}.max_image_size"],
+            ),
+        )
+        self.feature_option_family = feature_family
         self.timings[f"{stage}_seconds"] = round(time.time() - started, 2)
 
     def should_attempt_gps_first(self) -> bool:
@@ -803,6 +833,39 @@ class ColmapPipeline:
         self.matcher_pair_deltas[label] = self.matcher_pair_deltas.get(label, 0) + delta
         self.matchers_run.append(label)
 
+    def ordered_option_families(self, preferred: str, families: Sequence[str]) -> List[str]:
+        if preferred in families:
+            return [preferred, *[family for family in families if family != preferred]]
+        return list(families)
+
+    def run_with_option_family_fallback(
+        self,
+        *,
+        stage: str,
+        families: Sequence[str],
+        preferred_family: str,
+        build_command,
+    ) -> str:
+        last_error: RuntimeError | None = None
+        for family in self.ordered_option_families(preferred_family, families):
+            command, option_markers = build_command(family)
+            try:
+                stream_command(command, stage=stage)
+                return family
+            except RuntimeError as error:
+                if unrecognized_option_error(error, option_markers):
+                    logger.warning(
+                        "%s rejected %s-style COLMAP flags; retrying with a different option family",
+                        stage,
+                        family,
+                    )
+                    last_error = error
+                    continue
+                raise
+        if last_error is not None:
+            raise last_error
+        raise RuntimeError(f"{stage} failed before any COLMAP command could be attempted")
+
     def run_spatial_matcher(
         self,
         *,
@@ -815,25 +878,31 @@ class ColmapPipeline:
         active_database_path = database_path or self.database_path
         started = time.time()
         pairs_before = self.count_verified_pairs(active_database_path)
-        stream_command(
-            [
-                "colmap",
-                "spatial_matcher",
-                "--database_path",
-                str(active_database_path),
-                "--SiftMatching.use_gpu",
-                "1" if self.use_gpu else "0",
-                "--SiftMatching.guided_matching",
-                "1",
-                "--SpatialMatching.ignore_z",
-                "0",
-                "--SpatialMatching.max_num_neighbors",
-                str(max_neighbors if max_neighbors is not None else self.spatial_neighbors),
-                "--SpatialMatching.max_distance",
-                str(max_distance_m if max_distance_m is not None else self.spatial_distance_m),
-            ],
+        matching_family = self.run_with_option_family_fallback(
             stage=stage,
+            families=MATCHING_OPTION_FAMILIES,
+            preferred_family=self.matching_option_family,
+            build_command=lambda family: (
+                [
+                    "colmap",
+                    "spatial_matcher",
+                    "--database_path",
+                    str(active_database_path),
+                    f"--{family}.use_gpu",
+                    "1" if self.use_gpu else "0",
+                    f"--{family}.guided_matching",
+                    "1",
+                    "--SpatialMatching.ignore_z",
+                    "0",
+                    "--SpatialMatching.max_num_neighbors",
+                    str(max_neighbors if max_neighbors is not None else self.spatial_neighbors),
+                    "--SpatialMatching.max_distance",
+                    str(max_distance_m if max_distance_m is not None else self.spatial_distance_m),
+                ],
+                [f"--{family}.use_gpu", f"--{family}.guided_matching"],
+            ),
         )
+        self.matching_option_family = matching_family
         pairs_after = self.count_verified_pairs(active_database_path)
         self.timings[f"{stage}_seconds"] = round(time.time() - started, 2)
         self.record_matcher_delta(label, pairs_after - pairs_before)
