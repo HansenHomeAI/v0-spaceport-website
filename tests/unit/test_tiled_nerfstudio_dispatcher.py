@@ -215,6 +215,8 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             self.assertNotIn("nerfstudio-data", calls[0])
             self.assertIn("nerfstudio-data", calls[1])
             self.assertEqual(calls[1][-2:], ["--data", str(trainer.input_dir)])
+            self.assertNotIn("--pipeline.model.use-bilateral-grid", calls[0])
+            self.assertNotIn("--pipeline.model.use-bilateral-grid", calls[1])
 
 
 if __name__ == "__main__":

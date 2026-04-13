@@ -22,6 +22,7 @@ DEFAULT_SCAFFOLD_MAX_ITERATIONS = 4000
 DEFAULT_TILE_MAX_ITERATIONS = 12000
 DEFAULT_INSTANCE_TYPE = "ml.g5.2xlarge"
 DEFAULT_VOLUME_SIZE_GB = 100
+UNSUPPORTED_BILATERAL_VARIANTS = {"splatfacto-w-light", "splatfacto-w"}
 
 
 def run_command(command: Sequence[str], *, capture_output: bool = False) -> subprocess.CompletedProcess[str]:
@@ -129,6 +130,10 @@ def normalize_s3_prefix(uri: str) -> str:
     return uri.rstrip("/")
 
 
+def supports_bilateral_processing(model_variant: str) -> bool:
+    return model_variant not in UNSUPPORTED_BILATERAL_VARIANTS
+
+
 def select_tile_ids(
     manifest: dict,
     *,
@@ -211,7 +216,7 @@ def build_training_environment(
         "TILE_MANIFEST_PATH": tile_manifest_name,
         "VIEW_BUCKET_MANIFEST_PATH": view_bucket_manifest_name,
         "MODEL_VARIANT": "splatfacto-w-light",
-        "BILATERAL_PROCESSING": "true",
+        "BILATERAL_PROCESSING": "false",
         "ENABLE_BG_MODEL": "true",
         "ENABLE_ALPHA_LOSS": "true",
         "ENABLE_ROBUST_MASK": "true",
@@ -235,6 +240,10 @@ def build_training_environment(
     if tile_id:
         env["TILE_ID"] = tile_id
     env.update(extra_env)
+    model_variant = env.get("MODEL_VARIANT", "splatfacto-w-light")
+    bilateral_requested = env.get("BILATERAL_PROCESSING", "false").lower() in {"1", "true", "yes", "on"}
+    if bilateral_requested and not supports_bilateral_processing(model_variant):
+        env["BILATERAL_PROCESSING"] = "false"
     return env
 
 

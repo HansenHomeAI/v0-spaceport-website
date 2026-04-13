@@ -47,6 +47,23 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(tiled_env["TILED_MAX_TILES"], "2")
         self.assertEqual(tiled_env["TILED_INCLUDE_MERGE"], "true")
         self.assertEqual(tiled_env["GLOBAL_SCAFFOLD_MAX_ITERATIONS"], "2000")
+        self.assertEqual(tiled_env["BILATERAL_PROCESSING"], "false")
+
+    def test_build_training_environment_disables_bilateral_for_w_light_even_if_requested(self):
+        env = benchmark.build_training_environment(
+            training_mode="monolithic",
+            tile_manifest_name="3dgs_tile_manifest.json",
+            view_bucket_manifest_name="3dgs_view_buckets.json",
+            tile_id=None,
+            max_iterations=1000,
+            extra_env={
+                "MODEL_VARIANT": "splatfacto-w-light",
+                "BILATERAL_PROCESSING": "true",
+            },
+        )
+
+        self.assertEqual(env["MODEL_VARIANT"], "splatfacto-w-light")
+        self.assertEqual(env["BILATERAL_PROCESSING"], "false")
 
     def test_build_benchmark_stages_fanout_emits_leaf_tiles_and_merge(self):
         manifest = {

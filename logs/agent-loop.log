@@ -17,3 +17,4 @@
 [2026-04-13T20:58:23Z] workflows-green -> CDK 24366026674, Pages 24366300738, ML build 24366026752 succeeded -> close out with proof and preview URLs
 [2026-04-13T21:37:23Z] aws-sfm-start -> launching chunked SfM on whitney-farm-first-50-seq.zip with branch sfm image -> wait for manifest-bearing output
 [2026-04-13T21:54:01Z] sfm-root-cause -> SageMaker failed because deployed sfm image lacked COLMAP; patched deploy path to preserve pinned COLMAP base and queued a real sfm rebuild -> commit and push for workflow rebuild
+[2026-04-13T23:52:14Z] bilateral-fix -> disabled unsupported bilateral flag for splatfacto-w-light in launcher and trainer, targeted unit tests passed -> push branch and watch rebuilds

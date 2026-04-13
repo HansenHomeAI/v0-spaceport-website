@@ -162,6 +162,11 @@ def should_retry_with_explicit_dataparser(stderr: str) -> bool:
         and "Arguments are applied to the directly preceding subcommand" in error_text
     )
 
+
+def supports_bilateral_processing(model_variant: str) -> bool:
+    """Return whether the selected NerfStudio method exposes bilateral-grid args."""
+    return model_variant not in {"splatfacto-w-light", "splatfacto-w"}
+
 class NerfStudioTrainer:
     """Production NerfStudio trainer implementing Vincent Woo's methodology"""
     
@@ -1129,7 +1134,11 @@ class NerfStudioTrainer:
         model_variant = model_config.get('variant', 'splatfacto-w-light')
         max_iterations = training_config.get('max_iterations', 30000)
         sh_degree = model_config.get('sh_degree', 3)
-        bilateral_processing = model_config.get('bilateral_processing', False)
+        requested_bilateral_processing = model_config.get('bilateral_processing', False)
+        bilateral_processing = (
+            requested_bilateral_processing
+            and supports_bilateral_processing(model_variant)
+        )
         rasterize_mode = model_config.get('rasterize_mode', 'classic')
         use_scale_regularization = model_config.get('use_scale_regularization', True)
         cull_alpha_thresh = model_config.get('cull_alpha_thresh', 0.12)
@@ -1189,7 +1198,12 @@ class NerfStudioTrainer:
         ]
         method_args: list[str] = []
         
-        if bilateral_processing:
+        if requested_bilateral_processing and not bilateral_processing:
+            logger.warning(
+                "⚠️ Bilateral guided processing requested but unsupported for %s; ignoring it",
+                model_variant,
+            )
+        elif bilateral_processing:
             method_args.extend(["--pipeline.model.use-bilateral-grid", "True"])
             logger.info("🌈 Bilateral guided processing enabled (--pipeline.model.use-bilateral-grid True)")
         else:
@@ -1516,7 +1530,13 @@ class NerfStudioTrainer:
             'framework': 'NerfStudio',
             'model_variant': self.config.get('model', {}).get('variant', 'splatfacto-w-light'),
             'training_mode': self.resolve_training_mode(),
-            'bilateral_guided_processing': self.config.get('model', {}).get('bilateral_processing', False),
+            'bilateral_guided_processing': (
+                self.config.get('model', {}).get('bilateral_processing', False)
+                and supports_bilateral_processing(
+                    self.config.get('model', {}).get('variant', 'splatfacto-w-light')
+                )
+            ),
+            'bilateral_guided_processing_requested': self.config.get('model', {}).get('bilateral_processing', False),
             'sh_degree': self.config.get('model', {}).get('sh_degree', 3),
             'enable_bg_model': self.config.get('model', {}).get('enable_bg_model', True),
             'enable_alpha_loss': self.config.get('model', {}).get('enable_alpha_loss', True),
