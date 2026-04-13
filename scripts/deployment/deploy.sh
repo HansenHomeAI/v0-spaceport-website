@@ -95,6 +95,7 @@ deploy_container() {
   build_cache_ref="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:buildcache"
   local branch_tag="${BRANCH_SUFFIX:-}"
   local base_image="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:base"
+  local build_base_arg="${base_image}"
   local build_stage="app"
 
   log "--- Starting OPTIMIZED deployment for: ${container_name} ---"
@@ -113,6 +114,11 @@ deploy_container() {
   docker pull "${ecr_uri}:latest" || log "No existing image found, building from scratch..."
   docker pull "${build_cache_ref}" || log "No registry cache yet for ${container_name}"
   docker pull "${base_image}" || log "No base image yet for ${container_name}"
+
+  if [[ "${container_name}" == "sfm" ]] && aws ecr describe-images --region "${AWS_REGION}" --repository-name "${repo_name}" --image-ids imageTag=latest >/dev/null 2>&1; then
+    build_base_arg="${ecr_uri}:latest"
+    log "Using published latest image as the SFM base layer to avoid Docker Hub pull limits."
+  fi
   
   # Build base image if missing
   if ! aws ecr describe-images --region "${AWS_REGION}" --repository-name "${repo_name}" --image-ids imageTag=base >/dev/null 2>&1; then
@@ -143,12 +149,12 @@ deploy_container() {
   docker buildx build \
     --platform linux/amd64 \
     --file "${container_dir}/Dockerfile" \
-    --build-arg BASE_IMAGE="${base_image}" \
+    --build-arg BASE_IMAGE="${build_base_arg}" \
     --build-arg BUILDKIT_INLINE_CACHE=1 \
     --tag "${repo_name}:latest" \
     --cache-from "type=registry,ref=${build_cache_ref},mode=max" \
     --cache-from "type=registry,ref=${ecr_uri}:latest" \
-    --cache-from "${base_image}" \
+    --cache-from "${build_base_arg}" \
     --cache-to "type=registry,mode=max,compression=zstd,ref=${build_cache_ref}" \
     --progress plain \
     --load \
