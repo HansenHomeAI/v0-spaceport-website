@@ -53,6 +53,22 @@
             };
 
             const url = new URL(location.href);
+            const loadStartedAt = performance.now();
+            const parseVector = (value) => {
+                if (!value) {
+                    return null;
+                }
+                const parts = value.split(',').map(part => Number.parseFloat(part.trim()));
+                return parts.length === 3 && parts.every(Number.isFinite) ? parts : null;
+            };
+
+            const resolveAbsoluteUrl = (value) => {
+                try {
+                    return new URL(value, location.href).toString();
+                } catch {
+                    return null;
+                }
+            };
 
             const posterUrl = url.searchParams.get('poster');
             const explicitSkyboxUrl = url.searchParams.get('skybox');
@@ -62,6 +78,120 @@
             const lowQuality = quality === 'lq';
             const settingsUrl = url.searchParams.has('settings') ? url.searchParams.get('settings') : './settings.json';
             const contentUrl = url.searchParams.has('content') ? url.searchParams.get('content') : './scene.compressed.ply';
+            const contentAbsoluteUrl = resolveAbsoluteUrl(contentUrl) ?? contentUrl;
+            const networkMetrics = {
+                loadStartedAt,
+                rootManifestUrl: contentAbsoluteUrl,
+                rootManifestType: contentAbsoluteUrl.split('/').pop() ?? null,
+                firstFrame: null,
+                events: [],
+                uniqueChunkMetaUrls: [],
+                uniqueChunkTextureUrls: []
+            };
+            const isChunkMetaUrl = (absoluteUrl) => /\/\d+_\d+\/meta\.json(?:\?|$)/.test(absoluteUrl);
+            const isChunkTextureUrl = (absoluteUrl) => /\/\d+_\d+\/.+\.webp(?:\?|$)/.test(absoluteUrl);
+            const classifyUrl = (absoluteUrl) => {
+                if (absoluteUrl.endsWith('/lod-meta.json') || absoluteUrl.includes('/lod-meta.json?')) {
+                    return 'lod-root';
+                }
+                if (isChunkMetaUrl(absoluteUrl)) {
+                    return 'lod-chunk-meta';
+                }
+                if (isChunkTextureUrl(absoluteUrl)) {
+                    return 'lod-chunk-texture';
+                }
+                if (absoluteUrl.endsWith('/meta.json') || absoluteUrl.includes('/meta.json?')) {
+                    return 'meta-root';
+                }
+                return 'other';
+            };
+            const pushUnique = (target, value) => {
+                if (value && !target.includes(value)) {
+                    target.push(value);
+                }
+            };
+            const recordRequest = ({ url: requestUrl, source, status }) => {
+                const absoluteUrl = resolveAbsoluteUrl(requestUrl);
+                if (!absoluteUrl) {
+                    return;
+                }
+                const kind = classifyUrl(absoluteUrl);
+                networkMetrics.events.push({
+                    url: absoluteUrl,
+                    source,
+                    status,
+                    kind,
+                    at: performance.now()
+                });
+                if (kind === 'lod-chunk-meta') {
+                    pushUnique(networkMetrics.uniqueChunkMetaUrls, absoluteUrl);
+                }
+                if (kind === 'lod-chunk-texture') {
+                    pushUnique(networkMetrics.uniqueChunkTextureUrls, absoluteUrl);
+                }
+            };
+
+            const originalFetch = window.fetch.bind(window);
+            window.fetch = async (...args) => {
+                const [input] = args;
+                const requestUrl =
+                    typeof input === 'string'
+                        ? input
+                        : input instanceof Request
+                          ? input.url
+                          : input && typeof input === 'object' && 'url' in input
+                            ? input.url
+                            : null;
+                try {
+                    const response = await originalFetch(...args);
+                    if (requestUrl) {
+                        recordRequest({ url: requestUrl, source: 'fetch', status: response.status });
+                    }
+                    return response;
+                } catch (error) {
+                    if (requestUrl) {
+                        recordRequest({ url: requestUrl, source: 'fetch', status: 0 });
+                    }
+                    throw error;
+                }
+            };
+
+            const xhrOpen = XMLHttpRequest.prototype.open;
+            const xhrSend = XMLHttpRequest.prototype.send;
+            XMLHttpRequest.prototype.open = function(method, requestUrl, ...rest) {
+                this.__sogsRequestUrl = typeof requestUrl === 'string' ? requestUrl : String(requestUrl);
+                return xhrOpen.call(this, method, requestUrl, ...rest);
+            };
+            XMLHttpRequest.prototype.send = function(...args) {
+                this.addEventListener('loadend', () => {
+                    if (this.__sogsRequestUrl) {
+                        recordRequest({ url: this.__sogsRequestUrl, source: 'xhr', status: this.status });
+                    }
+                });
+                return xhrSend.apply(this, args);
+            };
+
+            window.__sogsLoadStartedAt = loadStartedAt;
+            window.__sogsNetworkMetrics = networkMetrics;
+            window.__sogsInitialViewerConfig = {
+                splatBudget: url.searchParams.has('budget') ? Number.parseInt(url.searchParams.get('budget'), 10) : null,
+                lodRangeMin: url.searchParams.has('lodMin') ? Number.parseInt(url.searchParams.get('lodMin'), 10) : null,
+                lodRangeMax: url.searchParams.has('lodMax') ? Number.parseInt(url.searchParams.get('lodMax'), 10) : null
+            };
+            window.__sogsInitialCameraPose = (() => {
+                const position = parseVector(url.searchParams.get('camPos'));
+                const target = parseVector(url.searchParams.get('camTarget'));
+                if (!position || !target) {
+                    return null;
+                }
+                const fovRaw = url.searchParams.get('camFov');
+                const fov = fovRaw == null ? null : Number.parseFloat(fovRaw);
+                return {
+                    position,
+                    target,
+                    fov: Number.isFinite(fov) ? fov : null
+                };
+            })();
 
             const sseConfigPromise = (async () => {
                 const resolvedSkyboxUrl = await resolveBundleSkyboxUrl(contentUrl, explicitSkyboxUrl);
@@ -76,8 +206,11 @@
                     lowQuality,
                     noui: url.searchParams.has('noui'),
                     noanim: url.searchParams.has('noanim'),
+                    nofx: url.searchParams.has('nofx'),
                     ministats: url.searchParams.has('ministats'),
                     unified: url.searchParams.has('unified'),
+                    webgpu: url.searchParams.has('webgpu'),
+                    gpusort: url.searchParams.has('gpusort'),
                     aa: url.searchParams.has('aa')
                 };
             })();

@@ -24,6 +24,10 @@ const BRIDGE_WAIT_TIMEOUT_MS = 12e3;
  */
 const LAYER_ID_IMMEDIATE = 3;
 
+function finiteNumber(value) {
+  return typeof value === "number" && Number.isFinite(value);
+}
+
 function getBootOptions() {
   if (typeof window === "undefined") {
     return { quality: "hq", lowQuality: false };
@@ -106,7 +110,33 @@ function waitForValue(getValue, stage, timeoutMs = BRIDGE_WAIT_TIMEOUT_MS, inter
   });
 }
 
+function metricsSnapshot() {
+  const metrics = window.__sogsNetworkMetrics ?? {};
+  const firstFrame = metrics.firstFrame ?? null;
+  return {
+    loadedNodeCount: Array.isArray(metrics.uniqueChunkMetaUrls) ? metrics.uniqueChunkMetaUrls.length : 0,
+    chunkMetaRequestCount: Array.isArray(metrics.uniqueChunkMetaUrls) ? metrics.uniqueChunkMetaUrls.length : 0,
+    chunkMetaAtFirstFrame:
+      firstFrame && finiteNumber(firstFrame.chunkMetaRequestCount) ? firstFrame.chunkMetaRequestCount : null,
+    totalRequestCount: Array.isArray(metrics.events) ? metrics.events.length : 0,
+    firstFrameMs:
+      firstFrame && finiteNumber(firstFrame.at) && finiteNumber(metrics.loadStartedAt)
+        ? firstFrame.at - metrics.loadStartedAt
+        : null,
+    rootManifestType: typeof metrics.rootManifestType === "string" ? metrics.rootManifestType : null,
+    rootManifestUrl: typeof metrics.rootManifestUrl === "string" ? metrics.rootManifestUrl : null,
+  };
+}
+
 window.firstFrame = function sogsFirstFrameHook() {
+  const metrics = window.__sogsNetworkMetrics;
+  if (metrics && !metrics.firstFrame) {
+    metrics.firstFrame = {
+      at: performance.now(),
+      chunkMetaRequestCount: Array.isArray(metrics.uniqueChunkMetaUrls) ? metrics.uniqueChunkMetaUrls.length : 0,
+      totalRequestCount: Array.isArray(metrics.events) ? metrics.events.length : 0,
+    };
+  }
   window.parent.postMessage({ type: "supersplat:firstFrame" }, "*");
   queueMicrotask(() => postSogsState());
 };
@@ -124,6 +154,8 @@ function postSogsState() {
     const p = g.getLocalPosition();
     const e = g.getLocalEulerAngles();
     const sc = g.getLocalScale();
+    const sceneGsplat = ctx.app.scene?.gsplat;
+    const telemetry = metricsSnapshot();
     let skyboxRotation = [0, 0, 0];
     try {
       const scene = ctx.app.scene;
@@ -141,13 +173,70 @@ function postSogsState() {
         rotation: [e.x, e.y, e.z],
         scale: sc.x,
         fov: ctx.camera.camera.fov,
+        splatBudget: finiteNumber(sceneGsplat?.splatBudget) ? sceneGsplat.splatBudget : null,
+        lodRangeMin: finiteNumber(sceneGsplat?.lodRangeMin) ? sceneGsplat.lodRangeMin : null,
+        lodRangeMax: finiteNumber(sceneGsplat?.lodRangeMax) ? sceneGsplat.lodRangeMax : null,
         skyboxRotation,
+        ...telemetry,
       },
       "*",
     );
   } catch {
     /* ignore */
   }
+}
+
+function applyViewerConfig(app, incomingConfig) {
+  if (!app?.scene?.gsplat || !incomingConfig || typeof incomingConfig !== "object") {
+    return;
+  }
+
+  const current = window.__sogsViewerConfig ?? {};
+  const merged = {
+    splatBudget:
+      finiteNumber(incomingConfig.splatBudget) && incomingConfig.splatBudget > 0
+        ? Math.trunc(incomingConfig.splatBudget)
+        : current.splatBudget ?? null,
+    lodRangeMin:
+      finiteNumber(incomingConfig.lodRangeMin) && incomingConfig.lodRangeMin >= 0
+        ? Math.trunc(incomingConfig.lodRangeMin)
+        : current.lodRangeMin ?? null,
+    lodRangeMax:
+      finiteNumber(incomingConfig.lodRangeMax) && incomingConfig.lodRangeMax >= 0
+        ? Math.trunc(incomingConfig.lodRangeMax)
+        : current.lodRangeMax ?? null,
+  };
+
+  window.__sogsViewerConfig = merged;
+
+  const sceneGsplat = app.scene.gsplat;
+  if (finiteNumber(merged.splatBudget) && merged.splatBudget > 0) {
+    sceneGsplat.splatBudget = merged.splatBudget;
+  }
+  if (finiteNumber(merged.lodRangeMin) && merged.lodRangeMin >= 0) {
+    sceneGsplat.lodRangeMin = merged.lodRangeMin;
+  }
+  if (finiteNumber(merged.lodRangeMax) && merged.lodRangeMax >= 0) {
+    sceneGsplat.lodRangeMax = merged.lodRangeMax;
+  }
+  app.renderNextFrame = true;
+}
+
+function installInitialCameraRelease(app) {
+  if (window.__sogsInitialCameraReleaseInstalled) {
+    return;
+  }
+  const release = () => {
+    if (!window.__sogsScriptedCamera) {
+      return;
+    }
+    window.__sogsScriptedCamera = false;
+    app.renderNextFrame = true;
+  };
+  window.addEventListener("pointerdown", release, { capture: true });
+  window.addEventListener("wheel", release, { capture: true, passive: true });
+  window.addEventListener("keydown", release, { capture: true });
+  window.__sogsInitialCameraReleaseInstalled = true;
 }
 
 /**
@@ -472,7 +561,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     await waitForValue(() => app.root.findByName("gsplat"), "gsplat");
     await waitForValue(() => viewer.cameraManager, "cameraManager");
 
+    applyViewerConfig(app, window.__sogsInitialViewerConfig ?? {});
     setupCameraManagerBridge(viewer.cameraManager);
+    const initialCameraPose = window.__sogsInitialCameraPose;
+    if (initialCameraPose?.position?.length === 3 && initialCameraPose?.target?.length === 3) {
+      window.__sogsCameraPose = {
+        position: initialCameraPose.position,
+        target: initialCameraPose.target,
+        fov: initialCameraPose.fov ?? null,
+      };
+      window.__sogsScriptedCamera = true;
+      tmpFrom.set(initialCameraPose.position[0], initialCameraPose.position[1], initialCameraPose.position[2]);
+      tmpTo.set(initialCameraPose.target[0], initialCameraPose.target[1], initialCameraPose.target[2]);
+      viewer.cameraManager.camera.look(tmpFrom, tmpTo);
+      if (finiteNumber(initialCameraPose.fov)) {
+        viewer.cameraManager.camera.fov = initialCameraPose.fov;
+        window.__sogsUserFov = initialCameraPose.fov;
+      }
+      installInitialCameraRelease(app);
+      app.renderNextFrame = true;
+    }
     /** Primary pointer + pointermove pan was removed: it fought orbit/touch and caused bounce. */
     window.__sogsSplatXzDragReady = true;
 
@@ -504,10 +612,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (d.type === "sogs:guides") {
         window.__sogsGuidesEnabled = !!d.enabled;
         syncSogsAxesGuides(app);
+        postSogsState();
       }
       if (d.type === "sogs:worldGuides") {
         window.__sogsWorldGuidesEnabled = !!d.enabled;
         syncWorldAxesGuides(app);
+        postSogsState();
+      }
+      if (d.type === "sogs:config") {
+        applyViewerConfig(app, d);
+        postSogsState();
       }
       if (d.type === "sogs:requestState") {
         postSogsState();
@@ -519,11 +633,13 @@ document.addEventListener("DOMContentLoaded", async () => {
           fov: d.fov,
         };
         app.renderNextFrame = true;
+        postSogsState();
       }
       if (d.type === "sogs:cameraMode") {
         const scripted = d.mode === "scripted" || d.scripted === true;
         window.__sogsScriptedCamera = !!scripted;
         app.renderNextFrame = true;
+        postSogsState();
       }
       if (d.type === "sogs:cameraBounds") {
         window.__sogsCameraYMin =
@@ -533,6 +649,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             ? d.maxRadiusFromOrigin
             : null;
         app.renderNextFrame = true;
+        postSogsState();
       }
       if (d.type === "sogs:skyboxRotation") {
         try {
@@ -562,6 +679,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     for (const ev of ["pointerdown", "wheel", "touchstart"]) {
       window.addEventListener(ev, notifyUserInteraction, { capture: true, passive: true });
     }
+    postSogsState();
     postBootEvent("supersplat:bridgeReady", { quality: bootOptions.quality });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

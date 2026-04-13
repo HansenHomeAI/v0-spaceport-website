@@ -65,7 +65,10 @@ class PublishBundleLambdaTests(unittest.TestCase):
                 {
                     "Contents": [
                         {"Key": "compressed/job-123/supersplat_bundle/meta.json"},
+                        {"Key": "compressed/job-123/supersplat_bundle/lod-meta.json"},
+                        {"Key": "compressed/job-123/supersplat_bundle/0_0/meta.json"},
                         {"Key": "compressed/job-123/supersplat_bundle/means_l.webp"},
+                        {"Key": "compressed/job-123/supersplat_bundle/0_0/means_l.webp"},
                         {"Key": "compressed/job-123/supersplat_bundle/skybox/kloppenheim_06_puresky_equirect.webp"},
                     ]
                 }
@@ -82,13 +85,20 @@ class PublishBundleLambdaTests(unittest.TestCase):
             result["edgeBundleUrl"],
             "https://d111111abcdef8.cloudfront.net/models/job-123/supersplat_bundle/meta.json",
         )
-        self.assertEqual(result["copiedObjectCount"], 3)
+        self.assertEqual(
+            result["edgeLodBundleUrl"],
+            "https://d111111abcdef8.cloudfront.net/models/job-123/supersplat_bundle/lod-meta.json",
+        )
+        self.assertEqual(result["copiedObjectCount"], 6)
         self.assertEqual(fake_s3.paginator.calls[0]["Prefix"], "compressed/job-123/supersplat_bundle/")
         self.assertEqual(fake_s3.copy_calls[0]["ContentType"], "application/json")
-        self.assertEqual(fake_s3.copy_calls[1]["ContentType"], "image/webp")
-        self.assertEqual(fake_s3.copy_calls[2]["ContentType"], "image/webp")
+        self.assertEqual(fake_s3.copy_calls[1]["ContentType"], "application/json")
+        self.assertEqual(fake_s3.copy_calls[2]["ContentType"], "application/json")
+        self.assertEqual(fake_s3.copy_calls[3]["ContentType"], "image/webp")
+        self.assertEqual(fake_s3.copy_calls[4]["ContentType"], "image/webp")
+        self.assertEqual(fake_s3.copy_calls[5]["ContentType"], "image/webp")
         self.assertEqual(
-            fake_s3.copy_calls[1]["CacheControl"],
+            fake_s3.copy_calls[4]["CacheControl"],
             "public, max-age=31536000, s-maxage=31536000, immutable",
         )
 

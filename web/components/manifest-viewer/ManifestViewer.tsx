@@ -10,7 +10,7 @@ import { PhotoModal } from "./PhotoModal";
 import { SoldOverlays } from "./SoldOverlays";
 import { TapPickFeedback } from "./TapPickFeedback";
 import { TapDotsOverlay } from "./TapDotsOverlay";
-import { resolveViewerBundle } from "../../lib/manifest-viewer/bundle";
+import { resolveViewerBundle, type ResolvedViewerBundle } from "../../lib/manifest-viewer/bundle";
 import { buildScenePayload, resolveHoleView, type ViewerManifest } from "../../lib/manifest-viewer/manifest";
 import {
   createInitialPathState,
@@ -24,6 +24,7 @@ import type { CameraPose, V3 } from "../../lib/manifest-viewer/types";
 import "./../sogs-migrated-viewer/sogs-migrated-viewer.css";
 
 const MOBILE_BOOT_TIMEOUT_MS = 6000;
+const REQUEST_STATE_INTERVAL_MS = 1500;
 
 function postToWindow(target: Window | null | undefined, payload: object) {
   if (!target) return;
@@ -68,6 +69,79 @@ function getDeveloperToolsEnabled() {
     /* ignore */
   }
   return false;
+}
+
+type ViewerTelemetry = {
+  loadedNodeCount: number;
+  chunkMetaRequestCount: number;
+  chunkMetaAtFirstFrame: number | null;
+  totalRequestCount: number;
+  firstFrameMs: number | null;
+  splatBudget: number | null;
+  lodRangeMin: number | null;
+  lodRangeMax: number | null;
+  rootManifestType: string | null;
+  rootManifestUrl: string | null;
+};
+
+const EMPTY_VIEWER_TELEMETRY: ViewerTelemetry = {
+  loadedNodeCount: 0,
+  chunkMetaRequestCount: 0,
+  chunkMetaAtFirstFrame: null,
+  totalRequestCount: 0,
+  firstFrameMs: null,
+  splatBudget: null,
+  lodRangeMin: null,
+  lodRangeMax: null,
+  rootManifestType: null,
+  rootManifestUrl: null,
+};
+
+function parseOptionalInteger(value: string | null | undefined): number | null {
+  const parsed = Number.parseInt(value?.trim() ?? "", 10);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function defaultStreamingBudget(
+  streaming: ViewerManifest["bundle"]["streaming"] | undefined,
+): number | null {
+  if (!streaming) {
+    return null;
+  }
+  if (typeof window === "undefined") {
+    return streaming.budgetDesktop ?? streaming.budgetMobile ?? null;
+  }
+
+  const ua = window.navigator.userAgent.toLowerCase();
+  const isMobileUa = /iphone|ipad|android|mobile|touch/.test(ua);
+  const isNarrowViewport = window.innerWidth <= 768;
+  if (isMobileUa || isNarrowViewport) {
+    return streaming.budgetMobile ?? streaming.budgetDesktop ?? null;
+  }
+  return streaming.budgetDesktop ?? streaming.budgetMobile ?? null;
+}
+
+function resolveStreamingConfig(
+  streaming: ViewerManifest["bundle"]["streaming"] | undefined,
+): {
+  splatBudget: number | null;
+  lodRangeMin: number | null;
+  lodRangeMax: number | null;
+} {
+  if (typeof window === "undefined") {
+    return {
+      splatBudget: defaultStreamingBudget(streaming),
+      lodRangeMin: streaming?.lodMin ?? null,
+      lodRangeMax: streaming?.lodMax ?? null,
+    };
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  return {
+    splatBudget: parseOptionalInteger(params.get("budget")) ?? defaultStreamingBudget(streaming),
+    lodRangeMin: parseOptionalInteger(params.get("lodMin")) ?? streaming?.lodMin ?? null,
+    lodRangeMax: parseOptionalInteger(params.get("lodMax")) ?? streaming?.lodMax ?? null,
+  };
 }
 
 type BootMode = "default" | "mobile-fallback";
@@ -115,6 +189,7 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
 
   const [inputUrl, setInputUrl] = useState(manifest.bundle.defaultUrl);
   const [activeUrl, setActiveUrl] = useState("");
+  const [resolvedBundle, setResolvedBundle] = useState<ResolvedViewerBundle | null>(null);
   const [skyboxUrl, setSkyboxUrl] = useState<string | null>(null);
   const [skyboxPitch, setSkyboxPitch] = useState(0);
   const [skyboxVOffset, setSkyboxVOffset] = useState(0);
@@ -122,6 +197,7 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
   const [viewerState, setViewerState] = useState<"idle" | "loading" | "ready">("idle");
   const [bootMode, setBootMode] = useState<BootMode>("default");
   const [error, setError] = useState<string | null>(null);
+  const [telemetry, setTelemetry] = useState<ViewerTelemetry>(EMPTY_VIEWER_TELEMETRY);
   const [pathVersion, setPathVersion] = useState(0);
   const [pathPlaying, setPathPlaying] = useState(false);
   const [autoRotate, setAutoRotate] = useState(manifest.orbit.autoRotateDefault ?? false);
@@ -137,6 +213,7 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
   const [developerToolsEnabled] = useState(getDeveloperToolsEnabled);
   const [mobileBootFallbackEnabled] = useState(shouldUseMobileBootFallback);
   const [revealDone, setRevealDone] = useState(false);
+  const streamingConfig = useMemo(() => resolveStreamingConfig(manifest.bundle.streaming), [manifest.bundle.streaming]);
 
   const bumpPath = useCallback(() => setPathVersion((value) => value + 1), []);
 
@@ -230,6 +307,8 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
       setError(null);
       setViewerState("loading");
       setBootMode(nextBootMode);
+      setResolvedBundle(null);
+      setTelemetry(EMPTY_VIEWER_TELEMETRY);
 
       const resolved = await resolveViewerBundle(
         { ...manifest.bundle, useProxy: manifest.bundle.useProxy ?? false },
@@ -245,6 +324,7 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
         return false;
       }
 
+      setResolvedBundle(resolved);
       orbitFocusRef.current = { ...activeHoleViewRef.current.target };
       setSkyboxUrl(resolved.skyboxUrl);
       setSkyboxPitch(resolved.skyboxPitch);
@@ -321,11 +401,30 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
       params.set("quality", "lq");
       params.set("bootMode", "mobile-fallback");
     }
+    if (streamingConfig.splatBudget != null) {
+      params.set("budget", String(streamingConfig.splatBudget));
+    }
+    if (streamingConfig.lodRangeMin != null) {
+      params.set("lodMin", String(streamingConfig.lodRangeMin));
+    }
+    if (streamingConfig.lodRangeMax != null) {
+      params.set("lodMax", String(streamingConfig.lodRangeMax));
+    }
     if (!developerToolsEnabled) {
       params.set("noui", "1");
     }
     return `${manifest.bundle.viewerBase ?? "/supersplat-viewer/index.html"}?${params.toString()}`;
-  }, [activeUrl, bootMode, developerToolsEnabled, manifest.bundle.viewerBase, manifest.bundle.viewerSettingsPath, skyboxPitch, skyboxUrl, skyboxVOffset]);
+  }, [
+    activeUrl,
+    bootMode,
+    developerToolsEnabled,
+    manifest.bundle.viewerBase,
+    manifest.bundle.viewerSettingsPath,
+    skyboxPitch,
+    skyboxUrl,
+    skyboxVOffset,
+    streamingConfig,
+  ]);
 
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
@@ -347,6 +446,12 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
           position: [holeView.startPosition.x, holeView.startPosition.y, holeView.startPosition.z],
           target: [holeView.target.x, holeView.target.y, holeView.target.z],
           fov: scene.fov,
+        });
+        postToWindow(event.source as Window, {
+          type: "sogs:config",
+          splatBudget: streamingConfig.splatBudget,
+          lodRangeMin: streamingConfig.lodRangeMin,
+          lodRangeMax: streamingConfig.lodRangeMax,
         });
         postToWindow(event.source as Window, { type: "sogs:cameraMode", mode: "free" });
         if (manifest.cameraBounds) {
@@ -447,6 +552,46 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
       }
 
       if (event.data?.type === "sogs:state") {
+        const data = event.data as {
+          loadedNodeCount?: number;
+          chunkMetaRequestCount?: number;
+          chunkMetaAtFirstFrame?: number | null;
+          totalRequestCount?: number;
+          firstFrameMs?: number | null;
+          splatBudget?: number | null;
+          lodRangeMin?: number | null;
+          lodRangeMax?: number | null;
+          rootManifestType?: string | null;
+          rootManifestUrl?: string | null;
+        };
+        setTelemetry({
+          loadedNodeCount:
+            typeof data.loadedNodeCount === "number" && Number.isFinite(data.loadedNodeCount)
+              ? data.loadedNodeCount
+              : 0,
+          chunkMetaRequestCount:
+            typeof data.chunkMetaRequestCount === "number" && Number.isFinite(data.chunkMetaRequestCount)
+              ? data.chunkMetaRequestCount
+              : 0,
+          chunkMetaAtFirstFrame:
+            typeof data.chunkMetaAtFirstFrame === "number" && Number.isFinite(data.chunkMetaAtFirstFrame)
+              ? data.chunkMetaAtFirstFrame
+              : null,
+          totalRequestCount:
+            typeof data.totalRequestCount === "number" && Number.isFinite(data.totalRequestCount)
+              ? data.totalRequestCount
+              : 0,
+          firstFrameMs:
+            typeof data.firstFrameMs === "number" && Number.isFinite(data.firstFrameMs) ? data.firstFrameMs : null,
+          splatBudget:
+            typeof data.splatBudget === "number" && Number.isFinite(data.splatBudget) ? data.splatBudget : null,
+          lodRangeMin:
+            typeof data.lodRangeMin === "number" && Number.isFinite(data.lodRangeMin) ? data.lodRangeMin : null,
+          lodRangeMax:
+            typeof data.lodRangeMax === "number" && Number.isFinite(data.lodRangeMax) ? data.lodRangeMax : null,
+          rootManifestType: typeof data.rootManifestType === "string" ? data.rootManifestType : null,
+          rootManifestUrl: typeof data.rootManifestUrl === "string" ? data.rootManifestUrl : null,
+        });
         if (ignoreNextStateRef.current) {
           ignoreNextStateRef.current = false;
         }
@@ -455,7 +600,41 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
 
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, [manifest.cameraBounds, manifest.scene.showWorldAxes, manifest.scene.skyboxRotation, requestMobileBootFallback, scene]);
+  }, [
+    manifest.cameraBounds,
+    manifest.scene.showWorldAxes,
+    manifest.scene.skyboxRotation,
+    requestMobileBootFallback,
+    scene,
+    streamingConfig.lodRangeMax,
+    streamingConfig.lodRangeMin,
+    streamingConfig.splatBudget,
+  ]);
+
+  useEffect(() => {
+    if (!activeUrl || viewerState !== "ready") {
+      return;
+    }
+    const targetWindow = iframeRef.current?.contentWindow;
+    postToWindow(targetWindow, {
+      type: "sogs:config",
+      splatBudget: streamingConfig.splatBudget,
+      lodRangeMin: streamingConfig.lodRangeMin,
+      lodRangeMax: streamingConfig.lodRangeMax,
+    });
+    postToWindow(targetWindow, { type: "sogs:requestState" });
+  }, [activeUrl, iframeKey, streamingConfig, viewerState]);
+
+  useEffect(() => {
+    if (!activeUrl || viewerState !== "ready") {
+      return;
+    }
+    const interval = window.setInterval(
+      () => postToWindow(iframeRef.current?.contentWindow, { type: "sogs:requestState" }),
+      REQUEST_STATE_INTERVAL_MS,
+    );
+    return () => window.clearInterval(interval);
+  }, [activeUrl, iframeKey, viewerState]);
 
   useEffect(() => {
     if (viewerState !== "ready") return;
@@ -895,6 +1074,25 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
 
       <DetailsPanel details={manifest.details} open={detailsOpen} onClose={() => setDetailsOpen(false)} />
       <PhotoModal dot={photoDot} onClose={() => setPhotoDot(null)} />
+      <div
+        hidden
+        data-testid="sogs-bundle-metrics"
+        data-bundle-kind={resolvedBundle?.bundleKind ?? ""}
+        data-transport={resolvedBundle?.summary.transport ?? ""}
+        data-root-file={resolvedBundle?.summary.rootFile ?? ""}
+        data-source-url={resolvedBundle?.summary.sourceUrl ?? ""}
+        data-lod-levels={resolvedBundle?.summary.lodLevels ?? ""}
+        data-chunk-files={resolvedBundle?.summary.chunkFiles ?? ""}
+        data-loaded-nodes={telemetry.loadedNodeCount}
+        data-chunk-meta-requests={telemetry.chunkMetaRequestCount}
+        data-chunk-meta-at-first-frame={telemetry.chunkMetaAtFirstFrame ?? ""}
+        data-first-frame-ms={telemetry.firstFrameMs ?? ""}
+        data-splat-budget={telemetry.splatBudget ?? streamingConfig.splatBudget ?? ""}
+        data-lod-min={telemetry.lodRangeMin ?? streamingConfig.lodRangeMin ?? ""}
+        data-lod-max={telemetry.lodRangeMax ?? streamingConfig.lodRangeMax ?? ""}
+        data-bounds-min={resolvedBundle?.summary.bounds ? resolvedBundle.summary.bounds.min.join(",") : ""}
+        data-bounds-max={resolvedBundle?.summary.bounds ? resolvedBundle.summary.bounds.max.join(",") : ""}
+      />
     </main>
   );
 }

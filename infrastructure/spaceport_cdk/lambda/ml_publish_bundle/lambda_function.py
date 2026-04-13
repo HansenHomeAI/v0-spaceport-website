@@ -32,10 +32,11 @@ def copy_bundle_objects(
     source_prefix: str,
     destination_bucket: str,
     destination_prefix: str,
-) -> List[str]:
+) -> Tuple[List[str], bool]:
     paginator = s3.get_paginator("list_objects_v2")
     copied_keys: List[str] = []
     found_meta = False
+    found_lod_meta = False
 
     for page in paginator.paginate(Bucket=source_bucket, Prefix=source_prefix):
         for entry in page.get("Contents", []):
@@ -46,6 +47,8 @@ def copy_bundle_objects(
 
             if relative_key == "meta.json":
                 found_meta = True
+            elif relative_key == "lod-meta.json":
+                found_lod_meta = True
 
             destination_key = f"{destination_prefix}/{relative_key}"
             s3.copy_object(
@@ -61,7 +64,7 @@ def copy_bundle_objects(
     if not found_meta:
         raise ValueError(f"Missing {source_prefix}/meta.json in {source_bucket}")
 
-    return copied_keys
+    return copied_keys, found_lod_meta
 
 
 def lambda_handler(event: Dict, context) -> Dict:
@@ -79,7 +82,7 @@ def lambda_handler(event: Dict, context) -> Dict:
     source_bundle_prefix = f"{source_root_prefix}/supersplat_bundle".strip("/")
     destination_prefix = f"models/{job_id}/supersplat_bundle"
 
-    copied_keys = copy_bundle_objects(
+    copied_keys, found_lod_meta = copy_bundle_objects(
         source_bucket=source_bucket,
         source_prefix=f"{source_bundle_prefix}/",
         destination_bucket=delivery_bucket,
@@ -87,7 +90,7 @@ def lambda_handler(event: Dict, context) -> Dict:
     )
 
     edge_bundle_url = f"https://{edge_distribution_domain}/{destination_prefix}/meta.json"
-    return {
+    result = {
         "jobId": job_id,
         "sourceBundleS3Uri": f"s3://{source_bucket}/{source_bundle_prefix}/",
         "deliveryBucket": delivery_bucket,
@@ -95,3 +98,6 @@ def lambda_handler(event: Dict, context) -> Dict:
         "edgeBundleUrl": edge_bundle_url,
         "copiedObjectCount": len(copied_keys),
     }
+    if found_lod_meta:
+        result["edgeLodBundleUrl"] = f"https://{edge_distribution_domain}/{destination_prefix}/lod-meta.json"
+    return result

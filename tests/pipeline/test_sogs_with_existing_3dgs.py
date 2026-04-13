@@ -32,7 +32,7 @@ class SimpleSOGSTester:
         # Configuration for SOGS compression test
         self.config = {
             'sagemaker_role': f'arn:aws:iam::{self.account_id}:role/SpaceportMLPipelineStack-SageMakerExecutionRole7843-A4BBnjJAXLs8',
-            'instance_type': 'ml.g4dn.xlarge',  # GPU instance for SOGS
+            'instance_type': 'ml.c6i.2xlarge',  # CPU-first splat-transform compression
             'container_image': f'{self.account_id}.dkr.ecr.{region}.amazonaws.com/spaceport/compressor:latest',
             'test_job_name': f"sogs-simple-test-{int(time.time())}"
         }

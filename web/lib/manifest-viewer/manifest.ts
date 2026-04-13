@@ -37,6 +37,12 @@ export type ViewerBundleManifest = {
   viewerBase?: string;
   viewerSettingsPath?: string;
   useProxy?: boolean;
+  streaming?: {
+    budgetDesktop?: number;
+    budgetMobile?: number;
+    lodMin?: number;
+    lodMax?: number | null;
+  };
 };
 
 export type ViewerHoleViewManifest = {

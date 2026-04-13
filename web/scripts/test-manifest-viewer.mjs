@@ -19,12 +19,15 @@ const logsDir = path.join(repoRoot, "logs");
 const baseUrl = (process.env.VIEWER_BASE_URL ?? "http://127.0.0.1:3000").replace(/\/$/, "");
 const slug = process.env.VIEWER_SLUG ?? "meadow-ln";
 const route = `/viewer/${slug}`;
+const bundleOverrideUrl = (process.env.VIEWER_BUNDLE_URL ?? "").trim();
 const iframeTitle = process.env.VIEWER_IFRAME_TITLE ?? "meadow-ln-viewer";
 const expectedSkyboxSubstring =
   process.env.VIEWER_EXPECT_SKYBOX_SUBSTRING?.trim() || "background_skybox.webp";
 const expectedDetailsHeading = process.env.VIEWER_EXPECT_DETAILS_HEADING ?? "Incognito";
 const expectedDetailsLead =
   process.env.VIEWER_EXPECT_DETAILS_LEAD?.trim() || "Tucked into nearly 30 acres beneath the Bridger Mountains";
+const expectedBundleKind = process.env.VIEWER_EXPECT_BUNDLE_KIND ?? "lod-streaming";
+const expectedRootFile = process.env.VIEWER_EXPECT_ROOT_FILE ?? "lod-meta.json";
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -130,6 +133,23 @@ function summarizeRenderedPixels(buffer) {
   return { width, height, bright, alpha };
 }
 
+function parseIntOrNull(value) {
+  const parsed = Number.parseInt(value ?? "", 10);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function parseFloatOrNull(value) {
+  const parsed = Number.parseFloat(value ?? "");
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function parseVector(value) {
+  return (value ?? "")
+    .split(",")
+    .map((entry) => Number.parseFloat(entry))
+    .filter((entry) => Number.isFinite(entry));
+}
+
 function cameraDelta(a, b) {
   return Math.hypot(
     (a?.x ?? 0) - (b?.x ?? 0),
@@ -171,19 +191,75 @@ async function assertTapRingVisible(page) {
   assert(state.opacity > 0.05, `tap ring should be visibly animating, got opacity ${state.opacity}`);
 }
 
+async function waitForStreamingMetrics(page) {
+  await page.locator('[data-testid="sogs-bundle-metrics"]').waitFor({ state: "attached", timeout: 120000 });
+  await page.waitForFunction(() => {
+    const element = document.querySelector('[data-testid="sogs-bundle-metrics"]');
+    if (!(element instanceof HTMLElement)) {
+      return false;
+    }
+    const firstFrameMs = Number.parseFloat(element.dataset.firstFrameMs ?? "");
+    const chunkMetaRequests = Number.parseInt(element.dataset.chunkMetaRequests ?? "", 10);
+    return (
+      !!element.dataset.bundleKind &&
+      Number.isFinite(firstFrameMs) &&
+      firstFrameMs > 0 &&
+      Number.isFinite(chunkMetaRequests) &&
+      chunkMetaRequests > 0
+    );
+  }, null, { timeout: 120000 });
+}
+
+async function readStreamingMetrics(page) {
+  const dataset = await page.locator('[data-testid="sogs-bundle-metrics"]').evaluate((element) => ({
+    ...element.dataset,
+  }));
+  return {
+    bundleKind: dataset.bundleKind ?? "",
+    transport: dataset.transport ?? "",
+    rootFile: dataset.rootFile ?? "",
+    sourceUrl: dataset.sourceUrl ?? "",
+    lodLevels: parseIntOrNull(dataset.lodLevels),
+    chunkFiles: parseIntOrNull(dataset.chunkFiles),
+    loadedNodes: parseIntOrNull(dataset.loadedNodes) ?? 0,
+    chunkMetaRequests: parseIntOrNull(dataset.chunkMetaRequests) ?? 0,
+    chunkMetaAtFirstFrame: parseIntOrNull(dataset.chunkMetaAtFirstFrame),
+    firstFrameMs: parseFloatOrNull(dataset.firstFrameMs),
+    splatBudget: parseIntOrNull(dataset.splatBudget),
+    lodMin: parseIntOrNull(dataset.lodMin),
+    lodMax: parseIntOrNull(dataset.lodMax),
+    boundsMin: parseVector(dataset.boundsMin),
+    boundsMax: parseVector(dataset.boundsMax),
+  };
+}
+
 (async () => {
   await fs.mkdir(logsDir, { recursive: true });
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   const skyboxResponses = [];
+  const lodResponses = [];
 
   page.on("response", (response) => {
     if (response.url().includes(expectedSkyboxSubstring)) {
       skyboxResponses.push({ url: response.url(), status: response.status() });
     }
+    if (
+      response.url().includes("lod-meta.json") ||
+      /\/\d+_\d+\/meta\.json(?:\?|$)/.test(response.url()) ||
+      /\/\d+_\d+\/.+\.webp(?:\?|$)/.test(response.url())
+    ) {
+      lodResponses.push({ url: response.url(), status: response.status() });
+    }
   });
 
-  await page.goto(`${baseUrl}${route}?dev=1`, {
+  const routeUrl = new URL(`${baseUrl}${route}`);
+  routeUrl.searchParams.set("dev", "1");
+  if (bundleOverrideUrl) {
+    routeUrl.searchParams.set("url", bundleOverrideUrl);
+  }
+
+  await page.goto(routeUrl.toString(), {
     waitUntil: "domcontentloaded",
     timeout: 120000,
   });
@@ -202,6 +278,23 @@ async function assertTapRingVisible(page) {
     const cam = window.__sogsCtx?.viewer?.cameraManager?.camera;
     return !!cam && [cam.position.x, cam.position.y, cam.position.z, cam.distance].every(Number.isFinite);
   }, null, { timeout: 120000 });
+  await waitForStreamingMetrics(page);
+  const bundleMetrics = await readStreamingMetrics(page);
+  assert(bundleMetrics.bundleKind === expectedBundleKind, `expected ${expectedBundleKind}, got ${bundleMetrics.bundleKind}`);
+  assert(bundleMetrics.rootFile === expectedRootFile, `expected ${expectedRootFile}, got ${bundleMetrics.rootFile}`);
+  assert((bundleMetrics.chunkFiles ?? 0) > 0, `expected streamed bundle chunk files, got ${JSON.stringify(bundleMetrics)}`);
+  assert(
+    bundleMetrics.firstFrameMs != null && bundleMetrics.firstFrameMs > 0,
+    `expected first-frame timing, got ${JSON.stringify(bundleMetrics)}`,
+  );
+  assert(
+    (bundleMetrics.chunkFiles ?? 0) > (bundleMetrics.chunkMetaAtFirstFrame ?? 0),
+    `expected first frame before all chunk manifests finished loading, got ${JSON.stringify(bundleMetrics)}`,
+  );
+  assert(
+    bundleMetrics.boundsMin.length === 3 && bundleMetrics.boundsMax.length === 3,
+    `expected streamed bounds metadata, got ${JSON.stringify(bundleMetrics)}`,
+  );
   await page.waitForFunction(() => {
     const button = document.querySelector("#detailsButton");
     return button instanceof HTMLButtonElement && !button.disabled;
@@ -276,6 +369,14 @@ async function assertTapRingVisible(page) {
     skyboxResponses.some((response) => response.status === 200),
     `expected skybox request containing "${expectedSkyboxSubstring}", got ${JSON.stringify(skyboxResponses)}`,
   );
+  assert(
+    lodResponses.some((response) => response.url.includes("/lod-meta.json") && response.status === 200),
+    `expected lod-meta.json network request, got ${JSON.stringify(lodResponses)}`,
+  );
+  assert(
+    lodResponses.some((response) => /\/\d+_\d+\/meta\.json(?:\?|$)/.test(response.url) && response.status === 200),
+    `expected chunk meta network requests, got ${JSON.stringify(lodResponses)}`,
+  );
 
   await page.getByTestId("path-editor-toggle").click();
   await page.waitForSelector('[data-testid="animation-path-panel"].active', { timeout: 10000 });
@@ -286,7 +387,9 @@ async function assertTapRingVisible(page) {
   const shot = path.join(logsDir, `manifest-viewer-${slug}-smoke.png`);
   await page.screenshot({ path: shot, fullPage: true });
   console.log(`Render stats: ${JSON.stringify(renderStats)}`);
+  console.log(`Bundle metrics: ${JSON.stringify(bundleMetrics)}`);
   console.log(`Skybox responses: ${JSON.stringify(skyboxResponses)}`);
+  console.log(`LOD responses: ${JSON.stringify(lodResponses.slice(0, 20))}`);
   console.log(`OK — screenshot ${shot}`);
   await browser.close();
 })().catch((error) => {

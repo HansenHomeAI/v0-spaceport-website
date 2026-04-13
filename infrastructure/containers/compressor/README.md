@@ -1,60 +1,33 @@
-# PlayCanvas SOGS Compression Container
+# SuperSplat Compression Container
 
 ## Overview
-Production-ready container for Self-Organizing Gaussian Splats (SOGS) compression using the official PlayCanvas SOGS implementation.
+This container uses `@playcanvas/splat-transform` to generate the current PlayCanvas
+SOG output formats:
 
-## Architecture
-- **Base Image**: `nvidia/cuda:11.8.0-devel-ubuntu22.04` (SageMaker g4dn compatible)
-- **PyTorch**: 2.0.1+cu118 (matches SageMaker driver 470.xx)
-- **Core Dependencies**: 
-  - `cupy-cuda11x` for GPU acceleration
-  - `torchpq` for quantization
-  - `PLAS` for parallel linear assignment sorting
-  - `sogs` (official PlayCanvas package)
+- `meta.json` for single-bundle fallback loading
+- `lod-meta.json` plus chunk directories for streamed LOD loading
 
-## Input/Output Format
-- **Input**: PLY files with spherical harmonics (`f_dc_0`, `f_dc_1`, `f_dc_2`, `f_rest_X`)
-- **Output**: WebP texture files + `meta.json` + SuperSplat viewer bundle
-- **Compression**: 8-bit/16-bit quantization with WebP image compression
+The SageMaker entrypoint remains `python3 /opt/ml/code/compress.py`.
 
-## Usage
+## Input and Output
+- Input: `.lcc`, `.ply`, `.tar.gz`, or `.zip`
+- Output: `supersplat_bundle/` containing `meta.json`, `lod-meta.json`, chunk folders, viewer settings, and skybox metadata
+
+## Defaults
+- Device: CPU
+- LOD decimation: `30%,10%,3%`
+- Chunk count: `1024` (thousands of splats)
+- Chunk extent: `32`
+
+Override with:
+- `SOGS_DEVICE`
+- `SOGS_LOD_DECIMATION`
+- `SOGS_LOD_CHUNK_COUNT`
+- `SOGS_LOD_CHUNK_EXTENT`
+- `SPLAT_TRANSFORM_BIN`
+
+## Local smoke check
 ```bash
-# SageMaker Processing Job
-python3 compress.py
-
-# Direct usage
-docker run spaceport/compressor:latest
+docker build -t spaceport/compressor:local infrastructure/containers/compressor
+docker run --rm spaceport/compressor:local splat-transform --version
 ```
-
-## GPU Requirements
-- **Instance Type**: `ml.g4dn.xlarge` (T4 GPU) or `ml.g5.xlarge` (A10G GPU)
-- **Driver**: CUDA 11.8 compatible (SageMaker g4dn: 470.xx, g5: 525.xx)
-- **Memory**: 16GB+ RAM recommended
-
-## Diagnostics
-The container includes comprehensive GPU diagnostics:
-- PyTorch CUDA availability check
-- Device information and capabilities
-- System CUDA runtime verification
-- Environment variable validation
-
-## Performance
-- **Compression Time**: 3-5 minutes for 250K gaussians
-- **Compression Ratio**: 10-20x reduction
-- **Output Size**: ~50-100MB for typical models
-
-## Testing
-```bash
-# Run SOGS-only test
-python tests/test_sogs_compression_only.py
-```
-
-## Viewer Integration
-Compressed models can be viewed using the SuperSplat viewer at `/viewer.html` with S3 bundle URLs.
-
-## Troubleshooting
-If GPU detection fails:
-1. Check SageMaker instance type (must be GPU-enabled)
-2. Verify CUDA driver compatibility
-3. Review diagnostic logs for detailed information
-4. Ensure sufficient quota for GPU instances

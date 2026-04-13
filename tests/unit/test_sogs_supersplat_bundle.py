@@ -38,7 +38,14 @@ class SogsSupersplatBundleTests(unittest.TestCase):
         self.compressed_dir.mkdir()
 
         (self.compressed_dir / "meta.json").write_text('{"asset": "ok"}', encoding="utf-8")
+        (self.compressed_dir / "lod-meta.json").write_text(
+            '{"lodLevels": 2, "filenames": ["0_0/meta.json"], "tree": {"lods": {"0": {"file": 0, "offset": 0, "count": 1}}}}',
+            encoding="utf-8",
+        )
         (self.compressed_dir / "chunk-0.webp").write_bytes(b"webp")
+        (self.compressed_dir / "0_0").mkdir()
+        (self.compressed_dir / "0_0" / "meta.json").write_text('{"asset": "lod"}', encoding="utf-8")
+        (self.compressed_dir / "0_0" / "means_l.webp").write_bytes(b"lod-webp")
 
         self.skybox_source = self.root / "source-skybox.png"
         self.skybox_source.write_bytes(b"png")
@@ -75,7 +82,10 @@ class SogsSupersplatBundleTests(unittest.TestCase):
 
         bundle_dir = self.output_dir / "supersplat_bundle"
         self.assertTrue((bundle_dir / "meta.json").exists())
+        self.assertTrue((bundle_dir / "lod-meta.json").exists())
         self.assertTrue((bundle_dir / "chunk-0.webp").exists())
+        self.assertTrue((bundle_dir / "0_0" / "meta.json").exists())
+        self.assertTrue((bundle_dir / "0_0" / "means_l.webp").exists())
         self.assertTrue((bundle_dir / "settings.json").exists())
 
         bundled_skybox = bundle_dir / "skybox" / compress_module.SKYBOX_GENERATED_ASSET_NAME
@@ -86,6 +96,8 @@ class SogsSupersplatBundleTests(unittest.TestCase):
         self.assertEqual(manifest["version"], 1)
         self.assertEqual(manifest["skybox"]["type"], "equirect")
         self.assertEqual(manifest["skybox"]["path"], compress_module.SKYBOX_BUNDLE_RELATIVE_PATH)
+        self.assertEqual(manifest["entrypoints"]["default"], "lod-meta.json")
+        self.assertEqual(manifest["streaming"]["lodLevels"], 2)
 
     def test_create_supersplat_bundle_falls_back_to_source_skybox_when_conversion_fails(self):
         results = {
