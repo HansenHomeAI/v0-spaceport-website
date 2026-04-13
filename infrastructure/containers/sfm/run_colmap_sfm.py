@@ -700,7 +700,7 @@ class ColmapPipeline:
             self.vocab_num_visual_words,
             self.vocab_max_num_descriptors,
         )
-        stream_command(
+        builder_commands = [
             [
                 "colmap",
                 "vocab_tree_builder",
@@ -713,8 +713,34 @@ class ColmapPipeline:
                 "--max_num_images",
                 str(max_num_images),
             ],
-            stage="vocab_tree_builder",
-        )
+            [
+                "colmap",
+                "vocab_tree_builder",
+                "--database_path",
+                str(active_database_path),
+                "--vocab_tree_path",
+                str(self.generated_vocab_tree_path),
+                "--num_visual_words",
+                str(self.vocab_num_visual_words),
+            ],
+        ]
+        last_error: RuntimeError | None = None
+        for command in builder_commands:
+            try:
+                stream_command(command, stage="vocab_tree_builder")
+                break
+            except RuntimeError as error:
+                if "--max_num_images" in command and unrecognized_option_error(error, ["--max_num_images"]):
+                    logger.warning(
+                        "vocab_tree_builder rejected --max_num_images; retrying with older COLMAP-compatible flags"
+                    )
+                    last_error = error
+                    continue
+                raise
+        else:
+            if last_error is not None:
+                raise last_error
+            raise RuntimeError("vocab_tree_builder failed before any command could be executed")
         if (
             not self.generated_vocab_tree_path.exists()
             or self.generated_vocab_tree_path.stat().st_size == 0
@@ -1373,25 +1399,33 @@ class ColmapPipeline:
             registered_ratio * 100.0,
         )
         self.boundary_recovery_triggered = True
-        self.run_spatial_matcher(
-            database_path=chunk_database_path,
-            stage=f"{chunk_stage_prefix}_spatial_matcher_recovery",
-            label="chunk_spatial_matcher",
-            max_neighbors=self.chunk_boundary_max_neighbors,
-            max_distance_m=max(self.spatial_distance_m * 1.5, self.chunk_max_radius_m),
-        )
-        self.run_vocab_matching(
-            database_path=chunk_database_path,
-            stage=f"{chunk_stage_prefix}_vocab_tree_matcher_recovery",
-            label="chunk_vocab_tree_matcher",
-            num_images=self.chunk_boundary_vocab_num_images,
-        )
-        recovered_model = self.run_mapper(
-            database_path=chunk_database_path,
-            stage=f"{chunk_stage_prefix}_mapper_recovery",
-            sparse_root=chunk_dir / "sparse_recovery",
-            image_count=len(chunk_plan.image_names),
-        )
+        try:
+            self.run_spatial_matcher(
+                database_path=chunk_database_path,
+                stage=f"{chunk_stage_prefix}_spatial_matcher_recovery",
+                label="chunk_spatial_matcher",
+                max_neighbors=self.chunk_boundary_max_neighbors,
+                max_distance_m=max(self.spatial_distance_m * 1.5, self.chunk_max_radius_m),
+            )
+            self.run_vocab_matching(
+                database_path=chunk_database_path,
+                stage=f"{chunk_stage_prefix}_vocab_tree_matcher_recovery",
+                label="chunk_vocab_tree_matcher",
+                num_images=self.chunk_boundary_vocab_num_images,
+            )
+            recovered_model = self.run_mapper(
+                database_path=chunk_database_path,
+                stage=f"{chunk_stage_prefix}_mapper_recovery",
+                sparse_root=chunk_dir / "sparse_recovery",
+                image_count=len(chunk_plan.image_names),
+            )
+        except RuntimeError as exc:
+            logger.warning(
+                "Chunk %s boundary recovery failed; keeping initial chunk model instead: %s",
+                chunk_plan.index,
+                exc,
+            )
+            return initial_model
         self.chunk_mapper_seconds += self.timings[f"{chunk_stage_prefix}_mapper_recovery_seconds"]
         return recovered_model if model_sort_key(recovered_model) >= model_sort_key(initial_model) else initial_model
 

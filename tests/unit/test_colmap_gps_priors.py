@@ -572,6 +572,84 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(vocab_mock.call_count, 1)
             self.assertEqual(mapper_mock.call_count, 2)
 
+    def test_run_chunk_pipeline_keeps_initial_model_when_boundary_recovery_fails(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.enable_sequential_matcher = True
+            pipeline.exif_records = {
+                "IMG_01.jpg": {"local_x_m": 0.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_02.jpg": {"local_x_m": 1.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_03.jpg": {"local_x_m": 2.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_04.jpg": {"local_x_m": 3.0, "local_y_m": 0.0, "heading_deg": 0.0},
+            }
+            chunk = run_colmap_sfm.ChunkPlan(
+                index=0,
+                core_names=["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg"],
+                image_names=["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg"],
+                overlap_names=["IMG_03.jpg", "IMG_04.jpg"],
+            )
+            initial_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_00_mapper_initial",
+                text_dir=root,
+                cameras_registered=1,
+                images_registered=2,
+                points_3d=1000,
+                binary_dir=root,
+                image_count=4,
+            )
+
+            with mock.patch.object(pipeline, "run_feature_extraction"), mock.patch.object(
+                pipeline, "validate_or_backfill_pose_priors"
+            ), mock.patch.object(pipeline, "run_spatial_matcher"), mock.patch.object(
+                pipeline, "run_sequential_matcher"
+            ), mock.patch.object(
+                pipeline,
+                "run_vocab_matching",
+                side_effect=RuntimeError("legacy builder flags unsupported"),
+            ), mock.patch.object(
+                pipeline,
+                "run_mapper",
+                return_value=initial_model,
+            ) as mapper_mock:
+                pipeline.timings["chunk_00_mapper_initial_seconds"] = 10.0
+                best_model = pipeline.run_chunk_pipeline(chunk)
+
+            self.assertEqual(best_model.images_registered, 2)
+            self.assertTrue(pipeline.boundary_recovery_triggered)
+            self.assertEqual(mapper_mock.call_count, 1)
+
+    def test_build_vocab_tree_retries_without_max_num_images_for_older_colmap(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.database_path = root / "database.db"
+            pipeline.generated_vocab_tree_path = root / "vocab_tree_faiss.bin"
+
+            with sqlite3.connect(pipeline.database_path) as connection:
+                connection.execute("CREATE TABLE images(image_id INTEGER PRIMARY KEY, name TEXT)")
+                connection.executemany(
+                    "INSERT INTO images(image_id, name) VALUES (?, ?)",
+                    [(1, "a.jpg"), (2, "b.jpg")],
+                )
+                connection.commit()
+
+            command_calls: list[list[str]] = []
+
+            def fake_stream_command(command, *, stage, env=None):
+                command_calls.append(command)
+                if "--max_num_images" in command:
+                    raise RuntimeError("vocab_tree_builder failed with exit code 1\nFailed to parse options - unrecognised option '--max_num_images'.")
+                pipeline.generated_vocab_tree_path.write_bytes(b"faiss")
+
+            with mock.patch.object(run_colmap_sfm, "stream_command", side_effect=fake_stream_command):
+                pipeline.build_vocab_tree()
+
+            self.assertEqual(len(command_calls), 2)
+            self.assertIn("--max_num_images", command_calls[0])
+            self.assertNotIn("--max_num_images", command_calls[1])
+            self.assertEqual(pipeline.active_vocab_tree_path, pipeline.generated_vocab_tree_path)
+
     def test_run_matching_and_mapping_falls_back_to_monolithic_when_chunked_path_fails(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
