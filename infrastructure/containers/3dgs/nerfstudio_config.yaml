@@ -2,12 +2,18 @@
 # Vincent Woo's Sutro Tower Methodology for High-Quality 3D Reconstruction
 # Optimized for AWS ml.g5.xlarge (A10G GPU) deployment
 
-# Model Configuration (Vincent Woo's exact setup)
+# Model Configuration
 model:
-  variant: "splatfacto-big"           # Vincent used splatfacto-big for maximum quality
-  sh_degree: 3                       # Industry standard: 16 coefficients (4^2)
-  bilateral_processing: true         # Vincent's key innovation for exposure correction
+  variant: "splatfacto-w-light"      # Adds the lightweight background model for sky coverage
+  sh_degree: 3                       # Foreground SH degree
+  bilateral_processing: false        # Not used by splatfacto-w-light
   max_num_gaussians: 1500000         # Conservative limit for A10G GPU (16GB VRAM)
+  enable_bg_model: true
+  enable_alpha_loss: true
+  enable_robust_mask: true
+  bg_sh_degree: 4
+  appearance_embed_dim: 48
+  never_mask_upper: 0.4
 
 # Training Configuration
 training:
@@ -35,6 +41,12 @@ output:
   format: "ply"                      # SOGS-compatible PLY format
   include_spherical_harmonics: true  # Required for high quality
   compression_ready: true            # Prepare for SOGS compression
+  background_skybox:
+    enabled: true
+    width: 1024
+    height: 512
+    quality: 90
+    appearance_mode: "average"
   
   # Metadata inclusion
   include_training_metadata: true
@@ -82,15 +94,15 @@ production:
 
 # Licensing and Compliance
 licensing:
-  framework: "NerfStudio"
+  framework: "NerfStudio + Splatfacto-W"
   license: "Apache 2.0"
   commercial_use: true
   attribution_required: true
-  methodology: "Vincent Woo Sutro Tower"
+  methodology: "Spaceport splatfacto-w-light skybox export"
 
 # Version and Compatibility
 version:
   config_version: "1.0.0"
-  nerfstudio_version: ">=1.0.0"
-  target_quality: "sutro_tower"
-  last_updated: "2025-01-27"
+  nerfstudio_version: "main"
+  target_quality: "full_sky_background"
+  last_updated: "2026-04-01"

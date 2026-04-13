@@ -25,3 +25,4 @@ INDUSTRY-STANDARD NERFSTUDIO FLOW: COLMAP TXT → BIN → ns-process-data → tr
 
 Nov 19th, 11:02AM
 # Cache validation: safe no-op touchpoint to exercise app-layer rebuild timing.
+2026-04-01T19:30:00Z splatfacto-w-light skybox export and background bake

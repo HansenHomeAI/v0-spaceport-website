@@ -578,21 +578,29 @@ class MLPipelineStack(Stack):
                     "PYTHONUNBUFFERED": "1",
                     "SAGEMAKER_PROGRAM": "train.py",
                     
-                    # Vincent Woo's NerfStudio Methodology - Core Parameters
-                    # Note: All values must be strings for SageMaker environment variables
-                    # Using JsonPath.string_at() directly - CDK will convert to Step Functions intrinsic functions
+                    # Note: All values must be strings for SageMaker environment variables.
                     "MAX_ITERATIONS": sfn.JsonPath.string_at("$.MAX_ITERATIONS"),
                     "TARGET_PSNR": sfn.JsonPath.string_at("$.TARGET_PSNR"),
                     "LOG_INTERVAL": sfn.JsonPath.string_at("$.LOG_INTERVAL"),
                     
-                    # Vincent Woo's Key Features
-                    "MODEL_VARIANT": sfn.JsonPath.string_at("$.MODEL_VARIANT"),  # splatfacto vs splatfacto-big
-                    "SH_DEGREE": sfn.JsonPath.string_at("$.SH_DEGREE"),          # Industry standard: 3
-                    "BILATERAL_PROCESSING": sfn.JsonPath.string_at("$.BILATERAL_PROCESSING"),  # Vincent's innovation
+                    # Model configuration
+                    "MODEL_VARIANT": sfn.JsonPath.string_at("$.MODEL_VARIANT"),
+                    "SH_DEGREE": sfn.JsonPath.string_at("$.SH_DEGREE"),
+                    "BILATERAL_PROCESSING": sfn.JsonPath.string_at("$.BILATERAL_PROCESSING"),
+                    "ENABLE_BG_MODEL": sfn.JsonPath.string_at("$.ENABLE_BG_MODEL"),
+                    "ENABLE_ALPHA_LOSS": sfn.JsonPath.string_at("$.ENABLE_ALPHA_LOSS"),
+                    "ENABLE_ROBUST_MASK": sfn.JsonPath.string_at("$.ENABLE_ROBUST_MASK"),
+                    "BG_SH_DEGREE": sfn.JsonPath.string_at("$.BG_SH_DEGREE"),
+                    "APPEARANCE_EMBED_DIM": sfn.JsonPath.string_at("$.APPEARANCE_EMBED_DIM"),
+                    "NEVER_MASK_UPPER": sfn.JsonPath.string_at("$.NEVER_MASK_UPPER"),
+                    "BACKGROUND_APPEARANCE_MODE": sfn.JsonPath.string_at("$.BACKGROUND_APPEARANCE_MODE"),
+                    "BACKGROUND_SKYBOX_WIDTH": sfn.JsonPath.string_at("$.BACKGROUND_SKYBOX_WIDTH"),
+                    "BACKGROUND_SKYBOX_HEIGHT": sfn.JsonPath.string_at("$.BACKGROUND_SKYBOX_HEIGHT"),
+                    "BACKGROUND_SKYBOX_QUALITY": sfn.JsonPath.string_at("$.BACKGROUND_SKYBOX_QUALITY"),
                     
                     # NerfStudio Framework Configuration
                     "FRAMEWORK": "nerfstudio",
-                    "METHODOLOGY": "vincent_woo_sutro_tower",
+                    "METHODOLOGY": "spaceport_splatfacto_w_light_skybox",
                     "LICENSE": "apache_2_0",
                     
                     # Quality and Performance Settings

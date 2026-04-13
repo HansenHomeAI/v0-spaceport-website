@@ -4,14 +4,15 @@ NerfStudio-based 3D Gaussian Splatting Training Script
 ======================================================
 
 Production implementation of Vincent Woo's Sutro Tower methodology.
-Uses NerfStudio's splatfacto-big with bilateral guided processing
-for high-quality 3D reconstruction matching commercial standards.
+Uses NerfStudio with splatfacto-w-light for high-quality foreground splats
+plus a lightweight learned background that we bake into the final viewer
+skybox.
 
 Key Features:
 1. Vincent Woo's exact training parameters and methodology
 2. Bilateral guided radiance field processing for exposure correction
 3. Production-grade error handling and logging
-4. SOGS-compatible PLY output for PlayCanvas deployment
+4. SOGS-compatible PLY output plus baked skybox for PlayCanvas deployment
 5. AWS SageMaker integration with Step Functions
 """
 
@@ -88,7 +89,7 @@ class NerfStudioTrainer:
         # Apply Step Functions parameter overrides
         self.apply_step_functions_params()
         
-        logger.info("🚀 NerfStudio Trainer initialized (Vincent Woo's methodology)")
+        logger.info("🚀 NerfStudio Trainer initialized (Spaceport splatfacto-w-light)")
         logger.info(f"📁 Input directory: {self.input_dir}")
         logger.info(f"📁 Output directory: {self.output_dir}")
         logger.info(f"📁 Temp directory: {self.temp_dir}")
@@ -101,18 +102,28 @@ class NerfStudioTrainer:
             'SH_DEGREE': 'model.sh_degree',
             'BILATERAL_PROCESSING': 'model.bilateral_processing',
             'LOG_INTERVAL': 'training.log_interval',
-            'MODEL_VARIANT': 'model.variant'  # splatfacto vs splatfacto-big
+            'MODEL_VARIANT': 'model.variant',
+            'ENABLE_BG_MODEL': 'model.enable_bg_model',
+            'ENABLE_ALPHA_LOSS': 'model.enable_alpha_loss',
+            'ENABLE_ROBUST_MASK': 'model.enable_robust_mask',
+            'BG_SH_DEGREE': 'model.bg_sh_degree',
+            'APPEARANCE_EMBED_DIM': 'model.appearance_embed_dim',
+            'NEVER_MASK_UPPER': 'model.never_mask_upper',
+            'BACKGROUND_APPEARANCE_MODE': 'output.background_skybox.appearance_mode',
+            'BACKGROUND_SKYBOX_WIDTH': 'output.background_skybox.width',
+            'BACKGROUND_SKYBOX_HEIGHT': 'output.background_skybox.height',
+            'BACKGROUND_SKYBOX_QUALITY': 'output.background_skybox.quality',
         }
         
         for env_var, config_path in env_params.items():
             value = os.environ.get(env_var)
             if value is not None:
                 # Convert string values to appropriate types
-                if env_var in ['BILATERAL_PROCESSING']:
+                if env_var in ['BILATERAL_PROCESSING', 'ENABLE_BG_MODEL', 'ENABLE_ALPHA_LOSS', 'ENABLE_ROBUST_MASK']:
                     value = value.lower() in ('true', '1', 'yes', 'on')
-                elif env_var in ['MAX_ITERATIONS', 'SH_DEGREE', 'LOG_INTERVAL']:
+                elif env_var in ['MAX_ITERATIONS', 'SH_DEGREE', 'LOG_INTERVAL', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY']:
                     value = int(value)
-                elif env_var in ['TARGET_PSNR']:
+                elif env_var in ['TARGET_PSNR', 'NEVER_MASK_UPPER']:
                     value = float(value)
                 
                 # Set nested config values
@@ -517,25 +528,35 @@ class NerfStudioTrainer:
             return False
     
     def run_nerfstudio_training(self) -> bool:
-        """Execute NerfStudio training with Vincent Woo's exact methodology"""
-        logger.info("🔥 Starting NerfStudio training (Vincent Woo's methodology)")
+        """Execute NerfStudio training with splatfacto-w-light and background export support"""
+        logger.info("🔥 Starting NerfStudio training (splatfacto-w-light)")
         logger.info("=" * 60)
         
         # Get configuration parameters
         model_config = self.config.get('model', {})
         training_config = self.config.get('training', {})
         
-        model_variant = model_config.get('variant', 'splatfacto-big')  # Vincent used splatfacto-big
+        model_variant = model_config.get('variant', 'splatfacto-w-light')
         max_iterations = training_config.get('max_iterations', 30000)
-        sh_degree = model_config.get('sh_degree', 3)  # Industry standard (Vincent's setting)
-        bilateral_processing = model_config.get('bilateral_processing', True)  # Vincent's key innovation
+        sh_degree = model_config.get('sh_degree', 3)
+        bilateral_processing = model_config.get('bilateral_processing', False)
+        enable_bg_model = model_config.get('enable_bg_model', True)
+        enable_alpha_loss = model_config.get('enable_alpha_loss', True)
+        enable_robust_mask = model_config.get('enable_robust_mask', True)
+        bg_sh_degree = model_config.get('bg_sh_degree', 4)
+        appearance_embed_dim = model_config.get('appearance_embed_dim', 48)
+        never_mask_upper = model_config.get('never_mask_upper', 0.4)
         log_interval = training_config.get('log_interval', 100)
         
-        logger.info(f"🎯 Training Configuration (Vincent Woo's methodology):")
+        logger.info("🎯 Training Configuration:")
         logger.info(f"   Model: {model_variant}")
         logger.info(f"   Max iterations: {max_iterations}")
-        logger.info(f"   SH degree: {sh_degree} (16 coefficients)")
-        logger.info(f"   Bilateral guided processing: {bilateral_processing}")
+        logger.info(f"   SH degree: {sh_degree}")
+        logger.info(f"   Background model: {enable_bg_model}")
+        logger.info(f"   Alpha loss: {enable_alpha_loss}")
+        logger.info(f"   Robust sky masking: {enable_robust_mask}")
+        logger.info(f"   Background SH degree: {bg_sh_degree}")
+        logger.info(f"   Appearance embedding dim: {appearance_embed_dim}")
         logger.info(f"   Log interval: {log_interval}")
         logger.info(f"   Dataparser: transforms.json (via ns-process-data conversion)")
         
@@ -551,13 +572,21 @@ class NerfStudioTrainer:
             "--logging.steps_per_log", str(log_interval)
         ]
         
-        # Add bilateral guided processing (Vincent's exposure correction)
-        # CORRECT PARAMETER FOUND: --pipeline.model.use-bilateral-grid True
         if bilateral_processing:
             cmd.extend(["--pipeline.model.use-bilateral-grid", "True"])
             logger.info("🌈 Bilateral guided processing enabled (--pipeline.model.use-bilateral-grid True)")
         else:
-            logger.info("⚠️  Bilateral guided processing disabled")
+            logger.info("ℹ️  Bilateral guided processing disabled")
+
+        if model_variant in {"splatfacto-w-light", "splatfacto-w"}:
+            cmd.extend([
+                "--pipeline.model.enable_bg_model", str(enable_bg_model),
+                "--pipeline.model.enable_alpha_loss", str(enable_alpha_loss),
+                "--pipeline.model.enable_robust_mask", str(enable_robust_mask),
+                "--pipeline.model.bg_sh_degree", str(bg_sh_degree),
+                "--pipeline.model.appearance_embed_dim", str(appearance_embed_dim),
+                "--pipeline.model.never_mask_upper", str(never_mask_upper),
+            ])
         
         # Memory optimization for A10G GPU (16GB vs Vincent's RTX 4090 24GB)
         # Using max-gauss-ratio instead of max_num_gaussians (suggested by NerfStudio error)
@@ -606,8 +635,8 @@ class NerfStudioTrainer:
             return False
     
     def export_trained_model(self) -> bool:
-        """Export trained model to PLY format (SOGS compatible)"""
-        logger.info("📦 Exporting trained model to PLY format...")
+        """Export trained model to PLY format and bake the background skybox when available."""
+        logger.info("📦 Exporting trained model artifacts...")
         
         # Find the latest config file in training output
         config_files = list(self.temp_dir.glob("**/config.yml"))
@@ -619,12 +648,26 @@ class NerfStudioTrainer:
         config_file = max(config_files, key=lambda x: x.stat().st_mtime)
         logger.info(f"📄 Using config: {config_file}")
         
-        # Export command
-        export_cmd = [
-            "ns-export", "gaussian-splat",
-            "--load-config", str(config_file),
-            "--output-dir", str(self.output_dir)
-        ]
+        model_variant = self.config.get('model', {}).get('variant', 'splatfacto-w-light')
+        skybox_config = self.config.get('output', {}).get('background_skybox', {})
+
+        if model_variant in {"splatfacto-w-light", "splatfacto-w"}:
+            export_cmd = [
+                "python", "/opt/ml/code/export_splatfacto_w_assets.py",
+                "--load-config", str(config_file),
+                "--output-dir", str(self.output_dir),
+                "--camera-idx", "0",
+                "--background-width", str(skybox_config.get('width', 1024)),
+                "--background-height", str(skybox_config.get('height', 512)),
+                "--background-quality", str(skybox_config.get('quality', 90)),
+                "--background-appearance-mode", str(skybox_config.get('appearance_mode', 'average')),
+            ]
+        else:
+            export_cmd = [
+                "ns-export", "gaussian-splat",
+                "--load-config", str(config_file),
+                "--output-dir", str(self.output_dir)
+            ]
         
         logger.info(f"🔄 Executing export command:")
         logger.info(f"   {' '.join(export_cmd)}")
@@ -655,6 +698,13 @@ class NerfStudioTrainer:
                 logger.info("✅ SOGS-compatible PLY format ready for compression")
             else:
                 logger.warning("⚠️ No PLY file found in export output")
+
+            skybox_path = self.output_dir / "background_skybox.webp"
+            if skybox_path.exists():
+                logger.info(
+                    f"🌤️ Background skybox: {skybox_path.name} "
+                    f"({skybox_path.stat().st_size / (1024 * 1024):.2f} MB)"
+                )
             
             return True
             
@@ -668,11 +718,14 @@ class NerfStudioTrainer:
     def generate_training_metadata(self) -> Dict[str, Any]:
         """Generate comprehensive training metadata"""
         metadata = {
-            'training_methodology': 'Vincent Woo Sutro Tower',
+            'training_methodology': 'Spaceport splatfacto-w-light skybox export',
             'framework': 'NerfStudio',
-            'model_variant': self.config.get('model', {}).get('variant', 'splatfacto-big'),
-            'bilateral_guided_processing': self.config.get('model', {}).get('bilateral_processing', True),
+            'model_variant': self.config.get('model', {}).get('variant', 'splatfacto-w-light'),
+            'bilateral_guided_processing': self.config.get('model', {}).get('bilateral_processing', False),
             'sh_degree': self.config.get('model', {}).get('sh_degree', 3),
+            'enable_bg_model': self.config.get('model', {}).get('enable_bg_model', True),
+            'enable_alpha_loss': self.config.get('model', {}).get('enable_alpha_loss', True),
+            'enable_robust_mask': self.config.get('model', {}).get('enable_robust_mask', True),
             'max_iterations': self.config.get('training', {}).get('max_iterations', 30000),
             'commercial_license': 'Apache 2.0',
             'sogs_compatible': True,
@@ -688,6 +741,11 @@ class NerfStudioTrainer:
             ply_file = ply_files[0]
             metadata['output_file'] = ply_file.name
             metadata['file_size_mb'] = ply_file.stat().st_size / (1024 * 1024)
+
+        skybox_path = self.output_dir / "background_skybox.webp"
+        if skybox_path.exists():
+            metadata['background_skybox'] = skybox_path.name
+            metadata['background_skybox_size_mb'] = skybox_path.stat().st_size / (1024 * 1024)
         
         # Save metadata
         metadata_path = self.output_dir / "training_metadata.json"
@@ -739,9 +797,9 @@ class NerfStudioTrainer:
             
             logger.info("=" * 80)
             logger.info("🎉 NERFSTUDIO TRAINING PIPELINE COMPLETED SUCCESSFULLY!")
-            logger.info("✅ Vincent Woo's methodology implemented")
-            logger.info("✅ Bilateral guided processing applied")
+            logger.info("✅ splatfacto-w-light foreground training completed")
             logger.info("✅ SOGS-compatible PLY output generated")
+            logger.info("✅ Background skybox baked for the viewer")
             logger.info("✅ Production-ready for PlayCanvas deployment")
             logger.info(f"📁 Output directory: {self.output_dir}")
             logger.info("=" * 80)
@@ -765,8 +823,8 @@ def main():
     
     try:
         logger.info("🚀 NerfStudio Production Training Started")
-        logger.info("📦 Framework: NerfStudio with Vincent Woo's methodology")
-        logger.info("🎯 Goal: Sutro Tower quality 3D reconstruction")
+        logger.info("📦 Framework: NerfStudio with splatfacto-w-light")
+        logger.info("🎯 Goal: high-quality 3D splats with full sky background coverage")
         
         # Initialize trainer
         trainer = NerfStudioTrainer(args.config)
