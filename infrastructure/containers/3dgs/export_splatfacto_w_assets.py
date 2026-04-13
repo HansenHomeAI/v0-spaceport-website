@@ -165,13 +165,13 @@ def main() -> None:
     parser.add_argument("--load-config", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--camera-idx", type=int, default=0)
-    parser.add_argument("--background-width", type=int, default=1024)
-    parser.add_argument("--background-height", type=int, default=512)
-    parser.add_argument("--background-quality", type=int, default=90)
+    parser.add_argument("--background-width", type=int, default=2048)
+    parser.add_argument("--background-height", type=int, default=1024)
+    parser.add_argument("--background-quality", type=int, default=95)
     parser.add_argument(
         "--background-appearance-mode",
-        choices=("average", "camera"),
-        default="average",
+        choices=("average", "camera", "auto_camera"),
+        default="auto_camera",
     )
     args = parser.parse_args()
 
@@ -190,7 +190,7 @@ def main() -> None:
         width=args.background_width,
         height=args.background_height,
         quality=args.background_quality,
-        appearance_mode=args.background_appearance_mode,
+        appearance_mode="camera" if args.background_appearance_mode == "auto_camera" else args.background_appearance_mode,
         camera_idx=args.camera_idx,
     )
 

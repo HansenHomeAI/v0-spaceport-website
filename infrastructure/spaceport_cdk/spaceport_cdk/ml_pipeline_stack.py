@@ -494,6 +494,15 @@ class MLPipelineStack(Stack):
                     "BACKGROUND_SKYBOX_WIDTH": sfn.JsonPath.string_at("$.BACKGROUND_SKYBOX_WIDTH"),
                     "BACKGROUND_SKYBOX_HEIGHT": sfn.JsonPath.string_at("$.BACKGROUND_SKYBOX_HEIGHT"),
                     "BACKGROUND_SKYBOX_QUALITY": sfn.JsonPath.string_at("$.BACKGROUND_SKYBOX_QUALITY"),
+                    "BACKGROUND_SELECTION_STRIDE": sfn.JsonPath.string_at("$.BACKGROUND_SELECTION_STRIDE"),
+                    "BACKGROUND_SELECTION_MAX_FRAMES": sfn.JsonPath.string_at("$.BACKGROUND_SELECTION_MAX_FRAMES"),
+                    "FLOATER_PRUNING_ENABLED": sfn.JsonPath.string_at("$.FLOATER_PRUNING_ENABLED"),
+                    "FLOATER_PRUNING_MIN_VIEWS": sfn.JsonPath.string_at("$.FLOATER_PRUNING_MIN_VIEWS"),
+                    "FLOATER_PRUNING_TOP_REGION_RATIO": sfn.JsonPath.string_at("$.FLOATER_PRUNING_TOP_REGION_RATIO"),
+                    "FLOATER_PRUNING_TOP_VIEW_FRACTION": sfn.JsonPath.string_at("$.FLOATER_PRUNING_TOP_VIEW_FRACTION"),
+                    "FLOATER_PRUNING_MAX_OPACITY": sfn.JsonPath.string_at("$.FLOATER_PRUNING_MAX_OPACITY"),
+                    "FLOATER_PRUNING_MAX_COLOR_DISTANCE": sfn.JsonPath.string_at("$.FLOATER_PRUNING_MAX_COLOR_DISTANCE"),
+                    "FLOATER_PRUNING_MIN_EDGE_SUPPORT": sfn.JsonPath.string_at("$.FLOATER_PRUNING_MIN_EDGE_SUPPORT"),
                     "TRAINING_TIMEOUT_SECONDS": sfn.JsonPath.string_at("$.TRAINING_TIMEOUT_SECONDS"),
                     
                     # NerfStudio Framework Configuration

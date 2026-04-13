@@ -91,6 +91,8 @@ class NerfStudioPipelineTest:
         # Test script path
         script_path = Path(__file__).parent / "train_nerfstudio_production.py"
         export_script_path = Path(__file__).parent / "export_splatfacto_w_assets.py"
+        quality_pass_script_path = Path(__file__).parent / "run_export_quality_pass.py"
+        helper_script_path = Path(__file__).parent / "sky_quality.py"
         config_path = Path(__file__).parent / "nerfstudio_config.yaml"
         
         if not script_path.exists():
@@ -99,6 +101,14 @@ class NerfStudioPipelineTest:
 
         if not export_script_path.exists():
             logger.error("❌ Export script not found")
+            return False
+
+        if not helper_script_path.exists():
+            logger.error("❌ Sky quality helper not found")
+            return False
+
+        if not quality_pass_script_path.exists():
+            logger.error("❌ Export quality pass script not found")
             return False
         
         if not config_path.exists():
@@ -126,6 +136,26 @@ class NerfStudioPipelineTest:
                 return False
 
             logger.info("✅ Export script syntax validated")
+
+            helper_result = subprocess.run([
+                sys.executable, "-m", "py_compile", str(helper_script_path)
+            ], capture_output=True, text=True)
+
+            if helper_result.returncode != 0:
+                logger.error(f"❌ Sky quality helper syntax error: {helper_result.stderr}")
+                return False
+
+            logger.info("✅ Sky quality helper syntax validated")
+
+            quality_pass_result = subprocess.run([
+                sys.executable, "-m", "py_compile", str(quality_pass_script_path)
+            ], capture_output=True, text=True)
+
+            if quality_pass_result.returncode != 0:
+                logger.error(f"❌ Export quality pass syntax error: {quality_pass_result.stderr}")
+                return False
+
+            logger.info("✅ Export quality pass syntax validated")
             
             # Test configuration loading
             import yaml
@@ -202,10 +232,22 @@ class NerfStudioPipelineTest:
             return False
 
         skybox_config = output_config.get('background_skybox', {})
-        if skybox_config.get('enabled') and skybox_config.get('width') == 1024:
+        if (
+            skybox_config.get('enabled')
+            and skybox_config.get('width') == 2048
+            and skybox_config.get('height') == 1024
+            and skybox_config.get('appearance_mode') == 'auto_camera'
+        ):
             logger.info("✅ Background skybox export configured")
         else:
             logger.error("❌ Background skybox export not configured")
+            return False
+
+        floater_pruning_config = output_config.get('floater_pruning', {})
+        if floater_pruning_config.get('enabled') and floater_pruning_config.get('min_views') == 4:
+            logger.info("✅ Floater pruning configured")
+        else:
+            logger.error("❌ Floater pruning not configured")
             return False
 
         return True
