@@ -4852,9 +4852,12 @@ class ColmapPipeline:
         max_images: int,
         preferred_names: Set[str] | None = None,
         required_names: Sequence[str] | None = None,
+        candidate_names: Sequence[str] | None = None,
     ) -> List[str]:
         preferred_names = preferred_names or set()
-        source_union = self.sorted_capture_names(set(left_source_names).union(right_source_names))
+        source_union = self.sorted_capture_names(
+            set(left_source_names).union(right_source_names).union(candidate_names or [])
+        )
         source_union_set = set(source_union)
         required_name_set = source_union_set.intersection(set(required_names or []))
         effective_max_images = max(max_images, len(required_name_set), 1)
@@ -4937,6 +4940,7 @@ class ColmapPipeline:
         right_source_names: Sequence[str],
         raw_merged_names: Set[str],
         required_names: Sequence[str] | None = None,
+        candidate_names: Sequence[str] | None = None,
     ) -> List[str]:
         return self.select_ranked_merge_frontier_names(
             left_source_names=left_source_names,
@@ -4944,6 +4948,7 @@ class ColmapPipeline:
             raw_merged_names=raw_merged_names,
             max_images=max(self.seam_frontier_max_images, 1),
             required_names=required_names,
+            candidate_names=candidate_names,
         )
 
     def expand_merge_frontier_names(
@@ -4954,8 +4959,11 @@ class ColmapPipeline:
         raw_merged_names: Set[str],
         preferred_names: Sequence[str],
         required_names: Sequence[str] | None = None,
+        candidate_names: Sequence[str] | None = None,
     ) -> List[str]:
-        source_union = self.sorted_capture_names(set(left_source_names).union(right_source_names))
+        source_union = self.sorted_capture_names(
+            set(left_source_names).union(right_source_names).union(candidate_names or [])
+        )
         retry_cap = min(max(self.seam_frontier_retry_max_images, len(preferred_names)), len(source_union))
         return self.select_ranked_merge_frontier_names(
             left_source_names=left_source_names,
@@ -4964,6 +4972,7 @@ class ColmapPipeline:
             max_images=max(retry_cap, 1),
             preferred_names=set(preferred_names).union(set(source_union).difference(raw_merged_names)),
             required_names=required_names,
+            candidate_names=candidate_names,
         )
 
     def run_image_registrator(
@@ -5145,9 +5154,12 @@ class ColmapPipeline:
         dir_name: str,
         bridge_target_name_sets: Sequence[Set[str]] | None = None,
         required_names: Sequence[str] | None = None,
+        scope_image_names: Sequence[str] | None = None,
         run_final_bundle_adjustment: bool = False,
     ) -> tuple[ModelSummary, List[str], bool, str]:
-        source_union_names = self.sorted_capture_names(set(left_source_names).union(right_source_names))
+        source_union_names = self.sorted_capture_names(
+            set(left_source_names).union(right_source_names).union(scope_image_names or [])
+        )
         required_scope_names = self.sorted_capture_names(
             set(source_union_names).intersection(set(required_names or []))
         )
@@ -5158,6 +5170,7 @@ class ColmapPipeline:
             right_source_names=right_source_names,
             raw_merged_names=raw_merged_names,
             required_names=required_scope_names,
+            candidate_names=source_union_names,
         )
         attempt_specs: List[tuple[str, str, List[str], int | None]] = [
             (
@@ -5173,6 +5186,7 @@ class ColmapPipeline:
             raw_merged_names=raw_merged_names,
             preferred_names=initial_frontier_names,
             required_names=required_scope_names,
+            candidate_names=source_union_names,
         )
         if expanded_frontier_names != initial_frontier_names:
             attempt_specs.append(
@@ -6081,6 +6095,7 @@ class ColmapPipeline:
                                     for image_name in target_name_set
                                 }
                             ),
+                            scope_image_names=merged_chunk_plan.image_names,
                             run_final_bundle_adjustment=False,
                         )
                     except RuntimeError as seam_error:

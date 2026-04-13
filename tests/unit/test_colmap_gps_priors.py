@@ -4051,7 +4051,7 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(repaired_models, chunk_models)
             self.assertEqual(pipeline.merged_component_count, 2)
 
-    def test_run_parent_seam_registration_with_retry_includes_required_names_in_scope(self):
+    def test_run_parent_seam_registration_with_retry_includes_required_and_scope_names_in_scope(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
@@ -4093,11 +4093,11 @@ class ColmapGpsPriorTests(unittest.TestCase):
             ), mock.patch.object(
                 pipeline,
                 "select_merge_frontier_names",
-                return_value=["IMG_03.jpg"],
+                return_value=["IMG_03.jpg", "IMG_04.jpg"],
             ) as select_mock, mock.patch.object(
                 pipeline,
                 "expand_merge_frontier_names",
-                return_value=["IMG_03.jpg"],
+                return_value=["IMG_03.jpg", "IMG_04.jpg"],
             ) as expand_mock, mock.patch.object(
                 pipeline,
                 "run_parent_seam_registration",
@@ -4112,20 +4112,29 @@ class ColmapGpsPriorTests(unittest.TestCase):
                         stage_prefix="chunk_01_02_merge_bridge_seed_01",
                         dir_name="chunk_01_02_merge_bridge_seed_01",
                         required_names=["IMG_05.jpg"],
+                        scope_image_names=["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg", "IMG_05.jpg"],
                         run_final_bundle_adjustment=False,
                     )
                 )
 
             self.assertIs(merged_model, refined_model)
-            self.assertEqual(frontier_names, ["IMG_03.jpg"])
+            self.assertEqual(frontier_names, ["IMG_03.jpg", "IMG_04.jpg"])
             self.assertFalse(seam_refinement_skipped)
             self.assertEqual(seam_refinement_reason, "frontier_only")
             self.assertEqual(select_mock.call_args.kwargs["required_names"], ["IMG_05.jpg"])
+            self.assertEqual(
+                select_mock.call_args.kwargs["candidate_names"],
+                ["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg", "IMG_05.jpg"],
+            )
             self.assertEqual(expand_mock.call_args.kwargs["required_names"], ["IMG_05.jpg"])
+            self.assertEqual(
+                expand_mock.call_args.kwargs["candidate_names"],
+                ["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg", "IMG_05.jpg"],
+            )
             chunk_plan = seam_mock.call_args.kwargs["chunk_plan"]
             self.assertEqual(
                 chunk_plan.image_names,
-                ["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_05.jpg"],
+                ["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg", "IMG_05.jpg"],
             )
 
     def test_repair_disconnected_chunk_model_components_passes_bridge_targets_as_required_names(self):
@@ -4265,6 +4274,10 @@ class ColmapGpsPriorTests(unittest.TestCase):
                     "IMG_06.jpg",
                     "IMG_07.jpg",
                 ],
+            )
+            self.assertEqual(
+                seam_mock.call_args.kwargs["scope_image_names"],
+                ["IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg", "IMG_05.jpg", "IMG_06.jpg"],
             )
             run_chunk_mock.assert_not_called()
 
