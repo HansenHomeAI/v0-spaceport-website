@@ -25,15 +25,18 @@ export function TapPickFeedback({ screen, durationMs = 720 }: Props) {
     setVisible(true);
     const timer = window.setTimeout(() => setVisible(false), durationMs);
     return () => clearTimeout(timer);
-  }, [durationMs, screen]);
+  }, [durationMs, screen?.t]);
 
   if (!screen || !visible) {
     return null;
   }
 
   return (
-    <div className="sogs-tap-pick-feedback" style={{ left: screen.x, top: screen.y }} aria-hidden>
-      {screen.t}
-    </div>
+    <div
+      key={screen.t}
+      className="sogs-tap-pick-feedback"
+      style={{ left: screen.x, top: screen.y }}
+      aria-hidden
+    />
   );
 }

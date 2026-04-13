@@ -160,6 +160,17 @@ async function clickUntilTapRing(page, frameLocator) {
   throw new Error("expected tap ring feedback after clicking a focusable point in the viewer");
 }
 
+async function assertTapRingVisible(page) {
+  await page.waitForSelector(".sogs-tap-pick-feedback", { timeout: 1500 });
+  const ring = page.locator(".sogs-tap-pick-feedback").first();
+  const state = await ring.evaluate((element) => ({
+    text: (element.textContent ?? "").trim(),
+    opacity: Number.parseFloat(getComputedStyle(element).opacity || "0"),
+  }));
+  assert(state.text === "", `tap ring should not render text content, got ${JSON.stringify(state.text)}`);
+  assert(state.opacity > 0.05, `tap ring should be visibly animating, got opacity ${state.opacity}`);
+}
+
 (async () => {
   await fs.mkdir(logsDir, { recursive: true });
   const browser = await chromium.launch();
@@ -209,7 +220,7 @@ async function clickUntilTapRing(page, frameLocator) {
     `expected reference compass aria label, got ${compassAriaLabel ?? "missing"}`,
   );
 
-  await page.locator("#detailsButton").click();
+  await page.locator("#detailsButton").evaluate((button) => button.click());
   await page.waitForSelector("#detailsBox.show", { timeout: 10000 });
   await page.waitForSelector("#overlay-ui.active", { timeout: 10000 });
   const detailsHeading = (await page.locator("#canyon-details-heading").textContent())?.trim();
@@ -240,6 +251,13 @@ async function clickUntilTapRing(page, frameLocator) {
 
   await clickUntilTapRing(page, viewerFrame.locator("canvas"));
   await page.waitForTimeout(300);
+  await assertTapRingVisible(page);
+
+  await page.waitForTimeout(900);
+  await clickUntilTapRing(page, viewerFrame.locator("canvas"));
+  await page.waitForTimeout(300);
+  await assertTapRingVisible(page);
+
   const stopStart = await readCameraPosition();
   await page.waitForTimeout(900);
   const stopEnd = await readCameraPosition();
