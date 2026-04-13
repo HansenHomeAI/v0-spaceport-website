@@ -1360,6 +1360,49 @@ class ColmapPipeline:
                 handle.write(f"{image_name}\n")
         return image_list_path
 
+    def prepare_chunk_database(self, chunk_plan: ChunkPlan) -> Path:
+        chunk_dir = self.work_dir / f"chunk_{chunk_plan.index:02d}"
+        chunk_dir.mkdir(parents=True, exist_ok=True)
+        chunk_database_path = chunk_dir / "database.db"
+        shutil.copy2(self.database_path, chunk_database_path)
+
+        keep_image_names = set(chunk_plan.image_names)
+        with sqlite3.connect(chunk_database_path) as connection:
+            rows = connection.execute("SELECT image_id, name, camera_id FROM images").fetchall()
+            remove_image_ids = [int(image_id) for image_id, name, _ in rows if str(name) not in keep_image_names]
+            if remove_image_ids:
+                placeholders = ",".join("?" for _ in remove_image_ids)
+                connection.execute(f"DELETE FROM keypoints WHERE image_id IN ({placeholders})", remove_image_ids)
+                connection.execute(f"DELETE FROM descriptors WHERE image_id IN ({placeholders})", remove_image_ids)
+                if self.supports_pose_prior_image_backfill(database_path=chunk_database_path):
+                    connection.execute(
+                        f"DELETE FROM pose_priors WHERE image_id IN ({placeholders})",
+                        remove_image_ids,
+                    )
+                connection.execute(f"DELETE FROM images WHERE image_id IN ({placeholders})", remove_image_ids)
+
+            used_camera_ids = [row[0] for row in connection.execute("SELECT DISTINCT camera_id FROM images").fetchall()]
+            if used_camera_ids:
+                placeholders = ",".join("?" for _ in used_camera_ids)
+                connection.execute(
+                    f"DELETE FROM cameras WHERE camera_id NOT IN ({placeholders})",
+                    used_camera_ids,
+                )
+            else:
+                connection.execute("DELETE FROM cameras")
+
+            # Always rebuild matches inside the chunk-specific database.
+            connection.execute("DELETE FROM matches")
+            connection.execute("DELETE FROM two_view_geometries")
+            connection.commit()
+
+        logger.info(
+            "Prepared chunk %s database by pruning global features down to %s images",
+            chunk_plan.index,
+            len(chunk_plan.image_names),
+        )
+        return chunk_database_path
+
     def chunk_registered_ratio_threshold(self) -> float:
         return max(self.gps_min_registered_ratio, 0.99)
 
@@ -1379,22 +1422,9 @@ class ColmapPipeline:
     def run_chunk_pipeline(self, chunk_plan: ChunkPlan) -> ModelSummary:
         chunk_dir = self.work_dir / f"chunk_{chunk_plan.index:02d}"
         chunk_dir.mkdir(parents=True, exist_ok=True)
-        chunk_database_path = chunk_dir / "database.db"
+        chunk_database_path = self.prepare_chunk_database(chunk_plan)
         chunk_image_list_path = self.write_chunk_image_list(chunk_plan)
         chunk_stage_prefix = f"chunk_{chunk_plan.index:02d}"
-        self.run_feature_extraction(
-            database_path=chunk_database_path,
-            image_list_path=chunk_image_list_path,
-            stage=f"{chunk_stage_prefix}_feature_extractor",
-        )
-        chunk_exif_records = {
-            image_name: self.exif_records[image_name] for image_name in chunk_plan.image_names if image_name in self.exif_records
-        }
-        self.validate_or_backfill_pose_priors(
-            database_path=chunk_database_path,
-            exif_records=chunk_exif_records,
-            gps_image_count=len(chunk_exif_records),
-        )
         self.run_spatial_matcher(
             database_path=chunk_database_path,
             stage=f"{chunk_stage_prefix}_spatial_matcher",
