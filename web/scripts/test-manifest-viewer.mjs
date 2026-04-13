@@ -22,6 +22,9 @@ const route = `/viewer/${slug}`;
 const iframeTitle = process.env.VIEWER_IFRAME_TITLE ?? "meadow-ln-viewer";
 const expectedSkyboxSubstring =
   process.env.VIEWER_EXPECT_SKYBOX_SUBSTRING?.trim() || "background_skybox.webp";
+const expectedDetailsHeading = process.env.VIEWER_EXPECT_DETAILS_HEADING ?? "Incognito";
+const expectedDetailsLead =
+  process.env.VIEWER_EXPECT_DETAILS_LEAD?.trim() || "Tucked into nearly 30 acres beneath the Bridger Mountains";
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -127,6 +130,14 @@ function summarizeRenderedPixels(buffer) {
   return { width, height, bright, alpha };
 }
 
+function cameraDelta(a, b) {
+  return Math.hypot(
+    (a?.x ?? 0) - (b?.x ?? 0),
+    (a?.y ?? 0) - (b?.y ?? 0),
+    (a?.z ?? 0) - (b?.z ?? 0),
+  );
+}
+
 (async () => {
   await fs.mkdir(logsDir, { recursive: true });
   const browser = await chromium.launch();
@@ -159,9 +170,61 @@ function summarizeRenderedPixels(buffer) {
     return !!cam && [cam.position.x, cam.position.y, cam.position.z, cam.distance].every(Number.isFinite);
   }, null, { timeout: 120000 });
   await page.waitForFunction(() => {
-    const button = document.querySelector('[data-testid="focus-scene-center"]');
+    const button = document.querySelector("#detailsButton");
     return button instanceof HTMLButtonElement && !button.disabled;
   }, null, { timeout: 120000 });
+  assert((await page.locator('[data-testid="focus-scene-center"]').count()) === 0, "reference viewer should not render focus-scene-center button");
+  await page.waitForSelector("#compassButton", { timeout: 10000 });
+
+  const detailsIconSrc = await page.locator("#detailsButton img").getAttribute("src");
+  assert(
+    detailsIconSrc?.includes("DetailsIconDefault.svg"),
+    `expected reference details icon, got ${detailsIconSrc ?? "missing"}`,
+  );
+  const compassAriaLabel = await page.locator("#compassButton").getAttribute("aria-label");
+  assert(
+    compassAriaLabel === "Go to animation start",
+    `expected reference compass aria label, got ${compassAriaLabel ?? "missing"}`,
+  );
+
+  await page.locator("#detailsButton").click();
+  await page.waitForSelector("#detailsBox.show", { timeout: 10000 });
+  await page.waitForSelector("#overlay-ui.active", { timeout: 10000 });
+  const detailsHeading = (await page.locator("#canyon-details-heading").textContent())?.trim();
+  assert(detailsHeading === expectedDetailsHeading, `expected details heading ${expectedDetailsHeading}, got ${detailsHeading ?? "missing"}`);
+  const detailsText = (await page.locator("#detailsContent").textContent())?.trim() ?? "";
+  assert(
+    detailsText.includes(expectedDetailsLead),
+    `expected details body to include reference copy substring "${expectedDetailsLead}"`,
+  );
+  await page.keyboard.press("Escape");
+  await page.waitForFunction(() => !document.querySelector("#detailsBox")?.classList.contains("show"), null, { timeout: 10000 });
+
+  const readCameraPosition = async () =>
+    viewerFrame.evaluate(() => {
+      const camera = window.__sogsCtx?.viewer?.cameraManager?.camera;
+      return camera
+        ? { x: camera.position.x, y: camera.position.y, z: camera.position.z }
+        : null;
+    });
+
+  const motionStart = await readCameraPosition();
+  await page.waitForTimeout(700);
+  const motionMid = await readCameraPosition();
+  assert(
+    cameraDelta(motionStart, motionMid) > 0.01,
+    `expected intro animation to move camera before interaction, got delta ${cameraDelta(motionStart, motionMid)}`,
+  );
+
+  await viewerFrame.locator("canvas").click({ position: { x: 120, y: 120 } });
+  await page.waitForTimeout(300);
+  const stopStart = await readCameraPosition();
+  await page.waitForTimeout(900);
+  const stopEnd = await readCameraPosition();
+  assert(
+    cameraDelta(stopStart, stopEnd) < 0.01,
+    `expected user interaction to stop scripted movement, got delta ${cameraDelta(stopStart, stopEnd)}`,
+  );
 
   const renderBuffer = await page.locator(`iframe[title="${iframeTitle}"]`).screenshot();
   const renderStats = summarizeRenderedPixels(renderBuffer);

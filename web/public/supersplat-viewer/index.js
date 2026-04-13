@@ -100970,16 +100970,17 @@ class OrbitController {
     }
     onExit(camera) {
     }
-    goto(camera) {
+    goto(camera, smooth = true) {
         p.position.copy(camera.position);
         p.angles.copy(camera.angles);
         p.distance = camera.distance;
-        this.controller.attach(p, true);
+        this.controller.attach(p, smooth);
     }
 }
 
 const tmpCamera = new Camera();
 const tmpv = new Vec3();
+const scratchPickScreen = new Vec3();
 const createCamera = (position, target, fov) => {
     const result = new Camera();
     result.look(position, target);
@@ -100996,6 +100997,11 @@ class CameraManager {
     // holds the camera state
     camera = new Camera();
     constructor(global, bbox) {
+        this._global = global;
+        this._pickFocusWorld = new Vec3();
+        this._pickFocusFramesLeft = 0;
+        this._pickFocusRingSeq = 0;
+        this._pickFocusRingT = 0;
         const { events, settings, state } = global;
         const camera0 = settings.cameras[0].initial;
         const frameCamera = createFrameCamera(bbox, camera0.fov);
@@ -101111,8 +101117,23 @@ class CameraManager {
             // set time
             controllers.anim.animState.cursor.value = time;
         });
-        // Spaceport: no double-click refocus — orbit pivot stays at scene origin / initial target
-        events.on('pick', () => {});
+        events.on('pick', (payload) => {
+            const worldPos = payload && payload.world ? payload.world : payload;
+            if (!worldPos || !isFinite(worldPos.x)) {
+                return;
+            }
+            if (state.cameraMode !== 'orbit') {
+                return;
+            }
+            const cam = this.camera;
+            tmpCamera.copy(cam);
+            tmpCamera.look(cam.position, worldPos);
+            this._pickFocusRingSeq++;
+            this._pickFocusRingT = Date.now();
+            controllers.orbit.goto(tmpCamera);
+            this._pickFocusWorld.set(worldPos.x, worldPos.y, worldPos.z);
+            this._pickFocusFramesLeft = 75;
+        });
         events.on('annotation.activate', (annotation) => {
             // switch to orbit camera on pick
             state.cameraMode = 'orbit';
@@ -101122,6 +101143,38 @@ class CameraManager {
             tmpCamera.look(new Vec3(initial.position), new Vec3(initial.target));
             controllers.orbit.goto(tmpCamera);
         });
+        /** Spaceport SOGS: after scripted `camera.look()` frames, orbit internal pose is stale; snap (no smooth) so no ~100ms lerp jitter. */
+        this.syncOrbitFromCurrentCamera = () => {
+            controllers.orbit.goto(this.camera, false);
+        };
+    }
+    emitPickFocusScreen() {
+        const global = this._global;
+        if (!global || this._pickFocusFramesLeft <= 0) {
+            return;
+        }
+        const worldPos = this._pickFocusWorld;
+        const screen = global.camera.camera.worldToScreen(worldPos, scratchPickScreen);
+        this._pickFocusFramesLeft--;
+        if (!screen || !isFinite(screen.x) || !isFinite(screen.y)) {
+            return;
+        }
+        try {
+            if (window.parent) {
+                window.parent.postMessage({
+                    type: 'sogs:pickFocus',
+                    world: [
+                        worldPos.x,
+                        worldPos.y,
+                        worldPos.z
+                    ],
+                    clientX: screen.x,
+                    clientY: screen.y,
+                    ringSeq: this._pickFocusRingSeq,
+                    ringT: this._pickFocusRingT
+                }, '*');
+            }
+        } catch (e) {}
     }
 }
 
@@ -101237,7 +101290,7 @@ class InputController {
     // this gets overridden by the viewer based on scene size
     moveSpeed = 4;
     orbitSpeed = 18;
-    pinchSpeed = 0.4;
+    pinchSpeed = 0.32;
     wheelSpeed = 0.06;
     constructor(global) {
         const { app, camera, events, state } = global;
@@ -101265,38 +101318,83 @@ class InputController {
         canvas.addEventListener('pointermove', (event) => {
             events.fire('inputEvent', 'interact', event);
         });
-        // Detect double taps manually because iOS doesn't send dblclick events
-        const lastTap = { time: 0, x: 0, y: 0 };
-        canvas.addEventListener('pointerdown', (event) => {
-            const now = Date.now();
-            const delay = Math.max(0, now - lastTap.time);
-            if (delay < 300 &&
-                Math.abs(event.clientX - lastTap.x) < 8 &&
-                Math.abs(event.clientY - lastTap.y) < 8) {
-                events.fire('inputEvent', 'dblclick', event);
-                lastTap.time = 0;
-            }
-            else {
-                lastTap.time = now;
-                lastTap.x = event.clientX;
-                lastTap.y = event.clientY;
-            }
-        });
-        // Calculate pick location on double click
         let picker = null;
-        events.on('inputEvent', async (eventName, event) => {
-            switch (eventName) {
-                case 'dblclick': {
-                    if (!picker) {
-                        picker = new Picker(app, camera);
-                    }
-                    const result = await picker.pick(event.offsetX, event.offsetY);
-                    if (result) {
-                        events.fire('pick', result);
-                    }
-                    break;
-                }
+        const TAP_MOVE_PX = 8;
+        const TAP_MAX_MS = 500;
+        let tapPointer = null;
+        let tapWheelDuring = false;
+        window.addEventListener('wheel', ()=>{
+            if (tapPointer) {
+                tapWheelDuring = true;
             }
+        }, {
+            passive: true,
+            capture: true
+        });
+        canvas.addEventListener('pointerdown', (event)=>{
+            if (event.button !== 0 || !event.isPrimary) {
+                return;
+            }
+            tapWheelDuring = false;
+            tapPointer = {
+                x: event.clientX,
+                y: event.clientY,
+                ox: event.offsetX,
+                oy: event.offsetY,
+                pointerId: event.pointerId,
+                t: Date.now(),
+                cancelled: false,
+                movePx: event.pointerType === 'touch' ? 12 : 8
+            };
+        }, {
+            passive: true
+        });
+        canvas.addEventListener('pointermove', (event)=>{
+            if (!tapPointer || event.pointerId !== tapPointer.pointerId) {
+                return;
+            }
+            const dx = event.clientX - tapPointer.x;
+            const dy = event.clientY - tapPointer.y;
+            const th = tapPointer.movePx ?? TAP_MOVE_PX;
+            if (Math.hypot(dx, dy) > th) {
+                tapPointer.cancelled = true;
+            }
+        }, {
+            passive: true
+        });
+        canvas.addEventListener('pointerup', (event)=>{
+            if (!tapPointer || event.pointerId !== tapPointer.pointerId) {
+                return;
+            }
+            const { ox, oy, t, cancelled } = tapPointer;
+            const clientX = event.clientX;
+            const clientY = event.clientY;
+            tapPointer = null;
+            if (cancelled || tapWheelDuring || Date.now() - t > TAP_MAX_MS) {
+                return;
+            }
+            (async ()=>{
+                if (!picker) {
+                    picker = new Picker(app, camera);
+                }
+                const result = await picker.pick(ox, oy);
+                if (result) {
+                    events.fire('pick', {
+                        world: result,
+                        clientX,
+                        clientY
+                    });
+                }
+            })();
+        }, {
+            passive: true
+        });
+        canvas.addEventListener('pointercancel', (event)=>{
+            if (tapPointer && event.pointerId === tapPointer.pointerId) {
+                tapPointer = null;
+            }
+        }, {
+            passive: true
         });
         // update input mode based on pointer event
         ['pointerdown', 'pointermove'].forEach((eventName) => {
@@ -101499,11 +101597,20 @@ class Viewer {
         // enable anonymous CORS for image loading in safari
         app.loader.getHandler('texture').imgParser.crossOrigin = 'anonymous';
         // render skybox as plain equirect
+        const skyboxVOffset = Number.isFinite(config.skyboxVOffset) ? config.skyboxVOffset : 0;
         const glsl = ShaderChunks.get(graphicsDevice, 'glsl');
-        glsl.set('skyboxPS', glsl.get('skyboxPS').replace('mapRoughnessUv(uv, mipLevel)', 'uv'));
+        const glslSkybox = glsl.get('skyboxPS')
+            .replace('vec2 uv = toSphericalUv(normalize(dir));', `vec2 uv = toSphericalUv(normalize(dir));
+				uv.y = clamp(uv.y + ${skyboxVOffset.toFixed(4)}, 0.0, 1.0);`)
+            .replace('mapRoughnessUv(uv, mipLevel)', 'uv');
+        glsl.set('skyboxPS', glslSkybox);
         glsl.set('pickPS', pickDepthGlsl);
         const wgsl = ShaderChunks.get(graphicsDevice, 'wgsl');
-        wgsl.set('skyboxPS', wgsl.get('skyboxPS').replace('mapRoughnessUv(uv, uniform.mipLevel)', 'uv'));
+        const wgslSkybox = wgsl.get('skyboxPS')
+            .replace('let uv : vec2f = toSphericalUv(normalize(dir));', `var uv : vec2f = toSphericalUv(normalize(dir));
+				uv.y = clamp(uv.y + ${skyboxVOffset.toFixed(4)}, 0.0, 1.0);`)
+            .replace('mapRoughnessUv(uv, uniform.mipLevel)', 'uv');
+        wgsl.set('skyboxPS', wgslSkybox);
         wgsl.set('pickPS', pickDepthWgsl);
         // disable auto render, we'll render only when camera changes
         app.autoRender = false;
@@ -101595,6 +101702,7 @@ class Viewer {
                 this.cameraManager.update(deltaTime, this.inputController.frame);
                 // apply to the camera entity
                 applyCamera(this.cameraManager.camera);
+                this.cameraManager.emitPickFocusScreen();
             }
         });
         // wait for the model to load
@@ -102257,7 +102365,7 @@ const loadGsplat = async (app, config, progressCallback) => {
     return new Promise((resolve, reject) => {
         asset.on('load', () => {
             const entity = new Entity('gsplat');
-            entity.setLocalEulerAngles(0, 0, 180);
+            entity.setLocalEulerAngles(0, 0, 0);
             entity.addComponent('gsplat', {
                 unified: unified || filename.toLowerCase().endsWith('lod-meta.json'),
                 asset
@@ -102310,7 +102418,7 @@ const main = (app, camera, settingsJson, config) => {
     const events = new EventHandler();
     const state = observe(events, {
         readyToRender: false,
-        hqMode: true,
+        hqMode: !config.lowQuality,
         progress: 0,
         inputMode: 'desktop',
         cameraMode: 'orbit',
@@ -102363,8 +102471,21 @@ const main = (app, camera, settingsJson, config) => {
         });
     }
     // Create the viewer
-    return new Viewer(global, gsplatLoad, skyboxLoad);
+    const viewer = new Viewer(global, gsplatLoad, skyboxLoad);
+    if (config.deferredSkyboxUrl) {
+        events.once('firstFrame', () => {
+            window.setTimeout(() => {
+                loadSkybox(app, config.deferredSkyboxUrl).then((asset) => {
+                    app.scene.envAtlas = asset.resource;
+                    app.renderNextFrame = true;
+                }).catch((err) => {
+                    console.warn('Deferred skybox failed', err);
+                });
+            }, 500);
+        });
+    }
+    return viewer;
 };
 
+window.__sogsPc = { Entity, Mesh, MeshInstance, StandardMaterial, Color, CylinderGeometry, Vec3, Quat };
 export { main };
-//# sourceMappingURL=index.js.map

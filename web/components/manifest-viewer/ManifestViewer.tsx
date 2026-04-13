@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CanyonVignette } from "../sogs-migrated-viewer/CanyonVignette";
 import { AnimationPathPanel } from "./AnimationPathPanel";
 import { CompassLive } from "./CompassLive";
+import { DetailsMenuButton, DetailsPanel } from "./DetailsPanel";
 import { LotLinesOverlay } from "./LotLinesOverlay";
 import { PhotoModal } from "./PhotoModal";
 import { SoldOverlays } from "./SoldOverlays";
@@ -122,6 +123,7 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
   const [showSoldLabels, setShowSoldLabels] = useState(manifest.defaults?.showSoldLabels ?? false);
   const [pathPanelOpen, setPathPanelOpen] = useState(false);
   const [bundlePanelOpen, setBundlePanelOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const [photoDot, setPhotoDot] = useState<(typeof manifest.overlays)["tapDots"] extends Array<infer T> ? T | null : null>(null);
   const [selectedHoleId, setSelectedHoleId] = useState(manifest.holes[0]?.id ?? manifest.slug);
   const [developerToolsEnabled] = useState(getDeveloperToolsEnabled);
@@ -528,27 +530,6 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
     [bumpPath, scene.fov],
   );
 
-  const onFocusSceneCenter = useCallback(() => {
-    const pose = poseRef.current;
-    const targetWindow = iframeRef.current?.contentWindow;
-    if (!pose || !targetWindow) return;
-    const target = manifest.scene.focusTarget ?? activeHoleViewRef.current.target;
-    postToWindow(targetWindow, { type: "sogs:cameraMode", mode: "scripted" });
-    postToWindow(targetWindow, {
-      type: "sogs:cameraLookAt",
-      position: [pose.position.x, pose.position.y, pose.position.z],
-      target: [target.x, target.y, target.z],
-      fov: pose.fov,
-    });
-    poseRef.current = {
-      position: { ...pose.position },
-      target: { ...target },
-      fov: pose.fov,
-    };
-    orbitFocusRef.current = { ...target };
-    window.setTimeout(() => postToWindow(iframeRef.current?.contentWindow, { type: "sogs:cameraMode", mode: "free" }), 80);
-  }, [manifest.scene.focusTarget]);
-
   const onFaceNorth = useCallback(() => {
     const pose = poseRef.current;
     const targetWindow = iframeRef.current?.contentWindow;
@@ -591,6 +572,8 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
   }, [manifest.compass?.mode, onFaceNorth]);
 
   const toggleDisabled = viewerState !== "ready";
+  const compassAriaLabel =
+    (manifest.compass?.mode ?? "faceNorth") === "animationStart" ? "Go to animation start" : "Face north";
 
   return (
     <main className="sogs-migrated-root">
@@ -641,6 +624,15 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
           aria-hidden
         />
       </div>
+
+      {detailsOpen ? (
+        <div
+          id="overlay-ui"
+          className="sogs-migrated-overlay-ui active"
+          onClick={() => setDetailsOpen(false)}
+          aria-hidden
+        />
+      ) : null}
 
       {developerToolsEnabled ? (
         <>
@@ -844,41 +836,19 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
       ) : null}
 
       <div className="menu-container" id="menuContainer">
-        <button
-          type="button"
-          className="menu-button"
-          data-testid="focus-scene-center"
-          aria-label="Focus scene"
-          disabled={viewerState !== "ready"}
-          onClick={onFocusSceneCenter}
-        >
-          <svg
-            className="sogs-focus-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden
-          >
-            <circle cx="12" cy="12" r="3" />
-            <line x1="12" y1="2" x2="12" y2="5" />
-            <line x1="12" y1="19" x2="12" y2="22" />
-            <line x1="2" y1="12" x2="5" y2="12" />
-            <line x1="19" y1="12" x2="22" y2="12" />
-          </svg>
-        </button>
-        {viewerState === "ready" ? (
-          <CompassLive
-            poseRef={poseRef}
-            orbitTarget={orbitFocusRef.current}
-            northDeg={activeHoleView.northDirection}
-            onClick={onCompassClick}
+        {manifest.details ? (
+          <DetailsMenuButton
+            disabled={viewerState !== "ready"}
+            open={detailsOpen}
+            onToggle={() => setDetailsOpen((value) => !value)}
           />
+        ) : null}
+        {viewerState === "ready" ? (
+          <CompassLive onClick={onCompassClick} ariaLabel={compassAriaLabel} />
         ) : null}
       </div>
 
+      <DetailsPanel details={manifest.details} open={detailsOpen} onClose={() => setDetailsOpen(false)} />
       <PhotoModal dot={photoDot} onClose={() => setPhotoDot(null)} />
     </main>
   );

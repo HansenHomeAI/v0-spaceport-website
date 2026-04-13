@@ -74,6 +74,11 @@ export type ViewerCompassManifest = {
   mode?: "faceNorth" | "animationStart";
 };
 
+export type ViewerDetailsManifest = {
+  title: string;
+  paragraphs: string[];
+};
+
 export type ViewerToggleDefaultsManifest = {
   showTapDots?: boolean;
   showLotLines?: boolean;
@@ -134,6 +139,7 @@ export type ViewerManifest = {
   orbit: ViewerOrbitManifest;
   intro?: ViewerIntroManifest;
   compass?: ViewerCompassManifest;
+  details?: ViewerDetailsManifest;
   cameraBounds?: ViewerCameraBoundsManifest;
   path: {
     enabled?: boolean;

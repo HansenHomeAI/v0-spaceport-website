@@ -71,6 +71,15 @@ export const meadowLaneManifest: ViewerManifest = {
   compass: {
     mode: "animationStart",
   },
+  details: {
+    title: "Incognito",
+    paragraphs: [
+      "Tucked into nearly 30 acres beneath the Bridger Mountains, Incognito is a private Bozeman estate that blends the warmth of a refined lodge with the scale and flexibility of a modern ranch property. It is secluded without feeling remote—composed to support both solitude and gathering.",
+      "The residence carries a strong sense of atmosphere: generous interior volume, natural materials, and a layout that feels equally suited to quiet retreat, creative work, and long-form hosting. An attached studio and guest apartment expand the property beyond a single-home experience, giving it a layered, adaptable character.",
+      "Across the grounds, the estate reads as both polished and usable. The setting, views, and open land give the property its privacy, while the architecture and updated interiors keep it elevated and intentional rather than rustic for its own sake.",
+      "Incognito is less about display than control—a hidden, fully formed retreat with presence, flexibility, and a distinctly Montana sense of distance.",
+    ],
+  },
   cameraBounds: {
     yMin: 0,
     maxRadiusFromOrigin: 1.2,
