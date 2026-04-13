@@ -566,9 +566,9 @@ class NerfStudioTrainer:
             "ns-train", model_variant,
             "--data", str(self.input_dir),
             "--output-dir", str(self.temp_dir),
+            "--vis", "tensorboard",
             "--max_num_iterations", str(max_iterations),
             "--pipeline.model.sh_degree", str(sh_degree),
-            "--viewer.quit_on_train_completion", "True",
             "--logging.steps_per_log", str(log_interval)
         ]
         
@@ -591,10 +591,10 @@ class NerfStudioTrainer:
         # Memory optimization for A10G GPU (16GB vs Vincent's RTX 4090 24GB)
         # Using max-gauss-ratio instead of max_num_gaussians (suggested by NerfStudio error)
         cmd.extend([
-            "--pipeline.model.max-gauss-ratio", "10.0",  # Conservative ratio for A10G
-            "--viewer.websocket_port", "7007"  # Avoid conflicts
+            "--pipeline.model.max-gauss-ratio", "10.0"  # Conservative ratio for A10G
         ])
         logger.info("🖥️  A10G GPU optimization enabled (max-gauss-ratio: 10.0)")
+        logger.info("🪟 Viewer disabled for headless SageMaker training (--vis tensorboard)")
         
         logger.info("🚀 Executing NerfStudio training command:")
         logger.info(f"   {' '.join(cmd)}")
