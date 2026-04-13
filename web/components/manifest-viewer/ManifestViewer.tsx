@@ -483,6 +483,7 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
 
   const viewerSrc = useMemo(() => {
     if (!activeUrl) return null;
+    const initialHoleView = activeHoleView;
     const params = new URLSearchParams({
       settings: manifest.bundle.viewerSettingsPath ?? "/supersplat-viewer/settings.json",
       content: activeUrl,
@@ -491,6 +492,26 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
       params.set("skybox", skyboxUrl.trim());
       params.set("skyboxPitch", String(skyboxPitch));
       params.set("skyboxVOffset", String(skyboxVOffset));
+    }
+    params.set("scenePos", scene.position.join(","));
+    params.set("sceneRot", scene.rotation.join(","));
+    params.set("sceneScale", String(scene.scale));
+    params.set("sceneFov", String(scene.fov));
+    params.set(
+      "camPos",
+      [
+        initialHoleView.startPosition.x,
+        initialHoleView.startPosition.y,
+        initialHoleView.startPosition.z,
+      ].join(","),
+    );
+    params.set(
+      "camTarget",
+      [initialHoleView.target.x, initialHoleView.target.y, initialHoleView.target.z].join(","),
+    );
+    params.set("camFov", String(scene.fov));
+    if (manifest.scene.skyboxRotation?.length) {
+      params.set("sceneSkyboxRot", manifest.scene.skyboxRotation.join(","));
     }
     if (bootMode === "mobile-fallback") {
       params.set("quality", "lq");
@@ -538,10 +559,13 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
     return `${manifest.bundle.viewerBase ?? "/supersplat-viewer/index.html"}?${params.toString()}`;
   }, [
     activeUrl,
+    activeHoleView,
     bootMode,
     developerToolsEnabled,
     manifest.bundle.viewerBase,
     manifest.bundle.viewerSettingsPath,
+    manifest.scene.skyboxRotation,
+    scene,
     skyboxPitch,
     skyboxUrl,
     skyboxVOffset,

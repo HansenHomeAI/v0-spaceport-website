@@ -301,6 +301,40 @@ function applyViewerConfig(app, incomingConfig) {
   app.renderNextFrame = true;
 }
 
+function applyScenePayload(app, payload) {
+  const gsplat = app?.root?.findByName("gsplat");
+  if (!gsplat || !payload || typeof payload !== "object") {
+    return;
+  }
+  if (Array.isArray(payload.position) && payload.position.length === 3) {
+    gsplat.setLocalPosition(payload.position[0], payload.position[1], payload.position[2]);
+  }
+  if (Array.isArray(payload.rotation) && payload.rotation.length === 3) {
+    gsplat.setLocalEulerAngles(payload.rotation[0], payload.rotation[1], payload.rotation[2]);
+  }
+  if (typeof payload.scale === "number" && Number.isFinite(payload.scale)) {
+    gsplat.setLocalScale(payload.scale, payload.scale, payload.scale);
+  }
+  if (typeof payload.fov === "number" && Number.isFinite(payload.fov)) {
+    window.__sogsUserFov = payload.fov;
+  }
+  app.renderNextFrame = true;
+}
+
+function applyInitialSkyboxRotation(app, rotation) {
+  if (!app?.scene || !Array.isArray(rotation) || rotation.length !== 3) {
+    return;
+  }
+  const rx = Number(rotation[0]);
+  const ry = Number(rotation[1]);
+  const rz = Number(rotation[2]);
+  if (!Number.isFinite(rx) || !Number.isFinite(ry) || !Number.isFinite(rz)) {
+    return;
+  }
+  app.scene.skyboxRotation = new Quat().setFromEulerAngles(rx, ry, rz);
+  app.renderNextFrame = true;
+}
+
 function installInitialCameraRelease(app) {
   if (window.__sogsInitialCameraReleaseInstalled) {
     return;
@@ -640,6 +674,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     await waitForValue(() => app.root.findByName("gsplat"), "gsplat");
     await waitForValue(() => viewer.cameraManager, "cameraManager");
 
+    applyScenePayload(app, window.__sogsInitialScenePayload ?? {});
+    applyInitialSkyboxRotation(app, window.__sogsInitialSkyboxRotation ?? null);
     applyViewerConfig(app, window.__sogsInitialViewerConfig ?? {});
     setupCameraManagerBridge(viewer.cameraManager);
     const initialCameraPose = window.__sogsInitialCameraPose;
@@ -669,23 +705,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
       }
       if (d.type === "sogs:apply") {
-        const g = app.root.findByName("gsplat");
-        if (!g) {
-          return;
-        }
-        if (Array.isArray(d.position) && d.position.length === 3) {
-          g.setLocalPosition(d.position[0], d.position[1], d.position[2]);
-        }
-        if (Array.isArray(d.rotation) && d.rotation.length === 3) {
-          g.setLocalEulerAngles(d.rotation[0], d.rotation[1], d.rotation[2]);
-        }
-        if (typeof d.scale === "number" && Number.isFinite(d.scale)) {
-          g.setLocalScale(d.scale, d.scale, d.scale);
-        }
-        if (typeof d.fov === "number" && Number.isFinite(d.fov)) {
-          window.__sogsUserFov = d.fov;
-        }
-        app.renderNextFrame = true;
+        applyScenePayload(app, d);
         postSogsState();
       }
       if (d.type === "sogs:guides") {

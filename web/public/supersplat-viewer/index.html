@@ -206,6 +206,24 @@
                 colorUpdateDistanceLodScale: parseOptionalNumber(url.searchParams.get('colorUpdateDistanceLodScale')),
                 colorUpdateAngleLodScale: parseOptionalNumber(url.searchParams.get('colorUpdateAngleLodScale'))
             };
+            window.__sogsInitialScenePayload = (() => {
+                const position = parseVector(url.searchParams.get('scenePos'));
+                const rotation = parseVector(url.searchParams.get('sceneRot'));
+                if (!position || !rotation) {
+                    return null;
+                }
+                const scaleRaw = url.searchParams.get('sceneScale');
+                const scale = scaleRaw == null ? null : Number.parseFloat(scaleRaw);
+                const fovRaw = url.searchParams.get('sceneFov');
+                const fov = fovRaw == null ? null : Number.parseFloat(fovRaw);
+                return {
+                    position,
+                    rotation,
+                    scale: Number.isFinite(scale) ? scale : null,
+                    fov: Number.isFinite(fov) ? fov : null
+                };
+            })();
+            window.__sogsInitialSkyboxRotation = parseVector(url.searchParams.get('sceneSkyboxRot'));
             window.__sogsInitialCameraPose = (() => {
                 const position = parseVector(url.searchParams.get('camPos'));
                 const target = parseVector(url.searchParams.get('camTarget'));
