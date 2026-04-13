@@ -154,6 +154,14 @@ def build_converted_image_name_map(
         'by_original_name': by_original_name,
     }
 
+
+def should_retry_with_explicit_dataparser(stderr: str) -> bool:
+    error_text = stderr or ""
+    return (
+        "Unrecognized or misplaced options" in error_text
+        and "Arguments are applied to the directly preceding subcommand" in error_text
+    )
+
 class NerfStudioTrainer:
     """Production NerfStudio trainer implementing Vincent Woo's methodology"""
     
@@ -1165,26 +1173,30 @@ class NerfStudioTrainer:
             if self.training_selection_result.get('tile_id'):
                 logger.info(f"   Tile ID: {self.training_selection_result['tile_id']}")
         
-        # Build NerfStudio command with Vincent's exact parameters on converted transforms.json dataset
-        # Using industry-standard ns-process-data conversion flow (COLMAP → transforms.json)
-        cmd = [
-            "ns-train", model_variant,
-            "--data", str(self.input_dir),
-            "--output-dir", str(self.temp_dir),
-            "--vis", "tensorboard",
-            "--max_num_iterations", str(max_iterations),
-            "--pipeline.model.sh_degree", str(sh_degree),
-            "--logging.steps_per_log", str(log_interval)
+        base_cmd = [
+            "ns-train",
+            model_variant,
+            "--output-dir",
+            str(self.temp_dir),
+            "--vis",
+            "tensorboard",
+            "--max_num_iterations",
+            str(max_iterations),
+            "--pipeline.model.sh_degree",
+            str(sh_degree),
+            "--logging.steps_per_log",
+            str(log_interval),
         ]
+        method_args: list[str] = []
         
         if bilateral_processing:
-            cmd.extend(["--pipeline.model.use-bilateral-grid", "True"])
+            method_args.extend(["--pipeline.model.use-bilateral-grid", "True"])
             logger.info("🌈 Bilateral guided processing enabled (--pipeline.model.use-bilateral-grid True)")
         else:
             logger.info("ℹ️  Bilateral guided processing disabled")
 
         if model_variant in {"splatfacto-w-light", "splatfacto-w"}:
-            cmd.extend([
+            method_args.extend([
                 "--pipeline.model.rasterize_mode", str(rasterize_mode),
                 "--pipeline.model.use_scale_regularization", str(use_scale_regularization),
                 "--pipeline.model.cull_alpha_thresh", str(cull_alpha_thresh),
@@ -1199,11 +1211,31 @@ class NerfStudioTrainer:
         
         # Memory optimization for A10G GPU (16GB vs Vincent's RTX 4090 24GB)
         # Using max-gauss-ratio instead of max_num_gaussians (suggested by NerfStudio error)
-        cmd.extend([
+        method_args.extend([
             "--pipeline.model.max-gauss-ratio", str(max_gauss_ratio)
         ])
         logger.info(f"🖥️  A10G GPU optimization enabled (max-gauss-ratio: {max_gauss_ratio})")
         logger.info("🪟 Viewer disabled for headless SageMaker training (--vis tensorboard)")
+
+        def build_training_command(*, explicit_dataparser: bool) -> list[str]:
+            if explicit_dataparser:
+                return [
+                    *base_cmd,
+                    *method_args,
+                    "nerfstudio-data",
+                    "--data",
+                    str(self.input_dir),
+                ]
+            return [
+                "ns-train",
+                model_variant,
+                "--data",
+                str(self.input_dir),
+                *base_cmd[2:],
+                *method_args,
+            ]
+
+        cmd = build_training_command(explicit_dataparser=False)
         
         logger.info("🚀 Executing NerfStudio training command:")
         logger.info(f"   {' '.join(cmd)}")
@@ -1229,6 +1261,20 @@ class NerfStudioTrainer:
                 env=train_env,
                 timeout=training_timeout_seconds,
             )
+
+            if result.returncode != 0 and should_retry_with_explicit_dataparser(result.stderr):
+                fallback_cmd = build_training_command(explicit_dataparser=True)
+                logger.warning(
+                    "⚠️ ns-train rejected the initial argument ordering; retrying with explicit nerfstudio-data subcommand"
+                )
+                logger.info(f"   {' '.join(fallback_cmd)}")
+                result = subprocess.run(
+                    fallback_cmd,
+                    capture_output=True,
+                    text=True,
+                    env=train_env,
+                    timeout=training_timeout_seconds,
+                )
             
             if result.returncode != 0:
                 logger.error("❌ NerfStudio training failed:")
