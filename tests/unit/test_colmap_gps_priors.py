@@ -3383,6 +3383,78 @@ class ColmapGpsPriorTests(unittest.TestCase):
             triangulator_clear_points_index = triangulator_command.index("--clear_points")
             self.assertEqual(triangulator_command[triangulator_clear_points_index + 1], "0")
 
+    def test_reindex_model_to_database_rewrites_model_image_ids(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            seed_text_dir = root / "seed_text"
+            seed_text_dir.mkdir(parents=True, exist_ok=True)
+            (seed_text_dir / "cameras.txt").write_text(
+                "# Camera list\n1 SIMPLE_RADIAL 4000 2250 2545.54 2000 1125 0.01\n",
+                encoding="utf-8",
+            )
+            (seed_text_dir / "images.txt").write_text(
+                "# Image list\n"
+                "1 1 0 0 0 0 0 0 1 IMG_01.jpg\n"
+                "0 0 -1\n"
+                "2 1 0 0 0 0 0 0 1 IMG_02.jpg\n"
+                "1 1 -1\n",
+                encoding="utf-8",
+            )
+            (seed_text_dir / "points3D.txt").write_text(
+                "# 3D point list\n"
+                "1 0 0 0 255 255 255 0.5 1 0 2 1\n",
+                encoding="utf-8",
+            )
+            (seed_text_dir / "frames.txt").write_text(
+                "# Frame list\n"
+                "1 1 1 0 0 0 0 0 0 2 CAMERA 1 1 CAMERA 1 2\n",
+                encoding="utf-8",
+            )
+            database_path = root / "seam.db"
+            with sqlite3.connect(database_path) as connection:
+                connection.execute("CREATE TABLE images(image_id INTEGER PRIMARY KEY, name TEXT)")
+                connection.execute(
+                    "INSERT INTO images(image_id, name) VALUES (?, ?), (?, ?)",
+                    (10, "IMG_01.jpg", 20, "IMG_02.jpg"),
+                )
+                connection.commit()
+
+            seed_model = run_colmap_sfm.ModelSummary(
+                stage="seed",
+                text_dir=seed_text_dir,
+                cameras_registered=1,
+                images_registered=2,
+                points_3d=1,
+                binary_dir=root / "seed_bin",
+                image_names=["IMG_01.jpg", "IMG_02.jpg"],
+                source_chunk_indexes=[1],
+            )
+
+            with mock.patch.object(
+                pipeline,
+                "convert_text_model_to_binary",
+                side_effect=lambda *, input_path, output_path, stage: output_path.mkdir(
+                    parents=True,
+                    exist_ok=True,
+                ),
+            ):
+                reindexed_model = pipeline.reindex_model_to_database(
+                    model=seed_model,
+                    database_path=database_path,
+                    stage_prefix="parent_seam_seed",
+                )
+
+            rewritten_images = (reindexed_model.text_dir / "images.txt").read_text(encoding="utf-8")
+            rewritten_points = (reindexed_model.text_dir / "points3D.txt").read_text(encoding="utf-8")
+            rewritten_frames = (reindexed_model.text_dir / "frames.txt").read_text(encoding="utf-8")
+            self.assertIn("10 1 0 0 0 0 0 0 1 IMG_01.jpg", rewritten_images)
+            self.assertIn("20 1 0 0 0 0 0 0 1 IMG_02.jpg", rewritten_images)
+            self.assertIn("1 0 0 0 255 255 255 0.5 10 0 20 1", rewritten_points)
+            self.assertIn("CAMERA 1 10 CAMERA 1 20", rewritten_frames)
+            self.assertEqual(reindexed_model.images_registered, 2)
+            self.assertEqual(reindexed_model.points_3d, 1)
+
     def test_run_parent_seam_registration_includes_seed_registered_names_in_frontier(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -3410,6 +3482,16 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 image_names=["IMG_01.jpg", "IMG_02.jpg"],
                 source_chunk_indexes=[1],
             )
+            reindexed_seed_model = run_colmap_sfm.ModelSummary(
+                stage="parent_seam_seed_reindexed",
+                text_dir=root / "reindexed_text",
+                cameras_registered=1,
+                images_registered=2,
+                points_3d=100,
+                binary_dir=root / "reindexed_bin",
+                image_names=["IMG_01.jpg", "IMG_02.jpg"],
+                source_chunk_indexes=[1],
+            )
             triangulated_model = run_colmap_sfm.ModelSummary(
                 stage="parent_seam_point_triangulator_01",
                 text_dir=root / "tri_text",
@@ -3427,12 +3509,16 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 return_value=root / "seam.db",
             ), mock.patch.object(
                 pipeline,
+                "reindex_model_to_database",
+                return_value=reindexed_seed_model,
+            ) as reindex_mock, mock.patch.object(
+                pipeline,
                 "run_chunk_matchers",
             ) as matchers_mock, mock.patch.object(
                 pipeline,
                 "run_image_registrator",
-                return_value=seed_model,
-            ), mock.patch.object(
+                return_value=reindexed_seed_model,
+            ) as registrator_mock, mock.patch.object(
                 pipeline,
                 "run_point_triangulator",
                 return_value=triangulated_model,
@@ -3452,6 +3538,15 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(
                 matchers_mock.call_args.kwargs["frontier_names"],
                 ["IMG_01.jpg", "IMG_02.jpg", "IMG_04.jpg"],
+            )
+            reindex_mock.assert_called_once_with(
+                model=seed_model,
+                database_path=root / "seam.db",
+                stage_prefix="parent_seam_seed",
+            )
+            self.assertEqual(
+                registrator_mock.call_args.kwargs["input_path"],
+                reindexed_seed_model.binary_dir,
             )
 
     def test_repair_disconnected_chunk_model_components_reruns_best_bridge_pair(self):

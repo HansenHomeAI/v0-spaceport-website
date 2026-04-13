@@ -2433,6 +2433,207 @@ class ColmapPipeline:
                 image_line = not image_line
         return image_id_map
 
+    def text_model_image_ids_by_name(self, images_txt: Path) -> Dict[str, int]:
+        image_ids_by_name: Dict[str, int] = {}
+        image_line = True
+        with open(images_txt, "r", encoding="utf-8") as handle:
+            for line in handle:
+                stripped = line.strip()
+                if not stripped or stripped.startswith("#"):
+                    continue
+                parts = stripped.split()
+                if image_line and len(parts) >= 10:
+                    image_ids_by_name[parts[9]] = int(parts[0])
+                image_line = not image_line
+        return image_ids_by_name
+
+    def rewrite_model_text_image_ids(
+        self,
+        *,
+        input_dir: Path,
+        output_dir: Path,
+        image_ids_by_name: Dict[str, int],
+    ) -> None:
+        output_dir.mkdir(parents=True, exist_ok=True)
+        images_path = input_dir / "images.txt"
+        points_path = input_dir / "points3D.txt"
+        frames_path = input_dir / "frames.txt"
+
+        old_to_new_image_ids: Dict[int, int] = {}
+        image_line = True
+        with open(images_path, "r", encoding="utf-8") as source, open(
+            output_dir / "images.txt",
+            "w",
+            encoding="utf-8",
+        ) as target:
+            for line in source:
+                stripped = line.strip()
+                if not stripped or stripped.startswith("#"):
+                    target.write(line)
+                    continue
+                parts = stripped.split()
+                if image_line and len(parts) >= 10:
+                    image_name = parts[9]
+                    new_image_id = image_ids_by_name.get(image_name)
+                    if new_image_id is None:
+                        raise RuntimeError(
+                            f"Seed model image {image_name} is missing from the seam database"
+                        )
+                    old_to_new_image_ids[int(parts[0])] = new_image_id
+                    parts[0] = str(new_image_id)
+                    target.write(" ".join(parts) + "\n")
+                else:
+                    target.write(line)
+                image_line = not image_line
+
+        if points_path.exists():
+            with open(points_path, "r", encoding="utf-8") as source, open(
+                output_dir / "points3D.txt",
+                "w",
+                encoding="utf-8",
+            ) as target:
+                for line in source:
+                    stripped = line.strip()
+                    if not stripped or stripped.startswith("#"):
+                        target.write(line)
+                        continue
+                    parts = stripped.split()
+                    rewritten_track: List[str] = []
+                    for offset in range(8, len(parts), 2):
+                        if offset + 1 >= len(parts):
+                            break
+                        try:
+                            old_image_id = int(parts[offset])
+                        except ValueError:
+                            continue
+                        new_image_id = old_to_new_image_ids.get(old_image_id)
+                        if new_image_id is None:
+                            continue
+                        rewritten_track.extend((str(new_image_id), parts[offset + 1]))
+                    if len(rewritten_track) < 4:
+                        continue
+                    target.write(" ".join(parts[:8] + rewritten_track) + "\n")
+
+        if frames_path.exists():
+            with open(frames_path, "r", encoding="utf-8") as source, open(
+                output_dir / "frames.txt",
+                "w",
+                encoding="utf-8",
+            ) as target:
+                for line in source:
+                    stripped = line.strip()
+                    if not stripped or stripped.startswith("#"):
+                        target.write(line)
+                        continue
+                    parts = stripped.split()
+                    if len(parts) >= 10:
+                        try:
+                            num_data_ids = int(parts[9])
+                        except ValueError:
+                            num_data_ids = 0
+                        offset = 10
+                        for _ in range(num_data_ids):
+                            if offset + 2 >= len(parts):
+                                break
+                            try:
+                                old_image_id = int(parts[offset + 2])
+                            except ValueError:
+                                offset += 3
+                                continue
+                            new_image_id = old_to_new_image_ids.get(old_image_id)
+                            if new_image_id is not None:
+                                parts[offset + 2] = str(new_image_id)
+                            offset += 3
+                    target.write(" ".join(parts) + "\n")
+
+        for source_file in input_dir.iterdir():
+            if source_file.name in {"images.txt", "points3D.txt", "frames.txt"}:
+                continue
+            if source_file.is_file():
+                shutil.copy2(source_file, output_dir / source_file.name)
+
+    def convert_text_model_to_binary(
+        self,
+        *,
+        input_path: Path,
+        output_path: Path,
+        stage: str,
+    ) -> None:
+        output_path.mkdir(parents=True, exist_ok=True)
+        stream_command(
+            [
+                "colmap",
+                "model_converter",
+                "--input_path",
+                str(input_path),
+                "--input_type",
+                "TXT",
+                "--output_path",
+                str(output_path),
+                "--output_type",
+                "BIN",
+            ],
+            stage=stage,
+            timeout_seconds=self.resolve_timeout_seconds(self.matcher_timeout_seconds),
+            heartbeat_seconds=self.command_heartbeat_seconds,
+        )
+
+    def reindex_model_to_database(
+        self,
+        *,
+        model: ModelSummary,
+        database_path: Path,
+        stage_prefix: str,
+    ) -> ModelSummary:
+        images_txt = model.text_dir / "images.txt"
+        if not images_txt.exists():
+            return model
+        current_image_ids_by_name = self.text_model_image_ids_by_name(images_txt)
+        database_image_ids_by_name = self.get_image_ids_by_name(database_path)
+        registered_names = self.merged_image_names(model)
+        if registered_names and all(
+            database_image_ids_by_name.get(image_name) == current_image_ids_by_name.get(image_name)
+            for image_name in registered_names
+        ):
+            return model
+        missing_names = sorted(registered_names.difference(database_image_ids_by_name))
+        if missing_names:
+            raise RuntimeError(
+                "Seed model contains images missing from the seam database: "
+                f"{missing_names[:10]}"
+            )
+        reindexed_root = self.work_dir / "reindexed_models" / stage_prefix
+        reindexed_text_dir = reindexed_root / "text"
+        reindexed_binary_dir = reindexed_root / "binary"
+        self.rewrite_model_text_image_ids(
+            input_dir=model.text_dir,
+            output_dir=reindexed_text_dir,
+            image_ids_by_name=database_image_ids_by_name,
+        )
+        reindex_stage = f"{stage_prefix}_model_converter"
+        try:
+            self.convert_text_model_to_binary(
+                input_path=reindexed_text_dir,
+                output_path=reindexed_binary_dir,
+                stage=reindex_stage,
+            )
+        except RuntimeError as error:
+            self.handle_stage_runtime_error(reindex_stage, error)
+            raise
+        return ModelSummary(
+            stage=f"{stage_prefix}_reindexed",
+            text_dir=reindexed_text_dir,
+            cameras_registered=count_text_rows(reindexed_text_dir / "cameras.txt"),
+            images_registered=count_registered_images(reindexed_text_dir / "images.txt"),
+            points_3d=count_text_rows(reindexed_text_dir / "points3D.txt"),
+            binary_dir=reindexed_binary_dir,
+            image_count=model.image_count,
+            partial_result=model.partial_result,
+            timed_out=model.timed_out,
+            image_names=list(model.image_names),
+            source_chunk_indexes=list(model.source_chunk_indexes),
+        )
+
     def far_context_point_has_sufficient_baseline(
         self,
         parts: Sequence[str],
@@ -4851,8 +5052,13 @@ class ColmapPipeline:
         seam_dir = self.work_dir / seam_dir_name
         seam_dir.mkdir(parents=True, exist_ok=True)
         seam_database_path = self.prepare_chunk_database(chunk_plan, dir_name=seam_dir_name)
+        current_model = self.reindex_model_to_database(
+            model=seed_model,
+            database_path=seam_database_path,
+            stage_prefix=f"{stage_prefix}_seed",
+        )
         seed_registered_names = self.sorted_capture_names(
-            self.merged_image_names(seed_model).intersection(set(chunk_plan.image_names))
+            self.merged_image_names(current_model).intersection(set(chunk_plan.image_names))
         )
         active_frontier_names = (
             self.sorted_capture_names(set(frontier_names or []).union(seed_registered_names))
@@ -4868,7 +5074,6 @@ class ColmapPipeline:
             frontier_names=active_frontier_names,
             frontier_pair_cap=frontier_pair_cap,
         )
-        current_model = seed_model
         current_model.image_names = list(chunk_plan.image_names)
         current_model.source_chunk_indexes = list(
             chunk_plan.source_chunk_indexes or seed_model.source_chunk_indexes
