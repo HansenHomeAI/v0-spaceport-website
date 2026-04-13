@@ -1525,6 +1525,7 @@ class ColmapPipeline:
         merged_components = 1
         for index, next_model in enumerate(chunk_models[1:], start=1):
             output_path = self.work_dir / f"merged_chunk_model_{index:02d}"
+            output_path.mkdir(parents=True, exist_ok=True)
             try:
                 stream_command(
                     [
