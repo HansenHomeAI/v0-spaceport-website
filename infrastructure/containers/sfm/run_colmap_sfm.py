@@ -17,7 +17,7 @@ import time
 import zipfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Sequence
+from typing import Dict, Iterable, List, Sequence, Set
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -85,6 +85,23 @@ def count_text_rows(path: Path) -> int:
 
 def count_registered_images(images_txt: Path) -> int:
     return count_text_rows(images_txt) // 2
+
+
+def load_registered_image_names(images_txt: Path) -> Set[str]:
+    if not images_txt.exists():
+        return set()
+    registered_names: Set[str] = set()
+    image_line = True
+    with open(images_txt, "r", encoding="utf-8") as handle:
+        for line in handle:
+            stripped = line.strip()
+            if not stripped or stripped.startswith("#"):
+                continue
+            parts = stripped.split()
+            if image_line and len(parts) >= 10:
+                registered_names.add(parts[9])
+            image_line = not image_line
+    return registered_names
 
 
 def stream_command(command: List[str], *, stage: str, env: Dict[str, str] | None = None) -> None:
@@ -1346,6 +1363,19 @@ class ColmapPipeline:
     def chunk_registered_ratio_threshold(self) -> float:
         return max(self.gps_min_registered_ratio, 0.99)
 
+    def chunk_core_registered_ratio(
+        self,
+        chunk_plan: ChunkPlan,
+        model: ModelSummary,
+    ) -> tuple[float, int, Set[str]]:
+        registered_names = load_registered_image_names(model.text_dir / "images.txt")
+        if not chunk_plan.core_names:
+            return 0.0, 0, registered_names
+        if not registered_names:
+            return 0.0, 0, registered_names
+        core_registered_count = len(set(chunk_plan.core_names).intersection(registered_names))
+        return core_registered_count / len(chunk_plan.core_names), core_registered_count, registered_names
+
     def run_chunk_pipeline(self, chunk_plan: ChunkPlan) -> ModelSummary:
         chunk_dir = self.work_dir / f"chunk_{chunk_plan.index:02d}"
         chunk_dir.mkdir(parents=True, exist_ok=True)
@@ -1388,15 +1418,36 @@ class ColmapPipeline:
             if chunk_plan.image_names
             else 0.0
         )
+        core_registered_ratio, core_registered_count, registered_names = self.chunk_core_registered_ratio(
+            chunk_plan,
+            initial_model,
+        )
+        core_missing_names = sorted(set(chunk_plan.core_names).difference(registered_names))
         if registered_ratio >= self.chunk_registered_ratio_threshold():
+            return initial_model
+        if core_registered_ratio >= self.chunk_registered_ratio_threshold():
+            logger.info(
+                "Chunk %s registered %s/%s total images (%.2f%%) but %s/%s core images (%.2f%%); skipping boundary recovery",
+                chunk_plan.index,
+                initial_model.images_registered,
+                len(chunk_plan.image_names),
+                registered_ratio * 100.0,
+                core_registered_count,
+                len(chunk_plan.core_names),
+                core_registered_ratio * 100.0,
+            )
             return initial_model
 
         logger.info(
-            "Chunk %s registered %s/%s images (%.2f%%); running targeted boundary recovery",
+            "Chunk %s registered %s/%s images (%.2f%%) with %s/%s core images (%.2f%%); running targeted boundary recovery. Missing core images: %s",
             chunk_plan.index,
             initial_model.images_registered,
             len(chunk_plan.image_names),
             registered_ratio * 100.0,
+            core_registered_count,
+            len(chunk_plan.core_names),
+            core_registered_ratio * 100.0,
+            core_missing_names,
         )
         self.boundary_recovery_triggered = True
         try:

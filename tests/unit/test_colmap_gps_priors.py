@@ -572,6 +572,78 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(vocab_mock.call_count, 1)
             self.assertEqual(mapper_mock.call_count, 2)
 
+    def test_run_chunk_pipeline_skips_boundary_recovery_when_core_images_are_registered(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.enable_sequential_matcher = True
+            pipeline.exif_records = {
+                "IMG_01.jpg": {"local_x_m": 0.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_02.jpg": {"local_x_m": 1.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_03.jpg": {"local_x_m": 2.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_04.jpg": {"local_x_m": 3.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_05.jpg": {"local_x_m": 4.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_06.jpg": {"local_x_m": 5.0, "local_y_m": 0.0, "heading_deg": 0.0},
+            }
+            chunk = run_colmap_sfm.ChunkPlan(
+                index=0,
+                core_names=["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg"],
+                image_names=[
+                    "IMG_01.jpg",
+                    "IMG_02.jpg",
+                    "IMG_03.jpg",
+                    "IMG_04.jpg",
+                    "IMG_05.jpg",
+                    "IMG_06.jpg",
+                ],
+                overlap_names=["IMG_05.jpg", "IMG_06.jpg"],
+            )
+            (root / "images.txt").write_text(
+                "\n".join(
+                    [
+                        "1 1 0 0 0 0 0 0 1 IMG_01.jpg",
+                        "0 0 -1",
+                        "2 1 0 0 0 0 0 0 1 IMG_02.jpg",
+                        "0 0 -1",
+                        "3 1 0 0 0 0 0 0 1 IMG_03.jpg",
+                        "0 0 -1",
+                        "4 1 0 0 0 0 0 0 1 IMG_04.jpg",
+                        "0 0 -1",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            initial_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_00_mapper_initial",
+                text_dir=root,
+                cameras_registered=1,
+                images_registered=4,
+                points_3d=1200,
+                binary_dir=root,
+                image_count=6,
+            )
+
+            with mock.patch.object(pipeline, "run_feature_extraction"), mock.patch.object(
+                pipeline, "validate_or_backfill_pose_priors"
+            ), mock.patch.object(pipeline, "run_spatial_matcher") as spatial_mock, mock.patch.object(
+                pipeline, "run_sequential_matcher"
+            ), mock.patch.object(
+                pipeline,
+                "run_vocab_matching",
+            ) as vocab_mock, mock.patch.object(
+                pipeline,
+                "run_mapper",
+                return_value=initial_model,
+            ) as mapper_mock:
+                pipeline.timings["chunk_00_mapper_initial_seconds"] = 10.0
+                best_model = pipeline.run_chunk_pipeline(chunk)
+
+            self.assertEqual(best_model.images_registered, 4)
+            self.assertFalse(pipeline.boundary_recovery_triggered)
+            self.assertEqual(spatial_mock.call_count, 1)
+            self.assertEqual(vocab_mock.call_count, 0)
+            self.assertEqual(mapper_mock.call_count, 1)
+
     def test_run_chunk_pipeline_keeps_initial_model_when_boundary_recovery_fails(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
