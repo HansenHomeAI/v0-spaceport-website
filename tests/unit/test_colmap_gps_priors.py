@@ -3524,6 +3524,10 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 return_value=triangulated_model,
             ), mock.patch.object(
                 pipeline,
+                "model_track_supported_pairs",
+                return_value=[("IMG_01.jpg", "IMG_02.jpg")],
+            ), mock.patch.object(
+                pipeline,
                 "merged_image_names",
                 return_value={"IMG_01.jpg", "IMG_02.jpg"},
             ):
@@ -3539,6 +3543,10 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 matchers_mock.call_args.kwargs["frontier_names"],
                 ["IMG_01.jpg", "IMG_02.jpg", "IMG_04.jpg"],
             )
+            self.assertEqual(
+                matchers_mock.call_args.kwargs["extra_pairs"],
+                [("IMG_01.jpg", "IMG_02.jpg")],
+            )
             reindex_mock.assert_called_once_with(
                 model=seed_model,
                 database_path=root / "seam.db",
@@ -3547,6 +3555,68 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(
                 registrator_mock.call_args.kwargs["input_path"],
                 reindexed_seed_model.binary_dir,
+            )
+
+    def test_model_track_supported_pairs_returns_seed_supported_neighbors(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.capture_ordered_names = [
+                "IMG_01.jpg",
+                "IMG_02.jpg",
+                "IMG_03.jpg",
+                "IMG_04.jpg",
+            ]
+            pipeline.exif_records = {name: {} for name in pipeline.capture_ordered_names}
+            model_text_dir = root / "seed_text"
+            model_text_dir.mkdir(parents=True, exist_ok=True)
+            (model_text_dir / "images.txt").write_text(
+                "\n".join(
+                    [
+                        "# Image list",
+                        "1 1 0 0 0 0 0 0 1 IMG_01.jpg",
+                        "0 0",
+                        "2 1 0 0 0 0 0 0 1 IMG_02.jpg",
+                        "0 0",
+                        "3 1 0 0 0 0 0 0 1 IMG_03.jpg",
+                        "0 0",
+                        "4 1 0 0 0 0 0 0 1 IMG_04.jpg",
+                        "0 0",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            (model_text_dir / "points3D.txt").write_text(
+                "\n".join(
+                    [
+                        "# 3D point list",
+                        "1 0 0 0 255 0 0 0.5 1 0 2 1 3 2",
+                        "2 0 0 0 255 0 0 0.5 1 3 2 4",
+                        "3 0 0 0 255 0 0 0.5 1 5 4 6",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            model = run_colmap_sfm.ModelSummary(
+                stage="seed_model",
+                text_dir=model_text_dir,
+                cameras_registered=1,
+                images_registered=4,
+                points_3d=3,
+                binary_dir=root / "seed_bin",
+            )
+
+            pair_names = pipeline.model_track_supported_pairs(
+                model,
+                allowed_names={"IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg"},
+                per_image_limit=1,
+            )
+
+            self.assertEqual(
+                pair_names,
+                [("IMG_01.jpg", "IMG_02.jpg"), ("IMG_01.jpg", "IMG_03.jpg")],
             )
 
     def test_repair_disconnected_chunk_model_components_reruns_best_bridge_pair(self):

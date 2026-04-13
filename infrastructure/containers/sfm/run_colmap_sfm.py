@@ -2668,6 +2668,78 @@ class ColmapPipeline:
                 max_baseline = max(max_baseline, baseline)
         return max_baseline >= self.filtered_sparse_far_context_min_baseline_m
 
+    def model_track_supported_pairs(
+        self,
+        model: ModelSummary,
+        *,
+        allowed_names: Set[str] | None = None,
+        per_image_limit: int | None = None,
+    ) -> List[tuple[str, str]]:
+        images_path = model.text_dir / "images.txt"
+        points_path = model.text_dir / "points3D.txt"
+        if not images_path.exists() or not points_path.exists():
+            return []
+        image_id_to_name = self.image_id_to_name_map(images_path)
+        allowed_name_set = set(allowed_names or [])
+        pair_support: Dict[tuple[str, str], int] = defaultdict(int)
+        with open(points_path, "r", encoding="utf-8") as handle:
+            for line in handle:
+                stripped = line.strip()
+                if not stripped or stripped.startswith("#"):
+                    continue
+                parts = stripped.split()
+                observation_names: List[str] = []
+                for offset in range(8, len(parts), 2):
+                    if offset + 1 >= len(parts):
+                        break
+                    try:
+                        image_id = int(parts[offset])
+                    except ValueError:
+                        continue
+                    image_name = image_id_to_name.get(image_id)
+                    if image_name is None:
+                        continue
+                    if allowed_name_set and image_name not in allowed_name_set:
+                        continue
+                    observation_names.append(image_name)
+                unique_names = self.sorted_capture_names(set(observation_names))
+                if len(unique_names) < 2:
+                    continue
+                for first_index, first_name in enumerate(unique_names):
+                    for second_name in unique_names[first_index + 1 :]:
+                        pair_support[(first_name, second_name)] += 1
+        if not pair_support:
+            return []
+        active_per_image_limit = (
+            max(per_image_limit, 1)
+            if per_image_limit is not None
+            else max(self.pair_cap_local, self.pair_cap_seam, 1)
+        )
+        ranked_neighbors: Dict[str, List[tuple[int, str]]] = defaultdict(list)
+        for (first_name, second_name), support_count in pair_support.items():
+            ranked_neighbors[first_name].append((support_count, second_name))
+            ranked_neighbors[second_name].append((support_count, first_name))
+        selected_pairs: Set[tuple[str, str]] = set()
+        for image_name, neighbors in ranked_neighbors.items():
+            for support_count, neighbor_name in sorted(
+                neighbors,
+                key=lambda item: (-item[0], item[1]),
+            )[:active_per_image_limit]:
+                if support_count <= 0:
+                    continue
+                selected_pairs.add(tuple(sorted((image_name, neighbor_name))))
+        capture_order_index = {
+            image_name: position for position, image_name in enumerate(self.capture_ordered_names)
+        }
+        return sorted(
+            selected_pairs,
+            key=lambda pair: (
+                capture_order_index.get(pair[0], sys.maxsize),
+                capture_order_index.get(pair[1], sys.maxsize),
+                pair,
+            ),
+        )
+
     def edge_is_revisit(self, image_name: str, edge: CandidateEdge) -> bool:
         neighbor_name = edge.second_name if edge.first_name == image_name else edge.first_name
         first_record = self.exif_records.get(image_name, {})
@@ -2849,6 +2921,7 @@ class ColmapPipeline:
         bridge_target_name_sets: Sequence[Set[str]] | None = None,
         frontier_names: Sequence[str] | None = None,
         frontier_pair_cap: int | None = None,
+        extra_pairs: Sequence[tuple[str, str]] | None = None,
     ) -> Path:
         pair_list_path = chunk_dir / "match_list.txt"
         image_name_set = set(chunk_plan.image_names)
@@ -2867,6 +2940,10 @@ class ColmapPipeline:
                         continue
                     pair_key = tuple(sorted((image_name, neighbor_name)))
                     self.write_match_pair(handle, seen_pairs, pair_key[0], pair_key[1])
+            for first_name, second_name in extra_pairs or []:
+                if first_name not in image_name_set or second_name not in image_name_set:
+                    continue
+                self.write_match_pair(handle, seen_pairs, first_name, second_name)
             bridge_pairs_added = 0
             if bridge_target_name_sets:
                 bridge_pairs_added = self.write_bridge_target_pairs(
@@ -2934,6 +3011,7 @@ class ColmapPipeline:
         bridge_target_name_sets: Sequence[Set[str]] | None = None,
         frontier_names: Sequence[str] | None = None,
         frontier_pair_cap: int | None = None,
+        extra_pairs: Sequence[tuple[str, str]] | None = None,
     ) -> None:
         if self.chunk_planner == "footprint_graph_v1":
             if self.colmap_capabilities.get("supports_matches_importer"):
@@ -2943,6 +3021,7 @@ class ColmapPipeline:
                     bridge_target_name_sets=bridge_target_name_sets if is_bridge_stage_prefix(stage_prefix) else None,
                     frontier_names=frontier_names,
                     frontier_pair_cap=frontier_pair_cap,
+                    extra_pairs=extra_pairs,
                 )
                 self.run_matches_importer(
                     database_path=chunk_database_path,
@@ -5083,6 +5162,11 @@ class ColmapPipeline:
             if frontier_names is not None
             else None
         )
+        seed_support_pairs = self.model_track_supported_pairs(
+            current_model,
+            allowed_names=set(chunk_plan.image_names),
+            per_image_limit=max(self.pair_cap_local, self.pair_cap_seam, 4),
+        )
         self.run_chunk_matchers(
             chunk_plan,
             chunk_database_path=seam_database_path,
@@ -5091,6 +5175,7 @@ class ColmapPipeline:
             bridge_target_name_sets=bridge_target_name_sets,
             frontier_names=active_frontier_names,
             frontier_pair_cap=frontier_pair_cap,
+            extra_pairs=seed_support_pairs,
         )
         current_model.image_names = list(chunk_plan.image_names)
         current_model.source_chunk_indexes = list(
