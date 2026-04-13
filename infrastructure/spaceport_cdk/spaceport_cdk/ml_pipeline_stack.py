@@ -459,7 +459,7 @@ class MLPipelineStack(Stack):
                     "VolumeSizeInGB": 100
                 },
                 "StoppingCondition": {
-                    "MaxRuntimeInSeconds": 7200  # 2 hours for real training
+                    "MaxRuntimeInSeconds": 14400  # 4 hours for real training with splatfacto-w-light skyboxes
                 },
                 "RoleArn": sagemaker_role.role_arn,
                 # Enable comprehensive CloudWatch logging for training
@@ -494,6 +494,7 @@ class MLPipelineStack(Stack):
                     "BACKGROUND_SKYBOX_WIDTH": sfn.JsonPath.string_at("$.BACKGROUND_SKYBOX_WIDTH"),
                     "BACKGROUND_SKYBOX_HEIGHT": sfn.JsonPath.string_at("$.BACKGROUND_SKYBOX_HEIGHT"),
                     "BACKGROUND_SKYBOX_QUALITY": sfn.JsonPath.string_at("$.BACKGROUND_SKYBOX_QUALITY"),
+                    "TRAINING_TIMEOUT_SECONDS": sfn.JsonPath.string_at("$.TRAINING_TIMEOUT_SECONDS"),
                     
                     # NerfStudio Framework Configuration
                     "FRAMEWORK": "nerfstudio",
