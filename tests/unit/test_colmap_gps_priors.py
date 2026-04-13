@@ -1173,6 +1173,153 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertTrue(chunk_sets[0].intersection(chunk_sets[1]))
             self.assertTrue(chunk_sets[1].intersection(chunk_sets[2]))
 
+    def test_build_footprint_graph_chunks_caps_spillover_tail_chunks(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {"COLMAP_CHUNK_PLANNER": "footprint_graph_v1"},
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.chunk_target_images = 2
+            pipeline.chunk_min_images = 2
+            pipeline.chunk_hard_max_images = 2
+            pipeline.leaf_target_images = 2
+            pipeline.leaf_hard_cap_images = 2
+            pipeline.capture_ordered_names = [
+                "A1.jpg",
+                "A2.jpg",
+                "B1.jpg",
+                "B2.jpg",
+                "B3.jpg",
+            ]
+            pipeline.exif_records = {
+                name: {
+                    "local_x_m": float(index),
+                    "local_y_m": 0.0,
+                    "local_z_m": 0.0,
+                    "relative_altitude": 30.0,
+                    "heading_deg": 0.0,
+                    "pitch_deg": -30.0,
+                    "focal_length_mm": 10.0,
+                    "focal_length_35mm_mm": 24.0,
+                    "image_width_px": 4000,
+                    "image_height_px": 3000,
+                }
+                for index, name in enumerate(pipeline.capture_ordered_names)
+            }
+            pipeline.graph_neighbors = {
+                "A1.jpg": [
+                    run_colmap_sfm.CandidateEdge(
+                        first_name="A1.jpg",
+                        second_name="A2.jpg",
+                        score=0.95,
+                        footprint_overlap=0.95,
+                        scale_similarity=0.95,
+                        viewpoint_complementarity=0.95,
+                        distance_consistency=0.95,
+                        temporal_bonus=0.0,
+                        xy_distance_m=1.0,
+                        xyz_distance_m=1.0,
+                        view_delta_deg=2.0,
+                    )
+                ],
+                "A2.jpg": [
+                    run_colmap_sfm.CandidateEdge(
+                        first_name="A2.jpg",
+                        second_name="A1.jpg",
+                        score=0.95,
+                        footprint_overlap=0.95,
+                        scale_similarity=0.95,
+                        viewpoint_complementarity=0.95,
+                        distance_consistency=0.95,
+                        temporal_bonus=0.0,
+                        xy_distance_m=1.0,
+                        xyz_distance_m=1.0,
+                        view_delta_deg=2.0,
+                    )
+                ],
+                "B1.jpg": [
+                    run_colmap_sfm.CandidateEdge(
+                        first_name="B1.jpg",
+                        second_name="B2.jpg",
+                        score=0.90,
+                        footprint_overlap=0.90,
+                        scale_similarity=0.90,
+                        viewpoint_complementarity=0.90,
+                        distance_consistency=0.90,
+                        temporal_bonus=0.0,
+                        xy_distance_m=1.0,
+                        xyz_distance_m=1.0,
+                        view_delta_deg=2.0,
+                    )
+                ],
+                "B2.jpg": [
+                    run_colmap_sfm.CandidateEdge(
+                        first_name="B2.jpg",
+                        second_name="B1.jpg",
+                        score=0.90,
+                        footprint_overlap=0.90,
+                        scale_similarity=0.90,
+                        viewpoint_complementarity=0.90,
+                        distance_consistency=0.90,
+                        temporal_bonus=0.0,
+                        xy_distance_m=1.0,
+                        xyz_distance_m=1.0,
+                        view_delta_deg=2.0,
+                    ),
+                    run_colmap_sfm.CandidateEdge(
+                        first_name="B2.jpg",
+                        second_name="B3.jpg",
+                        score=0.85,
+                        footprint_overlap=0.85,
+                        scale_similarity=0.85,
+                        viewpoint_complementarity=0.85,
+                        distance_consistency=0.85,
+                        temporal_bonus=0.0,
+                        xy_distance_m=1.0,
+                        xyz_distance_m=1.0,
+                        view_delta_deg=2.0,
+                    ),
+                ],
+                "B3.jpg": [
+                    run_colmap_sfm.CandidateEdge(
+                        first_name="B3.jpg",
+                        second_name="B2.jpg",
+                        score=0.85,
+                        footprint_overlap=0.85,
+                        scale_similarity=0.85,
+                        viewpoint_complementarity=0.85,
+                        distance_consistency=0.85,
+                        temporal_bonus=0.0,
+                        xy_distance_m=1.0,
+                        xyz_distance_m=1.0,
+                        view_delta_deg=2.0,
+                    )
+                ],
+            }
+
+            with mock.patch.object(
+                pipeline,
+                "classify_graph_roles",
+                return_value={
+                    "A1.jpg": "geometry_anchor",
+                    "A2.jpg": "geometry_anchor",
+                    "B1.jpg": "burst_redundant",
+                    "B2.jpg": "burst_redundant",
+                    "B3.jpg": "burst_redundant",
+                },
+            ):
+                chunks = pipeline.build_footprint_graph_chunks()
+
+            self.assertTrue(all(len(chunk.image_names) <= 2 for chunk in chunks))
+            self.assertEqual(
+                set(name for chunk in chunks for name in chunk.core_names),
+                set(pipeline.capture_ordered_names),
+            )
+            self.assertTrue(any(set(chunk.core_names) == {"B1.jpg", "B2.jpg"} for chunk in chunks))
+            self.assertTrue(any(set(chunk.core_names) == {"B3.jpg"} for chunk in chunks))
+
     def test_run_chunk_matchers_uses_matches_importer_for_footprint_graph(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
             os.environ,

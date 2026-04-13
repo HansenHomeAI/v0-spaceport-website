@@ -1649,16 +1649,17 @@ class ColmapPipeline:
 
     def representative_chunk_names(
         self,
-        chunk_names: Sequence[str],
+        chunk_names: Sequence[str] | Set[str],
         roles: Dict[str, str],
         *,
         limit: int = 24,
     ) -> List[str]:
-        if not chunk_names:
+        ordered_chunk_names = self.sorted_capture_names(chunk_names)
+        if not ordered_chunk_names:
             return []
-        centroid_x, centroid_y = self.centroid_for_names(chunk_names)
+        centroid_x, centroid_y = self.centroid_for_names(ordered_chunk_names)
         ranked_names: List[tuple[int, float, float, int, str]] = []
-        for image_name in chunk_names:
+        for image_name in ordered_chunk_names:
             if image_name not in self.exif_records or roles.get(image_name) == "burst_redundant":
                 continue
             record = self.exif_records[image_name]
@@ -1677,7 +1678,7 @@ class ColmapPipeline:
                 )
             )
         if not ranked_names:
-            return list(chunk_names[:limit])
+            return ordered_chunk_names[:limit]
         return [image_name for _, _, _, _, image_name in sorted(ranked_names)[:limit]]
 
     def bridge_anchor_scores(
@@ -3991,6 +3992,102 @@ class ColmapPipeline:
             for image_name in spillover_names:
                 image_membership_count[image_name] += 1
 
+    def build_spillover_core_chunks(
+        self,
+        *,
+        remaining_names: Sequence[str],
+        roles: Dict[str, str],
+        image_membership_count: Dict[str, int],
+    ) -> List[List[str]]:
+        ordered_remaining_names = [
+            name for name in self.capture_ordered_names if name in set(remaining_names) and name in self.exif_records
+        ]
+        if not ordered_remaining_names:
+            return []
+
+        remaining_name_set = set(ordered_remaining_names)
+        leaf_target_images = self.active_leaf_target_images()
+        leaf_hard_cap_images = self.active_leaf_hard_cap_images()
+        spillover_chunks: List[List[str]] = []
+        prioritized_names = sorted(
+            ordered_remaining_names,
+            key=lambda name: (
+                0 if roles.get(name) != "burst_redundant" else 1,
+                -sum(edge.score for edge in self.graph_neighbors.get(name, [])[:12]),
+                self.capture_ordered_names.index(name),
+            ),
+        )
+        while remaining_name_set:
+            seed_name = next(
+                (name for name in prioritized_names if name in remaining_name_set),
+                None,
+            )
+            if seed_name is None:
+                break
+            chunk_names: List[str] = [seed_name]
+            chunk_name_set = {seed_name}
+            frontier = [seed_name]
+            while frontier:
+                current_name = frontier.pop(0)
+                for edge in self.graph_neighbors.get(current_name, []):
+                    neighbor_name = edge.second_name if edge.first_name == current_name else edge.first_name
+                    if neighbor_name not in remaining_name_set or neighbor_name in chunk_name_set:
+                        continue
+                    if roles.get(neighbor_name) == "burst_redundant" and len(chunk_names) >= self.chunk_min_images:
+                        continue
+                    if len(chunk_names) >= leaf_hard_cap_images:
+                        frontier = []
+                        break
+                    chunk_names.append(neighbor_name)
+                    chunk_name_set.add(neighbor_name)
+                    if len(chunk_names) < leaf_target_images:
+                        frontier.append(neighbor_name)
+            if len(chunk_names) < self.chunk_min_images:
+                for additional_name in prioritized_names:
+                    if additional_name not in remaining_name_set or additional_name in chunk_name_set:
+                        continue
+                    if roles.get(additional_name) == "burst_redundant" and len(chunk_names) >= self.chunk_min_images:
+                        continue
+                    if len(chunk_names) >= leaf_hard_cap_images:
+                        break
+                    chunk_names.append(additional_name)
+                    chunk_name_set.add(additional_name)
+                    if len(chunk_names) >= min(self.chunk_min_images, leaf_hard_cap_images):
+                        break
+            for image_name in chunk_name_set:
+                remaining_name_set.discard(image_name)
+            spillover_chunks.append(
+                sorted(chunk_name_set, key=lambda name: self.capture_ordered_names.index(name))
+            )
+
+        if len(spillover_chunks) > 1 and len(spillover_chunks[-1]) < self.chunk_min_images:
+            tail_chunk_names = spillover_chunks.pop()
+            overflow_tail_names: List[str] = []
+            for image_name in tail_chunk_names:
+                candidate_chunks: List[tuple[float, int, int]] = []
+                for chunk_index, chunk_names in enumerate(spillover_chunks):
+                    if len(chunk_names) >= self.active_leaf_hard_cap_images():
+                        continue
+                    chunk_name_set = set(chunk_names)
+                    edge_score = sum(
+                        edge.score
+                        for edge in self.graph_neighbors.get(image_name, [])
+                        if (edge.second_name if edge.first_name == image_name else edge.first_name) in chunk_name_set
+                    )
+                    candidate_chunks.append((-edge_score, len(chunk_names), chunk_index))
+                if not candidate_chunks:
+                    overflow_tail_names.append(image_name)
+                    continue
+                _, _, selected_chunk_index = min(candidate_chunks)
+                spillover_chunks[selected_chunk_index].append(image_name)
+            if overflow_tail_names:
+                spillover_chunks.append(overflow_tail_names)
+
+        for chunk_names in spillover_chunks:
+            for image_name in chunk_names:
+                image_membership_count[image_name] += 1
+        return spillover_chunks
+
     def build_footprint_graph_chunks(self) -> List[ChunkPlan]:
         self.build_single_image_groups()
         self.build_view_geometries()
@@ -4120,9 +4217,13 @@ class ColmapPipeline:
                     image_membership_count=image_membership_count,
                 )
             else:
-                core_chunks.append(remaining_names)
-                for image_name in remaining_names:
-                    image_membership_count[image_name] += 1
+                core_chunks.extend(
+                    self.build_spillover_core_chunks(
+                        remaining_names=remaining_names,
+                        roles=roles,
+                        image_membership_count=image_membership_count,
+                    )
+                )
 
         overlap_assignments: Dict[int, Set[str]] = defaultdict(set)
         self.chunk_cross_edge_counts = {}
