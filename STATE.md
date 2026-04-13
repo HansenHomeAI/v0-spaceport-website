@@ -1,5 +1,5 @@
-reason: delivering a concrete tiled gaussian merge architecture plan and benchmark ladder on a clean task branch
-last_step: merged origin/development into the task branch, synthesized literature and repo fit, and drafted the implementation memo
-next_unblocked_step: bump the preview trigger, validate the docs change locally, push the branch, and monitor Pages/CDK workflows to green
+reason: implementing manifest-driven tiled gaussian scaffold training and strict-core merge on the clean task branch
+last_step: wired tile manifest export, manifest-driven training selection, strict-core merge fallback, and lightweight unit coverage
+next_unblocked_step: stage the implementation, push the branch, and monitor the triggered Pages/CDK workflows to completion
 owner_action_needed: none
-updated: 2026-04-13T23:59:00Z
+updated: 2026-04-13T19:48:27Z

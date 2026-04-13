@@ -30,6 +30,21 @@ training:
   min_iterations: 5000               # Minimum training duration
   convergence_patience: 2000         # Patience for convergence detection
 
+# Tile / Scaffold Controls
+tiling:
+  training_mode: "monolithic"        # monolithic, global_scaffold, or leaf_tile
+  tile_manifest_path: ""
+  view_bucket_manifest_path: ""
+  tile_id: ""
+  merge:
+    mode: "strict_core"
+  global_scaffold:
+    max_images: 240
+    frame_stride: 2
+    max_iterations: 4000
+    sh_degree: 1
+    max_gauss_ratio: 4.0
+
 # Hardware Optimization (A10G GPU specific)
 hardware:
   gpu_memory_optimization: true      # Enable memory optimizations

@@ -483,6 +483,10 @@ class ColmapPipeline:
         self.chunk_pair_budget = int(os.environ.get("COLMAP_CHUNK_PAIR_BUDGET", "25000"))
         self.chunk_overlap_anchor_count = int(os.environ.get("COLMAP_CHUNK_OVERLAP_ANCHOR_COUNT", "20"))
         self.chunk_cross_edge_min_count = int(os.environ.get("COLMAP_CHUNK_CROSS_EDGE_MIN_COUNT", "12"))
+        self.global_scaffold_max_images = int(os.environ.get("COLMAP_GLOBAL_SCAFFOLD_MAX_IMAGES", "240"))
+        self.global_scaffold_stride = int(os.environ.get("COLMAP_GLOBAL_SCAFFOLD_STRIDE", "4"))
+        self.tile_context_images = int(os.environ.get("COLMAP_TILE_CONTEXT_IMAGES", "12"))
+        self.tile_bounds_padding_m = float(os.environ.get("COLMAP_TILE_BOUNDS_PADDING_METERS", "12.0"))
         self.graph_xy_neighbor_limit = int(os.environ.get("COLMAP_GRAPH_XY_NEIGHBOR_LIMIT", "60"))
         self.graph_xyz_neighbor_limit = int(os.environ.get("COLMAP_GRAPH_XYZ_NEIGHBOR_LIMIT", "20"))
         self.chunk_boundary_max_neighbors = int(
@@ -3083,10 +3087,7 @@ class ColmapPipeline:
         return self.build_spatial_heading_chunks()
 
     def write_chunk_planner_manifest(self) -> None:
-        if self.chunk_planner == "footprint_graph_v1":
-            chunk_plans = self.build_chunk_plans()
-        else:
-            chunk_plans = self.build_chunk_plans()
+        chunk_plans = self.chunk_plans or self.build_chunk_plans()
         manifest = {
             "planner": self.chunk_planner,
             "chunk_matcher_strategy": self.chunk_matcher_strategy,
@@ -3124,6 +3125,209 @@ class ColmapPipeline:
                     image_path = self.images_dir / image_name
                     if image_path.exists():
                         archive.write(image_path, arcname=image_name)
+
+    def ordered_unique_image_names(self, image_names: Sequence[str]) -> List[str]:
+        seen: Set[str] = set()
+        ordered: List[str] = []
+        for image_name in image_names:
+            if image_name in seen:
+                continue
+            seen.add(image_name)
+            ordered.append(image_name)
+        return ordered
+
+    def image_selection_bounds(self, image_names: Sequence[str], *, padding_m: float = 0.0) -> dict[str, float]:
+        geometries = self.build_view_geometries()
+        selected = [geometries[name] for name in image_names if name in geometries]
+        if not selected:
+            return {
+                "min_x": 0.0,
+                "max_x": 0.0,
+                "min_y": 0.0,
+                "max_y": 0.0,
+                "min_z": 0.0,
+                "max_z": 0.0,
+            }
+
+        min_x = min_y = min_z = float("inf")
+        max_x = max_y = max_z = float("-inf")
+        for geometry in selected:
+            altitude_m = max(float(geometry.effective_altitude_m or 0.0), 15.0)
+            depth_factors = (0.75, 1.0, 1.5) if not geometry.is_shallow_view else (1.0, 1.75, 2.5)
+            for depth_factor in depth_factors:
+                center, footprint_radius_m = self.footprint_circle_for_geometry(
+                    geometry,
+                    depth_factor=depth_factor,
+                )
+                min_x = min(min_x, center[0] - footprint_radius_m)
+                max_x = max(max_x, center[0] + footprint_radius_m)
+                min_y = min(min_y, center[1] - footprint_radius_m)
+                max_y = max(max_y, center[1] + footprint_radius_m)
+            z_down_m = max(20.0, altitude_m * (1.5 if geometry.is_shallow_view else 1.2))
+            z_up_m = max(12.0, altitude_m * (1.0 if geometry.is_shallow_view else 0.35))
+            min_z = min(min_z, geometry.local_z_m - z_down_m)
+            max_z = max(max_z, geometry.local_z_m + z_up_m)
+
+        return {
+            "min_x": round(min_x - padding_m, 3),
+            "max_x": round(max_x + padding_m, 3),
+            "min_y": round(min_y - padding_m, 3),
+            "max_y": round(max_y + padding_m, 3),
+            "min_z": round(min_z - padding_m, 3),
+            "max_z": round(max_z + padding_m, 3),
+        }
+
+    def ranked_neighbor_chunk_indexes(self, chunk_index: int) -> List[int]:
+        ranked: List[tuple[float, float, int]] = []
+        seed_centroid = self.chunk_centroids.get(chunk_index, (0.0, 0.0))
+        for candidate_index, candidate_plan in self.chunk_plans_by_index.items():
+            if candidate_index == chunk_index:
+                continue
+            pair_key = tuple(sorted((chunk_index, candidate_index)))
+            cross_edge_count = float(self.chunk_cross_edge_counts.get(pair_key, 0))
+            candidate_centroid = self.chunk_centroids.get(candidate_index, (0.0, 0.0))
+            centroid_distance = math.hypot(
+                candidate_centroid[0] - seed_centroid[0],
+                candidate_centroid[1] - seed_centroid[1],
+            )
+            ranked.append((-cross_edge_count, centroid_distance, candidate_plan.index))
+        return [candidate_index for _, _, candidate_index in sorted(ranked)]
+
+    def build_context_camera_names(self, chunk_plan: ChunkPlan) -> List[str]:
+        if self.tile_context_images <= 0:
+            return []
+        if not self.graph_neighbors:
+            self.build_candidate_graph()
+        if not self.graph_neighbors:
+            return []
+        tile_image_set = set(chunk_plan.image_names)
+        candidate_scores: Dict[str, float] = {}
+        for neighbor_index in self.ranked_neighbor_chunk_indexes(chunk_plan.index):
+            neighbor_plan = self.chunk_plans_by_index.get(neighbor_index)
+            if neighbor_plan is None:
+                continue
+            for candidate_name in neighbor_plan.core_names:
+                if candidate_name in tile_image_set:
+                    continue
+                score = sum(
+                    edge.score
+                    for edge in self.graph_neighbors.get(candidate_name, [])
+                    if (edge.second_name if edge.first_name == candidate_name else edge.first_name) in tile_image_set
+                )
+                if score <= 0.0:
+                    continue
+                candidate_scores[candidate_name] = max(candidate_scores.get(candidate_name, 0.0), score)
+        return [
+            image_name
+            for image_name, _ in sorted(
+                candidate_scores.items(),
+                key=lambda item: (-item[1], self.capture_ordered_names.index(item[0])),
+            )[: self.tile_context_images]
+        ]
+
+    def build_global_scaffold_image_names(self) -> List[str]:
+        scaffold_names = self.ordered_unique_image_names(
+            [
+                *self.probe_subsets.get("geometry_mix", []),
+                *self.probe_subsets.get("cross_pass", []),
+                *self.probe_subsets.get("horizon_context", []),
+            ]
+        )
+        stride = max(1, self.global_scaffold_stride)
+        if len(scaffold_names) < self.global_scaffold_max_images:
+            for image_name in self.capture_ordered_names[::stride]:
+                if image_name in scaffold_names:
+                    continue
+                scaffold_names.append(image_name)
+                if len(scaffold_names) >= self.global_scaffold_max_images:
+                    break
+        return scaffold_names[: self.global_scaffold_max_images]
+
+    def build_3dgs_tile_manifest_payload(self, chunk_plans: Sequence[ChunkPlan]) -> tuple[dict[str, object], dict[str, List[str]]]:
+        if not chunk_plans:
+            chunk_plans = [
+                ChunkPlan(
+                    index=0,
+                    core_names=list(self.capture_ordered_names),
+                    image_names=list(self.capture_ordered_names),
+                    overlap_names=[],
+                )
+            ]
+        self.chunk_plans_by_index = {chunk_plan.index: chunk_plan for chunk_plan in chunk_plans}
+
+        tiles: List[dict[str, object]] = []
+        for chunk_plan in chunk_plans:
+            context_camera_ids = self.build_context_camera_names(chunk_plan)
+            neighbor_tile_ids = [
+                f"tile_{neighbor_index:02d}"
+                for neighbor_index in self.ranked_neighbor_chunk_indexes(chunk_plan.index)
+                if self.chunk_cross_edge_counts.get(tuple(sorted((chunk_plan.index, neighbor_index))), 0) > 0
+            ]
+            centroid_xy = self.chunk_centroids.get(chunk_plan.index, (0.0, 0.0))
+            tile_image_names = self.ordered_unique_image_names(
+                [
+                    *chunk_plan.core_names,
+                    *chunk_plan.overlap_names,
+                    *context_camera_ids,
+                ]
+            )
+            core_bounds = self.image_selection_bounds(
+                chunk_plan.core_names,
+                padding_m=self.tile_bounds_padding_m,
+            )
+            if all(abs(float(core_bounds[key])) <= 1e-6 for key in core_bounds):
+                core_bounds = self.image_selection_bounds(
+                    chunk_plan.image_names,
+                    padding_m=self.tile_bounds_padding_m,
+                )
+            overlap_bounds = self.image_selection_bounds(
+                chunk_plan.image_names,
+                padding_m=self.tile_bounds_padding_m,
+            )
+            if all(abs(float(overlap_bounds[key])) <= 1e-6 for key in overlap_bounds):
+                overlap_bounds = self.image_selection_bounds(
+                    tile_image_names,
+                    padding_m=self.tile_bounds_padding_m,
+                )
+            tiles.append(
+                {
+                    "tile_id": f"tile_{chunk_plan.index:02d}",
+                    "index": chunk_plan.index,
+                    "parent_id": "root_lod_0",
+                    "centroid_xy_m": {"x": round(float(centroid_xy[0]), 3), "y": round(float(centroid_xy[1]), 3)},
+                    "core_bounds": core_bounds,
+                    "overlap_bounds": overlap_bounds,
+                    "base_camera_ids": list(chunk_plan.core_names),
+                    "border_camera_ids": list(chunk_plan.overlap_names),
+                    "context_camera_ids": context_camera_ids,
+                    "image_names": tile_image_names,
+                    "neighbor_tile_ids": neighbor_tile_ids,
+                    "bounds_strategy": "camera_footprint_union_v1",
+                }
+            )
+
+        view_buckets = {
+            "near_detail_camera_ids": list(self.probe_subsets.get("geometry_mix", [])),
+            "boundary_camera_ids": list(self.probe_subsets.get("cross_pass", [])),
+            "horizon_camera_ids": list(self.probe_subsets.get("horizon_context", [])),
+        }
+        manifest = {
+            "version": "1.0.0",
+            "planner": self.chunk_planner,
+            "chunk_matcher_strategy": self.chunk_matcher_strategy,
+            "all_image_names": list(self.capture_ordered_names),
+            "global_scaffold_camera_ids": self.build_global_scaffold_image_names(),
+            "view_bucket_manifest": "3dgs_view_buckets.json",
+            "tiles": tiles,
+        }
+        return manifest, view_buckets
+
+    def write_3dgs_tile_manifests(self) -> None:
+        manifest, view_buckets = self.build_3dgs_tile_manifest_payload(self.chunk_plans)
+        with open(self.output_dir / "3dgs_tile_manifest.json", "w", encoding="utf-8") as handle:
+            json.dump(manifest, handle, indent=2)
+        with open(self.output_dir / "3dgs_view_buckets.json", "w", encoding="utf-8") as handle:
+            json.dump(view_buckets, handle, indent=2)
 
     def write_chunk_image_list(self, chunk_plan: ChunkPlan) -> Path:
         chunk_dir = self.work_dir / f"chunk_{chunk_plan.index:02d}"
@@ -4037,6 +4241,10 @@ class ColmapPipeline:
             "chunk_segment_count": self.chunk_segment_count,
             "chunk_pair_budget": self.chunk_pair_budget,
             "chunk_role_counts": dict(role_counts),
+            "global_scaffold_max_images": self.global_scaffold_max_images,
+            "global_scaffold_stride": self.global_scaffold_stride,
+            "tile_context_images": self.tile_context_images,
+            "tile_bounds_padding_m": self.tile_bounds_padding_m,
             "chunk_mapper_seconds": round(self.chunk_mapper_seconds, 2),
             "chunk_merge_seconds": round(self.chunk_merge_seconds, 2),
             "chunk_merge_proof": self.chunk_merge_proof,
@@ -4080,6 +4288,8 @@ class ColmapPipeline:
                 for probe_name, image_names in self.probe_subsets.items()
             },
             "probe_subset_details": self.probe_subset_details,
+            "three_dgs_tile_manifest": "3dgs_tile_manifest.json",
+            "three_dgs_view_buckets": "3dgs_view_buckets.json",
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         }
 
@@ -4109,6 +4319,7 @@ class ColmapPipeline:
             json.dump(metadata, handle, indent=2)
         if self.chunk_planner == "footprint_graph_v1":
             self.write_chunk_planner_manifest()
+        self.write_3dgs_tile_manifests()
 
         if not metadata["quality_check_passed"]:
             raise RuntimeError(

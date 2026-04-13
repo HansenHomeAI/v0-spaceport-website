@@ -1,1 +1,12 @@
 [2026-04-13T18:01:17Z] architecture-plan -> drafted gaussian tile hierarchy plan, validated diff and Playwright manager bootstrap -> push branch and monitor Pages/CDK
+[2026-04-13T18:01:53Z] push -> branch pushed with architecture plan commit -> enumerate workflow runs
+[2026-04-13T18:02:13Z] actions-wait -> waiting for branch workflow discovery -> enumerate again after 60s
+[2026-04-13T18:03:30Z] watch -> watching CDK 24358813540 and Pages 24358813541 -> await terminal status
+[2026-04-13T18:05:46Z] status-probe -> CDK still critical path, Pages waiting on CDK -> probe again after 60s
+[2026-04-13T18:06:55Z] cdk-green -> CDK Deploy succeeded, Pages advanced past gate -> wait for Pages preview URL
+[2026-04-13T18:08:02Z] pages-build -> Pages reached SSR build step -> wait for deploy and preview alias
+[2026-04-13T18:09:10Z] pages-build-wait -> SSR build still running without failure -> probe once more after 60s
+[2026-04-13T18:10:17Z] pages-deploy -> SSR build complete, Cloudflare deploy running -> wait for preview alias resolution
+[2026-04-13T18:11:27Z] pages-green -> Pages deploy succeeded -> resolve preview alias from workflow log
+[2026-04-13T19:31:00Z] implementation -> added tile manifest export, trainer selection path, strict-core merge CLI, and config/container wiring -> add targeted tests
+[2026-04-13T19:43:00Z] unit-tests -> py_compile passed, gaussian tile tests passed, targeted colmap manifest tests passed -> update state and trigger preview build

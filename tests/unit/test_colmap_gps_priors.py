@@ -1679,6 +1679,163 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(exif_records["c.jpg"]["heading_deg"], 174.0)
             self.assertEqual(exif_records["a.jpg"]["pitch_deg"], -20.0)
 
+    def test_build_3dgs_tile_manifest_payload_builds_context_and_horizon_aware_bounds(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.capture_ordered_names = ["a.jpg", "b.jpg", "c.jpg", "d.jpg"]
+            pipeline.exif_records = {
+                name: {"capture_time_s": None}
+                for name in pipeline.capture_ordered_names
+            }
+            pipeline.probe_subsets = {
+                "geometry_mix": ["a.jpg"],
+                "cross_pass": ["b.jpg"],
+                "horizon_context": ["d.jpg"],
+            }
+            pipeline.chunk_cross_edge_counts = {(0, 1): 3}
+            pipeline.chunk_centroids = {0: (0.0, 0.0), 1: (140.0, 0.0)}
+            pipeline.tile_context_images = 1
+            pipeline.view_geometries = {
+                "a.jpg": run_colmap_sfm.ImageViewGeometry(
+                    file_name="a.jpg",
+                    local_x_m=0.0,
+                    local_y_m=0.0,
+                    local_z_m=40.0,
+                    heading_deg=0.0,
+                    pitch_deg=-35.0,
+                    effective_altitude_m=60.0,
+                    focal_length_mm=None,
+                    focal_length_35mm_mm=None,
+                    image_width_px=4000,
+                    image_height_px=3000,
+                    horizontal_fov_deg=70.0,
+                    vertical_fov_deg=52.0,
+                    is_shallow_view=False,
+                ),
+                "b.jpg": run_colmap_sfm.ImageViewGeometry(
+                    file_name="b.jpg",
+                    local_x_m=35.0,
+                    local_y_m=0.0,
+                    local_z_m=42.0,
+                    heading_deg=5.0,
+                    pitch_deg=-20.0,
+                    effective_altitude_m=60.0,
+                    focal_length_mm=None,
+                    focal_length_35mm_mm=None,
+                    image_width_px=4000,
+                    image_height_px=3000,
+                    horizontal_fov_deg=70.0,
+                    vertical_fov_deg=52.0,
+                    is_shallow_view=False,
+                ),
+                "c.jpg": run_colmap_sfm.ImageViewGeometry(
+                    file_name="c.jpg",
+                    local_x_m=120.0,
+                    local_y_m=0.0,
+                    local_z_m=45.0,
+                    heading_deg=0.0,
+                    pitch_deg=-6.0,
+                    effective_altitude_m=80.0,
+                    focal_length_mm=None,
+                    focal_length_35mm_mm=None,
+                    image_width_px=4000,
+                    image_height_px=3000,
+                    horizontal_fov_deg=72.0,
+                    vertical_fov_deg=54.0,
+                    is_shallow_view=True,
+                ),
+                "d.jpg": run_colmap_sfm.ImageViewGeometry(
+                    file_name="d.jpg",
+                    local_x_m=55.0,
+                    local_y_m=8.0,
+                    local_z_m=43.0,
+                    heading_deg=2.0,
+                    pitch_deg=-8.0,
+                    effective_altitude_m=70.0,
+                    focal_length_mm=None,
+                    focal_length_35mm_mm=None,
+                    image_width_px=4000,
+                    image_height_px=3000,
+                    horizontal_fov_deg=72.0,
+                    vertical_fov_deg=54.0,
+                    is_shallow_view=True,
+                ),
+            }
+            chunk_plans = [
+                run_colmap_sfm.ChunkPlan(
+                    index=0,
+                    core_names=["a.jpg", "b.jpg"],
+                    image_names=["a.jpg", "b.jpg"],
+                    overlap_names=[],
+                ),
+                run_colmap_sfm.ChunkPlan(
+                    index=1,
+                    core_names=["c.jpg", "d.jpg"],
+                    image_names=["b.jpg", "c.jpg", "d.jpg"],
+                    overlap_names=["b.jpg"],
+                ),
+            ]
+
+            manifest, view_buckets = pipeline.build_3dgs_tile_manifest_payload(chunk_plans)
+
+            self.assertEqual(manifest["global_scaffold_camera_ids"], ["a.jpg", "b.jpg", "d.jpg"])
+            self.assertEqual(view_buckets["horizon_camera_ids"], ["d.jpg"])
+            self.assertEqual(len(manifest["tiles"]), 2)
+            self.assertEqual(manifest["tiles"][0]["context_camera_ids"], ["d.jpg"])
+            self.assertEqual(manifest["tiles"][0]["neighbor_tile_ids"], ["tile_01"])
+            self.assertGreater(manifest["tiles"][1]["core_bounds"]["max_x"], 250.0)
+
+    def test_build_3dgs_tile_manifest_payload_falls_back_when_core_geometry_is_missing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.capture_ordered_names = ["missing.jpg", "b.jpg"]
+            pipeline.exif_records = {
+                "b.jpg": {"capture_time_s": None},
+            }
+            pipeline.probe_subsets = {
+                "geometry_mix": ["b.jpg"],
+                "cross_pass": [],
+                "horizon_context": [],
+            }
+            pipeline.chunk_cross_edge_counts = {}
+            pipeline.chunk_centroids = {0: (0.0, 0.0)}
+            pipeline.tile_context_images = 0
+            pipeline.view_geometries = {
+                "b.jpg": run_colmap_sfm.ImageViewGeometry(
+                    file_name="b.jpg",
+                    local_x_m=20.0,
+                    local_y_m=5.0,
+                    local_z_m=30.0,
+                    heading_deg=15.0,
+                    pitch_deg=-25.0,
+                    effective_altitude_m=50.0,
+                    focal_length_mm=None,
+                    focal_length_35mm_mm=None,
+                    image_width_px=4000,
+                    image_height_px=3000,
+                    horizontal_fov_deg=68.0,
+                    vertical_fov_deg=50.0,
+                    is_shallow_view=False,
+                ),
+            }
+
+            manifest, _ = pipeline.build_3dgs_tile_manifest_payload(
+                [
+                    run_colmap_sfm.ChunkPlan(
+                        index=0,
+                        core_names=["missing.jpg"],
+                        image_names=["missing.jpg", "b.jpg"],
+                        overlap_names=["b.jpg"],
+                    )
+                ]
+            )
+
+            core_bounds = manifest["tiles"][0]["core_bounds"]
+            self.assertNotEqual(core_bounds, {"min_x": 0.0, "max_x": 0.0, "min_y": 0.0, "max_y": 0.0, "min_z": 0.0, "max_z": 0.0})
+            self.assertGreater(core_bounds["max_x"], core_bounds["min_x"])
+
 
 if __name__ == "__main__":
     unittest.main()

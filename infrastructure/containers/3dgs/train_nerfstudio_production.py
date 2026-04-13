@@ -71,6 +71,12 @@ from sky_quality import (
     prune_foreground_floaters,
     select_background_camera,
 )
+from tile_pipeline import (
+    filter_transforms_frames,
+    load_json,
+    selection_counts_for_buckets,
+    select_training_image_names,
+)
 
 # Configure production logging
 logging.basicConfig(
@@ -97,6 +103,7 @@ class NerfStudioTrainer:
         self.temp_dir.mkdir(exist_ok=True, parents=True)
         self.background_selection_result: Optional[BackgroundSelectionResult] = None
         self.floater_pruning_result: Optional[FloaterPruningResult] = None
+        self.training_selection_result: Optional[Dict[str, Any]] = None
         
         # Apply Step Functions parameter overrides
         self.apply_step_functions_params()
@@ -142,6 +149,16 @@ class NerfStudioTrainer:
             'FLOATER_PRUNING_MAX_OPACITY': 'output.floater_pruning.max_opacity',
             'FLOATER_PRUNING_MAX_COLOR_DISTANCE': 'output.floater_pruning.max_color_distance',
             'FLOATER_PRUNING_MIN_EDGE_SUPPORT': 'output.floater_pruning.min_edge_support',
+            'TRAINING_MODE': 'tiling.training_mode',
+            'TILE_MANIFEST_PATH': 'tiling.tile_manifest_path',
+            'VIEW_BUCKET_MANIFEST_PATH': 'tiling.view_bucket_manifest_path',
+            'TILE_ID': 'tiling.tile_id',
+            'MERGE_MODE': 'tiling.merge.mode',
+            'GLOBAL_SCAFFOLD_MAX_IMAGES': 'tiling.global_scaffold.max_images',
+            'GLOBAL_SCAFFOLD_FRAME_STRIDE': 'tiling.global_scaffold.frame_stride',
+            'GLOBAL_SCAFFOLD_MAX_ITERATIONS': 'tiling.global_scaffold.max_iterations',
+            'GLOBAL_SCAFFOLD_SH_DEGREE': 'tiling.global_scaffold.sh_degree',
+            'GLOBAL_SCAFFOLD_MAX_GAUSS_RATIO': 'tiling.global_scaffold.max_gauss_ratio',
         }
         
         for env_var, config_path in env_params.items():
@@ -150,9 +167,9 @@ class NerfStudioTrainer:
                 # Convert string values to appropriate types
                 if env_var in ['BILATERAL_PROCESSING', 'USE_SCALE_REGULARIZATION', 'ENABLE_BG_MODEL', 'ENABLE_ALPHA_LOSS', 'ENABLE_ROBUST_MASK', 'FLOATER_PRUNING_ENABLED']:
                     value = value.lower() in ('true', '1', 'yes', 'on')
-                elif env_var in ['MAX_ITERATIONS', 'SH_DEGREE', 'LOG_INTERVAL', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT']:
+                elif env_var in ['MAX_ITERATIONS', 'SH_DEGREE', 'LOG_INTERVAL', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT', 'GLOBAL_SCAFFOLD_MAX_IMAGES', 'GLOBAL_SCAFFOLD_FRAME_STRIDE', 'GLOBAL_SCAFFOLD_MAX_ITERATIONS', 'GLOBAL_SCAFFOLD_SH_DEGREE']:
                     value = int(value)
-                elif env_var in ['TARGET_PSNR', 'CULL_ALPHA_THRESH', 'CULL_SCALE_THRESH', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_SKY_MIN_LUMINANCE', 'FLOATER_PRUNING_SKY_MIN_SATURATION', 'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE']:
+                elif env_var in ['TARGET_PSNR', 'CULL_ALPHA_THRESH', 'CULL_SCALE_THRESH', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_SKY_MIN_LUMINANCE', 'FLOATER_PRUNING_SKY_MIN_SATURATION', 'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE', 'GLOBAL_SCAFFOLD_MAX_GAUSS_RATIO']:
                     value = float(value)
                 
                 # Set nested config values
@@ -555,6 +572,98 @@ class NerfStudioTrainer:
         except Exception as e:
             logger.error(f"❌ transforms.json validation error: {e}")
             return False
+
+    def resolve_training_mode(self) -> str:
+        return str(self.config.get('tiling', {}).get('training_mode', 'monolithic')).strip().lower() or 'monolithic'
+
+    def load_tile_selection_inputs(self) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+        tiling_config = self.config.get('tiling', {})
+        tile_manifest_path = str(tiling_config.get('tile_manifest_path', '')).strip()
+        view_bucket_manifest_path = str(tiling_config.get('view_bucket_manifest_path', '')).strip()
+
+        def resolve_input_path(raw_path: str) -> Path | None:
+            if not raw_path:
+                return None
+            candidate = Path(raw_path)
+            if candidate.is_absolute():
+                return candidate
+            return self.input_dir / candidate
+
+        tile_manifest_resolved = resolve_input_path(tile_manifest_path)
+        view_bucket_manifest_resolved = resolve_input_path(view_bucket_manifest_path)
+        tile_manifest = load_json(tile_manifest_resolved) if tile_manifest_resolved else None
+        view_buckets = load_json(view_bucket_manifest_resolved) if view_bucket_manifest_resolved else None
+        return tile_manifest, view_buckets
+
+    def apply_training_selection(self) -> bool:
+        training_mode = self.resolve_training_mode()
+        tile_manifest, view_buckets = self.load_tile_selection_inputs()
+
+        if training_mode == 'monolithic' and tile_manifest is None:
+            self.training_selection_result = {
+                'training_mode': training_mode,
+                'selected_image_count': None,
+                'view_bucket_counts': selection_counts_for_buckets([], view_buckets),
+            }
+            return True
+
+        tiling_config = self.config.get('tiling', {})
+        scaffold_config = tiling_config.get('global_scaffold', {})
+        tile_id = str(tiling_config.get('tile_id', '')).strip() or None
+        max_images = int(scaffold_config.get('max_images', 0)) if training_mode == 'global_scaffold' else None
+        frame_stride = int(scaffold_config.get('frame_stride', 1)) if training_mode == 'global_scaffold' else 1
+
+        selected_image_names = select_training_image_names(
+            training_mode=training_mode,
+            tile_manifest=tile_manifest,
+            tile_id=tile_id,
+            max_images=max_images,
+            stride=frame_stride,
+        )
+        if not selected_image_names:
+            logger.error("❌ Manifest-driven selection resolved zero frames")
+            return False
+
+        transforms_path = self.input_dir / "transforms.json"
+        with open(transforms_path, 'r', encoding='utf-8') as f:
+            transforms = json.load(f)
+        filtered_transforms = filter_transforms_frames(transforms, selected_image_names)
+        selected_frame_count = len(filtered_transforms.get('frames', []))
+        if selected_frame_count < 2:
+            logger.error("❌ Manifest-driven selection kept fewer than 2 frames")
+            return False
+
+        backup_path = self.input_dir / "transforms.full.json"
+        if not backup_path.exists():
+            shutil.copy2(transforms_path, backup_path)
+        with open(transforms_path, 'w', encoding='utf-8') as f:
+            json.dump(filtered_transforms, f, indent=2)
+
+        bucket_payload = {
+            bucket_name.replace('_camera_ids', ''): image_names
+            for bucket_name, image_names in (view_buckets or {}).items()
+        }
+        self.training_selection_result = {
+            'training_mode': training_mode,
+            'tile_id': tile_id,
+            'selected_image_names': selected_image_names,
+            'selected_image_count': selected_frame_count,
+            'view_bucket_counts': selection_counts_for_buckets(selected_image_names, bucket_payload),
+            'tile_manifest_path': str(tiling_config.get('tile_manifest_path', '')).strip() or None,
+            'view_bucket_manifest_path': str(tiling_config.get('view_bucket_manifest_path', '')).strip() or None,
+        }
+
+        selection_path = self.output_dir / "training_selection.json"
+        with open(selection_path, 'w', encoding='utf-8') as f:
+            json.dump(self.training_selection_result, f, indent=2)
+
+        logger.info("🧩 Applied manifest-driven training selection:")
+        logger.info(f"   Mode: {training_mode}")
+        if tile_id:
+            logger.info(f"   Tile ID: {tile_id}")
+        logger.info(f"   Selected images: {selected_frame_count}")
+        logger.info(f"   Selection summary: {self.training_selection_result['view_bucket_counts']}")
+        return True
     
     def run_nerfstudio_training(self) -> bool:
         """Execute NerfStudio training with splatfacto-w-light and background export support"""
@@ -580,6 +689,16 @@ class NerfStudioTrainer:
         appearance_embed_dim = model_config.get('appearance_embed_dim', 48)
         never_mask_upper = model_config.get('never_mask_upper', 0.4)
         log_interval = training_config.get('log_interval', 100)
+        training_mode = self.resolve_training_mode()
+        tiling_config = self.config.get('tiling', {})
+        scaffold_config = tiling_config.get('global_scaffold', {})
+
+        if training_mode == 'global_scaffold':
+            max_iterations = min(max_iterations, int(scaffold_config.get('max_iterations', 4000)))
+            sh_degree = min(sh_degree, int(scaffold_config.get('sh_degree', 1)))
+            max_gauss_ratio = float(scaffold_config.get('max_gauss_ratio', 4.0))
+        else:
+            max_gauss_ratio = 10.0
         
         logger.info("🎯 Training Configuration:")
         logger.info(f"   Model: {model_variant}")
@@ -595,7 +714,12 @@ class NerfStudioTrainer:
         logger.info(f"   Background SH degree: {bg_sh_degree}")
         logger.info(f"   Appearance embedding dim: {appearance_embed_dim}")
         logger.info(f"   Log interval: {log_interval}")
+        logger.info(f"   Training mode: {training_mode}")
         logger.info(f"   Dataparser: transforms.json (via ns-process-data conversion)")
+        if self.training_selection_result is not None:
+            logger.info(f"   Selected images: {self.training_selection_result.get('selected_image_count')}")
+            if self.training_selection_result.get('tile_id'):
+                logger.info(f"   Tile ID: {self.training_selection_result['tile_id']}")
         
         # Build NerfStudio command with Vincent's exact parameters on converted transforms.json dataset
         # Using industry-standard ns-process-data conversion flow (COLMAP → transforms.json)
@@ -632,9 +756,9 @@ class NerfStudioTrainer:
         # Memory optimization for A10G GPU (16GB vs Vincent's RTX 4090 24GB)
         # Using max-gauss-ratio instead of max_num_gaussians (suggested by NerfStudio error)
         cmd.extend([
-            "--pipeline.model.max-gauss-ratio", "10.0"  # Conservative ratio for A10G
+            "--pipeline.model.max-gauss-ratio", str(max_gauss_ratio)
         ])
-        logger.info("🖥️  A10G GPU optimization enabled (max-gauss-ratio: 10.0)")
+        logger.info(f"🖥️  A10G GPU optimization enabled (max-gauss-ratio: {max_gauss_ratio})")
         logger.info("🪟 Viewer disabled for headless SageMaker training (--vis tensorboard)")
         
         logger.info("🚀 Executing NerfStudio training command:")
@@ -817,10 +941,17 @@ class NerfStudioTrainer:
         logger.info(f"📄 Using config: {config_file}")
         
         model_variant = self.config.get('model', {}).get('variant', 'splatfacto-w-light')
+        training_mode = self.resolve_training_mode()
         skybox_config = self.config.get('output', {}).get('background_skybox', {})
-        background_selection = self.resolve_background_selection()
+        background_selection = None if training_mode == 'global_scaffold' else self.resolve_background_selection()
 
-        if model_variant in {"splatfacto-w-light", "splatfacto-w"}:
+        if training_mode == 'global_scaffold':
+            export_cmd = [
+                "ns-export", "gaussian-splat",
+                "--load-config", str(config_file),
+                "--output-dir", str(self.output_dir)
+            ]
+        elif model_variant in {"splatfacto-w-light", "splatfacto-w"}:
             export_cmd = [
                 "python", "/opt/ml/code/export_splatfacto_w_assets.py",
                 "--load-config", str(config_file),
@@ -875,8 +1006,9 @@ class NerfStudioTrainer:
                     f"({skybox_path.stat().st_size / (1024 * 1024):.2f} MB)"
                 )
 
-            self.prune_exported_foreground()
-            self.patch_export_manifests()
+            if training_mode != 'global_scaffold':
+                self.prune_exported_foreground()
+                self.patch_export_manifests()
             
             return True
             
@@ -893,6 +1025,7 @@ class NerfStudioTrainer:
             'training_methodology': 'Spaceport splatfacto-w-light skybox export',
             'framework': 'NerfStudio',
             'model_variant': self.config.get('model', {}).get('variant', 'splatfacto-w-light'),
+            'training_mode': self.resolve_training_mode(),
             'bilateral_guided_processing': self.config.get('model', {}).get('bilateral_processing', False),
             'sh_degree': self.config.get('model', {}).get('sh_degree', 3),
             'enable_bg_model': self.config.get('model', {}).get('enable_bg_model', True),
@@ -922,6 +1055,8 @@ class NerfStudioTrainer:
             metadata['background_selection'] = self.background_selection_result.to_dict()
         if self.floater_pruning_result is not None:
             metadata['floater_pruning'] = self.floater_pruning_result.to_dict()
+        if self.training_selection_result is not None:
+            metadata['training_selection'] = self.training_selection_result
         
         # Save metadata
         metadata_path = self.output_dir / "training_metadata.json"
@@ -953,6 +1088,11 @@ class NerfStudioTrainer:
             # Step 1: Validate input data
             if not self.validate_input_data():
                 logger.error("❌ Input data validation failed")
+                return False
+
+            # Step 1.5: Apply manifest-driven image selection after transforms.json conversion
+            if not self.apply_training_selection():
+                logger.error("❌ Manifest-driven training selection failed")
                 return False
             
             # Step 2: Run NerfStudio training

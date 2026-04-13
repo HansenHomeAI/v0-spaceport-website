@@ -92,6 +92,8 @@ class NerfStudioPipelineTest:
         # Test script path
         script_path = Path(__file__).parent / "train_nerfstudio_production.py"
         export_script_path = Path(__file__).parent / "export_splatfacto_w_assets.py"
+        tile_pipeline_script_path = Path(__file__).parent / "tile_pipeline.py"
+        merge_script_path = Path(__file__).parent / "merge_gaussian_tiles.py"
         quality_pass_script_path = Path(__file__).parent / "run_export_quality_pass.py"
         helper_script_path = Path(__file__).parent / "sky_quality.py"
         config_path = Path(__file__).parent / "nerfstudio_config.yaml"
@@ -102,6 +104,14 @@ class NerfStudioPipelineTest:
 
         if not export_script_path.exists():
             logger.error("❌ Export script not found")
+            return False
+
+        if not tile_pipeline_script_path.exists():
+            logger.error("❌ Tile pipeline helper not found")
+            return False
+
+        if not merge_script_path.exists():
+            logger.error("❌ Tile merge script not found")
             return False
 
         if not helper_script_path.exists():
@@ -138,6 +148,26 @@ class NerfStudioPipelineTest:
 
             logger.info("✅ Export script syntax validated")
 
+            tile_pipeline_result = subprocess.run([
+                sys.executable, "-m", "py_compile", str(tile_pipeline_script_path)
+            ], capture_output=True, text=True)
+
+            if tile_pipeline_result.returncode != 0:
+                logger.error(f"❌ Tile pipeline syntax error: {tile_pipeline_result.stderr}")
+                return False
+
+            logger.info("✅ Tile pipeline syntax validated")
+
+            merge_script_result = subprocess.run([
+                sys.executable, "-m", "py_compile", str(merge_script_path)
+            ], capture_output=True, text=True)
+
+            if merge_script_result.returncode != 0:
+                logger.error(f"❌ Tile merge script syntax error: {merge_script_result.stderr}")
+                return False
+
+            logger.info("✅ Tile merge script syntax validated")
+
             helper_result = subprocess.run([
                 sys.executable, "-m", "py_compile", str(helper_script_path)
             ], capture_output=True, text=True)
@@ -168,6 +198,10 @@ class NerfStudioPipelineTest:
                 if section not in config:
                     logger.error(f"❌ Missing config section: {section}")
                     return False
+
+            if 'tiling' not in config:
+                logger.error("❌ Missing config section: tiling")
+                return False
             
             logger.info("✅ Configuration file validated")
             return True
