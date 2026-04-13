@@ -8,11 +8,15 @@ model:
   sh_degree: 3                       # Foreground SH degree
   bilateral_processing: false        # Not used by splatfacto-w-light
   max_num_gaussians: 1500000         # Conservative limit for A10G GPU (16GB VRAM)
+  rasterize_mode: "classic"          # Export classic-mode PLYs for SuperSplat compatibility
+  use_scale_regularization: true     # Reduces oversized, spiky gaussians
+  cull_alpha_thresh: 0.12            # Slightly more aggressive opacity culling for sky cleanup
+  cull_scale_thresh: 0.35            # Cull oversized splats earlier to limit sky smear
   enable_bg_model: true
   enable_alpha_loss: true
   enable_robust_mask: true
-  bg_sh_degree: 4
-  appearance_embed_dim: 48
+  bg_sh_degree: 8
+  appearance_embed_dim: 64
   never_mask_upper: 0.4
 
 # Training Configuration

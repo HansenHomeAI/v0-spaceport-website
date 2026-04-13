@@ -115,6 +115,10 @@ class NerfStudioTrainer:
             'BILATERAL_PROCESSING': 'model.bilateral_processing',
             'LOG_INTERVAL': 'training.log_interval',
             'MODEL_VARIANT': 'model.variant',
+            'RASTERIZE_MODE': 'model.rasterize_mode',
+            'USE_SCALE_REGULARIZATION': 'model.use_scale_regularization',
+            'CULL_ALPHA_THRESH': 'model.cull_alpha_thresh',
+            'CULL_SCALE_THRESH': 'model.cull_scale_thresh',
             'ENABLE_BG_MODEL': 'model.enable_bg_model',
             'ENABLE_ALPHA_LOSS': 'model.enable_alpha_loss',
             'ENABLE_ROBUST_MASK': 'model.enable_robust_mask',
@@ -140,11 +144,11 @@ class NerfStudioTrainer:
             value = os.environ.get(env_var)
             if value is not None:
                 # Convert string values to appropriate types
-                if env_var in ['BILATERAL_PROCESSING', 'ENABLE_BG_MODEL', 'ENABLE_ALPHA_LOSS', 'ENABLE_ROBUST_MASK', 'FLOATER_PRUNING_ENABLED']:
+                if env_var in ['BILATERAL_PROCESSING', 'USE_SCALE_REGULARIZATION', 'ENABLE_BG_MODEL', 'ENABLE_ALPHA_LOSS', 'ENABLE_ROBUST_MASK', 'FLOATER_PRUNING_ENABLED']:
                     value = value.lower() in ('true', '1', 'yes', 'on')
                 elif env_var in ['MAX_ITERATIONS', 'SH_DEGREE', 'LOG_INTERVAL', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT']:
                     value = int(value)
-                elif env_var in ['TARGET_PSNR', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE']:
+                elif env_var in ['TARGET_PSNR', 'CULL_ALPHA_THRESH', 'CULL_SCALE_THRESH', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE']:
                     value = float(value)
                 
                 # Set nested config values
@@ -561,6 +565,10 @@ class NerfStudioTrainer:
         max_iterations = training_config.get('max_iterations', 30000)
         sh_degree = model_config.get('sh_degree', 3)
         bilateral_processing = model_config.get('bilateral_processing', False)
+        rasterize_mode = model_config.get('rasterize_mode', 'classic')
+        use_scale_regularization = model_config.get('use_scale_regularization', True)
+        cull_alpha_thresh = model_config.get('cull_alpha_thresh', 0.12)
+        cull_scale_thresh = model_config.get('cull_scale_thresh', 0.35)
         enable_bg_model = model_config.get('enable_bg_model', True)
         enable_alpha_loss = model_config.get('enable_alpha_loss', True)
         enable_robust_mask = model_config.get('enable_robust_mask', True)
@@ -573,6 +581,10 @@ class NerfStudioTrainer:
         logger.info(f"   Model: {model_variant}")
         logger.info(f"   Max iterations: {max_iterations}")
         logger.info(f"   SH degree: {sh_degree}")
+        logger.info(f"   Rasterize mode: {rasterize_mode}")
+        logger.info(f"   Scale regularization: {use_scale_regularization}")
+        logger.info(f"   Cull alpha threshold: {cull_alpha_thresh}")
+        logger.info(f"   Cull scale threshold: {cull_scale_thresh}")
         logger.info(f"   Background model: {enable_bg_model}")
         logger.info(f"   Alpha loss: {enable_alpha_loss}")
         logger.info(f"   Robust sky masking: {enable_robust_mask}")
@@ -601,6 +613,10 @@ class NerfStudioTrainer:
 
         if model_variant in {"splatfacto-w-light", "splatfacto-w"}:
             cmd.extend([
+                "--pipeline.model.rasterize_mode", str(rasterize_mode),
+                "--pipeline.model.use_scale_regularization", str(use_scale_regularization),
+                "--pipeline.model.cull_alpha_thresh", str(cull_alpha_thresh),
+                "--pipeline.model.cull_scale_thresh", str(cull_scale_thresh),
                 "--pipeline.model.enable_bg_model", str(enable_bg_model),
                 "--pipeline.model.enable_alpha_loss", str(enable_alpha_loss),
                 "--pipeline.model.enable_robust_mask", str(enable_robust_mask),
