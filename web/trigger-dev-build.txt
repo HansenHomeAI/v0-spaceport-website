@@ -66,3 +66,4 @@
 2026-03-30T13:07:44Z rerun preview auth opt-in with serialized non-production auth API endpoint migrations
 2026-04-13T23:59:30Z trigger preview for gaussian tile hierarchy architecture plan
 2026-04-14T00:42:00Z rerun preview while rebuilding sfm container with pinned COLMAP base
+2026-04-14T01:34:00Z rerun preview after fixing tiled nerfstudio image-name mapping for AWS proof job

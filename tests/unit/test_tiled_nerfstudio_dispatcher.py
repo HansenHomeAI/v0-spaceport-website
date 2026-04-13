@@ -29,7 +29,7 @@ def load_module_with_stubs():
         return json.loads(Path(path).read_text(encoding="utf-8"))
 
     tile_pipeline_stub = types.SimpleNamespace(
-        filter_transforms_frames=lambda transforms, _selected: transforms,
+        filter_transforms_frames=lambda transforms, _selected, image_name_map=None: transforms,
         load_json=load_json,
         merge_tile_outputs=lambda **kwargs: {
             "merge_mode": kwargs["merge_mode"],

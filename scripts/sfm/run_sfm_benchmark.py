@@ -67,6 +67,15 @@ def find_branch_ml_stack(branch_name: str) -> tuple[str, Dict[str, str]]:
     raise RuntimeError(f"Could not find an ML stack deployment for branch {branch_name}")
 
 
+def get_stack_outputs(stack_name: str) -> tuple[str, Dict[str, str]]:
+    response = aws_json("cloudformation", "describe-stacks", "--stack-name", stack_name)
+    stacks = response.get("Stacks", [])
+    if not stacks:
+        raise RuntimeError(f"Could not describe stack {stack_name}")
+    stack = stacks[0]
+    return stack["StackName"], stack_outputs(stack)
+
+
 def get_sagemaker_role_arn(stack_name: str) -> str:
     resources = aws_json("cloudformation", "list-stack-resources", "--stack-name", stack_name)
     for resource in resources.get("StackResourceSummaries", []):
@@ -104,6 +113,16 @@ def parse_env(values: List[str]) -> Dict[str, str]:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--branch", default="", help="Git branch to benchmark. Defaults to current branch.")
+    parser.add_argument(
+        "--stack-name",
+        default="",
+        help="Optional CloudFormation ML stack name override. Use this when the current branch has no deployed ML stack.",
+    )
+    parser.add_argument(
+        "--role-arn",
+        default="",
+        help="Optional SageMaker execution role ARN override. Requires --stack-name or an output S3 URI you control.",
+    )
     parser.add_argument("--input-s3-uri", required=True, help="S3 URI for the SfM input ZIP")
     parser.add_argument(
         "--output-s3-uri",
@@ -179,8 +198,11 @@ def build_summary_row(
 def main() -> int:
     args = parse_args()
     branch_name = args.branch or get_current_branch()
-    stack_name, outputs = find_branch_ml_stack(branch_name)
-    role_arn = get_sagemaker_role_arn(stack_name)
+    if args.stack_name:
+        stack_name, outputs = get_stack_outputs(args.stack_name)
+    else:
+        stack_name, outputs = find_branch_ml_stack(branch_name)
+    role_arn = args.role_arn or get_sagemaker_role_arn(stack_name)
     branch_tag = get_branch_ecr_tag(branch_name) or "latest"
     selected_tag = args.image_tag or branch_tag
     image_uri = args.image_uri or f"{outputs['SfMRepositoryUri']}:{selected_tag}"

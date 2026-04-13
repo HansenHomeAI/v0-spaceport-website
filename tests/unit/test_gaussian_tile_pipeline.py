@@ -151,6 +151,45 @@ class GaussianTilePipelineTests(unittest.TestCase):
         self.assertEqual(filtered["val_filenames"], ["images/c.jpg"])
         self.assertEqual(filtered["test_filenames"], ["images/b.jpg", "images/c.jpg"])
 
+    def test_filter_transforms_frames_uses_colmap_name_map_for_renamed_frames(self):
+        transforms = {
+            "frames": [
+                {"file_path": "images/frame_00001.JPG", "colmap_im_id": 101},
+                {"file_path": "images/frame_00002.JPG", "colmap_im_id": 102},
+            ],
+            "train_filenames": ["images/frame_00001.JPG", "images/frame_00002.JPG"],
+        }
+        image_name_map = {
+            "by_colmap_im_id": {
+                "101": {
+                    "original_image_name": "DJI_0001.JPG",
+                    "converted_file_path": "images/frame_00001.JPG",
+                    "converted_image_name": "frame_00001.JPG",
+                },
+                "102": {
+                    "original_image_name": "DJI_0002.JPG",
+                    "converted_file_path": "images/frame_00002.JPG",
+                    "converted_image_name": "frame_00002.JPG",
+                },
+            },
+            "by_converted_name": {
+                "frame_00001.JPG": {"original_image_name": "DJI_0001.JPG"},
+                "frame_00002.JPG": {"original_image_name": "DJI_0002.JPG"},
+            },
+        }
+
+        filtered = tile_pipeline.filter_transforms_frames(
+            transforms,
+            ["DJI_0002.JPG"],
+            image_name_map=image_name_map,
+        )
+
+        self.assertEqual(
+            [Path(frame["file_path"]).name for frame in filtered["frames"]],
+            ["frame_00002.JPG"],
+        )
+        self.assertEqual(filtered["train_filenames"], ["images/frame_00002.JPG"])
+
     def test_merge_tile_outputs_uses_overlap_fallback_when_core_retains_none(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

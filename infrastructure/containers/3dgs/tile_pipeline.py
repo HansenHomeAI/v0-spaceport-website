@@ -162,21 +162,57 @@ def select_training_image_names(
 def filter_transforms_frames(
     transforms: Mapping[str, Any],
     selected_image_names: Sequence[str],
+    image_name_map: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     selected = set(ordered_unique(selected_image_names))
+
+    by_colmap_im_id = {}
+    by_converted_name = {}
+    if isinstance(image_name_map, Mapping):
+        by_colmap_im_id = image_name_map.get("by_colmap_im_id", {}) or {}
+        by_converted_name = image_name_map.get("by_converted_name", {}) or {}
+
+    def frame_aliases(frame: Mapping[str, Any]) -> set[str]:
+        aliases: set[str] = set()
+        for key in ("file_path", "original_file_path", "original_image_name"):
+            value = frame.get(key)
+            if value:
+                aliases.add(normalize_image_name(str(value)))
+
+        converted_name = normalize_image_name(str(frame.get("file_path", "")))
+        converted_entry = by_converted_name.get(converted_name)
+        if isinstance(converted_entry, Mapping):
+            original_name = converted_entry.get("original_image_name")
+            if original_name:
+                aliases.add(normalize_image_name(str(original_name)))
+
+        colmap_im_id = frame.get("colmap_im_id")
+        if colmap_im_id is not None:
+            mapped_entry = by_colmap_im_id.get(str(colmap_im_id))
+            if isinstance(mapped_entry, Mapping):
+                original_name = mapped_entry.get("original_image_name")
+                if original_name:
+                    aliases.add(normalize_image_name(str(original_name)))
+        return aliases
+
     filtered_frames = [
         frame
         for frame in transforms.get("frames", [])
-        if normalize_image_name(frame.get("file_path", "")) in selected
+        if frame_aliases(frame) & selected
     ]
     filtered = dict(transforms)
     filtered["frames"] = filtered_frames
+    retained_converted_names = {
+        normalize_image_name(frame.get("file_path", ""))
+        for frame in filtered_frames
+        if frame.get("file_path")
+    }
     for key, value in transforms.items():
         if key.endswith("_filenames") and isinstance(value, list):
             filtered[key] = [
                 file_name
                 for file_name in value
-                if normalize_image_name(str(file_name)) in selected
+                if normalize_image_name(str(file_name)) in retained_converted_names
             ]
     return filtered
 

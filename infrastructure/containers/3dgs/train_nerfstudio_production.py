@@ -89,6 +89,71 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
+def load_colmap_image_id_name_map(images_txt: Path) -> dict[str, str]:
+    """Map COLMAP image ids to original image names from images.txt."""
+    mapping: dict[str, str] = {}
+    if not images_txt.exists():
+        return mapping
+
+    with open(images_txt, 'r', encoding='utf-8') as handle:
+        lines = handle.readlines()
+
+    line_index = 0
+    while line_index < len(lines):
+        line = lines[line_index].strip()
+        if not line or line.startswith('#'):
+            line_index += 1
+            continue
+        parts = line.split()
+        if len(parts) >= 10:
+            mapping[str(int(parts[0]))] = parts[9]
+            line_index += 2
+        else:
+            line_index += 1
+    return mapping
+
+
+def build_converted_image_name_map(
+    transforms: Dict[str, Any],
+    original_images_txt: Path,
+) -> dict[str, Any]:
+    """Persist a stable mapping from original COLMAP image names to converted frame files."""
+    colmap_name_map = load_colmap_image_id_name_map(original_images_txt)
+    by_colmap_im_id: dict[str, dict[str, Any]] = {}
+    by_converted_name: dict[str, dict[str, Any]] = {}
+    by_original_name: dict[str, dict[str, Any]] = {}
+
+    for frame in transforms.get('frames', []):
+        colmap_im_id = frame.get('colmap_im_id')
+        file_path = str(frame.get('file_path', '')).strip()
+        if not file_path or colmap_im_id is None:
+            continue
+
+        image_id = str(colmap_im_id)
+        original_image_name = colmap_name_map.get(image_id)
+        if not original_image_name:
+            continue
+
+        converted_name = Path(file_path).name
+        entry = {
+            'colmap_im_id': int(colmap_im_id),
+            'original_image_name': original_image_name,
+            'converted_file_path': file_path,
+            'converted_image_name': converted_name,
+        }
+        by_colmap_im_id[image_id] = entry
+        by_converted_name[converted_name] = entry
+        by_original_name[Path(original_image_name).name] = entry
+
+    return {
+        'version': 1,
+        'image_count': len(by_colmap_im_id),
+        'by_colmap_im_id': by_colmap_im_id,
+        'by_converted_name': by_converted_name,
+        'by_original_name': by_original_name,
+    }
+
 class NerfStudioTrainer:
     """Production NerfStudio trainer implementing Vincent Woo's methodology"""
     
@@ -294,6 +359,7 @@ class NerfStudioTrainer:
     def convert_colmap_to_nerfstudio(self) -> bool:
         """Convert COLMAP data to NerfStudio transforms.json format"""
         logger.info("🔄 Converting COLMAP data to NerfStudio format...")
+        source_input_dir = self.input_dir
         
         # Create converted data directory
         converted_dir = self.temp_dir / "converted_data"
@@ -375,6 +441,23 @@ class NerfStudioTrainer:
             if not self.validate_transforms_json(transforms_file):
                 logger.error("❌ transforms.json validation failed")
                 return False
+
+            try:
+                with open(transforms_file, 'r', encoding='utf-8') as f:
+                    transforms_payload = json.load(f)
+                image_name_map = build_converted_image_name_map(
+                    transforms_payload,
+                    source_input_dir / "sparse" / "0" / "images.txt",
+                )
+                image_name_map_path = converted_dir / "colmap_image_name_map.json"
+                with open(image_name_map_path, 'w', encoding='utf-8') as f:
+                    json.dump(image_name_map, f, indent=2)
+                logger.info(
+                    "🗺️ Saved converted image name map with %s entries",
+                    image_name_map.get('image_count', 0),
+                )
+            except Exception as e:
+                logger.warning(f"⚠️ Failed to save converted image name map: {e}")
             
             logger.info(f"✅ COLMAP data converted successfully")
             logger.info(f"📁 Final input directory: {self.input_dir}")
@@ -674,6 +757,9 @@ class NerfStudioTrainer:
         if not transforms_source.exists():
             transforms_source = canonical_input_dir / "transforms.json"
         shutil.copy2(transforms_source, stage_input_dir / "transforms.json")
+        image_name_map_source = canonical_input_dir / "colmap_image_name_map.json"
+        if image_name_map_source.exists():
+            shutil.copy2(image_name_map_source, stage_input_dir / "colmap_image_name_map.json")
 
         with open(stage_input_dir / tile_manifest_name, 'w', encoding='utf-8') as f:
             json.dump(tile_manifest, f, indent=2)
@@ -973,10 +1059,21 @@ class NerfStudioTrainer:
         transforms_path = self.input_dir / "transforms.json"
         with open(transforms_path, 'r', encoding='utf-8') as f:
             transforms = json.load(f)
-        filtered_transforms = filter_transforms_frames(transforms, selected_image_names)
+        image_name_map_path = self.input_dir / "colmap_image_name_map.json"
+        image_name_map = load_json(image_name_map_path) if image_name_map_path.exists() else None
+        filtered_transforms = filter_transforms_frames(
+            transforms,
+            selected_image_names,
+            image_name_map=image_name_map,
+        )
         selected_frame_count = len(filtered_transforms.get('frames', []))
         if selected_frame_count < 2:
-            logger.error("❌ Manifest-driven selection kept fewer than 2 frames")
+            logger.error(
+                "❌ Manifest-driven selection kept fewer than 2 frames (selected_names=%s, image_map=%s)",
+                len(selected_image_names),
+                image_name_map_path.exists(),
+            )
+            logger.error("   Sample selected image names: %s", selected_image_names[:5])
             return False
 
         backup_path = self.input_dir / "transforms.full.json"
@@ -997,6 +1094,7 @@ class NerfStudioTrainer:
             'view_bucket_counts': selection_counts_for_buckets(selected_image_names, bucket_payload),
             'tile_manifest_path': str(tiling_config.get('tile_manifest_path', '')).strip() or None,
             'view_bucket_manifest_path': str(tiling_config.get('view_bucket_manifest_path', '')).strip() or None,
+            'image_name_map_path': str(image_name_map_path) if image_name_map_path.exists() else None,
         }
 
         selection_path = self.output_dir / "training_selection.json"
