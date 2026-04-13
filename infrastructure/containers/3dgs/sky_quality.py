@@ -50,6 +50,10 @@ class FloaterPruningResult:
     min_views: int
     top_region_ratio: float
     top_view_fraction: float
+    min_sky_views: int
+    sky_min_luminance: float
+    sky_min_saturation: float
+    sky_blue_dominance_margin: float
     max_opacity: float
     max_color_distance: float
     min_edge_support: int
@@ -268,6 +272,21 @@ def _patch_edge_presence(edge_map: np.ndarray, xs: np.ndarray, ys: np.ndarray, p
     return edge_sum > 0
 
 
+def _patch_sky_presence(
+    patch_means: np.ndarray,
+    min_luminance: float,
+    min_saturation: float,
+    blue_dominance_margin: float,
+) -> np.ndarray:
+    r = patch_means[:, 0]
+    g = patch_means[:, 1]
+    b = patch_means[:, 2]
+    luminance = (0.2126 * r) + (0.7152 * g) + (0.0722 * b)
+    saturation = patch_means.max(axis=1) - patch_means.min(axis=1)
+    blue_dominant = (b > (r + blue_dominance_margin)) & (b > (g + blue_dominance_margin))
+    return blue_dominant & (luminance >= min_luminance) & (saturation >= min_saturation)
+
+
 def prune_foreground_floaters(
     ply_path: Path,
     data_dir: Path,
@@ -275,6 +294,10 @@ def prune_foreground_floaters(
     min_views: int = 4,
     top_region_ratio: float = 0.35,
     top_view_fraction: float = 0.8,
+    min_sky_views: int = 0,
+    sky_min_luminance: float = 0.3,
+    sky_min_saturation: float = 0.08,
+    sky_blue_dominance_margin: float = 0.02,
     max_opacity: float = 0.25,
     max_color_distance: float = 0.12,
     min_edge_support: int = 2,
@@ -300,6 +323,10 @@ def prune_foreground_floaters(
             min_views=min_views,
             top_region_ratio=top_region_ratio,
             top_view_fraction=top_view_fraction,
+            min_sky_views=min_sky_views,
+            sky_min_luminance=sky_min_luminance,
+            sky_min_saturation=sky_min_saturation,
+            sky_blue_dominance_margin=sky_blue_dominance_margin,
             max_opacity=max_opacity,
             max_color_distance=max_color_distance,
             min_edge_support=min_edge_support,
@@ -321,6 +348,10 @@ def prune_foreground_floaters(
             min_views=min_views,
             top_region_ratio=top_region_ratio,
             top_view_fraction=top_view_fraction,
+            min_sky_views=min_sky_views,
+            sky_min_luminance=sky_min_luminance,
+            sky_min_saturation=sky_min_saturation,
+            sky_blue_dominance_margin=sky_blue_dominance_margin,
             max_opacity=max_opacity,
             max_color_distance=max_color_distance,
             min_edge_support=min_edge_support,
@@ -335,6 +366,7 @@ def prune_foreground_floaters(
     )
     visible_counts = np.zeros(candidate_indices.shape[0], dtype=np.int32)
     top_counts = np.zeros(candidate_indices.shape[0], dtype=np.int32)
+    sky_support_counts = np.zeros(candidate_indices.shape[0], dtype=np.int32)
     edge_support_counts = np.zeros(candidate_indices.shape[0], dtype=np.int32)
     color_distances = np.full((candidate_indices.shape[0], sampled_frame_indices.shape[0]), np.nan, dtype=np.float32)
 
@@ -359,9 +391,21 @@ def prune_foreground_floaters(
         active_indices = np.flatnonzero(top_visible)
         gray = cv2_mod.cvtColor(image, cv2_mod.COLOR_RGB2GRAY)
         edge_map = cv2_mod.Canny(gray, 50, 150)
-        patch_means = _patch_means(image=image.astype(np.float32) / 255.0, xs=xs[active_indices], ys=ys[active_indices], patch_size=patch_size)
+        patch_means = _patch_means(
+            image=image.astype(np.float32) / 255.0,
+            xs=xs[active_indices],
+            ys=ys[active_indices],
+            patch_size=patch_size,
+        )
         patch_edges = _patch_edge_presence(edge_map=edge_map > 0, xs=xs[active_indices], ys=ys[active_indices], patch_size=patch_size)
+        patch_sky = _patch_sky_presence(
+            patch_means=patch_means,
+            min_luminance=sky_min_luminance,
+            min_saturation=sky_min_saturation,
+            blue_dominance_margin=sky_blue_dominance_margin,
+        )
         edge_support_counts[active_indices] += patch_edges.astype(np.int32)
+        sky_support_counts[active_indices] += patch_sky.astype(np.int32)
 
         rgb_delta = candidate_colors[active_indices] - patch_means
         color_distances[active_indices, sample_slot] = np.linalg.norm(rgb_delta, axis=1)
@@ -377,9 +421,15 @@ def prune_foreground_floaters(
         out=np.zeros_like(top_counts, dtype=np.float32),
         where=visible_counts > 0,
     )
+    meets_top_region = top_fraction >= top_view_fraction
+    meets_sky_support = (
+        sky_support_counts >= min_sky_views
+        if min_sky_views > 0
+        else np.zeros_like(sky_support_counts, dtype=bool)
+    )
     removal_local_mask = (
         (visible_counts >= min_views)
-        & (top_fraction >= top_view_fraction)
+        & (meets_top_region | meets_sky_support)
         & (edge_support_counts < min_edge_support)
         & (median_color_distance <= max_color_distance)
     )
@@ -403,6 +453,10 @@ def prune_foreground_floaters(
         min_views=min_views,
         top_region_ratio=top_region_ratio,
         top_view_fraction=top_view_fraction,
+        min_sky_views=min_sky_views,
+        sky_min_luminance=sky_min_luminance,
+        sky_min_saturation=sky_min_saturation,
+        sky_blue_dominance_margin=sky_blue_dominance_margin,
         max_opacity=max_opacity,
         max_color_distance=max_color_distance,
         min_edge_support=min_edge_support,
