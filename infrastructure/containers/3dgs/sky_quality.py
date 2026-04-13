@@ -368,6 +368,7 @@ def prune_foreground_floaters(
     top_counts = np.zeros(candidate_indices.shape[0], dtype=np.int32)
     sky_support_counts = np.zeros(candidate_indices.shape[0], dtype=np.int32)
     edge_support_counts = np.zeros(candidate_indices.shape[0], dtype=np.int32)
+    sky_edge_support_counts = np.zeros(candidate_indices.shape[0], dtype=np.int32)
     color_distances = np.full((candidate_indices.shape[0], sampled_frame_indices.shape[0]), np.nan, dtype=np.float32)
 
     for sample_slot, frame_idx in enumerate(sampled_frame_indices):
@@ -411,6 +412,7 @@ def prune_foreground_floaters(
         )
         edge_support_counts[active_visible] += patch_edges.astype(np.int32)
         sky_support_counts[active_visible] += patch_sky.astype(np.int32)
+        sky_edge_support_counts[active_visible] += (patch_edges & patch_sky).astype(np.int32)
 
         rgb_delta = candidate_colors[active_visible] - patch_means
         color_distances[active_visible, sample_slot] = np.linalg.norm(rgb_delta, axis=1)
@@ -435,7 +437,7 @@ def prune_foreground_floaters(
     removal_local_mask = (
         (visible_counts >= min_views)
         & (meets_top_region | meets_sky_support)
-        & (edge_support_counts < min_edge_support)
+        & (sky_edge_support_counts < min_edge_support)
         & (median_color_distance <= max_color_distance)
     )
     removal_global_mask = np.zeros(total_gaussians, dtype=bool)
