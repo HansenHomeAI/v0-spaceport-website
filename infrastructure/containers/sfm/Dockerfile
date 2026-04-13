@@ -1,4 +1,6 @@
 # Official CUDA-enabled COLMAP runtime, pinned to a dated tag so rebuilds stay reproducible.
+# The deployment script must preserve this default for app builds; published
+# ECR images are cache sources, not safe substitutes for the runtime base.
 ARG BASE_IMAGE=colmap/colmap:20260318.6455
 FROM ${BASE_IMAGE}
 

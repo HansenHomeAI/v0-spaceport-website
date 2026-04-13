@@ -11,3 +11,9 @@
 [2026-04-13T19:31:00Z] implementation -> added tile manifest export, trainer selection path, strict-core merge CLI, and config/container wiring -> add targeted tests
 [2026-04-13T19:43:00Z] unit-tests -> py_compile passed, gaussian tile tests passed, targeted colmap manifest tests passed -> update state and trigger preview build
 [2026-04-13T20:46:02Z] dry-run-smoke -> unit suite + live AWS tiled benchmark dry-runs passed -> commit and push branch
+[2026-04-13T20:46:38Z] push -> pushed benchmark orchestration commit 0c6e05e1 -> enumerate triggered workflows
+[2026-04-13T20:52:45Z] cdk-green -> CDK Deploy succeeded for 0c6e05e1 -> trigger Pages workflow and keep watching ML build
+[2026-04-13T20:53:15Z] pages-triggered -> manual Pages run 24366300738 started for 0c6e05e1 -> watch deploy and resolve preview alias
+[2026-04-13T20:58:23Z] workflows-green -> CDK 24366026674, Pages 24366300738, ML build 24366026752 succeeded -> close out with proof and preview URLs
+[2026-04-13T21:37:23Z] aws-sfm-start -> launching chunked SfM on whitney-farm-first-50-seq.zip with branch sfm image -> wait for manifest-bearing output
+[2026-04-13T21:54:01Z] sfm-root-cause -> SageMaker failed because deployed sfm image lacked COLMAP; patched deploy path to preserve pinned COLMAP base and queued a real sfm rebuild -> commit and push for workflow rebuild

@@ -96,7 +96,7 @@ deploy_container() {
   local branch_tag="${BRANCH_SUFFIX:-}"
   local base_image="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:base"
   local build_base_arg="${base_image}"
-  local build_stage="app"
+  local use_repo_base_image=1
 
   log "--- Starting OPTIMIZED deployment for: ${container_name} ---"
 
@@ -113,15 +113,17 @@ deploy_container() {
   log "Pulling existing image and cache for layer reuse..."
   docker pull "${ecr_uri}:latest" || log "No existing image found, building from scratch..."
   docker pull "${build_cache_ref}" || log "No registry cache yet for ${container_name}"
-  docker pull "${base_image}" || log "No base image yet for ${container_name}"
 
-  if [[ "${container_name}" == "sfm" ]] && aws ecr describe-images --region "${AWS_REGION}" --repository-name "${repo_name}" --image-ids imageTag=latest >/dev/null 2>&1; then
-    build_base_arg="${ecr_uri}:latest"
-    log "Using published latest image as the SFM base layer to avoid Docker Hub pull limits."
+  if [[ "${container_name}" == "sfm" ]]; then
+    use_repo_base_image=0
+    build_base_arg=""
+    log "Preserving the SFM Dockerfile's pinned COLMAP base image; published images stay cache-only."
+  else
+    docker pull "${base_image}" || log "No base image yet for ${container_name}"
   fi
   
   # Build base image if missing
-  if ! aws ecr describe-images --region "${AWS_REGION}" --repository-name "${repo_name}" --image-ids imageTag=base >/dev/null 2>&1; then
+  if [[ "${use_repo_base_image}" == "1" ]] && ! aws ecr describe-images --region "${AWS_REGION}" --repository-name "${repo_name}" --image-ids imageTag=base >/dev/null 2>&1; then
     local base_file="${container_dir}/Dockerfile.base"
     if [[ -f "$base_file" ]]; then
       log "Building base image for ${container_name}..."
@@ -146,20 +148,25 @@ deploy_container() {
 
   # Build with advanced caching options
   log "Building with Docker BuildKit and layer caching..."
-  docker buildx build \
+  local build_command=(
+    docker buildx build
     --platform linux/amd64 \
     --file "${container_dir}/Dockerfile" \
-    --build-arg BASE_IMAGE="${build_base_arg}" \
     --build-arg BUILDKIT_INLINE_CACHE=1 \
     --tag "${repo_name}:latest" \
     --cache-from "type=registry,ref=${build_cache_ref},mode=max" \
     --cache-from "type=registry,ref=${ecr_uri}:latest" \
-    --cache-from "${build_base_arg}" \
     --cache-to "type=registry,mode=max,compression=zstd,ref=${build_cache_ref}" \
     --progress plain \
     --load \
     "${container_dir}"
-  
+  )
+  if [[ -n "${build_base_arg}" ]]; then
+    build_command+=(--build-arg "BASE_IMAGE=${build_base_arg}")
+    build_command+=(--cache-from "${build_base_arg}")
+  fi
+  "${build_command[@]}"
+
   log "Build complete with caching optimizations."
 
   log "Tagging images..."
