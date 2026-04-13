@@ -385,30 +385,35 @@ def prune_foreground_floaters(
 
         top_visible = visible & (ys < (height * top_region_ratio))
         top_counts += top_visible.astype(np.int32)
-        if not top_visible.any():
+        active_visible = np.flatnonzero(visible)
+        if active_visible.size == 0:
             continue
 
-        active_indices = np.flatnonzero(top_visible)
         gray = cv2_mod.cvtColor(image, cv2_mod.COLOR_RGB2GRAY)
         edge_map = cv2_mod.Canny(gray, 50, 150)
         patch_means = _patch_means(
             image=image.astype(np.float32) / 255.0,
-            xs=xs[active_indices],
-            ys=ys[active_indices],
+            xs=xs[active_visible],
+            ys=ys[active_visible],
             patch_size=patch_size,
         )
-        patch_edges = _patch_edge_presence(edge_map=edge_map > 0, xs=xs[active_indices], ys=ys[active_indices], patch_size=patch_size)
+        patch_edges = _patch_edge_presence(
+            edge_map=edge_map > 0,
+            xs=xs[active_visible],
+            ys=ys[active_visible],
+            patch_size=patch_size,
+        )
         patch_sky = _patch_sky_presence(
             patch_means=patch_means,
             min_luminance=sky_min_luminance,
             min_saturation=sky_min_saturation,
             blue_dominance_margin=sky_blue_dominance_margin,
         )
-        edge_support_counts[active_indices] += patch_edges.astype(np.int32)
-        sky_support_counts[active_indices] += patch_sky.astype(np.int32)
+        edge_support_counts[active_visible] += patch_edges.astype(np.int32)
+        sky_support_counts[active_visible] += patch_sky.astype(np.int32)
 
-        rgb_delta = candidate_colors[active_indices] - patch_means
-        color_distances[active_indices, sample_slot] = np.linalg.norm(rgb_delta, axis=1)
+        rgb_delta = candidate_colors[active_visible] - patch_means
+        color_distances[active_visible, sample_slot] = np.linalg.norm(rgb_delta, axis=1)
 
     finite_color_mask = np.isfinite(color_distances).any(axis=1)
     median_color_distance = np.full(candidate_indices.shape[0], np.inf, dtype=np.float32)
