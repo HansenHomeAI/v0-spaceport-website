@@ -398,6 +398,96 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             self.assertIn("--vis", calls[0])
             self.assertEqual(calls[0][calls[0].index("--vis") + 1], "viewer")
 
+    def test_run_nerfstudio_training_honors_datamanager_cache_overrides(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.config = {
+                "model": {
+                    "variant": "splatfacto-w-light",
+                    "sh_degree": 3,
+                    "bilateral_processing": False,
+                    "rasterize_mode": "classic",
+                    "use_scale_regularization": True,
+                    "cull_alpha_thresh": 0.12,
+                    "cull_scale_thresh": 0.35,
+                    "enable_bg_model": True,
+                    "enable_alpha_loss": True,
+                    "enable_robust_mask": True,
+                    "bg_sh_degree": 8,
+                    "appearance_embed_dim": 64,
+                    "never_mask_upper": 0.4,
+                },
+                "training": {
+                    "max_iterations": 10,
+                    "log_interval": 1,
+                    "cache_images": "cpu",
+                    "cache_images_type": "uint8",
+                    "dataloader_num_workers": 0,
+                },
+                "tiling": {
+                    "training_mode": "leaf_tile",
+                    "global_scaffold": {},
+                },
+            }
+            trainer.input_dir = root / "input"
+            trainer.output_dir = root / "output"
+            trainer.temp_dir = root / "tmp"
+            trainer.training_selection_result = None
+            trainer.background_selection_result = None
+            trainer.floater_pruning_result = None
+            trainer.resolve_training_mode = lambda: "leaf_tile"
+
+            calls: list[list[str]] = []
+
+            def fake_run(cmd, **kwargs):
+                calls.append(list(cmd))
+                return types.SimpleNamespace(returncode=0, stdout="done\n", stderr="")
+
+            original_run = module.subprocess.run
+            module.subprocess.run = fake_run
+            try:
+                success = trainer.run_nerfstudio_training()
+            finally:
+                module.subprocess.run = original_run
+
+            self.assertTrue(success)
+            self.assertEqual(len(calls), 1)
+            self.assertIn("--pipeline.datamanager.cache-images", calls[0])
+            self.assertIn("cpu", calls[0])
+            self.assertIn("--pipeline.datamanager.cache-images-type", calls[0])
+            self.assertIn("uint8", calls[0])
+            self.assertIn("--pipeline.datamanager.dataloader-num-workers", calls[0])
+            self.assertIn("0", calls[0])
+
+    def test_build_sparse_point_cloud_ply_writes_ascii_vertices(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            points_txt = root / "points3D.txt"
+            points_txt.write_text(
+                "\n".join(
+                    [
+                        "# comment",
+                        "1 1.0 2.0 3.0 255 128 64 0.1 1 1",
+                        "2 4.0 5.0 6.0 10 20 30 0.2 2 3",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            output_ply = root / "sparse_pc.ply"
+
+            written = module.NerfStudioTrainer.build_sparse_point_cloud_ply(points_txt, output_ply)
+
+            self.assertTrue(written)
+            contents = output_ply.read_text(encoding="utf-8")
+            self.assertIn("element vertex 2", contents)
+            self.assertIn("1.0 2.0 3.0 255 128 64", contents)
+            self.assertIn("4.0 5.0 6.0 10 20 30", contents)
+
     def test_downscale_selected_training_data_if_requested_resizes_images_and_intrinsics(self):
         module = load_module_with_stubs()
 

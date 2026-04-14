@@ -90,6 +90,9 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         )
 
         self.assertEqual(env["TRAINING_VIS_MODE"], "viewer")
+        self.assertEqual(env["TRAINING_CACHE_IMAGES"], "cpu")
+        self.assertEqual(env["TRAINING_CACHE_IMAGES_TYPE"], "uint8")
+        self.assertEqual(env["TRAINING_DATALOADER_NUM_WORKERS"], "0")
 
     def test_build_training_environment_allows_explicit_vis_override_for_tiny_runs(self):
         env = benchmark.build_training_environment(

@@ -388,6 +388,9 @@ class NerfStudioTrainer:
             'BILATERAL_PROCESSING': 'model.bilateral_processing',
             'LOG_INTERVAL': 'training.log_interval',
             'TRAINING_VIS_MODE': 'training.vis_mode',
+            'TRAINING_CACHE_IMAGES': 'training.cache_images',
+            'TRAINING_CACHE_IMAGES_TYPE': 'training.cache_images_type',
+            'TRAINING_DATALOADER_NUM_WORKERS': 'training.dataloader_num_workers',
             'TRAINING_MAX_SELECTED_IMAGES': 'training.max_selected_images',
             'TRAINING_SELECTION_STRIDE': 'training.selection_stride',
             'TRAINING_STEPS_PER_EVAL_IMAGE': 'training.steps_per_eval_image',
@@ -446,7 +449,7 @@ class NerfStudioTrainer:
                 # Convert string values to appropriate types
                 if env_var in ['BILATERAL_PROCESSING', 'USE_SCALE_REGULARIZATION', 'ENABLE_BG_MODEL', 'ENABLE_ALPHA_LOSS', 'ENABLE_ROBUST_MASK', 'FLOATER_PRUNING_ENABLED', 'TILED_INCLUDE_SCAFFOLD', 'TILED_INCLUDE_MERGE', 'TILED_RESUME_EXISTING', 'VIEWER_QUIT_ON_TRAIN_COMPLETION']:
                     value = value.lower() in ('true', '1', 'yes', 'on')
-                elif env_var in ['MAX_ITERATIONS', 'LOG_INTERVAL', 'TRAINING_MAX_SELECTED_IMAGES', 'TRAINING_SELECTION_STRIDE', 'TRAINING_STEPS_PER_EVAL_IMAGE', 'TRAINING_STEPS_PER_EVAL_ALL_IMAGES', 'TRAINING_STEPS_PER_SAVE', 'SH_DEGREE', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'TRAINING_DOWNSCALE_FACTOR', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT', 'GLOBAL_SCAFFOLD_MAX_IMAGES', 'GLOBAL_SCAFFOLD_FRAME_STRIDE', 'GLOBAL_SCAFFOLD_MAX_ITERATIONS', 'GLOBAL_SCAFFOLD_SH_DEGREE', 'TILED_MAX_TILES']:
+                elif env_var in ['MAX_ITERATIONS', 'LOG_INTERVAL', 'TRAINING_DATALOADER_NUM_WORKERS', 'TRAINING_MAX_SELECTED_IMAGES', 'TRAINING_SELECTION_STRIDE', 'TRAINING_STEPS_PER_EVAL_IMAGE', 'TRAINING_STEPS_PER_EVAL_ALL_IMAGES', 'TRAINING_STEPS_PER_SAVE', 'SH_DEGREE', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'TRAINING_DOWNSCALE_FACTOR', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT', 'GLOBAL_SCAFFOLD_MAX_IMAGES', 'GLOBAL_SCAFFOLD_FRAME_STRIDE', 'GLOBAL_SCAFFOLD_MAX_ITERATIONS', 'GLOBAL_SCAFFOLD_SH_DEGREE', 'TILED_MAX_TILES']:
                     value = int(value)
                 elif env_var in ['TARGET_PSNR', 'CULL_ALPHA_THRESH', 'CULL_SCALE_THRESH', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_SKY_MIN_LUMINANCE', 'FLOATER_PRUNING_SKY_MIN_SATURATION', 'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE', 'GLOBAL_SCAFFOLD_MAX_GAUSS_RATIO']:
                     value = float(value)
@@ -559,6 +562,54 @@ class NerfStudioTrainer:
         
         logger.info("✅ COLMAP data validation passed - converting to NerfStudio format")
         return self.convert_colmap_to_nerfstudio()
+
+    @staticmethod
+    def build_sparse_point_cloud_ply(points_txt: Path, output_ply: Path) -> bool:
+        """Write a lightweight sparse COLMAP point cloud PLY for NerfStudio startup."""
+        if not points_txt.exists():
+            return False
+
+        vertices: list[tuple[float, float, float, int, int, int]] = []
+        with open(points_txt, 'r', encoding='utf-8') as handle:
+            for raw_line in handle:
+                line = raw_line.strip()
+                if not line or line.startswith('#'):
+                    continue
+                parts = line.split()
+                if len(parts) < 7:
+                    continue
+                try:
+                    vertices.append(
+                        (
+                            float(parts[1]),
+                            float(parts[2]),
+                            float(parts[3]),
+                            int(parts[4]),
+                            int(parts[5]),
+                            int(parts[6]),
+                        )
+                    )
+                except ValueError:
+                    continue
+
+        if not vertices:
+            return False
+
+        output_ply.parent.mkdir(parents=True, exist_ok=True)
+        with open(output_ply, 'w', encoding='utf-8') as handle:
+            handle.write("ply\n")
+            handle.write("format ascii 1.0\n")
+            handle.write(f"element vertex {len(vertices)}\n")
+            handle.write("property float x\n")
+            handle.write("property float y\n")
+            handle.write("property float z\n")
+            handle.write("property uchar red\n")
+            handle.write("property uchar green\n")
+            handle.write("property uchar blue\n")
+            handle.write("end_header\n")
+            for x, y, z, red, green, blue in vertices:
+                handle.write(f"{x} {y} {z} {red} {green} {blue}\n")
+        return True
     
     def convert_colmap_to_nerfstudio(self) -> bool:
         """Convert COLMAP data to NerfStudio transforms.json format"""
@@ -660,6 +711,14 @@ class NerfStudioTrainer:
                     "🗺️ Saved converted image name map with %s entries",
                     image_name_map.get('image_count', 0),
                 )
+                sparse_pc_path = converted_dir / "sparse_pc.ply"
+                if self.build_sparse_point_cloud_ply(
+                    source_input_dir / "sparse" / "0" / "points3D.txt",
+                    sparse_pc_path,
+                ):
+                    logger.info(f"☁️ Saved sparse point cloud PLY: {sparse_pc_path}")
+                else:
+                    logger.warning("⚠️ Failed to materialize sparse_pc.ply from COLMAP points")
             except Exception as e:
                 logger.warning(f"⚠️ Failed to save converted image name map: {e}")
             
@@ -1439,6 +1498,9 @@ class NerfStudioTrainer:
         appearance_embed_dim = model_config.get('appearance_embed_dim', 48)
         never_mask_upper = model_config.get('never_mask_upper', 0.4)
         log_interval = training_config.get('log_interval', 100)
+        cache_images = str(training_config.get('cache_images', '') or '').strip()
+        cache_images_type = str(training_config.get('cache_images_type', '') or '').strip()
+        dataloader_num_workers = training_config.get('dataloader_num_workers')
         steps_per_eval_image = training_config.get('steps_per_eval_image')
         steps_per_eval_all_images = training_config.get('steps_per_eval_all_images')
         steps_per_save = training_config.get('steps_per_save')
@@ -1476,6 +1538,12 @@ class NerfStudioTrainer:
         logger.info(f"   Background SH degree: {bg_sh_degree}")
         logger.info(f"   Appearance embedding dim: {appearance_embed_dim}")
         logger.info(f"   Log interval: {log_interval}")
+        logger.info(f"   Cache images: {cache_images or '<default>'}")
+        logger.info(f"   Cache images type: {cache_images_type or '<default>'}")
+        logger.info(
+            "   Dataloader workers: %s",
+            dataloader_num_workers if dataloader_num_workers is not None else "<default>",
+        )
         logger.info(f"   Steps per eval image: {steps_per_eval_image}")
         logger.info(f"   Steps per eval all images: {steps_per_eval_all_images}")
         logger.info(f"   Steps per save: {steps_per_save}")
@@ -1535,6 +1603,15 @@ class NerfStudioTrainer:
                 "--pipeline.model.bg_sh_degree", str(bg_sh_degree),
                 "--pipeline.model.appearance_embed_dim", str(appearance_embed_dim),
                 "--pipeline.model.never_mask_upper", str(never_mask_upper),
+            ])
+        if cache_images:
+            method_args.extend(["--pipeline.datamanager.cache-images", cache_images])
+        if cache_images_type:
+            method_args.extend(["--pipeline.datamanager.cache-images-type", cache_images_type])
+        if dataloader_num_workers is not None:
+            method_args.extend([
+                "--pipeline.datamanager.dataloader-num-workers",
+                str(int(dataloader_num_workers)),
             ])
         
         # Memory optimization for A10G GPU (16GB vs Vincent's RTX 4090 24GB)

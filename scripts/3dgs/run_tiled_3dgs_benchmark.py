@@ -229,6 +229,9 @@ def build_training_environment(
     }
     if max_iterations <= 50:
         env["TRAINING_VIS_MODE"] = "viewer"
+        env["TRAINING_CACHE_IMAGES"] = "cpu"
+        env["TRAINING_CACHE_IMAGES_TYPE"] = "uint8"
+        env["TRAINING_DATALOADER_NUM_WORKERS"] = "0"
     if training_mode == "global_scaffold":
         env["GLOBAL_SCAFFOLD_MAX_ITERATIONS"] = str(max_iterations)
     if downscale_factor > 1:
