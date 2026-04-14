@@ -911,6 +911,7 @@ class ColmapPipeline:
         self.bundle_adjusted_node_count = 0
         self.max_bundle_adjusted_image_count = 0
         self.skipped_seam_merge_count = 0
+        self.global_database_normalized_for_chunking = False
         self.images_dir.mkdir(parents=True, exist_ok=True)
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -4641,6 +4642,17 @@ class ColmapPipeline:
     def is_sqlite_lock_error(self, error: sqlite3.OperationalError) -> bool:
         return "database is locked" in str(error).lower()
 
+    def is_sqlite_corruption_error(self, error: sqlite3.DatabaseError) -> bool:
+        message = str(error).lower()
+        return any(
+            token in message
+            for token in (
+                "database disk image is malformed",
+                "disk image is malformed",
+                "malformed database schema",
+            )
+        )
+
     def run_sqlite_operation_with_retry(self, stage: str, operation):
         attempts = max(1, self.sqlite_lock_retry_count + 1)
         last_error: sqlite3.OperationalError | None = None
@@ -4694,6 +4706,15 @@ class ColmapPipeline:
                 sidecar_path.unlink()
             except FileNotFoundError:
                 continue
+
+    def prepare_global_database_for_chunking(self, *, force: bool = False) -> None:
+        if self.global_database_normalized_for_chunking and not force:
+            return
+        if not self.database_path.exists():
+            return
+        logger.info("Normalizing global COLMAP database %s for chunk cloning", self.database_path)
+        self.normalize_sqlite_database_for_chunking(self.database_path)
+        self.global_database_normalized_for_chunking = True
 
     def clone_database_for_chunk(self, destination_path: Path) -> None:
         destination_path.parent.mkdir(parents=True, exist_ok=True)
@@ -4755,23 +4776,37 @@ class ColmapPipeline:
         chunk_dir = self.work_dir / (dir_name or f"chunk_{chunk_plan.index:02d}")
         chunk_dir.mkdir(parents=True, exist_ok=True)
         chunk_database_path = chunk_dir / "database.db"
-        # Chunk retries can reuse the same directory name; create a fresh SQLite clone so
-        # stale WAL/SHM files from the previous attempt cannot corrupt the next retry.
-        self.clone_database_for_chunk(chunk_database_path)
-        supports_pose_prior_image_backfill = self.run_sqlite_operation_with_retry(
-            f"inspect_chunk_database_schema:{chunk_plan.index:02d}",
-            lambda: self.supports_pose_prior_image_backfill(database_path=chunk_database_path),
-        )
-
+        self.prepare_global_database_for_chunking()
         keep_image_names = set(chunk_plan.image_names)
-        self.run_sqlite_operation_with_retry(
-            f"prune_chunk_database:{chunk_plan.index:02d}",
-            lambda: self.prune_chunk_database(
-                chunk_database_path,
-                keep_image_names=keep_image_names,
-                supports_pose_prior_image_backfill=supports_pose_prior_image_backfill,
-            ),
-        )
+        for corruption_retry_index in range(2):
+            try:
+                # Chunk retries can reuse the same directory name; create a fresh SQLite clone so
+                # stale WAL/SHM files from the previous attempt cannot corrupt the next retry.
+                self.clone_database_for_chunk(chunk_database_path)
+                supports_pose_prior_image_backfill = self.run_sqlite_operation_with_retry(
+                    f"inspect_chunk_database_schema:{chunk_plan.index:02d}",
+                    lambda: self.supports_pose_prior_image_backfill(database_path=chunk_database_path),
+                )
+                self.run_sqlite_operation_with_retry(
+                    f"prune_chunk_database:{chunk_plan.index:02d}",
+                    lambda: self.prune_chunk_database(
+                        chunk_database_path,
+                        keep_image_names=keep_image_names,
+                        supports_pose_prior_image_backfill=supports_pose_prior_image_backfill,
+                    ),
+                )
+                break
+            except sqlite3.DatabaseError as error:
+                if not self.is_sqlite_corruption_error(error) or corruption_retry_index == 1:
+                    raise
+                logger.warning(
+                    "SQLite corruption while preparing chunk %s in %s (%s); rebuilding from a re-normalized source clone",
+                    chunk_plan.index,
+                    chunk_dir.name,
+                    error,
+                )
+                self.prepare_global_database_for_chunking(force=True)
+                self.remove_sqlite_database_artifacts(chunk_database_path)
         for sidecar_path in self.sqlite_sidecar_paths(chunk_database_path):
             if sidecar_path.exists():
                 sidecar_path.unlink()
@@ -6476,6 +6511,7 @@ class ColmapPipeline:
             self.enable_sequential_matcher = False
         self.chunk_plans = self.build_chunk_plans()
         self.chunk_plans_by_index = {chunk_plan.index: chunk_plan for chunk_plan in self.chunk_plans}
+        self.prepare_global_database_for_chunking()
         if self.only_chunk_indexes:
             self.chunk_plans = [
                 chunk_plan for chunk_plan in self.chunk_plans if chunk_plan.index in self.only_chunk_indexes
