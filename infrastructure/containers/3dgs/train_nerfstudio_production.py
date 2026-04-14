@@ -387,6 +387,7 @@ class NerfStudioTrainer:
             'SH_DEGREE': 'model.sh_degree',
             'BILATERAL_PROCESSING': 'model.bilateral_processing',
             'LOG_INTERVAL': 'training.log_interval',
+            'TRAINING_VIS_MODE': 'training.vis_mode',
             'TRAINING_MAX_SELECTED_IMAGES': 'training.max_selected_images',
             'TRAINING_SELECTION_STRIDE': 'training.selection_stride',
             'TRAINING_STEPS_PER_EVAL_IMAGE': 'training.steps_per_eval_image',
@@ -1453,13 +1454,14 @@ class NerfStudioTrainer:
         else:
             max_gauss_ratio = 10.0
 
-        if steps_per_eval_image is None and max_iterations <= 250:
+        if os.environ.get('TRAINING_STEPS_PER_EVAL_IMAGE') is None and max_iterations <= 250:
             steps_per_eval_image = max_iterations + 1
-        if steps_per_eval_all_images is None and max_iterations <= 250:
+        if os.environ.get('TRAINING_STEPS_PER_EVAL_ALL_IMAGES') is None and max_iterations <= 250:
             steps_per_eval_all_images = max_iterations + 1
-        if steps_per_save is None and max_iterations <= 250:
+        if os.environ.get('TRAINING_STEPS_PER_SAVE') is None and max_iterations <= 250:
             steps_per_save = max_iterations + 1
-        
+        vis_mode = str(training_config.get('vis_mode', 'tensorboard')).strip() or 'tensorboard'
+
         logger.info("🎯 Training Configuration:")
         logger.info(f"   Model: {model_variant}")
         logger.info(f"   Max iterations: {max_iterations}")
@@ -1477,6 +1479,7 @@ class NerfStudioTrainer:
         logger.info(f"   Steps per eval image: {steps_per_eval_image}")
         logger.info(f"   Steps per eval all images: {steps_per_eval_all_images}")
         logger.info(f"   Steps per save: {steps_per_save}")
+        logger.info(f"   Visualization mode: {vis_mode}")
         logger.info(f"   Quit on train completion: {quit_on_train_completion}")
         logger.info(f"   Training mode: {training_mode}")
         logger.info(f"   Dataparser: transforms.json (via ns-process-data conversion)")
@@ -1491,7 +1494,7 @@ class NerfStudioTrainer:
             "--output-dir",
             str(self.temp_dir),
             "--vis",
-            "tensorboard",
+            vis_mode,
             "--max_num_iterations",
             str(max_iterations),
             "--pipeline.model.sh_degree",
@@ -1540,7 +1543,7 @@ class NerfStudioTrainer:
             "--pipeline.model.max-gauss-ratio", str(max_gauss_ratio)
         ])
         logger.info(f"🖥️  A10G GPU optimization enabled (max-gauss-ratio: {max_gauss_ratio})")
-        logger.info("🪟 Viewer disabled for headless SageMaker training (--vis tensorboard)")
+        logger.info(f"🪟 Visualization backend for this run: {vis_mode}")
 
         def build_training_command(*, explicit_dataparser: bool) -> list[str]:
             if explicit_dataparser:

@@ -73,3 +73,4 @@
 proof-control-patch 2026-04-13T20:52:40-0600
 subprocess-logfile-fix 2026-04-13T21:36:00-0600
 stream-subprocess-debug 2026-04-13T23:00:00-0600
+viewer-proof-mode 2026-04-13T23:30:44-0600

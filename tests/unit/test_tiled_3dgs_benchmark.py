@@ -79,6 +79,30 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
 
         self.assertEqual(env["TRAINING_DOWNSCALE_FACTOR"], "8")
 
+    def test_build_training_environment_defaults_tiny_proof_runs_to_viewer_mode(self):
+        env = benchmark.build_training_environment(
+            training_mode="leaf_tile",
+            tile_manifest_name="3dgs_tile_manifest.json",
+            view_bucket_manifest_name="3dgs_view_buckets.json",
+            tile_id="tile_00",
+            max_iterations=10,
+            extra_env={},
+        )
+
+        self.assertEqual(env["TRAINING_VIS_MODE"], "viewer")
+
+    def test_build_training_environment_allows_explicit_vis_override_for_tiny_runs(self):
+        env = benchmark.build_training_environment(
+            training_mode="leaf_tile",
+            tile_manifest_name="3dgs_tile_manifest.json",
+            view_bucket_manifest_name="3dgs_view_buckets.json",
+            tile_id="tile_00",
+            max_iterations=10,
+            extra_env={"TRAINING_VIS_MODE": "tensorboard"},
+        )
+
+        self.assertEqual(env["TRAINING_VIS_MODE"], "tensorboard")
+
     def test_build_benchmark_stages_fanout_emits_leaf_tiles_and_merge(self):
         manifest = {
             "tiles": [

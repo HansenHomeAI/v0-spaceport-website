@@ -227,6 +227,8 @@ def build_training_environment(
         "FRAMEWORK": "nerfstudio",
         "METHODOLOGY": "spaceport_splatfacto_w_light_skybox",
     }
+    if max_iterations <= 50:
+        env["TRAINING_VIS_MODE"] = "viewer"
     if training_mode == "global_scaffold":
         env["GLOBAL_SCAFFOLD_MAX_ITERATIONS"] = str(max_iterations)
     if downscale_factor > 1:

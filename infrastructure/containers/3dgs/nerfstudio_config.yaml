@@ -24,6 +24,7 @@ training:
   max_iterations: 30000              # Vincent's training duration
   target_psnr: 35.0                  # High quality target
   log_interval: 100                  # Frequent logging for monitoring
+  vis_mode: "tensorboard"            # Use viewer for tiny proof runs to skip eval startup cost
   max_selected_images: 0             # Optional proof-run cap after manifest selection
   selection_stride: 1                # Optional proof-run stride after manifest selection
   steps_per_eval_image: 100          # NerfStudio eval cadence
