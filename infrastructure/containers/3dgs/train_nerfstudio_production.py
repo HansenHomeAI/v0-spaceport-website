@@ -1847,11 +1847,7 @@ class NerfStudioTrainer:
         background_selection = None if training_mode == 'global_scaffold' else self.resolve_background_selection()
 
         if training_mode == 'global_scaffold':
-            export_cmd = [
-                "ns-export", "gaussian-splat",
-                "--load-config", str(config_file),
-                "--output-dir", str(self.output_dir)
-            ]
+            return self.persist_scaffold_training_artifacts(config_file)
         elif model_variant in {"splatfacto-w-light", "splatfacto-w"}:
             export_cmd = [
                 "python", "/opt/ml/code/export_splatfacto_w_assets.py",
@@ -1919,6 +1915,38 @@ class NerfStudioTrainer:
             return False
         except Exception as e:
             logger.error(f"❌ Export execution failed: {e}")
+            return False
+
+    def persist_scaffold_training_artifacts(self, config_file: Path) -> bool:
+        """Persist scaffold checkpoints/config without invoking the Splatfacto-only exporter."""
+        try:
+            self.output_dir.mkdir(parents=True, exist_ok=True)
+            scaffold_config_path = self.output_dir / "config.yml"
+            shutil.copy2(config_file, scaffold_config_path)
+
+            checkpoint_dir = config_file.parent / "nerfstudio_models"
+            if checkpoint_dir.exists():
+                scaffold_checkpoint_dir = self.output_dir / "nerfstudio_models"
+                if scaffold_checkpoint_dir.exists():
+                    shutil.rmtree(scaffold_checkpoint_dir)
+                shutil.copytree(checkpoint_dir, scaffold_checkpoint_dir)
+
+            export_manifest = {
+                "mode": "training_only",
+                "reason": "global_scaffold uses checkpoint persistence instead of ns-export gaussian-splat",
+                "config": str(scaffold_config_path),
+                "checkpoint_dir": str(self.output_dir / "nerfstudio_models") if checkpoint_dir.exists() else None,
+            }
+            with open(self.output_dir / "export_manifest.json", "w", encoding="utf-8") as handle:
+                json.dump(export_manifest, handle, indent=2)
+
+            logger.info("✅ Scaffold artifacts persisted without gaussian export")
+            logger.info(f"📄 Scaffold config: {scaffold_config_path}")
+            if checkpoint_dir.exists():
+                logger.info(f"📦 Scaffold checkpoint dir: {self.output_dir / 'nerfstudio_models'}")
+            return True
+        except Exception as e:
+            logger.error(f"❌ Failed to persist scaffold artifacts: {e}")
             return False
     
     def generate_training_metadata(self) -> Dict[str, Any]:
