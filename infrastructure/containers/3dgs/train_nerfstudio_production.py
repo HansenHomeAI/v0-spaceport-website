@@ -214,6 +214,65 @@ def run_command_with_log_file(
     log_path.parent.mkdir(parents=True, exist_ok=True)
     stdout_path = log_path
     stderr_output = ""
+    stream_subprocess_output = str(os.environ.get("STREAM_SUBPROCESS_OUTPUT", "")).lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+
+    if stream_subprocess_output:
+        started_at = time.monotonic()
+        captured_lines: list[str] = []
+        with open(stdout_path, "w", encoding="utf-8") as handle:
+            process = subprocess.Popen(
+                list(cmd),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                env=env,
+                bufsize=1,
+            )
+            try:
+                while True:
+                    if timeout is not None and (time.monotonic() - started_at) > timeout:
+                        process.kill()
+                        raise subprocess.TimeoutExpired(list(cmd), timeout)
+
+                    if process.stdout is None:
+                        break
+
+                    line = process.stdout.readline()
+                    if line:
+                        captured_lines.append(line)
+                        handle.write(line)
+                        handle.flush()
+                        sys.stdout.write(line)
+                        sys.stdout.flush()
+                        continue
+
+                    if process.poll() is not None:
+                        break
+                    time.sleep(0.2)
+
+                if process.stdout is not None:
+                    remainder = process.stdout.read()
+                    if remainder:
+                        captured_lines.append(remainder)
+                        handle.write(remainder)
+                        handle.flush()
+                        sys.stdout.write(remainder)
+                        sys.stdout.flush()
+            finally:
+                if process.stdout is not None:
+                    process.stdout.close()
+
+            return subprocess.CompletedProcess(
+                args=list(cmd),
+                returncode=process.wait(),
+                stdout="".join(captured_lines),
+                stderr="",
+            )
 
     with open(stdout_path, "w", encoding="utf-8") as handle:
         result = subprocess.run(

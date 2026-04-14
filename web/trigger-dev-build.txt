@@ -72,3 +72,4 @@
 2026-04-14T01:28:00Z rerun preview after adding ns-train CLI fallback for explicit dataparser ordering
 proof-control-patch 2026-04-13T20:52:40-0600
 subprocess-logfile-fix 2026-04-13T21:36:00-0600
+stream-subprocess-debug 2026-04-13T23:00:00-0600

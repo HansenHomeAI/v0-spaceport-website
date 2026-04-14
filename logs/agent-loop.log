@@ -34,3 +34,6 @@
 [2026-04-13T20:52:42-0600] patch proof controls -> local unit tests green -> push and redeploy next
 [2026-04-13T21:10:09-0600] branch deploy green -> preview alias verified -> awaiting proof50 trainer start
 [2026-04-13T21:36:03-0600] identify ns-train pipe-buffer stall -> patch logfile subprocess runner -> stop stale proof50 run
+[2026-04-13T21:49:05-0600] relaunch proof50 on logfile-subprocess image -> awaiting completion behavior
+[2026-04-13T22:22:38-0600] proof50b stopping -> g5 quota still occupied -> relaunch proof50c when slot frees
+[2026-04-13T23:00:10-0600] proof50c still opaque after 35m -> stop and switch to streaming-subprocess build
