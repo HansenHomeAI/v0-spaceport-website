@@ -18,6 +18,10 @@ except ModuleNotFoundError:  # pragma: no cover - local planning/dry-run paths d
 DEFAULT_GLOBAL_SCAFFOLD_MAX_IMAGES = 240
 DEFAULT_GLOBAL_SCAFFOLD_STRIDE = 2
 DEFAULT_TILE_CONTEXT_IMAGES = 12
+DEFAULT_TILE_BOUNDS_PADDING_M = 12.0
+DEFAULT_CAMERA_BOUNDS_XY_PADDING_M = 24.0
+DEFAULT_CAMERA_BOUNDS_Z_DOWN_PADDING_M = 48.0
+DEFAULT_CAMERA_BOUNDS_Z_UP_PADDING_M = 18.0
 
 
 @dataclass
@@ -93,6 +97,156 @@ def zero_bounds() -> dict[str, float]:
     }
 
 
+def _quaternion_to_rotation_matrix(qw: float, qx: float, qy: float, qz: float) -> np.ndarray:
+    norm = float(np.sqrt(qw * qw + qx * qx + qy * qy + qz * qz))
+    if norm <= 1e-12:
+        return np.eye(3, dtype=np.float64)
+    qw /= norm
+    qx /= norm
+    qy /= norm
+    qz /= norm
+    return np.array(
+        [
+            [1.0 - 2.0 * (qy * qy + qz * qz), 2.0 * (qx * qy - qz * qw), 2.0 * (qx * qz + qy * qw)],
+            [2.0 * (qx * qy + qz * qw), 1.0 - 2.0 * (qx * qx + qz * qz), 2.0 * (qy * qz - qx * qw)],
+            [2.0 * (qx * qz - qy * qw), 2.0 * (qy * qz + qx * qw), 1.0 - 2.0 * (qx * qx + qy * qy)],
+        ],
+        dtype=np.float64,
+    )
+
+
+def _update_bounds(bounds: list[float] | None, point: Sequence[float]) -> list[float]:
+    x, y, z = float(point[0]), float(point[1]), float(point[2])
+    if bounds is None:
+        return [x, x, y, y, z, z]
+    bounds[0] = min(bounds[0], x)
+    bounds[1] = max(bounds[1], x)
+    bounds[2] = min(bounds[2], y)
+    bounds[3] = max(bounds[3], y)
+    bounds[4] = min(bounds[4], z)
+    bounds[5] = max(bounds[5], z)
+    return bounds
+
+
+def _bounds_payload(bounds: Sequence[float], *, padding_m: float) -> dict[str, float]:
+    return {
+        "min_x": round(float(bounds[0]) - padding_m, 3),
+        "max_x": round(float(bounds[1]) + padding_m, 3),
+        "min_y": round(float(bounds[2]) - padding_m, 3),
+        "max_y": round(float(bounds[3]) + padding_m, 3),
+        "min_z": round(float(bounds[4]) - padding_m, 3),
+        "max_z": round(float(bounds[5]) + padding_m, 3),
+    }
+
+
+def _camera_bounds_payload(bounds: Sequence[float]) -> dict[str, float]:
+    return {
+        "min_x": round(float(bounds[0]) - DEFAULT_CAMERA_BOUNDS_XY_PADDING_M, 3),
+        "max_x": round(float(bounds[1]) + DEFAULT_CAMERA_BOUNDS_XY_PADDING_M, 3),
+        "min_y": round(float(bounds[2]) - DEFAULT_CAMERA_BOUNDS_XY_PADDING_M, 3),
+        "max_y": round(float(bounds[3]) + DEFAULT_CAMERA_BOUNDS_XY_PADDING_M, 3),
+        "min_z": round(float(bounds[4]) - DEFAULT_CAMERA_BOUNDS_Z_DOWN_PADDING_M, 3),
+        "max_z": round(float(bounds[5]) + DEFAULT_CAMERA_BOUNDS_Z_UP_PADDING_M, 3),
+    }
+
+
+def load_sparse_bounds_support(
+    sparse_dir: str | Path | None,
+) -> tuple[dict[int, str], dict[str, np.ndarray], dict[str, list[float]]]:
+    if sparse_dir is None:
+        return {}, {}, {}
+
+    sparse_root = Path(sparse_dir)
+    images_txt = sparse_root / "images.txt"
+    points3d_txt = sparse_root / "points3D.txt"
+    if not images_txt.exists():
+        return {}, {}, {}
+
+    image_id_to_name: dict[int, str] = {}
+    camera_centers: dict[str, np.ndarray] = {}
+    with open(images_txt, "r", encoding="utf-8") as handle:
+        for raw_line in handle:
+            line = raw_line.strip()
+            if not line or line.startswith("#"):
+                continue
+            parts = line.split()
+            if len(parts) < 10:
+                continue
+            try:
+                image_id = int(parts[0])
+                qw, qx, qy, qz = (float(parts[1]), float(parts[2]), float(parts[3]), float(parts[4]))
+                tx, ty, tz = (float(parts[5]), float(parts[6]), float(parts[7]))
+            except ValueError:
+                continue
+            image_name = normalize_image_name(parts[9])
+            image_id_to_name[image_id] = image_name
+            rotation = _quaternion_to_rotation_matrix(qw, qx, qy, qz)
+            translation = np.array([tx, ty, tz], dtype=np.float64)
+            camera_centers[image_name] = -rotation.T @ translation
+
+    point_bounds_by_image: dict[str, list[float]] = {}
+    if not points3d_txt.exists():
+        return image_id_to_name, camera_centers, point_bounds_by_image
+
+    with open(points3d_txt, "r", encoding="utf-8") as handle:
+        for raw_line in handle:
+            line = raw_line.strip()
+            if not line or line.startswith("#"):
+                continue
+            parts = line.split()
+            if len(parts) < 8:
+                continue
+            try:
+                point = (float(parts[1]), float(parts[2]), float(parts[3]))
+            except ValueError:
+                continue
+            track_tokens = parts[8:]
+            for token_index in range(0, len(track_tokens) - 1, 2):
+                try:
+                    image_id = int(track_tokens[token_index])
+                except ValueError:
+                    continue
+                image_name = image_id_to_name.get(image_id)
+                if image_name is None:
+                    continue
+                point_bounds_by_image[image_name] = _update_bounds(
+                    point_bounds_by_image.get(image_name),
+                    point,
+                )
+
+    return image_id_to_name, camera_centers, point_bounds_by_image
+
+
+def selection_bounds_from_sparse_support(
+    image_names: Sequence[str],
+    *,
+    camera_centers: Mapping[str, np.ndarray],
+    point_bounds_by_image: Mapping[str, Sequence[float]],
+    padding_m: float = DEFAULT_TILE_BOUNDS_PADDING_M,
+) -> tuple[dict[str, float], str, bool]:
+    ordered_names = ordered_unique(image_names)
+    point_bounds: list[float] | None = None
+    for image_name in ordered_names:
+        per_image_bounds = point_bounds_by_image.get(image_name)
+        if per_image_bounds is None:
+            continue
+        point_bounds = _update_bounds(point_bounds, (per_image_bounds[0], per_image_bounds[2], per_image_bounds[4]))
+        point_bounds = _update_bounds(point_bounds, (per_image_bounds[1], per_image_bounds[3], per_image_bounds[5]))
+    if point_bounds is not None:
+        return _bounds_payload(point_bounds, padding_m=padding_m), "observed_points", True
+
+    camera_bounds: list[float] | None = None
+    for image_name in ordered_names:
+        center = camera_centers.get(image_name)
+        if center is None:
+            continue
+        camera_bounds = _update_bounds(camera_bounds, center.tolist())
+    if camera_bounds is not None:
+        return _camera_bounds_payload(camera_bounds), "camera_centers_fallback", True
+
+    return zero_bounds(), "missing_sparse_support", False
+
+
 def normalize_view_bucket_payload(view_buckets: Mapping[str, Any] | None) -> dict[str, list[str]]:
     if not isinstance(view_buckets, Mapping):
         return {
@@ -137,9 +291,11 @@ def synthesize_tiled_inputs_from_chunk_planner(
     chunk_planner_manifest: Mapping[str, Any],
     sfm_metadata: Mapping[str, Any] | None = None,
     *,
+    colmap_sparse_dir: str | Path | None = None,
     global_scaffold_max_images: int = DEFAULT_GLOBAL_SCAFFOLD_MAX_IMAGES,
     global_scaffold_stride: int = DEFAULT_GLOBAL_SCAFFOLD_STRIDE,
     tile_context_images: int = DEFAULT_TILE_CONTEXT_IMAGES,
+    tile_bounds_padding_m: float = DEFAULT_TILE_BOUNDS_PADDING_M,
 ) -> tuple[dict[str, Any], dict[str, list[str]], dict[str, Any]]:
     chunks = list(chunk_planner_manifest.get("chunks", []))
     if not chunks:
@@ -175,8 +331,10 @@ def synthesize_tiled_inputs_from_chunk_planner(
             if len(scaffold_names) >= global_scaffold_max_images:
                 break
     scaffold_names = scaffold_names[:global_scaffold_max_images]
+    _image_id_to_name, camera_centers, point_bounds_by_image = load_sparse_bounds_support(colmap_sparse_dir)
 
     tiles: list[dict[str, Any]] = []
+    all_tiles_have_bounds = True
     for index, chunk in enumerate(chunks):
         core_names = ordered_unique(chunk.get("core_names", []))
         overlap_names = ordered_unique(chunk.get("overlap_names", []))
@@ -212,20 +370,37 @@ def synthesize_tiled_inputs_from_chunk_planner(
                 break
 
         tile_id = f"tile_{int(chunk.get('index', index)):02d}"
+        core_bounds, core_bounds_strategy, core_bounds_available = selection_bounds_from_sparse_support(
+            core_names or image_names,
+            camera_centers=camera_centers,
+            point_bounds_by_image=point_bounds_by_image,
+            padding_m=tile_bounds_padding_m,
+        )
+        overlap_bounds, overlap_bounds_strategy, overlap_bounds_available = selection_bounds_from_sparse_support(
+            image_names or core_names,
+            camera_centers=camera_centers,
+            point_bounds_by_image=point_bounds_by_image,
+            padding_m=tile_bounds_padding_m,
+        )
+        ownership_bounds_available = core_bounds_available or overlap_bounds_available
+        all_tiles_have_bounds = all_tiles_have_bounds and ownership_bounds_available
         tiles.append(
             {
                 "tile_id": tile_id,
                 "index": int(chunk.get("index", index)),
                 "parent_id": "root_lod_0",
-                "core_bounds": zero_bounds(),
-                "overlap_bounds": zero_bounds(),
+                "core_bounds": core_bounds,
+                "overlap_bounds": overlap_bounds,
                 "base_camera_ids": core_names,
                 "border_camera_ids": overlap_names,
                 "context_camera_ids": context_camera_ids,
                 "image_names": image_names,
                 "neighbor_tile_ids": neighbor_tile_ids,
-                "bounds_strategy": "compatibility_no_bounds_v1",
-                "ownership_bounds_available": False,
+                "bounds_strategy": {
+                    "core": core_bounds_strategy,
+                    "overlap": overlap_bounds_strategy,
+                },
+                "ownership_bounds_available": ownership_bounds_available,
             }
         )
 
@@ -245,7 +420,7 @@ def synthesize_tiled_inputs_from_chunk_planner(
             "chunk_planner_available": True,
             "native_tile_manifest_available": False,
             "native_view_buckets_available": False,
-            "ownership_bounds_available": False,
+            "ownership_bounds_available": all_tiles_have_bounds,
         },
     }
     resolution = dict(manifest["manifest_resolution"])
@@ -260,9 +435,11 @@ def resolve_tiled_input_manifests(
     view_bucket_payload: Mapping[str, Any] | None,
     chunk_planner_manifest: Mapping[str, Any] | None = None,
     sfm_metadata: Mapping[str, Any] | None = None,
+    colmap_sparse_dir: str | Path | None = None,
     global_scaffold_max_images: int = DEFAULT_GLOBAL_SCAFFOLD_MAX_IMAGES,
     global_scaffold_stride: int = DEFAULT_GLOBAL_SCAFFOLD_STRIDE,
     tile_context_images: int = DEFAULT_TILE_CONTEXT_IMAGES,
+    tile_bounds_padding_m: float = DEFAULT_TILE_BOUNDS_PADDING_M,
 ) -> tuple[dict[str, Any], dict[str, list[str]], dict[str, Any]]:
     if isinstance(tile_manifest_payload, Mapping) and isinstance(view_bucket_payload, Mapping):
         manifest = dict(tile_manifest_payload)
@@ -285,9 +462,11 @@ def resolve_tiled_input_manifests(
     return synthesize_tiled_inputs_from_chunk_planner(
         chunk_planner_manifest,
         sfm_metadata=sfm_metadata,
+        colmap_sparse_dir=colmap_sparse_dir,
         global_scaffold_max_images=global_scaffold_max_images,
         global_scaffold_stride=global_scaffold_stride,
         tile_context_images=tile_context_images,
+        tile_bounds_padding_m=tile_bounds_padding_m,
     )
 
 

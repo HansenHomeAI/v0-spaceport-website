@@ -101,6 +101,62 @@ class GaussianTilePipelineTests(unittest.TestCase):
         self.assertFalse(manifest["tiles"][0]["ownership_bounds_available"])
         self.assertEqual(resolution["tile_count"], 2)
 
+    def test_synthesize_tiled_inputs_from_chunk_planner_uses_sparse_model_for_bounds(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            sparse_dir = Path(temp_dir) / "sparse" / "0"
+            sparse_dir.mkdir(parents=True, exist_ok=True)
+            (sparse_dir / "images.txt").write_text(
+                "\n".join(
+                    [
+                        "1 1 0 0 0 0 0 0 1 a.jpg",
+                        "",
+                        "2 1 0 0 0 10 0 0 1 b.jpg",
+                        "",
+                        "3 1 0 0 0 20 0 0 1 c.jpg",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            (sparse_dir / "points3D.txt").write_text(
+                "\n".join(
+                    [
+                        "1 0 0 -2 255 255 255 0.1 1 0 2 0",
+                        "2 20 0 -5 255 255 255 0.1 2 0 3 0",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            manifest, _, resolution = tile_pipeline.synthesize_tiled_inputs_from_chunk_planner(
+                {
+                    "planner": "footprint_graph_v1",
+                    "chunks": [
+                        {
+                            "index": 0,
+                            "core_names": ["a.jpg", "b.jpg"],
+                            "overlap_names": [],
+                            "image_names": ["a.jpg", "b.jpg"],
+                        },
+                        {
+                            "index": 1,
+                            "core_names": ["c.jpg"],
+                            "overlap_names": ["b.jpg"],
+                            "image_names": ["b.jpg", "c.jpg"],
+                        },
+                    ],
+                },
+                colmap_sparse_dir=sparse_dir,
+            )
+
+        self.assertTrue(resolution["ownership_bounds_available"])
+        tile_zero = manifest["tiles"][0]
+        self.assertTrue(tile_zero["ownership_bounds_available"])
+        self.assertEqual(tile_zero["bounds_strategy"]["core"], "observed_points")
+        self.assertLess(tile_zero["core_bounds"]["min_x"], 0.0)
+        self.assertGreater(tile_zero["core_bounds"]["max_x"], 19.0)
+        self.assertLess(tile_zero["core_bounds"]["min_z"], -5.0)
+
     def test_select_review_image_names_by_bucket_caps_per_bucket(self):
         review_images = tile_pipeline.select_review_image_names_by_bucket(
             ["a.jpg", "b.jpg", "c.jpg", "d.jpg", "e.jpg"],

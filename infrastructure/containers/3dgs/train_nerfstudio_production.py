@@ -973,6 +973,7 @@ class NerfStudioTrainer:
             view_bucket_payload=view_bucket_payload,
             chunk_planner_manifest=chunk_planner_payload,
             sfm_metadata=sfm_metadata_payload,
+            colmap_sparse_dir=self.input_dir / "sparse" / "0",
             global_scaffold_max_images=int(scaffold_config.get('max_images', 240) or 240),
             global_scaffold_stride=int(scaffold_config.get('frame_stride', 2) or 2),
             tile_context_images=int((sfm_metadata_payload or {}).get('tile_context_images', 12) or 12),

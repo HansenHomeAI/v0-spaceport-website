@@ -46,3 +46,7 @@
 [2026-04-14T02:15:36-0600] codebuild failed rebuilding pinned gsplat because glm headers were missing -> install libglm-dev in 3dgs image, push rebuild, then rerun proofv4 on the fresh digest
 [2026-04-14T03:48:13-0600] proofv4 succeeded end-to-end and 100-image scaffold+2-tile rung failed only on scaffold export assertion -> persist scaffold config/checkpoints instead of ns-export gaussian-splat, push rebuild, rerun same rung
 [2026-04-14T09:40:30-0600] md1 compatibility path now synthesizes tiled 3dgs manifests from chunk_planner metadata -> local dry-run succeeded against md1p27eba1k-1776107310, next push branch and validate the updated image on SageMaker
+[2026-04-14T15:50:58Z] workflow-check -> pages+cdk green, ml image building, md1 full sfm still in progress -> wait image then launch 1k md1 rung
+[2026-04-14T15:54:35Z] aws-submit -> md1-1k-probe-r1-1776182061-tiled submitted with pinned digest sha256:2c2d7dc44a6d2827fd251e1f5b72f44f96d912bf2602bbdee24b35250bfae08f -> poll SageMaker until completion
+[2026-04-14T15:56:10Z] workflows-green -> pages, cdk, ml container build all green for 86d38e29; md1-1k-probe-r1 training job downloading -> continue polling
+[2026-04-14T16:59:45Z] md1-r1 -> 4-tile 1k md1 rung completed; merge fallback revealed zero-bounds compatibility issue; sparse-bounds fix implemented and locally validated against md1 artifact -> push fix and rerun on fresh image

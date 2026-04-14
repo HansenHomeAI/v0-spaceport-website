@@ -72,6 +72,24 @@ def s3_json_or_none(s3_uri: str) -> dict | None:
     return json.loads(result.stdout)
 
 
+def download_sparse_support_dir(colmap_s3_uri: str, *, scratch_dir: Path) -> Path | None:
+    sparse_dir = scratch_dir / "sparse" / "0"
+    sparse_dir.mkdir(parents=True, exist_ok=True)
+    copied_any = False
+    for file_name in ("images.txt", "points3D.txt"):
+        source_uri = f"{normalize_s3_prefix(colmap_s3_uri)}/sparse/0/{file_name}"
+        target_path = sparse_dir / file_name
+        result = subprocess.run(
+            ["aws", "s3", "cp", source_uri, str(target_path)],
+            check=False,
+            text=True,
+            capture_output=True,
+        )
+        if result.returncode == 0:
+            copied_any = True
+    return sparse_dir if copied_any else None
+
+
 def get_current_branch() -> str:
     result = run_command(["git", "rev-parse", "--abbrev-ref", "HEAD"], capture_output=True)
     return result.stdout.strip()
@@ -655,11 +673,18 @@ def main() -> int:
     view_bucket_payload = s3_json_or_none(view_bucket_s3_uri)
     chunk_planner_payload = s3_json_or_none(chunk_planner_s3_uri)
     sfm_metadata_payload = s3_json_or_none(sfm_metadata_s3_uri)
+    sparse_support_dir = None
+    if chunk_planner_payload is not None and (tile_manifest_payload is None or view_bucket_payload is None):
+        sparse_support_dir = download_sparse_support_dir(
+            colmap_s3_uri,
+            scratch_dir=Path(tempfile.mkdtemp(prefix="3dgs-benchmark-sparse-")),
+        )
     tile_manifest, view_buckets, manifest_resolution = resolve_tiled_input_manifests(
         tile_manifest_payload=tile_manifest_payload,
         view_bucket_payload=view_bucket_payload,
         chunk_planner_manifest=chunk_planner_payload,
         sfm_metadata=sfm_metadata_payload,
+        colmap_sparse_dir=sparse_support_dir,
     )
 
     selected_tiles = select_tile_ids(
