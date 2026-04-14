@@ -65,6 +65,10 @@ for var in ('LD_LIBRARY_PATH', 'LIBRARY_PATH'):
 from pathlib import Path
 from typing import Dict, Any, Optional
 import shutil
+try:
+    from PIL import Image
+except ImportError:  # pragma: no cover - local unit tests may run without Pillow installed
+    Image = None
 
 from sky_quality import (
     BackgroundSelectionResult,
@@ -214,6 +218,7 @@ class NerfStudioTrainer:
             'ENABLE_ROBUST_MASK': 'model.enable_robust_mask',
             'BG_SH_DEGREE': 'model.bg_sh_degree',
             'APPEARANCE_EMBED_DIM': 'model.appearance_embed_dim',
+            'TRAINING_DOWNSCALE_FACTOR': 'training.downscale_factor',
             'NEVER_MASK_UPPER': 'model.never_mask_upper',
             'BACKGROUND_APPEARANCE_MODE': 'output.background_skybox.appearance_mode',
             'BACKGROUND_SKYBOX_WIDTH': 'output.background_skybox.width',
@@ -255,7 +260,7 @@ class NerfStudioTrainer:
                 # Convert string values to appropriate types
                 if env_var in ['BILATERAL_PROCESSING', 'USE_SCALE_REGULARIZATION', 'ENABLE_BG_MODEL', 'ENABLE_ALPHA_LOSS', 'ENABLE_ROBUST_MASK', 'FLOATER_PRUNING_ENABLED', 'TILED_INCLUDE_SCAFFOLD', 'TILED_INCLUDE_MERGE', 'TILED_RESUME_EXISTING']:
                     value = value.lower() in ('true', '1', 'yes', 'on')
-                elif env_var in ['MAX_ITERATIONS', 'SH_DEGREE', 'LOG_INTERVAL', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT', 'GLOBAL_SCAFFOLD_MAX_IMAGES', 'GLOBAL_SCAFFOLD_FRAME_STRIDE', 'GLOBAL_SCAFFOLD_MAX_ITERATIONS', 'GLOBAL_SCAFFOLD_SH_DEGREE', 'TILED_MAX_TILES']:
+                elif env_var in ['MAX_ITERATIONS', 'SH_DEGREE', 'LOG_INTERVAL', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'TRAINING_DOWNSCALE_FACTOR', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT', 'GLOBAL_SCAFFOLD_MAX_IMAGES', 'GLOBAL_SCAFFOLD_FRAME_STRIDE', 'GLOBAL_SCAFFOLD_MAX_ITERATIONS', 'GLOBAL_SCAFFOLD_SH_DEGREE', 'TILED_MAX_TILES']:
                     value = int(value)
                 elif env_var in ['TARGET_PSNR', 'CULL_ALPHA_THRESH', 'CULL_SCALE_THRESH', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_SKY_MIN_LUMINANCE', 'FLOATER_PRUNING_SKY_MIN_SATURATION', 'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE', 'GLOBAL_SCAFFOLD_MAX_GAUSS_RATIO']:
                     value = float(value)
@@ -827,6 +832,7 @@ class NerfStudioTrainer:
 
             if not self.apply_training_selection():
                 raise RuntimeError(f"Manifest-driven selection failed for {stage_name}")
+            self.downscale_selected_training_data_if_requested()
             if not self.run_nerfstudio_training():
                 raise RuntimeError(f"NerfStudio training failed for {stage_name}")
             if not self.export_trained_model():
@@ -859,6 +865,88 @@ class NerfStudioTrainer:
                 self.training_selection_result = None
                 tiling_config['training_mode'] = original_training_mode
                 tiling_config['tile_id'] = original_tile_id
+
+    def resolve_training_downscale_factor(self) -> int:
+        training_config = self.config.get('training', {})
+        return max(1, int(training_config.get('downscale_factor', 1) or 1))
+
+    @staticmethod
+    def scale_intrinsics_for_downscale(payload: Dict[str, Any], factor: int) -> None:
+        for key in ('fl_x', 'fl_y', 'cx', 'cy'):
+            if key in payload:
+                payload[key] = float(payload[key]) / factor
+        for key in ('w', 'h'):
+            if key in payload:
+                payload[key] = max(1, int(round(float(payload[key]) / factor)))
+
+    def downscale_selected_training_data_if_requested(self) -> None:
+        downscale_factor = self.resolve_training_downscale_factor()
+        if downscale_factor <= 1:
+            return
+        if Image is None:
+            raise RuntimeError("Pillow is required when TRAINING_DOWNSCALE_FACTOR is enabled")
+
+        transforms_path = self.input_dir / "transforms.json"
+        if not transforms_path.exists():
+            logger.warning("⚠️ Skipping proof-mode downscale because transforms.json is missing")
+            return
+
+        with open(transforms_path, 'r', encoding='utf-8') as f:
+            transforms = json.load(f)
+        original_transforms = json.loads(json.dumps(transforms))
+
+        frames = transforms.get('frames', [])
+        if not frames:
+            logger.warning("⚠️ Skipping proof-mode downscale because no frames were selected")
+            return
+
+        images_dir = self.input_dir / "images"
+        if not images_dir.exists():
+            logger.warning("⚠️ Skipping proof-mode downscale because images/ is missing")
+            return
+
+        source_images_dir = images_dir.resolve()
+        if images_dir.is_symlink():
+            images_dir.unlink()
+        images_dir.mkdir(parents=True, exist_ok=True)
+
+        resampling = getattr(getattr(Image, "Resampling", Image), "LANCZOS")
+        logger.info(
+            "🪄 Downscaling selected training images by %sx for proof-mode validation",
+            downscale_factor,
+        )
+        self.scale_intrinsics_for_downscale(transforms, downscale_factor)
+        downscaled_count = 0
+        for frame in frames:
+            relative_file_path = Path(str(frame.get('file_path', '')))
+            if not relative_file_path.name:
+                continue
+            source_image = source_images_dir / relative_file_path.name
+            if not source_image.exists():
+                raise FileNotFoundError(f"Selected training image missing for downscale: {source_image}")
+            target_image = self.input_dir / relative_file_path
+            target_image.parent.mkdir(parents=True, exist_ok=True)
+            with Image.open(source_image) as image:
+                new_width = max(1, image.width // downscale_factor)
+                new_height = max(1, image.height // downscale_factor)
+                resized = image.resize((new_width, new_height), resampling)
+                resized.save(target_image)
+            self.scale_intrinsics_for_downscale(frame, downscale_factor)
+            downscaled_count += 1
+
+        transforms['stage_downscale_factor'] = downscale_factor
+        with open(self.input_dir / "transforms.pre_downscale.json", 'w', encoding='utf-8') as f:
+            json.dump(original_transforms, f, indent=2)
+        with open(transforms_path, 'w', encoding='utf-8') as f:
+            json.dump(transforms, f, indent=2)
+
+        if self.training_selection_result is not None:
+            self.training_selection_result['downscale_factor'] = downscale_factor
+            self.training_selection_result['downscaled_image_count'] = downscaled_count
+        logger.info(
+            "✅ Downscaled %s selected images and updated transforms intrinsics",
+            downscaled_count,
+        )
 
     def run_tiled_training_pipeline(self) -> bool:
         source_input_dir = self.input_dir
@@ -1542,6 +1630,7 @@ class NerfStudioTrainer:
             'enable_alpha_loss': self.config.get('model', {}).get('enable_alpha_loss', True),
             'enable_robust_mask': self.config.get('model', {}).get('enable_robust_mask', True),
             'max_iterations': self.config.get('training', {}).get('max_iterations', 30000),
+            'downscale_factor': self.resolve_training_downscale_factor(),
             'commercial_license': 'Apache 2.0',
             'sogs_compatible': True,
             'playcanvas_ready': True,

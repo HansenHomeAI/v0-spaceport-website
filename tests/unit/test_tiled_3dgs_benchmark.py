@@ -38,6 +38,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             tile_max_iterations=12000,
             extra_env={"LOG_INTERVAL": "50"},
             timestamp=123,
+            downscale_factor=1,
         )
 
         self.assertEqual([stage.stage_name for stage in stages], ["M0_monolithic", "T2_tiled_pipeline"])
@@ -65,6 +66,19 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(env["MODEL_VARIANT"], "splatfacto-w-light")
         self.assertEqual(env["BILATERAL_PROCESSING"], "false")
 
+    def test_build_training_environment_includes_downscale_factor_when_requested(self):
+        env = benchmark.build_training_environment(
+            training_mode="monolithic",
+            tile_manifest_name="3dgs_tile_manifest.json",
+            view_bucket_manifest_name="3dgs_view_buckets.json",
+            tile_id=None,
+            max_iterations=1000,
+            extra_env={},
+            downscale_factor=8,
+        )
+
+        self.assertEqual(env["TRAINING_DOWNSCALE_FACTOR"], "8")
+
     def test_build_benchmark_stages_fanout_emits_leaf_tiles_and_merge(self):
         manifest = {
             "tiles": [
@@ -88,6 +102,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             tile_max_iterations=12000,
             extra_env={},
             timestamp=456,
+            downscale_factor=1,
         )
 
         self.assertEqual(

@@ -202,6 +202,7 @@ def build_training_environment(
     selected_tile_ids: Sequence[str] | None = None,
     include_scaffold: bool = True,
     include_merge: bool = True,
+    downscale_factor: int = 1,
 ) -> Dict[str, str]:
     env = {
         "AWS_DEFAULT_REGION": "us-west-2",
@@ -228,6 +229,8 @@ def build_training_environment(
     }
     if training_mode == "global_scaffold":
         env["GLOBAL_SCAFFOLD_MAX_ITERATIONS"] = str(max_iterations)
+    if downscale_factor > 1:
+        env["TRAINING_DOWNSCALE_FACTOR"] = str(downscale_factor)
     if training_mode == "tiled_pipeline":
         if scaffold_max_iterations is not None and scaffold_max_iterations > 0:
             env["GLOBAL_SCAFFOLD_MAX_ITERATIONS"] = str(scaffold_max_iterations)
@@ -263,6 +266,7 @@ def build_benchmark_stages(
     tile_max_iterations: int,
     extra_env: Dict[str, str],
     timestamp: int,
+    downscale_factor: int,
 ) -> list[BenchmarkStage]:
     output_root = normalize_s3_prefix(output_root_s3_uri)
     tile_manifest_name = "3dgs_tile_manifest.json"
@@ -284,6 +288,7 @@ def build_benchmark_stages(
                     tile_id=None,
                     max_iterations=monolithic_max_iterations,
                     extra_env=extra_env,
+                    downscale_factor=downscale_factor,
                 ),
             )
         )
@@ -308,6 +313,7 @@ def build_benchmark_stages(
                     selected_tile_ids=tile_ids,
                     include_scaffold=include_scaffold,
                     include_merge=include_merge,
+                    downscale_factor=downscale_factor,
                 ),
             )
         )
@@ -329,6 +335,7 @@ def build_benchmark_stages(
                     tile_id=None,
                     max_iterations=scaffold_max_iterations,
                     extra_env=extra_env,
+                    downscale_factor=downscale_factor,
                 ),
             )
         )
@@ -351,6 +358,7 @@ def build_benchmark_stages(
                     tile_id=tile_id,
                     max_iterations=tile_max_iterations,
                     extra_env=extra_env,
+                    downscale_factor=downscale_factor,
                 ),
             )
         )
@@ -523,6 +531,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--monolithic-max-iterations", type=int, default=DEFAULT_TILE_MAX_ITERATIONS)
     parser.add_argument("--scaffold-max-iterations", type=int, default=DEFAULT_SCAFFOLD_MAX_ITERATIONS)
     parser.add_argument("--tile-max-iterations", type=int, default=DEFAULT_TILE_MAX_ITERATIONS)
+    parser.add_argument("--downscale-factor", type=int, default=1, help="Optional per-stage image downscale factor for cheap proof runs.")
     parser.add_argument("--max-tiles", type=int, default=4, help="Cap leaf-tile jobs for cheap ladder runs.")
     parser.add_argument("--tile-id", action="append", default=[], help="Repeatable tile_id filter.")
     parser.add_argument("--env", action="append", default=[], help="Repeatable KEY=VALUE environment overrides.")
@@ -638,6 +647,7 @@ def main() -> int:
         tile_max_iterations=args.tile_max_iterations,
         extra_env=parse_env(args.env),
         timestamp=timestamp,
+        downscale_factor=args.downscale_factor,
     )
 
     summary: dict = {
@@ -648,6 +658,7 @@ def main() -> int:
         "tile_manifest_s3_uri": tile_manifest_s3_uri,
         "view_bucket_s3_uri": view_bucket_s3_uri,
         "selected_tile_ids": selected_tiles,
+        "downscale_factor": args.downscale_factor,
         "stages": [stage.to_dict() for stage in stages],
         "submitted_jobs": [],
         "completed_jobs": [],

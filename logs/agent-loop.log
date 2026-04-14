@@ -18,3 +18,12 @@
 [2026-04-13T21:37:23Z] aws-sfm-start -> launching chunked SfM on whitney-farm-first-50-seq.zip with branch sfm image -> wait for manifest-bearing output
 [2026-04-13T21:54:01Z] sfm-root-cause -> SageMaker failed because deployed sfm image lacked COLMAP; patched deploy path to preserve pinned COLMAP base and queued a real sfm rebuild -> commit and push for workflow rebuild
 [2026-04-13T23:52:14Z] bilateral-fix -> disabled unsupported bilateral flag for splatfacto-w-light in launcher and trainer, targeted unit tests passed -> push branch and watch rebuilds
+[2026-04-14T01:37:14Z] downscale-proof-mode -> added post-selection image downscaling for cheap tiled validation and revalidated with targeted unit tests -> push branch and rerun AWS proof with downscale enabled
+[2026-04-13T23:53:10Z] push -> pushed bilateral-safe patch 4034dd65 -> enumerate triggered workflows
+[2026-04-13T23:57:39Z] cdk-green -> CDK Deploy 24373048741 succeeded -> continue waiting on Pages and ML build
+[2026-04-14T00:00:59Z] pages-green -> Pages 24373048759 succeeded -> resolve preview alias and continue waiting on ML build
+[2026-04-14T00:04:24Z] workflows-green -> CDK 24373048741, Pages 24373048759, ML build 24373048744 succeeded; ECR digest sha256:92edc5b82a28b2a323fc423150453d7563a115364329eddffca8098c7bd4ac78 -> launch AWS smoke rung
+[2026-04-14T00:04:59Z] aws-smoke-start -> launched SageMaker job 3dgs-tiled-smoke-1776125082-tiled on ml.g5.xlarge with max_tiles=1, skip_scaffold, tile_max_iterations=2000 -> wait for completion
+[2026-04-14T00:46:31Z] aws-smoke-pivot -> stopping 3dgs-tiled-smoke-1776125082-tiled after live trainer proof to reduce wasted GPU-hours; relaunch with a much smaller iteration budget for end-to-end completion
+[2026-04-14T00:48:47Z] aws-mini-start -> launched SageMaker job 3dgs-tiled-mini-1776127715-tiled on ml.g5.xlarge with max_tiles=1, skip_scaffold, tile_max_iterations=50, LOG_INTERVAL=10 -> wait for completion
+[2026-04-14T01:34:11Z] aws-mini-pivot -> stopping 3dgs-tiled-mini-1776127715-tiled to add proof-mode image downscaling before the next rerun

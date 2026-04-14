@@ -12,6 +12,38 @@ MODULE_PATH = REPO_ROOT / "infrastructure" / "containers" / "3dgs" / "train_nerf
 
 
 def load_module_with_stubs():
+    class FakeImageFile:
+        def __init__(self, size):
+            self.width, self.height = size
+            self.size = size
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+        def resize(self, size, _resampling):
+            return FakeImageFile(size)
+
+        def save(self, path):
+            Path(path).write_text(json.dumps({"size": list(self.size)}), encoding="utf-8")
+
+    def fake_open(path):
+        payload = json.loads(Path(path).read_text(encoding="utf-8"))
+        return FakeImageFile(tuple(payload["size"]))
+
+    def fake_new(_mode, size, color=None):
+        return FakeImageFile(size)
+
+    pil_stub = types.SimpleNamespace(
+        Image=types.SimpleNamespace(
+            open=fake_open,
+            new=fake_new,
+            Resampling=types.SimpleNamespace(LANCZOS="lanczos"),
+            LANCZOS="lanczos",
+        )
+    )
     torch_stub = types.SimpleNamespace(
         _dynamo=types.SimpleNamespace(
             config=types.SimpleNamespace(suppress_errors=False)
@@ -51,6 +83,7 @@ def load_module_with_stubs():
     )
 
     for name, module in {
+        "PIL": pil_stub,
         "torch": torch_stub,
         "yaml": yaml_stub,
         "sky_quality": sky_quality_stub,
@@ -217,6 +250,61 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             self.assertEqual(calls[1][-2:], ["--data", str(trainer.input_dir)])
             self.assertNotIn("--pipeline.model.use-bilateral-grid", calls[0])
             self.assertNotIn("--pipeline.model.use-bilateral-grid", calls[1])
+
+    def test_downscale_selected_training_data_if_requested_resizes_images_and_intrinsics(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            canonical_images = root / "canonical_images"
+            canonical_images.mkdir()
+            image_path = canonical_images / "frame_00001.JPG"
+            module.Image.new("RGB", (800, 400), color=(64, 128, 192)).save(image_path)
+
+            stage_input = root / "stage_input"
+            stage_input.mkdir()
+            (stage_input / "images").symlink_to(canonical_images, target_is_directory=True)
+            transforms = {
+                "fl_x": 800.0,
+                "fl_y": 800.0,
+                "cx": 400.0,
+                "cy": 200.0,
+                "w": 800,
+                "h": 400,
+                "frames": [
+                    {
+                        "file_path": "images/frame_00001.JPG",
+                        "fl_x": 800.0,
+                        "fl_y": 800.0,
+                        "cx": 400.0,
+                        "cy": 200.0,
+                        "w": 800,
+                        "h": 400,
+                    }
+                ],
+            }
+            (stage_input / "transforms.json").write_text(json.dumps(transforms), encoding="utf-8")
+
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.config = {"training": {"downscale_factor": 4}}
+            trainer.input_dir = stage_input
+            trainer.training_selection_result = {}
+
+            trainer.downscale_selected_training_data_if_requested()
+
+            updated = json.loads((stage_input / "transforms.json").read_text(encoding="utf-8"))
+            self.assertEqual(updated["stage_downscale_factor"], 4)
+            self.assertEqual(updated["w"], 200)
+            self.assertEqual(updated["h"], 100)
+            self.assertEqual(updated["frames"][0]["w"], 200)
+            self.assertEqual(updated["frames"][0]["h"], 100)
+            self.assertEqual(updated["frames"][0]["cx"], 100.0)
+            self.assertEqual(trainer.training_selection_result["downscale_factor"], 4)
+            downscaled_image = stage_input / "images" / "frame_00001.JPG"
+            self.assertTrue(downscaled_image.exists())
+            with module.Image.open(downscaled_image) as image:
+                self.assertEqual(image.size, (200, 100))
+            self.assertTrue((stage_input / "transforms.pre_downscale.json").exists())
 
 
 if __name__ == "__main__":
