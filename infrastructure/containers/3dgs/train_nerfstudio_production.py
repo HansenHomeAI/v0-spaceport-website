@@ -1020,6 +1020,9 @@ class NerfStudioTrainer:
         if not transforms_source.exists():
             transforms_source = canonical_input_dir / "transforms.json"
         shutil.copy2(transforms_source, stage_input_dir / "transforms.json")
+        sparse_pc_source = canonical_input_dir / "sparse_pc.ply"
+        if sparse_pc_source.exists():
+            shutil.copy2(sparse_pc_source, stage_input_dir / "sparse_pc.ply")
         image_name_map_source = canonical_input_dir / "colmap_image_name_map.json"
         if image_name_map_source.exists():
             shutil.copy2(image_name_map_source, stage_input_dir / "colmap_image_name_map.json")

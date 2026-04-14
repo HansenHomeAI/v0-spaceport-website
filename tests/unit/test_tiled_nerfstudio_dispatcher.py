@@ -206,6 +206,39 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             self.assertEqual(root_metadata["selected_tile_ids"], ["tile_00"])
             self.assertEqual(root_metadata["merge"]["tile_count"], 1)
 
+    def test_prepare_tiled_stage_dataset_copies_sparse_point_cloud(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            canonical_input = root / "canonical"
+            stage_input = root / "stage"
+            (canonical_input / "images").mkdir(parents=True)
+            (canonical_input / "transforms.json").write_text(
+                json.dumps({"frames": []}),
+                encoding="utf-8",
+            )
+            (canonical_input / "sparse_pc.ply").write_text("ply\n", encoding="utf-8")
+            (canonical_input / "colmap_image_name_map.json").write_text(
+                json.dumps({"image_count": 0}),
+                encoding="utf-8",
+            )
+
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.prepare_tiled_stage_dataset(
+                canonical_input_dir=canonical_input,
+                stage_input_dir=stage_input,
+                tile_manifest={"tiles": [{"tile_id": "tile_00"}]},
+                view_buckets={"boundary_camera_ids": []},
+                tile_manifest_name="3dgs_tile_manifest.json",
+                view_bucket_name="3dgs_view_buckets.json",
+            )
+
+            self.assertTrue((stage_input / "images").is_symlink())
+            self.assertTrue((stage_input / "transforms.json").exists())
+            self.assertTrue((stage_input / "sparse_pc.ply").exists())
+            self.assertTrue((stage_input / "colmap_image_name_map.json").exists())
+
     def test_run_nerfstudio_training_retries_with_explicit_dataparser_on_tyro_order_error(self):
         module = load_module_with_stubs()
 

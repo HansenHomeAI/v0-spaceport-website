@@ -39,3 +39,4 @@
 [2026-04-13T23:00:10-0600] proof50c still opaque after 35m -> stop and switch to streaming-subprocess build
 [2026-04-13T23:30:44-0600] streaming proof exposed LPIPS+image-cache startup -> default tiny proof runs to viewer mode and suppress eval cadence -> push for new image
 [2026-04-14T00:07:27-0600] viewer proof still hung on train-image caching -> add sparse_pc.ply + proof datamanager cache overrides -> push for new image
+[2026-04-14T00:39:23-0600] proofv2 cleared image download but stalled on train-image caching -> stop stale job, copy sparse_pc.ply into tile stages, switch tiny proofs to disk cache, push for new image

@@ -90,7 +90,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         )
 
         self.assertEqual(env["TRAINING_VIS_MODE"], "viewer")
-        self.assertEqual(env["TRAINING_CACHE_IMAGES"], "cpu")
+        self.assertEqual(env["TRAINING_CACHE_IMAGES"], "disk")
         self.assertEqual(env["TRAINING_CACHE_IMAGES_TYPE"], "uint8")
         self.assertEqual(env["TRAINING_DATALOADER_NUM_WORKERS"], "0")
 
