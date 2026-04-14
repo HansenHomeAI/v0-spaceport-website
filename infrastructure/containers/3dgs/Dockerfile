@@ -40,6 +40,8 @@ ENV CUDA_HOME=/usr/local/cuda
 ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib
 ENV LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib
 ENV PATH=/usr/local/cuda/bin:/opt/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV TORCH_CUDA_ARCH_LIST="7.0;8.0;8.6+PTX"
+ENV CUDAARCHS="70;80;86"
 
 # CRITICAL: Limit build parallelism globally to prevent OOM during pip installs
 # BUILD_GENERAL1_LARGE has 15GB RAM, parallel builds (cmake/ninja) need ~8-12GB each
