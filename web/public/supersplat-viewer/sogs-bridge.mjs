@@ -5,13 +5,9 @@
 import { main } from "./index.js";
 
 const {
-  Asset,
   Color,
   CylinderGeometry,
   Entity,
-  FloatPacking,
-  GSplatData,
-  GSplatResource,
   Mesh,
   MeshInstance,
   Quat,
@@ -31,9 +27,9 @@ const AXIS_LEN = 10;
 const AXIS_RADIUS = 0.005;
 const MAIN_BOOT_TIMEOUT_MS = 15e3;
 const BRIDGE_WAIT_TIMEOUT_MS = 12e3;
-const PREVIEW_ALPHA_UPDATE_STEPS = 24;
-const PREVIEW_REVEAL_UPDATE_STEPS = 36;
-const SH_C0 = 0.28209479177387814;
+const PREVIEW_OVERLAY_ID = "sogs-preview-overlay";
+const PREVIEW_DOT_COLOR = "rgba(255,255,255,0.96)";
+const PREVIEW_HOLE_PADDING_PX = 48;
 /**
  * PlayCanvas default layer ids (must match bundled engine). Gsplat draws in World; we draw axes
  * on Immediate so they composite after the splat and stay visible.
@@ -118,8 +114,11 @@ function readPreviewBootConfig() {
     }
     return {
       metaUrl,
-      pointSize: Math.max(0.0001, Number.parseFloat(params.get("previewPointSize") ?? "0.011") || 0.011),
-      initialVisiblePoints: Math.max(1, Math.trunc(Number.parseFloat(params.get("previewInitialVisiblePoints") ?? "750") || 750)),
+      pointSize: Math.max(0.5, Number.parseFloat(params.get("previewPointSize") ?? "1.35") || 1.35),
+      initialVisiblePoints: Math.max(
+        0,
+        Math.trunc(Number.parseFloat(params.get("previewInitialVisiblePoints") ?? "0") || 0),
+      ),
       revealDurationMs: Math.max(0, Math.trunc(Number.parseFloat(params.get("previewRevealDurationMs") ?? "900") || 900)),
       fadeDelayMs: Math.max(0, Math.trunc(Number.parseFloat(params.get("previewFadeDelayMs") ?? "250") || 250)),
       fadeDurationMs: Math.max(0, Math.trunc(Number.parseFloat(params.get("previewFadeDurationMs") ?? "900") || 900)),
@@ -141,6 +140,8 @@ function setPreviewState(patch) {
     maxVisiblePoints: 0,
     everRevealed: false,
     everFaded: false,
+    mode: "white-point-cloud",
+    revealStyle: "focus-out",
     error: null,
   };
   const nextPhase = patch.phase ?? previous.phase;
@@ -163,36 +164,28 @@ function destroyPreviewController(controller) {
   if (!controller) {
     return;
   }
-  if (controller.revealFrame) {
-    cancelAnimationFrame(controller.revealFrame);
-  }
-  if (controller.fadeFrame) {
-    cancelAnimationFrame(controller.fadeFrame);
+  if (controller.frame) {
+    cancelAnimationFrame(controller.frame);
   }
   if (controller.fadeTimer) {
     clearTimeout(controller.fadeTimer);
   }
   try {
-    controller.entity?.destroy();
+    window.removeEventListener("pointerdown", controller.fastReveal, true);
+    window.removeEventListener("wheel", controller.fastReveal, true);
+    window.removeEventListener("touchstart", controller.fastReveal, true);
   } catch {
     /* ignore */
   }
   try {
-    if (controller.asset?.registry) {
-      controller.asset.registry.remove(controller.asset);
-    }
-  } catch {
-    /* ignore */
-  }
-  try {
-    controller.resource?.destroy();
+    controller.canvas?.remove();
   } catch {
     /* ignore */
   }
 }
 
 function applyPreviewVisibleCount(controller, visibleCount) {
-  if (!controller?.instance?.sorter) {
+  if (!controller) {
     return;
   }
   const nextVisible = Math.max(0, Math.min(controller.totalPoints, Math.trunc(visibleCount)));
@@ -200,58 +193,44 @@ function applyPreviewVisibleCount(controller, visibleCount) {
     return;
   }
   controller.visiblePoints = nextVisible;
-  controller.instance.sorter.setMapping(getPreviewMapping(controller, nextVisible));
-  controller.entity.enabled = nextVisible > 0;
   controller.app.renderNextFrame = true;
   setPreviewState({ visiblePoints: nextVisible, totalPoints: controller.totalPoints });
 }
 
-function applyPreviewAlpha(controller, alpha) {
-  if (!controller?.resource?.colorTexture || !controller?.baseAlphas) {
+function schedulePreviewFade(controller, options = {}) {
+  if (!controller) {
     return;
   }
-  const nextAlpha = clamp01(alpha);
-  const nextBucket = Math.round(nextAlpha * PREVIEW_ALPHA_UPDATE_STEPS);
-  if (nextBucket === controller.alphaBucket) {
+  const startReveal = () => {
+    if (controller.fadeTimer) {
+      clearTimeout(controller.fadeTimer);
+      controller.fadeTimer = 0;
+    }
+    controller.fadeScheduled = true;
+    controller.revealStartedAt = performance.now();
+    setPreviewState({ phase: "fading" });
+  };
+  if (controller.revealStartedAt) {
+    if (options.immediate === true) {
+      controller.revealStartedAt = Math.min(
+        controller.revealStartedAt,
+        performance.now() - Math.max(0, controller.config.fadeDurationMs * 0.35),
+      );
+    }
     return;
   }
-  controller.alphaBucket = nextBucket;
-  controller.alpha = nextBucket / PREVIEW_ALPHA_UPDATE_STEPS;
-  const colorData = controller.resource.colorTexture.lock();
-  for (let i = 0; i < controller.totalPoints; i += 1) {
-    colorData[i * 4 + 3] = FloatPacking.float2Half(controller.baseAlphas[i] * controller.alpha);
-  }
-  controller.resource.colorTexture.unlock();
-  controller.instance?.sorter?.setMapping(getPreviewMapping(controller, controller.visiblePoints));
-  controller.app.renderNextFrame = true;
-  setPreviewState({ alpha: controller.alpha });
-}
-
-function schedulePreviewFade(controller) {
-  if (!controller || controller.fadeScheduled) {
+  if (controller.fadeScheduled) {
+    if (options.immediate === true && controller.fadeTimer) {
+      startReveal();
+    }
     return;
   }
   controller.fadeScheduled = true;
-  controller.fadeTimer = window.setTimeout(() => {
-    controller.fadeTimer = 0;
-    setPreviewState({ phase: "fading" });
-    const startedAt = performance.now();
-    const duration = Math.max(1, controller.config.fadeDurationMs);
-    const tick = (now) => {
-      const progress = clamp01((now - startedAt) / duration);
-      applyPreviewAlpha(controller, 1 - progress);
-      if (progress >= 1) {
-        setPreviewState({ phase: "done", alpha: 0, visiblePoints: 0 });
-        destroyPreviewController(controller);
-        if (window.__sogsPreviewController === controller) {
-          window.__sogsPreviewController = null;
-        }
-        return;
-      }
-      controller.fadeFrame = requestAnimationFrame(tick);
-    };
-    controller.fadeFrame = requestAnimationFrame(tick);
-  }, controller.config.fadeDelayMs);
+  if (options.immediate === true) {
+    startReveal();
+    return;
+  }
+  controller.fadeTimer = window.setTimeout(startReveal, controller.config.fadeDelayMs);
 }
 
 function notifyPreviewFirstFrame() {
@@ -260,6 +239,34 @@ function notifyPreviewFirstFrame() {
   if (controller) {
     schedulePreviewFade(controller);
   }
+}
+
+function decodePreviewPosition(meta, view, offset) {
+  const encoding = typeof meta?.encoding === "string" ? meta.encoding : "";
+  if (encoding === "position-u16-bounds") {
+    const mins = Array.isArray(meta?.bounds?.min) ? meta.bounds.min : null;
+    const maxs = Array.isArray(meta?.bounds?.max) ? meta.bounds.max : null;
+    if (!mins || !maxs || mins.length !== 3 || maxs.length !== 3) {
+      throw new Error("preview-meta-bounds");
+    }
+    const decodeAxis = (quantized, axis) => {
+      const minimum = Number(mins[axis]);
+      const maximum = Number(maxs[axis]);
+      if (!Number.isFinite(minimum) || !Number.isFinite(maximum) || Math.abs(maximum - minimum) <= 1e-12) {
+        return minimum || 0;
+      }
+      return minimum + (maximum - minimum) * (quantized / 65535);
+    };
+    return [
+      decodeAxis(view.getUint16(offset, true), 0),
+      decodeAxis(view.getUint16(offset + 2, true), 1),
+      decodeAxis(view.getUint16(offset + 4, true), 2),
+    ];
+  }
+  if (encoding === "position-f32-color-rgba8") {
+    return [view.getFloat32(offset, true), view.getFloat32(offset + 4, true), view.getFloat32(offset + 8, true)];
+  }
+  throw new Error(`preview-encoding:${encoding || "unknown"}`);
 }
 
 async function loadPreviewPoints(config) {
@@ -277,9 +284,9 @@ async function loadPreviewPoints(config) {
     throw new Error(`preview-points:${pointsResponse.status}`);
   }
   const buffer = await pointsResponse.arrayBuffer();
-  const stride = Number(meta.stride ?? 16);
+  const stride = Number(meta.stride ?? 0);
   const count = Number(meta.count ?? 0);
-  if (!Number.isFinite(stride) || stride !== 16 || !Number.isFinite(count) || count <= 0) {
+  if (!Number.isFinite(stride) || stride <= 0 || !Number.isFinite(count) || count <= 0 || buffer.byteLength < stride * count) {
     throw new Error("preview-meta-invalid");
   }
   const view = new DataView(buffer);
@@ -287,134 +294,203 @@ async function loadPreviewPoints(config) {
   const points = new Array(count);
   for (let i = 0; i < count; i += 1) {
     const offset = i * stride;
-    const x = view.getFloat32(offset, true);
-    const y = view.getFloat32(offset + 4, true);
-    const z = view.getFloat32(offset + 8, true);
+    const [x, y, z] = decodePreviewPosition(meta, view, offset);
     points[i] = {
       x,
       y,
       z,
-      r: view.getUint8(offset + 12),
-      g: view.getUint8(offset + 13),
-      b: view.getUint8(offset + 14),
-      a: view.getUint8(offset + 15),
       distanceSq: (x - focus[0]) ** 2 + (y - focus[1]) ** 2 + (z - focus[2]) ** 2,
     };
   }
   points.sort((a, b) => a.distanceSq - b.distanceSq);
-  return { meta, points };
-}
-
-function encodePreviewDc(rgb) {
-  return (rgb - 0.5) / SH_C0;
-}
-
-function encodePreviewOpacity(alpha) {
-  const clamped = Math.min(0.999, Math.max(0.001, alpha));
-  return Math.log(clamped / (1 - clamped));
-}
-
-function getPreviewMapping(controller, visibleCount) {
-  const nextVisible = Math.max(0, Math.min(controller.totalPoints, Math.trunc(visibleCount)));
-  if (nextVisible >= controller.totalPoints) {
-    return null;
-  }
-  const cached = controller.mappings.get(nextVisible);
-  if (cached) {
-    return cached;
-  }
-  const mapping = new Uint32Array(nextVisible);
-  for (let i = 0; i < nextVisible; i += 1) {
-    mapping[i] = i;
-  }
-  controller.mappings.set(nextVisible, mapping);
-  return mapping;
-}
-
-function createPreviewGsplatAsset(app, points, config) {
-  const count = points.length;
-  const pointScale = Math.max(0.0005, config.pointSize);
-  const pointScaleLog = Math.log(pointScale);
-  const rotations0 = new Float32Array(count);
-  const rotations1 = new Float32Array(count);
-  const rotations2 = new Float32Array(count);
-  const rotations3 = new Float32Array(count);
-  const scales0 = new Float32Array(count);
-  const scales1 = new Float32Array(count);
-  const scales2 = new Float32Array(count);
-  const xs = new Float32Array(count);
-  const ys = new Float32Array(count);
-  const zs = new Float32Array(count);
-  const dc0 = new Float32Array(count);
-  const dc1 = new Float32Array(count);
-  const dc2 = new Float32Array(count);
-  const opacity = new Float32Array(count);
-  const baseAlphas = new Float32Array(count);
-
+  const localPoints = new Float32Array(count * 3);
+  const radialDistances = new Float32Array(count);
   for (let i = 0; i < count; i += 1) {
     const point = points[i];
-    const alpha = Math.max(0.12, point.a / 255);
-    xs[i] = point.x;
-    ys[i] = point.y;
-    zs[i] = point.z;
-    rotations0[i] = 1;
-    rotations1[i] = 0;
-    rotations2[i] = 0;
-    rotations3[i] = 0;
-    scales0[i] = pointScaleLog;
-    scales1[i] = pointScaleLog;
-    scales2[i] = pointScaleLog;
-    dc0[i] = encodePreviewDc(point.r / 255);
-    dc1[i] = encodePreviewDc(point.g / 255);
-    dc2[i] = encodePreviewDc(point.b / 255);
-    opacity[i] = encodePreviewOpacity(alpha);
-    baseAlphas[i] = alpha;
+    const base = i * 3;
+    localPoints[base] = point.x;
+    localPoints[base + 1] = point.y;
+    localPoints[base + 2] = point.z;
+    radialDistances[i] = Math.sqrt(point.distanceSq);
   }
-
-  const createProp = (name, storage) => ({
-    type: "float",
-    name,
-    storage,
-    byteSize: 4,
-  });
-  const gsplatData = new GSplatData([
-    {
-      name: "vertex",
-      count,
-      properties: [
-        createProp("x", xs),
-        createProp("y", ys),
-        createProp("z", zs),
-        createProp("rot_0", rotations0),
-        createProp("rot_1", rotations1),
-        createProp("rot_2", rotations2),
-        createProp("rot_3", rotations3),
-        createProp("scale_0", scales0),
-        createProp("scale_1", scales1),
-        createProp("scale_2", scales2),
-        createProp("f_dc_0", dc0),
-        createProp("f_dc_1", dc1),
-        createProp("f_dc_2", dc2),
-        createProp("opacity", opacity),
-      ],
-    },
-  ]);
-
-  const resource = new GSplatResource(app.graphicsDevice, gsplatData);
-  const asset = new Asset(`preview-gsplat-${Date.now()}`, "gsplat", null, {});
-  asset.resource = resource;
-  asset.loaded = true;
-  app.assets.add(asset);
-
-  return { asset, baseAlphas, resource };
+  return { meta, localPoints, radialDistances };
 }
 
-async function setupPreviewScaffold(app, gsplatEntity, config) {
-  if (!config || !Asset || !GSplatData || !GSplatResource || !FloatPacking) {
+function createPreviewOverlayCanvas() {
+  const existing = document.getElementById(PREVIEW_OVERLAY_ID);
+  if (existing instanceof HTMLCanvasElement) {
+    existing.remove();
+  }
+  const canvas = document.createElement("canvas");
+  canvas.id = PREVIEW_OVERLAY_ID;
+  canvas.setAttribute("aria-hidden", "true");
+  Object.assign(canvas.style, {
+    position: "fixed",
+    inset: "0",
+    width: "100%",
+    height: "100%",
+    pointerEvents: "none",
+    zIndex: "999",
+  });
+  document.body.appendChild(canvas);
+  return canvas;
+}
+
+function syncPreviewOverlaySize(controller) {
+  const sourceCanvas = controller.app?.graphicsDevice?.canvas;
+  const pixelWidth = Math.max(1, sourceCanvas?.width ?? Math.round(window.innerWidth * (window.devicePixelRatio || 1)));
+  const pixelHeight = Math.max(
+    1,
+    sourceCanvas?.height ?? Math.round(window.innerHeight * (window.devicePixelRatio || 1)),
+  );
+  if (controller.canvas.width !== pixelWidth) {
+    controller.canvas.width = pixelWidth;
+  }
+  if (controller.canvas.height !== pixelHeight) {
+    controller.canvas.height = pixelHeight;
+  }
+}
+
+function projectPreviewFocus(controller, out) {
+  const camera = window.__sogsCtx?.camera?.camera;
+  if (!camera || !controller.focusWorld) {
+    out.x = controller.canvas.width * 0.5;
+    out.y = controller.canvas.height * 0.5;
+    return out;
+  }
+  camera.worldToScreen(controller.focusWorld, out);
+  if (!Number.isFinite(out.x) || !Number.isFinite(out.y)) {
+    out.x = controller.canvas.width * 0.5;
+    out.y = controller.canvas.height * 0.5;
+  }
+  return out;
+}
+
+function computePreviewMaxRadius(controller, focusScreen) {
+  const width = controller.canvas.width;
+  const height = controller.canvas.height;
+  const padding = PREVIEW_HOLE_PADDING_PX * (window.devicePixelRatio || 1);
+  return (
+    Math.max(
+      Math.hypot(focusScreen.x, focusScreen.y),
+      Math.hypot(width - focusScreen.x, focusScreen.y),
+      Math.hypot(focusScreen.x, height - focusScreen.y),
+      Math.hypot(width - focusScreen.x, height - focusScreen.y),
+    ) + padding
+  );
+}
+
+function getPreviewVisibleCount(controller, now) {
+  const initialVisible =
+    controller.initialVisiblePoints > 0
+      ? Math.min(controller.totalPoints, controller.initialVisiblePoints)
+      : controller.totalPoints;
+  if (initialVisible >= controller.totalPoints || controller.config.revealDurationMs <= 0) {
+    return controller.totalPoints;
+  }
+  const progress = clamp01((now - controller.pointsStartedAt) / controller.config.revealDurationMs);
+  return Math.round(initialVisible + (controller.totalPoints - initialVisible) * easeOutCubic(progress));
+}
+
+function renderPreviewOverlay(controller, now) {
+  const camera = window.__sogsCtx?.camera?.camera;
+  if (!camera || !controller.context) {
+    controller.frame = requestAnimationFrame((nextNow) => renderPreviewOverlay(controller, nextNow));
+    return;
+  }
+
+  syncPreviewOverlaySize(controller);
+
+  const visibleCount = getPreviewVisibleCount(controller, now);
+  applyPreviewVisibleCount(controller, visibleCount);
+
+  const ctx = controller.context;
+  const width = controller.canvas.width;
+  const height = controller.canvas.height;
+  const focusScreen = projectPreviewFocus(controller, controller.focusScreen);
+
+  let revealProgress = 0;
+  let revealRadius = 0;
+  if (controller.revealStartedAt) {
+    revealProgress = clamp01((now - controller.revealStartedAt) / Math.max(1, controller.config.fadeDurationMs));
+    revealRadius = computePreviewMaxRadius(controller, focusScreen) * easeOutCubic(revealProgress);
+  }
+
+  controller.alpha = 1 - revealProgress;
+  setPreviewState({
+    phase:
+      revealProgress >= 1
+        ? "done"
+        : visibleCount < controller.totalPoints
+          ? "revealing"
+          : controller.revealStartedAt
+            ? "fading"
+            : "waiting-for-real",
+    alpha: controller.alpha,
+  });
+
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = "rgba(0,0,0,1)";
+  ctx.fillRect(0, 0, width, height);
+
+  if (revealRadius > 0) {
+    ctx.save();
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.beginPath();
+    ctx.arc(focusScreen.x, focusScreen.y, revealRadius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  const holeRadiusSq = revealRadius * revealRadius;
+  const size = Math.max(1, Math.round(controller.pointPixelSize));
+  const half = size * 0.5;
+  ctx.fillStyle = PREVIEW_DOT_COLOR;
+
+  for (let index = 0; index < visibleCount; index += 1) {
+    const base = index * 3;
+    controller.worldPoint.set(
+      controller.worldPoints[base],
+      controller.worldPoints[base + 1],
+      controller.worldPoints[base + 2],
+    );
+    camera.worldToScreen(controller.worldPoint, controller.screenPoint);
+    const x = controller.screenPoint.x;
+    const y = controller.screenPoint.y;
+    if (!Number.isFinite(x) || !Number.isFinite(y)) {
+      continue;
+    }
+    if (revealRadius > 0) {
+      const dx = x - focusScreen.x;
+      const dy = y - focusScreen.y;
+      if (dx * dx + dy * dy <= holeRadiusSq) {
+        continue;
+      }
+    }
+    if (x < -size || x > width + size || y < -size || y > height + size) {
+      continue;
+    }
+    ctx.fillRect(Math.round(x - half), Math.round(y - half), size, size);
+  }
+
+  if (revealProgress >= 1) {
+    setPreviewState({ phase: "done", alpha: 0, visiblePoints: 0 });
+    destroyPreviewController(controller);
+    if (window.__sogsPreviewController === controller) {
+      window.__sogsPreviewController = null;
+    }
+    return;
+  }
+
+  controller.frame = requestAnimationFrame((nextNow) => renderPreviewOverlay(controller, nextNow));
+}
+
+async function setupPreviewScaffold(app, gsplatEntity, config, preloadedData = null) {
+  if (!config) {
     setPreviewState({
       enabled: false,
       phase: "error",
-      error: "preview-support-missing",
+      error: "preview-config-missing",
     });
     return null;
   }
@@ -431,70 +507,78 @@ async function setupPreviewScaffold(app, gsplatEntity, config) {
     error: null,
   });
 
-  const { points } = await loadPreviewPoints(config);
-  if (!points.length) {
+  const previewData = preloadedData ?? (await loadPreviewPoints(config));
+  const totalPoints = Math.trunc((previewData?.localPoints?.length ?? 0) / 3);
+  if (!totalPoints) {
     setPreviewState({ phase: "done", enabled: false });
     return null;
   }
 
-  const { asset, baseAlphas, resource } = createPreviewGsplatAsset(app, points, config);
+  const canvas = createPreviewOverlayCanvas();
+  const context = canvas.getContext("2d", { alpha: true, desynchronized: true });
+  if (!context) {
+    throw new Error("preview-overlay-context");
+  }
 
-  const previewEntity = new Entity("preview-gsplat", app);
-  previewEntity.addComponent("gsplat", {
-    asset,
-    unified: false,
-  });
-  gsplatEntity.addChild(previewEntity);
-  const instance = await waitForValue(() => previewEntity.gsplat?.instance, "previewInstance");
-  previewEntity.gsplat.highQualitySH = false;
+  const focusLocal = new Vec3(config.focusTarget[0], config.focusTarget[1], config.focusTarget[2]);
+  const focusWorld = new Vec3();
+  const localPoint = new Vec3();
+  const transformedPoint = new Vec3();
+  gsplatEntity.getWorldTransform().transformPoint(focusLocal, focusWorld);
+
+  const worldPoints = new Float32Array(previewData.localPoints.length);
+  for (let index = 0; index < totalPoints; index += 1) {
+    const base = index * 3;
+    localPoint.set(
+      previewData.localPoints[base],
+      previewData.localPoints[base + 1],
+      previewData.localPoints[base + 2],
+    );
+    gsplatEntity.getWorldTransform().transformPoint(localPoint, transformedPoint);
+    worldPoints[base] = transformedPoint.x;
+    worldPoints[base + 1] = transformedPoint.y;
+    worldPoints[base + 2] = transformedPoint.z;
+  }
 
   const controller = {
     app,
-    asset,
-    entity: previewEntity,
-    baseAlphas,
-    instance,
-    mappings: new Map(),
-    resource,
-    totalPoints: points.length,
+    canvas,
+    context,
+    totalPoints,
     visiblePoints: 0,
     alpha: 1,
-    alphaBucket: PREVIEW_ALPHA_UPDATE_STEPS,
-    revealFrame: 0,
-    fadeFrame: 0,
+    frame: 0,
     fadeTimer: 0,
     fadeScheduled: false,
+    revealStartedAt: 0,
+    pointsStartedAt: performance.now(),
+    initialVisiblePoints: config.initialVisiblePoints,
+    worldPoints,
+    focusWorld,
+    worldPoint: new Vec3(),
+    screenPoint: new Vec3(),
+    focusScreen: new Vec3(),
+    pointPixelSize: config.pointSize * (window.devicePixelRatio || 1),
     config,
+    fastReveal: () => schedulePreviewFade(controller, { immediate: true }),
   };
   window.__sogsPreviewController = controller;
+
+  window.addEventListener("pointerdown", controller.fastReveal, true);
+  window.addEventListener("wheel", controller.fastReveal, true);
+  window.addEventListener("touchstart", controller.fastReveal, true);
+
   setPreviewState({
     phase: "revealing",
-    totalPoints: points.length,
+    totalPoints,
     visiblePoints: 0,
     alpha: 1,
   });
 
-  const initialVisible = Math.min(points.length, config.initialVisiblePoints);
+  const initialVisible =
+    config.initialVisiblePoints > 0 ? Math.min(totalPoints, config.initialVisiblePoints) : totalPoints;
   applyPreviewVisibleCount(controller, initialVisible);
-  applyPreviewAlpha(controller, 1);
-
-  const revealStartedAt = performance.now();
-  const revealDuration = Math.max(1, config.revealDurationMs);
-  const revealTick = (now) => {
-    const progress = clamp01((now - revealStartedAt) / revealDuration);
-    const quantizedProgress = Math.round(progress * PREVIEW_REVEAL_UPDATE_STEPS) / PREVIEW_REVEAL_UPDATE_STEPS;
-    const visible = Math.round(initialVisible + (points.length - initialVisible) * easeOutCubic(quantizedProgress));
-    applyPreviewVisibleCount(controller, visible);
-    if (progress >= 1) {
-      setPreviewState({ phase: "waiting-for-real", visiblePoints: points.length });
-      if (window.__sogsPreviewState?.fadeRequested) {
-        schedulePreviewFade(controller);
-      }
-      return;
-    }
-    controller.revealFrame = requestAnimationFrame(revealTick);
-  };
-  controller.revealFrame = requestAnimationFrame(revealTick);
+  controller.frame = requestAnimationFrame((now) => renderPreviewOverlay(controller, now));
 
   if (window.__sogsPreviewState?.fadeRequested) {
     schedulePreviewFade(controller);
@@ -1078,6 +1162,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.querySelector('pc-entity[name="camera"]').ready(),
       settings,
     ]);
+    const previewConfig = readPreviewBootConfig();
+    const previewDataPromise = previewConfig
+      ? loadPreviewPoints(previewConfig).catch((error) => {
+          console.error("Preview preload failed", error);
+          return null;
+        })
+      : null;
 
     const app = appElement.app;
     const camera = cameraElement.entity;
@@ -1106,20 +1197,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const gsplatEntity = await waitForValue(() => app.root.findByName("gsplat"), "gsplat");
     await waitForValue(() => viewer.cameraManager, "cameraManager");
 
-    const previewConfig = readPreviewBootConfig();
-    if (previewConfig) {
-      void setupPreviewScaffold(app, gsplatEntity, previewConfig).catch((error) => {
-        console.error("Preview scaffold failed", error);
-        setPreviewState({
-          enabled: false,
-          phase: "error",
-          error: error instanceof Error ? error.message : String(error),
-        });
-      });
-    } else {
-      setPreviewState({ enabled: false, phase: "idle" });
-    }
-
     applyScenePayload(app, window.__sogsInitialScenePayload ?? {});
     applyInitialSkyboxRotation(app, window.__sogsInitialSkyboxRotation ?? null);
     applyViewerConfig(app, window.__sogsInitialViewerConfig ?? {});
@@ -1144,6 +1221,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     /** Primary pointer + pointermove pan was removed: it fought orbit/touch and caused bounce. */
     window.__sogsSplatXzDragReady = true;
+
+    if (previewConfig) {
+      const previewData = previewDataPromise ? await previewDataPromise : null;
+      void setupPreviewScaffold(app, gsplatEntity, previewConfig, previewData).catch((error) => {
+        console.error("Preview scaffold failed", error);
+        setPreviewState({
+          enabled: false,
+          phase: "error",
+          error: error instanceof Error ? error.message : String(error),
+        });
+      });
+    } else {
+      setPreviewState({ enabled: false, phase: "idle" });
+    }
 
     window.addEventListener("message", (event) => {
       const d = event.data;

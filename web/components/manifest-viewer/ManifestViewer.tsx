@@ -268,15 +268,15 @@ function resolvePreviewConfig(
 
   return {
     metaUrl: previewMetaUrl,
-    pointSize: resolveStreamingDefault(preview?.pointSize, preview?.pointSizeDesktop, preview?.pointSizeMobile) ?? 0.011,
+    pointSize: resolveStreamingDefault(preview?.pointSize, preview?.pointSizeDesktop, preview?.pointSizeMobile) ?? 1.35,
     initialVisiblePoints: Math.max(
-      1,
+      0,
       Math.trunc(
         resolveStreamingDefault(
           preview?.initialVisiblePoints,
           preview?.initialVisiblePointsDesktop,
           preview?.initialVisiblePointsMobile,
-        ) ?? 750,
+        ) ?? 0,
       ),
     ),
     revealDurationMs: Math.max(

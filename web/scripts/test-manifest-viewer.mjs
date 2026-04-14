@@ -35,6 +35,8 @@ const expectedLodDistances = parseVector(process.env.VIEWER_EXPECT_LOD_DISTANCES
 const expectedPreviewMetaSubstring =
   process.env.VIEWER_EXPECT_PREVIEW_META_SUBSTRING?.trim() || "/viewer-previews/meadow-ln/preview-meta.json";
 const expectedPreviewPointCountMin = parseIntOrNull(process.env.VIEWER_EXPECT_PREVIEW_POINTS_MIN ?? "") ?? 10000;
+const expectedPreviewEncoding = process.env.VIEWER_EXPECT_PREVIEW_ENCODING?.trim() || "position-u16-bounds";
+const expectedPreviewMode = process.env.VIEWER_EXPECT_PREVIEW_MODE?.trim() || "white-point-cloud";
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -359,6 +361,14 @@ async function inspectStreamedChunkMetadata(bundleMetrics) {
   const chunkMetadata = await inspectStreamedChunkMetadata(bundleMetrics);
   const previewState = await viewerFrame.evaluate(() => window.__sogsPreviewState ?? null);
   assert(!!previewState, "expected preview state to exist");
+  assert(
+    previewState.mode === expectedPreviewMode,
+    `expected preview mode ${expectedPreviewMode}, got ${JSON.stringify(previewState)}`,
+  );
+  assert(
+    previewState.revealStyle === "focus-out",
+    `expected focus-out preview reveal style, got ${JSON.stringify(previewState)}`,
+  );
   assert(previewState.everRevealed === true, `expected preview reveal lifecycle, got ${JSON.stringify(previewState)}`);
   assert(previewState.everFaded === true, `expected preview fade lifecycle, got ${JSON.stringify(previewState)}`);
   assert(
@@ -373,6 +383,11 @@ async function inspectStreamedChunkMetadata(bundleMetrics) {
   assert(
     previewMetaUrl?.includes(expectedPreviewMetaSubstring),
     `expected preview meta URL containing ${expectedPreviewMetaSubstring}, got ${previewMetaUrl ?? "missing"}`,
+  );
+  const previewMeta = await fetchJson(previewMetaUrl);
+  assert(
+    previewMeta?.encoding === expectedPreviewEncoding,
+    `expected preview encoding ${expectedPreviewEncoding}, got ${JSON.stringify(previewMeta)}`,
   );
   await page.waitForFunction(() => {
     const button = document.querySelector("#detailsButton");
@@ -421,12 +436,12 @@ async function inspectStreamedChunkMetadata(bundleMetrics) {
     `expected intro animation to move camera before interaction, got delta ${cameraDelta(motionStart, motionMid)}`,
   );
 
-  await clickUntilTapRing(page, viewerFrame.locator("canvas"));
+  await clickUntilTapRing(page, viewerFrame.locator("canvas:not(#sogs-preview-overlay)"));
   await page.waitForTimeout(300);
   await assertTapRingVisible(page);
 
   await page.waitForTimeout(900);
-  await clickUntilTapRing(page, viewerFrame.locator("canvas"));
+  await clickUntilTapRing(page, viewerFrame.locator("canvas:not(#sogs-preview-overlay)"));
   await page.waitForTimeout(300);
   await assertTapRingVisible(page);
 

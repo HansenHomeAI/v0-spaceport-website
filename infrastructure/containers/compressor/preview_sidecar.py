@@ -15,6 +15,8 @@ from PIL import Image
 SH_C0 = 0.28209479177387814
 DEFAULT_PREVIEW_MAX_POINTS = 50_000
 DEFAULT_PREVIEW_MIN_ALPHA = 0.12
+PREVIEW_ENCODING = "position-u16-bounds"
+PREVIEW_STRIDE_BYTES = 6
 
 
 def _clamp01(value: float) -> float:
@@ -114,26 +116,6 @@ def _decode_position(
     return (components[0], components[1], components[2])
 
 
-def _decode_legacy_sh0(meta: dict[str, Any], pixel: tuple[int, int, int, int]) -> tuple[int, int, int, int]:
-    mins = meta["sh0"]["mins"]
-    maxs = meta["sh0"]["maxs"]
-    coeffs = [
-        _lerp(float(mins[channel]), float(maxs[channel]), int(pixel[channel]) / 255.0) for channel in range(3)
-    ]
-    opacity_logit = _lerp(float(mins[3]), float(maxs[3]), int(pixel[3]) / 255.0)
-    alpha = _sigmoid(opacity_logit)
-    rgb = [int(round(_clamp01(0.5 + coefficient * SH_C0) * 255.0)) for coefficient in coeffs]
-    return rgb[0], rgb[1], rgb[2], int(round(_clamp01(alpha) * 255.0))
-
-
-def _decode_modern_sh0(meta: dict[str, Any], pixel: tuple[int, int, int, int]) -> tuple[int, int, int, int]:
-    codebook = meta["sh0"]["codebook"]
-    rgb = [
-        int(round(_clamp01(0.5 + float(codebook[int(pixel[channel])]) * SH_C0) * 255.0)) for channel in range(3)
-    ]
-    return rgb[0], rgb[1], rgb[2], int(pixel[3])
-
-
 def _evenly_spaced_indices(count: int, sample_count: int) -> list[int]:
     if sample_count >= count:
         return list(range(count))
@@ -155,8 +137,7 @@ def _sample_points_from_meta(
     meta: dict[str, Any],
     meta_relative_path: str,
     sample_count: int,
-    point_alpha_floor: int,
-) -> list[tuple[float, float, float, int, int, int, int]]:
+) -> list[tuple[float, float, float]]:
     legacy_format = meta.get("version") != 2
     if legacy_format:
         count = int(meta["means"]["shape"][0])
@@ -168,9 +149,8 @@ def _sample_points_from_meta(
     base_dir = Path(meta_relative_path).parent
     means_low = _decode_image_rgba(source.read_bytes(str(base_dir / meta["means"]["files"][0])))
     means_high = _decode_image_rgba(source.read_bytes(str(base_dir / meta["means"]["files"][1])))
-    sh0_image = _decode_image_rgba(source.read_bytes(str(base_dir / meta["sh0"]["files"][0])))
 
-    if means_low.size != means_high.size or means_low.size != sh0_image.size:
+    if means_low.size != means_high.size:
         raise ValueError(f"preview sidecar requires matching image dimensions for {meta_relative_path}")
 
     width, height = means_low.size
@@ -179,9 +159,8 @@ def _sample_points_from_meta(
 
     means_low_px = means_low.load()
     means_high_px = means_high.load()
-    sh0_px = sh0_image.load()
 
-    points: list[tuple[float, float, float, int, int, int, int]] = []
+    points: list[tuple[float, float, float]] = []
     for source_index in _evenly_spaced_indices(count, min(count, sample_count)):
         x = source_index % width
         y = source_index // width
@@ -191,18 +170,7 @@ def _sample_points_from_meta(
             means_high_px[x, y],
             legacy_format=legacy_format,
         )
-        color = _decode_legacy_sh0(meta, sh0_px[x, y]) if legacy_format else _decode_modern_sh0(meta, sh0_px[x, y])
-        points.append(
-            (
-                float(position[0]),
-                float(position[1]),
-                float(position[2]),
-                int(color[0]),
-                int(color[1]),
-                int(color[2]),
-                max(point_alpha_floor, int(color[3])),
-            )
-        )
+        points.append((float(position[0]), float(position[1]), float(position[2])))
     return points
 
 
@@ -239,34 +207,42 @@ def _choose_chunk_sample_counts(chunk_counts: list[int], max_points: int) -> lis
 
 
 def _write_preview_payload(
-    points: list[tuple[float, float, float, int, int, int, int]],
+    points: list[tuple[float, float, float]],
     output_dir: Path,
     *,
     source_meta: str,
     source_count: int,
 ) -> dict[str, Any]:
     output_dir.mkdir(parents=True, exist_ok=True)
-
-    payload = bytearray(len(points) * 16)
     bounds_min = [math.inf, math.inf, math.inf]
     bounds_max = [-math.inf, -math.inf, -math.inf]
-
-    for output_index, point in enumerate(points):
+    for point in points:
         for axis in range(3):
             bounds_min[axis] = min(bounds_min[axis], point[axis])
             bounds_max[axis] = max(bounds_max[axis], point[axis])
 
+    if not points:
+        bounds_min = [0.0, 0.0, 0.0]
+        bounds_max = [0.0, 0.0, 0.0]
+
+    payload = bytearray(len(points) * PREVIEW_STRIDE_BYTES)
+    for output_index, point in enumerate(points):
+        quantized_components: list[int] = []
+        for axis in range(3):
+            span = float(bounds_max[axis] - bounds_min[axis])
+            if span <= 1e-12:
+                quantized = 0
+            else:
+                normalized = _clamp01((float(point[axis]) - float(bounds_min[axis])) / span)
+                quantized = int(round(normalized * 65535.0))
+            quantized_components.append(quantized)
         struct.pack_into(
-            "<fffBBBB",
+            "<HHH",
             payload,
-            output_index * 16,
-            point[0],
-            point[1],
-            point[2],
-            point[3],
-            point[4],
-            point[5],
-            point[6],
+            output_index * PREVIEW_STRIDE_BYTES,
+            quantized_components[0],
+            quantized_components[1],
+            quantized_components[2],
         )
 
     preview_asset_name = "preview-points.bin"
@@ -275,12 +251,14 @@ def _write_preview_payload(
 
     preview_meta = {
         "version": 1,
-        "encoding": "position-f32-color-rgba8",
-        "stride": 16,
+        "encoding": PREVIEW_ENCODING,
+        "stride": PREVIEW_STRIDE_BYTES,
         "count": len(points),
         "sourceCount": source_count,
         "sampleMode": "spatial-step",
         "asset": preview_asset_name,
+        "pointColor": [255, 255, 255, 255],
+        "quantizationBits": 16,
         "bounds": {
             "min": bounds_min,
             "max": bounds_max,
@@ -308,7 +286,6 @@ def generate_preview_sidecar(
 ) -> dict[str, Any]:
     source = BundleAssetSource(bundle_root)
     meta = source.read_json(source.meta_relative_path)
-    point_alpha_floor = int(round(_clamp01(min_alpha) * 255.0))
     output_dir_path = Path(output_dir)
 
     if isinstance(meta.get("filenames"), list):
@@ -322,7 +299,7 @@ def generate_preview_sidecar(
         for (relative_path, chunk_meta), sample_count in zip(chunk_metas, sample_counts, strict=False):
             if sample_count <= 0:
                 continue
-            points.extend(_sample_points_from_meta(source, chunk_meta, relative_path, sample_count, point_alpha_floor))
+            points.extend(_sample_points_from_meta(source, chunk_meta, relative_path, sample_count))
         return {
             **_write_preview_payload(
                 points,
@@ -338,7 +315,6 @@ def generate_preview_sidecar(
         meta,
         source.meta_relative_path,
         min(max(1, int(max_points)), int(meta["means"]["shape"][0] if meta.get("version") != 2 else meta["count"])),
-        point_alpha_floor,
     )
     source_count = int(meta["means"]["shape"][0]) if meta.get("version") != 2 else int(meta["count"])
     return {

@@ -1,11 +1,18 @@
 {
   "version": 1,
-  "encoding": "position-f32-color-rgba8",
-  "stride": 16,
+  "encoding": "position-u16-bounds",
+  "stride": 6,
   "count": 50000,
   "sourceCount": 779457,
   "sampleMode": "spatial-step",
   "asset": "preview-points.bin",
+  "pointColor": [
+    255,
+    255,
+    255,
+    255
+  ],
+  "quantizationBits": 16,
   "bounds": {
     "min": [
       -10.828829577832467,
