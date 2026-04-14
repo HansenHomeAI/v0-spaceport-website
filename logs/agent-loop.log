@@ -42,3 +42,4 @@
 [2026-04-14T00:39:23-0600] proofv2 cleared image download but stalled on train-image caching -> stop stale job, copy sparse_pc.ply into tile stages, switch tiny proofs to disk cache, push for new image
 [2026-04-14T01:08:59-0600] proofv3 removed sparse_pc warning and cache stall but still hung after model init -> stop stale job, force gsplat source install in image to move CUDA compile from SageMaker runtime into container build
 [2026-04-14T01:25:20-0600] codebuild failed compiling gsplat from source with deprecated sm_37/sm_50 targets -> export modern CUDA arch env in Dockerfile and push rebuild
+[2026-04-14T01:58:04-0600] codebuild compiled gsplat but upgraded torch/numpy incompatibly -> pin source rebuild to gsplat==1.4.0 with --no-deps and push rebuild

@@ -68,7 +68,8 @@ RUN pip install --no-cache-dir git+https://github.com/KevinXu02/splatfacto-w.git
 
 # Force gsplat to compile CUDA kernels during the image build so fresh
 # SageMaker jobs do not stall on first-use JIT compilation.
-RUN pip install --no-cache-dir --force-reinstall --no-binary=gsplat gsplat==1.5.3
+# Keep NerfStudio's pinned dependency set intact while rebuilding gsplat from source.
+RUN pip install --no-cache-dir --force-reinstall --no-binary=gsplat --no-deps gsplat==1.4.0
 
 # Verify installations
 RUN python -c "import nerfstudio; print('✅ NerfStudio installed successfully')"

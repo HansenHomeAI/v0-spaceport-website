@@ -78,3 +78,4 @@ proof-cache-tuning 2026-04-14T00:07:27-0600
 proof-disk-cache 2026-04-14T00:39:23-0600
 proof-gsplat-aot 2026-04-14T01:08:59-0600
 proof-gsplat-archfix 2026-04-14T01:25:20-0600
+proof-gsplat-nodeps 2026-04-14T01:58:04-0600
