@@ -80,7 +80,9 @@ from tile_pipeline import (
     filter_transforms_frames,
     load_json,
     merge_tile_outputs,
+    resolve_tiled_input_manifests,
     selection_counts_for_buckets,
+    select_review_image_names_by_bucket,
     select_manifest_tile_ids,
     select_training_image_names,
     subset_tile_manifest,
@@ -370,6 +372,7 @@ class NerfStudioTrainer:
         self.background_selection_result: Optional[BackgroundSelectionResult] = None
         self.floater_pruning_result: Optional[FloaterPruningResult] = None
         self.training_selection_result: Optional[Dict[str, Any]] = None
+        self.tile_manifest_resolution: Optional[Dict[str, Any]] = None
         
         # Apply Step Functions parameter overrides
         self.apply_step_functions_params()
@@ -393,6 +396,7 @@ class NerfStudioTrainer:
             'TRAINING_DATALOADER_NUM_WORKERS': 'training.dataloader_num_workers',
             'TRAINING_MAX_SELECTED_IMAGES': 'training.max_selected_images',
             'TRAINING_SELECTION_STRIDE': 'training.selection_stride',
+            'TRAINING_REVIEW_IMAGES_PER_BUCKET': 'training.review_images_per_bucket',
             'TRAINING_STEPS_PER_EVAL_IMAGE': 'training.steps_per_eval_image',
             'TRAINING_STEPS_PER_EVAL_ALL_IMAGES': 'training.steps_per_eval_all_images',
             'TRAINING_STEPS_PER_SAVE': 'training.steps_per_save',
@@ -449,7 +453,7 @@ class NerfStudioTrainer:
                 # Convert string values to appropriate types
                 if env_var in ['BILATERAL_PROCESSING', 'USE_SCALE_REGULARIZATION', 'ENABLE_BG_MODEL', 'ENABLE_ALPHA_LOSS', 'ENABLE_ROBUST_MASK', 'FLOATER_PRUNING_ENABLED', 'TILED_INCLUDE_SCAFFOLD', 'TILED_INCLUDE_MERGE', 'TILED_RESUME_EXISTING', 'VIEWER_QUIT_ON_TRAIN_COMPLETION']:
                     value = value.lower() in ('true', '1', 'yes', 'on')
-                elif env_var in ['MAX_ITERATIONS', 'LOG_INTERVAL', 'TRAINING_DATALOADER_NUM_WORKERS', 'TRAINING_MAX_SELECTED_IMAGES', 'TRAINING_SELECTION_STRIDE', 'TRAINING_STEPS_PER_EVAL_IMAGE', 'TRAINING_STEPS_PER_EVAL_ALL_IMAGES', 'TRAINING_STEPS_PER_SAVE', 'SH_DEGREE', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'TRAINING_DOWNSCALE_FACTOR', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT', 'GLOBAL_SCAFFOLD_MAX_IMAGES', 'GLOBAL_SCAFFOLD_FRAME_STRIDE', 'GLOBAL_SCAFFOLD_MAX_ITERATIONS', 'GLOBAL_SCAFFOLD_SH_DEGREE', 'TILED_MAX_TILES']:
+                elif env_var in ['MAX_ITERATIONS', 'LOG_INTERVAL', 'TRAINING_DATALOADER_NUM_WORKERS', 'TRAINING_MAX_SELECTED_IMAGES', 'TRAINING_SELECTION_STRIDE', 'TRAINING_REVIEW_IMAGES_PER_BUCKET', 'TRAINING_STEPS_PER_EVAL_IMAGE', 'TRAINING_STEPS_PER_EVAL_ALL_IMAGES', 'TRAINING_STEPS_PER_SAVE', 'SH_DEGREE', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'TRAINING_DOWNSCALE_FACTOR', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT', 'GLOBAL_SCAFFOLD_MAX_IMAGES', 'GLOBAL_SCAFFOLD_FRAME_STRIDE', 'GLOBAL_SCAFFOLD_MAX_ITERATIONS', 'GLOBAL_SCAFFOLD_SH_DEGREE', 'TILED_MAX_TILES']:
                     value = int(value)
                 elif env_var in ['TARGET_PSNR', 'CULL_ALPHA_THRESH', 'CULL_SCALE_THRESH', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_SKY_MIN_LUMINANCE', 'FLOATER_PRUNING_SKY_MIN_SATURATION', 'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE', 'GLOBAL_SCAFFOLD_MAX_GAUSS_RATIO']:
                     value = float(value)
@@ -951,8 +955,29 @@ class NerfStudioTrainer:
 
         tile_manifest_resolved = resolve_input_path(tile_manifest_path)
         view_bucket_manifest_resolved = resolve_input_path(view_bucket_manifest_path)
-        tile_manifest = load_json(tile_manifest_resolved) if tile_manifest_resolved else None
-        view_buckets = load_json(view_bucket_manifest_resolved) if view_bucket_manifest_resolved else None
+        chunk_planner_path = self.input_dir / "chunk_planner_manifest.json"
+        sfm_metadata_path = self.input_dir / "sfm_metadata.json"
+
+        tile_manifest_payload = load_json(tile_manifest_resolved) if tile_manifest_resolved and tile_manifest_resolved.exists() else None
+        view_bucket_payload = load_json(view_bucket_manifest_resolved) if view_bucket_manifest_resolved and view_bucket_manifest_resolved.exists() else None
+        chunk_planner_payload = load_json(chunk_planner_path) if chunk_planner_path.exists() else None
+        sfm_metadata_payload = load_json(sfm_metadata_path) if sfm_metadata_path.exists() else None
+
+        if tile_manifest_payload is None and view_bucket_payload is None and chunk_planner_payload is None:
+            self.tile_manifest_resolution = None
+            return None, None
+
+        scaffold_config = tiling_config.get('global_scaffold', {})
+        tile_manifest, view_buckets, resolution = resolve_tiled_input_manifests(
+            tile_manifest_payload=tile_manifest_payload,
+            view_bucket_payload=view_bucket_payload,
+            chunk_planner_manifest=chunk_planner_payload,
+            sfm_metadata=sfm_metadata_payload,
+            global_scaffold_max_images=int(scaffold_config.get('max_images', 240) or 240),
+            global_scaffold_stride=int(scaffold_config.get('frame_stride', 2) or 2),
+            tile_context_images=int((sfm_metadata_payload or {}).get('tile_context_images', 12) or 12),
+        )
+        self.tile_manifest_resolution = resolution
         return tile_manifest, view_buckets
 
     def resolve_tiled_pipeline_options(self, tile_manifest: dict[str, Any]) -> dict[str, Any]:
@@ -1032,6 +1057,43 @@ class NerfStudioTrainer:
         with open(stage_input_dir / view_bucket_name, 'w', encoding='utf-8') as f:
             json.dump(view_buckets, f, indent=2)
 
+    def emit_probe_review_bundle(self) -> Optional[Dict[str, Any]]:
+        if self.training_selection_result is None:
+            return None
+
+        review_image_names_by_bucket = self.training_selection_result.get('review_image_names_by_bucket') or {}
+        if not review_image_names_by_bucket:
+            return None
+
+        images_dir = self.input_dir / "images"
+        review_root = self.output_dir / "probe_review"
+        reference_root = review_root / "reference"
+        manifest = {
+            'bucket_counts': {
+                bucket_name: len(image_names)
+                for bucket_name, image_names in review_image_names_by_bucket.items()
+            },
+            'reference_images': {},
+        }
+        reference_root.mkdir(parents=True, exist_ok=True)
+        for bucket_name, image_names in review_image_names_by_bucket.items():
+            bucket_dir = reference_root / bucket_name
+            bucket_dir.mkdir(parents=True, exist_ok=True)
+            copied_names: list[str] = []
+            for image_name in image_names:
+                source_image = images_dir / image_name
+                if not source_image.exists():
+                    continue
+                target_image = bucket_dir / image_name
+                shutil.copy2(source_image, target_image)
+                copied_names.append(image_name)
+            manifest['reference_images'][bucket_name] = copied_names
+
+        manifest_path = review_root / "probe_review_manifest.json"
+        with open(manifest_path, 'w', encoding='utf-8') as f:
+            json.dump(manifest, f, indent=2)
+        return manifest
+
     def run_prepared_training_stage(
         self,
         *,
@@ -1086,6 +1148,11 @@ class NerfStudioTrainer:
             if not self.export_trained_model():
                 raise RuntimeError(f"Model export failed for {stage_name}")
             metadata = self.generate_training_metadata()
+            probe_review = self.emit_probe_review_bundle()
+            if probe_review is not None:
+                metadata['probe_review'] = probe_review
+                with open(self.output_dir / "training_metadata.json", 'w', encoding='utf-8') as f:
+                    json.dump(metadata, f, indent=2)
             elapsed_seconds = round(time.time() - started_at, 3)
             stage_summary = {
                 'stage_name': stage_name,
@@ -1096,6 +1163,7 @@ class NerfStudioTrainer:
                 'resume_fingerprint': resume_fingerprint,
                 'training_metadata': metadata,
                 'training_selection': self.training_selection_result,
+                'tile_manifest_resolution': self.tile_manifest_resolution,
             }
             with open(stage_summary_path, 'w', encoding='utf-8') as f:
                 json.dump(stage_summary, f, indent=2)
@@ -1111,6 +1179,7 @@ class NerfStudioTrainer:
                 self.background_selection_result = None
                 self.floater_pruning_result = None
                 self.training_selection_result = None
+                self.tile_manifest_resolution = None
                 tiling_config['training_mode'] = original_training_mode
                 tiling_config['tile_id'] = original_tile_id
 
@@ -1209,14 +1278,13 @@ class NerfStudioTrainer:
             str(tiling_config.get('view_bucket_manifest_path', '')),
             "3dgs_view_buckets.json",
         )
-        if not tile_manifest_source.exists() or not view_bucket_source.exists():
-            logger.error("❌ Tiled pipeline requires 3DGS tile manifests from the SfM stage")
-            logger.error(f"   tile_manifest: {tile_manifest_source}")
-            logger.error(f"   view_buckets: {view_bucket_source}")
+        tile_manifest, view_buckets = self.load_tile_selection_inputs()
+        if tile_manifest is None or view_buckets is None:
+            logger.error("❌ Tiled pipeline could not resolve tile selection inputs")
+            logger.error(f"   tile_manifest candidate: {tile_manifest_source}")
+            logger.error(f"   view_buckets candidate: {view_bucket_source}")
+            logger.error(f"   chunk_planner candidate: {source_input_dir / 'chunk_planner_manifest.json'}")
             return False
-
-        tile_manifest = load_json(tile_manifest_source)
-        view_buckets = load_json(view_bucket_source)
         pipeline_options = self.resolve_tiled_pipeline_options(tile_manifest)
         selected_tile_ids = pipeline_options['selected_tile_ids']
         selected_tile_manifest = subset_tile_manifest(
@@ -1245,6 +1313,7 @@ class NerfStudioTrainer:
             'resume_existing': pipeline_options['resume_existing'],
             'source_tile_manifest': str(tile_manifest_source),
             'source_view_bucket_manifest': str(view_bucket_source),
+            'tile_manifest_resolution': self.tile_manifest_resolution,
             'stages': [],
         }
         config_fingerprint = self.build_resume_fingerprint(
@@ -1363,6 +1432,7 @@ class NerfStudioTrainer:
                         'include_scaffold': pipeline_options['include_scaffold'],
                         'include_merge': pipeline_options['include_merge'],
                         'resume_existing': pipeline_options['resume_existing'],
+                        'tile_manifest_resolution': self.tile_manifest_resolution,
                         'merge': summary.get('merge'),
                         'stages': summary['stages'],
                         'training_completed': True,
@@ -1444,6 +1514,11 @@ class NerfStudioTrainer:
             bucket_name.replace('_camera_ids', ''): image_names
             for bucket_name, image_names in (view_buckets or {}).items()
         }
+        review_images_by_bucket = select_review_image_names_by_bucket(
+            selected_image_names,
+            view_buckets,
+            max_images_per_bucket=int(training_config.get('review_images_per_bucket', 4) or 4),
+        )
         self.training_selection_result = {
             'training_mode': training_mode,
             'tile_id': tile_id,
@@ -1452,9 +1527,11 @@ class NerfStudioTrainer:
             'max_selected_images': proof_max_images,
             'selection_stride': proof_selection_stride,
             'view_bucket_counts': selection_counts_for_buckets(selected_image_names, bucket_payload),
+            'review_image_names_by_bucket': review_images_by_bucket,
             'tile_manifest_path': str(tiling_config.get('tile_manifest_path', '')).strip() or None,
             'view_bucket_manifest_path': str(tiling_config.get('view_bucket_manifest_path', '')).strip() or None,
             'image_name_map_path': str(image_name_map_path) if image_name_map_path.exists() else None,
+            'tile_manifest_resolution': self.tile_manifest_resolution,
         }
 
         selection_path = self.output_dir / "training_selection.json"
@@ -1994,7 +2071,9 @@ class NerfStudioTrainer:
             metadata['floater_pruning'] = self.floater_pruning_result.to_dict()
         if self.training_selection_result is not None:
             metadata['training_selection'] = self.training_selection_result
-        
+        if self.tile_manifest_resolution is not None:
+            metadata['tile_manifest_resolution'] = self.tile_manifest_resolution
+
         # Save metadata
         metadata_path = self.output_dir / "training_metadata.json"
         with open(metadata_path, 'w') as f:

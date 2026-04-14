@@ -81,3 +81,4 @@ proof-gsplat-archfix 2026-04-14T01:25:20-0600
 proof-gsplat-nodeps 2026-04-14T01:58:04-0600
 proof-gsplat-glm 2026-04-14T02:15:36-0600
 proof-scaffold-export-bypass 2026-04-14T03:48:13-0600
+md1-hierarchical-compat 2026-04-14T09:40:30-0600

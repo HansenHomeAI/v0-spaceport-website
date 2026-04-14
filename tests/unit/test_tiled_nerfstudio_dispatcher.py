@@ -67,7 +67,19 @@ def load_module_with_stubs():
             "merge_mode": kwargs["merge_mode"],
             "tile_count": len(kwargs["tile_output_dirs"]),
         },
+        resolve_tiled_input_manifests=lambda **kwargs: (
+            kwargs.get("tile_manifest_payload") or {
+                "tiles": [{"tile_id": "tile_00"}],
+                "global_scaffold_camera_ids": [],
+                "all_image_names": [],
+            },
+            kwargs.get("view_bucket_payload") or {"boundary_camera_ids": []},
+            {"source_mode": "native_3dgs_manifests"},
+        ),
         selection_counts_for_buckets=lambda *_args, **_kwargs: {},
+        select_review_image_names_by_bucket=lambda *_args, **_kwargs: {
+            "boundary_camera_ids": ["frame_00002.JPG"],
+        },
         select_manifest_tile_ids=lambda manifest, explicit_tile_ids=None, max_tiles=None: [
             tile["tile_id"] for tile in manifest["tiles"]
         ][: max_tiles or None],
@@ -205,6 +217,78 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             self.assertEqual(root_metadata["training_mode"], "tiled_pipeline")
             self.assertEqual(root_metadata["selected_tile_ids"], ["tile_00"])
             self.assertEqual(root_metadata["merge"]["tile_count"], 1)
+
+    def test_apply_training_selection_records_review_buckets_and_manifest_resolution(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            input_dir = root / "input"
+            output_dir = root / "output"
+            images_dir = input_dir / "images"
+            images_dir.mkdir(parents=True)
+            output_dir.mkdir()
+            (input_dir / "3dgs_tile_manifest.json").write_text(
+                json.dumps(
+                    {
+                        "tiles": [{"tile_id": "tile_00", "base_camera_ids": ["frame_00002.JPG", "frame_00003.JPG"]}],
+                        "global_scaffold_camera_ids": ["frame_00002.JPG", "frame_00003.JPG"],
+                        "all_image_names": ["frame_00002.JPG", "frame_00003.JPG"],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (input_dir / "3dgs_view_buckets.json").write_text(
+                json.dumps({"boundary_camera_ids": ["frame_00002.JPG", "frame_00003.JPG"]}),
+                encoding="utf-8",
+            )
+            (input_dir / "transforms.json").write_text(
+                json.dumps(
+                    {
+                        "frames": [
+                            {"file_path": "images/frame_00002.JPG"},
+                            {"file_path": "images/frame_00003.JPG"},
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.config = {
+                "tiling": {
+                    "training_mode": "leaf_tile",
+                    "tile_manifest_path": "3dgs_tile_manifest.json",
+                    "view_bucket_manifest_path": "3dgs_view_buckets.json",
+                    "tile_id": "tile_00",
+                },
+                "training": {
+                    "review_images_per_bucket": 1,
+                    "max_selected_images": 0,
+                    "selection_stride": 1,
+                },
+            }
+            trainer.input_dir = input_dir
+            trainer.output_dir = output_dir
+            trainer.tile_manifest_resolution = None
+            trainer.training_selection_result = None
+
+            selected = ["frame_00002.JPG", "frame_00003.JPG"]
+            original_select = module.select_training_image_names
+            try:
+                module.select_training_image_names = lambda **_kwargs: selected
+                self.assertTrue(trainer.apply_training_selection())
+            finally:
+                module.select_training_image_names = original_select
+
+            self.assertEqual(
+                trainer.training_selection_result["review_image_names_by_bucket"]["boundary_camera_ids"],
+                ["frame_00002.JPG"],
+            )
+            self.assertEqual(
+                trainer.training_selection_result["tile_manifest_resolution"]["source_mode"],
+                "native_3dgs_manifests",
+            )
 
     def test_prepare_tiled_stage_dataset_copies_sparse_point_cloud(self):
         module = load_module_with_stubs()

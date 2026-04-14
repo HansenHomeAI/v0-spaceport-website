@@ -8,6 +8,7 @@ import json
 import re
 import shutil
 import subprocess
+import sys
 import tarfile
 import tempfile
 import time
@@ -17,6 +18,12 @@ from typing import Dict, Iterable, List, Sequence
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+THREE_DGS_ROOT = REPO_ROOT / "infrastructure" / "containers" / "3dgs"
+if str(THREE_DGS_ROOT) not in sys.path:
+    sys.path.insert(0, str(THREE_DGS_ROOT))
+
+from tile_pipeline import resolve_tiled_input_manifests
+
 MERGE_SCRIPT_PATH = REPO_ROOT / "infrastructure" / "containers" / "3dgs" / "merge_gaussian_tiles.py"
 DEFAULT_SCAFFOLD_MAX_ITERATIONS = 4000
 DEFAULT_TILE_MAX_ITERATIONS = 12000
@@ -50,6 +57,18 @@ def parse_s3_uri(uri: str) -> tuple[str, str]:
 
 def load_s3_json(s3_uri: str) -> dict:
     result = run_command(["aws", "s3", "cp", s3_uri, "-"], capture_output=True)
+    return json.loads(result.stdout)
+
+
+def s3_json_or_none(s3_uri: str) -> dict | None:
+    result = subprocess.run(
+        ["aws", "s3", "cp", s3_uri, "-"],
+        check=False,
+        text=True,
+        capture_output=True,
+    )
+    if result.returncode != 0:
+        return None
     return json.loads(result.stdout)
 
 
@@ -629,8 +648,19 @@ def main() -> int:
     colmap_s3_uri = normalize_s3_prefix(args.colmap_s3_uri)
     tile_manifest_s3_uri = f"{colmap_s3_uri}/3dgs_tile_manifest.json"
     view_bucket_s3_uri = f"{colmap_s3_uri}/3dgs_view_buckets.json"
-    tile_manifest = load_s3_json(tile_manifest_s3_uri)
-    _ = load_s3_json(view_bucket_s3_uri)
+    chunk_planner_s3_uri = f"{colmap_s3_uri}/chunk_planner_manifest.json"
+    sfm_metadata_s3_uri = f"{colmap_s3_uri}/sfm_metadata.json"
+
+    tile_manifest_payload = s3_json_or_none(tile_manifest_s3_uri)
+    view_bucket_payload = s3_json_or_none(view_bucket_s3_uri)
+    chunk_planner_payload = s3_json_or_none(chunk_planner_s3_uri)
+    sfm_metadata_payload = s3_json_or_none(sfm_metadata_s3_uri)
+    tile_manifest, view_buckets, manifest_resolution = resolve_tiled_input_manifests(
+        tile_manifest_payload=tile_manifest_payload,
+        view_bucket_payload=view_bucket_payload,
+        chunk_planner_manifest=chunk_planner_payload,
+        sfm_metadata=sfm_metadata_payload,
+    )
 
     selected_tiles = select_tile_ids(
         tile_manifest,
@@ -662,6 +692,9 @@ def main() -> int:
         "input_colmap_s3_uri": colmap_s3_uri,
         "tile_manifest_s3_uri": tile_manifest_s3_uri,
         "view_bucket_s3_uri": view_bucket_s3_uri,
+        "chunk_planner_s3_uri": chunk_planner_s3_uri,
+        "sfm_metadata_s3_uri": sfm_metadata_s3_uri,
+        "manifest_resolution": manifest_resolution,
         "selected_tile_ids": selected_tiles,
         "downscale_factor": args.downscale_factor,
         "stages": [stage.to_dict() for stage in stages],
@@ -759,7 +792,7 @@ def main() -> int:
 
         if merge_root is not None and not args.skip_merge and extracted_stage_dirs:
             local_tile_manifest_path = merge_root / "3dgs_tile_manifest.json"
-            run_command(["aws", "s3", "cp", tile_manifest_s3_uri, str(local_tile_manifest_path)])
+            local_tile_manifest_path.write_text(json.dumps(tile_manifest, indent=2), encoding="utf-8")
             merge_summary = run_merge_stage(
                 tile_manifest={
                     **tile_manifest,
@@ -775,7 +808,7 @@ def main() -> int:
             summary["merge"] = merge_summary
     elif args.wait and merge_root is not None and not args.skip_merge and extracted_stage_dirs:
         local_tile_manifest_path = merge_root / "3dgs_tile_manifest.json"
-        run_command(["aws", "s3", "cp", tile_manifest_s3_uri, str(local_tile_manifest_path)])
+        local_tile_manifest_path.write_text(json.dumps(tile_manifest, indent=2), encoding="utf-8")
         merge_summary = run_merge_stage(
             tile_manifest={
                 **tile_manifest,

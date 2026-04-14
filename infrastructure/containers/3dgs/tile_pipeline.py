@@ -9,7 +9,15 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 import numpy as np
-from plyfile import PlyData, PlyElement
+try:
+    from plyfile import PlyData, PlyElement
+except ModuleNotFoundError:  # pragma: no cover - local planning/dry-run paths do not need plyfile
+    PlyData = None
+    PlyElement = None
+
+DEFAULT_GLOBAL_SCAFFOLD_MAX_IMAGES = 240
+DEFAULT_GLOBAL_SCAFFOLD_STRIDE = 2
+DEFAULT_TILE_CONTEXT_IMAGES = 12
 
 
 @dataclass
@@ -72,6 +80,215 @@ def ordered_unique(items: Sequence[str]) -> list[str]:
         seen.add(normalized)
         ordered.append(normalized)
     return ordered
+
+
+def zero_bounds() -> dict[str, float]:
+    return {
+        "min_x": 0.0,
+        "max_x": 0.0,
+        "min_y": 0.0,
+        "max_y": 0.0,
+        "min_z": 0.0,
+        "max_z": 0.0,
+    }
+
+
+def normalize_view_bucket_payload(view_buckets: Mapping[str, Any] | None) -> dict[str, list[str]]:
+    if not isinstance(view_buckets, Mapping):
+        return {
+            "near_detail_camera_ids": [],
+            "boundary_camera_ids": [],
+            "horizon_camera_ids": [],
+        }
+    return {
+        "near_detail_camera_ids": ordered_unique(view_buckets.get("near_detail_camera_ids", [])),
+        "boundary_camera_ids": ordered_unique(view_buckets.get("boundary_camera_ids", [])),
+        "horizon_camera_ids": ordered_unique(view_buckets.get("horizon_camera_ids", [])),
+    }
+
+
+def select_review_image_names_by_bucket(
+    selected_image_names: Sequence[str],
+    view_buckets: Mapping[str, Sequence[str]] | None,
+    *,
+    max_images_per_bucket: int = 4,
+) -> dict[str, list[str]]:
+    if max_images_per_bucket <= 0:
+        return {}
+    selected = set(ordered_unique(selected_image_names))
+    normalized_buckets = normalize_view_bucket_payload(view_buckets)
+    review_images: dict[str, list[str]] = {}
+    for bucket_name, image_names in normalized_buckets.items():
+        review_images[bucket_name] = [
+            image_name
+            for image_name in ordered_unique(image_names)
+            if image_name in selected
+        ][:max_images_per_bucket]
+    return review_images
+
+
+def _shared_image_count(first_chunk: Mapping[str, Any], second_chunk: Mapping[str, Any]) -> int:
+    first_names = set(ordered_unique(first_chunk.get("image_names", [])))
+    second_names = set(ordered_unique(second_chunk.get("image_names", [])))
+    return len(first_names.intersection(second_names))
+
+
+def synthesize_tiled_inputs_from_chunk_planner(
+    chunk_planner_manifest: Mapping[str, Any],
+    sfm_metadata: Mapping[str, Any] | None = None,
+    *,
+    global_scaffold_max_images: int = DEFAULT_GLOBAL_SCAFFOLD_MAX_IMAGES,
+    global_scaffold_stride: int = DEFAULT_GLOBAL_SCAFFOLD_STRIDE,
+    tile_context_images: int = DEFAULT_TILE_CONTEXT_IMAGES,
+) -> tuple[dict[str, Any], dict[str, list[str]], dict[str, Any]]:
+    chunks = list(chunk_planner_manifest.get("chunks", []))
+    if not chunks:
+        raise ValueError("chunk_planner_manifest did not include any chunks")
+
+    probe_subsets = chunk_planner_manifest.get("probe_subsets", {})
+    view_buckets = normalize_view_bucket_payload(
+        {
+            "near_detail_camera_ids": probe_subsets.get("geometry_mix", []),
+            "boundary_camera_ids": probe_subsets.get("cross_pass", []),
+            "horizon_camera_ids": probe_subsets.get("horizon_context", []),
+        }
+    )
+    all_image_names = ordered_unique(
+        image_name
+        for chunk in chunks
+        for image_name in ordered_unique(chunk.get("image_names", []))
+    )
+
+    scaffold_names = ordered_unique(
+        [
+            *view_buckets["near_detail_camera_ids"],
+            *view_buckets["boundary_camera_ids"],
+            *view_buckets["horizon_camera_ids"],
+        ]
+    )
+    stride = max(1, int(global_scaffold_stride))
+    if len(scaffold_names) < global_scaffold_max_images:
+        for image_name in all_image_names[::stride]:
+            if image_name in scaffold_names:
+                continue
+            scaffold_names.append(image_name)
+            if len(scaffold_names) >= global_scaffold_max_images:
+                break
+    scaffold_names = scaffold_names[:global_scaffold_max_images]
+
+    tiles: list[dict[str, Any]] = []
+    for index, chunk in enumerate(chunks):
+        core_names = ordered_unique(chunk.get("core_names", []))
+        overlap_names = ordered_unique(chunk.get("overlap_names", []))
+        image_names = ordered_unique(chunk.get("image_names", []) or [*core_names, *overlap_names])
+        ranked_neighbor_indexes = sorted(
+            range(len(chunks)),
+            key=lambda candidate_index: (
+                -_shared_image_count(chunk, chunks[candidate_index]) if candidate_index != index else float("inf"),
+                abs(candidate_index - index),
+            ),
+        )
+        neighbor_tile_ids: list[str] = []
+        context_camera_ids: list[str] = []
+        image_name_set = set(image_names)
+        for candidate_index in ranked_neighbor_indexes:
+            if candidate_index == index:
+                continue
+            candidate_chunk = chunks[candidate_index]
+            shared_count = _shared_image_count(chunk, candidate_chunk)
+            is_adjacent = abs(candidate_index - index) == 1
+            if shared_count <= 0 and not is_adjacent:
+                continue
+            candidate_tile_id = f"tile_{candidate_index:02d}"
+            if candidate_tile_id not in neighbor_tile_ids:
+                neighbor_tile_ids.append(candidate_tile_id)
+            for candidate_name in ordered_unique(candidate_chunk.get("core_names", [])):
+                if candidate_name in image_name_set or candidate_name in context_camera_ids:
+                    continue
+                context_camera_ids.append(candidate_name)
+                if len(context_camera_ids) >= max(0, int(tile_context_images)):
+                    break
+            if len(context_camera_ids) >= max(0, int(tile_context_images)):
+                break
+
+        tile_id = f"tile_{int(chunk.get('index', index)):02d}"
+        tiles.append(
+            {
+                "tile_id": tile_id,
+                "index": int(chunk.get("index", index)),
+                "parent_id": "root_lod_0",
+                "core_bounds": zero_bounds(),
+                "overlap_bounds": zero_bounds(),
+                "base_camera_ids": core_names,
+                "border_camera_ids": overlap_names,
+                "context_camera_ids": context_camera_ids,
+                "image_names": image_names,
+                "neighbor_tile_ids": neighbor_tile_ids,
+                "bounds_strategy": "compatibility_no_bounds_v1",
+                "ownership_bounds_available": False,
+            }
+        )
+
+    manifest = {
+        "version": "1.0.0",
+        "planner": chunk_planner_manifest.get("planner")
+        or (sfm_metadata or {}).get("hierarchy_mode")
+        or "chunk_planner_compatibility_v1",
+        "chunk_matcher_strategy": chunk_planner_manifest.get("chunk_matcher_strategy")
+        or (sfm_metadata or {}).get("chunk_matcher_strategy"),
+        "all_image_names": all_image_names,
+        "global_scaffold_camera_ids": scaffold_names,
+        "view_bucket_manifest": "3dgs_view_buckets.json",
+        "tiles": tiles,
+        "manifest_resolution": {
+            "source_mode": "chunk_planner_synthesized_v1",
+            "chunk_planner_available": True,
+            "native_tile_manifest_available": False,
+            "native_view_buckets_available": False,
+            "ownership_bounds_available": False,
+        },
+    }
+    resolution = dict(manifest["manifest_resolution"])
+    resolution["tile_count"] = len(tiles)
+    resolution["scaffold_count"] = len(scaffold_names)
+    return manifest, view_buckets, resolution
+
+
+def resolve_tiled_input_manifests(
+    *,
+    tile_manifest_payload: Mapping[str, Any] | None,
+    view_bucket_payload: Mapping[str, Any] | None,
+    chunk_planner_manifest: Mapping[str, Any] | None = None,
+    sfm_metadata: Mapping[str, Any] | None = None,
+    global_scaffold_max_images: int = DEFAULT_GLOBAL_SCAFFOLD_MAX_IMAGES,
+    global_scaffold_stride: int = DEFAULT_GLOBAL_SCAFFOLD_STRIDE,
+    tile_context_images: int = DEFAULT_TILE_CONTEXT_IMAGES,
+) -> tuple[dict[str, Any], dict[str, list[str]], dict[str, Any]]:
+    if isinstance(tile_manifest_payload, Mapping) and isinstance(view_bucket_payload, Mapping):
+        manifest = dict(tile_manifest_payload)
+        view_buckets = normalize_view_bucket_payload(view_bucket_payload)
+        resolution = {
+            "source_mode": "native_3dgs_manifests",
+            "chunk_planner_available": chunk_planner_manifest is not None,
+            "native_tile_manifest_available": True,
+            "native_view_buckets_available": True,
+            "ownership_bounds_available": True,
+            "tile_count": len(manifest.get("tiles", [])),
+            "scaffold_count": len(manifest.get("global_scaffold_camera_ids", [])),
+        }
+        manifest.setdefault("manifest_resolution", resolution)
+        return manifest, view_buckets, resolution
+
+    if chunk_planner_manifest is None:
+        raise FileNotFoundError("Missing 3DGS manifests and no chunk_planner_manifest.json was available")
+
+    return synthesize_tiled_inputs_from_chunk_planner(
+        chunk_planner_manifest,
+        sfm_metadata=sfm_metadata,
+        global_scaffold_max_images=global_scaffold_max_images,
+        global_scaffold_stride=global_scaffold_stride,
+        tile_context_images=tile_context_images,
+    )
 
 
 def resolve_tile_entry(tile_manifest: Mapping[str, Any], tile_id: str) -> Mapping[str, Any]:
@@ -240,11 +457,15 @@ def merge_tile_outputs(
     normalized_mode = merge_mode.strip().lower()
     if normalized_mode != "strict_core":
         raise ValueError(f"Unsupported merge_mode={merge_mode}")
+    if PlyData is None or PlyElement is None:
+        raise ModuleNotFoundError("plyfile is required to merge tile outputs")
 
     output_dir.mkdir(parents=True, exist_ok=True)
     merged_vertices: list[np.ndarray] = []
     reference_dtype: np.dtype | None = None
     report_tiles: list[dict[str, Any]] = []
+    fallback_tile_count = 0
+    retain_all_tile_count = 0
 
     for tile_entry in tile_manifest.get("tiles", []):
         tile_id = str(tile_entry["tile_id"])
@@ -285,20 +506,29 @@ def merge_tile_outputs(
             if isinstance(overlap_bounds_payload, Mapping)
             else None
         )
+        used_fallback = False
         if not core_bounds.is_degenerate():
             keep_mask = core_bounds.contains_points(positions)
             retention_strategy = "core_bounds"
         elif overlap_bounds is not None and not overlap_bounds.is_degenerate():
             keep_mask = overlap_bounds.contains_points(positions)
             retention_strategy = "overlap_bounds_fallback"
+            used_fallback = True
         else:
             keep_mask = np.ones(total_vertex_count, dtype=bool)
             retention_strategy = "retain_all"
+            used_fallback = True
 
         if not np.any(keep_mask) and overlap_bounds is not None and not overlap_bounds.is_degenerate():
             keep_mask = overlap_bounds.contains_points(positions)
             if np.any(keep_mask):
                 retention_strategy = "overlap_bounds_fallback"
+                used_fallback = True
+
+        if used_fallback:
+            fallback_tile_count += 1
+        if retention_strategy == "retain_all":
+            retain_all_tile_count += 1
 
         kept_vertex = vertex[keep_mask]
 
@@ -318,6 +548,7 @@ def merge_tile_outputs(
                 "retained_gaussians": int(len(kept_vertex)),
                 "dropped_gaussians": int(total_vertex_count - len(kept_vertex)),
                 "retention_strategy": retention_strategy,
+                "ownership_bounds_available": bool(tile_entry.get("ownership_bounds_available", True)),
             }
         )
 
@@ -335,6 +566,8 @@ def merge_tile_outputs(
         "source_gaussians": sum(tile["source_gaussians"] for tile in report_tiles),
         "retained_gaussians": sum(tile["retained_gaussians"] for tile in report_tiles),
         "dropped_gaussians": sum(tile["dropped_gaussians"] for tile in report_tiles),
+        "fallback_tile_count": fallback_tile_count,
+        "retain_all_tile_count": retain_all_tile_count,
         "tiles": report_tiles,
     }
     with open(output_dir / "merge_report.json", "w", encoding="utf-8") as handle:

@@ -30,6 +30,7 @@ training:
   dataloader_num_workers: null       # Optional NerfStudio datamanager worker override
   max_selected_images: 0             # Optional proof-run cap after manifest selection
   selection_stride: 1                # Optional proof-run stride after manifest selection
+  review_images_per_bucket: 4        # Representative frames copied into outputs for seam/horizon review
   steps_per_eval_image: 100          # NerfStudio eval cadence
   steps_per_eval_all_images: 1000    # Full-image eval cadence
   steps_per_save: 2000               # Checkpoint cadence

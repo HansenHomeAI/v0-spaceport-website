@@ -4,6 +4,18 @@ import types
 import unittest
 from pathlib import Path
 
+tile_pipeline_stub = types.SimpleNamespace(
+    resolve_tiled_input_manifests=lambda **kwargs: (
+        kwargs.get("tile_manifest_payload") or {
+            "tiles": [{"tile_id": "tile_00"}, {"tile_id": "tile_01"}],
+            "global_scaffold_camera_ids": [],
+            "all_image_names": [],
+        },
+        kwargs.get("view_bucket_payload") or {"boundary_camera_ids": []},
+        {"source_mode": "native_3dgs_manifests"},
+    )
+)
+sys.modules.setdefault("tile_pipeline", tile_pipeline_stub)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MODULE_PATH = REPO_ROOT / "scripts" / "3dgs" / "run_tiled_3dgs_benchmark.py"
@@ -15,6 +27,18 @@ SPEC.loader.exec_module(benchmark)
 
 
 class Tiled3DGSBenchmarkTests(unittest.TestCase):
+    def test_s3_json_or_none_returns_none_on_missing_object(self):
+        original_run = benchmark.subprocess.run
+        try:
+            benchmark.subprocess.run = lambda *args, **kwargs: types.SimpleNamespace(
+                returncode=1,
+                stdout="",
+                stderr="missing",
+            )
+            self.assertIsNone(benchmark.s3_json_or_none("s3://bucket/missing.json"))
+        finally:
+            benchmark.subprocess.run = original_run
+
     def test_build_benchmark_stages_defaults_to_single_tiled_job(self):
         manifest = {
             "tiles": [

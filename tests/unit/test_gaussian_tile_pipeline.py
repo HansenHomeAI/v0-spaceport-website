@@ -62,6 +62,60 @@ def write_test_ply(path: Path, vertices: list[tuple[float, float, float, float]]
 
 
 class GaussianTilePipelineTests(unittest.TestCase):
+    def test_synthesize_tiled_inputs_from_chunk_planner_builds_compatibility_manifest(self):
+        manifest, view_buckets, resolution = tile_pipeline.synthesize_tiled_inputs_from_chunk_planner(
+            {
+                "planner": "footprint_graph_v1",
+                "chunk_matcher_strategy": "pair_list",
+                "probe_subsets": {
+                    "geometry_mix": ["a.jpg", "b.jpg"],
+                    "cross_pass": ["c.jpg"],
+                    "horizon_context": ["d.jpg"],
+                },
+                "chunks": [
+                    {
+                        "index": 0,
+                        "core_names": ["a.jpg", "b.jpg"],
+                        "overlap_names": ["c.jpg"],
+                        "image_names": ["a.jpg", "b.jpg", "c.jpg"],
+                    },
+                    {
+                        "index": 1,
+                        "core_names": ["d.jpg", "e.jpg"],
+                        "overlap_names": ["c.jpg"],
+                        "image_names": ["c.jpg", "d.jpg", "e.jpg"],
+                    },
+                ],
+            },
+            sfm_metadata={"hierarchy_mode": "balanced_tree_v1"},
+            global_scaffold_max_images=5,
+            global_scaffold_stride=1,
+            tile_context_images=2,
+        )
+
+        self.assertEqual(manifest["manifest_resolution"]["source_mode"], "chunk_planner_synthesized_v1")
+        self.assertEqual(len(manifest["tiles"]), 2)
+        self.assertEqual(view_buckets["near_detail_camera_ids"], ["a.jpg", "b.jpg"])
+        self.assertEqual(view_buckets["boundary_camera_ids"], ["c.jpg"])
+        self.assertEqual(view_buckets["horizon_camera_ids"], ["d.jpg"])
+        self.assertFalse(manifest["tiles"][0]["ownership_bounds_available"])
+        self.assertEqual(resolution["tile_count"], 2)
+
+    def test_select_review_image_names_by_bucket_caps_per_bucket(self):
+        review_images = tile_pipeline.select_review_image_names_by_bucket(
+            ["a.jpg", "b.jpg", "c.jpg", "d.jpg", "e.jpg"],
+            {
+                "near_detail_camera_ids": ["a.jpg", "b.jpg", "z.jpg"],
+                "boundary_camera_ids": ["c.jpg", "d.jpg"],
+                "horizon_camera_ids": ["e.jpg"],
+            },
+            max_images_per_bucket=1,
+        )
+
+        self.assertEqual(review_images["near_detail_camera_ids"], ["a.jpg"])
+        self.assertEqual(review_images["boundary_camera_ids"], ["c.jpg"])
+        self.assertEqual(review_images["horizon_camera_ids"], ["e.jpg"])
+
     def test_select_manifest_tile_ids_supports_subset_and_caps(self):
         manifest = {
             "tiles": [
@@ -233,6 +287,7 @@ class GaussianTilePipelineTests(unittest.TestCase):
 
             self.assertEqual(report["retained_gaussians"], 2)
             self.assertEqual(report["tiles"][0]["retention_strategy"], "overlap_bounds_fallback")
+            self.assertEqual(report["fallback_tile_count"], 1)
             self.assertTrue((root / "merged" / "merged_splat.ply").exists())
 
     def test_merge_tile_outputs_retains_all_when_bounds_are_degenerate(self):
@@ -272,6 +327,7 @@ class GaussianTilePipelineTests(unittest.TestCase):
 
             self.assertEqual(report["retained_gaussians"], 1)
             self.assertEqual(report["tiles"][0]["retention_strategy"], "retain_all")
+            self.assertEqual(report["retain_all_tile_count"], 1)
 
 
 if __name__ == "__main__":
