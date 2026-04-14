@@ -940,10 +940,15 @@ class NerfStudioTrainer:
     def resolve_training_mode(self) -> str:
         return str(self.config.get('tiling', {}).get('training_mode', 'monolithic')).strip().lower() or 'monolithic'
 
-    def load_tile_selection_inputs(self) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+    def load_tile_selection_inputs(
+        self,
+        *,
+        manifest_root: Path | None = None,
+    ) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
         tiling_config = self.config.get('tiling', {})
         tile_manifest_path = str(tiling_config.get('tile_manifest_path', '')).strip()
         view_bucket_manifest_path = str(tiling_config.get('view_bucket_manifest_path', '')).strip()
+        manifest_root = manifest_root or self.input_dir
 
         def resolve_input_path(raw_path: str) -> Path | None:
             if not raw_path:
@@ -951,17 +956,23 @@ class NerfStudioTrainer:
             candidate = Path(raw_path)
             if candidate.is_absolute():
                 return candidate
-            return self.input_dir / candidate
+            return manifest_root / candidate
 
         tile_manifest_resolved = resolve_input_path(tile_manifest_path)
         view_bucket_manifest_resolved = resolve_input_path(view_bucket_manifest_path)
-        chunk_planner_path = self.input_dir / "chunk_planner_manifest.json"
-        sfm_metadata_path = self.input_dir / "sfm_metadata.json"
+        chunk_planner_path = manifest_root / "chunk_planner_manifest.json"
+        sfm_metadata_path = manifest_root / "sfm_metadata.json"
+        transforms_path = self.input_dir / "transforms.full.json"
+        if not transforms_path.exists():
+            transforms_path = self.input_dir / "transforms.json"
+        image_name_map_path = self.input_dir / "colmap_image_name_map.json"
 
         tile_manifest_payload = load_json(tile_manifest_resolved) if tile_manifest_resolved and tile_manifest_resolved.exists() else None
         view_bucket_payload = load_json(view_bucket_manifest_resolved) if view_bucket_manifest_resolved and view_bucket_manifest_resolved.exists() else None
         chunk_planner_payload = load_json(chunk_planner_path) if chunk_planner_path.exists() else None
         sfm_metadata_payload = load_json(sfm_metadata_path) if sfm_metadata_path.exists() else None
+        transforms_payload = load_json(transforms_path) if transforms_path.exists() else None
+        image_name_map_payload = load_json(image_name_map_path) if image_name_map_path.exists() else None
 
         if tile_manifest_payload is None and view_bucket_payload is None and chunk_planner_payload is None:
             self.tile_manifest_resolution = None
@@ -974,6 +985,8 @@ class NerfStudioTrainer:
             chunk_planner_manifest=chunk_planner_payload,
             sfm_metadata=sfm_metadata_payload,
             colmap_sparse_dir=self.input_dir / "sparse" / "0",
+            transforms_payload=transforms_payload,
+            image_name_map_payload=image_name_map_payload,
             global_scaffold_max_images=int(scaffold_config.get('max_images', 240) or 240),
             global_scaffold_stride=int(scaffold_config.get('frame_stride', 2) or 2),
             tile_context_images=int((sfm_metadata_payload or {}).get('tile_context_images', 12) or 12),
@@ -1279,7 +1292,13 @@ class NerfStudioTrainer:
             str(tiling_config.get('view_bucket_manifest_path', '')),
             "3dgs_view_buckets.json",
         )
-        tile_manifest, view_buckets = self.load_tile_selection_inputs()
+
+        if not self.validate_input_data():
+            logger.error("❌ Input data validation failed")
+            return False
+
+        canonical_input_dir = self.input_dir
+        tile_manifest, view_buckets = self.load_tile_selection_inputs(manifest_root=source_input_dir)
         if tile_manifest is None or view_buckets is None:
             logger.error("❌ Tiled pipeline could not resolve tile selection inputs")
             logger.error(f"   tile_manifest candidate: {tile_manifest_source}")
@@ -1295,12 +1314,6 @@ class NerfStudioTrainer:
         if not selected_tile_ids:
             logger.error("❌ Tiled pipeline resolved zero selected tiles")
             return False
-
-        if not self.validate_input_data():
-            logger.error("❌ Input data validation failed")
-            return False
-
-        canonical_input_dir = self.input_dir
         pipeline_root = self.output_dir / "tiled_pipeline"
         pipeline_root.mkdir(parents=True, exist_ok=True)
         tile_manifest_name = tile_manifest_source.name

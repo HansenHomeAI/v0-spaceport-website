@@ -157,6 +157,73 @@ class GaussianTilePipelineTests(unittest.TestCase):
         self.assertGreater(tile_zero["core_bounds"]["max_x"], 19.0)
         self.assertLess(tile_zero["core_bounds"]["min_z"], -5.0)
 
+    def test_synthesize_tiled_inputs_prefers_transformed_camera_centers_when_available(self):
+        manifest, _, resolution = tile_pipeline.synthesize_tiled_inputs_from_chunk_planner(
+            {
+                "planner": "footprint_graph_v1",
+                "chunks": [
+                    {
+                        "index": 0,
+                        "core_names": ["a.jpg", "b.jpg"],
+                        "overlap_names": [],
+                        "image_names": ["a.jpg", "b.jpg"],
+                    },
+                    {
+                        "index": 1,
+                        "core_names": ["c.jpg"],
+                        "overlap_names": ["b.jpg"],
+                        "image_names": ["b.jpg", "c.jpg"],
+                    },
+                ],
+            },
+            transforms_payload={
+                "frames": [
+                    {
+                        "file_path": "images/frame_0001.jpg",
+                        "transform_matrix": [
+                            [1.0, 0.0, 0.0, 1.0],
+                            [0.0, 1.0, 0.0, 2.0],
+                            [0.0, 0.0, 1.0, 3.0],
+                            [0.0, 0.0, 0.0, 1.0],
+                        ],
+                    },
+                    {
+                        "file_path": "images/frame_0002.jpg",
+                        "transform_matrix": [
+                            [1.0, 0.0, 0.0, 4.0],
+                            [0.0, 1.0, 0.0, 5.0],
+                            [0.0, 0.0, 1.0, 6.0],
+                            [0.0, 0.0, 0.0, 1.0],
+                        ],
+                    },
+                    {
+                        "file_path": "images/frame_0003.jpg",
+                        "transform_matrix": [
+                            [1.0, 0.0, 0.0, 10.0],
+                            [0.0, 1.0, 0.0, 0.0],
+                            [0.0, 0.0, 1.0, -2.0],
+                            [0.0, 0.0, 0.0, 1.0],
+                        ],
+                    },
+                ],
+            },
+            image_name_map_payload={
+                "by_converted_name": {
+                    "frame_0001.jpg": {"original_image_name": "a.jpg"},
+                    "frame_0002.jpg": {"original_image_name": "b.jpg"},
+                    "frame_0003.jpg": {"original_image_name": "c.jpg"},
+                }
+            },
+        )
+
+        self.assertTrue(resolution["ownership_bounds_available"])
+        tile_zero = manifest["tiles"][0]
+        self.assertEqual(tile_zero["bounds_strategy"]["core"], "transformed_camera_centers")
+        self.assertAlmostEqual(tile_zero["core_bounds"]["min_x"], -11.0)
+        self.assertAlmostEqual(tile_zero["core_bounds"]["max_x"], 16.0)
+        self.assertAlmostEqual(tile_zero["core_bounds"]["min_y"], -10.0)
+        self.assertAlmostEqual(tile_zero["core_bounds"]["max_y"], 17.0)
+
     def test_select_review_image_names_by_bucket_caps_per_bucket(self):
         review_images = tile_pipeline.select_review_image_names_by_bucket(
             ["a.jpg", "b.jpg", "c.jpg", "d.jpg", "e.jpg"],

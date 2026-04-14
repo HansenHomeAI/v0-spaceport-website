@@ -217,14 +217,62 @@ def load_sparse_bounds_support(
     return image_id_to_name, camera_centers, point_bounds_by_image
 
 
-def selection_bounds_from_sparse_support(
+def load_transformed_camera_centers(
+    transforms_payload: Mapping[str, Any] | None,
+    image_name_map_payload: Mapping[str, Any] | None,
+) -> dict[str, np.ndarray]:
+    if not isinstance(transforms_payload, Mapping):
+        return {}
+
+    by_converted_name = {}
+    if isinstance(image_name_map_payload, Mapping):
+        by_converted_name = image_name_map_payload.get("by_converted_name", {}) or {}
+
+    transformed_camera_centers: dict[str, np.ndarray] = {}
+    for frame in transforms_payload.get("frames", []):
+        if not isinstance(frame, Mapping):
+            continue
+        transform_matrix = frame.get("transform_matrix")
+        if not isinstance(transform_matrix, Sequence) or len(transform_matrix) < 3:
+            continue
+
+        try:
+            transform = np.asarray(transform_matrix, dtype=np.float64)
+        except (TypeError, ValueError):
+            continue
+        if transform.shape[0] < 3 or transform.shape[1] < 4:
+            continue
+
+        converted_name = normalize_image_name(str(frame.get("file_path", "")))
+        original_entry = by_converted_name.get(converted_name)
+        original_name = (
+            normalize_image_name(str(original_entry.get("original_image_name")))
+            if isinstance(original_entry, Mapping) and original_entry.get("original_image_name")
+            else converted_name
+        )
+        transformed_camera_centers[original_name] = transform[:3, 3]
+
+    return transformed_camera_centers
+
+
+def selection_bounds_from_support(
     image_names: Sequence[str],
     *,
+    transformed_camera_centers: Mapping[str, np.ndarray] | None = None,
     camera_centers: Mapping[str, np.ndarray],
     point_bounds_by_image: Mapping[str, Sequence[float]],
     padding_m: float = DEFAULT_TILE_BOUNDS_PADDING_M,
 ) -> tuple[dict[str, float], str, bool]:
     ordered_names = ordered_unique(image_names)
+    transformed_bounds: list[float] | None = None
+    for image_name in ordered_names:
+        center = (transformed_camera_centers or {}).get(image_name)
+        if center is None:
+            continue
+        transformed_bounds = _update_bounds(transformed_bounds, center.tolist())
+    if transformed_bounds is not None:
+        return _bounds_payload(transformed_bounds, padding_m=padding_m), "transformed_camera_centers", True
+
     point_bounds: list[float] | None = None
     for image_name in ordered_names:
         per_image_bounds = point_bounds_by_image.get(image_name)
@@ -292,6 +340,8 @@ def synthesize_tiled_inputs_from_chunk_planner(
     sfm_metadata: Mapping[str, Any] | None = None,
     *,
     colmap_sparse_dir: str | Path | None = None,
+    transforms_payload: Mapping[str, Any] | None = None,
+    image_name_map_payload: Mapping[str, Any] | None = None,
     global_scaffold_max_images: int = DEFAULT_GLOBAL_SCAFFOLD_MAX_IMAGES,
     global_scaffold_stride: int = DEFAULT_GLOBAL_SCAFFOLD_STRIDE,
     tile_context_images: int = DEFAULT_TILE_CONTEXT_IMAGES,
@@ -332,6 +382,7 @@ def synthesize_tiled_inputs_from_chunk_planner(
                 break
     scaffold_names = scaffold_names[:global_scaffold_max_images]
     _image_id_to_name, camera_centers, point_bounds_by_image = load_sparse_bounds_support(colmap_sparse_dir)
+    transformed_camera_centers = load_transformed_camera_centers(transforms_payload, image_name_map_payload)
 
     tiles: list[dict[str, Any]] = []
     all_tiles_have_bounds = True
@@ -370,14 +421,16 @@ def synthesize_tiled_inputs_from_chunk_planner(
                 break
 
         tile_id = f"tile_{int(chunk.get('index', index)):02d}"
-        core_bounds, core_bounds_strategy, core_bounds_available = selection_bounds_from_sparse_support(
+        core_bounds, core_bounds_strategy, core_bounds_available = selection_bounds_from_support(
             core_names or image_names,
+            transformed_camera_centers=transformed_camera_centers,
             camera_centers=camera_centers,
             point_bounds_by_image=point_bounds_by_image,
             padding_m=tile_bounds_padding_m,
         )
-        overlap_bounds, overlap_bounds_strategy, overlap_bounds_available = selection_bounds_from_sparse_support(
+        overlap_bounds, overlap_bounds_strategy, overlap_bounds_available = selection_bounds_from_support(
             image_names or core_names,
+            transformed_camera_centers=transformed_camera_centers,
             camera_centers=camera_centers,
             point_bounds_by_image=point_bounds_by_image,
             padding_m=tile_bounds_padding_m,
@@ -436,6 +489,8 @@ def resolve_tiled_input_manifests(
     chunk_planner_manifest: Mapping[str, Any] | None = None,
     sfm_metadata: Mapping[str, Any] | None = None,
     colmap_sparse_dir: str | Path | None = None,
+    transforms_payload: Mapping[str, Any] | None = None,
+    image_name_map_payload: Mapping[str, Any] | None = None,
     global_scaffold_max_images: int = DEFAULT_GLOBAL_SCAFFOLD_MAX_IMAGES,
     global_scaffold_stride: int = DEFAULT_GLOBAL_SCAFFOLD_STRIDE,
     tile_context_images: int = DEFAULT_TILE_CONTEXT_IMAGES,
@@ -463,6 +518,8 @@ def resolve_tiled_input_manifests(
         chunk_planner_manifest,
         sfm_metadata=sfm_metadata,
         colmap_sparse_dir=colmap_sparse_dir,
+        transforms_payload=transforms_payload,
+        image_name_map_payload=image_name_map_payload,
         global_scaffold_max_images=global_scaffold_max_images,
         global_scaffold_stride=global_scaffold_stride,
         tile_context_images=tile_context_images,

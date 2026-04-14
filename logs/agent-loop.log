@@ -50,3 +50,7 @@
 [2026-04-14T15:54:35Z] aws-submit -> md1-1k-probe-r1-1776182061-tiled submitted with pinned digest sha256:2c2d7dc44a6d2827fd251e1f5b72f44f96d912bf2602bbdee24b35250bfae08f -> poll SageMaker until completion
 [2026-04-14T15:56:10Z] workflows-green -> pages, cdk, ml container build all green for 86d38e29; md1-1k-probe-r1 training job downloading -> continue polling
 [2026-04-14T16:59:45Z] md1-r1 -> 4-tile 1k md1 rung completed; merge fallback revealed zero-bounds compatibility issue; sparse-bounds fix implemented and locally validated against md1 artifact -> push fix and rerun on fresh image
+[2026-04-14T17:12:56Z] workflows-green -> pages, cdk, ml container build green for ba92bfca; image digest sha256:8857d6ba85eec3544b23f4e869ab38fc7205a6e27a8d8aaca259977c74138ee3 -> launch corrected md1 rung
+[2026-04-14T17:15:52Z] aws-submit -> md1-1k-full-r1-1776186795-tiled submitted with pinned digest sha256:8857d6ba85eec3544b23f4e869ab38fc7205a6e27a8d8aaca259977c74138ee3 -> poll full 7-tile md1 rung
+[2026-04-14T18:16:00Z] offline-remerge -> sparse-space bounds removed retain_all fallback but still retained all gaussians; identified coordinate-frame mismatch between COLMAP-space bounds and normalized training exports -> patch tiled manifest synthesis to prefer transformed camera-space bounds after conversion
+[2026-04-14T18:26:01Z] local-tests -> transformed-bounds synthesis and post-conversion manifest resolution covered by unit tests; 31 targeted tests green -> push for fresh image and rerun corrected md1 probe before full 7-tile rung
