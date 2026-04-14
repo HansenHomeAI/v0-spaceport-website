@@ -255,9 +255,80 @@ def load_transformed_camera_centers(
     return transformed_camera_centers
 
 
+def load_transformed_point_bounds(
+    transforms_payload: Mapping[str, Any] | None,
+    image_name_map_payload: Mapping[str, Any] | None,
+    point_bounds_by_image: Mapping[str, Sequence[float]],
+) -> dict[str, list[float]]:
+    if not isinstance(transforms_payload, Mapping) or not point_bounds_by_image:
+        return {}
+
+    applied_transform_payload = transforms_payload.get("applied_transform")
+    if not isinstance(applied_transform_payload, Sequence):
+        return {}
+    try:
+        applied_transform = np.asarray(applied_transform_payload, dtype=np.float64)
+    except (TypeError, ValueError):
+        return {}
+    if applied_transform.shape == (3, 4):
+        affine = np.eye(4, dtype=np.float64)
+        affine[:3, :4] = applied_transform
+    elif applied_transform.shape == (4, 4):
+        affine = applied_transform
+    else:
+        return {}
+
+    scale = transforms_payload.get("scale")
+    if not isinstance(scale, (int, float)):
+        scale = 1.0
+    offset_payload = transforms_payload.get("offset")
+    if isinstance(offset_payload, Sequence) and len(offset_payload) >= 3:
+        try:
+            offset = np.asarray(offset_payload[:3], dtype=np.float64)
+        except (TypeError, ValueError):
+            offset = np.zeros(3, dtype=np.float64)
+    else:
+        offset = np.zeros(3, dtype=np.float64)
+
+    by_original_name = {}
+    if isinstance(image_name_map_payload, Mapping):
+        by_original_name = image_name_map_payload.get("by_original_image_name", {}) or {}
+
+    transformed_bounds_by_image: dict[str, list[float]] = {}
+    for original_name, bounds in point_bounds_by_image.items():
+        if not isinstance(bounds, Sequence) or len(bounds) < 6:
+            continue
+        if by_original_name and original_name not in by_original_name:
+            continue
+
+        min_x, max_x, min_y, max_y, min_z, max_z = [float(value) for value in bounds[:6]]
+        corners = np.asarray(
+            [
+                [x, y, z, 1.0]
+                for x in (min_x, max_x)
+                for y in (min_y, max_y)
+                for z in (min_z, max_z)
+            ],
+            dtype=np.float64,
+        )
+        transformed = (affine @ corners.T).T[:, :3]
+        transformed = transformed * float(scale) + offset
+        transformed_bounds_by_image[original_name] = [
+            float(np.min(transformed[:, 0])),
+            float(np.max(transformed[:, 0])),
+            float(np.min(transformed[:, 1])),
+            float(np.max(transformed[:, 1])),
+            float(np.min(transformed[:, 2])),
+            float(np.max(transformed[:, 2])),
+        ]
+
+    return transformed_bounds_by_image
+
+
 def selection_bounds_from_support(
     image_names: Sequence[str],
     *,
+    transformed_point_bounds_by_image: Mapping[str, Sequence[float]] | None = None,
     transformed_camera_centers: Mapping[str, np.ndarray] | None = None,
     camera_centers: Mapping[str, np.ndarray],
     point_bounds_by_image: Mapping[str, Sequence[float]],
@@ -272,6 +343,22 @@ def selection_bounds_from_support(
         transformed_bounds = _update_bounds(transformed_bounds, center.tolist())
     if transformed_bounds is not None:
         return _bounds_payload(transformed_bounds, padding_m=padding_m), "transformed_camera_centers", True
+
+    transformed_point_bounds: list[float] | None = None
+    for image_name in ordered_names:
+        per_image_bounds = (transformed_point_bounds_by_image or {}).get(image_name)
+        if per_image_bounds is None:
+            continue
+        transformed_point_bounds = _update_bounds(
+            transformed_point_bounds,
+            (per_image_bounds[0], per_image_bounds[2], per_image_bounds[4]),
+        )
+        transformed_point_bounds = _update_bounds(
+            transformed_point_bounds,
+            (per_image_bounds[1], per_image_bounds[3], per_image_bounds[5]),
+        )
+    if transformed_point_bounds is not None:
+        return _bounds_payload(transformed_point_bounds, padding_m=padding_m), "transformed_observed_points", True
 
     point_bounds: list[float] | None = None
     for image_name in ordered_names:
@@ -383,6 +470,11 @@ def synthesize_tiled_inputs_from_chunk_planner(
     scaffold_names = scaffold_names[:global_scaffold_max_images]
     _image_id_to_name, camera_centers, point_bounds_by_image = load_sparse_bounds_support(colmap_sparse_dir)
     transformed_camera_centers = load_transformed_camera_centers(transforms_payload, image_name_map_payload)
+    transformed_point_bounds_by_image = load_transformed_point_bounds(
+        transforms_payload,
+        image_name_map_payload,
+        point_bounds_by_image,
+    )
 
     tiles: list[dict[str, Any]] = []
     all_tiles_have_bounds = True
@@ -423,6 +515,7 @@ def synthesize_tiled_inputs_from_chunk_planner(
         tile_id = f"tile_{int(chunk.get('index', index)):02d}"
         core_bounds, core_bounds_strategy, core_bounds_available = selection_bounds_from_support(
             core_names or image_names,
+            transformed_point_bounds_by_image=transformed_point_bounds_by_image,
             transformed_camera_centers=transformed_camera_centers,
             camera_centers=camera_centers,
             point_bounds_by_image=point_bounds_by_image,
@@ -430,6 +523,7 @@ def synthesize_tiled_inputs_from_chunk_planner(
         )
         overlap_bounds, overlap_bounds_strategy, overlap_bounds_available = selection_bounds_from_support(
             image_names or core_names,
+            transformed_point_bounds_by_image=transformed_point_bounds_by_image,
             transformed_camera_centers=transformed_camera_centers,
             camera_centers=camera_centers,
             point_bounds_by_image=point_bounds_by_image,
@@ -683,6 +777,69 @@ def selection_counts_for_buckets(
     }
 
 
+def compute_tile_centroids(
+    tile_manifest: Mapping[str, Any],
+    tile_output_dirs: Mapping[str, Path],
+) -> dict[str, np.ndarray]:
+    if PlyData is None:
+        raise ModuleNotFoundError("plyfile is required to compute tile centroids")
+
+    centroids: dict[str, np.ndarray] = {}
+    for tile_entry in tile_manifest.get("tiles", []):
+        tile_id = str(tile_entry["tile_id"])
+        tile_dir = tile_output_dirs.get(tile_id)
+        if tile_dir is None:
+            continue
+        ply_path = tile_dir / "splat.ply"
+        if not ply_path.exists():
+            continue
+        ply = PlyData.read(str(ply_path))
+        vertex = ply["vertex"].data
+        if len(vertex) == 0:
+            continue
+        positions = np.stack(
+            [
+                np.asarray(vertex["x"], dtype=np.float32),
+                np.asarray(vertex["y"], dtype=np.float32),
+                np.asarray(vertex["z"], dtype=np.float32),
+            ],
+            axis=1,
+        )
+        centroids[tile_id] = np.mean(positions, axis=0, dtype=np.float64)
+    return centroids
+
+
+def centroid_voronoi_mask(
+    tile_id: str,
+    positions: np.ndarray,
+    tile_entry: Mapping[str, Any],
+    tile_centroids: Mapping[str, np.ndarray],
+) -> np.ndarray | None:
+    candidate_tile_ids = [tile_id]
+    for neighbor_tile_id in ordered_unique(tile_entry.get("neighbor_tile_ids", [])):
+        if neighbor_tile_id in tile_centroids and neighbor_tile_id not in candidate_tile_ids:
+            candidate_tile_ids.append(neighbor_tile_id)
+
+    if len(candidate_tile_ids) <= 1:
+        for candidate_tile_id in tile_centroids:
+            if candidate_tile_id == tile_id or candidate_tile_id in candidate_tile_ids:
+                continue
+            candidate_tile_ids.append(candidate_tile_id)
+            if len(candidate_tile_ids) >= 3:
+                break
+
+    if len(candidate_tile_ids) <= 1:
+        return None
+
+    centroids = np.stack([tile_centroids[candidate_tile_id] for candidate_tile_id in candidate_tile_ids], axis=0)
+    deltas = positions[:, None, :] - centroids[None, :, :]
+    distances = np.sum(np.square(deltas), axis=2)
+    keep_mask = np.argmin(distances, axis=1) == 0
+    if not np.any(keep_mask):
+        return None
+    return keep_mask
+
+
 def merge_tile_outputs(
     *,
     tile_manifest: Mapping[str, Any],
@@ -702,6 +859,7 @@ def merge_tile_outputs(
     report_tiles: list[dict[str, Any]] = []
     fallback_tile_count = 0
     retain_all_tile_count = 0
+    tile_centroids = compute_tile_centroids(tile_manifest, tile_output_dirs)
 
     for tile_entry in tile_manifest.get("tiles", []):
         tile_id = str(tile_entry["tile_id"])
@@ -759,6 +917,16 @@ def merge_tile_outputs(
             keep_mask = overlap_bounds.contains_points(positions)
             if np.any(keep_mask):
                 retention_strategy = "overlap_bounds_fallback"
+                used_fallback = True
+        if not np.any(keep_mask):
+            centroid_keep_mask = centroid_voronoi_mask(tile_id, positions, tile_entry, tile_centroids)
+            if centroid_keep_mask is not None:
+                keep_mask = centroid_keep_mask
+                retention_strategy = "centroid_voronoi_fallback"
+                used_fallback = True
+            else:
+                keep_mask = np.ones(total_vertex_count, dtype=bool)
+                retention_strategy = "retain_all"
                 used_fallback = True
 
         if used_fallback:

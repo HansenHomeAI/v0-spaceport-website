@@ -84,3 +84,4 @@ proof-scaffold-export-bypass 2026-04-14T03:48:13-0600
 md1-hierarchical-compat 2026-04-14T09:40:30-0600
 md1-hierarchical-bounds-fix 2026-04-14T10:57:00-0600
 md1-hierarchical-normalized-bounds-fix 2026-04-14T12:27:00-0600
+md1-hierarchical-voronoi-merge-fix 2026-04-14T14:35:00-0600

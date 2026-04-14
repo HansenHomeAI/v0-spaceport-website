@@ -485,12 +485,25 @@ def wait_for_training_job(job_name: str, *, poll_seconds: int) -> dict:
         time.sleep(max(15, poll_seconds))
 
 
-def download_and_extract_model_artifact(*, s3_uri: str, target_dir: Path) -> Path:
+def download_and_extract_model_artifact(
+    *,
+    s3_uri: str,
+    target_dir: Path,
+    members: Sequence[str] | None = None,
+) -> Path:
     target_dir.mkdir(parents=True, exist_ok=True)
     tar_path = target_dir / "model.tar.gz"
     run_command(["aws", "s3", "cp", s3_uri, str(tar_path)])
     with tarfile.open(tar_path, "r:gz") as archive:
-        archive.extractall(target_dir)
+        if members:
+            for member_name in members:
+                try:
+                    member = archive.getmember(member_name)
+                except KeyError:
+                    continue
+                archive.extract(member, target_dir)
+        else:
+            archive.extractall(target_dir)
     return target_dir
 
 
@@ -513,6 +526,18 @@ def summarize_training_metadata(stage_name: str, extracted_dir: Path, describe_p
         "training_selection": selection or metadata.get("training_selection"),
         "tiled_pipeline_summary": tiled_summary or metadata.get("stages"),
     }
+
+
+def artifact_members_for_stage(stage: BenchmarkStage) -> list[str]:
+    members = [
+        "training_metadata.json",
+        "training_selection.json",
+        "tiled_pipeline_summary.json",
+        "merged/merge_report.json",
+    ]
+    if stage.tile_id:
+        members.append("splat.ply")
+    return members
 
 
 def run_merge_stage(
@@ -786,6 +811,7 @@ def main() -> int:
                 extracted_dir = download_and_extract_model_artifact(
                     s3_uri=model_artifacts_s3_uri,
                     target_dir=stage_dir,
+                    members=artifact_members_for_stage(stage),
                 )
             if stage.tile_id and extracted_dir is not None:
                 extracted_stage_dirs[stage.tile_id] = extracted_dir
@@ -808,6 +834,7 @@ def main() -> int:
                 extracted_dir = download_and_extract_model_artifact(
                     s3_uri=model_artifacts_s3_uri,
                     target_dir=stage_dir,
+                    members=artifact_members_for_stage(stage),
                 )
             if stage.tile_id and extracted_dir is not None:
                 extracted_stage_dirs[stage.tile_id] = extracted_dir

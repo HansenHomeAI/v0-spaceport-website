@@ -1,5 +1,5 @@
-reason: continuing end-to-end implementation of tiled gaussian scaffold training and AWS proof validation
-last_step: added proof-mode training downscale support after tile selection, validated it with targeted unit tests, and confirmed the prior AWS smoke/mini runs were dominated by the high-resolution training path rather than the iteration cap
-next_unblocked_step: push the downscale patch, monitor CDK/Pages/ML container workflows to green, then rerun the tiled 3DGS proof on AWS with TRAINING_DOWNSCALE_FACTOR enabled for a fast completion-oriented validation
+reason: continuing end-to-end md1 validation of tiled gaussian scaffold training with real AWS runs
+last_step: full 7-tile md1 rung md1-1k-full-r2-1776194089-tiled completed on SageMaker; post-run analysis found tile_05 and tile_06 were fully dropped by strict core ownership, then the merge logic was patched and replayed locally against the real artifact to retain both tiles via centroid Voronoi fallback while also shrinking benchmark artifact extraction to the required files only
+next_unblocked_step: push the merge and artifact-extraction fixes, watch Pages/CDK/container workflows to green, and then use the corrected codepath for the next md1-scale quality rung instead of re-running the broken merge logic
 owner_action_needed: none
-updated: 2026-04-14T01:37:14Z
+updated: 2026-04-14T20:35:00Z

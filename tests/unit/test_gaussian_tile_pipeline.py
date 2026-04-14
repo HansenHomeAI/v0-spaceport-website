@@ -157,64 +157,101 @@ class GaussianTilePipelineTests(unittest.TestCase):
         self.assertGreater(tile_zero["core_bounds"]["max_x"], 19.0)
         self.assertLess(tile_zero["core_bounds"]["min_z"], -5.0)
 
-    def test_synthesize_tiled_inputs_prefers_transformed_camera_centers_when_available(self):
-        manifest, _, resolution = tile_pipeline.synthesize_tiled_inputs_from_chunk_planner(
-            {
-                "planner": "footprint_graph_v1",
-                "chunks": [
-                    {
-                        "index": 0,
-                        "core_names": ["a.jpg", "b.jpg"],
-                        "overlap_names": [],
-                        "image_names": ["a.jpg", "b.jpg"],
+    def test_synthesize_tiled_inputs_prefers_transformed_camera_centers_before_point_bounds(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            sparse_dir = Path(temp_dir) / "sparse" / "0"
+            sparse_dir.mkdir(parents=True, exist_ok=True)
+            (sparse_dir / "images.txt").write_text(
+                "\n".join(
+                    [
+                        "1 1 0 0 0 0 0 0 1 a.jpg",
+                        "",
+                        "2 1 0 0 0 10 0 0 1 b.jpg",
+                        "",
+                        "3 1 0 0 0 20 0 0 1 c.jpg",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            (sparse_dir / "points3D.txt").write_text(
+                "\n".join(
+                    [
+                        "1 0 -2 20 255 255 255 0.1 1 0 2 0",
+                        "2 20 5 30 255 255 255 0.1 2 0 3 0",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            manifest, _, resolution = tile_pipeline.synthesize_tiled_inputs_from_chunk_planner(
+                {
+                    "planner": "footprint_graph_v1",
+                    "chunks": [
+                        {
+                            "index": 0,
+                            "core_names": ["a.jpg", "b.jpg"],
+                            "overlap_names": [],
+                            "image_names": ["a.jpg", "b.jpg"],
+                        },
+                        {
+                            "index": 1,
+                            "core_names": ["c.jpg"],
+                            "overlap_names": ["b.jpg"],
+                            "image_names": ["b.jpg", "c.jpg"],
+                        },
+                    ],
+                },
+                colmap_sparse_dir=sparse_dir,
+                transforms_payload={
+                    "applied_transform": [
+                        [1.0, 0.0, 0.0, 0.0],
+                        [0.0, 0.0, 1.0, 0.0],
+                        [0.0, -1.0, 0.0, 0.0],
+                    ],
+                    "frames": [
+                        {
+                            "file_path": "images/frame_0001.jpg",
+                            "transform_matrix": [
+                                [1.0, 0.0, 0.0, 1.0],
+                                [0.0, 1.0, 0.0, 2.0],
+                                [0.0, 0.0, 1.0, 3.0],
+                                [0.0, 0.0, 0.0, 1.0],
+                            ],
+                        },
+                        {
+                            "file_path": "images/frame_0002.jpg",
+                            "transform_matrix": [
+                                [1.0, 0.0, 0.0, 4.0],
+                                [0.0, 1.0, 0.0, 5.0],
+                                [0.0, 0.0, 1.0, 6.0],
+                                [0.0, 0.0, 0.0, 1.0],
+                            ],
+                        },
+                        {
+                            "file_path": "images/frame_0003.jpg",
+                            "transform_matrix": [
+                                [1.0, 0.0, 0.0, 10.0],
+                                [0.0, 1.0, 0.0, 0.0],
+                                [0.0, 0.0, 1.0, -2.0],
+                                [0.0, 0.0, 0.0, 1.0],
+                            ],
+                        },
+                    ],
+                },
+                image_name_map_payload={
+                    "by_converted_name": {
+                        "frame_0001.jpg": {"original_image_name": "a.jpg"},
+                        "frame_0002.jpg": {"original_image_name": "b.jpg"},
+                        "frame_0003.jpg": {"original_image_name": "c.jpg"},
                     },
-                    {
-                        "index": 1,
-                        "core_names": ["c.jpg"],
-                        "overlap_names": ["b.jpg"],
-                        "image_names": ["b.jpg", "c.jpg"],
+                    "by_original_image_name": {
+                        "a.jpg": {"converted_file_path": "images/frame_0001.jpg"},
+                        "b.jpg": {"converted_file_path": "images/frame_0002.jpg"},
+                        "c.jpg": {"converted_file_path": "images/frame_0003.jpg"},
                     },
-                ],
-            },
-            transforms_payload={
-                "frames": [
-                    {
-                        "file_path": "images/frame_0001.jpg",
-                        "transform_matrix": [
-                            [1.0, 0.0, 0.0, 1.0],
-                            [0.0, 1.0, 0.0, 2.0],
-                            [0.0, 0.0, 1.0, 3.0],
-                            [0.0, 0.0, 0.0, 1.0],
-                        ],
-                    },
-                    {
-                        "file_path": "images/frame_0002.jpg",
-                        "transform_matrix": [
-                            [1.0, 0.0, 0.0, 4.0],
-                            [0.0, 1.0, 0.0, 5.0],
-                            [0.0, 0.0, 1.0, 6.0],
-                            [0.0, 0.0, 0.0, 1.0],
-                        ],
-                    },
-                    {
-                        "file_path": "images/frame_0003.jpg",
-                        "transform_matrix": [
-                            [1.0, 0.0, 0.0, 10.0],
-                            [0.0, 1.0, 0.0, 0.0],
-                            [0.0, 0.0, 1.0, -2.0],
-                            [0.0, 0.0, 0.0, 1.0],
-                        ],
-                    },
-                ],
-            },
-            image_name_map_payload={
-                "by_converted_name": {
-                    "frame_0001.jpg": {"original_image_name": "a.jpg"},
-                    "frame_0002.jpg": {"original_image_name": "b.jpg"},
-                    "frame_0003.jpg": {"original_image_name": "c.jpg"},
-                }
-            },
-        )
+                },
+            )
 
         self.assertTrue(resolution["ownership_bounds_available"])
         tile_zero = manifest["tiles"][0]
@@ -223,6 +260,8 @@ class GaussianTilePipelineTests(unittest.TestCase):
         self.assertAlmostEqual(tile_zero["core_bounds"]["max_x"], 16.0)
         self.assertAlmostEqual(tile_zero["core_bounds"]["min_y"], -10.0)
         self.assertAlmostEqual(tile_zero["core_bounds"]["max_y"], 17.0)
+        self.assertAlmostEqual(tile_zero["core_bounds"]["min_z"], -9.0)
+        self.assertAlmostEqual(tile_zero["core_bounds"]["max_z"], 18.0)
 
     def test_select_review_image_names_by_bucket_caps_per_bucket(self):
         review_images = tile_pipeline.select_review_image_names_by_bucket(
@@ -451,6 +490,123 @@ class GaussianTilePipelineTests(unittest.TestCase):
             self.assertEqual(report["retained_gaussians"], 1)
             self.assertEqual(report["tiles"][0]["retention_strategy"], "retain_all")
             self.assertEqual(report["retain_all_tile_count"], 1)
+
+    def test_merge_tile_outputs_retains_all_when_non_degenerate_bounds_still_match_nothing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            tile_dir = root / "tiles" / "tile_00"
+            tile_dir.mkdir(parents=True)
+            write_test_ply(tile_dir / "splat.ply", [(10.0, 0.0, 0.0, 0.9)])
+
+            report = tile_pipeline.merge_tile_outputs(
+                tile_manifest={
+                    "tiles": [
+                        {
+                            "tile_id": "tile_00",
+                            "core_bounds": {
+                                "min_x": -5.0,
+                                "max_x": -1.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                            "overlap_bounds": {
+                                "min_x": -5.0,
+                                "max_x": -1.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                        }
+                    ]
+                },
+                tile_output_dirs={"tile_00": tile_dir},
+                output_dir=root / "merged",
+            )
+
+            self.assertEqual(report["retained_gaussians"], 1)
+            self.assertEqual(report["tiles"][0]["retention_strategy"], "retain_all")
+            self.assertEqual(report["retain_all_tile_count"], 1)
+            self.assertEqual(report["fallback_tile_count"], 1)
+
+    def test_merge_tile_outputs_uses_centroid_voronoi_fallback_before_retain_all(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            tile_zero_dir = root / "tiles" / "tile_00"
+            tile_one_dir = root / "tiles" / "tile_01"
+            tile_zero_dir.mkdir(parents=True)
+            tile_one_dir.mkdir(parents=True)
+            write_test_ply(
+                tile_zero_dir / "splat.ply",
+                [
+                    (0.0, 0.0, 0.0, 0.9),
+                    (1.0, 0.0, 0.0, 0.8),
+                ],
+            )
+            write_test_ply(
+                tile_one_dir / "splat.ply",
+                [
+                    (10.0, 0.0, 0.0, 0.9),
+                    (11.0, 0.0, 0.0, 0.8),
+                ],
+            )
+
+            report = tile_pipeline.merge_tile_outputs(
+                tile_manifest={
+                    "tiles": [
+                        {
+                            "tile_id": "tile_00",
+                            "neighbor_tile_ids": ["tile_01"],
+                            "core_bounds": {
+                                "min_x": -5.0,
+                                "max_x": -1.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                            "overlap_bounds": {
+                                "min_x": -5.0,
+                                "max_x": -1.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                        },
+                        {
+                            "tile_id": "tile_01",
+                            "neighbor_tile_ids": ["tile_00"],
+                            "core_bounds": {
+                                "min_x": 20.0,
+                                "max_x": 25.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                            "overlap_bounds": {
+                                "min_x": 20.0,
+                                "max_x": 25.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                        },
+                    ]
+                },
+                tile_output_dirs={"tile_00": tile_zero_dir, "tile_01": tile_one_dir},
+                output_dir=root / "merged",
+            )
+
+            self.assertEqual(report["retained_gaussians"], 4)
+            self.assertEqual(report["tiles"][0]["retention_strategy"], "centroid_voronoi_fallback")
+            self.assertEqual(report["tiles"][1]["retention_strategy"], "centroid_voronoi_fallback")
+            self.assertEqual(report["retain_all_tile_count"], 0)
+            self.assertEqual(report["fallback_tile_count"], 2)
 
 
 if __name__ == "__main__":
