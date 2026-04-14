@@ -96,6 +96,10 @@ type ViewerTelemetry = {
   colorUpdateAngleLodScale: number | null;
   rootManifestType: string | null;
   rootManifestUrl: string | null;
+  previewPhase: string | null;
+  previewVisiblePoints: number | null;
+  previewTotalPoints: number | null;
+  previewAlpha: number | null;
 };
 
 const EMPTY_VIEWER_TELEMETRY: ViewerTelemetry = {
@@ -118,6 +122,10 @@ const EMPTY_VIEWER_TELEMETRY: ViewerTelemetry = {
   colorUpdateAngleLodScale: null,
   rootManifestType: null,
   rootManifestUrl: null,
+  previewPhase: null,
+  previewVisiblePoints: null,
+  previewTotalPoints: null,
+  previewAlpha: null,
 };
 
 function parseOptionalInteger(value: string | null | undefined): number | null {
@@ -221,6 +229,87 @@ function resolveStreamingConfig(
   };
 }
 
+type ViewerPreviewRuntimeConfig = {
+  metaUrl: string;
+  pointSize: number;
+  initialVisiblePoints: number;
+  revealDurationMs: number;
+  fadeDelayMs: number;
+  fadeDurationMs: number;
+  focusTarget: V3;
+};
+
+function resolvePreviewConfig(
+  previewMetaUrl: string | null | undefined,
+  preview:
+    | {
+        pointSize?: number;
+        pointSizeDesktop?: number;
+        pointSizeMobile?: number;
+        initialVisiblePoints?: number;
+        initialVisiblePointsDesktop?: number;
+        initialVisiblePointsMobile?: number;
+        revealDurationMs?: number;
+        revealDurationDesktopMs?: number;
+        revealDurationMobileMs?: number;
+        fadeDelayMs?: number;
+        fadeDelayDesktopMs?: number;
+        fadeDelayMobileMs?: number;
+        fadeDurationMs?: number;
+        fadeDurationDesktopMs?: number;
+        fadeDurationMobileMs?: number;
+      }
+    | undefined,
+  focusTarget: V3,
+): ViewerPreviewRuntimeConfig | null {
+  if (!previewMetaUrl) {
+    return null;
+  }
+
+  return {
+    metaUrl: previewMetaUrl,
+    pointSize: resolveStreamingDefault(preview?.pointSize, preview?.pointSizeDesktop, preview?.pointSizeMobile) ?? 0.011,
+    initialVisiblePoints: Math.max(
+      1,
+      Math.trunc(
+        resolveStreamingDefault(
+          preview?.initialVisiblePoints,
+          preview?.initialVisiblePointsDesktop,
+          preview?.initialVisiblePointsMobile,
+        ) ?? 750,
+      ),
+    ),
+    revealDurationMs: Math.max(
+      0,
+      Math.trunc(
+        resolveStreamingDefault(
+          preview?.revealDurationMs,
+          preview?.revealDurationDesktopMs,
+          preview?.revealDurationMobileMs,
+        ) ?? 900,
+      ),
+    ),
+    fadeDelayMs: Math.max(
+      0,
+      Math.trunc(
+        resolveStreamingDefault(preview?.fadeDelayMs, preview?.fadeDelayDesktopMs, preview?.fadeDelayMobileMs) ??
+          250,
+      ),
+    ),
+    fadeDurationMs: Math.max(
+      0,
+      Math.trunc(
+        resolveStreamingDefault(
+          preview?.fadeDurationMs,
+          preview?.fadeDurationDesktopMs,
+          preview?.fadeDurationMobileMs,
+        ) ?? 900,
+      ),
+    ),
+    focusTarget: { ...focusTarget },
+  };
+}
+
 function buildViewerConfigPayload(streamingConfig: ReturnType<typeof resolveStreamingConfig>) {
   return {
     type: "sogs:config" as const,
@@ -268,6 +357,7 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
   const lastRequestedUrlRef = useRef(manifest.bundle.defaultUrl);
   const fallbackAttemptedRef = useRef(false);
   const introPathPlayedRef = useRef(false);
+  const introInteractionBlockedRef = useRef(false);
 
   const pathStateRef = useRef(
     createInitialPathState({
@@ -321,6 +411,15 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
     () => resolveHoleView(manifest.holeView, selectedHole),
     [manifest.holeView, selectedHole],
   );
+  const previewConfig = useMemo(
+    () =>
+      resolvePreviewConfig(
+        resolvedBundle?.preview?.metaUrl,
+        manifest.bundle.preview,
+        manifest.scene.focusTarget ?? activeHoleView.target,
+      ),
+    [activeHoleView.target, manifest.bundle.preview, manifest.scene.focusTarget, resolvedBundle?.preview?.metaUrl],
+  );
 
   useEffect(() => {
     activeHoleViewRef.current = activeHoleView;
@@ -353,6 +452,7 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
     if (viewerState === "loading" || viewerState === "idle") {
       setRevealDone(false);
       introPathPlayedRef.current = false;
+      introInteractionBlockedRef.current = false;
     }
   }, [viewerState]);
 
@@ -360,13 +460,17 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
     if (
       viewerState !== "ready" ||
       !manifest.intro?.autoPlayPathOnFirstReady ||
-      introPathPlayedRef.current
+      introPathPlayedRef.current ||
+      introInteractionBlockedRef.current
     ) {
       return;
     }
 
     introPathPlayedRef.current = true;
     const timer = window.setTimeout(() => {
+      if (introInteractionBlockedRef.current) {
+        return;
+      }
       setAutoRotate(false);
       const focus = orbitFocusRef.current;
       jumpToPathStart(pathStateRef.current, { ...focus });
@@ -553,6 +657,18 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
     if (streamingConfig.colorUpdateAngleLodScale != null) {
       params.set("colorUpdateAngleLodScale", String(streamingConfig.colorUpdateAngleLodScale));
     }
+    if (previewConfig) {
+      params.set("previewMeta", previewConfig.metaUrl);
+      params.set("previewPointSize", String(previewConfig.pointSize));
+      params.set("previewInitialVisiblePoints", String(previewConfig.initialVisiblePoints));
+      params.set("previewRevealDurationMs", String(previewConfig.revealDurationMs));
+      params.set("previewFadeDelayMs", String(previewConfig.fadeDelayMs));
+      params.set("previewFadeDurationMs", String(previewConfig.fadeDurationMs));
+      params.set(
+        "previewFocus",
+        [previewConfig.focusTarget.x, previewConfig.focusTarget.y, previewConfig.focusTarget.z].join(","),
+      );
+    }
     if (!developerToolsEnabled) {
       params.set("noui", "1");
     }
@@ -569,6 +685,7 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
     skyboxPitch,
     skyboxUrl,
     skyboxVOffset,
+    previewConfig,
     streamingConfig,
   ]);
 
@@ -630,6 +747,7 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
       }
 
       if (event.data?.type === "sogs:userInteraction") {
+        introInteractionBlockedRef.current = true;
         if (!pathPlayingRef.current && !autoRotateRef.current) {
           return;
         }
@@ -713,6 +831,10 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
           colorUpdateAngleLodScale?: number | null;
           rootManifestType?: string | null;
           rootManifestUrl?: string | null;
+          previewPhase?: string | null;
+          previewVisiblePoints?: number | null;
+          previewTotalPoints?: number | null;
+          previewAlpha?: number | null;
         };
         setTelemetry({
           loadedNodeCount:
@@ -774,6 +896,17 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
               : null,
           rootManifestType: typeof data.rootManifestType === "string" ? data.rootManifestType : null,
           rootManifestUrl: typeof data.rootManifestUrl === "string" ? data.rootManifestUrl : null,
+          previewPhase: typeof data.previewPhase === "string" ? data.previewPhase : null,
+          previewVisiblePoints:
+            typeof data.previewVisiblePoints === "number" && Number.isFinite(data.previewVisiblePoints)
+              ? data.previewVisiblePoints
+              : null,
+          previewTotalPoints:
+            typeof data.previewTotalPoints === "number" && Number.isFinite(data.previewTotalPoints)
+              ? data.previewTotalPoints
+              : null,
+          previewAlpha:
+            typeof data.previewAlpha === "number" && Number.isFinite(data.previewAlpha) ? data.previewAlpha : null,
         });
         if (ignoreNextStateRef.current) {
           ignoreNextStateRef.current = false;
@@ -1281,6 +1414,11 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
         }
         data-bounds-min={resolvedBundle?.summary.bounds ? resolvedBundle.summary.bounds.min.join(",") : ""}
         data-bounds-max={resolvedBundle?.summary.bounds ? resolvedBundle.summary.bounds.max.join(",") : ""}
+        data-preview-meta-url={previewConfig?.metaUrl ?? ""}
+        data-preview-phase={telemetry.previewPhase ?? ""}
+        data-preview-visible-points={telemetry.previewVisiblePoints ?? ""}
+        data-preview-total-points={telemetry.previewTotalPoints ?? ""}
+        data-preview-alpha={telemetry.previewAlpha ?? ""}
       />
     </main>
   );

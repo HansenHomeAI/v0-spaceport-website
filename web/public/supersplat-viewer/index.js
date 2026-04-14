@@ -102487,5 +102487,19 @@ const main = (app, camera, settingsJson, config) => {
     return viewer;
 };
 
-window.__sogsPc = { Entity, Mesh, MeshInstance, StandardMaterial, Color, CylinderGeometry, Vec3, Quat };
+window.__sogsPc = {
+		Asset,
+		BoundingBox,
+		Color,
+		CylinderGeometry,
+		Entity,
+		FloatPacking,
+		GSplatData,
+		GSplatResource,
+		Mesh,
+		MeshInstance,
+		Quat,
+		StandardMaterial,
+		Vec3
+};
 export { main };

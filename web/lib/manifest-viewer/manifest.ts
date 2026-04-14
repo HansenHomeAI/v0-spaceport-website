@@ -34,10 +34,32 @@ export type ViewerSkyboxManifest =
 export type ViewerBundleManifest = {
   defaultUrl: string;
   skybox?: ViewerSkyboxManifest;
+  preview?: ViewerPreviewManifest;
   viewerBase?: string;
   viewerSettingsPath?: string;
   useProxy?: boolean;
   streaming?: ViewerStreamingManifest;
+};
+
+export type ViewerPreviewManifest = {
+  metaUrl?: string | null;
+  configFileName?: string;
+  fallbackUrl?: string | null;
+  pointSize?: number;
+  pointSizeDesktop?: number;
+  pointSizeMobile?: number;
+  initialVisiblePoints?: number;
+  initialVisiblePointsDesktop?: number;
+  initialVisiblePointsMobile?: number;
+  revealDurationMs?: number;
+  revealDurationDesktopMs?: number;
+  revealDurationMobileMs?: number;
+  fadeDelayMs?: number;
+  fadeDelayDesktopMs?: number;
+  fadeDelayMobileMs?: number;
+  fadeDurationMs?: number;
+  fadeDurationDesktopMs?: number;
+  fadeDurationMobileMs?: number;
 };
 
 export type ViewerStreamingManifest = {

@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "encoding": "position-f32-color-rgba8",
+  "stride": 16,
+  "count": 50000,
+  "sourceCount": 779457,
+  "sampleMode": "spatial-step",
+  "asset": "preview-points.bin",
+  "bounds": {
+    "min": [
+      -10.828829577832467,
+      -8.843937282051614,
+      -1.3412907812539938
+    ],
+    "max": [
+      13.730193546015366,
+      13.03821281554948,
+      2.9176421165466304
+    ]
+  },
+  "sourceMeta": "https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/meadow-brassmatch-compress-20260413-lod-streaming-hqsh-horizon-public/supersplat_bundle/lod-meta.json"
+}

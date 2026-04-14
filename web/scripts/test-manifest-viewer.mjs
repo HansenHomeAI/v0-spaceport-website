@@ -32,6 +32,9 @@ const expectedHigherOrderSh = (process.env.VIEWER_EXPECT_HIGHER_ORDER_SH ?? "1")
 const expectedChunkFilesMin = parseIntOrNull(process.env.VIEWER_EXPECT_CHUNK_FILES_MIN ?? "");
 const expectedLodMax = parseIntOrNull(process.env.VIEWER_EXPECT_LOD_MAX ?? "");
 const expectedLodDistances = parseVector(process.env.VIEWER_EXPECT_LOD_DISTANCES ?? "");
+const expectedPreviewMetaSubstring =
+  process.env.VIEWER_EXPECT_PREVIEW_META_SUBSTRING?.trim() || "/viewer-previews/meadow-ln/preview-meta.json";
+const expectedPreviewPointCountMin = parseIntOrNull(process.env.VIEWER_EXPECT_PREVIEW_POINTS_MIN ?? "") ?? 10000;
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -273,6 +276,7 @@ async function inspectStreamedChunkMetadata(bundleMetrics) {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   const skyboxResponses = [];
   const lodResponses = [];
+  const previewResponses = [];
 
   page.on("response", (response) => {
     if (response.url().includes(expectedSkyboxSubstring)) {
@@ -284,6 +288,9 @@ async function inspectStreamedChunkMetadata(bundleMetrics) {
       /\/\d+_\d+\/.+\.webp(?:\?|$)/.test(response.url())
     ) {
       lodResponses.push({ url: response.url(), status: response.status() });
+    }
+    if (response.url().includes("preview-meta.json") || response.url().includes("preview-points.bin")) {
+      previewResponses.push({ url: response.url(), status: response.status() });
     }
   });
 
@@ -311,6 +318,10 @@ async function inspectStreamedChunkMetadata(bundleMetrics) {
   await viewerFrame.waitForFunction(() => {
     const cam = window.__sogsCtx?.viewer?.cameraManager?.camera;
     return !!cam && [cam.position.x, cam.position.y, cam.position.z, cam.distance].every(Number.isFinite);
+  }, null, { timeout: 120000 });
+  await viewerFrame.waitForFunction(() => {
+    const preview = window.__sogsPreviewState;
+    return !!preview && Number.isFinite(preview.totalPoints) && preview.totalPoints > 0;
   }, null, { timeout: 120000 });
   await waitForStreamingMetrics(page);
   const bundleMetrics = await readStreamingMetrics(page);
@@ -346,6 +357,23 @@ async function inspectStreamedChunkMetadata(bundleMetrics) {
     );
   }
   const chunkMetadata = await inspectStreamedChunkMetadata(bundleMetrics);
+  const previewState = await viewerFrame.evaluate(() => window.__sogsPreviewState ?? null);
+  assert(!!previewState, "expected preview state to exist");
+  assert(previewState.everRevealed === true, `expected preview reveal lifecycle, got ${JSON.stringify(previewState)}`);
+  assert(previewState.everFaded === true, `expected preview fade lifecycle, got ${JSON.stringify(previewState)}`);
+  assert(
+    Number.isFinite(previewState.totalPoints) && previewState.totalPoints >= expectedPreviewPointCountMin,
+    `expected preview total points >= ${expectedPreviewPointCountMin}, got ${JSON.stringify(previewState)}`,
+  );
+  assert(
+    Number.isFinite(previewState.maxVisiblePoints) && previewState.maxVisiblePoints >= expectedPreviewPointCountMin,
+    `expected preview max visible points >= ${expectedPreviewPointCountMin}, got ${JSON.stringify(previewState)}`,
+  );
+  const previewMetaUrl = await page.locator('[data-testid="sogs-bundle-metrics"]').getAttribute("data-preview-meta-url");
+  assert(
+    previewMetaUrl?.includes(expectedPreviewMetaSubstring),
+    `expected preview meta URL containing ${expectedPreviewMetaSubstring}, got ${previewMetaUrl ?? "missing"}`,
+  );
   await page.waitForFunction(() => {
     const button = document.querySelector("#detailsButton");
     return button instanceof HTMLButtonElement && !button.disabled;
@@ -428,6 +456,14 @@ async function inspectStreamedChunkMetadata(bundleMetrics) {
     lodResponses.some((response) => /\/\d+_\d+\/meta\.json(?:\?|$)/.test(response.url) && response.status === 200),
     `expected chunk meta network requests, got ${JSON.stringify(lodResponses)}`,
   );
+  assert(
+    previewResponses.some((response) => response.url.includes("preview-meta.json") && response.status === 200),
+    `expected preview-meta.json network request, got ${JSON.stringify(previewResponses)}`,
+  );
+  assert(
+    previewResponses.some((response) => response.url.includes("preview-points.bin") && response.status === 200),
+    `expected preview-points.bin network request, got ${JSON.stringify(previewResponses)}`,
+  );
 
   await page.getByTestId("path-editor-toggle").click();
   await page.waitForSelector('[data-testid="animation-path-panel"].active', { timeout: 10000 });
@@ -440,8 +476,10 @@ async function inspectStreamedChunkMetadata(bundleMetrics) {
   console.log(`Render stats: ${JSON.stringify(renderStats)}`);
   console.log(`Bundle metrics: ${JSON.stringify(bundleMetrics)}`);
   console.log(`Chunk metadata: ${JSON.stringify(chunkMetadata)}`);
+  console.log(`Preview state: ${JSON.stringify(previewState)}`);
   console.log(`Skybox responses: ${JSON.stringify(skyboxResponses)}`);
   console.log(`LOD responses: ${JSON.stringify(lodResponses.slice(0, 20))}`);
+  console.log(`Preview responses: ${JSON.stringify(previewResponses)}`);
   console.log(`OK — screenshot ${shot}`);
   await browser.close();
 })().catch((error) => {

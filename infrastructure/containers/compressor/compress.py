@@ -30,6 +30,8 @@ try:
 except ModuleNotFoundError:  # pragma: no cover - local smoke environments can omit boto3.
     boto3 = None
 
+from preview_sidecar import DEFAULT_PREVIEW_MAX_POINTS, generate_preview_sidecar
+
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -44,6 +46,7 @@ CONTAINER_SKYBOX_SOURCE = Path(__file__).resolve().parent / "assets" / "skybox" 
 DEFAULT_LOD_DECIMATION = ("30%", "10%", "3%")
 DEFAULT_LOD_CHUNK_COUNT = 1024
 DEFAULT_LOD_CHUNK_EXTENT = 32
+DEFAULT_PREVIEW_RELATIVE_META_PATH = "preview/preview-meta.json"
 DEFAULT_SOG_SETTINGS = {
     "background": {"color": [0, 0, 0, 1]},
     "camera": {
@@ -127,15 +130,17 @@ class PlayCanvasSOGSCompressor:
         self.lod_decimation = self._read_lod_decimation()
         self.lod_chunk_count = int(os.environ.get("SOGS_LOD_CHUNK_COUNT", DEFAULT_LOD_CHUNK_COUNT))
         self.lod_chunk_extent = int(os.environ.get("SOGS_LOD_CHUNK_EXTENT", DEFAULT_LOD_CHUNK_EXTENT))
+        self.preview_max_points = int(os.environ.get("SOGS_PREVIEW_MAX_POINTS", DEFAULT_PREVIEW_MAX_POINTS))
         self.transform_bin = self._resolve_transform_bin()
         self.version = self._get_splat_transform_version()
         logger.info(
-            "Using splat-transform %s (device=%s, lod_decimation=%s, chunk_count=%sK, chunk_extent=%s)",
+            "Using splat-transform %s (device=%s, lod_decimation=%s, chunk_count=%sK, chunk_extent=%s, preview_max_points=%s)",
             self.version,
             self.device,
             ",".join(self.lod_decimation),
             self.lod_chunk_count,
             self.lod_chunk_extent,
+            self.preview_max_points,
         )
 
     def _resolve_transform_bin(self) -> list[str]:
@@ -381,6 +386,8 @@ class PlayCanvasSOGSCompressor:
             "chunkFiles": 0,
             "lodTreeNodes": 0,
             "bounds": None,
+            "hasPreview": False,
+            "previewPointCount": None,
         }
 
         if not bundle_dir.exists():
@@ -417,6 +424,15 @@ class PlayCanvasSOGSCompressor:
             except json.JSONDecodeError:
                 logger.warning("Failed to parse %s", lod_meta_path)
 
+        preview_meta_path = bundle_dir / DEFAULT_PREVIEW_RELATIVE_META_PATH
+        if preview_meta_path.exists():
+            metrics["hasPreview"] = True
+            try:
+                preview_meta = json.loads(preview_meta_path.read_text(encoding="utf-8"))
+                metrics["previewPointCount"] = preview_meta.get("count")
+            except json.JSONDecodeError:
+                logger.warning("Failed to parse %s", preview_meta_path)
+
         return metrics
 
     def compress_gaussian_splats(self, input_sources: List[str], output_dir: str) -> Dict[str, Any]:
@@ -436,6 +452,17 @@ class PlayCanvasSOGSCompressor:
             self._build_single_bundle(source, bundle_source_dir)
             lod_inputs = self._build_lod_inputs_from_ply(source, Path(output_dir) / "lod_inputs")
             self._build_lod_bundle_from_inputs(lod_inputs, bundle_source_dir)
+
+        preview_metrics = None
+        try:
+            preview_metrics = generate_preview_sidecar(
+                bundle_source_dir,
+                bundle_source_dir / "preview",
+                max_points=self.preview_max_points,
+            )
+            logger.info("Generated preview sidecar with %s points", preview_metrics["count"])
+        except Exception as exc:
+            logger.warning("Failed to generate preview sidecar: %s", exc)
 
         metrics = self._collect_bundle_metrics(bundle_source_dir)
         original_size = source.stat().st_size
@@ -463,6 +490,7 @@ class PlayCanvasSOGSCompressor:
             ],
             "overall_compression_ratio": ratio,
             "bundle_metrics": metrics,
+            "preview_metrics": preview_metrics,
         }
 
     def _create_supersplat_bundle(self, results: Dict[str, Any]) -> None:
@@ -503,6 +531,14 @@ class PlayCanvasSOGSCompressor:
             "version": 1,
             "skybox": {"type": "equirect", "path": skybox_manifest_path} if skybox_manifest_path else None,
             "entrypoints": entrypoints,
+            "preview": (
+                {
+                    "path": DEFAULT_PREVIEW_RELATIVE_META_PATH,
+                    "count": bundle_metrics["previewPointCount"],
+                }
+                if bundle_metrics["hasPreview"]
+                else None
+            ),
             "streaming": {
                 "enabled": bool(bundle_metrics["hasLodMetaJson"]),
                 "lodLevels": bundle_metrics["lodLevels"],

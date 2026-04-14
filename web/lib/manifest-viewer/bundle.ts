@@ -3,7 +3,7 @@ import {
   resolveSogsViewerBundle,
   type ResolvedSogsViewerBundle,
 } from "../sogsViewerBundle";
-import type { ViewerBundleManifest, ViewerSkyboxManifest } from "./manifest";
+import type { ViewerBundleManifest, ViewerPreviewManifest, ViewerSkyboxManifest } from "./manifest";
 
 const DEFAULT_SPACEPORT_CONFIG_NAME = "spaceport_bundle.json";
 
@@ -14,6 +14,16 @@ type SpaceportBundleConfig = {
         path?: string;
         url?: string;
       };
+  preview?:
+    | string
+    | {
+        path?: string;
+        url?: string;
+      };
+};
+
+export type ResolvedViewerPreview = {
+  metaUrl: string;
 };
 
 export type ResolvedViewerBundle = {
@@ -21,6 +31,7 @@ export type ResolvedViewerBundle = {
   skyboxUrl: string | null;
   skyboxPitch: number;
   skyboxVOffset: number;
+  preview: ResolvedViewerPreview | null;
   bundleKind: ResolvedSogsViewerBundle["bundleKind"];
   summary: ResolvedSogsViewerBundle["summary"];
 };
@@ -105,6 +116,69 @@ async function resolveSkyboxUrl(
   return resolvedBundle.skyboxUrl;
 }
 
+function readPreviewPath(config: SpaceportBundleConfig): string | null {
+  if (typeof config.preview === "string") {
+    return config.preview;
+  }
+  if (typeof config.preview?.path === "string") {
+    return config.preview.path;
+  }
+  if (typeof config.preview?.url === "string") {
+    return config.preview.url;
+  }
+  return null;
+}
+
+async function resolvePreviewUrl(
+  previewManifest: ViewerPreviewManifest | undefined,
+  rawBundleValue: string,
+  resolvedBundle: ResolvedSogsViewerBundle,
+): Promise<string | null> {
+  if (previewManifest?.metaUrl === null) {
+    return null;
+  }
+  if (typeof previewManifest?.metaUrl === "string") {
+    return (
+      resolveBundleAssetUrlForTransport(rawBundleValue, previewManifest.metaUrl, resolvedBundle.summary.transport) ??
+      previewManifest.metaUrl
+    );
+  }
+
+  const configUrl = resolveBundleAssetUrlForTransport(
+    rawBundleValue,
+    previewManifest?.configFileName ?? DEFAULT_SPACEPORT_CONFIG_NAME,
+    resolvedBundle.summary.transport,
+  );
+
+  if (configUrl) {
+    try {
+      const response = await fetch(configUrl, {
+        headers: { Accept: "application/json" },
+      });
+      if (response.ok) {
+        const config = (await response.json()) as SpaceportBundleConfig;
+        const previewPath = readPreviewPath(config);
+        if (previewPath) {
+          return resolveBundleAssetUrlForTransport(rawBundleValue, previewPath, resolvedBundle.summary.transport);
+        }
+      }
+    } catch {
+      /* fall back below */
+    }
+  }
+
+  if (previewManifest?.fallbackUrl === null) {
+    return null;
+  }
+  if (typeof previewManifest?.fallbackUrl === "string") {
+    return (
+      resolveBundleAssetUrlForTransport(rawBundleValue, previewManifest.fallbackUrl, resolvedBundle.summary.transport) ??
+      previewManifest.fallbackUrl
+    );
+  }
+  return null;
+}
+
 export async function resolveViewerBundle(
   bundleManifest: ViewerBundleManifest,
   rawBundleValue: string,
@@ -113,6 +187,7 @@ export async function resolveViewerBundle(
   if (!resolvedBundle) return null;
 
   const skybox = await resolveSkyboxUrl(bundleManifest, rawBundleValue, resolvedBundle);
+  const previewUrl = await resolvePreviewUrl(bundleManifest.preview, rawBundleValue, resolvedBundle);
   const { pitch, vOffset } = skyboxSettings(bundleManifest.skybox);
 
   return {
@@ -120,6 +195,7 @@ export async function resolveViewerBundle(
     skyboxUrl: skybox,
     skyboxPitch: pitch,
     skyboxVOffset: vOffset,
+    preview: previewUrl ? { metaUrl: previewUrl } : null,
     bundleKind: resolvedBundle.bundleKind,
     summary: resolvedBundle.summary,
   };
