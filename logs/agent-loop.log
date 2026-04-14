@@ -43,3 +43,4 @@
 [2026-04-14T01:08:59-0600] proofv3 removed sparse_pc warning and cache stall but still hung after model init -> stop stale job, force gsplat source install in image to move CUDA compile from SageMaker runtime into container build
 [2026-04-14T01:25:20-0600] codebuild failed compiling gsplat from source with deprecated sm_37/sm_50 targets -> export modern CUDA arch env in Dockerfile and push rebuild
 [2026-04-14T01:58:04-0600] codebuild compiled gsplat but upgraded torch/numpy incompatibly -> pin source rebuild to gsplat==1.4.0 with --no-deps and push rebuild
+[2026-04-14T02:15:36-0600] codebuild failed rebuilding pinned gsplat because glm headers were missing -> install libglm-dev in 3dgs image, push rebuild, then rerun proofv4 on the fresh digest

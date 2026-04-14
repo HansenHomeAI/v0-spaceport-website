@@ -34,6 +34,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends wget gnupg && \
         cmake \
         ninja-build \
         git \
+        libglm-dev \
     && rm -rf /var/lib/apt/lists/*
 
 ENV CUDA_HOME=/usr/local/cuda
