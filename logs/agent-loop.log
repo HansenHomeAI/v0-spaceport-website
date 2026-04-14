@@ -27,3 +27,8 @@
 [2026-04-14T00:46:31Z] aws-smoke-pivot -> stopping 3dgs-tiled-smoke-1776125082-tiled after live trainer proof to reduce wasted GPU-hours; relaunch with a much smaller iteration budget for end-to-end completion
 [2026-04-14T00:48:47Z] aws-mini-start -> launched SageMaker job 3dgs-tiled-mini-1776127715-tiled on ml.g5.xlarge with max_tiles=1, skip_scaffold, tile_max_iterations=50, LOG_INTERVAL=10 -> wait for completion
 [2026-04-14T01:34:11Z] aws-mini-pivot -> stopping 3dgs-tiled-mini-1776127715-tiled to add proof-mode image downscaling before the next rerun
+[2026-04-14T01:37:58Z] push -> pushed downscale proof-mode patch 2c6ce5d5 -> enumerate triggered workflows
+[2026-04-14T01:44:58Z] cdk-green -> CDK Deploy 24376236237 succeeded -> continue waiting on Pages and ML build for downscale patch
+[2026-04-14T01:50:29Z] workflows-green -> CDK 24376236237, Pages 24376236241, ML build 24376236244 succeeded for downscale patch -> launch AWS rerun on rebuilt image
+[2026-04-14T01:50:59Z] aws-downscale-start -> launched SageMaker job 3dgs-tiled-downscale-1776131447-tiled on ml.g5.xlarge with max_tiles=1, skip_scaffold, tile_max_iterations=50, LOG_INTERVAL=10, TRAINING_DOWNSCALE_FACTOR=8 -> wait for completion
+[2026-04-13T20:52:42-0600] patch proof controls -> local unit tests green -> push and redeploy next

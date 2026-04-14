@@ -24,6 +24,12 @@ training:
   max_iterations: 30000              # Vincent's training duration
   target_psnr: 35.0                  # High quality target
   log_interval: 100                  # Frequent logging for monitoring
+  max_selected_images: 0             # Optional proof-run cap after manifest selection
+  selection_stride: 1                # Optional proof-run stride after manifest selection
+  steps_per_eval_image: 100          # NerfStudio eval cadence
+  steps_per_eval_all_images: 1000    # Full-image eval cadence
+  steps_per_save: 2000               # Checkpoint cadence
+  quit_on_train_completion: true     # Always exit cleanly in headless SageMaker jobs
   early_stopping: false             # Complete full training for quality
   
   # Quality thresholds

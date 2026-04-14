@@ -100,6 +100,31 @@ def load_module_with_stubs():
 
 
 class TiledNerfStudioDispatcherTests(unittest.TestCase):
+    def test_limit_selected_image_names_preserves_boundary_and_horizon_coverage(self):
+        module = load_module_with_stubs()
+
+        limited = module.limit_selected_image_names(
+            [
+                "frame_00001.JPG",
+                "frame_00002.JPG",
+                "frame_00003.JPG",
+                "frame_00004.JPG",
+                "frame_00005.JPG",
+                "frame_00006.JPG",
+            ],
+            view_buckets={
+                "boundary_camera_ids": ["frame_00002.JPG", "frame_00004.JPG"],
+                "horizon_camera_ids": ["frame_00006.JPG"],
+                "near_detail_camera_ids": ["frame_00001.JPG", "frame_00003.JPG"],
+            },
+            max_images=4,
+            selection_stride=1,
+        )
+
+        self.assertEqual(limited[:3], ["frame_00002.JPG", "frame_00004.JPG", "frame_00006.JPG"])
+        self.assertEqual(len(limited), 4)
+        self.assertIn(limited[3], {"frame_00001.JPG", "frame_00003.JPG"})
+
     def test_run_tiled_training_pipeline_writes_root_summary(self):
         module = load_module_with_stubs()
 
@@ -250,6 +275,67 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             self.assertEqual(calls[1][-2:], ["--data", str(trainer.input_dir)])
             self.assertNotIn("--pipeline.model.use-bilateral-grid", calls[0])
             self.assertNotIn("--pipeline.model.use-bilateral-grid", calls[1])
+
+    def test_run_nerfstudio_training_small_proof_run_suppresses_eval_and_save_cadence(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.config = {
+                "model": {
+                    "variant": "splatfacto-w-light",
+                    "sh_degree": 3,
+                    "bilateral_processing": False,
+                    "rasterize_mode": "classic",
+                    "use_scale_regularization": True,
+                    "cull_alpha_thresh": 0.12,
+                    "cull_scale_thresh": 0.35,
+                    "enable_bg_model": True,
+                    "enable_alpha_loss": True,
+                    "enable_robust_mask": True,
+                    "bg_sh_degree": 8,
+                    "appearance_embed_dim": 64,
+                    "never_mask_upper": 0.4,
+                },
+                "training": {
+                    "max_iterations": 50,
+                    "log_interval": 10,
+                },
+                "tiling": {
+                    "training_mode": "leaf_tile",
+                    "global_scaffold": {},
+                },
+            }
+            trainer.input_dir = root / "input"
+            trainer.output_dir = root / "output"
+            trainer.temp_dir = root / "tmp"
+            trainer.training_selection_result = None
+            trainer.background_selection_result = None
+            trainer.floater_pruning_result = None
+            trainer.resolve_training_mode = lambda: "leaf_tile"
+
+            calls: list[list[str]] = []
+
+            def fake_run(cmd, **kwargs):
+                calls.append(list(cmd))
+                return types.SimpleNamespace(returncode=0, stdout="done\n", stderr="")
+
+            original_run = module.subprocess.run
+            module.subprocess.run = fake_run
+            try:
+                success = trainer.run_nerfstudio_training()
+            finally:
+                module.subprocess.run = original_run
+
+            self.assertTrue(success)
+            self.assertEqual(len(calls), 1)
+            self.assertIn("--viewer.quit_on_train_completion", calls[0])
+            self.assertIn("True", calls[0])
+            self.assertIn("--steps_per_eval_image", calls[0])
+            self.assertIn("--steps_per_eval_all_images", calls[0])
+            self.assertIn("--steps_per_save", calls[0])
+            self.assertIn("51", calls[0])
 
     def test_downscale_selected_training_data_if_requested_resizes_images_and_intrinsics(self):
         module = load_module_with_stubs()

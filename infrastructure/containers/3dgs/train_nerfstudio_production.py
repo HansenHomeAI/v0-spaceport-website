@@ -63,7 +63,7 @@ for var in ('LD_LIBRARY_PATH', 'LIBRARY_PATH'):
     os.environ[var] = ':'.join(parts) if parts else ':'.join(cuda_lib_paths)
     print(f"✅ {var}={os.environ[var]}")
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Sequence
 import shutil
 try:
     from PIL import Image
@@ -116,6 +116,91 @@ def load_colmap_image_id_name_map(images_txt: Path) -> dict[str, str]:
         else:
             line_index += 1
     return mapping
+
+
+def unique_preserving_order(names: Sequence[str]) -> list[str]:
+    """Drop duplicates while preserving the original order."""
+    unique_names: list[str] = []
+    seen: set[str] = set()
+    for raw_name in names:
+        name = str(raw_name).strip()
+        if not name or name in seen:
+            continue
+        seen.add(name)
+        unique_names.append(name)
+    return unique_names
+
+
+def evenly_spaced_subset(names: Sequence[str], limit: int) -> list[str]:
+    """Select up to limit names while preserving broad coverage."""
+    unique_names = unique_preserving_order(names)
+    if limit <= 0:
+        return []
+    if len(unique_names) <= limit:
+        return unique_names
+    if limit == 1:
+        return [unique_names[len(unique_names) // 2]]
+
+    sampled_indices = [
+        round(index * (len(unique_names) - 1) / (limit - 1))
+        for index in range(limit)
+    ]
+    sampled = unique_preserving_order(unique_names[index] for index in sampled_indices)
+    if len(sampled) >= limit:
+        return sampled[:limit]
+
+    for name in unique_names:
+        if name in sampled:
+            continue
+        sampled.append(name)
+        if len(sampled) >= limit:
+            break
+    return sampled[:limit]
+
+
+def limit_selected_image_names(
+    selected_image_names: Sequence[str],
+    *,
+    view_buckets: Optional[Dict[str, Sequence[str]]] = None,
+    max_images: int = 0,
+    selection_stride: int = 1,
+) -> list[str]:
+    """Cap proof runs deterministically while preserving boundary/horizon coverage."""
+    working_names = unique_preserving_order(selected_image_names)
+    if selection_stride > 1:
+        working_names = working_names[::selection_stride]
+    if max_images <= 0 or len(working_names) <= max_images:
+        return working_names
+
+    resolved_view_buckets = view_buckets or {}
+    chosen: list[str] = []
+    chosen_set: set[str] = set()
+    coverage_targets = (
+        ("boundary_camera_ids", 2),
+        ("horizon_camera_ids", 1),
+        ("near_detail_camera_ids", 1),
+    )
+
+    for bucket_name, target in coverage_targets:
+        if len(chosen) >= max_images:
+            break
+        bucket_candidates = [
+            image_name
+            for image_name in resolved_view_buckets.get(bucket_name, [])
+            if image_name in working_names and image_name not in chosen_set
+        ]
+        bucket_limit = min(target, max_images - len(chosen), len(bucket_candidates))
+        for image_name in evenly_spaced_subset(bucket_candidates, bucket_limit):
+            if image_name in chosen_set:
+                continue
+            chosen.append(image_name)
+            chosen_set.add(image_name)
+            if len(chosen) >= max_images:
+                break
+
+    remaining_names = [image_name for image_name in working_names if image_name not in chosen_set]
+    chosen.extend(evenly_spaced_subset(remaining_names, max_images - len(chosen)))
+    return chosen[:max_images]
 
 
 def build_converted_image_name_map(
@@ -208,6 +293,12 @@ class NerfStudioTrainer:
             'SH_DEGREE': 'model.sh_degree',
             'BILATERAL_PROCESSING': 'model.bilateral_processing',
             'LOG_INTERVAL': 'training.log_interval',
+            'TRAINING_MAX_SELECTED_IMAGES': 'training.max_selected_images',
+            'TRAINING_SELECTION_STRIDE': 'training.selection_stride',
+            'TRAINING_STEPS_PER_EVAL_IMAGE': 'training.steps_per_eval_image',
+            'TRAINING_STEPS_PER_EVAL_ALL_IMAGES': 'training.steps_per_eval_all_images',
+            'TRAINING_STEPS_PER_SAVE': 'training.steps_per_save',
+            'VIEWER_QUIT_ON_TRAIN_COMPLETION': 'training.quit_on_train_completion',
             'MODEL_VARIANT': 'model.variant',
             'RASTERIZE_MODE': 'model.rasterize_mode',
             'USE_SCALE_REGULARIZATION': 'model.use_scale_regularization',
@@ -258,9 +349,9 @@ class NerfStudioTrainer:
             value = os.environ.get(env_var)
             if value is not None:
                 # Convert string values to appropriate types
-                if env_var in ['BILATERAL_PROCESSING', 'USE_SCALE_REGULARIZATION', 'ENABLE_BG_MODEL', 'ENABLE_ALPHA_LOSS', 'ENABLE_ROBUST_MASK', 'FLOATER_PRUNING_ENABLED', 'TILED_INCLUDE_SCAFFOLD', 'TILED_INCLUDE_MERGE', 'TILED_RESUME_EXISTING']:
+                if env_var in ['BILATERAL_PROCESSING', 'USE_SCALE_REGULARIZATION', 'ENABLE_BG_MODEL', 'ENABLE_ALPHA_LOSS', 'ENABLE_ROBUST_MASK', 'FLOATER_PRUNING_ENABLED', 'TILED_INCLUDE_SCAFFOLD', 'TILED_INCLUDE_MERGE', 'TILED_RESUME_EXISTING', 'VIEWER_QUIT_ON_TRAIN_COMPLETION']:
                     value = value.lower() in ('true', '1', 'yes', 'on')
-                elif env_var in ['MAX_ITERATIONS', 'SH_DEGREE', 'LOG_INTERVAL', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'TRAINING_DOWNSCALE_FACTOR', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT', 'GLOBAL_SCAFFOLD_MAX_IMAGES', 'GLOBAL_SCAFFOLD_FRAME_STRIDE', 'GLOBAL_SCAFFOLD_MAX_ITERATIONS', 'GLOBAL_SCAFFOLD_SH_DEGREE', 'TILED_MAX_TILES']:
+                elif env_var in ['MAX_ITERATIONS', 'LOG_INTERVAL', 'TRAINING_MAX_SELECTED_IMAGES', 'TRAINING_SELECTION_STRIDE', 'TRAINING_STEPS_PER_EVAL_IMAGE', 'TRAINING_STEPS_PER_EVAL_ALL_IMAGES', 'TRAINING_STEPS_PER_SAVE', 'SH_DEGREE', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'TRAINING_DOWNSCALE_FACTOR', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT', 'GLOBAL_SCAFFOLD_MAX_IMAGES', 'GLOBAL_SCAFFOLD_FRAME_STRIDE', 'GLOBAL_SCAFFOLD_MAX_ITERATIONS', 'GLOBAL_SCAFFOLD_SH_DEGREE', 'TILED_MAX_TILES']:
                     value = int(value)
                 elif env_var in ['TARGET_PSNR', 'CULL_ALPHA_THRESH', 'CULL_SCALE_THRESH', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_SKY_MIN_LUMINANCE', 'FLOATER_PRUNING_SKY_MIN_SATURATION', 'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE', 'GLOBAL_SCAFFOLD_MAX_GAUSS_RATIO']:
                     value = float(value)
@@ -1142,9 +1233,12 @@ class NerfStudioTrainer:
 
         tiling_config = self.config.get('tiling', {})
         scaffold_config = tiling_config.get('global_scaffold', {})
+        training_config = self.config.get('training', {})
         tile_id = str(tiling_config.get('tile_id', '')).strip() or None
         max_images = int(scaffold_config.get('max_images', 0)) if training_mode == 'global_scaffold' else None
         frame_stride = int(scaffold_config.get('frame_stride', 1)) if training_mode == 'global_scaffold' else 1
+        proof_max_images = int(training_config.get('max_selected_images', 0) or 0)
+        proof_selection_stride = max(1, int(training_config.get('selection_stride', 1) or 1))
 
         selected_image_names = select_training_image_names(
             training_mode=training_mode,
@@ -1152,6 +1246,12 @@ class NerfStudioTrainer:
             tile_id=tile_id,
             max_images=max_images,
             stride=frame_stride,
+        )
+        selected_image_names = limit_selected_image_names(
+            selected_image_names,
+            view_buckets=view_buckets,
+            max_images=proof_max_images,
+            selection_stride=proof_selection_stride,
         )
         if not selected_image_names:
             logger.error("❌ Manifest-driven selection resolved zero frames")
@@ -1192,6 +1292,8 @@ class NerfStudioTrainer:
             'tile_id': tile_id,
             'selected_image_names': selected_image_names,
             'selected_image_count': selected_frame_count,
+            'max_selected_images': proof_max_images,
+            'selection_stride': proof_selection_stride,
             'view_bucket_counts': selection_counts_for_buckets(selected_image_names, bucket_payload),
             'tile_manifest_path': str(tiling_config.get('tile_manifest_path', '')).strip() or None,
             'view_bucket_manifest_path': str(tiling_config.get('view_bucket_manifest_path', '')).strip() or None,
@@ -1207,6 +1309,10 @@ class NerfStudioTrainer:
         if tile_id:
             logger.info(f"   Tile ID: {tile_id}")
         logger.info(f"   Selected images: {selected_frame_count}")
+        if proof_max_images > 0:
+            logger.info(f"   Proof image cap: {proof_max_images}")
+        if proof_selection_stride > 1:
+            logger.info(f"   Selection stride: {proof_selection_stride}")
         logger.info(f"   Selection summary: {self.training_selection_result['view_bucket_counts']}")
         return True
     
@@ -1238,6 +1344,10 @@ class NerfStudioTrainer:
         appearance_embed_dim = model_config.get('appearance_embed_dim', 48)
         never_mask_upper = model_config.get('never_mask_upper', 0.4)
         log_interval = training_config.get('log_interval', 100)
+        steps_per_eval_image = training_config.get('steps_per_eval_image')
+        steps_per_eval_all_images = training_config.get('steps_per_eval_all_images')
+        steps_per_save = training_config.get('steps_per_save')
+        quit_on_train_completion = bool(training_config.get('quit_on_train_completion', True))
         training_mode = self.resolve_training_mode()
         tiling_config = self.config.get('tiling', {})
         scaffold_config = tiling_config.get('global_scaffold', {})
@@ -1248,6 +1358,13 @@ class NerfStudioTrainer:
             max_gauss_ratio = float(scaffold_config.get('max_gauss_ratio', 4.0))
         else:
             max_gauss_ratio = 10.0
+
+        if steps_per_eval_image is None and max_iterations <= 250:
+            steps_per_eval_image = max_iterations + 1
+        if steps_per_eval_all_images is None and max_iterations <= 250:
+            steps_per_eval_all_images = max_iterations + 1
+        if steps_per_save is None and max_iterations <= 250:
+            steps_per_save = max_iterations + 1
         
         logger.info("🎯 Training Configuration:")
         logger.info(f"   Model: {model_variant}")
@@ -1263,6 +1380,10 @@ class NerfStudioTrainer:
         logger.info(f"   Background SH degree: {bg_sh_degree}")
         logger.info(f"   Appearance embedding dim: {appearance_embed_dim}")
         logger.info(f"   Log interval: {log_interval}")
+        logger.info(f"   Steps per eval image: {steps_per_eval_image}")
+        logger.info(f"   Steps per eval all images: {steps_per_eval_all_images}")
+        logger.info(f"   Steps per save: {steps_per_save}")
+        logger.info(f"   Quit on train completion: {quit_on_train_completion}")
         logger.info(f"   Training mode: {training_mode}")
         logger.info(f"   Dataparser: transforms.json (via ns-process-data conversion)")
         if self.training_selection_result is not None:
@@ -1283,7 +1404,15 @@ class NerfStudioTrainer:
             str(sh_degree),
             "--logging.steps_per_log",
             str(log_interval),
+            "--viewer.quit_on_train_completion",
+            str(quit_on_train_completion),
         ]
+        if steps_per_eval_image is not None:
+            base_cmd.extend(["--steps_per_eval_image", str(int(steps_per_eval_image))])
+        if steps_per_eval_all_images is not None:
+            base_cmd.extend(["--steps_per_eval_all_images", str(int(steps_per_eval_all_images))])
+        if steps_per_save is not None:
+            base_cmd.extend(["--steps_per_save", str(int(steps_per_save))])
         method_args: list[str] = []
         
         if requested_bilateral_processing and not bilateral_processing:
