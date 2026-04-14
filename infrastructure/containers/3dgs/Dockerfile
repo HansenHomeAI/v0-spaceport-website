@@ -64,9 +64,13 @@ RUN git clone --depth 1 https://github.com/nerfstudio-project/nerfstudio.git /tm
 RUN pip install --no-cache-dir git+https://github.com/KevinXu02/splatfacto-w.git && \
     ns-install-cli
 
+# Force gsplat to compile CUDA kernels during the image build so fresh
+# SageMaker jobs do not stall on first-use JIT compilation.
+RUN pip install --no-cache-dir --force-reinstall --no-binary=gsplat gsplat==1.5.3
+
 # Verify installations
 RUN python -c "import nerfstudio; print('✅ NerfStudio installed successfully')"
-RUN python -c "import gsplat; print('✅ gsplat backend available (will JIT compile on first use)')"
+RUN python -c "import gsplat; print('✅ gsplat backend available with build-time CUDA compilation')"
 RUN ns-install-cli --help > /dev/null && echo "✅ NerfStudio CLI available"
 RUN ns-train splatfacto-w-light --help > /dev/null && echo "✅ splatfacto-w-light CLI available"
 
