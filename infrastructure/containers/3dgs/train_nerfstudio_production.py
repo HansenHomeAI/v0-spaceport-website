@@ -203,6 +203,41 @@ def limit_selected_image_names(
     return chosen[:max_images]
 
 
+def run_command_with_log_file(
+    cmd: Sequence[str],
+    *,
+    env: Optional[Dict[str, str]] = None,
+    timeout: Optional[int] = None,
+    log_path: Path,
+) -> subprocess.CompletedProcess[str]:
+    """Run a command without pipe buffering the child process output."""
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    stdout_path = log_path
+    stderr_output = ""
+
+    with open(stdout_path, "w", encoding="utf-8") as handle:
+        result = subprocess.run(
+            list(cmd),
+            stdout=handle,
+            stderr=subprocess.STDOUT,
+            text=True,
+            env=env,
+            timeout=timeout,
+        )
+
+    stdout_output = getattr(result, "stdout", "") or ""
+    stderr_output = getattr(result, "stderr", "") or ""
+    if not stdout_output and stdout_path.exists():
+        stdout_output = stdout_path.read_text(encoding="utf-8", errors="replace")
+
+    return subprocess.CompletedProcess(
+        args=list(cmd),
+        returncode=result.returncode,
+        stdout=stdout_output,
+        stderr=stderr_output,
+    )
+
+
 def build_converted_image_name_map(
     transforms: Dict[str, Any],
     original_images_txt: Path,
@@ -1484,27 +1519,30 @@ class NerfStudioTrainer:
                 pythonpath_parts.append(existing_pythonpath)
             train_env["PYTHONPATH"] = ":".join(part for part in pythonpath_parts if part)
             logger.info(f"🐍 PYTHONPATH for ns-train: {train_env['PYTHONPATH']}")
+            train_log_path = self.output_dir / "ns_train.log"
+            logger.info(f"📝 Streaming ns-train output to {train_log_path}")
 
-            result = subprocess.run(
+            result = run_command_with_log_file(
                 cmd,
-                capture_output=True,
-                text=True,
                 env=train_env,
                 timeout=training_timeout_seconds,
+                log_path=train_log_path,
             )
 
-            if result.returncode != 0 and should_retry_with_explicit_dataparser(result.stderr):
+            retry_output = result.stderr or result.stdout
+            if result.returncode != 0 and should_retry_with_explicit_dataparser(retry_output):
                 fallback_cmd = build_training_command(explicit_dataparser=True)
                 logger.warning(
                     "⚠️ ns-train rejected the initial argument ordering; retrying with explicit nerfstudio-data subcommand"
                 )
                 logger.info(f"   {' '.join(fallback_cmd)}")
-                result = subprocess.run(
+                fallback_log_path = self.output_dir / "ns_train.retry.log"
+                logger.info(f"📝 Streaming retry output to {fallback_log_path}")
+                result = run_command_with_log_file(
                     fallback_cmd,
-                    capture_output=True,
-                    text=True,
                     env=train_env,
                     timeout=training_timeout_seconds,
+                    log_path=fallback_log_path,
                 )
             
             if result.returncode != 0:
@@ -1694,11 +1732,12 @@ class NerfStudioTrainer:
         logger.info(f"   {' '.join(export_cmd)}")
         
         try:
-            result = subprocess.run(
+            export_log_path = self.output_dir / "ns_export.log"
+            logger.info(f"📝 Streaming export output to {export_log_path}")
+            result = run_command_with_log_file(
                 export_cmd,
-                capture_output=True,
-                text=True,
-                timeout=600  # 10 minute timeout
+                timeout=600,  # 10 minute timeout
+                log_path=export_log_path,
             )
             
             if result.returncode != 0:

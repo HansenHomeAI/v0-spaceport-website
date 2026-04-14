@@ -32,3 +32,5 @@
 [2026-04-14T01:50:29Z] workflows-green -> CDK 24376236237, Pages 24376236241, ML build 24376236244 succeeded for downscale patch -> launch AWS rerun on rebuilt image
 [2026-04-14T01:50:59Z] aws-downscale-start -> launched SageMaker job 3dgs-tiled-downscale-1776131447-tiled on ml.g5.xlarge with max_tiles=1, skip_scaffold, tile_max_iterations=50, LOG_INTERVAL=10, TRAINING_DOWNSCALE_FACTOR=8 -> wait for completion
 [2026-04-13T20:52:42-0600] patch proof controls -> local unit tests green -> push and redeploy next
+[2026-04-13T21:10:09-0600] branch deploy green -> preview alias verified -> awaiting proof50 trainer start
+[2026-04-13T21:36:03-0600] identify ns-train pipe-buffer stall -> patch logfile subprocess runner -> stop stale proof50 run
