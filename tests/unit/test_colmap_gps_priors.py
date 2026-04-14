@@ -1567,6 +1567,64 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(sequential_mock.call_count, 2)
             self.assertEqual(mapper_mock.call_count, 2)
 
+    def test_run_chunk_pipeline_removes_chunk_database_after_success(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.enable_sequential_matcher = False
+            pipeline.exif_records = {
+                "IMG_01.jpg": {"local_x_m": 0.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_02.jpg": {"local_x_m": 1.0, "local_y_m": 0.0, "heading_deg": 0.0},
+            }
+            chunk = run_colmap_sfm.ChunkPlan(
+                index=0,
+                core_names=["IMG_01.jpg", "IMG_02.jpg"],
+                image_names=["IMG_01.jpg", "IMG_02.jpg"],
+                overlap_names=[],
+            )
+            (root / "images.txt").write_text(
+                "\n".join(
+                    [
+                        "1 1 0 0 0 0 0 0 1 IMG_01.jpg",
+                        "0 0 -1",
+                        "2 1 0 0 0 0 0 0 1 IMG_02.jpg",
+                        "0 0 -1",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            initial_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_00_mapper_initial",
+                text_dir=root,
+                cameras_registered=1,
+                images_registered=2,
+                points_3d=1000,
+                binary_dir=root,
+                image_count=2,
+            )
+
+            with mock.patch.object(
+                pipeline,
+                "prepare_chunk_database",
+                return_value=root / "chunk.db",
+            ), mock.patch.object(
+                pipeline,
+                "run_spatial_matcher",
+            ), mock.patch.object(
+                pipeline,
+                "run_mapper",
+                return_value=initial_model,
+            ), mock.patch.object(
+                pipeline,
+                "remove_sqlite_database_artifacts",
+            ) as cleanup_mock:
+                pipeline.timings["chunk_00_mapper_initial_seconds"] = 1.0
+                best_model = pipeline.run_chunk_pipeline(chunk)
+
+            self.assertEqual(best_model.images_registered, 2)
+            cleanup_mock.assert_called_once_with(root / "chunk.db")
+
     def test_run_chunk_pipeline_skips_boundary_recovery_when_core_images_are_registered(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -3791,6 +3849,94 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 reindexed_seed_model.binary_dir,
             )
 
+    def test_run_parent_seam_registration_removes_seam_database_after_success(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            seed_text_dir = root / "seed_text"
+            seed_text_dir.mkdir(parents=True, exist_ok=True)
+            (seed_text_dir / "images.txt").write_text(
+                "\n".join(
+                    [
+                        "1 1 0 0 0 0 0 0 1 A.jpg",
+                        "0 0 -1",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            seed_model = run_colmap_sfm.ModelSummary(
+                stage="seed",
+                text_dir=seed_text_dir,
+                cameras_registered=1,
+                images_registered=1,
+                points_3d=10,
+                binary_dir=root / "seed_bin",
+                image_names=["A.jpg"],
+                source_chunk_indexes=[3],
+            )
+            adjusted_model = run_colmap_sfm.ModelSummary(
+                stage="bundle_adjusted",
+                text_dir=root / "adjusted_text",
+                cameras_registered=1,
+                images_registered=2,
+                points_3d=20,
+                binary_dir=root / "adjusted_bin",
+                image_names=["A.jpg", "B.jpg"],
+                source_chunk_indexes=[3],
+            )
+            chunk_plan = run_colmap_sfm.ChunkPlan(
+                index=3,
+                core_names=["A.jpg", "B.jpg"],
+                image_names=["A.jpg", "B.jpg"],
+                overlap_names=[],
+                source_chunk_indexes=[3],
+            )
+
+            with mock.patch.object(
+                pipeline,
+                "prepare_chunk_database",
+                return_value=root / "seam.db",
+            ), mock.patch.object(
+                pipeline,
+                "reindex_model_to_database",
+                return_value=seed_model,
+            ), mock.patch.object(
+                pipeline,
+                "model_track_supported_pairs",
+                return_value=[],
+            ), mock.patch.object(
+                pipeline,
+                "run_chunk_matchers",
+            ), mock.patch.object(
+                pipeline,
+                "run_image_registrator",
+                return_value=seed_model,
+            ), mock.patch.object(
+                pipeline,
+                "run_point_triangulator",
+                return_value=seed_model,
+            ), mock.patch.object(
+                pipeline,
+                "should_run_parent_bundle_adjustment",
+                return_value=(True, "needed"),
+            ), mock.patch.object(
+                pipeline,
+                "run_bundle_adjuster",
+                return_value=adjusted_model,
+            ), mock.patch.object(
+                pipeline,
+                "remove_sqlite_database_artifacts",
+            ) as cleanup_mock:
+                result = pipeline.run_parent_seam_registration(
+                    seed_model=seed_model,
+                    chunk_plan=chunk_plan,
+                    stage_prefix="chunk_model_seam_03",
+                )
+
+            self.assertEqual(result.images_registered, 2)
+            cleanup_mock.assert_called_once_with(root / "seam.db")
+
     def test_model_track_supported_pairs_returns_seed_supported_neighbors(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -5003,6 +5149,42 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 pipeline = run_colmap_sfm.ColmapPipeline(input_dir, output_dir)
                 with self.assertRaisesRegex(RuntimeError, "Requested subset images were missing"):
                     pipeline.extract_images()
+
+    def test_write_chunk_planner_manifest_skips_subset_archives_outside_snapshot_mode(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.capture_ordered_names = ["IMG_01.jpg", "IMG_02.jpg"]
+            pipeline.images_dir.mkdir(parents=True, exist_ok=True)
+            for image_name in pipeline.capture_ordered_names:
+                (pipeline.images_dir / image_name).write_bytes(image_name.encode("utf-8"))
+            pipeline.chunk_sizes = [2]
+            pipeline.chunk_overlap_image_count = 0
+            pipeline.chunk_group_count = 1
+            pipeline.chunk_segment_count = 1
+            pipeline.chunk_role_by_image = {name: "geometry_anchor" for name in pipeline.capture_ordered_names}
+            pipeline.probe_subsets = {"geometry_mix": ["IMG_01.jpg"]}
+            pipeline.probe_subset_details = {"geometry_mix": {"image_count": 1}}
+            pipeline.ladder_subsets = {"ladder_1000": ["IMG_02.jpg"]}
+            pipeline.ladder_subset_details = {"ladder_1000": {"image_count": 1}}
+            pipeline.chunk_plans = [
+                run_colmap_sfm.ChunkPlan(
+                    index=0,
+                    core_names=list(pipeline.capture_ordered_names),
+                    image_names=list(pipeline.capture_ordered_names),
+                    overlap_names=[],
+                )
+            ]
+
+            pipeline.write_chunk_planner_manifest()
+            self.assertTrue((pipeline.output_dir / "chunk_planner_manifest.json").exists())
+            self.assertFalse((pipeline.output_dir / "probes").exists())
+            self.assertFalse((pipeline.output_dir / "ladders").exists())
+
+            pipeline.planner_snapshot_only = True
+            pipeline.write_chunk_planner_manifest()
+            self.assertTrue((pipeline.output_dir / "probes" / "geometry_mix.zip").exists())
+            self.assertTrue((pipeline.output_dir / "ladders" / "ladder_1000.zip").exists())
 
     def test_run_spatial_heading_chunked_path_accepts_merged_ratio_at_gps_threshold(self):
         with tempfile.TemporaryDirectory() as tmp:

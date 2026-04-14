@@ -989,7 +989,7 @@ class ColmapPipeline:
 
     def write_failure_metadata(self) -> None:
         if self.chunk_planner == "footprint_graph_v1" and self.exif_records:
-            self.write_chunk_planner_manifest()
+            self.write_chunk_planner_manifest(include_archives=False)
         metadata = self.build_metadata(
             best_model=None,
             quality_check_passed=False,
@@ -4558,7 +4558,10 @@ class ColmapPipeline:
         self.chunk_matcher_strategy = "spatial_sequential"
         return self.build_spatial_heading_chunks()
 
-    def write_chunk_planner_manifest(self) -> None:
+    def should_write_subset_archives(self) -> bool:
+        return self.planner_snapshot_only
+
+    def write_chunk_planner_manifest(self, *, include_archives: bool | None = None) -> None:
         if self.chunk_planner == "footprint_graph_v1":
             chunk_plans = self.build_chunk_plans()
         else:
@@ -4591,6 +4594,10 @@ class ColmapPipeline:
             manifest["footprint_graph_manifest"] = self.chunk_graph_probe_manifest
         with open(self.output_dir / "chunk_planner_manifest.json", "w", encoding="utf-8") as handle:
             json.dump(manifest, handle, indent=2)
+        if include_archives is None:
+            include_archives = self.should_write_subset_archives()
+        if not include_archives:
+            return
         if not self.probe_subsets:
             if not self.ladder_subsets:
                 return
@@ -5285,84 +5292,87 @@ class ColmapPipeline:
         seam_dir = self.work_dir / seam_dir_name
         seam_dir.mkdir(parents=True, exist_ok=True)
         seam_database_path = self.prepare_chunk_database(chunk_plan, dir_name=seam_dir_name)
-        current_model = self.reindex_model_to_database(
-            model=seed_model,
-            database_path=seam_database_path,
-            stage_prefix=f"{stage_prefix}_seed",
-        )
-        seed_registered_names = self.sorted_capture_names(
-            self.merged_image_names(current_model).intersection(set(chunk_plan.image_names))
-        )
-        active_frontier_names = (
-            self.sorted_capture_names(set(frontier_names or []).union(seed_registered_names))
-            if frontier_names is not None
-            else None
-        )
-        seed_support_pairs = self.model_track_supported_pairs(
-            current_model,
-            allowed_names=set(chunk_plan.image_names),
-            per_image_limit=max(self.pair_cap_local, self.pair_cap_seam, 4),
-        )
-        self.run_chunk_matchers(
-            chunk_plan,
-            chunk_database_path=seam_database_path,
-            chunk_dir=seam_dir,
-            stage_prefix=stage_prefix,
-            bridge_target_name_sets=bridge_target_name_sets,
-            frontier_names=active_frontier_names,
-            frontier_pair_cap=frontier_pair_cap,
-            extra_pairs=seed_support_pairs,
-        )
-        current_model.image_names = list(chunk_plan.image_names)
-        current_model.source_chunk_indexes = list(
-            chunk_plan.source_chunk_indexes or seed_model.source_chunk_indexes
-        )
-        previous_registered_count = current_model.images_registered
-        for cycle in range(1, max(self.parent_seam_registration_cycles, 0) + 1):
-            registrator_model = self.run_image_registrator(
+        try:
+            current_model = self.reindex_model_to_database(
+                model=seed_model,
                 database_path=seam_database_path,
-                input_path=current_model.binary_dir,
-                stage=f"{stage_prefix}_image_registrator_{cycle:02d}",
-                image_count=len(chunk_plan.image_names),
+                stage_prefix=f"{stage_prefix}_seed",
             )
-            registrator_model.image_names = list(chunk_plan.image_names)
-            registrator_model.source_chunk_indexes = list(current_model.source_chunk_indexes)
-            triangulated_model = self.run_point_triangulator(
-                database_path=seam_database_path,
-                input_path=registrator_model.binary_dir,
-                stage=f"{stage_prefix}_point_triangulator_{cycle:02d}",
-                image_count=len(chunk_plan.image_names),
-                clear_points=False,
+            seed_registered_names = self.sorted_capture_names(
+                self.merged_image_names(current_model).intersection(set(chunk_plan.image_names))
             )
-            triangulated_model.image_names = list(chunk_plan.image_names)
-            triangulated_model.source_chunk_indexes = list(current_model.source_chunk_indexes)
-            current_model = triangulated_model
-            if current_model.images_registered <= previous_registered_count:
-                break
+            active_frontier_names = (
+                self.sorted_capture_names(set(frontier_names or []).union(seed_registered_names))
+                if frontier_names is not None
+                else None
+            )
+            seed_support_pairs = self.model_track_supported_pairs(
+                current_model,
+                allowed_names=set(chunk_plan.image_names),
+                per_image_limit=max(self.pair_cap_local, self.pair_cap_seam, 4),
+            )
+            self.run_chunk_matchers(
+                chunk_plan,
+                chunk_database_path=seam_database_path,
+                chunk_dir=seam_dir,
+                stage_prefix=stage_prefix,
+                bridge_target_name_sets=bridge_target_name_sets,
+                frontier_names=active_frontier_names,
+                frontier_pair_cap=frontier_pair_cap,
+                extra_pairs=seed_support_pairs,
+            )
+            current_model.image_names = list(chunk_plan.image_names)
+            current_model.source_chunk_indexes = list(
+                chunk_plan.source_chunk_indexes or seed_model.source_chunk_indexes
+            )
             previous_registered_count = current_model.images_registered
-        if not run_final_bundle_adjustment:
-            current_model.image_names = list(chunk_plan.image_names)
-            current_model.source_chunk_indexes = list(chunk_plan.source_chunk_indexes or current_model.source_chunk_indexes)
-            return current_model
-        should_run_ba, _ = self.should_run_parent_bundle_adjustment(current_model.images_registered)
-        if not should_run_ba:
-            current_model.image_names = list(chunk_plan.image_names)
-            current_model.source_chunk_indexes = list(chunk_plan.source_chunk_indexes or current_model.source_chunk_indexes)
-            return current_model
-        adjusted_model = self.run_bundle_adjuster(
-            input_path=current_model.binary_dir,
-            stage=f"{stage_prefix}_bundle_adjuster",
-        )
-        self.bundle_adjusted_node_count += 1
-        self.max_bundle_adjusted_image_count = max(
-            self.max_bundle_adjusted_image_count,
-            adjusted_model.images_registered,
-        )
-        adjusted_model.image_names = list(chunk_plan.image_names)
-        adjusted_model.source_chunk_indexes = list(
-            chunk_plan.source_chunk_indexes or current_model.source_chunk_indexes
-        )
-        return adjusted_model
+            for cycle in range(1, max(self.parent_seam_registration_cycles, 0) + 1):
+                registrator_model = self.run_image_registrator(
+                    database_path=seam_database_path,
+                    input_path=current_model.binary_dir,
+                    stage=f"{stage_prefix}_image_registrator_{cycle:02d}",
+                    image_count=len(chunk_plan.image_names),
+                )
+                registrator_model.image_names = list(chunk_plan.image_names)
+                registrator_model.source_chunk_indexes = list(current_model.source_chunk_indexes)
+                triangulated_model = self.run_point_triangulator(
+                    database_path=seam_database_path,
+                    input_path=registrator_model.binary_dir,
+                    stage=f"{stage_prefix}_point_triangulator_{cycle:02d}",
+                    image_count=len(chunk_plan.image_names),
+                    clear_points=False,
+                )
+                triangulated_model.image_names = list(chunk_plan.image_names)
+                triangulated_model.source_chunk_indexes = list(current_model.source_chunk_indexes)
+                current_model = triangulated_model
+                if current_model.images_registered <= previous_registered_count:
+                    break
+                previous_registered_count = current_model.images_registered
+            if not run_final_bundle_adjustment:
+                current_model.image_names = list(chunk_plan.image_names)
+                current_model.source_chunk_indexes = list(chunk_plan.source_chunk_indexes or current_model.source_chunk_indexes)
+                return current_model
+            should_run_ba, _ = self.should_run_parent_bundle_adjustment(current_model.images_registered)
+            if not should_run_ba:
+                current_model.image_names = list(chunk_plan.image_names)
+                current_model.source_chunk_indexes = list(chunk_plan.source_chunk_indexes or current_model.source_chunk_indexes)
+                return current_model
+            adjusted_model = self.run_bundle_adjuster(
+                input_path=current_model.binary_dir,
+                stage=f"{stage_prefix}_bundle_adjuster",
+            )
+            self.bundle_adjusted_node_count += 1
+            self.max_bundle_adjusted_image_count = max(
+                self.max_bundle_adjusted_image_count,
+                adjusted_model.images_registered,
+            )
+            adjusted_model.image_names = list(chunk_plan.image_names)
+            adjusted_model.source_chunk_indexes = list(
+                chunk_plan.source_chunk_indexes or current_model.source_chunk_indexes
+            )
+            return adjusted_model
+        finally:
+            self.remove_sqlite_database_artifacts(seam_database_path)
 
     def run_parent_seam_registration_with_retry(
         self,
@@ -5476,257 +5486,316 @@ class ColmapPipeline:
         chunk_dir = self.work_dir / (dir_name or chunk_stage_prefix)
         chunk_dir.mkdir(parents=True, exist_ok=True)
         chunk_database_path = self.prepare_chunk_database(chunk_plan, dir_name=dir_name or chunk_stage_prefix)
-        self.run_chunk_matchers(
-            chunk_plan,
-            chunk_database_path=chunk_database_path,
-            chunk_dir=chunk_dir,
-            stage_prefix=chunk_stage_prefix,
-            bridge_target_name_sets=bridge_target_name_sets,
-        )
-        initial_model = self.run_mapper(
-            database_path=chunk_database_path,
-            stage=f"{chunk_stage_prefix}_mapper_initial",
-            sparse_root=chunk_dir / "sparse_initial",
-            image_count=len(chunk_plan.image_names),
-            bridge_target_name_sets=bridge_target_name_sets,
-            allow_partial_timeout_result=allow_partial_result,
-        )
-        self.chunk_mapper_seconds += self.timings[f"{chunk_stage_prefix}_mapper_initial_seconds"]
-        initial_model.image_names = list(chunk_plan.image_names)
-        initial_model.source_chunk_indexes = list(chunk_plan.source_chunk_indexes or [chunk_plan.index])
-        registered_ratio = (
-            initial_model.images_registered / len(chunk_plan.image_names)
-            if chunk_plan.image_names
-            else 0.0
-        )
-        core_registered_ratio, core_registered_count, registered_names = self.chunk_core_registered_ratio(
-            chunk_plan,
-            initial_model,
-        )
-        core_missing_names = sorted(set(chunk_plan.core_names).difference(registered_names))
-        if registered_ratio >= self.chunk_registered_ratio_threshold():
-            self.chunk_run_metrics.append(
-                {
-                    "chunk_index": chunk_plan.index,
-                    "image_count": len(chunk_plan.image_names),
-                    "registered_ratio": round(registered_ratio, 4),
-                    "core_registered_ratio": round(core_registered_ratio, 4),
-                    "recovered_registered_ratio": None,
-                    "recovered_core_registered_ratio": None,
-                    "failure": False,
-                }
+        try:
+            self.run_chunk_matchers(
+                chunk_plan,
+                chunk_database_path=chunk_database_path,
+                chunk_dir=chunk_dir,
+                stage_prefix=chunk_stage_prefix,
+                bridge_target_name_sets=bridge_target_name_sets,
             )
-            return initial_model
-        if core_registered_ratio >= self.chunk_min_core_registered_ratio:
-            logger.info(
-                "Chunk %s registered %s/%s total images (%.2f%%) but %s/%s core images (%.2f%%); skipping boundary recovery",
-                chunk_plan.index,
-                initial_model.images_registered,
-                len(chunk_plan.image_names),
-                registered_ratio * 100.0,
-                core_registered_count,
-                len(chunk_plan.core_names),
-                core_registered_ratio * 100.0,
+            initial_model = self.run_mapper(
+                database_path=chunk_database_path,
+                stage=f"{chunk_stage_prefix}_mapper_initial",
+                sparse_root=chunk_dir / "sparse_initial",
+                image_count=len(chunk_plan.image_names),
+                bridge_target_name_sets=bridge_target_name_sets,
+                allow_partial_timeout_result=allow_partial_result,
             )
-            self.chunk_run_metrics.append(
-                {
-                    "chunk_index": chunk_plan.index,
-                    "image_count": len(chunk_plan.image_names),
-                    "registered_ratio": round(registered_ratio, 4),
-                    "core_registered_ratio": round(core_registered_ratio, 4),
-                    "recovered_registered_ratio": None,
-                    "recovered_core_registered_ratio": None,
-                    "failure": False,
-                }
+            self.chunk_mapper_seconds += self.timings[f"{chunk_stage_prefix}_mapper_initial_seconds"]
+            initial_model.image_names = list(chunk_plan.image_names)
+            initial_model.source_chunk_indexes = list(chunk_plan.source_chunk_indexes or [chunk_plan.index])
+            registered_ratio = (
+                initial_model.images_registered / len(chunk_plan.image_names)
+                if chunk_plan.image_names
+                else 0.0
             )
-            return initial_model
-        if allow_partial_result and initial_model.partial_result and initial_model.images_registered > 0:
-            bridge_target_count = len(bridge_target_name_sets or [])
-            touched_targets = 0
-            if bridge_target_name_sets:
-                touched_targets, _ = bridge_overlap_counts(
-                    self.merged_image_names(initial_model),
-                    bridge_target_name_sets,
+            core_registered_ratio, core_registered_count, registered_names = self.chunk_core_registered_ratio(
+                chunk_plan,
+                initial_model,
+            )
+            core_missing_names = sorted(set(chunk_plan.core_names).difference(registered_names))
+            if registered_ratio >= self.chunk_registered_ratio_threshold():
+                self.chunk_run_metrics.append(
+                    {
+                        "chunk_index": chunk_plan.index,
+                        "image_count": len(chunk_plan.image_names),
+                        "registered_ratio": round(registered_ratio, 4),
+                        "core_registered_ratio": round(core_registered_ratio, 4),
+                        "recovered_registered_ratio": None,
+                        "recovered_core_registered_ratio": None,
+                        "failure": False,
+                    }
                 )
-            logger.info(
-                "Chunk %s mapper timed out after registering %s/%s images; returning the partial initial result for bridge evaluation (%s/%s target components touched)",
-                chunk_plan.index,
-                initial_model.images_registered,
-                len(chunk_plan.image_names),
-                touched_targets,
-                bridge_target_count,
+                return initial_model
+            if core_registered_ratio >= self.chunk_min_core_registered_ratio:
+                logger.info(
+                    "Chunk %s registered %s/%s total images (%.2f%%) but %s/%s core images (%.2f%%); skipping boundary recovery",
+                    chunk_plan.index,
+                    initial_model.images_registered,
+                    len(chunk_plan.image_names),
+                    registered_ratio * 100.0,
+                    core_registered_count,
+                    len(chunk_plan.core_names),
+                    core_registered_ratio * 100.0,
+                )
+                self.chunk_run_metrics.append(
+                    {
+                        "chunk_index": chunk_plan.index,
+                        "image_count": len(chunk_plan.image_names),
+                        "registered_ratio": round(registered_ratio, 4),
+                        "core_registered_ratio": round(core_registered_ratio, 4),
+                        "recovered_registered_ratio": None,
+                        "recovered_core_registered_ratio": None,
+                        "failure": False,
+                    }
+                )
+                return initial_model
+            if allow_partial_result and initial_model.partial_result and initial_model.images_registered > 0:
+                bridge_target_count = len(bridge_target_name_sets or [])
+                touched_targets = 0
+                if bridge_target_name_sets:
+                    touched_targets, _ = bridge_overlap_counts(
+                        self.merged_image_names(initial_model),
+                        bridge_target_name_sets,
+                    )
+                logger.info(
+                    "Chunk %s mapper timed out after registering %s/%s images; returning the partial initial result for bridge evaluation (%s/%s target components touched)",
+                    chunk_plan.index,
+                    initial_model.images_registered,
+                    len(chunk_plan.image_names),
+                    touched_targets,
+                    bridge_target_count,
+                )
+                self.clear_failure()
+                self.chunk_run_metrics.append(
+                    {
+                        "chunk_index": chunk_plan.index,
+                        "image_count": len(chunk_plan.image_names),
+                        "registered_ratio": round(registered_ratio, 4),
+                        "core_registered_ratio": round(core_registered_ratio, 4),
+                        "recovered_registered_ratio": None,
+                        "recovered_core_registered_ratio": None,
+                        "failure": False,
+                        "partial_result_accepted": True,
+                        "partial_result_stage": "initial",
+                        "partial_result_timed_out": True,
+                    }
+                )
+                return initial_model
+            seam_only_initial_seed_enabled = (
+                self.seam_only_leaf_min_registered_ratio > 0.0
+                or self.seam_only_leaf_min_core_ratio > 0.0
             )
-            self.clear_failure()
-            self.chunk_run_metrics.append(
-                {
-                    "chunk_index": chunk_plan.index,
-                    "image_count": len(chunk_plan.image_names),
-                    "registered_ratio": round(registered_ratio, 4),
-                    "core_registered_ratio": round(core_registered_ratio, 4),
-                    "recovered_registered_ratio": None,
-                    "recovered_core_registered_ratio": None,
-                    "failure": False,
-                    "partial_result_accepted": True,
-                    "partial_result_stage": "initial",
-                    "partial_result_timed_out": True,
-                }
-            )
-            return initial_model
-        seam_only_initial_seed_enabled = (
-            self.seam_only_leaf_min_registered_ratio > 0.0
-            or self.seam_only_leaf_min_core_ratio > 0.0
-        )
-        if (
-            self.parent_merge_mode == "seam_only_v1"
-            and self.chunk_planner == "footprint_graph_v1"
-            and seam_only_initial_seed_enabled
-            and initial_model.images_registered > 0
-            and (
-                self.seam_only_leaf_min_registered_ratio <= 0.0
-                or registered_ratio >= self.seam_only_leaf_min_registered_ratio
-            )
-            and (
-                self.seam_only_leaf_min_core_ratio <= 0.0
-                or core_registered_ratio >= self.seam_only_leaf_min_core_ratio
-            )
-        ):
-            logger.info(
-                "Chunk %s registered %s/%s images (%.2f%%) with %s/%s core images (%.2f%%); keeping the initial model as a seam-only leaf seed and skipping boundary recovery",
-                chunk_plan.index,
-                initial_model.images_registered,
-                len(chunk_plan.image_names),
-                registered_ratio * 100.0,
-                core_registered_count,
-                len(chunk_plan.core_names),
-                core_registered_ratio * 100.0,
-            )
-            self.chunk_recovery_mode = "seam_only_leaf_initial"
-            self.clear_failure()
-            self.chunk_run_metrics.append(
-                {
-                    "chunk_index": chunk_plan.index,
-                    "image_count": len(chunk_plan.image_names),
-                    "registered_ratio": round(registered_ratio, 4),
-                    "core_registered_ratio": round(core_registered_ratio, 4),
-                    "recovered_registered_ratio": None,
-                    "recovered_core_registered_ratio": None,
-                    "failure": False,
-                    "partial_result_accepted": True,
-                    "partial_result_stage": "initial",
-                    "partial_result_timed_out": initial_model.timed_out,
-                    "partial_result_reason": "seam_only_initial_seed",
-                }
-            )
-            return initial_model
+            if (
+                self.parent_merge_mode == "seam_only_v1"
+                and self.chunk_planner == "footprint_graph_v1"
+                and seam_only_initial_seed_enabled
+                and initial_model.images_registered > 0
+                and (
+                    self.seam_only_leaf_min_registered_ratio <= 0.0
+                    or registered_ratio >= self.seam_only_leaf_min_registered_ratio
+                )
+                and (
+                    self.seam_only_leaf_min_core_ratio <= 0.0
+                    or core_registered_ratio >= self.seam_only_leaf_min_core_ratio
+                )
+            ):
+                logger.info(
+                    "Chunk %s registered %s/%s images (%.2f%%) with %s/%s core images (%.2f%%); keeping the initial model as a seam-only leaf seed and skipping boundary recovery",
+                    chunk_plan.index,
+                    initial_model.images_registered,
+                    len(chunk_plan.image_names),
+                    registered_ratio * 100.0,
+                    core_registered_count,
+                    len(chunk_plan.core_names),
+                    core_registered_ratio * 100.0,
+                )
+                self.chunk_recovery_mode = "seam_only_leaf_initial"
+                self.clear_failure()
+                self.chunk_run_metrics.append(
+                    {
+                        "chunk_index": chunk_plan.index,
+                        "image_count": len(chunk_plan.image_names),
+                        "registered_ratio": round(registered_ratio, 4),
+                        "core_registered_ratio": round(core_registered_ratio, 4),
+                        "recovered_registered_ratio": None,
+                        "recovered_core_registered_ratio": None,
+                        "failure": False,
+                        "partial_result_accepted": True,
+                        "partial_result_stage": "initial",
+                        "partial_result_timed_out": initial_model.timed_out,
+                        "partial_result_reason": "seam_only_initial_seed",
+                    }
+                )
+                return initial_model
 
-        logger.info(
-            "Chunk %s registered %s/%s images (%.2f%%) with %s/%s core images (%.2f%%); running targeted boundary recovery. Missing core images: %s",
-            chunk_plan.index,
-            initial_model.images_registered,
-            len(chunk_plan.image_names),
-            registered_ratio * 100.0,
-            core_registered_count,
-            len(chunk_plan.core_names),
-            core_registered_ratio * 100.0,
-            core_missing_names,
-        )
-        self.boundary_recovery_triggered = True
-        retry_chunk_plan = self.build_retry_chunk_plan(chunk_plan, core_missing_names)
-        if retry_chunk_plan.image_names != chunk_plan.image_names:
             logger.info(
-                "Chunk %s retry expanded from %s to %s images across groups %s",
+                "Chunk %s registered %s/%s images (%.2f%%) with %s/%s core images (%.2f%%); running targeted boundary recovery. Missing core images: %s",
                 chunk_plan.index,
+                initial_model.images_registered,
                 len(chunk_plan.image_names),
-                len(retry_chunk_plan.image_names),
-                retry_chunk_plan.group_indices,
+                registered_ratio * 100.0,
+                core_registered_count,
+                len(chunk_plan.core_names),
+                core_registered_ratio * 100.0,
+                core_missing_names,
             )
-            chunk_database_path = self.prepare_chunk_database(
-                retry_chunk_plan,
-                dir_name=dir_name or chunk_stage_prefix,
-            )
-        self.run_chunk_recovery_matchers(
-            chunk_database_path=chunk_database_path,
-            chunk_dir=chunk_dir,
-            chunk_plan=retry_chunk_plan,
-            stage_prefix=chunk_stage_prefix,
-        )
-        recovered_model = self.run_mapper(
-            database_path=chunk_database_path,
-            stage=f"{chunk_stage_prefix}_mapper_recovery",
-            sparse_root=chunk_dir / "sparse_recovery",
-            image_count=len(retry_chunk_plan.image_names),
-            bridge_target_name_sets=bridge_target_name_sets,
-            allow_partial_timeout_result=allow_partial_result,
-        )
-        self.chunk_mapper_seconds += self.timings[f"{chunk_stage_prefix}_mapper_recovery_seconds"]
-        recovered_model.image_names = list(retry_chunk_plan.image_names)
-        recovered_model.source_chunk_indexes = list(
-            retry_chunk_plan.source_chunk_indexes or [retry_chunk_plan.index]
-        )
-        recovered_ratio = (
-            recovered_model.images_registered / len(retry_chunk_plan.image_names)
-            if retry_chunk_plan.image_names
-            else 0.0
-        )
-        recovered_core_ratio, recovered_core_count, recovered_registered_names = self.chunk_core_registered_ratio(
-            retry_chunk_plan,
-            recovered_model,
-        )
-        if recovered_ratio >= self.chunk_registered_ratio_threshold():
-            self.chunk_run_metrics.append(
-                {
-                    "chunk_index": chunk_plan.index,
-                    "image_count": len(chunk_plan.image_names),
-                    "registered_ratio": round(registered_ratio, 4),
-                    "core_registered_ratio": round(core_registered_ratio, 4),
-                    "recovered_registered_ratio": round(recovered_ratio, 4),
-                    "recovered_core_registered_ratio": round(recovered_core_ratio, 4),
-                    "failure": False,
-                }
-            )
-            return recovered_model
-        if recovered_core_ratio >= self.chunk_min_core_registered_ratio:
-            logger.info(
-                "Chunk %s recovered to %s/%s total images (%.2f%%) with %s/%s core images (%.2f%%); accepting retry result",
-                retry_chunk_plan.index,
-                recovered_model.images_registered,
-                len(retry_chunk_plan.image_names),
-                recovered_ratio * 100.0,
-                recovered_core_count,
-                len(retry_chunk_plan.core_names),
-                recovered_core_ratio * 100.0,
-            )
-            self.chunk_run_metrics.append(
-                {
-                    "chunk_index": chunk_plan.index,
-                    "image_count": len(chunk_plan.image_names),
-                    "registered_ratio": round(registered_ratio, 4),
-                    "core_registered_ratio": round(core_registered_ratio, 4),
-                    "recovered_registered_ratio": round(recovered_ratio, 4),
-                    "recovered_core_registered_ratio": round(recovered_core_ratio, 4),
-                    "failure": False,
-                }
-            )
-            return recovered_model
-        if allow_partial_result and recovered_model.images_registered > 0:
-            bridge_target_count = len(bridge_target_name_sets or [])
-            touched_targets = 0
-            if bridge_target_name_sets:
-                touched_targets, _ = bridge_overlap_counts(
-                    self.merged_image_names(recovered_model),
-                    bridge_target_name_sets,
+            self.boundary_recovery_triggered = True
+            retry_chunk_plan = self.build_retry_chunk_plan(chunk_plan, core_missing_names)
+            if retry_chunk_plan.image_names != chunk_plan.image_names:
+                logger.info(
+                    "Chunk %s retry expanded from %s to %s images across groups %s",
+                    chunk_plan.index,
+                    len(chunk_plan.image_names),
+                    len(retry_chunk_plan.image_names),
+                    retry_chunk_plan.group_indices,
                 )
-            logger.info(
-                "Chunk %s remained below the standard retry threshold at %s/%s images and %s/%s core images; returning partial result for bridge evaluation (%s/%s target components touched)",
-                retry_chunk_plan.index,
-                recovered_model.images_registered,
-                len(retry_chunk_plan.image_names),
-                recovered_core_count,
-                len(retry_chunk_plan.core_names),
-                touched_targets,
-                bridge_target_count,
+                chunk_database_path = self.prepare_chunk_database(
+                    retry_chunk_plan,
+                    dir_name=dir_name or chunk_stage_prefix,
+                )
+            self.run_chunk_recovery_matchers(
+                chunk_database_path=chunk_database_path,
+                chunk_dir=chunk_dir,
+                chunk_plan=retry_chunk_plan,
+                stage_prefix=chunk_stage_prefix,
             )
-            self.clear_failure()
+            recovered_model = self.run_mapper(
+                database_path=chunk_database_path,
+                stage=f"{chunk_stage_prefix}_mapper_recovery",
+                sparse_root=chunk_dir / "sparse_recovery",
+                image_count=len(retry_chunk_plan.image_names),
+                bridge_target_name_sets=bridge_target_name_sets,
+                allow_partial_timeout_result=allow_partial_result,
+            )
+            self.chunk_mapper_seconds += self.timings[f"{chunk_stage_prefix}_mapper_recovery_seconds"]
+            recovered_model.image_names = list(retry_chunk_plan.image_names)
+            recovered_model.source_chunk_indexes = list(
+                retry_chunk_plan.source_chunk_indexes or [retry_chunk_plan.index]
+            )
+            recovered_ratio = (
+                recovered_model.images_registered / len(retry_chunk_plan.image_names)
+                if retry_chunk_plan.image_names
+                else 0.0
+            )
+            recovered_core_ratio, recovered_core_count, recovered_registered_names = self.chunk_core_registered_ratio(
+                retry_chunk_plan,
+                recovered_model,
+            )
+            if recovered_ratio >= self.chunk_registered_ratio_threshold():
+                self.chunk_run_metrics.append(
+                    {
+                        "chunk_index": chunk_plan.index,
+                        "image_count": len(chunk_plan.image_names),
+                        "registered_ratio": round(registered_ratio, 4),
+                        "core_registered_ratio": round(core_registered_ratio, 4),
+                        "recovered_registered_ratio": round(recovered_ratio, 4),
+                        "recovered_core_registered_ratio": round(recovered_core_ratio, 4),
+                        "failure": False,
+                    }
+                )
+                return recovered_model
+            if recovered_core_ratio >= self.chunk_min_core_registered_ratio:
+                logger.info(
+                    "Chunk %s recovered to %s/%s total images (%.2f%%) with %s/%s core images (%.2f%%); accepting retry result",
+                    retry_chunk_plan.index,
+                    recovered_model.images_registered,
+                    len(retry_chunk_plan.image_names),
+                    recovered_ratio * 100.0,
+                    recovered_core_count,
+                    len(retry_chunk_plan.core_names),
+                    recovered_core_ratio * 100.0,
+                )
+                self.chunk_run_metrics.append(
+                    {
+                        "chunk_index": chunk_plan.index,
+                        "image_count": len(chunk_plan.image_names),
+                        "registered_ratio": round(registered_ratio, 4),
+                        "core_registered_ratio": round(core_registered_ratio, 4),
+                        "recovered_registered_ratio": round(recovered_ratio, 4),
+                        "recovered_core_registered_ratio": round(recovered_core_ratio, 4),
+                        "failure": False,
+                    }
+                )
+                return recovered_model
+            if allow_partial_result and recovered_model.images_registered > 0:
+                bridge_target_count = len(bridge_target_name_sets or [])
+                touched_targets = 0
+                if bridge_target_name_sets:
+                    touched_targets, _ = bridge_overlap_counts(
+                        self.merged_image_names(recovered_model),
+                        bridge_target_name_sets,
+                    )
+                logger.info(
+                    "Chunk %s remained below the standard retry threshold at %s/%s images and %s/%s core images; returning partial result for bridge evaluation (%s/%s target components touched)",
+                    retry_chunk_plan.index,
+                    recovered_model.images_registered,
+                    len(retry_chunk_plan.image_names),
+                    recovered_core_count,
+                    len(retry_chunk_plan.core_names),
+                    touched_targets,
+                    bridge_target_count,
+                )
+                self.clear_failure()
+                self.chunk_run_metrics.append(
+                    {
+                        "chunk_index": chunk_plan.index,
+                        "image_count": len(chunk_plan.image_names),
+                        "registered_ratio": round(registered_ratio, 4),
+                        "core_registered_ratio": round(core_registered_ratio, 4),
+                        "recovered_registered_ratio": round(recovered_ratio, 4),
+                        "recovered_core_registered_ratio": round(recovered_core_ratio, 4),
+                        "failure": False,
+                        "partial_result_accepted": True,
+                        "partial_result_stage": "recovery",
+                        "partial_result_timed_out": recovered_model.timed_out,
+                    }
+                )
+                return recovered_model
+            if (
+                self.parent_merge_mode == "seam_only_v1"
+                and self.chunk_planner == "footprint_graph_v1"
+                and recovered_model.images_registered > 0
+            ):
+                logger.info(
+                    "Chunk %s remained below the standard retry threshold at %s/%s images and %s/%s core images; carrying the recovery model forward as a seam-only leaf seed instead of triggering an adjacent mapper rerun",
+                    retry_chunk_plan.index,
+                    recovered_model.images_registered,
+                    len(retry_chunk_plan.image_names),
+                    recovered_core_count,
+                    len(retry_chunk_plan.core_names),
+                )
+                self.chunk_recovery_mode = "seam_only_leaf_partial"
+                self.clear_failure()
+                self.chunk_run_metrics.append(
+                    {
+                        "chunk_index": chunk_plan.index,
+                        "image_count": len(chunk_plan.image_names),
+                        "registered_ratio": round(registered_ratio, 4),
+                        "core_registered_ratio": round(core_registered_ratio, 4),
+                        "recovered_registered_ratio": round(recovered_ratio, 4),
+                        "recovered_core_registered_ratio": round(recovered_core_ratio, 4),
+                        "failure": False,
+                        "partial_result_accepted": True,
+                        "partial_result_stage": "recovery",
+                        "partial_result_timed_out": recovered_model.timed_out,
+                        "partial_result_reason": "seam_only_leaf_seed",
+                    }
+                )
+                return recovered_model
+            self.mark_failure(
+                stage=f"{chunk_stage_prefix}_recovery_failed",
+                reason=(
+                    f"chunk {retry_chunk_plan.index} remained below threshold after prior-aware retry: "
+                    f"registered={recovered_model.images_registered}/{len(retry_chunk_plan.image_names)} "
+                    f"core={recovered_core_count}/{len(retry_chunk_plan.core_names)} "
+                    f"missing_core={sorted(set(retry_chunk_plan.core_names).difference(recovered_registered_names))}"
+                ),
+                chunk_index=retry_chunk_plan.index,
+                registered_ratio=recovered_ratio,
+                core_registered_ratio=recovered_core_ratio,
+            )
             self.chunk_run_metrics.append(
                 {
                     "chunk_index": chunk_plan.index,
@@ -5735,68 +5804,12 @@ class ColmapPipeline:
                     "core_registered_ratio": round(core_registered_ratio, 4),
                     "recovered_registered_ratio": round(recovered_ratio, 4),
                     "recovered_core_registered_ratio": round(recovered_core_ratio, 4),
-                    "failure": False,
-                    "partial_result_accepted": True,
-                    "partial_result_stage": "recovery",
-                    "partial_result_timed_out": recovered_model.timed_out,
+                    "failure": True,
                 }
             )
-            return recovered_model
-        if (
-            self.parent_merge_mode == "seam_only_v1"
-            and self.chunk_planner == "footprint_graph_v1"
-            and recovered_model.images_registered > 0
-        ):
-            logger.info(
-                "Chunk %s remained below the standard retry threshold at %s/%s images and %s/%s core images; carrying the recovery model forward as a seam-only leaf seed instead of triggering an adjacent mapper rerun",
-                retry_chunk_plan.index,
-                recovered_model.images_registered,
-                len(retry_chunk_plan.image_names),
-                recovered_core_count,
-                len(retry_chunk_plan.core_names),
-            )
-            self.chunk_recovery_mode = "seam_only_leaf_partial"
-            self.clear_failure()
-            self.chunk_run_metrics.append(
-                {
-                    "chunk_index": chunk_plan.index,
-                    "image_count": len(chunk_plan.image_names),
-                    "registered_ratio": round(registered_ratio, 4),
-                    "core_registered_ratio": round(core_registered_ratio, 4),
-                    "recovered_registered_ratio": round(recovered_ratio, 4),
-                    "recovered_core_registered_ratio": round(recovered_core_ratio, 4),
-                    "failure": False,
-                    "partial_result_accepted": True,
-                    "partial_result_stage": "recovery",
-                    "partial_result_timed_out": recovered_model.timed_out,
-                    "partial_result_reason": "seam_only_leaf_seed",
-                }
-            )
-            return recovered_model
-        self.mark_failure(
-            stage=f"{chunk_stage_prefix}_recovery_failed",
-            reason=(
-                f"chunk {retry_chunk_plan.index} remained below threshold after prior-aware retry: "
-                f"registered={recovered_model.images_registered}/{len(retry_chunk_plan.image_names)} "
-                f"core={recovered_core_count}/{len(retry_chunk_plan.core_names)} "
-                f"missing_core={sorted(set(retry_chunk_plan.core_names).difference(recovered_registered_names))}"
-            ),
-            chunk_index=retry_chunk_plan.index,
-            registered_ratio=recovered_ratio,
-            core_registered_ratio=recovered_core_ratio,
-        )
-        self.chunk_run_metrics.append(
-            {
-                "chunk_index": chunk_plan.index,
-                "image_count": len(chunk_plan.image_names),
-                "registered_ratio": round(registered_ratio, 4),
-                "core_registered_ratio": round(core_registered_ratio, 4),
-                "recovered_registered_ratio": round(recovered_ratio, 4),
-                "recovered_core_registered_ratio": round(recovered_core_ratio, 4),
-                "failure": True,
-            }
-        )
-        raise RuntimeError(self.failure_reason_detail)
+            raise RuntimeError(self.failure_reason_detail)
+        finally:
+            self.remove_sqlite_database_artifacts(chunk_database_path)
 
     def merged_image_names(self, model: ModelSummary) -> Set[str]:
         return load_registered_image_names(model.text_dir / "images.txt")
@@ -6988,7 +7001,7 @@ class ColmapPipeline:
         with open(self.output_dir / "sfm_metadata.json", "w", encoding="utf-8") as handle:
             json.dump(metadata, handle, indent=2)
         if self.chunk_planner == "footprint_graph_v1":
-            self.write_chunk_planner_manifest()
+            self.write_chunk_planner_manifest(include_archives=False)
 
         if not metadata["quality_check_passed"]:
             raise RuntimeError(
