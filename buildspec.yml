@@ -18,7 +18,21 @@ phases:
       python: 3.9
     commands:
       - echo "Installing dependencies..."
-      - pip install awscli --upgrade
+      - |
+        echo "Ensuring awscli is available..."
+        for attempt in 1 2 3; do
+          python -m pip install awscli --upgrade && break
+          if aws --version >/dev/null 2>&1; then
+            echo "awscli upgrade failed on attempt $attempt; falling back to preinstalled $(aws --version 2>&1)"
+            break
+          fi
+          if [ "$attempt" -eq 3 ]; then
+            echo "awscli upgrade failed and no preinstalled awscli is available"
+            exit 1
+          fi
+          echo "Retrying awscli upgrade after transient failure..."
+          sleep $((attempt * 5))
+        done
       # Install Docker Buildx for advanced caching
       - docker buildx version || (curl -L https://github.com/docker/buildx/releases/download/v0.11.2/buildx-v0.11.2.linux-amd64 -o /usr/local/bin/docker-buildx && chmod +x /usr/local/bin/docker-buildx)
       - docker buildx create --name mybuilder --use || true
