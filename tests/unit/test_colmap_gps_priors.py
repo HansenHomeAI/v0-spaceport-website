@@ -4082,6 +4082,112 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 "chunk_model_component_bridge_04_00_02_seed_01",
             )
 
+    def test_merge_chunk_models_preserves_pending_seed_artifacts_when_retiring_shared_paths(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.chunk_planner = "footprint_graph_v1"
+            pipeline.parent_merge_mode = "seam_only_v1"
+            pipeline.chunk_bridge_recovery_max_attempts = 1
+            pipeline.capture_ordered_names = [
+                "IMG_00.jpg",
+                "IMG_01.jpg",
+                "IMG_02.jpg",
+                "IMG_03.jpg",
+                "IMG_04.jpg",
+                "IMG_05.jpg",
+            ]
+            pipeline.exif_records = {name: {} for name in pipeline.capture_ordered_names}
+
+            shared_binary_dir = root / "shared_bin"
+            shared_text_dir = root / "shared_text"
+            second_binary_dir = root / "second_bin"
+            second_text_dir = root / "second_text"
+            for path in (shared_binary_dir, shared_text_dir, second_binary_dir, second_text_dir):
+                path.mkdir(parents=True, exist_ok=True)
+
+            chunk_models = [
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_00_mapper_initial",
+                    text_dir=shared_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=1000,
+                    binary_dir=shared_binary_dir,
+                    image_names=["IMG_00.jpg", "IMG_01.jpg"],
+                    source_chunk_indexes=[0],
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_01_mapper_initial",
+                    text_dir=second_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=1000,
+                    binary_dir=second_binary_dir,
+                    image_names=["IMG_01.jpg", "IMG_02.jpg"],
+                    source_chunk_indexes=[1],
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_02_mapper_initial",
+                    text_dir=shared_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=900,
+                    binary_dir=shared_binary_dir,
+                    image_names=["IMG_04.jpg", "IMG_05.jpg"],
+                    source_chunk_indexes=[2],
+                ),
+            ]
+            merged_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_model_merger_01_output_attempt_01",
+                text_dir=root / "merged_text",
+                cameras_registered=1,
+                images_registered=3,
+                points_3d=1500,
+                binary_dir=pipeline.work_dir / "merged_chunk_model_01_attempt_01",
+                image_names=["IMG_00.jpg", "IMG_01.jpg", "IMG_02.jpg"],
+                source_chunk_indexes=[0, 1],
+            )
+            registered_names_by_stage = {
+                "chunk_00_mapper_initial": {"IMG_00.jpg", "IMG_01.jpg"},
+                "chunk_01_mapper_initial": {"IMG_01.jpg", "IMG_02.jpg"},
+                "chunk_02_mapper_initial": {"IMG_04.jpg", "IMG_05.jpg"},
+                "chunk_model_merger_01_output_attempt_01": {"IMG_00.jpg", "IMG_01.jpg", "IMG_02.jpg"},
+            }
+
+            def summarize_side_effect(*, stage, binary_dir, image_count):
+                self.assertEqual(stage, "chunk_model_merger_01_output_attempt_01")
+                return merged_model
+
+            def recovery_side_effect(*, pending_models, **kwargs):
+                self.assertTrue(shared_binary_dir.exists())
+                self.assertTrue(shared_text_dir.exists())
+                self.assertEqual(
+                    [model.stage for model in pending_models],
+                    ["chunk_02_mapper_initial", "chunk_model_merger_01_output_attempt_01"],
+                )
+                return None, {"status": "no_usable_seed"}
+
+            with mock.patch.object(run_colmap_sfm, "stream_command"), mock.patch.object(
+                pipeline,
+                "summarize_model",
+                side_effect=summarize_side_effect,
+            ), mock.patch.object(
+                pipeline,
+                "merged_image_names",
+                side_effect=lambda model: registered_names_by_stage[model.stage],
+            ), mock.patch.object(
+                pipeline,
+                "attempt_pending_merge_bridge_recovery",
+                side_effect=recovery_side_effect,
+            ) as recovery_mock:
+                with self.assertRaises(RuntimeError):
+                    pipeline.merge_chunk_models(chunk_models)
+
+            self.assertEqual(recovery_mock.call_count, 1)
+            self.assertTrue(shared_binary_dir.exists())
+            self.assertTrue(shared_text_dir.exists())
+
     def test_merge_chunk_models_records_component_failure_summary(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

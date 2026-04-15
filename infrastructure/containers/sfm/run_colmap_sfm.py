@@ -6334,7 +6334,10 @@ class ColmapPipeline:
                             seam_refinement_skipped = True
                             seam_refinement_reason = "legacy_mode"
                         if raw_merged_candidate is not merged_candidate:
-                            self.cleanup_model_artifacts(raw_merged_candidate)
+                            self.cleanup_model_artifacts(
+                                raw_merged_candidate,
+                                preserve_models=[*pending_models, merged_candidate],
+                            )
                         if not seam_refinement_skipped and not seam_frontier_names:
                             seam_frontier_names = list(source_union_names)
                         merge_record = MergeNodeRecord(
@@ -6355,7 +6358,10 @@ class ColmapPipeline:
                         )
                         merged_pair_indexes = (first_index, second_index)
                         break
-                    self.cleanup_model_artifacts(merged_candidate)
+                    self.cleanup_model_artifacts(
+                        merged_candidate,
+                        preserve_models=pending_models,
+                    )
                     merged_candidate = None
                 if merged_candidate is not None:
                     break
@@ -6422,7 +6428,10 @@ class ColmapPipeline:
             pending_models.append(merged_candidate)
             registered_names_by_stage[merged_candidate.stage] = self.merged_image_names(merged_candidate)
             for retired_model in retired_models:
-                self.cleanup_model_artifacts(retired_model)
+                self.cleanup_model_artifacts(
+                    retired_model,
+                    preserve_models=pending_models,
+                )
             if merge_record is not None:
                 self.merge_node_records.append(merge_record)
             merge_sequence += 1
