@@ -4691,6 +4691,83 @@ class ColmapPipeline:
             except FileNotFoundError:
                 continue
 
+    def path_is_within_work_dir(self, path: Path) -> bool:
+        try:
+            path.resolve().relative_to(self.work_dir.resolve())
+            return True
+        except ValueError:
+            return False
+
+    def remove_work_dir_tree(self, path: Path) -> None:
+        if not path or str(path) == ".":
+            return
+        if not self.path_is_within_work_dir(path):
+            return
+        shutil.rmtree(path, ignore_errors=True)
+        for parent in path.parents:
+            if parent == self.work_dir or not self.path_is_within_work_dir(parent):
+                break
+            try:
+                parent.rmdir()
+            except OSError:
+                break
+
+    def model_artifact_paths(self, model: ModelSummary | None) -> Set[Path]:
+        if model is None:
+            return set()
+        return {
+            path
+            for path in (Path(model.binary_dir), Path(model.text_dir))
+            if path and str(path) != "."
+        }
+
+    def cleanup_model_artifacts(
+        self,
+        model: ModelSummary | None,
+        *,
+        preserve_models: Sequence[ModelSummary] | None = None,
+        preserve_paths: Sequence[Path] | None = None,
+    ) -> None:
+        model_paths = self.model_artifact_paths(model)
+        if not model_paths:
+            return
+        preserved = set(preserve_paths or [])
+        for preserve_model in preserve_models or []:
+            preserved.update(self.model_artifact_paths(preserve_model))
+        for artifact_path in sorted(model_paths, key=lambda candidate: len(candidate.parts), reverse=True):
+            if artifact_path in preserved:
+                continue
+            self.remove_work_dir_tree(artifact_path)
+
+    def path_is_within_work_dir(self, path: Path) -> bool:
+        try:
+            path.resolve().relative_to(self.work_dir.resolve())
+            return True
+        except (FileNotFoundError, RuntimeError, ValueError):
+            return False
+
+    def remove_work_dir_artifact(self, path: Path) -> None:
+        if not self.path_is_within_work_dir(path):
+            return
+        try:
+            if path.is_dir():
+                shutil.rmtree(path, ignore_errors=True)
+            else:
+                path.unlink()
+        except FileNotFoundError:
+            return
+
+    def cleanup_model_artifacts(self, model: ModelSummary | None) -> None:
+        if model is None:
+            return
+        seen_paths: Set[Path] = set()
+        for path in (model.binary_dir, model.text_dir):
+            normalized_path = Path(path)
+            if normalized_path in seen_paths:
+                continue
+            seen_paths.add(normalized_path)
+            self.remove_work_dir_artifact(normalized_path)
+
     def normalize_sqlite_database_for_chunking(self, database_path: Path) -> None:
         if not database_path.exists():
             return
@@ -5327,6 +5404,7 @@ class ColmapPipeline:
             )
             previous_registered_count = current_model.images_registered
             for cycle in range(1, max(self.parent_seam_registration_cycles, 0) + 1):
+                prior_cycle_model = current_model
                 registrator_model = self.run_image_registrator(
                     database_path=seam_database_path,
                     input_path=current_model.binary_dir,
@@ -5344,6 +5422,12 @@ class ColmapPipeline:
                 )
                 triangulated_model.image_names = list(chunk_plan.image_names)
                 triangulated_model.source_chunk_indexes = list(current_model.source_chunk_indexes)
+                self.cleanup_model_artifacts(registrator_model)
+                if (
+                    triangulated_model.binary_dir != prior_cycle_model.binary_dir
+                    or triangulated_model.text_dir != prior_cycle_model.text_dir
+                ):
+                    self.cleanup_model_artifacts(prior_cycle_model)
                 current_model = triangulated_model
                 if current_model.images_registered <= previous_registered_count:
                     break
@@ -5370,6 +5454,11 @@ class ColmapPipeline:
             adjusted_model.source_chunk_indexes = list(
                 chunk_plan.source_chunk_indexes or current_model.source_chunk_indexes
             )
+            if (
+                adjusted_model.binary_dir != current_model.binary_dir
+                or adjusted_model.text_dir != current_model.text_dir
+            ):
+                self.cleanup_model_artifacts(current_model)
             return adjusted_model
         finally:
             self.remove_sqlite_database_artifacts(seam_database_path)
@@ -5897,6 +5986,7 @@ class ColmapPipeline:
             model.stage: self.merged_image_names(model)
             for model in pending_models
         }
+        pre_merge_registered_names: Set[str] = set().union(*registered_names_by_stage.values())
         merge_sequence = 1
         while len(pending_models) > 1:
             ranked_pairs: List[tuple[int, int, int, int, int, int, int, int]] = []
@@ -6002,6 +6092,7 @@ class ColmapPipeline:
                         )
                     except RuntimeError as exc:
                         merge_error = exc
+                        self.remove_work_dir_artifact(output_path)
                         continue
                     merged_candidate = self.summarize_model(
                         stage=f"{stage_name}_output_attempt_{attempt_index:02d}",
@@ -6034,6 +6125,7 @@ class ColmapPipeline:
                                 self.model_source_image_names(input_two)
                             )
                         )
+                        raw_merged_candidate = merged_candidate
                         merged_candidate.image_names = list(source_union_names)
                         merged_candidate.source_chunk_indexes = list(source_chunk_indexes)
                         seam_frontier_names: List[str] = []
@@ -6072,6 +6164,8 @@ class ColmapPipeline:
                         else:
                             seam_refinement_skipped = True
                             seam_refinement_reason = "legacy_mode"
+                        if raw_merged_candidate is not merged_candidate:
+                            self.cleanup_model_artifacts(raw_merged_candidate)
                         if not seam_refinement_skipped and not seam_frontier_names:
                             seam_frontier_names = list(source_union_names)
                         merge_record = MergeNodeRecord(
@@ -6092,6 +6186,7 @@ class ColmapPipeline:
                         )
                         merged_pair_indexes = (first_index, second_index)
                         break
+                    self.cleanup_model_artifacts(merged_candidate)
                     merged_candidate = None
                 if merged_candidate is not None:
                     break
@@ -6105,10 +6200,13 @@ class ColmapPipeline:
                     "Failed to merge chunk models: no overlapping registered images produced "
                     f"a usable merge among pending stages {pending_stages}"
                 )
+            retired_models = [pending_models[index] for index in merged_pair_indexes]
             for removal_index in sorted(merged_pair_indexes, reverse=True):
                 pending_models.pop(removal_index)
             pending_models.append(merged_candidate)
             registered_names_by_stage[merged_candidate.stage] = self.merged_image_names(merged_candidate)
+            for retired_model in retired_models:
+                self.cleanup_model_artifacts(retired_model)
             if merge_record is not None:
                 self.merge_node_records.append(merge_record)
             merge_sequence += 1
@@ -6127,10 +6225,12 @@ class ColmapPipeline:
                 adjusted_model.images_registered,
             )
             adjusted_model.source_chunk_indexes = list(current_model.source_chunk_indexes)
+            if (
+                adjusted_model.binary_dir != current_model.binary_dir
+                or adjusted_model.text_dir != current_model.text_dir
+            ):
+                self.cleanup_model_artifacts(current_model)
         self.timings["chunk_bundle_adjuster_skipped"] = 0.0 if should_run_ba else 1.0
-        pre_merge_registered_names: Set[str] = set()
-        for chunk_model in chunk_models:
-            pre_merge_registered_names.update(load_registered_image_names(chunk_model.text_dir / "images.txt"))
         merged_registered_names = load_registered_image_names(adjusted_model.text_dir / "images.txt")
         retained_registered_names = pre_merge_registered_names.intersection(merged_registered_names)
         pre_merge_registered_count = len(pre_merge_registered_names)

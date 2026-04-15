@@ -2814,6 +2814,112 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(pipeline.chunk_merge_proof["pre_merge_unique_registered_images"], 3)
             self.assertEqual(pipeline.chunk_merge_proof["final_merged_registered_images"], 3)
 
+    def test_merge_chunk_models_cleans_failed_attempt_and_retired_model_artifacts(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.parent_merge_mode = "legacy_rerun"
+            first_model_dir = pipeline.work_dir / "chunk_00" / "sparse_initial" / "0"
+            second_model_dir = pipeline.work_dir / "chunk_01" / "sparse_initial" / "0"
+            first_text_dir = pipeline.work_dir / "text_00"
+            second_text_dir = pipeline.work_dir / "text_01"
+            failed_output_path = pipeline.work_dir / "merged_chunk_model_01_attempt_01"
+            failed_text_dir = pipeline.work_dir / "text_models" / "chunk_model_merger_01_output_attempt_01" / failed_output_path.name
+            success_output_path = pipeline.work_dir / "merged_chunk_model_01_attempt_02"
+            success_text_dir = pipeline.work_dir / "text_models" / "chunk_model_merger_01_output_attempt_02" / success_output_path.name
+            for directory in (
+                first_model_dir,
+                second_model_dir,
+                first_text_dir,
+                second_text_dir,
+                failed_output_path,
+                failed_text_dir,
+                success_output_path,
+                success_text_dir,
+            ):
+                directory.mkdir(parents=True, exist_ok=True)
+            (first_text_dir / "images.txt").write_text(
+                "1 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n2 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (second_text_dir / "images.txt").write_text(
+                "3 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n4 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (failed_text_dir / "images.txt").write_text(
+                "5 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n6 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (success_text_dir / "images.txt").write_text(
+                "7 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n8 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n9 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            chunk_models = [
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_00_mapper_initial",
+                    text_dir=first_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=1000,
+                    binary_dir=first_model_dir,
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_01_mapper_initial",
+                    text_dir=second_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=1000,
+                    binary_dir=second_model_dir,
+                ),
+            ]
+            summarize_side_effects = [
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_model_merger_01_output_attempt_01",
+                    text_dir=failed_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=1100,
+                    binary_dir=failed_output_path,
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_model_merger_01_output_attempt_02",
+                    text_dir=success_text_dir,
+                    cameras_registered=1,
+                    images_registered=3,
+                    points_3d=1500,
+                    binary_dir=success_output_path,
+                ),
+            ]
+            adjusted_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_bundle_adjuster",
+                text_dir=success_text_dir,
+                cameras_registered=1,
+                images_registered=3,
+                points_3d=2000,
+                binary_dir=success_output_path,
+            )
+
+            with mock.patch.object(run_colmap_sfm, "stream_command"), mock.patch.object(
+                pipeline,
+                "summarize_model",
+                side_effect=summarize_side_effects,
+            ), mock.patch.object(
+                pipeline,
+                "run_bundle_adjuster",
+                return_value=adjusted_model,
+            ):
+                result = pipeline.merge_chunk_models(chunk_models)
+
+            self.assertEqual(result.images_registered, 3)
+            self.assertFalse(failed_output_path.exists())
+            self.assertFalse(failed_text_dir.exists())
+            self.assertFalse(first_model_dir.exists())
+            self.assertFalse(first_text_dir.exists())
+            self.assertFalse(second_model_dir.exists())
+            self.assertFalse(second_text_dir.exists())
+            self.assertTrue(success_output_path.exists())
+            self.assertTrue(success_text_dir.exists())
+
     def test_merge_chunk_models_raises_when_no_usable_merge_candidate_is_produced(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -3936,6 +4042,161 @@ class ColmapGpsPriorTests(unittest.TestCase):
 
             self.assertEqual(result.images_registered, 2)
             cleanup_mock.assert_called_once_with(root / "seam.db")
+
+    def test_run_parent_seam_registration_cleans_superseded_cycle_model_artifacts(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.parent_seam_registration_cycles = 1
+            seed_text_dir = root / "seed_text"
+            seed_text_dir.mkdir(parents=True, exist_ok=True)
+            (seed_text_dir / "images.txt").write_text(
+                "\n".join(
+                    [
+                        "1 1 0 0 0 0 0 0 1 A.jpg",
+                        "0 0 -1",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            reindexed_binary_dir = pipeline.work_dir / "reindexed_bin"
+            reindexed_text_dir = pipeline.work_dir / "reindexed_text"
+            registrator_binary_dir = pipeline.work_dir / "registrator_bin"
+            registrator_text_dir = pipeline.work_dir / "registrator_text"
+            triangulated_binary_dir = pipeline.work_dir / "triangulated_bin"
+            triangulated_text_dir = pipeline.work_dir / "triangulated_text"
+            adjusted_binary_dir = pipeline.work_dir / "adjusted_bin"
+            adjusted_text_dir = pipeline.work_dir / "adjusted_text"
+            for directory in (
+                reindexed_binary_dir,
+                reindexed_text_dir,
+                registrator_binary_dir,
+                registrator_text_dir,
+                triangulated_binary_dir,
+                triangulated_text_dir,
+                adjusted_binary_dir,
+                adjusted_text_dir,
+            ):
+                directory.mkdir(parents=True, exist_ok=True)
+            (reindexed_text_dir / "images.txt").write_text(
+                "\n".join(
+                    [
+                        "1 1 0 0 0 0 0 0 1 A.jpg",
+                        "0 0 -1",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            seed_model = run_colmap_sfm.ModelSummary(
+                stage="seed",
+                text_dir=seed_text_dir,
+                cameras_registered=1,
+                images_registered=1,
+                points_3d=10,
+                binary_dir=root / "seed_bin",
+                image_names=["A.jpg"],
+                source_chunk_indexes=[3],
+            )
+            reindexed_model = run_colmap_sfm.ModelSummary(
+                stage="seed_reindexed",
+                text_dir=reindexed_text_dir,
+                cameras_registered=1,
+                images_registered=1,
+                points_3d=10,
+                binary_dir=reindexed_binary_dir,
+                image_names=["A.jpg"],
+                source_chunk_indexes=[3],
+            )
+            registrator_model = run_colmap_sfm.ModelSummary(
+                stage="registrator",
+                text_dir=registrator_text_dir,
+                cameras_registered=1,
+                images_registered=2,
+                points_3d=15,
+                binary_dir=registrator_binary_dir,
+                image_names=["A.jpg", "B.jpg"],
+                source_chunk_indexes=[3],
+            )
+            triangulated_model = run_colmap_sfm.ModelSummary(
+                stage="triangulated",
+                text_dir=triangulated_text_dir,
+                cameras_registered=1,
+                images_registered=2,
+                points_3d=20,
+                binary_dir=triangulated_binary_dir,
+                image_names=["A.jpg", "B.jpg"],
+                source_chunk_indexes=[3],
+            )
+            adjusted_model = run_colmap_sfm.ModelSummary(
+                stage="bundle_adjusted",
+                text_dir=adjusted_text_dir,
+                cameras_registered=1,
+                images_registered=3,
+                points_3d=25,
+                binary_dir=adjusted_binary_dir,
+                image_names=["A.jpg", "B.jpg", "C.jpg"],
+                source_chunk_indexes=[3],
+            )
+            chunk_plan = run_colmap_sfm.ChunkPlan(
+                index=3,
+                core_names=["A.jpg", "B.jpg"],
+                image_names=["A.jpg", "B.jpg"],
+                overlap_names=[],
+                source_chunk_indexes=[3],
+            )
+
+            with mock.patch.object(
+                pipeline,
+                "prepare_chunk_database",
+                return_value=root / "seam.db",
+            ), mock.patch.object(
+                pipeline,
+                "reindex_model_to_database",
+                return_value=reindexed_model,
+            ), mock.patch.object(
+                pipeline,
+                "model_track_supported_pairs",
+                return_value=[],
+            ), mock.patch.object(
+                pipeline,
+                "run_chunk_matchers",
+            ), mock.patch.object(
+                pipeline,
+                "run_image_registrator",
+                return_value=registrator_model,
+            ), mock.patch.object(
+                pipeline,
+                "run_point_triangulator",
+                return_value=triangulated_model,
+            ), mock.patch.object(
+                pipeline,
+                "should_run_parent_bundle_adjustment",
+                return_value=(True, "needed"),
+            ), mock.patch.object(
+                pipeline,
+                "run_bundle_adjuster",
+                return_value=adjusted_model,
+            ), mock.patch.object(
+                pipeline,
+                "remove_sqlite_database_artifacts",
+            ):
+                result = pipeline.run_parent_seam_registration(
+                    seed_model=seed_model,
+                    chunk_plan=chunk_plan,
+                    stage_prefix="chunk_model_seam_03",
+                )
+
+            self.assertEqual(result.images_registered, 3)
+            self.assertFalse(reindexed_binary_dir.exists())
+            self.assertFalse(reindexed_text_dir.exists())
+            self.assertFalse(registrator_binary_dir.exists())
+            self.assertFalse(registrator_text_dir.exists())
+            self.assertFalse(triangulated_binary_dir.exists())
+            self.assertFalse(triangulated_text_dir.exists())
+            self.assertTrue(adjusted_binary_dir.exists())
+            self.assertTrue(adjusted_text_dir.exists())
 
     def test_model_track_supported_pairs_returns_seed_supported_neighbors(self):
         with tempfile.TemporaryDirectory() as tmp:
