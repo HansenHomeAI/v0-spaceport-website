@@ -120,8 +120,21 @@ function readPreviewBootConfig() {
         Math.trunc(Number.parseFloat(params.get("previewInitialVisiblePoints") ?? "0") || 0),
       ),
       revealDurationMs: Math.max(0, Math.trunc(Number.parseFloat(params.get("previewRevealDurationMs") ?? "900") || 900)),
+      minimumDisplayMs: Math.max(
+        0,
+        Math.trunc(Number.parseFloat(params.get("previewMinimumDisplayMs") ?? "900") || 900),
+      ),
+      revealChunkMetaCount: Math.max(
+        0,
+        Math.trunc(Number.parseFloat(params.get("previewRevealChunkMetaCount") ?? "1") || 1),
+      ),
+      revealChunkTextureCount: Math.max(
+        0,
+        Math.trunc(Number.parseFloat(params.get("previewRevealChunkTextureCount") ?? "6") || 6),
+      ),
       fadeDelayMs: Math.max(0, Math.trunc(Number.parseFloat(params.get("previewFadeDelayMs") ?? "250") || 250)),
       fadeDurationMs: Math.max(0, Math.trunc(Number.parseFloat(params.get("previewFadeDurationMs") ?? "900") || 900)),
+      skyboxFadeStart: clamp01(Number.parseFloat(params.get("previewSkyboxFadeStart") ?? "0.72") || 0.72),
       focusTarget: parseVector(params.get("previewFocus")) ?? [0, 0, 0],
     };
   } catch {
@@ -160,6 +173,27 @@ function setPreviewState(patch) {
   };
 }
 
+function getPreviewFirstFrameAt() {
+  return finiteNumber(window.__sogsPreviewFirstFrameAt) ? window.__sogsPreviewFirstFrameAt : 0;
+}
+
+function previewReadinessSnapshot() {
+  const metrics = window.__sogsNetworkMetrics ?? {};
+  const uniqueChunkMetaUrls = Array.isArray(metrics.uniqueChunkMetaUrls) ? metrics.uniqueChunkMetaUrls : [];
+  const events = Array.isArray(metrics.events) ? metrics.events : [];
+  const chunkTextureUrls = new Set();
+  for (const event of events) {
+    if (event?.kind === "lod-chunk-texture" && event?.status === 200 && typeof event?.url === "string") {
+      chunkTextureUrls.add(event.url);
+    }
+  }
+  return {
+    chunkMetaCount: uniqueChunkMetaUrls.length,
+    chunkTextureCount: chunkTextureUrls.size,
+    firstFrameAt: getPreviewFirstFrameAt(),
+  };
+}
+
 function destroyPreviewController(controller) {
   if (!controller) {
     return;
@@ -167,8 +201,9 @@ function destroyPreviewController(controller) {
   if (controller.frame) {
     cancelAnimationFrame(controller.frame);
   }
-  if (controller.fadeTimer) {
-    clearTimeout(controller.fadeTimer);
+  if (controller.app?.scene && finiteNumber(controller.skyboxBaseIntensity)) {
+    controller.app.scene.skyboxIntensity = controller.skyboxBaseIntensity;
+    controller.app.renderNextFrame = true;
   }
   try {
     window.removeEventListener("pointerdown", controller.fastReveal, true);
@@ -197,21 +232,12 @@ function applyPreviewVisibleCount(controller, visibleCount) {
   setPreviewState({ visiblePoints: nextVisible, totalPoints: controller.totalPoints });
 }
 
-function schedulePreviewFade(controller, options = {}) {
+function startPreviewReveal(controller, now = performance.now()) {
   if (!controller) {
     return;
   }
-  const startReveal = () => {
-    if (controller.fadeTimer) {
-      clearTimeout(controller.fadeTimer);
-      controller.fadeTimer = 0;
-    }
-    controller.fadeScheduled = true;
-    controller.revealStartedAt = performance.now();
-    setPreviewState({ phase: "fading" });
-  };
   if (controller.revealStartedAt) {
-    if (options.immediate === true) {
+    if (controller.forceReveal) {
       controller.revealStartedAt = Math.min(
         controller.revealStartedAt,
         performance.now() - Math.max(0, controller.config.fadeDurationMs * 0.35),
@@ -219,24 +245,54 @@ function schedulePreviewFade(controller, options = {}) {
     }
     return;
   }
-  if (controller.fadeScheduled) {
-    if (options.immediate === true && controller.fadeTimer) {
-      startReveal();
-    }
-    return;
-  }
   controller.fadeScheduled = true;
-  if (options.immediate === true) {
-    startReveal();
+  controller.revealStartedAt = now;
+  setPreviewState({ phase: "fading" });
+}
+
+function schedulePreviewFade(controller, options = {}) {
+  if (!controller) {
     return;
   }
-  controller.fadeTimer = window.setTimeout(startReveal, controller.config.fadeDelayMs);
+  controller.revealRequested = true;
+  controller.revealReadyAt = controller.revealReadyAt || 0;
+  if (options.immediate === true) {
+    controller.forceReveal = true;
+  }
+}
+
+function maybeStartPreviewReveal(controller, now) {
+  if (!controller || controller.revealStartedAt) {
+    return;
+  }
+  const readiness = previewReadinessSnapshot();
+  controller.lastReadiness = readiness;
+  const minimumDisplayMs = controller.forceReveal
+    ? Math.min(200, controller.config.minimumDisplayMs)
+    : controller.config.minimumDisplayMs;
+  const firstFrameSeen = readiness.firstFrameAt > 0;
+  const displayedLongEnough = now - controller.pointsStartedAt >= minimumDisplayMs;
+  const readyForChunks =
+    readiness.chunkMetaCount >= controller.config.revealChunkMetaCount &&
+    readiness.chunkTextureCount >= controller.config.revealChunkTextureCount;
+  if (!(controller.revealRequested && firstFrameSeen && displayedLongEnough && (readyForChunks || controller.forceReveal))) {
+    return;
+  }
+  if (!controller.revealReadyAt) {
+    controller.revealReadyAt = now;
+  }
+  if (!controller.forceReveal && now - controller.revealReadyAt < controller.config.fadeDelayMs) {
+    return;
+  }
+  startPreviewReveal(controller, now);
 }
 
 function notifyPreviewFirstFrame() {
+  window.__sogsPreviewFirstFrameAt = performance.now();
   setPreviewState({ fadeRequested: true });
   const controller = window.__sogsPreviewController;
   if (controller) {
+    controller.firstFrameAt = getPreviewFirstFrameAt();
     schedulePreviewFade(controller);
   }
 }
@@ -319,7 +375,7 @@ async function loadPreviewPoints(config) {
 function createPreviewOverlayCanvas() {
   const existing = document.getElementById(PREVIEW_OVERLAY_ID);
   if (existing instanceof HTMLCanvasElement) {
-    existing.remove();
+    return existing;
   }
   const canvas = document.createElement("canvas");
   canvas.id = PREVIEW_OVERLAY_ID;
@@ -336,19 +392,43 @@ function createPreviewOverlayCanvas() {
   return canvas;
 }
 
-function syncPreviewOverlaySize(controller) {
-  const sourceCanvas = controller.app?.graphicsDevice?.canvas;
+function syncPreviewOverlaySize(sourceCanvas, canvas) {
   const pixelWidth = Math.max(1, sourceCanvas?.width ?? Math.round(window.innerWidth * (window.devicePixelRatio || 1)));
   const pixelHeight = Math.max(
     1,
     sourceCanvas?.height ?? Math.round(window.innerHeight * (window.devicePixelRatio || 1)),
   );
-  if (controller.canvas.width !== pixelWidth) {
-    controller.canvas.width = pixelWidth;
+  if (canvas.width !== pixelWidth) {
+    canvas.width = pixelWidth;
   }
-  if (controller.canvas.height !== pixelHeight) {
-    controller.canvas.height = pixelHeight;
+  if (canvas.height !== pixelHeight) {
+    canvas.height = pixelHeight;
   }
+}
+
+function paintPreviewBackdrop(canvas, context, sourceCanvas = null) {
+  if (!context) {
+    return;
+  }
+  syncPreviewOverlaySize(sourceCanvas, canvas);
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = "rgba(0,0,0,1)";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function primePreviewBackdrop() {
+  const canvas = createPreviewOverlayCanvas();
+  const context = canvas.getContext("2d", { alpha: true, desynchronized: true });
+  paintPreviewBackdrop(canvas, context);
+  setPreviewState({
+    enabled: true,
+    phase: "loading",
+    visiblePoints: 0,
+    totalPoints: 0,
+    alpha: 1,
+    error: null,
+  });
+  return { canvas, context };
 }
 
 function projectPreviewFocus(controller, out) {
@@ -395,11 +475,13 @@ function getPreviewVisibleCount(controller, now) {
 function renderPreviewOverlay(controller, now) {
   const camera = window.__sogsCtx?.camera?.camera;
   if (!camera || !controller.context) {
+    paintPreviewBackdrop(controller.canvas, controller.context, controller.app?.graphicsDevice?.canvas);
     controller.frame = requestAnimationFrame((nextNow) => renderPreviewOverlay(controller, nextNow));
     return;
   }
 
-  syncPreviewOverlaySize(controller);
+  syncPreviewOverlaySize(controller.app?.graphicsDevice?.canvas, controller.canvas);
+  maybeStartPreviewReveal(controller, now);
 
   const visibleCount = getPreviewVisibleCount(controller, now);
   applyPreviewVisibleCount(controller, visibleCount);
@@ -415,6 +497,16 @@ function renderPreviewOverlay(controller, now) {
     revealProgress = clamp01((now - controller.revealStartedAt) / Math.max(1, controller.config.fadeDurationMs));
     revealRadius = computePreviewMaxRadius(controller, focusScreen) * easeOutCubic(revealProgress);
   }
+  const holeFeather = Math.max(32 * (window.devicePixelRatio || 1), revealRadius * 0.16);
+  const holeInnerRadius = Math.max(0, revealRadius - holeFeather);
+
+  if (controller.app?.scene && finiteNumber(controller.skyboxBaseIntensity)) {
+    const skyboxProgress = controller.revealStartedAt
+      ? clamp01((revealProgress - controller.config.skyboxFadeStart) / Math.max(0.001, 1 - controller.config.skyboxFadeStart))
+      : 0;
+    controller.app.scene.skyboxIntensity = controller.skyboxBaseIntensity * easeOutCubic(skyboxProgress);
+    controller.app.renderNextFrame = true;
+  }
 
   controller.alpha = 1 - revealProgress;
   setPreviewState({
@@ -429,13 +521,22 @@ function renderPreviewOverlay(controller, now) {
     alpha: controller.alpha,
   });
 
-  ctx.clearRect(0, 0, width, height);
-  ctx.fillStyle = "rgba(0,0,0,1)";
-  ctx.fillRect(0, 0, width, height);
+  paintPreviewBackdrop(controller.canvas, ctx, controller.app?.graphicsDevice?.canvas);
 
   if (revealRadius > 0) {
     ctx.save();
     ctx.globalCompositeOperation = "destination-out";
+    const gradient = ctx.createRadialGradient(
+      focusScreen.x,
+      focusScreen.y,
+      holeInnerRadius,
+      focusScreen.x,
+      focusScreen.y,
+      revealRadius,
+    );
+    gradient.addColorStop(0, "rgba(0,0,0,1)");
+    gradient.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = gradient;
     ctx.beginPath();
     ctx.arc(focusScreen.x, focusScreen.y, revealRadius, 0, Math.PI * 2);
     ctx.fill();
@@ -443,6 +544,7 @@ function renderPreviewOverlay(controller, now) {
   }
 
   const holeRadiusSq = revealRadius * revealRadius;
+  const holeInnerRadiusSq = holeInnerRadius * holeInnerRadius;
   const size = Math.max(1, Math.round(controller.pointPixelSize));
   const half = size * 0.5;
   ctx.fillStyle = PREVIEW_DOT_COLOR;
@@ -463,7 +565,19 @@ function renderPreviewOverlay(controller, now) {
     if (revealRadius > 0) {
       const dx = x - focusScreen.x;
       const dy = y - focusScreen.y;
-      if (dx * dx + dy * dy <= holeRadiusSq) {
+      const radiusSq = dx * dx + dy * dy;
+      if (radiusSq <= holeInnerRadiusSq) {
+        continue;
+      }
+      if (radiusSq < holeRadiusSq) {
+        const radius = Math.sqrt(radiusSq);
+        const alpha = clamp01((radius - holeInnerRadius) / Math.max(1, revealRadius - holeInnerRadius));
+        if (alpha <= 0.02) {
+          continue;
+        }
+        ctx.fillStyle = `rgba(255,255,255,${alpha.toFixed(3)})`;
+        ctx.fillRect(Math.round(x - half), Math.round(y - half), size, size);
+        ctx.fillStyle = PREVIEW_DOT_COLOR;
         continue;
       }
     }
@@ -519,6 +633,7 @@ async function setupPreviewScaffold(app, gsplatEntity, config, preloadedData = n
   if (!context) {
     throw new Error("preview-overlay-context");
   }
+  paintPreviewBackdrop(canvas, context, app?.graphicsDevice?.canvas);
 
   const focusLocal = new Vec3(config.focusTarget[0], config.focusTarget[1], config.focusTarget[2]);
   const focusWorld = new Vec3();
@@ -548,9 +663,12 @@ async function setupPreviewScaffold(app, gsplatEntity, config, preloadedData = n
     visiblePoints: 0,
     alpha: 1,
     frame: 0,
-    fadeTimer: 0,
     fadeScheduled: false,
+    revealRequested: !!window.__sogsPreviewState?.fadeRequested,
     revealStartedAt: 0,
+    revealReadyAt: 0,
+    firstFrameAt: getPreviewFirstFrameAt(),
+    forceReveal: false,
     pointsStartedAt: performance.now(),
     initialVisiblePoints: config.initialVisiblePoints,
     worldPoints,
@@ -558,11 +676,16 @@ async function setupPreviewScaffold(app, gsplatEntity, config, preloadedData = n
     worldPoint: new Vec3(),
     screenPoint: new Vec3(),
     focusScreen: new Vec3(),
+    skyboxBaseIntensity: finiteNumber(app?.scene?.skyboxIntensity) ? app.scene.skyboxIntensity : 1,
     pointPixelSize: config.pointSize * (window.devicePixelRatio || 1),
     config,
     fastReveal: () => schedulePreviewFade(controller, { immediate: true }),
   };
   window.__sogsPreviewController = controller;
+  if (app?.scene) {
+    app.scene.skyboxIntensity = 0;
+    app.renderNextFrame = true;
+  }
 
   window.addEventListener("pointerdown", controller.fastReveal, true);
   window.addEventListener("wheel", controller.fastReveal, true);
@@ -1163,6 +1286,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       settings,
     ]);
     const previewConfig = readPreviewBootConfig();
+    if (previewConfig) {
+      primePreviewBackdrop();
+    }
     const previewDataPromise = previewConfig
       ? loadPreviewPoints(previewConfig).catch((error) => {
           console.error("Preview preload failed", error);

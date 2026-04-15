@@ -60,6 +60,12 @@ export type ViewerPreviewManifest = {
   fadeDurationMs?: number;
   fadeDurationDesktopMs?: number;
   fadeDurationMobileMs?: number;
+  minimumDisplayMs?: number;
+  minimumDisplayDesktopMs?: number;
+  minimumDisplayMobileMs?: number;
+  revealChunkMetaCount?: number;
+  revealChunkTextureCount?: number;
+  skyboxFadeStart?: number;
 };
 
 export type ViewerStreamingManifest = {

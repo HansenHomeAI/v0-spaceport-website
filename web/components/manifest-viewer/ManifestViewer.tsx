@@ -236,6 +236,10 @@ type ViewerPreviewRuntimeConfig = {
   revealDurationMs: number;
   fadeDelayMs: number;
   fadeDurationMs: number;
+  minimumDisplayMs: number;
+  revealChunkMetaCount: number;
+  revealChunkTextureCount: number;
+  skyboxFadeStart: number;
   focusTarget: V3;
 };
 
@@ -258,6 +262,12 @@ function resolvePreviewConfig(
         fadeDurationMs?: number;
         fadeDurationDesktopMs?: number;
         fadeDurationMobileMs?: number;
+        minimumDisplayMs?: number;
+        minimumDisplayDesktopMs?: number;
+        minimumDisplayMobileMs?: number;
+        revealChunkMetaCount?: number;
+        revealChunkTextureCount?: number;
+        skyboxFadeStart?: number;
       }
     | undefined,
   focusTarget: V3,
@@ -306,6 +316,19 @@ function resolvePreviewConfig(
         ) ?? 900,
       ),
     ),
+    minimumDisplayMs: Math.max(
+      0,
+      Math.trunc(
+        resolveStreamingDefault(
+          preview?.minimumDisplayMs,
+          preview?.minimumDisplayDesktopMs,
+          preview?.minimumDisplayMobileMs,
+        ) ?? 900,
+      ),
+    ),
+    revealChunkMetaCount: Math.max(0, Math.trunc(preview?.revealChunkMetaCount ?? 1)),
+    revealChunkTextureCount: Math.max(0, Math.trunc(preview?.revealChunkTextureCount ?? 6)),
+    skyboxFadeStart: Math.min(1, Math.max(0, preview?.skyboxFadeStart ?? 0.72)),
     focusTarget: { ...focusTarget },
   };
 }
@@ -662,8 +685,12 @@ export function ManifestViewer({ manifest }: { manifest: ViewerManifest }) {
       params.set("previewPointSize", String(previewConfig.pointSize));
       params.set("previewInitialVisiblePoints", String(previewConfig.initialVisiblePoints));
       params.set("previewRevealDurationMs", String(previewConfig.revealDurationMs));
+      params.set("previewMinimumDisplayMs", String(previewConfig.minimumDisplayMs));
+      params.set("previewRevealChunkMetaCount", String(previewConfig.revealChunkMetaCount));
+      params.set("previewRevealChunkTextureCount", String(previewConfig.revealChunkTextureCount));
       params.set("previewFadeDelayMs", String(previewConfig.fadeDelayMs));
       params.set("previewFadeDurationMs", String(previewConfig.fadeDurationMs));
+      params.set("previewSkyboxFadeStart", String(previewConfig.skyboxFadeStart));
       params.set(
         "previewFocus",
         [previewConfig.focusTarget.x, previewConfig.focusTarget.y, previewConfig.focusTarget.z].join(","),

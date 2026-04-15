@@ -1,3 +1,4 @@
+2026-04-15T00:55:00Z preview boot sequence fix: black point-cloud scaffold before chunk-gated center-out reveal
 2026-04-14T16:26:34Z white-point scaffold preview + focus-out splat reveal validation
 2026-04-14T05:02:33Z point-preview sidecar + progressive preview-to-splat manifest viewer validation
 2026-04-13T20:27:30Z Meadow full-SH streamed horizon bundle + manifest bridge tuning validation

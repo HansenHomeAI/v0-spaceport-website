@@ -325,6 +325,36 @@ async function inspectStreamedChunkMetadata(bundleMetrics) {
     const preview = window.__sogsPreviewState;
     return !!preview && Number.isFinite(preview.totalPoints) && preview.totalPoints > 0;
   }, null, { timeout: 120000 });
+  const earlyPreviewState = await viewerFrame.evaluate(() => {
+    const preview = window.__sogsPreviewState ?? null;
+    const metrics = window.__sogsNetworkMetrics ?? {};
+    const chunkTextureCount = Array.isArray(metrics.events)
+      ? new Set(
+          metrics.events
+            .filter((event) => event?.kind === "lod-chunk-texture" && event?.status === 200)
+            .map((event) => event.url),
+        ).size
+      : 0;
+    return {
+      preview,
+      skyboxIntensity: window.__sogsCtx?.app?.scene?.skyboxIntensity ?? null,
+      chunkTextureCount,
+    };
+  });
+  assert(!!earlyPreviewState.preview, "expected preview state during boot");
+  assert(
+    earlyPreviewState.preview.phase !== "done",
+    `expected preview stage before final handoff, got ${JSON.stringify(earlyPreviewState.preview)}`,
+  );
+  assert(
+    Number.isFinite(earlyPreviewState.preview.maxVisiblePoints) &&
+      earlyPreviewState.preview.maxVisiblePoints >= expectedPreviewPointCountMin,
+    `expected preview scaffold visible during boot, got ${JSON.stringify(earlyPreviewState.preview)}`,
+  );
+  assert(
+    Number.isFinite(earlyPreviewState.skyboxIntensity) && earlyPreviewState.skyboxIntensity <= 0.05,
+    `expected dark skybox during preview boot stage, got ${JSON.stringify(earlyPreviewState)}`,
+  );
   await waitForStreamingMetrics(page);
   const bundleMetrics = await readStreamingMetrics(page);
   assert(bundleMetrics.bundleKind === expectedBundleKind, `expected ${expectedBundleKind}, got ${bundleMetrics.bundleKind}`);
@@ -491,6 +521,7 @@ async function inspectStreamedChunkMetadata(bundleMetrics) {
   console.log(`Render stats: ${JSON.stringify(renderStats)}`);
   console.log(`Bundle metrics: ${JSON.stringify(bundleMetrics)}`);
   console.log(`Chunk metadata: ${JSON.stringify(chunkMetadata)}`);
+  console.log(`Early preview state: ${JSON.stringify(earlyPreviewState)}`);
   console.log(`Preview state: ${JSON.stringify(previewState)}`);
   console.log(`Skybox responses: ${JSON.stringify(skyboxResponses)}`);
   console.log(`LOD responses: ${JSON.stringify(lodResponses.slice(0, 20))}`);
