@@ -4660,6 +4660,10 @@ class ColmapPipeline:
             )
         )
 
+    def is_sqlite_disk_full_error(self, error: sqlite3.DatabaseError) -> bool:
+        message = str(error).lower()
+        return "database or disk is full" in message or "disk is full" in message
+
     def run_sqlite_operation_with_retry(self, stage: str, operation):
         attempts = max(1, self.sqlite_lock_retry_count + 1)
         last_error: sqlite3.OperationalError | None = None
@@ -4695,7 +4699,7 @@ class ColmapPipeline:
         try:
             path.resolve().relative_to(self.work_dir.resolve())
             return True
-        except ValueError:
+        except (FileNotFoundError, RuntimeError, ValueError):
             return False
 
     def remove_work_dir_tree(self, path: Path) -> None:
@@ -4711,6 +4715,18 @@ class ColmapPipeline:
                 parent.rmdir()
             except OSError:
                 break
+
+    def remove_work_dir_artifact(self, path: Path) -> None:
+        normalized_path = Path(path)
+        if not self.path_is_within_work_dir(normalized_path):
+            return
+        try:
+            if normalized_path.is_dir():
+                shutil.rmtree(normalized_path, ignore_errors=True)
+            else:
+                normalized_path.unlink()
+        except FileNotFoundError:
+            return
 
     def model_artifact_paths(self, model: ModelSummary | None) -> Set[Path]:
         if model is None:
@@ -4738,35 +4754,6 @@ class ColmapPipeline:
             if artifact_path in preserved:
                 continue
             self.remove_work_dir_tree(artifact_path)
-
-    def path_is_within_work_dir(self, path: Path) -> bool:
-        try:
-            path.resolve().relative_to(self.work_dir.resolve())
-            return True
-        except (FileNotFoundError, RuntimeError, ValueError):
-            return False
-
-    def remove_work_dir_artifact(self, path: Path) -> None:
-        if not self.path_is_within_work_dir(path):
-            return
-        try:
-            if path.is_dir():
-                shutil.rmtree(path, ignore_errors=True)
-            else:
-                path.unlink()
-        except FileNotFoundError:
-            return
-
-    def cleanup_model_artifacts(self, model: ModelSummary | None) -> None:
-        if model is None:
-            return
-        seen_paths: Set[Path] = set()
-        for path in (model.binary_dir, model.text_dir):
-            normalized_path = Path(path)
-            if normalized_path in seen_paths:
-                continue
-            seen_paths.add(normalized_path)
-            self.remove_work_dir_artifact(normalized_path)
 
     def normalize_sqlite_database_for_chunking(self, database_path: Path) -> None:
         if not database_path.exists():
@@ -4800,7 +4787,147 @@ class ColmapPipeline:
         self.normalize_sqlite_database_for_chunking(self.database_path)
         self.global_database_normalized_for_chunking = True
 
-    def clone_database_for_chunk(self, destination_path: Path) -> None:
+    def iter_sqlite_master_entries(
+        self,
+        connection: sqlite3.Connection,
+        *,
+        object_type: str,
+        table_names: Set[str],
+    ) -> List[tuple[str, str, str]]:
+        rows = connection.execute(
+            """
+            SELECT name, tbl_name, sql
+            FROM sqlite_master
+            WHERE type = ?
+              AND sql IS NOT NULL
+            ORDER BY name
+            """,
+            (object_type,),
+        ).fetchall()
+        return [
+            (str(name), str(table_name), str(sql))
+            for name, table_name, sql in rows
+            if str(table_name) in table_names and not str(name).startswith("sqlite_autoindex")
+        ]
+
+    def table_columns_for_connection(self, connection: sqlite3.Connection, table_name: str) -> List[str]:
+        return [str(row[1]) for row in connection.execute(f"PRAGMA table_info({table_name})").fetchall()]
+
+    def copy_rows_into_chunk_database(
+        self,
+        source_connection: sqlite3.Connection,
+        destination_connection: sqlite3.Connection,
+        *,
+        table_name: str,
+        key_column: str,
+        key_values: Sequence[int],
+    ) -> None:
+        if not key_values:
+            return
+        columns = self.table_columns_for_connection(source_connection, table_name)
+        if key_column not in columns:
+            return
+        column_list = ", ".join(columns)
+        placeholders = ", ".join("?" for _ in columns)
+        unique_values = sorted(set(int(value) for value in key_values))
+        batch_size = 400
+        for batch_start in range(0, len(unique_values), batch_size):
+            batch_values = unique_values[batch_start : batch_start + batch_size]
+            where_placeholders = ", ".join("?" for _ in batch_values)
+            rows = source_connection.execute(
+                f"SELECT {column_list} FROM {table_name} WHERE {key_column} IN ({where_placeholders})",
+                batch_values,
+            ).fetchall()
+            if rows:
+                destination_connection.executemany(
+                    f"INSERT INTO {table_name} ({column_list}) VALUES ({placeholders})",
+                    rows,
+                )
+
+    def create_chunk_database_subset(
+        self,
+        *,
+        source_connection: sqlite3.Connection,
+        destination_path: Path,
+        keep_image_names: Set[str],
+    ) -> None:
+        destination_path.parent.mkdir(parents=True, exist_ok=True)
+        self.remove_sqlite_database_artifacts(destination_path)
+        image_rows = source_connection.execute(
+            "SELECT image_id, name, camera_id FROM images"
+        ).fetchall()
+        kept_image_rows = [
+            (int(image_id), str(name), int(camera_id))
+            for image_id, name, camera_id in image_rows
+            if str(name) in keep_image_names
+        ]
+        if not kept_image_rows:
+            raise RuntimeError("Cannot create chunk database subset without any kept images")
+        kept_image_ids = [image_id for image_id, _name, _camera_id in kept_image_rows]
+        kept_camera_ids = [camera_id for _image_id, _name, camera_id in kept_image_rows]
+        table_names = {
+            "cameras",
+            "images",
+            "keypoints",
+            "descriptors",
+            "matches",
+            "two_view_geometries",
+            "pose_priors",
+        }
+        with self.sqlite_connect(destination_path) as destination_connection:
+            for _name, _table_name, sql in self.iter_sqlite_master_entries(
+                source_connection,
+                object_type="table",
+                table_names=table_names,
+            ):
+                destination_connection.execute(sql)
+            self.copy_rows_into_chunk_database(
+                source_connection,
+                destination_connection,
+                table_name="cameras",
+                key_column="camera_id",
+                key_values=kept_camera_ids,
+            )
+            self.copy_rows_into_chunk_database(
+                source_connection,
+                destination_connection,
+                table_name="images",
+                key_column="image_id",
+                key_values=kept_image_ids,
+            )
+            for feature_table in ("keypoints", "descriptors"):
+                self.copy_rows_into_chunk_database(
+                    source_connection,
+                    destination_connection,
+                    table_name=feature_table,
+                    key_column="image_id",
+                    key_values=kept_image_ids,
+                )
+            pose_prior_columns = set(self.table_columns_for_connection(source_connection, "pose_priors"))
+            if "image_id" in pose_prior_columns:
+                pose_prior_key = "image_id"
+            elif "pose_prior_id" in pose_prior_columns:
+                pose_prior_key = "pose_prior_id"
+            else:
+                pose_prior_key = ""
+            if pose_prior_key:
+                self.copy_rows_into_chunk_database(
+                    source_connection,
+                    destination_connection,
+                    table_name="pose_priors",
+                    key_column=pose_prior_key,
+                    key_values=kept_image_ids,
+                )
+            for _name, _table_name, sql in self.iter_sqlite_master_entries(
+                source_connection,
+                object_type="index",
+                table_names=table_names,
+            ):
+                destination_connection.execute(sql)
+            destination_connection.execute("PRAGMA journal_mode=DELETE")
+            destination_connection.commit()
+
+    def clone_database_for_chunk(self, destination_path: Path, *, keep_image_names: Set[str] | None = None) -> None:
         destination_path.parent.mkdir(parents=True, exist_ok=True)
         self.remove_sqlite_database_artifacts(destination_path)
         source_uri = f"file:{self.database_path.as_posix()}?mode=ro"
@@ -4813,10 +4940,28 @@ class ColmapPipeline:
                     destination_connection.execute("PRAGMA journal_mode=DELETE")
                     destination_connection.commit()
 
-        self.run_sqlite_operation_with_retry(
-            f"clone_database_for_chunk:{destination_path.parent.name}",
-            backup_database,
-        )
+        try:
+            self.run_sqlite_operation_with_retry(
+                f"clone_database_for_chunk:{destination_path.parent.name}",
+                backup_database,
+            )
+        except sqlite3.OperationalError as error:
+            if not keep_image_names or not self.is_sqlite_disk_full_error(error):
+                raise
+            logger.warning(
+                "SQLite backup clone for %s hit disk pressure (%s); rebuilding a lean chunk database subset for %s images",
+                destination_path.parent.name,
+                error,
+                len(keep_image_names),
+            )
+            self.remove_sqlite_database_artifacts(destination_path)
+            with self.sqlite_connect(source_uri, uri=True) as source_connection:
+                source_connection.execute("PRAGMA query_only=1")
+                self.create_chunk_database_subset(
+                    source_connection=source_connection,
+                    destination_path=destination_path,
+                    keep_image_names=keep_image_names,
+                )
         self.normalize_sqlite_database_for_chunking(destination_path)
 
     def prune_chunk_database(
@@ -4866,7 +5011,10 @@ class ColmapPipeline:
             try:
                 # Chunk retries can reuse the same directory name; create a fresh SQLite clone so
                 # stale WAL/SHM files from the previous attempt cannot corrupt the next retry.
-                self.clone_database_for_chunk(chunk_database_path)
+                self.clone_database_for_chunk(
+                    chunk_database_path,
+                    keep_image_names=keep_image_names,
+                )
                 supports_pose_prior_image_backfill = self.run_sqlite_operation_with_retry(
                     f"inspect_chunk_database_schema:{chunk_plan.index:02d}",
                     lambda: self.supports_pose_prior_image_backfill(database_path=chunk_database_path),
