@@ -91,7 +91,7 @@ deploy_container() {
   local container_name=$1
   local repo_name
   repo_name=$(get_repo_name "$container_name")
-  local sfm_runtime_base_digest="sha256:1f63ec405c289f7686b061d986ee76f42be776619a54fe99f095499d3b849a59"
+  local sfm_runtime_base_digest=""
   local build_cache_ref
   build_cache_ref="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:buildcache"
   local branch_tag="${BRANCH_SUFFIX:-}"
@@ -146,9 +146,21 @@ deploy_container() {
   local -a registry_cache_from=()
   local -a registry_cache_to=()
   if [[ "${container_name}" == "sfm" ]]; then
-    extra_build_args+=(--build-arg "BASE_IMAGE=${ecr_uri}@${sfm_runtime_base_digest}")
-    extra_cache_from+=(--cache-from "${ecr_uri}@${sfm_runtime_base_digest}")
-    log "SfM app builds use the last known-good runtime digest as BASE_IMAGE so COLMAP remains available."
+    sfm_runtime_base_digest=$(aws ecr describe-images \
+      --region "${AWS_REGION}" \
+      --repository-name "${repo_name}" \
+      --image-ids imageTag=latest \
+      --query 'imageDetails[0].imageDigest' \
+      --output text 2>/dev/null || true)
+    if [[ -n "${sfm_runtime_base_digest}" && "${sfm_runtime_base_digest}" != "None" ]]; then
+      extra_build_args+=(--build-arg "BASE_IMAGE=${ecr_uri}@${sfm_runtime_base_digest}")
+      extra_cache_from+=(--cache-from "${ecr_uri}@${sfm_runtime_base_digest}")
+      log "SfM app builds use the published runtime digest ${sfm_runtime_base_digest} as BASE_IMAGE so COLMAP remains available."
+    else
+      extra_build_args+=(--build-arg "BASE_IMAGE=${ecr_uri}:latest")
+      extra_cache_from+=(--cache-from "${ecr_uri}:latest")
+      log "SfM app builds could not resolve a runtime digest; falling back to ${ecr_uri}:latest as BASE_IMAGE."
+    fi
   elif [[ "${container_name}" != "sfm" ]]; then
     extra_build_args+=(--build-arg "BASE_IMAGE=${base_image}")
     extra_cache_from+=(--cache-from "${base_image}")
