@@ -3819,6 +3819,343 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertFalse(pipeline.chunk_merge_proof["top_level_ba_ran"])
             self.assertEqual(pipeline.chunk_merge_proof["top_level_ba_reason"], "above_threshold:2")
 
+    def test_merge_chunk_models_inserts_component_bridge_connector_and_continues(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.chunk_planner = "footprint_graph_v1"
+            pipeline.parent_merge_mode = "seam_only_v1"
+            first_model_dir = root / "chunk_00" / "sparse_initial" / "0"
+            second_model_dir = root / "chunk_01" / "sparse_initial" / "0"
+            third_model_dir = root / "chunk_02" / "sparse_initial" / "0"
+            first_text_dir = root / "text_00"
+            second_text_dir = root / "text_01"
+            third_text_dir = root / "text_02"
+            merged_first_text_dir = root / "merged_first_text"
+            merged_second_text_dir = root / "merged_second_text"
+            merged_final_text_dir = root / "merged_final_text"
+            connector_text_dir = root / "connector_text"
+            for directory in (
+                first_model_dir,
+                second_model_dir,
+                third_model_dir,
+                first_text_dir,
+                second_text_dir,
+                third_text_dir,
+                merged_first_text_dir,
+                merged_second_text_dir,
+                merged_final_text_dir,
+                connector_text_dir,
+            ):
+                directory.mkdir(parents=True, exist_ok=True)
+            (first_text_dir / "images.txt").write_text(
+                "1 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n2 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (second_text_dir / "images.txt").write_text(
+                "3 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n4 1 0 0 0 0 0 0 1 IMG_04.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (third_text_dir / "images.txt").write_text(
+                "5 1 0 0 0 0 0 0 1 IMG_04.jpg\n0 0 -1\n6 1 0 0 0 0 0 0 1 IMG_05.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (merged_first_text_dir / "images.txt").write_text(
+                "7 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n8 1 0 0 0 0 0 0 1 IMG_04.jpg\n0 0 -1\n9 1 0 0 0 0 0 0 1 IMG_05.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (connector_text_dir / "images.txt").write_text(
+                "10 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n11 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (merged_second_text_dir / "images.txt").write_text(
+                "12 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n13 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n14 1 0 0 0 0 0 0 1 IMG_04.jpg\n0 0 -1\n15 1 0 0 0 0 0 0 1 IMG_05.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (merged_final_text_dir / "images.txt").write_text(
+                "16 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n17 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n18 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n19 1 0 0 0 0 0 0 1 IMG_04.jpg\n0 0 -1\n20 1 0 0 0 0 0 0 1 IMG_05.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            chunk_models = [
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_00_mapper_initial",
+                    text_dir=first_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=1000,
+                    binary_dir=first_model_dir,
+                    image_names=["IMG_01.jpg", "IMG_02.jpg"],
+                    source_chunk_indexes=[0],
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_01_mapper_initial",
+                    text_dir=second_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=1000,
+                    binary_dir=second_model_dir,
+                    image_names=["IMG_03.jpg", "IMG_04.jpg"],
+                    source_chunk_indexes=[1],
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_02_mapper_initial",
+                    text_dir=third_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=1000,
+                    binary_dir=third_model_dir,
+                    image_names=["IMG_04.jpg", "IMG_05.jpg"],
+                    source_chunk_indexes=[2],
+                ),
+            ]
+            connector_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_model_component_bridge_02_00_02_seed_01_point_triangulator_01",
+                text_dir=connector_text_dir,
+                cameras_registered=1,
+                images_registered=2,
+                points_3d=800,
+                binary_dir=root / "connector_bin",
+                image_names=["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg", "IMG_05.jpg"],
+                source_chunk_indexes=[0, 1, 2],
+            )
+            summarize_call_count = 0
+
+            def summarize_side_effect(*, stage, binary_dir, image_count):
+                nonlocal summarize_call_count
+                summarize_call_count += 1
+                if summarize_call_count == 1:
+                    return run_colmap_sfm.ModelSummary(
+                        stage=stage,
+                        text_dir=merged_first_text_dir,
+                        cameras_registered=1,
+                        images_registered=3,
+                        points_3d=1500,
+                        binary_dir=binary_dir,
+                    )
+                return run_colmap_sfm.ModelSummary(
+                    stage=stage,
+                    text_dir=merged_final_text_dir,
+                    cameras_registered=1,
+                    images_registered=5,
+                    points_3d=2100,
+                    binary_dir=binary_dir,
+                )
+            adjusted_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_bundle_adjuster",
+                text_dir=merged_final_text_dir,
+                cameras_registered=1,
+                images_registered=5,
+                points_3d=2300,
+                binary_dir=pipeline.work_dir / "merged_chunk_model_03_attempt_01",
+                image_names=["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg", "IMG_05.jpg"],
+                source_chunk_indexes=[0, 1, 2],
+            )
+            recovery_record = {
+                "status": "connector_inserted",
+                "inserted_connector_stage": connector_model.stage,
+            }
+
+            with mock.patch.object(run_colmap_sfm, "stream_command") as stream_command_mock, mock.patch.object(
+                pipeline,
+                "summarize_model",
+                side_effect=summarize_side_effect,
+            ), mock.patch.object(
+                pipeline,
+                "attempt_pending_merge_bridge_recovery",
+                return_value=(connector_model, recovery_record),
+            ) as recovery_mock, mock.patch.object(
+                pipeline,
+                "run_bundle_adjuster",
+                return_value=adjusted_model,
+            ):
+                result = pipeline.merge_chunk_models(chunk_models)
+
+            self.assertEqual(result.images_registered, 5)
+            self.assertEqual(recovery_mock.call_count, 1)
+            merger_commands = [call.args[0] for call in stream_command_mock.call_args_list]
+            self.assertEqual(len(merger_commands), 3)
+            self.assertEqual(pipeline.chunk_merge_proof["merge_component_recovery_records"], [recovery_record])
+            self.assertEqual(pipeline.chunk_merge_summary["merge_component_recovery_records"], [recovery_record])
+
+    def test_attempt_pending_merge_bridge_recovery_uses_full_component_scope(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.chunk_planner = "footprint_graph_v1"
+            pipeline.parent_merge_mode = "seam_only_v1"
+            pipeline.chunk_bridge_recovery_max_images = 500
+            pipeline.chunk_cross_edge_counts[(0, 1)] = 5
+            pipeline.capture_ordered_names = [
+                "IMG_00.jpg",
+                "IMG_01.jpg",
+                "IMG_02.jpg",
+                "IMG_03.jpg",
+                "IMG_04.jpg",
+                "IMG_05.jpg",
+                "IMG_06.jpg",
+                "IMG_07.jpg",
+            ]
+            pipeline.exif_records = {name: {} for name in pipeline.capture_ordered_names}
+            pending_models = [
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_00_mapper_initial",
+                    text_dir=root / "chunk0_text",
+                    cameras_registered=1,
+                    images_registered=3,
+                    points_3d=100,
+                    binary_dir=root / "chunk0_bin",
+                    image_names=["IMG_00.jpg", "IMG_01.jpg", "IMG_02.jpg"],
+                    source_chunk_indexes=[0],
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_01_mapper_initial",
+                    text_dir=root / "chunk1_text",
+                    cameras_registered=1,
+                    images_registered=3,
+                    points_3d=100,
+                    binary_dir=root / "chunk1_bin",
+                    image_names=["IMG_03.jpg", "IMG_04.jpg", "IMG_05.jpg"],
+                    source_chunk_indexes=[1],
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_02_mapper_initial",
+                    text_dir=root / "chunk2_text",
+                    cameras_registered=1,
+                    images_registered=3,
+                    points_3d=100,
+                    binary_dir=root / "chunk2_bin",
+                    image_names=["IMG_05.jpg", "IMG_06.jpg", "IMG_07.jpg"],
+                    source_chunk_indexes=[2],
+                ),
+            ]
+            connector_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_model_component_bridge_04_00_02_seed_01_point_triangulator_01",
+                text_dir=root / "connector_text",
+                cameras_registered=1,
+                images_registered=5,
+                points_3d=200,
+                binary_dir=root / "connector_bin",
+                image_names=["IMG_00.jpg", "IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg", "IMG_05.jpg", "IMG_06.jpg", "IMG_07.jpg"],
+                source_chunk_indexes=[0, 1, 2],
+            )
+            registered_names_by_stage = {
+                "chunk_00_mapper_initial": {"IMG_00.jpg", "IMG_01.jpg", "IMG_02.jpg"},
+                "chunk_01_mapper_initial": {"IMG_03.jpg", "IMG_04.jpg", "IMG_05.jpg"},
+                "chunk_02_mapper_initial": {"IMG_05.jpg", "IMG_06.jpg", "IMG_07.jpg"},
+                "chunk_model_component_bridge_04_00_02_seed_01_point_triangulator_01": {
+                    "IMG_02.jpg",
+                    "IMG_03.jpg",
+                    "IMG_04.jpg",
+                    "IMG_05.jpg",
+                    "IMG_06.jpg",
+                },
+            }
+
+            with mock.patch.object(
+                pipeline,
+                "merged_image_names",
+                side_effect=lambda model: registered_names_by_stage[model.stage],
+            ), mock.patch.object(
+                pipeline,
+                "run_parent_seam_registration_with_retry",
+                return_value=(connector_model, ["IMG_02.jpg", "IMG_03.jpg"], False, "frontier_only"),
+            ) as seam_mock:
+                repaired_model, recovery_record = pipeline.attempt_pending_merge_bridge_recovery(
+                    pending_models=pending_models,
+                    registered_names_by_stage=registered_names_by_stage,
+                    merge_sequence=4,
+                    excluded_pairs=set(),
+                )
+
+            self.assertIs(repaired_model, connector_model)
+            self.assertEqual(recovery_record["status"], "connector_inserted")
+            self.assertEqual(
+                seam_mock.call_args.kwargs["required_names"],
+                ["IMG_00.jpg", "IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg", "IMG_05.jpg", "IMG_06.jpg", "IMG_07.jpg"],
+            )
+            self.assertEqual(
+                seam_mock.call_args.kwargs["scope_image_names"],
+                ["IMG_00.jpg", "IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg", "IMG_05.jpg", "IMG_06.jpg", "IMG_07.jpg"],
+            )
+            self.assertEqual(
+                seam_mock.call_args.kwargs["stage_prefix"],
+                "chunk_model_component_bridge_04_00_02_seed_01",
+            )
+
+    def test_merge_chunk_models_records_component_failure_summary(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.chunk_planner = "footprint_graph_v1"
+            pipeline.parent_merge_mode = "seam_only_v1"
+            pipeline.chunk_bridge_recovery_max_attempts = 1
+            first_model_dir = root / "chunk_00" / "sparse_initial" / "0"
+            second_model_dir = root / "chunk_01" / "sparse_initial" / "0"
+            first_text_dir = root / "text_00"
+            second_text_dir = root / "text_01"
+            for directory in (
+                first_model_dir,
+                second_model_dir,
+                first_text_dir,
+                second_text_dir,
+            ):
+                directory.mkdir(parents=True, exist_ok=True)
+            (first_text_dir / "images.txt").write_text(
+                "1 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n2 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (second_text_dir / "images.txt").write_text(
+                "3 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n4 1 0 0 0 0 0 0 1 IMG_04.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            chunk_models = [
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_00_mapper_initial",
+                    text_dir=first_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=1000,
+                    binary_dir=first_model_dir,
+                    image_names=["IMG_01.jpg", "IMG_02.jpg"],
+                    source_chunk_indexes=[0],
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_01_mapper_initial",
+                    text_dir=second_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=1000,
+                    binary_dir=second_model_dir,
+                    image_names=["IMG_03.jpg", "IMG_04.jpg"],
+                    source_chunk_indexes=[1],
+                ),
+            ]
+            recovery_record = {
+                "status": "no_candidate",
+                "pending_component_count": 2,
+            }
+
+            with mock.patch.object(
+                pipeline,
+                "attempt_pending_merge_bridge_recovery",
+                return_value=(None, recovery_record),
+            ):
+                with self.assertRaisesRegex(
+                    RuntimeError,
+                    "Failed to merge chunk models: no overlapping registered images produced a usable merge",
+                ):
+                    pipeline.merge_chunk_models(chunk_models)
+
+            self.assertEqual(pipeline.chunk_merge_summary["pending_component_count"], 2)
+            self.assertEqual(
+                pipeline.chunk_merge_proof["merge_component_recovery_records"],
+                [recovery_record],
+            )
+            self.assertEqual(
+                pipeline.chunk_merge_proof["pending_stages"],
+                ["chunk_00_mapper_initial", "chunk_01_mapper_initial"],
+            )
+
     def test_parent_seam_helpers_omit_fix_existing_images_flag(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

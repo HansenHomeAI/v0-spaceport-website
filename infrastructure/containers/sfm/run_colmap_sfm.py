@@ -899,6 +899,7 @@ class ColmapPipeline:
         self.chunk_graph_probe_manifest: dict[str, object] = {}
         self.chunk_run_metrics: List[dict[str, object]] = []
         self.chunk_merge_proof: dict[str, object] = {}
+        self.chunk_merge_summary: dict[str, object] = {}
         self.filtered_sparse_summary: dict[str, object] = {}
         self.probe_subset_details: Dict[str, dict[str, object]] = {}
         self.ladder_subsets: Dict[str, List[str]] = {}
@@ -908,6 +909,7 @@ class ColmapPipeline:
         self.chunk_cross_edge_counts: Dict[Tuple[int, int], int] = {}
         self.probe_subsets: Dict[str, List[str]] = {}
         self.merge_node_records: List[MergeNodeRecord] = []
+        self.merge_component_recovery_records: List[dict[str, object]] = []
         self.bundle_adjusted_node_count = 0
         self.max_bundle_adjusted_image_count = 0
         self.skipped_seam_merge_count = 0
@@ -6119,16 +6121,33 @@ class ColmapPipeline:
             raise RuntimeError("No chunk models available to merge")
         if len(chunk_models) == 1:
             self.merged_component_count = 1
+            self.chunk_merge_summary = {
+                "pending_component_count": 1,
+                "pending_components": [
+                    {
+                        "component_index": 0,
+                        "pending_model_indexes": [0],
+                        "stages": [chunk_models[0].stage],
+                        "source_chunk_indexes": self.model_source_chunk_indexes(chunk_models[0]),
+                        "source_image_count": len(self.model_source_image_names(chunk_models[0])),
+                        "registered_image_count": chunk_models[0].images_registered,
+                    }
+                ],
+                "merge_component_recovery_records": [],
+            }
             self.chunk_merge_proof = {
                 "chunk_model_count": 1,
                 "pre_merge_unique_registered_images": chunk_models[0].images_registered,
                 "final_merged_registered_images": chunk_models[0].images_registered,
                 "pre_merge_retention_ratio": 1.0,
+                "merge_component_recovery_records": [],
             }
             return chunk_models[0]
 
         merge_started = time.time()
         self.merge_node_records = []
+        self.merge_component_recovery_records = []
+        self.chunk_merge_summary = {}
         pending_models = list(chunk_models)
         registered_names_by_stage = {
             model.stage: self.merged_image_names(model)
@@ -6136,6 +6155,8 @@ class ColmapPipeline:
         }
         pre_merge_registered_names: Set[str] = set().union(*registered_names_by_stage.values())
         merge_sequence = 1
+        bridge_recovery_attempts_remaining = max(self.chunk_bridge_recovery_max_attempts, 0)
+        attempted_bridge_pairs: Set[tuple[tuple[int, ...], tuple[int, ...]]] = set()
         while len(pending_models) > 1:
             ranked_pairs: List[tuple[int, int, int, int, int, int, int, int]] = []
             for first_index, first_model in enumerate(pending_models):
@@ -6339,7 +6360,54 @@ class ColmapPipeline:
                 if merged_candidate is not None:
                     break
             if merged_candidate is None or merged_pair_indexes is None:
-                self.merged_component_count = len(pending_models)
+                components, registered_name_sets = self.registered_overlap_components(pending_models)
+                self.merged_component_count = len(components)
+                pending_component_summaries = self.summarize_pending_merge_components(
+                    pending_models=pending_models,
+                    registered_name_sets=registered_name_sets,
+                    components=components,
+                )
+                if (
+                    self.parent_merge_mode == "seam_only_v1"
+                    and self.chunk_planner == "footprint_graph_v1"
+                    and len(components) > 1
+                    and bridge_recovery_attempts_remaining > 0
+                ):
+                    connector_model, recovery_record = self.attempt_pending_merge_bridge_recovery(
+                        pending_models=pending_models,
+                        registered_names_by_stage=registered_names_by_stage,
+                        merge_sequence=merge_sequence,
+                        excluded_pairs=attempted_bridge_pairs,
+                    )
+                    self.merge_component_recovery_records.append(recovery_record)
+                    self.chunk_merge_summary = {
+                        "pending_component_count": len(components),
+                        "pending_components": pending_component_summaries,
+                        "merge_component_recovery_records": list(self.merge_component_recovery_records),
+                        "bridge_recovery_attempts_remaining": bridge_recovery_attempts_remaining - 1,
+                    }
+                    bridge_recovery_attempts_remaining -= 1
+                    if connector_model is not None:
+                        pending_models.append(connector_model)
+                        registered_names_by_stage[connector_model.stage] = self.merged_image_names(connector_model)
+                        continue
+                self.chunk_merge_proof = {
+                    "chunk_model_count": len(chunk_models),
+                    "pre_merge_unique_registered_images": len(pre_merge_registered_names),
+                    "final_merged_registered_images": 0,
+                    "retained_registered_images": 0,
+                    "pre_merge_retention_ratio": 0.0,
+                    "hierarchy_mode": self.hierarchy_mode,
+                    "top_level_ba_mode": self.top_level_ba_mode,
+                    "top_level_ba_image_threshold": self.top_level_ba_image_threshold,
+                    "top_level_ba_ran": False,
+                    "top_level_ba_reason": "merge_failed",
+                    "merge_nodes": [record.__dict__ for record in self.merge_node_records],
+                    "merge_component_recovery_records": list(self.merge_component_recovery_records),
+                    "pending_component_count": len(components),
+                    "pending_components": pending_component_summaries,
+                    "pending_stages": [model.stage for model in pending_models],
+                }
                 if merge_error is not None:
                     self.handle_stage_runtime_error(f"chunk_model_merger_{merge_sequence:02d}", merge_error)
                     raise RuntimeError(f"Failed to merge chunk model {merge_sequence}: {merge_error}") from merge_error
@@ -6399,6 +6467,21 @@ class ColmapPipeline:
             "top_level_ba_ran": should_run_ba,
             "top_level_ba_reason": ba_reason,
             "merge_nodes": [record.__dict__ for record in self.merge_node_records],
+            "merge_component_recovery_records": list(self.merge_component_recovery_records),
+        }
+        self.chunk_merge_summary = {
+            "pending_component_count": 1,
+            "pending_components": [
+                {
+                    "component_index": 0,
+                    "pending_model_indexes": [0],
+                    "stages": [adjusted_model.stage],
+                    "source_chunk_indexes": self.model_source_chunk_indexes(adjusted_model),
+                    "source_image_count": len(self.model_source_image_names(adjusted_model)),
+                    "registered_image_count": len(merged_registered_names),
+                }
+            ],
+            "merge_component_recovery_records": list(self.merge_component_recovery_records),
         }
         if self.merge_node_records:
             self.merge_node_records[-1].bundle_adjusted = should_run_ba
@@ -6450,49 +6533,337 @@ class ColmapPipeline:
         touched_targets, _ = bridge_overlap_counts(self.merged_image_names(model), target_name_sets)
         return touched_targets >= len(target_name_sets)
 
-    def best_bridge_chunk_pair(
+    def chunk_plan_source_key(self, chunk_plan: ChunkPlan) -> tuple[int, ...]:
+        source_indexes = sorted(set(chunk_plan.source_chunk_indexes or [chunk_plan.index]))
+        return tuple(source_indexes)
+
+    def chunk_pair_source_key(
+        self,
+        first_chunk_plan: ChunkPlan,
+        second_chunk_plan: ChunkPlan,
+    ) -> tuple[tuple[int, ...], tuple[int, ...]]:
+        first_key = self.chunk_plan_source_key(first_chunk_plan)
+        second_key = self.chunk_plan_source_key(second_chunk_plan)
+        return tuple(sorted((first_key, second_key)))
+
+    def ranked_bridge_chunk_pairs(
         self,
         *,
         chunk_plans: Sequence[ChunkPlan],
         components: Sequence[Set[int]],
-        excluded_pairs: Set[tuple[int, int]] | None = None,
-    ) -> tuple[int, int] | None:
-        ranked_candidates: List[tuple[int, int, int, int, int, int]] = []
+        excluded_pairs: Set[tuple[tuple[int, ...], tuple[int, ...]]] | None = None,
+    ) -> List[dict[str, object]]:
+        ranked_candidates: List[tuple[int, int, int, int, int, int, int, int, dict[str, object]]] = []
         excluded_pairs = excluded_pairs or set()
         for first_component_index, first_component in enumerate(components):
-            for second_component in components[first_component_index + 1 :]:
+            for second_component_index in range(first_component_index + 1, len(components)):
+                second_component = components[second_component_index]
                 for first_index in sorted(first_component):
                     first_plan = chunk_plans[first_index]
                     first_names = set(first_plan.image_names)
+                    first_source_indexes = self.chunk_plan_source_key(first_plan)
                     for second_index in sorted(second_component):
-                        pair_key = (min(first_index, second_index), max(first_index, second_index))
+                        second_plan = chunk_plans[second_index]
+                        pair_key = self.chunk_pair_source_key(first_plan, second_plan)
                         if pair_key in excluded_pairs:
                             continue
-                        second_plan = chunk_plans[second_index]
+                        second_source_indexes = self.chunk_plan_source_key(second_plan)
                         planned_shared_images = len(first_names.intersection(second_plan.image_names))
                         cross_edge_count = (
                             self.cross_chunk_edge_count(first_plan.image_names, second_plan.image_names)
                             + self.cross_chunk_edge_count(second_plan.image_names, first_plan.image_names)
                         )
-                        if planned_shared_images <= 0 and cross_edge_count <= 0:
+                        boundary_strength = self.boundary_cross_edge_strength(
+                            first_source_indexes,
+                            second_source_indexes,
+                        )
+                        gap_count = self.chunk_span_gap_count(
+                            first_source_indexes,
+                            second_source_indexes,
+                        )
+                        if planned_shared_images <= 0 and cross_edge_count <= 0 and boundary_strength <= 0:
                             continue
                         combined_image_count = len(first_names.union(second_plan.image_names))
                         if combined_image_count > self.chunk_bridge_recovery_max_images:
                             continue
+                        candidate_record = {
+                            "pair_key": [list(first_key) for first_key in pair_key],
+                            "first_index": first_index,
+                            "second_index": second_index,
+                            "first_chunk_index": first_plan.index,
+                            "second_chunk_index": second_plan.index,
+                            "first_source_chunk_indexes": list(first_source_indexes),
+                            "second_source_chunk_indexes": list(second_source_indexes),
+                            "planned_shared_images": planned_shared_images,
+                            "cross_edge_count": cross_edge_count,
+                            "boundary_strength": boundary_strength,
+                            "gap_count": gap_count,
+                            "combined_image_count": combined_image_count,
+                            "first_component_index": first_component_index,
+                            "second_component_index": second_component_index,
+                        }
                         ranked_candidates.append(
                             (
-                                -planned_shared_images,
+                                gap_count,
+                                -boundary_strength,
                                 -cross_edge_count,
+                                -planned_shared_images,
                                 combined_image_count,
                                 abs(first_plan.index - second_plan.index),
                                 first_index,
                                 second_index,
+                                candidate_record,
                             )
                         )
+        ranked_candidates.sort()
+        return [record for *_, record in ranked_candidates]
+
+    def summarize_pending_merge_components(
+        self,
+        *,
+        pending_models: Sequence[ModelSummary],
+        registered_name_sets: Sequence[Set[str]],
+        components: Sequence[Set[int]],
+    ) -> List[dict[str, object]]:
+        summaries: List[dict[str, object]] = []
+        for component_index, component in enumerate(components):
+            component_source_names: Set[str] = set()
+            component_registered_names: Set[str] = set()
+            component_source_chunk_indexes: Set[int] = set()
+            stages: List[str] = []
+            for model_index in sorted(component):
+                model = pending_models[model_index]
+                stages.append(model.stage)
+                component_source_names.update(self.model_source_image_names(model))
+                component_registered_names.update(registered_name_sets[model_index])
+                component_source_chunk_indexes.update(self.model_source_chunk_indexes(model))
+            summaries.append(
+                {
+                    "component_index": component_index,
+                    "pending_model_indexes": sorted(component),
+                    "stages": stages,
+                    "source_chunk_indexes": sorted(component_source_chunk_indexes),
+                    "source_image_count": len(component_source_names),
+                    "registered_image_count": len(component_registered_names),
+                }
+            )
+        return summaries
+
+    def build_pending_merge_chunk_plans(
+        self,
+        pending_models: Sequence[ModelSummary],
+    ) -> List[ChunkPlan]:
+        chunk_plans: List[ChunkPlan] = []
+        for fallback_index, model in enumerate(pending_models):
+            source_chunk_indexes = self.model_source_chunk_indexes(model) or [fallback_index]
+            chunk_plans.append(
+                self.build_chunk_plan_from_image_names(
+                    index=min(source_chunk_indexes),
+                    image_names=self.model_source_image_names(model),
+                    source_chunk_indexes=source_chunk_indexes,
+                )
+            )
+        return chunk_plans
+
+    def attempt_pending_merge_bridge_recovery(
+        self,
+        *,
+        pending_models: Sequence[ModelSummary],
+        registered_names_by_stage: Dict[str, Set[str]],
+        merge_sequence: int,
+        excluded_pairs: Set[tuple[tuple[int, ...], tuple[int, ...]]],
+    ) -> tuple[ModelSummary | None, dict[str, object]]:
+        components, registered_name_sets = self.registered_overlap_components(pending_models)
+        component_summaries = self.summarize_pending_merge_components(
+            pending_models=pending_models,
+            registered_name_sets=registered_name_sets,
+            components=components,
+        )
+        pending_chunk_plans = self.build_pending_merge_chunk_plans(pending_models)
+        ranked_candidates = self.ranked_bridge_chunk_pairs(
+            chunk_plans=pending_chunk_plans,
+            components=components,
+            excluded_pairs=excluded_pairs,
+        )
+        recovery_record: dict[str, object] = {
+            "merge_sequence": merge_sequence,
+            "pending_component_count": len(components),
+            "pending_components": component_summaries,
+            "ranked_candidates": ranked_candidates[:5],
+            "selected_candidate": None,
+            "inserted_connector_stage": "",
+            "inserted_connector_images_registered": 0,
+            "connects_target_components": False,
+            "auxiliary_connector_usable": False,
+            "status": "no_candidate",
+        }
+        if not ranked_candidates:
+            return None, recovery_record
+
+        selected_candidate = ranked_candidates[0]
+        recovery_record["selected_candidate"] = selected_candidate
+        first_index = int(selected_candidate["first_index"])
+        second_index = int(selected_candidate["second_index"])
+        first_component = components[int(selected_candidate["first_component_index"])]
+        second_component = components[int(selected_candidate["second_component_index"])]
+        first_plan = pending_chunk_plans[first_index]
+        second_plan = pending_chunk_plans[second_index]
+        excluded_pairs.add(self.chunk_pair_source_key(first_plan, second_plan))
+
+        first_component_source_names: Set[str] = set()
+        second_component_source_names: Set[str] = set()
+        first_component_source_chunk_indexes: Set[int] = set()
+        second_component_source_chunk_indexes: Set[int] = set()
+        for model_index in first_component:
+            model = pending_models[model_index]
+            first_component_source_names.update(self.model_source_image_names(model))
+            first_component_source_chunk_indexes.update(self.model_source_chunk_indexes(model))
+        for model_index in second_component:
+            model = pending_models[model_index]
+            second_component_source_names.update(self.model_source_image_names(model))
+            second_component_source_chunk_indexes.update(self.model_source_chunk_indexes(model))
+
+        bridge_target_name_sets = [
+            self.component_registered_names(component=first_component, registered_name_sets=registered_name_sets),
+            self.component_registered_names(component=second_component, registered_name_sets=registered_name_sets),
+        ]
+        component_scope_image_names = self.sorted_capture_names(
+            first_component_source_names.union(second_component_source_names)
+        )
+        merged_source_chunk_indexes = sorted(
+            first_component_source_chunk_indexes.union(second_component_source_chunk_indexes)
+        )
+        merged_chunk_plan = self.build_chunk_plan_from_image_names(
+            index=min(merged_source_chunk_indexes, default=min(first_plan.index, second_plan.index)),
+            image_names=component_scope_image_names,
+            source_chunk_indexes=merged_source_chunk_indexes,
+        )
+        merged_stage_prefix = (
+            f"chunk_model_component_bridge_{merge_sequence:02d}_"
+            f"{min(merged_source_chunk_indexes, default=0):02d}_"
+            f"{max(merged_source_chunk_indexes, default=0):02d}"
+        )
+        recovery_record["status"] = "attempted"
+        recovery_record["stage_prefix"] = merged_stage_prefix
+        recovery_record["scope_image_count"] = len(component_scope_image_names)
+        recovery_record["required_image_count"] = len(
+            {
+                image_name
+                for target_name_set in bridge_target_name_sets
+                for image_name in target_name_set
+            }
+        )
+        self.merge_bridge_recovery_triggered = True
+
+        seed_models = [pending_models[first_index], pending_models[second_index]]
+        seed_models.sort(
+            key=lambda model: bridge_model_sort_key(
+                model,
+                registered_names_by_stage[model.stage],
+                bridge_target_name_sets,
+            ),
+            reverse=True,
+        )
+        merged_model = None
+        last_candidate_model: ModelSummary | None = None
+        last_seam_error: RuntimeError | None = None
+        seed_attempt_records: List[dict[str, object]] = []
+        for seed_attempt, seed_model in enumerate(seed_models, start=1):
+            attempt_record = {
+                "seed_stage": seed_model.stage,
+                "status": "failed",
+            }
+            try:
+                candidate_model, _, _, _ = self.run_parent_seam_registration_with_retry(
+                    seed_model=seed_model,
+                    left_source_names=self.sorted_capture_names(first_component_source_names),
+                    right_source_names=self.sorted_capture_names(second_component_source_names),
+                    source_chunk_indexes=merged_chunk_plan.source_chunk_indexes or merged_source_chunk_indexes,
+                    stage_prefix=f"{merged_stage_prefix}_seed_{seed_attempt:02d}",
+                    dir_name=f"{merged_stage_prefix}_seed_{seed_attempt:02d}",
+                    bridge_target_name_sets=bridge_target_name_sets,
+                    required_names=self.sorted_capture_names(
+                        {
+                            image_name
+                            for target_name_set in bridge_target_name_sets
+                            for image_name in target_name_set
+                        }
+                    ),
+                    scope_image_names=component_scope_image_names,
+                    run_final_bundle_adjustment=False,
+                )
+            except RuntimeError as seam_error:
+                last_seam_error = seam_error
+                attempt_record["error"] = str(seam_error)
+                seed_attempt_records.append(attempt_record)
+                continue
+
+            last_candidate_model = candidate_model
+            connects_targets = self.model_connects_target_name_sets(
+                model=candidate_model,
+                target_name_sets=bridge_target_name_sets,
+            )
+            auxiliary_connector = self.auxiliary_bridge_model_is_usable(
+                model=candidate_model,
+                target_name_sets=bridge_target_name_sets,
+            )
+            attempt_record["status"] = "usable" if (connects_targets or auxiliary_connector) else "insufficient"
+            attempt_record["candidate_stage"] = candidate_model.stage
+            attempt_record["images_registered"] = candidate_model.images_registered
+            attempt_record["connects_target_components"] = connects_targets
+            attempt_record["auxiliary_connector_usable"] = auxiliary_connector
+            seed_attempt_records.append(attempt_record)
+            if connects_targets or auxiliary_connector:
+                merged_model = candidate_model
+                break
+
+        recovery_record["seed_attempts"] = seed_attempt_records
+        if merged_model is None:
+            if last_candidate_model is not None:
+                merged_model = last_candidate_model
+            else:
+                if last_seam_error is not None:
+                    recovery_record["error"] = str(last_seam_error)
+                recovery_record["status"] = "no_usable_seed"
+                return None, recovery_record
+
+        connects_targets = self.model_connects_target_name_sets(
+            model=merged_model,
+            target_name_sets=bridge_target_name_sets,
+        )
+        auxiliary_connector = self.auxiliary_bridge_model_is_usable(
+            model=merged_model,
+            target_name_sets=bridge_target_name_sets,
+        )
+        recovery_record["connects_target_components"] = connects_targets
+        recovery_record["auxiliary_connector_usable"] = auxiliary_connector
+        if not connects_targets and not auxiliary_connector:
+            recovery_record["status"] = "connector_not_usable"
+            return None, recovery_record
+
+        recovery_record["status"] = "connector_inserted"
+        recovery_record["inserted_connector_stage"] = merged_model.stage
+        recovery_record["inserted_connector_images_registered"] = merged_model.images_registered
+        return merged_model, recovery_record
+
+    def best_bridge_chunk_pair(
+        self,
+        *,
+        chunk_plans: Sequence[ChunkPlan],
+        components: Sequence[Set[int]],
+        excluded_pairs: Set[tuple[tuple[int, ...], tuple[int, ...]]] | None = None,
+    ) -> tuple[int, int] | None:
+        ranked_candidates = self.ranked_bridge_chunk_pairs(
+            chunk_plans=chunk_plans,
+            components=components,
+            excluded_pairs=excluded_pairs,
+        )
         if not ranked_candidates:
             return None
-        _, _, _, _, first_index, second_index = min(ranked_candidates)
-        return (first_index, second_index)
+        return (
+            int(ranked_candidates[0]["first_index"]),
+            int(ranked_candidates[0]["second_index"]),
+        )
 
     def repair_disconnected_chunk_model_components(
         self,
@@ -6506,7 +6877,7 @@ class ColmapPipeline:
         repaired_chunk_plans = list(chunk_plans)
         repaired_chunk_models = list(chunk_models)
         attempts_remaining = max(self.chunk_bridge_recovery_max_attempts, 0)
-        attempted_bridge_pairs: Set[tuple[int, int]] = set()
+        attempted_bridge_pairs: Set[tuple[tuple[int, ...], tuple[int, ...]]] = set()
         while attempts_remaining > 0:
             components, registered_name_sets = self.registered_overlap_components(repaired_chunk_models)
             if len(components) <= 1:
@@ -7145,6 +7516,7 @@ class ColmapPipeline:
             "chunk_mapper_seconds": round(self.chunk_mapper_seconds, 2),
             "chunk_merge_seconds": round(self.chunk_merge_seconds, 2),
             "chunk_merge_proof": self.chunk_merge_proof,
+            "chunk_merge_summary": self.chunk_merge_summary,
             "parent_merge_mode": self.parent_merge_mode,
             "hierarchy_mode": self.hierarchy_mode,
             "seam_frontier_mode": self.seam_frontier_mode,
