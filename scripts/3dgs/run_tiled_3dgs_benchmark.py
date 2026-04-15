@@ -223,6 +223,7 @@ def apply_proof_profile(
 ) -> None:
     if proof_profile != PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY:
         return
+    env.setdefault("TRAINING_PROOF_PROFILE", proof_profile)
     env.setdefault("TRAINING_VIS_MODE", "viewer")
     env.setdefault("TRAINING_CACHE_IMAGES", "disk")
     env.setdefault("TRAINING_CACHE_IMAGES_TYPE", "uint8")

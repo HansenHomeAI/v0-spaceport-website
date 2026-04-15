@@ -112,6 +112,50 @@ def load_module_with_stubs():
 
 
 class TiledNerfStudioDispatcherTests(unittest.TestCase):
+    def test_apply_training_proof_profile_defaults_sets_low_memory_defaults(self):
+        module = load_module_with_stubs()
+        config = {"training": {"max_iterations": 12000}}
+
+        applied = module.apply_training_proof_profile_defaults(
+            config,
+            module.PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY,
+            environ={},
+        )
+
+        self.assertEqual(config["training"]["vis_mode"], "viewer")
+        self.assertEqual(config["training"]["cache_images"], "disk")
+        self.assertEqual(config["training"]["cache_images_type"], "uint8")
+        self.assertEqual(config["training"]["dataloader_num_workers"], 0)
+        self.assertEqual(config["training"]["steps_per_eval_image"], 12001)
+        self.assertEqual(config["training"]["steps_per_eval_all_images"], 12001)
+        self.assertEqual(config["training"]["steps_per_save"], 12001)
+        self.assertEqual(applied["training.steps_per_eval_image"], 12001)
+
+    def test_apply_training_proof_profile_defaults_preserves_explicit_env_and_config(self):
+        module = load_module_with_stubs()
+        config = {
+            "training": {
+                "max_iterations": 12000,
+                "cache_images": "ram",
+            }
+        }
+
+        applied = module.apply_training_proof_profile_defaults(
+            config,
+            module.PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY,
+            environ={
+                "TRAINING_VIS_MODE": "tensorboard",
+                "TRAINING_STEPS_PER_SAVE": "300",
+            },
+        )
+
+        self.assertNotIn("training.vis_mode", applied)
+        self.assertNotIn("training.steps_per_save", applied)
+        self.assertEqual(config["training"]["cache_images"], "ram")
+        self.assertEqual(config["training"]["cache_images_type"], "uint8")
+        self.assertNotIn("vis_mode", config["training"])
+        self.assertNotIn("steps_per_save", config["training"])
+
     def test_limit_selected_image_names_preserves_boundary_and_horizon_coverage(self):
         module = load_module_with_stubs()
 

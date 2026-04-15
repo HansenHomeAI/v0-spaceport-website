@@ -95,6 +95,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+PROOF_PROFILE_NONE = "none"
+PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY = "quality_gate_low_memory"
+
 
 def load_colmap_image_id_name_map(images_txt: Path) -> dict[str, str]:
     """Map COLMAP image ids to original image names from images.txt."""
@@ -352,6 +355,60 @@ def supports_bilateral_processing(model_variant: str) -> bool:
     """Return whether the selected NerfStudio method exposes bilateral-grid args."""
     return model_variant not in {"splatfacto-w-light", "splatfacto-w"}
 
+
+def get_nested_config_value(config: Dict[str, Any], dotted_path: str) -> Any:
+    value: Any = config
+    for key in dotted_path.split('.'):
+        if not isinstance(value, dict) or key not in value:
+            return None
+        value = value[key]
+    return value
+
+
+def set_nested_config_value(config: Dict[str, Any], dotted_path: str, value: Any) -> None:
+    section = config
+    keys = dotted_path.split('.')
+    for key in keys[:-1]:
+        if key not in section or not isinstance(section[key], dict):
+            section[key] = {}
+        section = section[key]
+    section[keys[-1]] = value
+
+
+def apply_training_proof_profile_defaults(
+    config: Dict[str, Any],
+    proof_profile: str,
+    environ: Optional[Dict[str, str]] = None,
+) -> Dict[str, Any]:
+    if proof_profile != PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY:
+        return {}
+
+    environ = environ or os.environ
+    training_config = config.setdefault("training", {})
+    max_iterations = int(training_config.get("max_iterations", 12000))
+    suppressed_step = max_iterations + 1
+    defaults = {
+        "TRAINING_VIS_MODE": ("training.vis_mode", "viewer"),
+        "TRAINING_CACHE_IMAGES": ("training.cache_images", "disk"),
+        "TRAINING_CACHE_IMAGES_TYPE": ("training.cache_images_type", "uint8"),
+        "TRAINING_DATALOADER_NUM_WORKERS": ("training.dataloader_num_workers", 0),
+        "TRAINING_STEPS_PER_EVAL_IMAGE": ("training.steps_per_eval_image", suppressed_step),
+        "TRAINING_STEPS_PER_EVAL_ALL_IMAGES": ("training.steps_per_eval_all_images", suppressed_step),
+        "TRAINING_STEPS_PER_SAVE": ("training.steps_per_save", suppressed_step),
+    }
+    applied: Dict[str, Any] = {}
+
+    for env_var, (config_path, default_value) in defaults.items():
+        if environ.get(env_var) is not None:
+            continue
+        current_value = get_nested_config_value(config, config_path)
+        if current_value not in (None, ""):
+            continue
+        set_nested_config_value(config, config_path, default_value)
+        applied[config_path] = default_value
+
+    return applied
+
 class NerfStudioTrainer:
     """Production NerfStudio trainer implementing Vincent Woo's methodology"""
     
@@ -459,15 +516,18 @@ class NerfStudioTrainer:
                     value = float(value)
                 
                 # Set nested config values
-                keys = config_path.split('.')
-                config_section = self.config
-                for key in keys[:-1]:
-                    if key not in config_section:
-                        config_section[key] = {}
-                    config_section = config_section[key]
-                config_section[keys[-1]] = value
+                set_nested_config_value(self.config, config_path, value)
                 
                 logger.info(f"📝 Override {config_path} = {value} (from {env_var})")
+
+        proof_profile = str(os.environ.get("TRAINING_PROOF_PROFILE", PROOF_PROFILE_NONE)).strip() or PROOF_PROFILE_NONE
+        applied_defaults = apply_training_proof_profile_defaults(self.config, proof_profile)
+        if applied_defaults:
+            for config_path, value in applied_defaults.items():
+                logger.info(
+                    f"🧠 Proof profile default {config_path} = {value} "
+                    f"(from TRAINING_PROOF_PROFILE={proof_profile})"
+                )
     
     def validate_input_data(self) -> bool:
         """Validate COLMAP data format and convert to NerfStudio format"""

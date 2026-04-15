@@ -168,6 +168,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         )
 
         self.assertEqual(env["TRAINING_VIS_MODE"], "viewer")
+        self.assertEqual(env["TRAINING_PROOF_PROFILE"], "quality_gate_low_memory")
         self.assertEqual(env["TRAINING_CACHE_IMAGES"], "disk")
         self.assertEqual(env["TRAINING_CACHE_IMAGES_TYPE"], "uint8")
         self.assertEqual(env["TRAINING_DATALOADER_NUM_WORKERS"], "0")
@@ -195,6 +196,19 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(env["TRAINING_STEPS_PER_EVAL_IMAGE"], "300")
         self.assertEqual(env["TRAINING_STEPS_PER_EVAL_ALL_IMAGES"], "900")
         self.assertEqual(env["TRAINING_STEPS_PER_SAVE"], "1200")
+
+    def test_build_training_environment_quality_gate_profile_preserves_explicit_profile_override(self):
+        env = benchmark.build_training_environment(
+            training_mode="tiled_pipeline",
+            tile_manifest_name="3dgs_tile_manifest.json",
+            view_bucket_manifest_name="3dgs_view_buckets.json",
+            tile_id=None,
+            max_iterations=12000,
+            extra_env={"TRAINING_PROOF_PROFILE": "custom_profile"},
+            proof_profile=benchmark.PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY,
+        )
+
+        self.assertEqual(env["TRAINING_PROOF_PROFILE"], "custom_profile")
 
     def test_build_training_environment_allows_explicit_vis_override_for_tiny_runs(self):
         env = benchmark.build_training_environment(
