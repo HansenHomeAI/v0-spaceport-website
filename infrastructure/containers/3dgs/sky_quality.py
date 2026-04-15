@@ -122,6 +122,10 @@ def _compute_image_score(image: np.ndarray, top_ratio: float = 0.3) -> dict[str,
     }
 
 
+def compute_sky_image_metrics(image: np.ndarray, top_ratio: float = 0.3) -> dict[str, float]:
+    return _compute_image_score(image=image, top_ratio=top_ratio)
+
+
 def select_background_camera(
     data_dir: Path,
     requested_mode: str,

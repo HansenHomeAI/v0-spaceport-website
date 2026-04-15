@@ -87,7 +87,9 @@ RUN pip install --no-cache-dir \
     psutil>=5.9.0 \
     plyfile>=0.7.4 \
     Pillow>=10.0.0 \
-    opencv-python-headless>=4.10.0
+    opencv-python-headless>=4.10.0 \
+    scikit-image>=0.22.0 \
+    lpips>=0.1.4
 
 # ---------------------------------------------------------------
 # 3. Copy Training Code and Configuration
@@ -98,6 +100,7 @@ COPY export_splatfacto_w_assets.py /opt/ml/code/
 COPY tile_pipeline.py /opt/ml/code/
 COPY merge_gaussian_tiles.py /opt/ml/code/
 COPY run_export_quality_pass.py /opt/ml/code/
+COPY run_tiled_quality_review.py /opt/ml/code/
 COPY sky_quality.py /opt/ml/code/
 COPY nerfstudio_config.yaml /opt/ml/code/
 COPY sitecustomize.py /opt/ml/code/

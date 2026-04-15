@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -414,6 +415,38 @@ def select_review_image_names_by_bucket(
             if image_name in selected
         ][:max_images_per_bucket]
     return review_images
+
+
+def select_pipeline_image_names(
+    tile_manifest: Mapping[str, Any],
+    *,
+    selected_tile_ids: Sequence[str],
+) -> list[str]:
+    selected = {str(tile_id).strip() for tile_id in selected_tile_ids if str(tile_id).strip()}
+    image_names: list[str] = []
+    for tile_entry in tile_manifest.get("tiles", []):
+        tile_id = str(tile_entry.get("tile_id", "")).strip()
+        if tile_id not in selected:
+            continue
+        image_names.extend(tile_entry.get("base_camera_ids", []))
+        image_names.extend(tile_entry.get("border_camera_ids", []))
+        image_names.extend(tile_entry.get("context_camera_ids", []))
+        image_names.extend(tile_entry.get("image_names", []))
+    return ordered_unique(image_names)
+
+
+def select_pipeline_review_image_names_by_bucket(
+    tile_manifest: Mapping[str, Any],
+    view_buckets: Mapping[str, Sequence[str]] | None,
+    *,
+    selected_tile_ids: Sequence[str],
+    max_images_per_bucket: int = 4,
+) -> dict[str, list[str]]:
+    return select_review_image_names_by_bucket(
+        select_pipeline_image_names(tile_manifest, selected_tile_ids=selected_tile_ids),
+        view_buckets,
+        max_images_per_bucket=max_images_per_bucket,
+    )
 
 
 def _shared_image_count(first_chunk: Mapping[str, Any], second_chunk: Mapping[str, Any]) -> int:
@@ -840,6 +873,104 @@ def centroid_voronoi_mask(
     return keep_mask
 
 
+def _background_selection_score(payload: Mapping[str, Any]) -> float | None:
+    selection = payload.get("selection")
+    if not isinstance(selection, Mapping):
+        selection = payload.get("background_selection")
+    if not isinstance(selection, Mapping):
+        return None
+    score = selection.get("score")
+    if score is None:
+        return None
+    try:
+        return float(score)
+    except (TypeError, ValueError):
+        return None
+
+
+def copy_best_background_skybox(
+    *,
+    tile_output_dirs: Mapping[str, Path],
+    report_tiles: Sequence[Mapping[str, Any]],
+    output_dir: Path,
+) -> dict[str, Any] | None:
+    candidates: list[dict[str, Any]] = []
+    retained_counts = {
+        str(tile.get("tile_id")): int(tile.get("retained_gaussians", 0))
+        for tile in report_tiles
+    }
+    for report_index, tile in enumerate(report_tiles):
+        tile_id = str(tile.get("tile_id", "")).strip()
+        if not tile_id:
+            continue
+        tile_dir = tile_output_dirs.get(tile_id)
+        if tile_dir is None:
+            continue
+        skybox_path = tile_dir / "background_skybox.webp"
+        if not skybox_path.exists():
+            continue
+
+        background_manifest_path = tile_dir / "background_manifest.json"
+        export_manifest_path = tile_dir / "export_manifest.json"
+        background_manifest = (
+            load_json(background_manifest_path)
+            if background_manifest_path.exists()
+            else {}
+        )
+        export_manifest = load_json(export_manifest_path) if export_manifest_path.exists() else {}
+        selection_score = _background_selection_score(background_manifest)
+        if selection_score is None:
+            selection_score = _background_selection_score(export_manifest)
+
+        candidates.append(
+            {
+                "tile_id": tile_id,
+                "tile_dir": tile_dir,
+                "skybox_path": skybox_path,
+                "background_manifest_path": background_manifest_path if background_manifest_path.exists() else None,
+                "export_manifest_path": export_manifest_path if export_manifest_path.exists() else None,
+                "background_manifest": background_manifest,
+                "export_manifest": export_manifest,
+                "selection_score": selection_score,
+                "retained_gaussians": retained_counts.get(tile_id, 0),
+                "report_index": report_index,
+            }
+        )
+
+    if not candidates:
+        return None
+
+    candidates.sort(
+        key=lambda candidate: (
+            candidate["selection_score"] is not None,
+            float(candidate["selection_score"] or float("-inf")),
+            candidate["retained_gaussians"],
+            -candidate["report_index"],
+        ),
+        reverse=True,
+    )
+    selected = candidates[0]
+    merged_skybox_path = output_dir / "background_skybox.webp"
+    shutil.copy2(selected["skybox_path"], merged_skybox_path)
+
+    merged_background_manifest = dict(selected["background_manifest"])
+    merged_background_manifest["asset"] = merged_skybox_path.name
+    merged_background_manifest["source_tile_id"] = selected["tile_id"]
+    merged_background_manifest["source_asset"] = str(selected["skybox_path"])
+    if selected["selection_score"] is not None:
+        merged_background_manifest["selection_score"] = selected["selection_score"]
+    with open(output_dir / "background_manifest.json", "w", encoding="utf-8") as handle:
+        json.dump(merged_background_manifest, handle, indent=2)
+
+    return {
+        "asset": merged_skybox_path.name,
+        "source_tile_id": selected["tile_id"],
+        "source_asset": str(selected["skybox_path"]),
+        "selection_score": selected["selection_score"],
+        "retained_gaussians": selected["retained_gaussians"],
+    }
+
+
 def merge_tile_outputs(
     *,
     tile_manifest: Mapping[str, Any],
@@ -974,6 +1105,13 @@ def merge_tile_outputs(
         "retain_all_tile_count": retain_all_tile_count,
         "tiles": report_tiles,
     }
+    background_asset = copy_best_background_skybox(
+        tile_output_dirs=tile_output_dirs,
+        report_tiles=report_tiles,
+        output_dir=output_dir,
+    )
+    if background_asset is not None:
+        report["background_asset"] = background_asset
     with open(output_dir / "merge_report.json", "w", encoding="utf-8") as handle:
         json.dump(report, handle, indent=2)
     return report

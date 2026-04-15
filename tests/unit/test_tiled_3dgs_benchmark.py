@@ -63,9 +63,13 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             extra_env={"LOG_INTERVAL": "50"},
             timestamp=123,
             downscale_factor=1,
+            include_review=True,
         )
 
-        self.assertEqual([stage.stage_name for stage in stages], ["M0_monolithic", "T2_tiled_pipeline"])
+        self.assertEqual(
+            [stage.stage_name for stage in stages],
+            ["M0_monolithic", "T2_tiled_pipeline", "R0_quality_review"],
+        )
         tiled_env = stages[1].environment
         self.assertEqual(tiled_env["TRAINING_MODE"], "tiled_pipeline")
         self.assertEqual(tiled_env["TILED_TILE_IDS"], "tile_00,tile_01")
@@ -73,6 +77,8 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(tiled_env["TILED_INCLUDE_MERGE"], "true")
         self.assertEqual(tiled_env["GLOBAL_SCAFFOLD_MAX_ITERATIONS"], "2000")
         self.assertEqual(tiled_env["BILATERAL_PROCESSING"], "false")
+        self.assertEqual(stages[2].stage_type, "review")
+        self.assertEqual(stages[2].depends_on, ["T2_tiled_pipeline"])
 
     def test_build_training_environment_disables_bilateral_for_w_light_even_if_requested(self):
         env = benchmark.build_training_environment(
@@ -154,6 +160,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             extra_env={},
             timestamp=456,
             downscale_factor=1,
+            include_review=True,
         )
 
         self.assertEqual(
@@ -180,6 +187,27 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(payload["TrainingJobName"], "bench-123")
         self.assertEqual(payload["Environment"]["TRAINING_MODE"], "tiled_pipeline")
         self.assertIn({"Key": "Branch", "Value": "agent-branch"}, payload["Tags"])
+
+    def test_create_quality_review_processing_payload_includes_model_and_colmap_inputs(self):
+        payload = benchmark.create_quality_review_processing_payload(
+            branch_name="agent-branch",
+            job_name="bench-123-quality",
+            image_uri="123.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:latest",
+            role_arn="arn:aws:iam::123:role/test",
+            model_artifact_s3_uri="s3://bucket/model.tar.gz",
+            colmap_s3_uri="s3://bucket/colmap",
+            output_s3_uri="s3://bucket/review",
+            environment={"QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET": "4"},
+            instance_type="ml.g5.2xlarge",
+            volume_size_gb=100,
+            max_runtime_seconds=7200,
+        )
+
+        self.assertEqual(payload["ProcessingJobName"], "bench-123-quality")
+        self.assertEqual(payload["AppSpecification"]["ContainerEntrypoint"], ["python3", "/opt/ml/code/run_tiled_quality_review.py"])
+        self.assertEqual(payload["ProcessingInputs"][0]["S3Input"]["S3Uri"], "s3://bucket/model.tar.gz")
+        self.assertEqual(payload["ProcessingInputs"][1]["S3Input"]["S3Uri"], "s3://bucket/colmap")
+        self.assertEqual(payload["Environment"]["QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET"], "4")
 
     def test_resolve_execution_context_accepts_explicit_role_image_and_output_without_branch_stack(self):
         original_find = benchmark.find_branch_ml_stack

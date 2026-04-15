@@ -29,6 +29,7 @@ DEFAULT_SCAFFOLD_MAX_ITERATIONS = 4000
 DEFAULT_TILE_MAX_ITERATIONS = 12000
 DEFAULT_INSTANCE_TYPE = "ml.g5.2xlarge"
 DEFAULT_VOLUME_SIZE_GB = 100
+DEFAULT_REVIEW_MAX_RUNTIME_SECONDS = 7200
 UNSUPPORTED_BILATERAL_VARIANTS = {"splatfacto-w-light", "splatfacto-w"}
 
 
@@ -309,6 +310,7 @@ def build_benchmark_stages(
     extra_env: Dict[str, str],
     timestamp: int,
     downscale_factor: int,
+    include_review: bool,
 ) -> list[BenchmarkStage]:
     output_root = normalize_s3_prefix(output_root_s3_uri)
     tile_manifest_name = "3dgs_tile_manifest.json"
@@ -359,6 +361,20 @@ def build_benchmark_stages(
                 ),
             )
         )
+        if include_review and include_merge:
+            stages.append(
+                BenchmarkStage(
+                    stage_name="R0_quality_review",
+                    stage_type="review",
+                    training_mode="quality_review",
+                    output_s3_uri=f"{output_root}/quality_review",
+                    depends_on=["T2_tiled_pipeline"],
+                    environment={
+                        "QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET": "4",
+                        "QUALITY_REVIEW_TILE_IDS": ",".join(tile_ids),
+                    },
+                )
+            )
         return stages
 
     scaffold_stage_name = "S0_scaffold"
@@ -473,6 +489,80 @@ def create_training_job_payload(
     }
 
 
+def create_quality_review_processing_payload(
+    *,
+    branch_name: str,
+    job_name: str,
+    image_uri: str,
+    role_arn: str,
+    model_artifact_s3_uri: str,
+    colmap_s3_uri: str,
+    output_s3_uri: str,
+    environment: Dict[str, str],
+    instance_type: str,
+    volume_size_gb: int,
+    max_runtime_seconds: int,
+) -> dict:
+    return {
+        "ProcessingJobName": job_name,
+        "RoleArn": role_arn,
+        "AppSpecification": {
+            "ImageUri": image_uri,
+            "ContainerEntrypoint": ["python3", "/opt/ml/code/run_tiled_quality_review.py"],
+        },
+        "Environment": environment,
+        "ProcessingInputs": [
+            {
+                "InputName": "model",
+                "S3Input": {
+                    "S3Uri": model_artifact_s3_uri,
+                    "LocalPath": "/opt/ml/processing/input/model",
+                    "S3DataType": "S3Prefix",
+                    "S3InputMode": "File",
+                },
+            },
+            {
+                "InputName": "colmap",
+                "S3Input": {
+                    "S3Uri": colmap_s3_uri,
+                    "LocalPath": "/opt/ml/processing/input/colmap",
+                    "S3DataType": "S3Prefix",
+                    "S3InputMode": "File",
+                },
+            },
+        ],
+        "ProcessingOutputConfig": {
+            "Outputs": [
+                {
+                    "OutputName": "quality-review",
+                    "S3Output": {
+                        "S3Uri": output_s3_uri,
+                        "LocalPath": "/opt/ml/processing/output",
+                        "S3UploadMode": "EndOfJob",
+                    },
+                }
+            ]
+        },
+        "ProcessingResources": {
+            "ClusterConfig": {
+                "InstanceType": instance_type,
+                "InstanceCount": 1,
+                "VolumeSizeInGB": volume_size_gb,
+            }
+        },
+        "StoppingCondition": {
+            "MaxRuntimeInSeconds": max_runtime_seconds,
+        },
+        "Tags": [
+            {"Key": "Project", "Value": "Spaceport"},
+            {"Key": "Component", "Value": "3DGS"},
+            {"Key": "Benchmark", "Value": "true"},
+            {"Key": "Branch", "Value": branch_name},
+            {"Key": "Stage", "Value": "quality-review"},
+        ],
+    }
+
+
 def wait_for_training_job(job_name: str, *, poll_seconds: int) -> dict:
     while True:
         status = aws_json("sagemaker", "describe-training-job", "--training-job-name", job_name)
@@ -482,6 +572,18 @@ def wait_for_training_job(job_name: str, *, poll_seconds: int) -> dict:
         if current_status in {"Failed", "Stopped"}:
             reason = status.get("FailureReason", current_status)
             raise RuntimeError(f"Training job {job_name} ended with {current_status}: {reason}")
+        time.sleep(max(15, poll_seconds))
+
+
+def wait_for_processing_job(job_name: str, *, poll_seconds: int) -> dict:
+    while True:
+        status = aws_json("sagemaker", "describe-processing-job", "--processing-job-name", job_name)
+        current_status = status["ProcessingJobStatus"]
+        if current_status == "Completed":
+            return status
+        if current_status in {"Failed", "Stopped"}:
+            reason = status.get("FailureReason", current_status)
+            raise RuntimeError(f"Processing job {job_name} ended with {current_status}: {reason}")
         time.sleep(max(15, poll_seconds))
 
 
@@ -617,6 +719,15 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--skip-scaffold", action="store_true", help="Skip the scaffold rung.")
     parser.add_argument("--skip-merge", action="store_true", help="Skip the local merge stage.")
+    parser.add_argument("--skip-review", action="store_true", help="Skip the post-run merged quality review job.")
+    parser.add_argument("--review-instance-type", default=DEFAULT_INSTANCE_TYPE)
+    parser.add_argument("--review-volume-size-gb", type=int, default=DEFAULT_VOLUME_SIZE_GB)
+    parser.add_argument("--review-max-runtime-seconds", type=int, default=DEFAULT_REVIEW_MAX_RUNTIME_SECONDS)
+    parser.add_argument(
+        "--compatibility-gate",
+        action="store_true",
+        help="Mark the run as a future large-artifact compatibility gate; summaries stop on manual hold.",
+    )
     parser.add_argument("--summary-json-output", default="", help="Optional local path for the benchmark summary JSON.")
     parser.add_argument(
         "--local-merge-output-dir",
@@ -733,6 +844,7 @@ def main() -> int:
         extra_env=parse_env(args.env),
         timestamp=timestamp,
         downscale_factor=args.downscale_factor,
+        include_review=not args.skip_review,
     )
 
     summary: dict = {
@@ -747,6 +859,15 @@ def main() -> int:
         "manifest_resolution": manifest_resolution,
         "selected_tile_ids": selected_tiles,
         "downscale_factor": args.downscale_factor,
+        "compatibility_gate": bool(args.compatibility_gate),
+        "manual_hold": (
+            {
+                "required": True,
+                "reason": "compatibility gate passed; hold before launching the future largest tiled 3DGS run",
+            }
+            if args.compatibility_gate
+            else None
+        ),
         "stages": [stage.to_dict() for stage in stages],
         "submitted_jobs": [],
         "completed_jobs": [],
@@ -819,6 +940,7 @@ def main() -> int:
             summary["completed_jobs"].append(completed)
             completed_stage_outputs[stage.stage_name] = completed
 
+    review_stage = next((stage for stage in stages if stage.stage_type == "review"), None)
     if args.wait and args.orchestration_mode != "fanout":
         merge_root = Path(args.local_merge_output_dir) if args.local_merge_output_dir else None
         for stage in stages:
@@ -841,6 +963,52 @@ def main() -> int:
             completed = summarize_training_metadata(stage.stage_name, extracted_dir or Path("/nonexistent"), describe_payload)
             summary["completed_jobs"].append(completed)
             completed_stage_outputs[stage.stage_name] = completed
+
+        if review_stage is not None:
+            tiled_stage_output = completed_stage_outputs.get("T2_tiled_pipeline")
+            if tiled_stage_output is None:
+                raise RuntimeError("Quality review requires completed output for T2_tiled_pipeline")
+            model_artifacts_s3_uri = str(tiled_stage_output.get("model_artifacts_s3_uri", "")).strip()
+            if not model_artifacts_s3_uri:
+                raise RuntimeError("Quality review requires the tiled pipeline model artifact S3 URI")
+
+            review_job_name = sanitize_sagemaker_job_name(f"{args.job_prefix}-{timestamp}-quality")
+            review_payload = create_quality_review_processing_payload(
+                branch_name=branch_name,
+                job_name=review_job_name,
+                image_uri=context.image_uri,
+                role_arn=context.role_arn,
+                model_artifact_s3_uri=model_artifacts_s3_uri,
+                colmap_s3_uri=colmap_s3_uri,
+                output_s3_uri=review_stage.output_s3_uri,
+                environment=review_stage.environment or {},
+                instance_type=args.review_instance_type,
+                volume_size_gb=args.review_volume_size_gb,
+                max_runtime_seconds=args.review_max_runtime_seconds,
+            )
+            with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as handle:
+                json.dump(review_payload, handle, indent=2)
+                handle.flush()
+                payload_path = Path(handle.name)
+            try:
+                run_command(["aws", "sagemaker", "create-processing-job", "--cli-input-json", f"file://{payload_path}"])
+            finally:
+                payload_path.unlink(missing_ok=True)
+
+            processing_status = wait_for_processing_job(review_job_name, poll_seconds=args.poll_seconds)
+            review_manifest_s3_uri = f"{normalize_s3_prefix(review_stage.output_s3_uri)}/quality_review_manifest.json"
+            review_manifest = load_s3_json(review_manifest_s3_uri)
+            summary["quality_review"] = {
+                "stage_name": review_stage.stage_name,
+                "processing_job_name": review_job_name,
+                "output_s3_uri": review_stage.output_s3_uri,
+                "manifest_s3_uri": review_manifest_s3_uri,
+                "processing_status": processing_status.get("ProcessingJobStatus"),
+                "processing_start_time": processing_status.get("ProcessingStartTime"),
+                "processing_end_time": processing_status.get("ProcessingEndTime"),
+                "manifest": review_manifest,
+            }
+            summary["promotion_readiness"] = review_manifest.get("promotion_readiness")
 
         if merge_root is not None and not args.skip_merge and extracted_stage_dirs:
             local_tile_manifest_path = merge_root / "3dgs_tile_manifest.json"
@@ -874,6 +1042,13 @@ def main() -> int:
             output_dir=merge_root / "merged",
         )
         summary["merge"] = merge_summary
+    elif review_stage is not None:
+        summary["quality_review"] = {
+            "stage_name": review_stage.stage_name,
+            "planned_output_s3_uri": review_stage.output_s3_uri,
+            "planned_environment": review_stage.environment or {},
+            "requires_wait": True,
+        }
 
     print(json.dumps(summary, indent=2))
     if args.summary_json_output:

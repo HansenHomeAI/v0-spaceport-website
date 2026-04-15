@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import sys
 import tempfile
 import types
@@ -277,6 +278,41 @@ class GaussianTilePipelineTests(unittest.TestCase):
         self.assertEqual(review_images["near_detail_camera_ids"], ["a.jpg"])
         self.assertEqual(review_images["boundary_camera_ids"], ["c.jpg"])
         self.assertEqual(review_images["horizon_camera_ids"], ["e.jpg"])
+
+    def test_select_pipeline_review_image_names_by_bucket_uses_selected_tiles(self):
+        manifest = {
+            "tiles": [
+                {
+                    "tile_id": "tile_00",
+                    "base_camera_ids": ["a.jpg"],
+                    "border_camera_ids": ["b.jpg"],
+                    "context_camera_ids": ["c.jpg"],
+                    "image_names": ["a.jpg", "b.jpg"],
+                },
+                {
+                    "tile_id": "tile_01",
+                    "base_camera_ids": ["d.jpg"],
+                    "border_camera_ids": ["e.jpg"],
+                    "context_camera_ids": ["f.jpg"],
+                    "image_names": ["d.jpg", "e.jpg"],
+                },
+            ]
+        }
+
+        review_images = tile_pipeline.select_pipeline_review_image_names_by_bucket(
+            manifest,
+            {
+                "near_detail_camera_ids": ["a.jpg", "d.jpg"],
+                "boundary_camera_ids": ["b.jpg", "e.jpg"],
+                "horizon_camera_ids": ["c.jpg", "f.jpg"],
+            },
+            selected_tile_ids=["tile_01"],
+            max_images_per_bucket=2,
+        )
+
+        self.assertEqual(review_images["near_detail_camera_ids"], ["d.jpg"])
+        self.assertEqual(review_images["boundary_camera_ids"], ["e.jpg"])
+        self.assertEqual(review_images["horizon_camera_ids"], ["f.jpg"])
 
     def test_select_manifest_tile_ids_supports_subset_and_caps(self):
         manifest = {
@@ -607,6 +643,78 @@ class GaussianTilePipelineTests(unittest.TestCase):
             self.assertEqual(report["tiles"][1]["retention_strategy"], "centroid_voronoi_fallback")
             self.assertEqual(report["retain_all_tile_count"], 0)
             self.assertEqual(report["fallback_tile_count"], 2)
+
+    def test_merge_tile_outputs_promotes_best_background_skybox(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            tile_zero_dir = root / "tiles" / "tile_00"
+            tile_one_dir = root / "tiles" / "tile_01"
+            tile_zero_dir.mkdir(parents=True)
+            tile_one_dir.mkdir(parents=True)
+            write_test_ply(tile_zero_dir / "splat.ply", [(0.0, 0.0, 0.0, 0.9)])
+            write_test_ply(tile_one_dir / "splat.ply", [(10.0, 0.0, 0.0, 0.9)])
+            (tile_zero_dir / "background_skybox.webp").write_bytes(b"tile-zero")
+            (tile_one_dir / "background_skybox.webp").write_bytes(b"tile-one")
+            (tile_zero_dir / "background_manifest.json").write_text(
+                json.dumps({"selection": {"score": 0.25}}),
+                encoding="utf-8",
+            )
+            (tile_one_dir / "background_manifest.json").write_text(
+                json.dumps({"selection": {"score": 0.9}}),
+                encoding="utf-8",
+            )
+
+            report = tile_pipeline.merge_tile_outputs(
+                tile_manifest={
+                    "tiles": [
+                        {
+                            "tile_id": "tile_00",
+                            "core_bounds": {
+                                "min_x": -1.0,
+                                "max_x": 1.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                            "overlap_bounds": {
+                                "min_x": -1.0,
+                                "max_x": 1.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                        },
+                        {
+                            "tile_id": "tile_01",
+                            "core_bounds": {
+                                "min_x": 9.0,
+                                "max_x": 11.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                            "overlap_bounds": {
+                                "min_x": 9.0,
+                                "max_x": 11.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                        },
+                    ]
+                },
+                tile_output_dirs={"tile_00": tile_zero_dir, "tile_01": tile_one_dir},
+                output_dir=root / "merged",
+            )
+
+            self.assertEqual(report["background_asset"]["source_tile_id"], "tile_01")
+            self.assertTrue((root / "merged" / "background_skybox.webp").exists())
+            manifest = json.loads((root / "merged" / "background_manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(manifest["source_tile_id"], "tile_01")
 
 
 if __name__ == "__main__":
