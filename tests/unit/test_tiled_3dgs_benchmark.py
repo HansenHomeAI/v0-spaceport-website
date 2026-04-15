@@ -27,6 +27,33 @@ SPEC.loader.exec_module(benchmark)
 
 
 class Tiled3DGSBenchmarkTests(unittest.TestCase):
+    def test_resolve_proof_profile_defaults_to_quality_gate_low_memory_for_single_job_review(self):
+        resolved = benchmark.resolve_proof_profile(
+            None,
+            orchestration_mode="single_job",
+            include_review=True,
+        )
+
+        self.assertEqual(resolved, benchmark.PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY)
+
+    def test_resolve_proof_profile_defaults_to_none_for_non_review_or_fanout_runs(self):
+        self.assertEqual(
+            benchmark.resolve_proof_profile(
+                None,
+                orchestration_mode="single_job",
+                include_review=False,
+            ),
+            benchmark.PROOF_PROFILE_NONE,
+        )
+        self.assertEqual(
+            benchmark.resolve_proof_profile(
+                None,
+                orchestration_mode="fanout",
+                include_review=True,
+            ),
+            benchmark.PROOF_PROFILE_NONE,
+        )
+
     def test_s3_json_or_none_returns_none_on_missing_object(self):
         original_run = benchmark.subprocess.run
         try:
@@ -64,6 +91,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             timestamp=123,
             downscale_factor=1,
             include_review=True,
+            proof_profile=benchmark.PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY,
         )
 
         self.assertEqual(
@@ -77,6 +105,10 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(tiled_env["TILED_INCLUDE_MERGE"], "true")
         self.assertEqual(tiled_env["GLOBAL_SCAFFOLD_MAX_ITERATIONS"], "2000")
         self.assertEqual(tiled_env["BILATERAL_PROCESSING"], "false")
+        self.assertEqual(tiled_env["TRAINING_VIS_MODE"], "viewer")
+        self.assertEqual(tiled_env["TRAINING_STEPS_PER_EVAL_IMAGE"], "12001")
+        self.assertEqual(tiled_env["TRAINING_STEPS_PER_EVAL_ALL_IMAGES"], "12001")
+        self.assertEqual(tiled_env["TRAINING_STEPS_PER_SAVE"], "12001")
         self.assertEqual(stages[2].stage_type, "review")
         self.assertEqual(stages[2].depends_on, ["T2_tiled_pipeline"])
 
@@ -124,6 +156,46 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(env["TRAINING_CACHE_IMAGES_TYPE"], "uint8")
         self.assertEqual(env["TRAINING_DATALOADER_NUM_WORKERS"], "0")
 
+    def test_build_training_environment_quality_gate_profile_injects_low_memory_defaults(self):
+        env = benchmark.build_training_environment(
+            training_mode="tiled_pipeline",
+            tile_manifest_name="3dgs_tile_manifest.json",
+            view_bucket_manifest_name="3dgs_view_buckets.json",
+            tile_id=None,
+            max_iterations=12000,
+            extra_env={},
+            proof_profile=benchmark.PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY,
+        )
+
+        self.assertEqual(env["TRAINING_VIS_MODE"], "viewer")
+        self.assertEqual(env["TRAINING_CACHE_IMAGES"], "disk")
+        self.assertEqual(env["TRAINING_CACHE_IMAGES_TYPE"], "uint8")
+        self.assertEqual(env["TRAINING_DATALOADER_NUM_WORKERS"], "0")
+        self.assertEqual(env["TRAINING_STEPS_PER_EVAL_IMAGE"], "12001")
+        self.assertEqual(env["TRAINING_STEPS_PER_EVAL_ALL_IMAGES"], "12001")
+        self.assertEqual(env["TRAINING_STEPS_PER_SAVE"], "12001")
+
+    def test_build_training_environment_quality_gate_profile_preserves_explicit_overrides(self):
+        env = benchmark.build_training_environment(
+            training_mode="tiled_pipeline",
+            tile_manifest_name="3dgs_tile_manifest.json",
+            view_bucket_manifest_name="3dgs_view_buckets.json",
+            tile_id=None,
+            max_iterations=12000,
+            extra_env={
+                "TRAINING_VIS_MODE": "tensorboard",
+                "TRAINING_STEPS_PER_EVAL_IMAGE": "300",
+                "TRAINING_STEPS_PER_EVAL_ALL_IMAGES": "900",
+                "TRAINING_STEPS_PER_SAVE": "1200",
+            },
+            proof_profile=benchmark.PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY,
+        )
+
+        self.assertEqual(env["TRAINING_VIS_MODE"], "tensorboard")
+        self.assertEqual(env["TRAINING_STEPS_PER_EVAL_IMAGE"], "300")
+        self.assertEqual(env["TRAINING_STEPS_PER_EVAL_ALL_IMAGES"], "900")
+        self.assertEqual(env["TRAINING_STEPS_PER_SAVE"], "1200")
+
     def test_build_training_environment_allows_explicit_vis_override_for_tiny_runs(self):
         env = benchmark.build_training_environment(
             training_mode="leaf_tile",
@@ -161,6 +233,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             timestamp=456,
             downscale_factor=1,
             include_review=True,
+            proof_profile=benchmark.PROOF_PROFILE_NONE,
         )
 
         self.assertEqual(

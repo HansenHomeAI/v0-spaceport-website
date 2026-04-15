@@ -31,6 +31,8 @@ DEFAULT_INSTANCE_TYPE = "ml.g5.2xlarge"
 DEFAULT_VOLUME_SIZE_GB = 100
 DEFAULT_REVIEW_MAX_RUNTIME_SECONDS = 7200
 UNSUPPORTED_BILATERAL_VARIANTS = {"splatfacto-w-light", "splatfacto-w"}
+PROOF_PROFILE_NONE = "none"
+PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY = "quality_gate_low_memory"
 
 
 def run_command(command: Sequence[str], *, capture_output: bool = False) -> subprocess.CompletedProcess[str]:
@@ -200,6 +202,37 @@ def sanitize_sagemaker_job_name(raw_name: str, *, max_length: int = 63) -> str:
     return sanitized or "spaceport-3dgs-job"
 
 
+def resolve_proof_profile(
+    requested_profile: str | None,
+    *,
+    orchestration_mode: str,
+    include_review: bool,
+) -> str:
+    if requested_profile:
+        return requested_profile
+    if orchestration_mode == "single_job" and include_review:
+        return PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY
+    return PROOF_PROFILE_NONE
+
+
+def apply_proof_profile(
+    env: Dict[str, str],
+    *,
+    proof_profile: str,
+    max_iterations: int,
+) -> None:
+    if proof_profile != PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY:
+        return
+    env.setdefault("TRAINING_VIS_MODE", "viewer")
+    env.setdefault("TRAINING_CACHE_IMAGES", "disk")
+    env.setdefault("TRAINING_CACHE_IMAGES_TYPE", "uint8")
+    env.setdefault("TRAINING_DATALOADER_NUM_WORKERS", "0")
+    suppressed_step = str(max_iterations + 1)
+    env.setdefault("TRAINING_STEPS_PER_EVAL_IMAGE", suppressed_step)
+    env.setdefault("TRAINING_STEPS_PER_EVAL_ALL_IMAGES", suppressed_step)
+    env.setdefault("TRAINING_STEPS_PER_SAVE", suppressed_step)
+
+
 @dataclass
 class BenchmarkStage:
     stage_name: str
@@ -241,6 +274,7 @@ def build_training_environment(
     include_scaffold: bool = True,
     include_merge: bool = True,
     downscale_factor: int = 1,
+    proof_profile: str = PROOF_PROFILE_NONE,
 ) -> Dict[str, str]:
     env = {
         "AWS_DEFAULT_REGION": "us-west-2",
@@ -283,6 +317,7 @@ def build_training_environment(
             env["TILED_TILE_IDS"] = ",".join(selected_tile_ids)
         env["TILED_INCLUDE_SCAFFOLD"] = "true" if include_scaffold else "false"
         env["TILED_INCLUDE_MERGE"] = "true" if include_merge else "false"
+        apply_proof_profile(env, proof_profile=proof_profile, max_iterations=max_iterations)
     if tile_id:
         env["TILE_ID"] = tile_id
     env.update(extra_env)
@@ -311,6 +346,7 @@ def build_benchmark_stages(
     timestamp: int,
     downscale_factor: int,
     include_review: bool,
+    proof_profile: str = PROOF_PROFILE_NONE,
 ) -> list[BenchmarkStage]:
     output_root = normalize_s3_prefix(output_root_s3_uri)
     tile_manifest_name = "3dgs_tile_manifest.json"
@@ -358,6 +394,7 @@ def build_benchmark_stages(
                     include_scaffold=include_scaffold,
                     include_merge=include_merge,
                     downscale_factor=downscale_factor,
+                    proof_profile=proof_profile,
                 ),
             )
         )
@@ -720,6 +757,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--skip-scaffold", action="store_true", help="Skip the scaffold rung.")
     parser.add_argument("--skip-merge", action="store_true", help="Skip the local merge stage.")
     parser.add_argument("--skip-review", action="store_true", help="Skip the post-run merged quality review job.")
+    parser.add_argument(
+        "--proof-profile",
+        choices=[PROOF_PROFILE_NONE, PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY],
+        default=None,
+        help="Optional proof-run environment profile. Defaults to quality_gate_low_memory for single-job runs with review.",
+    )
     parser.add_argument("--review-instance-type", default=DEFAULT_INSTANCE_TYPE)
     parser.add_argument("--review-volume-size-gb", type=int, default=DEFAULT_VOLUME_SIZE_GB)
     parser.add_argument("--review-max-runtime-seconds", type=int, default=DEFAULT_REVIEW_MAX_RUNTIME_SECONDS)
@@ -793,6 +836,12 @@ def main() -> int:
     args = parse_args()
     branch_name = args.branch or get_current_branch()
     timestamp = int(time.time())
+    include_review = not args.skip_review
+    resolved_proof_profile = resolve_proof_profile(
+        args.proof_profile,
+        orchestration_mode=args.orchestration_mode,
+        include_review=include_review,
+    )
     context = resolve_execution_context(
         branch_name=branch_name,
         timestamp=timestamp,
@@ -844,7 +893,8 @@ def main() -> int:
         extra_env=parse_env(args.env),
         timestamp=timestamp,
         downscale_factor=args.downscale_factor,
-        include_review=not args.skip_review,
+        include_review=include_review,
+        proof_profile=resolved_proof_profile,
     )
 
     summary: dict = {
@@ -859,6 +909,7 @@ def main() -> int:
         "manifest_resolution": manifest_resolution,
         "selected_tile_ids": selected_tiles,
         "downscale_factor": args.downscale_factor,
+        "proof_profile": resolved_proof_profile,
         "compatibility_gate": bool(args.compatibility_gate),
         "manual_hold": (
             {

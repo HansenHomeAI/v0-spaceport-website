@@ -437,6 +437,83 @@ def median_or_none(values: Sequence[float | None]) -> float | None:
     return float(median(filtered))
 
 
+def build_review_manifest(
+    *,
+    model_tarball: Path,
+    selected_tile_ids: Sequence[str],
+    manifest_resolution: Mapping[str, Any],
+    merge_report: Mapping[str, Any],
+    review_images_by_bucket: Mapping[str, Sequence[str]],
+    review_camera_manifest_path: Path,
+    review_views: Sequence[Mapping[str, Any]],
+    max_images_per_bucket: int,
+    merged_background_present: bool,
+) -> dict[str, Any]:
+    bucket_medians: dict[str, dict[str, float | None]] = {}
+    sky_bucket_medians: dict[str, dict[str, float | None]] = {}
+    for _bucket_name, bucket_label_value in DEFAULT_BUCKET_ORDER:
+        bucket_views = [view for view in review_views if view["bucket"] == bucket_label_value]
+        bucket_medians[bucket_label_value] = {
+            "psnr": median_or_none([view["metrics"]["psnr"] for view in bucket_views]),
+            "ssim": median_or_none([view["metrics"]["ssim"] for view in bucket_views]),
+            "lpips": median_or_none([view["metrics"]["lpips"] for view in bucket_views]),
+        }
+        sky_bucket_medians[bucket_label_value] = {
+            "score": median_or_none([view["sky_metrics"]["score"] for view in bucket_views]),
+            "luminance": median_or_none([view["sky_metrics"]["luminance"] for view in bucket_views]),
+            "saturation": median_or_none([view["sky_metrics"]["saturation"] for view in bucket_views]),
+            "blue_dominance": median_or_none([view["sky_metrics"]["blue_dominance"] for view in bucket_views]),
+            "edge_density": median_or_none([view["sky_metrics"]["edge_density"] for view in bucket_views]),
+        }
+
+    expected_bucket_counts = {bucket_label_value: max_images_per_bucket for _, bucket_label_value in DEFAULT_BUCKET_ORDER}
+    actual_bucket_counts = {
+        bucket_label_value: len(review_images_by_bucket.get(bucket_name, []))
+        for bucket_name, bucket_label_value in DEFAULT_BUCKET_ORDER
+    }
+    review_buckets_complete = all(
+        actual_bucket_counts.get(bucket_label_value, 0) >= expected_bucket_counts[bucket_label_value]
+        for _, bucket_label_value in DEFAULT_BUCKET_ORDER
+    )
+    retain_all_tile_count = int(merge_report.get("retain_all_tile_count", 0) or 0)
+    promotion_status = "ready_for_manual_signoff" if review_buckets_complete and retain_all_tile_count == 0 else "blocked"
+    promotion_notes: list[str] = []
+    if not review_buckets_complete:
+        promotion_notes.append("review buckets did not produce the requested 4/4/4 coverage")
+    if retain_all_tile_count > 0:
+        promotion_notes.append("merge used retain_all fallback on at least one tile")
+    if merged_background_present:
+        promotion_notes.append("merged review included promoted background skybox")
+    else:
+        promotion_notes.append("merged review had no promoted background skybox")
+
+    return {
+        "version": "1.0.0",
+        "model_artifact": str(model_tarball),
+        "selected_tile_ids": list(selected_tile_ids),
+        "manifest_resolution": dict(manifest_resolution),
+        "merge_report": dict(merge_report),
+        "review_image_names_by_bucket": {
+            bucket_name: list(image_names)
+            for bucket_name, image_names in review_images_by_bucket.items()
+        },
+        "expected_bucket_counts": expected_bucket_counts,
+        "actual_bucket_counts": actual_bucket_counts,
+        "review_camera_manifest": str(review_camera_manifest_path),
+        "views": list(review_views),
+        "bucket_medians": bucket_medians,
+        "sky_bucket_medians": sky_bucket_medians,
+        "promotion_readiness": {
+            "status": promotion_status,
+            "review_buckets_complete": review_buckets_complete,
+            "retain_all_tile_count": retain_all_tile_count,
+            "fallback_tile_count": int(merge_report.get("fallback_tile_count", 0) or 0),
+            "manual_visual_review_required": True,
+            "notes": promotion_notes,
+        },
+    }
+
+
 def bucket_label(bucket_name: str) -> str:
     return bucket_name.replace("_camera_ids", "")
 
@@ -629,66 +706,17 @@ def main() -> None:
         with open(review_camera_manifest_path, "w", encoding="utf-8") as handle:
             json.dump(camera_manifest, handle, indent=2)
 
-        bucket_medians: dict[str, dict[str, float | None]] = {}
-        sky_bucket_medians: dict[str, dict[str, float | None]] = {}
-        for _bucket_name, bucket_label_value in DEFAULT_BUCKET_ORDER:
-            bucket_views = [view for view in review_views if view["bucket"] == bucket_label_value]
-            bucket_medians[bucket_label_value] = {
-                "psnr": median_or_none([view["metrics"]["psnr"] for view in bucket_views]),
-                "ssim": median_or_none([view["metrics"]["ssim"] for view in bucket_views]),
-                "lpips": median_or_none([view["metrics"]["lpips"] for view in bucket_views]),
-            }
-            sky_bucket_medians[bucket_label_value] = {
-                "score": median_or_none([view["sky_metrics"]["score"] for view in bucket_views]),
-                "luminance": median_or_none([view["sky_metrics"]["luminance"] for view in bucket_views]),
-                "saturation": median_or_none([view["sky_metrics"]["saturation"] for view in bucket_views]),
-                "blue_dominance": median_or_none([view["sky_metrics"]["blue_dominance"] for view in bucket_views]),
-                "edge_density": median_or_none([view["sky_metrics"]["edge_density"] for view in bucket_views]),
-            }
-
-        expected_bucket_counts = {bucket_label_value: max_images_per_bucket for _, bucket_label_value in DEFAULT_BUCKET_ORDER}
-        actual_bucket_counts = {
-            bucket_label_value: len(review_images_by_bucket.get(bucket_name, []))
-            for bucket_name, bucket_label_value in DEFAULT_BUCKET_ORDER
-        }
-        review_buckets_complete = all(
-            actual_bucket_counts.get(bucket_label_value, 0) >= expected_bucket_counts[bucket_label_value]
-            for _, bucket_label_value in DEFAULT_BUCKET_ORDER
+        manifest = build_review_manifest(
+            model_tarball=model_tarball,
+            selected_tile_ids=selected_tile_ids,
+            manifest_resolution=manifest_resolution,
+            merge_report=merge_report,
+            review_images_by_bucket=review_images_by_bucket,
+            review_camera_manifest_path=review_camera_manifest_path,
+            review_views=review_views,
+            max_images_per_bucket=max_images_per_bucket,
+            merged_background_present=merged_background_path.exists(),
         )
-        retain_all_tile_count = int(merge_report.get("retain_all_tile_count", 0) or 0)
-        promotion_status = "ready_for_manual_signoff" if review_buckets_complete and retain_all_tile_count == 0 else "blocked"
-        promotion_notes: list[str] = []
-        if not review_buckets_complete:
-            promotion_notes.append("review buckets did not produce the requested 4/4/4 coverage")
-        if retain_all_tile_count > 0:
-            promotion_notes.append("merge used retain_all fallback on at least one tile")
-        if merged_background_path.exists():
-            promotion_notes.append("merged review included promoted background skybox")
-        else:
-            promotion_notes.append("merged review had no promoted background skybox")
-
-        manifest = {
-            "version": "1.0.0",
-            "model_artifact": str(model_tarball),
-            "selected_tile_ids": selected_tile_ids,
-            "manifest_resolution": manifest_resolution,
-            "merge_report": merge_report,
-            "review_image_names_by_bucket": review_images_by_bucket,
-            "expected_bucket_counts": expected_bucket_counts,
-            "actual_bucket_counts": actual_bucket_counts,
-            "review_camera_manifest": str(review_camera_manifest_path),
-            "views": review_views,
-            "bucket_medians": bucket_medians,
-            "sky_bucket_medians": sky_bucket_medians,
-            "promotion_readiness": {
-                "status": promotion_status,
-                "review_buckets_complete": review_buckets_complete,
-                "retain_all_tile_count": retain_all_tile_count,
-                "fallback_tile_count": int(merge_report.get("fallback_tile_count", 0) or 0),
-                "manual_visual_review_required": True,
-                "notes": promotion_notes,
-            },
-        }
         with open(output_dir / "quality_review_manifest.json", "w", encoding="utf-8") as handle:
             json.dump(manifest, handle, indent=2)
         logger.info("✅ Tiled quality review complete: %s", output_dir / "quality_review_manifest.json")
