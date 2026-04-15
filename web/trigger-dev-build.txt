@@ -1,3 +1,4 @@
+2026-04-15T22:15:00Z trigger preview build for real 3dgs container rebuild after proof-profile fallback
 2026-04-15T22:08:00Z trigger preview build for resilient awscli install in ml container build
 2026-04-15T22:00:00Z trigger preview build for trainer proof-profile fallback rerun
 2026-04-15T20:04:00Z trigger preview build for md1 tiled quality-gate proof-profile stabilization

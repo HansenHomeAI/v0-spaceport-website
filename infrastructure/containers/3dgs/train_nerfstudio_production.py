@@ -520,6 +520,8 @@ class NerfStudioTrainer:
                 
                 logger.info(f"📝 Override {config_path} = {value} (from {env_var})")
 
+        # Mirror launcher proof profiles when the trainer is invoked outside the
+        # benchmark orchestration path or receives only the profile marker.
         proof_profile = str(os.environ.get("TRAINING_PROOF_PROFILE", PROOF_PROFILE_NONE)).strip() or PROOF_PROFILE_NONE
         applied_defaults = apply_training_proof_profile_defaults(self.config, proof_profile)
         if applied_defaults:
