@@ -18,6 +18,8 @@
   "description": "",
   "type": "module",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1030.0",
+    "@aws-sdk/s3-request-presigner": "^3.1030.0",
     "@cloudflare/next-on-pages": "1.13.13",
     "@playcanvas/supersplat-viewer": "^1.8.3",
     "@react-three/drei": "^9.113.7",

@@ -1,5 +1,5 @@
-reason: executing phase 2 branch sync by merging origin/development into codex/agent-72759001-sync-development-into-ml and validating the integrated branch
-last_step: completed the phase 2 baseline checks, merged origin/development into the phase 2 branch, and started resolving the expected workflow and web content conflicts
-next_unblocked_step: finish conflict resolution, audit the auto-merged infra files for branch-aware naming and R2/payment settings, push the branch, and monitor Pages/CDK/container checks to green
+reason: building and validating a local SfM preview for the latest completed ladder_2000 output
+last_step: implemented /sfm-preview and /api/sfm-preview, then verified the live dev server, signed S3 links, and hydrated point-cloud canvas against md1p24e752k-1776314974
+next_unblocked_step: bump the Pages trigger file, push agent-58692692-sfm-ladder-viewer, and monitor the branch Pages/CDK workflows to completion
 owner_action_needed: none
-updated: 2026-03-06T02:16:00Z
+updated: 2026-04-16T17:14:00Z
