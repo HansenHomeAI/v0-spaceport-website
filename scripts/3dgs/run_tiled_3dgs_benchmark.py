@@ -35,6 +35,8 @@ UNSUPPORTED_BILATERAL_VARIANTS = {"splatfacto-w-light", "splatfacto-w"}
 PROOF_PROFILE_NONE = "none"
 PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY = "quality_gate_low_memory"
 QUALITY_GATE_LOW_MEMORY_STOP_SPLIT_AT = 8500
+QUALITY_GATE_MULTI_TILE_STOP_SPLIT_AT = 7000
+QUALITY_GATE_MULTI_TILE_MAX_GAUSS_RATIO = "8.0"
 
 
 def run_command(command: Sequence[str], *, capture_output: bool = False) -> subprocess.CompletedProcess[str]:
@@ -222,6 +224,9 @@ def apply_proof_profile(
     *,
     proof_profile: str,
     max_iterations: int,
+    training_mode: str,
+    include_review: bool,
+    tile_count: int,
 ) -> None:
     if proof_profile != PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY:
         return
@@ -230,7 +235,11 @@ def apply_proof_profile(
     env.setdefault("TRAINING_CACHE_IMAGES", "disk")
     env.setdefault("TRAINING_CACHE_IMAGES_TYPE", "uint8")
     env.setdefault("TRAINING_DATALOADER_NUM_WORKERS", "0")
-    env.setdefault("TRAINING_STOP_SPLIT_AT", str(min(max_iterations, QUALITY_GATE_LOW_MEMORY_STOP_SPLIT_AT)))
+    stop_split_at = QUALITY_GATE_LOW_MEMORY_STOP_SPLIT_AT
+    if training_mode == "tiled_pipeline" and include_review and tile_count >= 3:
+        env.setdefault("TRAINING_MAX_GAUSS_RATIO", QUALITY_GATE_MULTI_TILE_MAX_GAUSS_RATIO)
+        stop_split_at = QUALITY_GATE_MULTI_TILE_STOP_SPLIT_AT
+    env.setdefault("TRAINING_STOP_SPLIT_AT", str(min(max_iterations, stop_split_at)))
     suppressed_step = str(max_iterations + 1)
     env.setdefault("TRAINING_STEPS_PER_EVAL_IMAGE", suppressed_step)
     env.setdefault("TRAINING_STEPS_PER_EVAL_ALL_IMAGES", suppressed_step)
@@ -278,6 +287,7 @@ def build_training_environment(
     selected_tile_ids: Sequence[str] | None = None,
     include_scaffold: bool = True,
     include_merge: bool = True,
+    include_review: bool = False,
     downscale_factor: int = 1,
     proof_profile: str = PROOF_PROFILE_NONE,
 ) -> Dict[str, str]:
@@ -324,7 +334,14 @@ def build_training_environment(
             env["TILED_TILE_IDS"] = ",".join(selected_tile_ids)
         env["TILED_INCLUDE_SCAFFOLD"] = "true" if include_scaffold else "false"
         env["TILED_INCLUDE_MERGE"] = "true" if include_merge else "false"
-        apply_proof_profile(env, proof_profile=proof_profile, max_iterations=max_iterations)
+        apply_proof_profile(
+            env,
+            proof_profile=proof_profile,
+            max_iterations=max_iterations,
+            training_mode=training_mode,
+            include_review=include_review,
+            tile_count=len(selected_tile_ids or []),
+        )
     if tile_id:
         env["TILE_ID"] = tile_id
     env.update(extra_env)
@@ -403,6 +420,7 @@ def build_benchmark_stages(
                     selected_tile_ids=tile_ids,
                     include_scaffold=include_scaffold,
                     include_merge=include_merge,
+                    include_review=include_review,
                     downscale_factor=downscale_factor,
                     proof_profile=proof_profile,
                 ),

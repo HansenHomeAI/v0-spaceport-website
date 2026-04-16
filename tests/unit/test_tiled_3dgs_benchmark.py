@@ -181,6 +181,39 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(env["TRAINING_STEPS_PER_EVAL_ALL_IMAGES"], "12001")
         self.assertEqual(env["TRAINING_STEPS_PER_SAVE"], "12001")
 
+    def test_build_training_environment_quality_gate_profile_tightens_multi_tile_review_runs(self):
+        env = benchmark.build_training_environment(
+            training_mode="tiled_pipeline",
+            tile_manifest_name="3dgs_tile_manifest.json",
+            view_bucket_manifest_name="3dgs_view_buckets.json",
+            tile_id=None,
+            max_iterations=12000,
+            extra_env={},
+            include_review=True,
+            selected_tile_ids=["tile_04", "tile_05", "tile_06"],
+            proof_profile=benchmark.PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY,
+        )
+
+        self.assertEqual(env["TRAINING_PROOF_PROFILE"], "quality_gate_low_memory")
+        self.assertEqual(env["TRAINING_MAX_GAUSS_RATIO"], "8.0")
+        self.assertEqual(env["TRAINING_STOP_SPLIT_AT"], "7000")
+
+    def test_build_training_environment_quality_gate_profile_keeps_single_tile_behavior(self):
+        env = benchmark.build_training_environment(
+            training_mode="tiled_pipeline",
+            tile_manifest_name="3dgs_tile_manifest.json",
+            view_bucket_manifest_name="3dgs_view_buckets.json",
+            tile_id=None,
+            max_iterations=12000,
+            extra_env={},
+            include_review=True,
+            selected_tile_ids=["tile_00"],
+            proof_profile=benchmark.PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY,
+        )
+
+        self.assertNotIn("TRAINING_MAX_GAUSS_RATIO", env)
+        self.assertEqual(env["TRAINING_STOP_SPLIT_AT"], "8500")
+
     def test_build_training_environment_preserves_explicit_timeout_override(self):
         env = benchmark.build_training_environment(
             training_mode="tiled_pipeline",
@@ -208,7 +241,10 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
                 "TRAINING_STEPS_PER_EVAL_ALL_IMAGES": "900",
                 "TRAINING_STEPS_PER_SAVE": "1200",
                 "TRAINING_STOP_SPLIT_AT": "7000",
+                "TRAINING_MAX_GAUSS_RATIO": "7.5",
             },
+            include_review=True,
+            selected_tile_ids=["tile_04", "tile_05", "tile_06"],
             proof_profile=benchmark.PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY,
         )
 
@@ -217,6 +253,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(env["TRAINING_STEPS_PER_EVAL_ALL_IMAGES"], "900")
         self.assertEqual(env["TRAINING_STEPS_PER_SAVE"], "1200")
         self.assertEqual(env["TRAINING_STOP_SPLIT_AT"], "7000")
+        self.assertEqual(env["TRAINING_MAX_GAUSS_RATIO"], "7.5")
 
     def test_build_training_environment_quality_gate_profile_preserves_explicit_profile_override(self):
         env = benchmark.build_training_environment(
