@@ -1058,7 +1058,6 @@ export default function PipelineViewerPage() {
   }, [activeTab, colmapBaseUrl, handleLoadSfm, sfmLoadNonce]);
 
   const sfmFileUrls = useMemo(() => buildSfmFileUrls(colmapBaseUrl, sfmSparsePath), [colmapBaseUrl, sfmSparsePath]);
-  const activeStageUrl = activeTab === "sfm" ? colmapBaseUrl : activeTab === "gaussian" ? gaussianPlyUrl : compressedBundleUrl;
   const activeViewerStatus =
     activeTab === "sfm"
       ? sfmError ?? sfmStatus
@@ -1243,10 +1242,6 @@ export default function PipelineViewerPage() {
                 </div>
               </div>
             )}
-
-            <p style={mutedTextStyles}>
-              {activeStageUrl || "Paste any pipeline URL and switch stages as needed."}
-            </p>
           </div>
         </div>
       </section>
