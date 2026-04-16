@@ -5577,7 +5577,10 @@ class ColmapPipeline:
                     triangulated_model.binary_dir != prior_cycle_model.binary_dir
                     or triangulated_model.text_dir != prior_cycle_model.text_dir
                 ):
-                    self.cleanup_model_artifacts(prior_cycle_model)
+                    self.cleanup_model_artifacts(
+                        prior_cycle_model,
+                        preserve_models=[seed_model],
+                    )
                 current_model = triangulated_model
                 if current_model.images_registered <= previous_registered_count:
                     break
@@ -5608,7 +5611,10 @@ class ColmapPipeline:
                 adjusted_model.binary_dir != current_model.binary_dir
                 or adjusted_model.text_dir != current_model.text_dir
             ):
-                self.cleanup_model_artifacts(current_model)
+                self.cleanup_model_artifacts(
+                    current_model,
+                    preserve_models=[seed_model],
+                )
             return adjusted_model
         finally:
             self.remove_sqlite_database_artifacts(seam_database_path)
