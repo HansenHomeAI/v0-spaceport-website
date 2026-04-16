@@ -15,10 +15,13 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 const DEFAULT_COMPRESSED_BUNDLE =
   "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json";
 const VIEWER_BASE = "/supersplat-viewer/index.html";
-const PROXY_HOSTS = new Set([
-  "spaceport-ml-processing.s3.amazonaws.com",
-  "spaceport-ml-processing.s3.us-west-2.amazonaws.com",
-]);
+const PIPELINE_BUCKET_PATTERNS = [
+  /^spaceport-ml-processing(?:-[a-z0-9-]+)?$/i,
+  /^spaceport-ml-delivery(?:-[a-z0-9-]+)?$/i,
+  /^spaceport-model-delivery(?:-[a-z0-9-]+)?$/i,
+];
+const S3_HOST_PATTERN = /^(.+)\.s3(?:[.-][a-z0-9-]+)?\.amazonaws\.com$/i;
+const S3_PATH_STYLE_HOST_PATTERN = /^s3(?:[.-][a-z0-9-]+)?\.amazonaws\.com$/i;
 
 type SfmData = {
   points: Float32Array;
@@ -34,88 +37,100 @@ type SfmData = {
 
 type TransformOption = "native" | "rotateX90" | "rotateX-90" | "rotateY90" | "rotateZ90";
 
-type SupersplatPanelProps = {
-  label: string;
-  description: string;
+type SupersplatViewportProps = {
   defaultUrl: string;
-  buttonLabel: string;
-  helperText: string;
-  inputPlaceholder: string;
-  ensureMetaJson?: boolean;
-  onNormalize?: (url: string | null) => void;
+  normalizeInputUrl?: (rawValue: string) => URL | null;
+  onViewerStateChange?: (state: "idle" | "loading" | "ready" | "invalid") => void;
+};
+
+type DerivedPipelineArtifacts = {
+  sourceKind: "compressed" | "gaussian" | "sfm";
+  sourceLabel: string;
+  jobId: string | null;
+  sourceUrl: string;
+  compressedBundle: string | null;
+  colmapBase: string | null;
+  gaussianPly: string | null;
+  sparsePath: string | null;
 };
 
 const pageStyles: CSSProperties = {
-  minHeight: "100vh",
-  backgroundColor: "#05050a",
+  position: "relative",
+  width: "100vw",
+  height: "100vh",
+  overflow: "hidden",
+  backgroundColor: "#040507",
   color: "#f8f8fb",
-  padding: "48px 28px 64px",
   fontFamily: "'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
 };
 
-const headerStyles: CSSProperties = {
-  maxWidth: "1120px",
-  margin: "0 auto 32px",
+const viewportStyles: CSSProperties = {
+  position: "absolute",
+  inset: 0,
+  background:
+    "radial-gradient(circle at top left, rgba(255, 122, 26, 0.14), transparent 28%), radial-gradient(circle at top right, rgba(76, 170, 255, 0.14), transparent 26%), #040507",
 };
 
-const titleStyles: CSSProperties = {
-  fontSize: "2.6rem",
-  fontWeight: 600,
-  letterSpacing: "-0.02em",
-  marginBottom: "12px",
+const viewerShellStyles: CSSProperties = {
+  position: "absolute",
+  inset: 0,
+  overflow: "hidden",
+  background: "#040507",
 };
 
-const subtitleStyles: CSSProperties = {
-  fontSize: "1rem",
-  color: "rgba(255, 255, 255, 0.75)",
-  maxWidth: "860px",
-  lineHeight: 1.6,
-};
-
-const cardStyles: CSSProperties = {
-  background: "rgba(14, 14, 22, 0.7)",
-  borderRadius: "28px",
-  border: "1px solid rgba(255, 255, 255, 0.08)",
-  boxShadow: "0 24px 60px rgba(5, 5, 8, 0.6)",
-  padding: "24px",
-};
-
-const sectionGridStyles: CSSProperties = {
+const overlayStyles: CSSProperties = {
+  position: "absolute",
+  top: "20px",
+  left: "20px",
+  zIndex: 20,
+  width: "min(560px, calc(100vw - 40px))",
   display: "grid",
-  gridTemplateColumns: "minmax(0, 1.1fr) minmax(0, 1fr)",
-  gap: "24px",
-  maxWidth: "1120px",
-  margin: "0 auto 36px",
+  gap: "14px",
 };
 
-const fullWidthSectionStyles: CSSProperties = {
-  maxWidth: "1120px",
-  margin: "0 auto",
+const glassPanelStyles: CSSProperties = {
+  background: "rgba(10, 12, 18, 0.72)",
+  borderRadius: "24px",
+  border: "1px solid rgba(255, 255, 255, 0.12)",
+  boxShadow: "0 24px 60px rgba(0, 0, 0, 0.42)",
+  backdropFilter: "blur(22px)",
+  padding: "16px",
+};
+
+const sourceFormStyles: CSSProperties = {
+  display: "grid",
+  gap: "12px",
+};
+
+const inputRowStyles: CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "minmax(0, 1fr) auto",
+  gap: "10px",
+  alignItems: "center",
 };
 
 const labelStyles: CSSProperties = {
-  fontSize: "0.8rem",
+  fontSize: "0.72rem",
   fontWeight: 600,
   letterSpacing: "0.08em",
   textTransform: "uppercase",
   color: "rgba(255, 255, 255, 0.7)",
-  marginBottom: "8px",
   display: "block",
 };
 
 const inputStyles: CSSProperties = {
   width: "100%",
-  padding: "12px 14px",
-  borderRadius: "12px",
+  padding: "13px 14px",
+  borderRadius: "14px",
   border: "1px solid rgba(255, 255, 255, 0.14)",
-  background: "rgba(10, 10, 16, 0.8)",
+  background: "rgba(5, 7, 11, 0.78)",
   color: "#ffffff",
   fontSize: "0.95rem",
   outline: "none",
 };
 
 const buttonStyles: CSSProperties = {
-  padding: "10px 18px",
+  padding: "12px 18px",
   borderRadius: "999px",
   border: "1px solid rgba(255, 255, 255, 0.2)",
   background: "linear-gradient(90deg, #ff6b00, #ff9a2b)",
@@ -126,25 +141,25 @@ const buttonStyles: CSSProperties = {
 };
 
 const mutedTextStyles: CSSProperties = {
-  fontSize: "0.85rem",
+  fontSize: "0.82rem",
   color: "rgba(255, 255, 255, 0.6)",
   lineHeight: 1.5,
 };
 
 const tabListStyles: CSSProperties = {
   display: "flex",
-  gap: "10px",
-  marginBottom: "18px",
+  gap: "8px",
   flexWrap: "wrap",
 };
 
 const tabButtonStyles: CSSProperties = {
-  padding: "8px 16px",
+  padding: "8px 14px",
   borderRadius: "999px",
   border: "1px solid rgba(255, 255, 255, 0.2)",
-  background: "rgba(255, 255, 255, 0.04)",
+  background: "rgba(255, 255, 255, 0.05)",
   color: "rgba(255, 255, 255, 0.75)",
-  fontSize: "0.85rem",
+  fontSize: "0.78rem",
+  fontWeight: 600,
   cursor: "pointer",
 };
 
@@ -155,62 +170,78 @@ const activeTabButtonStyles: CSSProperties = {
   color: "#ffffff",
 };
 
-const viewerShellStyles: CSSProperties = {
-  position: "relative",
-  width: "100%",
-  height: "520px",
-  borderRadius: "20px",
-  overflow: "hidden",
-  border: "1px solid rgba(255, 255, 255, 0.1)",
-  background: "rgba(5, 5, 8, 0.9)",
-};
-
-const overlayCardStyles: CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "14px",
-};
-
 const statusPillStyles: CSSProperties = {
-  padding: "6px 12px",
+  padding: "6px 10px",
   borderRadius: "999px",
   background: "rgba(255, 255, 255, 0.08)",
-  fontSize: "0.75rem",
+  border: "1px solid rgba(255, 255, 255, 0.1)",
+  fontSize: "0.72rem",
   letterSpacing: "0.05em",
   textTransform: "uppercase",
 };
 
-const toggleRowStyles: CSSProperties = {
+const toolbarRowStyles: CSSProperties = {
   display: "flex",
   flexWrap: "wrap",
-  gap: "12px",
+  gap: "10px",
   alignItems: "center",
 };
 
 const inlineInputStyles: CSSProperties = {
   ...inputStyles,
-  maxWidth: "120px",
+  maxWidth: "118px",
+  padding: "9px 12px",
+  fontSize: "0.84rem",
 };
 
-const calloutStyles: CSSProperties = {
-  padding: "14px 16px",
-  background: "rgba(255, 126, 0, 0.12)",
-  borderRadius: "16px",
-  border: "1px solid rgba(255, 126, 0, 0.35)",
-  fontSize: "0.85rem",
-  color: "rgba(255, 255, 255, 0.8)",
-};
-
-const derivedListStyles: CSSProperties = {
+const metaGridStyles: CSSProperties = {
   display: "grid",
-  gap: "6px",
-  fontSize: "0.85rem",
-  color: "rgba(255, 255, 255, 0.7)",
+  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+  gap: "8px",
 };
 
-const mobileStackStyles: CSSProperties = {
+const metaCardStyles: CSSProperties = {
+  padding: "10px 12px",
+  borderRadius: "14px",
+  background: "rgba(255, 255, 255, 0.04)",
+  border: "1px solid rgba(255, 255, 255, 0.08)",
   display: "grid",
-  gap: "12px",
+  gap: "3px",
+};
+
+const metaValueStyles: CSSProperties = {
+  fontSize: "0.79rem",
+  color: "rgba(255, 255, 255, 0.82)",
+  wordBreak: "break-word",
+};
+
+const sfmControlsStyles: CSSProperties = {
+  display: "grid",
+  gap: "10px",
+};
+
+const bottomStatusStyles: CSSProperties = {
+  position: "absolute",
+  left: "20px",
+  bottom: "20px",
+  zIndex: 20,
+  maxWidth: "min(520px, calc(100vw - 40px))",
+  padding: "12px 14px",
+  borderRadius: "18px",
+  background: "rgba(8, 10, 14, 0.62)",
+  border: "1px solid rgba(255, 255, 255, 0.08)",
+  backdropFilter: "blur(18px)",
+};
+
+const emptyStateStyles: CSSProperties = {
+  position: "absolute",
+  inset: 0,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  color: "rgba(255, 255, 255, 0.45)",
+  fontSize: "0.95rem",
+  letterSpacing: "0.02em",
 };
 
 const transformOptions: { value: TransformOption; label: string; rotation: [number, number, number] }[] = [
@@ -232,6 +263,27 @@ const toHttpsFromS3 = (raw: string) => {
   }
   const path = rest.join("/");
   return `https://${bucket}.s3.amazonaws.com/${path}`;
+};
+
+const isAllowedPipelineBucket = (bucket: string) =>
+  PIPELINE_BUCKET_PATTERNS.some((pattern) => pattern.test(bucket));
+
+const getBucketFromUrl = (url: URL) => {
+  if (url.protocol === "s3:") {
+    return url.hostname.trim() || null;
+  }
+
+  const virtualHostedMatch = url.host.match(S3_HOST_PATTERN);
+  if (virtualHostedMatch) {
+    return virtualHostedMatch[1];
+  }
+
+  if (S3_PATH_STYLE_HOST_PATTERN.test(url.host)) {
+    const bucket = url.pathname.replace(/^\/+/, "").split("/")[0];
+    return bucket || null;
+  }
+
+  return null;
 };
 
 const normalizeUrl = (rawValue: string, options?: { ensureMetaJson?: boolean; ensureTrailingSlash?: boolean }) => {
@@ -260,8 +312,88 @@ const normalizeUrl = (rawValue: string, options?: { ensureMetaJson?: boolean; en
   }
 };
 
+const normalizeCompressedBundleUrl = (rawValue: string) => {
+  const parsed = normalizeUrl(rawValue);
+  if (!parsed) {
+    return null;
+  }
+
+  if (!parsed.pathname.endsWith(".json")) {
+    if (parsed.pathname.includes("/supersplat_bundle")) {
+      parsed.pathname = parsed.pathname.replace(/\/?$/, "/meta.json");
+    } else if (
+      /\/compressed\/[^/]+\/?$/.test(parsed.pathname) ||
+      /\/manual-validations\/[^/]+\/compressed\/?$/.test(parsed.pathname)
+    ) {
+      parsed.pathname = `${parsed.pathname.replace(/\/?$/, "/")}supersplat_bundle/meta.json`;
+    } else {
+      parsed.pathname = parsed.pathname.replace(/\/?$/, "/meta.json");
+    }
+  }
+
+  return parsed;
+};
+
+const normalizeGaussianAssetUrl = (rawValue: string) => {
+  const parsed = normalizeUrl(rawValue);
+  if (!parsed) {
+    return null;
+  }
+
+  if (parsed.pathname.endsWith("/")) {
+    parsed.pathname = `${parsed.pathname}splat.ply`;
+    return parsed;
+  }
+
+  if (parsed.pathname.endsWith("/model.tar.gz")) {
+    const standard3dgsMatch = parsed.pathname.match(/\/3dgs\/([^/]+)\/.+\/model\.tar\.gz$/);
+    if (standard3dgsMatch) {
+      parsed.pathname = `/3dgs/${standard3dgsMatch[1]}/splat.ply`;
+      return parsed;
+    }
+
+    parsed.pathname = parsed.pathname.replace(/model\.tar\.gz$/, "splat.ply");
+  }
+
+  return parsed;
+};
+
+const resolveSfmInput = (rawValue: string, fallbackSparsePath: string) => {
+  const parsed = normalizeUrl(rawValue);
+  if (!parsed) {
+    return null;
+  }
+
+  const directFileMatch = parsed.pathname.match(/^(.*\/)(sparse\/\d+\/)(?:cameras|images|points3D)\.txt$/);
+  if (directFileMatch) {
+    parsed.pathname = directFileMatch[1];
+    return {
+      baseUrl: parsed.toString(),
+      sparsePath: directFileMatch[2],
+    };
+  }
+
+  const sparseDirectoryMatch = parsed.pathname.match(/^(.*\/)(sparse\/\d+\/)$/);
+  if (sparseDirectoryMatch) {
+    parsed.pathname = sparseDirectoryMatch[1];
+    return {
+      baseUrl: parsed.toString(),
+      sparsePath: sparseDirectoryMatch[2],
+    };
+  }
+
+  parsed.pathname = parsed.pathname.replace(/\/?$/, "/");
+  return {
+    baseUrl: parsed.toString(),
+    sparsePath: fallbackSparsePath.replace(/^\/+/, "").replace(/\/?$/, "/"),
+  };
+};
+
 const withProxyIfNeeded = (url: URL) => {
-  if (PROXY_HOSTS.has(url.host)) {
+  const bucket = getBucketFromUrl(url);
+  const shouldProxyBucket = bucket ? isAllowedPipelineBucket(bucket) : false;
+  const shouldProxyEdgeBundle = url.host.endsWith(".cloudfront.net") && url.pathname.startsWith("/models/");
+  if (shouldProxyBucket || shouldProxyEdgeBundle) {
     const base = `${url.protocol}//${url.host}`;
     const encodedBase = base.replace("://", ":/");
     return `/api/sogs-proxy/${encodedBase}${url.pathname}${url.search}`;
@@ -269,34 +401,111 @@ const withProxyIfNeeded = (url: URL) => {
   return url.toString();
 };
 
-const derivePipelineFromCompressed = (rawCompressed: string) => {
-  const parsed = normalizeUrl(rawCompressed, { ensureMetaJson: true });
+const derivePipelineArtifacts = (rawSource: string): DerivedPipelineArtifacts | null => {
+  const parsed = normalizeUrl(rawSource);
   if (!parsed) {
     return null;
   }
-  const match = parsed.pathname.match(/\/compressed\/([^/]+)\//);
-  if (!match) {
-    return null;
-  }
-
-  const jobId = match[1];
   const baseOrigin = `${parsed.protocol}//${parsed.host}`;
-  return {
+
+  const buildStandardArtifacts = (
+    jobId: string,
+    sourceKind: DerivedPipelineArtifacts["sourceKind"],
+    sourceLabel: string
+  ): DerivedPipelineArtifacts => ({
+    sourceKind,
+    sourceLabel,
     jobId,
-    compressedBundle: parsed.toString(),
+    sourceUrl: parsed.toString(),
+    compressedBundle: `${baseOrigin}/compressed/${jobId}/supersplat_bundle/meta.json`,
     colmapBase: `${baseOrigin}/colmap/${jobId}/`,
     gaussianPly: `${baseOrigin}/3dgs/${jobId}/splat.ply`,
-  };
+    sparsePath: "sparse/0/",
+  });
+
+  const manualValidationMatch = parsed.pathname.match(/\/manual-validations\/([^/]+)\/(compressed|repair|colmap)(?:\/|$)/);
+  if (manualValidationMatch) {
+    const runId = manualValidationMatch[1];
+    const sourceKind =
+      manualValidationMatch[2] === "colmap" ? "sfm" : manualValidationMatch[2] === "repair" ? "gaussian" : "compressed";
+    const sfmInput = resolveSfmInput(rawSource, "sparse/0/");
+    return {
+      sourceKind,
+      sourceLabel:
+        sourceKind === "sfm"
+          ? "Manual validation COLMAP"
+          : sourceKind === "gaussian"
+            ? "Manual validation 3DGS"
+            : "Manual validation compressed bundle",
+      jobId: runId,
+      sourceUrl:
+        sourceKind === "compressed"
+          ? normalizeCompressedBundleUrl(rawSource)?.toString() ?? parsed.toString()
+          : sourceKind === "gaussian"
+            ? normalizeGaussianAssetUrl(rawSource)?.toString() ?? parsed.toString()
+            : sfmInput?.baseUrl ?? parsed.toString(),
+      compressedBundle: `${baseOrigin}/manual-validations/${runId}/compressed/supersplat_bundle/meta.json`,
+      colmapBase: `${baseOrigin}/manual-validations/${runId}/colmap/`,
+      gaussianPly: `${baseOrigin}/manual-validations/${runId}/repair/splat.ply`,
+      sparsePath: sfmInput?.sparsePath ?? "sparse/0/",
+    };
+  }
+
+  const standardCompressedMatch = parsed.pathname.match(/^\/compressed\/([^/]+)\//);
+  if (standardCompressedMatch) {
+    return {
+      ...buildStandardArtifacts(standardCompressedMatch[1], "compressed", "Compressed bundle"),
+      sourceUrl: normalizeCompressedBundleUrl(rawSource)?.toString() ?? parsed.toString(),
+    };
+  }
+
+  const standardGaussianMatch = parsed.pathname.match(/^\/3dgs\/([^/]+)(?:\/|$)/);
+  if (standardGaussianMatch) {
+    return {
+      ...buildStandardArtifacts(standardGaussianMatch[1], "gaussian", "3DGS output"),
+      sourceUrl: normalizeGaussianAssetUrl(rawSource)?.toString() ?? parsed.toString(),
+      gaussianPly:
+        normalizeGaussianAssetUrl(rawSource)?.toString() ?? `${baseOrigin}/3dgs/${standardGaussianMatch[1]}/splat.ply`,
+    };
+  }
+
+  const standardSfmMatch = parsed.pathname.match(/^\/colmap\/([^/]+)(?:\/|$)/);
+  if (standardSfmMatch) {
+    const sfmInput = resolveSfmInput(rawSource, "sparse/0/");
+    return {
+      ...buildStandardArtifacts(standardSfmMatch[1], "sfm", "COLMAP output"),
+      sourceUrl: sfmInput?.baseUrl ?? parsed.toString(),
+      colmapBase: sfmInput?.baseUrl ?? `${baseOrigin}/colmap/${standardSfmMatch[1]}/`,
+      sparsePath: sfmInput?.sparsePath ?? "sparse/0/",
+    };
+  }
+
+  if (parsed.pathname.includes("/supersplat_bundle/")) {
+    return {
+      sourceKind: "compressed",
+      sourceLabel: "Compressed bundle",
+      jobId: null,
+      sourceUrl: normalizeCompressedBundleUrl(rawSource)?.toString() ?? parsed.toString(),
+      compressedBundle: normalizeCompressedBundleUrl(rawSource)?.toString() ?? parsed.toString(),
+      colmapBase: null,
+      gaussianPly: null,
+      sparsePath: null,
+    };
+  }
+
+  return null;
 };
 
 const buildSfmFileUrls = (baseUrl: string, sparsePath: string) => {
-  const normalized = normalizeUrl(baseUrl, { ensureTrailingSlash: true });
-  if (!normalized) {
+  const resolved = resolveSfmInput(baseUrl, sparsePath);
+  if (!resolved) {
     return null;
   }
-  const safeSparse = sparsePath.replace(/^\/+/, "").replace(/\/?$/, "/");
-  const base = normalized.toString();
+  const safeSparse = resolved.sparsePath;
+  const base = resolved.baseUrl;
   return {
+    baseUrl: base,
+    sparsePath: safeSparse,
     cameras: `${base}${safeSparse}cameras.txt`,
     images: `${base}${safeSparse}images.txt`,
     points: `${base}${safeSparse}points3D.txt`,
@@ -664,142 +873,86 @@ const SfmCanvas = ({
   return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />;
 };
 
-const SupersplatPanel = ({
-  label,
-  description,
+const SupersplatViewport = ({
   defaultUrl,
-  buttonLabel,
-  helperText,
-  inputPlaceholder,
-  ensureMetaJson,
-  onNormalize,
-}: SupersplatPanelProps) => {
+  normalizeInputUrl,
+  onViewerStateChange,
+}: SupersplatViewportProps) => {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
-  const [inputUrl, setInputUrl] = useState(defaultUrl);
-  const [activeUrl, setActiveUrl] = useState(defaultUrl);
-  const [status, setStatus] = useState("Idle");
-  const [viewerState, setViewerState] = useState<"idle" | "loading" | "ready">("idle");
+  const [activeUrl, setActiveUrl] = useState("");
   const [iframeKey, setIframeKey] = useState(0);
-  const [error, setError] = useState<string | null>(null);
-  const inputId = useMemo(
-    () => `supersplat-${label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
-    [label]
-  );
 
   const normalizeForViewer = useCallback(
     (rawValue: string) => {
-      const parsed = normalizeUrl(rawValue, { ensureMetaJson });
+      const parsed = normalizeInputUrl ? normalizeInputUrl(rawValue) : normalizeUrl(rawValue);
       if (!parsed) {
         return null;
       }
-      return withProxyIfNeeded(parsed);
+      return {
+        canonicalUrl: parsed.toString(),
+        viewerUrl: withProxyIfNeeded(parsed),
+      };
     },
-    [ensureMetaJson]
-  );
-
-  const attemptLoad = useCallback(
-    (rawValue: string) => {
-      setError(null);
-      const normalized = normalizeForViewer(rawValue);
-      if (!normalized) {
-        setError("Enter a valid URL pointing to a SOGS bundle or PLY file.");
-        return false;
-      }
-      setViewerState("loading");
-      setStatus("Loading viewer...");
-      setActiveUrl(normalized);
-      setIframeKey((prev) => prev + 1);
-      if (onNormalize) {
-        onNormalize(rawValue.trim() ? rawValue : null);
-      }
-      return true;
-    },
-    [normalizeForViewer, onNormalize]
+    [normalizeInputUrl]
   );
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data?.type === "supersplat:firstFrame" && event.source === iframeRef.current?.contentWindow) {
-        setViewerState("ready");
-        setStatus("Viewer ready");
+        onViewerStateChange?.("ready");
       }
     };
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, []);
+  }, [onViewerStateChange]);
 
   useEffect(() => {
     const normalized = normalizeForViewer(defaultUrl);
-    setActiveUrl(normalized ?? "");
-    setInputUrl(defaultUrl);
-  }, [defaultUrl, normalizeForViewer]);
+    if (!normalized) {
+      setActiveUrl("");
+      onViewerStateChange?.("invalid");
+      return;
+    }
+    setActiveUrl(normalized.viewerUrl);
+    setIframeKey((prev) => prev + 1);
+    onViewerStateChange?.("loading");
+  }, [defaultUrl, normalizeForViewer, onViewerStateChange]);
 
   const viewerSrc = useMemo(() => {
     if (!activeUrl) {
-      return `${VIEWER_BASE}?settings=/supersplat-viewer/settings.json`;
+      return "";
     }
     const params = new URLSearchParams({
       settings: "/supersplat-viewer/settings.json",
       content: activeUrl,
     });
     return `${VIEWER_BASE}?${params.toString()}`;
-  }, [activeUrl, iframeKey]);
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    attemptLoad(inputUrl);
-  };
+  }, [activeUrl]);
 
   return (
-    <div style={overlayCardStyles}>
-      <div>
-        <p style={statusPillStyles}>
-          {viewerState === "ready" ? "Viewer ready" : viewerState === "loading" ? "Loading" : "Idle"}
-        </p>
-        <h2 style={{ margin: "8px 0 6px", fontSize: "1.6rem" }}>{label}</h2>
-        <p style={mutedTextStyles}>{description}</p>
-      </div>
-      <form onSubmit={handleSubmit} style={mobileStackStyles}>
-        <div>
-          <label style={labelStyles} htmlFor={inputId}>
-            Source URL
-          </label>
-          <input
-            id={inputId}
-            type="url"
-            value={inputUrl}
-            onChange={(event) => setInputUrl(event.target.value)}
-            placeholder={inputPlaceholder}
-            style={inputStyles}
-          />
-        </div>
-        <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
-          <button type="submit" style={buttonStyles}>
-            {buttonLabel}
-          </button>
-          <span style={mutedTextStyles}>{helperText}</span>
-        </div>
-        {error && <p style={{ ...mutedTextStyles, color: "#ff7a6d" }}>{error}</p>}
-      </form>
-      <div style={viewerShellStyles}>
+    <>
+      {viewerSrc ? (
         <iframe
           key={iframeKey}
           ref={iframeRef}
           src={viewerSrc}
-          title={`${label} Viewer`}
+          title="Pipeline viewport"
           style={{ border: "none", width: "100%", height: "100%", display: "block" }}
           allow="xr-spatial-tracking"
         />
-      </div>
-      <p style={mutedTextStyles}>{status}</p>
-    </div>
+      ) : (
+        <div style={emptyStateStyles}>Paste a supported pipeline link to load this stage.</div>
+      )}
+    </>
   );
 };
 
 export default function PipelineViewerPage() {
   const [activeTab, setActiveTab] = useState<"sfm" | "gaussian" | "compressed">("compressed");
-  const [compressedInput, setCompressedInput] = useState(DEFAULT_COMPRESSED_BUNDLE);
+  const [pipelineSourceInput, setPipelineSourceInput] = useState(DEFAULT_COMPRESSED_BUNDLE);
+  const [compressedBundleUrl, setCompressedBundleUrl] = useState(DEFAULT_COMPRESSED_BUNDLE);
   const [derivedJobId, setDerivedJobId] = useState<string | null>(null);
+  const [derivedSourceLabel, setDerivedSourceLabel] = useState<string | null>("Compressed bundle");
   const [colmapBaseUrl, setColmapBaseUrl] = useState("");
   const [gaussianPlyUrl, setGaussianPlyUrl] = useState("");
   const [sfmSparsePath, setSfmSparsePath] = useState("sparse/0/");
@@ -812,20 +965,33 @@ export default function PipelineViewerPage() {
   const [sfmData, setSfmData] = useState<SfmData | null>(null);
   const [sfmStatus, setSfmStatus] = useState("Awaiting data");
   const [sfmError, setSfmError] = useState<string | null>(null);
+  const [sfmLoadNonce, setSfmLoadNonce] = useState(0);
+  const [gaussianViewerState, setGaussianViewerState] = useState<"idle" | "loading" | "ready" | "invalid">("idle");
+  const [compressedViewerState, setCompressedViewerState] = useState<"idle" | "loading" | "ready" | "invalid">("idle");
 
   const handleDerive = () => {
-    const result = derivePipelineFromCompressed(compressedInput);
+    const result = derivePipelineArtifacts(pipelineSourceInput);
     if (!result) {
       setDerivedJobId(null);
+      setDerivedSourceLabel(null);
       return;
     }
+    setPipelineSourceInput(result.sourceUrl);
     setDerivedJobId(result.jobId);
-    setColmapBaseUrl(result.colmapBase);
-    setGaussianPlyUrl(result.gaussianPly);
-    setCompressedInput(result.compressedBundle);
+    setDerivedSourceLabel(result.sourceLabel);
+    setCompressedBundleUrl(result.compressedBundle ?? "");
+    setColmapBaseUrl(result.colmapBase ?? "");
+    setGaussianPlyUrl(result.gaussianPly ?? "");
+    if (result.sparsePath) {
+      setSfmSparsePath(result.sparsePath);
+    }
+    setActiveTab(result.sourceKind);
+    if (result.colmapBase) {
+      setSfmLoadNonce((value) => value + 1);
+    }
   };
 
-  const handleLoadSfm = async () => {
+  const handleLoadSfm = useCallback(async () => {
     setSfmError(null);
     setSfmStatus("Loading SFM output...");
 
@@ -835,6 +1001,9 @@ export default function PipelineViewerPage() {
       setSfmStatus("Failed to load");
       return;
     }
+
+    setColmapBaseUrl(fileUrls.baseUrl);
+    setSfmSparsePath(fileUrls.sparsePath);
 
     try {
       const imagesUrl = normalizeUrl(fileUrls.images) ?? new URL(fileUrls.images);
@@ -879,124 +1048,124 @@ export default function PipelineViewerPage() {
       setSfmError(message);
       setSfmStatus("Failed to load");
     }
-  };
+  }, [colmapBaseUrl, sfmSparsePath, sfmMaxPoints, sfmMaxCameras]);
+
+  useEffect(() => {
+    if (activeTab !== "sfm" || sfmLoadNonce === 0 || !colmapBaseUrl) {
+      return;
+    }
+    void handleLoadSfm();
+  }, [activeTab, colmapBaseUrl, handleLoadSfm, sfmLoadNonce]);
 
   const sfmFileUrls = useMemo(() => buildSfmFileUrls(colmapBaseUrl, sfmSparsePath), [colmapBaseUrl, sfmSparsePath]);
+  const activeStageUrl = activeTab === "sfm" ? colmapBaseUrl : activeTab === "gaussian" ? gaussianPlyUrl : compressedBundleUrl;
+  const activeViewerStatus =
+    activeTab === "sfm"
+      ? sfmError ?? sfmStatus
+      : activeTab === "gaussian"
+        ? gaussianViewerState === "ready"
+          ? "Viewer ready"
+          : gaussianViewerState === "loading"
+            ? "Loading viewer..."
+            : gaussianViewerState === "invalid"
+              ? "Paste a valid 3DGS asset URL."
+              : "Awaiting 3DGS input"
+        : compressedViewerState === "ready"
+          ? "Viewer ready"
+          : compressedViewerState === "loading"
+            ? "Loading viewer..."
+            : compressedViewerState === "invalid"
+              ? "Paste a valid compressed bundle URL."
+              : "Awaiting compressed input";
+
+  const handleSourceSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    handleDerive();
+  };
 
   return (
     <main style={pageStyles}>
-      <header style={headerStyles}>
-        <h1 style={titleStyles}>Pipeline Viewer</h1>
-        <p style={subtitleStyles}>
-          Trace orientation drift across the SfM, 3DGS, and compressed SOGS stages. Start with a known-good
-          compressed bundle, derive the pipeline step URLs, and inspect each output in a dedicated viewer.
-        </p>
-      </header>
+      <div style={viewportStyles} />
+      <div style={viewerShellStyles}>
+        {activeTab === "sfm" && <SfmCanvas data={sfmData} showAxes={showAxes} showCameras={showCameras} pointSize={sfmPointSize} transform={sfmTransform} />}
+        {activeTab === "gaussian" && (
+          <SupersplatViewport
+            defaultUrl={gaussianPlyUrl}
+            normalizeInputUrl={normalizeGaussianAssetUrl}
+            onViewerStateChange={setGaussianViewerState}
+          />
+        )}
+        {activeTab === "compressed" && (
+          <SupersplatViewport
+            defaultUrl={compressedBundleUrl}
+            normalizeInputUrl={normalizeCompressedBundleUrl}
+            onViewerStateChange={setCompressedViewerState}
+          />
+        )}
+        {activeTab === "sfm" && !sfmData && sfmStatus === "Awaiting data" && (
+          <div style={emptyStateStyles}>Resolve a pipeline URL, then load the SfM stage.</div>
+        )}
+      </div>
 
-      <section style={sectionGridStyles}>
-        <div style={cardStyles}>
-          <h2 style={{ margin: "0 0 12px", fontSize: "1.3rem" }}>Pipeline Source</h2>
-          <p style={mutedTextStyles}>
-            Paste the compressed bundle URL that renders correctly. We will infer the job ID and suggest the
-            matching COLMAP + 3DGS paths so you can check rotation errors earlier in the pipeline.
-          </p>
-          <div style={{ marginTop: "14px", display: "grid", gap: "10px" }}>
-            <label style={labelStyles} htmlFor="compressed-seed">
-              Compressed bundle URL
-            </label>
-            <input
-              id="compressed-seed"
-              type="url"
-              style={inputStyles}
-              value={compressedInput}
-              onChange={(event) => setCompressedInput(event.target.value)}
-            />
-            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-              <button type="button" style={buttonStyles} onClick={handleDerive}>
-                Derive step URLs
-              </button>
-              <span style={mutedTextStyles}>Works with `s3://` or `https://` links.</span>
-            </div>
-          </div>
-          <div style={{ marginTop: "16px" }}>
-            <p style={labelStyles}>Derived links</p>
-            <div style={derivedListStyles}>
-              <div>Job ID: {derivedJobId ?? "Not detected"}</div>
-              <div>COLMAP base: {colmapBaseUrl || "—"}</div>
-              <div>3DGS PLY: {gaussianPlyUrl || "—"}</div>
-            </div>
-          </div>
-        </div>
-
-        <div style={{ ...cardStyles, display: "grid", gap: "12px" }}>
-          <h2 style={{ margin: 0, fontSize: "1.3rem" }}>How To Use This</h2>
-          <div style={calloutStyles}>
-            1. Confirm the compressed bundle renders correctly in the Compressed tab.
-            2. Load the COLMAP output in the SfM tab and check if the camera cloud is rotated.
-            3. Load the raw 3DGS PLY output in the 3DGS tab. If rotation appears here, the issue is upstream of
-            compression.
-          </div>
-          <p style={mutedTextStyles}>
-            If the 3DGS output is still packaged as `model.tar.gz`, extract the `splat.ply` and provide its
-            direct URL. Large files may take a while to load.
-          </p>
-        </div>
-      </section>
-
-      <section style={fullWidthSectionStyles}>
-        <div style={tabListStyles}>
-          <button
-            type="button"
-            style={activeTab === "sfm" ? activeTabButtonStyles : tabButtonStyles}
-            onClick={() => setActiveTab("sfm")}
-          >
-            SfM (COLMAP)
-          </button>
-          <button
-            type="button"
-            style={activeTab === "gaussian" ? activeTabButtonStyles : tabButtonStyles}
-            onClick={() => setActiveTab("gaussian")}
-          >
-            3DGS (PLY)
-          </button>
-          <button
-            type="button"
-            style={activeTab === "compressed" ? activeTabButtonStyles : tabButtonStyles}
-            onClick={() => setActiveTab("compressed")}
-          >
-            Compressed (SOGS)
-          </button>
-        </div>
-
-        <div style={cardStyles}>
-          {activeTab === "sfm" && (
-            <div style={overlayCardStyles}>
-              <div>
-                <p style={statusPillStyles}>SfM output</p>
-                <h2 style={{ margin: "8px 0 6px", fontSize: "1.6rem" }}>Structure-from-Motion Viewer</h2>
-                <p style={mutedTextStyles}>
-                  Load COLMAP outputs and visualize the sparse point cloud plus camera frustums. Use the
-                  transform dropdown to check 90-degree rotation offsets.
-                </p>
+      <section style={overlayStyles}>
+        <div style={glassPanelStyles}>
+          <div style={{ display: "grid", gap: "12px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", alignItems: "start" }}>
+              <div style={{ display: "grid", gap: "6px" }}>
+                <p style={labelStyles}>Pipeline Viewer</p>
+                <h1 style={{ margin: 0, fontSize: "1.3rem", letterSpacing: "-0.02em" }}>Paste a pipeline S3 link</h1>
               </div>
-              <div style={mobileStackStyles}>
-                <div>
-                  <label style={labelStyles} htmlFor="sfm-base">
-                    COLMAP base URL
-                  </label>
-                  <input
-                    id="sfm-base"
-                    type="url"
-                    style={inputStyles}
-                    value={colmapBaseUrl}
-                    onChange={(event) => setColmapBaseUrl(event.target.value)}
-                    placeholder="https://spaceport-ml-processing.s3.amazonaws.com/colmap/<job-id>/"
-                  />
-                </div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
+              <p style={statusPillStyles}>{activeViewerStatus}</p>
+            </div>
+
+            <form style={sourceFormStyles} onSubmit={handleSourceSubmit}>
+              <label style={labelStyles} htmlFor="compressed-seed">
+                Pipeline Artifact URL
+              </label>
+              <div style={inputRowStyles}>
+                <input
+                  id="compressed-seed"
+                  type="url"
+                  style={inputStyles}
+                  value={pipelineSourceInput}
+                  onChange={(event) => setPipelineSourceInput(event.target.value)}
+                  placeholder="s3://bucket/path or https://bucket.s3.amazonaws.com/..."
+                />
+                <button type="submit" style={buttonStyles}>
+                  Open
+                </button>
+              </div>
+            </form>
+
+            <div style={tabListStyles}>
+              <button type="button" style={activeTab === "sfm" ? activeTabButtonStyles : tabButtonStyles} onClick={() => setActiveTab("sfm")}>
+                SfM
+              </button>
+              <button type="button" style={activeTab === "gaussian" ? activeTabButtonStyles : tabButtonStyles} onClick={() => setActiveTab("gaussian")}>
+                3DGS
+              </button>
+              <button type="button" style={activeTab === "compressed" ? activeTabButtonStyles : tabButtonStyles} onClick={() => setActiveTab("compressed")}>
+                SOGS
+              </button>
+            </div>
+
+            <div style={metaGridStyles}>
+              <div style={metaCardStyles}>
+                <span style={labelStyles}>Source</span>
+                <span style={metaValueStyles}>{derivedSourceLabel ?? "Not detected"}</span>
+              </div>
+              <div style={metaCardStyles}>
+                <span style={labelStyles}>Job</span>
+                <span style={metaValueStyles}>{derivedJobId ?? "—"}</span>
+              </div>
+            </div>
+
+            {activeTab === "sfm" && (
+              <div style={sfmControlsStyles}>
+                <div style={toolbarRowStyles}>
                   <div>
                     <label style={labelStyles} htmlFor="sfm-sparse">
-                      Sparse path
+                      Sparse
                     </label>
                     <input
                       id="sfm-sparse"
@@ -1008,7 +1177,7 @@ export default function PipelineViewerPage() {
                   </div>
                   <div>
                     <label style={labelStyles} htmlFor="sfm-points">
-                      Max points
+                      Points
                     </label>
                     <input
                       id="sfm-points"
@@ -1021,7 +1190,7 @@ export default function PipelineViewerPage() {
                   </div>
                   <div>
                     <label style={labelStyles} htmlFor="sfm-cameras">
-                      Max cameras
+                      Cameras
                     </label>
                     <input
                       id="sfm-cameras"
@@ -1034,7 +1203,7 @@ export default function PipelineViewerPage() {
                   </div>
                   <div>
                     <label style={labelStyles} htmlFor="sfm-size">
-                      Point size
+                      Size
                     </label>
                     <input
                       id="sfm-size"
@@ -1047,12 +1216,12 @@ export default function PipelineViewerPage() {
                     />
                   </div>
                 </div>
-                <div style={toggleRowStyles}>
-                  <label style={{ ...labelStyles, marginBottom: 0 }}>Transform</label>
+
+                <div style={toolbarRowStyles}>
                   <select
                     value={sfmTransform}
                     onChange={(event) => setSfmTransform(event.target.value as TransformOption)}
-                    style={{ ...inputStyles, maxWidth: "220px" }}
+                    style={{ ...inlineInputStyles, maxWidth: "180px" }}
                   >
                     {transformOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -1061,79 +1230,34 @@ export default function PipelineViewerPage() {
                     ))}
                   </select>
                   <label style={{ ...mutedTextStyles, display: "flex", alignItems: "center", gap: "6px" }}>
-                    <input
-                      type="checkbox"
-                      checked={showAxes}
-                      onChange={(event) => setShowAxes(event.target.checked)}
-                    />
-                    Show axes
+                    <input type="checkbox" checked={showAxes} onChange={(event) => setShowAxes(event.target.checked)} />
+                    Axes
                   </label>
                   <label style={{ ...mutedTextStyles, display: "flex", alignItems: "center", gap: "6px" }}>
-                    <input
-                      type="checkbox"
-                      checked={showCameras}
-                      onChange={(event) => setShowCameras(event.target.checked)}
-                    />
-                    Show cameras
+                    <input type="checkbox" checked={showCameras} onChange={(event) => setShowCameras(event.target.checked)} />
+                    Cameras
                   </label>
                   <button type="button" style={buttonStyles} onClick={handleLoadSfm}>
                     Load SfM
                   </button>
                 </div>
               </div>
-              {sfmFileUrls && (
-                <p style={mutedTextStyles}>
-                  Using: {sfmFileUrls.points} · {sfmFileUrls.images}
-                </p>
-              )}
-              <div style={viewerShellStyles}>
-                <SfmCanvas
-                  data={sfmData}
-                  showAxes={showAxes}
-                  showCameras={showCameras}
-                  pointSize={sfmPointSize}
-                  transform={sfmTransform}
-                />
-              </div>
-              <p style={mutedTextStyles}>{sfmStatus}</p>
-              {sfmError && <p style={{ ...mutedTextStyles, color: "#ff7a6d" }}>{sfmError}</p>}
-            </div>
-          )}
+            )}
 
-          {activeTab === "gaussian" && (
-            <SupersplatPanel
-              label="3D Gaussian Splatting"
-              description="Load the raw PLY output from 3DGS training. Use this to confirm orientation before compression."
-              defaultUrl={gaussianPlyUrl}
-              buttonLabel="Load 3DGS"
-              helperText="Provide a direct .ply or .splat file URL."
-              inputPlaceholder="https://bucket.s3.amazonaws.com/3dgs/<job-id>/splat.ply"
-              onNormalize={(value) => {
-                if (value) {
-                  setGaussianPlyUrl(value);
-                }
-              }}
-            />
-          )}
-
-          {activeTab === "compressed" && (
-            <SupersplatPanel
-              label="Compressed SOGS"
-              description="PlayCanvas SuperSplat viewer for the compressed bundle. This should match the final output."
-              defaultUrl={compressedInput}
-              buttonLabel="Load Compressed"
-              helperText="Paste the meta.json or bundle directory URL."
-              inputPlaceholder="https://bucket.s3.amazonaws.com/compressed/<job-id>/supersplat_bundle/"
-              ensureMetaJson
-              onNormalize={(value) => {
-                if (value) {
-                  setCompressedInput(value);
-                }
-              }}
-            />
-          )}
+            <p style={mutedTextStyles}>
+              {activeStageUrl || "Paste any pipeline URL and switch stages as needed."}
+            </p>
+          </div>
         </div>
       </section>
+
+      <div style={bottomStatusStyles}>
+        <p style={{ ...mutedTextStyles, margin: 0 }}>
+          {activeTab === "sfm" && sfmFileUrls
+            ? `Using ${sfmFileUrls.points} and ${sfmFileUrls.images}`
+            : activeViewerStatus}
+        </p>
+      </div>
     </main>
   );
 }

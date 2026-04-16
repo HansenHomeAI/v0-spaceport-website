@@ -1,8 +1,10 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import TermsOfServiceModal from './TermsOfServiceModal';
 
 export default function Footer(): JSX.Element {
+  const pathname = usePathname();
   const [feedback, setFeedback] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -73,6 +75,10 @@ export default function Footer(): JSX.Element {
       setIsSubmitting(false);
     }
   };
+
+  if (pathname === '/pipeline-viewer') {
+    return <></>;
+  }
 
   return (
     <>
