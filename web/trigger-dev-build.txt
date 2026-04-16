@@ -1,3 +1,4 @@
+2026-04-16T03:22:00Z trigger preview build for leaf-tile max-gauss-ratio override after allocator proof reached 10300
 2026-04-15T22:15:00Z trigger preview build for real 3dgs container rebuild after proof-profile fallback
 2026-04-15T22:08:00Z trigger preview build for resilient awscli install in ml container build
 2026-04-15T22:00:00Z trigger preview build for trainer proof-profile fallback rerun

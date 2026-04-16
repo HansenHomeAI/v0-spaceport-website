@@ -457,6 +457,7 @@ class NerfStudioTrainer:
             'TRAINING_STEPS_PER_EVAL_IMAGE': 'training.steps_per_eval_image',
             'TRAINING_STEPS_PER_EVAL_ALL_IMAGES': 'training.steps_per_eval_all_images',
             'TRAINING_STEPS_PER_SAVE': 'training.steps_per_save',
+            'TRAINING_MAX_GAUSS_RATIO': 'training.max_gauss_ratio',
             'VIEWER_QUIT_ON_TRAIN_COMPLETION': 'training.quit_on_train_completion',
             'MODEL_VARIANT': 'model.variant',
             'RASTERIZE_MODE': 'model.rasterize_mode',
@@ -1671,6 +1672,9 @@ class NerfStudioTrainer:
             max_gauss_ratio = float(scaffold_config.get('max_gauss_ratio', 4.0))
         else:
             max_gauss_ratio = 10.0
+        explicit_max_gauss_ratio = training_config.get('max_gauss_ratio')
+        if explicit_max_gauss_ratio not in (None, ""):
+            max_gauss_ratio = float(explicit_max_gauss_ratio)
 
         if os.environ.get('TRAINING_STEPS_PER_EVAL_IMAGE') is None and max_iterations <= 250:
             steps_per_eval_image = max_iterations + 1
@@ -1703,6 +1707,7 @@ class NerfStudioTrainer:
         logger.info(f"   Steps per eval image: {steps_per_eval_image}")
         logger.info(f"   Steps per eval all images: {steps_per_eval_all_images}")
         logger.info(f"   Steps per save: {steps_per_save}")
+        logger.info(f"   Max gauss ratio: {max_gauss_ratio}")
         logger.info(f"   Visualization mode: {vis_mode}")
         logger.info(f"   Quit on train completion: {quit_on_train_completion}")
         logger.info(f"   Training mode: {training_mode}")
