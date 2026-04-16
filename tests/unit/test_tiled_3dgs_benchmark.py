@@ -172,6 +172,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(env["TRAINING_CACHE_IMAGES"], "disk")
         self.assertEqual(env["TRAINING_CACHE_IMAGES_TYPE"], "uint8")
         self.assertEqual(env["TRAINING_DATALOADER_NUM_WORKERS"], "0")
+        self.assertEqual(env["TRAINING_STOP_SPLIT_AT"], "8500")
         self.assertEqual(env["TRAINING_STEPS_PER_EVAL_IMAGE"], "12001")
         self.assertEqual(env["TRAINING_STEPS_PER_EVAL_ALL_IMAGES"], "12001")
         self.assertEqual(env["TRAINING_STEPS_PER_SAVE"], "12001")
@@ -188,6 +189,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
                 "TRAINING_STEPS_PER_EVAL_IMAGE": "300",
                 "TRAINING_STEPS_PER_EVAL_ALL_IMAGES": "900",
                 "TRAINING_STEPS_PER_SAVE": "1200",
+                "TRAINING_STOP_SPLIT_AT": "7000",
             },
             proof_profile=benchmark.PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY,
         )
@@ -196,6 +198,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(env["TRAINING_STEPS_PER_EVAL_IMAGE"], "300")
         self.assertEqual(env["TRAINING_STEPS_PER_EVAL_ALL_IMAGES"], "900")
         self.assertEqual(env["TRAINING_STEPS_PER_SAVE"], "1200")
+        self.assertEqual(env["TRAINING_STOP_SPLIT_AT"], "7000")
 
     def test_build_training_environment_quality_gate_profile_preserves_explicit_profile_override(self):
         env = benchmark.build_training_environment(

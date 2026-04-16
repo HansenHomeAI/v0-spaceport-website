@@ -97,6 +97,7 @@ logger = logging.getLogger(__name__)
 
 PROOF_PROFILE_NONE = "none"
 PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY = "quality_gate_low_memory"
+QUALITY_GATE_LOW_MEMORY_STOP_SPLIT_AT = 8500
 
 
 def load_colmap_image_id_name_map(images_txt: Path) -> dict[str, str]:
@@ -392,6 +393,7 @@ def apply_training_proof_profile_defaults(
         "TRAINING_CACHE_IMAGES": ("training.cache_images", "disk"),
         "TRAINING_CACHE_IMAGES_TYPE": ("training.cache_images_type", "uint8"),
         "TRAINING_DATALOADER_NUM_WORKERS": ("training.dataloader_num_workers", 0),
+        "TRAINING_STOP_SPLIT_AT": ("model.stop_split_at", min(max_iterations, QUALITY_GATE_LOW_MEMORY_STOP_SPLIT_AT)),
         "TRAINING_STEPS_PER_EVAL_IMAGE": ("training.steps_per_eval_image", suppressed_step),
         "TRAINING_STEPS_PER_EVAL_ALL_IMAGES": ("training.steps_per_eval_all_images", suppressed_step),
         "TRAINING_STEPS_PER_SAVE": ("training.steps_per_save", suppressed_step),
@@ -458,6 +460,7 @@ class NerfStudioTrainer:
             'TRAINING_STEPS_PER_EVAL_ALL_IMAGES': 'training.steps_per_eval_all_images',
             'TRAINING_STEPS_PER_SAVE': 'training.steps_per_save',
             'TRAINING_MAX_GAUSS_RATIO': 'training.max_gauss_ratio',
+            'TRAINING_STOP_SPLIT_AT': 'model.stop_split_at',
             'VIEWER_QUIT_ON_TRAIN_COMPLETION': 'training.quit_on_train_completion',
             'MODEL_VARIANT': 'model.variant',
             'RASTERIZE_MODE': 'model.rasterize_mode',
@@ -511,7 +514,7 @@ class NerfStudioTrainer:
                 # Convert string values to appropriate types
                 if env_var in ['BILATERAL_PROCESSING', 'USE_SCALE_REGULARIZATION', 'ENABLE_BG_MODEL', 'ENABLE_ALPHA_LOSS', 'ENABLE_ROBUST_MASK', 'FLOATER_PRUNING_ENABLED', 'TILED_INCLUDE_SCAFFOLD', 'TILED_INCLUDE_MERGE', 'TILED_RESUME_EXISTING', 'VIEWER_QUIT_ON_TRAIN_COMPLETION']:
                     value = value.lower() in ('true', '1', 'yes', 'on')
-                elif env_var in ['MAX_ITERATIONS', 'LOG_INTERVAL', 'TRAINING_DATALOADER_NUM_WORKERS', 'TRAINING_MAX_SELECTED_IMAGES', 'TRAINING_SELECTION_STRIDE', 'TRAINING_REVIEW_IMAGES_PER_BUCKET', 'TRAINING_STEPS_PER_EVAL_IMAGE', 'TRAINING_STEPS_PER_EVAL_ALL_IMAGES', 'TRAINING_STEPS_PER_SAVE', 'SH_DEGREE', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'TRAINING_DOWNSCALE_FACTOR', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT', 'GLOBAL_SCAFFOLD_MAX_IMAGES', 'GLOBAL_SCAFFOLD_FRAME_STRIDE', 'GLOBAL_SCAFFOLD_MAX_ITERATIONS', 'GLOBAL_SCAFFOLD_SH_DEGREE', 'TILED_MAX_TILES']:
+                elif env_var in ['MAX_ITERATIONS', 'LOG_INTERVAL', 'TRAINING_DATALOADER_NUM_WORKERS', 'TRAINING_MAX_SELECTED_IMAGES', 'TRAINING_SELECTION_STRIDE', 'TRAINING_REVIEW_IMAGES_PER_BUCKET', 'TRAINING_STEPS_PER_EVAL_IMAGE', 'TRAINING_STEPS_PER_EVAL_ALL_IMAGES', 'TRAINING_STEPS_PER_SAVE', 'TRAINING_STOP_SPLIT_AT', 'SH_DEGREE', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'TRAINING_DOWNSCALE_FACTOR', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT', 'GLOBAL_SCAFFOLD_MAX_IMAGES', 'GLOBAL_SCAFFOLD_FRAME_STRIDE', 'GLOBAL_SCAFFOLD_MAX_ITERATIONS', 'GLOBAL_SCAFFOLD_SH_DEGREE', 'TILED_MAX_TILES']:
                     value = int(value)
                 elif env_var in ['TARGET_PSNR', 'CULL_ALPHA_THRESH', 'CULL_SCALE_THRESH', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_SKY_MIN_LUMINANCE', 'FLOATER_PRUNING_SKY_MIN_SATURATION', 'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE', 'GLOBAL_SCAFFOLD_MAX_GAUSS_RATIO']:
                     value = float(value)
@@ -1648,6 +1651,7 @@ class NerfStudioTrainer:
         use_scale_regularization = model_config.get('use_scale_regularization', True)
         cull_alpha_thresh = model_config.get('cull_alpha_thresh', 0.12)
         cull_scale_thresh = model_config.get('cull_scale_thresh', 0.35)
+        stop_split_at = model_config.get('stop_split_at')
         enable_bg_model = model_config.get('enable_bg_model', True)
         enable_alpha_loss = model_config.get('enable_alpha_loss', True)
         enable_robust_mask = model_config.get('enable_robust_mask', True)
@@ -1692,6 +1696,10 @@ class NerfStudioTrainer:
         logger.info(f"   Scale regularization: {use_scale_regularization}")
         logger.info(f"   Cull alpha threshold: {cull_alpha_thresh}")
         logger.info(f"   Cull scale threshold: {cull_scale_thresh}")
+        logger.info(
+            "   Stop split at: %s",
+            stop_split_at if stop_split_at not in (None, "") else "<default>",
+        )
         logger.info(f"   Background model: {enable_bg_model}")
         logger.info(f"   Alpha loss: {enable_alpha_loss}")
         logger.info(f"   Robust sky masking: {enable_robust_mask}")
@@ -1765,6 +1773,8 @@ class NerfStudioTrainer:
                 "--pipeline.model.appearance_embed_dim", str(appearance_embed_dim),
                 "--pipeline.model.never_mask_upper", str(never_mask_upper),
             ])
+        if stop_split_at not in (None, ""):
+            method_args.extend(["--pipeline.model.stop_split_at", str(int(stop_split_at))])
         if cache_images:
             method_args.extend(["--pipeline.datamanager.cache-images", cache_images])
         if cache_images_type:

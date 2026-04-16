@@ -126,6 +126,7 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
         self.assertEqual(config["training"]["cache_images"], "disk")
         self.assertEqual(config["training"]["cache_images_type"], "uint8")
         self.assertEqual(config["training"]["dataloader_num_workers"], 0)
+        self.assertEqual(config["model"]["stop_split_at"], 8500)
         self.assertEqual(config["training"]["steps_per_eval_image"], 12001)
         self.assertEqual(config["training"]["steps_per_eval_all_images"], 12001)
         self.assertEqual(config["training"]["steps_per_save"], 12001)
@@ -145,14 +146,17 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             module.PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY,
             environ={
                 "TRAINING_VIS_MODE": "tensorboard",
+                "TRAINING_STOP_SPLIT_AT": "7000",
                 "TRAINING_STEPS_PER_SAVE": "300",
             },
         )
 
         self.assertNotIn("training.vis_mode", applied)
+        self.assertNotIn("model.stop_split_at", applied)
         self.assertNotIn("training.steps_per_save", applied)
         self.assertEqual(config["training"]["cache_images"], "ram")
         self.assertEqual(config["training"]["cache_images_type"], "uint8")
+        self.assertNotIn("stop_split_at", config.get("model", {}))
         self.assertNotIn("vis_mode", config["training"])
         self.assertNotIn("steps_per_save", config["training"])
 
@@ -680,6 +684,64 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             self.assertEqual(len(calls), 1)
             self.assertIn("--pipeline.model.max-gauss-ratio", calls[0])
             self.assertEqual(calls[0][calls[0].index("--pipeline.model.max-gauss-ratio") + 1], "9.5")
+
+    def test_run_nerfstudio_training_honors_stop_split_at_override(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.config = {
+                "model": {
+                    "variant": "splatfacto-w-light",
+                    "sh_degree": 3,
+                    "bilateral_processing": False,
+                    "rasterize_mode": "classic",
+                    "use_scale_regularization": True,
+                    "cull_alpha_thresh": 0.12,
+                    "cull_scale_thresh": 0.35,
+                    "stop_split_at": 8500,
+                    "enable_bg_model": True,
+                    "enable_alpha_loss": True,
+                    "enable_robust_mask": True,
+                    "bg_sh_degree": 8,
+                    "appearance_embed_dim": 64,
+                    "never_mask_upper": 0.4,
+                },
+                "training": {
+                    "max_iterations": 10,
+                    "log_interval": 1,
+                },
+                "tiling": {
+                    "training_mode": "leaf_tile",
+                    "global_scaffold": {},
+                },
+            }
+            trainer.input_dir = root / "input"
+            trainer.output_dir = root / "output"
+            trainer.temp_dir = root / "tmp"
+            trainer.training_selection_result = None
+            trainer.background_selection_result = None
+            trainer.floater_pruning_result = None
+            trainer.resolve_training_mode = lambda: "leaf_tile"
+
+            calls: list[list[str]] = []
+
+            def fake_run(cmd, **kwargs):
+                calls.append(list(cmd))
+                return types.SimpleNamespace(returncode=0, stdout="done\n", stderr="")
+
+            original_run = module.subprocess.run
+            module.subprocess.run = fake_run
+            try:
+                success = trainer.run_nerfstudio_training()
+            finally:
+                module.subprocess.run = original_run
+
+            self.assertTrue(success)
+            self.assertEqual(len(calls), 1)
+            self.assertIn("--pipeline.model.stop_split_at", calls[0])
+            self.assertEqual(calls[0][calls[0].index("--pipeline.model.stop_split_at") + 1], "8500")
 
     def test_build_sparse_point_cloud_ply_writes_ascii_vertices(self):
         module = load_module_with_stubs()

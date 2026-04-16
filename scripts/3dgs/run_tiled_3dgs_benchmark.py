@@ -33,6 +33,7 @@ DEFAULT_REVIEW_MAX_RUNTIME_SECONDS = 7200
 UNSUPPORTED_BILATERAL_VARIANTS = {"splatfacto-w-light", "splatfacto-w"}
 PROOF_PROFILE_NONE = "none"
 PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY = "quality_gate_low_memory"
+QUALITY_GATE_LOW_MEMORY_STOP_SPLIT_AT = 8500
 
 
 def run_command(command: Sequence[str], *, capture_output: bool = False) -> subprocess.CompletedProcess[str]:
@@ -228,6 +229,7 @@ def apply_proof_profile(
     env.setdefault("TRAINING_CACHE_IMAGES", "disk")
     env.setdefault("TRAINING_CACHE_IMAGES_TYPE", "uint8")
     env.setdefault("TRAINING_DATALOADER_NUM_WORKERS", "0")
+    env.setdefault("TRAINING_STOP_SPLIT_AT", str(min(max_iterations, QUALITY_GATE_LOW_MEMORY_STOP_SPLIT_AT)))
     suppressed_step = str(max_iterations + 1)
     env.setdefault("TRAINING_STEPS_PER_EVAL_IMAGE", suppressed_step)
     env.setdefault("TRAINING_STEPS_PER_EVAL_ALL_IMAGES", suppressed_step)
