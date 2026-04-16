@@ -5519,6 +5519,7 @@ class ColmapPipeline:
         seam_dir = self.work_dir / seam_dir_name
         seam_dir.mkdir(parents=True, exist_ok=True)
         seam_database_path = self.prepare_chunk_database(chunk_plan, dir_name=seam_dir_name)
+        preserved_seed_paths = list(self.model_artifact_paths(seed_model))
         try:
             current_model = self.reindex_model_to_database(
                 model=seed_model,
@@ -5577,7 +5578,10 @@ class ColmapPipeline:
                     triangulated_model.binary_dir != prior_cycle_model.binary_dir
                     or triangulated_model.text_dir != prior_cycle_model.text_dir
                 ):
-                    self.cleanup_model_artifacts(prior_cycle_model)
+                    self.cleanup_model_artifacts(
+                        prior_cycle_model,
+                        preserve_paths=preserved_seed_paths,
+                    )
                 current_model = triangulated_model
                 if current_model.images_registered <= previous_registered_count:
                     break
@@ -5608,7 +5612,10 @@ class ColmapPipeline:
                 adjusted_model.binary_dir != current_model.binary_dir
                 or adjusted_model.text_dir != current_model.text_dir
             ):
-                self.cleanup_model_artifacts(current_model)
+                self.cleanup_model_artifacts(
+                    current_model,
+                    preserve_paths=preserved_seed_paths,
+                )
             return adjusted_model
         finally:
             self.remove_sqlite_database_artifacts(seam_database_path)

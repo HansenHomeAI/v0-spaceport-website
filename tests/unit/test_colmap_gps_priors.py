@@ -4723,6 +4723,120 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertTrue(adjusted_binary_dir.exists())
             self.assertTrue(adjusted_text_dir.exists())
 
+    def test_run_parent_seam_registration_preserves_original_seed_artifacts_on_reindex_short_circuit(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.parent_seam_registration_cycles = 1
+            seed_binary_dir = pipeline.work_dir / "seed_bin"
+            seed_text_dir = pipeline.work_dir / "seed_text"
+            registrator_binary_dir = pipeline.work_dir / "registrator_bin"
+            registrator_text_dir = pipeline.work_dir / "registrator_text"
+            triangulated_binary_dir = pipeline.work_dir / "triangulated_bin"
+            triangulated_text_dir = pipeline.work_dir / "triangulated_text"
+            for directory in (
+                seed_binary_dir,
+                seed_text_dir,
+                registrator_binary_dir,
+                registrator_text_dir,
+                triangulated_binary_dir,
+                triangulated_text_dir,
+            ):
+                directory.mkdir(parents=True, exist_ok=True)
+            (seed_text_dir / "images.txt").write_text(
+                "\n".join(
+                    [
+                        "1 1 0 0 0 0 0 0 1 A.jpg",
+                        "0 0 -1",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            seed_model = run_colmap_sfm.ModelSummary(
+                stage="seed",
+                text_dir=seed_text_dir,
+                cameras_registered=1,
+                images_registered=1,
+                points_3d=10,
+                binary_dir=seed_binary_dir,
+                image_names=["A.jpg"],
+                source_chunk_indexes=[3],
+            )
+            registrator_model = run_colmap_sfm.ModelSummary(
+                stage="registrator",
+                text_dir=registrator_text_dir,
+                cameras_registered=1,
+                images_registered=2,
+                points_3d=15,
+                binary_dir=registrator_binary_dir,
+                image_names=["A.jpg", "B.jpg"],
+                source_chunk_indexes=[3],
+            )
+            triangulated_model = run_colmap_sfm.ModelSummary(
+                stage="triangulated",
+                text_dir=triangulated_text_dir,
+                cameras_registered=1,
+                images_registered=2,
+                points_3d=20,
+                binary_dir=triangulated_binary_dir,
+                image_names=["A.jpg", "B.jpg"],
+                source_chunk_indexes=[3],
+            )
+            chunk_plan = run_colmap_sfm.ChunkPlan(
+                index=3,
+                core_names=["A.jpg", "B.jpg"],
+                image_names=["A.jpg", "B.jpg"],
+                overlap_names=[],
+                source_chunk_indexes=[3],
+            )
+
+            with mock.patch.object(
+                pipeline,
+                "prepare_chunk_database",
+                return_value=root / "seam.db",
+            ), mock.patch.object(
+                pipeline,
+                "reindex_model_to_database",
+                return_value=seed_model,
+            ), mock.patch.object(
+                pipeline,
+                "model_track_supported_pairs",
+                return_value=[],
+            ), mock.patch.object(
+                pipeline,
+                "run_chunk_matchers",
+            ), mock.patch.object(
+                pipeline,
+                "run_image_registrator",
+                return_value=registrator_model,
+            ), mock.patch.object(
+                pipeline,
+                "run_point_triangulator",
+                return_value=triangulated_model,
+            ), mock.patch.object(
+                pipeline,
+                "should_run_parent_bundle_adjustment",
+                return_value=(False, "not_needed"),
+            ), mock.patch.object(
+                pipeline,
+                "remove_sqlite_database_artifacts",
+            ):
+                result = pipeline.run_parent_seam_registration(
+                    seed_model=seed_model,
+                    chunk_plan=chunk_plan,
+                    stage_prefix="chunk_model_component_bridge_09_00_01_seed_02",
+                    run_final_bundle_adjustment=False,
+                )
+
+            self.assertEqual(result.images_registered, 2)
+            self.assertTrue(seed_binary_dir.exists())
+            self.assertTrue(seed_text_dir.exists())
+            self.assertFalse(registrator_binary_dir.exists())
+            self.assertFalse(registrator_text_dir.exists())
+            self.assertTrue(triangulated_binary_dir.exists())
+            self.assertTrue(triangulated_text_dir.exists())
+
     def test_model_track_supported_pairs_returns_seed_supported_neighbors(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
