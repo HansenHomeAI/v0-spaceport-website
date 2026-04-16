@@ -512,7 +512,129 @@ const buildSfmFileUrls = (baseUrl: string, sparsePath: string) => {
   };
 };
 
-const parsePoints = (text: string, maxPoints: number) => {
+const streamTextLines = async (
+  resourceUrl: string,
+  fetchErrorLabel: string,
+  onLine: (line: string) => boolean | void,
+  rangeWindowBytes?: number
+) => {
+  const decoder = new TextDecoder();
+  const nextWindowSize = rangeWindowBytes ?? 0;
+  let nextByteStart = 0;
+  let trailingBuffer = "";
+  let shouldContinue = true;
+  const parseContentRange = (contentRange: string | null) => {
+    if (!contentRange) {
+      return null;
+    }
+    const match = contentRange.match(/^bytes\s+(\d+)-(\d+)\/(\d+|\*)$/i);
+    if (!match) {
+      return null;
+    }
+    return {
+      end: Number(match[2]),
+      total: match[3] === "*" ? null : Number(match[3]),
+    };
+  };
+
+  while (shouldContinue) {
+    const response = await fetch(resourceUrl, {
+      headers: rangeWindowBytes
+        ? {
+            Range: `bytes=${nextByteStart}-${nextByteStart + nextWindowSize - 1}`,
+          }
+        : undefined,
+    });
+    if (!response.ok) {
+      throw new Error(`${fetchErrorLabel} fetch failed (${response.status})`);
+    }
+
+    const contentRange = parseContentRange(response.headers.get("content-range"));
+    const reachedEnd =
+      !rangeWindowBytes ||
+      response.status !== 206 ||
+      !contentRange ||
+      contentRange.total == null ||
+      contentRange.end + 1 >= contentRange.total;
+
+    if (!response.body) {
+      const fallbackText = trailingBuffer + (await response.text());
+      const lines = fallbackText.split(/\r?\n/);
+      for (let index = 0; index < lines.length; index += 1) {
+        const isLastLine = index === lines.length - 1;
+        if (!reachedEnd && isLastLine) {
+          trailingBuffer = lines[index];
+          break;
+        }
+        if (onLine(lines[index]) === false) {
+          shouldContinue = false;
+          break;
+        }
+      }
+    } else {
+      const reader = response.body.getReader();
+      let buffer = trailingBuffer;
+      trailingBuffer = "";
+
+      try {
+        while (shouldContinue) {
+          const { value, done } = await reader.read();
+          if (done) {
+            break;
+          }
+
+          buffer += decoder.decode(value, { stream: true });
+          let newlineIndex = buffer.indexOf("\n");
+          while (newlineIndex !== -1) {
+            let line = buffer.slice(0, newlineIndex);
+            if (line.endsWith("\r")) {
+              line = line.slice(0, -1);
+            }
+            shouldContinue = onLine(line) !== false;
+            buffer = buffer.slice(newlineIndex + 1);
+            if (!shouldContinue) {
+              break;
+            }
+            newlineIndex = buffer.indexOf("\n");
+          }
+        }
+
+        if (shouldContinue) {
+          buffer += decoder.decode();
+          if (reachedEnd) {
+            const trailingLine = buffer.replace(/\r$/, "");
+            if (trailingLine) {
+              shouldContinue = onLine(trailingLine) !== false;
+            }
+          } else {
+            trailingBuffer = buffer;
+          }
+        }
+      } finally {
+        await reader.cancel().catch(() => undefined);
+      }
+    }
+
+    if (!shouldContinue || reachedEnd) {
+      break;
+    }
+
+    nextByteStart = contentRange ? contentRange.end + 1 : nextByteStart + nextWindowSize;
+  }
+};
+
+const finalizeBounds = (count: number, min: [number, number, number], max: [number, number, number]) => {
+  if (count === 0) {
+    return {
+      min: [0, 0, 0] as [number, number, number],
+      max: [0, 0, 0] as [number, number, number],
+    };
+  }
+
+  return { min, max };
+};
+
+const loadPoints = async (pointsUrl: string, maxPoints: number) => {
   const positions: number[] = [];
   const colors: number[] = [];
   let count = 0;
@@ -523,58 +645,55 @@ const parsePoints = (text: string, maxPoints: number) => {
   let maxY = -Infinity;
   let maxZ = -Infinity;
 
-  const lines = text.split(/\r?\n/);
-  for (const line of lines) {
-    if (!line || line.startsWith("#")) {
-      continue;
-    }
-    const parts = line.trim().split(/\s+/);
-    if (parts.length < 7) {
-      continue;
-    }
-    const x = Number(parts[1]);
-    const y = Number(parts[2]);
-    const z = Number(parts[3]);
-    const r = Number(parts[4]);
-    const g = Number(parts[5]);
-    const b = Number(parts[6]);
-    if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) {
-      continue;
-    }
+  await streamTextLines(
+    pointsUrl,
+    "points3D.txt",
+    (line) => {
+      if (!line || line.startsWith("#")) {
+        return true;
+      }
+      const parts = line.trim().split(/\s+/);
+      if (parts.length < 7) {
+        return true;
+      }
+      const x = Number(parts[1]);
+      const y = Number(parts[2]);
+      const z = Number(parts[3]);
+      const r = Number(parts[4]);
+      const g = Number(parts[5]);
+      const b = Number(parts[6]);
+      if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) {
+        return true;
+      }
 
-    positions.push(x, y, z);
-    colors.push(r / 255, g / 255, b / 255);
+      positions.push(x, y, z);
+      colors.push(r / 255, g / 255, b / 255);
 
-    minX = Math.min(minX, x);
-    minY = Math.min(minY, y);
-    minZ = Math.min(minZ, z);
-    maxX = Math.max(maxX, x);
-    maxY = Math.max(maxY, y);
-    maxZ = Math.max(maxZ, z);
+      minX = Math.min(minX, x);
+      minY = Math.min(minY, y);
+      minZ = Math.min(minZ, z);
+      maxX = Math.max(maxX, x);
+      maxY = Math.max(maxY, y);
+      maxZ = Math.max(maxZ, z);
 
-    count += 1;
-    if (count >= maxPoints) {
-      break;
-    }
-  }
-
-  if (count === 0) {
-    minX = minY = minZ = 0;
-    maxX = maxY = maxZ = 0;
-  }
+      count += 1;
+      if (count >= maxPoints) {
+        return false;
+      }
+      return true;
+    },
+    32 * 1024 * 1024
+  );
 
   return {
     positions: new Float32Array(positions),
     colors: new Float32Array(colors),
     count,
-    bounds: {
-      min: [minX, minY, minZ] as [number, number, number],
-      max: [maxX, maxY, maxZ] as [number, number, number],
-    },
+    bounds: finalizeBounds(count, [minX, minY, minZ], [maxX, maxY, maxZ]),
   };
 };
 
-const parseImages = (text: string, maxCameras: number) => {
+const loadImages = async (imagesUrl: string, maxCameras: number) => {
   const linePositions: number[] = [];
   let count = 0;
   let minX = Infinity;
@@ -583,91 +702,87 @@ const parseImages = (text: string, maxCameras: number) => {
   let maxX = -Infinity;
   let maxY = -Infinity;
   let maxZ = -Infinity;
-
-  const lines = text.split(/\r?\n/);
   let skipNext = false;
 
   const pushLine = (a: THREE.Vector3, b: THREE.Vector3) => {
     linePositions.push(a.x, a.y, a.z, b.x, b.y, b.z);
   };
 
-  for (const line of lines) {
-    if (skipNext) {
-      skipNext = false;
-      continue;
-    }
-    if (!line || line.startsWith("#")) {
-      continue;
-    }
-    const parts = line.trim().split(/\s+/);
-    if (parts.length < 9) {
-      continue;
-    }
+  await streamTextLines(
+    imagesUrl,
+    "images.txt",
+    (line) => {
+      if (skipNext) {
+        skipNext = false;
+        return true;
+      }
+      if (!line || line.startsWith("#")) {
+        return true;
+      }
+      const parts = line.trim().split(/\s+/);
+      if (parts.length < 9) {
+        return true;
+      }
 
-    const qw = Number(parts[1]);
-    const qx = Number(parts[2]);
-    const qy = Number(parts[3]);
-    const qz = Number(parts[4]);
-    const tx = Number(parts[5]);
-    const ty = Number(parts[6]);
-    const tz = Number(parts[7]);
+      const qw = Number(parts[1]);
+      const qx = Number(parts[2]);
+      const qy = Number(parts[3]);
+      const qz = Number(parts[4]);
+      const tx = Number(parts[5]);
+      const ty = Number(parts[6]);
+      const tz = Number(parts[7]);
 
-    if (![qw, qx, qy, qz, tx, ty, tz].every(Number.isFinite)) {
-      continue;
-    }
+      if (![qw, qx, qy, qz, tx, ty, tz].every(Number.isFinite)) {
+        return true;
+      }
 
-    const worldToCam = new THREE.Quaternion(qx, qy, qz, qw);
-    const camToWorld = worldToCam.clone().invert();
-    const t = new THREE.Vector3(tx, ty, tz);
-    const center = t.clone().applyQuaternion(camToWorld).multiplyScalar(-1);
+      const worldToCam = new THREE.Quaternion(qx, qy, qz, qw);
+      const camToWorld = worldToCam.clone().invert();
+      const t = new THREE.Vector3(tx, ty, tz);
+      const center = t.clone().applyQuaternion(camToWorld).multiplyScalar(-1);
 
-    minX = Math.min(minX, center.x);
-    minY = Math.min(minY, center.y);
-    minZ = Math.min(minZ, center.z);
-    maxX = Math.max(maxX, center.x);
-    maxY = Math.max(maxY, center.y);
-    maxZ = Math.max(maxZ, center.z);
+      minX = Math.min(minX, center.x);
+      minY = Math.min(minY, center.y);
+      minZ = Math.min(minZ, center.z);
+      maxX = Math.max(maxX, center.x);
+      maxY = Math.max(maxY, center.y);
+      maxZ = Math.max(maxZ, center.z);
 
-    const depth = 0.4;
-    const half = depth * 0.35;
-    const localCorners = [
-      new THREE.Vector3(-half, -half, depth),
-      new THREE.Vector3(half, -half, depth),
-      new THREE.Vector3(half, half, depth),
-      new THREE.Vector3(-half, half, depth),
-    ];
+      const depth = 0.4;
+      const half = depth * 0.35;
+      const localCorners = [
+        new THREE.Vector3(-half, -half, depth),
+        new THREE.Vector3(half, -half, depth),
+        new THREE.Vector3(half, half, depth),
+        new THREE.Vector3(-half, half, depth),
+      ];
 
-    const worldCorners = localCorners.map((corner) => corner.applyQuaternion(camToWorld).add(center));
+      const worldCorners = localCorners.map((corner) => corner.applyQuaternion(camToWorld).add(center));
 
-    for (const corner of worldCorners) {
-      pushLine(center, corner);
-    }
+      for (const corner of worldCorners) {
+        pushLine(center, corner);
+      }
 
-    pushLine(worldCorners[0], worldCorners[1]);
-    pushLine(worldCorners[1], worldCorners[2]);
-    pushLine(worldCorners[2], worldCorners[3]);
-    pushLine(worldCorners[3], worldCorners[0]);
+      pushLine(worldCorners[0], worldCorners[1]);
+      pushLine(worldCorners[1], worldCorners[2]);
+      pushLine(worldCorners[2], worldCorners[3]);
+      pushLine(worldCorners[3], worldCorners[0]);
 
-    count += 1;
-    if (count >= maxCameras) {
-      break;
-    }
+      count += 1;
+      if (count >= maxCameras) {
+        return false;
+      }
 
-    skipNext = true;
-  }
-
-  if (count === 0) {
-    minX = minY = minZ = 0;
-    maxX = maxY = maxZ = 0;
-  }
+      skipNext = true;
+      return true;
+    },
+    8 * 1024 * 1024
+  );
 
   return {
     positions: new Float32Array(linePositions),
     count,
-    bounds: {
-      min: [minX, minY, minZ] as [number, number, number],
-      max: [maxX, maxY, maxZ] as [number, number, number],
-    },
+    bounds: finalizeBounds(count, [minX, minY, minZ], [maxX, maxY, maxZ]),
   };
 };
 
@@ -1006,43 +1121,20 @@ export default function PipelineViewerPage() {
     setSfmSparsePath(fileUrls.sparsePath);
 
     try {
-      const imagesUrl = normalizeUrl(fileUrls.images) ?? new URL(fileUrls.images);
       const pointsUrl = normalizeUrl(fileUrls.points) ?? new URL(fileUrls.points);
 
-      const [imagesText, pointsText] = await Promise.all([
-        fetch(withProxyIfNeeded(imagesUrl)).then((res) => {
-          if (!res.ok) {
-            throw new Error(`images.txt fetch failed (${res.status})`);
-          }
-          return res.text();
-        }),
-        fetch(withProxyIfNeeded(pointsUrl)).then((res) => {
-          if (!res.ok) {
-            throw new Error(`points3D.txt fetch failed (${res.status})`);
-          }
-          return res.text();
-        }),
-      ]);
-
-      const parsedPoints = parsePoints(pointsText, sfmMaxPoints);
-      const parsedImages = parseImages(imagesText, sfmMaxCameras);
-      let bounds = parsedPoints.bounds;
-      if (parsedPoints.count > 0 && parsedImages.count > 0) {
-        bounds = mergeBounds(parsedPoints.bounds, parsedImages.bounds);
-      } else if (parsedImages.count > 0) {
-        bounds = parsedImages.bounds;
-      }
+      const parsedPoints = await loadPoints(withProxyIfNeeded(pointsUrl), sfmMaxPoints);
 
       setSfmData({
         points: parsedPoints.positions,
         colors: parsedPoints.colors,
-        cameraLines: parsedImages.positions,
+        cameraLines: new Float32Array(),
         pointCount: parsedPoints.count,
-        cameraCount: parsedImages.count,
-        bounds,
+        cameraCount: 0,
+        bounds: parsedPoints.bounds,
       });
 
-      setSfmStatus(`Loaded ${parsedPoints.count} points and ${parsedImages.count} cameras.`);
+      setSfmStatus(`Loaded ${parsedPoints.count} points.`);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
       setSfmError(message);

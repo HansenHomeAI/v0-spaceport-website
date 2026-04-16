@@ -81,11 +81,12 @@ function toResponseBody(body: unknown): BodyInit | null {
   return body as BodyInit;
 }
 
-async function fetchSignedS3Object(bucket: string, key: string): Promise<Response> {
+async function fetchSignedS3Object(bucket: string, key: string, rangeHeader?: string | null): Promise<Response> {
   const object = await s3Client.send(
     new GetObjectCommand({
       Bucket: bucket,
       Key: decodeURIComponent(key),
+      Range: rangeHeader ?? undefined,
     })
   );
 
@@ -96,8 +97,14 @@ async function fetchSignedS3Object(bucket: string, key: string): Promise<Respons
   if (object.ContentLength != null) {
     headers.set("content-length", String(object.ContentLength));
   }
+  if (object.AcceptRanges) {
+    headers.set("accept-ranges", object.AcceptRanges);
+  }
   if (object.CacheControl) {
     headers.set("cache-control", object.CacheControl);
+  }
+  if (object.ContentRange) {
+    headers.set("content-range", object.ContentRange);
   }
   if (object.ETag) {
     headers.set("etag", object.ETag);
@@ -107,15 +114,17 @@ async function fetchSignedS3Object(bucket: string, key: string): Promise<Respons
   }
 
   return new Response(toResponseBody(object.Body), {
-    status: 200,
+    status: object.ContentRange ? 206 : 200,
     headers,
   });
 }
 
 async function fetchUpstream(request: NextRequest, upstreamUrl: URL): Promise<Response> {
+  const rangeHeader = request.headers.get("range");
   const upstreamResponse = await fetch(upstreamUrl, {
     headers: {
       Accept: request.headers.get("accept") ?? "*/*",
+      ...(rangeHeader ? { Range: rangeHeader } : {}),
     },
   });
 
@@ -168,7 +177,7 @@ export async function GET(request: NextRequest, { params }: { params: { resource
   const s3Location = getS3Location(upstreamUrl);
   if (s3Location && isAllowedPipelineBucket(s3Location.bucket)) {
     try {
-      return await fetchSignedS3Object(s3Location.bucket, s3Location.key);
+      return await fetchSignedS3Object(s3Location.bucket, s3Location.key, request.headers.get("range"));
     } catch {
       return fetchUpstream(request, upstreamUrl);
     }
