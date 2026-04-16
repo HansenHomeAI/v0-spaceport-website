@@ -29,6 +29,7 @@ DEFAULT_SCAFFOLD_MAX_ITERATIONS = 4000
 DEFAULT_TILE_MAX_ITERATIONS = 12000
 DEFAULT_INSTANCE_TYPE = "ml.g5.2xlarge"
 DEFAULT_VOLUME_SIZE_GB = 100
+DEFAULT_TRAINING_MAX_RUNTIME_SECONDS = 14400
 DEFAULT_REVIEW_MAX_RUNTIME_SECONDS = 7200
 UNSUPPORTED_BILATERAL_VARIANTS = {"splatfacto-w-light", "splatfacto-w"}
 PROOF_PROFILE_NONE = "none"
@@ -486,6 +487,7 @@ def create_training_job_payload(
     environment: Dict[str, str],
     instance_type: str,
     volume_size_gb: int,
+    max_runtime_seconds: int,
 ) -> dict:
     return {
         "TrainingJobName": job_name,
@@ -517,7 +519,7 @@ def create_training_job_payload(
             "VolumeSizeInGB": volume_size_gb,
         },
         "StoppingCondition": {
-            "MaxRuntimeInSeconds": 14400,
+            "MaxRuntimeInSeconds": max_runtime_seconds,
         },
         "Environment": environment,
         "Tags": [
@@ -737,6 +739,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--job-prefix", default="3dgs-tiled", help="Training job name prefix.")
     parser.add_argument("--instance-type", default=DEFAULT_INSTANCE_TYPE)
     parser.add_argument("--volume-size-gb", type=int, default=DEFAULT_VOLUME_SIZE_GB)
+    parser.add_argument("--training-max-runtime-seconds", type=int, default=DEFAULT_TRAINING_MAX_RUNTIME_SECONDS)
     parser.add_argument("--monolithic-max-iterations", type=int, default=DEFAULT_TILE_MAX_ITERATIONS)
     parser.add_argument("--scaffold-max-iterations", type=int, default=DEFAULT_SCAFFOLD_MAX_ITERATIONS)
     parser.add_argument("--tile-max-iterations", type=int, default=DEFAULT_TILE_MAX_ITERATIONS)
@@ -913,6 +916,7 @@ def main() -> int:
         "selected_tile_ids": selected_tiles,
         "downscale_factor": args.downscale_factor,
         "proof_profile": resolved_proof_profile,
+        "training_max_runtime_seconds": args.training_max_runtime_seconds,
         "compatibility_gate": bool(args.compatibility_gate),
         "manual_hold": (
             {
@@ -957,6 +961,7 @@ def main() -> int:
             environment=stage.environment or {},
             instance_type=args.instance_type,
             volume_size_gb=args.volume_size_gb,
+            max_runtime_seconds=args.training_max_runtime_seconds,
         )
         with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as handle:
             json.dump(payload, handle, indent=2)

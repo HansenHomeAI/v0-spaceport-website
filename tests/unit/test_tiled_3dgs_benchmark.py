@@ -272,10 +272,12 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             environment={"TRAINING_MODE": "tiled_pipeline"},
             instance_type="ml.g5.2xlarge",
             volume_size_gb=100,
+            max_runtime_seconds=18000,
         )
 
         self.assertEqual(payload["TrainingJobName"], "bench-123")
         self.assertEqual(payload["Environment"]["TRAINING_MODE"], "tiled_pipeline")
+        self.assertEqual(payload["StoppingCondition"]["MaxRuntimeInSeconds"], 18000)
         self.assertIn({"Key": "Branch", "Value": "agent-branch"}, payload["Tags"])
 
     def test_create_quality_review_processing_payload_includes_model_and_colmap_inputs(self):
