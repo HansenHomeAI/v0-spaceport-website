@@ -87,6 +87,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             monolithic_max_iterations=8000,
             scaffold_max_iterations=2000,
             tile_max_iterations=12000,
+            training_max_runtime_seconds=21600,
             extra_env={"LOG_INTERVAL": "50"},
             timestamp=123,
             downscale_factor=1,
@@ -106,6 +107,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(tiled_env["GLOBAL_SCAFFOLD_MAX_ITERATIONS"], "2000")
         self.assertEqual(tiled_env["BILATERAL_PROCESSING"], "false")
         self.assertEqual(tiled_env["TRAINING_VIS_MODE"], "viewer")
+        self.assertEqual(tiled_env["TRAINING_TIMEOUT_SECONDS"], "21600")
         self.assertEqual(tiled_env["TRAINING_STEPS_PER_EVAL_IMAGE"], "12001")
         self.assertEqual(tiled_env["TRAINING_STEPS_PER_EVAL_ALL_IMAGES"], "12001")
         self.assertEqual(tiled_env["TRAINING_STEPS_PER_SAVE"], "12001")
@@ -164,11 +166,13 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             tile_id=None,
             max_iterations=12000,
             extra_env={},
+            training_timeout_seconds=21600,
             proof_profile=benchmark.PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY,
         )
 
         self.assertEqual(env["TRAINING_VIS_MODE"], "viewer")
         self.assertEqual(env["TRAINING_PROOF_PROFILE"], "quality_gate_low_memory")
+        self.assertEqual(env["TRAINING_TIMEOUT_SECONDS"], "21600")
         self.assertEqual(env["TRAINING_CACHE_IMAGES"], "disk")
         self.assertEqual(env["TRAINING_CACHE_IMAGES_TYPE"], "uint8")
         self.assertEqual(env["TRAINING_DATALOADER_NUM_WORKERS"], "0")
@@ -176,6 +180,20 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(env["TRAINING_STEPS_PER_EVAL_IMAGE"], "12001")
         self.assertEqual(env["TRAINING_STEPS_PER_EVAL_ALL_IMAGES"], "12001")
         self.assertEqual(env["TRAINING_STEPS_PER_SAVE"], "12001")
+
+    def test_build_training_environment_preserves_explicit_timeout_override(self):
+        env = benchmark.build_training_environment(
+            training_mode="tiled_pipeline",
+            tile_manifest_name="3dgs_tile_manifest.json",
+            view_bucket_manifest_name="3dgs_view_buckets.json",
+            tile_id=None,
+            max_iterations=12000,
+            extra_env={"TRAINING_TIMEOUT_SECONDS": "28800"},
+            training_timeout_seconds=21600,
+            proof_profile=benchmark.PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY,
+        )
+
+        self.assertEqual(env["TRAINING_TIMEOUT_SECONDS"], "28800")
 
     def test_build_training_environment_quality_gate_profile_preserves_explicit_overrides(self):
         env = benchmark.build_training_environment(
@@ -246,6 +264,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             monolithic_max_iterations=8000,
             scaffold_max_iterations=2000,
             tile_max_iterations=12000,
+            training_max_runtime_seconds=21600,
             extra_env={},
             timestamp=456,
             downscale_factor=1,
@@ -257,6 +276,8 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             [stage.stage_name for stage in stages],
             ["S0_scaffold", "T0_tile_00", "T0_tile_01", "MERGE_strict_core"],
         )
+        self.assertEqual(stages[0].environment["TRAINING_TIMEOUT_SECONDS"], "21600")
+        self.assertEqual(stages[1].environment["TRAINING_TIMEOUT_SECONDS"], "21600")
         self.assertEqual(stages[1].depends_on, ["S0_scaffold"])
         self.assertEqual(stages[3].stage_type, "merge")
         self.assertEqual(stages[1].job_name, "bench-456-tile-00")

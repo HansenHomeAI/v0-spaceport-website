@@ -272,6 +272,7 @@ def build_training_environment(
     tile_id: str | None,
     max_iterations: int,
     extra_env: Dict[str, str],
+    training_timeout_seconds: int | None = None,
     scaffold_max_iterations: int | None = None,
     max_tiles: int | None = None,
     selected_tile_ids: Sequence[str] | None = None,
@@ -303,6 +304,8 @@ def build_training_environment(
         "FRAMEWORK": "nerfstudio",
         "METHODOLOGY": "spaceport_splatfacto_w_light_skybox",
     }
+    if training_timeout_seconds is not None and training_timeout_seconds > 0:
+        env["TRAINING_TIMEOUT_SECONDS"] = str(training_timeout_seconds)
     if max_iterations <= 50:
         env["TRAINING_VIS_MODE"] = "viewer"
         env["TRAINING_CACHE_IMAGES"] = "disk"
@@ -346,6 +349,7 @@ def build_benchmark_stages(
     monolithic_max_iterations: int,
     scaffold_max_iterations: int,
     tile_max_iterations: int,
+    training_max_runtime_seconds: int,
     extra_env: Dict[str, str],
     timestamp: int,
     downscale_factor: int,
@@ -372,6 +376,7 @@ def build_benchmark_stages(
                     tile_id=None,
                     max_iterations=monolithic_max_iterations,
                     extra_env=extra_env,
+                    training_timeout_seconds=training_max_runtime_seconds,
                     downscale_factor=downscale_factor,
                 ),
             )
@@ -392,6 +397,7 @@ def build_benchmark_stages(
                     tile_id=None,
                     max_iterations=tile_max_iterations,
                     extra_env=extra_env,
+                    training_timeout_seconds=training_max_runtime_seconds,
                     scaffold_max_iterations=scaffold_max_iterations,
                     max_tiles=len(tile_ids),
                     selected_tile_ids=tile_ids,
@@ -434,6 +440,7 @@ def build_benchmark_stages(
                     tile_id=None,
                     max_iterations=scaffold_max_iterations,
                     extra_env=extra_env,
+                    training_timeout_seconds=training_max_runtime_seconds,
                     downscale_factor=downscale_factor,
                 ),
             )
@@ -457,6 +464,7 @@ def build_benchmark_stages(
                     tile_id=tile_id,
                     max_iterations=tile_max_iterations,
                     extra_env=extra_env,
+                    training_timeout_seconds=training_max_runtime_seconds,
                     downscale_factor=downscale_factor,
                 ),
             )
@@ -896,6 +904,7 @@ def main() -> int:
         monolithic_max_iterations=args.monolithic_max_iterations,
         scaffold_max_iterations=args.scaffold_max_iterations,
         tile_max_iterations=args.tile_max_iterations,
+        training_max_runtime_seconds=args.training_max_runtime_seconds,
         extra_env=parse_env(args.env),
         timestamp=timestamp,
         downscale_factor=args.downscale_factor,

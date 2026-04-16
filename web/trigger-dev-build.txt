@@ -1,3 +1,4 @@
+2026-04-16T06:24:00Z trigger preview build for aligned in-container tiled training timeout
 2026-04-16T06:18:12Z trigger preview build for tiled proof stop-split stabilization after late gsplat OOM
 2026-04-16T03:22:00Z trigger preview build for leaf-tile max-gauss-ratio override after allocator proof reached 10300
 2026-04-15T22:15:00Z trigger preview build for real 3dgs container rebuild after proof-profile fallback
