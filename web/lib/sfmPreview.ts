@@ -27,6 +27,7 @@ export type SfmPreviewArtifact = {
 };
 
 export type SfmPreviewLink = {
+  id: string;
   label: string;
   key: string;
   s3Uri: string;
@@ -68,6 +69,14 @@ const LINK_EXPIRY_SECONDS = 60 * 60 * 24;
 const RANGE_COUNT = 14;
 const RANGE_BYTES = 768 * 1024;
 const DEFAULT_SAMPLE_POINTS = 18_000;
+
+export type SfmPreviewDownloadDefinition = {
+  id: string;
+  label: string;
+  bucket: string;
+  key: string;
+  fileName: string;
+};
 
 export const DEFAULT_SFM_PREVIEW_ARTIFACT: SfmPreviewArtifact = {
   title: "2000 Rung Ladder SfM Preview",
@@ -147,7 +156,7 @@ function parsePlanner(text: string): string | null {
   return match?.[1] ?? null;
 }
 
-async function fetchSignedS3(bucket: string, key: string, init: RequestInit = {}): Promise<Response> {
+export async function fetchSignedS3(bucket: string, key: string, init: RequestInit = {}): Promise<Response> {
   const url = buildS3HttpsUrl(bucket, key);
   const request = new Request(url, init);
   const signedRequest = await getAwsClient().sign(request);
@@ -272,14 +281,58 @@ async function headSize(bucket: string, key: string): Promise<number> {
   return contentLength ? Number.parseInt(contentLength, 10) : 0;
 }
 
-async function getSignedDownloadUrl(bucket: string, key: string): Promise<string> {
-  const signed = await getAwsClient().sign(buildS3HttpsUrl(bucket, key), {
-    method: "GET",
-    aws: {
-      signQuery: true,
+function buildDownloadDefinitions(
+  artifact: SfmPreviewArtifact,
+): SfmPreviewDownloadDefinition[] {
+  const pointsKey = artifactKey(artifact, "sparse/0/points3D.txt");
+  const manifestKey = artifactKey(artifact, "chunk_planner_manifest.json");
+  const camerasKey = artifactKey(artifact, "sparse/0/cameras.txt");
+  const framesKey = artifactKey(artifact, "sparse/0/frames.txt");
+
+  return [
+    {
+      id: "sparse-points",
+      label: "Sparse points",
+      bucket: artifact.bucket,
+      key: pointsKey,
+      fileName: "points3D.txt",
     },
-  });
-  return typeof signed === "string" ? signed : signed.url;
+    {
+      id: "chunk-planner-manifest",
+      label: "Chunk planner manifest",
+      bucket: artifact.bucket,
+      key: manifestKey,
+      fileName: "chunk_planner_manifest.json",
+    },
+    {
+      id: "frames",
+      label: "Frames",
+      bucket: artifact.bucket,
+      key: framesKey,
+      fileName: "frames.txt",
+    },
+    {
+      id: "cameras",
+      label: "Cameras",
+      bucket: artifact.bucket,
+      key: camerasKey,
+      fileName: "cameras.txt",
+    },
+    {
+      id: "source-zip",
+      label: "Source ZIP",
+      bucket: artifact.sourceBucket,
+      key: artifact.sourceKey,
+      fileName: artifact.sourceKey.split("/").pop() ?? "source.zip",
+    },
+  ];
+}
+
+export function getSfmPreviewDownloadDefinition(
+  id: string,
+  artifact: SfmPreviewArtifact = DEFAULT_SFM_PREVIEW_ARTIFACT,
+): SfmPreviewDownloadDefinition | null {
+  return buildDownloadDefinitions(artifact).find((definition) => definition.id === id) ?? null;
 }
 
 export async function getSfmPreviewPageData(
@@ -297,26 +350,20 @@ export async function getSfmPreviewPageData(
     readRangeText(artifact.bucket, manifestKey, 0, 4095),
   ]);
 
-  const linkDefinitions = [
-    { label: "Sparse points", bucket: artifact.bucket, key: pointsKey },
-    { label: "Chunk planner manifest", bucket: artifact.bucket, key: manifestKey },
-    { label: "Frames", bucket: artifact.bucket, key: framesKey },
-    { label: "Cameras", bucket: artifact.bucket, key: camerasKey },
-    { label: "Source ZIP", bucket: artifact.sourceBucket, key: artifact.sourceKey },
-  ];
+  const linkDefinitions = buildDownloadDefinitions(artifact);
 
   const links = await Promise.all(
-    linkDefinitions.map(async ({ label, bucket, key }) => {
-      const [sizeBytes, signedUrl] = await Promise.all([
+    linkDefinitions.map(async ({ id, label, bucket, key }) => {
+      const [sizeBytes] = await Promise.all([
         headSize(bucket, key),
-        getSignedDownloadUrl(bucket, key),
       ]);
 
       return {
+        id,
         label,
         key,
         s3Uri: toS3Uri(bucket, key),
-        signedUrl,
+        signedUrl: `/api/sfm-preview-download/${id}`,
         sizeBytes,
         verified: true,
       };

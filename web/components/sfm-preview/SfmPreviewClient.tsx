@@ -496,7 +496,7 @@ export default function SfmPreviewClient({ pageData }: { pageData: SfmPreviewPag
             </div>
             <div>
               <strong style={{ color: "#e2e8f0" }}>Planner:</strong> {pageData.planner || "Unavailable"} with signed
-              object links that expire in about {Math.max(1, Math.round(pageData.linkExpirySeconds / 3600))} hours.
+              preview-side download links backed by verified S3 reads.
             </div>
             {viewerUrl ? (
               <div>
