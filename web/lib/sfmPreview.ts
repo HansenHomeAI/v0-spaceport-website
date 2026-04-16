@@ -1,6 +1,4 @@
-import { GetObjectCommand, HeadObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { Readable } from "node:stream";
+import { AwsClient } from "aws4fetch";
 
 type Vec3 = [number, number, number];
 
@@ -87,13 +85,28 @@ export const DEFAULT_SFM_PREVIEW_ARTIFACT: SfmPreviewArtifact = {
 };
 
 const previewCache = new Map<string, Promise<SfmPreviewSamplePayload>>();
-let s3Client: S3Client | null = null;
+let awsClient: AwsClient | null = null;
 
-function getS3Client(): S3Client {
-  if (!s3Client) {
-    s3Client = new S3Client({ region: REGION });
+function getAwsClient(): AwsClient {
+  if (!awsClient) {
+    const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+    const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+    const sessionToken = process.env.AWS_SESSION_TOKEN;
+
+    if (!accessKeyId || !secretAccessKey) {
+      throw new Error("Missing AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY for SfM preview runtime access.");
+    }
+
+    awsClient = new AwsClient({
+      accessKeyId,
+      secretAccessKey,
+      sessionToken,
+      region: REGION,
+      service: "s3",
+    });
   }
-  return s3Client;
+
+  return awsClient;
 }
 
 function artifactKey(artifact: SfmPreviewArtifact, suffix: string): string {
@@ -102,6 +115,17 @@ function artifactKey(artifact: SfmPreviewArtifact, suffix: string): string {
 
 function toS3Uri(bucket: string, key: string): string {
   return `s3://${bucket}/${key}`;
+}
+
+function encodeKey(key: string): string {
+  return key
+    .split("/")
+    .map((segment) => encodeURIComponent(segment))
+    .join("/");
+}
+
+function buildS3HttpsUrl(bucket: string, key: string): string {
+  return `https://${bucket}.s3.${REGION}.amazonaws.com/${encodeKey(key)}`;
 }
 
 function parseCount(pattern: RegExp, text: string): number | null {
@@ -123,35 +147,27 @@ function parsePlanner(text: string): string | null {
   return match?.[1] ?? null;
 }
 
-async function bodyToString(body: unknown): Promise<string> {
-  if (!body) {
-    return "";
+async function fetchSignedS3(bucket: string, key: string, init: RequestInit = {}): Promise<Response> {
+  const url = buildS3HttpsUrl(bucket, key);
+  const request = new Request(url, init);
+  const signedRequest = await getAwsClient().sign(request);
+  const response = await fetch(signedRequest, { cache: "no-store" });
+
+  if (!response.ok) {
+    throw new Error(`S3 request failed for ${toS3Uri(bucket, key)} (${response.status} ${response.statusText})`);
   }
 
-  if (typeof (body as { transformToString?: () => Promise<string> }).transformToString === "function") {
-    return (body as { transformToString: () => Promise<string> }).transformToString();
-  }
-
-  if (body instanceof Readable) {
-    const chunks: Buffer[] = [];
-    for await (const chunk of body) {
-      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
-    }
-    return Buffer.concat(chunks).toString("utf8");
-  }
-
-  return await new Response(body as BodyInit).text();
+  return response;
 }
 
 async function readRangeText(bucket: string, key: string, start: number, end: number): Promise<string> {
-  const response = await getS3Client().send(
-    new GetObjectCommand({
-      Bucket: bucket,
-      Key: key,
+  const response = await fetchSignedS3(bucket, key, {
+    method: "GET",
+    headers: {
       Range: `bytes=${start}-${end}`,
-    }),
-  );
-  return bodyToString(response.Body);
+    },
+  });
+  return response.text();
 }
 
 function buildRanges(totalBytes: number, count = RANGE_COUNT, chunkBytes = RANGE_BYTES): Array<[number, number]> {
@@ -251,13 +267,19 @@ function normalizePoints(points: ParsedPoint[]) {
 }
 
 async function headSize(bucket: string, key: string): Promise<number> {
-  const response = await getS3Client().send(
-    new HeadObjectCommand({
-      Bucket: bucket,
-      Key: key,
-    }),
-  );
-  return response.ContentLength ?? 0;
+  const response = await fetchSignedS3(bucket, key, { method: "HEAD" });
+  const contentLength = response.headers.get("content-length");
+  return contentLength ? Number.parseInt(contentLength, 10) : 0;
+}
+
+async function getSignedDownloadUrl(bucket: string, key: string): Promise<string> {
+  const signed = await getAwsClient().sign(buildS3HttpsUrl(bucket, key), {
+    method: "GET",
+    aws: {
+      signQuery: true,
+    },
+  });
+  return typeof signed === "string" ? signed : signed.url;
 }
 
 export async function getSfmPreviewPageData(
@@ -287,14 +309,7 @@ export async function getSfmPreviewPageData(
     linkDefinitions.map(async ({ label, bucket, key }) => {
       const [sizeBytes, signedUrl] = await Promise.all([
         headSize(bucket, key),
-        getSignedUrl(
-          getS3Client(),
-          new GetObjectCommand({
-            Bucket: bucket,
-            Key: key,
-          }),
-          { expiresIn: LINK_EXPIRY_SECONDS },
-        ),
+        getSignedDownloadUrl(bucket, key),
       ]);
 
       return {

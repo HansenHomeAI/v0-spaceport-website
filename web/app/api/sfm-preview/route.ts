@@ -1,6 +1,6 @@
 import { DEFAULT_SFM_PREVIEW_ARTIFACT, getSfmPreviewSample } from "../../../lib/sfmPreview";
 
-export const runtime = "nodejs";
+export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
