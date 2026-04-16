@@ -38,6 +38,7 @@
 2026-03-25 SOGS_DEFAULT_SCENE rotation X/Y -90°, Z 180°
 2026-03-25 SOGS_DEFAULT_SCENE rotation X 0 Y 0 Z -90
 2026-03-25 SOGS_DEFAULT_SCENE rotation from pasted JSON X -82 Y -90 Z 0
+2026-04-16T18:02:00Z richer sfm inspector with chunk filters camera frustums and explicit colmap-only messaging
 2026-03-25 sogs-viewer: do not overwrite rotation form from sogs:state (Euler ambiguity)
 2026-03-25 sogs-viewer remove Sync button
 2026-03-25 sogs-viewer remove Reset button

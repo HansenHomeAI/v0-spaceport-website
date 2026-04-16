@@ -9,8 +9,8 @@ export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "2000 Rung Ladder SfM Preview",
-  description: "Local preview for the latest completed 2000-ladder SfM output.",
+  title: "2000 Rung Ladder SfM Inspector",
+  description: "COLMAP inspector for the latest completed 2000-ladder SfM output.",
 };
 
 function fallbackPageData(message: string): SfmPreviewPageData {
