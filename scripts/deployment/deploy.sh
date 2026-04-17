@@ -94,7 +94,8 @@ deploy_container() {
   local build_cache_ref
   build_cache_ref="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:buildcache"
   local branch_tag="${BRANCH_SUFFIX:-}"
-  local base_image="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:base"
+  local ecr_base_image="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:base"
+  local app_base_image="colmap/colmap:20260318.6455"
   local build_stage="app"
 
   log "--- Starting OPTIMIZED deployment for: ${container_name} ---"
@@ -112,7 +113,13 @@ deploy_container() {
   log "Pulling existing image and cache for layer reuse..."
   docker pull "${ecr_uri}:latest" || log "No existing image found, building from scratch..."
   docker pull "${build_cache_ref}" || log "No registry cache yet for ${container_name}"
-  docker pull "${base_image}" || log "No base image yet for ${container_name}"
+  docker pull "${ecr_base_image}" || log "No base image yet for ${container_name}"
+  if aws ecr describe-images --region "${AWS_REGION}" --repository-name "${repo_name}" --image-ids imageTag=latest >/dev/null 2>&1; then
+    app_base_image="${ecr_uri}:latest"
+    log "Using existing ECR latest tag as app base image: ${app_base_image}"
+  else
+    log "No ECR latest tag available for ${container_name}; falling back to ${app_base_image}"
+  fi
   
   # Build base image if missing
   if ! aws ecr describe-images --region "${AWS_REGION}" --repository-name "${repo_name}" --image-ids imageTag=base >/dev/null 2>&1; then
@@ -126,9 +133,9 @@ deploy_container() {
         --progress plain \
         --load \
         "${container_dir}"
-      docker tag "${repo_name}:base" "${base_image}"
-      docker push "${base_image}"
-      log "Base image built and pushed: ${base_image}"
+      docker tag "${repo_name}:base" "${ecr_base_image}"
+      docker push "${ecr_base_image}"
+      log "Base image built and pushed: ${ecr_base_image}"
       if [[ "${BUILD_BASE_ONLY:-0}" = "1" ]]; then
         log "BUILD_BASE_ONLY=1 set; skipping app build for ${container_name}"
         return
@@ -143,12 +150,12 @@ deploy_container() {
   docker buildx build \
     --platform linux/amd64 \
     --file "${container_dir}/Dockerfile" \
-    --build-arg BASE_IMAGE="${base_image}" \
+    --build-arg BASE_IMAGE="${app_base_image}" \
     --build-arg BUILDKIT_INLINE_CACHE=1 \
     --tag "${repo_name}:latest" \
     --cache-from "type=registry,ref=${build_cache_ref},mode=max" \
     --cache-from "type=registry,ref=${ecr_uri}:latest" \
-    --cache-from "${base_image}" \
+    --cache-from "${ecr_base_image}" \
     --cache-to "type=registry,mode=max,compression=zstd,ref=${build_cache_ref}" \
     --progress plain \
     --load \

@@ -1,5 +1,7 @@
-# Official CUDA-enabled COLMAP runtime, pinned to a dated tag so rebuilds stay reproducible.
-FROM colmap/colmap:20260318.6455
+# Reuse a previously published Spaceport SfM runtime when available to avoid
+# repeated unauthenticated Docker Hub pulls during branch builds.
+ARG BASE_IMAGE=colmap/colmap:20260318.6455
+FROM ${BASE_IMAGE}
 
 # Leave the vocab tree URL empty by default so COLMAP 4 can use its own
 # FAISS-compatible runtime tree path; the runtime script still accepts an
