@@ -1059,28 +1059,25 @@ const SfmCanvas = ({
 
     const min = new THREE.Vector3(...data.bounds.min);
     const max = new THREE.Vector3(...data.bounds.max);
-    const center = new THREE.Vector3(...data.focus);
-    const extent = new THREE.Vector3(
-      Math.max(Math.abs(max.x - center.x), Math.abs(center.x - min.x)),
-      Math.max(Math.abs(max.y - center.y), Math.abs(center.y - min.y)),
-      Math.max(Math.abs(max.z - center.z), Math.abs(center.z - min.z))
-    );
-    const framingRadius = Math.max(extent.x, extent.y, extent.z, 0.1);
+    const center = new THREE.Vector3(0, 0, 0);
+    const size = new THREE.Vector3().subVectors(max, min);
+    const framingRadius = Math.max(size.x, size.y, size.z, 0.1) * 0.5;
 
     const camera = cameraRef.current;
-    const distance = (framingRadius / Math.tan((camera.fov * Math.PI) / 360)) * 0.72;
-    const viewDirection = new THREE.Vector3(1, 0.35, 0.95).normalize().multiplyScalar(distance);
+    const distance = (framingRadius / Math.tan((camera.fov * Math.PI) / 360)) * 1.15;
     camera.near = Math.max(distance / 100, 0.01);
     camera.far = distance * 200;
-    camera.position.copy(center).add(viewDirection);
+    camera.position.set(center.x, center.y, center.z + distance);
+    camera.up.set(0, 1, 0);
     camera.lookAt(center);
     camera.updateProjectionMatrix();
 
     controlsRef.current.target.copy(center);
+    controlsRef.current.object.position.copy(camera.position);
     controlsRef.current.update();
 
     if (axesRef.current) {
-      const axisSize = Math.max(framingRadius * 0.55, 0.5);
+      const axisSize = Math.max(framingRadius * 0.8, 0.5);
       axesRef.current.scale.set(axisSize, axisSize, axisSize);
       axesRef.current.position.copy(center);
     }
