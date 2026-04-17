@@ -919,6 +919,7 @@ const SfmCanvas = ({
   const cameraLinesRef = useRef<THREE.LineSegments | null>(null);
   const axesRef = useRef<THREE.AxesHelper | null>(null);
   const frameRef = useRef<number | null>(null);
+  const [viewportSize, setViewportSize] = useState({ width: 1, height: 1 });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -953,7 +954,7 @@ const SfmCanvas = ({
     scene.add(axes);
     axesRef.current = axes;
 
-    const resizeObserver = new ResizeObserver(() => {
+    const applyViewportSize = () => {
       if (!rendererRef.current || !cameraRef.current || !containerRef.current) {
         return;
       }
@@ -961,6 +962,13 @@ const SfmCanvas = ({
       rendererRef.current.setSize(clientWidth, clientHeight, false);
       cameraRef.current.aspect = clientWidth / Math.max(clientHeight, 1);
       cameraRef.current.updateProjectionMatrix();
+      setViewportSize({ width: Math.max(clientWidth, 1), height: Math.max(clientHeight, 1) });
+    };
+
+    applyViewportSize();
+
+    const resizeObserver = new ResizeObserver(() => {
+      applyViewportSize();
     });
 
     resizeObserver.observe(container);
@@ -1060,11 +1068,17 @@ const SfmCanvas = ({
     const min = new THREE.Vector3(...data.bounds.min);
     const max = new THREE.Vector3(...data.bounds.max);
     const center = new THREE.Vector3(0, 0, 0);
-    const size = new THREE.Vector3().subVectors(max, min);
-    const framingRadius = Math.max(size.x, size.y, size.z, 0.1) * 0.5;
+    const halfWidth = Math.max(Math.abs(min.x), Math.abs(max.x), 0.05);
+    const halfHeight = Math.max(Math.abs(min.y), Math.abs(max.y), 0.05);
+    const halfDepth = Math.max(Math.abs(min.z), Math.abs(max.z), 0.05);
 
     const camera = cameraRef.current;
-    const distance = (framingRadius / Math.tan((camera.fov * Math.PI) / 360)) * 1.15;
+    const verticalFov = THREE.MathUtils.degToRad(camera.fov);
+    const aspect = viewportSize.width / Math.max(viewportSize.height, 1);
+    const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * aspect);
+    const distanceForHeight = halfHeight / Math.tan(verticalFov / 2);
+    const distanceForWidth = halfWidth / Math.tan(horizontalFov / 2);
+    const distance = (Math.max(distanceForHeight, distanceForWidth) + halfDepth) * 1.18;
     camera.near = Math.max(distance / 100, 0.01);
     camera.far = distance * 200;
     camera.position.set(center.x, center.y, center.z + distance);
@@ -1077,11 +1091,11 @@ const SfmCanvas = ({
     controlsRef.current.update();
 
     if (axesRef.current) {
-      const axisSize = Math.max(framingRadius * 0.8, 0.5);
+      const axisSize = Math.max(Math.max(halfWidth, halfHeight, halfDepth) * 0.9, 0.5);
       axesRef.current.scale.set(axisSize, axisSize, axisSize);
       axesRef.current.position.copy(center);
     }
-  }, [data, pointSize, showCameras]);
+  }, [data, pointSize, showCameras, viewportSize.height, viewportSize.width]);
 
   return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />;
 };
