@@ -1131,36 +1131,59 @@ export default function PipelineViewerPage() {
   const [gaussianViewerState, setGaussianViewerState] = useState<"idle" | "loading" | "ready" | "invalid">("idle");
   const [compressedViewerState, setCompressedViewerState] = useState<"idle" | "loading" | "ready" | "invalid">("idle");
 
-  const handleDerive = () => {
-    const result = derivePipelineArtifacts(pipelineSourceInput);
-    if (!result) {
-      setDerivedJobId(null);
-      setDerivedSourceLabel(null);
+  const applyDerivedArtifacts = useCallback(
+    (result: DerivedPipelineArtifacts | null, rawInput: string) => {
+      if (!result) {
+        setPipelineSourceInput(rawInput);
+        setDerivedJobId(null);
+        setDerivedSourceLabel(null);
+        return;
+      }
+      setPipelineSourceInput(result.sourceUrl);
+      setDerivedJobId(result.jobId);
+      setDerivedSourceLabel(result.sourceLabel);
+      setCompressedBundleUrl(result.compressedBundle ?? "");
+      setColmapBaseUrl(result.colmapBase ?? "");
+      setGaussianPlyUrl(result.gaussianPly ?? "");
+      if (result.sparsePath) {
+        setSfmSparsePath(result.sparsePath);
+      }
+      setActiveTab(result.sourceKind);
+      if (result.colmapBase) {
+        setSfmLoadNonce((value) => value + 1);
+      }
+    },
+    []
+  );
+
+  const handleDerive = useCallback((rawInput: string) => {
+    const result = derivePipelineArtifacts(rawInput);
+    applyDerivedArtifacts(result, rawInput);
+  }, [applyDerivedArtifacts]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
       return;
     }
-    setPipelineSourceInput(result.sourceUrl);
-    setDerivedJobId(result.jobId);
-    setDerivedSourceLabel(result.sourceLabel);
-    setCompressedBundleUrl(result.compressedBundle ?? "");
-    setColmapBaseUrl(result.colmapBase ?? "");
-    setGaussianPlyUrl(result.gaussianPly ?? "");
-    if (result.sparsePath) {
-      setSfmSparsePath(result.sparsePath);
+    const searchParams = new URLSearchParams(window.location.search);
+    const preloadUrl = searchParams.get("url");
+    if (!preloadUrl) {
+      return;
     }
-    setActiveTab(result.sourceKind);
-    if (result.colmapBase) {
-      setSfmLoadNonce((value) => value + 1);
-    }
+    handleDerive(preloadUrl);
+  }, [handleDerive]);
+
+  const handleSourceSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    handleDerive(pipelineSourceInput);
   };
 
   const handleLoadSfm = useCallback(async () => {
     setSfmError(null);
     setSfmStatus("Loading SFM output...");
 
-    const derivedSfmInput =
-      derivePipelineArtifacts(pipelineSourceInput)?.sourceKind === "sfm"
-        ? derivePipelineArtifacts(pipelineSourceInput)
-        : null;
+    const derivedFromInput = derivePipelineArtifacts(pipelineSourceInput);
+    const derivedSfmInput = derivedFromInput?.sourceKind === "sfm" ? derivedFromInput : null;
     const effectiveColmapBaseUrl = colmapBaseUrl || derivedSfmInput?.colmapBase || "";
     const effectiveSparsePath = derivedSfmInput?.sparsePath ?? sfmSparsePath;
     const fileUrls = buildSfmFileUrls(effectiveColmapBaseUrl, effectiveSparsePath);
@@ -1176,6 +1199,7 @@ export default function PipelineViewerPage() {
       setDerivedJobId(derivedSfmInput.jobId);
       setDerivedSourceLabel(derivedSfmInput.sourceLabel);
       setActiveTab("sfm");
+      setPipelineSourceInput(derivedSfmInput.sourceUrl);
     }
 
     try {
@@ -1226,11 +1250,6 @@ export default function PipelineViewerPage() {
             : compressedViewerState === "invalid"
               ? "Paste a valid compressed bundle URL."
               : "Awaiting compressed input";
-
-  const handleSourceSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    handleDerive();
-  };
 
   return (
     <main style={pageStyles}>
