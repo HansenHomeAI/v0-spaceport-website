@@ -88,6 +88,16 @@ const overlayStyles: CSSProperties = {
   gap: "14px",
 };
 
+const collapsedOverlayStyles: CSSProperties = {
+  position: "absolute",
+  top: "20px",
+  left: "20px",
+  zIndex: 20,
+  display: "flex",
+  alignItems: "center",
+  gap: "10px",
+};
+
 const glassPanelStyles: CSSProperties = {
   background: "rgba(10, 12, 18, 0.72)",
   borderRadius: "24px",
@@ -178,6 +188,25 @@ const statusPillStyles: CSSProperties = {
   fontSize: "0.72rem",
   letterSpacing: "0.05em",
   textTransform: "uppercase",
+};
+
+const collapseButtonStyles: CSSProperties = {
+  padding: "8px 12px",
+  borderRadius: "999px",
+  border: "1px solid rgba(255, 255, 255, 0.16)",
+  background: "rgba(255, 255, 255, 0.06)",
+  color: "#f8f8fb",
+  fontSize: "0.78rem",
+  fontWeight: 600,
+  cursor: "pointer",
+  whiteSpace: "nowrap",
+};
+
+const collapsedToggleStyles: CSSProperties = {
+  ...collapseButtonStyles,
+  background: "rgba(10, 12, 18, 0.78)",
+  boxShadow: "0 14px 32px rgba(0, 0, 0, 0.28)",
+  backdropFilter: "blur(18px)",
 };
 
 const toolbarRowStyles: CSSProperties = {
@@ -1064,6 +1093,7 @@ const SupersplatViewport = ({
 
 export default function PipelineViewerPage() {
   const [activeTab, setActiveTab] = useState<"sfm" | "gaussian" | "compressed">("compressed");
+  const [controlsCollapsed, setControlsCollapsed] = useState(false);
   const [pipelineSourceInput, setPipelineSourceInput] = useState(DEFAULT_COMPRESSED_BUNDLE);
   const [compressedBundleUrl, setCompressedBundleUrl] = useState(DEFAULT_COMPRESSED_BUNDLE);
   const [derivedJobId, setDerivedJobId] = useState<string | null>(null);
@@ -1198,153 +1228,179 @@ export default function PipelineViewerPage() {
         )}
       </div>
 
-      <section style={overlayStyles}>
-        <div style={glassPanelStyles}>
-          <div style={{ display: "grid", gap: "12px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", alignItems: "start" }}>
-              <div style={{ display: "grid", gap: "6px" }}>
-                <p style={labelStyles}>Pipeline Viewer</p>
-                <h1 style={{ margin: 0, fontSize: "1.3rem", letterSpacing: "-0.02em" }}>Paste a pipeline S3 link</h1>
-              </div>
-              <p style={statusPillStyles}>{activeViewerStatus}</p>
-            </div>
-
-            <form style={sourceFormStyles} onSubmit={handleSourceSubmit}>
-              <label style={labelStyles} htmlFor="compressed-seed">
-                Pipeline Artifact URL
-              </label>
-              <div style={inputRowStyles}>
-                <input
-                  id="compressed-seed"
-                  type="url"
-                  style={inputStyles}
-                  value={pipelineSourceInput}
-                  onChange={(event) => setPipelineSourceInput(event.target.value)}
-                  placeholder="s3://bucket/path or https://bucket.s3.amazonaws.com/..."
-                />
-                <button type="submit" style={buttonStyles}>
-                  Open
-                </button>
-              </div>
-            </form>
-
-            <div style={tabListStyles}>
-              <button type="button" style={activeTab === "sfm" ? activeTabButtonStyles : tabButtonStyles} onClick={() => setActiveTab("sfm")}>
-                SfM
-              </button>
-              <button type="button" style={activeTab === "gaussian" ? activeTabButtonStyles : tabButtonStyles} onClick={() => setActiveTab("gaussian")}>
-                3DGS
-              </button>
-              <button type="button" style={activeTab === "compressed" ? activeTabButtonStyles : tabButtonStyles} onClick={() => setActiveTab("compressed")}>
-                SOGS
-              </button>
-            </div>
-
-            <div style={metaGridStyles}>
-              <div style={metaCardStyles}>
-                <span style={labelStyles}>Source</span>
-                <span style={metaValueStyles}>{derivedSourceLabel ?? "Not detected"}</span>
-              </div>
-              <div style={metaCardStyles}>
-                <span style={labelStyles}>Job</span>
-                <span style={metaValueStyles}>{derivedJobId ?? "—"}</span>
-              </div>
-            </div>
-
-            {activeTab === "sfm" && (
-              <div style={sfmControlsStyles}>
-                <div style={toolbarRowStyles}>
-                  <div>
-                    <label style={labelStyles} htmlFor="sfm-sparse">
-                      Sparse
-                    </label>
-                    <input
-                      id="sfm-sparse"
-                      type="text"
-                      style={inlineInputStyles}
-                      value={sfmSparsePath}
-                      onChange={(event) => setSfmSparsePath(event.target.value)}
-                    />
+      {controlsCollapsed ? (
+        <section style={collapsedOverlayStyles}>
+          <button
+            type="button"
+            style={collapsedToggleStyles}
+            onClick={() => setControlsCollapsed(false)}
+            aria-label="Show pipeline viewer controls"
+          >
+            Show controls
+          </button>
+          <p style={{ ...statusPillStyles, margin: 0 }}>{activeViewerStatus}</p>
+        </section>
+      ) : (
+        <>
+          <section style={overlayStyles}>
+            <div style={glassPanelStyles}>
+              <div style={{ display: "grid", gap: "12px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", alignItems: "start" }}>
+                  <div style={{ display: "grid", gap: "6px" }}>
+                    <p style={labelStyles}>Pipeline Viewer</p>
+                    <h1 style={{ margin: 0, fontSize: "1.3rem", letterSpacing: "-0.02em" }}>Paste a pipeline S3 link</h1>
                   </div>
-                  <div>
-                    <label style={labelStyles} htmlFor="sfm-points">
-                      Points
-                    </label>
-                    <input
-                      id="sfm-points"
-                      type="number"
-                      min={1000}
-                      style={inlineInputStyles}
-                      value={sfmMaxPoints}
-                      onChange={(event) => setSfmMaxPoints(Number(event.target.value))}
-                    />
-                  </div>
-                  <div>
-                    <label style={labelStyles} htmlFor="sfm-cameras">
-                      Cameras
-                    </label>
-                    <input
-                      id="sfm-cameras"
-                      type="number"
-                      min={10}
-                      style={inlineInputStyles}
-                      value={sfmMaxCameras}
-                      onChange={(event) => setSfmMaxCameras(Number(event.target.value))}
-                    />
-                  </div>
-                  <div>
-                    <label style={labelStyles} htmlFor="sfm-size">
-                      Size
-                    </label>
-                    <input
-                      id="sfm-size"
-                      type="number"
-                      step={0.01}
-                      min={0.001}
-                      style={inlineInputStyles}
-                      value={sfmPointSize}
-                      onChange={(event) => setSfmPointSize(Number(event.target.value))}
-                    />
+                  <div style={{ display: "flex", alignItems: "start", gap: "10px", flexWrap: "wrap", justifyContent: "end" }}>
+                    <p style={statusPillStyles}>{activeViewerStatus}</p>
+                    <button
+                      type="button"
+                      style={collapseButtonStyles}
+                      onClick={() => setControlsCollapsed(true)}
+                      aria-label="Hide pipeline viewer controls"
+                    >
+                      Hide controls
+                    </button>
                   </div>
                 </div>
 
-                <div style={toolbarRowStyles}>
-                  <select
-                    value={sfmTransform}
-                    onChange={(event) => setSfmTransform(event.target.value as TransformOption)}
-                    style={{ ...inlineInputStyles, maxWidth: "180px" }}
-                  >
-                    {transformOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                  <label style={{ ...mutedTextStyles, display: "flex", alignItems: "center", gap: "6px" }}>
-                    <input type="checkbox" checked={showAxes} onChange={(event) => setShowAxes(event.target.checked)} />
-                    Axes
+                <form style={sourceFormStyles} onSubmit={handleSourceSubmit}>
+                  <label style={labelStyles} htmlFor="compressed-seed">
+                    Pipeline Artifact URL
                   </label>
-                  <label style={{ ...mutedTextStyles, display: "flex", alignItems: "center", gap: "6px" }}>
-                    <input type="checkbox" checked={showCameras} onChange={(event) => setShowCameras(event.target.checked)} />
-                    Cameras
-                  </label>
-                  <button type="button" style={buttonStyles} onClick={handleLoadSfm}>
-                    Load SfM
+                  <div style={inputRowStyles}>
+                    <input
+                      id="compressed-seed"
+                      type="url"
+                      style={inputStyles}
+                      value={pipelineSourceInput}
+                      onChange={(event) => setPipelineSourceInput(event.target.value)}
+                      placeholder="s3://bucket/path or https://bucket.s3.amazonaws.com/..."
+                    />
+                    <button type="submit" style={buttonStyles}>
+                      Open
+                    </button>
+                  </div>
+                </form>
+
+                <div style={tabListStyles}>
+                  <button type="button" style={activeTab === "sfm" ? activeTabButtonStyles : tabButtonStyles} onClick={() => setActiveTab("sfm")}>
+                    SfM
+                  </button>
+                  <button type="button" style={activeTab === "gaussian" ? activeTabButtonStyles : tabButtonStyles} onClick={() => setActiveTab("gaussian")}>
+                    3DGS
+                  </button>
+                  <button type="button" style={activeTab === "compressed" ? activeTabButtonStyles : tabButtonStyles} onClick={() => setActiveTab("compressed")}>
+                    SOGS
                   </button>
                 </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
 
-      <div style={bottomStatusStyles}>
-        <p style={{ ...mutedTextStyles, margin: 0 }}>
-          {activeTab === "sfm" && sfmFileUrls
-            ? `Using ${sfmFileUrls.points} and ${sfmFileUrls.images}`
-            : activeViewerStatus}
-        </p>
-      </div>
+                <div style={metaGridStyles}>
+                  <div style={metaCardStyles}>
+                    <span style={labelStyles}>Source</span>
+                    <span style={metaValueStyles}>{derivedSourceLabel ?? "Not detected"}</span>
+                  </div>
+                  <div style={metaCardStyles}>
+                    <span style={labelStyles}>Job</span>
+                    <span style={metaValueStyles}>{derivedJobId ?? "—"}</span>
+                  </div>
+                </div>
+
+                {activeTab === "sfm" && (
+                  <div style={sfmControlsStyles}>
+                    <div style={toolbarRowStyles}>
+                      <div>
+                        <label style={labelStyles} htmlFor="sfm-sparse">
+                          Sparse
+                        </label>
+                        <input
+                          id="sfm-sparse"
+                          type="text"
+                          style={inlineInputStyles}
+                          value={sfmSparsePath}
+                          onChange={(event) => setSfmSparsePath(event.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label style={labelStyles} htmlFor="sfm-points">
+                          Points
+                        </label>
+                        <input
+                          id="sfm-points"
+                          type="number"
+                          min={1000}
+                          style={inlineInputStyles}
+                          value={sfmMaxPoints}
+                          onChange={(event) => setSfmMaxPoints(Number(event.target.value))}
+                        />
+                      </div>
+                      <div>
+                        <label style={labelStyles} htmlFor="sfm-cameras">
+                          Cameras
+                        </label>
+                        <input
+                          id="sfm-cameras"
+                          type="number"
+                          min={10}
+                          style={inlineInputStyles}
+                          value={sfmMaxCameras}
+                          onChange={(event) => setSfmMaxCameras(Number(event.target.value))}
+                        />
+                      </div>
+                      <div>
+                        <label style={labelStyles} htmlFor="sfm-size">
+                          Size
+                        </label>
+                        <input
+                          id="sfm-size"
+                          type="number"
+                          step={0.01}
+                          min={0.001}
+                          style={inlineInputStyles}
+                          value={sfmPointSize}
+                          onChange={(event) => setSfmPointSize(Number(event.target.value))}
+                        />
+                      </div>
+                    </div>
+
+                    <div style={toolbarRowStyles}>
+                      <select
+                        value={sfmTransform}
+                        onChange={(event) => setSfmTransform(event.target.value as TransformOption)}
+                        style={{ ...inlineInputStyles, maxWidth: "180px" }}
+                      >
+                        {transformOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      <label style={{ ...mutedTextStyles, display: "flex", alignItems: "center", gap: "6px" }}>
+                        <input type="checkbox" checked={showAxes} onChange={(event) => setShowAxes(event.target.checked)} />
+                        Axes
+                      </label>
+                      <label style={{ ...mutedTextStyles, display: "flex", alignItems: "center", gap: "6px" }}>
+                        <input type="checkbox" checked={showCameras} onChange={(event) => setShowCameras(event.target.checked)} />
+                        Cameras
+                      </label>
+                      <button type="button" style={buttonStyles} onClick={handleLoadSfm}>
+                        Load SfM
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+
+          <div style={bottomStatusStyles}>
+            <p style={{ ...mutedTextStyles, margin: 0 }}>
+              {activeTab === "sfm" && sfmFileUrls
+                ? `Using ${sfmFileUrls.points} and ${sfmFileUrls.images}`
+                : activeViewerStatus}
+            </p>
+          </div>
+        </>
+      )}
     </main>
   );
 }
