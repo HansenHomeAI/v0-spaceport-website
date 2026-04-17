@@ -428,6 +428,22 @@ class ColmapPipeline:
         self.enable_spatial_chunking = (
             os.environ.get("COLMAP_ENABLE_SPATIAL_CHUNKING", "0") != "0"
         )
+        self.monolithic_mapper_mode = (
+            os.environ.get("COLMAP_MONOLITHIC_MAPPER_MODE", "incremental").strip().lower()
+            or "incremental"
+        )
+        if self.monolithic_mapper_mode not in {"incremental", "global"}:
+            raise RuntimeError(
+                "Unsupported COLMAP_MONOLITHIC_MAPPER_MODE="
+                f"{self.monolithic_mapper_mode}; expected one of incremental, global"
+            )
+        self.global_mapper_use_view_graph_calibrator = (
+            os.environ.get(
+                "COLMAP_GLOBAL_MAPPER_USE_VIEW_GRAPH_CALIBRATOR",
+                "1" if self.monolithic_mapper_mode == "global" else "0",
+            )
+            != "0"
+        )
         self.chunk_planner = (
             os.environ.get("COLMAP_CHUNK_PLANNER", "legacy_spatial_heading").strip().lower()
             or "legacy_spatial_heading"
@@ -574,6 +590,10 @@ class ColmapPipeline:
             os.environ.get("COLMAP_GPS_MIN_REGISTERED_RATIO", "0.98")
         )
         self.mapper_threads = os.environ.get("COLMAP_MAPPER_THREADS", "-1")
+        self.global_mapper_used = False
+        self.global_mapper_seconds = 0.0
+        self.view_graph_calibrator_ran = False
+        self.view_graph_calibrator_seconds = 0.0
         self.start_time = time.time()
         self.timings: Dict[str, float] = {}
         self.dataset_image_count = 0
@@ -2105,27 +2125,37 @@ class ColmapPipeline:
         stage: str,
         sparse_root: Path,
         image_count: int | None = None,
+        mapper_command: str = "mapper",
+        mapper_options: Sequence[str] | None = None,
     ) -> ModelSummary:
         active_database_path = database_path or self.database_path
         active_image_count = image_count if image_count is not None else self.dataset_image_count
         started = time.time()
         sparse_root.mkdir(parents=True, exist_ok=True)
-        try:
-            stream_command(
+        command = [
+            "colmap",
+            mapper_command,
+            "--database_path",
+            str(active_database_path),
+            "--image_path",
+            str(self.images_dir),
+            "--output_path",
+            str(sparse_root),
+        ]
+        if mapper_command == "mapper":
+            command.extend(
                 [
-                    "colmap",
-                    "mapper",
-                    "--database_path",
-                    str(active_database_path),
-                    "--image_path",
-                    str(self.images_dir),
-                    "--output_path",
-                    str(sparse_root),
                     "--Mapper.num_threads",
                     str(self.mapper_threads),
                     "--Mapper.ba_refine_principal_point",
                     "0",
-                ],
+                ]
+            )
+        if mapper_options:
+            command.extend(mapper_options)
+        try:
+            stream_command(
+                command,
                 stage=stage,
                 timeout_seconds=self.resolve_timeout_seconds(
                     self.chunk_mapper_timeout_seconds
@@ -2167,6 +2197,64 @@ class ColmapPipeline:
             }
         )
         return best_model
+
+    def run_view_graph_calibrator(
+        self,
+        *,
+        database_path: Path,
+        stage: str,
+    ) -> None:
+        if "view_graph_calibrator" not in self.colmap_commands:
+            raise RuntimeError("COLMAP runtime does not support view_graph_calibrator")
+        started = time.time()
+        try:
+            stream_command(
+                [
+                    "colmap",
+                    "view_graph_calibrator",
+                    "--database_path",
+                    str(database_path),
+                ],
+                stage=stage,
+                timeout_seconds=self.resolve_timeout_seconds(self.monolithic_mapper_timeout_seconds),
+                heartbeat_seconds=self.command_heartbeat_seconds,
+            )
+        except RuntimeError as error:
+            self.handle_stage_runtime_error(stage, error)
+            raise
+        elapsed_seconds = round(time.time() - started, 2)
+        self.timings[f"{stage}_seconds"] = elapsed_seconds
+        self.view_graph_calibrator_ran = True
+        self.view_graph_calibrator_seconds = elapsed_seconds
+
+    def run_global_mapper(
+        self,
+        *,
+        stage: str,
+        sparse_root: Path,
+        image_count: int | None = None,
+    ) -> ModelSummary:
+        if not self.colmap_capabilities.get("supports_global_mapper"):
+            raise RuntimeError("COLMAP runtime does not support global_mapper")
+        global_database_path = self.work_dir / "database_global.db"
+        # view_graph_calibrator mutates the database in-place, so keep the
+        # feature-extracted database pristine for the incremental path.
+        self.clone_database_for_chunk(global_database_path)
+        if self.global_mapper_use_view_graph_calibrator:
+            self.run_view_graph_calibrator(
+                database_path=global_database_path,
+                stage=f"view_graph_calibrator_{stage}",
+            )
+        model = self.run_mapper(
+            database_path=global_database_path,
+            stage=stage,
+            sparse_root=sparse_root,
+            image_count=image_count,
+            mapper_command="global_mapper",
+        )
+        self.global_mapper_used = True
+        self.global_mapper_seconds = self.timings.get(f"{stage}_seconds", 0.0)
+        return model
 
     def run_bundle_adjuster(self, *, input_path: Path, stage: str) -> ModelSummary:
         started = time.time()
@@ -3749,31 +3837,58 @@ class ColmapPipeline:
 
     def run_monolithic_gps_first_path(self) -> ModelSummary:
         self.gps_first_attempted = True
+        use_global_mapper = self.monolithic_mapper_mode == "global"
+        mapper_stage = (
+            "mapper_global_spatial_sequential_only"
+            if use_global_mapper and self.enable_sequential_matcher
+            else "mapper_global_spatial_only"
+            if use_global_mapper
+            else "mapper_spatial_sequential_only"
+            if self.enable_sequential_matcher
+            else "mapper_spatial_only"
+        )
+        mapper_sparse_root = (
+            self.work_dir / "sparse_global_spatial_sequential_only"
+            if use_global_mapper and self.enable_sequential_matcher
+            else self.work_dir / "sparse_global_spatial_only"
+            if use_global_mapper
+            else self.work_dir / "sparse_spatial_sequential_only"
+            if self.enable_sequential_matcher
+            else self.work_dir / "sparse_spatial_only"
+        )
+        threshold_failure_stage = (
+            mapper_stage
+            if use_global_mapper
+            else "mapper_spatial_sequential_plus_vocab"
+            if self.enable_sequential_matcher
+            else "mapper_spatial_plus_vocab"
+        )
+        self.pipeline_name = (
+            "colmap_gpu_global_mapper"
+            if use_global_mapper
+            else "colmap_gpu_adaptive_matching"
+        )
         try:
             self.run_spatial_matcher()
             if self.enable_sequential_matcher:
                 self.run_sequential_matcher()
-            spatial_model = self.run_mapper(
-                database_path=self.database_path,
-                stage=(
-                    "mapper_spatial_sequential_only"
-                    if self.enable_sequential_matcher
-                    else "mapper_spatial_only"
-                ),
-                sparse_root=(
-                    self.work_dir / "sparse_spatial_sequential_only"
-                    if self.enable_sequential_matcher
-                    else self.work_dir / "sparse_spatial_only"
-                ),
-                image_count=self.dataset_image_count,
+            spatial_model = (
+                self.run_global_mapper(
+                    stage=mapper_stage,
+                    sparse_root=mapper_sparse_root,
+                    image_count=self.dataset_image_count,
+                )
+                if use_global_mapper
+                else self.run_mapper(
+                    database_path=self.database_path,
+                    stage=mapper_stage,
+                    sparse_root=mapper_sparse_root,
+                    image_count=self.dataset_image_count,
+                )
             )
         except RuntimeError as exc:
             self.mark_failure(
-                stage=(
-                    "mapper_spatial_sequential_only"
-                    if self.enable_sequential_matcher
-                    else "mapper_spatial_only"
-                ),
+                stage=mapper_stage,
                 reason=f"GPS-first mapper failed: {exc}",
             )
             raise RuntimeError(self.failure_reason_detail) from exc
@@ -3791,17 +3906,18 @@ class ColmapPipeline:
         )
         if registered_ratio >= self.gps_min_registered_ratio:
             self.final_matcher_mode = (
+                "global_spatial_sequential_only"
+                if use_global_mapper and self.enable_sequential_matcher
+                else "global_spatial_only"
+                if use_global_mapper
+                else
                 "spatial_sequential_only"
                 if self.enable_sequential_matcher
                 else "spatial_only"
             )
             return spatial_model
         self.mark_failure(
-            stage=(
-                "mapper_spatial_sequential_plus_vocab"
-                if self.enable_sequential_matcher
-                else "mapper_spatial_plus_vocab"
-            ),
+            stage=threshold_failure_stage,
             reason=(
                 "GPS-first mapper registered "
                 f"{spatial_model.images_registered}/{self.dataset_image_count} images "
@@ -4023,6 +4139,11 @@ class ColmapPipeline:
             "sequential_matcher_enabled": self.enable_sequential_matcher,
             "sequential_pair_delta": self.matcher_pair_deltas.get("sequential_matcher", 0),
             "match_profile": self.match_profile,
+            "monolithic_mapper_mode": self.monolithic_mapper_mode,
+            "global_mapper_used": self.global_mapper_used,
+            "global_mapper_seconds": round(self.global_mapper_seconds, 2),
+            "view_graph_calibrator_ran": self.view_graph_calibrator_ran,
+            "view_graph_calibrator_seconds": round(self.view_graph_calibrator_seconds, 2),
             "gps_first_attempted": self.gps_first_attempted,
             "gps_first_skipped_reason": self.gps_first_skipped_reason,
             "chunking_enabled": self.enable_spatial_chunking,

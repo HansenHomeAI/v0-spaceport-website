@@ -1,5 +1,5 @@
-reason: executing phase 2 branch sync by merging origin/development into codex/agent-72759001-sync-development-into-ml and validating the integrated branch
-last_step: completed the phase 2 baseline checks, merged origin/development into the phase 2 branch, and started resolving the expected workflow and web content conflicts
-next_unblocked_step: finish conflict resolution, audit the auto-merged infra files for branch-aware naming and R2/payment settings, push the branch, and monitor Pages/CDK/container checks to green
+reason: implementing the monolithic global_mapper SfM benchmark path in an isolated worktree, validating locally, then pushing the branch and running bounded CI plus AWS proof
+last_step: added the global_mapper runtime path, manifest subset utility, and focused unit coverage; local py_compile and unit tests are green
+next_unblocked_step: bump the Pages trigger, push agent-39418949-sfm-global-mapper-benchmark, wait for Pages/CDK/container workflows to finish green, then run the capability snapshot and geometry_mix subset benchmark
 owner_action_needed: none
-updated: 2026-03-06T02:16:00Z
+updated: 2026-04-17T20:14:00Z
