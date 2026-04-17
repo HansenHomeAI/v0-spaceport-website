@@ -38,3 +38,4 @@
 2026-04-15T05:40:57Z trigger preview for seam-clone disk-full fallback on full MD1 hierarchy run
 2026-04-15T05:49:30Z trigger preview for sfm runtime base-image fallback and stale-digest build fix
 2026-04-15T10:23:15Z trigger preview for component-aware hierarchy bridge recovery and merge diagnostics
+2026-04-17T00:00:00Z validate shared preview backend/role reuse for IAM quota-safe branch deploys
