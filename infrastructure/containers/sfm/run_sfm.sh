@@ -68,13 +68,63 @@ echo "============================================================"
 echo "🔍 VALIDATING OUTPUT"
 echo "============================================================"
 
+[ -f "$OUTPUT_DIR/sfm_metadata.json" ] || error_exit "Missing sfm_metadata.json"
+
+SNAPSHOT_MODE=$(python3 - <<'PY'
+import json
+import os
+from pathlib import Path
+
+metadata = json.loads(Path("/opt/ml/processing/output/sfm_metadata.json").read_text(encoding="utf-8"))
+if os.environ.get("SFM_CAPABILITY_SNAPSHOT_ONLY") == "1" or metadata.get("capability_snapshot_only"):
+    print("capability")
+elif os.environ.get("SFM_PLANNER_SNAPSHOT_ONLY") == "1" or metadata.get("planner_snapshot_only"):
+    print("planner")
+else:
+    print("")
+PY
+)
+
+if [ "$SNAPSHOT_MODE" = "capability" ]; then
+    echo "✅ Snapshot-only capability metadata written"
+    python3 - <<'PY'
+import json
+from pathlib import Path
+
+metadata = json.loads(Path("/opt/ml/processing/output/sfm_metadata.json").read_text(encoding="utf-8"))
+capabilities = metadata.get("colmap_capabilities", {})
+print(f"🧪 Snapshot mode: capability")
+print(f"🗺️ global_mapper supported: {capabilities.get('supports_global_mapper')}")
+print(f"🔧 view_graph_calibrator available: {'view_graph_calibrator' in capabilities.get('available_commands', [])}")
+PY
+    echo "✅ Capability snapshot validation passed"
+    exit 0
+fi
+
+if [ "$SNAPSHOT_MODE" = "planner" ]; then
+    [ -f "$OUTPUT_DIR/chunk_planner_manifest.json" ] || error_exit "Missing chunk_planner_manifest.json"
+    echo "✅ Planner snapshot artifacts written"
+    python3 - <<'PY'
+import json
+from pathlib import Path
+
+metadata = json.loads(Path("/opt/ml/processing/output/sfm_metadata.json").read_text(encoding="utf-8"))
+manifest = json.loads(Path("/opt/ml/processing/output/chunk_planner_manifest.json").read_text(encoding="utf-8"))
+print(f"🧪 Snapshot mode: planner")
+print(f"🧩 Chunk count: {manifest.get('chunk_count')}")
+print(f"🔎 Probe subsets: {sorted((manifest.get('probe_subsets') or {}).keys())}")
+print(f"⏱️ Processing time: {metadata.get('processing_time_seconds')} seconds")
+PY
+    echo "✅ Planner snapshot validation passed"
+    exit 0
+fi
+
 REQUIRED_OUTPUT_FILES=(
     "$OUTPUT_DIR/sparse/0/cameras.txt"
     "$OUTPUT_DIR/sparse/0/images.txt"
     "$OUTPUT_DIR/sparse/0/points3D.txt"
     "$OUTPUT_DIR/images"
     "$OUTPUT_DIR/database.db"
-    "$OUTPUT_DIR/sfm_metadata.json"
 )
 
 ALL_FILES_PRESENT=true
