@@ -83,7 +83,6 @@ class ColmapGlobalMapperTests(unittest.TestCase):
             command = stream_command_mock.call_args_list[0].args[0]
             self.assertIn("--Mapper.ba_use_gpu", command)
             self.assertIn("--Mapper.ba_gpu_index", command)
-
     def test_run_global_mapper_clones_database_and_runs_calibrator(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
             os.environ,
@@ -326,7 +325,6 @@ class ColmapGlobalMapperTests(unittest.TestCase):
 
             with self.assertRaisesRegex(RuntimeError, "build info marker is missing"):
                 pipeline.ensure_gpu_bundle_adjustment_preflight()
-
 
 if __name__ == "__main__":
     unittest.main()
