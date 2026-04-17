@@ -4,6 +4,7 @@ import tempfile
 import unittest
 import zipfile
 from pathlib import Path
+from unittest import mock
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -98,6 +99,28 @@ class ManifestSubsetZipTests(unittest.TestCase):
 
             with self.assertRaisesRegex(ValueError, "missing from archive"):
                 subset_zip.create_subset_zip(input_zip, ["IMG_011.jpg"], root / "missing.zip")
+
+    def test_parse_args_accepts_input_zip_flag(self):
+        with mock.patch.object(
+            sys,
+            "argv",
+            [
+                "build_manifest_subset_zip.py",
+                "--input-zip",
+                "s3://bucket/input.zip",
+                "--manifest-uri",
+                "s3://bucket/manifest.json",
+                "--subset-key",
+                "probe_subsets.geometry_mix",
+                "--output",
+                "/tmp/subset.zip",
+            ],
+        ):
+            args = subset_zip.parse_args()
+
+        self.assertEqual(args.input_zip, "s3://bucket/input.zip")
+        self.assertEqual(args.manifest_uri, "s3://bucket/manifest.json")
+        self.assertEqual(args.subset_key, "probe_subsets.geometry_mix")
 
 
 if __name__ == "__main__":

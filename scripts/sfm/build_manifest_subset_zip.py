@@ -204,7 +204,13 @@ def create_subset_zip(input_zip: Path, subset_basenames: Sequence[str], output_z
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--input", required=True, help="Local path, file:// URI, s3:// URI, or http(s):// URL for the source ZIP")
+    parser.add_argument(
+        "--input-zip",
+        "--input",
+        dest="input_zip",
+        required=True,
+        help="Local path, file:// URI, s3:// URI, or http(s):// URL for the source ZIP",
+    )
     parser.add_argument(
         "--manifest-uri",
         required=True,
@@ -223,7 +229,7 @@ def main() -> int:
     args = parse_args()
     with tempfile.TemporaryDirectory(prefix="manifest_subset_zip_") as temp_dir:
         workspace = Path(temp_dir)
-        input_zip = materialize_input(args.input, workspace, default_name="input.zip")
+        input_zip = materialize_input(args.input_zip, workspace, default_name="input.zip")
         manifest_path = materialize_input(args.manifest_uri, workspace, default_name="manifest.json")
         manifest = load_json(manifest_path)
         subset_basenames = resolve_subset_basenames(manifest, args.subset_key)
@@ -231,7 +237,7 @@ def main() -> int:
         written_names = create_subset_zip(input_zip, subset_basenames, local_output)
         published_output = publish_output(local_output, args.output)
         summary = {
-            "input": args.input,
+            "input_zip": args.input_zip,
             "manifest_uri": args.manifest_uri,
             "subset_key": args.subset_key,
             "requested_image_count": len(subset_basenames),
