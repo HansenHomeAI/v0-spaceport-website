@@ -14,6 +14,9 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 const DEFAULT_COMPRESSED_BUNDLE =
   "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json";
+const DEFAULT_GAUSSIAN_SOURCE =
+  "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz";
+const DEFAULT_GAUSSIAN_TAR_MEMBER = "merged/merged_splat.ply";
 const VIEWER_BASE = "/supersplat-viewer/index.html";
 const PIPELINE_BUCKET_PATTERNS = [
   /^spaceport-ml-processing(?:-[a-z0-9-]+)?$/i,
@@ -376,6 +379,14 @@ const normalizeGaussianAssetUrl = (rawValue: string) => {
   }
 
   if (parsed.pathname.endsWith("/model.tar.gz")) {
+    if (/\/manual-validations\/[^/]+\/3dgs\//.test(parsed.pathname)) {
+      parsed.searchParams.set("pipeline-viewer-source", "model-tar-gz");
+      if (!parsed.searchParams.get("tar-member")) {
+        parsed.searchParams.set("tar-member", DEFAULT_GAUSSIAN_TAR_MEMBER);
+      }
+      return parsed;
+    }
+
     const standard3dgsMatch = parsed.pathname.match(/\/3dgs\/([^/]+)\/.+\/model\.tar\.gz$/);
     if (standard3dgsMatch) {
       parsed.pathname = `/3dgs/${standard3dgsMatch[1]}/splat.ply`;
@@ -478,6 +489,21 @@ const derivePipelineArtifacts = (rawSource: string): DerivedPipelineArtifacts | 
       colmapBase: `${baseOrigin}/manual-validations/${runId}/colmap/`,
       gaussianPly: `${baseOrigin}/manual-validations/${runId}/repair/splat.ply`,
       sparsePath: sfmInput?.sparsePath ?? "sparse/0/",
+    };
+  }
+
+  const manualValidationGaussianMatch = parsed.pathname.match(/\/manual-validations\/([^/]+)\/3dgs\/.+(?:\/|$)/);
+  if (manualValidationGaussianMatch) {
+    const runId = manualValidationGaussianMatch[1];
+    return {
+      sourceKind: "gaussian",
+      sourceLabel: "Manual validation 3DGS",
+      jobId: runId,
+      sourceUrl: normalizeGaussianAssetUrl(rawSource)?.toString() ?? parsed.toString(),
+      compressedBundle: `${baseOrigin}/manual-validations/${runId}/compressed/supersplat_bundle/meta.json`,
+      colmapBase: `${baseOrigin}/manual-validations/${runId}/colmap/`,
+      gaussianPly: normalizeGaussianAssetUrl(rawSource)?.toString() ?? parsed.toString(),
+      sparsePath: "sparse/0/",
     };
   }
 
@@ -1182,7 +1208,9 @@ export default function PipelineViewerPage() {
   const [derivedJobId, setDerivedJobId] = useState<string | null>(null);
   const [derivedSourceLabel, setDerivedSourceLabel] = useState<string | null>("Compressed bundle");
   const [colmapBaseUrl, setColmapBaseUrl] = useState("");
-  const [gaussianPlyUrl, setGaussianPlyUrl] = useState("");
+  const [gaussianPlyUrl, setGaussianPlyUrl] = useState(
+    () => normalizeGaussianAssetUrl(DEFAULT_GAUSSIAN_SOURCE)?.toString() ?? DEFAULT_GAUSSIAN_SOURCE
+  );
   const [sfmSparsePath, setSfmSparsePath] = useState("sparse/0/");
   const [sfmMaxPoints, setSfmMaxPoints] = useState(150000);
   const [sfmMaxCameras, setSfmMaxCameras] = useState(600);
