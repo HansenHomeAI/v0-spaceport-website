@@ -857,6 +857,45 @@ const mergeBounds = (a: SfmData["bounds"], b: SfmData["bounds"]) => {
   return { min, max };
 };
 
+const recenterSfmData = (data: {
+  positions: Float32Array;
+  colors: Float32Array;
+  count: number;
+  bounds: SfmData["bounds"];
+}) => {
+  const center: [number, number, number] = [
+    (data.bounds.min[0] + data.bounds.max[0]) * 0.5,
+    (data.bounds.min[1] + data.bounds.max[1]) * 0.5,
+    (data.bounds.min[2] + data.bounds.max[2]) * 0.5,
+  ];
+
+  const centeredPositions = new Float32Array(data.positions.length);
+  for (let index = 0; index < data.positions.length; index += 3) {
+    centeredPositions[index] = data.positions[index] - center[0];
+    centeredPositions[index + 1] = data.positions[index + 1] - center[1];
+    centeredPositions[index + 2] = data.positions[index + 2] - center[2];
+  }
+
+  return {
+    positions: centeredPositions,
+    colors: data.colors,
+    count: data.count,
+    focus: [0, 0, 0] as [number, number, number],
+    bounds: {
+      min: [
+        data.bounds.min[0] - center[0],
+        data.bounds.min[1] - center[1],
+        data.bounds.min[2] - center[2],
+      ] as [number, number, number],
+      max: [
+        data.bounds.max[0] - center[0],
+        data.bounds.max[1] - center[1],
+        data.bounds.max[2] - center[2],
+      ] as [number, number, number],
+    },
+  };
+};
+
 const SfmCanvas = ({
   data,
   showAxes,
@@ -1221,7 +1260,7 @@ export default function PipelineViewerPage() {
     try {
       const pointsUrl = normalizeUrl(fileUrls.points) ?? new URL(fileUrls.points);
 
-      const parsedPoints = await loadPoints(withProxyIfNeeded(pointsUrl), sfmMaxPoints);
+      const parsedPoints = recenterSfmData(await loadPoints(withProxyIfNeeded(pointsUrl), sfmMaxPoints));
 
       setSfmData({
         points: parsedPoints.positions,
