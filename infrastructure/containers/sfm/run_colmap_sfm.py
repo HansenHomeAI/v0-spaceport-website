@@ -6568,8 +6568,9 @@ class ColmapPipeline:
         components: Sequence[Set[int]],
         excluded_pairs: Set[tuple[tuple[int, ...], tuple[int, ...]]] | None = None,
     ) -> List[dict[str, object]]:
-        ranked_candidates: List[tuple[int, int, int, int, int, int, int, int, dict[str, object]]] = []
+        ranked_candidates: List[tuple[int, int, int, int, int, int, int, int, int, dict[str, object]]] = []
         excluded_pairs = excluded_pairs or set()
+        allow_zero_signal_fallback = len(components) == 2
         for first_component_index, first_component in enumerate(components):
             for second_component_index in range(first_component_index + 1, len(components)):
                 second_component = components[second_component_index]
@@ -6596,7 +6597,12 @@ class ColmapPipeline:
                             first_source_indexes,
                             second_source_indexes,
                         )
-                        if planned_shared_images <= 0 and cross_edge_count <= 0 and boundary_strength <= 0:
+                        zero_signal_candidate = (
+                            planned_shared_images <= 0
+                            and cross_edge_count <= 0
+                            and boundary_strength <= 0
+                        )
+                        if zero_signal_candidate and not allow_zero_signal_fallback:
                             continue
                         combined_image_count = len(first_names.union(second_plan.image_names))
                         if combined_image_count > self.chunk_bridge_recovery_max_images:
@@ -6614,11 +6620,13 @@ class ColmapPipeline:
                             "boundary_strength": boundary_strength,
                             "gap_count": gap_count,
                             "combined_image_count": combined_image_count,
+                            "zero_signal_fallback": zero_signal_candidate,
                             "first_component_index": first_component_index,
                             "second_component_index": second_component_index,
                         }
                         ranked_candidates.append(
                             (
+                                1 if zero_signal_candidate else 0,
                                 gap_count,
                                 -boundary_strength,
                                 -cross_edge_count,

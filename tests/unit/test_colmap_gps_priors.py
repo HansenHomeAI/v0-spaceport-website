@@ -4082,6 +4082,90 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 "chunk_model_component_bridge_04_00_02_seed_01",
             )
 
+    def test_attempt_pending_merge_bridge_recovery_allows_zero_signal_fallback_for_final_two_components(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.chunk_planner = "footprint_graph_v1"
+            pipeline.parent_merge_mode = "seam_only_v1"
+            pipeline.chunk_bridge_recovery_max_images = 500
+            pipeline.capture_ordered_names = [
+                "IMG_00.jpg",
+                "IMG_01.jpg",
+                "IMG_02.jpg",
+                "IMG_03.jpg",
+            ]
+            pipeline.exif_records = {name: {} for name in pipeline.capture_ordered_names}
+            pending_models = [
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_00_mapper_initial",
+                    text_dir=root / "chunk0_text",
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=100,
+                    binary_dir=root / "chunk0_bin",
+                    image_names=["IMG_00.jpg", "IMG_01.jpg"],
+                    source_chunk_indexes=[0],
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_01_mapper_initial",
+                    text_dir=root / "chunk1_text",
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=100,
+                    binary_dir=root / "chunk1_bin",
+                    image_names=["IMG_02.jpg", "IMG_03.jpg"],
+                    source_chunk_indexes=[2],
+                ),
+            ]
+            connector_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_model_component_bridge_03_00_01_seed_01_point_triangulator_01",
+                text_dir=root / "connector_text",
+                cameras_registered=1,
+                images_registered=3,
+                points_3d=200,
+                binary_dir=root / "connector_bin",
+                image_names=["IMG_00.jpg", "IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg"],
+                source_chunk_indexes=[0, 2],
+            )
+            registered_names_by_stage = {
+                "chunk_00_mapper_initial": {"IMG_00.jpg", "IMG_01.jpg"},
+                "chunk_01_mapper_initial": {"IMG_02.jpg", "IMG_03.jpg"},
+                "chunk_model_component_bridge_03_00_01_seed_01_point_triangulator_01": {
+                    "IMG_01.jpg",
+                    "IMG_02.jpg",
+                    "IMG_03.jpg",
+                },
+            }
+
+            with mock.patch.object(
+                pipeline,
+                "merged_image_names",
+                side_effect=lambda model: registered_names_by_stage[model.stage],
+            ), mock.patch.object(
+                pipeline,
+                "run_parent_seam_registration_with_retry",
+                return_value=(connector_model, ["IMG_01.jpg", "IMG_02.jpg"], False, "frontier_only"),
+            ) as seam_mock:
+                repaired_model, recovery_record = pipeline.attempt_pending_merge_bridge_recovery(
+                    pending_models=pending_models,
+                    registered_names_by_stage=registered_names_by_stage,
+                    merge_sequence=3,
+                    excluded_pairs=set(),
+                )
+
+            self.assertIs(repaired_model, connector_model)
+            self.assertEqual(recovery_record["status"], "connector_inserted")
+            self.assertTrue(recovery_record["selected_candidate"]["zero_signal_fallback"])
+            self.assertEqual(
+                recovery_record["selected_candidate"]["gap_count"],
+                1,
+            )
+            self.assertEqual(
+                seam_mock.call_args.kwargs["required_names"],
+                ["IMG_00.jpg", "IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg"],
+            )
+
     def test_merge_chunk_models_preserves_pending_seed_artifacts_when_retiring_shared_paths(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
