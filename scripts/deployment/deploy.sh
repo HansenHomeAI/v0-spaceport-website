@@ -8,6 +8,8 @@ set -e
 AWS_REGION="us-west-2"
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 BRANCH_SUFFIX="${BRANCH_SUFFIX:-}"
+SFM_CUDA_BASE_IMAGE="public.ecr.aws/nvidia/cuda:12.6.3-devel-ubuntu22.04"
+SFM_CUDA_RUNTIME_IMAGE="public.ecr.aws/nvidia/cuda:12.6.3-runtime-ubuntu22.04"
 
 # Enable Docker BuildKit for better caching and performance
 export DOCKER_BUILDKIT=1
@@ -52,13 +54,34 @@ cache_base_images() {
   
   # Pull common base images in parallel
   {
-    docker pull public.ecr.aws/nvidia/cuda:11.8.0-devel-ubuntu22.04 || true &
-    docker pull public.ecr.aws/nvidia/cuda:12.9.1-runtime-ubuntu22.04 || true &
+    docker pull "${SFM_CUDA_BASE_IMAGE}" || true &
+    docker pull "${SFM_CUDA_RUNTIME_IMAGE}" || true &
     docker pull python:3.9-slim || true &
     wait
   }
   
   log "Base images cached."
+}
+
+compute_container_base_hash() {
+  local container_dir=$1
+  python3 - "$container_dir" <<'PY'
+import hashlib
+import sys
+from pathlib import Path
+
+container_dir = Path(sys.argv[1])
+hash_paths = [container_dir / "Dockerfile.base"]
+digest = hashlib.sha256()
+for path in hash_paths:
+    if not path.exists():
+        continue
+    digest.update(str(path.relative_to(container_dir)).encode("utf-8"))
+    digest.update(b"\0")
+    digest.update(path.read_bytes())
+    digest.update(b"\0")
+print(digest.hexdigest()[:16])
+PY
 }
 
 # --- Main Functions ---
@@ -96,12 +119,14 @@ deploy_container() {
   local branch_tag="${BRANCH_SUFFIX:-}"
   local ecr_base_image="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:base"
   local app_base_image="colmap/colmap:20260318.6455"
-  local build_stage="app"
 
   log "--- Starting OPTIMIZED deployment for: ${container_name} ---"
 
   local ecr_uri="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}"
   local container_dir="${PROJECT_ROOT}/infrastructure/containers/${container_name}"
+  local base_file="${container_dir}/Dockerfile.base"
+  local content_addressed_base_tag=""
+  local content_addressed_base_image=""
 
   if [[ ! -d "$container_dir" ]]; then
     error "Container directory not found: ${container_dir}"
@@ -114,34 +139,40 @@ deploy_container() {
   docker pull "${ecr_uri}:latest" || log "No existing image found, building from scratch..."
   docker pull "${build_cache_ref}" || log "No registry cache yet for ${container_name}"
   docker pull "${ecr_base_image}" || log "No base image yet for ${container_name}"
-  if aws ecr describe-images --region "${AWS_REGION}" --repository-name "${repo_name}" --image-ids imageTag=latest >/dev/null 2>&1; then
+  if [[ -f "$base_file" ]]; then
+    content_addressed_base_tag="base-$(compute_container_base_hash "$container_dir")"
+    content_addressed_base_image="${ecr_uri}:${content_addressed_base_tag}"
+    app_base_image="${content_addressed_base_image}"
+    docker pull "${content_addressed_base_image}" || log "No content-addressed base image found yet for ${container_name}: ${content_addressed_base_tag}"
+    log "Using content-addressed base image for ${container_name}: ${app_base_image}"
+  elif aws ecr describe-images --region "${AWS_REGION}" --repository-name "${repo_name}" --image-ids imageTag=latest >/dev/null 2>&1; then
     app_base_image="${ecr_uri}:latest"
     log "Using existing ECR latest tag as app base image: ${app_base_image}"
   else
     log "No ECR latest tag available for ${container_name}; falling back to ${app_base_image}"
   fi
   
-  # Build base image if missing
-  if ! aws ecr describe-images --region "${AWS_REGION}" --repository-name "${repo_name}" --image-ids imageTag=base >/dev/null 2>&1; then
-    local base_file="${container_dir}/Dockerfile.base"
-    if [[ -f "$base_file" ]]; then
+  # Build base image if missing or when a new content-addressed base is needed.
+  if [[ -f "$base_file" ]]; then
+    if ! aws ecr describe-images --region "${AWS_REGION}" --repository-name "${repo_name}" --image-ids imageTag="${content_addressed_base_tag}" >/dev/null 2>&1; then
       log "Building base image for ${container_name}..."
       docker buildx build \
         --platform linux/amd64 \
         --file "${base_file}" \
-        --tag "${repo_name}:base" \
+        --tag "${repo_name}:${content_addressed_base_tag}" \
+        --build-arg BUILDKIT_INLINE_CACHE=1 \
         --progress plain \
         --load \
         "${container_dir}"
-      docker tag "${repo_name}:base" "${ecr_base_image}"
+      docker tag "${repo_name}:${content_addressed_base_tag}" "${content_addressed_base_image}"
+      docker tag "${repo_name}:${content_addressed_base_tag}" "${ecr_base_image}"
+      docker push "${content_addressed_base_image}"
       docker push "${ecr_base_image}"
-      log "Base image built and pushed: ${ecr_base_image}"
-      if [[ "${BUILD_BASE_ONLY:-0}" = "1" ]]; then
-        log "BUILD_BASE_ONLY=1 set; skipping app build for ${container_name}"
-        return
-      fi
-    else
-      log "No Dockerfile.base for ${container_name}; skipping base build."
+      log "Base image built and pushed: ${content_addressed_base_image}"
+    fi
+    if [[ "${BUILD_BASE_ONLY:-0}" = "1" ]]; then
+      log "BUILD_BASE_ONLY=1 set; skipping app build for ${container_name}"
+      return
     fi
   fi
 
@@ -155,6 +186,7 @@ deploy_container() {
     --tag "${repo_name}:latest" \
     --cache-from "type=registry,ref=${build_cache_ref},mode=max" \
     --cache-from "type=registry,ref=${ecr_uri}:latest" \
+    $( [[ -n "${content_addressed_base_image}" ]] && printf '%s %s' "--cache-from" "${content_addressed_base_image}" ) \
     --cache-from "${ecr_base_image}" \
     --cache-to "type=registry,mode=max,compression=zstd,ref=${build_cache_ref}" \
     --progress plain \

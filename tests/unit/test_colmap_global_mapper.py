@@ -57,7 +57,30 @@ class ColmapGlobalMapperTests(unittest.TestCase):
             self.assertEqual(command[1], "global_mapper")
             self.assertNotIn("--Mapper.num_threads", command)
             self.assertNotIn("--Mapper.ba_refine_principal_point", command)
+            self.assertIn("--GlobalMapper.num_threads", command)
+            self.assertIn("--GlobalMapper.gp_use_gpu", command)
+            self.assertIn("--GlobalMapper.ba_ceres_use_gpu", command)
             self.assertEqual(model.images_registered, 3)
+
+    def test_run_mapper_uses_gpu_bundle_adjustment_flags_for_incremental_mapper(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            sparse_root = root / "sparse_incremental"
+            (sparse_root / "0").mkdir(parents=True, exist_ok=True)
+
+            with mock.patch.object(run_colmap_sfm, "stream_command") as stream_command_mock, mock.patch.object(
+                run_colmap_sfm, "count_text_rows", return_value=1
+            ), mock.patch.object(run_colmap_sfm, "count_registered_images", return_value=3):
+                pipeline.run_mapper(
+                    stage="mapper_spatial_only",
+                    sparse_root=sparse_root,
+                    mapper_command="mapper",
+                )
+
+            command = stream_command_mock.call_args_list[0].args[0]
+            self.assertIn("--Mapper.ba_use_gpu", command)
+            self.assertIn("--Mapper.ba_gpu_index", command)
 
     def test_run_global_mapper_clones_database_and_runs_calibrator(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
@@ -236,6 +259,23 @@ class ColmapGlobalMapperTests(unittest.TestCase):
             self.assertEqual(metadata["global_mapper_seconds"], 12.5)
             self.assertTrue(metadata["view_graph_calibrator_ran"])
             self.assertEqual(metadata["view_graph_calibrator_seconds"], 2.25)
+
+    def test_gpu_bundle_adjustment_preflight_rejects_missing_build_support(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {
+                "COLMAP_MONOLITHIC_MAPPER_MODE": "global",
+                "COLMAP_REQUIRE_GPU_BUNDLE_ADJUSTMENT": "1",
+            },
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.colmap_build_info = {"build_info_present": False}
+            pipeline.colmap_capabilities = pipeline.build_colmap_capabilities()
+
+            with self.assertRaisesRegex(RuntimeError, "build info marker is missing"):
+                pipeline.ensure_gpu_bundle_adjustment_preflight()
 
 
 if __name__ == "__main__":

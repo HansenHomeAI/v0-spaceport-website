@@ -1,38 +1,112 @@
-# Base image for sfm (apt deps + Python deps)
-ARG BASE_IMAGE=public.ecr.aws/docker/library/python:3.9-slim-bullseye
+# Base image for SfM with a source-built COLMAP + Ceres stack that explicitly
+# includes CUDA and cuDSS support for bundle adjustment.
+ARG BASE_IMAGE=public.ecr.aws/nvidia/cuda:12.6.3-devel-ubuntu22.04
+ARG CERES_GIT_REF=806af056feb22a1236baca247b4f4b6e1ea911e5
+ARG COLMAP_GIT_REF=4.0.3
+ARG CUDA_ARCHITECTURES=75;86
 FROM ${BASE_IMAGE}
 
-ENV DEBIAN_FRONTEND=noninteractive
+ARG BASE_IMAGE
+ARG CERES_GIT_REF
+ARG COLMAP_GIT_REF
+ARG CUDA_ARCHITECTURES
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    COLMAP_BUILD_INFO_PATH=/opt/spaceport/sfm/colmap_build_info.json
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        gnupg \
+        wget && \
+    wget -q https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb && \
+    dpkg -i cuda-keyring_1.1-1_all.deb && \
+    rm -f cuda-keyring_1.1-1_all.deb && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
         build-essential \
+        ccache \
         cmake \
         git \
-        wget \
-        curl \
-        unzip \
-        ca-certificates \
-        pkg-config \
+        libcgal-dev \
+        libcudss0-dev-cuda-12 \
+        libatlas-base-dev \
+        libboost-graph-dev \
+        libboost-program-options-dev \
+        libboost-system-dev \
+        libcurl4-openssl-dev \
         libeigen3-dev \
-        libopencv-dev \
-        libceres-dev \
-        libgoogle-glog-dev \
         libgflags-dev \
-        libopenblas-dev \
+        libglew-dev \
+        libgoogle-glog-dev \
+        libmetis-dev \
+        libopenimageio-dev \
+        libsqlite3-dev \
+        libssl-dev \
         libsuitesparse-dev \
-        libproj-dev \
-        libgdal-dev \
-        python3-dev \
-        libboost-all-dev \
-        libyaml-dev \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+        ninja-build \
+        pkg-config && \
+    rm -rf /var/lib/apt/lists/*
 
-WORKDIR /opt/ml/code
+# Ubuntu's openimageio CMake package expects the OpenCV include directory to
+# exist even when COLMAP does not link OpenCV functionality.
+RUN mkdir -p /usr/include/opencv4 /opt/src /opt/spaceport/sfm
 
-COPY requirements.txt /opt/ml/code/
-RUN pip3 install --no-cache-dir -r /opt/ml/code/requirements.txt \
-    && pip3 install --no-cache-dir sphinx==4.5.0 \
-    && pip3 cache purge \
-    && rm -rf ~/.cache/pip
+WORKDIR /opt/src
+
+RUN git clone --filter=blob:none https://github.com/ceres-solver/ceres-solver.git ceres && \
+    cd ceres && \
+    git checkout "${CERES_GIT_REF}" && \
+    git submodule update --init --recursive && \
+    cmake -S . -B build \
+        -GNinja \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr/local \
+        -DUSE_CUDA=default \
+        -DBUILD_TESTING=OFF \
+        -DBUILD_EXAMPLES=OFF \
+        -DBUILD_BENCHMARKS=OFF \
+        -DBUILD_DOCUMENTATION=OFF && \
+    cmake --build build --parallel "$(nproc)" && \
+    cmake --install build
+
+RUN git clone --filter=blob:none https://github.com/colmap/colmap.git colmap && \
+    cd colmap && \
+    git checkout "${COLMAP_GIT_REF}" && \
+    cmake -S . -B build \
+        -GNinja \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr/local \
+        -DCMAKE_CUDA_ARCHITECTURES="${CUDA_ARCHITECTURES}" \
+        -DCUDA_ENABLED=ON \
+        -DGUI_ENABLED=OFF \
+        -DTESTS_ENABLED=OFF && \
+    cmake --build build --parallel "$(nproc)" && \
+    cmake --install build
+
+RUN CERES_CONFIG="$(find /usr/local -path '*CeresConfig.cmake' | head -n 1)" && \
+    test -n "${CERES_CONFIG}" && \
+    grep -q "find_dependency(CUDAToolkit" "${CERES_CONFIG}" && \
+    grep -q "find_dependency(cudss" "${CERES_CONFIG}" && \
+    colmap help > /tmp/colmap-help.txt 2>&1 && \
+    grep -q "global_mapper" /tmp/colmap-help.txt && \
+    grep -q "view_graph_calibrator" /tmp/colmap-help.txt && \
+    cat <<EOF > "${COLMAP_BUILD_INFO_PATH}"
+{
+  "build_info_present": true,
+  "base_image": "${BASE_IMAGE}",
+  "cuda_architectures": "${CUDA_ARCHITECTURES}",
+  "ceres_git_ref": "${CERES_GIT_REF}",
+  "colmap_git_ref": "${COLMAP_GIT_REF}",
+  "ceres_cuda_enabled": true,
+  "ceres_cudss_enabled": true,
+  "mapper_gpu_bundle_adjustment_supported": true,
+  "sparse_gpu_bundle_adjustment_supported": true,
+  "global_mapper_gpu_bundle_adjustment_supported": true,
+  "global_mapper_gpu_positioning_supported": true
+}
+EOF
+
+RUN rm -rf /opt/src /tmp/colmap-help.txt /root/.cache && \
+    apt-get clean

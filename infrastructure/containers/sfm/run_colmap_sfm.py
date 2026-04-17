@@ -264,6 +264,21 @@ def unrecognized_option_error(error: RuntimeError, option_markers: Sequence[str]
     return "unrecognised option" in message and any(marker in message for marker in option_markers)
 
 
+def strip_option_value_pairs(command: Sequence[str], option_markers: Sequence[str]) -> List[str]:
+    markers = set(option_markers)
+    stripped: List[str] = []
+    skip_next = False
+    for token in command:
+        if skip_next:
+            skip_next = False
+            continue
+        if token in markers:
+            skip_next = True
+            continue
+        stripped.append(token)
+    return stripped
+
+
 def pack_float64_blob(values: Iterable[float]) -> bytes:
     packed_values = [float(value) for value in values]
     return struct.pack(f"<{len(packed_values)}d", *packed_values)
@@ -413,6 +428,10 @@ class ColmapPipeline:
         self.active_vocab_tree_path: Path | None = None
         self.vocab_tree_url = os.environ.get("COLMAP_VOCAB_TREE_URL", "")
         self.use_gpu = os.environ.get("COLMAP_USE_GPU", "1") != "0"
+        self.gpu_index = (
+            os.environ.get("COLMAP_GPU_INDEX", "0" if self.use_gpu else "-1").strip()
+            or ("0" if self.use_gpu else "-1")
+        )
         self.feature_option_family = os.environ.get(
             "COLMAP_FEATURE_OPTION_FAMILY",
             FEATURE_OPTION_FAMILIES[0],
@@ -443,6 +462,28 @@ class ColmapPipeline:
                 "1" if self.monolithic_mapper_mode == "global" else "0",
             )
             != "0"
+        )
+        self.mapper_ba_use_gpu = (
+            os.environ.get("COLMAP_MAPPER_BA_USE_GPU", "1" if self.use_gpu else "0") != "0"
+        )
+        self.global_mapper_gp_use_gpu = (
+            os.environ.get("COLMAP_GLOBAL_MAPPER_GP_USE_GPU", "1" if self.use_gpu else "0") != "0"
+        )
+        self.global_mapper_ba_use_gpu = (
+            os.environ.get("COLMAP_GLOBAL_MAPPER_BA_USE_GPU", "1" if self.use_gpu else "0") != "0"
+        )
+        self.require_gpu_bundle_adjustment = (
+            os.environ.get(
+                "COLMAP_REQUIRE_GPU_BUNDLE_ADJUSTMENT",
+                "1" if self.monolithic_mapper_mode == "global" and self.use_gpu else "0",
+            )
+            != "0"
+        )
+        self.build_info_path = Path(
+            os.environ.get(
+                "COLMAP_BUILD_INFO_PATH",
+                "/opt/spaceport/sfm/colmap_build_info.json",
+            )
         )
         self.chunk_planner = (
             os.environ.get("COLMAP_CHUNK_PLANNER", "legacy_spatial_heading").strip().lower()
@@ -653,6 +694,7 @@ class ColmapPipeline:
         self.heading_prior_dispersion_deg = 0.0
         self.pitch_prior_dispersion_deg = 0.0
         self.colmap_commands = self.detect_colmap_commands()
+        self.colmap_build_info = self.load_colmap_build_info()
         self.colmap_capabilities = self.build_colmap_capabilities()
         self.view_geometries: Dict[str, ImageViewGeometry] = {}
         self.graph_neighbors: Dict[str, List[CandidateEdge]] = {}
@@ -711,7 +753,50 @@ class ColmapPipeline:
             "supports_pose_prior_mapper": "pose_prior_mapper" in commands,
             "supports_hierarchical_mapper": "hierarchical_mapper" in commands,
             "supports_global_mapper": "global_mapper" in commands,
+            "build_info_path": str(self.build_info_path),
+            "build_info_present": bool(self.colmap_build_info.get("build_info_present")),
+            "ceres_cuda_enabled": bool(self.colmap_build_info.get("ceres_cuda_enabled")),
+            "ceres_cudss_enabled": bool(self.colmap_build_info.get("ceres_cudss_enabled")),
+            "supports_gpu_bundle_adjustment": bool(
+                self.colmap_build_info.get("mapper_gpu_bundle_adjustment_supported")
+            ),
+            "supports_sparse_gpu_bundle_adjustment": bool(
+                self.colmap_build_info.get("sparse_gpu_bundle_adjustment_supported")
+            ),
+            "supports_global_mapper_gpu_bundle_adjustment": bool(
+                self.colmap_build_info.get("global_mapper_gpu_bundle_adjustment_supported")
+            ),
+            "supports_global_mapper_gpu_positioning": bool(
+                self.colmap_build_info.get("global_mapper_gpu_positioning_supported")
+            ),
         }
+
+    def load_colmap_build_info(self) -> dict[str, object]:
+        if not self.build_info_path.exists():
+            logger.warning("COLMAP build info marker is missing: %s", self.build_info_path)
+            return {
+                "build_info_present": False,
+                "build_info_path": str(self.build_info_path),
+            }
+        try:
+            with open(self.build_info_path, "r", encoding="utf-8") as handle:
+                build_info = json.load(handle)
+        except Exception as exc:
+            logger.warning("Unable to parse COLMAP build info at %s: %s", self.build_info_path, exc)
+            return {
+                "build_info_present": False,
+                "build_info_path": str(self.build_info_path),
+                "build_info_error": str(exc),
+            }
+        if not isinstance(build_info, dict):
+            return {
+                "build_info_present": False,
+                "build_info_path": str(self.build_info_path),
+                "build_info_error": "build info payload was not a JSON object",
+            }
+        build_info.setdefault("build_info_present", True)
+        build_info.setdefault("build_info_path", str(self.build_info_path))
+        return build_info
 
     def mark_failure(
         self,
@@ -763,6 +848,7 @@ class ColmapPipeline:
                 with open(self.output_dir / "sfm_metadata.json", "w", encoding="utf-8") as handle:
                     json.dump(metadata, handle, indent=2)
                 return 0
+            self.ensure_gpu_bundle_adjustment_preflight()
             self.extract_images()
             self.exif_records = self.load_exif_records()
             self.gps_image_count = len(self.exif_records)
@@ -2142,6 +2228,7 @@ class ColmapPipeline:
             "--output_path",
             str(sparse_root),
         ]
+        gpu_option_markers: List[str] = []
         if mapper_command == "mapper":
             command.extend(
                 [
@@ -2151,6 +2238,52 @@ class ColmapPipeline:
                     "0",
                 ]
             )
+            if self.mapper_ba_use_gpu:
+                command.extend(
+                    [
+                        "--Mapper.ba_use_gpu",
+                        "1" if self.use_gpu else "0",
+                        "--Mapper.ba_gpu_index",
+                        self.gpu_index,
+                    ]
+                )
+                gpu_option_markers.extend(["--Mapper.ba_use_gpu", "--Mapper.ba_gpu_index"])
+        elif mapper_command == "global_mapper":
+            command.extend(
+                [
+                    "--GlobalMapper.num_threads",
+                    str(self.mapper_threads),
+                    "--GlobalMapper.ba_refine_principal_point",
+                    "0",
+                ]
+            )
+            if self.global_mapper_gp_use_gpu:
+                command.extend(
+                    [
+                        "--GlobalMapper.gp_use_gpu",
+                        "1" if self.use_gpu else "0",
+                        "--GlobalMapper.gp_gpu_index",
+                        self.gpu_index,
+                    ]
+                )
+                gpu_option_markers.extend(
+                    ["--GlobalMapper.gp_use_gpu", "--GlobalMapper.gp_gpu_index"]
+                )
+            if self.global_mapper_ba_use_gpu:
+                command.extend(
+                    [
+                        "--GlobalMapper.ba_ceres_use_gpu",
+                        "1" if self.use_gpu else "0",
+                        "--GlobalMapper.ba_ceres_gpu_index",
+                        self.gpu_index,
+                    ]
+                )
+                gpu_option_markers.extend(
+                    [
+                        "--GlobalMapper.ba_ceres_use_gpu",
+                        "--GlobalMapper.ba_ceres_gpu_index",
+                    ]
+                )
         if mapper_options:
             command.extend(mapper_options)
         try:
@@ -2165,8 +2298,34 @@ class ColmapPipeline:
                 heartbeat_seconds=self.command_heartbeat_seconds,
             )
         except RuntimeError as error:
-            self.handle_stage_runtime_error(stage, error)
-            raise
+            if gpu_option_markers and unrecognized_option_error(error, gpu_option_markers):
+                if self.require_gpu_bundle_adjustment:
+                    self.handle_stage_runtime_error(stage, error)
+                    raise RuntimeError(
+                        f"{stage} rejected required GPU bundle adjustment flags: {error}"
+                    ) from error
+                logger.warning(
+                    "%s rejected GPU bundle adjustment flags; retrying without them for compatibility",
+                    stage,
+                )
+                fallback_command = strip_option_value_pairs(command, gpu_option_markers)
+                try:
+                    stream_command(
+                        fallback_command,
+                        stage=stage,
+                        timeout_seconds=self.resolve_timeout_seconds(
+                            self.chunk_mapper_timeout_seconds
+                            if stage.startswith("chunk_")
+                            else self.monolithic_mapper_timeout_seconds
+                        ),
+                        heartbeat_seconds=self.command_heartbeat_seconds,
+                    )
+                except RuntimeError as fallback_error:
+                    self.handle_stage_runtime_error(stage, fallback_error)
+                    raise
+            else:
+                self.handle_stage_runtime_error(stage, error)
+                raise
         self.timings[f"{stage}_seconds"] = round(time.time() - started, 2)
 
         candidate_dirs = [path for path in sorted(sparse_root.iterdir()) if path.is_dir()]
@@ -2271,6 +2430,8 @@ class ColmapPipeline:
             "0",
             "--BundleAdjustment.use_gpu",
             "1" if self.use_gpu else "0",
+            "--BundleAdjustment.gpu_index",
+            self.gpu_index,
         ]
         try:
             stream_command(
@@ -2309,6 +2470,35 @@ class ColmapPipeline:
             binary_dir=output_path,
             image_count=self.dataset_image_count,
         )
+
+    def ensure_gpu_bundle_adjustment_preflight(self) -> None:
+        if not self.require_gpu_bundle_adjustment:
+            return
+        if not self.use_gpu:
+            raise RuntimeError(
+                "COLMAP_REQUIRE_GPU_BUNDLE_ADJUSTMENT=1 requires COLMAP_USE_GPU=1"
+            )
+        if not self.colmap_capabilities.get("build_info_present"):
+            raise RuntimeError(
+                "COLMAP build info marker is missing; cannot verify GPU bundle adjustment support"
+            )
+        if not self.colmap_capabilities.get("supports_gpu_bundle_adjustment"):
+            raise RuntimeError(
+                "COLMAP build does not advertise GPU bundle adjustment support"
+            )
+        if not self.colmap_capabilities.get("supports_sparse_gpu_bundle_adjustment"):
+            raise RuntimeError(
+                "COLMAP build does not advertise sparse GPU bundle adjustment support"
+            )
+        if self.monolithic_mapper_mode == "global":
+            if not self.colmap_capabilities.get("supports_global_mapper_gpu_bundle_adjustment"):
+                raise RuntimeError(
+                    "COLMAP build does not advertise GlobalMapper GPU bundle adjustment support"
+                )
+            if not self.colmap_capabilities.get("supports_global_mapper_gpu_positioning"):
+                raise RuntimeError(
+                    "COLMAP build does not advertise GlobalMapper GPU positioning support"
+                )
 
     def centroid_for_names(self, image_names: Sequence[str]) -> tuple[float, float]:
         if not image_names:
@@ -4122,6 +4312,9 @@ class ColmapPipeline:
             "points_3d": best_model.points_3d if best_model is not None else 0,
             "quality_check_passed": quality_check_passed,
             "gpu_enabled": self.use_gpu,
+            "gpu_index": self.gpu_index,
+            "gpu_bundle_adjustment_required": self.require_gpu_bundle_adjustment,
+            "colmap_build_info": self.colmap_build_info,
             "gps_priors_detected": self.gps_image_count,
             "gps_exif_count": self.gps_image_count,
             "orientation_prior_count": self.orientation_prior_count,
