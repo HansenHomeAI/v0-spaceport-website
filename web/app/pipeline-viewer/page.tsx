@@ -29,6 +29,7 @@ type SfmData = {
   cameraLines: Float32Array;
   pointCount: number;
   cameraCount: number;
+  focus: [number, number, number];
   bounds: {
     min: [number, number, number];
     max: [number, number, number];
@@ -684,6 +685,9 @@ const loadPoints = async (pointsUrl: string, maxPoints: number) => {
   const positions: number[] = [];
   const colors: number[] = [];
   let count = 0;
+  let sumX = 0;
+  let sumY = 0;
+  let sumZ = 0;
   let minX = Infinity;
   let minY = Infinity;
   let minZ = Infinity;
@@ -714,6 +718,9 @@ const loadPoints = async (pointsUrl: string, maxPoints: number) => {
 
       positions.push(x, y, z);
       colors.push(r / 255, g / 255, b / 255);
+      sumX += x;
+      sumY += y;
+      sumZ += z;
 
       minX = Math.min(minX, x);
       minY = Math.min(minY, y);
@@ -735,6 +742,10 @@ const loadPoints = async (pointsUrl: string, maxPoints: number) => {
     positions: new Float32Array(positions),
     colors: new Float32Array(colors),
     count,
+    focus:
+      count > 0
+        ? ([sumX / count, sumY / count, sumZ / count] as [number, number, number])
+        : ([0, 0, 0] as [number, number, number]),
     bounds: finalizeBounds(count, [minX, minY, minZ], [maxX, maxY, maxZ]),
   };
 };
@@ -1009,15 +1020,20 @@ const SfmCanvas = ({
 
     const min = new THREE.Vector3(...data.bounds.min);
     const max = new THREE.Vector3(...data.bounds.max);
-    const center = new THREE.Vector3().addVectors(min, max).multiplyScalar(0.5);
-    const size = new THREE.Vector3().subVectors(max, min);
-    const radius = Math.max(size.length() * 0.5, 0.1);
+    const center = new THREE.Vector3(...data.focus);
+    const extent = new THREE.Vector3(
+      Math.max(Math.abs(max.x - center.x), Math.abs(center.x - min.x)),
+      Math.max(Math.abs(max.y - center.y), Math.abs(center.y - min.y)),
+      Math.max(Math.abs(max.z - center.z), Math.abs(center.z - min.z))
+    );
+    const framingRadius = Math.max(extent.x, extent.y, extent.z, 0.1);
 
     const camera = cameraRef.current;
-    const distance = radius / Math.tan((camera.fov * Math.PI) / 360);
+    const distance = (framingRadius / Math.tan((camera.fov * Math.PI) / 360)) * 0.72;
+    const viewDirection = new THREE.Vector3(1, 0.35, 0.95).normalize().multiplyScalar(distance);
     camera.near = Math.max(distance / 100, 0.01);
     camera.far = distance * 200;
-    camera.position.set(center.x + distance, center.y + distance * 0.6, center.z + distance);
+    camera.position.copy(center).add(viewDirection);
     camera.lookAt(center);
     camera.updateProjectionMatrix();
 
@@ -1025,7 +1041,7 @@ const SfmCanvas = ({
     controlsRef.current.update();
 
     if (axesRef.current) {
-      const axisSize = Math.max(radius * 0.6, 0.5);
+      const axisSize = Math.max(framingRadius * 0.55, 0.5);
       axesRef.current.scale.set(axisSize, axisSize, axisSize);
       axesRef.current.position.copy(center);
     }
@@ -1213,6 +1229,7 @@ export default function PipelineViewerPage() {
         cameraLines: new Float32Array(),
         pointCount: parsedPoints.count,
         cameraCount: 0,
+        focus: parsedPoints.focus,
         bounds: parsedPoints.bounds,
       });
 
