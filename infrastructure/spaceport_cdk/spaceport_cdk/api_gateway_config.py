@@ -9,3 +9,13 @@ def resolve_auth_api_endpoint_type(deployment_class: str) -> Optional[str]:
 
 def should_serialize_auth_api_updates(deployment_class: str) -> bool:
     return resolve_auth_api_endpoint_type(deployment_class) == "REGIONAL"
+
+
+def resolve_preview_api_endpoint_type(deployment_class: str) -> Optional[str]:
+    if deployment_class != "branch-preview":
+        return None
+    return "REGIONAL"
+
+
+def should_disable_preview_api_cloudwatch_role(deployment_class: str) -> bool:
+    return deployment_class == "branch-preview"

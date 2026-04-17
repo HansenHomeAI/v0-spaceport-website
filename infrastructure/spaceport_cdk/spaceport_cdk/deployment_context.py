@@ -24,6 +24,8 @@ class DeploymentContext:
     auth_stack_name: str
     cdk_environment_name: str
     environment_name: str
+    reuse_shared_preview_resources: bool
+    shared_preview_resource_suffix: str
     reuse_shared_auth: bool
     reuse_shared_ecr: bool
     allow_fallback_imports: bool
@@ -54,6 +56,8 @@ def resolve_deployment_context(branch_name: str) -> DeploymentContext:
             auth_stack_name=PRODUCTION_AUTH_STACK,
             cdk_environment_name="production",
             environment_name="production",
+            reuse_shared_preview_resources=False,
+            shared_preview_resource_suffix="prod",
             reuse_shared_auth=False,
             reuse_shared_ecr=False,
             allow_fallback_imports=True,
@@ -72,6 +76,8 @@ def resolve_deployment_context(branch_name: str) -> DeploymentContext:
             auth_stack_name=SHARED_STAGING_AUTH_STACK,
             cdk_environment_name="staging",
             environment_name="staging",
+            reuse_shared_preview_resources=False,
+            shared_preview_resource_suffix="staging",
             reuse_shared_auth=False,
             reuse_shared_ecr=False,
             allow_fallback_imports=True,
@@ -91,6 +97,8 @@ def resolve_deployment_context(branch_name: str) -> DeploymentContext:
         auth_stack_name=SHARED_STAGING_AUTH_STACK,
         cdk_environment_name="staging",
         environment_name="branch-preview",
+        reuse_shared_preview_resources=True,
+        shared_preview_resource_suffix="staging",
         reuse_shared_auth=True,
         reuse_shared_ecr=True,
         allow_fallback_imports=False,
@@ -104,6 +112,8 @@ def build_env_config(base_env_config: Dict[str, object], context: DeploymentCont
         {
             "deploymentClass": context.deployment_class,
             "environmentName": context.environment_name,
+            "reuseSharedPreviewResources": context.reuse_shared_preview_resources,
+            "sharedPreviewResourceSuffix": context.shared_preview_resource_suffix,
             "resourceSuffix": context.resource_suffix,
             "sharedAuthStackName": context.auth_stack_name,
             "reuseSharedEcr": context.reuse_shared_ecr,

@@ -30,6 +30,15 @@ import os
 import aws_cdk as cdk
 import boto3
 from .branch_utils import build_scoped_name
+from .api_gateway_config import (
+    resolve_preview_api_endpoint_type,
+    should_disable_preview_api_cloudwatch_role,
+)
+from .preview_sharing import (
+    shared_preview_bucket_name,
+    shared_preview_role_name,
+    shared_preview_table_name,
+)
 
 class SpaceportStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, env_config: dict, **kwargs) -> None:
@@ -44,6 +53,13 @@ class SpaceportStack(Stack):
         self.branch_id = env_config.get("branchId", "")
         self.branch_name = env_config.get("branchName", "")
         self.allow_fallback_imports = env_config.get("allowFallbackImports", True)
+        self.reuse_shared_preview_resources = bool(env_config.get("reuseSharedPreviewResources", False))
+        self.shared_preview_resource_suffix = env_config.get("sharedPreviewResourceSuffix", "staging")
+        self.ml_bucket_name = (
+            f"spaceport-ml-processing-{self.shared_preview_resource_suffix}"
+            if self.reuse_shared_preview_resources
+            else f"spaceport-ml-processing-{suffix}"
+        )
         # Account will be dynamically resolved from deployment context
 
         if self.deployment_class == "branch-preview":
@@ -71,89 +87,141 @@ class SpaceportStack(Stack):
         )
 
         # Upload bucket - this stack owns this bucket (ML Pipeline stack imports it)
-        self.upload_bucket = self._get_or_create_s3_bucket(
-            construct_id="SpaceportUploadBucket",
-            preferred_name=f"spaceport-uploads-{suffix}",
-            fallback_name="spaceport-uploads"
-        )
+        if self.reuse_shared_preview_resources:
+            shared_upload_bucket_name = shared_preview_bucket_name(
+                "spaceport-uploads",
+                self.shared_preview_resource_suffix,
+            )
+            self.upload_bucket = s3.Bucket.from_bucket_name(
+                self,
+                "SpaceportUploadBucket",
+                shared_upload_bucket_name,
+            )
+            print(f"Importing shared preview upload bucket: {shared_upload_bucket_name}")
+        else:
+            self.upload_bucket = self._get_or_create_s3_bucket(
+                construct_id="SpaceportUploadBucket",
+                preferred_name=f"spaceport-uploads-{suffix}",
+                fallback_name="spaceport-uploads"
+            )
         print(f"🆕 Main Spaceport stack owns upload bucket: {self.upload_bucket.bucket_name}")
         
         # Dynamic DynamoDB tables - import if exist, create if not
-        self.file_metadata_table = self._get_or_create_dynamodb_table(
-            construct_id="FileMetadataTable",
-            preferred_name=f"Spaceport-FileMetadata-{suffix}",
-            fallback_name="Spaceport-FileMetadata",
-            partition_key_name="id",
-            partition_key_type=dynamodb.AttributeType.STRING
-        )
+        if self.reuse_shared_preview_resources:
+            shared_file_metadata_table_name = shared_preview_table_name(
+                "Spaceport-FileMetadata",
+                self.shared_preview_resource_suffix,
+            )
+            shared_drone_path_table_name = shared_preview_table_name(
+                "Spaceport-DroneFlightPaths",
+                self.shared_preview_resource_suffix,
+            )
+            shared_waitlist_table_name = shared_preview_table_name(
+                "Spaceport-Waitlist",
+                self.shared_preview_resource_suffix,
+            )
+            self.file_metadata_table = dynamodb.Table.from_table_name(
+                self,
+                "FileMetadataTable",
+                shared_file_metadata_table_name,
+            )
+            self.drone_path_table = dynamodb.Table.from_table_name(
+                self,
+                "DroneFlightPathsTable",
+                shared_drone_path_table_name,
+            )
+            self.waitlist_table = dynamodb.Table.from_table_name(
+                self,
+                "WaitlistTable",
+                shared_waitlist_table_name,
+            )
+        else:
+            self.file_metadata_table = self._get_or_create_dynamodb_table(
+                construct_id="FileMetadataTable",
+                preferred_name=f"Spaceport-FileMetadata-{suffix}",
+                fallback_name="Spaceport-FileMetadata",
+                partition_key_name="id",
+                partition_key_type=dynamodb.AttributeType.STRING
+            )
 
-        self.drone_path_table = self._get_or_create_dynamodb_table(
-            construct_id="DroneFlightPathsTable",
-            preferred_name=f"Spaceport-DroneFlightPaths-{suffix}",
-            fallback_name="Spaceport-DroneFlightPaths",
-            partition_key_name="id",
-            partition_key_type=dynamodb.AttributeType.STRING
-        )
-        
-        # Dynamic waitlist table
-        self.waitlist_table = self._get_or_create_dynamodb_table(
-            construct_id="WaitlistTable",
-            preferred_name=f"Spaceport-Waitlist-{suffix}",
-            fallback_name="Spaceport-Waitlist",
-            partition_key_name="email",
-            partition_key_type=dynamodb.AttributeType.STRING
-        )
+            self.drone_path_table = self._get_or_create_dynamodb_table(
+                construct_id="DroneFlightPathsTable",
+                preferred_name=f"Spaceport-DroneFlightPaths-{suffix}",
+                fallback_name="Spaceport-DroneFlightPaths",
+                partition_key_name="id",
+                partition_key_type=dynamodb.AttributeType.STRING
+            )
+
+            # Dynamic waitlist table
+            self.waitlist_table = self._get_or_create_dynamodb_table(
+                construct_id="WaitlistTable",
+                preferred_name=f"Spaceport-Waitlist-{suffix}",
+                fallback_name="Spaceport-Waitlist",
+                partition_key_name="email",
+                partition_key_type=dynamodb.AttributeType.STRING
+            )
         
         # Create Lambda execution role with permissions and environment-specific naming
-        self.lambda_role = iam.Role(
-            self, 
-            "SpaceportLambdaRole",
-            role_name=scoped_name("Spaceport-Lambda-Role-"),
-            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
-            managed_policies=[
-                iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
-            ]
-        )
-        
-        # Add S3 permissions to the Lambda role
-        self.lambda_role.add_to_policy(
-            iam.PolicyStatement(
-                actions=[
-                    "s3:PutObject",
-                    "s3:GetObject",
-                    "s3:ListBucket",
-                    "s3:DeleteObject",
-                    "s3:AbortMultipartUpload",
-                    "s3:ListMultipartUploadParts",
-                    "s3:ListBucketMultipartUploads"
-                ],
-                resources=[
-                    f"arn:aws:s3:::{self.upload_bucket.bucket_name}",
-                    f"arn:aws:s3:::{self.upload_bucket.bucket_name}/*"
+        if self.reuse_shared_preview_resources:
+            self.lambda_role = iam.Role.from_role_name(
+                self,
+                "SpaceportLambdaRole",
+                shared_preview_role_name(
+                    "Spaceport-Lambda-Role-",
+                    self.shared_preview_resource_suffix,
+                ),
+                mutable=False,
+            )
+        else:
+            self.lambda_role = iam.Role(
+                self,
+                "SpaceportLambdaRole",
+                role_name=scoped_name("Spaceport-Lambda-Role-"),
+                assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+                managed_policies=[
+                    iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
                 ]
             )
-        )
-        
-        # Add ML bucket permissions
-        self.lambda_role.add_to_policy(
-            iam.PolicyStatement(
-                actions=[
-                    "s3:PutObject",
-                    "s3:GetObject",
-                    "s3:ListBucket",
-                    "s3:DeleteObject"
-                ],
-                resources=[
-                    f"arn:aws:s3:::spaceport-ml-processing-{suffix}",
-                    f"arn:aws:s3:::spaceport-ml-processing-{suffix}/*"
-                ]
+
+            # Add S3 permissions to the Lambda role
+            self.lambda_role.add_to_policy(
+                iam.PolicyStatement(
+                    actions=[
+                        "s3:PutObject",
+                        "s3:GetObject",
+                        "s3:ListBucket",
+                        "s3:DeleteObject",
+                        "s3:AbortMultipartUpload",
+                        "s3:ListMultipartUploadParts",
+                        "s3:ListBucketMultipartUploads"
+                    ],
+                    resources=[
+                        f"arn:aws:s3:::{self.upload_bucket.bucket_name}",
+                        f"arn:aws:s3:::{self.upload_bucket.bucket_name}/*"
+                    ]
+                )
             )
-        )
-        
-        # Grant DynamoDB permissions
-        self.file_metadata_table.grant_read_write_data(self.lambda_role)
-        self.drone_path_table.grant_read_write_data(self.lambda_role)
-        self.waitlist_table.grant_read_write_data(self.lambda_role)
+
+            # Add ML bucket permissions
+            self.lambda_role.add_to_policy(
+                iam.PolicyStatement(
+                    actions=[
+                        "s3:PutObject",
+                        "s3:GetObject",
+                        "s3:ListBucket",
+                        "s3:DeleteObject"
+                    ],
+                    resources=[
+                        f"arn:aws:s3:::{self.ml_bucket_name}",
+                        f"arn:aws:s3:::{self.ml_bucket_name}/*"
+                    ]
+                )
+            )
+
+            # Grant DynamoDB permissions
+            self.file_metadata_table.grant_read_write_data(self.lambda_role)
+            self.drone_path_table.grant_read_write_data(self.lambda_role)
+            self.waitlist_table.grant_read_write_data(self.lambda_role)
         
         # Note: SES permissions removed - now using Resend for all email functionality
         
@@ -181,7 +249,7 @@ class SpaceportStack(Stack):
                 "UPLOAD_BUCKET": self.upload_bucket.bucket_name,
                 "FILE_METADATA_TABLE": self.file_metadata_table.table_name,
                 "DRONE_PATH_TABLE": self.drone_path_table.table_name,
-                "ML_BUCKET": f"spaceport-ml-processing-{suffix}",
+                "ML_BUCKET": self.ml_bucket_name,
                 "GOOGLE_MAPS_API_KEY": google_maps_api_key_param.value_as_string,
             }
         )
@@ -223,7 +291,7 @@ class SpaceportStack(Stack):
             timeout=Duration.seconds(30),
             memory_size=512,
             environment={
-                "ML_BUCKET": f"spaceport-ml-processing-{suffix}"
+                "ML_BUCKET": self.ml_bucket_name
             }
         )
         
@@ -290,9 +358,10 @@ class SpaceportStack(Stack):
         # ========== API GATEWAY CONFIGURATION ==========
         # Create API Gateway with environment-specific naming
         api_kwargs = {}
-        if self.deployment_class == "branch-preview":
-            # Branch previews quickly exhaust the account EDGE API quota; keep prod/shared behavior unchanged.
+        if resolve_preview_api_endpoint_type(self.deployment_class) == "REGIONAL":
             api_kwargs["endpoint_types"] = [apigw.EndpointType.REGIONAL]
+        if should_disable_preview_api_cloudwatch_role(self.deployment_class):
+            api_kwargs["cloud_watch_role"] = False
 
         self.drone_path_api = apigw.RestApi(
             self,
