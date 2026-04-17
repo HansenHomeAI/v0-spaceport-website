@@ -522,6 +522,23 @@ const derivePipelineArtifacts = (rawSource: string): DerivedPipelineArtifacts | 
     };
   }
 
+  const genericSfmInput = resolveSfmInput(rawSource, "sparse/0/");
+  if (
+    genericSfmInput &&
+    /(?:^|\/)(?:colmap|sparse\/\d+|(?:cameras|images|points3D)\.txt)(?:\/|$)/.test(parsed.pathname)
+  ) {
+    return {
+      sourceKind: "sfm",
+      sourceLabel: "COLMAP output",
+      jobId: null,
+      sourceUrl: genericSfmInput.baseUrl,
+      compressedBundle: null,
+      colmapBase: genericSfmInput.baseUrl,
+      gaussianPly: null,
+      sparsePath: genericSfmInput.sparsePath,
+    };
+  }
+
   return null;
 };
 
@@ -1140,7 +1157,13 @@ export default function PipelineViewerPage() {
     setSfmError(null);
     setSfmStatus("Loading SFM output...");
 
-    const fileUrls = buildSfmFileUrls(colmapBaseUrl, sfmSparsePath);
+    const derivedSfmInput =
+      derivePipelineArtifacts(pipelineSourceInput)?.sourceKind === "sfm"
+        ? derivePipelineArtifacts(pipelineSourceInput)
+        : null;
+    const effectiveColmapBaseUrl = colmapBaseUrl || derivedSfmInput?.colmapBase || "";
+    const effectiveSparsePath = derivedSfmInput?.sparsePath ?? sfmSparsePath;
+    const fileUrls = buildSfmFileUrls(effectiveColmapBaseUrl, effectiveSparsePath);
     if (!fileUrls) {
       setSfmError("Enter a valid COLMAP base URL (s3:// or https).");
       setSfmStatus("Failed to load");
@@ -1149,6 +1172,11 @@ export default function PipelineViewerPage() {
 
     setColmapBaseUrl(fileUrls.baseUrl);
     setSfmSparsePath(fileUrls.sparsePath);
+    if (derivedSfmInput) {
+      setDerivedJobId(derivedSfmInput.jobId);
+      setDerivedSourceLabel(derivedSfmInput.sourceLabel);
+      setActiveTab("sfm");
+    }
 
     try {
       const pointsUrl = normalizeUrl(fileUrls.points) ?? new URL(fileUrls.points);
@@ -1170,7 +1198,7 @@ export default function PipelineViewerPage() {
       setSfmError(message);
       setSfmStatus("Failed to load");
     }
-  }, [colmapBaseUrl, sfmSparsePath, sfmMaxPoints, sfmMaxCameras]);
+  }, [colmapBaseUrl, pipelineSourceInput, sfmSparsePath, sfmMaxPoints, sfmMaxCameras]);
 
   useEffect(() => {
     if (activeTab !== "sfm" || sfmLoadNonce === 0 || !colmapBaseUrl) {
@@ -1270,7 +1298,7 @@ export default function PipelineViewerPage() {
                   <div style={inputRowStyles}>
                     <input
                       id="compressed-seed"
-                      type="url"
+                      type="text"
                       style={inputStyles}
                       value={pipelineSourceInput}
                       onChange={(event) => setPipelineSourceInput(event.target.value)}
