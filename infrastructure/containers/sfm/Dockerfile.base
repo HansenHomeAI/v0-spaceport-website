@@ -43,6 +43,7 @@ RUN apt-get update && \
         libmetis-dev \
         libopenexr-dev \
         libopenimageio-dev \
+        openimageio-tools \
         libsqlite3-dev \
         libssl-dev \
         libsuitesparse-dev \
