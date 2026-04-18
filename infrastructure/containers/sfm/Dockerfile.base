@@ -57,20 +57,26 @@ RUN mkdir -p /usr/include/opencv4 /opt/src /opt/spaceport/sfm
 
 WORKDIR /opt/src
 
-RUN git clone --filter=blob:none https://github.com/ceres-solver/ceres-solver.git ceres && \
-    cd ceres && \
-    git checkout "${CERES_GIT_REF}" && \
-    git submodule update --init --recursive && \
+RUN set -eux; \
+    CUDSS_CONFIG="$(find /usr -path '*cudss-config.cmake' | sort | head -n 1)"; \
+    test -n "${CUDSS_CONFIG}"; \
+    CUDSS_DIR="$(dirname "${CUDSS_CONFIG}")"; \
+    git clone --filter=blob:none https://github.com/ceres-solver/ceres-solver.git ceres; \
+    cd ceres; \
+    git checkout "${CERES_GIT_REF}"; \
+    git submodule update --init --recursive; \
     cmake -S . -B build \
         -GNinja \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/local \
+        -DCMAKE_CUDA_ARCHITECTURES="${CUDA_ARCHITECTURES}" \
         -DUSE_CUDA=default \
+        -Dcudss_DIR="${CUDSS_DIR}" \
         -DBUILD_TESTING=OFF \
         -DBUILD_EXAMPLES=OFF \
         -DBUILD_BENCHMARKS=OFF \
-        -DBUILD_DOCUMENTATION=OFF && \
-    cmake --build build --parallel "$(nproc)" && \
+        -DBUILD_DOCUMENTATION=OFF; \
+    cmake --build build --parallel "$(nproc)"; \
     cmake --install build
 
 RUN git clone --filter=blob:none https://github.com/colmap/colmap.git colmap && \
@@ -89,8 +95,15 @@ RUN git clone --filter=blob:none https://github.com/colmap/colmap.git colmap && 
 
 RUN set -eux; \
     CERES_CONFIG="$(find /usr/local -path '*CeresConfig.cmake' | sort | tail -n 1)"; \
+    CERES_HEADER="/usr/local/include/ceres/internal/config.h"; \
     test -n "${CERES_CONFIG}"; \
     test -f "${CERES_CONFIG}"; \
+    test -f "${CERES_HEADER}"; \
+    grep -q "#define CERES_USE_CUDA" "${CERES_HEADER}" || { cat "${CERES_HEADER}"; exit 1; }; \
+    if grep -q "#define CERES_NO_CUDSS" "${CERES_HEADER}"; then \
+        cat "${CERES_HEADER}"; \
+        exit 1; \
+    fi; \
     if ! colmap help > /tmp/colmap-help.txt 2>&1; then \
         cat /tmp/colmap-help.txt; \
         exit 1; \
