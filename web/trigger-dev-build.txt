@@ -1,3 +1,4 @@
+2026-04-18T02:10:18Z rerun preview after restoring the canonical cuDSS CMake and header symlink layout so Ceres can resolve cudss_DIR without the package-relative header failure
 2026-04-18T02:05:34Z rerun preview after wiring cudss_DIR into the SfM Ceres build and making the image verifier fail on CERES_NO_CUDSS after the geometry_mix subset exposed runtime CPU fallback
 2026-04-18T01:09:49Z rerun preview after relaxing the SfM post-build verifier and adding shared-staging ML stack fallback to the benchmark launcher
 2026-04-18T00:46:33Z rerun preview after installing openimageio-tools for the SfM GPU BA image rebuild
