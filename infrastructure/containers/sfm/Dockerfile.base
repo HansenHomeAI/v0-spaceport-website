@@ -56,19 +56,17 @@ RUN apt-get update && \
 
 # The Ubuntu cuDSS package places the CMake config under
 # /usr/lib/x86_64-linux-gnu/libcudss/12/cmake/cudss. Ceres expects the
-# canonical /usr/lib/x86_64-linux-gnu/cmake/cudss entry plus the top-level
-# cudss.h symlinks so the config's relative header lookup resolves correctly.
+# canonical /usr/lib/x86_64-linux-gnu/cmake/cudss entry plus top-level cuDSS
+# headers so the config's relative header lookup resolves correctly.
 RUN set -eux; \
     mkdir -p /usr/lib/x86_64-linux-gnu/cmake; \
     if [ ! -e /usr/lib/x86_64-linux-gnu/cmake/cudss ]; then \
         ln -s /usr/lib/x86_64-linux-gnu/libcudss/12/cmake/cudss /usr/lib/x86_64-linux-gnu/cmake/cudss; \
     fi; \
-    if [ -f /usr/include/libcudss/12/cudss.h ] && [ ! -e /usr/include/cudss.h ]; then \
-        ln -s /usr/include/libcudss/12/cudss.h /usr/include/cudss.h; \
-    fi; \
-    if [ -f /usr/include/libcudss/12/cudss_distributed_interface.h ] && [ ! -e /usr/include/cudss_distributed_interface.h ]; then \
-        ln -s /usr/include/libcudss/12/cudss_distributed_interface.h /usr/include/cudss_distributed_interface.h; \
-    fi
+    for header in /usr/include/libcudss/12/cudss*.h; do \
+        [ -e "${header}" ] || continue; \
+        ln -sf "${header}" "/usr/include/$(basename "${header}")"; \
+    done
 
 # Ubuntu's openimageio CMake package expects the OpenCV include directory to
 # exist even when COLMAP does not link OpenCV functionality.
