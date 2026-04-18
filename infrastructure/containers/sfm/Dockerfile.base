@@ -87,13 +87,27 @@ RUN git clone --filter=blob:none https://github.com/colmap/colmap.git colmap && 
     cmake --build build --parallel "$(nproc)" && \
     cmake --install build
 
-RUN CERES_CONFIG="$(find /usr/local -path '*CeresConfig.cmake' | head -n 1)" && \
-    test -n "${CERES_CONFIG}" && \
-    grep -q "find_dependency(CUDAToolkit" "${CERES_CONFIG}" && \
-    grep -q "find_dependency(cudss" "${CERES_CONFIG}" && \
-    colmap help > /tmp/colmap-help.txt 2>&1 && \
-    grep -q "global_mapper" /tmp/colmap-help.txt && \
-    grep -q "view_graph_calibrator" /tmp/colmap-help.txt && \
+RUN set -eux; \
+    CERES_CONFIG="$(find /usr/local -path '*CeresConfig.cmake' | sort | tail -n 1)"; \
+    test -n "${CERES_CONFIG}"; \
+    test -f "${CERES_CONFIG}"; \
+    if ! colmap help > /tmp/colmap-help.txt 2>&1; then \
+        cat /tmp/colmap-help.txt; \
+        exit 1; \
+    fi; \
+    grep -q "global_mapper" /tmp/colmap-help.txt || { cat /tmp/colmap-help.txt; exit 1; }; \
+    grep -q "view_graph_calibrator" /tmp/colmap-help.txt || { cat /tmp/colmap-help.txt; exit 1; }; \
+    if ! colmap global_mapper -h > /tmp/colmap-global-mapper-help.txt 2>&1; then \
+        cat /tmp/colmap-global-mapper-help.txt; \
+        exit 1; \
+    fi; \
+    grep -q "GlobalMapper.gp_use_gpu" /tmp/colmap-global-mapper-help.txt || { cat /tmp/colmap-global-mapper-help.txt; exit 1; }; \
+    grep -q "GlobalMapper.ba_ceres_use_gpu" /tmp/colmap-global-mapper-help.txt || { cat /tmp/colmap-global-mapper-help.txt; exit 1; }; \
+    if ! colmap mapper -h > /tmp/colmap-mapper-help.txt 2>&1; then \
+        cat /tmp/colmap-mapper-help.txt; \
+        exit 1; \
+    fi; \
+    grep -q "Mapper.ba_use_gpu" /tmp/colmap-mapper-help.txt || { cat /tmp/colmap-mapper-help.txt; exit 1; }; \
     cat <<EOF > "${COLMAP_BUILD_INFO_PATH}"
 {
   "build_info_present": true,
@@ -110,5 +124,10 @@ RUN CERES_CONFIG="$(find /usr/local -path '*CeresConfig.cmake' | head -n 1)" && 
 }
 EOF
 
-RUN rm -rf /opt/src /tmp/colmap-help.txt /root/.cache && \
+RUN rm -rf \
+        /opt/src \
+        /tmp/colmap-help.txt \
+        /tmp/colmap-global-mapper-help.txt \
+        /tmp/colmap-mapper-help.txt \
+        /root/.cache && \
     apt-get clean

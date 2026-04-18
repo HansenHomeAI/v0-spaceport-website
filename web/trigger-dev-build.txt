@@ -1,3 +1,4 @@
+2026-04-18T01:09:49Z rerun preview after relaxing the SfM post-build verifier and adding shared-staging ML stack fallback to the benchmark launcher
 2026-04-18T00:46:33Z rerun preview after installing openimageio-tools for the SfM GPU BA image rebuild
 2026-04-18T00:31:50Z rerun preview after adding the missing OpenEXR dependency for the SfM GPU BA image rebuild
 2026-04-17T22:51:30Z rerun preview after fixing the CUDA base image source for the SfM GPU BA rebuild

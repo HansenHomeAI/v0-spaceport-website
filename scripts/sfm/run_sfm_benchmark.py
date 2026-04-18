@@ -14,6 +14,8 @@ from typing import Dict, List
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+SHARED_STAGING_ML_STACK = "SpaceportMLPipelineStagingStack"
+PRODUCTION_ML_STACK = "SpaceportMLPipelineProductionStack"
 
 
 def run_command(command: List[str], *, capture_output: bool = False) -> subprocess.CompletedProcess[str]:
@@ -56,15 +58,31 @@ def stack_outputs(stack: dict) -> Dict[str, str]:
     return outputs
 
 
+def has_required_ml_outputs(outputs: Dict[str, str]) -> bool:
+    return "MLBucketName" in outputs and "SfMRepositoryUri" in outputs
+
+
+def stack_summary(stack_name: str) -> tuple[str, Dict[str, str]]:
+    response = aws_json("cloudformation", "describe-stacks", "--stack-name", stack_name)
+    stack = response["Stacks"][0]
+    return stack["StackName"], stack_outputs(stack)
+
+
 def find_branch_ml_stack(branch_name: str) -> tuple[str, Dict[str, str]]:
     response = aws_json("cloudformation", "describe-stacks")
     for stack in response.get("Stacks", []):
         outputs = stack_outputs(stack)
         if outputs.get("BranchName") != branch_name:
             continue
-        if "MLBucketName" not in outputs or "SfMRepositoryUri" not in outputs:
+        if not has_required_ml_outputs(outputs):
             continue
         return stack["StackName"], outputs
+
+    fallback_stack_name = PRODUCTION_ML_STACK if branch_name == "main" else SHARED_STAGING_ML_STACK
+    stack_name, outputs = stack_summary(fallback_stack_name)
+    if has_required_ml_outputs(outputs):
+        return stack_name, outputs
+
     raise RuntimeError(f"Could not find an ML stack deployment for branch {branch_name}")
 
 

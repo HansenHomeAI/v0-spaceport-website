@@ -52,5 +52,84 @@ class ParseArgsTests(unittest.TestCase):
         self.assertEqual(args.stop_after_seconds, 2112.0)
 
 
+class FindBranchMlStackTests(unittest.TestCase):
+    def test_returns_exact_branch_stack_when_present(self) -> None:
+        with mock.patch.object(
+            run_sfm_benchmark,
+            "aws_json",
+            return_value={
+                "Stacks": [
+                    {
+                        "StackName": "SpaceportMLPreviewStack",
+                        "Outputs": [
+                            {"OutputKey": "BranchName", "OutputValue": "feature-branch"},
+                            {"OutputKey": "MLBucketName", "OutputValue": "preview-bucket"},
+                            {"OutputKey": "SfMRepositoryUri", "OutputValue": "123456789012.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm"},
+                        ],
+                    }
+                ]
+            },
+        ):
+            stack_name, outputs = run_sfm_benchmark.find_branch_ml_stack("feature-branch")
+
+        self.assertEqual(stack_name, "SpaceportMLPreviewStack")
+        self.assertEqual(outputs["MLBucketName"], "preview-bucket")
+
+    def test_falls_back_to_shared_staging_stack_for_branch_preview(self) -> None:
+        with mock.patch.object(
+            run_sfm_benchmark,
+            "aws_json",
+            side_effect=[
+                {
+                    "Stacks": [
+                        {
+                            "StackName": "SpaceportPreviewStack",
+                            "Outputs": [
+                                {"OutputKey": "BranchName", "OutputValue": "feature-branch"},
+                            ],
+                        }
+                    ]
+                },
+                {
+                    "Stacks": [
+                        {
+                            "StackName": "SpaceportMLPipelineStagingStack",
+                            "Outputs": [
+                                {"OutputKey": "BranchName", "OutputValue": "development"},
+                                {"OutputKey": "MLBucketName", "OutputValue": "staging-bucket"},
+                                {"OutputKey": "SfMRepositoryUri", "OutputValue": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm"},
+                            ],
+                        }
+                    ]
+                },
+            ],
+        ):
+            stack_name, outputs = run_sfm_benchmark.find_branch_ml_stack("feature-branch")
+
+        self.assertEqual(stack_name, "SpaceportMLPipelineStagingStack")
+        self.assertEqual(outputs["MLBucketName"], "staging-bucket")
+
+    def test_raises_when_no_ml_stack_has_required_outputs(self) -> None:
+        with mock.patch.object(
+            run_sfm_benchmark,
+            "aws_json",
+            side_effect=[
+                {"Stacks": []},
+                {
+                    "Stacks": [
+                        {
+                            "StackName": "SpaceportMLPipelineStagingStack",
+                            "Outputs": [
+                                {"OutputKey": "BranchName", "OutputValue": "development"},
+                            ],
+                        }
+                    ]
+                },
+            ],
+        ):
+            with self.assertRaises(RuntimeError):
+                run_sfm_benchmark.find_branch_ml_stack("feature-branch")
+
+
 if __name__ == "__main__":
     unittest.main()
