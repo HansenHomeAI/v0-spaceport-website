@@ -1,3 +1,4 @@
+2026-04-18T05:43:05Z rerun preview after rewriting the verifier's temp-source generation with printf so Docker keeps the preprocessor check inside one RUN instruction
 2026-04-18T05:34:46Z rerun preview after changing the Ceres verifier from fragile text grep to a real preprocessor compile so config.h consistency guards stop tripping valid GPU builds
 2026-04-18T05:14:26Z rerun preview after fixing the Ceres verifier to test real CERES_NO_* defines instead of falsely requiring a CERES_USE_CUDA define that this config.h does not emit
 2026-04-18T04:52:35Z rerun preview after mirroring all cudss*.h headers into /usr/include so Ceres can compile against cudss.h and its sibling threading headers

@@ -115,19 +115,19 @@ RUN set -eux; \
     test -n "${CERES_CONFIG}"; \
     test -f "${CERES_CONFIG}"; \
     test -f "${CERES_HEADER}"; \
-    cat <<'EOF' > /tmp/check_ceres_config.cc; \
-#include <ceres/internal/config.h>
-#if defined(CERES_NO_CUDA)
-#error CERES_NO_CUDA
-#endif
-#if defined(CERES_NO_CUDSS)
-#error CERES_NO_CUDSS
-#endif
-#if defined(CERES_NO_SPARSE)
-#error CERES_NO_SPARSE
-#endif
-int main() { return 0; }
-EOF
+    printf '%s\n' \
+        '#include <ceres/internal/config.h>' \
+        '#if defined(CERES_NO_CUDA)' \
+        '#error CERES_NO_CUDA' \
+        '#endif' \
+        '#if defined(CERES_NO_CUDSS)' \
+        '#error CERES_NO_CUDSS' \
+        '#endif' \
+        '#if defined(CERES_NO_SPARSE)' \
+        '#error CERES_NO_SPARSE' \
+        '#endif' \
+        'int main() { return 0; }' \
+        > /tmp/check_ceres_config.cc; \
     c++ -I/usr/local/include -c /tmp/check_ceres_config.cc -o /tmp/check_ceres_config.o || { \
         cat "${CERES_HEADER}"; \
         exit 1; \
