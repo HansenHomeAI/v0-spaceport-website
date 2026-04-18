@@ -1,3 +1,4 @@
+2026-04-18T05:14:26Z rerun preview after fixing the Ceres verifier to test real CERES_NO_* defines instead of falsely requiring a CERES_USE_CUDA define that this config.h does not emit
 2026-04-18T04:52:35Z rerun preview after mirroring all cudss*.h headers into /usr/include so Ceres can compile against cudss.h and its sibling threading headers
 2026-04-18T02:29:17Z rerun preview after adding the missing libcudss static package so Ceres can consume cudss-static-targets.cmake without the absent libcudss_static.a failure
 2026-04-18T02:20:55Z rerun preview after forcing a real sfm container rebuild so the ECR :base parent fix is exercised instead of the workflow retagging the old branch image

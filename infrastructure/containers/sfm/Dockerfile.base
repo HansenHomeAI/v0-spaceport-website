@@ -115,8 +115,15 @@ RUN set -eux; \
     test -n "${CERES_CONFIG}"; \
     test -f "${CERES_CONFIG}"; \
     test -f "${CERES_HEADER}"; \
-    grep -q "#define CERES_USE_CUDA" "${CERES_HEADER}" || { cat "${CERES_HEADER}"; exit 1; }; \
-    if grep -q "#define CERES_NO_CUDSS" "${CERES_HEADER}"; then \
+    if grep -Eq '^[[:space:]]*#define CERES_NO_CUDA([[:space:]]|$)' "${CERES_HEADER}"; then \
+        cat "${CERES_HEADER}"; \
+        exit 1; \
+    fi; \
+    if grep -Eq '^[[:space:]]*#define CERES_NO_CUDSS([[:space:]]|$)' "${CERES_HEADER}"; then \
+        cat "${CERES_HEADER}"; \
+        exit 1; \
+    fi; \
+    if grep -Eq '^[[:space:]]*#define CERES_NO_SPARSE([[:space:]]|$)' "${CERES_HEADER}"; then \
         cat "${CERES_HEADER}"; \
         exit 1; \
     fi; \
