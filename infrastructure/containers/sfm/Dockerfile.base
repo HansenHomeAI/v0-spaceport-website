@@ -33,6 +33,7 @@ RUN apt-get update && \
         git \
         libcgal-dev \
         libcudss0-dev-cuda-12 \
+        libcudss0-static-cuda-12 \
         libatlas-base-dev \
         libboost-graph-dev \
         libboost-program-options-dev \

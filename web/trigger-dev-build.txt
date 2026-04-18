@@ -1,3 +1,4 @@
+2026-04-18T02:29:17Z rerun preview after adding the missing libcudss static package so Ceres can consume cudss-static-targets.cmake without the absent libcudss_static.a failure
 2026-04-18T02:20:55Z rerun preview after forcing a real sfm container rebuild so the ECR :base parent fix is exercised instead of the workflow retagging the old branch image
 2026-04-18T02:17:11Z rerun preview after routing Dockerfile.base rebuilds through the existing ECR :base parent to avoid Docker Hub CUDA rate limits during branch container builds
 2026-04-18T02:10:18Z rerun preview after restoring the canonical cuDSS CMake and header symlink layout so Ceres can resolve cudss_DIR without the package-relative header failure
