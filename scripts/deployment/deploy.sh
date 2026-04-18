@@ -119,6 +119,7 @@ deploy_container() {
   local branch_tag="${BRANCH_SUFFIX:-}"
   local ecr_base_image="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${repo_name}:base"
   local app_base_image="colmap/colmap:20260318.6455"
+  local base_parent_image="${SFM_CUDA_BASE_IMAGE}"
 
   log "--- Starting OPTIMIZED deployment for: ${container_name} ---"
 
@@ -138,7 +139,12 @@ deploy_container() {
   log "Pulling existing image and cache for layer reuse..."
   docker pull "${ecr_uri}:latest" || log "No existing image found, building from scratch..."
   docker pull "${build_cache_ref}" || log "No registry cache yet for ${container_name}"
-  docker pull "${ecr_base_image}" || log "No base image yet for ${container_name}"
+  if docker pull "${ecr_base_image}"; then
+    base_parent_image="${ecr_base_image}"
+    log "Using existing ECR base image as Dockerfile.base parent: ${base_parent_image}"
+  else
+    log "No base image yet for ${container_name}; Dockerfile.base parent remains ${base_parent_image}"
+  fi
   if [[ -f "$base_file" ]]; then
     content_addressed_base_tag="base-$(compute_container_base_hash "$container_dir")"
     content_addressed_base_image="${ecr_uri}:${content_addressed_base_tag}"
@@ -160,6 +166,7 @@ deploy_container() {
         --platform linux/amd64 \
         --file "${base_file}" \
         --tag "${repo_name}:${content_addressed_base_tag}" \
+        --build-arg BASE_IMAGE="${base_parent_image}" \
         --build-arg BUILDKIT_INLINE_CACHE=1 \
         --progress plain \
         --load \
