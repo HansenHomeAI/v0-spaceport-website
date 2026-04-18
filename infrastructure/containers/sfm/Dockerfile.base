@@ -54,19 +54,23 @@ RUN apt-get update && \
         pkg-config && \
     rm -rf /var/lib/apt/lists/*
 
-# The Ubuntu cuDSS package places the CMake config under
-# /usr/lib/x86_64-linux-gnu/libcudss/12/cmake/cudss. Ceres expects the
-# canonical /usr/lib/x86_64-linux-gnu/cmake/cudss entry plus top-level cuDSS
-# headers so the config's relative header lookup resolves correctly.
+# The Ubuntu cuDSS package places CMake config, headers, and shared libraries
+# under /usr/lib/x86_64-linux-gnu/libcudss/12 and /usr/include/libcudss/12.
+# Ceres expects the canonical CMake entry and top-level headers, and the final
+# runtime needs that shared-library directory registered with ldconfig.
 RUN set -eux; \
+    CUDSS_ROOT="/usr/lib/x86_64-linux-gnu/libcudss/12"; \
     mkdir -p /usr/lib/x86_64-linux-gnu/cmake; \
     if [ ! -e /usr/lib/x86_64-linux-gnu/cmake/cudss ]; then \
-        ln -s /usr/lib/x86_64-linux-gnu/libcudss/12/cmake/cudss /usr/lib/x86_64-linux-gnu/cmake/cudss; \
+        ln -s "${CUDSS_ROOT}/cmake/cudss" /usr/lib/x86_64-linux-gnu/cmake/cudss; \
     fi; \
     for header in /usr/include/libcudss/12/cudss*.h; do \
         [ -e "${header}" ] || continue; \
         ln -sf "${header}" "/usr/include/$(basename "${header}")"; \
-    done
+    done; \
+    printf '%s\n' "${CUDSS_ROOT}" > /etc/ld.so.conf.d/libcudss.conf; \
+    ldconfig; \
+    ldconfig -p | grep -q 'libcudss\.so\.0'
 
 # Ubuntu's openimageio CMake package expects the OpenCV include directory to
 # exist even when COLMAP does not link OpenCV functionality.
@@ -115,6 +119,7 @@ RUN set -eux; \
     test -n "${CERES_CONFIG}"; \
     test -f "${CERES_CONFIG}"; \
     test -f "${CERES_HEADER}"; \
+    ldconfig -p | grep -q 'libcudss\.so\.0'; \
     printf '%s\n' \
         '#include <ceres/internal/config.h>' \
         '#if defined(CERES_NO_CUDA)' \
@@ -130,6 +135,11 @@ RUN set -eux; \
         > /tmp/check_ceres_config.cc; \
     c++ -I/usr/local/include -c /tmp/check_ceres_config.cc -o /tmp/check_ceres_config.o || { \
         cat "${CERES_HEADER}"; \
+        exit 1; \
+    }; \
+    ldd /usr/local/bin/colmap > /tmp/colmap-ldd.txt; \
+    grep -q 'libcudss\.so\.0 => ' /tmp/colmap-ldd.txt || { \
+        cat /tmp/colmap-ldd.txt; \
         exit 1; \
     }; \
     if ! colmap help > /tmp/colmap-help.txt 2>&1; then \
@@ -168,6 +178,7 @@ EOF
 RUN rm -rf \
         /opt/src \
         /tmp/colmap-help.txt \
+        /tmp/colmap-ldd.txt \
         /tmp/colmap-global-mapper-help.txt \
         /tmp/colmap-mapper-help.txt \
         /root/.cache && \
