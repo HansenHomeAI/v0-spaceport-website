@@ -1,3 +1,4 @@
+2026-04-18T00:31:50Z rerun preview after adding the missing OpenEXR dependency for the SfM GPU BA image rebuild
 2026-04-17T22:51:30Z rerun preview after fixing the CUDA base image source for the SfM GPU BA rebuild
 2026-04-17T20:29:30Z rerun preview after routing sfm app builds through ECR latest base fallback
 2026-04-17T20:26:00Z rerun preview after making snapshot-only wrapper validation mode-aware

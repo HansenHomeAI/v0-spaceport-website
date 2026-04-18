@@ -8,6 +8,7 @@ import json
 import subprocess
 import tempfile
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List
 
@@ -147,7 +148,34 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--wait", action="store_true", help="Wait for job completion and print metadata")
     parser.add_argument("--poll-seconds", type=int, default=60)
+    parser.add_argument(
+        "--stop-after-seconds",
+        type=float,
+        default=0.0,
+        help="If waiting, stop the SageMaker job once runtime exceeds this threshold.",
+    )
     return parser.parse_args()
+
+
+def processing_job_elapsed_seconds(
+    status: dict,
+    *,
+    now: datetime | None = None,
+) -> float | None:
+    started_at = status.get("ProcessingStartTime")
+    if not started_at:
+        return None
+    if isinstance(started_at, str):
+        started_at = datetime.fromisoformat(started_at)
+    if started_at.tzinfo is None:
+        started_at = started_at.replace(tzinfo=timezone.utc)
+    current_time = now or datetime.now(timezone.utc)
+    if current_time.tzinfo is None:
+        current_time = current_time.replace(tzinfo=timezone.utc)
+    return max(
+        0.0,
+        (current_time.astimezone(timezone.utc) - started_at.astimezone(timezone.utc)).total_seconds(),
+    )
 
 
 def build_summary_row(
@@ -286,6 +314,8 @@ def main() -> int:
     if not args.wait:
         return 0
 
+    stop_requested = False
+    stop_reason = ""
     while True:
         status = aws_json(
             "sagemaker",
@@ -294,16 +324,52 @@ def main() -> int:
             job_name,
         )
         job_status = status["ProcessingJobStatus"]
+        elapsed_seconds = processing_job_elapsed_seconds(status)
         print(
             json.dumps(
                 {
                     "job_name": job_name,
                     "status": job_status,
+                    "elapsed_seconds": round(elapsed_seconds, 2) if elapsed_seconds is not None else None,
                     "failure_reason": status.get("FailureReason", ""),
+                    "stop_requested": stop_requested,
+                    "stop_reason": stop_reason,
                 },
                 indent=2,
             )
         )
+        if (
+            args.stop_after_seconds > 0
+            and not stop_requested
+            and job_status not in {"Completed", "Failed", "Stopped"}
+            and elapsed_seconds is not None
+            and elapsed_seconds > args.stop_after_seconds
+        ):
+            stop_reason = (
+                f"elapsed runtime {elapsed_seconds:.2f}s exceeded stop-after threshold "
+                f"{args.stop_after_seconds:.2f}s"
+            )
+            run_command(
+                [
+                    "aws",
+                    "sagemaker",
+                    "stop-processing-job",
+                    "--processing-job-name",
+                    job_name,
+                ]
+            )
+            stop_requested = True
+            print(
+                json.dumps(
+                    {
+                        "job_name": job_name,
+                        "status": job_status,
+                        "stop_requested": stop_requested,
+                        "stop_reason": stop_reason,
+                    },
+                    indent=2,
+                )
+            )
         if job_status in {"Completed", "Failed", "Stopped"}:
             break
         time.sleep(max(args.poll_seconds, 15))

@@ -41,6 +41,7 @@ RUN apt-get update && \
         libglew-dev \
         libgoogle-glog-dev \
         libmetis-dev \
+        libopenexr-dev \
         libopenimageio-dev \
         libsqlite3-dev \
         libssl-dev \
