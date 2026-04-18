@@ -1,6 +1,6 @@
 # Base image for SfM with a source-built COLMAP + Ceres stack that explicitly
 # includes CUDA and cuDSS support for bundle adjustment.
-ARG BASE_IMAGE=public.ecr.aws/nvidia/cuda:12.6.3-devel-ubuntu22.04
+ARG BASE_IMAGE=nvidia/cuda:12.6.3-devel-ubuntu22.04
 ARG CERES_GIT_REF=806af056feb22a1236baca247b4f4b6e1ea911e5
 ARG COLMAP_GIT_REF=4.0.3
 ARG CUDA_ARCHITECTURES=75;86

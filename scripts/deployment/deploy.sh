@@ -8,8 +8,8 @@ set -e
 AWS_REGION="us-west-2"
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 BRANCH_SUFFIX="${BRANCH_SUFFIX:-}"
-SFM_CUDA_BASE_IMAGE="public.ecr.aws/nvidia/cuda:12.6.3-devel-ubuntu22.04"
-SFM_CUDA_RUNTIME_IMAGE="public.ecr.aws/nvidia/cuda:12.6.3-runtime-ubuntu22.04"
+SFM_CUDA_BASE_IMAGE="nvidia/cuda:12.6.3-devel-ubuntu22.04"
+SFM_CUDA_RUNTIME_IMAGE="nvidia/cuda:12.6.3-runtime-ubuntu22.04"
 
 # Enable Docker BuildKit for better caching and performance
 export DOCKER_BUILDKIT=1
