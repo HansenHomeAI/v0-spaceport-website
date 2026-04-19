@@ -445,6 +445,12 @@ class ColmapPipeline:
             )
         profile_defaults = MATCH_PROFILES[requested_match_profile]
         self.max_features = int(os.environ.get("COLMAP_SIFT_MAX_NUM_FEATURES", "8192"))
+        matching_max_num_matches_raw = os.environ.get("COLMAP_MATCHING_MAX_NUM_MATCHES", "").strip()
+        self.matching_max_num_matches = (
+            int(matching_max_num_matches_raw) if matching_max_num_matches_raw else None
+        )
+        feature_max_image_size_raw = os.environ.get("COLMAP_FEATURE_MAX_IMAGE_SIZE", "").strip()
+        self.feature_max_image_size = feature_max_image_size_raw or None
         self.vocab_num_images = int(os.environ.get("COLMAP_VOCAB_NUM_IMAGES", "40"))
         self.vocab_num_visual_words = int(
             os.environ.get("COLMAP_VOCAB_BUILD_NUM_VISUAL_WORDS", "8192")
@@ -1636,6 +1642,11 @@ class ColmapPipeline:
                     "1" if self.use_gpu else "0",
                     f"--{family}.guided_matching",
                     "1",
+                    *(
+                        [f"--{family}.max_num_matches", str(self.matching_max_num_matches)]
+                        if self.matching_max_num_matches is not None
+                        else []
+                    ),
                     "--VocabTreeMatching.num_images",
                     str(num_images if num_images is not None else self.vocab_num_images),
                     *(
@@ -1647,7 +1658,11 @@ class ColmapPipeline:
                         else []
                     ),
                 ],
-                [f"--{family}.use_gpu", f"--{family}.guided_matching"],
+                [
+                    f"--{family}.use_gpu",
+                    f"--{family}.guided_matching",
+                    f"--{family}.max_num_matches",
+                ],
             ),
             timeout_seconds=self.matcher_timeout_seconds,
         )
@@ -1662,7 +1677,6 @@ class ColmapPipeline:
     ) -> None:
         active_database_path = database_path or self.database_path
         started = time.time()
-        max_image_size = os.environ.get("COLMAP_FEATURE_MAX_IMAGE_SIZE")
         feature_family = self.run_with_option_family_fallback(
             stage=stage,
             families=FEATURE_OPTION_FAMILIES,
@@ -1684,7 +1698,11 @@ class ColmapPipeline:
                     "--SiftExtraction.max_num_features",
                     str(self.max_features),
                     *(["--image_list_path", str(image_list_path)] if image_list_path is not None else []),
-                    *([f"--{family}.max_image_size", max_image_size] if max_image_size else []),
+                    *(
+                        [f"--{family}.max_image_size", self.feature_max_image_size]
+                        if self.feature_max_image_size
+                        else []
+                    ),
                 ],
                 [f"--{family}.use_gpu", f"--{family}.max_image_size"],
             ),
@@ -1800,6 +1818,11 @@ class ColmapPipeline:
                     "1" if self.use_gpu else "0",
                     f"--{family}.guided_matching",
                     "1",
+                    *(
+                        [f"--{family}.max_num_matches", str(self.matching_max_num_matches)]
+                        if self.matching_max_num_matches is not None
+                        else []
+                    ),
                     "--SpatialMatching.ignore_z",
                     "0",
                     "--SpatialMatching.max_num_neighbors",
@@ -1807,7 +1830,11 @@ class ColmapPipeline:
                     "--SpatialMatching.max_distance",
                     str(max_distance_m if max_distance_m is not None else self.spatial_distance_m),
                 ],
-                [f"--{family}.use_gpu", f"--{family}.guided_matching"],
+                [
+                    f"--{family}.use_gpu",
+                    f"--{family}.guided_matching",
+                    f"--{family}.max_num_matches",
+                ],
             ),
             timeout_seconds=self.matcher_timeout_seconds,
         )
@@ -1829,13 +1856,21 @@ class ColmapPipeline:
         active_database_path = database_path or self.database_path
         started = time.time()
         pairs_before = self.count_verified_pairs(active_database_path)
-        try:
-            stream_command(
+        matching_family = self.run_with_option_family_fallback(
+            stage=stage,
+            families=MATCHING_OPTION_FAMILIES,
+            preferred_family=self.matching_option_family,
+            build_command=lambda family: (
                 [
                     "colmap",
                     "sequential_matcher",
                     "--database_path",
                     str(active_database_path),
+                    *(
+                        [f"--{family}.max_num_matches", str(self.matching_max_num_matches)]
+                        if self.matching_max_num_matches is not None
+                        else []
+                    ),
                     "--SequentialMatching.overlap",
                     str(overlap if overlap is not None else self.sequential_overlap),
                     "--SequentialMatching.quadratic_overlap",
@@ -1843,13 +1878,11 @@ class ColmapPipeline:
                     "--SequentialMatching.loop_detection",
                     "0",
                 ],
-                stage=stage,
-                timeout_seconds=self.resolve_timeout_seconds(self.matcher_timeout_seconds),
-                heartbeat_seconds=self.command_heartbeat_seconds,
-            )
-        except RuntimeError as error:
-            self.handle_stage_runtime_error(stage, error)
-            raise
+                [f"--{family}.max_num_matches"],
+            ),
+            timeout_seconds=self.matcher_timeout_seconds,
+        )
+        self.matching_option_family = matching_family
         pairs_after = self.count_verified_pairs(active_database_path)
         self.timings[f"{stage}_seconds"] = round(time.time() - started, 2)
         self.record_matcher_delta(label, pairs_after - pairs_before)
@@ -1880,8 +1913,17 @@ class ColmapPipeline:
                     "1" if self.use_gpu else "0",
                     f"--{family}.guided_matching",
                     "1",
+                    *(
+                        [f"--{family}.max_num_matches", str(self.matching_max_num_matches)]
+                        if self.matching_max_num_matches is not None
+                        else []
+                    ),
                 ],
-                [f"--{family}.use_gpu", f"--{family}.guided_matching"],
+                [
+                    f"--{family}.use_gpu",
+                    f"--{family}.guided_matching",
+                    f"--{family}.max_num_matches",
+                ],
             ),
             timeout_seconds=self.matcher_timeout_seconds,
         )
@@ -1943,8 +1985,17 @@ class ColmapPipeline:
                     "1" if self.use_gpu else "0",
                     f"--{family}.guided_matching",
                     "1",
+                    *(
+                        [f"--{family}.max_num_matches", str(self.matching_max_num_matches)]
+                        if self.matching_max_num_matches is not None
+                        else []
+                    ),
                 ],
-                [f"--{family}.use_gpu", f"--{family}.guided_matching"],
+                [
+                    f"--{family}.use_gpu",
+                    f"--{family}.guided_matching",
+                    f"--{family}.max_num_matches",
+                ],
             ),
             timeout_seconds=self.matcher_timeout_seconds,
         )
@@ -4059,6 +4110,8 @@ class ColmapPipeline:
             ),
             "vocab_tree_source": self.vocab_tree_source,
             "sift_max_num_features": self.max_features,
+            "matching_max_num_matches": self.matching_max_num_matches,
+            "feature_max_image_size": self.feature_max_image_size,
             "spatial_matcher_neighbors": self.spatial_neighbors,
             "spatial_matcher_distance_m": self.spatial_distance_m,
             "vocab_tree_num_images": self.vocab_num_images,
