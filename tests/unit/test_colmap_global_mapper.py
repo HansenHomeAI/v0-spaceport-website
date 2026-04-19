@@ -24,6 +24,8 @@ class ColmapGlobalMapperTests(unittest.TestCase):
 
             self.assertEqual(pipeline.monolithic_mapper_mode, "incremental")
             self.assertFalse(pipeline.global_mapper_use_view_graph_calibrator)
+            self.assertIsNone(pipeline.matching_max_num_matches)
+            self.assertIsNone(pipeline.feature_max_image_size)
 
     def test_global_mapper_mode_enables_view_graph_calibrator_by_default(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
@@ -259,6 +261,54 @@ class ColmapGlobalMapperTests(unittest.TestCase):
             self.assertEqual(metadata["global_mapper_seconds"], 12.5)
             self.assertTrue(metadata["view_graph_calibrator_ran"])
             self.assertEqual(metadata["view_graph_calibrator_seconds"], 2.25)
+
+    def test_matchers_include_matching_max_num_matches_when_configured(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {"COLMAP_MATCHING_MAX_NUM_MATCHES": "2048"},
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+
+            with mock.patch.object(run_colmap_sfm, "stream_command") as stream_command_mock, mock.patch.object(
+                pipeline,
+                "count_verified_pairs",
+                side_effect=[0, 12, 12, 20],
+            ):
+                pipeline.run_spatial_matcher()
+                pipeline.run_sequential_matcher()
+
+            spatial_command = stream_command_mock.call_args_list[0].args[0]
+            sequential_command = stream_command_mock.call_args_list[1].args[0]
+            self.assertIn("--FeatureMatching.max_num_matches", spatial_command)
+            self.assertIn("2048", spatial_command)
+            self.assertIn("--FeatureMatching.max_num_matches", sequential_command)
+            self.assertIn("2048", sequential_command)
+
+    def test_build_metadata_reports_matching_and_feature_size_fields(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {
+                "COLMAP_MATCHING_MAX_NUM_MATCHES": "2048",
+                "COLMAP_FEATURE_MAX_IMAGE_SIZE": "3200",
+            },
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            model = run_colmap_sfm.ModelSummary(
+                stage="mapper_spatial_only",
+                text_dir=root,
+                cameras_registered=1,
+                images_registered=5,
+                points_3d=250,
+            )
+
+            metadata = pipeline.build_metadata(best_model=model, quality_check_passed=True)
+
+            self.assertEqual(metadata["matching_max_num_matches"], 2048)
+            self.assertEqual(metadata["feature_max_image_size"], "3200")
 
     def test_gpu_bundle_adjustment_preflight_rejects_missing_build_support(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
