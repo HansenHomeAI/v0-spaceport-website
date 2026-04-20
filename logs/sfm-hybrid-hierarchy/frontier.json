@@ -1,23 +1,41 @@
 {
-  "updated_at": "2026-04-20T15:22:30Z",
-  "current_phase": "subset_control_launch",
-  "active_candidate": "footprint_graph_v1 + global leaves + hierarchical merge",
+  "updated_at": "2026-04-20T16:34:00Z",
+  "current_phase": "connected_subset_control_preflight",
+  "active_candidate": "chunked_incremental_control_chunks_8_13_connected",
   "candidates": [
     {
       "name": "chunked_incremental_control_geometry_mix",
       "scope": "subset",
+      "status": "stopped",
+      "quality_metrics": {
+        "images_registered": 0,
+        "dataset_image_count": 352,
+        "final_points_per_registered_image": 0.0,
+        "merged_component_count": 1
+      },
+      "mapper_burden_metrics": {
+        "processing_time_seconds": 2914.97,
+        "chunk_mapper_seconds": 1659.31,
+        "chunk_merge_seconds": 52.58,
+        "verified_pairs_total": 6270
+      },
+      "decision": "invalid cheap gate for chunk-merge benchmarking because geometry_mix was built from two disjoint source chunks and model_merger retained only 176/352 registered images"
+    },
+    {
+      "name": "chunked_incremental_control_chunks_8_13_connected",
+      "scope": "subset",
       "status": "ready_to_launch",
       "quality_metrics": null,
       "mapper_burden_metrics": null,
-      "decision": "launch first to establish exact subset control on the published branch image"
+      "decision": "next bounded proof candidate because chunk indexes 8 and 13 form the smallest connected pair that still tracks the original full-run planner topology"
     },
     {
-      "name": "chunked_global_hierarchical_geometry_mix",
+      "name": "chunked_global_hierarchical_chunks_8_13_connected",
       "scope": "subset",
       "status": "queued_after_control",
       "quality_metrics": null,
       "mapper_burden_metrics": null,
-      "decision": "launch immediately after the control; promote only if subset quality and speed gates clear"
+      "decision": "launch only after the connected incremental control produces a valid merged model"
     },
     {
       "name": "chunked_global_hierarchical_ladder_2157_exact",

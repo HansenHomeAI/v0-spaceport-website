@@ -1,5 +1,5 @@
 reason: implementing prior-aware hybrid hierarchical SfM with GLOMAP chunk leaves and a COLMAP merge tree, then validating it through the bounded subset-first benchmark loop
-last_step: proved the hybrid runtime locally, pushed the workflow fix, and got the required branch gates green on head ea94ee257f057e67a87b37db08a329764c863ff2 (Trigger ML Container Build, CDK Deploy, and Cloudflare Pages)
-next_unblocked_step: launch the exact geometry_mix chunked incremental control benchmark on the published branch image, then launch the exact geometry_mix hybrid benchmark with global leaves plus hierarchical merge and compare both against the promotion gates before spending on a full 2157-image rung
+last_step: ran the exact geometry_mix chunked-incremental control benchmark as hybridctl-1776699104, proved the branch image/runtime path works, but found the planned cheap gate is invalid for chunk-merge benchmarking because the subset is a union of two disjoint source chunks; each leaf chunk reconstructed 176/176 images, then model_merger failed semantically and retained only 176/352 registered images, and I patched local code to (1) support manifest-driven connected chunk-index subset builds and (2) fail fast when model_merger noops instead of silently proceeding into BA
+next_unblocked_step: commit and push the connected-subset + merge-validation changes, monitor CDK + Pages + branch SfM container build to green, then build a connected exact subset from the full manifest (starting with chunk indexes 8,13) and rerun the chunked incremental control on that connected subset before launching the hybrid global-leaf hierarchical variant
 owner_action_needed: none
-updated: 2026-04-20T15:22:30Z
+updated: 2026-04-20T16:34:00Z

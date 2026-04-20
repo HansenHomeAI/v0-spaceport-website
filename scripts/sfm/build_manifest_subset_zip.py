@@ -165,6 +165,58 @@ def resolve_subset_basenames(manifest: Any, subset_key: str) -> list[str]:
     return basenames
 
 
+def parse_chunk_indexes(value: str) -> list[int]:
+    indexes: list[int] = []
+    for segment in value.split(","):
+        cleaned = segment.strip()
+        if not cleaned:
+            continue
+        try:
+            indexes.append(int(cleaned))
+        except ValueError as exc:
+            raise ValueError(f"Chunk index {cleaned!r} is not an integer") from exc
+    if not indexes:
+        raise ValueError("chunk_indexes must contain at least one integer index")
+    return indexes
+
+
+def resolve_chunk_basenames(manifest: Any, chunk_indexes: Sequence[int]) -> list[str]:
+    chunks = manifest.get("chunks")
+    if not isinstance(chunks, list):
+        raise ValueError("Manifest must contain a top-level chunks list to resolve chunk indexes")
+    chunks_by_index = {}
+    for chunk in chunks:
+        if not isinstance(chunk, dict) or "index" not in chunk:
+            continue
+        chunks_by_index[int(chunk["index"])] = chunk
+
+    basenames: list[str] = []
+    seen: set[str] = set()
+    missing_indexes = [chunk_index for chunk_index in chunk_indexes if chunk_index not in chunks_by_index]
+    if missing_indexes:
+        raise KeyError(f"Manifest is missing chunk indexes: {missing_indexes}")
+
+    for chunk_index in chunk_indexes:
+        chunk = chunks_by_index[chunk_index]
+        image_entries = chunk.get("image_names")
+        if not isinstance(image_entries, list):
+            raise ValueError(f"Manifest chunk {chunk_index} does not contain an image_names list")
+        for entry in image_entries:
+            basename = extract_image_basename(entry)
+            if not basename:
+                raise ValueError(
+                    f"Could not resolve an image basename from chunk {chunk_index} entry: {entry!r}"
+                )
+            if basename in seen:
+                continue
+            basenames.append(basename)
+            seen.add(basename)
+
+    if not basenames:
+        raise ValueError(f"Manifest chunk indexes {list(chunk_indexes)} did not contain any image basenames")
+    return basenames
+
+
 def build_member_lookup(archive: zipfile.ZipFile) -> dict[str, zipfile.ZipInfo]:
     members: dict[str, zipfile.ZipInfo] = {}
     for member in archive.infolist():
@@ -210,10 +262,14 @@ def parse_args() -> argparse.Namespace:
         required=True,
         help="Local path, file:// URI, s3:// URI, or http(s):// URL for the manifest JSON",
     )
-    parser.add_argument(
+    selection_group = parser.add_mutually_exclusive_group(required=True)
+    selection_group.add_argument(
         "--subset-key",
-        required=True,
         help="Manifest key or dotted path resolving to the image subset, for example probe_subsets.geometry_mix",
+    )
+    selection_group.add_argument(
+        "--chunk-indexes",
+        help="Comma-separated manifest chunk indexes whose image_names should be unioned in order, for example 8,13",
     )
     parser.add_argument("--output", required=True, help="Local path, file:// URI, or s3:// URI for the subset ZIP")
     return parser.parse_args()
@@ -226,20 +282,26 @@ def main() -> int:
         input_zip = materialize_input(args.input, workspace, default_name="input.zip")
         manifest_path = materialize_input(args.manifest_uri, workspace, default_name="manifest.json")
         manifest = load_json(manifest_path)
-        subset_basenames = resolve_subset_basenames(manifest, args.subset_key)
+        if args.subset_key:
+            selection_descriptor = {"subset_key": args.subset_key}
+            subset_basenames = resolve_subset_basenames(manifest, args.subset_key)
+        else:
+            chunk_indexes = parse_chunk_indexes(args.chunk_indexes)
+            selection_descriptor = {"chunk_indexes": chunk_indexes}
+            subset_basenames = resolve_chunk_basenames(manifest, chunk_indexes)
         local_output = workspace / "subset.zip"
         written_names = create_subset_zip(input_zip, subset_basenames, local_output)
         published_output = publish_output(local_output, args.output)
         summary = {
             "input": args.input,
             "manifest_uri": args.manifest_uri,
-            "subset_key": args.subset_key,
             "requested_image_count": len(subset_basenames),
             "selected_image_count": len(written_names),
             "first_image": written_names[0] if written_names else "",
             "last_image": written_names[-1] if written_names else "",
             "output": str(published_output),
         }
+        summary.update(selection_descriptor)
         print(json.dumps(summary, indent=2))
     return 0
 

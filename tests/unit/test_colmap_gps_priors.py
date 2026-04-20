@@ -1434,9 +1434,26 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 "run_bundle_adjuster",
                 return_value=merged_model,
             ):
+                def fake_stream(command, *, stage, timeout_seconds, heartbeat_seconds):
+                    if command[1] != "model_converter":
+                        return
+                    output_path = Path(command[command.index("--output_path") + 1])
+                    output_path.mkdir(parents=True, exist_ok=True)
+                    for name in ("images.txt", "cameras.txt", "points3D.txt"):
+                        source = merged_text_dir / name
+                        if source.exists():
+                            (output_path / name).write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
+
+                stream_command_mock.side_effect = fake_stream
                 result = pipeline.merge_chunk_models(chunk_models)
 
-            merger_command = stream_command_mock.call_args.args[0]
+            merger_commands = [
+                call.args[0]
+                for call in stream_command_mock.call_args_list
+                if len(call.args[0]) > 1 and call.args[0][1] == "model_merger"
+            ]
+            self.assertEqual(len(merger_commands), 1)
+            merger_command = merger_commands[0]
             self.assertIn("model_merger", merger_command)
             output_path = Path(merger_command[merger_command.index("--output_path") + 1])
             self.assertTrue(output_path.is_dir())
@@ -1547,13 +1564,33 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 "run_bundle_adjuster",
                 side_effect=[intermediate_model, final_model],
             ):
+                converter_sources = [mid_text_dir, final_text_dir]
+
+                def fake_stream(command, *, stage, timeout_seconds, heartbeat_seconds):
+                    if command[1] != "model_converter":
+                        return
+                    output_path = Path(command[command.index("--output_path") + 1])
+                    output_path.mkdir(parents=True, exist_ok=True)
+                    source_dir = converter_sources.pop(0)
+                    for name in ("images.txt", "cameras.txt", "points3D.txt"):
+                        source = source_dir / name
+                        if source.exists():
+                            (output_path / name).write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
+
+                stream_command_mock.side_effect = fake_stream
                 result = pipeline.merge_chunk_models(
                     chunk_models,
                     chunk_components=[[0], [1], [2]],
                 )
 
-            first_merge_command = stream_command_mock.call_args_list[0].args[0]
-            second_merge_command = stream_command_mock.call_args_list[1].args[0]
+            merger_commands = [
+                call.args[0]
+                for call in stream_command_mock.call_args_list
+                if len(call.args[0]) > 1 and call.args[0][1] == "model_merger"
+            ]
+            self.assertEqual(len(merger_commands), 2)
+            first_merge_command = merger_commands[0]
+            second_merge_command = merger_commands[1]
             self.assertEqual(first_merge_command[first_merge_command.index("--input_path1") + 1], str(first_model_dir))
             self.assertEqual(first_merge_command[first_merge_command.index("--input_path2") + 1], str(second_model_dir))
             self.assertEqual(second_merge_command[second_merge_command.index("--input_path2") + 1], str(third_model_dir))
@@ -1563,6 +1600,61 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(len(pipeline.merge_tree_level_summaries), 2)
             self.assertEqual(pipeline.chunk_merge_proof["chunk_merge_strategy"], "hierarchical")
             self.assertEqual(pipeline.chunk_merge_proof["final_merged_registered_images"], 4)
+
+    def test_merge_chunk_models_raises_when_model_merger_noops(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            first_model_dir = root / "chunk_00" / "sparse_initial" / "0"
+            second_model_dir = root / "chunk_01" / "sparse_initial" / "0"
+            first_text_dir = root / "text_00"
+            second_text_dir = root / "text_01"
+            noop_text_dir = root / "noop_text"
+            for path in (first_model_dir, second_model_dir, first_text_dir, second_text_dir, noop_text_dir):
+                path.mkdir(parents=True, exist_ok=True)
+            (first_text_dir / "images.txt").write_text(
+                "1 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n2 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (second_text_dir / "images.txt").write_text(
+                "3 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n4 1 0 0 0 0 0 0 1 IMG_04.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (noop_text_dir / "images.txt").write_text(
+                "5 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n6 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (noop_text_dir / "cameras.txt").write_text("1 SIMPLE_RADIAL 1 1 1 0\n", encoding="utf-8")
+            (noop_text_dir / "points3D.txt").write_text("1 0 0 0 1 1 1 1 1 1\n", encoding="utf-8")
+            chunk_models = [
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_00_mapper_initial",
+                    text_dir=first_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=100,
+                    binary_dir=first_model_dir,
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_01_mapper_initial",
+                    text_dir=second_text_dir,
+                    cameras_registered=1,
+                    images_registered=2,
+                    points_3d=100,
+                    binary_dir=second_model_dir,
+                ),
+            ]
+
+            def fake_stream(command, *, stage, timeout_seconds, heartbeat_seconds):
+                if command[1] == "model_converter":
+                    output_path = Path(command[command.index("--output_path") + 1])
+                    output_path.mkdir(parents=True, exist_ok=True)
+                    for name in ("images.txt", "cameras.txt", "points3D.txt"):
+                        (output_path / name).write_text((noop_text_dir / name).read_text(encoding="utf-8"), encoding="utf-8")
+
+            with mock.patch.object(run_colmap_sfm, "stream_command", side_effect=fake_stream):
+                with self.assertRaisesRegex(RuntimeError, "did not increase registered images"):
+                    pipeline.merge_chunk_models(chunk_models)
 
     def test_run_spatial_heading_chunked_path_accepts_merged_ratio_at_gps_threshold(self):
         with tempfile.TemporaryDirectory() as tmp:

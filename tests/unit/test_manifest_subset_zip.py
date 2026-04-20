@@ -52,6 +52,28 @@ class ManifestSubsetZipTests(unittest.TestCase):
 
         self.assertEqual(basenames, ["IMG_004.jpg", "IMG_005.jpg"])
 
+    def test_resolve_chunk_basenames_unions_chunk_images_in_order_without_duplicates(self):
+        manifest = {
+            "chunks": [
+                {
+                    "index": 8,
+                    "image_names": ["captures/IMG_100.jpg", "captures/IMG_101.jpg"],
+                },
+                {
+                    "index": 13,
+                    "image_names": ["captures/IMG_101.jpg", "captures/IMG_102.jpg"],
+                },
+            ]
+        }
+
+        basenames = subset_zip.resolve_chunk_basenames(manifest, [8, 13])
+
+        self.assertEqual(basenames, ["IMG_100.jpg", "IMG_101.jpg", "IMG_102.jpg"])
+
+    def test_parse_chunk_indexes_rejects_empty_values(self):
+        with self.assertRaisesRegex(ValueError, "must contain at least one integer index"):
+            subset_zip.parse_chunk_indexes(" , ")
+
     def test_create_subset_zip_writes_requested_images_in_order(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)

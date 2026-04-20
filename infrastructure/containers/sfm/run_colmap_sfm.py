@@ -185,6 +185,17 @@ def load_registered_image_names(images_txt: Path) -> Set[str]:
     return registered_names
 
 
+def summarize_text_model(text_dir: Path, *, stage: str, binary_dir: Path) -> ModelSummary:
+    return ModelSummary(
+        stage=stage,
+        text_dir=text_dir,
+        cameras_registered=count_text_rows(text_dir / "cameras.txt"),
+        images_registered=count_registered_images(text_dir / "images.txt"),
+        points_3d=count_text_rows(text_dir / "points3D.txt"),
+        binary_dir=binary_dir,
+    )
+
+
 def stream_command(
     command: List[str],
     *,
@@ -3819,18 +3830,20 @@ class ColmapPipeline:
     ) -> MergeComponent:
         if len(components) == 1:
             return components[0]
-        merged_path = components[0].model.binary_dir
+        merged_component = components[0]
         for merge_index, next_component in enumerate(components[1:], start=1):
             stage = f"chunk_model_merger_l{level_index:02d}_g{group_index:02d}_m{merge_index:02d}"
             output_path = self.work_dir / stage
             output_path.mkdir(parents=True, exist_ok=True)
+            left_registered_names = load_registered_image_names(merged_component.model.text_dir / "images.txt")
+            right_registered_names = load_registered_image_names(next_component.model.text_dir / "images.txt")
             try:
                 stream_command(
                     [
                         "colmap",
                         "model_merger",
                         "--input_path1",
-                        str(merged_path),
+                        str(merged_component.model.binary_dir),
                         "--input_path2",
                         str(next_component.model.binary_dir),
                         "--output_path",
@@ -3846,9 +3859,47 @@ class ColmapPipeline:
                 self.merged_component_count = len(components)
                 self.handle_stage_runtime_error(stage, exc)
                 raise RuntimeError(f"Failed to merge chunk model group {group_index}: {exc}") from exc
-            merged_path = output_path
+            validation_stage = f"{stage}_model_converter"
+            validation_text_root = self.work_dir / "text_models" / validation_stage
+            validation_text_root.mkdir(parents=True, exist_ok=True)
+            stream_command(
+                [
+                    "colmap",
+                    "model_converter",
+                    "--input_path",
+                    str(output_path),
+                    "--output_path",
+                    str(validation_text_root),
+                    "--output_type",
+                    "TXT",
+                ],
+                stage=validation_stage,
+                timeout_seconds=self.resolve_timeout_seconds(self.matcher_timeout_seconds),
+                heartbeat_seconds=self.command_heartbeat_seconds,
+            )
+            merged_component = MergeComponent(
+                model=summarize_text_model(
+                    validation_text_root,
+                    stage=validation_stage,
+                    binary_dir=output_path,
+                ),
+                chunk_indexes=sorted(
+                    set(merged_component.chunk_indexes).union(next_component.chunk_indexes)
+                ),
+            )
+            merged_registered_names = load_registered_image_names(merged_component.model.text_dir / "images.txt")
+            max_input_registered = max(len(left_registered_names), len(right_registered_names))
+            union_registered_count = len(left_registered_names.union(right_registered_names))
+            if (
+                union_registered_count > max_input_registered
+                and len(merged_registered_names) <= max_input_registered
+            ):
+                raise RuntimeError(
+                    f"Failed to merge chunk model group {group_index}: {stage} did not increase registered "
+                    f"images ({len(merged_registered_names)} <= {max_input_registered}); merge likely failed"
+                )
         adjusted_model = self.run_bundle_adjuster(
-            input_path=merged_path,
+            input_path=merged_component.model.binary_dir,
             stage=f"chunk_bundle_adjuster_l{level_index:02d}_g{group_index:02d}",
         )
         return MergeComponent(
