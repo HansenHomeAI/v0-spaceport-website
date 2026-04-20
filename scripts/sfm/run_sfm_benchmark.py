@@ -13,6 +13,7 @@ from typing import Dict, List
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+SHARED_ML_STACK_NAME = "SpaceportMLPipelineStagingStack"
 
 
 def run_command(command: List[str], *, capture_output: bool = False) -> subprocess.CompletedProcess[str]:
@@ -64,7 +65,17 @@ def find_branch_ml_stack(branch_name: str) -> tuple[str, Dict[str, str]]:
         if "MLBucketName" not in outputs or "SfMRepositoryUri" not in outputs:
             continue
         return stack["StackName"], outputs
-    raise RuntimeError(f"Could not find an ML stack deployment for branch {branch_name}")
+
+    fallback = aws_json("cloudformation", "describe-stacks", "--stack-name", SHARED_ML_STACK_NAME)
+    stacks = fallback.get("Stacks", [])
+    if not stacks:
+        raise RuntimeError(f"Could not find an ML stack deployment for branch {branch_name}")
+    outputs = stack_outputs(stacks[0])
+    if "MLBucketName" not in outputs or "SfMRepositoryUri" not in outputs:
+        raise RuntimeError(
+            f"Shared ML fallback stack {SHARED_ML_STACK_NAME} is missing required outputs"
+        )
+    return SHARED_ML_STACK_NAME, outputs
 
 
 def get_sagemaker_role_arn(stack_name: str) -> str:

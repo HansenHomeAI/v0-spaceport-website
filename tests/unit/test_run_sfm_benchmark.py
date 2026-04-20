@@ -77,5 +77,65 @@ class BuildEnvironmentTests(unittest.TestCase):
         self.assertNotIn("COLMAP_CHUNK_LEAF_MAPPER_MODE", environment)
 
 
+class FindBranchMlStackTests(unittest.TestCase):
+    def test_find_branch_ml_stack_returns_branch_specific_stack_when_present(self) -> None:
+        branch_name = "agent-branch"
+        with mock.patch.object(
+            run_sfm_benchmark,
+            "aws_json",
+            return_value={
+                "Stacks": [
+                    {
+                        "StackName": "SpaceportMLPipeline-agent-branch",
+                        "Outputs": [
+                            {"OutputKey": "BranchName", "OutputValue": branch_name},
+                            {"OutputKey": "MLBucketName", "OutputValue": "branch-bucket"},
+                            {"OutputKey": "SfMRepositoryUri", "OutputValue": "repo-uri"},
+                        ],
+                    }
+                ]
+            },
+        ) as aws_json:
+            stack_name, outputs = run_sfm_benchmark.find_branch_ml_stack(branch_name)
+
+        self.assertEqual(stack_name, "SpaceportMLPipeline-agent-branch")
+        self.assertEqual(outputs["MLBucketName"], "branch-bucket")
+        aws_json.assert_called_once_with("cloudformation", "describe-stacks")
+
+    def test_find_branch_ml_stack_falls_back_to_shared_staging_stack(self) -> None:
+        branch_name = "agent-branch"
+        with mock.patch.object(
+            run_sfm_benchmark,
+            "aws_json",
+            side_effect=[
+                {"Stacks": []},
+                {
+                    "Stacks": [
+                        {
+                            "StackName": run_sfm_benchmark.SHARED_ML_STACK_NAME,
+                            "Outputs": [
+                                {"OutputKey": "BranchName", "OutputValue": "development"},
+                                {"OutputKey": "MLBucketName", "OutputValue": "shared-bucket"},
+                                {"OutputKey": "SfMRepositoryUri", "OutputValue": "shared-repo"},
+                            ],
+                        }
+                    ]
+                },
+            ],
+        ) as aws_json:
+            stack_name, outputs = run_sfm_benchmark.find_branch_ml_stack(branch_name)
+
+        self.assertEqual(stack_name, run_sfm_benchmark.SHARED_ML_STACK_NAME)
+        self.assertEqual(outputs["MLBucketName"], "shared-bucket")
+        self.assertEqual(aws_json.call_count, 2)
+        aws_json.assert_any_call("cloudformation", "describe-stacks")
+        aws_json.assert_any_call(
+            "cloudformation",
+            "describe-stacks",
+            "--stack-name",
+            run_sfm_benchmark.SHARED_ML_STACK_NAME,
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
