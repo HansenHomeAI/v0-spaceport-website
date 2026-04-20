@@ -1,0 +1,31 @@
+{
+  "updated_at": "2026-04-20T15:08:53Z",
+  "current_phase": "pre-push-validation",
+  "active_candidate": "footprint_graph_v1 + global leaves + hierarchical merge",
+  "candidates": [
+    {
+      "name": "chunked_incremental_control_geometry_mix",
+      "scope": "subset",
+      "status": "pending",
+      "quality_metrics": null,
+      "mapper_burden_metrics": null,
+      "decision": "baseline control not yet run"
+    },
+    {
+      "name": "chunked_global_hierarchical_geometry_mix",
+      "scope": "subset",
+      "status": "pending",
+      "quality_metrics": null,
+      "mapper_burden_metrics": null,
+      "decision": "promote only if subset quality and speed gates clear"
+    },
+    {
+      "name": "chunked_global_hierarchical_ladder_2157_exact",
+      "scope": "full",
+      "status": "blocked_on_subset",
+      "quality_metrics": null,
+      "mapper_burden_metrics": null,
+      "decision": "do not launch until hybrid subset is proven"
+    }
+  ]
+}

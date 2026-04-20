@@ -1,5 +1,5 @@
-reason: executing phase 2 branch sync by merging origin/development into codex/agent-72759001-sync-development-into-ml and validating the integrated branch
-last_step: completed the phase 2 baseline checks, merged origin/development into the phase 2 branch, and started resolving the expected workflow and web content conflicts
-next_unblocked_step: finish conflict resolution, audit the auto-merged infra files for branch-aware naming and R2/payment settings, push the branch, and monitor Pages/CDK/container checks to green
+reason: implementing prior-aware hybrid hierarchical SfM with GLOMAP chunk leaves and a COLMAP merge tree, then validating it through the bounded subset-first benchmark loop
+last_step: transplanted the proven monolithic GLOMAP plumbing, implemented chunk leaf mapper dispatch plus hierarchical merge support, added attributable benchmark CLI flags, and passed the focused local unit suite for the new hybrid control path
+next_unblocked_step: push the hybrid runtime/test changes, monitor Trigger ML Container Build plus CDK Deploy plus Cloudflare Pages to green, then launch the exact geometry_mix control and hybrid subset benchmarks to decide whether the full 2157-image exact rung is justified
 owner_action_needed: none
-updated: 2026-03-06T02:16:00Z
+updated: 2026-04-20T15:08:53Z

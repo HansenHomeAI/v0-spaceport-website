@@ -101,6 +101,28 @@ def parse_env(values: List[str]) -> Dict[str, str]:
     return env
 
 
+def build_environment(args: argparse.Namespace) -> Dict[str, str]:
+    environment = {
+        "AWS_DEFAULT_REGION": "us-west-2",
+        "PYTHONUNBUFFERED": "1",
+        "SFM_BENCHMARK_SUBSET_STRATEGY": args.subset_strategy,
+        **parse_env(args.env),
+    }
+    if args.mode == "chunked":
+        environment.setdefault("COLMAP_ENABLE_SPATIAL_CHUNKING", "1")
+    else:
+        environment.setdefault("COLMAP_ENABLE_SPATIAL_CHUNKING", "0")
+    if args.chunk_leaf_mapper:
+        environment["COLMAP_CHUNK_LEAF_MAPPER_MODE"] = args.chunk_leaf_mapper
+    if args.chunk_recovery_mapper:
+        environment["COLMAP_CHUNK_RECOVERY_MAPPER_MODE"] = args.chunk_recovery_mapper
+    if args.chunk_merge_strategy:
+        environment["COLMAP_CHUNK_MERGE_STRATEGY"] = args.chunk_merge_strategy
+    if args.chunk_hierarchical_merge_fanin is not None:
+        environment["COLMAP_CHUNK_HIERARCHICAL_MERGE_FANIN"] = str(args.chunk_hierarchical_merge_fanin)
+    return environment
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--branch", default="", help="Git branch to benchmark. Defaults to current branch.")
@@ -145,6 +167,30 @@ def parse_args() -> argparse.Namespace:
         default="",
         help="Optional local path for the compact benchmark summary JSON.",
     )
+    parser.add_argument(
+        "--chunk-leaf-mapper",
+        choices=["incremental", "global"],
+        default="",
+        help="Chunk leaf mapper backend override for chunked runs.",
+    )
+    parser.add_argument(
+        "--chunk-recovery-mapper",
+        choices=["inherit", "incremental", "global"],
+        default="",
+        help="Chunk recovery mapper backend override for chunked runs.",
+    )
+    parser.add_argument(
+        "--chunk-merge-strategy",
+        choices=["serial", "hierarchical"],
+        default="",
+        help="Chunk merge strategy override for chunked runs.",
+    )
+    parser.add_argument(
+        "--chunk-hierarchical-merge-fanin",
+        type=int,
+        default=None,
+        help="Hierarchical chunk merge fan-in override.",
+    )
     parser.add_argument("--wait", action="store_true", help="Wait for job completion and print metadata")
     parser.add_argument("--poll-seconds", type=int, default=60)
     return parser.parse_args()
@@ -171,6 +217,10 @@ def build_summary_row(
         "final_matcher_mode": metadata.get("final_matcher_mode"),
         "fallback_reason": metadata.get("fallback_reason"),
         "merged_component_count": metadata.get("merged_component_count"),
+        "chunk_leaf_mapper_mode": metadata.get("chunk_leaf_mapper_mode"),
+        "chunk_recovery_mapper_mode": metadata.get("chunk_recovery_mapper_mode"),
+        "chunk_merge_strategy": metadata.get("chunk_merge_strategy"),
+        "merge_tree_depth": metadata.get("merge_tree_depth"),
         "chunk_count": metadata.get("chunk_count"),
         "chunk_sizes": metadata.get("chunk_sizes"),
     }
@@ -191,16 +241,7 @@ def main() -> int:
         f"s3://{outputs['MLBucketName']}/manual-validations/{job_name}/colmap"
     )
 
-    environment = {
-        "AWS_DEFAULT_REGION": "us-west-2",
-        "PYTHONUNBUFFERED": "1",
-        "SFM_BENCHMARK_SUBSET_STRATEGY": args.subset_strategy,
-        **parse_env(args.env),
-    }
-    if args.mode == "chunked":
-        environment.setdefault("COLMAP_ENABLE_SPATIAL_CHUNKING", "1")
-    else:
-        environment.setdefault("COLMAP_ENABLE_SPATIAL_CHUNKING", "0")
+    environment = build_environment(args)
 
     payload = {
         "ProcessingJobName": job_name,

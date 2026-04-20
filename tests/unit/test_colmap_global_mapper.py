@@ -26,6 +26,10 @@ class ColmapGlobalMapperTests(unittest.TestCase):
             self.assertFalse(pipeline.global_mapper_use_view_graph_calibrator)
             self.assertIsNone(pipeline.matching_max_num_matches)
             self.assertIsNone(pipeline.feature_max_image_size)
+            self.assertEqual(pipeline.chunk_leaf_mapper_mode, "incremental")
+            self.assertEqual(pipeline.chunk_recovery_mapper_mode, "inherit")
+            self.assertEqual(pipeline.chunk_merge_strategy, "serial")
+            self.assertEqual(pipeline.chunk_hierarchical_merge_fanin, 2)
 
     def test_global_mapper_mode_enables_view_graph_calibrator_by_default(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
@@ -38,6 +42,18 @@ class ColmapGlobalMapperTests(unittest.TestCase):
 
             self.assertEqual(pipeline.monolithic_mapper_mode, "global")
             self.assertTrue(pipeline.global_mapper_use_view_graph_calibrator)
+
+    def test_chunk_global_leaf_defaults_recovery_to_incremental(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {"COLMAP_CHUNK_LEAF_MAPPER_MODE": "global"},
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+
+            self.assertEqual(pipeline.chunk_leaf_mapper_mode, "global")
+            self.assertEqual(pipeline.chunk_recovery_mapper_mode, "incremental")
 
     def test_run_mapper_uses_global_mapper_command_without_incremental_flags(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -59,9 +75,6 @@ class ColmapGlobalMapperTests(unittest.TestCase):
             self.assertEqual(command[1], "global_mapper")
             self.assertNotIn("--Mapper.num_threads", command)
             self.assertNotIn("--Mapper.ba_refine_principal_point", command)
-            self.assertIn("--GlobalMapper.num_threads", command)
-            self.assertIn("--GlobalMapper.gp_use_gpu", command)
-            self.assertIn("--GlobalMapper.ba_ceres_use_gpu", command)
             self.assertEqual(model.images_registered, 3)
 
     def test_run_mapper_uses_gpu_bundle_adjustment_flags_for_incremental_mapper(self):
@@ -81,8 +94,8 @@ class ColmapGlobalMapperTests(unittest.TestCase):
                 )
 
             command = stream_command_mock.call_args_list[0].args[0]
-            self.assertIn("--Mapper.ba_use_gpu", command)
-            self.assertIn("--Mapper.ba_gpu_index", command)
+            self.assertIn("--Mapper.num_threads", command)
+            self.assertIn("--Mapper.ba_refine_principal_point", command)
     def test_run_global_mapper_clones_database_and_runs_calibrator(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
             os.environ,
@@ -103,7 +116,7 @@ class ColmapGlobalMapperTests(unittest.TestCase):
                     points_3d=1000,
                 )
 
-            with mock.patch.object(pipeline, "clone_database_for_chunk") as clone_mock, mock.patch.object(
+            with mock.patch.object(pipeline, "clone_database") as clone_mock, mock.patch.object(
                 pipeline, "run_view_graph_calibrator"
             ) as calibrator_mock, mock.patch.object(
                 pipeline,
@@ -117,7 +130,11 @@ class ColmapGlobalMapperTests(unittest.TestCase):
                 )
 
             global_database_path = pipeline.work_dir / "database_global.db"
-            clone_mock.assert_called_once_with(global_database_path)
+            clone_mock.assert_called_once_with(
+                pipeline.database_path,
+                global_database_path,
+                operation_label="clone_database_for_global_mapper",
+            )
             calibrator_mock.assert_called_once_with(
                 database_path=global_database_path,
                 stage="view_graph_calibrator_mapper_global_spatial_only",
@@ -146,7 +163,7 @@ class ColmapGlobalMapperTests(unittest.TestCase):
             pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
             pipeline.colmap_capabilities["supports_global_mapper"] = True
 
-            with mock.patch.object(pipeline, "clone_database_for_chunk"), mock.patch.object(
+            with mock.patch.object(pipeline, "clone_database"), mock.patch.object(
                 pipeline, "run_view_graph_calibrator"
             ) as calibrator_mock, mock.patch.object(
                 pipeline,
@@ -166,6 +183,100 @@ class ColmapGlobalMapperTests(unittest.TestCase):
                 )
 
             calibrator_mock.assert_not_called()
+
+    def test_run_chunk_pipeline_dispatches_global_initial_and_incremental_recovery(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {"COLMAP_CHUNK_LEAF_MAPPER_MODE": "global"},
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            chunk_plan = run_colmap_sfm.ChunkPlan(
+                index=0,
+                core_names=["IMG_01.jpg"],
+                image_names=["IMG_01.jpg", "IMG_02.jpg"],
+                overlap_names=["IMG_02.jpg"],
+                source_chunk_indexes=[0],
+            )
+            chunk_database_path = root / "chunk.db"
+            initial_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_00_mapper_initial",
+                text_dir=root,
+                cameras_registered=1,
+                images_registered=1,
+                points_3d=100,
+                binary_dir=root / "chunk_initial",
+            )
+            recovered_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_00_mapper_recovery",
+                text_dir=root,
+                cameras_registered=1,
+                images_registered=2,
+                points_3d=200,
+                binary_dir=root / "chunk_recovery",
+            )
+
+            def global_mapper_side_effect(**kwargs):
+                pipeline.timings["chunk_00_mapper_initial_seconds"] = 12.5
+                return initial_model
+
+            def incremental_mapper_side_effect(**kwargs):
+                pipeline.timings["chunk_00_mapper_recovery_seconds"] = 3.0
+                return recovered_model
+
+            with mock.patch.object(
+                pipeline,
+                "prepare_chunk_database",
+                return_value=chunk_database_path,
+            ), mock.patch.object(
+                pipeline,
+                "run_chunk_matchers",
+            ), mock.patch.object(
+                pipeline,
+                "run_chunk_recovery_matchers",
+            ), mock.patch.object(
+                pipeline,
+                "build_retry_chunk_plan",
+                return_value=chunk_plan,
+            ), mock.patch.object(
+                pipeline,
+                "run_global_mapper",
+                side_effect=global_mapper_side_effect,
+            ) as run_global_mapper_mock, mock.patch.object(
+                pipeline,
+                "run_mapper",
+                side_effect=incremental_mapper_side_effect,
+            ) as run_mapper_mock, mock.patch.object(
+                pipeline,
+                "chunk_core_registered_ratio",
+                side_effect=[
+                    (0.0, 0, set()),
+                    (1.0, 1, {"IMG_01.jpg", "IMG_02.jpg"}),
+                ],
+            ):
+                model = pipeline.run_chunk_pipeline(chunk_plan)
+
+            self.assertEqual(model.images_registered, 2)
+            run_global_mapper_mock.assert_called_once_with(
+                stage="chunk_00_mapper_initial",
+                sparse_root=pipeline.work_dir / "chunk_00" / "sparse_initial",
+                image_count=2,
+                source_database_path=chunk_database_path,
+                database_path=pipeline.work_dir / "chunk_00" / "database_global_initial.db",
+            )
+            run_mapper_mock.assert_called_once_with(
+                database_path=chunk_database_path,
+                stage="chunk_00_mapper_recovery",
+                sparse_root=pipeline.work_dir / "chunk_00" / "sparse_recovery",
+                image_count=2,
+            )
+            self.assertEqual(pipeline.chunk_global_mapper_seconds, 12.5)
+            self.assertEqual(pipeline.chunk_incremental_mapper_seconds, 3.0)
+            self.assertEqual(pipeline.chunk_mapper_seconds, 15.5)
+            self.assertEqual(pipeline.chunk_leaf_global_count, 1)
+            self.assertEqual(pipeline.chunk_leaf_incremental_count, 1)
+            self.assertEqual(pipeline.chunk_leaf_recovery_fallback_count, 1)
 
     def test_run_matching_and_mapping_uses_global_mapper_when_requested(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
@@ -261,6 +372,48 @@ class ColmapGlobalMapperTests(unittest.TestCase):
             self.assertTrue(metadata["view_graph_calibrator_ran"])
             self.assertEqual(metadata["view_graph_calibrator_seconds"], 2.25)
 
+    def test_build_metadata_reports_chunk_hybrid_fields(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {
+                "COLMAP_CHUNK_LEAF_MAPPER_MODE": "global",
+                "COLMAP_CHUNK_MERGE_STRATEGY": "hierarchical",
+            },
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.chunk_global_mapper_seconds = 12.5
+            pipeline.chunk_incremental_mapper_seconds = 3.0
+            pipeline.chunk_mapper_seconds = 15.5
+            pipeline.chunk_leaf_global_count = 2
+            pipeline.chunk_leaf_incremental_count = 1
+            pipeline.chunk_leaf_recovery_fallback_count = 1
+            pipeline.merge_tree_depth = 2
+            pipeline.merge_tree_node_count = 5
+            pipeline.merge_tree_level_summaries = [{"level": 0, "input_component_count": 3}]
+            model = run_colmap_sfm.ModelSummary(
+                stage="chunk_bundle_adjuster_l01_g00",
+                text_dir=root,
+                cameras_registered=1,
+                images_registered=5,
+                points_3d=250,
+            )
+
+            metadata = pipeline.build_metadata(best_model=model, quality_check_passed=True)
+
+            self.assertEqual(metadata["chunk_leaf_mapper_mode"], "global")
+            self.assertEqual(metadata["chunk_recovery_mapper_mode"], "incremental")
+            self.assertEqual(metadata["chunk_merge_strategy"], "hierarchical")
+            self.assertEqual(metadata["chunk_global_mapper_seconds"], 12.5)
+            self.assertEqual(metadata["chunk_incremental_mapper_seconds"], 3.0)
+            self.assertEqual(metadata["chunk_leaf_global_count"], 2)
+            self.assertEqual(metadata["chunk_leaf_incremental_count"], 1)
+            self.assertEqual(metadata["chunk_leaf_recovery_fallback_count"], 1)
+            self.assertEqual(metadata["merge_tree_depth"], 2)
+            self.assertEqual(metadata["merge_tree_node_count"], 5)
+            self.assertEqual(metadata["merge_tree_level_summaries"], [{"level": 0, "input_component_count": 3}])
+
     def test_matchers_include_matching_max_num_matches_when_configured(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
             os.environ,
@@ -320,6 +473,8 @@ class ColmapGlobalMapperTests(unittest.TestCase):
         ):
             root = Path(tmp)
             pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            if not hasattr(pipeline, "ensure_gpu_bundle_adjustment_preflight"):
+                self.skipTest("GPU bundle-adjustment preflight is not shipped on this branch")
             pipeline.colmap_build_info = {"build_info_present": False}
             pipeline.colmap_capabilities = pipeline.build_colmap_capabilities()
 

@@ -1420,14 +1420,13 @@ class ColmapGpsPriorTests(unittest.TestCase):
                     binary_dir=second_model_dir,
                 ),
             ]
-            output_path = pipeline.work_dir / "merged_chunk_model_01"
             merged_model = run_colmap_sfm.ModelSummary(
                 stage="chunk_bundle_adjuster",
                 text_dir=merged_text_dir,
                 cameras_registered=1,
                 images_registered=20,
                 points_3d=2000,
-                binary_dir=output_path,
+                binary_dir=root / "merged_binary",
             )
 
             with mock.patch.object(run_colmap_sfm, "stream_command") as stream_command_mock, mock.patch.object(
@@ -1437,14 +1436,133 @@ class ColmapGpsPriorTests(unittest.TestCase):
             ):
                 result = pipeline.merge_chunk_models(chunk_models)
 
-            self.assertTrue(output_path.is_dir())
             merger_command = stream_command_mock.call_args.args[0]
             self.assertIn("model_merger", merger_command)
-            self.assertIn(str(output_path), merger_command)
+            output_path = Path(merger_command[merger_command.index("--output_path") + 1])
+            self.assertTrue(output_path.is_dir())
             self.assertEqual(result.images_registered, 20)
             self.assertEqual(pipeline.chunk_merge_proof["pre_merge_unique_registered_images"], 3)
             self.assertEqual(pipeline.chunk_merge_proof["final_merged_registered_images"], 3)
             self.assertEqual(pipeline.chunk_merge_proof["pre_merge_retention_ratio"], 1.0)
+
+    def test_merge_chunk_models_hierarchical_prefers_strongest_adjacent_pair(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {
+                "COLMAP_CHUNK_MERGE_STRATEGY": "hierarchical",
+                "COLMAP_CHUNK_HIERARCHICAL_MERGE_FANIN": "2",
+                "COLMAP_CHUNK_PLANNER": "footprint_graph_v1",
+            },
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.chunk_centroids = {0: (0.0, 0.0), 1: (1.0, 0.0), 2: (50.0, 0.0)}
+            pipeline.chunk_cross_edge_counts = {(0, 1): 7, (0, 2): 1, (1, 2): 1}
+
+            first_model_dir = root / "chunk_00" / "sparse_initial" / "0"
+            second_model_dir = root / "chunk_01" / "sparse_initial" / "0"
+            third_model_dir = root / "chunk_02" / "sparse_initial" / "0"
+            first_text_dir = root / "text_00"
+            second_text_dir = root / "text_01"
+            third_text_dir = root / "text_02"
+            mid_text_dir = root / "mid_text"
+            final_text_dir = root / "final_text"
+            for path in (
+                first_model_dir,
+                second_model_dir,
+                third_model_dir,
+                first_text_dir,
+                second_text_dir,
+                third_text_dir,
+                mid_text_dir,
+                final_text_dir,
+            ):
+                path.mkdir(parents=True, exist_ok=True)
+            (first_text_dir / "images.txt").write_text(
+                "1 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n2 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (second_text_dir / "images.txt").write_text(
+                "3 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n4 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (third_text_dir / "images.txt").write_text(
+                "5 1 0 0 0 0 0 0 1 IMG_04.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (mid_text_dir / "images.txt").write_text(
+                "6 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n7 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n8 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (final_text_dir / "images.txt").write_text(
+                "9 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n10 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n11 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n12 1 0 0 0 0 0 0 1 IMG_04.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            chunk_models = [
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_00_mapper_initial",
+                    text_dir=first_text_dir,
+                    cameras_registered=1,
+                    images_registered=10,
+                    points_3d=1000,
+                    binary_dir=first_model_dir,
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_01_mapper_initial",
+                    text_dir=second_text_dir,
+                    cameras_registered=1,
+                    images_registered=10,
+                    points_3d=1000,
+                    binary_dir=second_model_dir,
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_02_mapper_initial",
+                    text_dir=third_text_dir,
+                    cameras_registered=1,
+                    images_registered=10,
+                    points_3d=1000,
+                    binary_dir=third_model_dir,
+                ),
+            ]
+            intermediate_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_bundle_adjuster_l00_g00",
+                text_dir=mid_text_dir,
+                cameras_registered=1,
+                images_registered=20,
+                points_3d=2000,
+                binary_dir=root / "mid_binary",
+            )
+            final_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_bundle_adjuster_l01_g00",
+                text_dir=final_text_dir,
+                cameras_registered=1,
+                images_registered=30,
+                points_3d=3000,
+                binary_dir=root / "final_binary",
+            )
+
+            with mock.patch.object(run_colmap_sfm, "stream_command") as stream_command_mock, mock.patch.object(
+                pipeline,
+                "run_bundle_adjuster",
+                side_effect=[intermediate_model, final_model],
+            ):
+                result = pipeline.merge_chunk_models(
+                    chunk_models,
+                    chunk_components=[[0], [1], [2]],
+                )
+
+            first_merge_command = stream_command_mock.call_args_list[0].args[0]
+            second_merge_command = stream_command_mock.call_args_list[1].args[0]
+            self.assertEqual(first_merge_command[first_merge_command.index("--input_path1") + 1], str(first_model_dir))
+            self.assertEqual(first_merge_command[first_merge_command.index("--input_path2") + 1], str(second_model_dir))
+            self.assertEqual(second_merge_command[second_merge_command.index("--input_path2") + 1], str(third_model_dir))
+            self.assertEqual(result.images_registered, 30)
+            self.assertEqual(pipeline.merge_tree_depth, 2)
+            self.assertEqual(pipeline.merge_tree_node_count, 5)
+            self.assertEqual(len(pipeline.merge_tree_level_summaries), 2)
+            self.assertEqual(pipeline.chunk_merge_proof["chunk_merge_strategy"], "hierarchical")
+            self.assertEqual(pipeline.chunk_merge_proof["final_merged_registered_images"], 4)
 
     def test_run_spatial_heading_chunked_path_accepts_merged_ratio_at_gps_threshold(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -70,6 +70,7 @@ class ChunkPlan:
     core_names: List[str]
     image_names: List[str]
     overlap_names: List[str]
+    source_chunk_indexes: List[int] = field(default_factory=list)
     core_group_indices: List[int] = field(default_factory=list)
     group_indices: List[int] = field(default_factory=list)
     overlap_group_indices: List[int] = field(default_factory=list)
@@ -138,6 +139,12 @@ class FlightSegment:
     @property
     def end_group_index(self) -> int:
         return self.group_indices[-1]
+
+
+@dataclass
+class MergeComponent:
+    model: ModelSummary
+    chunk_indexes: List[int]
 
 
 def log_memory(stage: str) -> None:
@@ -453,6 +460,42 @@ class ColmapPipeline:
                 "Unsupported COLMAP_CHUNK_PLANNER="
                 f"{self.chunk_planner}; expected one of legacy_spatial_heading, footprint_graph_v1"
             )
+        self.chunk_leaf_mapper_mode = (
+            os.environ.get("COLMAP_CHUNK_LEAF_MAPPER_MODE", "incremental").strip().lower()
+            or "incremental"
+        )
+        if self.chunk_leaf_mapper_mode not in {"incremental", "global"}:
+            raise RuntimeError(
+                "Unsupported COLMAP_CHUNK_LEAF_MAPPER_MODE="
+                f"{self.chunk_leaf_mapper_mode}; expected one of incremental, global"
+            )
+        chunk_recovery_default = "incremental" if self.chunk_leaf_mapper_mode == "global" else "inherit"
+        self.chunk_recovery_mapper_mode = (
+            os.environ.get("COLMAP_CHUNK_RECOVERY_MAPPER_MODE", chunk_recovery_default).strip().lower()
+            or chunk_recovery_default
+        )
+        if self.chunk_recovery_mapper_mode not in {"inherit", "incremental", "global"}:
+            raise RuntimeError(
+                "Unsupported COLMAP_CHUNK_RECOVERY_MAPPER_MODE="
+                f"{self.chunk_recovery_mapper_mode}; expected one of inherit, incremental, global"
+            )
+        self.chunk_merge_strategy = (
+            os.environ.get("COLMAP_CHUNK_MERGE_STRATEGY", "serial").strip().lower()
+            or "serial"
+        )
+        if self.chunk_merge_strategy not in {"serial", "hierarchical"}:
+            raise RuntimeError(
+                "Unsupported COLMAP_CHUNK_MERGE_STRATEGY="
+                f"{self.chunk_merge_strategy}; expected one of serial, hierarchical"
+            )
+        self.chunk_hierarchical_merge_fanin = int(
+            os.environ.get("COLMAP_CHUNK_HIERARCHICAL_MERGE_FANIN", "2")
+        )
+        if self.chunk_hierarchical_merge_fanin < 2:
+            raise RuntimeError(
+                "COLMAP_CHUNK_HIERARCHICAL_MERGE_FANIN must be >= 2; got "
+                f"{self.chunk_hierarchical_merge_fanin}"
+            )
         self.force_gps_first = os.environ.get("COLMAP_FORCE_GPS_FIRST", "1") != "0"
         requested_match_profile = os.environ.get("COLMAP_MATCH_PROFILE", "P1").strip().upper() or "P1"
         if requested_match_profile not in MATCH_PROFILES:
@@ -629,10 +672,18 @@ class ColmapPipeline:
         self.chunk_sizes: List[int] = []
         self.chunk_overlap_image_count = 0
         self.chunk_mapper_seconds = 0.0
+        self.chunk_global_mapper_seconds = 0.0
+        self.chunk_incremental_mapper_seconds = 0.0
         self.chunk_merge_seconds = 0.0
+        self.merge_tree_depth = 0
+        self.merge_tree_node_count = 0
+        self.merge_tree_level_summaries: List[dict[str, object]] = []
         self.boundary_recovery_triggered = False
         self.adjacent_chunk_merge_triggered = False
         self.merged_component_count = 0
+        self.chunk_leaf_global_count = 0
+        self.chunk_leaf_incremental_count = 0
+        self.chunk_leaf_recovery_fallback_count = 0
         self.chunk_groups: List[CaptureGroup] = []
         self.flight_segments: List[FlightSegment] = []
         self.image_group_indices: Dict[str, int] = {}
@@ -2284,13 +2335,19 @@ class ColmapPipeline:
         stage: str,
         sparse_root: Path,
         image_count: int | None = None,
+        source_database_path: Path | None = None,
+        database_path: Path | None = None,
     ) -> ModelSummary:
         if not self.colmap_capabilities.get("supports_global_mapper"):
             raise RuntimeError("COLMAP runtime does not support global_mapper")
-        global_database_path = self.work_dir / "database_global.db"
+        global_database_path = database_path or (self.work_dir / "database_global.db")
         # view_graph_calibrator mutates the database in-place, so keep the
         # feature-extracted database pristine for the incremental path.
-        self.clone_database_for_chunk(global_database_path)
+        self.clone_database(
+            source_database_path or self.database_path,
+            global_database_path,
+            operation_label="clone_database_for_global_mapper",
+        )
         if self.global_mapper_use_view_graph_calibrator:
             self.run_view_graph_calibrator(
                 database_path=global_database_path,
@@ -2715,6 +2772,7 @@ class ColmapPipeline:
         core_group_indices: Sequence[int],
         overlap_group_indices: Sequence[int],
         segment_indices: Sequence[int],
+        source_chunk_indexes: Sequence[int] | None = None,
     ) -> ChunkPlan:
         capture_order_index = {
             image_name: position for position, image_name in enumerate(self.capture_ordered_names)
@@ -2744,6 +2802,7 @@ class ColmapPipeline:
                 set(overlap_names),
                 key=lambda image_name: capture_order_index.get(image_name, sys.maxsize),
             ),
+            source_chunk_indexes=sorted(set(source_chunk_indexes or [index])),
             core_group_indices=list(core_group_indices),
             group_indices=sorted(set(core_group_indices).union(overlap_group_indices)),
             overlap_group_indices=sorted(set(overlap_group_indices)),
@@ -3347,10 +3406,16 @@ class ColmapPipeline:
             except FileNotFoundError:
                 continue
 
-    def clone_database_for_chunk(self, destination_path: Path) -> None:
+    def clone_database(
+        self,
+        source_path: Path,
+        destination_path: Path,
+        *,
+        operation_label: str = "clone_database_for_chunk",
+    ) -> None:
         destination_path.parent.mkdir(parents=True, exist_ok=True)
         self.remove_sqlite_database_artifacts(destination_path)
-        source_uri = f"file:{self.database_path.as_posix()}?mode=ro"
+        source_uri = f"file:{source_path.as_posix()}?mode=ro"
 
         def backup_database() -> None:
             with self.sqlite_connect(source_uri, uri=True) as source_connection:
@@ -3361,10 +3426,13 @@ class ColmapPipeline:
                     destination_connection.commit()
 
         self.run_sqlite_operation_with_retry(
-            f"clone_database_for_chunk:{destination_path.parent.name}",
+            f"{operation_label}:{destination_path.parent.name}",
             backup_database,
         )
         self.normalize_sqlite_database_for_chunking(destination_path)
+
+    def clone_database_for_chunk(self, destination_path: Path) -> None:
+        self.clone_database(self.database_path, destination_path)
 
     def prune_chunk_database(
         self,
@@ -3511,6 +3579,7 @@ class ColmapPipeline:
                 core_names=retry_core_names,
                 image_names=retry_ordered_names,
                 overlap_names=retry_overlap_names,
+                source_chunk_indexes=list(chunk_plan.source_chunk_indexes or [chunk_plan.index]),
                 core_group_indices=[
                     self.image_group_indices[name] for name in retry_core_names if name in self.image_group_indices
                 ],
@@ -3575,6 +3644,11 @@ class ColmapPipeline:
                 core_names=merged_core_names,
                 image_names=merged_image_names,
                 overlap_names=merged_overlap_names,
+                source_chunk_indexes=sorted(
+                    set(first_chunk_plan.source_chunk_indexes or [first_chunk_plan.index]).union(
+                        second_chunk_plan.source_chunk_indexes or [second_chunk_plan.index]
+                    )
+                ),
                 core_group_indices=[
                     self.image_group_indices[name] for name in merged_core_names if name in self.image_group_indices
                 ],
@@ -3599,9 +3673,193 @@ class ColmapPipeline:
         )
         return self.build_chunk_plan_from_groups(
             index=index,
+            source_chunk_indexes=sorted(
+                set(first_chunk_plan.source_chunk_indexes or [first_chunk_plan.index]).union(
+                    second_chunk_plan.source_chunk_indexes or [second_chunk_plan.index]
+                )
+            ),
             core_group_indices=merged_core_group_indices,
             overlap_group_indices=merged_overlap_group_indices,
             segment_indices=merged_segment_indices,
+        )
+
+    def resolve_chunk_mapper_mode(self, *, recovery: bool) -> str:
+        if not recovery:
+            return self.chunk_leaf_mapper_mode
+        if self.chunk_recovery_mapper_mode == "inherit":
+            return self.chunk_leaf_mapper_mode
+        return self.chunk_recovery_mapper_mode
+
+    def run_chunk_leaf_mapper(
+        self,
+        *,
+        chunk_plan: ChunkPlan,
+        chunk_dir: Path,
+        chunk_database_path: Path,
+        chunk_stage_prefix: str,
+        recovery: bool,
+    ) -> ModelSummary:
+        mapper_mode = self.resolve_chunk_mapper_mode(recovery=recovery)
+        stage_name = f"{chunk_stage_prefix}_mapper_recovery" if recovery else f"{chunk_stage_prefix}_mapper_initial"
+        sparse_root = chunk_dir / ("sparse_recovery" if recovery else "sparse_initial")
+        if recovery and mapper_mode != self.chunk_leaf_mapper_mode:
+            self.chunk_leaf_recovery_fallback_count += 1
+        if mapper_mode == "global":
+            model = self.run_global_mapper(
+                stage=stage_name,
+                sparse_root=sparse_root,
+                image_count=len(chunk_plan.image_names),
+                source_database_path=chunk_database_path,
+                database_path=chunk_dir / ("database_global_recovery.db" if recovery else "database_global_initial.db"),
+            )
+            stage_seconds = self.timings.get(f"{stage_name}_seconds", 0.0)
+            self.chunk_global_mapper_seconds += stage_seconds
+            self.chunk_leaf_global_count += 1
+        else:
+            model = self.run_mapper(
+                database_path=chunk_database_path,
+                stage=stage_name,
+                sparse_root=sparse_root,
+                image_count=len(chunk_plan.image_names),
+            )
+            stage_seconds = self.timings.get(f"{stage_name}_seconds", 0.0)
+            self.chunk_incremental_mapper_seconds += stage_seconds
+            self.chunk_leaf_incremental_count += 1
+        self.chunk_mapper_seconds += stage_seconds
+        return model
+
+    def component_centroid_xy(self, chunk_indexes: Sequence[int]) -> tuple[float, float]:
+        centroids = [
+            self.chunk_centroids[index]
+            for index in chunk_indexes
+            if index in self.chunk_centroids
+        ]
+        if not centroids:
+            return (0.0, 0.0)
+        return (
+            sum(point[0] for point in centroids) / len(centroids),
+            sum(point[1] for point in centroids) / len(centroids),
+        )
+
+    def component_cross_edge_count(
+        self,
+        left_chunk_indexes: Sequence[int],
+        right_chunk_indexes: Sequence[int],
+    ) -> int:
+        score = 0
+        for left_index in left_chunk_indexes:
+            for right_index in right_chunk_indexes:
+                if left_index == right_index:
+                    continue
+                pair_key = (min(left_index, right_index), max(left_index, right_index))
+                score += self.chunk_cross_edge_counts.get(pair_key, 0)
+        return score
+
+    def merge_component_sort_key(
+        self,
+        left_component: MergeComponent,
+        right_component: MergeComponent,
+    ) -> tuple[float, float, int, int]:
+        left_indexes = sorted(left_component.chunk_indexes)
+        right_indexes = sorted(right_component.chunk_indexes)
+        left_centroid = self.component_centroid_xy(left_indexes)
+        right_centroid = self.component_centroid_xy(right_indexes)
+        centroid_distance = math.hypot(
+            left_centroid[0] - right_centroid[0],
+            left_centroid[1] - right_centroid[1],
+        )
+        index_gap = min(abs(left - right) for left in left_indexes for right in right_indexes)
+        if self.chunk_planner == "footprint_graph_v1":
+            cross_edge_score = self.component_cross_edge_count(left_indexes, right_indexes)
+            return (-float(cross_edge_score), centroid_distance, index_gap, min(left_indexes + right_indexes))
+        return (float(index_gap), centroid_distance, min(left_indexes + right_indexes), max(left_indexes + right_indexes))
+
+    def select_hierarchical_merge_groups(
+        self,
+        components: Sequence[MergeComponent],
+    ) -> List[List[int]]:
+        remaining = set(range(len(components)))
+        groups: List[List[int]] = []
+        while remaining:
+            if len(remaining) == 1:
+                groups.append([remaining.pop()])
+                continue
+            best_pair = min(
+                (
+                    (self.merge_component_sort_key(components[left], components[right]), left, right)
+                    for left in remaining
+                    for right in remaining
+                    if left < right
+                ),
+                key=lambda item: item[0],
+            )
+            _, first_index, second_index = best_pair
+            group = [first_index, second_index]
+            remaining.remove(first_index)
+            remaining.remove(second_index)
+            while remaining and len(group) < self.chunk_hierarchical_merge_fanin:
+                next_index = min(
+                    remaining,
+                    key=lambda candidate: min(
+                        self.merge_component_sort_key(components[group_member], components[candidate])
+                        for group_member in group
+                    ),
+                )
+                group.append(next_index)
+                remaining.remove(next_index)
+            groups.append(sorted(group))
+        return groups
+
+    def merge_model_group(
+        self,
+        components: Sequence[MergeComponent],
+        *,
+        level_index: int,
+        group_index: int,
+    ) -> MergeComponent:
+        if len(components) == 1:
+            return components[0]
+        merged_path = components[0].model.binary_dir
+        for merge_index, next_component in enumerate(components[1:], start=1):
+            stage = f"chunk_model_merger_l{level_index:02d}_g{group_index:02d}_m{merge_index:02d}"
+            output_path = self.work_dir / stage
+            output_path.mkdir(parents=True, exist_ok=True)
+            try:
+                stream_command(
+                    [
+                        "colmap",
+                        "model_merger",
+                        "--input_path1",
+                        str(merged_path),
+                        "--input_path2",
+                        str(next_component.model.binary_dir),
+                        "--output_path",
+                        str(output_path),
+                        "--max_reproj_error",
+                        "64",
+                    ],
+                    stage=stage,
+                    timeout_seconds=self.resolve_timeout_seconds(self.matcher_timeout_seconds),
+                    heartbeat_seconds=self.command_heartbeat_seconds,
+                )
+            except RuntimeError as exc:
+                self.merged_component_count = len(components)
+                self.handle_stage_runtime_error(stage, exc)
+                raise RuntimeError(f"Failed to merge chunk model group {group_index}: {exc}") from exc
+            merged_path = output_path
+        adjusted_model = self.run_bundle_adjuster(
+            input_path=merged_path,
+            stage=f"chunk_bundle_adjuster_l{level_index:02d}_g{group_index:02d}",
+        )
+        return MergeComponent(
+            model=adjusted_model,
+            chunk_indexes=sorted(
+                {
+                    chunk_index
+                    for component in components
+                    for chunk_index in component.chunk_indexes
+                }
+            ),
         )
 
     def run_chunk_pipeline(
@@ -3621,13 +3879,13 @@ class ColmapPipeline:
             chunk_dir=chunk_dir,
             stage_prefix=chunk_stage_prefix,
         )
-        initial_model = self.run_mapper(
-            database_path=chunk_database_path,
-            stage=f"{chunk_stage_prefix}_mapper_initial",
-            sparse_root=chunk_dir / "sparse_initial",
-            image_count=len(chunk_plan.image_names),
+        initial_model = self.run_chunk_leaf_mapper(
+            chunk_plan=chunk_plan,
+            chunk_dir=chunk_dir,
+            chunk_database_path=chunk_database_path,
+            chunk_stage_prefix=chunk_stage_prefix,
+            recovery=False,
         )
-        self.chunk_mapper_seconds += self.timings[f"{chunk_stage_prefix}_mapper_initial_seconds"]
         registered_ratio = (
             initial_model.images_registered / len(chunk_plan.image_names)
             if chunk_plan.image_names
@@ -3706,13 +3964,13 @@ class ColmapPipeline:
             chunk_plan=retry_chunk_plan,
             stage_prefix=chunk_stage_prefix,
         )
-        recovered_model = self.run_mapper(
-            database_path=chunk_database_path,
-            stage=f"{chunk_stage_prefix}_mapper_recovery",
-            sparse_root=chunk_dir / "sparse_recovery",
-            image_count=len(retry_chunk_plan.image_names),
+        recovered_model = self.run_chunk_leaf_mapper(
+            chunk_plan=retry_chunk_plan,
+            chunk_dir=chunk_dir,
+            chunk_database_path=chunk_database_path,
+            chunk_stage_prefix=chunk_stage_prefix,
+            recovery=True,
         )
-        self.chunk_mapper_seconds += self.timings[f"{chunk_stage_prefix}_mapper_recovery_seconds"]
         recovered_ratio = (
             recovered_model.images_registered / len(retry_chunk_plan.image_names)
             if retry_chunk_plan.image_names
@@ -3783,54 +4041,108 @@ class ColmapPipeline:
         )
         raise RuntimeError(self.failure_reason_detail)
 
-    def merge_chunk_models(self, chunk_models: Sequence[ModelSummary]) -> ModelSummary:
+    def merge_chunk_models(
+        self,
+        chunk_models: Sequence[ModelSummary],
+        *,
+        chunk_components: Sequence[Sequence[int]] | None = None,
+    ) -> ModelSummary:
         if not chunk_models:
             raise RuntimeError("No chunk models available to merge")
+        source_chunk_components = list(chunk_components or [[index] for index in range(len(chunk_models))])
+        if len(source_chunk_components) != len(chunk_models):
+            raise RuntimeError(
+                "Chunk model/component mismatch: "
+                f"{len(chunk_models)} models but {len(source_chunk_components)} component lists"
+            )
         if len(chunk_models) == 1:
             self.merged_component_count = 1
+            self.merge_tree_depth = 0
+            self.merge_tree_node_count = 1
+            self.merge_tree_level_summaries = [
+                {
+                    "level": 0,
+                    "input_component_count": 1,
+                    "output_component_count": 1,
+                    "merged_group_count": 0,
+                    "carried_group_count": 1,
+                    "group_sizes": [1],
+                }
+            ]
             self.chunk_merge_proof = {
                 "chunk_model_count": 1,
                 "pre_merge_unique_registered_images": chunk_models[0].images_registered,
                 "final_merged_registered_images": chunk_models[0].images_registered,
                 "pre_merge_retention_ratio": 1.0,
+                "chunk_merge_strategy": self.chunk_merge_strategy,
             }
             return chunk_models[0]
 
         merge_started = time.time()
-        merged_path = chunk_models[0].binary_dir
-        merged_components = 1
-        for index, next_model in enumerate(chunk_models[1:], start=1):
-            output_path = self.work_dir / f"merged_chunk_model_{index:02d}"
-            output_path.mkdir(parents=True, exist_ok=True)
-            try:
-                stream_command(
-                    [
-                        "colmap",
-                        "model_merger",
-                        "--input_path1",
-                        str(merged_path),
-                        "--input_path2",
-                        str(next_model.binary_dir),
-                        "--output_path",
-                        str(output_path),
-                        "--max_reproj_error",
-                        "64",
-                    ],
-                    stage=f"chunk_model_merger_{index:02d}",
-                    timeout_seconds=self.resolve_timeout_seconds(self.matcher_timeout_seconds),
-                    heartbeat_seconds=self.command_heartbeat_seconds,
+        components = [
+            MergeComponent(
+                model=model,
+                chunk_indexes=sorted(set(component_indexes or [index])),
+            )
+            for index, (model, component_indexes) in enumerate(zip(chunk_models, source_chunk_components))
+        ]
+        self.merge_tree_level_summaries = []
+        self.merge_tree_node_count = len(components)
+        level_index = 0
+        while len(components) > 1:
+            if self.chunk_merge_strategy == "hierarchical":
+                group_indexes = self.select_hierarchical_merge_groups(components)
+            else:
+                group_indexes = [
+                    list(range(start_index, min(start_index + self.chunk_hierarchical_merge_fanin, len(components))))
+                    for start_index in range(0, len(components), self.chunk_hierarchical_merge_fanin)
+                ]
+            next_components: List[MergeComponent] = []
+            merged_group_count = 0
+            carried_group_count = 0
+            level_group_sizes = [len(group_index_list) for group_index_list in group_indexes]
+            for group_index, component_indexes in enumerate(group_indexes):
+                grouped_components = [components[component_index] for component_index in component_indexes]
+                if len(grouped_components) == 1:
+                    next_components.append(grouped_components[0])
+                    carried_group_count += 1
+                    continue
+                next_components.append(
+                    self.merge_model_group(
+                        grouped_components,
+                        level_index=level_index,
+                        group_index=group_index,
+                    )
                 )
-            except RuntimeError as exc:
-                merged_components += 1
-                self.merged_component_count = merged_components
-                self.handle_stage_runtime_error(f"chunk_model_merger_{index:02d}", exc)
-                raise RuntimeError(f"Failed to merge chunk model {index}: {exc}") from exc
-            merged_path = output_path
+                merged_group_count += 1
+            self.merge_tree_node_count += merged_group_count
+            self.merge_tree_level_summaries.append(
+                {
+                    "level": level_index,
+                    "input_component_count": len(components),
+                    "output_component_count": len(next_components),
+                    "merged_group_count": merged_group_count,
+                    "carried_group_count": carried_group_count,
+                    "group_sizes": level_group_sizes,
+                }
+            )
+            components = next_components
+            level_index += 1
+
+        adjusted_model = components[0].model
         self.chunk_merge_seconds = round(time.time() - merge_started, 2)
         self.timings["chunk_model_merge_seconds"] = self.chunk_merge_seconds
+        self.merge_tree_depth = level_index
         self.merged_component_count = 1
-        self.pipeline_name = "colmap_gpu_spatial_heading_chunked"
-        adjusted_model = self.run_bundle_adjuster(input_path=merged_path, stage="chunk_bundle_adjuster")
+        self.pipeline_name = (
+            "colmap_gpu_footprint_graph_chunked"
+            if self.chunk_planner == "footprint_graph_v1"
+            else "colmap_gpu_spatial_heading_chunked"
+        )
+        if self.chunk_leaf_mapper_mode == "global":
+            self.pipeline_name += "_global_leaves"
+        if self.chunk_merge_strategy == "hierarchical":
+            self.pipeline_name += "_hierarchical_merge"
         pre_merge_registered_names: Set[str] = set()
         for chunk_model in chunk_models:
             pre_merge_registered_names.update(load_registered_image_names(chunk_model.text_dir / "images.txt"))
@@ -3848,6 +4160,10 @@ class ColmapPipeline:
             )
             if pre_merge_registered_count
             else 0.0,
+            "chunk_merge_strategy": self.chunk_merge_strategy,
+            "merge_tree_depth": self.merge_tree_depth,
+            "merge_tree_node_count": self.merge_tree_node_count,
+            "merge_tree_level_summaries": self.merge_tree_level_summaries,
         }
         return adjusted_model
 
@@ -3986,9 +4302,16 @@ class ColmapPipeline:
             if self.chunk_planner == "footprint_graph_v1"
             else "colmap_gpu_spatial_heading_chunked"
         )
+        if self.chunk_leaf_mapper_mode == "global":
+            self.pipeline_name += "_global_leaves"
+        if self.chunk_merge_strategy == "hierarchical":
+            self.pipeline_name += "_hierarchical_merge"
         if self.chunk_planner == "footprint_graph_v1":
             self.enable_sequential_matcher = False
         self.chunk_plans = self.build_chunk_plans()
+        for chunk_plan in self.chunk_plans:
+            if not chunk_plan.source_chunk_indexes:
+                chunk_plan.source_chunk_indexes = [chunk_plan.index]
         self.chunk_plans_by_index = {chunk_plan.index: chunk_plan for chunk_plan in self.chunk_plans}
         if self.only_chunk_indexes:
             self.chunk_plans = [
@@ -4011,12 +4334,14 @@ class ColmapPipeline:
         if len(self.chunk_plans) <= 1:
             self.chunking_skipped_reason = "single_chunk_only" if not self.only_chunk_indexes else "single_chunk_selected"
         chunk_models: List[ModelSummary] = []
+        chunk_component_indexes: List[List[int]] = []
         chunk_index = 0
         while chunk_index < len(self.chunk_plans):
             chunk_plan = self.chunk_plans[chunk_index]
             try:
                 chunk_model = self.run_chunk_pipeline(chunk_plan)
                 chunk_models.append(chunk_model)
+                chunk_component_indexes.append(list(chunk_plan.source_chunk_indexes or [chunk_plan.index]))
                 chunk_index += 1
                 continue
             except RuntimeError:
@@ -4082,14 +4407,21 @@ class ColmapPipeline:
                 self.clear_failure()
                 if merge_side == "previous":
                     chunk_models.pop()
+                    chunk_component_indexes.pop()
                 merged_model = self.run_chunk_pipeline(
                     merged_chunk_plan,
                     stage_prefix=merged_stage_prefix,
                     dir_name=merged_stage_prefix,
                 )
                 chunk_models.append(merged_model)
+                chunk_component_indexes.append(
+                    list(merged_chunk_plan.source_chunk_indexes or [merged_chunk_plan.index])
+                )
                 chunk_index += 1 if merge_side == "previous" else 2
-        merged_model = self.merge_chunk_models(chunk_models)
+        merged_model = self.merge_chunk_models(
+            chunk_models,
+            chunk_components=chunk_component_indexes,
+        )
         merged_ratio = (
             merged_model.images_registered / self.chunk_execution_image_count
             if self.chunk_execution_image_count
@@ -4107,16 +4439,16 @@ class ColmapPipeline:
             )
             raise RuntimeError(self.failure_reason_detail)
         self.final_matcher_mode = (
-            (
-                "footprint_graph_chunked_subset"
-                if self.only_chunk_indexes
-                else "footprint_graph_chunked"
-            )
+            "footprint_graph_chunked"
             if self.chunk_planner == "footprint_graph_v1"
-            else (
-                "spatial_heading_chunked_subset" if self.only_chunk_indexes else "spatial_heading_chunked"
-            )
+            else "spatial_heading_chunked"
         )
+        if self.chunk_leaf_mapper_mode == "global":
+            self.final_matcher_mode += "_global_leaves"
+        if self.chunk_merge_strategy == "hierarchical":
+            self.final_matcher_mode += "_hierarchical_merge"
+        if self.only_chunk_indexes:
+            self.final_matcher_mode += "_subset"
         return merged_model
 
     def run_matching_and_mapping(self) -> ModelSummary:
@@ -4135,7 +4467,7 @@ class ColmapPipeline:
         return self.run_monolithic_gps_first_path()
 
     def resolve_mapper_seconds(self) -> float:
-        if self.final_matcher_mode in {"spatial_heading_chunked", "spatial_heading_chunked_subset"}:
+        if "chunked" in self.final_matcher_mode:
             return round(self.chunk_mapper_seconds, 2)
         mapper_timings = [
             value for key, value in self.timings.items() if key.startswith("mapper_") and key.endswith("_seconds")
@@ -4202,6 +4534,10 @@ class ColmapPipeline:
             "chunking_skipped_reason": self.chunking_skipped_reason,
             "chunk_planner": self.chunk_planner,
             "chunk_matcher_strategy": self.chunk_matcher_strategy,
+            "chunk_leaf_mapper_mode": self.chunk_leaf_mapper_mode,
+            "chunk_recovery_mapper_mode": self.chunk_recovery_mapper_mode,
+            "chunk_merge_strategy": self.chunk_merge_strategy,
+            "chunk_hierarchical_merge_fanin": self.chunk_hierarchical_merge_fanin,
             "chunk_count": len(self.chunk_plans),
             "chunk_sizes": self.chunk_sizes,
             "chunk_overlap_image_count": self.chunk_overlap_image_count,
@@ -4210,13 +4546,21 @@ class ColmapPipeline:
             "chunk_pair_budget": self.chunk_pair_budget,
             "chunk_role_counts": dict(role_counts),
             "chunk_mapper_seconds": round(self.chunk_mapper_seconds, 2),
+            "chunk_global_mapper_seconds": round(self.chunk_global_mapper_seconds, 2),
+            "chunk_incremental_mapper_seconds": round(self.chunk_incremental_mapper_seconds, 2),
             "chunk_merge_seconds": round(self.chunk_merge_seconds, 2),
             "chunk_merge_proof": self.chunk_merge_proof,
             "chunk_recovery_mode": self.chunk_recovery_mode,
             "chunk_run_metrics": self.chunk_run_metrics,
             "boundary_recovery_triggered": self.boundary_recovery_triggered,
             "adjacent_chunk_merge_triggered": self.adjacent_chunk_merge_triggered,
+            "chunk_leaf_global_count": self.chunk_leaf_global_count,
+            "chunk_leaf_incremental_count": self.chunk_leaf_incremental_count,
+            "chunk_leaf_recovery_fallback_count": self.chunk_leaf_recovery_fallback_count,
             "merged_component_count": self.merged_component_count,
+            "merge_tree_depth": self.merge_tree_depth,
+            "merge_tree_node_count": self.merge_tree_node_count,
+            "merge_tree_level_summaries": self.merge_tree_level_summaries,
             "final_points_per_registered_image": final_points_per_registered_image,
             "mapper_seconds_per_registered_image": mapper_seconds_per_registered_image,
             "fallback_triggered": self.fallback_triggered,
