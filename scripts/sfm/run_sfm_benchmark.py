@@ -100,7 +100,7 @@ def get_sagemaker_role_arn(stack_name: str) -> str:
 
 def load_s3_json(s3_uri: str) -> dict | None:
     try:
-        result = run_command(["aws", "s3", "cp", s3_uri, "-"], capture_output=True)
+        result = run_command([AWS_CLI, "s3", "cp", s3_uri, "-"], capture_output=True)
     except subprocess.CalledProcessError:
         return None
     return json.loads(result.stdout)
@@ -264,6 +264,9 @@ def build_summary_row(
         "input_s3_uri": input_s3_uri,
         "processing_time_seconds": metadata.get("processing_time_seconds"),
         "chunk_mapper_seconds": metadata.get("chunk_mapper_seconds"),
+        "chunk_global_mapper_seconds": metadata.get("chunk_global_mapper_seconds"),
+        "chunk_incremental_mapper_seconds": metadata.get("chunk_incremental_mapper_seconds"),
+        "chunk_merge_seconds": metadata.get("chunk_merge_seconds"),
         "mapper_seconds_per_registered_image": metadata.get("mapper_seconds_per_registered_image"),
         "images_registered": metadata.get("images_registered"),
         "dataset_image_count": metadata.get("dataset_image_count"),
