@@ -18,6 +18,9 @@ from typing import Any, Sequence
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".tif", ".tiff", ".webp"}
 IMAGE_LIST_KEYS = ("image_names", "images", "file_names", "files", "entries", "items")
 IMAGE_VALUE_KEYS = ("file_name", "image_name", "name", "path", "uri", "key", "basename")
+AWS_CLI = shutil.which("aws") or (
+    "/opt/homebrew/bin/aws" if Path("/opt/homebrew/bin/aws").exists() else "aws"
+)
 
 
 def run_command(command: list[str]) -> None:
@@ -45,7 +48,7 @@ def materialize_input(source: str, workspace: Path, *, default_name: str) -> Pat
     file_name = Path(urllib.parse.unquote(parsed.path)).name or default_name
     local_path = workspace / file_name
     if parsed.scheme == "s3":
-        run_command(["aws", "s3", "cp", source, str(local_path)])
+        run_command([AWS_CLI, "s3", "cp", source, str(local_path)])
         return local_path
     if parsed.scheme in ("http", "https"):
         with urllib.request.urlopen(source) as response, open(local_path, "wb") as output_handle:
@@ -63,7 +66,7 @@ def publish_output(local_path: Path, output: str) -> Path | str:
             shutil.copy2(local_path, destination)
         return destination
     if parsed.scheme == "s3":
-        run_command(["aws", "s3", "cp", str(local_path), output])
+        run_command([AWS_CLI, "s3", "cp", str(local_path), output])
         return output
     raise ValueError(f"Unsupported output URI scheme for {output}")
 

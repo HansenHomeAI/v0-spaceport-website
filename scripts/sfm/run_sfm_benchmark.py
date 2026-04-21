@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import subprocess
 import tempfile
 import time
@@ -14,6 +15,9 @@ from typing import Dict, List
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SHARED_ML_STACK_NAME = "SpaceportMLPipelineStagingStack"
+AWS_CLI = shutil.which("aws") or (
+    "/opt/homebrew/bin/aws" if Path("/opt/homebrew/bin/aws").exists() else "aws"
+)
 
 
 def run_command(command: List[str], *, capture_output: bool = False) -> subprocess.CompletedProcess[str]:
@@ -26,7 +30,7 @@ def run_command(command: List[str], *, capture_output: bool = False) -> subproce
 
 
 def aws_json(*args: str) -> dict:
-    result = run_command(["aws", *args, "--output", "json"], capture_output=True)
+    result = run_command([AWS_CLI, *args, "--output", "json"], capture_output=True)
     return json.loads(result.stdout)
 
 
@@ -131,6 +135,16 @@ def build_environment(args: argparse.Namespace) -> Dict[str, str]:
         environment["COLMAP_CHUNK_MERGE_STRATEGY"] = args.chunk_merge_strategy
     if args.chunk_hierarchical_merge_fanin is not None:
         environment["COLMAP_CHUNK_HIERARCHICAL_MERGE_FANIN"] = str(args.chunk_hierarchical_merge_fanin)
+    if args.chunk_merge_ba_policy:
+        environment["COLMAP_CHUNK_MERGE_BA_POLICY"] = args.chunk_merge_ba_policy
+    if args.matching_max_num_matches is not None:
+        environment["COLMAP_MATCHING_MAX_NUM_MATCHES"] = str(args.matching_max_num_matches)
+    if args.spatial_max_neighbors is not None:
+        environment["COLMAP_SPATIAL_MAX_NEIGHBORS"] = str(args.spatial_max_neighbors)
+    if args.spatial_max_distance_meters is not None:
+        environment["COLMAP_SPATIAL_MAX_DISTANCE_METERS"] = str(args.spatial_max_distance_meters)
+    if args.sequential_overlap is not None:
+        environment["COLMAP_SEQUENTIAL_OVERLAP"] = str(args.sequential_overlap)
     return environment
 
 
@@ -202,6 +216,36 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Hierarchical chunk merge fan-in override.",
     )
+    parser.add_argument(
+        "--chunk-merge-ba-policy",
+        choices=["per_merge", "per_level", "root_only"],
+        default="",
+        help="Chunk merge bundle-adjustment policy override.",
+    )
+    parser.add_argument(
+        "--matching-max-num-matches",
+        type=int,
+        default=None,
+        help="Cap COLMAP per-pair matches for attributable benchmark runs.",
+    )
+    parser.add_argument(
+        "--spatial-max-neighbors",
+        type=int,
+        default=None,
+        help="Override COLMAP spatial matcher max neighbors.",
+    )
+    parser.add_argument(
+        "--spatial-max-distance-meters",
+        type=float,
+        default=None,
+        help="Override COLMAP spatial matcher max distance in meters.",
+    )
+    parser.add_argument(
+        "--sequential-overlap",
+        type=int,
+        default=None,
+        help="Override COLMAP sequential matcher overlap window.",
+    )
     parser.add_argument("--wait", action="store_true", help="Wait for job completion and print metadata")
     parser.add_argument("--poll-seconds", type=int, default=60)
     return parser.parse_args()
@@ -231,9 +275,15 @@ def build_summary_row(
         "chunk_leaf_mapper_mode": metadata.get("chunk_leaf_mapper_mode"),
         "chunk_recovery_mapper_mode": metadata.get("chunk_recovery_mapper_mode"),
         "chunk_merge_strategy": metadata.get("chunk_merge_strategy"),
+        "chunk_merge_ba_policy": metadata.get("chunk_merge_ba_policy"),
+        "chunk_merge_bundle_adjuster_seconds": metadata.get("chunk_merge_bundle_adjuster_seconds"),
         "merge_tree_depth": metadata.get("merge_tree_depth"),
         "chunk_count": metadata.get("chunk_count"),
         "chunk_sizes": metadata.get("chunk_sizes"),
+        "matching_max_num_matches": metadata.get("matching_max_num_matches"),
+        "spatial_matcher_neighbors": metadata.get("spatial_matcher_neighbors"),
+        "spatial_matcher_distance_m": metadata.get("spatial_matcher_distance_m"),
+        "sequential_overlap": metadata.get("sequential_overlap"),
     }
 
 
@@ -311,7 +361,7 @@ def main() -> int:
     try:
         run_command(
             [
-                "aws",
+                AWS_CLI,
                 "sagemaker",
                 "create-processing-job",
                 "--cli-input-json",

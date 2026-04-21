@@ -1601,6 +1601,87 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(pipeline.chunk_merge_proof["chunk_merge_strategy"], "hierarchical")
             self.assertEqual(pipeline.chunk_merge_proof["final_merged_registered_images"], 4)
 
+    def test_merge_chunk_models_root_only_runs_single_terminal_bundle_adjuster(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {
+                "COLMAP_CHUNK_MERGE_STRATEGY": "hierarchical",
+                "COLMAP_CHUNK_HIERARCHICAL_MERGE_FANIN": "2",
+                "COLMAP_CHUNK_MERGE_BA_POLICY": "root_only",
+            },
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            first_model_dir = root / "chunk_00" / "sparse_initial" / "0"
+            second_model_dir = root / "chunk_01" / "sparse_initial" / "0"
+            first_text_dir = root / "text_00"
+            second_text_dir = root / "text_01"
+            merged_text_dir = root / "merged_text"
+            for path in (first_model_dir, second_model_dir, first_text_dir, second_text_dir, merged_text_dir):
+                path.mkdir(parents=True, exist_ok=True)
+            (first_text_dir / "images.txt").write_text(
+                "1 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n2 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (second_text_dir / "images.txt").write_text(
+                "3 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n4 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (merged_text_dir / "images.txt").write_text(
+                "5 1 0 0 0 0 0 0 1 IMG_01.jpg\n0 0 -1\n6 1 0 0 0 0 0 0 1 IMG_02.jpg\n0 0 -1\n7 1 0 0 0 0 0 0 1 IMG_03.jpg\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            chunk_models = [
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_00_mapper_initial",
+                    text_dir=first_text_dir,
+                    cameras_registered=1,
+                    images_registered=10,
+                    points_3d=1000,
+                    binary_dir=first_model_dir,
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_01_mapper_initial",
+                    text_dir=second_text_dir,
+                    cameras_registered=1,
+                    images_registered=10,
+                    points_3d=1000,
+                    binary_dir=second_model_dir,
+                ),
+            ]
+            final_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_bundle_adjuster_root",
+                text_dir=merged_text_dir,
+                cameras_registered=1,
+                images_registered=20,
+                points_3d=2000,
+                binary_dir=root / "merged_binary",
+            )
+
+            with mock.patch.object(run_colmap_sfm, "stream_command") as stream_command_mock, mock.patch.object(
+                pipeline,
+                "run_bundle_adjuster",
+                return_value=final_model,
+            ) as run_bundle_adjuster_mock:
+                def fake_stream(command, *, stage, timeout_seconds, heartbeat_seconds):
+                    if command[1] != "model_converter":
+                        return
+                    output_path = Path(command[command.index("--output_path") + 1])
+                    output_path.mkdir(parents=True, exist_ok=True)
+                    for name in ("images.txt", "cameras.txt", "points3D.txt"):
+                        source = merged_text_dir / name
+                        if source.exists():
+                            (output_path / name).write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
+
+                stream_command_mock.side_effect = fake_stream
+                result = pipeline.merge_chunk_models(chunk_models)
+
+            run_bundle_adjuster_mock.assert_called_once()
+            self.assertEqual(run_bundle_adjuster_mock.call_args.kwargs["stage"], "chunk_bundle_adjuster_root")
+            self.assertEqual(pipeline.chunk_merge_proof["chunk_merge_ba_policy"], "root_only")
+            self.assertEqual(pipeline.chunk_merge_stage_summaries[-1]["root_adjustment"], True)
+
     def test_merge_chunk_models_raises_when_model_merger_noops(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

@@ -1,3 +1,4 @@
+2026-04-20T21:46:00Z advance sfm proof frontier with merge-ba policy, selector, and attributable tuning knobs
 2026-04-20T15:08:53Z hybrid hierarchical sfm preview validation
 2026-04-17T20:14:00Z monolithic global_mapper sfm benchmark branch preview
 2026-03-30T16:16:32Z optimize bundled skybox payload for cold edge delivery validation

@@ -30,6 +30,7 @@ class ColmapGlobalMapperTests(unittest.TestCase):
             self.assertEqual(pipeline.chunk_recovery_mapper_mode, "inherit")
             self.assertEqual(pipeline.chunk_merge_strategy, "serial")
             self.assertEqual(pipeline.chunk_hierarchical_merge_fanin, 2)
+            self.assertEqual(pipeline.chunk_merge_ba_policy, "per_level")
 
     def test_global_mapper_mode_enables_view_graph_calibrator_by_default(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(

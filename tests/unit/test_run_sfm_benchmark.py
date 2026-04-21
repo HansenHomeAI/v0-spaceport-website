@@ -28,6 +28,16 @@ class ParseArgsTests(unittest.TestCase):
             "hierarchical",
             "--chunk-hierarchical-merge-fanin",
             "2",
+            "--chunk-merge-ba-policy",
+            "root_only",
+            "--matching-max-num-matches",
+            "10240",
+            "--spatial-max-neighbors",
+            "8",
+            "--spatial-max-distance-meters",
+            "120",
+            "--sequential-overlap",
+            "6",
         ]
         with mock.patch("sys.argv", argv):
             args = run_sfm_benchmark.parse_args()
@@ -37,6 +47,11 @@ class ParseArgsTests(unittest.TestCase):
         self.assertEqual(args.chunk_recovery_mapper, "incremental")
         self.assertEqual(args.chunk_merge_strategy, "hierarchical")
         self.assertEqual(args.chunk_hierarchical_merge_fanin, 2)
+        self.assertEqual(args.chunk_merge_ba_policy, "root_only")
+        self.assertEqual(args.matching_max_num_matches, 10240)
+        self.assertEqual(args.spatial_max_neighbors, 8)
+        self.assertEqual(args.spatial_max_distance_meters, 120.0)
+        self.assertEqual(args.sequential_overlap, 6)
 
 
 class BuildEnvironmentTests(unittest.TestCase):
@@ -49,6 +64,11 @@ class BuildEnvironmentTests(unittest.TestCase):
             chunk_recovery_mapper="incremental",
             chunk_merge_strategy="hierarchical",
             chunk_hierarchical_merge_fanin=2,
+            chunk_merge_ba_policy="root_only",
+            matching_max_num_matches=10240,
+            spatial_max_neighbors=8,
+            spatial_max_distance_meters=120.0,
+            sequential_overlap=6,
         )
 
         environment = run_sfm_benchmark.build_environment(args)
@@ -58,6 +78,11 @@ class BuildEnvironmentTests(unittest.TestCase):
         self.assertEqual(environment["COLMAP_CHUNK_RECOVERY_MAPPER_MODE"], "incremental")
         self.assertEqual(environment["COLMAP_CHUNK_MERGE_STRATEGY"], "hierarchical")
         self.assertEqual(environment["COLMAP_CHUNK_HIERARCHICAL_MERGE_FANIN"], "2")
+        self.assertEqual(environment["COLMAP_CHUNK_MERGE_BA_POLICY"], "root_only")
+        self.assertEqual(environment["COLMAP_MATCHING_MAX_NUM_MATCHES"], "10240")
+        self.assertEqual(environment["COLMAP_SPATIAL_MAX_NEIGHBORS"], "8")
+        self.assertEqual(environment["COLMAP_SPATIAL_MAX_DISTANCE_METERS"], "120.0")
+        self.assertEqual(environment["COLMAP_SEQUENTIAL_OVERLAP"], "6")
         self.assertEqual(environment["EXTRA_FLAG"], "1")
 
     def test_build_environment_defaults_chunking_off_for_monolithic(self) -> None:
@@ -69,6 +94,11 @@ class BuildEnvironmentTests(unittest.TestCase):
             chunk_recovery_mapper="",
             chunk_merge_strategy="",
             chunk_hierarchical_merge_fanin=None,
+            chunk_merge_ba_policy="",
+            matching_max_num_matches=None,
+            spatial_max_neighbors=None,
+            spatial_max_distance_meters=None,
+            sequential_overlap=None,
         )
 
         environment = run_sfm_benchmark.build_environment(args)

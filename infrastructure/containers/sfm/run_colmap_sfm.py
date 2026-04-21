@@ -507,6 +507,15 @@ class ColmapPipeline:
                 "COLMAP_CHUNK_HIERARCHICAL_MERGE_FANIN must be >= 2; got "
                 f"{self.chunk_hierarchical_merge_fanin}"
             )
+        self.chunk_merge_ba_policy = (
+            os.environ.get("COLMAP_CHUNK_MERGE_BA_POLICY", "per_level").strip().lower()
+            or "per_level"
+        )
+        if self.chunk_merge_ba_policy not in {"per_merge", "per_level", "root_only"}:
+            raise RuntimeError(
+                "Unsupported COLMAP_CHUNK_MERGE_BA_POLICY="
+                f"{self.chunk_merge_ba_policy}; expected one of per_merge, per_level, root_only"
+            )
         self.force_gps_first = os.environ.get("COLMAP_FORCE_GPS_FIRST", "1") != "0"
         requested_match_profile = os.environ.get("COLMAP_MATCH_PROFILE", "P1").strip().upper() or "P1"
         if requested_match_profile not in MATCH_PROFILES:
@@ -686,6 +695,7 @@ class ColmapPipeline:
         self.chunk_global_mapper_seconds = 0.0
         self.chunk_incremental_mapper_seconds = 0.0
         self.chunk_merge_seconds = 0.0
+        self.chunk_merge_bundle_adjuster_seconds = 0.0
         self.merge_tree_depth = 0
         self.merge_tree_node_count = 0
         self.merge_tree_level_summaries: List[dict[str, object]] = []
@@ -695,6 +705,8 @@ class ColmapPipeline:
         self.chunk_leaf_global_count = 0
         self.chunk_leaf_incremental_count = 0
         self.chunk_leaf_recovery_fallback_count = 0
+        self.chunk_leaf_stage_summaries: List[dict[str, object]] = []
+        self.chunk_merge_stage_summaries: List[dict[str, object]] = []
         self.chunk_groups: List[CaptureGroup] = []
         self.flight_segments: List[FlightSegment] = []
         self.image_group_indices: Dict[str, int] = {}
@@ -3737,6 +3749,19 @@ class ColmapPipeline:
             self.chunk_incremental_mapper_seconds += stage_seconds
             self.chunk_leaf_incremental_count += 1
         self.chunk_mapper_seconds += stage_seconds
+        self.chunk_leaf_stage_summaries.append(
+            {
+                "chunk_index": chunk_plan.index,
+                "stage": stage_name,
+                "mapper_mode": mapper_mode,
+                "recovery": recovery,
+                "image_count": len(chunk_plan.image_names),
+                "source_chunk_indexes": sorted(chunk_plan.source_chunk_indexes),
+                "registered_images": model.images_registered,
+                "points_3d": model.points_3d,
+                "mapper_seconds": round(stage_seconds, 2),
+            }
+        )
         return model
 
     def component_centroid_xy(self, chunk_indexes: Sequence[int]) -> tuple[float, float]:
@@ -3830,6 +3855,8 @@ class ColmapPipeline:
     ) -> MergeComponent:
         if len(components) == 1:
             return components[0]
+        group_model_merger_seconds = 0.0
+        group_bundle_adjuster_seconds = 0.0
         merged_component = components[0]
         for merge_index, next_component in enumerate(components[1:], start=1):
             stage = f"chunk_model_merger_l{level_index:02d}_g{group_index:02d}_m{merge_index:02d}"
@@ -3838,6 +3865,7 @@ class ColmapPipeline:
             left_registered_names = load_registered_image_names(merged_component.model.text_dir / "images.txt")
             right_registered_names = load_registered_image_names(next_component.model.text_dir / "images.txt")
             try:
+                started = time.time()
                 stream_command(
                     [
                         "colmap",
@@ -3855,6 +3883,8 @@ class ColmapPipeline:
                     timeout_seconds=self.resolve_timeout_seconds(self.matcher_timeout_seconds),
                     heartbeat_seconds=self.command_heartbeat_seconds,
                 )
+                self.timings[f"{stage}_seconds"] = round(time.time() - started, 2)
+                group_model_merger_seconds += self.timings[f"{stage}_seconds"]
             except RuntimeError as exc:
                 self.merged_component_count = len(components)
                 self.handle_stage_runtime_error(stage, exc)
@@ -3898,12 +3928,61 @@ class ColmapPipeline:
                     f"Failed to merge chunk model group {group_index}: {stage} did not increase registered "
                     f"images ({len(merged_registered_names)} <= {max_input_registered}); merge likely failed"
                 )
-        adjusted_model = self.run_bundle_adjuster(
-            input_path=merged_component.model.binary_dir,
-            stage=f"chunk_bundle_adjuster_l{level_index:02d}_g{group_index:02d}",
+            if self.chunk_merge_ba_policy == "per_merge":
+                bundle_stage = (
+                    f"chunk_bundle_adjuster_l{level_index:02d}_g{group_index:02d}_m{merge_index:02d}"
+                )
+                adjusted_model = self.run_bundle_adjuster(
+                    input_path=merged_component.model.binary_dir,
+                    stage=bundle_stage,
+                )
+                bundle_seconds = self.timings.get(f"{bundle_stage}_seconds", 0.0)
+                self.chunk_merge_bundle_adjuster_seconds += bundle_seconds
+                group_bundle_adjuster_seconds += bundle_seconds
+                merged_component = MergeComponent(
+                    model=adjusted_model,
+                    chunk_indexes=merged_component.chunk_indexes,
+                )
+        if self.chunk_merge_ba_policy == "per_level":
+            bundle_stage = f"chunk_bundle_adjuster_l{level_index:02d}_g{group_index:02d}"
+            adjusted_model = self.run_bundle_adjuster(
+                input_path=merged_component.model.binary_dir,
+                stage=bundle_stage,
+            )
+            bundle_seconds = self.timings.get(f"{bundle_stage}_seconds", 0.0)
+            self.chunk_merge_bundle_adjuster_seconds += bundle_seconds
+            group_bundle_adjuster_seconds += bundle_seconds
+            merged_component = MergeComponent(
+                model=adjusted_model,
+                chunk_indexes=sorted(
+                    {
+                        chunk_index
+                        for component in components
+                        for chunk_index in component.chunk_indexes
+                    }
+                ),
+            )
+        self.chunk_merge_stage_summaries.append(
+            {
+                "level": level_index,
+                "group": group_index,
+                "chunk_indexes": sorted(
+                    {
+                        chunk_index
+                        for component in components
+                        for chunk_index in component.chunk_indexes
+                    }
+                ),
+                "input_component_count": len(components),
+                "registered_images": merged_component.model.images_registered,
+                "points_3d": merged_component.model.points_3d,
+                "model_merger_seconds": round(group_model_merger_seconds, 2),
+                "bundle_adjuster_seconds": round(group_bundle_adjuster_seconds, 2),
+                "chunk_merge_ba_policy": self.chunk_merge_ba_policy,
+            }
         )
         return MergeComponent(
-            model=adjusted_model,
+            model=merged_component.model,
             chunk_indexes=sorted(
                 {
                     chunk_index
@@ -4181,6 +4260,38 @@ class ColmapPipeline:
             level_index += 1
 
         adjusted_model = components[0].model
+        if self.chunk_merge_ba_policy == "root_only":
+            adjusted_model = self.run_bundle_adjuster(
+                input_path=adjusted_model.binary_dir,
+                stage="chunk_bundle_adjuster_root",
+            )
+            self.chunk_merge_bundle_adjuster_seconds += self.timings.get(
+                "chunk_bundle_adjuster_root_seconds",
+                0.0,
+            )
+            self.chunk_merge_stage_summaries.append(
+                {
+                    "level": level_index,
+                    "group": 0,
+                    "chunk_indexes": sorted(
+                        {
+                            chunk_index
+                            for component in components
+                            for chunk_index in component.chunk_indexes
+                        }
+                    ),
+                    "input_component_count": 1,
+                    "registered_images": adjusted_model.images_registered,
+                    "points_3d": adjusted_model.points_3d,
+                    "model_merger_seconds": 0.0,
+                    "bundle_adjuster_seconds": round(
+                        self.timings.get("chunk_bundle_adjuster_root_seconds", 0.0),
+                        2,
+                    ),
+                    "chunk_merge_ba_policy": self.chunk_merge_ba_policy,
+                    "root_adjustment": True,
+                }
+            )
         self.chunk_merge_seconds = round(time.time() - merge_started, 2)
         self.timings["chunk_model_merge_seconds"] = self.chunk_merge_seconds
         self.merge_tree_depth = level_index
@@ -4212,6 +4323,7 @@ class ColmapPipeline:
             if pre_merge_registered_count
             else 0.0,
             "chunk_merge_strategy": self.chunk_merge_strategy,
+            "chunk_merge_ba_policy": self.chunk_merge_ba_policy,
             "merge_tree_depth": self.merge_tree_depth,
             "merge_tree_node_count": self.merge_tree_node_count,
             "merge_tree_level_summaries": self.merge_tree_level_summaries,
@@ -4589,6 +4701,7 @@ class ColmapPipeline:
             "chunk_recovery_mapper_mode": self.chunk_recovery_mapper_mode,
             "chunk_merge_strategy": self.chunk_merge_strategy,
             "chunk_hierarchical_merge_fanin": self.chunk_hierarchical_merge_fanin,
+            "chunk_merge_ba_policy": self.chunk_merge_ba_policy,
             "chunk_count": len(self.chunk_plans),
             "chunk_sizes": self.chunk_sizes,
             "chunk_overlap_image_count": self.chunk_overlap_image_count,
@@ -4600,9 +4713,12 @@ class ColmapPipeline:
             "chunk_global_mapper_seconds": round(self.chunk_global_mapper_seconds, 2),
             "chunk_incremental_mapper_seconds": round(self.chunk_incremental_mapper_seconds, 2),
             "chunk_merge_seconds": round(self.chunk_merge_seconds, 2),
+            "chunk_merge_bundle_adjuster_seconds": round(self.chunk_merge_bundle_adjuster_seconds, 2),
             "chunk_merge_proof": self.chunk_merge_proof,
             "chunk_recovery_mode": self.chunk_recovery_mode,
             "chunk_run_metrics": self.chunk_run_metrics,
+            "chunk_leaf_stage_summaries": self.chunk_leaf_stage_summaries,
+            "chunk_merge_stage_summaries": self.chunk_merge_stage_summaries,
             "boundary_recovery_triggered": self.boundary_recovery_triggered,
             "adjacent_chunk_merge_triggered": self.adjacent_chunk_merge_triggered,
             "chunk_leaf_global_count": self.chunk_leaf_global_count,
