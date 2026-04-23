@@ -5,13 +5,14 @@ import types
 import unittest
 from pathlib import Path
 
+import numpy as np
+
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MODULE_PATH = REPO_ROOT / "infrastructure" / "containers" / "3dgs" / "run_tiled_quality_review.py"
 
 
 def load_module_with_stubs():
-    numpy_stub = types.ModuleType("numpy")
     torch_stub = types.ModuleType("torch")
     pil_stub = types.ModuleType("PIL")
     plyfile_stub = types.ModuleType("plyfile")
@@ -35,7 +36,6 @@ def load_module_with_stubs():
     trainer_stub.NerfStudioTrainer = type("NerfStudioTrainer", (), {})
 
     for name, module in {
-        "numpy": numpy_stub,
         "torch": torch_stub,
         "PIL": pil_stub,
         "plyfile": plyfile_stub,
@@ -73,6 +73,14 @@ def make_view(bucket: str, *, psnr: float = 30.0) -> dict:
             "visible_gaussians": 3_100_000,
             "rendered_gaussians": 900_000,
             "limited": True,
+        },
+        "render_health": {
+            "rgb_mean": 0.45,
+            "rgb_std": 0.08,
+            "rgb_min": 0.02,
+            "rgb_max": 0.91,
+            "dynamic_range": 0.89,
+            "blank_or_flat": False,
         },
     }
 
@@ -121,6 +129,7 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
             self.assertEqual(manifest["render_settings"]["render_scale"], 0.5)
             self.assertEqual(manifest["render_stats_summary"]["merged_limited_view_count"], 12)
             self.assertEqual(manifest["render_stats_summary"]["merged_rendered_gaussian_min"], 900000.0)
+            self.assertEqual(manifest["render_health_summary"]["blank_or_flat_count"], 0)
             self.assertIn(
                 "merged review included promoted background skybox",
                 manifest["promotion_readiness"]["notes"],
@@ -174,6 +183,50 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
                 "merged review had no promoted background skybox",
                 manifest["promotion_readiness"]["notes"],
             )
+
+    def test_build_review_manifest_blocks_blank_or_flat_renders(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            review_camera_manifest_path = root / "review_camera_manifest.json"
+            review_camera_manifest_path.write_text("{}", encoding="utf-8")
+
+            review_views = []
+            review_images_by_bucket = {}
+            for bucket_key, bucket_label in module.DEFAULT_BUCKET_ORDER:
+                review_images_by_bucket[bucket_key] = [f"{bucket_label}_{index}.png" for index in range(4)]
+                for index in range(4):
+                    view = make_view(bucket_label, psnr=30.0 + index)
+                    if bucket_label == "near_detail" and index == 0:
+                        view["render_health"] = {
+                            "rgb_mean": 0.0,
+                            "rgb_std": 0.0,
+                            "rgb_min": 0.0,
+                            "rgb_max": 0.0,
+                            "dynamic_range": 0.0,
+                            "blank_or_flat": True,
+                        }
+                    review_views.append(view)
+
+            manifest = module.build_review_manifest(
+                model_tarball=root / "model.tar.gz",
+                selected_tile_ids=["tile_02", "tile_05"],
+                manifest_resolution={"source_mode": "native_3dgs_manifests"},
+                merge_report={"retain_all_tile_count": 0, "fallback_tile_count": 0},
+                review_images_by_bucket=review_images_by_bucket,
+                review_camera_manifest_path=review_camera_manifest_path,
+                review_views=review_views,
+                max_images_per_bucket=4,
+                merged_background_present=False,
+            )
+
+        self.assertEqual(manifest["promotion_readiness"]["status"], "blocked")
+        self.assertEqual(manifest["render_health_summary"]["blank_or_flat_count"], 1)
+        self.assertIn(
+            "merged review produced blank or flat renders on 1 views",
+            manifest["promotion_readiness"]["notes"],
+        )
 
     def test_compare_review_manifests_blocks_metric_regressions_and_merge_fallbacks(self):
         module = load_module_with_stubs()
@@ -247,6 +300,18 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
         self.assertEqual(frozen["near_detail_camera_ids"], ["a.jpg"])
         self.assertEqual(frozen["boundary_camera_ids"], ["b.jpg"])
         self.assertEqual(frozen["horizon_camera_ids"], ["c.jpg"])
+
+    def test_sh_rest_coefficients_load_channel_major_ply_order(self):
+        module = load_module_with_stubs()
+
+        rest = np.array([[0.0, 1.0, 2.0, 3.0, 4.0, 5.0]], dtype=np.float32)
+        reshaped = module.reshape_sh_rest_coefficients(rest)
+
+        self.assertEqual(reshaped.shape, (1, 2, 3))
+        np.testing.assert_array_equal(
+            reshaped,
+            np.array([[[0.0, 2.0, 4.0], [1.0, 3.0, 5.0]]], dtype=np.float32),
+        )
 
 
 if __name__ == "__main__":

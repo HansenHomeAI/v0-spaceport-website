@@ -1,9 +1,9 @@
 reason: geometry-first md1 tiled 3DGS reset; continuing beyond offline R1 toward bounded proof gates
-current_rung: R1a review-gate hardening; render decode fix implemented after black-render smoke
+current_rung: R1a review-gate hardening; corrected smoke completed but invalid, SH coefficient ordering fix implemented locally
 root_cause_classification: merge_bad
-live_compute_status: none; md1-r1a-rendercap-20260423214434 completed but produced black renders because PLY log-scale/logit-opacity decode was wrong
+live_compute_status: none; md1-r1a-renderfix-20260423221859 completed and artifact was invalid because review renders were black/flat
 current_branch: agent-53821974-md1-geometry-consistency
-current_head_at_state_write: e03dc2cc7e30c6c7fd4df62b4069ac85922ced99 plus uncommitted PLY decode/camera-cap review fix
+current_head_at_state_write: d491d515f809b575a0aa769ed60e26be288ab32b plus uncommitted SH-rest ordering and render-health gate fix
 base_branch: agent-86580563-hierarchical-splat-merge-plan
 base_commit: ffef97e646046f204267ec30dd7dbf6f19027cad
 automation:
@@ -12,11 +12,13 @@ automation:
   purpose: reassess branch, PR, workflow, AWS, artifact, and audit status; keep moving the proof ladder
 exact_artifacts:
   canonical_training_tarball: s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz
-  active_smoke_review_job: md1-r1a-rendercap-20260423214434
-  active_smoke_review_output_root: s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r1a-20260423214434/review-render-job-output
-  active_smoke_review_image: 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:f1498dced6aeb169c97dbe1cf6d5b0cc8d6440cf558c444a3bd54e1aaf898eeb
+  active_smoke_review_job: md1-r1a-renderfix-20260423221859
+  active_smoke_review_output_root: s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r1a-20260423221859/review-render-job-output
+  active_smoke_review_artifact: s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r1a-20260423221859/review-render-job-output/md1-r1a-renderfix-20260423221859/output/model.tar.gz
+  active_smoke_review_image: 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:0faa958f738982cc4e73fda07cec408f8e1106e095dd17a1873dd26e130dc879
+  active_smoke_review_camera_manifest: s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r1a-20260423221859/inputs/review_camera_manifest.json
   preview_url: https://agent-53821974-md1-geometry.v0-spaceport-website-preview2.pages.dev
-  preview_hash_url: https://b35176c7.v0-spaceport-website-preview2.pages.dev
+  preview_hash_url: https://1c94e71e.v0-spaceport-website-preview2.pages.dev
   local_audit_manifest: logs/audit/md1-1k-full-r2/audit_manifest.json
   local_review_comparison: logs/audit/md1-1k-full-r2/review_comparison.json
   frozen_review_cameras: logs/audit/md1-1k-full-r2/review_camera_manifest.json
@@ -41,7 +43,11 @@ review_gate_delta:
   black_render_root_cause: PLY opacity logits and log-scales were passed to gsplat without sigmoid/exp conversion
   added_ply_decode_fix: true
   added_frozen_camera_smoke_cap: true
+  completed_flat_render_job: md1-r1a-renderfix-20260423221859
+  flat_render_root_cause: f_rest_* SH coefficients were loaded as RGB-interleaved triples, but the exporter writes channel-major SH rest fields
+  added_sh_rest_order_fix: true
+  added_blank_flat_render_health_gate: true
   smoke_review_target: tile_02/tile_05 using frozen 4/4/4 camera set before bounded R2 retraining
-next_unblocked_step: commit and push PLY decode plus frozen-camera cap fix, watch CDK/Pages/container workflows to green, relaunch 4/4/4 smoke with render_scale=0.25 and inspect nonblack renders before R2 spend
+next_unblocked_step: commit and push SH-rest ordering plus blank/flat render-health gate fix, watch CDK/Pages/container workflows to green, rerun 4/4/4 smoke with render_scale=0.25, and require nonblank side-by-side evidence before R2 spend
 owner_action_needed: none
-updated: 2026-04-23T22:01:09Z
+updated: 2026-04-23T23:12:30Z

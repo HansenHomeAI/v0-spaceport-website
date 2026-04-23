@@ -56,6 +56,8 @@ PROMOTION_THRESHOLDS = {
 DEFAULT_RENDER_MAX_GAUSSIANS_PER_VIEW = 900_000
 DEFAULT_RENDER_CULL_MARGIN = 0.50
 DEFAULT_RENDER_MIN_GAUSSIANS_ON_OOM = 75_000
+DEFAULT_BLANK_RENDER_STD_THRESHOLD = 0.005
+DEFAULT_BLANK_RENDER_RANGE_THRESHOLD = 0.02
 
 
 def env_int(name: str, default: int) -> int:
@@ -278,6 +280,13 @@ def save_rgb_image(image: np.ndarray, output_path: Path) -> str:
     return str(output_path)
 
 
+def reshape_sh_rest_coefficients(sh_rest_flat: np.ndarray) -> np.ndarray:
+    if sh_rest_flat.shape[1] % 3 != 0:
+        raise RuntimeError(f"Unexpected SH payload width: {sh_rest_flat.shape[1]}")
+    coeff_count = sh_rest_flat.shape[1] // 3
+    return sh_rest_flat.reshape(sh_rest_flat.shape[0], 3, coeff_count).transpose(0, 2, 1)
+
+
 def load_gaussian_model(ply_path: Path, device: torch.device) -> dict[str, Any]:
     ply = PlyData.read(str(ply_path))
     vertex = ply["vertex"].data
@@ -343,9 +352,7 @@ def load_gaussian_model(ply_path: Path, device: torch.device) -> dict[str, Any]:
     )
     if sh_rest_fields:
         sh_rest_flat = np.stack([np.asarray(vertex[field], dtype=np.float32) for field in sh_rest_fields], axis=1)
-        if sh_rest_flat.shape[1] % 3 != 0:
-            raise RuntimeError(f"Unexpected SH payload width in {ply_path}: {sh_rest_flat.shape[1]}")
-        sh_rest = torch.from_numpy(sh_rest_flat.reshape(len(vertex), -1, 3)).to(device)
+        sh_rest = torch.from_numpy(reshape_sh_rest_coefficients(sh_rest_flat)).to(device)
     else:
         sh_rest = torch.zeros((len(vertex), 0, 3), dtype=torch.float32, device=device)
 
@@ -427,7 +434,7 @@ def _view_projected_subset(
         sign, visible_mask, depth, u, v = best
         visible_indices = torch.nonzero(visible_mask, as_tuple=False).flatten()
         if visible_indices.numel() == 0:
-            opacity_score = torch.sigmoid(model["opacities"].float())
+            opacity_score = model["opacities"].float()
             selected_count = min(source_count, int(max_gaussians_per_view))
             selected_indices = torch.topk(opacity_score, k=selected_count, largest=True).indices
             stats.update(
@@ -448,7 +455,7 @@ def _view_projected_subset(
         else:
             selected_count = int(max_gaussians_per_view)
             depth_visible = torch.clamp(depth.index_select(0, visible_indices), min=1e-3)
-            opacity_visible = torch.sigmoid(model["opacities"].float().index_select(0, visible_indices))
+            opacity_visible = model["opacities"].float().index_select(0, visible_indices)
             scale_max = torch.amax(model["scales"].float().index_select(0, visible_indices), dim=1)
             center_distance = torch.square((u.index_select(0, visible_indices) - cx) / max(width, 1))
             center_distance = center_distance + torch.square((v.index_select(0, visible_indices) - cy) / max(height, 1))
@@ -598,6 +605,31 @@ def composite_render(foreground: np.ndarray, alpha: np.ndarray, background: np.n
     if background is None:
         return foreground
     return np.clip(foreground + (background * (1.0 - alpha[..., None])), 0.0, 1.0)
+
+
+def compute_render_health(image: np.ndarray, alpha: np.ndarray | None = None) -> dict[str, Any]:
+    clipped = np.clip(image.astype(np.float32), 0.0, 1.0)
+    rgb_min = float(np.min(clipped))
+    rgb_max = float(np.max(clipped))
+    rgb_std = float(np.std(clipped))
+    rgb_mean = float(np.mean(clipped))
+    dynamic_range = rgb_max - rgb_min
+    health = {
+        "rgb_mean": rgb_mean,
+        "rgb_std": rgb_std,
+        "rgb_min": rgb_min,
+        "rgb_max": rgb_max,
+        "dynamic_range": dynamic_range,
+        "blank_or_flat": bool(
+            rgb_std < DEFAULT_BLANK_RENDER_STD_THRESHOLD
+            and dynamic_range < DEFAULT_BLANK_RENDER_RANGE_THRESHOLD
+        ),
+    }
+    if alpha is not None:
+        alpha_clipped = np.clip(alpha.astype(np.float32), 0.0, 1.0)
+        health["alpha_mean"] = float(np.mean(alpha_clipped))
+        health["alpha_max"] = float(np.max(alpha_clipped))
+    return health
 
 
 def compute_metrics(
@@ -901,6 +933,15 @@ def build_review_manifest(
     limited_render_count = sum(1 for stats in merged_render_stats if stats.get("limited"))
     if limited_render_count:
         promotion_notes.append(f"merged review used deterministic view-capped rendering on {limited_render_count} views")
+    render_health_entries = [
+        view.get("render_health", {})
+        for view in review_views
+        if isinstance(view.get("render_health"), Mapping)
+    ]
+    blank_or_flat_count = sum(1 for health in render_health_entries if health.get("blank_or_flat"))
+    if blank_or_flat_count:
+        promotion_notes.append(f"merged review produced blank or flat renders on {blank_or_flat_count} views")
+        promotion_status = "blocked"
 
     return {
         "version": "1.0.0",
@@ -928,6 +969,12 @@ def build_review_manifest(
             "merged_visible_gaussian_median": median_or_none(
                 [stats.get("visible_gaussians") for stats in merged_render_stats]
             ),
+        },
+        "render_health_summary": {
+            "merged_view_count": len(render_health_entries),
+            "blank_or_flat_count": blank_or_flat_count,
+            "rgb_std_median": median_or_none([health.get("rgb_std") for health in render_health_entries]),
+            "dynamic_range_median": median_or_none([health.get("dynamic_range") for health in render_health_entries]),
         },
         "promotion_readiness": {
             "status": promotion_status,
@@ -1137,6 +1184,8 @@ def main() -> None:
                     "metrics_no_background": metrics_no_background,
                     "sky_metrics": sky_metrics,
                     "sky_metrics_no_background": sky_metrics_no_background,
+                    "render_health": compute_render_health(merged_final, merged_alpha),
+                    "render_health_no_background": compute_render_health(merged_no_background, merged_alpha),
                     "merged_render_stats": merged_render_stats,
                 }
 
