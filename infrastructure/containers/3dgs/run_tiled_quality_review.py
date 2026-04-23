@@ -294,28 +294,38 @@ def load_gaussian_model(ply_path: Path, device: torch.device) -> dict[str, Any]:
             axis=1,
         )
     ).to(device)
-    opacities = torch.from_numpy(np.asarray(vertex["opacity"], dtype=np.float32)).to(device)
-    scales = torch.from_numpy(
-        np.stack(
-            [
-                np.asarray(vertex["scale_0"], dtype=np.float32),
-                np.asarray(vertex["scale_1"], dtype=np.float32),
-                np.asarray(vertex["scale_2"], dtype=np.float32),
-            ],
-            axis=1,
-        )
-    ).to(device)
-    quats = torch.from_numpy(
-        np.stack(
-            [
-                np.asarray(vertex["rot_0"], dtype=np.float32),
-                np.asarray(vertex["rot_1"], dtype=np.float32),
-                np.asarray(vertex["rot_2"], dtype=np.float32),
-                np.asarray(vertex["rot_3"], dtype=np.float32),
-            ],
-            axis=1,
-        )
-    ).to(device)
+    raw_opacities = np.asarray(vertex["opacity"], dtype=np.float32)
+    if float(np.nanmin(raw_opacities)) < 0.0 or float(np.nanmax(raw_opacities)) > 1.0:
+        opacity_values = 1.0 / (1.0 + np.exp(-np.clip(raw_opacities, -20.0, 20.0)))
+    else:
+        opacity_values = np.clip(raw_opacities, 0.0, 1.0)
+    opacities = torch.from_numpy(opacity_values.astype(np.float32)).to(device)
+
+    raw_scales = np.stack(
+        [
+            np.asarray(vertex["scale_0"], dtype=np.float32),
+            np.asarray(vertex["scale_1"], dtype=np.float32),
+            np.asarray(vertex["scale_2"], dtype=np.float32),
+        ],
+        axis=1,
+    )
+    if float(np.nanmin(raw_scales)) < 0.0:
+        scale_values = np.exp(np.clip(raw_scales, -20.0, 8.0))
+    else:
+        scale_values = np.clip(raw_scales, 1e-8, None)
+    scales = torch.from_numpy(scale_values.astype(np.float32)).to(device)
+
+    raw_quats = np.stack(
+        [
+            np.asarray(vertex["rot_0"], dtype=np.float32),
+            np.asarray(vertex["rot_1"], dtype=np.float32),
+            np.asarray(vertex["rot_2"], dtype=np.float32),
+            np.asarray(vertex["rot_3"], dtype=np.float32),
+        ],
+        axis=1,
+    )
+    quat_norms = np.linalg.norm(raw_quats, axis=1, keepdims=True).clip(min=1e-8)
+    quats = torch.from_numpy((raw_quats / quat_norms).astype(np.float32)).to(device)
     sh_dc = torch.from_numpy(
         np.stack(
             [
@@ -789,7 +799,11 @@ def compare_review_manifests(
     }
 
 
-def load_frozen_review_images_by_bucket(path: Path) -> dict[str, list[str]]:
+def load_frozen_review_images_by_bucket(
+    path: Path,
+    *,
+    max_images_per_bucket: int | None = None,
+) -> dict[str, list[str]]:
     payload = load_json(path)
     raw_buckets = payload.get("review_image_names_by_bucket", payload)
     label_to_key = {bucket_label: bucket_key for bucket_key, bucket_label in DEFAULT_BUCKET_ORDER}
@@ -800,7 +814,10 @@ def load_frozen_review_images_by_bucket(path: Path) -> dict[str, list[str]]:
             values = raw_buckets.get(bucket_label_value)
         if values is None:
             values = raw_buckets.get(label_to_key.get(bucket_label_value, ""))
-        selected[bucket_key] = [normalize_image_name(str(value)) for value in values or []]
+        image_names = [normalize_image_name(str(value)) for value in values or []]
+        if max_images_per_bucket is not None:
+            image_names = image_names[:max_images_per_bucket]
+        selected[bucket_key] = image_names
     return selected
 
 
@@ -841,9 +858,13 @@ def build_review_manifest(
         }
 
     expected_bucket_counts = {bucket_label_value: max_images_per_bucket for _, bucket_label_value in DEFAULT_BUCKET_ORDER}
-    actual_bucket_counts = {
+    requested_bucket_counts = {
         bucket_label_value: len(review_images_by_bucket.get(bucket_name, []))
         for bucket_name, bucket_label_value in DEFAULT_BUCKET_ORDER
+    }
+    actual_bucket_counts = {
+        bucket_label_value: sum(1 for view in review_views if view.get("bucket") == bucket_label_value)
+        for _, bucket_label_value in DEFAULT_BUCKET_ORDER
     }
     review_buckets_complete = all(
         actual_bucket_counts.get(bucket_label_value, 0) >= expected_bucket_counts[bucket_label_value]
@@ -892,6 +913,7 @@ def build_review_manifest(
             for bucket_name, image_names in review_images_by_bucket.items()
         },
         "expected_bucket_counts": expected_bucket_counts,
+        "requested_bucket_counts": requested_bucket_counts,
         "actual_bucket_counts": actual_bucket_counts,
         "review_camera_manifest": str(review_camera_manifest_path),
         "views": list(review_views),
@@ -1016,7 +1038,10 @@ def main() -> None:
             frozen_path = Path(frozen_camera_manifest)
             if not frozen_path.exists():
                 raise FileNotFoundError(f"Frozen review camera manifest was missing: {frozen_path}")
-            review_images_by_bucket = load_frozen_review_images_by_bucket(frozen_path)
+            review_images_by_bucket = load_frozen_review_images_by_bucket(
+                frozen_path,
+                max_images_per_bucket=max_images_per_bucket,
+            )
         if not selected_tile_ids:
             selected_tile_ids = [str(tile.get("tile_id")) for tile in tile_manifest.get("tiles", []) if tile.get("tile_id")]
 

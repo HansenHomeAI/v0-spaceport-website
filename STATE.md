@@ -1,9 +1,9 @@
 reason: geometry-first md1 tiled 3DGS reset; continuing beyond offline R1 toward bounded proof gates
-current_rung: R1a review-gate hardening; bounded smoke review failed on renderer OOM, retry path implemented locally
+current_rung: R1a review-gate hardening; render decode fix implemented after black-render smoke
 root_cause_classification: merge_bad
-live_compute_status: no active job; failed smoke renderer job md1-r1a-render-20260423211511 hit gsplat CUDA OOM at full merged 3DGS render
+live_compute_status: none; md1-r1a-rendercap-20260423214434 completed but produced black renders because PLY log-scale/logit-opacity decode was wrong
 current_branch: agent-53821974-md1-geometry-consistency
-current_head_at_state_write: 901acf42d306e8a04f4efe861c000a345aac7449 plus uncommitted deterministic view-capped review-render fix
+current_head_at_state_write: e03dc2cc7e30c6c7fd4df62b4069ac85922ced99 plus uncommitted PLY decode/camera-cap review fix
 base_branch: agent-86580563-hierarchical-splat-merge-plan
 base_commit: ffef97e646046f204267ec30dd7dbf6f19027cad
 automation:
@@ -12,6 +12,11 @@ automation:
   purpose: reassess branch, PR, workflow, AWS, artifact, and audit status; keep moving the proof ladder
 exact_artifacts:
   canonical_training_tarball: s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz
+  active_smoke_review_job: md1-r1a-rendercap-20260423214434
+  active_smoke_review_output_root: s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r1a-20260423214434/review-render-job-output
+  active_smoke_review_image: 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:f1498dced6aeb169c97dbe1cf6d5b0cc8d6440cf558c444a3bd54e1aaf898eeb
+  preview_url: https://agent-53821974-md1-geometry.v0-spaceport-website-preview2.pages.dev
+  preview_hash_url: https://b35176c7.v0-spaceport-website-preview2.pages.dev
   local_audit_manifest: logs/audit/md1-1k-full-r2/audit_manifest.json
   local_review_comparison: logs/audit/md1-1k-full-r2/review_comparison.json
   frozen_review_cameras: logs/audit/md1-1k-full-r2/review_camera_manifest.json
@@ -32,7 +37,11 @@ review_gate_delta:
   added_deterministic_view_capped_rendering: true
   renderer_failure_root_cause: full merged 3.6M-Gaussian artifact requested ~454GiB during gsplat tile intersection
   failed_smoke_review_job: md1-r1a-render-20260423211511
+  completed_black_render_job: md1-r1a-rendercap-20260423214434
+  black_render_root_cause: PLY opacity logits and log-scales were passed to gsplat without sigmoid/exp conversion
+  added_ply_decode_fix: true
+  added_frozen_camera_smoke_cap: true
   smoke_review_target: tile_02/tile_05 using frozen 4/4/4 camera set before bounded R2 retraining
-next_unblocked_step: commit and push deterministic view-capped review-render fix, watch CDK/Pages/container workflows to green, then relaunch the frozen 4/4/4 smoke review with QUALITY_REVIEW_RENDER_SCALE=0.5 and QUALITY_REVIEW_MAX_GAUSSIANS_PER_VIEW=900000
+next_unblocked_step: commit and push PLY decode plus frozen-camera cap fix, watch CDK/Pages/container workflows to green, relaunch 4/4/4 smoke with render_scale=0.25 and inspect nonblack renders before R2 spend
 owner_action_needed: none
-updated: 2026-04-23T21:32:26Z
+updated: 2026-04-23T22:01:09Z

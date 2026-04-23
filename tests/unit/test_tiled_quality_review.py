@@ -112,6 +112,10 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
                 manifest["actual_bucket_counts"],
                 {"near_detail": 4, "boundary": 4, "horizon": 4},
             )
+            self.assertEqual(
+                manifest["requested_bucket_counts"],
+                {"near_detail": 4, "boundary": 4, "horizon": 4},
+            )
             self.assertEqual(manifest["bucket_medians"]["near_detail"]["psnr"], 31.5)
             self.assertEqual(manifest["no_background_bucket_medians"]["near_detail"]["psnr"], 31.0)
             self.assertEqual(manifest["render_settings"]["render_scale"], 0.5)
@@ -234,11 +238,11 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "review_camera_manifest.json"
             path.write_text(
-                '{"review_image_names_by_bucket":{"near_detail":["a.jpg"],"boundary":["b.jpg"],"horizon":["c.jpg"]}}',
+                '{"review_image_names_by_bucket":{"near_detail":["a.jpg","a2.jpg"],"boundary":["b.jpg","b2.jpg"],"horizon":["c.jpg","c2.jpg"]}}',
                 encoding="utf-8",
             )
 
-            frozen = module.load_frozen_review_images_by_bucket(path)
+            frozen = module.load_frozen_review_images_by_bucket(path, max_images_per_bucket=1)
 
         self.assertEqual(frozen["near_detail_camera_ids"], ["a.jpg"])
         self.assertEqual(frozen["boundary_camera_ids"], ["b.jpg"])
