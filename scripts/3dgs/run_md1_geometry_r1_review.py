@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 import tarfile
 import time
@@ -102,6 +103,7 @@ def stage_review_inputs(
     output_root_s3_uri: str,
     variants: Sequence[str],
     force_tarballs: bool,
+    keep_local_tarballs: bool,
 ) -> dict[str, Any]:
     extracted_model_dir = audit_root / "model" / "extracted"
     if not extracted_model_dir.exists():
@@ -123,12 +125,19 @@ def stage_review_inputs(
             extracted_model_dir=extracted_model_dir,
             merge_dir=merge_dir,
             output_tarball=staged_root / variant / "model.tar.gz",
-            force=force_tarballs,
+            force=force_tarballs or not keep_local_tarballs,
         )
         model_s3_prefix = s3_prefix_join(output_root_s3_uri, "inputs", variant)
         aws_cp(tarball, f"{model_s3_prefix}/model.tar.gz")
+        retained_local_tarball = str(tarball) if keep_local_tarballs else None
+        if not keep_local_tarballs:
+            tarball.unlink(missing_ok=True)
+            try:
+                tarball.parent.rmdir()
+            except OSError:
+                pass
         staged_variants[variant] = {
-            "local_model_tarball": str(tarball),
+            "local_model_tarball": retained_local_tarball,
             "model_s3_uri": f"{model_s3_prefix}/model.tar.gz",
             "merge_report": str(merge_dir / "merge_report.json"),
         }
@@ -246,6 +255,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--submit", action="store_true")
     parser.add_argument("--wait", action="store_true")
     parser.add_argument("--force-tarballs", action="store_true")
+    parser.add_argument("--keep-local-tarballs", action="store_true")
     parser.add_argument("--skip-output-download", action="store_true")
     parser.add_argument("--summary-json-output", type=Path, default=None)
     return parser.parse_args()
@@ -268,6 +278,7 @@ def main() -> int:
         output_root_s3_uri=output_root_s3_uri,
         variants=variants,
         force_tarballs=args.force_tarballs,
+        keep_local_tarballs=args.keep_local_tarballs,
     )
     jobs = run_review_jobs(
         branch_name=branch_name,

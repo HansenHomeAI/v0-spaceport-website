@@ -16,6 +16,6 @@ r0_inventory: complete; 7 tile splats, merged splat, merge report, tile manifest
 r1_result: raw_union retained 5103651/5103651; strict_core retained 4500379/5103651 with fallback_tile_count=2; support_weighted_overlap retained 4500379/5103651 with fallback_tile_count=2
 candidate_pair_top_rank: tile_02/tile_05; shared_assigned_images=64; boundary_support=52; eligible=true
 blocked_promotion_reason: fallback_tile_count remains >0 and render metrics are not yet available for comparative promotion
-next_unblocked_step: commit and push the shared-ML-stack R1 review runner fix after local tests, wait for CDK/Pages/3DGS image workflows on the exact head, then launch sequential R1 render-backed smoke processing for strict_core, support_weighted_overlap, and raw_union against the frozen smoke camera manifest
+next_unblocked_step: commit and push the disk-safe R1 review runner update after local tests, wait for CDK/Pages/3DGS image workflows on the exact head, then launch sequential R1 render-backed smoke processing for strict_core, support_weighted_overlap, and raw_union against the frozen smoke camera manifest
 owner_action_needed: none
-updated: 2026-04-23T15:24:55-06:00
+updated: 2026-04-23T15:26:09-06:00

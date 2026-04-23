@@ -69,3 +69,4 @@
 [2026-04-23T15:06:57-0600] r1-review-runner -> added frozen camera manifest processing input, safe model extraction, and md1 R1 staged review launcher; 61 targeted tests green -> commit, push, and wait for workflows before SageMaker processing
 [2026-04-23T15:24:11-0600] r1-review-runner-fix -> shared staging ML stack fallback added and tested; ignore large staged review tar/render artifacts -> commit, push, and continue workflow gate
 [2026-04-23T15:24:55-0600] image-workflow -> Trigger ML Container Build green for 653eb3ddbfa21a5a33e4a56efb07e0d83381f898; 3dgs branch tag digest sha256:7aa9e267b2c63a37d73135c4acf094094842b5ee5d654730b537cd8cc920c693 -> push runner fix on new head
+[2026-04-23T15:26:09-0600] r1-review-runner-disk -> local disk has 8.7Gi free, so staged model tarballs now upload one variant at a time and delete locally by default; 24 targeted tests green -> amend branch with disk-safe runner
