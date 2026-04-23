@@ -48,6 +48,11 @@ DEFAULT_BUCKET_ORDER = [
     ("boundary_camera_ids", "boundary"),
     ("horizon_camera_ids", "horizon"),
 ]
+PROMOTION_THRESHOLDS = {
+    "near_detail": {"psnr_drop": 1.0, "ssim_drop": 0.015, "lpips_rise": 0.035},
+    "boundary": {"psnr_gain": 0.5, "ssim_gain": 0.01, "lpips_drop": 0.025},
+    "horizon": {"psnr_drop": 0.75, "ssim_drop": 0.012, "lpips_rise": 0.03, "sky_score_drop_ratio": 0.10},
+}
 
 
 def find_model_artifact(model_input_dir: Path) -> Path:
@@ -437,6 +442,177 @@ def median_or_none(values: Sequence[float | None]) -> float | None:
     return float(median(filtered))
 
 
+def _as_float_or_none(value: Any) -> float | None:
+    try:
+        result = float(value)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(result):
+        return None
+    return result
+
+
+def _metric_delta(candidate: float | None, baseline: float | None) -> float | None:
+    if candidate is None or baseline is None:
+        return None
+    return float(candidate - baseline)
+
+
+def compare_review_manifests(
+    *,
+    baseline_manifest: Mapping[str, Any],
+    candidate_manifest: Mapping[str, Any],
+    thresholds: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    thresholds = thresholds or PROMOTION_THRESHOLDS
+    baseline_medians = baseline_manifest.get("bucket_medians", {}) or {}
+    candidate_medians = candidate_manifest.get("bucket_medians", {}) or {}
+    baseline_sky = baseline_manifest.get("sky_bucket_medians", {}) or {}
+    candidate_sky = candidate_manifest.get("sky_bucket_medians", {}) or {}
+    deltas: dict[str, Any] = {}
+    block_reasons: list[dict[str, Any]] = []
+
+    for bucket_name in ("near_detail", "boundary", "horizon"):
+        baseline_bucket = baseline_medians.get(bucket_name, {}) or {}
+        candidate_bucket = candidate_medians.get(bucket_name, {}) or {}
+        bucket_delta = {
+            metric_name: _metric_delta(
+                _as_float_or_none(candidate_bucket.get(metric_name)),
+                _as_float_or_none(baseline_bucket.get(metric_name)),
+            )
+            for metric_name in ("psnr", "ssim", "lpips")
+        }
+        deltas[bucket_name] = {
+            "baseline": dict(baseline_bucket),
+            "candidate": dict(candidate_bucket),
+            "delta": bucket_delta,
+        }
+
+    near_thresholds = thresholds["near_detail"]
+    near_delta = deltas["near_detail"]["delta"]
+    if near_delta["psnr"] is None or near_delta["ssim"] is None or near_delta["lpips"] is None:
+        block_reasons.append({"code": "near_detail_metrics_missing", "bucket": "near_detail"})
+    else:
+        if near_delta["psnr"] < -float(near_thresholds["psnr_drop"]):
+            block_reasons.append({"code": "near_detail_psnr_regression", "bucket": "near_detail", "delta": near_delta["psnr"]})
+        if near_delta["ssim"] < -float(near_thresholds["ssim_drop"]):
+            block_reasons.append({"code": "near_detail_ssim_regression", "bucket": "near_detail", "delta": near_delta["ssim"]})
+        if near_delta["lpips"] > float(near_thresholds["lpips_rise"]):
+            block_reasons.append({"code": "near_detail_lpips_regression", "bucket": "near_detail", "delta": near_delta["lpips"]})
+
+    boundary_thresholds = thresholds["boundary"]
+    boundary_delta = deltas["boundary"]["delta"]
+    boundary_missing = boundary_delta["psnr"] is None or boundary_delta["ssim"] is None or boundary_delta["lpips"] is None
+    if boundary_missing:
+        block_reasons.append({"code": "boundary_metrics_missing", "bucket": "boundary"})
+    else:
+        boundary_improved = (
+            boundary_delta["psnr"] >= float(boundary_thresholds["psnr_gain"])
+            or boundary_delta["ssim"] >= float(boundary_thresholds["ssim_gain"])
+            or boundary_delta["lpips"] <= -float(boundary_thresholds["lpips_drop"])
+        )
+        if not boundary_improved:
+            block_reasons.append({"code": "boundary_no_required_improvement", "bucket": "boundary", "delta": boundary_delta})
+        if boundary_delta["psnr"] < -float(near_thresholds["psnr_drop"]):
+            block_reasons.append({"code": "boundary_psnr_regression", "bucket": "boundary", "delta": boundary_delta["psnr"]})
+        if boundary_delta["ssim"] < -float(near_thresholds["ssim_drop"]):
+            block_reasons.append({"code": "boundary_ssim_regression", "bucket": "boundary", "delta": boundary_delta["ssim"]})
+        if boundary_delta["lpips"] > float(near_thresholds["lpips_rise"]):
+            block_reasons.append({"code": "boundary_lpips_regression", "bucket": "boundary", "delta": boundary_delta["lpips"]})
+
+    horizon_thresholds = thresholds["horizon"]
+    horizon_delta = deltas["horizon"]["delta"]
+    if horizon_delta["psnr"] is None or horizon_delta["ssim"] is None or horizon_delta["lpips"] is None:
+        block_reasons.append({"code": "horizon_metrics_missing", "bucket": "horizon"})
+    else:
+        if horizon_delta["psnr"] < -float(horizon_thresholds["psnr_drop"]):
+            block_reasons.append({"code": "horizon_psnr_regression", "bucket": "horizon", "delta": horizon_delta["psnr"]})
+        if horizon_delta["ssim"] < -float(horizon_thresholds["ssim_drop"]):
+            block_reasons.append({"code": "horizon_ssim_regression", "bucket": "horizon", "delta": horizon_delta["ssim"]})
+        if horizon_delta["lpips"] > float(horizon_thresholds["lpips_rise"]):
+            block_reasons.append({"code": "horizon_lpips_regression", "bucket": "horizon", "delta": horizon_delta["lpips"]})
+
+    baseline_horizon_sky = _as_float_or_none((baseline_sky.get("horizon", {}) or {}).get("score"))
+    candidate_horizon_sky = _as_float_or_none((candidate_sky.get("horizon", {}) or {}).get("score"))
+    sky_delta = _metric_delta(candidate_horizon_sky, baseline_horizon_sky)
+    sky_drop_ratio = None
+    if baseline_horizon_sky is not None and baseline_horizon_sky > 0 and candidate_horizon_sky is not None:
+        sky_drop_ratio = max(0.0, baseline_horizon_sky - candidate_horizon_sky) / baseline_horizon_sky
+        if sky_drop_ratio > float(horizon_thresholds["sky_score_drop_ratio"]):
+            block_reasons.append({"code": "horizon_sky_score_regression", "bucket": "horizon", "drop_ratio": sky_drop_ratio})
+    deltas["horizon"]["sky_score_delta"] = sky_delta
+    deltas["horizon"]["sky_score_drop_ratio"] = sky_drop_ratio
+
+    merge_report = candidate_manifest.get("merge_report", {}) or {}
+    fallback_tile_count = int(merge_report.get("fallback_tile_count", 0) or 0)
+    retain_all_tile_count = int(merge_report.get("retain_all_tile_count", 0) or 0)
+    if fallback_tile_count > 0:
+        block_reasons.append({"code": "merge_fallback_tile_count_nonzero", "fallback_tile_count": fallback_tile_count})
+    if retain_all_tile_count > 0:
+        block_reasons.append({"code": "merge_retain_all_tile_count_nonzero", "retain_all_tile_count": retain_all_tile_count})
+
+    baseline_views = {
+        (view.get("bucket"), view.get("image_name")): view
+        for view in baseline_manifest.get("views", [])
+        if isinstance(view, Mapping)
+    }
+    candidate_views = {
+        (view.get("bucket"), view.get("image_name")): view
+        for view in candidate_manifest.get("views", [])
+        if isinstance(view, Mapping)
+    }
+    side_by_side_render_paths = []
+    for key, candidate_view in candidate_views.items():
+        baseline_view = baseline_views.get(key)
+        if baseline_view is None:
+            continue
+        side_by_side_render_paths.append(
+            {
+                "bucket": key[0],
+                "image_name": key[1],
+                "baseline_render": baseline_view.get("merged_render"),
+                "candidate_render": candidate_view.get("merged_render"),
+                "candidate_boundary_composite": candidate_view.get("boundary_composite"),
+            }
+        )
+
+    promotion_status = "promoted" if not block_reasons else "blocked"
+    return {
+        "version": "geometry_consistency_review_v1",
+        "baseline_artifact": baseline_manifest.get("model_artifact"),
+        "candidate_artifact": candidate_manifest.get("model_artifact"),
+        "camera_manifest": candidate_manifest.get("review_camera_manifest"),
+        "thresholds": dict(thresholds),
+        "per_bucket": deltas,
+        "fallback_breakdown": {
+            "fallback_tile_count": fallback_tile_count,
+            "retain_all_tile_count": retain_all_tile_count,
+            "tiles": merge_report.get("tiles", []),
+        },
+        "side_by_side_render_paths": side_by_side_render_paths,
+        "block_reasons": block_reasons,
+        "promotion_decision": {
+            "status": promotion_status,
+            "promoted": promotion_status == "promoted",
+        },
+    }
+
+
+def load_frozen_review_images_by_bucket(path: Path) -> dict[str, list[str]]:
+    payload = load_json(path)
+    raw_buckets = payload.get("review_image_names_by_bucket", payload)
+    label_to_key = {bucket_label: bucket_key for bucket_key, bucket_label in DEFAULT_BUCKET_ORDER}
+    selected: dict[str, list[str]] = {}
+    for bucket_key, bucket_label_value in DEFAULT_BUCKET_ORDER:
+        values = raw_buckets.get(bucket_key)
+        if values is None:
+            values = raw_buckets.get(bucket_label_value)
+        if values is None:
+            values = raw_buckets.get(label_to_key.get(bucket_label_value, ""))
+        selected[bucket_key] = [normalize_image_name(str(value)) for value in values or []]
+    return selected
+
+
 def build_review_manifest(
     *,
     model_tarball: Path,
@@ -476,10 +652,17 @@ def build_review_manifest(
         for _, bucket_label_value in DEFAULT_BUCKET_ORDER
     )
     retain_all_tile_count = int(merge_report.get("retain_all_tile_count", 0) or 0)
-    promotion_status = "ready_for_manual_signoff" if review_buckets_complete and retain_all_tile_count == 0 else "blocked"
+    fallback_tile_count = int(merge_report.get("fallback_tile_count", 0) or 0)
+    promotion_status = (
+        "ready_for_manual_signoff"
+        if review_buckets_complete and retain_all_tile_count == 0 and fallback_tile_count == 0
+        else "blocked"
+    )
     promotion_notes: list[str] = []
     if not review_buckets_complete:
-        promotion_notes.append("review buckets did not produce the requested 4/4/4 coverage")
+        promotion_notes.append(f"review buckets did not produce the requested {max_images_per_bucket}/{max_images_per_bucket}/{max_images_per_bucket} coverage")
+    if fallback_tile_count > 0:
+        promotion_notes.append("merge used fallback ownership on at least one tile")
     if retain_all_tile_count > 0:
         promotion_notes.append("merge used retain_all fallback on at least one tile")
     if merged_background_present:
@@ -507,7 +690,7 @@ def build_review_manifest(
             "status": promotion_status,
             "review_buckets_complete": review_buckets_complete,
             "retain_all_tile_count": retain_all_tile_count,
-            "fallback_tile_count": int(merge_report.get("fallback_tile_count", 0) or 0),
+            "fallback_tile_count": fallback_tile_count,
             "manual_visual_review_required": True,
             "notes": promotion_notes,
         },
@@ -605,6 +788,12 @@ def main() -> None:
             selected_tile_ids=selected_tile_ids,
             max_images_per_bucket=max_images_per_bucket,
         )
+        frozen_camera_manifest = os.environ.get("QUALITY_REVIEW_CAMERA_MANIFEST", "").strip()
+        if frozen_camera_manifest:
+            frozen_path = Path(frozen_camera_manifest)
+            if not frozen_path.exists():
+                raise FileNotFoundError(f"Frozen review camera manifest was missing: {frozen_path}")
+            review_images_by_bucket = load_frozen_review_images_by_bucket(frozen_path)
         if not selected_tile_ids:
             selected_tile_ids = [str(tile.get("tile_id")) for tile in tile_manifest.get("tiles", []) if tile.get("tile_id")]
 
@@ -719,6 +908,15 @@ def main() -> None:
         )
         with open(output_dir / "quality_review_manifest.json", "w", encoding="utf-8") as handle:
             json.dump(manifest, handle, indent=2)
+        baseline_manifest_path = os.environ.get("BASELINE_REVIEW_MANIFEST_PATH", "").strip()
+        if baseline_manifest_path:
+            baseline_manifest = load_json(Path(baseline_manifest_path))
+            comparison = compare_review_manifests(
+                baseline_manifest=baseline_manifest,
+                candidate_manifest=manifest,
+            )
+            with open(output_dir / "review_comparison.json", "w", encoding="utf-8") as handle:
+                json.dump(comparison, handle, indent=2)
         logger.info("✅ Tiled quality review complete: %s", output_dir / "quality_review_manifest.json")
     finally:
         if selected_tile_ids:

@@ -314,6 +314,53 @@ class GaussianTilePipelineTests(unittest.TestCase):
         self.assertEqual(review_images["boundary_camera_ids"], ["e.jpg"])
         self.assertEqual(review_images["horizon_camera_ids"], ["f.jpg"])
 
+    def test_manifest_support_statistics_and_pair_ranking_are_data_driven(self):
+        shared = [f"shared_{index:02d}.jpg" for index in range(24)]
+        manifest = {
+            "tiles": [
+                {
+                    "tile_id": "tile_02",
+                    "base_camera_ids": [*shared, "a.jpg"],
+                    "border_camera_ids": [],
+                    "context_camera_ids": [],
+                    "image_names": [*shared, "a.jpg"],
+                    "neighbor_tile_ids": ["tile_05"],
+                    "core_bounds": {"min_x": 0, "max_x": 1, "min_y": 0, "max_y": 1, "min_z": 0, "max_z": 1},
+                },
+                {
+                    "tile_id": "tile_05",
+                    "base_camera_ids": [*shared, "b.jpg"],
+                    "border_camera_ids": [],
+                    "context_camera_ids": [],
+                    "image_names": [*shared, "b.jpg"],
+                    "neighbor_tile_ids": ["tile_02"],
+                    "core_bounds": {"min_x": 1, "max_x": 2, "min_y": 0, "max_y": 1, "min_z": 0, "max_z": 1},
+                },
+            ]
+        }
+
+        annotated = tile_pipeline.attach_manifest_support_statistics(
+            manifest,
+            {"boundary_camera_ids": shared[:4]},
+        )
+        ranked = tile_pipeline.rank_candidate_tile_pairs(
+            manifest,
+            {"boundary_camera_ids": shared[:4]},
+            merge_report={
+                "tiles": [
+                    {"tile_id": "tile_02", "retention_strategy": "core_bounds", "source_gaussians": 10, "retained_gaussians": 10},
+                    {"tile_id": "tile_05", "retention_strategy": "overlap_bounds_fallback", "source_gaussians": 10, "retained_gaussians": 6},
+                ]
+            },
+        )
+
+        self.assertEqual(annotated["support_statistics"]["eligible_pair_count"], 1)
+        self.assertEqual(ranked[0]["tile_ids"], ["tile_02", "tile_05"])
+        self.assertTrue(ranked[0]["eligible"])
+        self.assertEqual(ranked[0]["shared_assigned_image_count"], 24)
+        self.assertEqual(ranked[0]["boundary_support_count"], 4)
+        self.assertEqual(ranked[0]["fallback_involvement"], 1)
+
     def test_select_manifest_tile_ids_supports_subset_and_caps(self):
         manifest = {
             "tiles": [
@@ -715,6 +762,85 @@ class GaussianTilePipelineTests(unittest.TestCase):
             self.assertTrue((root / "merged" / "background_skybox.webp").exists())
             manifest = json.loads((root / "merged" / "background_manifest.json").read_text(encoding="utf-8"))
             self.assertEqual(manifest["source_tile_id"], "tile_01")
+
+    def test_merge_tile_outputs_support_weighted_overlap_arbitrates_overlap_without_fallback(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            tile_zero_dir = root / "tiles" / "tile_00"
+            tile_one_dir = root / "tiles" / "tile_01"
+            tile_zero_dir.mkdir(parents=True)
+            tile_one_dir.mkdir(parents=True)
+            write_test_ply(
+                tile_zero_dir / "splat.ply",
+                [
+                    (0.0, 0.0, 0.0, 0.9),
+                    (0.8, 0.0, 0.0, 0.9),
+                ],
+            )
+            write_test_ply(
+                tile_one_dir / "splat.ply",
+                [
+                    (0.8, 0.0, 0.0, 0.9),
+                    (1.6, 0.0, 0.0, 0.9),
+                ],
+            )
+
+            report = tile_pipeline.merge_tile_outputs(
+                tile_manifest={
+                    "tiles": [
+                        {
+                            "tile_id": "tile_00",
+                            "image_names": ["a.jpg"],
+                            "core_bounds": {
+                                "min_x": -0.5,
+                                "max_x": 0.5,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                            "overlap_bounds": {
+                                "min_x": -0.5,
+                                "max_x": 2.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                        },
+                        {
+                            "tile_id": "tile_01",
+                            "image_names": ["b.jpg", "c.jpg", "d.jpg", "e.jpg"],
+                            "core_bounds": {
+                                "min_x": 1.2,
+                                "max_x": 2.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                            "overlap_bounds": {
+                                "min_x": -0.5,
+                                "max_x": 2.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                        },
+                    ]
+                },
+                tile_output_dirs={"tile_00": tile_zero_dir, "tile_01": tile_one_dir},
+                output_dir=root / "merged",
+                merge_mode="support_weighted_overlap",
+            )
+
+            self.assertEqual(report["merge_mode"], "support_weighted_overlap")
+            self.assertEqual(report["fallback_tile_count"], 0)
+            self.assertEqual(report["retain_all_tile_count"], 0)
+            self.assertEqual(report["retained_gaussians"], 3)
+            self.assertEqual(report["tiles"][0]["support_weighted_overlap"]["kept_overlap_gaussians"], 0)
+            self.assertEqual(report["tiles"][1]["support_weighted_overlap"]["kept_overlap_gaussians"], 1)
 
 
 if __name__ == "__main__":

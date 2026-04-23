@@ -155,6 +155,61 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
                 manifest["promotion_readiness"]["notes"],
             )
 
+    def test_compare_review_manifests_blocks_metric_regressions_and_merge_fallbacks(self):
+        module = load_module_with_stubs()
+
+        baseline = {
+            "model_artifact": "s3://baseline/model.tar.gz",
+            "bucket_medians": {
+                "near_detail": {"psnr": 30.0, "ssim": 0.90, "lpips": 0.10},
+                "boundary": {"psnr": 25.0, "ssim": 0.85, "lpips": 0.20},
+                "horizon": {"psnr": 28.0, "ssim": 0.88, "lpips": 0.12},
+            },
+            "sky_bucket_medians": {"horizon": {"score": 0.80}},
+            "views": [{"bucket": "boundary", "image_name": "a.jpg", "merged_render": "baseline.png"}],
+        }
+        candidate = {
+            "model_artifact": "s3://candidate/model.tar.gz",
+            "review_camera_manifest": "review_camera_manifest.json",
+            "bucket_medians": {
+                "near_detail": {"psnr": 28.5, "ssim": 0.86, "lpips": 0.16},
+                "boundary": {"psnr": 25.1, "ssim": 0.851, "lpips": 0.19},
+                "horizon": {"psnr": 27.0, "ssim": 0.87, "lpips": 0.16},
+            },
+            "sky_bucket_medians": {"horizon": {"score": 0.60}},
+            "merge_report": {"fallback_tile_count": 1, "retain_all_tile_count": 0, "tiles": []},
+            "views": [{"bucket": "boundary", "image_name": "a.jpg", "merged_render": "candidate.png"}],
+        }
+
+        comparison = module.compare_review_manifests(
+            baseline_manifest=baseline,
+            candidate_manifest=candidate,
+        )
+
+        codes = {reason["code"] for reason in comparison["block_reasons"]}
+        self.assertFalse(comparison["promotion_decision"]["promoted"])
+        self.assertIn("near_detail_psnr_regression", codes)
+        self.assertIn("boundary_no_required_improvement", codes)
+        self.assertIn("horizon_sky_score_regression", codes)
+        self.assertIn("merge_fallback_tile_count_nonzero", codes)
+        self.assertEqual(comparison["side_by_side_render_paths"][0]["baseline_render"], "baseline.png")
+
+    def test_load_frozen_review_images_by_bucket_accepts_label_keys(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "review_camera_manifest.json"
+            path.write_text(
+                '{"review_image_names_by_bucket":{"near_detail":["a.jpg"],"boundary":["b.jpg"],"horizon":["c.jpg"]}}',
+                encoding="utf-8",
+            )
+
+            frozen = module.load_frozen_review_images_by_bucket(path)
+
+        self.assertEqual(frozen["near_detail_camera_ids"], ["a.jpg"])
+        self.assertEqual(frozen["boundary_camera_ids"], ["b.jpg"])
+        self.assertEqual(frozen["horizon_camera_ids"], ["c.jpg"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -77,6 +77,7 @@ from sky_quality import (
     select_background_camera,
 )
 from tile_pipeline import (
+    filter_scaffold_ply_to_sparse_points,
     filter_transforms_frames,
     load_json,
     merge_tile_outputs,
@@ -1137,6 +1138,56 @@ class NerfStudioTrainer:
         with open(stage_input_dir / view_bucket_name, 'w', encoding='utf-8') as f:
             json.dump(view_buckets, f, indent=2)
 
+    def inject_scaffold_initialization(
+        self,
+        *,
+        stage_input_dir: Path,
+        tile_manifest: dict[str, Any],
+        tile_id: str,
+        scaffold_output_dir: Path | None,
+    ) -> dict[str, Any] | None:
+        if scaffold_output_dir is None:
+            return None
+        scaffold_ply_path = scaffold_output_dir / "splat.ply"
+        if not scaffold_ply_path.exists():
+            metadata = {
+                "scaffold_source_artifact": str(scaffold_ply_path),
+                "scaffold_inheritance_mode": "unavailable",
+                "inherited_gaussian_count": 0,
+                "inherited_attributes": [],
+                "reinitialized_attributes": ["scale", "opacity", "sh", "appearance_embedding"],
+            }
+            with open(stage_input_dir / "scaffold_init_metadata.json", "w", encoding="utf-8") as f:
+                json.dump(metadata, f, indent=2)
+            return metadata
+
+        tile_entry = next(
+            (tile for tile in tile_manifest.get("tiles", []) if str(tile.get("tile_id")) == tile_id),
+            None,
+        )
+        if tile_entry is None:
+            raise KeyError(f"Unknown tile_id={tile_id} for scaffold initialization")
+        bounds_payload = tile_entry.get("overlap_bounds") or tile_entry.get("core_bounds")
+        if not isinstance(bounds_payload, dict):
+            metadata = {
+                "scaffold_source_artifact": str(scaffold_ply_path),
+                "scaffold_inheritance_mode": "unavailable_missing_tile_bounds",
+                "inherited_gaussian_count": 0,
+                "inherited_attributes": [],
+                "reinitialized_attributes": ["scale", "opacity", "sh", "appearance_embedding"],
+            }
+        else:
+            metadata = filter_scaffold_ply_to_sparse_points(
+                scaffold_ply_path=scaffold_ply_path,
+                output_ply_path=stage_input_dir / "sparse_pc.ply",
+                bounds_payload=bounds_payload,
+                padding_ratio=0.10,
+            )
+        metadata["tile_id"] = tile_id
+        with open(stage_input_dir / "scaffold_init_metadata.json", "w", encoding="utf-8") as f:
+            json.dump(metadata, f, indent=2)
+        return metadata
+
     def emit_probe_review_bundle(self) -> Optional[Dict[str, Any]]:
         if self.training_selection_result is None:
             return None
@@ -1405,6 +1456,8 @@ class NerfStudioTrainer:
         )
 
         try:
+            scaffold_output_dir: Path | None = None
+            scaffold_summary: dict[str, Any] | None = None
             if pipeline_options['include_scaffold']:
                 scaffold_input_dir = pipeline_root / "inputs" / "scaffold"
                 self.prepare_tiled_stage_dataset(
@@ -1431,6 +1484,7 @@ class NerfStudioTrainer:
                     ),
                 )
                 summary['stages'].append(scaffold_summary)
+                scaffold_output_dir = self.output_dir / "scaffold"
 
             tile_output_dirs: Dict[str, Path] = {}
             for tile_id in selected_tile_ids:
@@ -1442,6 +1496,12 @@ class NerfStudioTrainer:
                     view_buckets=view_buckets,
                     tile_manifest_name=tile_manifest_name,
                     view_bucket_name=view_bucket_name,
+                )
+                scaffold_init_metadata = self.inject_scaffold_initialization(
+                    stage_input_dir=tile_input_dir,
+                    tile_manifest=selected_tile_manifest,
+                    tile_id=tile_id,
+                    scaffold_output_dir=scaffold_output_dir,
                 )
                 tile_output_dir = self.output_dir / "tiles" / tile_id
                 tile_summary = self.run_prepared_training_stage(
@@ -1458,6 +1518,7 @@ class NerfStudioTrainer:
                             'training_mode': 'leaf_tile',
                             'tile_id': tile_id,
                             'config_fingerprint': config_fingerprint,
+                            'scaffold_init_metadata': scaffold_init_metadata,
                         }
                     ),
                 )
@@ -2086,7 +2147,7 @@ class NerfStudioTrainer:
             return False
 
     def persist_scaffold_training_artifacts(self, config_file: Path) -> bool:
-        """Persist scaffold checkpoints/config without invoking the Splatfacto-only exporter."""
+        """Export the global scaffold as a Gaussian PLY plus checkpoint breadcrumbs."""
         try:
             self.output_dir.mkdir(parents=True, exist_ok=True)
             scaffold_config_path = self.output_dir / "config.yml"
@@ -2099,17 +2160,47 @@ class NerfStudioTrainer:
                     shutil.rmtree(scaffold_checkpoint_dir)
                 shutil.copytree(checkpoint_dir, scaffold_checkpoint_dir)
 
-            export_manifest = {
-                "mode": "training_only",
-                "reason": "global_scaffold uses checkpoint persistence instead of ns-export gaussian-splat",
-                "config": str(scaffold_config_path),
-                "checkpoint_dir": str(self.output_dir / "nerfstudio_models") if checkpoint_dir.exists() else None,
-            }
-            with open(self.output_dir / "export_manifest.json", "w", encoding="utf-8") as handle:
+            export_cmd = [
+                "python", "/opt/ml/code/export_splatfacto_w_assets.py",
+                "--load-config", str(config_file),
+                "--output-dir", str(self.output_dir),
+                "--camera-idx", "0",
+                "--skip-background",
+            ]
+            export_log_path = self.output_dir / "scaffold_export.log"
+            logger.info("🌐 Exporting global scaffold Gaussian PLY:")
+            logger.info(f"   {' '.join(export_cmd)}")
+            result = run_command_with_log_file(
+                export_cmd,
+                timeout=600,
+                log_path=export_log_path,
+            )
+            if result.returncode != 0:
+                logger.error("❌ Scaffold Gaussian PLY export failed")
+                logger.error(f"STDOUT: {result.stdout}")
+                logger.error(f"STDERR: {result.stderr}")
+                return False
+
+            export_manifest_path = self.output_dir / "export_manifest.json"
+            export_manifest = load_json(export_manifest_path) if export_manifest_path.exists() else {}
+            export_manifest.update(
+                {
+                    "mode": "global_scaffold_gaussian_ply",
+                    "config": str(scaffold_config_path),
+                    "checkpoint_dir": str(self.output_dir / "nerfstudio_models") if checkpoint_dir.exists() else None,
+                    "scaffold_inheritance_contract": {
+                        "leaf_tiles_consume": "filtered sparse point cloud PLY",
+                        "inherited_attributes": ["position", "rgb_dc_proxy"],
+                        "reinitialized_attributes": ["scale", "opacity", "sh", "appearance_embedding"],
+                    },
+                }
+            )
+            with open(export_manifest_path, "w", encoding="utf-8") as handle:
                 json.dump(export_manifest, handle, indent=2)
 
-            logger.info("✅ Scaffold artifacts persisted without gaussian export")
+            logger.info("✅ Scaffold artifacts exported for leaf initialization")
             logger.info(f"📄 Scaffold config: {scaffold_config_path}")
+            logger.info(f"☁️ Scaffold PLY: {self.output_dir / 'splat.ply'}")
             if checkpoint_dir.exists():
                 logger.info(f"📦 Scaffold checkpoint dir: {self.output_dir / 'nerfstudio_models'}")
             return True
@@ -2164,6 +2255,9 @@ class NerfStudioTrainer:
             metadata['training_selection'] = self.training_selection_result
         if self.tile_manifest_resolution is not None:
             metadata['tile_manifest_resolution'] = self.tile_manifest_resolution
+        scaffold_init_path = self.input_dir / "scaffold_init_metadata.json"
+        if scaffold_init_path.exists():
+            metadata['scaffold_initialization'] = load_json(scaffold_init_path)
 
         # Save metadata
         metadata_path = self.output_dir / "training_metadata.json"

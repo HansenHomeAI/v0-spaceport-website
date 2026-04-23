@@ -1,0 +1,405 @@
+{
+  "version": "geometry_consistency_review_comparison_v1",
+  "baseline_artifact": {
+    "path": "/Users/gabrielhansen/worktrees/agent-86580563-hierarchical-splat-merge-plan/logs/aws/md1-1k-full-r2/remerge-fixed/merged-fixed-2",
+    "merged_splat": "/Users/gabrielhansen/worktrees/agent-86580563-hierarchical-splat-merge-plan/logs/aws/md1-1k-full-r2/remerge-fixed/merged-fixed-2/merged_splat.ply",
+    "merge_report": "/Users/gabrielhansen/worktrees/agent-86580563-hierarchical-splat-merge-plan/logs/aws/md1-1k-full-r2/remerge-fixed/merged-fixed-2/merge_report.json",
+    "available": true
+  },
+  "candidate_artifact": {
+    "s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
+    "local_extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted"
+  },
+  "camera_manifest": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/review_camera_manifest.json",
+  "per_bucket_metrics": {},
+  "deltas": {},
+  "fallback_breakdown": {
+    "fallback_tile_count": 2,
+    "retain_all_tile_count": 0,
+    "tiles": [
+      {
+        "tile_id": "tile_00",
+        "source_ply": "logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_00/splat.ply",
+        "source_gaussians": 729093,
+        "retained_gaussians": 726601,
+        "dropped_gaussians": 2492,
+        "retention_strategy": "core_bounds",
+        "ownership_bounds_available": true
+      },
+      {
+        "tile_id": "tile_01",
+        "source_ply": "logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_01/splat.ply",
+        "source_gaussians": 729093,
+        "retained_gaussians": 718230,
+        "dropped_gaussians": 10863,
+        "retention_strategy": "core_bounds",
+        "ownership_bounds_available": true
+      },
+      {
+        "tile_id": "tile_02",
+        "source_ply": "logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_02/splat.ply",
+        "source_gaussians": 729093,
+        "retained_gaussians": 727483,
+        "dropped_gaussians": 1610,
+        "retention_strategy": "core_bounds",
+        "ownership_bounds_available": true
+      },
+      {
+        "tile_id": "tile_03",
+        "source_ply": "logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_03/splat.ply",
+        "source_gaussians": 729093,
+        "retained_gaussians": 724258,
+        "dropped_gaussians": 4835,
+        "retention_strategy": "core_bounds",
+        "ownership_bounds_available": true
+      },
+      {
+        "tile_id": "tile_04",
+        "source_ply": "logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_04/splat.ply",
+        "source_gaussians": 729093,
+        "retained_gaussians": 728771,
+        "dropped_gaussians": 322,
+        "retention_strategy": "core_bounds",
+        "ownership_bounds_available": true
+      },
+      {
+        "tile_id": "tile_05",
+        "source_ply": "logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_05/splat.ply",
+        "source_gaussians": 729093,
+        "retained_gaussians": 397202,
+        "dropped_gaussians": 331891,
+        "retention_strategy": "centroid_voronoi_fallback",
+        "ownership_bounds_available": true
+      },
+      {
+        "tile_id": "tile_06",
+        "source_ply": "logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_06/splat.ply",
+        "source_gaussians": 729093,
+        "retained_gaussians": 477834,
+        "dropped_gaussians": 251259,
+        "retention_strategy": "centroid_voronoi_fallback",
+        "ownership_bounds_available": true
+      }
+    ]
+  },
+  "offline_merge_reports": {
+    "raw_union": {
+      "report_path": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges/raw_union_merge_report.json",
+      "merge_mode": "raw_union",
+      "tile_count": 7,
+      "source_gaussians": 5103651,
+      "retained_gaussians": 5103651,
+      "dropped_gaussians": 0,
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "tiles": [
+        {
+          "tile_id": "tile_00",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_00/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 729093,
+          "dropped_gaussians": 0,
+          "retention_strategy": "raw_union",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_01",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_01/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 729093,
+          "dropped_gaussians": 0,
+          "retention_strategy": "raw_union",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_02",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_02/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 729093,
+          "dropped_gaussians": 0,
+          "retention_strategy": "raw_union",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_03",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_03/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 729093,
+          "dropped_gaussians": 0,
+          "retention_strategy": "raw_union",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_04",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_04/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 729093,
+          "dropped_gaussians": 0,
+          "retention_strategy": "raw_union",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_05",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_05/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 729093,
+          "dropped_gaussians": 0,
+          "retention_strategy": "raw_union",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_06",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_06/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 729093,
+          "dropped_gaussians": 0,
+          "retention_strategy": "raw_union",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        }
+      ]
+    },
+    "strict_core": {
+      "report_path": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges/strict_core_merge_report.json",
+      "merge_mode": "strict_core",
+      "tile_count": 7,
+      "source_gaussians": 5103651,
+      "retained_gaussians": 4500379,
+      "dropped_gaussians": 603272,
+      "fallback_tile_count": 2,
+      "retain_all_tile_count": 0,
+      "tiles": [
+        {
+          "tile_id": "tile_00",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_00/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 726601,
+          "dropped_gaussians": 2492,
+          "retention_strategy": "core_bounds",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_01",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_01/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 718230,
+          "dropped_gaussians": 10863,
+          "retention_strategy": "core_bounds",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_02",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_02/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 727483,
+          "dropped_gaussians": 1610,
+          "retention_strategy": "core_bounds",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_03",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_03/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 724258,
+          "dropped_gaussians": 4835,
+          "retention_strategy": "core_bounds",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_04",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_04/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 728771,
+          "dropped_gaussians": 322,
+          "retention_strategy": "core_bounds",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_05",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_05/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 397202,
+          "dropped_gaussians": 331891,
+          "retention_strategy": "centroid_voronoi_fallback",
+          "fallback_reason_code": "bounds_retained_zero_gaussians",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_06",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_06/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 477834,
+          "dropped_gaussians": 251259,
+          "retention_strategy": "centroid_voronoi_fallback",
+          "fallback_reason_code": "bounds_retained_zero_gaussians",
+          "ownership_bounds_available": true
+        }
+      ]
+    },
+    "support_weighted_overlap": {
+      "report_path": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges/support_weighted_overlap_merge_report.json",
+      "merge_mode": "support_weighted_overlap",
+      "tile_count": 7,
+      "source_gaussians": 5103651,
+      "retained_gaussians": 4500379,
+      "dropped_gaussians": 603272,
+      "fallback_tile_count": 2,
+      "retain_all_tile_count": 0,
+      "tiles": [
+        {
+          "tile_id": "tile_00",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_00/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 726601,
+          "dropped_gaussians": 2492,
+          "retention_strategy": "core_plus_support_weighted_overlap",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true,
+          "support_weighted_overlap": {
+            "core_gaussians": 726601,
+            "eligible_gaussians": 0,
+            "kept_overlap_gaussians": 0,
+            "score_formula": "0.55*shared_view_projection_support + 0.20*opacity_score + 0.15*core_distance_score - 0.10*large_scale_floater_penalty",
+            "render_contribution_proxy": "opacity * inverse_distance_to_tile_core_center * visibility_support_count"
+          }
+        },
+        {
+          "tile_id": "tile_01",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_01/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 718230,
+          "dropped_gaussians": 10863,
+          "retention_strategy": "core_plus_support_weighted_overlap",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true,
+          "support_weighted_overlap": {
+            "core_gaussians": 718230,
+            "eligible_gaussians": 0,
+            "kept_overlap_gaussians": 0,
+            "score_formula": "0.55*shared_view_projection_support + 0.20*opacity_score + 0.15*core_distance_score - 0.10*large_scale_floater_penalty",
+            "render_contribution_proxy": "opacity * inverse_distance_to_tile_core_center * visibility_support_count"
+          }
+        },
+        {
+          "tile_id": "tile_02",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_02/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 727483,
+          "dropped_gaussians": 1610,
+          "retention_strategy": "core_plus_support_weighted_overlap",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true,
+          "support_weighted_overlap": {
+            "core_gaussians": 727483,
+            "eligible_gaussians": 0,
+            "kept_overlap_gaussians": 0,
+            "score_formula": "0.55*shared_view_projection_support + 0.20*opacity_score + 0.15*core_distance_score - 0.10*large_scale_floater_penalty",
+            "render_contribution_proxy": "opacity * inverse_distance_to_tile_core_center * visibility_support_count"
+          }
+        },
+        {
+          "tile_id": "tile_03",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_03/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 724258,
+          "dropped_gaussians": 4835,
+          "retention_strategy": "core_plus_support_weighted_overlap",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true,
+          "support_weighted_overlap": {
+            "core_gaussians": 724258,
+            "eligible_gaussians": 0,
+            "kept_overlap_gaussians": 0,
+            "score_formula": "0.55*shared_view_projection_support + 0.20*opacity_score + 0.15*core_distance_score - 0.10*large_scale_floater_penalty",
+            "render_contribution_proxy": "opacity * inverse_distance_to_tile_core_center * visibility_support_count"
+          }
+        },
+        {
+          "tile_id": "tile_04",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_04/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 728771,
+          "dropped_gaussians": 322,
+          "retention_strategy": "core_plus_support_weighted_overlap",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true,
+          "support_weighted_overlap": {
+            "core_gaussians": 728771,
+            "eligible_gaussians": 0,
+            "kept_overlap_gaussians": 0,
+            "score_formula": "0.55*shared_view_projection_support + 0.20*opacity_score + 0.15*core_distance_score - 0.10*large_scale_floater_penalty",
+            "render_contribution_proxy": "opacity * inverse_distance_to_tile_core_center * visibility_support_count"
+          }
+        },
+        {
+          "tile_id": "tile_05",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_05/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 397202,
+          "dropped_gaussians": 331891,
+          "retention_strategy": "centroid_voronoi_fallback",
+          "fallback_reason_code": "bounds_retained_zero_gaussians",
+          "ownership_bounds_available": true,
+          "support_weighted_overlap": {
+            "core_gaussians": 0,
+            "eligible_gaussians": 0,
+            "kept_overlap_gaussians": 0,
+            "score_formula": "0.55*shared_view_projection_support + 0.20*opacity_score + 0.15*core_distance_score - 0.10*large_scale_floater_penalty",
+            "render_contribution_proxy": "opacity * inverse_distance_to_tile_core_center * visibility_support_count"
+          }
+        },
+        {
+          "tile_id": "tile_06",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_06/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 477834,
+          "dropped_gaussians": 251259,
+          "retention_strategy": "centroid_voronoi_fallback",
+          "fallback_reason_code": "bounds_retained_zero_gaussians",
+          "ownership_bounds_available": true,
+          "support_weighted_overlap": {
+            "core_gaussians": 0,
+            "eligible_gaussians": 0,
+            "kept_overlap_gaussians": 0,
+            "score_formula": "0.55*shared_view_projection_support + 0.20*opacity_score + 0.15*core_distance_score - 0.10*large_scale_floater_penalty",
+            "render_contribution_proxy": "opacity * inverse_distance_to_tile_core_center * visibility_support_count"
+          }
+        }
+      ]
+    },
+    "support_vs_strict": {
+      "retained_gaussian_delta": 0,
+      "dropped_gaussian_delta": 0,
+      "fallback_tile_count_delta": 0,
+      "merge_only_recovered_boundary_gap": false,
+      "decision": "pivot_to_training_time_overlap_consistency_or_global_guidance"
+    }
+  },
+  "side_by_side_render_paths": [],
+  "block_reasons": [
+    {
+      "code": "offline_render_metrics_missing",
+      "detail": "R0 inventory complete; render review must run in the 3DGS container"
+    },
+    {
+      "code": "merge_fallback_tile_count_nonzero",
+      "fallback_tile_count": 2
+    }
+  ],
+  "promotion_decision": {
+    "status": "blocked",
+    "promoted": false,
+    "root_cause_classification": "merge_bad"
+  }
+}

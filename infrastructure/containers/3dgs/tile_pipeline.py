@@ -4,9 +4,11 @@
 from __future__ import annotations
 
 import json
+import math
 import shutil
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from statistics import median
 from typing import Any, Mapping, Sequence
 
 import numpy as np
@@ -23,6 +25,7 @@ DEFAULT_TILE_BOUNDS_PADDING_M = 12.0
 DEFAULT_CAMERA_BOUNDS_XY_PADDING_M = 24.0
 DEFAULT_CAMERA_BOUNDS_Z_DOWN_PADDING_M = 48.0
 DEFAULT_CAMERA_BOUNDS_Z_UP_PADDING_M = 18.0
+DEFAULT_PAIR_MIN_SHARED_IMAGES = 24
 
 
 @dataclass
@@ -96,6 +99,248 @@ def zero_bounds() -> dict[str, float]:
         "min_z": 0.0,
         "max_z": 0.0,
     }
+
+
+def _finite_float(value: Any, default: float = 0.0) -> float:
+    try:
+        result = float(value)
+    except (TypeError, ValueError):
+        return default
+    if not math.isfinite(result):
+        return default
+    return result
+
+
+def tile_assignment_image_names(tile_entry: Mapping[str, Any]) -> list[str]:
+    return ordered_unique(
+        [
+            *tile_entry.get("base_camera_ids", []),
+            *tile_entry.get("border_camera_ids", []),
+            *tile_entry.get("context_camera_ids", []),
+            *tile_entry.get("image_names", []),
+        ]
+    )
+
+
+def bounds_payload_is_valid(payload: Any) -> bool:
+    if not isinstance(payload, Mapping):
+        return False
+    try:
+        return not AxisAlignedBounds.from_dict(payload).is_degenerate()
+    except (KeyError, TypeError, ValueError):
+        return False
+
+
+def tile_has_valid_ownership_bounds(tile_entry: Mapping[str, Any]) -> bool:
+    if tile_entry.get("ownership_bounds_available") is False:
+        return False
+    return bounds_payload_is_valid(tile_entry.get("core_bounds")) or bounds_payload_is_valid(
+        tile_entry.get("overlap_bounds")
+    )
+
+
+def _pair_key(first_tile_id: str, second_tile_id: str) -> str:
+    return "::".join(sorted((first_tile_id, second_tile_id)))
+
+
+def compute_pair_support_stats(
+    first_tile: Mapping[str, Any],
+    second_tile: Mapping[str, Any],
+    view_buckets: Mapping[str, Sequence[str]] | None,
+    *,
+    median_selected_image_count: float | None = None,
+    min_shared_images: int = DEFAULT_PAIR_MIN_SHARED_IMAGES,
+) -> dict[str, Any]:
+    first_tile_id = str(first_tile.get("tile_id"))
+    second_tile_id = str(second_tile.get("tile_id"))
+    first_images = set(tile_assignment_image_names(first_tile))
+    second_images = set(tile_assignment_image_names(second_tile))
+    shared_images = sorted(first_images.intersection(second_images))
+    normalized_buckets = normalize_view_bucket_payload(view_buckets)
+    boundary_support_images = [
+        image_name
+        for image_name in normalized_buckets["boundary_camera_ids"]
+        if image_name in first_images and image_name in second_images
+    ]
+    first_count = len(first_images)
+    second_count = len(second_images)
+    median_count = float(median_selected_image_count or median([first_count, second_count] or [0]))
+    lower_count = median_count * 0.5
+    upper_count = median_count * 1.5
+    selected_image_count_balanced = (
+        median_count <= 0.0
+        or (lower_count <= first_count <= upper_count and lower_count <= second_count <= upper_count)
+    )
+    first_neighbors = set(ordered_unique(first_tile.get("neighbor_tile_ids", [])))
+    second_neighbors = set(ordered_unique(second_tile.get("neighbor_tile_ids", [])))
+    neighbor_link = second_tile_id in first_neighbors or first_tile_id in second_neighbors
+    first_bounds_valid = tile_has_valid_ownership_bounds(first_tile)
+    second_bounds_valid = tile_has_valid_ownership_bounds(second_tile)
+
+    return {
+        "tile_ids": [first_tile_id, second_tile_id],
+        "pair_key": _pair_key(first_tile_id, second_tile_id),
+        "neighbor_link": neighbor_link,
+        "shared_assigned_image_count": len(shared_images),
+        "shared_assigned_images": shared_images,
+        "boundary_support_count": len(boundary_support_images),
+        "boundary_support_images": boundary_support_images,
+        "selected_image_counts": {
+            first_tile_id: first_count,
+            second_tile_id: second_count,
+        },
+        "selected_image_count_balanced": selected_image_count_balanced,
+        "ownership_bounds_valid": {
+            first_tile_id: first_bounds_valid,
+            second_tile_id: second_bounds_valid,
+        },
+        "eligible": (
+            len(shared_images) >= min_shared_images
+            and len(boundary_support_images) > 0
+            and first_bounds_valid
+            and second_bounds_valid
+            and selected_image_count_balanced
+        ),
+        "eligibility_thresholds": {
+            "min_shared_assigned_images": min_shared_images,
+            "requires_boundary_support": True,
+            "requires_valid_ownership_bounds": True,
+            "selected_image_count_window": [round(lower_count, 3), round(upper_count, 3)],
+        },
+    }
+
+
+def attach_manifest_support_statistics(
+    tile_manifest: Mapping[str, Any],
+    view_buckets: Mapping[str, Sequence[str]] | None,
+    *,
+    min_shared_images: int = DEFAULT_PAIR_MIN_SHARED_IMAGES,
+) -> dict[str, Any]:
+    manifest = dict(tile_manifest)
+    tiles = [dict(tile) for tile in manifest.get("tiles", [])]
+    selected_counts = [len(tile_assignment_image_names(tile)) for tile in tiles]
+    median_selected_count = float(median(selected_counts)) if selected_counts else 0.0
+    tile_by_id = {str(tile.get("tile_id")): tile for tile in tiles}
+
+    pair_stats_by_key: dict[str, dict[str, Any]] = {}
+    for first_index, first_tile in enumerate(tiles):
+        first_tile_id = str(first_tile.get("tile_id"))
+        neighbor_stats: dict[str, Any] = {}
+        for second_index, second_tile in enumerate(tiles):
+            if second_index <= first_index:
+                continue
+            second_tile_id = str(second_tile.get("tile_id"))
+            stats = compute_pair_support_stats(
+                first_tile,
+                second_tile,
+                view_buckets,
+                median_selected_image_count=median_selected_count,
+                min_shared_images=min_shared_images,
+            )
+            if stats["neighbor_link"] or stats["shared_assigned_image_count"] > 0:
+                pair_stats_by_key[stats["pair_key"]] = stats
+                neighbor_stats[second_tile_id] = {
+                    "shared_assigned_image_count": stats["shared_assigned_image_count"],
+                    "boundary_support_count": stats["boundary_support_count"],
+                    "eligible": stats["eligible"],
+                }
+        existing_neighbor_stats = dict(first_tile.get("overlap_stats_by_neighbor", {}))
+        existing_neighbor_stats.update(neighbor_stats)
+        first_tile["selected_image_count"] = len(tile_assignment_image_names(first_tile))
+        first_tile["sparse_support_coverage"] = {
+            "ownership_bounds_available": tile_has_valid_ownership_bounds(first_tile),
+            "base_camera_count": len(ordered_unique(first_tile.get("base_camera_ids", []))),
+            "border_camera_count": len(ordered_unique(first_tile.get("border_camera_ids", []))),
+            "context_camera_count": len(ordered_unique(first_tile.get("context_camera_ids", []))),
+        }
+        first_tile["overlap_stats_by_neighbor"] = existing_neighbor_stats
+
+    for stats in pair_stats_by_key.values():
+        first_tile_id, second_tile_id = stats["tile_ids"]
+        first_tile = tile_by_id.get(first_tile_id)
+        second_tile = tile_by_id.get(second_tile_id)
+        if first_tile is not None:
+            first_tile.setdefault("overlap_stats_by_neighbor", {})[second_tile_id] = {
+                "shared_assigned_image_count": stats["shared_assigned_image_count"],
+                "boundary_support_count": stats["boundary_support_count"],
+                "eligible": stats["eligible"],
+            }
+        if second_tile is not None:
+            second_tile.setdefault("overlap_stats_by_neighbor", {})[first_tile_id] = {
+                "shared_assigned_image_count": stats["shared_assigned_image_count"],
+                "boundary_support_count": stats["boundary_support_count"],
+                "eligible": stats["eligible"],
+            }
+
+    manifest["tiles"] = tiles
+    manifest["support_statistics"] = {
+        "version": "geometry_consistency_v1",
+        "median_selected_image_count": median_selected_count,
+        "pair_count": len(pair_stats_by_key),
+        "eligible_pair_count": sum(1 for stats in pair_stats_by_key.values() if stats["eligible"]),
+        "pair_stats": list(pair_stats_by_key.values()),
+    }
+    return manifest
+
+
+def rank_candidate_tile_pairs(
+    tile_manifest: Mapping[str, Any],
+    view_buckets: Mapping[str, Sequence[str]] | None,
+    *,
+    merge_report: Mapping[str, Any] | None = None,
+    min_shared_images: int = DEFAULT_PAIR_MIN_SHARED_IMAGES,
+) -> list[dict[str, Any]]:
+    manifest = attach_manifest_support_statistics(
+        tile_manifest,
+        view_buckets,
+        min_shared_images=min_shared_images,
+    )
+    merge_tiles = {
+        str(tile.get("tile_id")): tile
+        for tile in (merge_report or {}).get("tiles", [])
+        if tile.get("tile_id")
+    }
+
+    ranked_pairs: list[dict[str, Any]] = []
+    for stats in manifest.get("support_statistics", {}).get("pair_stats", []):
+        first_tile_id, second_tile_id = stats["tile_ids"]
+        first_merge = merge_tiles.get(first_tile_id, {})
+        second_merge = merge_tiles.get(second_tile_id, {})
+        fallback_involvement = int(first_merge.get("retention_strategy", "") != "core_bounds") + int(
+            second_merge.get("retention_strategy", "") != "core_bounds"
+        )
+        source_gaussians = int(first_merge.get("source_gaussians", 0) or 0) + int(
+            second_merge.get("source_gaussians", 0) or 0
+        )
+        retained_gaussians = int(first_merge.get("retained_gaussians", 0) or 0) + int(
+            second_merge.get("retained_gaussians", 0) or 0
+        )
+        retained_ratio = retained_gaussians / source_gaussians if source_gaussians > 0 else None
+        rank_score = (
+            float(stats["boundary_support_count"]) * 4.0
+            + float(stats["shared_assigned_image_count"])
+            + (20.0 if stats["neighbor_link"] else 0.0)
+            + float(fallback_involvement) * 35.0
+            + (10.0 if retained_ratio is not None and retained_ratio < 0.75 else 0.0)
+            + (50.0 if stats["eligible"] else -50.0)
+        )
+        ranked_pairs.append(
+            {
+                **stats,
+                "fallback_involvement": fallback_involvement,
+                "merge_retained_ratio": retained_ratio,
+                "rank_score": round(rank_score, 6),
+            }
+        )
+
+    return sorted(
+        ranked_pairs,
+        key=lambda item: (
+            not item["eligible"],
+            -float(item["rank_score"]),
+            item["tile_ids"],
+        ),
+    )
 
 
 def _quaternion_to_rotation_matrix(qw: float, qx: float, qy: float, qz: float) -> np.ndarray:
@@ -603,6 +848,7 @@ def synthesize_tiled_inputs_from_chunk_planner(
             "ownership_bounds_available": all_tiles_have_bounds,
         },
     }
+    manifest = attach_manifest_support_statistics(manifest, view_buckets)
     resolution = dict(manifest["manifest_resolution"])
     resolution["tile_count"] = len(tiles)
     resolution["scaffold_count"] = len(scaffold_names)
@@ -624,8 +870,8 @@ def resolve_tiled_input_manifests(
     tile_bounds_padding_m: float = DEFAULT_TILE_BOUNDS_PADDING_M,
 ) -> tuple[dict[str, Any], dict[str, list[str]], dict[str, Any]]:
     if isinstance(tile_manifest_payload, Mapping) and isinstance(view_bucket_payload, Mapping):
-        manifest = dict(tile_manifest_payload)
         view_buckets = normalize_view_bucket_payload(view_bucket_payload)
+        manifest = attach_manifest_support_statistics(tile_manifest_payload, view_buckets)
         resolution = {
             "source_mode": "native_3dgs_manifests",
             "chunk_planner_available": chunk_planner_manifest is not None,
@@ -873,6 +1119,296 @@ def centroid_voronoi_mask(
     return keep_mask
 
 
+def _bounds_center_and_radius(bounds: AxisAlignedBounds | None) -> tuple[np.ndarray, float] | None:
+    if bounds is None or bounds.is_degenerate():
+        return None
+    center = np.array(
+        [
+            (bounds.min_x + bounds.max_x) * 0.5,
+            (bounds.min_y + bounds.max_y) * 0.5,
+            (bounds.min_z + bounds.max_z) * 0.5,
+        ],
+        dtype=np.float64,
+    )
+    radius = max(
+        math.sqrt(
+            (bounds.max_x - bounds.min_x) ** 2
+            + (bounds.max_y - bounds.min_y) ** 2
+            + (bounds.max_z - bounds.min_z) ** 2
+        )
+        * 0.5,
+        1e-6,
+    )
+    return center, radius
+
+
+def _load_bounds(payload: Any) -> AxisAlignedBounds | None:
+    if not isinstance(payload, Mapping):
+        return None
+    try:
+        bounds = AxisAlignedBounds.from_dict(payload)
+    except (KeyError, TypeError, ValueError):
+        return None
+    return None if bounds.is_degenerate() else bounds
+
+
+def _tile_visibility_support_count(tile_entry: Mapping[str, Any]) -> int:
+    support = len(tile_assignment_image_names(tile_entry))
+    for stats in (tile_entry.get("overlap_stats_by_neighbor") or {}).values():
+        if isinstance(stats, Mapping):
+            support += int(stats.get("shared_assigned_image_count", 0) or 0)
+    return max(1, support)
+
+
+def _opacity_scores(vertex: np.ndarray) -> np.ndarray:
+    if "opacity" not in vertex.dtype.names:
+        return np.ones(len(vertex), dtype=np.float32)
+    opacity = np.asarray(vertex["opacity"], dtype=np.float32)
+    if len(opacity) == 0:
+        return opacity
+    if float(np.nanmin(opacity)) < 0.0 or float(np.nanmax(opacity)) > 1.0:
+        opacity = 1.0 / (1.0 + np.exp(-np.clip(opacity, -20.0, 20.0)))
+    return np.clip(opacity, 0.0, 1.0)
+
+
+def _large_scale_floater_penalty(vertex: np.ndarray, tile_radius: float) -> np.ndarray:
+    dtype_names = vertex.dtype.names or ()
+    scale_names = [name for name in ("scale_0", "scale_1", "scale_2") if name in dtype_names]
+    if not scale_names:
+        return np.zeros(len(vertex), dtype=np.float32)
+    raw_scales = np.stack(
+        [np.asarray(vertex[name], dtype=np.float32) for name in scale_names],
+        axis=1,
+    )
+    finite_scales = np.where(np.isfinite(raw_scales), raw_scales, 0.0)
+    linear_scales = np.exp(np.clip(finite_scales, -20.0, 20.0))
+    max_scale = np.max(linear_scales, axis=1)
+    soft_limit = max(tile_radius * 0.05, 1e-6)
+    hard_limit = max(tile_radius * 0.25, soft_limit + 1e-6)
+    return np.clip((max_scale - soft_limit) / (hard_limit - soft_limit), 0.0, 1.0)
+
+
+def support_weighted_overlap_mask(
+    *,
+    tile_id: str,
+    positions: np.ndarray,
+    vertex: np.ndarray,
+    tile_entry: Mapping[str, Any],
+    all_tile_entries: Sequence[Mapping[str, Any]],
+) -> tuple[np.ndarray, dict[str, Any]]:
+    tile_records: dict[str, dict[str, Any]] = {}
+    max_support_count = 1
+    for candidate_entry in all_tile_entries:
+        candidate_tile_id = str(candidate_entry.get("tile_id"))
+        core_bounds = _load_bounds(candidate_entry.get("core_bounds"))
+        overlap_bounds = _load_bounds(candidate_entry.get("overlap_bounds")) or core_bounds
+        center_radius = _bounds_center_and_radius(core_bounds or overlap_bounds)
+        support_count = _tile_visibility_support_count(candidate_entry)
+        max_support_count = max(max_support_count, support_count)
+        tile_records[candidate_tile_id] = {
+            "core_bounds": core_bounds,
+            "overlap_bounds": overlap_bounds,
+            "center_radius": center_radius,
+            "support_count": support_count,
+        }
+
+    own_record = tile_records.get(tile_id)
+    if own_record is None:
+        raise KeyError(f"Missing tile record for {tile_id}")
+    own_core = own_record["core_bounds"]
+    own_overlap = own_record["overlap_bounds"]
+    if own_core is None and own_overlap is None:
+        return np.zeros(len(positions), dtype=bool), {
+            "retention_strategy": "support_weighted_missing_bounds",
+            "fallback_reason_code": "missing_core_and_overlap_bounds",
+            "used_fallback": True,
+            "support_weighted_overlap": {
+                "eligible_gaussians": 0,
+                "kept_overlap_gaussians": 0,
+            },
+        }
+
+    own_core_mask = own_core.contains_points(positions) if own_core is not None else np.zeros(len(positions), dtype=bool)
+    own_overlap_mask = (
+        own_overlap.contains_points(positions)
+        if own_overlap is not None
+        else np.zeros(len(positions), dtype=bool)
+    )
+    overlap_candidate_mask = own_overlap_mask & ~own_core_mask
+
+    keep_mask = own_core_mask.copy()
+    if np.any(overlap_candidate_mask):
+        foreign_core_owner_mask = np.zeros(len(positions), dtype=bool)
+        best_score = np.full(len(positions), -np.inf, dtype=np.float64)
+        own_score = np.full(len(positions), -np.inf, dtype=np.float64)
+        opacity_score = _opacity_scores(vertex)
+        own_center_radius = own_record["center_radius"]
+        own_radius = own_center_radius[1] if own_center_radius is not None else 1.0
+        floater_penalty = _large_scale_floater_penalty(vertex, own_radius)
+
+        for candidate_tile_id, candidate_record in tile_records.items():
+            candidate_core = candidate_record["core_bounds"]
+            candidate_overlap = candidate_record["overlap_bounds"]
+            if candidate_core is not None:
+                candidate_core_mask = candidate_core.contains_points(positions)
+                if candidate_tile_id != tile_id:
+                    foreign_core_owner_mask |= candidate_core_mask
+            if candidate_overlap is None:
+                continue
+            candidate_mask = candidate_overlap.contains_points(positions) & overlap_candidate_mask
+            if not np.any(candidate_mask):
+                continue
+            center_radius = candidate_record["center_radius"]
+            if center_radius is None:
+                distance_score = np.zeros(len(positions), dtype=np.float64)
+            else:
+                center, radius = center_radius
+                distances = np.linalg.norm(positions - center[None, :], axis=1)
+                distance_score = 1.0 / (1.0 + distances / radius)
+            support_score = float(candidate_record["support_count"]) / float(max_support_count)
+            score = (
+                0.55 * support_score
+                + 0.20 * opacity_score
+                + 0.15 * distance_score
+                - 0.10 * floater_penalty
+            )
+            best_score = np.where(candidate_mask & (score > best_score), score, best_score)
+            if candidate_tile_id == tile_id:
+                own_score = np.where(candidate_mask, score, own_score)
+
+        resolved_overlap_mask = (
+            overlap_candidate_mask
+            & ~foreign_core_owner_mask
+            & np.isfinite(own_score)
+            & (own_score >= best_score - 1e-9)
+        )
+        keep_mask |= resolved_overlap_mask
+    else:
+        resolved_overlap_mask = np.zeros(len(positions), dtype=bool)
+
+    return keep_mask, {
+        "retention_strategy": "core_plus_support_weighted_overlap",
+        "fallback_reason_code": "none",
+        "used_fallback": False,
+        "support_weighted_overlap": {
+            "core_gaussians": int(np.count_nonzero(own_core_mask)),
+            "eligible_gaussians": int(np.count_nonzero(overlap_candidate_mask)),
+            "kept_overlap_gaussians": int(np.count_nonzero(resolved_overlap_mask)),
+            "score_formula": (
+                "0.55*shared_view_projection_support + 0.20*opacity_score + "
+                "0.15*core_distance_score - 0.10*large_scale_floater_penalty"
+            ),
+            "render_contribution_proxy": (
+                "opacity * inverse_distance_to_tile_core_center * visibility_support_count"
+            ),
+        },
+    }
+
+
+def expanded_bounds(bounds_payload: Mapping[str, Any], *, padding_ratio: float = 0.10) -> AxisAlignedBounds:
+    bounds = AxisAlignedBounds.from_dict(bounds_payload)
+    pad_x = (bounds.max_x - bounds.min_x) * padding_ratio
+    pad_y = (bounds.max_y - bounds.min_y) * padding_ratio
+    pad_z = (bounds.max_z - bounds.min_z) * padding_ratio
+    return AxisAlignedBounds(
+        min_x=bounds.min_x - pad_x,
+        max_x=bounds.max_x + pad_x,
+        min_y=bounds.min_y - pad_y,
+        max_y=bounds.max_y + pad_y,
+        min_z=bounds.min_z - pad_z,
+        max_z=bounds.max_z + pad_z,
+    )
+
+
+def _dc_to_rgb(vertex: np.ndarray, mask: np.ndarray) -> np.ndarray:
+    dtype_names = vertex.dtype.names or ()
+    if all(name in dtype_names for name in ("f_dc_0", "f_dc_1", "f_dc_2")):
+        dc = np.stack(
+            [
+                np.asarray(vertex["f_dc_0"], dtype=np.float32),
+                np.asarray(vertex["f_dc_1"], dtype=np.float32),
+                np.asarray(vertex["f_dc_2"], dtype=np.float32),
+            ],
+            axis=1,
+        )[mask]
+        rgb = np.clip((dc * 0.28209479177387814 + 0.5) * 255.0, 0, 255)
+        return rgb.astype(np.uint8)
+    return np.full((int(np.count_nonzero(mask)), 3), 127, dtype=np.uint8)
+
+
+def write_sparse_point_cloud_ply(path: Path, positions: np.ndarray, rgb: np.ndarray) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8") as handle:
+        handle.write("ply\n")
+        handle.write("format ascii 1.0\n")
+        handle.write(f"element vertex {len(positions)}\n")
+        handle.write("property float x\n")
+        handle.write("property float y\n")
+        handle.write("property float z\n")
+        handle.write("property uchar red\n")
+        handle.write("property uchar green\n")
+        handle.write("property uchar blue\n")
+        handle.write("end_header\n")
+        for position, color in zip(positions, rgb):
+            handle.write(
+                f"{float(position[0])} {float(position[1])} {float(position[2])} "
+                f"{int(color[0])} {int(color[1])} {int(color[2])}\n"
+            )
+
+
+def filter_scaffold_ply_to_sparse_points(
+    *,
+    scaffold_ply_path: Path,
+    output_ply_path: Path,
+    bounds_payload: Mapping[str, Any],
+    padding_ratio: float = 0.10,
+    max_points: int = 0,
+) -> dict[str, Any]:
+    if PlyData is None:
+        raise ModuleNotFoundError("plyfile is required to filter scaffold PLY initialization")
+    if not scaffold_ply_path.exists():
+        raise FileNotFoundError(f"Missing scaffold PLY: {scaffold_ply_path}")
+    bounds = expanded_bounds(bounds_payload, padding_ratio=padding_ratio)
+    ply = PlyData.read(str(scaffold_ply_path))
+    vertex = ply["vertex"].data
+    positions = np.stack(
+        [
+            np.asarray(vertex["x"], dtype=np.float32),
+            np.asarray(vertex["y"], dtype=np.float32),
+            np.asarray(vertex["z"], dtype=np.float32),
+        ],
+        axis=1,
+    )
+    keep_mask = bounds.contains_points(positions)
+    inherited_count = int(np.count_nonzero(keep_mask))
+    if inherited_count <= 0:
+        return {
+            "scaffold_source_artifact": str(scaffold_ply_path),
+            "scaffold_filter_bounds": bounds.to_dict(),
+            "inherited_gaussian_count": 0,
+            "inherited_attributes": [],
+            "reinitialized_attributes": ["scale", "opacity", "sh", "appearance_embedding"],
+            "scaffold_inheritance_mode": "none_empty_filter",
+        }
+
+    filtered_positions = positions[keep_mask]
+    filtered_rgb = _dc_to_rgb(vertex, keep_mask)
+    if max_points and inherited_count > max_points:
+        indexes = np.linspace(0, inherited_count - 1, num=max_points, dtype=np.int64)
+        filtered_positions = filtered_positions[indexes]
+        filtered_rgb = filtered_rgb[indexes]
+    write_sparse_point_cloud_ply(output_ply_path, filtered_positions, filtered_rgb)
+    return {
+        "scaffold_source_artifact": str(scaffold_ply_path),
+        "scaffold_filter_bounds": bounds.to_dict(),
+        "inherited_gaussian_count": int(len(filtered_positions)),
+        "inherited_attributes": ["position", "rgb_dc_proxy"],
+        "reinitialized_attributes": ["scale", "opacity", "sh", "appearance_embedding"],
+        "scaffold_inheritance_mode": "filtered_ply_as_sparse_point_cloud",
+        "output_point_cloud": str(output_ply_path),
+    }
+
+
 def _background_selection_score(payload: Mapping[str, Any]) -> float | None:
     selection = payload.get("selection")
     if not isinstance(selection, Mapping):
@@ -979,7 +1515,7 @@ def merge_tile_outputs(
     merge_mode: str = "strict_core",
 ) -> dict[str, Any]:
     normalized_mode = merge_mode.strip().lower()
-    if normalized_mode != "strict_core":
+    if normalized_mode not in {"strict_core", "support_weighted_overlap", "raw_union"}:
         raise ValueError(f"Unsupported merge_mode={merge_mode}")
     if PlyData is None or PlyElement is None:
         raise ModuleNotFoundError("plyfile is required to merge tile outputs")
@@ -991,8 +1527,9 @@ def merge_tile_outputs(
     fallback_tile_count = 0
     retain_all_tile_count = 0
     tile_centroids = compute_tile_centroids(tile_manifest, tile_output_dirs)
+    manifest_tiles = [dict(tile) for tile in tile_manifest.get("tiles", [])]
 
-    for tile_entry in tile_manifest.get("tiles", []):
+    for tile_entry in manifest_tiles:
         tile_id = str(tile_entry["tile_id"])
         tile_dir = tile_output_dirs.get(tile_id)
         if tile_dir is None:
@@ -1024,40 +1561,59 @@ def merge_tile_outputs(
             ],
             axis=1,
         )
-        core_bounds = AxisAlignedBounds.from_dict(tile_entry["core_bounds"])
-        overlap_bounds_payload = tile_entry.get("overlap_bounds")
-        overlap_bounds = (
-            AxisAlignedBounds.from_dict(overlap_bounds_payload)
-            if isinstance(overlap_bounds_payload, Mapping)
-            else None
-        )
         used_fallback = False
-        if not core_bounds.is_degenerate():
-            keep_mask = core_bounds.contains_points(positions)
-            retention_strategy = "core_bounds"
-        elif overlap_bounds is not None and not overlap_bounds.is_degenerate():
-            keep_mask = overlap_bounds.contains_points(positions)
-            retention_strategy = "overlap_bounds_fallback"
-            used_fallback = True
-        else:
-            keep_mask = np.ones(total_vertex_count, dtype=bool)
-            retention_strategy = "retain_all"
-            used_fallback = True
+        fallback_reason_code = "none"
+        retention_metadata: dict[str, Any] = {}
 
-        if not np.any(keep_mask) and overlap_bounds is not None and not overlap_bounds.is_degenerate():
+        if normalized_mode == "raw_union":
+            keep_mask = np.ones(total_vertex_count, dtype=bool)
+            retention_strategy = "raw_union"
+        elif normalized_mode == "support_weighted_overlap":
+            keep_mask, retention_metadata = support_weighted_overlap_mask(
+                tile_id=tile_id,
+                positions=positions,
+                vertex=vertex,
+                tile_entry=tile_entry,
+                all_tile_entries=manifest_tiles,
+            )
+            retention_strategy = str(retention_metadata.get("retention_strategy", "core_plus_support_weighted_overlap"))
+            fallback_reason_code = str(retention_metadata.get("fallback_reason_code", "none"))
+            used_fallback = bool(retention_metadata.get("used_fallback", False))
+        else:
+            core_bounds = _load_bounds(tile_entry.get("core_bounds"))
+            overlap_bounds = _load_bounds(tile_entry.get("overlap_bounds"))
+            if core_bounds is not None:
+                keep_mask = core_bounds.contains_points(positions)
+                retention_strategy = "core_bounds"
+            elif overlap_bounds is not None:
+                keep_mask = overlap_bounds.contains_points(positions)
+                retention_strategy = "overlap_bounds_fallback"
+                fallback_reason_code = "missing_or_degenerate_core_bounds"
+                used_fallback = True
+            else:
+                keep_mask = np.ones(total_vertex_count, dtype=bool)
+                retention_strategy = "retain_all"
+                fallback_reason_code = "missing_or_degenerate_ownership_bounds"
+                used_fallback = True
+
+        overlap_bounds = _load_bounds(tile_entry.get("overlap_bounds"))
+        if not np.any(keep_mask) and overlap_bounds is not None:
             keep_mask = overlap_bounds.contains_points(positions)
             if np.any(keep_mask):
                 retention_strategy = "overlap_bounds_fallback"
+                fallback_reason_code = "primary_strategy_retained_zero_gaussians"
                 used_fallback = True
         if not np.any(keep_mask):
             centroid_keep_mask = centroid_voronoi_mask(tile_id, positions, tile_entry, tile_centroids)
             if centroid_keep_mask is not None:
                 keep_mask = centroid_keep_mask
                 retention_strategy = "centroid_voronoi_fallback"
+                fallback_reason_code = "bounds_retained_zero_gaussians"
                 used_fallback = True
             else:
                 keep_mask = np.ones(total_vertex_count, dtype=bool)
                 retention_strategy = "retain_all"
+                fallback_reason_code = "all_strategies_retained_zero_gaussians"
                 used_fallback = True
 
         if used_fallback:
@@ -1075,20 +1631,22 @@ def merge_tile_outputs(
         if len(kept_vertex):
             merged_vertices.append(kept_vertex)
 
-        report_tiles.append(
-            {
-                "tile_id": tile_id,
-                "source_ply": str(ply_path),
-                "source_gaussians": total_vertex_count,
-                "retained_gaussians": int(len(kept_vertex)),
-                "dropped_gaussians": int(total_vertex_count - len(kept_vertex)),
-                "retention_strategy": retention_strategy,
-                "ownership_bounds_available": bool(tile_entry.get("ownership_bounds_available", True)),
-            }
-        )
+        tile_report = {
+            "tile_id": tile_id,
+            "source_ply": str(ply_path),
+            "source_gaussians": total_vertex_count,
+            "retained_gaussians": int(len(kept_vertex)),
+            "dropped_gaussians": int(total_vertex_count - len(kept_vertex)),
+            "retention_strategy": retention_strategy,
+            "fallback_reason_code": fallback_reason_code,
+            "ownership_bounds_available": bool(tile_entry.get("ownership_bounds_available", True)),
+        }
+        if retention_metadata.get("support_weighted_overlap"):
+            tile_report["support_weighted_overlap"] = retention_metadata["support_weighted_overlap"]
+        report_tiles.append(tile_report)
 
     if not merged_vertices:
-        raise RuntimeError("Strict core merge produced no retained gaussians")
+        raise RuntimeError(f"{normalized_mode} merge produced no retained gaussians")
 
     merged_vertex = np.concatenate(merged_vertices)
     merged_path = output_dir / "merged_splat.ply"

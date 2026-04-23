@@ -23,7 +23,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--merge-mode",
         default="strict_core",
-        choices=["strict_core"],
+        choices=["strict_core", "support_weighted_overlap", "raw_union"],
         help="Tile merge strategy",
     )
     return parser.parse_args()

@@ -372,6 +372,7 @@ def build_benchmark_stages(
     downscale_factor: int,
     include_review: bool,
     proof_profile: str = PROOF_PROFILE_NONE,
+    merge_mode: str = "strict_core",
 ) -> list[BenchmarkStage]:
     output_root = normalize_s3_prefix(output_root_s3_uri)
     tile_manifest_name = "3dgs_tile_manifest.json"
@@ -400,6 +401,9 @@ def build_benchmark_stages(
         )
 
     if orchestration_mode == "single_job":
+        tiled_extra_env = dict(extra_env)
+        if merge_mode != "strict_core":
+            tiled_extra_env.setdefault("MERGE_MODE", merge_mode)
         stages.append(
             BenchmarkStage(
                 stage_name="T2_tiled_pipeline",
@@ -413,7 +417,7 @@ def build_benchmark_stages(
                     view_bucket_manifest_name=view_bucket_manifest_name,
                     tile_id=None,
                     max_iterations=tile_max_iterations,
-                    extra_env=extra_env,
+                    extra_env=tiled_extra_env,
                     training_timeout_seconds=training_max_runtime_seconds,
                     scaffold_max_iterations=scaffold_max_iterations,
                     max_tiles=len(tile_ids),
@@ -491,9 +495,9 @@ def build_benchmark_stages(
     if include_merge and selected_tiles:
         stages.append(
             BenchmarkStage(
-                stage_name="MERGE_strict_core",
+                stage_name=f"MERGE_{merge_mode}",
                 stage_type="merge",
-                training_mode="strict_core",
+                training_mode=merge_mode,
                 output_s3_uri=f"{output_root}/merged",
                 depends_on=[f"T0_{tile_id}" for tile_id in selected_tiles],
             )
@@ -715,6 +719,7 @@ def run_merge_stage(
     tile_manifest: dict[str, object],
     tile_stage_dirs: Dict[str, Path],
     output_dir: Path,
+    merge_mode: str = "strict_core",
 ) -> dict:
     output_dir.mkdir(parents=True, exist_ok=True)
     tile_manifest_path = output_dir / "selected_tile_manifest.json"
@@ -728,6 +733,8 @@ def run_merge_stage(
         str(output_dir / "tile_outputs"),
         "--output-dir",
         str(output_dir),
+        "--merge-mode",
+        merge_mode,
     ]
     tile_root = output_dir / "tile_outputs"
     tile_root.mkdir(parents=True, exist_ok=True)
@@ -788,6 +795,12 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--skip-scaffold", action="store_true", help="Skip the scaffold rung.")
     parser.add_argument("--skip-merge", action="store_true", help="Skip the local merge stage.")
+    parser.add_argument(
+        "--merge-mode",
+        choices=["strict_core", "support_weighted_overlap", "raw_union"],
+        default="strict_core",
+        help="Merge strategy for fanout/local merge validation.",
+    )
     parser.add_argument("--skip-review", action="store_true", help="Skip the post-run merged quality review job.")
     parser.add_argument(
         "--proof-profile",
@@ -928,6 +941,7 @@ def main() -> int:
         downscale_factor=args.downscale_factor,
         include_review=include_review,
         proof_profile=resolved_proof_profile,
+        merge_mode=args.merge_mode,
     )
 
     summary: dict = {
@@ -1110,6 +1124,7 @@ def main() -> int:
                 },
                 tile_stage_dirs=extracted_stage_dirs,
                 output_dir=merge_root / "merged",
+                merge_mode=args.merge_mode,
             )
             summary["merge"] = merge_summary
     elif args.wait and merge_root is not None and not args.skip_merge and extracted_stage_dirs:
@@ -1126,6 +1141,7 @@ def main() -> int:
             },
             tile_stage_dirs=extracted_stage_dirs,
             output_dir=merge_root / "merged",
+            merge_mode=args.merge_mode,
         )
         summary["merge"] = merge_summary
     elif review_stage is not None:

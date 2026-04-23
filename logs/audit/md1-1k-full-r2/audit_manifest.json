@@ -1,0 +1,1175 @@
+{
+  "version": "geometry_consistency_audit_v1",
+  "created_at_epoch": 1776971688.489463,
+  "git": {
+    "branch": "agent-53821974-md1-geometry-consistency",
+    "head": "ffef97e646046f204267ec30dd7dbf6f19027cad"
+  },
+  "rung": "R0",
+  "model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
+  "local_model_tarball": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
+  "local_extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
+  "inventory": {
+    "tile_splats": [
+      {
+        "tile_id": "tile_00",
+        "path": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_00/splat.ply",
+        "vertex_count": 729093,
+        "size_bytes": 180816595
+      },
+      {
+        "tile_id": "tile_01",
+        "path": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_01/splat.ply",
+        "vertex_count": 729093,
+        "size_bytes": 180816595
+      },
+      {
+        "tile_id": "tile_02",
+        "path": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_02/splat.ply",
+        "vertex_count": 729093,
+        "size_bytes": 180816595
+      },
+      {
+        "tile_id": "tile_03",
+        "path": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_03/splat.ply",
+        "vertex_count": 729093,
+        "size_bytes": 180816595
+      },
+      {
+        "tile_id": "tile_04",
+        "path": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_04/splat.ply",
+        "vertex_count": 729093,
+        "size_bytes": 180816595
+      },
+      {
+        "tile_id": "tile_05",
+        "path": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_05/splat.ply",
+        "vertex_count": 729093,
+        "size_bytes": 180816595
+      },
+      {
+        "tile_id": "tile_06",
+        "path": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_06/splat.ply",
+        "vertex_count": 729093,
+        "size_bytes": 180816595
+      }
+    ],
+    "tile_splat_count": 7,
+    "merged_splat": {
+      "path": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/merged/merged_splat.ply",
+      "vertex_count": 3625343,
+      "size_bytes": 899086596
+    },
+    "merge_report": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/merged/merge_report.json",
+    "tile_manifest": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiled_pipeline/inputs/scaffold/3dgs_tile_manifest.json",
+    "view_bucket_manifest": "/Users/gabrielhansen/worktrees/agent-86580563-hierarchical-splat-merge-plan/logs/aws/md1-1k-full-r2/remerge-fixed/3dgs_view_buckets.fixed.json",
+    "recovered_historical_baseline": {
+      "path": "/Users/gabrielhansen/worktrees/agent-86580563-hierarchical-splat-merge-plan/logs/aws/md1-1k-full-r2/remerge-fixed/merged-fixed-2",
+      "merged_splat": "/Users/gabrielhansen/worktrees/agent-86580563-hierarchical-splat-merge-plan/logs/aws/md1-1k-full-r2/remerge-fixed/merged-fixed-2/merged_splat.ply",
+      "merge_report": "/Users/gabrielhansen/worktrees/agent-86580563-hierarchical-splat-merge-plan/logs/aws/md1-1k-full-r2/remerge-fixed/merged-fixed-2/merge_report.json",
+      "available": true
+    },
+    "required_artifacts": {
+      "seven_tile_splats": true,
+      "merged_splat": true,
+      "merge_report": true,
+      "tile_manifest": true,
+      "view_bucket_manifest": true
+    },
+    "fail_closed": false
+  },
+  "review_camera_manifest": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/review_camera_manifest.json",
+  "frozen_camera_sets": {
+    "version": "geometry_consistency_review_cameras_v1",
+    "source_buckets": {
+      "near_detail_camera_ids": 352,
+      "boundary_camera_ids": 352,
+      "horizon_camera_ids": 352
+    },
+    "max_images_per_bucket": 12,
+    "smoke_images_per_bucket": 4,
+    "review_image_names_by_bucket": {
+      "near_detail_camera_ids": [
+        "DJI_0258.JPG",
+        "DJI_0261.JPG",
+        "DJI_0262.JPG",
+        "DJI_0263.JPG",
+        "DJI_01091.JPG",
+        "DJI_01092.JPG",
+        "DJI_01093.JPG",
+        "DJI_01094.JPG",
+        "DJI_01095.JPG",
+        "DJI_01096.JPG",
+        "DJI_01097.JPG",
+        "DJI_01098.JPG"
+      ],
+      "boundary_camera_ids": [
+        "DJI_0067.JPG",
+        "DJI_0068.JPG",
+        "DJI_0069.JPG",
+        "DJI_0070.JPG",
+        "DJI_0071.JPG",
+        "DJI_0072.JPG",
+        "DJI_0141.JPG",
+        "DJI_0146.JPG",
+        "DJI_0147.JPG",
+        "DJI_0148.JPG",
+        "DJI_0149.JPG",
+        "DJI_0150.JPG"
+      ],
+      "horizon_camera_ids": [
+        "DJI_0066.JPG",
+        "DJI_0073.JPG",
+        "DJI_0146.JPG",
+        "DJI_0147.JPG",
+        "DJI_0148.JPG",
+        "DJI_0149.JPG",
+        "DJI_0150.JPG",
+        "DJI_0151.JPG",
+        "DJI_0152.JPG",
+        "DJI_0153.JPG",
+        "DJI_0154.JPG",
+        "DJI_0155.JPG"
+      ]
+    },
+    "smoke_image_names_by_bucket": {
+      "near_detail_camera_ids": [
+        "DJI_0258.JPG",
+        "DJI_0261.JPG",
+        "DJI_0262.JPG",
+        "DJI_0263.JPG"
+      ],
+      "boundary_camera_ids": [
+        "DJI_0067.JPG",
+        "DJI_0068.JPG",
+        "DJI_0069.JPG",
+        "DJI_0070.JPG"
+      ],
+      "horizon_camera_ids": [
+        "DJI_0066.JPG",
+        "DJI_0073.JPG",
+        "DJI_0146.JPG",
+        "DJI_0147.JPG"
+      ]
+    }
+  },
+  "candidate_pairs": [
+    {
+      "tile_ids": [
+        "tile_02",
+        "tile_05"
+      ],
+      "pair_key": "tile_02::tile_05",
+      "neighbor_link": true,
+      "shared_assigned_image_count": 64,
+      "shared_assigned_images": [
+        "DJI_0067.JPG",
+        "DJI_0068.JPG",
+        "DJI_0069.JPG",
+        "DJI_0070.JPG",
+        "DJI_0071.JPG",
+        "DJI_0072.JPG",
+        "DJI_0141.JPG",
+        "DJI_01518.JPG",
+        "DJI_01519.JPG",
+        "DJI_01520.JPG",
+        "DJI_01521.JPG",
+        "DJI_01522.JPG",
+        "DJI_01523.JPG",
+        "DJI_01524.JPG",
+        "DJI_01525.JPG",
+        "DJI_01526.JPG",
+        "DJI_01527.JPG",
+        "DJI_01528.JPG",
+        "DJI_01529.JPG",
+        "DJI_01530.JPG",
+        "DJI_01531.JPG",
+        "DJI_01540.JPG",
+        "DJI_01541.JPG",
+        "DJI_01542.JPG",
+        "DJI_01543.JPG",
+        "DJI_01544.JPG",
+        "DJI_01545.JPG",
+        "DJI_01546.JPG",
+        "DJI_01612.JPG",
+        "DJI_01613.JPG",
+        "DJI_01614.JPG",
+        "DJI_01615.JPG",
+        "DJI_01631.JPG",
+        "DJI_01632.JPG",
+        "DJI_01633.JPG",
+        "DJI_01634.JPG",
+        "DJI_01635.JPG",
+        "DJI_01720.JPG",
+        "DJI_01721.JPG",
+        "DJI_01722.JPG",
+        "DJI_01723.JPG",
+        "DJI_01724.JPG",
+        "DJI_01737.JPG",
+        "DJI_01738.JPG",
+        "DJI_01739.JPG",
+        "DJI_01740.JPG",
+        "DJI_01741.JPG",
+        "DJI_01742.JPG",
+        "DJI_01743.JPG",
+        "DJI_01812.JPG",
+        "DJI_01813.JPG",
+        "DJI_01831.JPG",
+        "DJI_01832.JPG",
+        "DJI_01833.JPG",
+        "DJI_01834.JPG",
+        "DJI_01835.JPG",
+        "DJI_01836.JPG",
+        "DJI_01884.JPG",
+        "DJI_01891.JPG",
+        "DJI_0255.JPG",
+        "DJI_0259.JPG",
+        "DJI_0260.JPG",
+        "DJI_0264.JPG",
+        "DJI_0334.JPG"
+      ],
+      "boundary_support_count": 52,
+      "boundary_support_images": [
+        "DJI_0067.JPG",
+        "DJI_0068.JPG",
+        "DJI_0069.JPG",
+        "DJI_0070.JPG",
+        "DJI_0071.JPG",
+        "DJI_0072.JPG",
+        "DJI_0141.JPG",
+        "DJI_0255.JPG",
+        "DJI_0259.JPG",
+        "DJI_0260.JPG",
+        "DJI_0264.JPG",
+        "DJI_0334.JPG",
+        "DJI_01518.JPG",
+        "DJI_01519.JPG",
+        "DJI_01540.JPG",
+        "DJI_01541.JPG",
+        "DJI_01542.JPG",
+        "DJI_01543.JPG",
+        "DJI_01544.JPG",
+        "DJI_01545.JPG",
+        "DJI_01546.JPG",
+        "DJI_01612.JPG",
+        "DJI_01613.JPG",
+        "DJI_01614.JPG",
+        "DJI_01615.JPG",
+        "DJI_01631.JPG",
+        "DJI_01632.JPG",
+        "DJI_01633.JPG",
+        "DJI_01634.JPG",
+        "DJI_01635.JPG",
+        "DJI_01720.JPG",
+        "DJI_01721.JPG",
+        "DJI_01722.JPG",
+        "DJI_01723.JPG",
+        "DJI_01724.JPG",
+        "DJI_01737.JPG",
+        "DJI_01738.JPG",
+        "DJI_01739.JPG",
+        "DJI_01740.JPG",
+        "DJI_01741.JPG",
+        "DJI_01742.JPG",
+        "DJI_01743.JPG",
+        "DJI_01812.JPG",
+        "DJI_01813.JPG",
+        "DJI_01831.JPG",
+        "DJI_01832.JPG",
+        "DJI_01833.JPG",
+        "DJI_01834.JPG",
+        "DJI_01835.JPG",
+        "DJI_01836.JPG",
+        "DJI_01884.JPG",
+        "DJI_01891.JPG"
+      ],
+      "selected_image_counts": {
+        "tile_02": 188,
+        "tile_05": 188
+      },
+      "selected_image_count_balanced": true,
+      "ownership_bounds_valid": {
+        "tile_02": true,
+        "tile_05": true
+      },
+      "eligible": true,
+      "eligibility_thresholds": {
+        "min_shared_assigned_images": 24,
+        "requires_boundary_support": true,
+        "requires_valid_ownership_bounds": true,
+        "selected_image_count_window": [
+          94.0,
+          282.0
+        ]
+      },
+      "fallback_involvement": 1,
+      "merge_retained_ratio": 0.771290493805317,
+      "rank_score": 377.0
+    },
+    {
+      "tile_ids": [
+        "tile_04",
+        "tile_06"
+      ],
+      "pair_key": "tile_04::tile_06",
+      "neighbor_link": true,
+      "shared_assigned_image_count": 64,
+      "shared_assigned_images": [
+        "DJI_01091.JPG",
+        "DJI_01092.JPG",
+        "DJI_01093.JPG",
+        "DJI_01094.JPG",
+        "DJI_01095.JPG",
+        "DJI_01096.JPG",
+        "DJI_01097.JPG",
+        "DJI_01098.JPG",
+        "DJI_02075.JPG",
+        "DJI_02086.JPG",
+        "DJI_02087.JPG",
+        "DJI_02088.JPG",
+        "DJI_02102.JPG",
+        "DJI_02119.JPG",
+        "DJI_02120.JPG",
+        "DJI_02121.JPG",
+        "DJI_02122.JPG",
+        "DJI_02140.JPG",
+        "DJI_02141.JPG",
+        "DJI_02142.JPG",
+        "DJI_02143.JPG",
+        "DJI_02144.JPG",
+        "DJI_02172.JPG",
+        "DJI_02182.JPG",
+        "DJI_02183.JPG",
+        "DJI_02184.JPG",
+        "DJI_02185.JPG",
+        "DJI_02186.JPG",
+        "DJI_02275.JPG",
+        "DJI_02276.JPG",
+        "DJI_02277.JPG",
+        "DJI_02278.JPG",
+        "DJI_02279.JPG",
+        "DJI_02280.JPG",
+        "DJI_02281.JPG",
+        "DJI_02282.JPG",
+        "DJI_02283.JPG",
+        "DJI_02284.JPG",
+        "DJI_02285.JPG",
+        "DJI_02286.JPG",
+        "DJI_02287.JPG",
+        "DJI_02288.JPG",
+        "DJI_02289.JPG",
+        "DJI_02290.JPG",
+        "DJI_02291.JPG",
+        "DJI_02375.JPG",
+        "DJI_02376.JPG",
+        "DJI_02377.JPG",
+        "DJI_02379.JPG",
+        "DJI_02391.JPG",
+        "DJI_0258.JPG",
+        "DJI_0261.JPG",
+        "DJI_0262.JPG",
+        "DJI_0263.JPG",
+        "DJI_02676.JPG",
+        "DJI_02876.JPG",
+        "DJI_02877.JPG",
+        "DJI_02878.JPG",
+        "DJI_02879.JPG",
+        "DJI_02881.JPG",
+        "DJI_02882.JPG",
+        "DJI_02887.JPG",
+        "DJI_02888.JPG",
+        "DJI_02890.JPG"
+      ],
+      "boundary_support_count": 0,
+      "boundary_support_images": [],
+      "selected_image_counts": {
+        "tile_04": 188,
+        "tile_06": 188
+      },
+      "selected_image_count_balanced": true,
+      "ownership_bounds_valid": {
+        "tile_04": true,
+        "tile_06": true
+      },
+      "eligible": false,
+      "eligibility_thresholds": {
+        "min_shared_assigned_images": 24,
+        "requires_boundary_support": true,
+        "requires_valid_ownership_bounds": true,
+        "selected_image_count_window": [
+          94.0,
+          282.0
+        ]
+      },
+      "fallback_involvement": 1,
+      "merge_retained_ratio": 0.8274698838145477,
+      "rank_score": 69.0
+    },
+    {
+      "tile_ids": [
+        "tile_02",
+        "tile_06"
+      ],
+      "pair_key": "tile_02::tile_06",
+      "neighbor_link": false,
+      "shared_assigned_image_count": 16,
+      "shared_assigned_images": [
+        "DJI_02601.JPG",
+        "DJI_02602.JPG",
+        "DJI_02603.JPG",
+        "DJI_02604.JPG",
+        "DJI_02605.JPG",
+        "DJI_02988.JPG",
+        "DJI_02989.JPG",
+        "DJI_02990.JPG",
+        "DJI_03011.JPG",
+        "DJI_03012.JPG",
+        "DJI_03013.JPG",
+        "DJI_03014.JPG",
+        "DJI_03015.JPG",
+        "DJI_03016.JPG",
+        "DJI_03017.JPG",
+        "DJI_03018.JPG"
+      ],
+      "boundary_support_count": 16,
+      "boundary_support_images": [
+        "DJI_02601.JPG",
+        "DJI_02602.JPG",
+        "DJI_02603.JPG",
+        "DJI_02604.JPG",
+        "DJI_02605.JPG",
+        "DJI_02988.JPG",
+        "DJI_02989.JPG",
+        "DJI_02990.JPG",
+        "DJI_03011.JPG",
+        "DJI_03012.JPG",
+        "DJI_03013.JPG",
+        "DJI_03014.JPG",
+        "DJI_03015.JPG",
+        "DJI_03016.JPG",
+        "DJI_03017.JPG",
+        "DJI_03018.JPG"
+      ],
+      "selected_image_counts": {
+        "tile_02": 188,
+        "tile_06": 188
+      },
+      "selected_image_count_balanced": true,
+      "ownership_bounds_valid": {
+        "tile_02": true,
+        "tile_06": true
+      },
+      "eligible": false,
+      "eligibility_thresholds": {
+        "min_shared_assigned_images": 24,
+        "requires_boundary_support": true,
+        "requires_valid_ownership_bounds": true,
+        "selected_image_count_window": [
+          94.0,
+          282.0
+        ]
+      },
+      "fallback_involvement": 1,
+      "merge_retained_ratio": 0.8265865945770978,
+      "rank_score": 65.0
+    },
+    {
+      "tile_ids": [
+        "tile_02",
+        "tile_04"
+      ],
+      "pair_key": "tile_02::tile_04",
+      "neighbor_link": false,
+      "shared_assigned_image_count": 14,
+      "shared_assigned_images": [
+        "DJI_02766.JPG",
+        "DJI_02767.JPG",
+        "DJI_02771.JPG",
+        "DJI_02797.JPG",
+        "DJI_02798.JPG",
+        "DJI_02799.JPG",
+        "DJI_02800.JPG",
+        "DJI_02801.JPG",
+        "DJI_02862.JPG",
+        "DJI_02864.JPG",
+        "DJI_02883.JPG",
+        "DJI_02886.JPG",
+        "DJI_02892.JPG",
+        "DJI_02901.JPG"
+      ],
+      "boundary_support_count": 14,
+      "boundary_support_images": [
+        "DJI_02766.JPG",
+        "DJI_02767.JPG",
+        "DJI_02771.JPG",
+        "DJI_02797.JPG",
+        "DJI_02798.JPG",
+        "DJI_02799.JPG",
+        "DJI_02800.JPG",
+        "DJI_02801.JPG",
+        "DJI_02862.JPG",
+        "DJI_02864.JPG",
+        "DJI_02883.JPG",
+        "DJI_02886.JPG",
+        "DJI_02892.JPG",
+        "DJI_02901.JPG"
+      ],
+      "selected_image_counts": {
+        "tile_02": 188,
+        "tile_04": 188
+      },
+      "selected_image_count_balanced": true,
+      "ownership_bounds_valid": {
+        "tile_02": true,
+        "tile_04": true
+      },
+      "eligible": false,
+      "eligibility_thresholds": {
+        "min_shared_assigned_images": 24,
+        "requires_boundary_support": true,
+        "requires_valid_ownership_bounds": true,
+        "selected_image_count_window": [
+          94.0,
+          282.0
+        ]
+      },
+      "fallback_involvement": 0,
+      "merge_retained_ratio": 0.9986750661438253,
+      "rank_score": 20.0
+    },
+    {
+      "tile_ids": [
+        "tile_03",
+        "tile_04"
+      ],
+      "pair_key": "tile_03::tile_04",
+      "neighbor_link": true,
+      "shared_assigned_image_count": 41,
+      "shared_assigned_images": [
+        "DJI_01091.JPG",
+        "DJI_01092.JPG",
+        "DJI_01093.JPG",
+        "DJI_01094.JPG",
+        "DJI_01095.JPG",
+        "DJI_01096.JPG",
+        "DJI_01097.JPG",
+        "DJI_01098.JPG",
+        "DJI_0258.JPG",
+        "DJI_0261.JPG",
+        "DJI_0262.JPG",
+        "DJI_0263.JPG",
+        "DJI_02705.JPG",
+        "DJI_02706.JPG",
+        "DJI_02707.JPG",
+        "DJI_02752.JPG",
+        "DJI_02753.JPG",
+        "DJI_02754.JPG",
+        "DJI_02757.JPG",
+        "DJI_02758.JPG",
+        "DJI_02759.JPG",
+        "DJI_02760.JPG",
+        "DJI_02761.JPG",
+        "DJI_02802.JPG",
+        "DJI_02803.JPG",
+        "DJI_02804.JPG",
+        "DJI_02805.JPG",
+        "DJI_02806.JPG",
+        "DJI_02807.JPG",
+        "DJI_02808.JPG",
+        "DJI_02855.JPG",
+        "DJI_02856.JPG",
+        "DJI_02857.JPG",
+        "DJI_02858.JPG",
+        "DJI_02859.JPG",
+        "DJI_02860.JPG",
+        "DJI_02861.JPG",
+        "DJI_02904.JPG",
+        "DJI_02905.JPG",
+        "DJI_02906.JPG",
+        "DJI_02907.JPG"
+      ],
+      "boundary_support_count": 0,
+      "boundary_support_images": [],
+      "selected_image_counts": {
+        "tile_03": 188,
+        "tile_04": 188
+      },
+      "selected_image_count_balanced": true,
+      "ownership_bounds_valid": {
+        "tile_03": true,
+        "tile_04": true
+      },
+      "eligible": false,
+      "eligibility_thresholds": {
+        "min_shared_assigned_images": 24,
+        "requires_boundary_support": true,
+        "requires_valid_ownership_bounds": true,
+        "selected_image_count_window": [
+          94.0,
+          282.0
+        ]
+      },
+      "fallback_involvement": 0,
+      "merge_retained_ratio": 0.9964634141323535,
+      "rank_score": 11.0
+    },
+    {
+      "tile_ids": [
+        "tile_00",
+        "tile_06"
+      ],
+      "pair_key": "tile_00::tile_06",
+      "neighbor_link": false,
+      "shared_assigned_image_count": 12,
+      "shared_assigned_images": [
+        "DJI_01091.JPG",
+        "DJI_01092.JPG",
+        "DJI_01093.JPG",
+        "DJI_01094.JPG",
+        "DJI_01095.JPG",
+        "DJI_01096.JPG",
+        "DJI_01097.JPG",
+        "DJI_01098.JPG",
+        "DJI_0258.JPG",
+        "DJI_0261.JPG",
+        "DJI_0262.JPG",
+        "DJI_0263.JPG"
+      ],
+      "boundary_support_count": 0,
+      "boundary_support_images": [],
+      "selected_image_counts": {
+        "tile_00": 188,
+        "tile_06": 188
+      },
+      "selected_image_count_balanced": true,
+      "ownership_bounds_valid": {
+        "tile_00": true,
+        "tile_06": true
+      },
+      "eligible": false,
+      "eligibility_thresholds": {
+        "min_shared_assigned_images": 24,
+        "requires_boundary_support": true,
+        "requires_valid_ownership_bounds": true,
+        "selected_image_count_window": [
+          94.0,
+          282.0
+        ]
+      },
+      "fallback_involvement": 1,
+      "merge_retained_ratio": 0.8259817334688442,
+      "rank_score": -3.0
+    },
+    {
+      "tile_ids": [
+        "tile_03",
+        "tile_06"
+      ],
+      "pair_key": "tile_03::tile_06",
+      "neighbor_link": false,
+      "shared_assigned_image_count": 12,
+      "shared_assigned_images": [
+        "DJI_01091.JPG",
+        "DJI_01092.JPG",
+        "DJI_01093.JPG",
+        "DJI_01094.JPG",
+        "DJI_01095.JPG",
+        "DJI_01096.JPG",
+        "DJI_01097.JPG",
+        "DJI_01098.JPG",
+        "DJI_0258.JPG",
+        "DJI_0261.JPG",
+        "DJI_0262.JPG",
+        "DJI_0263.JPG"
+      ],
+      "boundary_support_count": 0,
+      "boundary_support_images": [],
+      "selected_image_counts": {
+        "tile_03": 188,
+        "tile_06": 188
+      },
+      "selected_image_count_balanced": true,
+      "ownership_bounds_valid": {
+        "tile_03": true,
+        "tile_06": true
+      },
+      "eligible": false,
+      "eligibility_thresholds": {
+        "min_shared_assigned_images": 24,
+        "requires_boundary_support": true,
+        "requires_valid_ownership_bounds": true,
+        "selected_image_count_window": [
+          94.0,
+          282.0
+        ]
+      },
+      "fallback_involvement": 1,
+      "merge_retained_ratio": 0.824374942565626,
+      "rank_score": -3.0
+    },
+    {
+      "tile_ids": [
+        "tile_00",
+        "tile_04"
+      ],
+      "pair_key": "tile_00::tile_04",
+      "neighbor_link": true,
+      "shared_assigned_image_count": 26,
+      "shared_assigned_images": [
+        "DJI_01091.JPG",
+        "DJI_01092.JPG",
+        "DJI_01093.JPG",
+        "DJI_01094.JPG",
+        "DJI_01095.JPG",
+        "DJI_01096.JPG",
+        "DJI_01097.JPG",
+        "DJI_01098.JPG",
+        "DJI_01099.JPG",
+        "DJI_01100.JPG",
+        "DJI_01101.JPG",
+        "DJI_01114.JPG",
+        "DJI_01115.JPG",
+        "DJI_01116.JPG",
+        "DJI_01117.JPG",
+        "DJI_01123.JPG",
+        "DJI_01124.JPG",
+        "DJI_01212.JPG",
+        "DJI_01213.JPG",
+        "DJI_01214.JPG",
+        "DJI_01224.JPG",
+        "DJI_01225.JPG",
+        "DJI_0258.JPG",
+        "DJI_0261.JPG",
+        "DJI_0262.JPG",
+        "DJI_0263.JPG"
+      ],
+      "boundary_support_count": 0,
+      "boundary_support_images": [],
+      "selected_image_counts": {
+        "tile_00": 188,
+        "tile_04": 188
+      },
+      "selected_image_count_balanced": true,
+      "ownership_bounds_valid": {
+        "tile_00": true,
+        "tile_04": true
+      },
+      "eligible": false,
+      "eligibility_thresholds": {
+        "min_shared_assigned_images": 24,
+        "requires_boundary_support": true,
+        "requires_valid_ownership_bounds": true,
+        "selected_image_count_window": [
+          94.0,
+          282.0
+        ]
+      },
+      "fallback_involvement": 0,
+      "merge_retained_ratio": 0.9980702050355716,
+      "rank_score": -4.0
+    },
+    {
+      "tile_ids": [
+        "tile_00",
+        "tile_01"
+      ],
+      "pair_key": "tile_00::tile_01",
+      "neighbor_link": true,
+      "shared_assigned_image_count": 12,
+      "shared_assigned_images": [
+        "DJI_0066.JPG",
+        "DJI_0073.JPG",
+        "DJI_0441.JPG",
+        "DJI_0443.JPG",
+        "DJI_0502.JPG",
+        "DJI_0503.JPG",
+        "DJI_0504.JPG",
+        "DJI_0505.JPG",
+        "DJI_0506.JPG",
+        "DJI_0507.JPG",
+        "DJI_0508.JPG",
+        "DJI_0509.JPG"
+      ],
+      "boundary_support_count": 0,
+      "boundary_support_images": [],
+      "selected_image_counts": {
+        "tile_00": 188,
+        "tile_01": 188
+      },
+      "selected_image_count_balanced": true,
+      "ownership_bounds_valid": {
+        "tile_00": true,
+        "tile_01": true
+      },
+      "eligible": false,
+      "eligibility_thresholds": {
+        "min_shared_assigned_images": 24,
+        "requires_boundary_support": true,
+        "requires_valid_ownership_bounds": true,
+        "selected_image_count_window": [
+          94.0,
+          282.0
+        ]
+      },
+      "fallback_involvement": 0,
+      "merge_retained_ratio": 0.9908413604300137,
+      "rank_score": -18.0
+    },
+    {
+      "tile_ids": [
+        "tile_00",
+        "tile_03"
+      ],
+      "pair_key": "tile_00::tile_03",
+      "neighbor_link": false,
+      "shared_assigned_image_count": 12,
+      "shared_assigned_images": [
+        "DJI_01091.JPG",
+        "DJI_01092.JPG",
+        "DJI_01093.JPG",
+        "DJI_01094.JPG",
+        "DJI_01095.JPG",
+        "DJI_01096.JPG",
+        "DJI_01097.JPG",
+        "DJI_01098.JPG",
+        "DJI_0258.JPG",
+        "DJI_0261.JPG",
+        "DJI_0262.JPG",
+        "DJI_0263.JPG"
+      ],
+      "boundary_support_count": 0,
+      "boundary_support_images": [],
+      "selected_image_counts": {
+        "tile_00": 188,
+        "tile_03": 188
+      },
+      "selected_image_count_balanced": true,
+      "ownership_bounds_valid": {
+        "tile_00": true,
+        "tile_03": true
+      },
+      "eligible": false,
+      "eligibility_thresholds": {
+        "min_shared_assigned_images": 24,
+        "requires_boundary_support": true,
+        "requires_valid_ownership_bounds": true,
+        "selected_image_count_window": [
+          94.0,
+          282.0
+        ]
+      },
+      "fallback_involvement": 0,
+      "merge_retained_ratio": 0.99497526378665,
+      "rank_score": -38.0
+    }
+  ],
+  "offline_merge_reports": {
+    "raw_union": {
+      "report_path": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges/raw_union_merge_report.json",
+      "merge_mode": "raw_union",
+      "tile_count": 7,
+      "source_gaussians": 5103651,
+      "retained_gaussians": 5103651,
+      "dropped_gaussians": 0,
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "tiles": [
+        {
+          "tile_id": "tile_00",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_00/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 729093,
+          "dropped_gaussians": 0,
+          "retention_strategy": "raw_union",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_01",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_01/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 729093,
+          "dropped_gaussians": 0,
+          "retention_strategy": "raw_union",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_02",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_02/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 729093,
+          "dropped_gaussians": 0,
+          "retention_strategy": "raw_union",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_03",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_03/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 729093,
+          "dropped_gaussians": 0,
+          "retention_strategy": "raw_union",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_04",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_04/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 729093,
+          "dropped_gaussians": 0,
+          "retention_strategy": "raw_union",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_05",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_05/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 729093,
+          "dropped_gaussians": 0,
+          "retention_strategy": "raw_union",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_06",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_06/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 729093,
+          "dropped_gaussians": 0,
+          "retention_strategy": "raw_union",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        }
+      ]
+    },
+    "strict_core": {
+      "report_path": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges/strict_core_merge_report.json",
+      "merge_mode": "strict_core",
+      "tile_count": 7,
+      "source_gaussians": 5103651,
+      "retained_gaussians": 4500379,
+      "dropped_gaussians": 603272,
+      "fallback_tile_count": 2,
+      "retain_all_tile_count": 0,
+      "tiles": [
+        {
+          "tile_id": "tile_00",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_00/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 726601,
+          "dropped_gaussians": 2492,
+          "retention_strategy": "core_bounds",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_01",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_01/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 718230,
+          "dropped_gaussians": 10863,
+          "retention_strategy": "core_bounds",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_02",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_02/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 727483,
+          "dropped_gaussians": 1610,
+          "retention_strategy": "core_bounds",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_03",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_03/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 724258,
+          "dropped_gaussians": 4835,
+          "retention_strategy": "core_bounds",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_04",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_04/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 728771,
+          "dropped_gaussians": 322,
+          "retention_strategy": "core_bounds",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_05",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_05/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 397202,
+          "dropped_gaussians": 331891,
+          "retention_strategy": "centroid_voronoi_fallback",
+          "fallback_reason_code": "bounds_retained_zero_gaussians",
+          "ownership_bounds_available": true
+        },
+        {
+          "tile_id": "tile_06",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_06/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 477834,
+          "dropped_gaussians": 251259,
+          "retention_strategy": "centroid_voronoi_fallback",
+          "fallback_reason_code": "bounds_retained_zero_gaussians",
+          "ownership_bounds_available": true
+        }
+      ]
+    },
+    "support_weighted_overlap": {
+      "report_path": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges/support_weighted_overlap_merge_report.json",
+      "merge_mode": "support_weighted_overlap",
+      "tile_count": 7,
+      "source_gaussians": 5103651,
+      "retained_gaussians": 4500379,
+      "dropped_gaussians": 603272,
+      "fallback_tile_count": 2,
+      "retain_all_tile_count": 0,
+      "tiles": [
+        {
+          "tile_id": "tile_00",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_00/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 726601,
+          "dropped_gaussians": 2492,
+          "retention_strategy": "core_plus_support_weighted_overlap",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true,
+          "support_weighted_overlap": {
+            "core_gaussians": 726601,
+            "eligible_gaussians": 0,
+            "kept_overlap_gaussians": 0,
+            "score_formula": "0.55*shared_view_projection_support + 0.20*opacity_score + 0.15*core_distance_score - 0.10*large_scale_floater_penalty",
+            "render_contribution_proxy": "opacity * inverse_distance_to_tile_core_center * visibility_support_count"
+          }
+        },
+        {
+          "tile_id": "tile_01",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_01/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 718230,
+          "dropped_gaussians": 10863,
+          "retention_strategy": "core_plus_support_weighted_overlap",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true,
+          "support_weighted_overlap": {
+            "core_gaussians": 718230,
+            "eligible_gaussians": 0,
+            "kept_overlap_gaussians": 0,
+            "score_formula": "0.55*shared_view_projection_support + 0.20*opacity_score + 0.15*core_distance_score - 0.10*large_scale_floater_penalty",
+            "render_contribution_proxy": "opacity * inverse_distance_to_tile_core_center * visibility_support_count"
+          }
+        },
+        {
+          "tile_id": "tile_02",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_02/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 727483,
+          "dropped_gaussians": 1610,
+          "retention_strategy": "core_plus_support_weighted_overlap",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true,
+          "support_weighted_overlap": {
+            "core_gaussians": 727483,
+            "eligible_gaussians": 0,
+            "kept_overlap_gaussians": 0,
+            "score_formula": "0.55*shared_view_projection_support + 0.20*opacity_score + 0.15*core_distance_score - 0.10*large_scale_floater_penalty",
+            "render_contribution_proxy": "opacity * inverse_distance_to_tile_core_center * visibility_support_count"
+          }
+        },
+        {
+          "tile_id": "tile_03",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_03/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 724258,
+          "dropped_gaussians": 4835,
+          "retention_strategy": "core_plus_support_weighted_overlap",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true,
+          "support_weighted_overlap": {
+            "core_gaussians": 724258,
+            "eligible_gaussians": 0,
+            "kept_overlap_gaussians": 0,
+            "score_formula": "0.55*shared_view_projection_support + 0.20*opacity_score + 0.15*core_distance_score - 0.10*large_scale_floater_penalty",
+            "render_contribution_proxy": "opacity * inverse_distance_to_tile_core_center * visibility_support_count"
+          }
+        },
+        {
+          "tile_id": "tile_04",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_04/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 728771,
+          "dropped_gaussians": 322,
+          "retention_strategy": "core_plus_support_weighted_overlap",
+          "fallback_reason_code": "none",
+          "ownership_bounds_available": true,
+          "support_weighted_overlap": {
+            "core_gaussians": 728771,
+            "eligible_gaussians": 0,
+            "kept_overlap_gaussians": 0,
+            "score_formula": "0.55*shared_view_projection_support + 0.20*opacity_score + 0.15*core_distance_score - 0.10*large_scale_floater_penalty",
+            "render_contribution_proxy": "opacity * inverse_distance_to_tile_core_center * visibility_support_count"
+          }
+        },
+        {
+          "tile_id": "tile_05",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_05/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 397202,
+          "dropped_gaussians": 331891,
+          "retention_strategy": "centroid_voronoi_fallback",
+          "fallback_reason_code": "bounds_retained_zero_gaussians",
+          "ownership_bounds_available": true,
+          "support_weighted_overlap": {
+            "core_gaussians": 0,
+            "eligible_gaussians": 0,
+            "kept_overlap_gaussians": 0,
+            "score_formula": "0.55*shared_view_projection_support + 0.20*opacity_score + 0.15*core_distance_score - 0.10*large_scale_floater_penalty",
+            "render_contribution_proxy": "opacity * inverse_distance_to_tile_core_center * visibility_support_count"
+          }
+        },
+        {
+          "tile_id": "tile_06",
+          "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_06/splat.ply",
+          "source_gaussians": 729093,
+          "retained_gaussians": 477834,
+          "dropped_gaussians": 251259,
+          "retention_strategy": "centroid_voronoi_fallback",
+          "fallback_reason_code": "bounds_retained_zero_gaussians",
+          "ownership_bounds_available": true,
+          "support_weighted_overlap": {
+            "core_gaussians": 0,
+            "eligible_gaussians": 0,
+            "kept_overlap_gaussians": 0,
+            "score_formula": "0.55*shared_view_projection_support + 0.20*opacity_score + 0.15*core_distance_score - 0.10*large_scale_floater_penalty",
+            "render_contribution_proxy": "opacity * inverse_distance_to_tile_core_center * visibility_support_count"
+          }
+        }
+      ]
+    },
+    "support_vs_strict": {
+      "retained_gaussian_delta": 0,
+      "dropped_gaussian_delta": 0,
+      "fallback_tile_count_delta": 0,
+      "merge_only_recovered_boundary_gap": false,
+      "decision": "pivot_to_training_time_overlap_consistency_or_global_guidance"
+    }
+  },
+  "baseline_metrics": {
+    "status": "not_rendered_locally",
+    "reason": "local workstation lacks gsplat/torch review dependencies; AWS processing review should consume frozen camera manifest"
+  },
+  "root_cause_classification": "merge_bad"
+}

@@ -3289,6 +3289,36 @@ class ColmapPipeline:
                     tile_image_names,
                     padding_m=self.tile_bounds_padding_m,
                 )
+            overlap_stats_by_neighbor: Dict[str, object] = {}
+            tile_image_set = set(tile_image_names)
+            boundary_image_set = set(self.probe_subsets.get("cross_pass", []))
+            for neighbor_index in self.ranked_neighbor_chunk_indexes(chunk_plan.index):
+                neighbor_plan = self.chunk_plans_by_index.get(neighbor_index)
+                if neighbor_plan is None:
+                    continue
+                neighbor_tile_id = f"tile_{neighbor_index:02d}"
+                neighbor_images = set(
+                    self.ordered_unique_image_names(
+                        [
+                            *neighbor_plan.core_names,
+                            *neighbor_plan.overlap_names,
+                            *self.build_context_camera_names(neighbor_plan),
+                        ]
+                    )
+                )
+                shared_images = sorted(tile_image_set.intersection(neighbor_images))
+                boundary_support = sorted(boundary_image_set.intersection(shared_images))
+                cross_edge_count = int(self.chunk_cross_edge_counts.get(tuple(sorted((chunk_plan.index, neighbor_index))), 0))
+                if cross_edge_count <= 0 and not shared_images:
+                    continue
+                overlap_stats_by_neighbor[neighbor_tile_id] = {
+                    "shared_assigned_image_count": len(shared_images),
+                    "shared_assigned_images": shared_images,
+                    "boundary_support_count": len(boundary_support),
+                    "boundary_support_images": boundary_support,
+                    "cross_edge_count": cross_edge_count,
+                }
+            ownership_bounds_available = not all(abs(float(core_bounds[key])) <= 1e-6 for key in core_bounds)
             tiles.append(
                 {
                     "tile_id": f"tile_{chunk_plan.index:02d}",
@@ -3300,9 +3330,26 @@ class ColmapPipeline:
                     "base_camera_ids": list(chunk_plan.core_names),
                     "border_camera_ids": list(chunk_plan.overlap_names),
                     "context_camera_ids": context_camera_ids,
+                    "selected_cameras_by_role": {
+                        "base": list(chunk_plan.core_names),
+                        "border": list(chunk_plan.overlap_names),
+                        "context": context_camera_ids,
+                    },
                     "image_names": tile_image_names,
+                    "selected_image_count": len(tile_image_names),
                     "neighbor_tile_ids": neighbor_tile_ids,
+                    "overlap_stats_by_neighbor": overlap_stats_by_neighbor,
                     "bounds_strategy": "camera_footprint_union_v1",
+                    "ownership_bounds_strategy": "camera_footprint_union_v1",
+                    "ownership_bounds_available": ownership_bounds_available,
+                    "sparse_support_coverage": {
+                        "view_geometry_count": sum(1 for image_name in tile_image_names if image_name in self.view_geometries),
+                        "selected_image_count": len(tile_image_names),
+                    },
+                    "scaffold_init_metadata": {
+                        "scaffold_inheritance_mode": "pending_filtered_ply_as_sparse_point_cloud",
+                        "padding_ratio": 0.10,
+                    },
                 }
             )
 

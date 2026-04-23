@@ -60,7 +60,19 @@ def load_module_with_stubs():
     def load_json(path):
         return json.loads(Path(path).read_text(encoding="utf-8"))
 
+    def fake_filter_scaffold_ply_to_sparse_points(**kwargs):
+        Path(kwargs["output_ply_path"]).write_text("ply\n", encoding="utf-8")
+        return {
+            "scaffold_source_artifact": str(kwargs["scaffold_ply_path"]),
+            "scaffold_filter_bounds": kwargs["bounds_payload"],
+            "inherited_gaussian_count": 3,
+            "inherited_attributes": ["position", "rgb_dc_proxy"],
+            "reinitialized_attributes": ["scale", "opacity", "sh", "appearance_embedding"],
+            "scaffold_inheritance_mode": "filtered_ply_as_sparse_point_cloud",
+        }
+
     tile_pipeline_stub = types.SimpleNamespace(
+        filter_scaffold_ply_to_sparse_points=fake_filter_scaffold_ply_to_sparse_points,
         filter_transforms_frames=lambda transforms, _selected, image_name_map=None: transforms,
         load_json=load_json,
         merge_tile_outputs=lambda **kwargs: {
@@ -370,6 +382,45 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             self.assertTrue((stage_input / "transforms.json").exists())
             self.assertTrue((stage_input / "sparse_pc.ply").exists())
             self.assertTrue((stage_input / "colmap_image_name_map.json").exists())
+
+    def test_inject_scaffold_initialization_records_leaf_metadata(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            stage_input = root / "stage"
+            scaffold_output = root / "scaffold"
+            stage_input.mkdir()
+            scaffold_output.mkdir()
+            (scaffold_output / "splat.ply").write_text("ply\n", encoding="utf-8")
+
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            metadata = trainer.inject_scaffold_initialization(
+                stage_input_dir=stage_input,
+                tile_manifest={
+                    "tiles": [
+                        {
+                            "tile_id": "tile_00",
+                            "overlap_bounds": {
+                                "min_x": 0.0,
+                                "max_x": 1.0,
+                                "min_y": 0.0,
+                                "max_y": 1.0,
+                                "min_z": 0.0,
+                                "max_z": 1.0,
+                            },
+                        }
+                    ]
+                },
+                tile_id="tile_00",
+                scaffold_output_dir=scaffold_output,
+            )
+
+            saved = json.loads((stage_input / "scaffold_init_metadata.json").read_text(encoding="utf-8"))
+            self.assertEqual(metadata["scaffold_inheritance_mode"], "filtered_ply_as_sparse_point_cloud")
+            self.assertEqual(saved["tile_id"], "tile_00")
+            self.assertEqual(saved["inherited_gaussian_count"], 3)
+            self.assertTrue((stage_input / "sparse_pc.ply").exists())
 
     def test_run_nerfstudio_training_retries_with_explicit_dataparser_on_tyro_order_error(self):
         module = load_module_with_stubs()

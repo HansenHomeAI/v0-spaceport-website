@@ -1,0 +1,89 @@
+{
+  "merge_mode": "raw_union",
+  "merged_ply": "/tmp/md1-r1-offline-merges/raw_union/merged_splat.ply",
+  "tile_count": 7,
+  "source_gaussians": 5103651,
+  "retained_gaussians": 5103651,
+  "dropped_gaussians": 0,
+  "fallback_tile_count": 0,
+  "retain_all_tile_count": 0,
+  "tiles": [
+    {
+      "tile_id": "tile_00",
+      "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_00/splat.ply",
+      "source_gaussians": 729093,
+      "retained_gaussians": 729093,
+      "dropped_gaussians": 0,
+      "retention_strategy": "raw_union",
+      "fallback_reason_code": "none",
+      "ownership_bounds_available": true
+    },
+    {
+      "tile_id": "tile_01",
+      "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_01/splat.ply",
+      "source_gaussians": 729093,
+      "retained_gaussians": 729093,
+      "dropped_gaussians": 0,
+      "retention_strategy": "raw_union",
+      "fallback_reason_code": "none",
+      "ownership_bounds_available": true
+    },
+    {
+      "tile_id": "tile_02",
+      "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_02/splat.ply",
+      "source_gaussians": 729093,
+      "retained_gaussians": 729093,
+      "dropped_gaussians": 0,
+      "retention_strategy": "raw_union",
+      "fallback_reason_code": "none",
+      "ownership_bounds_available": true
+    },
+    {
+      "tile_id": "tile_03",
+      "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_03/splat.ply",
+      "source_gaussians": 729093,
+      "retained_gaussians": 729093,
+      "dropped_gaussians": 0,
+      "retention_strategy": "raw_union",
+      "fallback_reason_code": "none",
+      "ownership_bounds_available": true
+    },
+    {
+      "tile_id": "tile_04",
+      "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_04/splat.ply",
+      "source_gaussians": 729093,
+      "retained_gaussians": 729093,
+      "dropped_gaussians": 0,
+      "retention_strategy": "raw_union",
+      "fallback_reason_code": "none",
+      "ownership_bounds_available": true
+    },
+    {
+      "tile_id": "tile_05",
+      "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_05/splat.ply",
+      "source_gaussians": 729093,
+      "retained_gaussians": 729093,
+      "dropped_gaussians": 0,
+      "retention_strategy": "raw_union",
+      "fallback_reason_code": "none",
+      "ownership_bounds_available": true
+    },
+    {
+      "tile_id": "tile_06",
+      "source_ply": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_06/splat.ply",
+      "source_gaussians": 729093,
+      "retained_gaussians": 729093,
+      "dropped_gaussians": 0,
+      "retention_strategy": "raw_union",
+      "fallback_reason_code": "none",
+      "ownership_bounds_available": true
+    }
+  ],
+  "background_asset": {
+    "asset": "background_skybox.webp",
+    "source_tile_id": "tile_05",
+    "source_asset": "/Users/gabrielhansen/worktrees/agent-53821974-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiles/tile_05/background_skybox.webp",
+    "selection_score": 0.6064970013714971,
+    "retained_gaussians": 729093
+  }
+}

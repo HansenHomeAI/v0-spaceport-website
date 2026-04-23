@@ -173,6 +173,11 @@ def main() -> None:
         choices=("average", "camera", "auto_camera"),
         default="auto_camera",
     )
+    parser.add_argument(
+        "--skip-background",
+        action="store_true",
+        help="Export foreground Gaussian PLY only.",
+    )
     args = parser.parse_args()
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -184,21 +189,24 @@ def main() -> None:
         raise RuntimeError("Loaded model is not compatible with Splatfacto-W asset export")
 
     build_foreground_ply(model, args.output_dir, args.camera_idx)
-    skybox_path = build_background_skybox(
-        model=model,
-        output_dir=args.output_dir,
-        width=args.background_width,
-        height=args.background_height,
-        quality=args.background_quality,
-        appearance_mode="camera" if args.background_appearance_mode == "auto_camera" else args.background_appearance_mode,
-        camera_idx=args.camera_idx,
-    )
+    skybox_path = None
+    if not args.skip_background:
+        skybox_path = build_background_skybox(
+            model=model,
+            output_dir=args.output_dir,
+            width=args.background_width,
+            height=args.background_height,
+            quality=args.background_quality,
+            appearance_mode="camera" if args.background_appearance_mode == "auto_camera" else args.background_appearance_mode,
+            camera_idx=args.camera_idx,
+        )
 
     summary = {
         "ply": "splat.ply",
         "skybox": skybox_path.name if skybox_path else None,
         "camera_idx": args.camera_idx,
         "background_appearance_mode": args.background_appearance_mode,
+        "background_skipped": bool(args.skip_background),
     }
     (args.output_dir / "export_manifest.json").write_text(json.dumps(summary, indent=2))
 
