@@ -100,3 +100,4 @@ md1-hierarchical-runtime-budget-fix 2026-04-16T04:42:00-0600
 md1-geometry-review-render-cap 2026-04-23T15:32:26-0600
 md1-geometry-review-ply-decode 2026-04-23T16:01:09-0600
 md1-geometry-review-sh-order 2026-04-23T17:12:30-0600
+md1-geometry-review-camera-viewmat 2026-04-23T17:50:00-0600

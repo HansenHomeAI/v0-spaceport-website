@@ -1,0 +1,44 @@
+{
+  "rung": "R1a",
+  "job_name": "md1-r1a-shfix-20260423233228",
+  "status": "completed_but_invalid",
+  "sagemaker_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r1a-20260423233228/review-render-job-output/md1-r1a-shfix-20260423233228/output/model.tar.gz",
+  "image": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:2371b9bb9c13bf1fb9dbfb1d884c78bf5311a73cb1e7b679edd63494577497b9",
+  "billable_time_seconds": 539,
+  "branch_head": "3dc47b2f3f354dbba0c12babe29ca3ec381fff70",
+  "selected_tile_ids": ["tile_02", "tile_05"],
+  "render_settings": {
+    "render_scale": 0.25,
+    "max_gaussians_per_view": 500000,
+    "cull_margin": 0.5,
+    "min_gaussians_on_oom": 75000
+  },
+  "manifest_summary": {
+    "actual_bucket_counts_reported": {
+      "near_detail": 4,
+      "boundary": 4,
+      "horizon": 4
+    },
+    "rendered_view_count": 12,
+    "merge_fallback_tile_count": 0,
+    "merge_retain_all_tile_count": 0,
+    "merged_limited_view_count": 12,
+    "blank_or_flat_count": 4,
+    "near_detail_psnr_median": 4.771726953898579,
+    "boundary_psnr_median": 13.96494616849388,
+    "horizon_psnr_median": 5.885276717651862,
+    "horizon_sky_score_median": 0.06026079553268553
+  },
+  "visual_check": {
+    "merged_near_detail_DJI_0258": "black alpha=0",
+    "merged_horizon_DJI_0066": "black alpha=0",
+    "merged_near_detail_DJI_0263": "nonblack but spatially incorrect",
+    "merged_boundary_DJI_0067": "flat gray-blue"
+  },
+  "diagnosis": {
+    "valid_for_promotion": false,
+    "root_cause": "review_renderer_camera_convention_mismatch",
+    "evidence": "The remaining blank renders all used the projected-support sign that implied negative-Z camera space; alpha was 0 even with hundreds of thousands of selected gaussians.",
+    "fix": "Select deterministic camera view matrices from raw, OpenGL-to-OpenCV YZ flip, Z flip, and Y flip candidates, use the selected view matrix for both support culling and gsplat rasterization, and keep blank/flat renders blocked."
+  }
+}

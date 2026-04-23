@@ -313,6 +313,21 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
             np.array([[[0.0, 2.0, 4.0], [1.0, 3.0, 5.0]]], dtype=np.float32),
         )
 
+    def test_camera_viewmat_candidates_include_opengl_to_opencv_flip(self):
+        module = load_module_with_stubs()
+
+        c2w = np.eye(4, dtype=np.float32)
+        candidates = dict(module.camera_viewmat_candidates(c2w))
+
+        np.testing.assert_array_equal(
+            candidates["opengl_to_opencv_yz_flip"],
+            np.diag([1.0, -1.0, -1.0, 1.0]).astype(np.float32),
+        )
+        np.testing.assert_array_equal(
+            candidates["raw_world_to_camera"],
+            np.eye(4, dtype=np.float32),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

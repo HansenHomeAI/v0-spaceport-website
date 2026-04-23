@@ -266,6 +266,19 @@ def frame_intrinsics(
     return fx, fy, cx, cy, width, height
 
 
+def camera_viewmat_candidates(c2w: np.ndarray) -> list[tuple[str, np.ndarray]]:
+    world_to_camera = np.linalg.inv(c2w).astype(np.float32)
+    opengl_to_opencv = np.diag([1.0, -1.0, -1.0, 1.0]).astype(np.float32)
+    flip_z = np.diag([1.0, 1.0, -1.0, 1.0]).astype(np.float32)
+    flip_y = np.diag([1.0, -1.0, 1.0, 1.0]).astype(np.float32)
+    return [
+        ("opengl_to_opencv_yz_flip", opengl_to_opencv @ world_to_camera),
+        ("raw_world_to_camera", world_to_camera),
+        ("z_flip", flip_z @ world_to_camera),
+        ("y_flip", flip_y @ world_to_camera),
+    ]
+
+
 def load_image_tensor(image_path: Path, *, size: tuple[int, int] | None = None) -> np.ndarray:
     image = Image.open(image_path).convert("RGB")
     if size is not None and image.size != size:
@@ -395,28 +408,30 @@ def _view_projected_subset(
     render_scale: float,
     max_gaussians_per_view: int | None,
     cull_margin: float,
-) -> tuple[dict[str, Any], dict[str, Any]]:
+) -> tuple[dict[str, Any], dict[str, Any], np.ndarray]:
     source_count = int(model.get("gaussian_count", 0) or 0)
+    c2w = np.asarray(frame["transform_matrix"], dtype=np.float32)
+    view_candidates = camera_viewmat_candidates(c2w)
+    fallback_viewmat = view_candidates[0][1]
     stats: dict[str, Any] = {
         "source_gaussians": source_count,
         "visible_gaussians": source_count,
         "rendered_gaussians": source_count,
         "limited": False,
-        "projection_sign": None,
+        "view_transform": view_candidates[0][0],
     }
     if source_count == 0 or max_gaussians_per_view is None or source_count <= max_gaussians_per_view:
-        return dict(model), stats
+        return dict(model), stats, fallback_viewmat
 
     fx, fy, cx, cy, width, height = frame_intrinsics(frame, transforms, render_scale=render_scale)
-    c2w = np.asarray(frame["transform_matrix"], dtype=np.float32)
-    world_to_camera = torch.from_numpy(np.linalg.inv(c2w).astype(np.float32)).to(model["means"].device)
 
     with torch.no_grad():
         means = model["means"]
-        camera_xyz = means @ world_to_camera[:3, :3].T + world_to_camera[:3, 3]
-        best: tuple[int, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor] | None = None
-        for sign in (-1, 1):
-            depth = float(sign) * camera_xyz[:, 2]
+        best: tuple[str, np.ndarray, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor] | None = None
+        for view_name, viewmat_np in view_candidates:
+            viewmat = torch.from_numpy(viewmat_np).to(model["means"].device)
+            camera_xyz = means @ viewmat[:3, :3].T + viewmat[:3, 3]
+            depth = camera_xyz[:, 2]
             safe_depth = torch.clamp(depth, min=1e-6)
             u = (fx * (camera_xyz[:, 0] / safe_depth)) + cx
             v = (fy * (camera_xyz[:, 1] / safe_depth)) + cy
@@ -427,11 +442,11 @@ def _view_projected_subset(
                 & (v >= (-cull_margin * height))
                 & (v <= ((1.0 + cull_margin) * height))
             )
-            if best is None or int(mask.sum().item()) > int(best[1].sum().item()):
-                best = (sign, mask, depth, u, v)
+            if best is None or int(mask.sum().item()) > int(best[2].sum().item()):
+                best = (view_name, viewmat_np, mask, depth, u, v)
 
         assert best is not None
-        sign, visible_mask, depth, u, v = best
+        view_name, selected_viewmat, visible_mask, depth, u, v = best
         visible_indices = torch.nonzero(visible_mask, as_tuple=False).flatten()
         if visible_indices.numel() == 0:
             opacity_score = model["opacities"].float()
@@ -442,11 +457,11 @@ def _view_projected_subset(
                     "visible_gaussians": 0,
                     "rendered_gaussians": int(selected_indices.numel()),
                     "limited": source_count > int(selected_indices.numel()),
-                    "projection_sign": sign,
+                    "view_transform": view_name,
                     "selection_reason": "opacity_fallback_no_projected_support",
                 }
             )
-            return _slice_gaussian_model(model, torch.sort(selected_indices).values), stats
+            return _slice_gaussian_model(model, torch.sort(selected_indices).values), stats, selected_viewmat
 
         stats["visible_gaussians"] = int(visible_indices.numel())
         if visible_indices.numel() <= max_gaussians_per_view:
@@ -472,10 +487,10 @@ def _view_projected_subset(
             {
                 "rendered_gaussians": int(selected_indices.numel()),
                 "limited": source_count > int(selected_indices.numel()),
-                "projection_sign": sign,
+                "view_transform": view_name,
             }
         )
-        return _slice_gaussian_model(model, selected_indices), stats
+        return _slice_gaussian_model(model, selected_indices), stats, selected_viewmat
 
 
 def normalize_render_color(render_colors: torch.Tensor) -> np.ndarray:
@@ -509,14 +524,12 @@ def render_gaussian_view(
     min_gaussians_on_oom: int = DEFAULT_RENDER_MIN_GAUSSIANS_ON_OOM,
 ) -> tuple[np.ndarray, np.ndarray, dict[str, Any]]:
     fx, fy, cx, cy, width, height = frame_intrinsics(frame, transforms, render_scale=render_scale)
-    c2w = np.asarray(frame["transform_matrix"], dtype=np.float32)
-    world_to_camera = np.linalg.inv(c2w).astype(np.float32)
     K = torch.tensor([[fx, 0.0, cx], [0.0, fy, cy], [0.0, 0.0, 1.0]], device=device, dtype=torch.float32)
 
     active_limit = max_gaussians_per_view
     retries: list[dict[str, Any]] = []
     while True:
-        render_model, stats = _view_projected_subset(
+        render_model, stats, viewmat = _view_projected_subset(
             model,
             frame,
             transforms,
@@ -537,7 +550,7 @@ def render_gaussian_view(
                     quats=render_model["quats"],
                     opacities=render_model["opacities"],
                     colors=render_model["colors"],
-                    viewmats=torch.from_numpy(world_to_camera).to(device).unsqueeze(0),
+                    viewmats=torch.from_numpy(viewmat).to(device).unsqueeze(0),
                     Ks=K.unsqueeze(0),
                     width=width,
                     height=height,
