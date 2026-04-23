@@ -186,6 +186,43 @@ def stream_command(
     timeout_seconds: float | None = None,
     heartbeat_seconds: float | None = None,
 ) -> None:
+    _stream_command_impl(
+        command,
+        stage=stage,
+        env=env,
+        timeout_seconds=timeout_seconds,
+        heartbeat_seconds=heartbeat_seconds,
+        capture_output=False,
+    )
+
+
+def stream_command_capture(
+    command: List[str],
+    *,
+    stage: str,
+    env: Dict[str, str] | None = None,
+    timeout_seconds: float | None = None,
+    heartbeat_seconds: float | None = None,
+) -> List[Tuple[float, str]]:
+    return _stream_command_impl(
+        command,
+        stage=stage,
+        env=env,
+        timeout_seconds=timeout_seconds,
+        heartbeat_seconds=heartbeat_seconds,
+        capture_output=True,
+    )
+
+
+def _stream_command_impl(
+    command: List[str],
+    *,
+    stage: str,
+    env: Dict[str, str] | None = None,
+    timeout_seconds: float | None = None,
+    heartbeat_seconds: float | None = None,
+    capture_output: bool,
+) -> List[Tuple[float, str]]:
     logger.info("[%s] %s", stage, " ".join(command))
     process = subprocess.Popen(
         command,
@@ -209,6 +246,7 @@ def stream_command(
     reader_thread.start()
 
     lines: List[str] = []
+    captured_lines: List[Tuple[float, str]] = []
     started = time.monotonic()
     last_output_at = started
     next_heartbeat_at = (
@@ -250,6 +288,9 @@ def stream_command(
             break
         lines.append(message)
         last_output_at = time.monotonic()
+        elapsed = last_output_at - started
+        if capture_output:
+            captured_lines.append((elapsed, message))
         print(f"COLMAP[{stage}] {message}", flush=True)
         if heartbeat_seconds is not None and heartbeat_seconds > 0:
             next_heartbeat_at = last_output_at + heartbeat_seconds
@@ -257,6 +298,7 @@ def stream_command(
     if return_code != 0:
         tail = "\n".join(lines[-50:])
         raise RuntimeError(f"{stage} failed with exit code {return_code}\n{tail}")
+    return captured_lines
 
 
 def unrecognized_option_error(error: RuntimeError, option_markers: Sequence[str]) -> bool:
@@ -271,6 +313,30 @@ def pack_float64_blob(values: Iterable[float]) -> bytes:
 
 def model_sort_key(model: ModelSummary) -> tuple[int, int, int]:
     return (model.images_registered, model.points_3d, model.cameras_registered)
+
+
+def hierarchical_stage_timings(
+    command_output: Sequence[Tuple[float, str]],
+    *,
+    total_seconds: float,
+) -> tuple[float | None, float | None, float | None]:
+    reconstruct_start: float | None = None
+    merge_start: float | None = None
+    for elapsed_seconds, line in command_output:
+        if reconstruct_start is None and "Reconstructing clusters" in line:
+            reconstruct_start = elapsed_seconds
+        if merge_start is None and "Merging clusters" in line:
+            merge_start = elapsed_seconds
+    partition_seconds = round(reconstruct_start, 2) if reconstruct_start is not None else None
+    if reconstruct_start is None:
+        return partition_seconds, None, None
+    if merge_start is None:
+        return partition_seconds, round(max(total_seconds - reconstruct_start, 0.0), 2), None
+    return (
+        partition_seconds,
+        round(max(merge_start - reconstruct_start, 0.0), 2),
+        round(max(total_seconds - merge_start, 0.0), 2),
+    )
 
 
 def sort_capture_records(records: Iterable[dict[str, str]]) -> List[dict[str, str]]:
@@ -428,6 +494,15 @@ class ColmapPipeline:
         self.enable_spatial_chunking = (
             os.environ.get("COLMAP_ENABLE_SPATIAL_CHUNKING", "0") != "0"
         )
+        self.colmap_pipeline_mode = (
+            os.environ.get("COLMAP_PIPELINE_MODE", "adaptive").strip().lower()
+            or "adaptive"
+        )
+        if self.colmap_pipeline_mode not in {"adaptive", "hierarchical_stock"}:
+            raise RuntimeError(
+                "Unsupported COLMAP_PIPELINE_MODE="
+                f"{self.colmap_pipeline_mode}; expected one of adaptive, hierarchical_stock"
+            )
         self.chunk_planner = (
             os.environ.get("COLMAP_CHUNK_PLANNER", "legacy_spatial_heading").strip().lower()
             or "legacy_spatial_heading"
@@ -604,6 +679,10 @@ class ColmapPipeline:
         self.chunk_overlap_image_count = 0
         self.chunk_mapper_seconds = 0.0
         self.chunk_merge_seconds = 0.0
+        self.hierarchical_mapper_seconds = 0.0
+        self.hierarchical_partition_seconds: float | None = None
+        self.hierarchical_leaf_reconstruction_seconds: float | None = None
+        self.hierarchical_merge_seconds: float | None = None
         self.boundary_recovery_triggered = False
         self.adjacent_chunk_merge_triggered = False
         self.merged_component_count = 0
@@ -2098,6 +2177,42 @@ class ColmapPipeline:
             image_count=image_count,
         )
 
+    def choose_best_model_from_sparse_root(
+        self,
+        *,
+        stage: str,
+        sparse_root: Path,
+        image_count: int,
+    ) -> ModelSummary:
+        candidate_dirs = [path for path in sorted(sparse_root.iterdir()) if path.is_dir()]
+        if not candidate_dirs:
+            raise RuntimeError(f"{stage} did not produce any sparse models")
+
+        best_model: ModelSummary | None = None
+        for candidate_dir in candidate_dirs:
+            model = self.summarize_model(stage=stage, binary_dir=candidate_dir, image_count=image_count)
+            logger.info(
+                "%s model %s registered %s/%s images and %s points",
+                stage,
+                candidate_dir.name,
+                model.images_registered,
+                image_count,
+                model.points_3d,
+            )
+            if best_model is None or model_sort_key(model) > model_sort_key(best_model):
+                best_model = model
+        if best_model is None:
+            raise RuntimeError(f"Unable to choose a sparse model for {stage}")
+        self.model_summaries.append(
+            {
+                "stage": best_model.stage,
+                "cameras_registered": best_model.cameras_registered,
+                "images_registered": best_model.images_registered,
+                "points_3d": best_model.points_3d,
+            }
+        )
+        return best_model
+
     def run_mapper(
         self,
         *,
@@ -2138,35 +2253,60 @@ class ColmapPipeline:
             self.handle_stage_runtime_error(stage, error)
             raise
         self.timings[f"{stage}_seconds"] = round(time.time() - started, 2)
-
-        candidate_dirs = [path for path in sorted(sparse_root.iterdir()) if path.is_dir()]
-        if not candidate_dirs:
-            raise RuntimeError(f"{stage} did not produce any sparse models")
-
-        best_model: ModelSummary | None = None
-        for candidate_dir in candidate_dirs:
-            model = self.summarize_model(stage=stage, binary_dir=candidate_dir, image_count=active_image_count)
-            logger.info(
-                "%s model %s registered %s/%s images and %s points",
-                stage,
-                candidate_dir.name,
-                model.images_registered,
-                active_image_count,
-                model.points_3d,
-            )
-            if best_model is None or model_sort_key(model) > model_sort_key(best_model):
-                best_model = model
-        if best_model is None:
-            raise RuntimeError(f"Unable to choose a sparse model for {stage}")
-        self.model_summaries.append(
-            {
-                "stage": best_model.stage,
-                "cameras_registered": best_model.cameras_registered,
-                "images_registered": best_model.images_registered,
-                "points_3d": best_model.points_3d,
-            }
+        return self.choose_best_model_from_sparse_root(
+            stage=stage,
+            sparse_root=sparse_root,
+            image_count=active_image_count,
         )
-        return best_model
+
+    def run_hierarchical_mapper(
+        self,
+        *,
+        database_path: Path | None = None,
+        stage: str,
+        sparse_root: Path,
+        image_count: int | None = None,
+    ) -> ModelSummary:
+        if not self.colmap_capabilities.get("supports_hierarchical_mapper"):
+            raise RuntimeError("COLMAP runtime does not support hierarchical_mapper")
+        active_database_path = database_path or self.database_path
+        active_image_count = image_count if image_count is not None else self.dataset_image_count
+        started = time.time()
+        sparse_root.mkdir(parents=True, exist_ok=True)
+        try:
+            command_output = stream_command_capture(
+                [
+                    "colmap",
+                    "hierarchical_mapper",
+                    "--database_path",
+                    str(active_database_path),
+                    "--image_path",
+                    str(self.images_dir),
+                    "--output_path",
+                    str(sparse_root),
+                    "--num_threads",
+                    str(self.mapper_threads),
+                ],
+                stage=stage,
+                timeout_seconds=self.resolve_timeout_seconds(self.monolithic_mapper_timeout_seconds),
+                heartbeat_seconds=self.command_heartbeat_seconds,
+            )
+        except RuntimeError as error:
+            self.handle_stage_runtime_error(stage, error)
+            raise
+        total_seconds = round(time.time() - started, 2)
+        self.timings[f"{stage}_seconds"] = total_seconds
+        (
+            self.hierarchical_partition_seconds,
+            self.hierarchical_leaf_reconstruction_seconds,
+            self.hierarchical_merge_seconds,
+        ) = hierarchical_stage_timings(command_output, total_seconds=total_seconds)
+        self.hierarchical_mapper_seconds = total_seconds
+        return self.choose_best_model_from_sparse_root(
+            stage=stage,
+            sparse_root=sparse_root,
+            image_count=active_image_count,
+        )
 
     def run_bundle_adjuster(self, *, input_path: Path, stage: str) -> ModelSummary:
         started = time.time()
@@ -3812,6 +3952,43 @@ class ColmapPipeline:
         )
         raise RuntimeError(self.failure_reason_detail)
 
+    def run_hierarchical_stock_path(self) -> ModelSummary:
+        self.pipeline_name = "colmap_stock_hierarchical"
+        self.colmap_pipeline_mode = "hierarchical_stock"
+        if self.should_attempt_gps_first():
+            self.gps_first_attempted = True
+            self.run_spatial_matcher()
+            if self.enable_sequential_matcher:
+                self.run_sequential_matcher()
+            self.final_matcher_mode = (
+                "spatial_sequential_only"
+                if self.enable_sequential_matcher
+                else "spatial_only"
+            )
+        elif (
+            self.enable_spatial_matcher
+            and self.gps_image_count > 0
+            and self.gps_prior_coverage >= self.gps_min_prior_coverage
+        ):
+            self.run_spatial_matcher()
+            if self.enable_sequential_matcher:
+                self.run_sequential_matcher()
+            self.run_vocab_matching()
+            self.final_matcher_mode = (
+                "spatial_sequential_plus_vocab"
+                if self.enable_sequential_matcher
+                else "spatial_plus_vocab"
+            )
+        else:
+            self.run_vocab_matching()
+            self.final_matcher_mode = "vocab_only"
+        return self.run_hierarchical_mapper(
+            database_path=self.database_path,
+            stage="hierarchical_mapper",
+            sparse_root=self.work_dir / "sparse_hierarchical_stock",
+            image_count=self.dataset_image_count,
+        )
+
     def run_spatial_heading_chunked_path(self) -> ModelSummary:
         self.chunking_attempted = True
         self.pipeline_name = (
@@ -3953,6 +4130,9 @@ class ColmapPipeline:
         return merged_model
 
     def run_matching_and_mapping(self) -> ModelSummary:
+        if self.colmap_pipeline_mode == "hierarchical_stock":
+            return self.run_hierarchical_stock_path()
+
         if self.should_attempt_spatial_chunking():
             return self.run_spatial_heading_chunked_path()
 
@@ -3968,6 +4148,8 @@ class ColmapPipeline:
         return self.run_monolithic_gps_first_path()
 
     def resolve_mapper_seconds(self) -> float:
+        if self.colmap_pipeline_mode == "hierarchical_stock":
+            return round(self.hierarchical_mapper_seconds, 2)
         if self.final_matcher_mode in {"spatial_heading_chunked", "spatial_heading_chunked_subset"}:
             return round(self.chunk_mapper_seconds, 2)
         mapper_timings = [
@@ -3997,6 +4179,7 @@ class ColmapPipeline:
             role_counts[role] += 1
         return {
             "pipeline": self.pipeline_name,
+            "colmap_pipeline_mode": self.colmap_pipeline_mode,
             "processing_time_seconds": round(time.time() - self.start_time, 2),
             "timings": self.timings,
             "dataset_image_count": self.dataset_image_count,
@@ -4039,6 +4222,10 @@ class ColmapPipeline:
             "chunk_role_counts": dict(role_counts),
             "chunk_mapper_seconds": round(self.chunk_mapper_seconds, 2),
             "chunk_merge_seconds": round(self.chunk_merge_seconds, 2),
+            "hierarchical_mapper_seconds": round(self.hierarchical_mapper_seconds, 2),
+            "hierarchical_partition_seconds": self.hierarchical_partition_seconds,
+            "hierarchical_leaf_reconstruction_seconds": self.hierarchical_leaf_reconstruction_seconds,
+            "hierarchical_merge_seconds": self.hierarchical_merge_seconds,
             "chunk_merge_proof": self.chunk_merge_proof,
             "chunk_recovery_mode": self.chunk_recovery_mode,
             "chunk_run_metrics": self.chunk_run_metrics,

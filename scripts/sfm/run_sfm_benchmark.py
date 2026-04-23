@@ -131,9 +131,9 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--mode",
-        choices=["monolithic", "chunked"],
+        choices=["monolithic", "chunked", "hierarchical-stock"],
         default="monolithic",
-        help="Benchmark the current monolithic path or the spatial-heading chunked path.",
+        help="Benchmark the current monolithic path, the spatial-heading chunked path, or stock COLMAP hierarchical mapping.",
     )
     parser.add_argument(
         "--subset-strategy",
@@ -161,8 +161,13 @@ def build_summary_row(
         "job_name": job_name,
         "mode": mode,
         "input_s3_uri": input_s3_uri,
+        "colmap_pipeline_mode": metadata.get("colmap_pipeline_mode"),
         "processing_time_seconds": metadata.get("processing_time_seconds"),
         "chunk_mapper_seconds": metadata.get("chunk_mapper_seconds"),
+        "hierarchical_mapper_seconds": metadata.get("hierarchical_mapper_seconds"),
+        "hierarchical_partition_seconds": metadata.get("hierarchical_partition_seconds"),
+        "hierarchical_leaf_reconstruction_seconds": metadata.get("hierarchical_leaf_reconstruction_seconds"),
+        "hierarchical_merge_seconds": metadata.get("hierarchical_merge_seconds"),
         "mapper_seconds_per_registered_image": metadata.get("mapper_seconds_per_registered_image"),
         "images_registered": metadata.get("images_registered"),
         "dataset_image_count": metadata.get("dataset_image_count"),
@@ -201,6 +206,8 @@ def main() -> int:
         environment.setdefault("COLMAP_ENABLE_SPATIAL_CHUNKING", "1")
     else:
         environment.setdefault("COLMAP_ENABLE_SPATIAL_CHUNKING", "0")
+    if args.mode == "hierarchical-stock":
+        environment.setdefault("COLMAP_PIPELINE_MODE", "hierarchical_stock")
 
     payload = {
         "ProcessingJobName": job_name,

@@ -1596,6 +1596,118 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(pipeline.chunk_execution_image_count, 2)
             self.assertEqual(pipeline.final_matcher_mode, "spatial_heading_chunked_subset")
 
+    def test_run_matching_and_mapping_dispatches_hierarchical_stock_mode(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {"COLMAP_PIPELINE_MODE": "hierarchical_stock"},
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            hierarchical_model = run_colmap_sfm.ModelSummary(
+                stage="hierarchical_mapper",
+                text_dir=root / "hierarchical_text",
+                cameras_registered=1,
+                images_registered=3,
+                points_3d=30,
+                binary_dir=root / "hierarchical_bin",
+            )
+
+            with mock.patch.object(
+                pipeline,
+                "run_hierarchical_stock_path",
+                return_value=hierarchical_model,
+            ) as hierarchical_mock:
+                result = pipeline.run_matching_and_mapping()
+
+            self.assertEqual(result.images_registered, 3)
+            hierarchical_mock.assert_called_once_with()
+
+    def test_run_hierarchical_mapper_uses_stock_command_and_parses_stage_markers(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            sparse_root = root / "sparse_hierarchical"
+            best_model = run_colmap_sfm.ModelSummary(
+                stage="hierarchical_mapper",
+                text_dir=root / "hierarchical_text",
+                cameras_registered=1,
+                images_registered=12,
+                points_3d=1200,
+                binary_dir=sparse_root / "0",
+            )
+
+            with mock.patch.object(
+                run_colmap_sfm,
+                "stream_command_capture",
+                return_value=[
+                    (3.0, "I... Partitioning scene"),
+                    (7.0, "I... Reconstructing clusters"),
+                    (14.0, "I... Merging clusters"),
+                ],
+            ) as stream_mock, mock.patch.object(
+                pipeline,
+                "choose_best_model_from_sparse_root",
+                return_value=best_model,
+            ) as choose_mock, mock.patch.object(
+                run_colmap_sfm.time,
+                "time",
+                side_effect=[100.0, 120.0],
+            ):
+                result = pipeline.run_hierarchical_mapper(
+                    stage="hierarchical_mapper",
+                    sparse_root=sparse_root,
+                    image_count=20,
+                )
+
+            command = stream_mock.call_args.args[0]
+            self.assertIn("hierarchical_mapper", command)
+            self.assertIn("--num_threads", command)
+            self.assertIn(str(sparse_root), command)
+            choose_mock.assert_called_once()
+            self.assertEqual(result.images_registered, 12)
+            self.assertEqual(pipeline.hierarchical_mapper_seconds, 20.0)
+            self.assertEqual(pipeline.hierarchical_partition_seconds, 7.0)
+            self.assertEqual(pipeline.hierarchical_leaf_reconstruction_seconds, 7.0)
+            self.assertEqual(pipeline.hierarchical_merge_seconds, 6.0)
+
+    def test_run_hierarchical_mapper_leaves_stage_breakdown_empty_without_markers(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            sparse_root = root / "sparse_hierarchical"
+            best_model = run_colmap_sfm.ModelSummary(
+                stage="hierarchical_mapper",
+                text_dir=root / "hierarchical_text",
+                cameras_registered=1,
+                images_registered=4,
+                points_3d=400,
+                binary_dir=sparse_root / "0",
+            )
+
+            with mock.patch.object(
+                run_colmap_sfm,
+                "stream_command_capture",
+                return_value=[(2.0, "I... Building scene graph")],
+            ), mock.patch.object(
+                pipeline,
+                "choose_best_model_from_sparse_root",
+                return_value=best_model,
+            ), mock.patch.object(
+                run_colmap_sfm.time,
+                "time",
+                side_effect=[50.0, 55.0],
+            ):
+                pipeline.run_hierarchical_mapper(
+                    stage="hierarchical_mapper",
+                    sparse_root=sparse_root,
+                    image_count=8,
+                )
+
+            self.assertIsNone(pipeline.hierarchical_partition_seconds)
+            self.assertIsNone(pipeline.hierarchical_leaf_reconstruction_seconds)
+            self.assertIsNone(pipeline.hierarchical_merge_seconds)
+
     def test_stream_command_times_out(self):
         started = time.time()
         with self.assertRaises(RuntimeError) as raised:
