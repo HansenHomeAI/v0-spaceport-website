@@ -68,6 +68,12 @@ def make_view(bucket: str, *, psnr: float = 30.0) -> dict:
             "blue_dominance": 0.21,
             "edge_density": 0.06,
         },
+        "merged_render_stats": {
+            "source_gaussians": 3_600_000,
+            "visible_gaussians": 3_100_000,
+            "rendered_gaussians": 900_000,
+            "limited": True,
+        },
     }
 
 
@@ -97,6 +103,7 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
                 review_views=review_views,
                 max_images_per_bucket=4,
                 merged_background_present=True,
+                render_settings={"render_scale": 0.5, "max_gaussians_per_view": 900000},
             )
 
             self.assertEqual(manifest["promotion_readiness"]["status"], "ready_for_manual_signoff")
@@ -107,8 +114,15 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
             )
             self.assertEqual(manifest["bucket_medians"]["near_detail"]["psnr"], 31.5)
             self.assertEqual(manifest["no_background_bucket_medians"]["near_detail"]["psnr"], 31.0)
+            self.assertEqual(manifest["render_settings"]["render_scale"], 0.5)
+            self.assertEqual(manifest["render_stats_summary"]["merged_limited_view_count"], 12)
+            self.assertEqual(manifest["render_stats_summary"]["merged_rendered_gaussian_min"], 900000.0)
             self.assertIn(
                 "merged review included promoted background skybox",
+                manifest["promotion_readiness"]["notes"],
+            )
+            self.assertIn(
+                "merged review used deterministic view-capped rendering on 12 views",
                 manifest["promotion_readiness"]["notes"],
             )
 

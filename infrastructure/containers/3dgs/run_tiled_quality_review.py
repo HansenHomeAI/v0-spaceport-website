@@ -53,6 +53,40 @@ PROMOTION_THRESHOLDS = {
     "boundary": {"psnr_gain": 0.5, "ssim_gain": 0.01, "lpips_drop": 0.025},
     "horizon": {"psnr_drop": 0.75, "ssim_drop": 0.012, "lpips_rise": 0.03, "sky_score_drop_ratio": 0.10},
 }
+DEFAULT_RENDER_MAX_GAUSSIANS_PER_VIEW = 900_000
+DEFAULT_RENDER_CULL_MARGIN = 0.50
+DEFAULT_RENDER_MIN_GAUSSIANS_ON_OOM = 75_000
+
+
+def env_int(name: str, default: int) -> int:
+    try:
+        return int(os.environ.get(name, str(default)) or default)
+    except ValueError:
+        return default
+
+
+def env_float(name: str, default: float) -> float:
+    try:
+        value = float(os.environ.get(name, str(default)) or default)
+    except ValueError:
+        return default
+    if not math.isfinite(value):
+        return default
+    return value
+
+
+def resolve_render_settings_from_env() -> dict[str, Any]:
+    render_scale = max(0.05, min(1.0, env_float("QUALITY_REVIEW_RENDER_SCALE", 1.0)))
+    max_gaussians = env_int(
+        "QUALITY_REVIEW_MAX_GAUSSIANS_PER_VIEW",
+        DEFAULT_RENDER_MAX_GAUSSIANS_PER_VIEW,
+    )
+    return {
+        "render_scale": render_scale,
+        "max_gaussians_per_view": max(1, max_gaussians),
+        "cull_margin": max(0.0, env_float("QUALITY_REVIEW_CULL_MARGIN", DEFAULT_RENDER_CULL_MARGIN)),
+        "min_gaussians_on_oom": max(1, env_int("QUALITY_REVIEW_MIN_GAUSSIANS_ON_OOM", DEFAULT_RENDER_MIN_GAUSSIANS_ON_OOM)),
+    }
 
 
 def find_model_artifact(model_input_dir: Path) -> Path:
@@ -213,18 +247,28 @@ def build_frame_index(converted_input_dir: Path) -> tuple[dict[str, Any], dict[s
     return transforms, frame_index
 
 
-def frame_intrinsics(frame: Mapping[str, Any], transforms: Mapping[str, Any]) -> tuple[float, float, float, float, int, int]:
-    width = int(frame.get("w", transforms.get("w")))
-    height = int(frame.get("h", transforms.get("h")))
-    fx = float(frame.get("fl_x", transforms.get("fl_x")))
-    fy = float(frame.get("fl_y", transforms.get("fl_y")))
-    cx = float(frame.get("cx", transforms.get("cx", width / 2.0)))
-    cy = float(frame.get("cy", transforms.get("cy", height / 2.0)))
+def frame_intrinsics(
+    frame: Mapping[str, Any],
+    transforms: Mapping[str, Any],
+    *,
+    render_scale: float = 1.0,
+) -> tuple[float, float, float, float, int, int]:
+    source_width = int(frame.get("w", transforms.get("w")))
+    source_height = int(frame.get("h", transforms.get("h")))
+    width = max(1, int(round(source_width * render_scale)))
+    height = max(1, int(round(source_height * render_scale)))
+    fx = float(frame.get("fl_x", transforms.get("fl_x"))) * render_scale
+    fy = float(frame.get("fl_y", transforms.get("fl_y"))) * render_scale
+    cx = float(frame.get("cx", transforms.get("cx", source_width / 2.0))) * render_scale
+    cy = float(frame.get("cy", transforms.get("cy", source_height / 2.0))) * render_scale
     return fx, fy, cx, cy, width, height
 
 
-def load_image_tensor(image_path: Path) -> np.ndarray:
+def load_image_tensor(image_path: Path, *, size: tuple[int, int] | None = None) -> np.ndarray:
     image = Image.open(image_path).convert("RGB")
+    if size is not None and image.size != size:
+        resampling = getattr(Image, "Resampling", Image).LANCZOS
+        image = image.resize(size, resampling)
     return np.asarray(image, dtype=np.float32) / 255.0
 
 
@@ -311,6 +355,112 @@ def load_gaussian_model(ply_path: Path, device: torch.device) -> dict[str, Any]:
     }
 
 
+def _slice_gaussian_model(model: Mapping[str, Any], indices: torch.Tensor | None) -> dict[str, Any]:
+    if indices is None:
+        return dict(model)
+
+    source_count = int(model.get("gaussian_count", 0) or 0)
+    sliced: dict[str, Any] = {}
+    for key, value in model.items():
+        if isinstance(value, torch.Tensor) and value.dim() > 0 and value.shape[0] == source_count:
+            sliced[key] = value.index_select(0, indices)
+        else:
+            sliced[key] = value
+    sliced["gaussian_count"] = int(indices.numel())
+    return sliced
+
+
+def _view_projected_subset(
+    model: Mapping[str, Any],
+    frame: Mapping[str, Any],
+    transforms: Mapping[str, Any],
+    *,
+    render_scale: float,
+    max_gaussians_per_view: int | None,
+    cull_margin: float,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    source_count = int(model.get("gaussian_count", 0) or 0)
+    stats: dict[str, Any] = {
+        "source_gaussians": source_count,
+        "visible_gaussians": source_count,
+        "rendered_gaussians": source_count,
+        "limited": False,
+        "projection_sign": None,
+    }
+    if source_count == 0 or max_gaussians_per_view is None or source_count <= max_gaussians_per_view:
+        return dict(model), stats
+
+    fx, fy, cx, cy, width, height = frame_intrinsics(frame, transforms, render_scale=render_scale)
+    c2w = np.asarray(frame["transform_matrix"], dtype=np.float32)
+    world_to_camera = torch.from_numpy(np.linalg.inv(c2w).astype(np.float32)).to(model["means"].device)
+
+    with torch.no_grad():
+        means = model["means"]
+        camera_xyz = means @ world_to_camera[:3, :3].T + world_to_camera[:3, 3]
+        best: tuple[int, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor] | None = None
+        for sign in (-1, 1):
+            depth = float(sign) * camera_xyz[:, 2]
+            safe_depth = torch.clamp(depth, min=1e-6)
+            u = (fx * (camera_xyz[:, 0] / safe_depth)) + cx
+            v = (fy * (camera_xyz[:, 1] / safe_depth)) + cy
+            mask = (
+                (depth > 0.01)
+                & (u >= (-cull_margin * width))
+                & (u <= ((1.0 + cull_margin) * width))
+                & (v >= (-cull_margin * height))
+                & (v <= ((1.0 + cull_margin) * height))
+            )
+            if best is None or int(mask.sum().item()) > int(best[1].sum().item()):
+                best = (sign, mask, depth, u, v)
+
+        assert best is not None
+        sign, visible_mask, depth, u, v = best
+        visible_indices = torch.nonzero(visible_mask, as_tuple=False).flatten()
+        if visible_indices.numel() == 0:
+            opacity_score = torch.sigmoid(model["opacities"].float())
+            selected_count = min(source_count, int(max_gaussians_per_view))
+            selected_indices = torch.topk(opacity_score, k=selected_count, largest=True).indices
+            stats.update(
+                {
+                    "visible_gaussians": 0,
+                    "rendered_gaussians": int(selected_indices.numel()),
+                    "limited": source_count > int(selected_indices.numel()),
+                    "projection_sign": sign,
+                    "selection_reason": "opacity_fallback_no_projected_support",
+                }
+            )
+            return _slice_gaussian_model(model, torch.sort(selected_indices).values), stats
+
+        stats["visible_gaussians"] = int(visible_indices.numel())
+        if visible_indices.numel() <= max_gaussians_per_view:
+            selected_indices = visible_indices
+            stats["selection_reason"] = "projected_visibility"
+        else:
+            selected_count = int(max_gaussians_per_view)
+            depth_visible = torch.clamp(depth.index_select(0, visible_indices), min=1e-3)
+            opacity_visible = torch.sigmoid(model["opacities"].float().index_select(0, visible_indices))
+            scale_max = torch.amax(model["scales"].float().index_select(0, visible_indices), dim=1)
+            center_distance = torch.square((u.index_select(0, visible_indices) - cx) / max(width, 1))
+            center_distance = center_distance + torch.square((v.index_select(0, visible_indices) - cy) / max(height, 1))
+            median_depth = torch.median(depth_visible)
+            depth_score = torch.clamp(median_depth / depth_visible, min=0.05, max=4.0)
+            scale_penalty = torch.clamp(scale_max, min=-8.0, max=4.0)
+            support_score = opacity_visible + (0.12 * depth_score) - (0.035 * scale_penalty) - (0.05 * center_distance)
+            selected_relative = torch.topk(support_score, k=selected_count, largest=True).indices
+            selected_indices = visible_indices.index_select(0, selected_relative)
+            stats["selection_reason"] = "projected_support_topk"
+
+        selected_indices = torch.sort(selected_indices).values
+        stats.update(
+            {
+                "rendered_gaussians": int(selected_indices.numel()),
+                "limited": source_count > int(selected_indices.numel()),
+                "projection_sign": sign,
+            }
+        )
+        return _slice_gaussian_model(model, selected_indices), stats
+
+
 def normalize_render_color(render_colors: torch.Tensor) -> np.ndarray:
     if render_colors.dim() == 4:
         render_colors = render_colors.squeeze(0)
@@ -335,38 +485,77 @@ def render_gaussian_view(
     frame: Mapping[str, Any],
     transforms: Mapping[str, Any],
     device: torch.device,
-) -> tuple[np.ndarray, np.ndarray]:
-    fx, fy, cx, cy, width, height = frame_intrinsics(frame, transforms)
+    *,
+    render_scale: float = 1.0,
+    max_gaussians_per_view: int | None = None,
+    cull_margin: float = DEFAULT_RENDER_CULL_MARGIN,
+    min_gaussians_on_oom: int = DEFAULT_RENDER_MIN_GAUSSIANS_ON_OOM,
+) -> tuple[np.ndarray, np.ndarray, dict[str, Any]]:
+    fx, fy, cx, cy, width, height = frame_intrinsics(frame, transforms, render_scale=render_scale)
     c2w = np.asarray(frame["transform_matrix"], dtype=np.float32)
     world_to_camera = np.linalg.inv(c2w).astype(np.float32)
     K = torch.tensor([[fx, 0.0, cx], [0.0, fy, cy], [0.0, 0.0, 1.0]], device=device, dtype=torch.float32)
 
-    with torch.no_grad():
-        render_colors, render_alphas, _ = rasterization(
-            means=model["means"],
-            scales=model["scales"],
-            quats=model["quats"],
-            opacities=model["opacities"],
-            colors=model["colors"],
-            viewmats=torch.from_numpy(world_to_camera).to(device).unsqueeze(0),
-            Ks=K.unsqueeze(0),
-            width=width,
-            height=height,
-            sh_degree=int(model["sh_degree"]),
+    active_limit = max_gaussians_per_view
+    retries: list[dict[str, Any]] = []
+    while True:
+        render_model, stats = _view_projected_subset(
+            model,
+            frame,
+            transforms,
+            render_scale=render_scale,
+            max_gaussians_per_view=active_limit,
+            cull_margin=cull_margin,
         )
-    return normalize_render_color(render_colors), normalize_render_alpha(render_alphas, (height, width))
+        stats["render_scale"] = render_scale
+        stats["width"] = width
+        stats["height"] = height
+        if retries:
+            stats["oom_retries"] = retries
+        try:
+            with torch.no_grad():
+                render_colors, render_alphas, _ = rasterization(
+                    means=render_model["means"],
+                    scales=render_model["scales"],
+                    quats=render_model["quats"],
+                    opacities=render_model["opacities"],
+                    colors=render_model["colors"],
+                    viewmats=torch.from_numpy(world_to_camera).to(device).unsqueeze(0),
+                    Ks=K.unsqueeze(0),
+                    width=width,
+                    height=height,
+                    sh_degree=int(render_model["sh_degree"]),
+                )
+            return normalize_render_color(render_colors), normalize_render_alpha(render_alphas, (height, width)), stats
+        except torch.cuda.OutOfMemoryError:
+            torch.cuda.empty_cache()
+            current_count = int(stats.get("rendered_gaussians", render_model.get("gaussian_count", 0)) or 0)
+            next_limit = max(int(min_gaussians_on_oom), max(1, current_count // 2))
+            retries.append({"rendered_gaussians": current_count, "next_limit": next_limit})
+            logger.warning(
+                "Gaussian render OOM at %s gaussians for %sx%s; retrying with limit %s",
+                current_count,
+                width,
+                height,
+                next_limit,
+            )
+            if next_limit >= current_count:
+                raise
+            active_limit = next_limit
 
 
 def render_skybox_view(
     skybox_path: Path | None,
     frame: Mapping[str, Any],
     transforms: Mapping[str, Any],
+    *,
+    render_scale: float = 1.0,
 ) -> np.ndarray | None:
     if skybox_path is None or not skybox_path.exists():
         return None
 
     skybox = np.asarray(Image.open(skybox_path).convert("RGB"), dtype=np.float32) / 255.0
-    fx, fy, cx, cy, width, height = frame_intrinsics(frame, transforms)
+    fx, fy, cx, cy, width, height = frame_intrinsics(frame, transforms, render_scale=render_scale)
     c2w = np.asarray(frame["transform_matrix"], dtype=np.float32)
     rotation = c2w[:3, :3]
 
@@ -626,6 +815,7 @@ def build_review_manifest(
     review_views: Sequence[Mapping[str, Any]],
     max_images_per_bucket: int,
     merged_background_present: bool,
+    render_settings: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     bucket_medians: dict[str, dict[str, float | None]] = {}
     no_background_bucket_medians: dict[str, dict[str, float | None]] = {}
@@ -677,6 +867,19 @@ def build_review_manifest(
         promotion_notes.append("merged review included promoted background skybox")
     else:
         promotion_notes.append("merged review had no promoted background skybox")
+    merged_render_stats = [
+        view.get("merged_render_stats", {})
+        for view in review_views
+        if isinstance(view.get("merged_render_stats"), Mapping)
+    ]
+    merged_rendered_counts = [
+        int(stats.get("rendered_gaussians"))
+        for stats in merged_render_stats
+        if stats.get("rendered_gaussians") is not None
+    ]
+    limited_render_count = sum(1 for stats in merged_render_stats if stats.get("limited"))
+    if limited_render_count:
+        promotion_notes.append(f"merged review used deterministic view-capped rendering on {limited_render_count} views")
 
     return {
         "version": "1.0.0",
@@ -695,6 +898,15 @@ def build_review_manifest(
         "bucket_medians": bucket_medians,
         "no_background_bucket_medians": no_background_bucket_medians,
         "sky_bucket_medians": sky_bucket_medians,
+        "render_settings": dict(render_settings or {}),
+        "render_stats_summary": {
+            "merged_view_count": len(merged_render_stats),
+            "merged_limited_view_count": limited_render_count,
+            "merged_rendered_gaussian_min": float(min(merged_rendered_counts)) if merged_rendered_counts else None,
+            "merged_visible_gaussian_median": median_or_none(
+                [stats.get("visible_gaussians") for stats in merged_render_stats]
+            ),
+        },
         "promotion_readiness": {
             "status": promotion_status,
             "review_buckets_complete": review_buckets_complete,
@@ -772,11 +984,13 @@ def main() -> None:
         if tile_id.strip()
     ]
     max_images_per_bucket = max(1, int(os.environ.get("QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET", "4") or 4))
+    render_settings = resolve_render_settings_from_env()
 
     logger.info("🚀 Starting tiled 3DGS quality review")
     logger.info("📦 Model input: %s", model_input_dir)
     logger.info("📁 COLMAP input: %s", colmap_input_dir)
     logger.info("📁 Output dir: %s", output_dir)
+    logger.info("🖼️ Render settings: %s", render_settings)
 
     selected_tile_ids: list[str] = []
     trainer: NerfStudioTrainer | None = None
@@ -837,12 +1051,31 @@ def main() -> None:
                 reference_image_path = converted_input_dir / str(frame_record.get("converted_file_path") or frame_record["file_path"])
                 if not reference_image_path.exists():
                     reference_image_path = converted_input_dir / str(frame_record["file_path"])
-                reference_image = load_image_tensor(reference_image_path)
+                _fx, _fy, _cx, _cy, render_width, render_height = frame_intrinsics(
+                    frame,
+                    transforms,
+                    render_scale=float(render_settings["render_scale"]),
+                )
+                reference_image = load_image_tensor(reference_image_path, size=(render_width, render_height))
                 reference_output_path = reference_root / bucket_label_value / Path(image_name).name
                 saved_reference_path = save_rgb_image(reference_image, reference_output_path)
 
-                merged_foreground, merged_alpha = render_gaussian_view(merged_model, frame, transforms, device)
-                merged_background = render_skybox_view(merged_background_path, frame, transforms)
+                merged_foreground, merged_alpha, merged_render_stats = render_gaussian_view(
+                    merged_model,
+                    frame,
+                    transforms,
+                    device,
+                    render_scale=float(render_settings["render_scale"]),
+                    max_gaussians_per_view=int(render_settings["max_gaussians_per_view"]),
+                    cull_margin=float(render_settings["cull_margin"]),
+                    min_gaussians_on_oom=int(render_settings["min_gaussians_on_oom"]),
+                )
+                merged_background = render_skybox_view(
+                    merged_background_path,
+                    frame,
+                    transforms,
+                    render_scale=float(render_settings["render_scale"]),
+                )
                 merged_final = composite_render(merged_foreground, merged_alpha, merged_background)
                 merged_no_background = composite_render(
                     merged_foreground,
@@ -879,6 +1112,7 @@ def main() -> None:
                     "metrics_no_background": metrics_no_background,
                     "sky_metrics": sky_metrics,
                     "sky_metrics_no_background": sky_metrics_no_background,
+                    "merged_render_stats": merged_render_stats,
                 }
 
                 boundary_tile_ids: list[str] = []
@@ -892,11 +1126,26 @@ def main() -> None:
                             continue
                         tile_model = load_gaussian_model(tile_ply_path, device)
                         tile_background_path = extracted_model_dir / "tiles" / tile_id / "background_skybox.webp"
-                        tile_foreground, tile_alpha = render_gaussian_view(tile_model, frame, transforms, device)
-                        tile_background = render_skybox_view(tile_background_path, frame, transforms)
+                        tile_foreground, tile_alpha, tile_render_stats = render_gaussian_view(
+                            tile_model,
+                            frame,
+                            transforms,
+                            device,
+                            render_scale=float(render_settings["render_scale"]),
+                            max_gaussians_per_view=int(render_settings["max_gaussians_per_view"]),
+                            cull_margin=float(render_settings["cull_margin"]),
+                            min_gaussians_on_oom=int(render_settings["min_gaussians_on_oom"]),
+                        )
+                        tile_background = render_skybox_view(
+                            tile_background_path,
+                            frame,
+                            transforms,
+                            render_scale=float(render_settings["render_scale"]),
+                        )
                         tile_final = composite_render(tile_foreground, tile_alpha, tile_background)
                         tile_render_path = tiles_root / tile_id / bucket_label_value / f"{Path(image_name).stem}.png"
                         tile_render_paths.append(save_rgb_image(tile_final, tile_render_path))
+                        view_entry.setdefault("boundary_tile_render_stats", {})[tile_id] = tile_render_stats
                         boundary_images.append(tile_final)
                     composite_path = composites_root / f"{Path(image_name).stem}.png"
                     view_entry["boundary_context_tile_ids"] = boundary_tile_ids
@@ -932,6 +1181,7 @@ def main() -> None:
             review_views=review_views,
             max_images_per_bucket=max_images_per_bucket,
             merged_background_present=merged_background_path.exists(),
+            render_settings=render_settings,
         )
         with open(output_dir / "quality_review_manifest.json", "w", encoding="utf-8") as handle:
             json.dump(manifest, handle, indent=2)

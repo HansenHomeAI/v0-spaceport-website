@@ -1,9 +1,9 @@
 reason: geometry-first md1 tiled 3DGS reset; continuing beyond offline R1 toward bounded proof gates
-current_rung: R1a review-gate hardening; no new AWS training launched
+current_rung: R1a review-gate hardening; bounded smoke review failed on renderer OOM, retry path implemented locally
 root_cause_classification: merge_bad
-live_compute_status: none
+live_compute_status: no active job; failed smoke renderer job md1-r1a-render-20260423211511 hit gsplat CUDA OOM at full merged 3DGS render
 current_branch: agent-53821974-md1-geometry-consistency
-current_head_at_state_write: 6a37bea71e591b2d7616c08a92997e436543d59b plus unpushed R1a review hardening changes
+current_head_at_state_write: 901acf42d306e8a04f4efe861c000a345aac7449 plus uncommitted deterministic view-capped review-render fix
 base_branch: agent-86580563-hierarchical-splat-merge-plan
 base_commit: ffef97e646046f204267ec30dd7dbf6f19027cad
 automation:
@@ -29,7 +29,10 @@ audit_result:
 review_gate_delta:
   added_merged_no_background_renders: true
   added_no_background_bucket_medians: true
+  added_deterministic_view_capped_rendering: true
+  renderer_failure_root_cause: full merged 3.6M-Gaussian artifact requested ~454GiB during gsplat tile intersection
+  failed_smoke_review_job: md1-r1a-render-20260423211511
   smoke_review_target: tile_02/tile_05 using frozen 4/4/4 camera set before bounded R2 retraining
-next_unblocked_step: push R1a review hardening, watch CDK/Pages/container workflows to green, then run SageMaker Processing smoke review against the canonical md1 artifact with frozen cameras
+next_unblocked_step: commit and push deterministic view-capped review-render fix, watch CDK/Pages/container workflows to green, then relaunch the frozen 4/4/4 smoke review with QUALITY_REVIEW_RENDER_SCALE=0.5 and QUALITY_REVIEW_MAX_GAUSSIANS_PER_VIEW=900000
 owner_action_needed: none
-updated: 2026-04-23T21:02:37Z
+updated: 2026-04-23T21:32:26Z

@@ -97,3 +97,4 @@ md1-hierarchical-bounds-fix 2026-04-14T10:57:00-0600
 md1-hierarchical-normalized-bounds-fix 2026-04-14T12:27:00-0600
 md1-hierarchical-voronoi-merge-fix 2026-04-14T14:35:00-0600
 md1-hierarchical-runtime-budget-fix 2026-04-16T04:42:00-0600
+md1-geometry-review-render-cap 2026-04-23T15:32:26-0600
