@@ -1,0 +1,70 @@
+{
+  "version": "1.0.0",
+  "selection": "deterministic_ordered_manifest_first_n",
+  "images_per_bucket": 12,
+  "smoke_images_per_bucket": 4,
+  "buckets": {
+    "near_detail": [
+      "DJI_0258.JPG",
+      "DJI_0261.JPG",
+      "DJI_0262.JPG",
+      "DJI_0263.JPG",
+      "DJI_01091.JPG",
+      "DJI_01092.JPG",
+      "DJI_01093.JPG",
+      "DJI_01094.JPG",
+      "DJI_01095.JPG",
+      "DJI_01096.JPG",
+      "DJI_01097.JPG",
+      "DJI_01098.JPG"
+    ],
+    "boundary": [
+      "DJI_0067.JPG",
+      "DJI_0068.JPG",
+      "DJI_0069.JPG",
+      "DJI_0070.JPG",
+      "DJI_0071.JPG",
+      "DJI_0072.JPG",
+      "DJI_0141.JPG",
+      "DJI_0146.JPG",
+      "DJI_0147.JPG",
+      "DJI_0148.JPG",
+      "DJI_0149.JPG",
+      "DJI_0150.JPG"
+    ],
+    "horizon": [
+      "DJI_0066.JPG",
+      "DJI_0073.JPG",
+      "DJI_0146.JPG",
+      "DJI_0147.JPG",
+      "DJI_0148.JPG",
+      "DJI_0149.JPG",
+      "DJI_0150.JPG",
+      "DJI_0151.JPG",
+      "DJI_0152.JPG",
+      "DJI_0153.JPG",
+      "DJI_0154.JPG",
+      "DJI_0155.JPG"
+    ]
+  },
+  "smoke_buckets": {
+    "near_detail": [
+      "DJI_0258.JPG",
+      "DJI_0261.JPG",
+      "DJI_0262.JPG",
+      "DJI_0263.JPG"
+    ],
+    "boundary": [
+      "DJI_0067.JPG",
+      "DJI_0068.JPG",
+      "DJI_0069.JPG",
+      "DJI_0070.JPG"
+    ],
+    "horizon": [
+      "DJI_0066.JPG",
+      "DJI_0073.JPG",
+      "DJI_0146.JPG",
+      "DJI_0147.JPG"
+    ]
+  }
+}

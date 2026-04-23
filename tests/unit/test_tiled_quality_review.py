@@ -18,6 +18,7 @@ def load_module_with_stubs():
     skimage_stub = types.ModuleType("skimage")
     skimage_metrics_stub = types.ModuleType("skimage.metrics")
     gsplat_stub = types.ModuleType("gsplat")
+    geometry_review_stub = types.ModuleType("geometry_review")
     sky_quality_stub = types.ModuleType("sky_quality")
     tile_pipeline_stub = types.ModuleType("tile_pipeline")
     trainer_stub = types.ModuleType("train_nerfstudio_production")
@@ -26,6 +27,12 @@ def load_module_with_stubs():
     plyfile_stub.PlyData = type("PlyData", (), {})
     skimage_metrics_stub.structural_similarity = lambda *args, **kwargs: 1.0
     gsplat_stub.rasterization = types.SimpleNamespace()
+    geometry_review_stub.REVIEW_BUCKETS = [
+        ("near_detail_camera_ids", "near_detail"),
+        ("boundary_camera_ids", "boundary"),
+        ("horizon_camera_ids", "horizon"),
+    ]
+    geometry_review_stub.build_review_comparison = lambda **kwargs: {"promotion_decision": {"status": "blocked"}}
     sky_quality_stub.compute_sky_image_metrics = lambda *_args, **_kwargs: {}
     tile_pipeline_stub.normalize_image_name = lambda value: value
     tile_pipeline_stub.ordered_unique = lambda values: list(dict.fromkeys(values))
@@ -42,6 +49,7 @@ def load_module_with_stubs():
         "skimage": skimage_stub,
         "skimage.metrics": skimage_metrics_stub,
         "gsplat": gsplat_stub,
+        "geometry_review": geometry_review_stub,
         "sky_quality": sky_quality_stub,
         "tile_pipeline": tile_pipeline_stub,
         "train_nerfstudio_production": trainer_stub,
@@ -98,7 +106,7 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
                 merged_background_present=True,
             )
 
-            self.assertEqual(manifest["promotion_readiness"]["status"], "ready_for_manual_signoff")
+            self.assertEqual(manifest["promotion_readiness"]["status"], "ready_for_comparison")
             self.assertTrue(manifest["promotion_readiness"]["review_buckets_complete"])
             self.assertEqual(
                 manifest["actual_bucket_counts"],

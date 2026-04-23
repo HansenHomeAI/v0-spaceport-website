@@ -62,11 +62,20 @@ def load_module_with_stubs():
 
     tile_pipeline_stub = types.SimpleNamespace(
         filter_transforms_frames=lambda transforms, _selected, image_name_map=None: transforms,
+        write_point_cloud_ply_from_gaussians=lambda *args, **kwargs: {
+            "scaffold_source_artifact": str(args[0]),
+            "filtered_point_cloud": str(args[1]),
+            "inherited_gaussian_count": 1,
+            "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+        },
         load_json=load_json,
         merge_tile_outputs=lambda **kwargs: {
             "merge_mode": kwargs["merge_mode"],
             "tile_count": len(kwargs["tile_output_dirs"]),
         },
+        resolve_tile_entry=lambda manifest, tile_id: next(
+            tile for tile in manifest.get("tiles", []) if tile.get("tile_id") == tile_id
+        ),
         resolve_tiled_input_manifests=lambda **kwargs: (
             kwargs.get("tile_manifest_payload") or {
                 "tiles": [{"tile_id": "tile_00"}],

@@ -28,6 +28,7 @@ except ImportError:  # pragma: no cover - exercised inside the container image
 
 from gsplat import rasterization
 
+from geometry_review import REVIEW_BUCKETS, build_review_comparison
 from sky_quality import compute_sky_image_metrics
 from tile_pipeline import (
     normalize_image_name,
@@ -43,11 +44,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 CONFIG_PATH = Path("/opt/ml/code/nerfstudio_config.yaml")
-DEFAULT_BUCKET_ORDER = [
-    ("near_detail_camera_ids", "near_detail"),
-    ("boundary_camera_ids", "boundary"),
-    ("horizon_camera_ids", "horizon"),
-]
+DEFAULT_BUCKET_ORDER = list(REVIEW_BUCKETS)
 
 
 def find_model_artifact(model_input_dir: Path) -> Path:
@@ -476,12 +473,19 @@ def build_review_manifest(
         for _, bucket_label_value in DEFAULT_BUCKET_ORDER
     )
     retain_all_tile_count = int(merge_report.get("retain_all_tile_count", 0) or 0)
-    promotion_status = "ready_for_manual_signoff" if review_buckets_complete and retain_all_tile_count == 0 else "blocked"
+    fallback_tile_count = int(merge_report.get("fallback_tile_count", 0) or 0)
+    promotion_status = (
+        "ready_for_comparison"
+        if review_buckets_complete and retain_all_tile_count == 0 and fallback_tile_count == 0
+        else "blocked"
+    )
     promotion_notes: list[str] = []
     if not review_buckets_complete:
         promotion_notes.append("review buckets did not produce the requested 4/4/4 coverage")
     if retain_all_tile_count > 0:
         promotion_notes.append("merge used retain_all fallback on at least one tile")
+    if fallback_tile_count > 0:
+        promotion_notes.append("merge used fallback on at least one tile")
     if merged_background_present:
         promotion_notes.append("merged review included promoted background skybox")
     else:
@@ -507,7 +511,7 @@ def build_review_manifest(
             "status": promotion_status,
             "review_buckets_complete": review_buckets_complete,
             "retain_all_tile_count": retain_all_tile_count,
-            "fallback_tile_count": int(merge_report.get("fallback_tile_count", 0) or 0),
+            "fallback_tile_count": fallback_tile_count,
             "manual_visual_review_required": True,
             "notes": promotion_notes,
         },
@@ -719,6 +723,18 @@ def main() -> None:
         )
         with open(output_dir / "quality_review_manifest.json", "w", encoding="utf-8") as handle:
             json.dump(manifest, handle, indent=2)
+        baseline_manifest_path = os.environ.get("BASELINE_REVIEW_MANIFEST", "").strip()
+        if baseline_manifest_path:
+            baseline_manifest = load_json(Path(baseline_manifest_path))
+            comparison = build_review_comparison(
+                baseline_manifest=baseline_manifest,
+                candidate_manifest=manifest,
+                baseline_artifact=baseline_manifest.get("model_artifact"),
+                candidate_artifact=str(model_tarball),
+                camera_manifest=camera_manifest,
+            )
+            with open(output_dir / "review_comparison.json", "w", encoding="utf-8") as handle:
+                json.dump(comparison, handle, indent=2)
         logger.info("✅ Tiled quality review complete: %s", output_dir / "quality_review_manifest.json")
     finally:
         if selected_tile_ids:

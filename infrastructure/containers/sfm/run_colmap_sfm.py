@@ -3243,6 +3243,26 @@ class ColmapPipeline:
                     break
         return scaffold_names[: self.global_scaffold_max_images]
 
+    @staticmethod
+    def expand_bounds_by_ratio(bounds: Dict[str, float], ratio: float = 0.2) -> Dict[str, float]:
+        try:
+            min_x, max_x = float(bounds["min_x"]), float(bounds["max_x"])
+            min_y, max_y = float(bounds["min_y"]), float(bounds["max_y"])
+            min_z, max_z = float(bounds["min_z"]), float(bounds["max_z"])
+        except (KeyError, TypeError, ValueError):
+            return dict(bounds)
+        pad_x = max(0.0, max_x - min_x) * ratio
+        pad_y = max(0.0, max_y - min_y) * ratio
+        pad_z = max(0.0, max_z - min_z) * ratio
+        return {
+            "min_x": round(min_x - pad_x, 3),
+            "max_x": round(max_x + pad_x, 3),
+            "min_y": round(min_y - pad_y, 3),
+            "max_y": round(max_y + pad_y, 3),
+            "min_z": round(min_z - pad_z, 3),
+            "max_z": round(max_z + pad_z, 3),
+        }
+
     def build_3dgs_tile_manifest_payload(self, chunk_plans: Sequence[ChunkPlan]) -> tuple[dict[str, object], dict[str, List[str]]]:
         if not chunk_plans:
             chunk_plans = [
@@ -3289,6 +3309,31 @@ class ColmapPipeline:
                     tile_image_names,
                     padding_m=self.tile_bounds_padding_m,
                 )
+            selected_roles = {
+                "base": list(chunk_plan.core_names),
+                "border": list(chunk_plan.overlap_names),
+                "context": context_camera_ids,
+            }
+            overlap_stats_by_neighbor: Dict[str, object] = {}
+            for neighbor_tile_id in neighbor_tile_ids:
+                try:
+                    neighbor_index = int(neighbor_tile_id.split("_")[-1])
+                except ValueError:
+                    continue
+                neighbor_plan = self.chunk_plans_by_index.get(neighbor_index)
+                if neighbor_plan is None:
+                    continue
+                shared_images = sorted(set(tile_image_names).intersection(neighbor_plan.image_names))
+                boundary_images = sorted(set(shared_images).intersection(chunk_plan.overlap_names))
+                overlap_stats_by_neighbor[neighbor_tile_id] = {
+                    "shared_assigned_image_count": len(shared_images),
+                    "boundary_support_count": len(boundary_images),
+                    "boundary_support_images": boundary_images,
+                    "graph_cross_edge_count": self.chunk_cross_edge_counts.get(
+                        tuple(sorted((chunk_plan.index, neighbor_index))),
+                        0,
+                    ),
+                }
             tiles.append(
                 {
                     "tile_id": f"tile_{chunk_plan.index:02d}",
@@ -3300,9 +3345,24 @@ class ColmapPipeline:
                     "base_camera_ids": list(chunk_plan.core_names),
                     "border_camera_ids": list(chunk_plan.overlap_names),
                     "context_camera_ids": context_camera_ids,
+                    "selected_cameras_by_role": selected_roles,
                     "image_names": tile_image_names,
+                    "selected_image_count": len(tile_image_names),
                     "neighbor_tile_ids": neighbor_tile_ids,
                     "bounds_strategy": "camera_footprint_union_v1",
+                    "ownership_bounds_strategy": "camera_footprint_union_v1",
+                    "expanded_overlap_bounds_20pct": self.expand_bounds_by_ratio(overlap_bounds, ratio=0.2),
+                    "overlap_stats_by_neighbor": overlap_stats_by_neighbor,
+                    "sparse_support_coverage": {
+                        "core_bounds_valid": not all(abs(float(core_bounds[key])) <= 1e-6 for key in core_bounds),
+                        "overlap_bounds_valid": not all(abs(float(overlap_bounds[key])) <= 1e-6 for key in overlap_bounds),
+                        "ownership_bounds_available": True,
+                    },
+                    "scaffold_init": {
+                        "scaffold_inheritance_mode": "global_scaffold_ply_filtered",
+                        "filter_bounds_source": "overlap_bounds_with_10pct_padding",
+                        "status": "pending_training_export",
+                    },
                 }
             )
 

@@ -1,0 +1,267 @@
+{
+  "version": "1.0.0",
+  "baseline_artifact": "/Users/gabrielhansen/worktrees/agent-86580563-hierarchical-splat-merge-plan/logs/aws/md1-1k-full-r2/remerge-fixed/merged-fixed-2",
+  "candidate_artifact": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges/support_weighted_overlap",
+  "camera_manifest": {
+    "version": "1.0.0",
+    "selection": "deterministic_ordered_manifest_first_n",
+    "images_per_bucket": 12,
+    "smoke_images_per_bucket": 4,
+    "buckets": {
+      "near_detail": [
+        "DJI_0258.JPG",
+        "DJI_0261.JPG",
+        "DJI_0262.JPG",
+        "DJI_0263.JPG",
+        "DJI_01091.JPG",
+        "DJI_01092.JPG",
+        "DJI_01093.JPG",
+        "DJI_01094.JPG",
+        "DJI_01095.JPG",
+        "DJI_01096.JPG",
+        "DJI_01097.JPG",
+        "DJI_01098.JPG"
+      ],
+      "boundary": [
+        "DJI_0067.JPG",
+        "DJI_0068.JPG",
+        "DJI_0069.JPG",
+        "DJI_0070.JPG",
+        "DJI_0071.JPG",
+        "DJI_0072.JPG",
+        "DJI_0141.JPG",
+        "DJI_0146.JPG",
+        "DJI_0147.JPG",
+        "DJI_0148.JPG",
+        "DJI_0149.JPG",
+        "DJI_0150.JPG"
+      ],
+      "horizon": [
+        "DJI_0066.JPG",
+        "DJI_0073.JPG",
+        "DJI_0146.JPG",
+        "DJI_0147.JPG",
+        "DJI_0148.JPG",
+        "DJI_0149.JPG",
+        "DJI_0150.JPG",
+        "DJI_0151.JPG",
+        "DJI_0152.JPG",
+        "DJI_0153.JPG",
+        "DJI_0154.JPG",
+        "DJI_0155.JPG"
+      ]
+    },
+    "smoke_buckets": {
+      "near_detail": [
+        "DJI_0258.JPG",
+        "DJI_0261.JPG",
+        "DJI_0262.JPG",
+        "DJI_0263.JPG"
+      ],
+      "boundary": [
+        "DJI_0067.JPG",
+        "DJI_0068.JPG",
+        "DJI_0069.JPG",
+        "DJI_0070.JPG"
+      ],
+      "horizon": [
+        "DJI_0066.JPG",
+        "DJI_0073.JPG",
+        "DJI_0146.JPG",
+        "DJI_0147.JPG"
+      ]
+    }
+  },
+  "per_bucket": {
+    "near_detail": {
+      "baseline": {
+        "psnr": null,
+        "ssim": null,
+        "lpips": null
+      },
+      "candidate": {
+        "psnr": null,
+        "ssim": null,
+        "lpips": null
+      },
+      "delta": {
+        "psnr": null,
+        "ssim": null,
+        "lpips": null
+      },
+      "block_reasons": [
+        "near_detail_candidate_metrics_missing",
+        "near_detail_baseline_metrics_missing"
+      ]
+    },
+    "boundary": {
+      "baseline": {
+        "psnr": null,
+        "ssim": null,
+        "lpips": null
+      },
+      "candidate": {
+        "psnr": null,
+        "ssim": null,
+        "lpips": null
+      },
+      "delta": {
+        "psnr": null,
+        "ssim": null,
+        "lpips": null
+      },
+      "block_reasons": [
+        "boundary_candidate_metrics_missing",
+        "boundary_baseline_metrics_missing"
+      ]
+    },
+    "horizon": {
+      "baseline": {
+        "psnr": null,
+        "ssim": null,
+        "lpips": null
+      },
+      "candidate": {
+        "psnr": null,
+        "ssim": null,
+        "lpips": null
+      },
+      "delta": {
+        "psnr": null,
+        "ssim": null,
+        "lpips": null
+      },
+      "block_reasons": [
+        "horizon_candidate_metrics_missing",
+        "horizon_baseline_metrics_missing"
+      ]
+    }
+  },
+  "fallback_breakdown": {
+    "baseline": {
+      "fallback_tile_count": 2,
+      "retain_all_tile_count": 0,
+      "fallback_reasons": []
+    },
+    "candidate": {
+      "fallback_tile_count": 2,
+      "retain_all_tile_count": 0,
+      "fallback_reasons": [
+        {
+          "tile_id": "tile_05",
+          "reason": "primary_and_overlap_retained_zero",
+          "retention_strategy": "centroid_voronoi_fallback"
+        },
+        {
+          "tile_id": "tile_06",
+          "reason": "primary_and_overlap_retained_zero",
+          "retention_strategy": "centroid_voronoi_fallback"
+        }
+      ]
+    }
+  },
+  "side_by_side_render_paths": [],
+  "promotion_decision": {
+    "status": "blocked",
+    "block_reasons": [
+      "merge_fallback_tile_count_gt_zero",
+      "near_detail_candidate_metrics_missing",
+      "near_detail_baseline_metrics_missing",
+      "boundary_candidate_metrics_missing",
+      "boundary_baseline_metrics_missing",
+      "horizon_candidate_metrics_missing",
+      "horizon_baseline_metrics_missing"
+    ],
+    "warnings": [],
+    "fallback_tile_count": 2,
+    "retain_all_tile_count": 0,
+    "per_bucket": {
+      "near_detail": {
+        "baseline": {
+          "psnr": null,
+          "ssim": null,
+          "lpips": null
+        },
+        "candidate": {
+          "psnr": null,
+          "ssim": null,
+          "lpips": null
+        },
+        "delta": {
+          "psnr": null,
+          "ssim": null,
+          "lpips": null
+        },
+        "block_reasons": [
+          "near_detail_candidate_metrics_missing",
+          "near_detail_baseline_metrics_missing"
+        ]
+      },
+      "boundary": {
+        "baseline": {
+          "psnr": null,
+          "ssim": null,
+          "lpips": null
+        },
+        "candidate": {
+          "psnr": null,
+          "ssim": null,
+          "lpips": null
+        },
+        "delta": {
+          "psnr": null,
+          "ssim": null,
+          "lpips": null
+        },
+        "block_reasons": [
+          "boundary_candidate_metrics_missing",
+          "boundary_baseline_metrics_missing"
+        ]
+      },
+      "horizon": {
+        "baseline": {
+          "psnr": null,
+          "ssim": null,
+          "lpips": null
+        },
+        "candidate": {
+          "psnr": null,
+          "ssim": null,
+          "lpips": null
+        },
+        "delta": {
+          "psnr": null,
+          "ssim": null,
+          "lpips": null
+        },
+        "block_reasons": [
+          "horizon_candidate_metrics_missing",
+          "horizon_baseline_metrics_missing"
+        ]
+      }
+    },
+    "thresholds": {
+      "near_detail": {
+        "psnr_min_delta": -1.0,
+        "ssim_min_delta": -0.015,
+        "lpips_max_delta": 0.035
+      },
+      "boundary": {
+        "psnr_min_delta": -1.0,
+        "ssim_min_delta": -0.015,
+        "lpips_max_delta": 0.035,
+        "required_improvement": {
+          "psnr": 0.5,
+          "ssim": 0.01,
+          "lpips": -0.025
+        }
+      },
+      "horizon": {
+        "psnr_min_delta": -0.75,
+        "ssim_min_delta": -0.012,
+        "lpips_max_delta": 0.03,
+        "sky_score_min_ratio": 0.9
+      }
+    }
+  }
+}

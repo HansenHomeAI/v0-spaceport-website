@@ -78,8 +78,10 @@ from sky_quality import (
 )
 from tile_pipeline import (
     filter_transforms_frames,
+    write_point_cloud_ply_from_gaussians,
     load_json,
     merge_tile_outputs,
+    resolve_tile_entry,
     resolve_tiled_input_manifests,
     selection_counts_for_buckets,
     select_review_image_names_by_bucket,
@@ -1112,6 +1114,8 @@ class NerfStudioTrainer:
         view_buckets: dict[str, Any],
         tile_manifest_name: str,
         view_bucket_name: str,
+        tile_id: str | None = None,
+        scaffold_output_dir: Path | None = None,
     ) -> None:
         if stage_input_dir.exists():
             shutil.rmtree(stage_input_dir)
@@ -1136,6 +1140,34 @@ class NerfStudioTrainer:
             json.dump(tile_manifest, f, indent=2)
         with open(stage_input_dir / view_bucket_name, 'w', encoding='utf-8') as f:
             json.dump(view_buckets, f, indent=2)
+
+        if tile_id and scaffold_output_dir is not None:
+            scaffold_ply = scaffold_output_dir / "splat.ply"
+            if scaffold_ply.exists():
+                tile_entry = resolve_tile_entry(tile_manifest, tile_id)
+                scaffold_init_path = stage_input_dir / "scaffold_init.ply"
+                scaffold_metadata = write_point_cloud_ply_from_gaussians(
+                    scaffold_ply,
+                    scaffold_init_path,
+                    bounds=tile_entry.get("overlap_bounds") or tile_entry.get("core_bounds"),
+                    padding_ratio=0.1,
+                )
+                transforms_path = stage_input_dir / "transforms.json"
+                with open(transforms_path, "r", encoding="utf-8") as f:
+                    transforms_payload = json.load(f)
+                transforms_payload["ply_file_path"] = scaffold_init_path.name
+                transforms_payload.setdefault("spaceport_metadata", {})[
+                    "scaffold_initialization"
+                ] = scaffold_metadata
+                with open(transforms_path, "w", encoding="utf-8") as f:
+                    json.dump(transforms_payload, f, indent=2)
+                with open(stage_input_dir / "scaffold_init_metadata.json", "w", encoding="utf-8") as f:
+                    json.dump(scaffold_metadata, f, indent=2)
+                logger.info(
+                    "🌐 Prepared scaffold point-cloud init for %s with %s inherited points",
+                    tile_id,
+                    scaffold_metadata.get("inherited_gaussian_count"),
+                )
 
     def emit_probe_review_bundle(self) -> Optional[Dict[str, Any]]:
         if self.training_selection_result is None:
@@ -1405,6 +1437,7 @@ class NerfStudioTrainer:
         )
 
         try:
+            scaffold_summary: dict[str, Any] | None = None
             if pipeline_options['include_scaffold']:
                 scaffold_input_dir = pipeline_root / "inputs" / "scaffold"
                 self.prepare_tiled_stage_dataset(
@@ -1442,6 +1475,8 @@ class NerfStudioTrainer:
                     view_buckets=view_buckets,
                     tile_manifest_name=tile_manifest_name,
                     view_bucket_name=view_bucket_name,
+                    tile_id=tile_id,
+                    scaffold_output_dir=(self.output_dir / "scaffold") if scaffold_summary else None,
                 )
                 tile_output_dir = self.output_dir / "tiles" / tile_id
                 tile_summary = self.run_prepared_training_stage(
@@ -1569,6 +1604,12 @@ class NerfStudioTrainer:
             transforms = json.load(f)
         image_name_map_path = self.input_dir / "colmap_image_name_map.json"
         image_name_map = load_json(image_name_map_path) if image_name_map_path.exists() else None
+        scaffold_init_metadata_path = self.input_dir / "scaffold_init_metadata.json"
+        scaffold_init_metadata = (
+            load_json(scaffold_init_metadata_path)
+            if scaffold_init_metadata_path.exists()
+            else None
+        )
         filtered_transforms = filter_transforms_frames(
             transforms,
             selected_image_names,
@@ -1611,6 +1652,7 @@ class NerfStudioTrainer:
             'tile_manifest_path': str(tiling_config.get('tile_manifest_path', '')).strip() or None,
             'view_bucket_manifest_path': str(tiling_config.get('view_bucket_manifest_path', '')).strip() or None,
             'image_name_map_path': str(image_name_map_path) if image_name_map_path.exists() else None,
+            'scaffold_initialization': scaffold_init_metadata,
             'tile_manifest_resolution': self.tile_manifest_resolution,
         }
 
@@ -2086,7 +2128,7 @@ class NerfStudioTrainer:
             return False
 
     def persist_scaffold_training_artifacts(self, config_file: Path) -> bool:
-        """Persist scaffold checkpoints/config without invoking the Splatfacto-only exporter."""
+        """Persist scaffold checkpoint plus an explicit Gaussian PLY export for leaf initialization."""
         try:
             self.output_dir.mkdir(parents=True, exist_ok=True)
             scaffold_config_path = self.output_dir / "config.yml"
@@ -2099,17 +2141,53 @@ class NerfStudioTrainer:
                     shutil.rmtree(scaffold_checkpoint_dir)
                 shutil.copytree(checkpoint_dir, scaffold_checkpoint_dir)
 
+            export_cmd = [
+                "python",
+                "/opt/ml/code/export_splatfacto_w_assets.py",
+                "--load-config",
+                str(config_file),
+                "--output-dir",
+                str(self.output_dir),
+                "--skip-background",
+            ]
+            export_log_path = self.output_dir / "scaffold_export.log"
+            result = run_command_with_log_file(
+                export_cmd,
+                timeout=600,
+                log_path=export_log_path,
+            )
+            if result.returncode != 0:
+                logger.error("❌ Scaffold Gaussian PLY export failed")
+                logger.error(f"Exit code: {result.returncode}")
+                logger.error(f"STDOUT: {result.stdout}")
+                logger.error(f"STDERR: {result.stderr}")
+                return False
+            scaffold_ply_path = self.output_dir / "splat.ply"
+            if not scaffold_ply_path.exists():
+                logger.error("❌ Scaffold export completed without splat.ply")
+                return False
+
             export_manifest = {
-                "mode": "training_only",
-                "reason": "global_scaffold uses checkpoint persistence instead of ns-export gaussian-splat",
+                "mode": "gaussian_ply_export",
+                "reason": "global_scaffold exports Gaussian PLY for geometry-first leaf initialization",
                 "config": str(scaffold_config_path),
                 "checkpoint_dir": str(self.output_dir / "nerfstudio_models") if checkpoint_dir.exists() else None,
+                "ply": str(scaffold_ply_path),
+                "inherited_attributes": ["positions", "dc_color"],
+                "reinitialized_leaf_attributes": [
+                    "scale",
+                    "opacity",
+                    "rotation",
+                    "sh_rest",
+                    "appearance_embeddings",
+                ],
             }
             with open(self.output_dir / "export_manifest.json", "w", encoding="utf-8") as handle:
                 json.dump(export_manifest, handle, indent=2)
 
-            logger.info("✅ Scaffold artifacts persisted without gaussian export")
+            logger.info("✅ Scaffold artifacts persisted with Gaussian PLY export")
             logger.info(f"📄 Scaffold config: {scaffold_config_path}")
+            logger.info(f"☁️ Scaffold PLY: {scaffold_ply_path}")
             if checkpoint_dir.exists():
                 logger.info(f"📦 Scaffold checkpoint dir: {self.output_dir / 'nerfstudio_models'}")
             return True

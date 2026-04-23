@@ -73,6 +73,9 @@ tests/pipeline/*.log
 logs/*.png
 logs/*.jpg
 logs/*.jpeg
+logs/audit/**/model/
+logs/audit/**/*.ply
+logs/audit/**/*.webp
 .next/
 .vercel/
 web/.next/

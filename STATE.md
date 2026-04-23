@@ -1,5 +1,21 @@
-reason: continuing end-to-end md1 validation of tiled gaussian scaffold training with real AWS runs
-last_step: implemented the md1-small tiled quality gate on the 3dgs branch by promoting a best leaf background skybox into merged outputs, adding a SageMaker processing review script that renders 4 near-detail + 4 boundary + 4 horizon views with PSNR/SSIM/LPIPS and seam composites, wiring the benchmark runner to plan/launch that review stage, and validating the new schema with green unit tests plus a dry run against s3://spaceport-ml-processing-staging/manual-validations/md1p27eba1k-1776107310/colmap
-next_unblocked_step: push the merged-background and quality-review changes, watch Pages/CDK/container workflows to green, then launch the next md1-small tiled proof run from the patched path and collect the first real quality_review_manifest.json
+reason: geometry-first md1 tiled 3DGS reset from pinned ffef97e646046f204267ec30dd7dbf6f19027cad
+current_rung: R1_offline_merge_arbitration
+root_cause_classification: merge_bad
+live_compute_status: none; no SageMaker training or processing jobs launched from this branch
+branch: agent-90742618-md1-geometry-consistency
+base_commit: ffef97e646046f204267ec30dd7dbf6f19027cad
+head: committed branch tip; exact hash captured by git rev-parse HEAD and final proof
+base_worktree: /Users/gabrielhansen/worktrees/agent-86580563-hierarchical-splat-merge-plan
+canonical_model_artifact: s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz
+local_audit_root: /Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2
+audit_manifest: logs/audit/md1-1k-full-r2/audit_manifest.json
+review_camera_manifest: logs/audit/md1-1k-full-r2/review_camera_manifest.json
+review_comparison: logs/audit/md1-1k-full-r2/review_comparison.json
+offline_merge_reports: logs/audit/md1-1k-full-r2/offline_merges/{raw_union,strict_core,support_weighted_overlap}/merge_report.json
+r0_inventory: complete; 7 tile splats, merged splat, merge report, tile manifest, and view bucket manifest found
+r1_result: raw_union retained 5103651/5103651; strict_core retained 4500379/5103651 with fallback_tile_count=2; support_weighted_overlap retained 4500379/5103651 with fallback_tile_count=2
+candidate_pair_top_rank: tile_02/tile_05; shared_assigned_images=64; boundary_support=52; eligible=true
+blocked_promotion_reason: fallback_tile_count remains >0 and render metrics are not yet available for comparative promotion
+next_unblocked_step: run render-backed R1 comparison on the frozen camera manifest; if support_weighted_overlap recovers less than 50% of boundary LPIPS gap versus strict_core, pivot to R2 training-time overlap consistency and scaffold-guided bounded pair retrain on tile_02/tile_05
 owner_action_needed: none
-updated: 2026-04-15T14:35:00Z
+updated: 2026-04-23T13:19:09-06:00

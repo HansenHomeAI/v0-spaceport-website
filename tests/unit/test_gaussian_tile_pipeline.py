@@ -62,6 +62,22 @@ def write_test_ply(path: Path, vertices: list[tuple[float, float, float, float]]
     PlyData([PlyElement.describe(vertex_array, "vertex")], text=False).write(str(path))
 
 
+def write_gaussian_test_ply(path: Path, vertices: list[tuple[float, float, float, float, float, float, float]]) -> None:
+    vertex_array = np.array(
+        vertices,
+        dtype=[
+            ("x", "f4"),
+            ("y", "f4"),
+            ("z", "f4"),
+            ("opacity", "f4"),
+            ("f_dc_0", "f4"),
+            ("f_dc_1", "f4"),
+            ("f_dc_2", "f4"),
+        ],
+    )
+    PlyData([PlyElement.describe(vertex_array, "vertex")], text=False).write(str(path))
+
+
 class GaussianTilePipelineTests(unittest.TestCase):
     def test_synthesize_tiled_inputs_from_chunk_planner_builds_compatibility_manifest(self):
         manifest, view_buckets, resolution = tile_pipeline.synthesize_tiled_inputs_from_chunk_planner(
@@ -100,6 +116,9 @@ class GaussianTilePipelineTests(unittest.TestCase):
         self.assertEqual(view_buckets["boundary_camera_ids"], ["c.jpg"])
         self.assertEqual(view_buckets["horizon_camera_ids"], ["d.jpg"])
         self.assertFalse(manifest["tiles"][0]["ownership_bounds_available"])
+        self.assertIn("support_statistics", manifest)
+        self.assertIn("selected_cameras_by_role", manifest["tiles"][0])
+        self.assertIn("overlap_stats_by_neighbor", manifest["tiles"][0])
         self.assertEqual(resolution["tile_count"], 2)
 
     def test_synthesize_tiled_inputs_from_chunk_planner_uses_sparse_model_for_bounds(self):
@@ -715,6 +734,141 @@ class GaussianTilePipelineTests(unittest.TestCase):
             self.assertTrue((root / "merged" / "background_skybox.webp").exists())
             manifest = json.loads((root / "merged" / "background_manifest.json").read_text(encoding="utf-8"))
             self.assertEqual(manifest["source_tile_id"], "tile_01")
+
+    def test_rank_candidate_tile_pairs_uses_shared_images_boundary_support_and_fallback(self):
+        manifest = {
+            "tiles": [
+                {
+                    "tile_id": "tile_02",
+                    "neighbor_tile_ids": ["tile_05"],
+                    "base_camera_ids": [f"shared_{index}.jpg" for index in range(6)],
+                    "border_camera_ids": ["boundary_0.jpg", "boundary_1.jpg"],
+                    "context_camera_ids": [],
+                    "image_names": [f"shared_{index}.jpg" for index in range(6)] + ["boundary_0.jpg"],
+                    "core_bounds": {"min_x": 0, "max_x": 1, "min_y": 0, "max_y": 1, "min_z": 0, "max_z": 1},
+                    "overlap_bounds": {"min_x": 0, "max_x": 2, "min_y": 0, "max_y": 1, "min_z": 0, "max_z": 1},
+                },
+                {
+                    "tile_id": "tile_05",
+                    "neighbor_tile_ids": ["tile_02"],
+                    "base_camera_ids": [f"shared_{index}.jpg" for index in range(6)],
+                    "border_camera_ids": ["boundary_0.jpg"],
+                    "context_camera_ids": [],
+                    "image_names": [f"shared_{index}.jpg" for index in range(6)] + ["boundary_0.jpg"],
+                    "core_bounds": {"min_x": 1, "max_x": 2, "min_y": 0, "max_y": 1, "min_z": 0, "max_z": 1},
+                    "overlap_bounds": {"min_x": 0, "max_x": 2, "min_y": 0, "max_y": 1, "min_z": 0, "max_z": 1},
+                },
+            ]
+        }
+
+        ranked = tile_pipeline.rank_candidate_tile_pairs(
+            manifest,
+            {"boundary_camera_ids": ["boundary_0.jpg"]},
+            merge_report={"tiles": [{"tile_id": "tile_05", "retention_strategy": "overlap_bounds_fallback"}]},
+            min_shared_assigned_images=4,
+        )
+
+        self.assertEqual(ranked[0]["tile_ids"], ["tile_02", "tile_05"])
+        self.assertTrue(ranked[0]["eligible"])
+        self.assertEqual(ranked[0]["boundary_support_count"], 1)
+        self.assertTrue(ranked[0]["fallback_involved"])
+
+    def test_merge_tile_outputs_support_weighted_overlap_arbitrates_boundary_candidates(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            tile_zero_dir = root / "tiles" / "tile_00"
+            tile_one_dir = root / "tiles" / "tile_01"
+            tile_zero_dir.mkdir(parents=True)
+            tile_one_dir.mkdir(parents=True)
+            write_test_ply(tile_zero_dir / "splat.ply", [(1.0, 0.0, 0.0, 0.9), (5.5, 0.0, 0.0, 0.9)])
+            write_test_ply(tile_one_dir / "splat.ply", [(5.5, 0.0, 0.0, 0.9), (7.0, 0.0, 0.0, 0.9)])
+
+            report = tile_pipeline.merge_tile_outputs(
+                tile_manifest={
+                    "tiles": [
+                        {
+                            "tile_id": "tile_00",
+                            "neighbor_tile_ids": ["tile_01"],
+                            "base_camera_ids": ["a.jpg", "shared.jpg"],
+                            "border_camera_ids": ["boundary.jpg"],
+                            "image_names": ["a.jpg", "shared.jpg", "boundary.jpg"],
+                            "core_bounds": {
+                                "min_x": 0.0,
+                                "max_x": 3.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                            "overlap_bounds": {
+                                "min_x": 0.0,
+                                "max_x": 6.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                        },
+                        {
+                            "tile_id": "tile_01",
+                            "neighbor_tile_ids": ["tile_00"],
+                            "base_camera_ids": ["b.jpg", "shared.jpg"],
+                            "border_camera_ids": ["boundary.jpg"],
+                            "image_names": ["b.jpg", "shared.jpg", "boundary.jpg"],
+                            "core_bounds": {
+                                "min_x": 5.0,
+                                "max_x": 8.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                            "overlap_bounds": {
+                                "min_x": 2.0,
+                                "max_x": 8.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                        },
+                    ]
+                },
+                tile_output_dirs={"tile_00": tile_zero_dir, "tile_01": tile_one_dir},
+                output_dir=root / "support_weighted",
+                merge_mode="support_weighted_overlap",
+            )
+
+            self.assertEqual(report["merge_mode"], "support_weighted_overlap")
+            self.assertEqual(report["retain_all_tile_count"], 0)
+            self.assertEqual(report["fallback_tile_count"], 0)
+            self.assertEqual(report["retained_gaussians"], 3)
+            self.assertEqual(report["tiles"][0]["support_weighted_overlap"]["overlap_candidate_count"], 1)
+
+    def test_write_point_cloud_ply_from_gaussians_filters_scaffold_to_padded_bounds(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "scaffold.ply"
+            target = root / "tile" / "scaffold_init.ply"
+            write_gaussian_test_ply(
+                source,
+                [
+                    (0.0, 0.0, 0.0, 0.8, 0.1, 0.1, 0.1),
+                    (5.0, 0.0, 0.0, 0.8, 0.1, 0.1, 0.1),
+                ],
+            )
+
+            metadata = tile_pipeline.write_point_cloud_ply_from_gaussians(
+                source,
+                target,
+                bounds={"min_x": -1, "max_x": 1, "min_y": -1, "max_y": 1, "min_z": -1, "max_z": 1},
+                padding_ratio=0.1,
+            )
+
+            filtered = PlyData.read(str(target))["vertex"].data
+            self.assertEqual(len(filtered), 1)
+            self.assertEqual(metadata["inherited_gaussian_count"], 1)
+            self.assertEqual(metadata["scaffold_inheritance_mode"], "global_scaffold_ply_filtered_point_cloud")
 
 
 if __name__ == "__main__":
