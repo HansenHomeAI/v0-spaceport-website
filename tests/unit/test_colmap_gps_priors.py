@@ -1662,7 +1662,7 @@ class ColmapGpsPriorTests(unittest.TestCase):
 
             command = stream_mock.call_args.args[0]
             self.assertIn("hierarchical_mapper", command)
-            self.assertIn("--num_threads", command)
+            self.assertNotIn("--num_threads", command)
             self.assertIn(str(sparse_root), command)
             choose_mock.assert_called_once()
             self.assertEqual(result.images_registered, 12)

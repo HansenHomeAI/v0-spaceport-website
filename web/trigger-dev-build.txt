@@ -65,3 +65,4 @@
 2026-03-30T13:07:44Z rerun preview auth opt-in with serialized non-production auth API endpoint migrations
 2026-04-17T00:00:00Z validate shared preview backend/role reuse for IAM quota-safe branch deploys
 2026-04-23T17:30:00Z trigger preview for stock hierarchical benchmark branch
+2026-04-23T19:44:00Z trigger preview after hierarchical_mapper option fix

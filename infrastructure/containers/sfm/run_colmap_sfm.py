@@ -2284,8 +2284,6 @@ class ColmapPipeline:
                     str(self.images_dir),
                     "--output_path",
                     str(sparse_root),
-                    "--num_threads",
-                    str(self.mapper_threads),
                 ],
                 stage=stage,
                 timeout_seconds=self.resolve_timeout_seconds(self.monolithic_mapper_timeout_seconds),
