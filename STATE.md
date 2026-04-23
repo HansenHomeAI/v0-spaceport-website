@@ -1,7 +1,7 @@
 reason: geometry-first md1 tiled 3DGS reset from pinned ffef97e646046f204267ec30dd7dbf6f19027cad
 current_rung: R1_offline_merge_arbitration
 root_cause_classification: merge_bad
-live_compute_status: CDK, Pages, and 3dgs image workflows are green for 653eb3ddbfa21a5a33e4a56efb07e0d83381f898; 3dgs image digest sha256:7aa9e267b2c63a37d73135c4acf094094842b5ee5d654730b537cd8cc920c693; no SageMaker processing launched yet from the new head
+live_compute_status: R1 strict_core render-backed smoke review md1-r1-strict-core-1776980821-quality failed before rendering because the 3dgs image did not copy geometry_review.py; Dockerfile fix is local and must be pushed for a fresh 3dgs image before retry
 branch: agent-90742618-md1-geometry-consistency
 base_commit: ffef97e646046f204267ec30dd7dbf6f19027cad
 head: committed branch tip; exact hash captured by git rev-parse HEAD and final proof
@@ -16,6 +16,6 @@ r0_inventory: complete; 7 tile splats, merged splat, merge report, tile manifest
 r1_result: raw_union retained 5103651/5103651; strict_core retained 4500379/5103651 with fallback_tile_count=2; support_weighted_overlap retained 4500379/5103651 with fallback_tile_count=2
 candidate_pair_top_rank: tile_02/tile_05; shared_assigned_images=64; boundary_support=52; eligible=true
 blocked_promotion_reason: fallback_tile_count remains >0 and render metrics are not yet available for comparative promotion
-next_unblocked_step: commit and push the disk-safe R1 review runner update after local tests, wait for CDK/Pages/3DGS image workflows on the exact head, then launch sequential R1 render-backed smoke processing for strict_core, support_weighted_overlap, and raw_union against the frozen smoke camera manifest
+next_unblocked_step: commit and push the Dockerfile geometry_review.py copy fix, wait for CDK/Pages and the fresh 3dgs image workflow on the exact head, then retry the staged R1 strict_core smoke review on quota-supported ml.g4dn.xlarge without restaging inputs
 owner_action_needed: none
-updated: 2026-04-23T15:26:09-06:00
+updated: 2026-04-23T15:56:01-06:00

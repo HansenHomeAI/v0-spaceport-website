@@ -101,6 +101,7 @@ COPY tile_pipeline.py /opt/ml/code/
 COPY merge_gaussian_tiles.py /opt/ml/code/
 COPY run_export_quality_pass.py /opt/ml/code/
 COPY run_tiled_quality_review.py /opt/ml/code/
+COPY geometry_review.py /opt/ml/code/
 COPY sky_quality.py /opt/ml/code/
 COPY nerfstudio_config.yaml /opt/ml/code/
 COPY sitecustomize.py /opt/ml/code/
