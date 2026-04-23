@@ -1,5 +1,7 @@
 import importlib.util
+import json
 import sys
+import tarfile
 import tempfile
 import types
 import unittest
@@ -79,6 +81,59 @@ def make_view(bucket: str, *, psnr: float = 30.0) -> dict:
 
 
 class TiledQualityReviewManifestTests(unittest.TestCase):
+    def test_extract_model_artifact_rejects_unsafe_members(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            archive_path = root / "unsafe.tar.gz"
+            payload = root / "payload.txt"
+            payload.write_text("unsafe", encoding="utf-8")
+            with tarfile.open(archive_path, "w:gz") as archive:
+                archive.add(payload, arcname="../payload.txt")
+
+            with self.assertRaisesRegex(RuntimeError, "Refusing unsafe tar member"):
+                module.extract_model_artifact(archive_path, root / "extract")
+
+    def test_load_frozen_review_images_uses_smoke_bucket_keys(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            manifest_path = root / "review_camera_manifest.json"
+            manifest_path.write_text(
+                json.dumps(
+                    {
+                        "buckets": {
+                            "near_detail": ["near_0", "near_1", "near_2"],
+                            "boundary": ["boundary_0", "boundary_1", "boundary_2"],
+                            "horizon": ["horizon_0", "horizon_1", "horizon_2"],
+                        },
+                        "smoke_buckets": {
+                            "near_detail": ["near_0"],
+                            "boundary": ["boundary_0"],
+                            "horizon": ["horizon_0"],
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            selected = module.load_frozen_review_images_by_bucket(
+                manifest_path,
+                max_images_per_bucket=4,
+                camera_set="auto",
+            )
+
+            self.assertEqual(
+                selected,
+                {
+                    "near_detail_camera_ids": ["near_0"],
+                    "boundary_camera_ids": ["boundary_0"],
+                    "horizon_camera_ids": ["horizon_0"],
+                },
+            )
+
     def test_build_review_manifest_marks_ready_for_manual_signoff(self):
         module = load_module_with_stubs()
 

@@ -571,7 +571,63 @@ def create_quality_review_processing_payload(
     instance_type: str,
     volume_size_gb: int,
     max_runtime_seconds: int,
+    review_camera_manifest_s3_uri: str = "",
+    baseline_review_manifest_s3_uri: str = "",
 ) -> dict:
+    resolved_environment = dict(environment)
+    processing_inputs = [
+        {
+            "InputName": "model",
+            "S3Input": {
+                "S3Uri": model_artifact_s3_uri,
+                "LocalPath": "/opt/ml/processing/input/model",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+            },
+        },
+        {
+            "InputName": "colmap",
+            "S3Input": {
+                "S3Uri": colmap_s3_uri,
+                "LocalPath": "/opt/ml/processing/input/colmap",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+            },
+        },
+    ]
+    if review_camera_manifest_s3_uri:
+        processing_inputs.append(
+            {
+                "InputName": "review-manifest",
+                "S3Input": {
+                    "S3Uri": review_camera_manifest_s3_uri,
+                    "LocalPath": "/opt/ml/processing/input/review",
+                    "S3DataType": "S3Prefix",
+                    "S3InputMode": "File",
+                },
+            }
+        )
+        resolved_environment.setdefault(
+            "FROZEN_REVIEW_CAMERA_MANIFEST",
+            "/opt/ml/processing/input/review/review_camera_manifest.json",
+        )
+    if baseline_review_manifest_s3_uri:
+        processing_inputs.append(
+            {
+                "InputName": "baseline-review",
+                "S3Input": {
+                    "S3Uri": baseline_review_manifest_s3_uri,
+                    "LocalPath": "/opt/ml/processing/input/baseline-review",
+                    "S3DataType": "S3Prefix",
+                    "S3InputMode": "File",
+                },
+            }
+        )
+        resolved_environment.setdefault(
+            "BASELINE_REVIEW_MANIFEST",
+            "/opt/ml/processing/input/baseline-review/quality_review_manifest.json",
+        )
+
     return {
         "ProcessingJobName": job_name,
         "RoleArn": role_arn,
@@ -579,27 +635,8 @@ def create_quality_review_processing_payload(
             "ImageUri": image_uri,
             "ContainerEntrypoint": ["python3", "/opt/ml/code/run_tiled_quality_review.py"],
         },
-        "Environment": environment,
-        "ProcessingInputs": [
-            {
-                "InputName": "model",
-                "S3Input": {
-                    "S3Uri": model_artifact_s3_uri,
-                    "LocalPath": "/opt/ml/processing/input/model",
-                    "S3DataType": "S3Prefix",
-                    "S3InputMode": "File",
-                },
-            },
-            {
-                "InputName": "colmap",
-                "S3Input": {
-                    "S3Uri": colmap_s3_uri,
-                    "LocalPath": "/opt/ml/processing/input/colmap",
-                    "S3DataType": "S3Prefix",
-                    "S3InputMode": "File",
-                },
-            },
-        ],
+        "Environment": resolved_environment,
+        "ProcessingInputs": processing_inputs,
         "ProcessingOutputConfig": {
             "Outputs": [
                 {

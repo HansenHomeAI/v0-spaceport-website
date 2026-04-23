@@ -61,6 +61,10 @@ def extract_model_artifact(model_tarball: Path, extract_dir: Path) -> Path:
         shutil.rmtree(extract_dir)
     extract_dir.mkdir(parents=True, exist_ok=True)
     with tarfile.open(model_tarball, "r:gz") as tar:
+        for member in tar.getmembers():
+            member_path = Path(member.name)
+            if member_path.is_absolute() or ".." in member_path.parts or member.issym() or member.islnk():
+                raise RuntimeError(f"Refusing unsafe tar member: {member.name}")
         tar.extractall(extract_dir)
     return extract_dir
 
@@ -131,12 +135,53 @@ def prepare_converted_dataset(colmap_input_dir: Path, temp_dir: Path) -> tuple[N
     return trainer, review_input_dir, converted_dir
 
 
+def load_frozen_review_images_by_bucket(
+    camera_manifest_path: Path,
+    *,
+    max_images_per_bucket: int,
+    camera_set: str,
+) -> dict[str, list[str]]:
+    payload = load_json(camera_manifest_path)
+    requested_set = camera_set.strip().lower()
+    if requested_set in {"", "auto"}:
+        requested_set = "smoke" if max_images_per_bucket <= 4 else "buckets"
+    if requested_set in {"full", "promotion", "buckets"}:
+        set_key = "buckets"
+    elif requested_set == "smoke":
+        set_key = "smoke_buckets" if "smoke_buckets" in payload else "buckets"
+    else:
+        raise ValueError(f"Unknown QUALITY_REVIEW_CAMERA_SET={camera_set!r}")
+
+    selected_payload = payload.get(set_key) or {}
+    frozen: dict[str, list[str]] = {}
+    for bucket_key, bucket_label in DEFAULT_BUCKET_ORDER:
+        names = selected_payload.get(bucket_label, selected_payload.get(bucket_key, []))
+        frozen[bucket_key] = ordered_unique([str(name) for name in names])[:max_images_per_bucket]
+    return frozen
+
+
+def resolve_optional_input_path(path_value: str, *, base_dirs: Sequence[Path]) -> Path | None:
+    cleaned = path_value.strip()
+    if not cleaned:
+        return None
+    candidate = Path(cleaned)
+    if candidate.exists():
+        return candidate
+    for base_dir in base_dirs:
+        base_candidate = base_dir / cleaned
+        if base_candidate.exists():
+            return base_candidate
+    return candidate
+
+
 def resolve_review_manifest_inputs(
     *,
     trainer: NerfStudioTrainer,
     review_input_dir: Path,
     selected_tile_ids: Sequence[str],
     max_images_per_bucket: int,
+    frozen_review_camera_manifest_path: Path | None = None,
+    review_camera_set: str = "auto",
 ) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], dict[str, list[str]]]:
     tile_manifest_source = review_input_dir / "3dgs_tile_manifest.json"
     view_bucket_source = review_input_dir / "3dgs_view_buckets.json"
@@ -167,6 +212,12 @@ def resolve_review_manifest_inputs(
         selected_tile_ids=selected_tile_ids,
         max_images_per_bucket=max_images_per_bucket,
     )
+    if frozen_review_camera_manifest_path is not None and frozen_review_camera_manifest_path.exists():
+        review_images_by_bucket = load_frozen_review_images_by_bucket(
+            frozen_review_camera_manifest_path,
+            max_images_per_bucket=max_images_per_bucket,
+            camera_set=review_camera_set,
+        )
     return selected_subset, view_buckets, manifest_resolution, review_images_by_bucket
 
 
@@ -584,11 +635,22 @@ def main() -> None:
         if tile_id.strip()
     ]
     max_images_per_bucket = max(1, int(os.environ.get("QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET", "4") or 4))
+    review_camera_set = os.environ.get("QUALITY_REVIEW_CAMERA_SET", "auto")
+    frozen_review_camera_manifest_path = resolve_optional_input_path(
+        os.environ.get("FROZEN_REVIEW_CAMERA_MANIFEST", ""),
+        base_dirs=[
+            Path("/opt/ml/processing/input/review"),
+            model_input_dir,
+            colmap_input_dir,
+        ],
+    )
 
     logger.info("🚀 Starting tiled 3DGS quality review")
     logger.info("📦 Model input: %s", model_input_dir)
     logger.info("📁 COLMAP input: %s", colmap_input_dir)
     logger.info("📁 Output dir: %s", output_dir)
+    if frozen_review_camera_manifest_path is not None:
+        logger.info("📷 Frozen camera manifest: %s", frozen_review_camera_manifest_path)
 
     selected_tile_ids: list[str] = []
     trainer: NerfStudioTrainer | None = None
@@ -608,6 +670,8 @@ def main() -> None:
             review_input_dir=review_input_dir,
             selected_tile_ids=selected_tile_ids,
             max_images_per_bucket=max_images_per_bucket,
+            frozen_review_camera_manifest_path=frozen_review_camera_manifest_path,
+            review_camera_set=review_camera_set,
         )
         if not selected_tile_ids:
             selected_tile_ids = [str(tile.get("tile_id")) for tile in tile_manifest.get("tiles", []) if tile.get("tile_id")]

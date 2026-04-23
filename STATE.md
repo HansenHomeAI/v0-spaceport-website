@@ -1,7 +1,7 @@
 reason: geometry-first md1 tiled 3DGS reset from pinned ffef97e646046f204267ec30dd7dbf6f19027cad
 current_rung: R1_offline_merge_arbitration
 root_cause_classification: merge_bad
-live_compute_status: none; no SageMaker training or processing jobs launched from this branch
+live_compute_status: none; R1 render-backed review runner patched locally, no SageMaker processing launched yet from the new head
 branch: agent-90742618-md1-geometry-consistency
 base_commit: ffef97e646046f204267ec30dd7dbf6f19027cad
 head: committed branch tip; exact hash captured by git rev-parse HEAD and final proof
@@ -16,6 +16,6 @@ r0_inventory: complete; 7 tile splats, merged splat, merge report, tile manifest
 r1_result: raw_union retained 5103651/5103651; strict_core retained 4500379/5103651 with fallback_tile_count=2; support_weighted_overlap retained 4500379/5103651 with fallback_tile_count=2
 candidate_pair_top_rank: tile_02/tile_05; shared_assigned_images=64; boundary_support=52; eligible=true
 blocked_promotion_reason: fallback_tile_count remains >0 and render metrics are not yet available for comparative promotion
-next_unblocked_step: run render-backed R1 comparison on the frozen camera manifest; if support_weighted_overlap recovers less than 50% of boundary LPIPS gap versus strict_core, pivot to R2 training-time overlap consistency and scaffold-guided bounded pair retrain on tile_02/tile_05
+next_unblocked_step: push the frozen-camera R1 review runner patch, wait for CDK/Pages/3DGS image workflows on the exact head, then launch sequential R1 render-backed smoke processing for strict_core, support_weighted_overlap, and raw_union against the frozen smoke camera manifest
 owner_action_needed: none
-updated: 2026-04-23T13:19:09-06:00
+updated: 2026-04-23T15:06:57-06:00

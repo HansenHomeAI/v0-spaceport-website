@@ -359,6 +359,36 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(payload["ProcessingInputs"][1]["S3Input"]["S3Uri"], "s3://bucket/colmap")
         self.assertEqual(payload["Environment"]["QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET"], "4")
 
+    def test_create_quality_review_processing_payload_can_mount_frozen_and_baseline_manifests(self):
+        payload = benchmark.create_quality_review_processing_payload(
+            branch_name="agent-branch",
+            job_name="bench-123-quality",
+            image_uri="123.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:latest",
+            role_arn="arn:aws:iam::123:role/test",
+            model_artifact_s3_uri="s3://bucket/model.tar.gz",
+            colmap_s3_uri="s3://bucket/colmap",
+            output_s3_uri="s3://bucket/review",
+            environment={},
+            instance_type="ml.g5.2xlarge",
+            volume_size_gb=100,
+            max_runtime_seconds=7200,
+            review_camera_manifest_s3_uri="s3://bucket/review-input",
+            baseline_review_manifest_s3_uri="s3://bucket/baseline-review",
+        )
+
+        self.assertEqual(
+            [processing_input["InputName"] for processing_input in payload["ProcessingInputs"]],
+            ["model", "colmap", "review-manifest", "baseline-review"],
+        )
+        self.assertEqual(
+            payload["Environment"]["FROZEN_REVIEW_CAMERA_MANIFEST"],
+            "/opt/ml/processing/input/review/review_camera_manifest.json",
+        )
+        self.assertEqual(
+            payload["Environment"]["BASELINE_REVIEW_MANIFEST"],
+            "/opt/ml/processing/input/baseline-review/quality_review_manifest.json",
+        )
+
     def test_resolve_execution_context_accepts_explicit_role_image_and_output_without_branch_stack(self):
         original_find = benchmark.find_branch_ml_stack
         original_tag = benchmark.get_branch_ecr_tag
