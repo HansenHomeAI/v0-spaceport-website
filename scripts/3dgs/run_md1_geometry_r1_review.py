@@ -8,6 +8,7 @@ import json
 import subprocess
 import sys
 import tarfile
+import tempfile
 import time
 from pathlib import Path
 from typing import Any, Sequence
@@ -20,6 +21,7 @@ if str(SCRIPTS_3DGS_ROOT) not in sys.path:
 
 from run_tiled_3dgs_benchmark import (  # noqa: E402
     create_quality_review_processing_payload,
+    create_quality_review_training_payload,
     find_branch_ml_stack,
     get_branch_ecr_tag,
     get_current_branch,
@@ -29,6 +31,7 @@ from run_tiled_3dgs_benchmark import (  # noqa: E402
     run_command,
     sanitize_sagemaker_job_name,
     wait_for_processing_job,
+    wait_for_training_job,
 )
 
 
@@ -95,6 +98,25 @@ def create_variant_model_tarball(
 def s3_prefix_join(prefix: str, *parts: str) -> str:
     cleaned = [part.strip("/") for part in parts if part.strip("/")]
     return "/".join([normalize_s3_prefix(prefix), *cleaned])
+
+
+def upload_manifest_from_training_artifact(
+    *,
+    artifact_uri: str,
+    output_root_s3_uri: str,
+    variant: str,
+) -> str:
+    if not artifact_uri:
+        raise RuntimeError("Training job completed without a model artifact URI")
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_root = Path(tmp)
+        tarball = tmp_root / "model.tar.gz"
+        aws_cp(artifact_uri, tarball)
+        with tarfile.open(tarball, "r:gz") as archive:
+            archive.extract("quality_review_manifest.json", tmp_root)
+        baseline_prefix = s3_prefix_join(output_root_s3_uri, "baselines", variant)
+        aws_cp(tmp_root / "quality_review_manifest.json", f"{baseline_prefix}/quality_review_manifest.json")
+    return baseline_prefix
 
 
 def stage_review_inputs(
@@ -166,35 +188,67 @@ def run_review_jobs(
     poll_seconds: int,
     submit: bool,
     wait: bool,
+    execution_mode: str,
+    render_scale: float,
+    max_gaussians_per_view: int,
+    cull_margin: float,
+    min_gaussians_on_oom: int,
+    tile_ids: str,
 ) -> dict[str, Any]:
     jobs: dict[str, Any] = {}
     strict_output_uri = ""
+    strict_baseline_manifest_uri = ""
     for variant in variants:
         model_s3_uri = staged_variants[variant]["model_s3_uri"]
         output_s3_uri = s3_prefix_join(output_root_s3_uri, "outputs", variant)
-        baseline_s3_uri = strict_output_uri if strict_output_uri and variant != "strict_core" else ""
+        baseline_s3_uri = strict_baseline_manifest_uri if strict_baseline_manifest_uri and variant != "strict_core" else ""
         job_name = sanitize_sagemaker_job_name(f"md1-r1-{variant}-{int(time.time())}-quality")
-        payload = create_quality_review_processing_payload(
-            branch_name=branch_name,
-            job_name=job_name,
-            image_uri=image_uri,
-            role_arn=role_arn,
-            model_artifact_s3_uri=model_s3_uri,
-            colmap_s3_uri=colmap_s3_uri,
-            output_s3_uri=output_s3_uri,
-            environment={
-                "QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET": str(max_images_per_bucket),
-                "QUALITY_REVIEW_CAMERA_SET": camera_set,
-                "PYTHONUNBUFFERED": "1",
-            },
-            instance_type=instance_type,
-            volume_size_gb=volume_size_gb,
-            max_runtime_seconds=max_runtime_seconds,
-            review_camera_manifest_s3_uri=review_camera_manifest_s3_uri,
-            baseline_review_manifest_s3_uri=baseline_s3_uri,
-        )
+        environment = {
+            "QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET": str(max_images_per_bucket),
+            "QUALITY_REVIEW_CAMERA_SET": camera_set,
+            "QUALITY_REVIEW_RENDER_SCALE": str(render_scale),
+            "QUALITY_REVIEW_MAX_GAUSSIANS_PER_VIEW": str(max_gaussians_per_view),
+            "QUALITY_REVIEW_CULL_MARGIN": str(cull_margin),
+            "QUALITY_REVIEW_MIN_GAUSSIANS_ON_OOM": str(min_gaussians_on_oom),
+            "PYTHONUNBUFFERED": "1",
+        }
+        if tile_ids:
+            environment["QUALITY_REVIEW_TILE_IDS"] = tile_ids
+        if execution_mode == "training":
+            payload = create_quality_review_training_payload(
+                branch_name=branch_name,
+                job_name=job_name,
+                image_uri=image_uri,
+                role_arn=role_arn,
+                model_artifact_s3_uri=model_s3_uri,
+                colmap_s3_uri=colmap_s3_uri,
+                output_s3_uri=output_s3_uri,
+                environment=environment,
+                instance_type=instance_type,
+                volume_size_gb=volume_size_gb,
+                max_runtime_seconds=max_runtime_seconds,
+                review_camera_manifest_s3_uri=review_camera_manifest_s3_uri,
+                baseline_review_manifest_s3_uri=baseline_s3_uri,
+            )
+        else:
+            payload = create_quality_review_processing_payload(
+                branch_name=branch_name,
+                job_name=job_name,
+                image_uri=image_uri,
+                role_arn=role_arn,
+                model_artifact_s3_uri=model_s3_uri,
+                colmap_s3_uri=colmap_s3_uri,
+                output_s3_uri=output_s3_uri,
+                environment=environment,
+                instance_type=instance_type,
+                volume_size_gb=volume_size_gb,
+                max_runtime_seconds=max_runtime_seconds,
+                review_camera_manifest_s3_uri=review_camera_manifest_s3_uri,
+                baseline_review_manifest_s3_uri=baseline_s3_uri,
+            )
         jobs[variant] = {
             "job_name": job_name,
+            "execution_mode": execution_mode,
             "model_s3_uri": model_s3_uri,
             "output_s3_uri": output_s3_uri,
             "baseline_review_manifest_s3_uri": baseline_s3_uri,
@@ -205,19 +259,40 @@ def run_review_jobs(
         payload_path = Path("/tmp") / f"{job_name}.json"
         write_json(payload_path, payload)
         try:
-            run_command(["aws", "sagemaker", "create-processing-job", "--cli-input-json", f"file://{payload_path}"])
+            if execution_mode == "training":
+                run_command(["aws", "sagemaker", "create-training-job", "--cli-input-json", f"file://{payload_path}"])
+            else:
+                run_command(["aws", "sagemaker", "create-processing-job", "--cli-input-json", f"file://{payload_path}"])
         finally:
             payload_path.unlink(missing_ok=True)
         jobs[variant]["submitted"] = True
         if wait:
-            status = wait_for_processing_job(job_name, poll_seconds=poll_seconds)
-            jobs[variant]["status"] = {
-                "ProcessingJobStatus": status.get("ProcessingJobStatus"),
-                "ProcessingStartTime": str(status.get("ProcessingStartTime")),
-                "ProcessingEndTime": str(status.get("ProcessingEndTime")),
-            }
+            if execution_mode == "training":
+                status = wait_for_training_job(job_name, poll_seconds=poll_seconds)
+                jobs[variant]["status"] = {
+                    "TrainingJobStatus": status.get("TrainingJobStatus"),
+                    "TrainingStartTime": str(status.get("TrainingStartTime")),
+                    "TrainingEndTime": str(status.get("TrainingEndTime")),
+                }
+                jobs[variant]["model_artifacts_s3_uri"] = status.get("ModelArtifacts", {}).get("S3ModelArtifacts", "")
+            else:
+                status = wait_for_processing_job(job_name, poll_seconds=poll_seconds)
+                jobs[variant]["status"] = {
+                    "ProcessingJobStatus": status.get("ProcessingJobStatus"),
+                    "ProcessingStartTime": str(status.get("ProcessingStartTime")),
+                    "ProcessingEndTime": str(status.get("ProcessingEndTime")),
+                }
             if variant == "strict_core":
                 strict_output_uri = output_s3_uri
+                if execution_mode == "training":
+                    artifact_uri = jobs[variant].get("model_artifacts_s3_uri", "")
+                    strict_baseline_manifest_uri = upload_manifest_from_training_artifact(
+                        artifact_uri=artifact_uri,
+                        output_root_s3_uri=output_root_s3_uri,
+                        variant=variant,
+                    )
+                else:
+                    strict_baseline_manifest_uri = strict_output_uri
     return jobs
 
 
@@ -226,6 +301,19 @@ def download_review_outputs(*, audit_root: Path, jobs: dict[str, Any]) -> None:
     for variant, job in jobs.items():
         variant_output = output_root / variant
         variant_output.mkdir(parents=True, exist_ok=True)
+        artifact_uri = job.get("model_artifacts_s3_uri")
+        if artifact_uri:
+            tarball = variant_output / "model.tar.gz"
+            aws_cp(str(artifact_uri), tarball)
+            with tarfile.open(tarball, "r:gz") as archive:
+                for file_name in ("quality_review_manifest.json", "review_comparison.json"):
+                    try:
+                        archive.extract(file_name, variant_output)
+                    except KeyError:
+                        if file_name == "quality_review_manifest.json":
+                            raise RuntimeError(f"Training artifact missing {file_name}: {artifact_uri}")
+            tarball.unlink(missing_ok=True)
+            continue
         for file_name in ("quality_review_manifest.json", "review_comparison.json"):
             source_uri = f"{normalize_s3_prefix(job['output_s3_uri'])}/{file_name}"
             result = subprocess.run(
@@ -248,10 +336,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--variant", action="append", choices=DEFAULT_VARIANTS, default=[])
     parser.add_argument("--max-images-per-bucket", type=int, default=4)
     parser.add_argument("--camera-set", default="smoke")
+    parser.add_argument("--execution-mode", choices=("processing", "training"), default="processing")
     parser.add_argument("--instance-type", default="ml.g5.2xlarge")
     parser.add_argument("--volume-size-gb", type=int, default=100)
     parser.add_argument("--max-runtime-seconds", type=int, default=7200)
     parser.add_argument("--poll-seconds", type=int, default=60)
+    parser.add_argument("--render-scale", type=float, default=0.25)
+    parser.add_argument("--max-gaussians-per-view", type=int, default=500_000)
+    parser.add_argument("--cull-margin", type=float, default=0.5)
+    parser.add_argument("--min-gaussians-on-oom", type=int, default=75_000)
+    parser.add_argument("--tile-ids", default="tile_02,tile_05")
     parser.add_argument("--submit", action="store_true")
     parser.add_argument("--wait", action="store_true")
     parser.add_argument("--force-tarballs", action="store_true")
@@ -297,6 +391,12 @@ def main() -> int:
         poll_seconds=args.poll_seconds,
         submit=args.submit,
         wait=args.wait,
+        execution_mode=args.execution_mode,
+        render_scale=args.render_scale,
+        max_gaussians_per_view=args.max_gaussians_per_view,
+        cull_margin=args.cull_margin,
+        min_gaussians_on_oom=args.min_gaussians_on_oom,
+        tile_ids=args.tile_ids,
     )
     if args.submit and args.wait and not args.skip_output_download:
         download_review_outputs(audit_root=args.audit_root, jobs=jobs)
@@ -310,6 +410,14 @@ def main() -> int:
         "colmap_s3_uri": args.colmap_s3_uri,
         "output_root_s3_uri": output_root_s3_uri,
         "review_camera_manifest_s3_uri": staged["review_camera_manifest_s3_uri"],
+        "execution_mode": args.execution_mode,
+        "render_settings": {
+            "render_scale": args.render_scale,
+            "max_gaussians_per_view": args.max_gaussians_per_view,
+            "cull_margin": args.cull_margin,
+            "min_gaussians_on_oom": args.min_gaussians_on_oom,
+            "tile_ids": args.tile_ids,
+        },
         "variants": variants,
         "staged_inputs": staged["variants"],
         "jobs": jobs,

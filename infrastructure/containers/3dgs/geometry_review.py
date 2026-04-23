@@ -214,6 +214,7 @@ def build_review_comparison(
                 "image_name": view.get("image_name"),
                 "reference_image": view.get("reference_image"),
                 "candidate_render": view.get("merged_render"),
+                "candidate_no_background_render": view.get("merged_no_background_render"),
                 "boundary_composite": view.get("boundary_composite"),
                 "tile_renders": view.get("boundary_tile_renders", []),
             }

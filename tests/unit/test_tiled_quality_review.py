@@ -159,9 +159,12 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
                 review_views=review_views,
                 max_images_per_bucket=4,
                 merged_background_present=True,
+                render_settings=module.RenderSettings(render_scale=0.5, max_gaussians_per_view=500_000),
             )
 
             self.assertEqual(manifest["promotion_readiness"]["status"], "ready_for_comparison")
+            self.assertEqual(manifest["render_settings"]["render_scale"], 0.5)
+            self.assertEqual(manifest["render_settings"]["max_gaussians_per_view"], 500_000)
             self.assertTrue(manifest["promotion_readiness"]["review_buckets_complete"])
             self.assertEqual(
                 manifest["actual_bucket_counts"],
@@ -199,6 +202,7 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
                 ],
                 max_images_per_bucket=4,
                 merged_background_present=False,
+                render_settings=module.RenderSettings(),
             )
 
             self.assertEqual(manifest["promotion_readiness"]["status"], "blocked")

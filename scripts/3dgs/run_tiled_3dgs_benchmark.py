@@ -669,6 +669,124 @@ def create_quality_review_processing_payload(
     }
 
 
+def create_quality_review_training_payload(
+    *,
+    branch_name: str,
+    job_name: str,
+    image_uri: str,
+    role_arn: str,
+    model_artifact_s3_uri: str,
+    colmap_s3_uri: str,
+    output_s3_uri: str,
+    environment: Dict[str, str],
+    instance_type: str,
+    volume_size_gb: int,
+    max_runtime_seconds: int,
+    review_camera_manifest_s3_uri: str = "",
+    baseline_review_manifest_s3_uri: str = "",
+) -> dict:
+    resolved_environment = {
+        "MODEL_INPUT_DIR": "/opt/ml/input/data/model",
+        "COLMAP_INPUT_DIR": "/opt/ml/input/data/colmap",
+        "OUTPUT_DIR": "/opt/ml/model",
+        **environment,
+    }
+    input_channels = [
+        {
+            "ChannelName": "model",
+            "DataSource": {
+                "S3DataSource": {
+                    "S3DataType": "S3Prefix",
+                    "S3Uri": model_artifact_s3_uri,
+                    "S3DataDistributionType": "FullyReplicated",
+                }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None",
+        },
+        {
+            "ChannelName": "colmap",
+            "DataSource": {
+                "S3DataSource": {
+                    "S3DataType": "S3Prefix",
+                    "S3Uri": colmap_s3_uri,
+                    "S3DataDistributionType": "FullyReplicated",
+                }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None",
+        },
+    ]
+    if review_camera_manifest_s3_uri:
+        input_channels.append(
+            {
+                "ChannelName": "review-manifest",
+                "DataSource": {
+                    "S3DataSource": {
+                        "S3DataType": "S3Prefix",
+                        "S3Uri": review_camera_manifest_s3_uri,
+                        "S3DataDistributionType": "FullyReplicated",
+                    }
+                },
+                "CompressionType": "None",
+                "RecordWrapperType": "None",
+            }
+        )
+        resolved_environment.setdefault(
+            "FROZEN_REVIEW_CAMERA_MANIFEST",
+            "/opt/ml/input/data/review-manifest/review_camera_manifest.json",
+        )
+    if baseline_review_manifest_s3_uri:
+        input_channels.append(
+            {
+                "ChannelName": "baseline-review",
+                "DataSource": {
+                    "S3DataSource": {
+                        "S3DataType": "S3Prefix",
+                        "S3Uri": baseline_review_manifest_s3_uri,
+                        "S3DataDistributionType": "FullyReplicated",
+                    }
+                },
+                "CompressionType": "None",
+                "RecordWrapperType": "None",
+            }
+        )
+        resolved_environment.setdefault(
+            "BASELINE_REVIEW_MANIFEST",
+            "/opt/ml/input/data/baseline-review/quality_review_manifest.json",
+        )
+
+    return {
+        "TrainingJobName": job_name,
+        "RoleArn": role_arn,
+        "AlgorithmSpecification": {
+            "TrainingImage": image_uri,
+            "TrainingInputMode": "File",
+            "ContainerEntrypoint": ["python3", "/opt/ml/code/run_tiled_quality_review.py"],
+        },
+        "InputDataConfig": input_channels,
+        "OutputDataConfig": {
+            "S3OutputPath": output_s3_uri,
+        },
+        "ResourceConfig": {
+            "InstanceType": instance_type,
+            "InstanceCount": 1,
+            "VolumeSizeInGB": volume_size_gb,
+        },
+        "StoppingCondition": {
+            "MaxRuntimeInSeconds": max_runtime_seconds,
+        },
+        "Environment": resolved_environment,
+        "Tags": [
+            {"Key": "Project", "Value": "Spaceport"},
+            {"Key": "Component", "Value": "3DGS"},
+            {"Key": "Benchmark", "Value": "true"},
+            {"Key": "Branch", "Value": branch_name},
+            {"Key": "Stage", "Value": "quality-review"},
+        ],
+    }
+
+
 def wait_for_training_job(job_name: str, *, poll_seconds: int) -> dict:
     while True:
         status = aws_json("sagemaker", "describe-training-job", "--training-job-name", job_name)

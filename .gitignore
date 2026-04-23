@@ -75,6 +75,7 @@ logs/*.jpg
 logs/*.jpeg
 logs/audit/**/model/
 logs/audit/**/r1_review_inputs/
+logs/audit/**/aws_review_jobs/
 logs/audit/**/*.tar.gz
 logs/audit/**/*.ply
 logs/audit/**/*.webp
