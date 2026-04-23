@@ -65,3 +65,4 @@
 [2026-04-23T13:13:00-0600] r1-offline-merge -> compared raw_union, strict_core, support_weighted_overlap from saved tile splats -> fallback_tile_count still 2 for strict/support, promotion blocked
 [2026-04-23T13:18:39-0600] local-tests -> geometry review, tile pipeline, quality review, benchmark, and tiled dispatcher unit suites green (58 tests) -> push meaningful work and monitor workflows
 [2026-04-23T13:17:34-0600] broader-unit-discover -> targeted tiled dispatcher suite fixed and green; full unittest discover still blocked by unrelated local deps/preexisting tests (pandas/botocore missing, SOGS/explore expectations) -> continue with targeted gate
+[2026-04-23T13:27:19-0600] pages-preview -> manual Pages dispatch failed resolving shared ML fallback stack in UPDATE_ROLLBACK_COMPLETE -> patch Pages workflow ready-state tolerance and rerun preview gate
