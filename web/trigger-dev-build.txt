@@ -1,3 +1,4 @@
+2026-04-23T19:24:59Z rerun preview after allowing rollback-complete shared ML outputs
 2026-04-23T19:17:57Z trigger preview build for md1 geometry consistency audit gates
 2026-04-16T17:20:00Z trigger preview build for multi-tile low-memory 2k promotion ladder
 2026-04-16T06:24:00Z trigger preview build for aligned in-container tiled training timeout
