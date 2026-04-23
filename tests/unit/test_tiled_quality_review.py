@@ -60,6 +60,7 @@ def make_view(bucket: str, *, psnr: float = 30.0) -> dict:
     return {
         "bucket": bucket,
         "metrics": {"psnr": psnr, "ssim": 0.92, "lpips": 0.08},
+        "metrics_no_background": {"psnr": psnr - 0.5, "ssim": 0.90, "lpips": 0.10},
         "sky_metrics": {
             "score": 0.81,
             "luminance": 0.74,
@@ -105,6 +106,7 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
                 {"near_detail": 4, "boundary": 4, "horizon": 4},
             )
             self.assertEqual(manifest["bucket_medians"]["near_detail"]["psnr"], 31.5)
+            self.assertEqual(manifest["no_background_bucket_medians"]["near_detail"]["psnr"], 31.0)
             self.assertIn(
                 "merged review included promoted background skybox",
                 manifest["promotion_readiness"]["notes"],
@@ -166,7 +168,14 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
                 "horizon": {"psnr": 28.0, "ssim": 0.88, "lpips": 0.12},
             },
             "sky_bucket_medians": {"horizon": {"score": 0.80}},
-            "views": [{"bucket": "boundary", "image_name": "a.jpg", "merged_render": "baseline.png"}],
+            "views": [
+                {
+                    "bucket": "boundary",
+                    "image_name": "a.jpg",
+                    "merged_render": "baseline.png",
+                    "merged_no_background_render": "baseline_no_bg.png",
+                }
+            ],
         }
         candidate = {
             "model_artifact": "s3://candidate/model.tar.gz",
@@ -178,7 +187,14 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
             },
             "sky_bucket_medians": {"horizon": {"score": 0.60}},
             "merge_report": {"fallback_tile_count": 1, "retain_all_tile_count": 0, "tiles": []},
-            "views": [{"bucket": "boundary", "image_name": "a.jpg", "merged_render": "candidate.png"}],
+            "views": [
+                {
+                    "bucket": "boundary",
+                    "image_name": "a.jpg",
+                    "merged_render": "candidate.png",
+                    "merged_no_background_render": "candidate_no_bg.png",
+                }
+            ],
         }
 
         comparison = module.compare_review_manifests(
@@ -193,6 +209,10 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
         self.assertIn("horizon_sky_score_regression", codes)
         self.assertIn("merge_fallback_tile_count_nonzero", codes)
         self.assertEqual(comparison["side_by_side_render_paths"][0]["baseline_render"], "baseline.png")
+        self.assertEqual(
+            comparison["side_by_side_render_paths"][0]["candidate_no_background_render"],
+            "candidate_no_bg.png",
+        )
 
     def test_load_frozen_review_images_by_bucket_accepts_label_keys(self):
         module = load_module_with_stubs()

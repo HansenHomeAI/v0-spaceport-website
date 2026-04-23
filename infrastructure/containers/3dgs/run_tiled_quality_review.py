@@ -572,6 +572,8 @@ def compare_review_manifests(
                 "image_name": key[1],
                 "baseline_render": baseline_view.get("merged_render"),
                 "candidate_render": candidate_view.get("merged_render"),
+                "baseline_no_background_render": baseline_view.get("merged_no_background_render"),
+                "candidate_no_background_render": candidate_view.get("merged_no_background_render"),
                 "candidate_boundary_composite": candidate_view.get("boundary_composite"),
             }
         )
@@ -626,6 +628,7 @@ def build_review_manifest(
     merged_background_present: bool,
 ) -> dict[str, Any]:
     bucket_medians: dict[str, dict[str, float | None]] = {}
+    no_background_bucket_medians: dict[str, dict[str, float | None]] = {}
     sky_bucket_medians: dict[str, dict[str, float | None]] = {}
     for _bucket_name, bucket_label_value in DEFAULT_BUCKET_ORDER:
         bucket_views = [view for view in review_views if view["bucket"] == bucket_label_value]
@@ -633,6 +636,11 @@ def build_review_manifest(
             "psnr": median_or_none([view["metrics"]["psnr"] for view in bucket_views]),
             "ssim": median_or_none([view["metrics"]["ssim"] for view in bucket_views]),
             "lpips": median_or_none([view["metrics"]["lpips"] for view in bucket_views]),
+        }
+        no_background_bucket_medians[bucket_label_value] = {
+            "psnr": median_or_none([(view.get("metrics_no_background") or {}).get("psnr") for view in bucket_views]),
+            "ssim": median_or_none([(view.get("metrics_no_background") or {}).get("ssim") for view in bucket_views]),
+            "lpips": median_or_none([(view.get("metrics_no_background") or {}).get("lpips") for view in bucket_views]),
         }
         sky_bucket_medians[bucket_label_value] = {
             "score": median_or_none([view["sky_metrics"]["score"] for view in bucket_views]),
@@ -685,6 +693,7 @@ def build_review_manifest(
         "review_camera_manifest": str(review_camera_manifest_path),
         "views": list(review_views),
         "bucket_medians": bucket_medians,
+        "no_background_bucket_medians": no_background_bucket_medians,
         "sky_bucket_medians": sky_bucket_medians,
         "promotion_readiness": {
             "status": promotion_status,
@@ -811,6 +820,7 @@ def main() -> None:
         review_root = output_dir / "quality_review"
         reference_root = review_root / "reference"
         merged_root = review_root / "merged"
+        merged_no_background_root = review_root / "merged_no_background"
         tiles_root = review_root / "tiles"
         composites_root = review_root / "boundary_composites"
         camera_manifest_entries: list[dict[str, Any]] = []
@@ -834,8 +844,15 @@ def main() -> None:
                 merged_foreground, merged_alpha = render_gaussian_view(merged_model, frame, transforms, device)
                 merged_background = render_skybox_view(merged_background_path, frame, transforms)
                 merged_final = composite_render(merged_foreground, merged_alpha, merged_background)
+                merged_no_background = composite_render(
+                    merged_foreground,
+                    merged_alpha,
+                    np.zeros_like(merged_foreground, dtype=np.float32),
+                )
                 merged_render_path = merged_root / bucket_label_value / f"{Path(image_name).stem}.png"
                 saved_merged_path = save_rgb_image(merged_final, merged_render_path)
+                merged_no_background_path = merged_no_background_root / bucket_label_value / f"{Path(image_name).stem}.png"
+                saved_merged_no_background_path = save_rgb_image(merged_no_background, merged_no_background_path)
 
                 metrics = compute_metrics(
                     merged_final,
@@ -843,15 +860,25 @@ def main() -> None:
                     lpips_model=lpips_model,
                     device=device,
                 )
+                metrics_no_background = compute_metrics(
+                    merged_no_background,
+                    reference_image,
+                    lpips_model=lpips_model,
+                    device=device,
+                )
                 sky_metrics = compute_sky_image_metrics((merged_final * 255.0).astype(np.uint8))
+                sky_metrics_no_background = compute_sky_image_metrics((merged_no_background * 255.0).astype(np.uint8))
 
                 view_entry: dict[str, Any] = {
                     "bucket": bucket_label_value,
                     "image_name": image_name,
                     "reference_image": saved_reference_path,
                     "merged_render": saved_merged_path,
+                    "merged_no_background_render": saved_merged_no_background_path,
                     "metrics": metrics,
+                    "metrics_no_background": metrics_no_background,
                     "sky_metrics": sky_metrics,
+                    "sky_metrics_no_background": sky_metrics_no_background,
                 }
 
                 boundary_tile_ids: list[str] = []
