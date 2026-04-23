@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import subprocess
 import sys
 import tarfile
 import time
@@ -24,15 +23,16 @@ from run_tiled_3dgs_benchmark import (  # noqa: E402
     get_branch_ecr_tag,
     get_current_branch,
     get_sagemaker_role_arn,
+    get_stack_outputs,
     normalize_s3_prefix,
     run_command,
     sanitize_sagemaker_job_name,
-    stack_outputs,
     wait_for_processing_job,
 )
 
 
 DEFAULT_COLMAP_S3_URI = "s3://spaceport-ml-processing-staging/manual-validations/md1p27eba1k-1776107310/colmap"
+DEFAULT_SHARED_ML_STACK_NAME = "SpaceportMLPipelineStagingStack"
 DEFAULT_VARIANTS = ("strict_core", "support_weighted_overlap", "raw_union")
 TOP_LEVEL_METADATA_FILES = (
     "training_metadata.json",
@@ -45,23 +45,20 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
-def run_capture(command: Sequence[str]) -> str:
-    result = subprocess.run(list(command), check=True, text=True, capture_output=True)
-    return result.stdout.strip()
-
-
 def aws_cp(source: str | Path, target: str | Path) -> None:
     run_command(["aws", "s3", "cp", str(source), str(target)])
 
 
-def resolve_stack_and_outputs(branch_name: str) -> tuple[str, dict[str, str]]:
-    stack_name, outputs = find_branch_ml_stack(branch_name)
-    if "GaussianRepositoryUri" not in outputs or "MLBucketName" not in outputs:
-        raw_stack = json.loads(
-            run_capture(["aws", "cloudformation", "describe-stacks", "--stack-name", stack_name, "--output", "json"])
-        )
-        outputs = stack_outputs(raw_stack["Stacks"][0])
-    return stack_name, outputs
+def resolve_stack_and_outputs(branch_name: str, *, stack_name: str = "") -> tuple[str, dict[str, str], str]:
+    if stack_name:
+        resolved_stack_name, outputs = get_stack_outputs(stack_name)
+        return resolved_stack_name, outputs, "explicit_stack"
+    try:
+        resolved_stack_name, outputs = find_branch_ml_stack(branch_name)
+        return resolved_stack_name, outputs, "branch_stack"
+    except RuntimeError:
+        resolved_stack_name, outputs = get_stack_outputs(DEFAULT_SHARED_ML_STACK_NAME)
+        return resolved_stack_name, outputs, "shared_staging_fallback"
 
 
 def add_path_to_tar(archive: tarfile.TarFile, source_path: Path, arcname: str) -> None:
@@ -236,6 +233,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--audit-root", type=Path, default=REPO_ROOT / "logs" / "audit" / "md1-1k-full-r2")
     parser.add_argument("--branch", default="")
+    parser.add_argument("--stack-name", default="")
     parser.add_argument("--colmap-s3-uri", default=DEFAULT_COLMAP_S3_URI)
     parser.add_argument("--output-root-s3-uri", default="")
     parser.add_argument("--variant", action="append", choices=DEFAULT_VARIANTS, default=[])
@@ -258,7 +256,7 @@ def main() -> int:
     branch_name = args.branch or get_current_branch()
     variants = args.variant or list(DEFAULT_VARIANTS)
     timestamp = int(time.time())
-    stack_name, outputs = resolve_stack_and_outputs(branch_name)
+    stack_name, outputs, stack_resolution = resolve_stack_and_outputs(branch_name, stack_name=args.stack_name)
     role_arn = get_sagemaker_role_arn(stack_name)
     image_uri = f"{outputs['GaussianRepositoryUri']}:{get_branch_ecr_tag(branch_name)}"
     output_root_s3_uri = args.output_root_s3_uri or (
@@ -295,6 +293,7 @@ def main() -> int:
     summary = {
         "branch": branch_name,
         "stack_name": stack_name,
+        "stack_resolution": stack_resolution,
         "image_uri": image_uri,
         "role_arn": role_arn,
         "colmap_s3_uri": args.colmap_s3_uri,

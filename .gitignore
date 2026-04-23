@@ -74,8 +74,13 @@ logs/*.png
 logs/*.jpg
 logs/*.jpeg
 logs/audit/**/model/
+logs/audit/**/r1_review_inputs/
+logs/audit/**/*.tar.gz
 logs/audit/**/*.ply
 logs/audit/**/*.webp
+logs/audit/**/*.png
+logs/audit/**/*.jpg
+logs/audit/**/*.jpeg
 .next/
 .vercel/
 web/.next/
