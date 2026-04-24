@@ -3,7 +3,7 @@ current_rung: R2 bounded adjacent-pair retrain on tile_02/tile_05
 root_cause_classification: tile_training_bad
 live_compute_status: SageMaker training job md1-r2-pair-1776991746-tiled InProgress for full-quality bounded tile_02/tile_05 retrain; latest CDK and Pages workflows are green; no full-scene training spend active
 current_branch: agent-53821974-md1-geometry-consistency
-current_head_at_state_write: 5d17ae3c405291ad2336f4296431579650e0e831
+current_head_at_state_write: 93b3d81f0975b737646b4e5482b6608a6c0f3c7f plus local absolute-quality floor patch
 base_branch: agent-86580563-hierarchical-splat-merge-plan
 base_commit: ffef97e646046f204267ec30dd7dbf6f19027cad
 automation:
@@ -64,7 +64,9 @@ review_gate_delta:
   embedded_pose_smoke_medians: near_detail_psnr=6.934, boundary_psnr=9.628, horizon_psnr=15.531, boundary_lpips=0.929
   launcher_baseline_review_input_support_commit: 5d17ae3c405291ad2336f4296431579650e0e831
   launcher_frozen_camera_review_input_support_commit: 5d17ae3c405291ad2336f4296431579650e0e831
+  local_absolute_quality_floor_gate: blocks ready_for_manual_signoff when near_detail/boundary/horizon median PSNR or LPIPS are below conservative spatial-quality floors
+  local_quality_floor_tests: py_compile plus 65 targeted geometry/tile/review tests green
   r2_training_target: tile_02/tile_05 using full-quality bounded scope, scaffold enabled, merge_mode=support_weighted_overlap, no proof downscale
 next_unblocked_step: monitor md1-r2-pair-1776991746-tiled for useful artifact formation, stop if the run becomes opaque or low-signal, then run frozen 4/4/4 comparative review against the saved R1a baseline manifest
 owner_action_needed: none
-updated: 2026-04-24T00:49:31Z
+updated: 2026-04-24T00:53:29Z

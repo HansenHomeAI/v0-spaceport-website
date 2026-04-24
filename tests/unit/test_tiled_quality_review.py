@@ -228,6 +228,45 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
             manifest["promotion_readiness"]["notes"],
         )
 
+    def test_build_review_manifest_blocks_absolute_quality_floor_failures(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            review_camera_manifest_path = root / "review_camera_manifest.json"
+            review_camera_manifest_path.write_text("{}", encoding="utf-8")
+
+            review_views = []
+            review_images_by_bucket = {}
+            for bucket_key, bucket_label in module.DEFAULT_BUCKET_ORDER:
+                review_images_by_bucket[bucket_key] = [f"{bucket_label}_{index}.png" for index in range(4)]
+                for _index in range(4):
+                    view = make_view(bucket_label, psnr=30.0)
+                    if bucket_label == "near_detail":
+                        view["metrics"] = {"psnr": 7.0, "ssim": 0.20, "lpips": 1.0}
+                    review_views.append(view)
+
+            manifest = module.build_review_manifest(
+                model_tarball=root / "model.tar.gz",
+                selected_tile_ids=["tile_02", "tile_05"],
+                manifest_resolution={"source_mode": "native_3dgs_manifests"},
+                merge_report={"retain_all_tile_count": 0, "fallback_tile_count": 0},
+                review_images_by_bucket=review_images_by_bucket,
+                review_camera_manifest_path=review_camera_manifest_path,
+                review_views=review_views,
+                max_images_per_bucket=4,
+                merged_background_present=False,
+            )
+
+        codes = {reason["code"] for reason in manifest["absolute_quality_block_reasons"]}
+        self.assertEqual(manifest["promotion_readiness"]["status"], "blocked")
+        self.assertIn("absolute_psnr_floor_not_met", codes)
+        self.assertIn("absolute_lpips_floor_not_met", codes)
+        self.assertIn(
+            "merged review did not meet absolute spatial quality floors",
+            manifest["promotion_readiness"]["notes"],
+        )
+
     def test_compare_review_manifests_blocks_metric_regressions_and_merge_fallbacks(self):
         module = load_module_with_stubs()
 

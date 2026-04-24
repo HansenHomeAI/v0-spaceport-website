@@ -53,6 +53,11 @@ PROMOTION_THRESHOLDS = {
     "boundary": {"psnr_gain": 0.5, "ssim_gain": 0.01, "lpips_drop": 0.025},
     "horizon": {"psnr_drop": 0.75, "ssim_drop": 0.012, "lpips_rise": 0.03, "sky_score_drop_ratio": 0.10},
 }
+ABSOLUTE_REVIEW_QUALITY_FLOORS = {
+    "near_detail": {"min_psnr": 10.0, "max_lpips": 0.90},
+    "boundary": {"min_psnr": 12.0, "max_lpips": 0.90},
+    "horizon": {"min_psnr": 10.0, "max_lpips": 0.90},
+}
 DEFAULT_RENDER_MAX_GAUSSIANS_PER_VIEW = 900_000
 DEFAULT_RENDER_CULL_MARGIN = 0.50
 DEFAULT_RENDER_MIN_GAUSSIANS_ON_OOM = 75_000
@@ -760,6 +765,34 @@ def _metric_delta(candidate: float | None, baseline: float | None) -> float | No
     return float(candidate - baseline)
 
 
+def absolute_quality_block_reasons(
+    bucket_medians: Mapping[str, Mapping[str, Any]],
+    *,
+    floors: Mapping[str, Mapping[str, float]] | None = None,
+) -> list[dict[str, Any]]:
+    floors = floors or ABSOLUTE_REVIEW_QUALITY_FLOORS
+    block_reasons: list[dict[str, Any]] = []
+    for bucket_name, bucket_floors in floors.items():
+        metrics = bucket_medians.get(bucket_name, {}) or {}
+        psnr = _as_float_or_none(metrics.get("psnr"))
+        lpips_value = _as_float_or_none(metrics.get("lpips"))
+        min_psnr = float(bucket_floors.get("min_psnr", 0.0))
+        max_lpips = float(bucket_floors.get("max_lpips", float("inf")))
+        if psnr is None:
+            block_reasons.append({"code": "absolute_psnr_missing", "bucket": bucket_name, "threshold": min_psnr})
+        elif psnr < min_psnr:
+            block_reasons.append(
+                {"code": "absolute_psnr_floor_not_met", "bucket": bucket_name, "value": psnr, "threshold": min_psnr}
+            )
+        if lpips_value is None:
+            block_reasons.append({"code": "absolute_lpips_missing", "bucket": bucket_name, "threshold": max_lpips})
+        elif lpips_value > max_lpips:
+            block_reasons.append(
+                {"code": "absolute_lpips_floor_not_met", "bucket": bucket_name, "value": lpips_value, "threshold": max_lpips}
+            )
+    return block_reasons
+
+
 def compare_review_manifests(
     *,
     baseline_manifest: Mapping[str, Any],
@@ -852,6 +885,7 @@ def compare_review_manifests(
         block_reasons.append({"code": "merge_fallback_tile_count_nonzero", "fallback_tile_count": fallback_tile_count})
     if retain_all_tile_count > 0:
         block_reasons.append({"code": "merge_retain_all_tile_count_nonzero", "retain_all_tile_count": retain_all_tile_count})
+    block_reasons.extend(absolute_quality_block_reasons(candidate_medians))
 
     baseline_views = {
         (view.get("bucket"), view.get("image_name")): view
@@ -1013,6 +1047,10 @@ def build_review_manifest(
     if blank_or_flat_count:
         promotion_notes.append(f"merged review produced blank or flat renders on {blank_or_flat_count} views")
         promotion_status = "blocked"
+    absolute_quality_reasons = absolute_quality_block_reasons(bucket_medians)
+    if absolute_quality_reasons:
+        promotion_status = "blocked"
+        promotion_notes.append("merged review did not meet absolute spatial quality floors")
 
     return {
         "version": "1.0.0",
@@ -1047,6 +1085,8 @@ def build_review_manifest(
             "rgb_std_median": median_or_none([health.get("rgb_std") for health in render_health_entries]),
             "dynamic_range_median": median_or_none([health.get("dynamic_range") for health in render_health_entries]),
         },
+        "absolute_quality_floors": ABSOLUTE_REVIEW_QUALITY_FLOORS,
+        "absolute_quality_block_reasons": absolute_quality_reasons,
         "promotion_readiness": {
             "status": promotion_status,
             "review_buckets_complete": review_buckets_complete,
