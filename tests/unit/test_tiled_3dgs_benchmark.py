@@ -311,6 +311,15 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
 
         self.assertEqual(env["TRAINING_PROOF_PROFILE"], "custom_profile")
 
+    def test_apply_training_eval_suppression_preserves_explicit_overrides(self):
+        env = {"TRAINING_STEPS_PER_EVAL_IMAGE": "300"}
+
+        benchmark.apply_training_eval_suppression(env, max_iterations=12000)
+
+        self.assertEqual(env["TRAINING_STEPS_PER_EVAL_IMAGE"], "300")
+        self.assertEqual(env["TRAINING_STEPS_PER_EVAL_ALL_IMAGES"], "12001")
+        self.assertEqual(env["TRAINING_STEPS_PER_SAVE"], "12001")
+
     def test_build_training_environment_allows_explicit_vis_override_for_tiny_runs(self):
         env = benchmark.build_training_environment(
             training_mode="leaf_tile",

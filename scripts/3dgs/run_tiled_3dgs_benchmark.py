@@ -253,6 +253,10 @@ def apply_proof_profile(
         env.setdefault("TRAINING_MAX_GAUSS_RATIO", QUALITY_GATE_MULTI_TILE_MAX_GAUSS_RATIO)
         stop_split_at = QUALITY_GATE_MULTI_TILE_STOP_SPLIT_AT
     env.setdefault("TRAINING_STOP_SPLIT_AT", str(min(max_iterations, stop_split_at)))
+    apply_training_eval_suppression(env, max_iterations=max_iterations)
+
+
+def apply_training_eval_suppression(env: Dict[str, str], *, max_iterations: int) -> None:
     suppressed_step = str(max_iterations + 1)
     env.setdefault("TRAINING_STEPS_PER_EVAL_IMAGE", suppressed_step)
     env.setdefault("TRAINING_STEPS_PER_EVAL_ALL_IMAGES", suppressed_step)
@@ -996,6 +1000,14 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Optional proof-run environment profile. Defaults to quality_gate_low_memory for single-job runs with review.",
     )
+    parser.add_argument(
+        "--suppress-training-eval",
+        action="store_true",
+        help=(
+            "Set train-time eval/save intervals to max_iterations+1 without enabling the low-memory proof profile. "
+            "Explicit --env values for the same keys still win."
+        ),
+    )
     parser.add_argument("--review-instance-type", default=DEFAULT_INSTANCE_TYPE)
     parser.add_argument("--review-volume-size-gb", type=int, default=DEFAULT_VOLUME_SIZE_GB)
     parser.add_argument("--review-max-runtime-seconds", type=int, default=DEFAULT_REVIEW_MAX_RUNTIME_SECONDS)
@@ -1113,6 +1125,8 @@ def main() -> int:
         max_tiles=args.max_tiles,
     )
     training_env_overrides = {"MERGE_MODE": args.merge_mode, **parse_env(args.env)}
+    if args.suppress_training_eval:
+        apply_training_eval_suppression(training_env_overrides, max_iterations=args.tile_max_iterations)
     if args.scaffold_artifact_s3_uri:
         training_env_overrides.setdefault("GLOBAL_SCAFFOLD_SOURCE_DIR", "/opt/ml/input/data/scaffold")
 
@@ -1152,6 +1166,7 @@ def main() -> int:
         "proof_profile": resolved_proof_profile,
         "training_max_runtime_seconds": args.training_max_runtime_seconds,
         "compatibility_gate": bool(args.compatibility_gate),
+        "suppress_training_eval": bool(args.suppress_training_eval),
         "merge_mode": args.merge_mode,
         "scaffold_artifact_s3_uri": args.scaffold_artifact_s3_uri,
         "manual_hold": (
