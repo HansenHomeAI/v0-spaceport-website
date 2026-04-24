@@ -1,0 +1,47 @@
+{
+  "job_name": "md1-r2-cap300k-sh2-1777009892-tiled",
+  "status": "Failed",
+  "failure_classification": "tile_training_bad",
+  "failure_type": "training_backward_cuda_oom_compute_sh_bwd",
+  "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r2-cap300k-sh2-split4500-noeval-reusescaffold-20260424054953/T2_tiled_pipeline/md1-r2-cap300k-sh2-1777009892-tiled/output/model.tar.gz",
+  "extracted_evidence_dir": "logs/audit/md1-1k-full-r2/r2_cap300k_sh2_failed_artifact_20260424062609",
+  "tile_id": "tile_02",
+  "selected_image_count": 188,
+  "view_bucket_counts": {
+    "near_detail": 66,
+    "boundary": 176,
+    "horizon": 0
+  },
+  "inherited_gaussian_count": 300000,
+  "source_filtered_gaussian_count": 1109358,
+  "inherited_gaussian_cap": 300000,
+  "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+  "scaffold_init_downsample_strategy": "spatial_key_even_sample",
+  "sh_degree": 2,
+  "stop_split_at": 4500,
+  "max_gauss_ratio": 6.0,
+  "steps_per_eval_image": 12001,
+  "steps_per_eval_all_images": 12001,
+  "steps_per_save": 12001,
+  "last_reported_step": 5900,
+  "last_reported_gaussian_count": 571360,
+  "max_reported_gaussian_count": 629184,
+  "oom_message": "CUDA out of memory. Tried to allocate 8.14 GiB (GPU 0; 22.30 GiB total capacity; 14.20 GiB already allocated; 7.46 GiB free; 14.47 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF",
+  "oom_allocation_gib": 8.14,
+  "oom_already_allocated_gib": 14.2,
+  "oom_free_gib": 7.46,
+  "oom_reserved_gib": 14.47,
+  "next_retry_recommendation": {
+    "same_scientific_question": "full scale, 12000 iterations, same tile_02/tile_05 bounded pair, frozen eval, scaffold reuse",
+    "memory_pressure_adjustment": "stop densification earlier and harden gaussian pressure target before downscaling or reducing iterations",
+    "suggested_env": {
+      "GLOBAL_SCAFFOLD_INIT_MAX_POINTS": "300000",
+      "TRAINING_STOP_SPLIT_AT": "3500",
+      "TRAINING_MAX_GAUSS_RATIO": "3.0",
+      "SH_DEGREE": "2",
+      "TRAINING_STEPS_PER_EVAL_IMAGE": "12001",
+      "TRAINING_STEPS_PER_EVAL_ALL_IMAGES": "12001",
+      "TRAINING_STEPS_PER_SAVE": "12001"
+    }
+  }
+}
