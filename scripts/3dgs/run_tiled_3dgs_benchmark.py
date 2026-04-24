@@ -352,6 +352,15 @@ def build_training_environment(
     return env
 
 
+def build_quality_review_environment(tile_ids: Sequence[str], extra_env: Dict[str, str]) -> Dict[str, str]:
+    env = {
+        "QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET": "4",
+        "QUALITY_REVIEW_TILE_IDS": ",".join(tile_ids),
+    }
+    env.update(extra_env)
+    return env
+
+
 def build_benchmark_stages(
     *,
     manifest: dict,
@@ -438,10 +447,7 @@ def build_benchmark_stages(
                     training_mode="quality_review",
                     output_s3_uri=f"{output_root}/quality_review",
                     depends_on=["T2_tiled_pipeline"],
-                    environment={
-                        "QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET": "4",
-                        "QUALITY_REVIEW_TILE_IDS": ",".join(tile_ids),
-                    },
+                    environment=build_quality_review_environment(tile_ids, extra_env),
                 )
             )
         return stages
@@ -858,6 +864,11 @@ def parse_args() -> argparse.Namespace:
         help="Optional baseline quality_review_manifest.json used for promotion deltas.",
     )
     parser.add_argument(
+        "--review-model-artifact-s3-uri",
+        default="",
+        help="Submit a quality-review processing job for an existing tiled model artifact instead of launching training.",
+    )
+    parser.add_argument(
         "--compatibility-gate",
         action="store_true",
         help="Mark the run as a future large-artifact compatibility gate; summaries stop on manual hold.",
@@ -925,6 +936,8 @@ def resolve_execution_context(
 
 def main() -> int:
     args = parse_args()
+    if args.review_model_artifact_s3_uri and args.skip_review:
+        raise RuntimeError("--review-model-artifact-s3-uri cannot be combined with --skip-review")
     branch_name = args.branch or get_current_branch()
     timestamp = int(time.time())
     include_review = not args.skip_review
@@ -968,6 +981,80 @@ def main() -> int:
         explicit_tile_ids=args.tile_id,
         max_tiles=args.max_tiles,
     )
+    extra_env = parse_env(args.env)
+    if args.review_model_artifact_s3_uri:
+        review_output_s3_uri = f"{normalize_s3_prefix(context.output_root_s3_uri)}/quality_review"
+        review_job_name = sanitize_sagemaker_job_name(f"{args.job_prefix}-{timestamp}-quality")
+        review_environment = build_quality_review_environment(selected_tiles, extra_env)
+        review_payload = create_quality_review_processing_payload(
+            branch_name=branch_name,
+            job_name=review_job_name,
+            image_uri=context.image_uri,
+            role_arn=context.role_arn,
+            model_artifact_s3_uri=args.review_model_artifact_s3_uri,
+            colmap_s3_uri=colmap_s3_uri,
+            output_s3_uri=review_output_s3_uri,
+            environment=review_environment,
+            instance_type=args.review_instance_type,
+            volume_size_gb=args.review_volume_size_gb,
+            max_runtime_seconds=args.review_max_runtime_seconds,
+            camera_manifest_s3_uri=args.review_camera_manifest_s3_uri,
+            baseline_review_manifest_s3_uri=args.baseline_review_manifest_s3_uri,
+        )
+        summary = {
+            "branch": branch_name,
+            "stack_name": context.stack_name,
+            "image_uri": context.image_uri,
+            "input_colmap_s3_uri": colmap_s3_uri,
+            "manifest_resolution": manifest_resolution,
+            "selected_tile_ids": selected_tiles,
+            "mode": "review_existing_artifact",
+            "quality_review": {
+                "processing_job_name": review_job_name,
+                "model_artifact_s3_uri": args.review_model_artifact_s3_uri,
+                "output_s3_uri": review_output_s3_uri,
+                "manifest_s3_uri": f"{review_output_s3_uri}/quality_review_manifest.json",
+                "baseline_review_manifest_s3_uri": args.baseline_review_manifest_s3_uri,
+                "review_camera_manifest_s3_uri": args.review_camera_manifest_s3_uri,
+                "environment": review_environment,
+            },
+            "submitted_jobs": [],
+            "completed_jobs": [],
+        }
+        if args.dry_run or not args.submit:
+            print(json.dumps(summary, indent=2))
+            if args.summary_json_output:
+                Path(args.summary_json_output).write_text(json.dumps(summary, indent=2), encoding="utf-8")
+            return 0
+
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as handle:
+            json.dump(review_payload, handle, indent=2)
+            handle.flush()
+            payload_path = Path(handle.name)
+        try:
+            run_command(["aws", "sagemaker", "create-processing-job", "--cli-input-json", f"file://{payload_path}"])
+        finally:
+            payload_path.unlink(missing_ok=True)
+        summary["submitted_jobs"].append(
+            {
+                "stage_name": "R0_quality_review",
+                "job_name": review_job_name,
+                "output_s3_uri": review_output_s3_uri,
+            }
+        )
+        if args.wait:
+            processing_status = wait_for_processing_job(review_job_name, poll_seconds=args.poll_seconds)
+            review_manifest = load_s3_json(f"{review_output_s3_uri}/quality_review_manifest.json")
+            summary["quality_review"]["processing_status"] = processing_status.get("ProcessingJobStatus")
+            summary["quality_review"]["processing_start_time"] = processing_status.get("ProcessingStartTime")
+            summary["quality_review"]["processing_end_time"] = processing_status.get("ProcessingEndTime")
+            summary["quality_review"]["manifest"] = review_manifest
+            summary["promotion_readiness"] = review_manifest.get("promotion_readiness")
+        print(json.dumps(summary, indent=2))
+        if args.summary_json_output:
+            Path(args.summary_json_output).write_text(json.dumps(summary, indent=2), encoding="utf-8")
+        return 0
+
     stages = build_benchmark_stages(
         manifest=tile_manifest,
         branch_name=branch_name,
@@ -982,7 +1069,7 @@ def main() -> int:
         scaffold_max_iterations=args.scaffold_max_iterations,
         tile_max_iterations=args.tile_max_iterations,
         training_max_runtime_seconds=args.training_max_runtime_seconds,
-        extra_env=parse_env(args.env),
+        extra_env=extra_env,
         timestamp=timestamp,
         downscale_factor=args.downscale_factor,
         include_review=include_review,

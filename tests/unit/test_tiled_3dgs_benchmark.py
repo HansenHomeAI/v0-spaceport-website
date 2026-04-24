@@ -114,6 +114,16 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(stages[2].stage_type, "review")
         self.assertEqual(stages[2].depends_on, ["T2_tiled_pipeline"])
 
+    def test_build_quality_review_environment_allows_review_overrides(self):
+        env = benchmark.build_quality_review_environment(
+            ["tile_02", "tile_05"],
+            {"QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET": "12", "QUALITY_REVIEW_RENDER_SCALE": "0.25"},
+        )
+
+        self.assertEqual(env["QUALITY_REVIEW_TILE_IDS"], "tile_02,tile_05")
+        self.assertEqual(env["QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET"], "12")
+        self.assertEqual(env["QUALITY_REVIEW_RENDER_SCALE"], "0.25")
+
     def test_build_training_environment_disables_bilateral_for_w_light_even_if_requested(self):
         env = benchmark.build_training_environment(
             training_mode="monolithic",

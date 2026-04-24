@@ -1,9 +1,9 @@
 reason: geometry-first md1 tiled 3DGS reset; continuing beyond offline R1 toward bounded proof gates
 current_rung: R2 bounded adjacent-pair retrain on tile_02/tile_05
 root_cause_classification: tile_training_bad
-live_compute_status: SageMaker training job md1-r2-pair-1776991746-tiled InProgress for full-quality bounded tile_02/tile_05 retrain; latest CDK and Pages workflows are green; no full-scene training spend active
+live_compute_status: SageMaker training job md1-r2-pair-1776991746-tiled InProgress/Training for full-quality bounded tile_02/tile_05 retrain; CDK 24866617348, Pages 24866621453, and ML container 24866617350 are green for pushed review-gate head 5db6fcd2; no full-scene training spend active
 current_branch: agent-53821974-md1-geometry-consistency
-current_head_at_state_write: 93b3d81f0975b737646b4e5482b6608a6c0f3c7f plus local absolute-quality floor patch
+current_head_at_state_write: 5db6fcd22db380d2441c5dafcbb70c8989df45fa plus local review-only launcher patch
 base_branch: agent-86580563-hierarchical-splat-merge-plan
 base_commit: ffef97e646046f204267ec30dd7dbf6f19027cad
 automation:
@@ -22,8 +22,10 @@ exact_artifacts:
   active_r2_stage_output: s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r2-20260424004906/3dgs/T2_tiled_pipeline
   active_r2_image: 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:0e9492295885735deb6ef1e8ce8bbe1e8d72dd84f2c38082bd601a9c9e2ab750
   active_r2_submit_summary: logs/audit/md1-1k-full-r2/r2_pair_submit_20260424004906.json
+  review_gate_image_source_head: 5db6fcd22db380d2441c5dafcbb70c8989df45fa
+  review_gate_image_after_absolute_floor_patch: 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:3c4c34a04d411ca671bad9865f31254f685e88e28c635c18c9866e53c1e2c7c0
   preview_url: https://agent-53821974-md1-geometry.v0-spaceport-website-preview2.pages.dev
-  preview_hash_url: https://b7c2b926.v0-spaceport-website-preview2.pages.dev
+  preview_hash_url: https://4b42e4d7.v0-spaceport-website-preview2.pages.dev
   local_audit_manifest: logs/audit/md1-1k-full-r2/audit_manifest.json
   local_review_comparison: logs/audit/md1-1k-full-r2/review_comparison.json
   frozen_review_cameras: logs/audit/md1-1k-full-r2/review_camera_manifest.json
@@ -66,7 +68,9 @@ review_gate_delta:
   launcher_frozen_camera_review_input_support_commit: 5d17ae3c405291ad2336f4296431579650e0e831
   local_absolute_quality_floor_gate: blocks ready_for_manual_signoff when near_detail/boundary/horizon median PSNR or LPIPS are below conservative spatial-quality floors
   local_quality_floor_tests: py_compile plus 65 targeted geometry/tile/review tests green
+  local_review_existing_artifact_launcher: adds --review-model-artifact-s3-uri path so completed R2 artifacts can be reviewed with frozen cameras and baseline without relaunching training
+  local_review_launcher_tests: dry-run resolved frozen camera/baseline inputs and review env; py_compile plus 66 targeted geometry/tile/review tests green
   r2_training_target: tile_02/tile_05 using full-quality bounded scope, scaffold enabled, merge_mode=support_weighted_overlap, no proof downscale
 next_unblocked_step: monitor md1-r2-pair-1776991746-tiled for useful artifact formation, stop if the run becomes opaque or low-signal, then run frozen 4/4/4 comparative review against the saved R1a baseline manifest
 owner_action_needed: none
-updated: 2026-04-24T00:53:29Z
+updated: 2026-04-24T01:09:21Z
