@@ -350,8 +350,8 @@ def load_gaussian_model(ply_path: Path, device: torch.device) -> dict[str, Any]:
             axis=1,
         )
     ).to(device)
-    opacities = torch.from_numpy(np.asarray(vertex["opacity"], dtype=np.float32)).to(device)
-    scales = torch.from_numpy(
+    raw_opacities = torch.from_numpy(np.asarray(vertex["opacity"], dtype=np.float32)).to(device)
+    raw_scales = torch.from_numpy(
         np.stack(
             [
                 np.asarray(vertex["scale_0"], dtype=np.float32),
@@ -361,7 +361,7 @@ def load_gaussian_model(ply_path: Path, device: torch.device) -> dict[str, Any]:
             axis=1,
         )
     ).to(device)
-    quats = torch.from_numpy(
+    raw_quats = torch.from_numpy(
         np.stack(
             [
                 np.asarray(vertex["rot_0"], dtype=np.float32),
@@ -372,6 +372,20 @@ def load_gaussian_model(ply_path: Path, device: torch.device) -> dict[str, Any]:
             axis=1,
         )
     ).to(device)
+    scales_activation = "exp" if bool((raw_scales <= 0.0).any().detach().cpu().item()) else "identity"
+    opacity_activation = (
+        "sigmoid"
+        if bool(((raw_opacities < 0.0) | (raw_opacities > 1.0)).any().detach().cpu().item())
+        else "identity_clamped"
+    )
+    scales = torch.exp(raw_scales) if scales_activation == "exp" else raw_scales
+    scales = torch.clamp(scales, min=1e-6, max=1e3)
+    opacities = (
+        torch.sigmoid(raw_opacities)
+        if opacity_activation == "sigmoid"
+        else torch.clamp(raw_opacities, min=0.0, max=1.0)
+    )
+    quats = torch.nn.functional.normalize(raw_quats, dim=1, eps=1e-8)
     sh_dc = torch.from_numpy(
         np.stack(
             [
@@ -408,6 +422,11 @@ def load_gaussian_model(ply_path: Path, device: torch.device) -> dict[str, Any]:
         "colors": colors,
         "sh_degree": sh_degree,
         "gaussian_count": int(len(vertex)),
+        "activation_metadata": {
+            "scales": scales_activation,
+            "opacities": opacity_activation,
+            "quats": "normalized",
+        },
     }
 
 
@@ -456,32 +475,26 @@ def _project_visible_gaussians(
     margin_x = float(width) * cull_margin
     margin_y = float(height) * cull_margin
 
-    best_mask: torch.Tensor | None = None
-    best_depth: torch.Tensor | None = None
-    best_sign = -1
-    best_count = -1
-    for sign in (1.0, -1.0):
-        depth = camera_means[:, 2] * sign
-        valid_depth = depth > 1e-4
-        safe_depth = torch.clamp(depth, min=1e-4)
-        projected_x = (camera_means[:, 0] * float(fx) / safe_depth) + float(cx)
-        projected_y = (camera_means[:, 1] * float(fy) / safe_depth) + float(cy)
-        mask = (
-            valid_depth
-            & (projected_x >= -margin_x)
-            & (projected_x <= float(width) + margin_x)
-            & (projected_y >= -margin_y)
-            & (projected_y <= float(height) + margin_y)
-        )
-        count = int(mask.sum().detach().cpu().item())
-        if count > best_count:
-            best_mask = mask
-            best_depth = safe_depth
-            best_sign = int(sign)
-            best_count = count
+    depth = camera_means[:, 2]
+    valid_depth = depth > 1e-4
+    safe_depth = torch.clamp(depth, min=1e-4)
+    projected_x = (camera_means[:, 0] * float(fx) / safe_depth) + float(cx)
+    projected_y = (camera_means[:, 1] * float(fy) / safe_depth) + float(cy)
+    mask = (
+        valid_depth
+        & (projected_x >= -margin_x)
+        & (projected_x <= float(width) + margin_x)
+        & (projected_y >= -margin_y)
+        & (projected_y <= float(height) + margin_y)
+    )
+    return mask, safe_depth, 1
 
-    assert best_mask is not None and best_depth is not None
-    return best_mask, best_depth, best_sign
+
+def frame_world_to_camera(frame: Mapping[str, Any]) -> np.ndarray:
+    c2w = np.asarray(frame["transform_matrix"], dtype=np.float32)
+    world_to_camera_gl = np.linalg.inv(c2w).astype(np.float32)
+    opengl_to_opencv = np.diag([1.0, -1.0, -1.0, 1.0]).astype(np.float32)
+    return opengl_to_opencv @ world_to_camera_gl
 
 
 def select_gaussians_for_view(
@@ -565,8 +578,7 @@ def render_gaussian_view(
     settings: RenderSettings,
 ) -> tuple[np.ndarray, np.ndarray, dict[str, Any]]:
     fx, fy, cx, cy, width, height = frame_intrinsics(frame, transforms, render_scale=settings.render_scale)
-    c2w = np.asarray(frame["transform_matrix"], dtype=np.float32)
-    world_to_camera = np.linalg.inv(c2w).astype(np.float32)
+    world_to_camera = frame_world_to_camera(frame)
     K = torch.tensor([[fx, 0.0, cx], [0.0, fy, cy], [0.0, 0.0, 1.0]], device=device, dtype=torch.float32)
 
     source_count = int(model["gaussian_count"])
@@ -633,7 +645,7 @@ def render_skybox_view(
     dirs_camera = np.stack(
         (
             (grid_x - cx) / fx,
-            (grid_y - cy) / fy,
+            -(grid_y - cy) / fy,
             -np.ones_like(grid_x, dtype=np.float32),
         ),
         axis=-1,
@@ -699,6 +711,55 @@ def median_or_none(values: Sequence[float | None]) -> float | None:
     return float(median(filtered))
 
 
+def image_summary_stats(image: np.ndarray) -> dict[str, float]:
+    image = np.clip(image.astype(np.float32), 0.0, 1.0)
+    luminance = (0.2126 * image[..., 0]) + (0.7152 * image[..., 1]) + (0.0722 * image[..., 2])
+    return {
+        "mean_luminance": float(np.mean(luminance)),
+        "max_luminance": float(np.max(luminance)),
+        "mean_rgb": float(np.mean(image)),
+        "max_rgb": float(np.max(image)),
+    }
+
+
+def alpha_summary_stats(alpha: np.ndarray) -> dict[str, float]:
+    alpha = np.clip(alpha.astype(np.float32), 0.0, 1.0)
+    return {
+        "mean": float(np.mean(alpha)),
+        "max": float(np.max(alpha)),
+        "coverage_gt_001": float(np.mean(alpha > 0.01)),
+        "coverage_gt_005": float(np.mean(alpha > 0.05)),
+    }
+
+
+def summarize_render_sanity(review_views: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    checked_views = [view for view in review_views if isinstance(view.get("merged_alpha_stats"), Mapping)]
+    blank_views: list[dict[str, Any]] = []
+    for view in checked_views:
+        alpha_stats = view.get("merged_alpha_stats", {})
+        foreground_stats = view.get("merged_foreground_stats", {})
+        alpha_max = float(alpha_stats.get("max", 0.0) or 0.0)
+        alpha_coverage = float(alpha_stats.get("coverage_gt_001", 0.0) or 0.0)
+        foreground_max = float(foreground_stats.get("max_rgb", 0.0) or 0.0)
+        if alpha_max < 0.01 or alpha_coverage < 1e-5 or foreground_max < 1e-4:
+            blank_views.append(
+                {
+                    "bucket": view.get("bucket"),
+                    "image_name": view.get("image_name"),
+                    "alpha_max": alpha_max,
+                    "alpha_coverage_gt_001": alpha_coverage,
+                    "foreground_max_rgb": foreground_max,
+                }
+            )
+    status = "unknown" if not checked_views else ("blocked" if blank_views else "ok")
+    return {
+        "status": status,
+        "checked_view_count": len(checked_views),
+        "blank_view_count": len(blank_views),
+        "blank_views": blank_views[:12],
+    }
+
+
 def build_review_manifest(
     *,
     model_tarball: Path,
@@ -739,11 +800,15 @@ def build_review_manifest(
         actual_bucket_counts.get(bucket_label_value, 0) >= expected_bucket_counts[bucket_label_value]
         for _, bucket_label_value in DEFAULT_BUCKET_ORDER
     )
+    render_sanity = summarize_render_sanity(review_views)
     retain_all_tile_count = int(merge_report.get("retain_all_tile_count", 0) or 0)
     fallback_tile_count = int(merge_report.get("fallback_tile_count", 0) or 0)
     promotion_status = (
         "ready_for_comparison"
-        if review_buckets_complete and retain_all_tile_count == 0 and fallback_tile_count == 0
+        if review_buckets_complete
+        and retain_all_tile_count == 0
+        and fallback_tile_count == 0
+        and render_sanity["status"] != "blocked"
         else "blocked"
     )
     promotion_notes: list[str] = []
@@ -753,6 +818,8 @@ def build_review_manifest(
         promotion_notes.append("merge used retain_all fallback on at least one tile")
     if fallback_tile_count > 0:
         promotion_notes.append("merge used fallback on at least one tile")
+    if render_sanity["status"] == "blocked":
+        promotion_notes.append("merged gaussian foreground rendered blank for at least one review view")
     if merged_background_present:
         promotion_notes.append("merged review included promoted background skybox")
     else:
@@ -781,11 +848,13 @@ def build_review_manifest(
         "views": list(review_views),
         "bucket_medians": bucket_medians,
         "sky_bucket_medians": sky_bucket_medians,
+        "render_sanity": render_sanity,
         "promotion_readiness": {
             "status": promotion_status,
             "review_buckets_complete": review_buckets_complete,
             "retain_all_tile_count": retain_all_tile_count,
             "fallback_tile_count": fallback_tile_count,
+            "render_sanity": render_sanity,
             "manual_visual_review_required": True,
             "notes": promotion_notes,
         },
@@ -989,6 +1058,9 @@ def main() -> None:
                     "sky_metrics": sky_metrics,
                     "sky_metrics_no_background": sky_metrics_no_background,
                     "merged_render_stats": merged_render_stats,
+                    "merged_alpha_stats": alpha_summary_stats(merged_alpha),
+                    "merged_foreground_stats": image_summary_stats(merged_foreground),
+                    "merged_final_stats": image_summary_stats(merged_final),
                 }
 
                 boundary_tile_ids: list[str] = []

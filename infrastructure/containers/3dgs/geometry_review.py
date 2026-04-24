@@ -131,6 +131,13 @@ def evaluate_promotion_decision(
         block_reasons.append("merge_fallback_tile_count_gt_zero")
     if retain_all_tile_count > 0:
         block_reasons.append("merge_retain_all_tile_count_gt_zero")
+    render_sanity = candidate_manifest.get("render_sanity") or (
+        candidate_manifest.get("promotion_readiness", {}).get("render_sanity")
+        if isinstance(candidate_manifest.get("promotion_readiness"), Mapping)
+        else {}
+    )
+    if isinstance(render_sanity, Mapping) and render_sanity.get("status") == "blocked":
+        block_reasons.append("candidate_render_sanity_blocked")
 
     for _bucket_key, bucket_label in REVIEW_BUCKETS:
         baseline_metrics = baseline_buckets.get(bucket_label)

@@ -190,9 +190,20 @@
       ]
     },
     "candidate": {
-      "fallback_tile_count": 0,
+      "fallback_tile_count": 2,
       "retain_all_tile_count": 0,
-      "fallback_reasons": []
+      "fallback_reasons": [
+        {
+          "tile_id": "tile_05",
+          "reason": "primary_and_overlap_retained_zero",
+          "retention_strategy": "centroid_voronoi_fallback"
+        },
+        {
+          "tile_id": "tile_06",
+          "reason": "primary_and_overlap_retained_zero",
+          "retention_strategy": "centroid_voronoi_fallback"
+        }
+      ]
     }
   },
   "side_by_side_render_paths": [
@@ -320,10 +331,11 @@
   "promotion_decision": {
     "status": "blocked",
     "block_reasons": [
+      "merge_fallback_tile_count_gt_zero",
       "boundary_no_required_improvement"
     ],
     "warnings": [],
-    "fallback_tile_count": 0,
+    "fallback_tile_count": 2,
     "retain_all_tile_count": 0,
     "per_bucket": {
       "near_detail": {

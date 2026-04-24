@@ -222,6 +222,56 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
                 manifest["promotion_readiness"]["notes"],
             )
 
+    def test_build_review_manifest_blocks_blank_gaussian_foreground(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            review_camera_manifest_path = root / "review_camera_manifest.json"
+            review_camera_manifest_path.write_text("{}", encoding="utf-8")
+
+            review_views = []
+            review_images_by_bucket = {}
+            for bucket_key, bucket_label in module.DEFAULT_BUCKET_ORDER:
+                review_images_by_bucket[bucket_key] = [f"{bucket_label}_{index}.png" for index in range(4)]
+                for index in range(4):
+                    view = make_view(bucket_label, psnr=30.0 + index)
+                    view["image_name"] = f"{bucket_label}_{index}.png"
+                    view["merged_alpha_stats"] = {
+                        "mean": 0.0,
+                        "max": 0.0,
+                        "coverage_gt_001": 0.0,
+                        "coverage_gt_005": 0.0,
+                    }
+                    view["merged_foreground_stats"] = {
+                        "mean_luminance": 0.0,
+                        "max_luminance": 0.0,
+                        "mean_rgb": 0.0,
+                        "max_rgb": 0.0,
+                    }
+                    review_views.append(view)
+
+            manifest = module.build_review_manifest(
+                model_tarball=root / "model.tar.gz",
+                selected_tile_ids=["tile_02", "tile_05"],
+                manifest_resolution={"source_mode": "native_3dgs_manifests"},
+                merge_report={"retain_all_tile_count": 0, "fallback_tile_count": 0},
+                review_images_by_bucket=review_images_by_bucket,
+                review_camera_manifest_path=review_camera_manifest_path,
+                review_views=review_views,
+                max_images_per_bucket=4,
+                merged_background_present=True,
+                render_settings=module.RenderSettings(),
+            )
+
+            self.assertEqual(manifest["promotion_readiness"]["status"], "blocked")
+            self.assertEqual(manifest["render_sanity"]["status"], "blocked")
+            self.assertEqual(manifest["render_sanity"]["blank_view_count"], 12)
+            self.assertIn(
+                "merged gaussian foreground rendered blank for at least one review view",
+                manifest["promotion_readiness"]["notes"],
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -83,6 +83,34 @@ class GeometryFirstReviewTests(unittest.TestCase):
             comparison["promotion_decision"]["block_reasons"],
         )
 
+    def test_evaluate_promotion_decision_blocks_blank_render_sanity(self):
+        baseline = {
+            "bucket_medians": {
+                "near_detail": {"psnr": 30.0, "ssim": 0.9, "lpips": 0.1},
+                "boundary": {"psnr": 28.0, "ssim": 0.88, "lpips": 0.12},
+                "horizon": {"psnr": 27.0, "ssim": 0.86, "lpips": 0.14},
+            },
+            "sky_bucket_medians": {"horizon": {"score": 0.8}},
+        }
+        candidate = {
+            "bucket_medians": {
+                "near_detail": {"psnr": 30.0, "ssim": 0.9, "lpips": 0.1},
+                "boundary": {"psnr": 28.6, "ssim": 0.89, "lpips": 0.09},
+                "horizon": {"psnr": 27.0, "ssim": 0.86, "lpips": 0.14},
+            },
+            "sky_bucket_medians": {"horizon": {"score": 0.8}},
+            "merge_report": {"fallback_tile_count": 0, "retain_all_tile_count": 0},
+            "render_sanity": {"status": "blocked", "blank_view_count": 12},
+        }
+
+        decision = geometry_review.evaluate_promotion_decision(
+            baseline_manifest=baseline,
+            candidate_manifest=candidate,
+        )
+
+        self.assertEqual(decision["status"], "blocked")
+        self.assertIn("candidate_render_sanity_blocked", decision["block_reasons"])
+
     def test_classify_root_cause_prefers_merge_bad_on_fallbacks(self):
         root_cause = geometry_review.classify_root_cause(
             inventory={"complete": True, "required": {"seven_tile_splats": True}},
