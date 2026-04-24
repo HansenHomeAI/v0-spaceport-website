@@ -1,0 +1,1225 @@
+✅ sitecustomize: filtered deprecated CUDA arch flags (TORCH_CUDA_ARCH_LIST=8.0 8.6)
+✅ sitecustomize: patched nerfstudio PIL conversion
+[03:19:43] Using --data alias for --data.pipeline.datamanager.data                                          train.py:241
+──────────────────────────────────────────────────────── Config ────────────────────────────────────────────────────────
+TrainerConfig(
+    _target=<class 'nerfstudio.engine.trainer.Trainer'>,
+    output_dir=PosixPath('/opt/ml/model/tiled_pipeline/tmp/tile_02'),
+    method_name='splatfacto-w-light',
+    experiment_name=None,
+    project_name='nerfstudio-project',
+    timestamp='2026-04-24_031943',
+    machine=MachineConfig(seed=42, num_devices=1, num_machines=1, machine_rank=0, dist_url='auto', device_type='cuda'),
+    logging=LoggingConfig(
+        relative_log_dir=PosixPath('.'),
+        steps_per_log=100,
+        max_buffer_size=20,
+        local_writer=LocalWriterConfig(
+            _target=<class 'nerfstudio.utils.writer.LocalWriter'>,
+            enable=True,
+            stats_to_track=(
+                <EventName.ITER_TRAIN_TIME: 'Train Iter (time)'>,
+                <EventName.TRAIN_RAYS_PER_SEC: 'Train Rays / Sec'>,
+                <EventName.CURR_TEST_PSNR: 'Test PSNR'>,
+                <EventName.VIS_RAYS_PER_SEC: 'Vis Rays / Sec'>,
+                <EventName.TEST_RAYS_PER_SEC: 'Test Rays / Sec'>,
+                <EventName.ETA: 'ETA (time)'>
+            ),
+            max_log_size=10
+        ),
+        profiler='basic'
+    ),
+    viewer=ViewerConfig(
+        relative_log_filename='viewer_log_filename.txt',
+        websocket_port=None,
+        websocket_port_default=7007,
+        websocket_host='0.0.0.0',
+        num_rays_per_chunk=32768,
+        max_num_display_images=512,
+        quit_on_train_completion=True,
+        image_format='jpeg',
+        jpeg_quality=75,
+        make_share_url=False,
+        camera_frustum_scale=0.1,
+        default_composite_depth=True
+    ),
+    pipeline=VanillaPipelineConfig(
+        _target=<class 'nerfstudio.pipelines.base_pipeline.VanillaPipeline'>,
+        datamanager=FullImageDatamanagerConfig(
+            _target=<class 'nerfstudio.data.datamanagers.full_images_datamanager.FullImageDatamanager'>,
+            data=PosixPath('/opt/ml/model/tiled_pipeline/inputs/tile_02'),
+            masks_on_gpu=False,
+            images_on_gpu=False,
+            dataparser=NerfstudioDataParserConfig(
+                _target=<class 'nerfstudio.data.dataparsers.nerfstudio_dataparser.Nerfstudio'>,
+                data=PosixPath('.'),
+                scale_factor=1.0,
+                downscale_factor=None,
+                scene_scale=1.0,
+                orientation_method='up',
+                center_method='poses',
+                auto_scale_poses=True,
+                eval_mode='fraction',
+                train_split_fraction=0.9,
+                eval_interval=8,
+                depth_unit_scale_factor=0.001,
+                mask_color=None,
+                load_3D_points=True
+            ),
+            camera_res_scale_factor=1.0,
+            eval_num_images_to_sample_from=-1,
+            eval_num_times_to_repeat_images=-1,
+            cache_images='gpu',
+            cache_images_type='uint8',
+            max_thread_workers=None,
+            train_cameras_sampling_strategy='random',
+            train_cameras_sampling_seed=42,
+            fps_reset_every=100,
+            dataloader_num_workers=4,
+            prefetch_factor=4,
+            cache_compressed_images=False
+        ),
+        model=SplatfactoWModelConfig(
+            _target=<class 'splatfactow.splatfactow_model.SplatfactoWModel'>,
+            enable_collider=True,
+            collider_params={'near_plane': 2.0, 'far_plane': 6.0},
+            loss_coefficients={'rgb_loss_coarse': 1.0, 'rgb_loss_fine': 1.0},
+            eval_num_rays_per_chunk=4096,
+            prompt=None,
+            warmup_length=1000,
+            refine_every=100,
+            resolution_schedule=3000,
+            background_color='random',
+            num_downscales=2,
+            cull_alpha_thresh=0.12,
+            cull_scale_thresh=0.35,
+            continue_cull_post_densification=True,
+            reset_alpha_every=30,
+            densify_grad_thresh=0.0008,
+            densify_size_thresh=0.01,
+            n_split_samples=2,
+            cull_screen_size=0.15,
+            split_screen_size=0.05,
+            stop_screen_size_at=4000,
+            random_init=False,
+            num_random=50000,
+            random_scale=10.0,
+            ssim_lambda=0.2,
+            stop_split_at=15000,
+            use_scale_regularization=True,
+            max_gauss_ratio=10.0,
+            output_depth_during_training=False,
+            rasterize_mode='classic',
+            camera_optimizer=CameraOptimizerConfig(
+                _target=<class 'nerfstudio.cameras.camera_optimizers.CameraOptimizer'>,
+                mode='off',
+                trans_l2_penalty=0.01,
+                rot_l2_penalty=0.001,
+                optimizer=None,
+                scheduler=None
+            ),
+            enable_bg_model=True,
+            bg_num_layers=2,
+            bg_layer_width=128,
+            implementation='torch',
+            appearance_embed_dim=64,
+            app_num_layers=2,
+            app_layer_width=128,
+            enable_alpha_loss=True,
+            appearance_features_dim=32,
+            enable_robust_mask=True,
+            robust_mask_percentage=(0.0, 0.4),
+            robust_mask_reset_interval=6000,
+            never_mask_upper=0.4,
+            start_robust_mask_at=6000,
+            sh_degree_interval=1000,
+            sh_degree=3,
+            bg_sh_degree=8,
+            use_avg_appearance=True,
+            eval_right_half=False
+        )
+    ),
+    optimizers={
+        'means': {
+            'optimizer': AdamOptimizerConfig(
+                _target=<class 'torch.optim.adam.Adam'>,
+                lr=1.6e-05,
+                eps=1e-15,
+                max_norm=None,
+                weight_decay=0
+            ),
+            'scheduler': ExponentialDecaySchedulerConfig(
+                _target=<class 'nerfstudio.engine.schedulers.ExponentialDecayScheduler'>,
+                lr_pre_warmup=1e-08,
+                lr_final=1.6e-07,
+                warmup_steps=0,
+                max_steps=30000,
+                ramp='cosine'
+            )
+        },
+        'appearance_features': {
+            'optimizer': AdamOptimizerConfig(
+                _target=<class 'torch.optim.adam.Adam'>,
+                lr=0.02,
+                eps=1e-15,
+                max_norm=None,
+                weight_decay=0
+            ),
+            'scheduler': ExponentialDecaySchedulerConfig(
+                _target=<class 'nerfstudio.engine.schedulers.ExponentialDecayScheduler'>,
+                lr_pre_warmup=1e-08,
+                lr_final=0.001,
+                warmup_steps=0,
+                max_steps=40000,
+                ramp='cosine'
+            )
+        },
+        'opacities': {
+            'optimizer': AdamOptimizerConfig(
+                _target=<class 'torch.optim.adam.Adam'>,
+                lr=0.03,
+                eps=1e-15,
+                max_norm=None,
+                weight_decay=0
+            ),
+            'scheduler': None
+        },
+        'scales': {
+            'optimizer': AdamOptimizerConfig(
+                _target=<class 'torch.optim.adam.Adam'>,
+                lr=0.005,
+                eps=1e-15,
+                max_norm=None,
+                weight_decay=0
+            ),
+            'scheduler': None
+        },
+        'quats': {
+            'optimizer': AdamOptimizerConfig(
+                _target=<class 'torch.optim.adam.Adam'>,
+                lr=0.001,
+                eps=1e-15,
+                max_norm=None,
+                weight_decay=0
+            ),
+            'scheduler': None
+        },
+        'camera_opt': {
+            'optimizer': AdamOptimizerConfig(
+                _target=<class 'torch.optim.adam.Adam'>,
+                lr=0.001,
+                eps=1e-15,
+                max_norm=None,
+                weight_decay=0
+            ),
+            'scheduler': ExponentialDecaySchedulerConfig(
+                _target=<class 'nerfstudio.engine.schedulers.ExponentialDecayScheduler'>,
+                lr_pre_warmup=1e-08,
+                lr_final=5e-05,
+                warmup_steps=0,
+                max_steps=15000,
+                ramp='cosine'
+            )
+        },
+        'field_background_encoder': {
+            'optimizer': AdamOptimizerConfig(
+                _target=<class 'torch.optim.adam.Adam'>,
+                lr=0.002,
+                eps=1e-15,
+                max_norm=None,
+                weight_decay=0
+            ),
+            'scheduler': ExponentialDecaySchedulerConfig(
+                _target=<class 'nerfstudio.engine.schedulers.ExponentialDecayScheduler'>,
+                lr_pre_warmup=1e-08,
+                lr_final=0.0001,
+                warmup_steps=0,
+                max_steps=15000,
+                ramp='cosine'
+            )
+        },
+        'field_background_base': {
+            'optimizer': AdamOptimizerConfig(
+                _target=<class 'torch.optim.adam.Adam'>,
+                lr=0.002,
+                eps=1e-15,
+                max_norm=None,
+                weight_decay=0
+            ),
+            'scheduler': ExponentialDecaySchedulerConfig(
+                _target=<class 'nerfstudio.engine.schedulers.ExponentialDecayScheduler'>,
+                lr_pre_warmup=1e-08,
+                lr_final=0.0002,
+                warmup_steps=0,
+                max_steps=15000,
+                ramp='cosine'
+            )
+        },
+        'field_background_rest': {
+            'optimizer': AdamOptimizerConfig(
+                _target=<class 'torch.optim.adam.Adam'>,
+                lr=0.0001,
+                eps=1e-15,
+                max_norm=None,
+                weight_decay=0
+            ),
+            'scheduler': ExponentialDecaySchedulerConfig(
+                _target=<class 'nerfstudio.engine.schedulers.ExponentialDecayScheduler'>,
+                lr_pre_warmup=1e-08,
+                lr_final=1e-05,
+                warmup_steps=0,
+                max_steps=15000,
+                ramp='cosine'
+            )
+        },
+        'appearance_model_encoder': {
+            'optimizer': AdamOptimizerConfig(
+                _target=<class 'torch.optim.adam.Adam'>,
+                lr=0.002,
+                eps=1e-15,
+                max_norm=None,
+                weight_decay=0
+            ),
+            'scheduler': ExponentialDecaySchedulerConfig(
+                _target=<class 'nerfstudio.engine.schedulers.ExponentialDecayScheduler'>,
+                lr_pre_warmup=1e-08,
+                lr_final=0.0001,
+                warmup_steps=0,
+                max_steps=15000,
+                ramp='cosine'
+            )
+        },
+        'appearance_model_base': {
+            'optimizer': AdamOptimizerConfig(
+                _target=<class 'torch.optim.adam.Adam'>,
+                lr=0.002,
+                eps=1e-15,
+                max_norm=None,
+                weight_decay=0
+            ),
+            'scheduler': ExponentialDecaySchedulerConfig(
+                _target=<class 'nerfstudio.engine.schedulers.ExponentialDecayScheduler'>,
+                lr_pre_warmup=1e-08,
+                lr_final=0.0001,
+                warmup_steps=0,
+                max_steps=15000,
+                ramp='cosine'
+            )
+        },
+        'appearance_model_rest': {
+            'optimizer': AdamOptimizerConfig(
+                _target=<class 'torch.optim.adam.Adam'>,
+                lr=0.0001,
+                eps=1e-15,
+                max_norm=None,
+                weight_decay=0
+            ),
+            'scheduler': ExponentialDecaySchedulerConfig(
+                _target=<class 'nerfstudio.engine.schedulers.ExponentialDecayScheduler'>,
+                lr_pre_warmup=1e-08,
+                lr_final=5e-06,
+                warmup_steps=0,
+                max_steps=15000,
+                ramp='cosine'
+            )
+        },
+        'appearance_embed': {
+            'optimizer': AdamOptimizerConfig(
+                _target=<class 'torch.optim.adam.Adam'>,
+                lr=0.001,
+                eps=1e-15,
+                max_norm=None,
+                weight_decay=0
+            ),
+            'scheduler': ExponentialDecaySchedulerConfig(
+                _target=<class 'nerfstudio.engine.schedulers.ExponentialDecayScheduler'>,
+                lr_pre_warmup=1e-08,
+                lr_final=0.0003,
+                warmup_steps=0,
+                max_steps=15000,
+                ramp='cosine'
+            )
+        }
+    },
+    vis='tensorboard',
+    data=PosixPath('/opt/ml/model/tiled_pipeline/inputs/tile_02'),
+    prompt=None,
+    relative_model_dir=PosixPath('nerfstudio_models'),
+    load_scheduler=True,
+    steps_per_save=2000,
+    steps_per_eval_batch=0,
+    steps_per_eval_image=12001,
+    steps_per_eval_all_images=12001,
+    max_num_iterations=12000,
+    mixed_precision=False,
+    use_grad_scaler=False,
+    save_only_latest_checkpoint=True,
+    load_dir=None,
+    load_step=None,
+    load_config=None,
+    load_checkpoint=None,
+    log_gradients=False,
+    gradient_accumulation_steps={},
+    start_paused=False
+)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+           Saving config to:                                                                    experiment_config.py:136
+           /opt/ml/model/tiled_pipeline/tmp/tile_02/tile_02/splatfacto-w-light/2026-04-24_03194                         
+           3/config.yml                                                                                                 
+           Saving checkpoints to:                                                                         trainer.py:142
+           /opt/ml/model/tiled_pipeline/tmp/tile_02/tile_02/splatfacto-w-light/2026-04-24_031943/nerfstud               
+           io_models                                                                                                    
+           Auto image downscale factor of 1                                                 nerfstudio_dataparser.py:484
+No Nerfstudio checkpoint to load, so training from scratch.
+logging events to: /opt/ml/model/tiled_pipeline/tmp/tile_02/tile_02/splatfacto-w-light/2026-04-24_031943
+[03:19:56] Caching / undistorting train images                                            full_images_datamanager.py:239
+
+[03:20:36] Printing max of 10 lines. Set flag --logging.local-writer.max-log-size=0 to disable line        writer.py:449
+           wrapping.                                                                                                    
+Step (% Done)       Train Iter (time)    ETA (time)           
+--------------------------------------------------------------
+[2A[1KStep (% Done)       Train Iter (time)    ETA (time)             [0m
+--------------------------------------------------------------  [0m
+0 (0.00%)           40 s, 102.885 ms     5 d, 13 h, 40 m, 34 s  [0m
+[3A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+0 (0.00%)           40 s, 102.885 ms     5 d, 13 h, 40 m, 34 s                      [0m
+100 (0.83%)         125.174 ms           24 m, 49 s           72.88 M               [0m
+[4A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+0 (0.00%)           40 s, 102.885 ms     5 d, 13 h, 40 m, 34 s                      [0m
+100 (0.83%)         125.174 ms           24 m, 49 s           72.88 M               [0m
+200 (1.67%)         128.005 ms           25 m, 10 s           71.10 M               [0m
+[5A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+0 (0.00%)           40 s, 102.885 ms     5 d, 13 h, 40 m, 34 s                      [0m
+100 (0.83%)         125.174 ms           24 m, 49 s           72.88 M               [0m
+200 (1.67%)         128.005 ms           25 m, 10 s           71.10 M               [0m
+300 (2.50%)         142.339 ms           27 m, 45 s           64.13 M               [0m
+[6A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+0 (0.00%)           40 s, 102.885 ms     5 d, 13 h, 40 m, 34 s                      [0m
+100 (0.83%)         125.174 ms           24 m, 49 s           72.88 M               [0m
+200 (1.67%)         128.005 ms           25 m, 10 s           71.10 M               [0m
+300 (2.50%)         142.339 ms           27 m, 45 s           64.13 M               [0m
+400 (3.33%)         129.864 ms           25 m, 6 s            70.82 M               [0m
+[7A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+0 (0.00%)           40 s, 102.885 ms     5 d, 13 h, 40 m, 34 s                      [0m
+100 (0.83%)         125.174 ms           24 m, 49 s           72.88 M               [0m
+200 (1.67%)         128.005 ms           25 m, 10 s           71.10 M               [0m
+300 (2.50%)         142.339 ms           27 m, 45 s           64.13 M               [0m
+400 (3.33%)         129.864 ms           25 m, 6 s            70.82 M               [0m
+500 (4.17%)         147.972 ms           28 m, 21 s           63.89 M               [0m
+[8A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+0 (0.00%)           40 s, 102.885 ms     5 d, 13 h, 40 m, 34 s                      [0m
+100 (0.83%)         125.174 ms           24 m, 49 s           72.88 M               [0m
+200 (1.67%)         128.005 ms           25 m, 10 s           71.10 M               [0m
+300 (2.50%)         142.339 ms           27 m, 45 s           64.13 M               [0m
+400 (3.33%)         129.864 ms           25 m, 6 s            70.82 M               [0m
+500 (4.17%)         147.972 ms           28 m, 21 s           63.89 M               [0m
+600 (5.00%)         146.879 ms           27 m, 54 s           62.97 M               [0m
+[9A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+0 (0.00%)           40 s, 102.885 ms     5 d, 13 h, 40 m, 34 s                      [0m
+100 (0.83%)         125.174 ms           24 m, 49 s           72.88 M               [0m
+200 (1.67%)         128.005 ms           25 m, 10 s           71.10 M               [0m
+300 (2.50%)         142.339 ms           27 m, 45 s           64.13 M               [0m
+400 (3.33%)         129.864 ms           25 m, 6 s            70.82 M               [0m
+500 (4.17%)         147.972 ms           28 m, 21 s           63.89 M               [0m
+600 (5.00%)         146.879 ms           27 m, 54 s           62.97 M               [0m
+700 (5.83%)         147.595 ms           27 m, 47 s           62.69 M               [0m
+[10A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+0 (0.00%)           40 s, 102.885 ms     5 d, 13 h, 40 m, 34 s                      [0m
+100 (0.83%)         125.174 ms           24 m, 49 s           72.88 M               [0m
+200 (1.67%)         128.005 ms           25 m, 10 s           71.10 M               [0m
+300 (2.50%)         142.339 ms           27 m, 45 s           64.13 M               [0m
+400 (3.33%)         129.864 ms           25 m, 6 s            70.82 M               [0m
+500 (4.17%)         147.972 ms           28 m, 21 s           63.89 M               [0m
+600 (5.00%)         146.879 ms           27 m, 54 s           62.97 M               [0m
+700 (5.83%)         147.595 ms           27 m, 47 s           62.69 M               [0m
+800 (6.67%)         131.492 ms           24 m, 32 s           69.57 M               [0m
+[11A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+0 (0.00%)           40 s, 102.885 ms     5 d, 13 h, 40 m, 34 s                      [0m
+100 (0.83%)         125.174 ms           24 m, 49 s           72.88 M               [0m
+200 (1.67%)         128.005 ms           25 m, 10 s           71.10 M               [0m
+300 (2.50%)         142.339 ms           27 m, 45 s           64.13 M               [0m
+400 (3.33%)         129.864 ms           25 m, 6 s            70.82 M               [0m
+500 (4.17%)         147.972 ms           28 m, 21 s           63.89 M               [0m
+600 (5.00%)         146.879 ms           27 m, 54 s           62.97 M               [0m
+700 (5.83%)         147.595 ms           27 m, 47 s           62.69 M               [0m
+800 (6.67%)         131.492 ms           24 m, 32 s           69.57 M               [0m
+900 (7.50%)         135.593 ms           25 m, 5 s            67.01 M               [0m
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+100 (0.83%)         125.174 ms           24 m, 49 s           72.88 M               [0m
+200 (1.67%)         128.005 ms           25 m, 10 s           71.10 M               [0m
+300 (2.50%)         142.339 ms           27 m, 45 s           64.13 M               [0m
+400 (3.33%)         129.864 ms           25 m, 6 s            70.82 M               [0m
+500 (4.17%)         147.972 ms           28 m, 21 s           63.89 M               [0m
+600 (5.00%)         146.879 ms           27 m, 54 s           62.97 M               [0m
+700 (5.83%)         147.595 ms           27 m, 47 s           62.69 M               [0m
+800 (6.67%)         131.492 ms           24 m, 32 s           69.57 M               [0m
+900 (7.50%)         135.593 ms           25 m, 5 s            67.01 M               [0m
+1000 (8.33%)        137.842 ms           25 m, 16 s           67.11 M               [0m
+[03:23:14] Splitting 0.008611111111111111 gaussians: 3875/450000                                splatfactow_model.py:753
+           Duplicating 0.005828888888888889 gaussians: 2623/450000                              splatfactow_model.py:801
+           Culled 271396 gaussians (268309 below alpha thresh, 0 too bigs, 188977 remaining)    splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+200 (1.67%)         128.005 ms           25 m, 10 s           71.10 M               [0m
+300 (2.50%)         142.339 ms           27 m, 45 s           64.13 M               [0m
+400 (3.33%)         129.864 ms           25 m, 6 s            70.82 M               [0m
+500 (4.17%)         147.972 ms           28 m, 21 s           63.89 M               [0m
+600 (5.00%)         146.879 ms           27 m, 54 s           62.97 M               [0m
+700 (5.83%)         147.595 ms           27 m, 47 s           62.69 M               [0m
+800 (6.67%)         131.492 ms           24 m, 32 s           69.57 M               [0m
+900 (7.50%)         135.593 ms           25 m, 5 s            67.01 M               [0m
+1000 (8.33%)        137.842 ms           25 m, 16 s           67.11 M               [0m
+1100 (9.17%)        129.538 ms           23 m, 31 s           73.07 M               [0m
+[03:23:27] Splitting 0.029813151865041777 gaussians: 5634/188977                                splatfactow_model.py:753
+           Duplicating 0.05104854029855485 gaussians: 9647/188977                               splatfactow_model.py:801
+           Culled 24412 gaussians (19097 below alpha thresh, 0 too bigs, 185480 remaining)      splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+300 (2.50%)         142.339 ms           27 m, 45 s           64.13 M               [0m
+400 (3.33%)         129.864 ms           25 m, 6 s            70.82 M               [0m
+500 (4.17%)         147.972 ms           28 m, 21 s           63.89 M               [0m
+600 (5.00%)         146.879 ms           27 m, 54 s           62.97 M               [0m
+700 (5.83%)         147.595 ms           27 m, 47 s           62.69 M               [0m
+800 (6.67%)         131.492 ms           24 m, 32 s           69.57 M               [0m
+900 (7.50%)         135.593 ms           25 m, 5 s            67.01 M               [0m
+1000 (8.33%)        137.842 ms           25 m, 16 s           67.11 M               [0m
+1100 (9.17%)        129.538 ms           23 m, 31 s           73.07 M               [0m
+1200 (10.00%)       126.540 ms           22 m, 46 s           72.42 M               [0m
+[03:23:40] Splitting 0.02953418158291999 gaussians: 5478/185480                                 splatfactow_model.py:753
+           Duplicating 0.052722665516497735 gaussians: 9779/185480                              splatfactow_model.py:801
+           Culled 13683 gaussians (8363 below alpha thresh, 0 too bigs, 192532 remaining)       splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+400 (3.33%)         129.864 ms           25 m, 6 s            70.82 M               [0m
+500 (4.17%)         147.972 ms           28 m, 21 s           63.89 M               [0m
+600 (5.00%)         146.879 ms           27 m, 54 s           62.97 M               [0m
+700 (5.83%)         147.595 ms           27 m, 47 s           62.69 M               [0m
+800 (6.67%)         131.492 ms           24 m, 32 s           69.57 M               [0m
+900 (7.50%)         135.593 ms           25 m, 5 s            67.01 M               [0m
+1000 (8.33%)        137.842 ms           25 m, 16 s           67.11 M               [0m
+1100 (9.17%)        129.538 ms           23 m, 31 s           73.07 M               [0m
+1200 (10.00%)       126.540 ms           22 m, 46 s           72.42 M               [0m
+1300 (10.83%)       117.881 ms           21 m, 1 s            78.47 M               [0m
+[03:23:54] Splitting 0.03433195520744604 gaussians: 6610/192532                                 splatfactow_model.py:753
+           Duplicating 0.05046433839569526 gaussians: 9716/192532                               splatfactow_model.py:801
+           Culled 16388 gaussians (9918 below alpha thresh, 0 too bigs, 199080 remaining)       splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+500 (4.17%)         147.972 ms           28 m, 21 s           63.89 M               [0m
+600 (5.00%)         146.879 ms           27 m, 54 s           62.97 M               [0m
+700 (5.83%)         147.595 ms           27 m, 47 s           62.69 M               [0m
+800 (6.67%)         131.492 ms           24 m, 32 s           69.57 M               [0m
+900 (7.50%)         135.593 ms           25 m, 5 s            67.01 M               [0m
+1000 (8.33%)        137.842 ms           25 m, 16 s           67.11 M               [0m
+1100 (9.17%)        129.538 ms           23 m, 31 s           73.07 M               [0m
+1200 (10.00%)       126.540 ms           22 m, 46 s           72.42 M               [0m
+1300 (10.83%)       117.881 ms           21 m, 1 s            78.47 M               [0m
+1400 (11.67%)       142.242 ms           25 m, 7 s            65.63 M               [0m
+[03:24:07] Splitting 0.03214285714285714 gaussians: 6399/199080                                 splatfactow_model.py:753
+           Duplicating 0.05321981113120353 gaussians: 10595/199080                              splatfactow_model.py:801
+           Culled 12987 gaussians (6662 below alpha thresh, 0 too bigs, 209486 remaining)       splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+600 (5.00%)         146.879 ms           27 m, 54 s           62.97 M               [0m
+700 (5.83%)         147.595 ms           27 m, 47 s           62.69 M               [0m
+800 (6.67%)         131.492 ms           24 m, 32 s           69.57 M               [0m
+900 (7.50%)         135.593 ms           25 m, 5 s            67.01 M               [0m
+1000 (8.33%)        137.842 ms           25 m, 16 s           67.11 M               [0m
+1100 (9.17%)        129.538 ms           23 m, 31 s           73.07 M               [0m
+1200 (10.00%)       126.540 ms           22 m, 46 s           72.42 M               [0m
+1300 (10.83%)       117.881 ms           21 m, 1 s            78.47 M               [0m
+1400 (11.67%)       142.242 ms           25 m, 7 s            65.63 M               [0m
+1500 (12.50%)       127.845 ms           22 m, 22 s           77.19 M               [0m
+[03:24:20] Splitting 0.03597853794525648 gaussians: 7537/209486                                 splatfactow_model.py:753
+           Duplicating 0.08118919641408018 gaussians: 17008/209486                              splatfactow_model.py:801
+           Culled 13604 gaussians (6140 below alpha thresh, 0 too bigs, 227964 remaining)       splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+700 (5.83%)         147.595 ms           27 m, 47 s           62.69 M               [0m
+800 (6.67%)         131.492 ms           24 m, 32 s           69.57 M               [0m
+900 (7.50%)         135.593 ms           25 m, 5 s            67.01 M               [0m
+1000 (8.33%)        137.842 ms           25 m, 16 s           67.11 M               [0m
+1100 (9.17%)        129.538 ms           23 m, 31 s           73.07 M               [0m
+1200 (10.00%)       126.540 ms           22 m, 46 s           72.42 M               [0m
+1300 (10.83%)       117.881 ms           21 m, 1 s            78.47 M               [0m
+1400 (11.67%)       142.242 ms           25 m, 7 s            65.63 M               [0m
+1500 (12.50%)       127.845 ms           22 m, 22 s           77.19 M               [0m
+1600 (13.33%)       123.775 ms           21 m, 27 s           73.38 M               [0m
+[03:24:33] Splitting 0.033000824691617976 gaussians: 7523/227964                                splatfactow_model.py:753
+           Duplicating 0.058004772683406154 gaussians: 13223/227964                             splatfactow_model.py:801
+           Culled 14020 gaussians (6573 below alpha thresh, 0 too bigs, 242213 remaining)       splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+800 (6.67%)         131.492 ms           24 m, 32 s           69.57 M               [0m
+900 (7.50%)         135.593 ms           25 m, 5 s            67.01 M               [0m
+1000 (8.33%)        137.842 ms           25 m, 16 s           67.11 M               [0m
+1100 (9.17%)        129.538 ms           23 m, 31 s           73.07 M               [0m
+1200 (10.00%)       126.540 ms           22 m, 46 s           72.42 M               [0m
+1300 (10.83%)       117.881 ms           21 m, 1 s            78.47 M               [0m
+1400 (11.67%)       142.242 ms           25 m, 7 s            65.63 M               [0m
+1500 (12.50%)       127.845 ms           22 m, 22 s           77.19 M               [0m
+1600 (13.33%)       123.775 ms           21 m, 27 s           73.38 M               [0m
+1700 (14.17%)       116.070 ms           19 m, 55 s           79.69 M               [0m
+[03:24:47] Splitting 0.03260353490522804 gaussians: 7897/242213                                 splatfactow_model.py:753
+           Duplicating 0.07187888346207677 gaussians: 17410/242213                              splatfactow_model.py:801
+           Culled 13372 gaussians (5525 below alpha thresh, 0 too bigs, 262045 remaining)       splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+900 (7.50%)         135.593 ms           25 m, 5 s            67.01 M               [0m
+1000 (8.33%)        137.842 ms           25 m, 16 s           67.11 M               [0m
+1100 (9.17%)        129.538 ms           23 m, 31 s           73.07 M               [0m
+1200 (10.00%)       126.540 ms           22 m, 46 s           72.42 M               [0m
+1300 (10.83%)       117.881 ms           21 m, 1 s            78.47 M               [0m
+1400 (11.67%)       142.242 ms           25 m, 7 s            65.63 M               [0m
+1500 (12.50%)       127.845 ms           22 m, 22 s           77.19 M               [0m
+1600 (13.33%)       123.775 ms           21 m, 27 s           73.38 M               [0m
+1700 (14.17%)       116.070 ms           19 m, 55 s           79.69 M               [0m
+1800 (15.00%)       124.702 ms           21 m, 11 s           73.58 M               [0m
+[03:25:05] Splitting 0.027426587036577688 gaussians: 7187/262045                                splatfactow_model.py:753
+           Duplicating 0.06091701806941556 gaussians: 15963/262045                              splatfactow_model.py:801
+           Culled 13389 gaussians (6236 below alpha thresh, 0 too bigs, 278993 remaining)       splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+1000 (8.33%)        137.842 ms           25 m, 16 s           67.11 M               [0m
+1100 (9.17%)        129.538 ms           23 m, 31 s           73.07 M               [0m
+1200 (10.00%)       126.540 ms           22 m, 46 s           72.42 M               [0m
+1300 (10.83%)       117.881 ms           21 m, 1 s            78.47 M               [0m
+1400 (11.67%)       142.242 ms           25 m, 7 s            65.63 M               [0m
+1500 (12.50%)       127.845 ms           22 m, 22 s           77.19 M               [0m
+1600 (13.33%)       123.775 ms           21 m, 27 s           73.38 M               [0m
+1700 (14.17%)       116.070 ms           19 m, 55 s           79.69 M               [0m
+1800 (15.00%)       124.702 ms           21 m, 11 s           73.58 M               [0m
+1900 (15.83%)       213.230 ms           35 m, 53 s           48.96 M               [0m
+[03:25:19] Splitting 0.026853720344238028 gaussians: 7492/278993                                splatfactow_model.py:753
+           Duplicating 0.06629198582043277 gaussians: 18495/278993                              splatfactow_model.py:801
+           Culled 12943 gaussians (5499 below alpha thresh, 0 too bigs, 299529 remaining)       splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+1100 (9.17%)        129.538 ms           23 m, 31 s           73.07 M               [0m
+1200 (10.00%)       126.540 ms           22 m, 46 s           72.42 M               [0m
+1300 (10.83%)       117.881 ms           21 m, 1 s            78.47 M               [0m
+1400 (11.67%)       142.242 ms           25 m, 7 s            65.63 M               [0m
+1500 (12.50%)       127.845 ms           22 m, 22 s           77.19 M               [0m
+1600 (13.33%)       123.775 ms           21 m, 27 s           73.38 M               [0m
+1700 (14.17%)       116.070 ms           19 m, 55 s           79.69 M               [0m
+1800 (15.00%)       124.702 ms           21 m, 11 s           73.58 M               [0m
+1900 (15.83%)       213.230 ms           35 m, 53 s           48.96 M               [0m
+2000 (16.67%)       129.599 ms           21 m, 35 s           73.00 M               [0m
+[03:25:34] Splitting 0.02176083117160609 gaussians: 6518/299529                                 splatfactow_model.py:753
+           Duplicating 0.05548043762039736 gaussians: 16618/299529                              splatfactow_model.py:801
+           Culled 12112 gaussians (5627 below alpha thresh, 0 too bigs, 317071 remaining)       splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+1200 (10.00%)       126.540 ms           22 m, 46 s           72.42 M               [0m
+1300 (10.83%)       117.881 ms           21 m, 1 s            78.47 M               [0m
+1400 (11.67%)       142.242 ms           25 m, 7 s            65.63 M               [0m
+1500 (12.50%)       127.845 ms           22 m, 22 s           77.19 M               [0m
+1600 (13.33%)       123.775 ms           21 m, 27 s           73.38 M               [0m
+1700 (14.17%)       116.070 ms           19 m, 55 s           79.69 M               [0m
+1800 (15.00%)       124.702 ms           21 m, 11 s           73.58 M               [0m
+1900 (15.83%)       213.230 ms           35 m, 53 s           48.96 M               [0m
+2000 (16.67%)       129.599 ms           21 m, 35 s           73.00 M               [0m
+2100 (17.50%)       146.264 ms           24 m, 8 s            62.72 M               [0m
+[03:25:48] Splitting 0.026375795957372324 gaussians: 8363/317071                                splatfactow_model.py:753
+           Duplicating 0.07700798874699988 gaussians: 24417/317071                              splatfactow_model.py:801
+           Culled 13405 gaussians (5066 below alpha thresh, 0 too bigs, 344809 remaining)       splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+1300 (10.83%)       117.881 ms           21 m, 1 s            78.47 M               [0m
+1400 (11.67%)       142.242 ms           25 m, 7 s            65.63 M               [0m
+1500 (12.50%)       127.845 ms           22 m, 22 s           77.19 M               [0m
+1600 (13.33%)       123.775 ms           21 m, 27 s           73.38 M               [0m
+1700 (14.17%)       116.070 ms           19 m, 55 s           79.69 M               [0m
+1800 (15.00%)       124.702 ms           21 m, 11 s           73.58 M               [0m
+1900 (15.83%)       213.230 ms           35 m, 53 s           48.96 M               [0m
+2000 (16.67%)       129.599 ms           21 m, 35 s           73.00 M               [0m
+2100 (17.50%)       146.264 ms           24 m, 8 s            62.72 M               [0m
+2200 (18.33%)       141.413 ms           23 m, 5 s            65.89 M               [0m
+[03:26:04] Splitting 0.018552299968968327 gaussians: 6397/344809                                splatfactow_model.py:753
+           Duplicating 0.06051176158394937 gaussians: 20865/344809                              splatfactow_model.py:801
+           Culled 12413 gaussians (6034 below alpha thresh, 0 too bigs, 366055 remaining)       splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+1400 (11.67%)       142.242 ms           25 m, 7 s            65.63 M               [0m
+1500 (12.50%)       127.845 ms           22 m, 22 s           77.19 M               [0m
+1600 (13.33%)       123.775 ms           21 m, 27 s           73.38 M               [0m
+1700 (14.17%)       116.070 ms           19 m, 55 s           79.69 M               [0m
+1800 (15.00%)       124.702 ms           21 m, 11 s           73.58 M               [0m
+1900 (15.83%)       213.230 ms           35 m, 53 s           48.96 M               [0m
+2000 (16.67%)       129.599 ms           21 m, 35 s           73.00 M               [0m
+2100 (17.50%)       146.264 ms           24 m, 8 s            62.72 M               [0m
+2200 (18.33%)       141.413 ms           23 m, 5 s            65.89 M               [0m
+2300 (19.17%)       186.409 ms           30 m, 8 s            52.57 M               [0m
+[03:26:20] Splitting 0.01611506467607327 gaussians: 5899/366055                                 splatfactow_model.py:753
+           Duplicating 0.05319146029968174 gaussians: 19471/366055                              splatfactow_model.py:801
+           Culled 11844 gaussians (5962 below alpha thresh, 0 too bigs, 385480 remaining)       splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+1500 (12.50%)       127.845 ms           22 m, 22 s           77.19 M               [0m
+1600 (13.33%)       123.775 ms           21 m, 27 s           73.38 M               [0m
+1700 (14.17%)       116.070 ms           19 m, 55 s           79.69 M               [0m
+1800 (15.00%)       124.702 ms           21 m, 11 s           73.58 M               [0m
+1900 (15.83%)       213.230 ms           35 m, 53 s           48.96 M               [0m
+2000 (16.67%)       129.599 ms           21 m, 35 s           73.00 M               [0m
+2100 (17.50%)       146.264 ms           24 m, 8 s            62.72 M               [0m
+2200 (18.33%)       141.413 ms           23 m, 5 s            65.89 M               [0m
+2300 (19.17%)       186.409 ms           30 m, 8 s            52.57 M               [0m
+2400 (20.00%)       137.756 ms           22 m, 2 s            68.19 M               [0m
+[03:26:34] Splitting 0.01625246445989416 gaussians: 6265/385480                                 splatfactow_model.py:753
+           Duplicating 0.06034813738715368 gaussians: 23263/385480                              splatfactow_model.py:801
+           Culled 12084 gaussians (5839 below alpha thresh, 0 too bigs, 409189 remaining)       splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+1600 (13.33%)       123.775 ms           21 m, 27 s           73.38 M               [0m
+1700 (14.17%)       116.070 ms           19 m, 55 s           79.69 M               [0m
+1800 (15.00%)       124.702 ms           21 m, 11 s           73.58 M               [0m
+1900 (15.83%)       213.230 ms           35 m, 53 s           48.96 M               [0m
+2000 (16.67%)       129.599 ms           21 m, 35 s           73.00 M               [0m
+2100 (17.50%)       146.264 ms           24 m, 8 s            62.72 M               [0m
+2200 (18.33%)       141.413 ms           23 m, 5 s            65.89 M               [0m
+2300 (19.17%)       186.409 ms           30 m, 8 s            52.57 M               [0m
+2400 (20.00%)       137.756 ms           22 m, 2 s            68.19 M               [0m
+2500 (20.83%)       136.251 ms           21 m, 34 s           69.40 M               [0m
+[03:26:49] Splitting 0.015782437944324018 gaussians: 6458/409189                                splatfactow_model.py:753
+           Duplicating 0.06156812622040182 gaussians: 25193/409189                              splatfactow_model.py:801
+           Culled 12449 gaussians (6019 below alpha thresh, 0 too bigs, 434849 remaining)       splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+1700 (14.17%)       116.070 ms           19 m, 55 s           79.69 M               [0m
+1800 (15.00%)       124.702 ms           21 m, 11 s           73.58 M               [0m
+1900 (15.83%)       213.230 ms           35 m, 53 s           48.96 M               [0m
+2000 (16.67%)       129.599 ms           21 m, 35 s           73.00 M               [0m
+2100 (17.50%)       146.264 ms           24 m, 8 s            62.72 M               [0m
+2200 (18.33%)       141.413 ms           23 m, 5 s            65.89 M               [0m
+2300 (19.17%)       186.409 ms           30 m, 8 s            52.57 M               [0m
+2400 (20.00%)       137.756 ms           22 m, 2 s            68.19 M               [0m
+2500 (20.83%)       136.251 ms           21 m, 34 s           69.40 M               [0m
+2600 (21.67%)       124.224 ms           19 m, 27 s           74.77 M               [0m
+[03:27:03] Splitting 0.014720052248021727 gaussians: 6401/434849                                splatfactow_model.py:753
+           Duplicating 0.06961726944295606 gaussians: 30273/434849                              splatfactow_model.py:801
+           Culled 12847 gaussians (6471 below alpha thresh, 0 too bigs, 465077 remaining)       splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+1800 (15.00%)       124.702 ms           21 m, 11 s           73.58 M               [0m
+1900 (15.83%)       213.230 ms           35 m, 53 s           48.96 M               [0m
+2000 (16.67%)       129.599 ms           21 m, 35 s           73.00 M               [0m
+2100 (17.50%)       146.264 ms           24 m, 8 s            62.72 M               [0m
+2200 (18.33%)       141.413 ms           23 m, 5 s            65.89 M               [0m
+2300 (19.17%)       186.409 ms           30 m, 8 s            52.57 M               [0m
+2400 (20.00%)       137.756 ms           22 m, 2 s            68.19 M               [0m
+2500 (20.83%)       136.251 ms           21 m, 34 s           69.40 M               [0m
+2600 (21.67%)       124.224 ms           19 m, 27 s           74.77 M               [0m
+2700 (22.50%)       138.145 ms           21 m, 24 s           67.90 M               [0m
+[03:27:18] Splitting 0.01062189701920327 gaussians: 4940/465077                                 splatfactow_model.py:753
+           Duplicating 0.0510840140449861 gaussians: 23758/465077                               splatfactow_model.py:801
+           Culled 12536 gaussians (7620 below alpha thresh, 0 too bigs, 486179 remaining)       splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+1900 (15.83%)       213.230 ms           35 m, 53 s           48.96 M               [0m
+2000 (16.67%)       129.599 ms           21 m, 35 s           73.00 M               [0m
+2100 (17.50%)       146.264 ms           24 m, 8 s            62.72 M               [0m
+2200 (18.33%)       141.413 ms           23 m, 5 s            65.89 M               [0m
+2300 (19.17%)       186.409 ms           30 m, 8 s            52.57 M               [0m
+2400 (20.00%)       137.756 ms           22 m, 2 s            68.19 M               [0m
+2500 (20.83%)       136.251 ms           21 m, 34 s           69.40 M               [0m
+2600 (21.67%)       124.224 ms           19 m, 27 s           74.77 M               [0m
+2700 (22.50%)       138.145 ms           21 m, 24 s           67.90 M               [0m
+2800 (23.33%)       132.337 ms           20 m, 17 s           71.45 M               [0m
+[03:27:34] Splitting 0.009564378551932519 gaussians: 4650/486179                                splatfactow_model.py:753
+           Duplicating 0.04507187681903167 gaussians: 21913/486179                              splatfactow_model.py:801
+           Culled 11567 gaussians (6938 below alpha thresh, 0 too bigs, 505825 remaining)       splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+2000 (16.67%)       129.599 ms           21 m, 35 s           73.00 M               [0m
+2100 (17.50%)       146.264 ms           24 m, 8 s            62.72 M               [0m
+2200 (18.33%)       141.413 ms           23 m, 5 s            65.89 M               [0m
+2300 (19.17%)       186.409 ms           30 m, 8 s            52.57 M               [0m
+2400 (20.00%)       137.756 ms           22 m, 2 s            68.19 M               [0m
+2500 (20.83%)       136.251 ms           21 m, 34 s           69.40 M               [0m
+2600 (21.67%)       124.224 ms           19 m, 27 s           74.77 M               [0m
+2700 (22.50%)       138.145 ms           21 m, 24 s           67.90 M               [0m
+2800 (23.33%)       132.337 ms           20 m, 17 s           71.45 M               [0m
+2900 (24.17%)       160.411 ms           24 m, 19 s           58.35 M               [0m
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+2100 (17.50%)       146.264 ms           24 m, 8 s            62.72 M               [0m
+2200 (18.33%)       141.413 ms           23 m, 5 s            65.89 M               [0m
+2300 (19.17%)       186.409 ms           30 m, 8 s            52.57 M               [0m
+2400 (20.00%)       137.756 ms           22 m, 2 s            68.19 M               [0m
+2500 (20.83%)       136.251 ms           21 m, 34 s           69.40 M               [0m
+2600 (21.67%)       124.224 ms           19 m, 27 s           74.77 M               [0m
+2700 (22.50%)       138.145 ms           21 m, 24 s           67.90 M               [0m
+2800 (23.33%)       132.337 ms           20 m, 17 s           71.45 M               [0m
+2900 (24.17%)       160.411 ms           24 m, 19 s           58.35 M               [0m
+3000 (25.00%)       209.084 ms           31 m, 21 s           58.91 M               [0m
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+2200 (18.33%)       141.413 ms           23 m, 5 s            65.89 M               [0m
+2300 (19.17%)       186.409 ms           30 m, 8 s            52.57 M               [0m
+2400 (20.00%)       137.756 ms           22 m, 2 s            68.19 M               [0m
+2500 (20.83%)       136.251 ms           21 m, 34 s           69.40 M               [0m
+2600 (21.67%)       124.224 ms           19 m, 27 s           74.77 M               [0m
+2700 (22.50%)       138.145 ms           21 m, 24 s           67.90 M               [0m
+2800 (23.33%)       132.337 ms           20 m, 17 s           71.45 M               [0m
+2900 (24.17%)       160.411 ms           24 m, 19 s           58.35 M               [0m
+3000 (25.00%)       209.084 ms           31 m, 21 s           58.91 M               [0m
+3100 (25.83%)       355.348 ms           52 m, 42 s           25.46 M               [0m
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+2300 (19.17%)       186.409 ms           30 m, 8 s            52.57 M               [0m
+2400 (20.00%)       137.756 ms           22 m, 2 s            68.19 M               [0m
+2500 (20.83%)       136.251 ms           21 m, 34 s           69.40 M               [0m
+2600 (21.67%)       124.224 ms           19 m, 27 s           74.77 M               [0m
+2700 (22.50%)       138.145 ms           21 m, 24 s           67.90 M               [0m
+2800 (23.33%)       132.337 ms           20 m, 17 s           71.45 M               [0m
+2900 (24.17%)       160.411 ms           24 m, 19 s           58.35 M               [0m
+3000 (25.00%)       209.084 ms           31 m, 21 s           58.91 M               [0m
+3100 (25.83%)       355.348 ms           52 m, 42 s           25.46 M               [0m
+3200 (26.67%)       348.120 ms           51 m, 3 s            25.98 M               [0m
+[03:29:42] Splitting 0.019686650521425392 gaussians: 9958/505825                                splatfactow_model.py:753
+           Duplicating 0.06294271734295458 gaussians: 31838/505825                              splatfactow_model.py:801
+           Culled 71897 gaussians (60022 below alpha thresh, 2461 too bigs, 485682 remaining)   splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+2400 (20.00%)       137.756 ms           22 m, 2 s            68.19 M               [0m
+2500 (20.83%)       136.251 ms           21 m, 34 s           69.40 M               [0m
+2600 (21.67%)       124.224 ms           19 m, 27 s           74.77 M               [0m
+2700 (22.50%)       138.145 ms           21 m, 24 s           67.90 M               [0m
+2800 (23.33%)       132.337 ms           20 m, 17 s           71.45 M               [0m
+2900 (24.17%)       160.411 ms           24 m, 19 s           58.35 M               [0m
+3000 (25.00%)       209.084 ms           31 m, 21 s           58.91 M               [0m
+3100 (25.83%)       355.348 ms           52 m, 42 s           25.46 M               [0m
+3200 (26.67%)       348.120 ms           51 m, 3 s            25.98 M               [0m
+3300 (27.50%)       360.328 ms           52 m, 14 s           25.39 M               [0m
+[03:30:18] Splitting 0.01653345192945178 gaussians: 8030/485682                                 splatfactow_model.py:753
+           Duplicating 0.06940755473746196 gaussians: 33710/485682                              splatfactow_model.py:801
+           Culled 22221 gaussians (13372 below alpha thresh, 1091 too bigs, 513231 remaining)   splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+2500 (20.83%)       136.251 ms           21 m, 34 s           69.40 M               [0m
+2600 (21.67%)       124.224 ms           19 m, 27 s           74.77 M               [0m
+2700 (22.50%)       138.145 ms           21 m, 24 s           67.90 M               [0m
+2800 (23.33%)       132.337 ms           20 m, 17 s           71.45 M               [0m
+2900 (24.17%)       160.411 ms           24 m, 19 s           58.35 M               [0m
+3000 (25.00%)       209.084 ms           31 m, 21 s           58.91 M               [0m
+3100 (25.83%)       355.348 ms           52 m, 42 s           25.46 M               [0m
+3200 (26.67%)       348.120 ms           51 m, 3 s            25.98 M               [0m
+3300 (27.50%)       360.328 ms           52 m, 14 s           25.39 M               [0m
+3400 (28.33%)       343.863 ms           49 m, 17 s           26.38 M               [0m
+[03:30:52] Splitting 0.0143015523224435 gaussians: 7340/513231                                  splatfactow_model.py:753
+           Duplicating 0.0737172929928239 gaussians: 37834/513231                               splatfactow_model.py:801
+           Culled 19851 gaussians (12227 below alpha thresh, 468 too bigs, 545894 remaining)    splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+2600 (21.67%)       124.224 ms           19 m, 27 s           74.77 M               [0m
+2700 (22.50%)       138.145 ms           21 m, 24 s           67.90 M               [0m
+2800 (23.33%)       132.337 ms           20 m, 17 s           71.45 M               [0m
+2900 (24.17%)       160.411 ms           24 m, 19 s           58.35 M               [0m
+3000 (25.00%)       209.084 ms           31 m, 21 s           58.91 M               [0m
+3100 (25.83%)       355.348 ms           52 m, 42 s           25.46 M               [0m
+3200 (26.67%)       348.120 ms           51 m, 3 s            25.98 M               [0m
+3300 (27.50%)       360.328 ms           52 m, 14 s           25.39 M               [0m
+3400 (28.33%)       343.863 ms           49 m, 17 s           26.38 M               [0m
+3500 (29.17%)       353.629 ms           50 m, 5 s            25.65 M               [0m
+[03:31:26] Splitting 0.008629880526256012 gaussians: 4711/545894                                splatfactow_model.py:753
+           Duplicating 0.03821254675816184 gaussians: 20860/545894                              splatfactow_model.py:801
+           Culled 17569 gaussians (12600 below alpha thresh, 368 too bigs, 558607 remaining)    splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+2700 (22.50%)       138.145 ms           21 m, 24 s           67.90 M               [0m
+2800 (23.33%)       132.337 ms           20 m, 17 s           71.45 M               [0m
+2900 (24.17%)       160.411 ms           24 m, 19 s           58.35 M               [0m
+3000 (25.00%)       209.084 ms           31 m, 21 s           58.91 M               [0m
+3100 (25.83%)       355.348 ms           52 m, 42 s           25.46 M               [0m
+3200 (26.67%)       348.120 ms           51 m, 3 s            25.98 M               [0m
+3300 (27.50%)       360.328 ms           52 m, 14 s           25.39 M               [0m
+3400 (28.33%)       343.863 ms           49 m, 17 s           26.38 M               [0m
+3500 (29.17%)       353.629 ms           50 m, 5 s            25.65 M               [0m
+3600 (30.00%)       335.005 ms           46 m, 54 s           27.21 M               [0m
+[03:32:00] Splitting 0.013909600130324181 gaussians: 7770/558607                                splatfactow_model.py:753
+           Duplicating 0.07340402107384977 gaussians: 41004/558607                              splatfactow_model.py:801
+           Culled 17706 gaussians (9679 below alpha thresh, 369 too bigs, 597445 remaining)     splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+2800 (23.33%)       132.337 ms           20 m, 17 s           71.45 M               [0m
+2900 (24.17%)       160.411 ms           24 m, 19 s           58.35 M               [0m
+3000 (25.00%)       209.084 ms           31 m, 21 s           58.91 M               [0m
+3100 (25.83%)       355.348 ms           52 m, 42 s           25.46 M               [0m
+3200 (26.67%)       348.120 ms           51 m, 3 s            25.98 M               [0m
+3300 (27.50%)       360.328 ms           52 m, 14 s           25.39 M               [0m
+3400 (28.33%)       343.863 ms           49 m, 17 s           26.38 M               [0m
+3500 (29.17%)       353.629 ms           50 m, 5 s            25.65 M               [0m
+3600 (30.00%)       335.005 ms           46 m, 54 s           27.21 M               [0m
+3700 (30.83%)       345.662 ms           47 m, 48 s           26.29 M               [0m
+[03:32:35] Splitting 0.008620040338441196 gaussians: 5150/597445                                splatfactow_model.py:753
+           Duplicating 0.05609888776372721 gaussians: 33516/597445                              splatfactow_model.py:801
+           Culled 18109 gaussians (12824 below alpha thresh, 203 too bigs, 623152 remaining)    splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+2900 (24.17%)       160.411 ms           24 m, 19 s           58.35 M               [0m
+3000 (25.00%)       209.084 ms           31 m, 21 s           58.91 M               [0m
+3100 (25.83%)       355.348 ms           52 m, 42 s           25.46 M               [0m
+3200 (26.67%)       348.120 ms           51 m, 3 s            25.98 M               [0m
+3300 (27.50%)       360.328 ms           52 m, 14 s           25.39 M               [0m
+3400 (28.33%)       343.863 ms           49 m, 17 s           26.38 M               [0m
+3500 (29.17%)       353.629 ms           50 m, 5 s            25.65 M               [0m
+3600 (30.00%)       335.005 ms           46 m, 54 s           27.21 M               [0m
+3700 (30.83%)       345.662 ms           47 m, 48 s           26.29 M               [0m
+3800 (31.67%)       340.827 ms           46 m, 34 s           26.86 M               [0m
+[03:33:09] Splitting 0.00748132076925052 gaussians: 4662/623152                                 splatfactow_model.py:753
+           Duplicating 0.046574511515649474 gaussians: 29023/623152                             splatfactow_model.py:801
+           Culled 16464 gaussians (11601 below alpha thresh, 269 too bigs, 645035 remaining)    splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+3000 (25.00%)       209.084 ms           31 m, 21 s           58.91 M               [0m
+3100 (25.83%)       355.348 ms           52 m, 42 s           25.46 M               [0m
+3200 (26.67%)       348.120 ms           51 m, 3 s            25.98 M               [0m
+3300 (27.50%)       360.328 ms           52 m, 14 s           25.39 M               [0m
+3400 (28.33%)       343.863 ms           49 m, 17 s           26.38 M               [0m
+3500 (29.17%)       353.629 ms           50 m, 5 s            25.65 M               [0m
+3600 (30.00%)       335.005 ms           46 m, 54 s           27.21 M               [0m
+3700 (30.83%)       345.662 ms           47 m, 48 s           26.29 M               [0m
+3800 (31.67%)       340.827 ms           46 m, 34 s           26.86 M               [0m
+3900 (32.50%)       343.619 ms           46 m, 23 s           26.40 M               [0m
+[03:33:44] Splitting 0.005418310634306665 gaussians: 3495/645035                                splatfactow_model.py:753
+           Duplicating 0.057345725425752093 gaussians: 36990/645035                             splatfactow_model.py:801
+           Culled 14811 gaussians (11320 below alpha thresh, 0 too bigs, 674204 remaining)      splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+3100 (25.83%)       355.348 ms           52 m, 42 s           25.46 M               [0m
+3200 (26.67%)       348.120 ms           51 m, 3 s            25.98 M               [0m
+3300 (27.50%)       360.328 ms           52 m, 14 s           25.39 M               [0m
+3400 (28.33%)       343.863 ms           49 m, 17 s           26.38 M               [0m
+3500 (29.17%)       353.629 ms           50 m, 5 s            25.65 M               [0m
+3600 (30.00%)       335.005 ms           46 m, 54 s           27.21 M               [0m
+3700 (30.83%)       345.662 ms           47 m, 48 s           26.29 M               [0m
+3800 (31.67%)       340.827 ms           46 m, 34 s           26.86 M               [0m
+3900 (32.50%)       343.619 ms           46 m, 23 s           26.40 M               [0m
+4000 (33.33%)       348.919 ms           46 m, 31 s           26.17 M               [0m
+[03:34:21] Splitting 0.0035404714300122813 gaussians: 2387/674204                               splatfactow_model.py:753
+           Duplicating 0.04267847713748361 gaussians: 28774/674204                              splatfactow_model.py:801
+           Culled 14019 gaussians (11637 below alpha thresh, 0 too bigs, 693733 remaining)      splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+3200 (26.67%)       348.120 ms           51 m, 3 s            25.98 M               [0m
+3300 (27.50%)       360.328 ms           52 m, 14 s           25.39 M               [0m
+3400 (28.33%)       343.863 ms           49 m, 17 s           26.38 M               [0m
+3500 (29.17%)       353.629 ms           50 m, 5 s            25.65 M               [0m
+3600 (30.00%)       335.005 ms           46 m, 54 s           27.21 M               [0m
+3700 (30.83%)       345.662 ms           47 m, 48 s           26.29 M               [0m
+3800 (31.67%)       340.827 ms           46 m, 34 s           26.86 M               [0m
+3900 (32.50%)       343.619 ms           46 m, 23 s           26.40 M               [0m
+4000 (33.33%)       348.919 ms           46 m, 31 s           26.17 M               [0m
+4100 (34.17%)       346.220 ms           45 m, 35 s           26.20 M               [0m
+[03:35:03] Splitting 0.003994332113363499 gaussians: 2771/693733                                splatfactow_model.py:753
+           Duplicating 0.048424970413689414 gaussians: 33594/693733                             splatfactow_model.py:801
+           Culled 13586 gaussians (10829 below alpha thresh, 0 too bigs, 719283 remaining)      splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+3300 (27.50%)       360.328 ms           52 m, 14 s           25.39 M               [0m
+3400 (28.33%)       343.863 ms           49 m, 17 s           26.38 M               [0m
+3500 (29.17%)       353.629 ms           50 m, 5 s            25.65 M               [0m
+3600 (30.00%)       335.005 ms           46 m, 54 s           27.21 M               [0m
+3700 (30.83%)       345.662 ms           47 m, 48 s           26.29 M               [0m
+3800 (31.67%)       340.827 ms           46 m, 34 s           26.86 M               [0m
+3900 (32.50%)       343.619 ms           46 m, 23 s           26.40 M               [0m
+4000 (33.33%)       348.919 ms           46 m, 31 s           26.17 M               [0m
+4100 (34.17%)       346.220 ms           45 m, 35 s           26.20 M               [0m
+4200 (35.00%)       469.427 ms           1 h, 1 m, 1 s        20.31 M               [0m
+[03:35:38] Splitting 0.0032351661307162827 gaussians: 2327/719283                               splatfactow_model.py:753
+           Duplicating 0.0369520758866816 gaussians: 26579/719283                               splatfactow_model.py:801
+           Culled 14166 gaussians (11842 below alpha thresh, 0 too bigs, 736350 remaining)      splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+3400 (28.33%)       343.863 ms           49 m, 17 s           26.38 M               [0m
+3500 (29.17%)       353.629 ms           50 m, 5 s            25.65 M               [0m
+3600 (30.00%)       335.005 ms           46 m, 54 s           27.21 M               [0m
+3700 (30.83%)       345.662 ms           47 m, 48 s           26.29 M               [0m
+3800 (31.67%)       340.827 ms           46 m, 34 s           26.86 M               [0m
+3900 (32.50%)       343.619 ms           46 m, 23 s           26.40 M               [0m
+4000 (33.33%)       348.919 ms           46 m, 31 s           26.17 M               [0m
+4100 (34.17%)       346.220 ms           45 m, 35 s           26.20 M               [0m
+4200 (35.00%)       469.427 ms           1 h, 1 m, 1 s        20.31 M               [0m
+4300 (35.83%)       351.056 ms           45 m, 3 s            25.75 M               [0m
+[03:36:16] Splitting 0.0026577035377198343 gaussians: 1957/736350                               splatfactow_model.py:753
+           Duplicating 0.04591430705506892 gaussians: 33809/736350                              splatfactow_model.py:801
+           Culled 12927 gaussians (10978 below alpha thresh, 0 too bigs, 761146 remaining)      splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+3500 (29.17%)       353.629 ms           50 m, 5 s            25.65 M               [0m
+3600 (30.00%)       335.005 ms           46 m, 54 s           27.21 M               [0m
+3700 (30.83%)       345.662 ms           47 m, 48 s           26.29 M               [0m
+3800 (31.67%)       340.827 ms           46 m, 34 s           26.86 M               [0m
+3900 (32.50%)       343.619 ms           46 m, 23 s           26.40 M               [0m
+4000 (33.33%)       348.919 ms           46 m, 31 s           26.17 M               [0m
+4100 (34.17%)       346.220 ms           45 m, 35 s           26.20 M               [0m
+4200 (35.00%)       469.427 ms           1 h, 1 m, 1 s        20.31 M               [0m
+4300 (35.83%)       351.056 ms           45 m, 3 s            25.75 M               [0m
+4400 (36.67%)       383.259 ms           48 m, 32 s           24.25 M               [0m
+[03:36:51] Splitting 0.0037430401000596468 gaussians: 2849/761146                               splatfactow_model.py:753
+           Duplicating 0.0438115683456262 gaussians: 33347/761146                               splatfactow_model.py:801
+[03:36:52] Culled 14817 gaussians (11977 below alpha thresh, 0 too bigs, 785374 remaining)      splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+3600 (30.00%)       335.005 ms           46 m, 54 s           27.21 M               [0m
+3700 (30.83%)       345.662 ms           47 m, 48 s           26.29 M               [0m
+3800 (31.67%)       340.827 ms           46 m, 34 s           26.86 M               [0m
+3900 (32.50%)       343.619 ms           46 m, 23 s           26.40 M               [0m
+4000 (33.33%)       348.919 ms           46 m, 31 s           26.17 M               [0m
+4100 (34.17%)       346.220 ms           45 m, 35 s           26.20 M               [0m
+4200 (35.00%)       469.427 ms           1 h, 1 m, 1 s        20.31 M               [0m
+4300 (35.83%)       351.056 ms           45 m, 3 s            25.75 M               [0m
+4400 (36.67%)       383.259 ms           48 m, 32 s           24.25 M               [0m
+4500 (37.50%)       359.135 ms           44 m, 53 s           25.42 M               [0m
+[03:37:27] Splitting 0.0027744743268812056 gaussians: 2179/785374                               splatfactow_model.py:753
+           Duplicating 0.03706132364962426 gaussians: 29107/785374                              splatfactow_model.py:801
+           Culled 13820 gaussians (11648 below alpha thresh, 0 too bigs, 805019 remaining)      splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+3700 (30.83%)       345.662 ms           47 m, 48 s           26.29 M               [0m
+3800 (31.67%)       340.827 ms           46 m, 34 s           26.86 M               [0m
+3900 (32.50%)       343.619 ms           46 m, 23 s           26.40 M               [0m
+4000 (33.33%)       348.919 ms           46 m, 31 s           26.17 M               [0m
+4100 (34.17%)       346.220 ms           45 m, 35 s           26.20 M               [0m
+4200 (35.00%)       469.427 ms           1 h, 1 m, 1 s        20.31 M               [0m
+4300 (35.83%)       351.056 ms           45 m, 3 s            25.75 M               [0m
+4400 (36.67%)       383.259 ms           48 m, 32 s           24.25 M               [0m
+4500 (37.50%)       359.135 ms           44 m, 53 s           25.42 M               [0m
+4600 (38.33%)       352.440 ms           43 m, 28 s           25.75 M               [0m
+[03:38:03] Splitting 0.0028930994175292756 gaussians: 2329/805019                               splatfactow_model.py:753
+           Duplicating 0.038756849217223444 gaussians: 31200/805019                             splatfactow_model.py:801
+           Culled 13809 gaussians (11485 below alpha thresh, 0 too bigs, 827068 remaining)      splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+3800 (31.67%)       340.827 ms           46 m, 34 s           26.86 M               [0m
+3900 (32.50%)       343.619 ms           46 m, 23 s           26.40 M               [0m
+4000 (33.33%)       348.919 ms           46 m, 31 s           26.17 M               [0m
+4100 (34.17%)       346.220 ms           45 m, 35 s           26.20 M               [0m
+4200 (35.00%)       469.427 ms           1 h, 1 m, 1 s        20.31 M               [0m
+4300 (35.83%)       351.056 ms           45 m, 3 s            25.75 M               [0m
+4400 (36.67%)       383.259 ms           48 m, 32 s           24.25 M               [0m
+4500 (37.50%)       359.135 ms           44 m, 53 s           25.42 M               [0m
+4600 (38.33%)       352.440 ms           43 m, 28 s           25.75 M               [0m
+4700 (39.17%)       368.945 ms           44 m, 53 s           24.63 M               [0m
+[03:38:39] Splitting 0.0045546436326880015 gaussians: 3767/827068                               splatfactow_model.py:753
+           Duplicating 0.058087122219696564 gaussians: 48042/827068                             splatfactow_model.py:801
+[03:38:40] Culled 15890 gaussians (12130 below alpha thresh, 0 too bigs, 866754 remaining)      splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+3900 (32.50%)       343.619 ms           46 m, 23 s           26.40 M               [0m
+4000 (33.33%)       348.919 ms           46 m, 31 s           26.17 M               [0m
+4100 (34.17%)       346.220 ms           45 m, 35 s           26.20 M               [0m
+4200 (35.00%)       469.427 ms           1 h, 1 m, 1 s        20.31 M               [0m
+4300 (35.83%)       351.056 ms           45 m, 3 s            25.75 M               [0m
+4400 (36.67%)       383.259 ms           48 m, 32 s           24.25 M               [0m
+4500 (37.50%)       359.135 ms           44 m, 53 s           25.42 M               [0m
+4600 (38.33%)       352.440 ms           43 m, 28 s           25.75 M               [0m
+4700 (39.17%)       368.945 ms           44 m, 53 s           24.63 M               [0m
+4800 (40.00%)       370.412 ms           44 m, 26 s           24.51 M               [0m
+[03:39:16] Splitting 0.0020490242906291752 gaussians: 1776/866754                               splatfactow_model.py:753
+           Duplicating 0.02857904318872483 gaussians: 24771/866754                              splatfactow_model.py:801
+           Culled 14736 gaussians (12963 below alpha thresh, 0 too bigs, 880341 remaining)      splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+4000 (33.33%)       348.919 ms           46 m, 31 s           26.17 M               [0m
+4100 (34.17%)       346.220 ms           45 m, 35 s           26.20 M               [0m
+4200 (35.00%)       469.427 ms           1 h, 1 m, 1 s        20.31 M               [0m
+4300 (35.83%)       351.056 ms           45 m, 3 s            25.75 M               [0m
+4400 (36.67%)       383.259 ms           48 m, 32 s           24.25 M               [0m
+4500 (37.50%)       359.135 ms           44 m, 53 s           25.42 M               [0m
+4600 (38.33%)       352.440 ms           43 m, 28 s           25.75 M               [0m
+4700 (39.17%)       368.945 ms           44 m, 53 s           24.63 M               [0m
+4800 (40.00%)       370.412 ms           44 m, 26 s           24.51 M               [0m
+4900 (40.83%)       364.650 ms           43 m, 9 s            25.19 M               [0m
+[03:39:53] Splitting 0.003189673092585714 gaussians: 2808/880341                                splatfactow_model.py:753
+           Duplicating 0.036469958800055886 gaussians: 32106/880341                             splatfactow_model.py:801
+           Culled 15615 gaussians (12812 below alpha thresh, 0 too bigs, 902448 remaining)      splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+4100 (34.17%)       346.220 ms           45 m, 35 s           26.20 M               [0m
+4200 (35.00%)       469.427 ms           1 h, 1 m, 1 s        20.31 M               [0m
+4300 (35.83%)       351.056 ms           45 m, 3 s            25.75 M               [0m
+4400 (36.67%)       383.259 ms           48 m, 32 s           24.25 M               [0m
+4500 (37.50%)       359.135 ms           44 m, 53 s           25.42 M               [0m
+4600 (38.33%)       352.440 ms           43 m, 28 s           25.75 M               [0m
+4700 (39.17%)       368.945 ms           44 m, 53 s           24.63 M               [0m
+4800 (40.00%)       370.412 ms           44 m, 26 s           24.51 M               [0m
+4900 (40.83%)       364.650 ms           43 m, 9 s            25.19 M               [0m
+5000 (41.67%)       365.216 ms           42 m, 36 s           24.93 M               [0m
+[03:40:30] Splitting 0.0019380618052231265 gaussians: 1749/902448                               splatfactow_model.py:753
+           Duplicating 0.03157522649504459 gaussians: 28495/902448                              splatfactow_model.py:801
+           Culled 13355 gaussians (11612 below alpha thresh, 0 too bigs, 921086 remaining)      splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+4200 (35.00%)       469.427 ms           1 h, 1 m, 1 s        20.31 M               [0m
+4300 (35.83%)       351.056 ms           45 m, 3 s            25.75 M               [0m
+4400 (36.67%)       383.259 ms           48 m, 32 s           24.25 M               [0m
+4500 (37.50%)       359.135 ms           44 m, 53 s           25.42 M               [0m
+4600 (38.33%)       352.440 ms           43 m, 28 s           25.75 M               [0m
+4700 (39.17%)       368.945 ms           44 m, 53 s           24.63 M               [0m
+4800 (40.00%)       370.412 ms           44 m, 26 s           24.51 M               [0m
+4900 (40.83%)       364.650 ms           43 m, 9 s            25.19 M               [0m
+5000 (41.67%)       365.216 ms           42 m, 36 s           24.93 M               [0m
+5100 (42.50%)       366.245 ms           42 m, 7 s            24.87 M               [0m
+[03:41:07] Splitting 0.0036120405695016537 gaussians: 3327/921086                               splatfactow_model.py:753
+           Duplicating 0.048433045339957397 gaussians: 44611/921086                             splatfactow_model.py:801
+           Culled 15361 gaussians (12037 below alpha thresh, 0 too bigs, 956990 remaining)      splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+4300 (35.83%)       351.056 ms           45 m, 3 s            25.75 M               [0m
+4400 (36.67%)       383.259 ms           48 m, 32 s           24.25 M               [0m
+4500 (37.50%)       359.135 ms           44 m, 53 s           25.42 M               [0m
+4600 (38.33%)       352.440 ms           43 m, 28 s           25.75 M               [0m
+4700 (39.17%)       368.945 ms           44 m, 53 s           24.63 M               [0m
+4800 (40.00%)       370.412 ms           44 m, 26 s           24.51 M               [0m
+4900 (40.83%)       364.650 ms           43 m, 9 s            25.19 M               [0m
+5000 (41.67%)       365.216 ms           42 m, 36 s           24.93 M               [0m
+5100 (42.50%)       366.245 ms           42 m, 7 s            24.87 M               [0m
+5200 (43.33%)       373.159 ms           42 m, 17 s           24.29 M               [0m
+[03:41:44] Splitting 0.0021316837166532564 gaussians: 2040/956990                               splatfactow_model.py:753
+           Duplicating 0.03689484738607509 gaussians: 35308/956990                              splatfactow_model.py:801
+           Culled 15952 gaussians (13917 below alpha thresh, 0 too bigs, 980426 remaining)      splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+4400 (36.67%)       383.259 ms           48 m, 32 s           24.25 M               [0m
+4500 (37.50%)       359.135 ms           44 m, 53 s           25.42 M               [0m
+4600 (38.33%)       352.440 ms           43 m, 28 s           25.75 M               [0m
+4700 (39.17%)       368.945 ms           44 m, 53 s           24.63 M               [0m
+4800 (40.00%)       370.412 ms           44 m, 26 s           24.51 M               [0m
+4900 (40.83%)       364.650 ms           43 m, 9 s            25.19 M               [0m
+5000 (41.67%)       365.216 ms           42 m, 36 s           24.93 M               [0m
+5100 (42.50%)       366.245 ms           42 m, 7 s            24.87 M               [0m
+5200 (43.33%)       373.159 ms           42 m, 17 s           24.29 M               [0m
+5300 (44.17%)       372.971 ms           41 m, 38 s           24.28 M               [0m
+[03:42:21] Splitting 0.0028936401115433495 gaussians: 2837/980426                               splatfactow_model.py:753
+           Duplicating 0.041662501810437506 gaussians: 40847/980426                             splatfactow_model.py:801
+           Culled 15248 gaussians (12421 below alpha thresh, 0 too bigs, 1011699 remaining)     splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+4500 (37.50%)       359.135 ms           44 m, 53 s           25.42 M               [0m
+4600 (38.33%)       352.440 ms           43 m, 28 s           25.75 M               [0m
+4700 (39.17%)       368.945 ms           44 m, 53 s           24.63 M               [0m
+4800 (40.00%)       370.412 ms           44 m, 26 s           24.51 M               [0m
+4900 (40.83%)       364.650 ms           43 m, 9 s            25.19 M               [0m
+5000 (41.67%)       365.216 ms           42 m, 36 s           24.93 M               [0m
+5100 (42.50%)       366.245 ms           42 m, 7 s            24.87 M               [0m
+5200 (43.33%)       373.159 ms           42 m, 17 s           24.29 M               [0m
+5300 (44.17%)       372.971 ms           41 m, 38 s           24.28 M               [0m
+5400 (45.00%)       376.110 ms           41 m, 22 s           24.25 M               [0m
+[03:42:58] Splitting 0.0032124179227220745 gaussians: 3250/1011699                              splatfactow_model.py:753
+           Duplicating 0.03809532281834815 gaussians: 38541/1011699                             splatfactow_model.py:801
+           Culled 17544 gaussians (14308 below alpha thresh, 0 too bigs, 1039196 remaining)     splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+4600 (38.33%)       352.440 ms           43 m, 28 s           25.75 M               [0m
+4700 (39.17%)       368.945 ms           44 m, 53 s           24.63 M               [0m
+4800 (40.00%)       370.412 ms           44 m, 26 s           24.51 M               [0m
+4900 (40.83%)       364.650 ms           43 m, 9 s            25.19 M               [0m
+5000 (41.67%)       365.216 ms           42 m, 36 s           24.93 M               [0m
+5100 (42.50%)       366.245 ms           42 m, 7 s            24.87 M               [0m
+5200 (43.33%)       373.159 ms           42 m, 17 s           24.29 M               [0m
+5300 (44.17%)       372.971 ms           41 m, 38 s           24.28 M               [0m
+5400 (45.00%)       376.110 ms           41 m, 22 s           24.25 M               [0m
+5500 (45.83%)       365.642 ms           39 m, 36 s           24.76 M               [0m
+[03:43:40] Splitting 0.001572369408658232 gaussians: 1634/1039196                               splatfactow_model.py:753
+           Duplicating 0.030333065177310152 gaussians: 31522/1039196                            splatfactow_model.py:801
+           Culled 16365 gaussians (14737 below alpha thresh, 0 too bigs, 1057621 remaining)     splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+4700 (39.17%)       368.945 ms           44 m, 53 s           24.63 M               [0m
+4800 (40.00%)       370.412 ms           44 m, 26 s           24.51 M               [0m
+4900 (40.83%)       364.650 ms           43 m, 9 s            25.19 M               [0m
+5000 (41.67%)       365.216 ms           42 m, 36 s           24.93 M               [0m
+5100 (42.50%)       366.245 ms           42 m, 7 s            24.87 M               [0m
+5200 (43.33%)       373.159 ms           42 m, 17 s           24.29 M               [0m
+5300 (44.17%)       372.971 ms           41 m, 38 s           24.28 M               [0m
+5400 (45.00%)       376.110 ms           41 m, 22 s           24.25 M               [0m
+5500 (45.83%)       365.642 ms           39 m, 36 s           24.76 M               [0m
+5600 (46.67%)       467.470 ms           49 m, 51 s           20.20 M               [0m
+[03:44:17] Splitting 0.00190049176406293 gaussians: 2010/1057621                                splatfactow_model.py:753
+           Duplicating 0.03235374486701758 gaussians: 34218/1057621                             splatfactow_model.py:801
+           Culled 15372 gaussians (13366 below alpha thresh, 0 too bigs, 1080487 remaining)     splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+4800 (40.00%)       370.412 ms           44 m, 26 s           24.51 M               [0m
+4900 (40.83%)       364.650 ms           43 m, 9 s            25.19 M               [0m
+5000 (41.67%)       365.216 ms           42 m, 36 s           24.93 M               [0m
+5100 (42.50%)       366.245 ms           42 m, 7 s            24.87 M               [0m
+5200 (43.33%)       373.159 ms           42 m, 17 s           24.29 M               [0m
+5300 (44.17%)       372.971 ms           41 m, 38 s           24.28 M               [0m
+5400 (45.00%)       376.110 ms           41 m, 22 s           24.25 M               [0m
+5500 (45.83%)       365.642 ms           39 m, 36 s           24.76 M               [0m
+5600 (46.67%)       467.470 ms           49 m, 51 s           20.20 M               [0m
+5700 (47.50%)       377.780 ms           39 m, 40 s           24.10 M               [0m
+[03:44:54] Splitting 0.002663613722330764 gaussians: 2878/1080487                               splatfactow_model.py:753
+           Duplicating 0.049456402529600076 gaussians: 53437/1080487                            splatfactow_model.py:801
+           Culled 16630 gaussians (13759 below alpha thresh, 0 too bigs, 1123050 remaining)     splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+4900 (40.83%)       364.650 ms           43 m, 9 s            25.19 M               [0m
+5000 (41.67%)       365.216 ms           42 m, 36 s           24.93 M               [0m
+5100 (42.50%)       366.245 ms           42 m, 7 s            24.87 M               [0m
+5200 (43.33%)       373.159 ms           42 m, 17 s           24.29 M               [0m
+5300 (44.17%)       372.971 ms           41 m, 38 s           24.28 M               [0m
+5400 (45.00%)       376.110 ms           41 m, 22 s           24.25 M               [0m
+5500 (45.83%)       365.642 ms           39 m, 36 s           24.76 M               [0m
+5600 (46.67%)       467.470 ms           49 m, 51 s           20.20 M               [0m
+5700 (47.50%)       377.780 ms           39 m, 40 s           24.10 M               [0m
+5800 (48.33%)       370.855 ms           38 m, 19 s           24.46 M               [0m
+[03:45:32] Splitting 0.0013757179110458128 gaussians: 1545/1123050                              splatfactow_model.py:753
+           Duplicating 0.023880503984684564 gaussians: 26819/1123050                            splatfactow_model.py:801
+           Culled 16119 gaussians (14587 below alpha thresh, 0 too bigs, 1136840 remaining)     splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+5000 (41.67%)       365.216 ms           42 m, 36 s           24.93 M               [0m
+5100 (42.50%)       366.245 ms           42 m, 7 s            24.87 M               [0m
+5200 (43.33%)       373.159 ms           42 m, 17 s           24.29 M               [0m
+5300 (44.17%)       372.971 ms           41 m, 38 s           24.28 M               [0m
+5400 (45.00%)       376.110 ms           41 m, 22 s           24.25 M               [0m
+5500 (45.83%)       365.642 ms           39 m, 36 s           24.76 M               [0m
+5600 (46.67%)       467.470 ms           49 m, 51 s           20.20 M               [0m
+5700 (47.50%)       377.780 ms           39 m, 40 s           24.10 M               [0m
+5800 (48.33%)       370.855 ms           38 m, 19 s           24.46 M               [0m
+5900 (49.17%)       390.699 ms           39 m, 43 s           23.34 M               [0m
+Printing profiling stats, from longest to shortest duration in seconds
+Trainer.train_iteration: 0.2252              
+VanillaPipeline.get_train_loss_dict: 0.2086              
+Trainer.eval_iteration: 0.0000              
+Traceback (most recent call last):
+  File "/opt/conda/bin/ns-train", line 8, in <module>
+    sys.exit(entrypoint())
+  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/scripts/train.py", line 273, in entrypoint
+    main(
+  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/scripts/train.py", line 258, in main
+    launch(
+  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/scripts/train.py", line 190, in launch
+    main_func(local_rank=0, world_size=world_size, config=config)
+  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/scripts/train.py", line 101, in train_loop
+    trainer.train()
+  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/engine/trainer.py", line 266, in train
+    loss, loss_dict, metrics_dict = self.train_iteration(step)
+  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/utils/profiler.py", line 111, in inner
+    out = func(*args, **kwargs)
+  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/engine/trainer.py", line 504, in train_iteration
+    self.grad_scaler.scale(loss).backward()  # type: ignore
+  File "/opt/conda/lib/python3.10/site-packages/torch/_tensor.py", line 487, in backward
+    torch.autograd.backward(
+  File "/opt/conda/lib/python3.10/site-packages/torch/autograd/__init__.py", line 200, in backward
+    Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+  File "/opt/conda/lib/python3.10/site-packages/torch/autograd/function.py", line 274, in apply
+    return user_fn(self, *args)
+  File "/opt/conda/lib/python3.10/site-packages/gsplat/cuda/_wrapper.py", line 1227, in backward
+    v_coeffs, v_dirs = _make_lazy_cuda_func("compute_sh_bwd")(
+  File "/opt/conda/lib/python3.10/site-packages/gsplat/cuda/_wrapper.py", line 14, in call_cuda
+    return getattr(_C, name)(*args, **kwargs)
+torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 8.14 GiB (GPU 0; 22.30 GiB total capacity; 15.26 GiB already allocated; 6.53 GiB free; 15.41 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
