@@ -201,6 +201,90 @@ def boundary_support_images_for_pair(
     return [image_name for image_name in shared if image_name in first_border or image_name in second_border]
 
 
+def boundary_support_details_for_pair(
+    first_tile: Mapping[str, Any],
+    second_tile: Mapping[str, Any],
+    view_buckets: Mapping[str, Sequence[str]] | None,
+    *,
+    min_boundary_support_images: int = 4,
+) -> dict[str, Any]:
+    """Choose boundary support for pair rungs, falling back to shared assigned images.
+
+    Frozen boundary buckets are the strongest signal. Some historical manifests only
+    preserve shared assigned cameras for otherwise plausible adjacent seams, so keep
+    those pairs eligible while making the weaker support source machine-readable.
+    """
+
+    min_support = max(1, int(min_boundary_support_images))
+    boundary_set = set(
+        ordered_unique(
+            (view_buckets or {}).get("boundary_camera_ids", [])
+            or (view_buckets or {}).get("boundary", [])
+        )
+    )
+    shared = shared_tile_images(first_tile, second_tile)
+    explicit_bucket_images = [image_name for image_name in shared if image_name in boundary_set]
+    first_border = set(ordered_unique(first_tile.get("border_camera_ids", [])))
+    second_border = set(ordered_unique(second_tile.get("border_camera_ids", [])))
+    border_images = [
+        image_name for image_name in shared if image_name in first_border or image_name in second_border
+    ]
+
+    support_images: list[str]
+    support_source: str
+    support_quality: str
+    uses_shared_fallback = False
+    poor_support = False
+    if len(explicit_bucket_images) >= min_support:
+        support_images = explicit_bucket_images
+        support_source = "view_bucket_intersection"
+        support_quality = "explicit_boundary_bucket"
+    elif len(border_images) >= min_support:
+        support_images = border_images
+        support_source = "border_camera_intersection"
+        support_quality = "border_role_overlap"
+    elif len(shared) >= min_support:
+        support_images = shared
+        support_source = "shared_assigned_images_fallback"
+        uses_shared_fallback = True
+        if explicit_bucket_images:
+            support_quality = "shared_images_after_poor_boundary_bucket"
+        elif border_images:
+            support_quality = "shared_images_after_poor_border_support"
+        elif boundary_set:
+            support_quality = "shared_images_no_bucket_intersection"
+        else:
+            support_quality = "shared_images_no_boundary_bucket"
+    elif explicit_bucket_images:
+        support_images = explicit_bucket_images
+        support_source = "view_bucket_intersection"
+        support_quality = "poor_explicit_boundary_bucket"
+        poor_support = True
+    elif border_images:
+        support_images = border_images
+        support_source = "border_camera_intersection"
+        support_quality = "poor_border_role_overlap"
+        poor_support = True
+    else:
+        support_images = shared
+        support_source = "shared_assigned_images"
+        support_quality = "poor_shared_image_support"
+        poor_support = True
+
+    return {
+        "boundary_support_images": support_images,
+        "boundary_support_count": len(support_images),
+        "boundary_support_source": support_source,
+        "boundary_support_quality": support_quality,
+        "boundary_support_minimum": min_support,
+        "explicit_boundary_support_count": len(explicit_bucket_images),
+        "border_boundary_support_count": len(border_images),
+        "shared_assigned_image_count": len(shared),
+        "uses_shared_assigned_fallback": uses_shared_fallback,
+        "poor_boundary_support": poor_support or len(support_images) < min_support,
+    }
+
+
 def selected_count_ratio_ok(selected_count: int, median_selected_count: float) -> bool:
     if median_selected_count <= 0:
         return selected_count > 0
@@ -570,6 +654,7 @@ def rank_candidate_tile_pairs(
     *,
     merge_report: Mapping[str, Any] | None = None,
     min_shared_assigned_images: int = 24,
+    min_boundary_support_images: int = 4,
 ) -> list[dict[str, Any]]:
     tiles = [dict(tile) for tile in tile_manifest.get("tiles", [])]
     tile_by_id = {str(tile.get("tile_id")): tile for tile in tiles if tile.get("tile_id")}
@@ -612,7 +697,13 @@ def rank_candidate_tile_pairs(
         first_tile = tile_by_id[first_id]
         second_tile = tile_by_id[second_id]
         shared_images = shared_tile_images(first_tile, second_tile)
-        boundary_images = boundary_support_images_for_pair(first_tile, second_tile, view_buckets)
+        boundary_support = boundary_support_details_for_pair(
+            first_tile,
+            second_tile,
+            view_buckets,
+            min_boundary_support_images=min_boundary_support_images,
+        )
+        boundary_images = list(boundary_support["boundary_support_images"])
         first_count = len(tile_selected_image_names(first_tile))
         second_count = len(tile_selected_image_names(second_tile))
         selected_ratio_valid = (
@@ -635,15 +726,20 @@ def rank_candidate_tile_pairs(
         ineligible_reasons: list[str] = []
         if len(shared_images) < min_shared_assigned_images:
             ineligible_reasons.append("shared_assigned_images_below_threshold")
-        if not boundary_images:
-            ineligible_reasons.append("boundary_support_empty")
+        if boundary_support["poor_boundary_support"]:
+            ineligible_reasons.append("boundary_support_below_minimum")
         if not ownership_bounds_valid:
             ineligible_reasons.append("ownership_bounds_invalid")
         if not selected_ratio_valid:
             ineligible_reasons.append("selected_image_count_outside_0_5x_1_5x_median")
+        boundary_score_weight = 8.0
+        if boundary_support["boundary_support_source"] == "border_camera_intersection":
+            boundary_score_weight = 5.0
+        elif boundary_support["uses_shared_assigned_fallback"]:
+            boundary_score_weight = 2.0
         score = (
             len(shared_images) * 3.0
-            + len(boundary_images) * 8.0
+            + len(boundary_images) * boundary_score_weight
             + (20.0 if fallback_involved else 0.0)
             + (10.0 if ownership_bounds_valid else -25.0)
             + (5.0 if selected_ratio_valid else -10.0)
@@ -654,6 +750,13 @@ def rank_candidate_tile_pairs(
                 "shared_assigned_image_count": len(shared_images),
                 "boundary_support_count": len(boundary_images),
                 "boundary_support_images": boundary_images,
+                "boundary_support_source": boundary_support["boundary_support_source"],
+                "boundary_support_quality": boundary_support["boundary_support_quality"],
+                "boundary_support_minimum": boundary_support["boundary_support_minimum"],
+                "explicit_boundary_support_count": boundary_support["explicit_boundary_support_count"],
+                "border_boundary_support_count": boundary_support["border_boundary_support_count"],
+                "uses_shared_assigned_fallback": boundary_support["uses_shared_assigned_fallback"],
+                "poor_boundary_support": boundary_support["poor_boundary_support"],
                 "fallback_involved": fallback_involved,
                 "ownership_bounds_valid": ownership_bounds_valid,
                 "selected_image_counts": {first_id: first_count, second_id: second_count},
@@ -705,11 +808,19 @@ def enrich_tile_manifest_support_metadata(
             neighbor = tile_by_id.get(neighbor_id)
             if neighbor is None:
                 continue
-            boundary_images = boundary_support_images_for_pair(tile, neighbor, view_buckets)
+            boundary_support = boundary_support_details_for_pair(tile, neighbor, view_buckets)
+            boundary_images = list(boundary_support["boundary_support_images"])
             overlap_stats[neighbor_id] = {
                 "shared_assigned_image_count": len(shared_tile_images(tile, neighbor)),
                 "boundary_support_count": len(boundary_images),
                 "boundary_support_images": boundary_images,
+                "boundary_support_source": boundary_support["boundary_support_source"],
+                "boundary_support_quality": boundary_support["boundary_support_quality"],
+                "boundary_support_minimum": boundary_support["boundary_support_minimum"],
+                "explicit_boundary_support_count": boundary_support["explicit_boundary_support_count"],
+                "border_boundary_support_count": boundary_support["border_boundary_support_count"],
+                "uses_shared_assigned_fallback": boundary_support["uses_shared_assigned_fallback"],
+                "poor_boundary_support": boundary_support["poor_boundary_support"],
             }
         tile["overlap_stats_by_neighbor"] = overlap_stats
         tile["load_balance"] = {

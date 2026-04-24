@@ -763,15 +763,92 @@ class GaussianTilePipelineTests(unittest.TestCase):
 
         ranked = tile_pipeline.rank_candidate_tile_pairs(
             manifest,
-            {"boundary_camera_ids": ["boundary_0.jpg"]},
+            {"boundary_camera_ids": [f"shared_{index}.jpg" for index in range(4)]},
             merge_report={"tiles": [{"tile_id": "tile_05", "retention_strategy": "overlap_bounds_fallback"}]},
             min_shared_assigned_images=4,
         )
 
         self.assertEqual(ranked[0]["tile_ids"], ["tile_02", "tile_05"])
         self.assertTrue(ranked[0]["eligible"])
-        self.assertEqual(ranked[0]["boundary_support_count"], 1)
+        self.assertEqual(ranked[0]["boundary_support_count"], 4)
+        self.assertEqual(ranked[0]["boundary_support_source"], "view_bucket_intersection")
+        self.assertEqual(ranked[0]["boundary_support_quality"], "explicit_boundary_bucket")
         self.assertTrue(ranked[0]["fallback_involved"])
+
+    def test_rank_candidate_tile_pairs_can_use_shared_images_as_boundary_fallback(self):
+        shared_names = [f"shared_{index}.jpg" for index in range(6)]
+        bounds = {"min_x": 0, "max_x": 1, "min_y": 0, "max_y": 1, "min_z": 0, "max_z": 1}
+        manifest = {
+            "tiles": [
+                {
+                    "tile_id": "tile_04",
+                    "neighbor_tile_ids": ["tile_06"],
+                    "base_camera_ids": shared_names,
+                    "border_camera_ids": [],
+                    "context_camera_ids": [],
+                    "image_names": shared_names,
+                    "core_bounds": bounds,
+                    "overlap_bounds": bounds,
+                },
+                {
+                    "tile_id": "tile_06",
+                    "neighbor_tile_ids": ["tile_04"],
+                    "base_camera_ids": shared_names,
+                    "border_camera_ids": [],
+                    "context_camera_ids": [],
+                    "image_names": shared_names,
+                    "core_bounds": bounds,
+                    "overlap_bounds": bounds,
+                },
+            ]
+        }
+
+        ranked = tile_pipeline.rank_candidate_tile_pairs(
+            manifest,
+            {"boundary_camera_ids": ["unrelated_boundary.jpg"]},
+            min_shared_assigned_images=4,
+        )
+
+        self.assertTrue(ranked[0]["eligible"])
+        self.assertEqual(ranked[0]["boundary_support_count"], 6)
+        self.assertEqual(ranked[0]["boundary_support_source"], "shared_assigned_images_fallback")
+        self.assertEqual(ranked[0]["boundary_support_quality"], "shared_images_no_bucket_intersection")
+        self.assertTrue(ranked[0]["uses_shared_assigned_fallback"])
+
+    def test_rank_candidate_tile_pairs_blocks_poor_boundary_support(self):
+        shared_names = [f"shared_{index}.jpg" for index in range(3)]
+        bounds = {"min_x": 0, "max_x": 1, "min_y": 0, "max_y": 1, "min_z": 0, "max_z": 1}
+        manifest = {
+            "tiles": [
+                {
+                    "tile_id": "tile_00",
+                    "neighbor_tile_ids": ["tile_01"],
+                    "base_camera_ids": shared_names,
+                    "image_names": shared_names,
+                    "core_bounds": bounds,
+                    "overlap_bounds": bounds,
+                },
+                {
+                    "tile_id": "tile_01",
+                    "neighbor_tile_ids": ["tile_00"],
+                    "base_camera_ids": shared_names,
+                    "image_names": shared_names,
+                    "core_bounds": bounds,
+                    "overlap_bounds": bounds,
+                },
+            ]
+        }
+
+        ranked = tile_pipeline.rank_candidate_tile_pairs(
+            manifest,
+            {"boundary_camera_ids": []},
+            min_shared_assigned_images=1,
+            min_boundary_support_images=4,
+        )
+
+        self.assertFalse(ranked[0]["eligible"])
+        self.assertIn("boundary_support_below_minimum", ranked[0]["ineligible_reasons"])
+        self.assertTrue(ranked[0]["poor_boundary_support"])
 
     def test_merge_tile_outputs_support_weighted_overlap_arbitrates_boundary_candidates(self):
         with tempfile.TemporaryDirectory() as tmp:
