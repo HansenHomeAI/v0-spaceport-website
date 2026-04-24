@@ -108,7 +108,89 @@ def positions_to_original_space(positions: np.ndarray, pipeline) -> tuple[np.nda
     metadata["applied"] = True
     metadata["position_transform_applied"] = True
     metadata["dataparser_transform"] = affine[:3, :4].tolist()
+    metadata["model_to_output_linear"] = (inverse[:3, :3] / scale).tolist()
     return transformed, metadata
+
+
+def resolve_pipeline_transforms_payload(pipeline) -> tuple[Mapping[str, Any] | None, str]:
+    datamanager = getattr(pipeline, "datamanager", None)
+    candidates = [
+        getattr(datamanager, "dataparser", None),
+        getattr(datamanager, "train_dataparser", None),
+        getattr(datamanager, "_dataparser", None),
+    ]
+    for candidate in candidates:
+        config = getattr(candidate, "config", None)
+        data_dir = getattr(config, "data", None)
+        if not data_dir:
+            continue
+        data_path = Path(data_dir)
+        for file_name in ("transforms.json", "transforms.full.json"):
+            transforms_path = data_path / file_name
+            if not transforms_path.exists():
+                continue
+            with open(transforms_path, "r", encoding="utf-8") as handle:
+                return json.load(handle), str(transforms_path)
+    return None, "missing_transforms_payload"
+
+
+def resolve_planner_frame_transform(pipeline) -> tuple[Optional[np.ndarray], float, np.ndarray, str]:
+    transforms_payload, source = resolve_pipeline_transforms_payload(pipeline)
+    if transforms_payload is None:
+        return None, 1.0, np.zeros(3, dtype=np.float64), source
+    applied_transform_payload = transforms_payload.get("applied_transform")
+    if not isinstance(applied_transform_payload, list):
+        return None, 1.0, np.zeros(3, dtype=np.float64), f"{source}:missing_applied_transform"
+    applied_transform = np.asarray(applied_transform_payload, dtype=np.float64)
+    if applied_transform.shape == (3, 4):
+        affine = np.eye(4, dtype=np.float64)
+        affine[:3, :4] = applied_transform
+    elif applied_transform.shape == (4, 4):
+        affine = applied_transform
+    else:
+        return None, 1.0, np.zeros(3, dtype=np.float64), f"{source}:unsupported_applied_transform_shape_{applied_transform.shape}"
+
+    scale_value = transforms_payload.get("scale", 1.0)
+    try:
+        scale = float(scale_value)
+    except (TypeError, ValueError):
+        scale = 1.0
+    if not np.isfinite(scale) or abs(scale) <= 1e-9:
+        scale = 1.0
+
+    offset_payload = transforms_payload.get("offset", [0.0, 0.0, 0.0])
+    try:
+        offset = np.asarray(offset_payload, dtype=np.float64).reshape(3)
+    except (TypeError, ValueError):
+        offset = np.zeros(3, dtype=np.float64)
+    return affine, scale, offset, source
+
+
+def positions_to_planner_space(positions: np.ndarray, pipeline) -> tuple[np.ndarray, dict]:
+    original_positions, metadata = positions_to_original_space(positions, pipeline)
+    metadata["coordinate_frame"] = "planner"
+    metadata["planner_transform_applied"] = False
+    planner_affine, planner_scale, planner_offset, planner_source = resolve_planner_frame_transform(pipeline)
+    metadata["planner_transform_source"] = planner_source
+    metadata["planner_scale"] = planner_scale
+    metadata["planner_offset"] = planner_offset.tolist()
+    if planner_affine is None:
+        return original_positions, metadata
+
+    homogeneous = np.concatenate(
+        [original_positions.astype(np.float64), np.ones((original_positions.shape[0], 1), dtype=np.float64)],
+        axis=1,
+    )
+    transformed = (planner_affine @ homogeneous.T).T[:, :3]
+    transformed = transformed * planner_scale + planner_offset[None, :]
+    metadata["applied"] = True
+    metadata["planner_transform_applied"] = True
+    metadata["planner_transform"] = planner_affine[:3, :4].tolist()
+
+    output_linear = np.asarray(metadata.get("model_to_output_linear"), dtype=np.float64)
+    if output_linear.shape == (3, 3):
+        metadata["model_to_output_linear"] = (planner_scale * planner_affine[:3, :3] @ output_linear).tolist()
+    return transformed.astype(np.float32), metadata
 
 
 def log_scales_to_original_space(raw_scales: np.ndarray, transform_metadata: Mapping[str, Any]) -> np.ndarray:
@@ -119,6 +201,17 @@ def log_scales_to_original_space(raw_scales: np.ndarray, transform_metadata: Map
         return raw_scales
     transform_metadata["scale_transform_applied"] = True
     return (raw_scales.astype(np.float32) - np.float32(np.log(scale))).astype(np.float32)
+
+
+def log_scales_to_output_space(raw_scales: np.ndarray, transform_metadata: Mapping[str, Any]) -> np.ndarray:
+    transformed = log_scales_to_original_space(raw_scales, transform_metadata)
+    if transform_metadata.get("coordinate_frame") != "planner" or not transform_metadata.get("planner_transform_applied"):
+        return transformed
+    planner_scale = float(transform_metadata.get("planner_scale") or 1.0)
+    if not np.isfinite(planner_scale) or planner_scale <= 1e-9:
+        return transformed
+    transform_metadata["planner_scale_transform_applied"] = True
+    return (transformed.astype(np.float32) + np.float32(np.log(planner_scale))).astype(np.float32)
 
 
 def _normalize_quaternions(quats: np.ndarray) -> np.ndarray:
@@ -194,15 +287,34 @@ def quaternions_to_original_space(quats: np.ndarray, transform_metadata: Mapping
         model_to_original_linear = np.linalg.inv(transform[:, :3])
     except np.linalg.LinAlgError:
         return quats
-    u, _singular_values, vh = np.linalg.svd(model_to_original_linear)
-    model_to_original_rotation = u @ vh
-    if np.linalg.det(model_to_original_rotation) < 0.0:
-        u[:, -1] *= -1.0
-        model_to_original_rotation = u @ vh
+    model_to_original_rotation = linear_to_rotation(model_to_original_linear)
     gaussian_rotations = _quaternions_to_rotation_matrices(quats)
     transformed = np.einsum("ij,njk->nik", model_to_original_rotation, gaussian_rotations)
     transform_metadata["rotation_transform_applied"] = True
     transform_metadata["model_to_original_rotation"] = model_to_original_rotation.tolist()
+    return _rotation_matrices_to_quaternions(transformed)
+
+
+def linear_to_rotation(linear: np.ndarray) -> np.ndarray:
+    u, _singular_values, vh = np.linalg.svd(linear)
+    rotation = u @ vh
+    if np.linalg.det(rotation) < 0.0:
+        u[:, -1] *= -1.0
+        rotation = u @ vh
+    return rotation
+
+
+def quaternions_to_output_space(quats: np.ndarray, transform_metadata: Mapping[str, Any]) -> np.ndarray:
+    if transform_metadata.get("coordinate_frame") != "planner" or not transform_metadata.get("planner_transform_applied"):
+        return quaternions_to_original_space(quats, transform_metadata)
+    output_linear = np.asarray(transform_metadata.get("model_to_output_linear"), dtype=np.float64)
+    if output_linear.shape != (3, 3):
+        return quaternions_to_original_space(quats, transform_metadata)
+    output_rotation = linear_to_rotation(output_linear)
+    gaussian_rotations = _quaternions_to_rotation_matrices(quats)
+    transformed = np.einsum("ij,njk->nik", output_rotation, gaussian_rotations)
+    transform_metadata["rotation_transform_applied"] = True
+    transform_metadata["model_to_output_rotation"] = output_rotation.tolist()
     return _rotation_matrices_to_quaternions(transformed)
 
 
@@ -220,6 +332,16 @@ def build_foreground_ply(model, output_dir: Path, camera_idx: int, *, pipeline=N
             }
         else:
             positions, transform_metadata = positions_to_original_space(positions, pipeline)
+    elif coordinate_frame == "planner":
+        if pipeline is None:
+            transform_metadata = {
+                "coordinate_frame": "planner",
+                "applied": False,
+                "dataparser_transform_source": "missing_pipeline",
+                "planner_transform_source": "missing_pipeline",
+            }
+        else:
+            positions, transform_metadata = positions_to_planner_space(positions, pipeline)
     count = positions.shape[0]
     tensors: OrderedDict[str, np.ndarray] = OrderedDict()
 
@@ -242,14 +364,14 @@ def build_foreground_ply(model, output_dir: Path, camera_idx: int, *, pipeline=N
     tensors["opacity"] = model.opacities.detach().cpu().numpy()
 
     scales = model.scales.detach().cpu().numpy()
-    if coordinate_frame == "original":
-        scales = log_scales_to_original_space(scales, transform_metadata)
+    if coordinate_frame in {"original", "planner"}:
+        scales = log_scales_to_output_space(scales, transform_metadata)
     for axis in range(3):
         tensors[f"scale_{axis}"] = scales[:, axis, None]
 
     quats = model.quats.detach().cpu().numpy()
-    if coordinate_frame == "original":
-        quats = quaternions_to_original_space(quats, transform_metadata)
+    if coordinate_frame in {"original", "planner"}:
+        quats = quaternions_to_output_space(quats, transform_metadata)
     for axis in range(4):
         tensors[f"rot_{axis}"] = quats[:, axis, None]
 
@@ -355,9 +477,9 @@ def main() -> None:
     parser.add_argument("--skip-background", action="store_true")
     parser.add_argument(
         "--foreground-coordinate-frame",
-        choices=("model", "original"),
+        choices=("model", "original", "planner"),
         default="model",
-        help="Export foreground Gaussian positions in model space or inverse dataparser original space.",
+        help="Export foreground Gaussian positions in model, inverse dataparser original, or planner manifest space.",
     )
     args = parser.parse_args()
 

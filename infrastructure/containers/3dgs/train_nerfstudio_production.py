@@ -2171,7 +2171,7 @@ class NerfStudioTrainer:
                 "--background-appearance-mode", str(background_selection.resolved_mode),
             ]
             if training_mode == 'leaf_tile':
-                export_cmd.extend(["--foreground-coordinate-frame", "original"])
+                export_cmd.extend(["--foreground-coordinate-frame", "planner"])
         else:
             export_cmd = [
                 "ns-export", "gaussian-splat",

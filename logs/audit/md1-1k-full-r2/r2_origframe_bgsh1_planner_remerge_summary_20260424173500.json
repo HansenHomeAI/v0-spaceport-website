@@ -1,0 +1,30 @@
+{
+  "source_training_job": "md1-r2-origframe-bgsh1-1777035704-tiled",
+  "source_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r2-origframe-cap300k-sh1-bgsh1-split3500-noeval-reusescaffold-20260424125936/T2_tiled_pipeline/md1-r2-origframe-bgsh1-1777035704-tiled/output/model.tar.gz",
+  "repaired_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r2-origframe-planner-remerge-20260424173500/model.tar.gz",
+  "repair_method": "apply_transforms_json_applied_transform_to_leaf_plys_then_remerge_core_masks",
+  "merge_mode": "support_weighted_overlap",
+  "source_gaussians": 457184,
+  "retained_gaussians": 397305,
+  "fallback_tile_count": 0,
+  "retain_all_tile_count": 0,
+  "tile_reports": [
+    {
+      "tile_id": "tile_02",
+      "source_gaussians": 289623,
+      "retained_gaussians": 277042,
+      "core_candidate_count": 277042,
+      "overlap_candidate_count": 75,
+      "fallback_used": false
+    },
+    {
+      "tile_id": "tile_05",
+      "source_gaussians": 167561,
+      "retained_gaussians": 120263,
+      "core_candidate_count": 120263,
+      "overlap_candidate_count": 0,
+      "fallback_used": false
+    }
+  ],
+  "promotion_status": "pending_frozen_camera_smoke_review"
+}
