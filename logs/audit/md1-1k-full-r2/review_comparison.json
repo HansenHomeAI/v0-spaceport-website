@@ -122,14 +122,14 @@
         "lpips": 0.9124259352684021
       },
       "candidate": {
-        "psnr": 13.41298357287238,
-        "ssim": 0.3636915385723114,
-        "lpips": 0.8359178304672241
+        "psnr": 13.572700174504973,
+        "ssim": 0.36661793291568756,
+        "lpips": 0.838735818862915
       },
       "delta": {
-        "psnr": 3.2084136630648548,
-        "ssim": 0.03861244022846222,
-        "lpips": -0.07650810480117798
+        "psnr": 3.3681302646974487,
+        "ssim": 0.04153883457183838,
+        "lpips": -0.07369011640548706
       },
       "block_reasons": []
     },
@@ -140,14 +140,14 @@
         "lpips": 0.8232778012752533
       },
       "candidate": {
-        "psnr": 16.015094696971016,
-        "ssim": 0.4458271861076355,
-        "lpips": 0.7019957005977631
+        "psnr": 15.919232861698845,
+        "ssim": 0.44407132267951965,
+        "lpips": 0.7107531130313873
       },
       "delta": {
-        "psnr": 2.8810550858594866,
-        "ssim": 0.0290030837059021,
-        "lpips": -0.12128210067749023
+        "psnr": 2.785193250587316,
+        "ssim": 0.027247220277786255,
+        "lpips": -0.11252468824386597
       },
       "block_reasons": []
     },
@@ -158,19 +158,20 @@
         "lpips": 0.8720598220825195
       },
       "candidate": {
-        "psnr": 12.657442169043858,
-        "ssim": 0.34274475276470184,
-        "lpips": 0.9136873483657837
+        "psnr": 13.898596293549229,
+        "ssim": 0.370365634560585,
+        "lpips": 0.9098518490791321
       },
       "delta": {
-        "psnr": -3.5580824282951333,
-        "ssim": -0.04038490355014801,
-        "lpips": 0.04162752628326416
+        "psnr": -2.316928303789762,
+        "ssim": -0.012764021754264832,
+        "lpips": 0.03779202699661255
       },
       "block_reasons": [
         "horizon_psnr_regression",
         "horizon_ssim_regression",
-        "horizon_lpips_regression"
+        "horizon_lpips_regression",
+        "horizon_sky_score_regression"
       ]
     }
   },
@@ -196,11 +197,17 @@
     },
     "candidate": {
       "merge_mode": "support_weighted_overlap",
-      "fallback_tile_count": 0,
+      "fallback_tile_count": 1,
       "retain_all_tile_count": 0,
-      "source_gaussians": 457184,
-      "retained_gaussians": 397305,
-      "fallback_reasons": []
+      "source_gaussians": 4102649,
+      "retained_gaussians": 3773074,
+      "fallback_reasons": [
+        {
+          "tile_id": "tile_06",
+          "reason": "primary_and_overlap_retained_zero",
+          "retention_strategy": "centroid_voronoi_fallback"
+        }
+      ]
     }
   },
   "side_by_side_render_paths": [
@@ -328,13 +335,15 @@
   "promotion_decision": {
     "status": "blocked",
     "block_reasons": [
+      "merge_fallback_tile_count_gt_zero",
       "horizon_psnr_regression",
       "horizon_ssim_regression",
-      "horizon_lpips_regression"
+      "horizon_lpips_regression",
+      "horizon_sky_score_regression"
     ],
     "warnings": [],
     "merge_mode": "support_weighted_overlap",
-    "fallback_tile_count": 0,
+    "fallback_tile_count": 1,
     "retain_all_tile_count": 0,
     "per_bucket": {
       "near_detail": {
@@ -344,14 +353,14 @@
           "lpips": 0.9124259352684021
         },
         "candidate": {
-          "psnr": 13.41298357287238,
-          "ssim": 0.3636915385723114,
-          "lpips": 0.8359178304672241
+          "psnr": 13.572700174504973,
+          "ssim": 0.36661793291568756,
+          "lpips": 0.838735818862915
         },
         "delta": {
-          "psnr": 3.2084136630648548,
-          "ssim": 0.03861244022846222,
-          "lpips": -0.07650810480117798
+          "psnr": 3.3681302646974487,
+          "ssim": 0.04153883457183838,
+          "lpips": -0.07369011640548706
         },
         "block_reasons": []
       },
@@ -362,14 +371,14 @@
           "lpips": 0.8232778012752533
         },
         "candidate": {
-          "psnr": 16.015094696971016,
-          "ssim": 0.4458271861076355,
-          "lpips": 0.7019957005977631
+          "psnr": 15.919232861698845,
+          "ssim": 0.44407132267951965,
+          "lpips": 0.7107531130313873
         },
         "delta": {
-          "psnr": 2.8810550858594866,
-          "ssim": 0.0290030837059021,
-          "lpips": -0.12128210067749023
+          "psnr": 2.785193250587316,
+          "ssim": 0.027247220277786255,
+          "lpips": -0.11252468824386597
         },
         "block_reasons": []
       },
@@ -380,19 +389,20 @@
           "lpips": 0.8720598220825195
         },
         "candidate": {
-          "psnr": 12.657442169043858,
-          "ssim": 0.34274475276470184,
-          "lpips": 0.9136873483657837
+          "psnr": 13.898596293549229,
+          "ssim": 0.370365634560585,
+          "lpips": 0.9098518490791321
         },
         "delta": {
-          "psnr": -3.5580824282951333,
-          "ssim": -0.04038490355014801,
-          "lpips": 0.04162752628326416
+          "psnr": -2.316928303789762,
+          "ssim": -0.012764021754264832,
+          "lpips": 0.03779202699661255
         },
         "block_reasons": [
           "horizon_psnr_regression",
           "horizon_ssim_regression",
-          "horizon_lpips_regression"
+          "horizon_lpips_regression",
+          "horizon_sky_score_regression"
         ]
       }
     },
