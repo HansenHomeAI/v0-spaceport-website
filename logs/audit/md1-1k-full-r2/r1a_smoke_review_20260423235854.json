@@ -1,0 +1,58 @@
+{
+  "job": "md1-r1a-viewfix-20260423235854",
+  "branch": "agent-53821974-md1-geometry-consistency",
+  "head": "9fff5423f3203fcf92b55df8568454a844eaef4e",
+  "image": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:83899e61c91fef1adc932bfe33ba30e061883c8c0cb98de3e58c82ac24b10853",
+  "artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r1a-20260423235854/review-render-job-output/md1-r1a-viewfix-20260423235854/output/model.tar.gz",
+  "status": "completed_but_invalid",
+  "billable_seconds": 532,
+  "root_cause": "review_renderer_pose_source_mismatch",
+  "diagnosis": "The review renderer used freshly converted COLMAP transforms while the exported Nerfstudio splats live in the training dataparser coordinate frame. Renders became nonblank after view-matrix selection but remained spatially meaningless and low-quality.",
+  "promotion_readiness": {
+    "status": "ready_for_manual_signoff",
+    "review_buckets_complete": true,
+    "retain_all_tile_count": 0,
+    "fallback_tile_count": 0,
+    "manual_visual_review_required": true,
+    "notes": [
+      "merged review had no promoted background skybox",
+      "merged review used deterministic view-capped rendering on 12 views"
+    ]
+  },
+  "bucket_medians": {
+    "near_detail": {
+      "psnr": 7.173015311596753,
+      "ssim": 0.18193405121564865,
+      "lpips": 0.9968040585517883
+    },
+    "boundary": {
+      "psnr": 13.96494616849388,
+      "ssim": 0.366350382566452,
+      "lpips": 0.8658547103404999
+    },
+    "horizon": {
+      "psnr": 7.3046697528112645,
+      "ssim": 0.15431777574121952,
+      "lpips": 1.028559535741806
+    }
+  },
+  "render_health_summary": {
+    "merged_view_count": 12,
+    "blank_or_flat_count": 0,
+    "rgb_std_median": 0.06413445062935352,
+    "dynamic_range_median": 0.3634420521557331
+  },
+  "render_stats_summary": {
+    "merged_view_count": 12,
+    "merged_limited_view_count": 12,
+    "merged_rendered_gaussian_min": 876.0,
+    "merged_visible_gaussian_median": 67259.5
+  },
+  "evidence_paths": {
+    "local_extracted": "/tmp/md1-r1a-viewfix-20260423235854/extracted",
+    "near_detail_render": "/tmp/md1-r1a-viewfix-20260423235854/extracted/quality_review/merged/near_detail/DJI_0261.png",
+    "boundary_composite": "/tmp/md1-r1a-viewfix-20260423235854/extracted/quality_review/boundary_composites/DJI_0068.png",
+    "horizon_render": "/tmp/md1-r1a-viewfix-20260423235854/extracted/quality_review/merged/horizon/DJI_0066.png"
+  },
+  "next_step": "Use embedded tiled_pipeline/inputs/*/transforms.full.json from the model artifact as the pose source, rebuild the 3DGS container, and rerun the same 4/4/4 smoke before any R2 spend."
+}

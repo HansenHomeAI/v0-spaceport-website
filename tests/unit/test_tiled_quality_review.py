@@ -328,6 +328,45 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
             np.eye(4, dtype=np.float32),
         )
 
+    def test_build_frame_index_accepts_current_original_name_map_key(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "transforms.full.json").write_text(
+                '{"w":4000,"h":2250,"fl_x":1000.0,"fl_y":1000.0,"frames":[{"file_path":"images/frame_00001.JPG","transform_matrix":[[1,0,0,1],[0,1,0,2],[0,0,1,3],[0,0,0,1]]}]}',
+                encoding="utf-8",
+            )
+            (root / "colmap_image_name_map.json").write_text(
+                '{"by_converted_name":{"images/frame_00001.JPG":{"original_image_name":"DJI_0001.JPG"}},"by_original_name":{"DJI_0001.JPG":{"converted_file_path":"images/frame_00001.JPG"}}}',
+                encoding="utf-8",
+            )
+
+            transforms, frame_index = module.build_frame_index(root, transforms_filename="transforms.full.json")
+
+        self.assertEqual(transforms["w"], 4000)
+        self.assertIn("DJI_0001.JPG", frame_index)
+        self.assertEqual(frame_index["DJI_0001.JPG"]["converted_file_path"], "images/frame_00001.JPG")
+        self.assertEqual(frame_index["DJI_0001.JPG"]["transforms_filename"], "transforms.full.json")
+
+    def test_resolve_embedded_pose_source_prefers_full_training_transforms(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            scaffold = root / "tiled_pipeline" / "inputs" / "scaffold"
+            tile = root / "tiled_pipeline" / "inputs" / "tile_02"
+            scaffold.mkdir(parents=True)
+            tile.mkdir(parents=True)
+            (tile / "transforms.json").write_text("{}", encoding="utf-8")
+            (tile / "colmap_image_name_map.json").write_text("{}", encoding="utf-8")
+            (scaffold / "transforms.full.json").write_text("{}", encoding="utf-8")
+            (scaffold / "colmap_image_name_map.json").write_text("{}", encoding="utf-8")
+
+            source = module.resolve_embedded_pose_source(root, ["tile_02"])
+
+        self.assertEqual(source, (scaffold, "transforms.full.json"))
+
 
 if __name__ == "__main__":
     unittest.main()

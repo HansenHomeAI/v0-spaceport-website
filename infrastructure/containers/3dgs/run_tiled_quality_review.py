@@ -214,12 +214,20 @@ def resolve_review_manifest_inputs(
     return selected_subset, view_buckets, manifest_resolution, review_images_by_bucket
 
 
-def build_frame_index(converted_input_dir: Path) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
-    transforms = load_json(converted_input_dir / "transforms.json")
+def build_frame_index(
+    converted_input_dir: Path,
+    *,
+    transforms_filename: str = "transforms.json",
+) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
+    transforms = load_json(converted_input_dir / transforms_filename)
     image_name_map_path = converted_input_dir / "colmap_image_name_map.json"
     image_name_map = load_json(image_name_map_path) if image_name_map_path.exists() else {}
     by_converted_name = image_name_map.get("by_converted_name", {}) or {}
-    by_original_name = image_name_map.get("by_original_image_name", {}) or {}
+    by_original_name = (
+        image_name_map.get("by_original_name", {})
+        or image_name_map.get("by_original_image_name", {})
+        or {}
+    )
 
     frame_index: dict[str, dict[str, Any]] = {}
     for frame in transforms.get("frames", []):
@@ -238,6 +246,8 @@ def build_frame_index(converted_input_dir: Path) -> tuple[dict[str, Any], dict[s
             "file_path": file_path,
             "converted_name": converted_name,
             "original_image_name": normalize_image_name(str(mapped_original or original_image_name or converted_name)),
+            "input_dir": str(converted_input_dir),
+            "transforms_filename": transforms_filename,
         }
         original_entry = by_original_name.get(frame_record["original_image_name"])
         if isinstance(original_entry, Mapping):
@@ -247,6 +257,43 @@ def build_frame_index(converted_input_dir: Path) -> tuple[dict[str, Any], dict[s
         for alias in aliases:
             frame_index.setdefault(alias, frame_record)
     return transforms, frame_index
+
+
+def resolve_embedded_pose_source(
+    extracted_model_dir: Path,
+    selected_tile_ids: Sequence[str],
+) -> tuple[Path, str] | None:
+    """Prefer the exact transforms bundled with the trained splats.
+
+    Nerfstudio exports foreground splats in the dataparser-normalized training
+    coordinate system. Rebuilding transforms from COLMAP can produce a valid
+    dataset with a different camera frame, which makes offline review renders
+    look nonblank but spatially meaningless.
+    """
+
+    input_root = extracted_model_dir / "tiled_pipeline" / "inputs"
+    if not input_root.exists():
+        return None
+
+    candidates: list[Path] = []
+    scaffold_dir = input_root / "scaffold"
+    if scaffold_dir.exists():
+        candidates.append(scaffold_dir)
+    for tile_id in selected_tile_ids:
+        tile_dir = input_root / str(tile_id)
+        if tile_dir.exists():
+            candidates.append(tile_dir)
+    for child in sorted(input_root.iterdir()):
+        if child.is_dir() and child not in candidates:
+            candidates.append(child)
+
+    for candidate_dir in candidates:
+        if not (candidate_dir / "colmap_image_name_map.json").exists():
+            continue
+        for transforms_filename in ("transforms.full.json", "transforms.json"):
+            if (candidate_dir / transforms_filename).exists():
+                return candidate_dir, transforms_filename
+    return None
 
 
 def frame_intrinsics(
@@ -408,10 +455,19 @@ def _view_projected_subset(
     render_scale: float,
     max_gaussians_per_view: int | None,
     cull_margin: float,
+    preferred_view_transform: str | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any], np.ndarray]:
     source_count = int(model.get("gaussian_count", 0) or 0)
     c2w = np.asarray(frame["transform_matrix"], dtype=np.float32)
     view_candidates = camera_viewmat_candidates(c2w)
+    if preferred_view_transform:
+        preferred_candidates = [
+            (name, viewmat)
+            for name, viewmat in view_candidates
+            if name == preferred_view_transform
+        ]
+        if preferred_candidates:
+            view_candidates = preferred_candidates
     fallback_viewmat = view_candidates[0][1]
     stats: dict[str, Any] = {
         "source_gaussians": source_count,
@@ -522,6 +578,7 @@ def render_gaussian_view(
     max_gaussians_per_view: int | None = None,
     cull_margin: float = DEFAULT_RENDER_CULL_MARGIN,
     min_gaussians_on_oom: int = DEFAULT_RENDER_MIN_GAUSSIANS_ON_OOM,
+    preferred_view_transform: str | None = None,
 ) -> tuple[np.ndarray, np.ndarray, dict[str, Any]]:
     fx, fy, cx, cy, width, height = frame_intrinsics(frame, transforms, render_scale=render_scale)
     K = torch.tensor([[fx, 0.0, cx], [0.0, fy, cy], [0.0, 0.0, 1.0]], device=device, dtype=torch.float32)
@@ -536,6 +593,7 @@ def render_gaussian_view(
             render_scale=render_scale,
             max_gaussians_per_view=active_limit,
             cull_margin=cull_margin,
+            preferred_view_transform=preferred_view_transform,
         )
         stats["render_scale"] = render_scale
         stats["width"] = width
@@ -1105,7 +1163,23 @@ def main() -> None:
         if not selected_tile_ids:
             selected_tile_ids = [str(tile.get("tile_id")) for tile in tile_manifest.get("tiles", []) if tile.get("tile_id")]
 
-        transforms, frame_index = build_frame_index(converted_input_dir)
+        pose_source = resolve_embedded_pose_source(extracted_model_dir, selected_tile_ids)
+        preferred_view_transform: str | None = None
+        if pose_source is not None:
+            pose_input_dir, pose_transforms_filename = pose_source
+            transforms, frame_index = build_frame_index(
+                pose_input_dir,
+                transforms_filename=pose_transforms_filename,
+            )
+            preferred_view_transform = "opengl_to_opencv_yz_flip"
+            render_settings["pose_source"] = str(pose_input_dir / pose_transforms_filename)
+            render_settings["view_transform_mode"] = preferred_view_transform
+            logger.info("📐 Using embedded training transforms for review poses: %s", render_settings["pose_source"])
+        else:
+            transforms, frame_index = build_frame_index(converted_input_dir)
+            render_settings["pose_source"] = str(converted_input_dir / "transforms.json")
+            render_settings["view_transform_mode"] = "auto_projected_support"
+            logger.warning("No embedded training transforms found; using freshly converted COLMAP poses")
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         merged_model = load_gaussian_model(merged_ply_path, device)
         merged_background_path = extracted_model_dir / "merged" / "background_skybox.webp"
@@ -1133,9 +1207,14 @@ def main() -> None:
                     continue
 
                 frame = frame_record["frame"]
-                reference_image_path = converted_input_dir / str(frame_record.get("converted_file_path") or frame_record["file_path"])
-                if not reference_image_path.exists():
-                    reference_image_path = converted_input_dir / str(frame_record["file_path"])
+                frame_input_dir = Path(str(frame_record.get("input_dir") or converted_input_dir))
+                reference_candidates = [
+                    converted_input_dir / str(frame_record.get("converted_file_path") or frame_record["file_path"]),
+                    converted_input_dir / str(frame_record["file_path"]),
+                    frame_input_dir / str(frame_record.get("converted_file_path") or frame_record["file_path"]),
+                    frame_input_dir / str(frame_record["file_path"]),
+                ]
+                reference_image_path = next((candidate for candidate in reference_candidates if candidate.exists()), reference_candidates[0])
                 _fx, _fy, _cx, _cy, render_width, render_height = frame_intrinsics(
                     frame,
                     transforms,
@@ -1154,6 +1233,7 @@ def main() -> None:
                     max_gaussians_per_view=int(render_settings["max_gaussians_per_view"]),
                     cull_margin=float(render_settings["cull_margin"]),
                     min_gaussians_on_oom=int(render_settings["min_gaussians_on_oom"]),
+                    preferred_view_transform=preferred_view_transform,
                 )
                 merged_background = render_skybox_view(
                     merged_background_path,
@@ -1222,6 +1302,7 @@ def main() -> None:
                             max_gaussians_per_view=int(render_settings["max_gaussians_per_view"]),
                             cull_margin=float(render_settings["cull_margin"]),
                             min_gaussians_on_oom=int(render_settings["min_gaussians_on_oom"]),
+                            preferred_view_transform=preferred_view_transform,
                         )
                         tile_background = render_skybox_view(
                             tile_background_path,
