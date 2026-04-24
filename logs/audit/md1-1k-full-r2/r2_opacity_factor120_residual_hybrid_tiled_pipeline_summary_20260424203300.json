@@ -1,0 +1,21 @@
+{
+  "pipeline": "md1_hybrid_diagnostic",
+  "label": "r2_opacity_factor120_residual_hybrid",
+  "merge": {
+    "merge_mode": "support_weighted_overlap",
+    "tile_count": 7,
+    "source_gaussians": 5560835,
+    "retained_gaussians": 4500557,
+    "dropped_gaussians": 1060278,
+    "fallback_tile_count": 1,
+    "retain_all_tile_count": 0,
+    "fallback_reasons": [
+      {
+        "tile_id": "tile_06",
+        "reason": "primary_and_overlap_retained_zero",
+        "retention_strategy": "centroid_voronoi_fallback"
+      }
+    ]
+  },
+  "model_artifact": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r2_opacity_factor120_residual_hybrid_20260424203300/model.tar.gz"
+}

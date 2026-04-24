@@ -46,6 +46,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--scale-start-quantile", type=float, default=0.90)
     parser.add_argument("--scale-full-quantile", type=float, default=0.99)
     parser.add_argument("--scale-weight-power", type=float, default=1.0)
+    parser.add_argument(
+        "--skip-local-tarball",
+        action="store_true",
+        help="Build the artifact directory and summaries without writing model.tar.gz locally.",
+    )
     parser.add_argument("--label", default="md1_hybrid")
     parser.add_argument("--purpose", default="")
     return parser.parse_args()
@@ -291,8 +296,17 @@ def main() -> int:
         ),
         encoding="utf-8",
     )
-    tarball = build_tarball(output_dir)
-    print(json.dumps({"output_dir": str(output_dir), "model_tarball": str(tarball), "summary": summary}, indent=2))
+    tarball = None if args.skip_local_tarball else build_tarball(output_dir)
+    print(
+        json.dumps(
+            {
+                "output_dir": str(output_dir),
+                "model_tarball": None if tarball is None else str(tarball),
+                "summary": summary,
+            },
+            indent=2,
+        )
+    )
     return 0
 
 
