@@ -143,7 +143,11 @@
   },
   "candidate_pairs": [
     {
-      "border_boundary_support_count": 40,
+      "tile_ids": [
+        "tile_02",
+        "tile_05"
+      ],
+      "shared_assigned_image_count": 64,
       "boundary_support_count": 52,
       "boundary_support_images": [
         "DJI_01518.JPG",
@@ -199,31 +203,31 @@
         "DJI_0264.JPG",
         "DJI_0334.JPG"
       ],
-      "boundary_support_minimum": 4,
-      "boundary_support_quality": "explicit_boundary_bucket",
       "boundary_support_source": "view_bucket_intersection",
-      "eligible": true,
+      "boundary_support_quality": "explicit_boundary_bucket",
+      "boundary_support_minimum": 4,
       "explicit_boundary_support_count": 52,
-      "fallback_involved": false,
-      "ineligible_reasons": [],
-      "ownership_bounds_valid": true,
+      "border_boundary_support_count": 40,
+      "uses_shared_assigned_fallback": false,
       "poor_boundary_support": false,
-      "score": 623.0,
-      "selected_count_median": 188.0,
-      "selected_count_ratio_valid": true,
+      "fallback_involved": false,
+      "ownership_bounds_valid": true,
       "selected_image_counts": {
         "tile_02": 188,
         "tile_05": 188
       },
-      "shared_assigned_image_count": 64,
-      "tile_ids": [
-        "tile_02",
-        "tile_05"
-      ],
-      "uses_shared_assigned_fallback": false
+      "selected_count_median": 188.0,
+      "selected_count_ratio_valid": true,
+      "eligible": true,
+      "ineligible_reasons": [],
+      "score": 623.0
     },
     {
-      "border_boundary_support_count": 31,
+      "tile_ids": [
+        "tile_04",
+        "tile_06"
+      ],
+      "shared_assigned_image_count": 64,
       "boundary_support_count": 31,
       "boundary_support_images": [
         "DJI_02087.JPG",
@@ -258,31 +262,31 @@
         "DJI_02391.JPG",
         "DJI_02676.JPG"
       ],
-      "boundary_support_minimum": 4,
-      "boundary_support_quality": "border_role_overlap",
       "boundary_support_source": "border_camera_intersection",
-      "eligible": true,
+      "boundary_support_quality": "border_role_overlap",
+      "boundary_support_minimum": 4,
       "explicit_boundary_support_count": 0,
-      "fallback_involved": false,
-      "ineligible_reasons": [],
-      "ownership_bounds_valid": true,
+      "border_boundary_support_count": 31,
+      "uses_shared_assigned_fallback": false,
       "poor_boundary_support": false,
-      "score": 362.0,
-      "selected_count_median": 188.0,
-      "selected_count_ratio_valid": true,
+      "fallback_involved": false,
+      "ownership_bounds_valid": true,
       "selected_image_counts": {
         "tile_04": 188,
         "tile_06": 188
       },
-      "shared_assigned_image_count": 64,
-      "tile_ids": [
-        "tile_04",
-        "tile_06"
-      ],
-      "uses_shared_assigned_fallback": false
+      "selected_count_median": 188.0,
+      "selected_count_ratio_valid": true,
+      "eligible": true,
+      "ineligible_reasons": [],
+      "score": 362.0
     },
     {
-      "border_boundary_support_count": 25,
+      "tile_ids": [
+        "tile_03",
+        "tile_04"
+      ],
+      "shared_assigned_image_count": 41,
       "boundary_support_count": 25,
       "boundary_support_images": [
         "DJI_02705.JPG",
@@ -311,31 +315,31 @@
         "DJI_02906.JPG",
         "DJI_02907.JPG"
       ],
-      "boundary_support_minimum": 4,
-      "boundary_support_quality": "border_role_overlap",
       "boundary_support_source": "border_camera_intersection",
-      "eligible": true,
+      "boundary_support_quality": "border_role_overlap",
+      "boundary_support_minimum": 4,
       "explicit_boundary_support_count": 0,
-      "fallback_involved": false,
-      "ineligible_reasons": [],
-      "ownership_bounds_valid": true,
+      "border_boundary_support_count": 25,
+      "uses_shared_assigned_fallback": false,
       "poor_boundary_support": false,
-      "score": 263.0,
-      "selected_count_median": 188.0,
-      "selected_count_ratio_valid": true,
+      "fallback_involved": false,
+      "ownership_bounds_valid": true,
       "selected_image_counts": {
         "tile_03": 188,
         "tile_04": 188
       },
-      "shared_assigned_image_count": 41,
-      "tile_ids": [
-        "tile_03",
-        "tile_04"
-      ],
-      "uses_shared_assigned_fallback": false
+      "selected_count_median": 188.0,
+      "selected_count_ratio_valid": true,
+      "eligible": true,
+      "ineligible_reasons": [],
+      "score": 263.0
     },
     {
-      "border_boundary_support_count": 0,
+      "tile_ids": [
+        "tile_00",
+        "tile_04"
+      ],
+      "shared_assigned_image_count": 26,
       "boundary_support_count": 26,
       "boundary_support_images": [
         "DJI_0258.JPG",
@@ -365,31 +369,31 @@
         "DJI_01224.JPG",
         "DJI_01225.JPG"
       ],
-      "boundary_support_minimum": 4,
-      "boundary_support_quality": "shared_images_no_bucket_intersection",
       "boundary_support_source": "shared_assigned_images_fallback",
-      "eligible": true,
+      "boundary_support_quality": "shared_images_no_bucket_intersection",
+      "boundary_support_minimum": 4,
       "explicit_boundary_support_count": 0,
-      "fallback_involved": false,
-      "ineligible_reasons": [],
-      "ownership_bounds_valid": true,
+      "border_boundary_support_count": 0,
+      "uses_shared_assigned_fallback": true,
       "poor_boundary_support": false,
-      "score": 145.0,
-      "selected_count_median": 188.0,
-      "selected_count_ratio_valid": true,
+      "fallback_involved": false,
+      "ownership_bounds_valid": true,
       "selected_image_counts": {
         "tile_00": 188,
         "tile_04": 188
       },
-      "shared_assigned_image_count": 26,
-      "tile_ids": [
-        "tile_00",
-        "tile_04"
-      ],
-      "uses_shared_assigned_fallback": true
+      "selected_count_median": 188.0,
+      "selected_count_ratio_valid": true,
+      "eligible": true,
+      "ineligible_reasons": [],
+      "score": 145.0
     },
     {
-      "border_boundary_support_count": 0,
+      "tile_ids": [
+        "tile_00",
+        "tile_01"
+      ],
+      "shared_assigned_image_count": 12,
       "boundary_support_count": 12,
       "boundary_support_images": [
         "DJI_0066.JPG",
@@ -405,30 +409,26 @@
         "DJI_0508.JPG",
         "DJI_0509.JPG"
       ],
-      "boundary_support_minimum": 4,
-      "boundary_support_quality": "shared_images_no_bucket_intersection",
       "boundary_support_source": "shared_assigned_images_fallback",
-      "eligible": false,
+      "boundary_support_quality": "shared_images_no_bucket_intersection",
+      "boundary_support_minimum": 4,
       "explicit_boundary_support_count": 0,
-      "fallback_involved": false,
-      "ineligible_reasons": [
-        "shared_assigned_images_below_threshold"
-      ],
-      "ownership_bounds_valid": true,
+      "border_boundary_support_count": 0,
+      "uses_shared_assigned_fallback": true,
       "poor_boundary_support": false,
-      "score": 75.0,
-      "selected_count_median": 188.0,
-      "selected_count_ratio_valid": true,
+      "fallback_involved": false,
+      "ownership_bounds_valid": true,
       "selected_image_counts": {
         "tile_00": 188,
         "tile_01": 188
       },
-      "shared_assigned_image_count": 12,
-      "tile_ids": [
-        "tile_00",
-        "tile_01"
+      "selected_count_median": 188.0,
+      "selected_count_ratio_valid": true,
+      "eligible": false,
+      "ineligible_reasons": [
+        "shared_assigned_images_below_threshold"
       ],
-      "uses_shared_assigned_fallback": true
+      "score": 75.0
     }
   ],
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
@@ -875,5 +875,293 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
+  "manifest_inputs_source": {
+    "canonical_model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
+    "extracted_subset_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/manifest_inputs/canonical",
+    "note": "small canonical tarball subset; full model extraction was pruned locally for disk headroom"
+  },
+  "candidate_triples": [
+    {
+      "tile_ids": [
+        "tile_03",
+        "tile_04",
+        "tile_06"
+      ],
+      "anchor_pair_tile_ids": [
+        "tile_03",
+        "tile_04"
+      ],
+      "completed_pair_tile_ids": [],
+      "eligible": true,
+      "ineligible_reasons": [],
+      "score": 419.7,
+      "eligible_pair_count": 2,
+      "pair_count": 2,
+      "pair_summaries": [
+        {
+          "tile_ids": [
+            "tile_04",
+            "tile_06"
+          ],
+          "eligible": true,
+          "score": 362.0,
+          "shared_assigned_image_count": 64,
+          "boundary_support_count": 31,
+          "boundary_support_source": "border_camera_intersection",
+          "boundary_support_quality": "border_role_overlap"
+        },
+        {
+          "tile_ids": [
+            "tile_03",
+            "tile_04"
+          ],
+          "eligible": true,
+          "score": 263.0,
+          "shared_assigned_image_count": 41,
+          "boundary_support_count": 25,
+          "boundary_support_source": "border_camera_intersection",
+          "boundary_support_quality": "border_role_overlap"
+        }
+      ]
+    },
+    {
+      "tile_ids": [
+        "tile_00",
+        "tile_04",
+        "tile_06"
+      ],
+      "anchor_pair_tile_ids": [
+        "tile_00",
+        "tile_04"
+      ],
+      "completed_pair_tile_ids": [],
+      "eligible": true,
+      "ineligible_reasons": [],
+      "score": 301.7,
+      "eligible_pair_count": 2,
+      "pair_count": 2,
+      "pair_summaries": [
+        {
+          "tile_ids": [
+            "tile_04",
+            "tile_06"
+          ],
+          "eligible": true,
+          "score": 362.0,
+          "shared_assigned_image_count": 64,
+          "boundary_support_count": 31,
+          "boundary_support_source": "border_camera_intersection",
+          "boundary_support_quality": "border_role_overlap"
+        },
+        {
+          "tile_ids": [
+            "tile_00",
+            "tile_04"
+          ],
+          "eligible": true,
+          "score": 145.0,
+          "shared_assigned_image_count": 26,
+          "boundary_support_count": 26,
+          "boundary_support_source": "shared_assigned_images_fallback",
+          "boundary_support_quality": "shared_images_no_bucket_intersection"
+        }
+      ]
+    }
+  ],
+  "r3_candidate_triples_preview_completed_pair_rungs": [
+    {
+      "tile_ids": [
+        "tile_03",
+        "tile_04",
+        "tile_06"
+      ],
+      "anchor_pair_tile_ids": [
+        "tile_03",
+        "tile_04"
+      ],
+      "completed_pair_tile_ids": [
+        [
+          "tile_02",
+          "tile_05"
+        ],
+        [
+          "tile_04",
+          "tile_06"
+        ]
+      ],
+      "eligible": true,
+      "ineligible_reasons": [],
+      "score": 419.7,
+      "eligible_pair_count": 2,
+      "pair_count": 2,
+      "pair_summaries": [
+        {
+          "tile_ids": [
+            "tile_04",
+            "tile_06"
+          ],
+          "eligible": true,
+          "score": 362.0,
+          "shared_assigned_image_count": 64,
+          "boundary_support_count": 31,
+          "boundary_support_source": "border_camera_intersection",
+          "boundary_support_quality": "border_role_overlap"
+        },
+        {
+          "tile_ids": [
+            "tile_03",
+            "tile_04"
+          ],
+          "eligible": true,
+          "score": 263.0,
+          "shared_assigned_image_count": 41,
+          "boundary_support_count": 25,
+          "boundary_support_source": "border_camera_intersection",
+          "boundary_support_quality": "border_role_overlap"
+        }
+      ]
+    },
+    {
+      "tile_ids": [
+        "tile_00",
+        "tile_04",
+        "tile_06"
+      ],
+      "anchor_pair_tile_ids": [
+        "tile_00",
+        "tile_04"
+      ],
+      "completed_pair_tile_ids": [
+        [
+          "tile_02",
+          "tile_05"
+        ],
+        [
+          "tile_04",
+          "tile_06"
+        ]
+      ],
+      "eligible": true,
+      "ineligible_reasons": [],
+      "score": 301.7,
+      "eligible_pair_count": 2,
+      "pair_count": 2,
+      "pair_summaries": [
+        {
+          "tile_ids": [
+            "tile_04",
+            "tile_06"
+          ],
+          "eligible": true,
+          "score": 362.0,
+          "shared_assigned_image_count": 64,
+          "boundary_support_count": 31,
+          "boundary_support_source": "border_camera_intersection",
+          "boundary_support_quality": "border_role_overlap"
+        },
+        {
+          "tile_ids": [
+            "tile_00",
+            "tile_04"
+          ],
+          "eligible": true,
+          "score": 145.0,
+          "shared_assigned_image_count": 26,
+          "boundary_support_count": 26,
+          "boundary_support_source": "shared_assigned_images_fallback",
+          "boundary_support_quality": "shared_images_no_bucket_intersection"
+        }
+      ]
+    }
+  ],
+  "candidate_pair_recompute_check": {
+    "generated_at": "2026-04-24T23:44:22.417914+00:00",
+    "matches_existing": true,
+    "existing_shape": [
+      [
+        [
+          "tile_02",
+          "tile_05"
+        ],
+        true,
+        623.0
+      ],
+      [
+        [
+          "tile_04",
+          "tile_06"
+        ],
+        true,
+        362.0
+      ],
+      [
+        [
+          "tile_03",
+          "tile_04"
+        ],
+        true,
+        263.0
+      ],
+      [
+        [
+          "tile_00",
+          "tile_04"
+        ],
+        true,
+        145.0
+      ],
+      [
+        [
+          "tile_00",
+          "tile_01"
+        ],
+        false,
+        75.0
+      ]
+    ],
+    "recomputed_shape": [
+      [
+        [
+          "tile_02",
+          "tile_05"
+        ],
+        true,
+        623.0
+      ],
+      [
+        [
+          "tile_04",
+          "tile_06"
+        ],
+        true,
+        362.0
+      ],
+      [
+        [
+          "tile_03",
+          "tile_04"
+        ],
+        true,
+        263.0
+      ],
+      [
+        [
+          "tile_00",
+          "tile_04"
+        ],
+        true,
+        145.0
+      ],
+      [
+        [
+          "tile_00",
+          "tile_01"
+        ],
+        false,
+        75.0
+      ]
+    ]
+  }
 }
