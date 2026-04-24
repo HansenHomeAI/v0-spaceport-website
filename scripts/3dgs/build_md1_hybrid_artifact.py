@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import sys
 import tarfile
@@ -29,6 +30,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--replacement-root", required=True, type=Path)
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument("--replacement-tile", action="append", default=[])
+    parser.add_argument(
+        "--replacement-mode",
+        choices=["replace", "append"],
+        default="replace",
+        help="Whether replacement tile splats replace or append to historical tile splats.",
+    )
     parser.add_argument("--merge-mode", default="support_weighted_overlap")
     parser.add_argument(
         "--opacity-policy",
@@ -51,6 +58,16 @@ def read_vertex(path: Path) -> np.ndarray:
 def write_vertex(path: Path, vertex: np.ndarray) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     PlyData([PlyElement.describe(vertex, "vertex")], text=False).write(str(path))
+
+
+def link_or_copy(source: Path, destination: Path) -> None:
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    if destination.exists():
+        destination.unlink()
+    try:
+        os.link(source, destination)
+    except OSError:
+        shutil.copy2(source, destination)
 
 
 def expand_vertex_dtype(vertex: np.ndarray, target_dtype: np.dtype) -> np.ndarray:
@@ -127,11 +144,14 @@ def apply_opacity_policy(
     }
 
 
-def copy_tile_sidecars(source_tile_dir: Path, output_tile_dir: Path) -> None:
+def copy_tile_sidecars(source_tile_dir: Path, output_tile_dir: Path, *, prefer_link: bool = False) -> None:
     for sidecar in ("background_skybox.webp", "background_manifest.json", "export_manifest.json"):
         source = source_tile_dir / sidecar
         if source.exists():
-            shutil.copy2(source, output_tile_dir / sidecar)
+            if prefer_link:
+                link_or_copy(source, output_tile_dir / sidecar)
+            else:
+                shutil.copy2(source, output_tile_dir / sidecar)
 
 
 def build_tarball(output_dir: Path) -> Path:
@@ -191,22 +211,31 @@ def main() -> int:
                 scale_full_quantile=args.scale_full_quantile,
                 scale_weight_power=args.scale_weight_power,
             )
-            write_vertex(output_tile_dir / "splat.ply", adjusted)
+            if args.replacement_mode == "append":
+                output_vertex = np.concatenate([historical_vertex, adjusted])
+                tile_mode = "historical_plus_replacement"
+            else:
+                output_vertex = adjusted
+                tile_mode = "replacement"
+            write_vertex(output_tile_dir / "splat.ply", output_vertex)
             copy_tile_sidecars(source_tile_dir, output_tile_dir)
             tile_policy[tile_id] = {
-                "mode": "replacement",
+                "mode": tile_mode,
                 "source_splat": str(source_tile_dir / "splat.ply"),
+                "historical_source_splat": str(historical_tile_dir / "splat.ply"),
                 "source_property_count": len(source_vertex.dtype.names or ()),
                 "expanded_to_dtype_property_count": len(reference_dtype.names or ()),
+                "written_gaussian_count": int(len(output_vertex)),
                 "opacity_policy": policy_summary,
             }
         else:
             source_tile_dir = historical_tile_dir
-            shutil.copy2(source_tile_dir / "splat.ply", output_tile_dir / "splat.ply")
-            copy_tile_sidecars(source_tile_dir, output_tile_dir)
+            link_or_copy(source_tile_dir / "splat.ply", output_tile_dir / "splat.ply")
+            copy_tile_sidecars(source_tile_dir, output_tile_dir, prefer_link=True)
             tile_policy[tile_id] = {
                 "mode": "historical",
                 "source_splat": str(source_tile_dir / "splat.ply"),
+                "storage": "hardlink_or_copy",
             }
         tile_dirs[tile_id] = output_tile_dir
 
@@ -224,6 +253,7 @@ def main() -> int:
         "historical_source_root": str(historical_root),
         "replacement_source_root": str(replacement_root),
         "replacement_tiles": sorted(replacement_tiles),
+        "replacement_mode": args.replacement_mode,
         "merge_mode": args.merge_mode,
         "opacity_policy": {
             "mode": args.opacity_policy,

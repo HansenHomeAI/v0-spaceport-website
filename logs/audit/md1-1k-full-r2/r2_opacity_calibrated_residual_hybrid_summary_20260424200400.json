@@ -1,0 +1,123 @@
+{
+  "created_at": "2026-04-24T20:04:41Z",
+  "label": "r2_opacity_calibrated_residual_hybrid",
+  "purpose": "Retain historical tile_02/tile_05 far-field structure and append median opacity-calibrated R2 geometry to test whether residual historical structure recovers horizon SSIM while keeping R2 near/boundary gains.",
+  "historical_source_root": "/Users/gabrielhansen/worktrees/agent-86580563-hierarchical-splat-merge-plan/logs/aws/md1-1k-full-r2/remerge-fixed",
+  "replacement_source_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r2_origframe_bgsh1_planner_remerge_20260424173500",
+  "replacement_tiles": [
+    "tile_02",
+    "tile_05"
+  ],
+  "replacement_mode": "append",
+  "merge_mode": "support_weighted_overlap",
+  "opacity_policy": {
+    "mode": "median",
+    "factor": 1.0,
+    "scale_start_quantile": 0.9,
+    "scale_full_quantile": 0.99,
+    "scale_weight_power": 1.0
+  },
+  "tile_policy": {
+    "tile_00": {
+      "mode": "historical",
+      "source_splat": "/Users/gabrielhansen/worktrees/agent-86580563-hierarchical-splat-merge-plan/logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_00/splat.ply",
+      "storage": "hardlink_or_copy"
+    },
+    "tile_01": {
+      "mode": "historical",
+      "source_splat": "/Users/gabrielhansen/worktrees/agent-86580563-hierarchical-splat-merge-plan/logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_01/splat.ply",
+      "storage": "hardlink_or_copy"
+    },
+    "tile_02": {
+      "mode": "historical_plus_replacement",
+      "source_splat": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r2_origframe_bgsh1_planner_remerge_20260424173500/tiles/tile_02/splat.ply",
+      "historical_source_splat": "/Users/gabrielhansen/worktrees/agent-86580563-hierarchical-splat-merge-plan/logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_02/splat.ply",
+      "source_property_count": 26,
+      "expanded_to_dtype_property_count": 62,
+      "written_gaussian_count": 1018716,
+      "opacity_policy": {
+        "mode": "median",
+        "adjusted": true,
+        "tile_id": "tile_02",
+        "old_median_opacity": -2.1972246170043945,
+        "replacement_median_opacity_before": 2.534442901611328,
+        "full_median_shift": 4.731667518615723,
+        "opacity_factor": 1.0,
+        "opacity_logit_shift_mean": 4.7316670417785645,
+        "replacement_median_opacity_after": -2.1972246170043945,
+        "weight_quantiles": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "adjusted_gaussian_count": 289623,
+        "fully_adjusted_gaussian_count": 289623
+      }
+    },
+    "tile_03": {
+      "mode": "historical",
+      "source_splat": "/Users/gabrielhansen/worktrees/agent-86580563-hierarchical-splat-merge-plan/logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_03/splat.ply",
+      "storage": "hardlink_or_copy"
+    },
+    "tile_04": {
+      "mode": "historical",
+      "source_splat": "/Users/gabrielhansen/worktrees/agent-86580563-hierarchical-splat-merge-plan/logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_04/splat.ply",
+      "storage": "hardlink_or_copy"
+    },
+    "tile_05": {
+      "mode": "historical_plus_replacement",
+      "source_splat": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r2_origframe_bgsh1_planner_remerge_20260424173500/tiles/tile_05/splat.ply",
+      "historical_source_splat": "/Users/gabrielhansen/worktrees/agent-86580563-hierarchical-splat-merge-plan/logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_05/splat.ply",
+      "source_property_count": 26,
+      "expanded_to_dtype_property_count": 62,
+      "written_gaussian_count": 896654,
+      "opacity_policy": {
+        "mode": "median",
+        "adjusted": true,
+        "tile_id": "tile_05",
+        "old_median_opacity": -2.1972246170043945,
+        "replacement_median_opacity_before": 2.528273582458496,
+        "full_median_shift": 4.725498199462891,
+        "opacity_factor": 1.0,
+        "opacity_logit_shift_mean": 4.725497722625732,
+        "replacement_median_opacity_after": -2.1972246170043945,
+        "weight_quantiles": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "adjusted_gaussian_count": 167561,
+        "fully_adjusted_gaussian_count": 167561
+      }
+    },
+    "tile_06": {
+      "mode": "historical",
+      "source_splat": "/Users/gabrielhansen/worktrees/agent-86580563-hierarchical-splat-merge-plan/logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_06/splat.ply",
+      "storage": "hardlink_or_copy"
+    }
+  },
+  "merge_report": {
+    "merge_mode": "support_weighted_overlap",
+    "tile_count": 7,
+    "source_gaussians": 5560835,
+    "retained_gaussians": 4500557,
+    "dropped_gaussians": 1060278,
+    "fallback_tile_count": 1,
+    "retain_all_tile_count": 0,
+    "fallback_reasons": [
+      {
+        "tile_id": "tile_06",
+        "reason": "primary_and_overlap_retained_zero",
+        "retention_strategy": "centroid_voronoi_fallback"
+      }
+    ]
+  }
+}
