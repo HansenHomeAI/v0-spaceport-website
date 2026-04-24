@@ -194,10 +194,11 @@ def run_review_jobs(
     cull_margin: float,
     min_gaussians_on_oom: int,
     tile_ids: str,
+    baseline_review_manifest_s3_uri: str = "",
 ) -> dict[str, Any]:
     jobs: dict[str, Any] = {}
     strict_output_uri = ""
-    strict_baseline_manifest_uri = ""
+    strict_baseline_manifest_uri = baseline_review_manifest_s3_uri.strip()
     for variant in variants:
         model_s3_uri = staged_variants[variant]["model_s3_uri"]
         output_s3_uri = s3_prefix_join(output_root_s3_uri, "outputs", variant)
@@ -346,6 +347,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--cull-margin", type=float, default=0.5)
     parser.add_argument("--min-gaussians-on-oom", type=int, default=75_000)
     parser.add_argument("--tile-ids", default="tile_02,tile_05")
+    parser.add_argument("--baseline-review-manifest-s3-uri", default="")
     parser.add_argument("--submit", action="store_true")
     parser.add_argument("--wait", action="store_true")
     parser.add_argument("--force-tarballs", action="store_true")
@@ -397,6 +399,7 @@ def main() -> int:
         cull_margin=args.cull_margin,
         min_gaussians_on_oom=args.min_gaussians_on_oom,
         tile_ids=args.tile_ids,
+        baseline_review_manifest_s3_uri=args.baseline_review_manifest_s3_uri,
     )
     if args.submit and args.wait and not args.skip_output_download:
         download_review_outputs(audit_root=args.audit_root, jobs=jobs)
@@ -410,6 +413,7 @@ def main() -> int:
         "colmap_s3_uri": args.colmap_s3_uri,
         "output_root_s3_uri": output_root_s3_uri,
         "review_camera_manifest_s3_uri": staged["review_camera_manifest_s3_uri"],
+        "baseline_review_manifest_s3_uri": args.baseline_review_manifest_s3_uri,
         "execution_mode": args.execution_mode,
         "render_settings": {
             "render_scale": args.render_scale,

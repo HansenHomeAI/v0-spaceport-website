@@ -1,10 +1,10 @@
 reason: geometry-first md1 tiled 3DGS reset from pinned ffef97e646046f204267ec30dd7dbf6f19027cad
-current_rung: R1_review_gate_fix
+current_rung: R1_candidate_comparison
 root_cause_classification: merge_bad
-live_compute_status: exact-head R1 strict_core/support_weighted_overlap/raw_union Training reviews completed; all rendered blank gaussian foreground, so R1 cannot trust those metric deltas. Observed live ad-hoc review md1-r1a-viewfix-20260423235854 on ml.g5.2xlarge from digest sha256:83899e61c91fef1adc932bfe33ba30e061883c8c0cb98de3e58c82ac24b10853; monitor for signal while branch patch is pushed and rebuilt.
+live_compute_status: CDK Deploy, Cloudflare Pages, and 3dgs image rebuild are green for c00091ae6ec390e1cb341f92d964b290f9cd5658. Exact preview alias is https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash URL is https://d090e306.v0-spaceport-website-preview2.pages.dev. Branch 3dgs image tag agent90742618md1geometryconsistency points to digest sha256:039416aaf53bed7ab8a60202acf125c80083de3b14177fbd6ee2979b7b0725f6. Exact-head R1 strict_core review job md1-r1-strict-core-1776989969-quality completed and produced render_sanity=ok, but promotion is blocked by fallback_tile_count=2 and weak/flat boundary tile visuals.
 branch: agent-90742618-md1-geometry-consistency
 base_commit: ffef97e646046f204267ec30dd7dbf6f19027cad
-head: 0c6a4495cf7088363326de41f43c7f34d6427e27
+head: c00091ae6ec390e1cb341f92d964b290f9cd5658
 base_worktree: /Users/gabrielhansen/worktrees/agent-86580563-hierarchical-splat-merge-plan
 canonical_model_artifact: s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz
 local_audit_root: /Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2
@@ -13,9 +13,9 @@ review_camera_manifest: logs/audit/md1-1k-full-r2/review_camera_manifest.json
 review_comparison: logs/audit/md1-1k-full-r2/review_comparison.json
 offline_merge_reports: logs/audit/md1-1k-full-r2/offline_merges/{raw_union,strict_core,support_weighted_overlap}/merge_report.json
 r0_inventory: complete; 7 tile splats, merged splat, merge report, tile manifest, and view bucket manifest found
-r1_result: exact-head render reviews completed: strict_core fallback_tile_count=2, support_weighted_overlap fallback_tile_count=2 with zero delta vs strict_core, raw_union fallback_tile_count=0 but zero delta because gaussian foreground was blank; renderer fixed locally to activate exported scales/opacities/quaternions, convert Nerfstudio OpenGL cameras to OpenCV viewmats for gsplat, and block blank foreground renders through render_sanity
+r1_result: exact-head c00091ae strict_core review completed: near_detail median PSNR=10.2046 SSIM=0.3251 LPIPS=0.9124; boundary median PSNR=13.1340 SSIM=0.4168 LPIPS=0.8233; horizon median PSNR=16.2155 SSIM=0.3831 LPIPS=0.8721; render_sanity=ok; fallback_tile_count=2; retain_all_tile_count=0. Visuals are no longer blank but boundary/individual tile renders remain poor, so run support/raw candidate comparison before pivoting.
 candidate_pair_top_rank: tile_02/tile_05; shared_assigned_images=64; boundary_support=52; eligible=true
-blocked_promotion_reason: R1 metric deltas from 0c6a4495 are invalid because rendered gaussian foreground was blank; prior fallback blockers remain for strict_core/support_weighted_overlap
-next_unblocked_step: commit/push the renderer activation/camera-convention/render-sanity fix, wait exact-head CDK/Pages/3dgs image gates, then rerun strict_core R1 review before candidate comparisons
+blocked_promotion_reason: strict_core still has fallback_tile_count=2 and weak/flat boundary/tile renders; candidate comparison has not yet rerun on valid render_sanity baseline
+next_unblocked_step: run support_weighted_overlap and raw_union R1 candidate reviews against strict_core baseline manifest s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r1-review-c00091ae-render-sanity/baselines/strict_core, then decide merge-only versus training-time geometry pivot
 owner_action_needed: none
-updated: 2026-04-23T18:02:04-06:00
+updated: 2026-04-23T18:31:00-06:00
