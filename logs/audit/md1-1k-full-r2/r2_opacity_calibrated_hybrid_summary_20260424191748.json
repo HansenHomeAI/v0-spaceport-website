@@ -1,0 +1,43 @@
+{
+  "created_at": "2026-04-24T19:18:45Z",
+  "diagnostic_label": "r2_opacity_calibrated_hybrid",
+  "purpose": "Test whether repaired R2 leaf opacity logits are over-dominating horizon/far-field by median-matching R2 tile opacity logits to historical tiles before merge.",
+  "historical_source_root": "/Users/gabrielhansen/worktrees/agent-86580563-hierarchical-splat-merge-plan/logs/aws/md1-1k-full-r2/remerge-fixed",
+  "r2_repaired_source_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r2_origframe_bgsh1_planner_remerge_20260424173500",
+  "tile_policy": {
+    "tile_02": {
+      "mode": "repaired_r2_tile_02_opacity_median_matched_to_historical_tile_02",
+      "old_median_opacity": -2.1972246170043945,
+      "r2_median_opacity_before": 2.534442901611328,
+      "opacity_logit_shift_subtracted": 4.731667518615723,
+      "r2_median_opacity_after": -2.1972246170043945,
+      "r2_vertices": 289623
+    },
+    "tile_05": {
+      "mode": "repaired_r2_tile_05_opacity_median_matched_to_historical_tile_05",
+      "old_median_opacity": -2.1972246170043945,
+      "r2_median_opacity_before": 2.528273582458496,
+      "opacity_logit_shift_subtracted": 4.725498199462891,
+      "r2_median_opacity_after": -2.1972246170043945,
+      "r2_vertices": 167561
+    },
+    "other_tiles": "historical recovered tile splats for merge context"
+  },
+  "dtype_field_count": 62,
+  "merge_report": {
+    "merge_mode": "support_weighted_overlap",
+    "tile_count": 7,
+    "source_gaussians": 4102649,
+    "retained_gaussians": 3773074,
+    "dropped_gaussians": 329575,
+    "fallback_tile_count": 1,
+    "retain_all_tile_count": 0,
+    "fallback_reasons": [
+      {
+        "tile_id": "tile_06",
+        "reason": "primary_and_overlap_retained_zero",
+        "retention_strategy": "centroid_voronoi_fallback"
+      }
+    ]
+  }
+}

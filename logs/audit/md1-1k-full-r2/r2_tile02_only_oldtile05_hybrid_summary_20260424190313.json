@@ -1,0 +1,40 @@
+{
+  "created_at": "2026-04-24T19:04:13Z",
+  "diagnostic_label": "r2_tile02_only_oldtile05_hybrid",
+  "purpose": "Isolate whether repaired R2 tile_05 is responsible for horizon/far-field regression by restoring historical tile_05 while keeping repaired R2 tile_02.",
+  "historical_source_root": "/Users/gabrielhansen/worktrees/agent-86580563-hierarchical-splat-merge-plan/logs/aws/md1-1k-full-r2/remerge-fixed",
+  "r2_repaired_source_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r2_origframe_bgsh1_planner_remerge_20260424173500",
+  "tile_policy": {
+    "tile_02": {
+      "r2_vertices": 289623,
+      "mode": "repaired_r2_tile_02_expanded_to_historical_sh3_dtype"
+    },
+    "tile_05": {
+      "old_historical_vertices": 729093,
+      "mode": "historical_tile_05_restored"
+    },
+    "other_tiles": "historical recovered tile splats for merge context"
+  },
+  "dtype_field_count": 62,
+  "merge_report": {
+    "merge_mode": "support_weighted_overlap",
+    "tile_count": 7,
+    "source_gaussians": 4664181,
+    "retained_gaussians": 4381848,
+    "dropped_gaussians": 282333,
+    "fallback_tile_count": 2,
+    "retain_all_tile_count": 0,
+    "fallback_reasons": [
+      {
+        "tile_id": "tile_05",
+        "reason": "primary_and_overlap_retained_zero",
+        "retention_strategy": "centroid_voronoi_fallback"
+      },
+      {
+        "tile_id": "tile_06",
+        "reason": "primary_and_overlap_retained_zero",
+        "retention_strategy": "centroid_voronoi_fallback"
+      }
+    ]
+  }
+}

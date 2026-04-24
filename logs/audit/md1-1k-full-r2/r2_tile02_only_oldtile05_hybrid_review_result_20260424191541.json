@@ -1,0 +1,144 @@
+{
+  "job_name": "md1-r1-r2-tile02-only-oldtile05-hybrid-1777057519-quality",
+  "job_status": "Completed",
+  "billable_time_seconds": 536,
+  "candidate_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r2-tile02-only-oldtile05-hybrid-20260424190313/model.tar.gz",
+  "review_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r2-tile02-only-oldtile05-hybrid-smoke-review-20260424190313/outputs/r2-tile02-only-oldtile05-hybrid/md1-r1-r2-tile02-only-oldtile05-hybrid-1777057519-quality/output/model.tar.gz",
+  "promotion_decision": {
+    "status": "blocked",
+    "block_reasons": [
+      "merge_fallback_tile_count_gt_zero",
+      "horizon_psnr_regression",
+      "horizon_lpips_regression",
+      "horizon_sky_score_regression"
+    ],
+    "warnings": [],
+    "merge_mode": "support_weighted_overlap",
+    "fallback_tile_count": 2,
+    "retain_all_tile_count": 0,
+    "per_bucket": {
+      "near_detail": {
+        "baseline": {
+          "psnr": 10.204569909807525,
+          "ssim": 0.3250790983438492,
+          "lpips": 0.9124259352684021
+        },
+        "candidate": {
+          "psnr": 13.147208004086917,
+          "ssim": 0.36545993387699127,
+          "lpips": 0.8331922292709351
+        },
+        "delta": {
+          "psnr": 2.942638094279392,
+          "ssim": 0.04038083553314209,
+          "lpips": -0.07923370599746704
+        },
+        "block_reasons": []
+      },
+      "boundary": {
+        "baseline": {
+          "psnr": 13.134039611111529,
+          "ssim": 0.4168241024017334,
+          "lpips": 0.8232778012752533
+        },
+        "candidate": {
+          "psnr": 15.336363742257276,
+          "ssim": 0.4359397888183594,
+          "lpips": 0.7052737772464752
+        },
+        "delta": {
+          "psnr": 2.2023241311457475,
+          "ssim": 0.019115686416625977,
+          "lpips": -0.11800402402877808
+        },
+        "block_reasons": []
+      },
+      "horizon": {
+        "baseline": {
+          "psnr": 16.21552459733899,
+          "ssim": 0.38312965631484985,
+          "lpips": 0.8720598220825195
+        },
+        "candidate": {
+          "psnr": 13.87107548673205,
+          "ssim": 0.37437453866004944,
+          "lpips": 0.9098554253578186
+        },
+        "delta": {
+          "psnr": -2.3444491106069414,
+          "ssim": -0.008755117654800415,
+          "lpips": 0.03779560327529907
+        },
+        "block_reasons": [
+          "horizon_psnr_regression",
+          "horizon_lpips_regression",
+          "horizon_sky_score_regression"
+        ]
+      }
+    },
+    "thresholds": {
+      "near_detail": {
+        "psnr_min_delta": -1.0,
+        "ssim_min_delta": -0.015,
+        "lpips_max_delta": 0.035
+      },
+      "boundary": {
+        "psnr_min_delta": -1.0,
+        "ssim_min_delta": -0.015,
+        "lpips_max_delta": 0.035,
+        "required_improvement": {
+          "psnr": 0.5,
+          "ssim": 0.01,
+          "lpips": -0.025
+        }
+      },
+      "horizon": {
+        "psnr_min_delta": -0.75,
+        "ssim_min_delta": -0.012,
+        "lpips_max_delta": 0.03,
+        "sky_score_min_ratio": 0.9
+      }
+    }
+  },
+  "fallback_breakdown": {
+    "baseline": {
+      "merge_mode": "strict_core",
+      "fallback_tile_count": 2,
+      "retain_all_tile_count": 0,
+      "source_gaussians": 5103651,
+      "retained_gaussians": 4500379,
+      "fallback_reasons": [
+        {
+          "tile_id": "tile_05",
+          "reason": "primary_and_overlap_retained_zero",
+          "retention_strategy": "centroid_voronoi_fallback"
+        },
+        {
+          "tile_id": "tile_06",
+          "reason": "primary_and_overlap_retained_zero",
+          "retention_strategy": "centroid_voronoi_fallback"
+        }
+      ]
+    },
+    "candidate": {
+      "merge_mode": "support_weighted_overlap",
+      "fallback_tile_count": 2,
+      "retain_all_tile_count": 0,
+      "source_gaussians": 4664181,
+      "retained_gaussians": 4381848,
+      "fallback_reasons": [
+        {
+          "tile_id": "tile_05",
+          "reason": "primary_and_overlap_retained_zero",
+          "retention_strategy": "centroid_voronoi_fallback"
+        },
+        {
+          "tile_id": "tile_06",
+          "reason": "primary_and_overlap_retained_zero",
+          "retention_strategy": "centroid_voronoi_fallback"
+        }
+      ]
+    }
+  },
+  "interpretation": "Restoring historical tile_05 while keeping repaired R2 tile_02 did not recover horizon; R2 tile_02 or leaf opacity/far-field calibration remains a likely contaminant."
+}
