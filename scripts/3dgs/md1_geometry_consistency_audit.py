@@ -25,7 +25,7 @@ from geometry_review import (  # noqa: E402
     freeze_review_camera_manifest,
     inventory_extracted_model,
 )
-from tile_pipeline import load_json, merge_tile_outputs, rank_candidate_tile_pairs  # noqa: E402
+from tile_pipeline import load_json, merge_tile_outputs, rank_candidate_tile_pairs, rank_candidate_tile_triples  # noqa: E402
 
 
 CANONICAL_MODEL_URI = (
@@ -205,6 +205,11 @@ def main() -> int:
         view_buckets,
         merge_report=merge_report,
     )
+    candidate_triples = rank_candidate_tile_triples(
+        tile_manifest,
+        view_buckets,
+        merge_report=merge_report,
+    )
     offline_merge_comparisons = None
     if not args.skip_offline_merges:
         offline_merge_comparisons = run_offline_merge_comparisons(
@@ -263,6 +268,7 @@ def main() -> int:
         "frozen_review_camera_manifest": str(camera_manifest_path),
         "frozen_camera_sets": camera_manifest,
         "candidate_pairs": candidate_pairs,
+        "candidate_triples": candidate_triples,
         "offline_merge_comparisons": offline_merge_comparisons,
         "baseline_metrics": baseline_manifest["bucket_medians"],
         "candidate_metrics": candidate_manifest["bucket_medians"],

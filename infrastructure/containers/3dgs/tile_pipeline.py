@@ -777,6 +777,117 @@ def rank_candidate_tile_pairs(
     )
 
 
+def rank_candidate_tile_triples(
+    tile_manifest: Mapping[str, Any],
+    view_buckets: Mapping[str, Sequence[str]] | None = None,
+    *,
+    merge_report: Mapping[str, Any] | None = None,
+    completed_pair_tile_ids: Sequence[Sequence[str]] | None = None,
+    min_shared_assigned_images: int = 24,
+    min_boundary_support_images: int = 4,
+) -> list[dict[str, Any]]:
+    """Rank connected three-tile windows for bounded R3 training.
+
+    The anchor must be an eligible pair that has not already been covered by an
+    earlier pair rung. The third tile is chosen only from actual neighbor links.
+    """
+
+    completed_pair_keys = {
+        tuple(sorted(str(tile_id) for tile_id in pair))
+        for pair in (completed_pair_tile_ids or [])
+        if len(pair) == 2
+    }
+    tiles = [dict(tile) for tile in tile_manifest.get("tiles", [])]
+    tile_by_id = {str(tile.get("tile_id")): tile for tile in tiles if tile.get("tile_id")}
+    pair_rankings = rank_candidate_tile_pairs(
+        tile_manifest,
+        view_buckets,
+        merge_report=merge_report,
+        min_shared_assigned_images=min_shared_assigned_images,
+        min_boundary_support_images=min_boundary_support_images,
+    )
+    pair_by_key = {tuple(pair["tile_ids"]): pair for pair in pair_rankings}
+    triple_by_key: dict[tuple[str, str, str], dict[str, Any]] = {}
+    for pair in pair_rankings:
+        pair_key = tuple(pair["tile_ids"])
+        if not pair.get("eligible") or pair_key in completed_pair_keys:
+            continue
+        neighbor_candidates: set[str] = set()
+        for tile_id in pair_key:
+            tile = tile_by_id.get(tile_id, {})
+            for neighbor_id in ordered_unique(tile.get("neighbor_tile_ids", [])):
+                neighbor_id = str(neighbor_id)
+                if neighbor_id in tile_by_id and neighbor_id not in pair_key:
+                    neighbor_candidates.add(neighbor_id)
+        for third_id in sorted(neighbor_candidates):
+            triple_key = tuple(sorted((*pair_key, third_id)))
+            if len(triple_key) != 3:
+                continue
+            participating_pair_keys = [
+                key
+                for key in pair_by_key
+                if key[0] in triple_key and key[1] in triple_key
+            ]
+            pair_details = [pair_by_key[key] for key in participating_pair_keys]
+            eligible_pair_count = sum(1 for detail in pair_details if detail.get("eligible"))
+            if eligible_pair_count == 0:
+                continue
+            ownership_valid = all(
+                bool(tile_by_id[tile_id].get("ownership_bounds_available", True))
+                and (
+                    bounds_available(tile_by_id[tile_id].get("core_bounds"))
+                    or bounds_available(tile_by_id[tile_id].get("overlap_bounds"))
+                )
+                for tile_id in triple_key
+            )
+            ineligible_reasons: list[str] = []
+            if not ownership_valid:
+                ineligible_reasons.append("ownership_bounds_invalid")
+            if eligible_pair_count < 2:
+                ineligible_reasons.append("only_one_supported_pair_in_window")
+            if not ineligible_reasons:
+                score = (
+                    float(pair.get("score", 0.0))
+                    + sum(float(detail.get("score", 0.0)) for detail in pair_details if detail is not pair) * 0.35
+                    + eligible_pair_count * 15.0
+                )
+            else:
+                score = float(pair.get("score", 0.0)) - 50.0
+            candidate = {
+                "tile_ids": list(triple_key),
+                "anchor_pair_tile_ids": list(pair_key),
+                "completed_pair_tile_ids": [list(key) for key in sorted(completed_pair_keys)],
+                "eligible": not ineligible_reasons,
+                "ineligible_reasons": ineligible_reasons,
+                "score": round(score, 6),
+                "eligible_pair_count": eligible_pair_count,
+                "pair_count": len(pair_details),
+                "pair_summaries": [
+                    {
+                        "tile_ids": list(detail["tile_ids"]),
+                        "eligible": bool(detail.get("eligible")),
+                        "score": detail.get("score"),
+                        "shared_assigned_image_count": detail.get("shared_assigned_image_count"),
+                        "boundary_support_count": detail.get("boundary_support_count"),
+                        "boundary_support_source": detail.get("boundary_support_source"),
+                        "boundary_support_quality": detail.get("boundary_support_quality"),
+                    }
+                    for detail in pair_details
+                ],
+            }
+            existing = triple_by_key.get(triple_key)
+            if existing is None or candidate["score"] > existing["score"]:
+                triple_by_key[triple_key] = candidate
+    return sorted(
+        triple_by_key.values(),
+        key=lambda triple: (
+            not bool(triple["eligible"]),
+            -float(triple["score"]),
+            triple["tile_ids"],
+        ),
+    )
+
+
 def enrich_tile_manifest_support_metadata(
     tile_manifest: Mapping[str, Any],
     view_buckets: Mapping[str, Sequence[str]] | None = None,

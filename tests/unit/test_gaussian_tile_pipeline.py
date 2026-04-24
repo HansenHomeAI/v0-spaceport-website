@@ -850,6 +850,45 @@ class GaussianTilePipelineTests(unittest.TestCase):
         self.assertIn("boundary_support_below_minimum", ranked[0]["ineligible_reasons"])
         self.assertTrue(ranked[0]["poor_boundary_support"])
 
+    def test_rank_candidate_tile_triples_anchors_on_uncompleted_supported_pair(self):
+        bounds = {"min_x": 0, "max_x": 1, "min_y": 0, "max_y": 1, "min_z": 0, "max_z": 1}
+
+        def tile(tile_id, neighbors, names):
+            return {
+                "tile_id": tile_id,
+                "neighbor_tile_ids": neighbors,
+                "base_camera_ids": names,
+                "border_camera_ids": names[:4],
+                "image_names": names,
+                "core_bounds": bounds,
+                "overlap_bounds": bounds,
+            }
+
+        shared_0205 = [f"shared_0205_{index}.jpg" for index in range(6)]
+        shared_0506 = [f"shared_0506_{index}.jpg" for index in range(6)]
+        tile02_context = [f"tile02_context_{index}.jpg" for index in range(6)]
+        tile06_context = [f"tile06_context_{index}.jpg" for index in range(6)]
+        manifest = {
+            "tiles": [
+                tile("tile_02", ["tile_05"], shared_0205 + tile02_context),
+                tile("tile_05", ["tile_02", "tile_06"], shared_0205 + shared_0506),
+                tile("tile_06", ["tile_05"], shared_0506 + tile06_context),
+            ]
+        }
+
+        ranked = tile_pipeline.rank_candidate_tile_triples(
+            manifest,
+            {"boundary_camera_ids": shared_0205[:4] + shared_0506[:4]},
+            completed_pair_tile_ids=[["tile_02", "tile_05"]],
+            min_shared_assigned_images=4,
+        )
+
+        self.assertEqual(ranked[0]["tile_ids"], ["tile_02", "tile_05", "tile_06"])
+        self.assertTrue(ranked[0]["eligible"])
+        self.assertEqual(ranked[0]["anchor_pair_tile_ids"], ["tile_05", "tile_06"])
+        self.assertEqual(ranked[0]["eligible_pair_count"], 2)
+        self.assertEqual(ranked[0]["completed_pair_tile_ids"], [["tile_02", "tile_05"]])
+
     def test_merge_tile_outputs_support_weighted_overlap_arbitrates_boundary_candidates(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
