@@ -111,6 +111,39 @@ class GeometryFirstReviewTests(unittest.TestCase):
         self.assertEqual(decision["status"], "blocked")
         self.assertIn("candidate_render_sanity_blocked", decision["block_reasons"])
 
+    def test_evaluate_promotion_decision_blocks_raw_union_as_diagnostic(self):
+        baseline = {
+            "bucket_medians": {
+                "near_detail": {"psnr": 30.0, "ssim": 0.9, "lpips": 0.1},
+                "boundary": {"psnr": 28.0, "ssim": 0.88, "lpips": 0.12},
+                "horizon": {"psnr": 27.0, "ssim": 0.86, "lpips": 0.14},
+            },
+            "sky_bucket_medians": {"horizon": {"score": 0.8}},
+        }
+        candidate = {
+            "bucket_medians": {
+                "near_detail": {"psnr": 30.4, "ssim": 0.91, "lpips": 0.09},
+                "boundary": {"psnr": 28.7, "ssim": 0.89, "lpips": 0.09},
+                "horizon": {"psnr": 27.2, "ssim": 0.87, "lpips": 0.13},
+            },
+            "sky_bucket_medians": {"horizon": {"score": 0.8}},
+            "merge_report": {
+                "merge_mode": "raw_union",
+                "fallback_tile_count": 0,
+                "retain_all_tile_count": 0,
+            },
+            "render_sanity": {"status": "ok", "blank_view_count": 0},
+        }
+
+        decision = geometry_review.evaluate_promotion_decision(
+            baseline_manifest=baseline,
+            candidate_manifest=candidate,
+        )
+
+        self.assertEqual(decision["status"], "blocked")
+        self.assertEqual(decision["merge_mode"], "raw_union")
+        self.assertIn("diagnostic_raw_union_not_promotable", decision["block_reasons"])
+
     def test_classify_root_cause_prefers_merge_bad_on_fallbacks(self):
         root_cause = geometry_review.classify_root_cause(
             inventory={"complete": True, "required": {"seven_tile_splats": True}},

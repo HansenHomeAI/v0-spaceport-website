@@ -127,10 +127,13 @@ def evaluate_promotion_decision(
 
     fallback_tile_count = int(effective_merge_report.get("fallback_tile_count", 0) or 0)
     retain_all_tile_count = int(effective_merge_report.get("retain_all_tile_count", 0) or 0)
+    merge_mode = str(effective_merge_report.get("merge_mode", "") or "")
     if fallback_tile_count > 0:
         block_reasons.append("merge_fallback_tile_count_gt_zero")
     if retain_all_tile_count > 0:
         block_reasons.append("merge_retain_all_tile_count_gt_zero")
+    if merge_mode == "raw_union":
+        block_reasons.append("diagnostic_raw_union_not_promotable")
     render_sanity = candidate_manifest.get("render_sanity") or (
         candidate_manifest.get("promotion_readiness", {}).get("render_sanity")
         if isinstance(candidate_manifest.get("promotion_readiness"), Mapping)
@@ -189,6 +192,7 @@ def evaluate_promotion_decision(
         "status": "promoted" if not unique_block_reasons else "blocked",
         "block_reasons": unique_block_reasons,
         "warnings": list(dict.fromkeys(warnings)),
+        "merge_mode": merge_mode,
         "fallback_tile_count": fallback_tile_count,
         "retain_all_tile_count": retain_all_tile_count,
         "per_bucket": per_bucket,
@@ -234,13 +238,19 @@ def build_review_comparison(
         "per_bucket": decision["per_bucket"],
         "fallback_breakdown": {
             "baseline": {
+                "merge_mode": baseline_merge_report.get("merge_mode"),
                 "fallback_tile_count": int(baseline_merge_report.get("fallback_tile_count", 0) or 0),
                 "retain_all_tile_count": int(baseline_merge_report.get("retain_all_tile_count", 0) or 0),
+                "source_gaussians": baseline_merge_report.get("source_gaussians"),
+                "retained_gaussians": baseline_merge_report.get("retained_gaussians"),
                 "fallback_reasons": baseline_merge_report.get("fallback_reasons", []),
             },
             "candidate": {
+                "merge_mode": candidate_merge_report.get("merge_mode"),
                 "fallback_tile_count": int(candidate_merge_report.get("fallback_tile_count", 0) or 0),
                 "retain_all_tile_count": int(candidate_merge_report.get("retain_all_tile_count", 0) or 0),
+                "source_gaussians": candidate_merge_report.get("source_gaussians"),
+                "retained_gaussians": candidate_merge_report.get("retained_gaussians"),
                 "fallback_reasons": candidate_merge_report.get("fallback_reasons", []),
             },
         },

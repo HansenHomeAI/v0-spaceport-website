@@ -1,192 +1,138 @@
 {
-  "version": "1.0.0",
-  "generated_at": "2026-04-23T19:18:59.399561+00:00",
-  "rung": "R0_artifact_first_diagnosis",
-  "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
-  "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
-  "inventory": {
-    "model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
-    "tile_splat_count": 7,
-    "tile_splats": [
-      "tiles/tile_00/splat.ply",
-      "tiles/tile_01/splat.ply",
-      "tiles/tile_02/splat.ply",
-      "tiles/tile_03/splat.ply",
-      "tiles/tile_04/splat.ply",
-      "tiles/tile_05/splat.ply",
-      "tiles/tile_06/splat.ply"
-    ],
-    "merged_splat": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/merged/merged_splat.ply",
-    "merge_report": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/merged/merge_report.json",
-    "tile_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiled_pipeline/inputs/scaffold/3dgs_tile_manifest.json",
-    "view_bucket_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiled_pipeline/inputs/scaffold/3dgs_view_buckets.json",
-    "required": {
-      "seven_tile_splats": true,
-      "merged_splat": true,
-      "merge_report": true,
-      "tile_manifest": true,
-      "view_bucket_manifest": true
-    },
-    "complete": true
-  },
   "baseline_artifact": {
-    "source": "historical_recovered_local_merge",
-    "path": "/Users/gabrielhansen/worktrees/agent-86580563-hierarchical-splat-merge-plan/logs/aws/md1-1k-full-r2/remerge-fixed/merged-fixed-2",
     "merge_report": {
-      "merge_mode": "strict_core",
-      "merged_ply": "logs/aws/md1-1k-full-r2/remerge-fixed/merged-fixed-2/merged_splat.ply",
-      "tile_count": 7,
-      "source_gaussians": 5103651,
-      "retained_gaussians": 4500379,
       "dropped_gaussians": 603272,
       "fallback_tile_count": 2,
+      "merge_mode": "strict_core",
+      "merged_ply": "logs/aws/md1-1k-full-r2/remerge-fixed/merged-fixed-2/merged_splat.ply",
       "retain_all_tile_count": 0,
+      "retained_gaussians": 4500379,
+      "source_gaussians": 5103651,
+      "tile_count": 7,
       "tiles": [
         {
-          "tile_id": "tile_00",
-          "source_ply": "logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_00/splat.ply",
-          "source_gaussians": 729093,
-          "retained_gaussians": 726601,
           "dropped_gaussians": 2492,
+          "ownership_bounds_available": true,
+          "retained_gaussians": 726601,
           "retention_strategy": "core_bounds",
-          "ownership_bounds_available": true
+          "source_gaussians": 729093,
+          "source_ply": "logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_00/splat.ply",
+          "tile_id": "tile_00"
         },
         {
-          "tile_id": "tile_01",
-          "source_ply": "logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_01/splat.ply",
-          "source_gaussians": 729093,
-          "retained_gaussians": 718230,
           "dropped_gaussians": 10863,
+          "ownership_bounds_available": true,
+          "retained_gaussians": 718230,
           "retention_strategy": "core_bounds",
-          "ownership_bounds_available": true
+          "source_gaussians": 729093,
+          "source_ply": "logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_01/splat.ply",
+          "tile_id": "tile_01"
         },
         {
-          "tile_id": "tile_02",
-          "source_ply": "logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_02/splat.ply",
-          "source_gaussians": 729093,
-          "retained_gaussians": 727483,
           "dropped_gaussians": 1610,
+          "ownership_bounds_available": true,
+          "retained_gaussians": 727483,
           "retention_strategy": "core_bounds",
-          "ownership_bounds_available": true
+          "source_gaussians": 729093,
+          "source_ply": "logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_02/splat.ply",
+          "tile_id": "tile_02"
         },
         {
-          "tile_id": "tile_03",
-          "source_ply": "logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_03/splat.ply",
-          "source_gaussians": 729093,
-          "retained_gaussians": 724258,
           "dropped_gaussians": 4835,
+          "ownership_bounds_available": true,
+          "retained_gaussians": 724258,
           "retention_strategy": "core_bounds",
-          "ownership_bounds_available": true
+          "source_gaussians": 729093,
+          "source_ply": "logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_03/splat.ply",
+          "tile_id": "tile_03"
         },
         {
-          "tile_id": "tile_04",
-          "source_ply": "logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_04/splat.ply",
-          "source_gaussians": 729093,
-          "retained_gaussians": 728771,
           "dropped_gaussians": 322,
+          "ownership_bounds_available": true,
+          "retained_gaussians": 728771,
           "retention_strategy": "core_bounds",
-          "ownership_bounds_available": true
+          "source_gaussians": 729093,
+          "source_ply": "logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_04/splat.ply",
+          "tile_id": "tile_04"
         },
         {
-          "tile_id": "tile_05",
-          "source_ply": "logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_05/splat.ply",
-          "source_gaussians": 729093,
-          "retained_gaussians": 397202,
           "dropped_gaussians": 331891,
+          "ownership_bounds_available": true,
+          "retained_gaussians": 397202,
           "retention_strategy": "centroid_voronoi_fallback",
-          "ownership_bounds_available": true
+          "source_gaussians": 729093,
+          "source_ply": "logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_05/splat.ply",
+          "tile_id": "tile_05"
         },
         {
-          "tile_id": "tile_06",
-          "source_ply": "logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_06/splat.ply",
-          "source_gaussians": 729093,
-          "retained_gaussians": 477834,
           "dropped_gaussians": 251259,
+          "ownership_bounds_available": true,
+          "retained_gaussians": 477834,
           "retention_strategy": "centroid_voronoi_fallback",
-          "ownership_bounds_available": true
+          "source_gaussians": 729093,
+          "source_ply": "logs/aws/md1-1k-full-r2/remerge-fixed/tiles/tile_06/splat.ply",
+          "tile_id": "tile_06"
         }
       ]
+    },
+    "path": "/Users/gabrielhansen/worktrees/agent-86580563-hierarchical-splat-merge-plan/logs/aws/md1-1k-full-r2/remerge-fixed/merged-fixed-2",
+    "source": "historical_recovered_local_merge"
+  },
+  "baseline_metrics": {
+    "boundary": {
+      "lpips": 0.8232778012752533,
+      "psnr": 13.134039611111529,
+      "ssim": 0.4168241024017334
+    },
+    "horizon": {
+      "lpips": 0.8720598220825195,
+      "psnr": 16.21552459733899,
+      "ssim": 0.38312965631484985
+    },
+    "near_detail": {
+      "lpips": 0.9124259352684021,
+      "psnr": 10.204569909807525,
+      "ssim": 0.3250790983438492
     }
   },
-  "frozen_review_camera_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/review_camera_manifest.json",
-  "frozen_camera_sets": {
-    "version": "1.0.0",
-    "selection": "deterministic_ordered_manifest_first_n",
-    "images_per_bucket": 12,
-    "smoke_images_per_bucket": 4,
-    "buckets": {
-      "near_detail": [
-        "DJI_0258.JPG",
-        "DJI_0261.JPG",
-        "DJI_0262.JPG",
-        "DJI_0263.JPG",
-        "DJI_01091.JPG",
-        "DJI_01092.JPG",
-        "DJI_01093.JPG",
-        "DJI_01094.JPG",
-        "DJI_01095.JPG",
-        "DJI_01096.JPG",
-        "DJI_01097.JPG",
-        "DJI_01098.JPG"
-      ],
-      "boundary": [
-        "DJI_0067.JPG",
-        "DJI_0068.JPG",
-        "DJI_0069.JPG",
-        "DJI_0070.JPG",
-        "DJI_0071.JPG",
-        "DJI_0072.JPG",
-        "DJI_0141.JPG",
-        "DJI_0146.JPG",
-        "DJI_0147.JPG",
-        "DJI_0148.JPG",
-        "DJI_0149.JPG",
-        "DJI_0150.JPG"
-      ],
-      "horizon": [
-        "DJI_0066.JPG",
-        "DJI_0073.JPG",
-        "DJI_0146.JPG",
-        "DJI_0147.JPG",
-        "DJI_0148.JPG",
-        "DJI_0149.JPG",
-        "DJI_0150.JPG",
-        "DJI_0151.JPG",
-        "DJI_0152.JPG",
-        "DJI_0153.JPG",
-        "DJI_0154.JPG",
-        "DJI_0155.JPG"
-      ]
+  "candidate_metrics": {
+    "raw_union": {
+      "boundary": {
+        "lpips": 0.8111611902713776,
+        "psnr": 14.065428213190629,
+        "ssim": 0.4217575043439865
+      },
+      "horizon": {
+        "lpips": 0.8704187870025635,
+        "psnr": 16.384478007660626,
+        "ssim": 0.38790637254714966
+      },
+      "near_detail": {
+        "lpips": 0.9004180431365967,
+        "psnr": 10.910244949335178,
+        "ssim": 0.34935279190540314
+      }
     },
-    "smoke_buckets": {
-      "near_detail": [
-        "DJI_0258.JPG",
-        "DJI_0261.JPG",
-        "DJI_0262.JPG",
-        "DJI_0263.JPG"
-      ],
-      "boundary": [
-        "DJI_0067.JPG",
-        "DJI_0068.JPG",
-        "DJI_0069.JPG",
-        "DJI_0070.JPG"
-      ],
-      "horizon": [
-        "DJI_0066.JPG",
-        "DJI_0073.JPG",
-        "DJI_0146.JPG",
-        "DJI_0147.JPG"
-      ]
+    "support_weighted_overlap": {
+      "boundary": {
+        "lpips": 0.8232778012752533,
+        "psnr": 13.134039611111529,
+        "ssim": 0.4168241024017334
+      },
+      "horizon": {
+        "lpips": 0.8720598220825195,
+        "psnr": 16.21552459733899,
+        "ssim": 0.38312965631484985
+      },
+      "near_detail": {
+        "lpips": 0.9124259352684021,
+        "psnr": 10.204569909807525,
+        "ssim": 0.3250790983438492
+      }
     }
   },
   "candidate_pairs": [
     {
-      "tile_ids": [
-        "tile_02",
-        "tile_05"
-      ],
-      "shared_assigned_image_count": 64,
       "boundary_support_count": 52,
       "boundary_support_images": [
         "DJI_01518.JPG",
@@ -242,202 +188,551 @@
         "DJI_0264.JPG",
         "DJI_0334.JPG"
       ],
+      "eligible": true,
       "fallback_involved": false,
+      "ineligible_reasons": [],
       "ownership_bounds_valid": true,
+      "score": 623.0,
+      "selected_count_median": 188.0,
+      "selected_count_ratio_valid": true,
       "selected_image_counts": {
         "tile_02": 188,
         "tile_05": 188
       },
-      "selected_count_median": 188.0,
-      "selected_count_ratio_valid": true,
-      "eligible": true,
-      "ineligible_reasons": [],
-      "score": 623.0
+      "shared_assigned_image_count": 64,
+      "tile_ids": [
+        "tile_02",
+        "tile_05"
+      ]
     },
     {
-      "tile_ids": [
-        "tile_04",
-        "tile_06"
-      ],
-      "shared_assigned_image_count": 64,
       "boundary_support_count": 0,
       "boundary_support_images": [],
+      "eligible": false,
       "fallback_involved": false,
+      "ineligible_reasons": [
+        "boundary_support_empty"
+      ],
       "ownership_bounds_valid": true,
+      "score": 207.0,
+      "selected_count_median": 188.0,
+      "selected_count_ratio_valid": true,
       "selected_image_counts": {
         "tile_04": 188,
         "tile_06": 188
       },
-      "selected_count_median": 188.0,
-      "selected_count_ratio_valid": true,
+      "shared_assigned_image_count": 64,
+      "tile_ids": [
+        "tile_04",
+        "tile_06"
+      ]
+    },
+    {
+      "boundary_support_count": 0,
+      "boundary_support_images": [],
       "eligible": false,
+      "fallback_involved": false,
       "ineligible_reasons": [
         "boundary_support_empty"
       ],
-      "score": 207.0
-    },
-    {
-      "tile_ids": [
-        "tile_03",
-        "tile_04"
-      ],
-      "shared_assigned_image_count": 41,
-      "boundary_support_count": 0,
-      "boundary_support_images": [],
-      "fallback_involved": false,
       "ownership_bounds_valid": true,
+      "score": 138.0,
+      "selected_count_median": 188.0,
+      "selected_count_ratio_valid": true,
       "selected_image_counts": {
         "tile_03": 188,
         "tile_04": 188
       },
-      "selected_count_median": 188.0,
-      "selected_count_ratio_valid": true,
+      "shared_assigned_image_count": 41,
+      "tile_ids": [
+        "tile_03",
+        "tile_04"
+      ]
+    },
+    {
+      "boundary_support_count": 0,
+      "boundary_support_images": [],
       "eligible": false,
+      "fallback_involved": false,
       "ineligible_reasons": [
         "boundary_support_empty"
       ],
-      "score": 138.0
-    },
-    {
-      "tile_ids": [
-        "tile_00",
-        "tile_04"
-      ],
-      "shared_assigned_image_count": 26,
-      "boundary_support_count": 0,
-      "boundary_support_images": [],
-      "fallback_involved": false,
       "ownership_bounds_valid": true,
+      "score": 93.0,
+      "selected_count_median": 188.0,
+      "selected_count_ratio_valid": true,
       "selected_image_counts": {
         "tile_00": 188,
         "tile_04": 188
       },
-      "selected_count_median": 188.0,
-      "selected_count_ratio_valid": true,
-      "eligible": false,
-      "ineligible_reasons": [
-        "boundary_support_empty"
-      ],
-      "score": 93.0
-    },
-    {
+      "shared_assigned_image_count": 26,
       "tile_ids": [
         "tile_00",
-        "tile_01"
-      ],
-      "shared_assigned_image_count": 12,
+        "tile_04"
+      ]
+    },
+    {
       "boundary_support_count": 0,
       "boundary_support_images": [],
-      "fallback_involved": false,
-      "ownership_bounds_valid": true,
-      "selected_image_counts": {
-        "tile_00": 188,
-        "tile_01": 188
-      },
-      "selected_count_median": 188.0,
-      "selected_count_ratio_valid": true,
       "eligible": false,
+      "fallback_involved": false,
       "ineligible_reasons": [
         "shared_assigned_images_below_threshold",
         "boundary_support_empty"
       ],
-      "score": 51.0
+      "ownership_bounds_valid": true,
+      "score": 51.0,
+      "selected_count_median": 188.0,
+      "selected_count_ratio_valid": true,
+      "selected_image_counts": {
+        "tile_00": 188,
+        "tile_01": 188
+      },
+      "shared_assigned_image_count": 12,
+      "tile_ids": [
+        "tile_00",
+        "tile_01"
+      ]
     }
   ],
+  "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
+  "frozen_camera_sets": {
+    "buckets": {
+      "boundary": [
+        "DJI_0067.JPG",
+        "DJI_0068.JPG",
+        "DJI_0069.JPG",
+        "DJI_0070.JPG",
+        "DJI_0071.JPG",
+        "DJI_0072.JPG",
+        "DJI_0141.JPG",
+        "DJI_0146.JPG",
+        "DJI_0147.JPG",
+        "DJI_0148.JPG",
+        "DJI_0149.JPG",
+        "DJI_0150.JPG"
+      ],
+      "horizon": [
+        "DJI_0066.JPG",
+        "DJI_0073.JPG",
+        "DJI_0146.JPG",
+        "DJI_0147.JPG",
+        "DJI_0148.JPG",
+        "DJI_0149.JPG",
+        "DJI_0150.JPG",
+        "DJI_0151.JPG",
+        "DJI_0152.JPG",
+        "DJI_0153.JPG",
+        "DJI_0154.JPG",
+        "DJI_0155.JPG"
+      ],
+      "near_detail": [
+        "DJI_0258.JPG",
+        "DJI_0261.JPG",
+        "DJI_0262.JPG",
+        "DJI_0263.JPG",
+        "DJI_01091.JPG",
+        "DJI_01092.JPG",
+        "DJI_01093.JPG",
+        "DJI_01094.JPG",
+        "DJI_01095.JPG",
+        "DJI_01096.JPG",
+        "DJI_01097.JPG",
+        "DJI_01098.JPG"
+      ]
+    },
+    "images_per_bucket": 12,
+    "selection": "deterministic_ordered_manifest_first_n",
+    "smoke_buckets": {
+      "boundary": [
+        "DJI_0067.JPG",
+        "DJI_0068.JPG",
+        "DJI_0069.JPG",
+        "DJI_0070.JPG"
+      ],
+      "horizon": [
+        "DJI_0066.JPG",
+        "DJI_0073.JPG",
+        "DJI_0146.JPG",
+        "DJI_0147.JPG"
+      ],
+      "near_detail": [
+        "DJI_0258.JPG",
+        "DJI_0261.JPG",
+        "DJI_0262.JPG",
+        "DJI_0263.JPG"
+      ]
+    },
+    "smoke_images_per_bucket": 4,
+    "version": "1.0.0"
+  },
+  "frozen_review_camera_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/review_camera_manifest.json",
+  "generated_at": "2026-04-23T19:16:00-06:00",
+  "inventory": {
+    "complete": true,
+    "merge_report": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/merged/merge_report.json",
+    "merged_splat": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/merged/merged_splat.ply",
+    "model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
+    "required": {
+      "merge_report": true,
+      "merged_splat": true,
+      "seven_tile_splats": true,
+      "tile_manifest": true,
+      "view_bucket_manifest": true
+    },
+    "tile_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiled_pipeline/inputs/scaffold/3dgs_tile_manifest.json",
+    "tile_splat_count": 7,
+    "tile_splats": [
+      "tiles/tile_00/splat.ply",
+      "tiles/tile_01/splat.ply",
+      "tiles/tile_02/splat.ply",
+      "tiles/tile_03/splat.ply",
+      "tiles/tile_04/splat.ply",
+      "tiles/tile_05/splat.ply",
+      "tiles/tile_06/splat.ply"
+    ],
+    "view_bucket_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiled_pipeline/inputs/scaffold/3dgs_view_buckets.json"
+  },
+  "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
+  "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
+  "next_unblocked_step": "R2 bounded pair retrain for tile_02/tile_05 with geometry-first overlap/scaffold preflight; do not continue merge-only arbitration because support_weighted_overlap recovered 0% over strict_core and raw_union is diagnostic-only.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
+    "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
+    "render_metrics_required": true,
     "reports": {
       "raw_union": {
-        "report_path": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges/raw_union/merge_report.json",
-        "merged_ply": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges/raw_union/merged_splat.ply",
-        "tile_count": 7,
-        "source_gaussians": 5103651,
-        "retained_gaussians": 5103651,
+        "fallback_reasons": [],
         "fallback_tile_count": 0,
+        "merged_ply": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges/raw_union/merged_splat.ply",
+        "report_path": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges/raw_union/merge_report.json",
         "retain_all_tile_count": 0,
-        "fallback_reasons": []
+        "retained_gaussians": 5103651,
+        "source_gaussians": 5103651,
+        "tile_count": 7
       },
       "strict_core": {
-        "report_path": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges/strict_core/merge_report.json",
-        "merged_ply": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges/strict_core/merged_splat.ply",
-        "tile_count": 7,
-        "source_gaussians": 5103651,
-        "retained_gaussians": 4500379,
-        "fallback_tile_count": 2,
-        "retain_all_tile_count": 0,
         "fallback_reasons": [
           {
-            "tile_id": "tile_05",
             "reason": "primary_and_overlap_retained_zero",
-            "retention_strategy": "centroid_voronoi_fallback"
+            "retention_strategy": "centroid_voronoi_fallback",
+            "tile_id": "tile_05"
           },
           {
-            "tile_id": "tile_06",
             "reason": "primary_and_overlap_retained_zero",
-            "retention_strategy": "centroid_voronoi_fallback"
+            "retention_strategy": "centroid_voronoi_fallback",
+            "tile_id": "tile_06"
           }
-        ]
+        ],
+        "fallback_tile_count": 2,
+        "merged_ply": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges/strict_core/merged_splat.ply",
+        "report_path": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges/strict_core/merge_report.json",
+        "retain_all_tile_count": 0,
+        "retained_gaussians": 4500379,
+        "source_gaussians": 5103651,
+        "tile_count": 7
       },
       "support_weighted_overlap": {
-        "report_path": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges/support_weighted_overlap/merge_report.json",
-        "merged_ply": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges/support_weighted_overlap/merged_splat.ply",
-        "tile_count": 7,
-        "source_gaussians": 5103651,
-        "retained_gaussians": 4500379,
-        "fallback_tile_count": 2,
-        "retain_all_tile_count": 0,
         "fallback_reasons": [
           {
-            "tile_id": "tile_05",
             "reason": "primary_and_overlap_retained_zero",
-            "retention_strategy": "centroid_voronoi_fallback"
+            "retention_strategy": "centroid_voronoi_fallback",
+            "tile_id": "tile_05"
           },
           {
-            "tile_id": "tile_06",
             "reason": "primary_and_overlap_retained_zero",
-            "retention_strategy": "centroid_voronoi_fallback"
+            "retention_strategy": "centroid_voronoi_fallback",
+            "tile_id": "tile_06"
           }
-        ]
+        ],
+        "fallback_tile_count": 2,
+        "merged_ply": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges/support_weighted_overlap/merged_splat.ply",
+        "report_path": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges/support_weighted_overlap/merge_report.json",
+        "retain_all_tile_count": 0,
+        "retained_gaussians": 4500379,
+        "source_gaussians": 5103651,
+        "tile_count": 7
       }
     },
-    "retained_delta_vs_strict_core": 0,
-    "render_metrics_required": true,
-    "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap."
+    "retained_delta_vs_strict_core": 0
   },
-  "baseline_metrics": {
-    "near_detail": {
-      "psnr": null,
-      "ssim": null,
-      "lpips": null
+  "r1_candidate_reviews": {
+    "baseline": {
+      "bucket_medians": {
+        "boundary": {
+          "lpips": 0.8232778012752533,
+          "psnr": 13.134039611111529,
+          "ssim": 0.4168241024017334
+        },
+        "horizon": {
+          "lpips": 0.8720598220825195,
+          "psnr": 16.21552459733899,
+          "ssim": 0.38312965631484985
+        },
+        "near_detail": {
+          "lpips": 0.9124259352684021,
+          "psnr": 10.204569909807525,
+          "ssim": 0.3250790983438492
+        }
+      },
+      "fallback_tile_count": 2,
+      "job_name": "md1-r1-strict-core-1776989969-quality",
+      "render_sanity": {
+        "blank_view_count": 0,
+        "blank_views": [],
+        "checked_view_count": 12,
+        "status": "ok"
+      },
+      "retain_all_tile_count": 0,
+      "variant": "strict_core"
     },
-    "boundary": {
-      "psnr": null,
-      "ssim": null,
-      "lpips": null
+    "conclusion": {
+      "candidate_pair": "tile_02/tile_05",
+      "next_rung": "R2_bounded_pair_training",
+      "reason": "raw_union improves metrics but is diagnostic and not consistency-preserving; support_weighted_overlap matches strict_core and still uses merge fallback, so merge-only arbitration failed the R1 gate.",
+      "status": "blocked_for_promotion_pivot_required"
     },
-    "horizon": {
-      "psnr": null,
-      "ssim": null,
-      "lpips": null
-    }
-  },
-  "candidate_metrics": {
-    "near_detail": {
-      "psnr": null,
-      "ssim": null,
-      "lpips": null
+    "raw_union": {
+      "artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r1-review-c00091ae-render-sanity/outputs/raw_union/md1-r1-raw-union-1776992620-quality/output/model.tar.gz",
+      "bucket_medians": {
+        "boundary": {
+          "lpips": 0.8111611902713776,
+          "psnr": 14.065428213190629,
+          "ssim": 0.4217575043439865
+        },
+        "horizon": {
+          "lpips": 0.8704187870025635,
+          "psnr": 16.384478007660626,
+          "ssim": 0.38790637254714966
+        },
+        "near_detail": {
+          "lpips": 0.9004180431365967,
+          "psnr": 10.910244949335178,
+          "ssim": 0.34935279190540314
+        }
+      },
+      "fallback_tile_count": 0,
+      "job_name": "md1-r1-raw-union-1776992620-quality",
+      "promotion_decision": {
+        "block_reasons": [
+          "diagnostic_raw_union_not_promotable"
+        ],
+        "fallback_tile_count": 0,
+        "merge_mode": "raw_union",
+        "per_bucket": {
+          "boundary": {
+            "baseline": {
+              "lpips": 0.8232778012752533,
+              "psnr": 13.134039611111529,
+              "ssim": 0.4168241024017334
+            },
+            "block_reasons": [],
+            "candidate": {
+              "lpips": 0.8111611902713776,
+              "psnr": 14.065428213190629,
+              "ssim": 0.4217575043439865
+            },
+            "delta": {
+              "lpips": -0.012116611003875732,
+              "psnr": 0.9313886020790996,
+              "ssim": 0.004933401942253113
+            }
+          },
+          "horizon": {
+            "baseline": {
+              "lpips": 0.8720598220825195,
+              "psnr": 16.21552459733899,
+              "ssim": 0.38312965631484985
+            },
+            "block_reasons": [],
+            "candidate": {
+              "lpips": 0.8704187870025635,
+              "psnr": 16.384478007660626,
+              "ssim": 0.38790637254714966
+            },
+            "delta": {
+              "lpips": -0.0016410350799560547,
+              "psnr": 0.16895341032163458,
+              "ssim": 0.004776716232299805
+            }
+          },
+          "near_detail": {
+            "baseline": {
+              "lpips": 0.9124259352684021,
+              "psnr": 10.204569909807525,
+              "ssim": 0.3250790983438492
+            },
+            "block_reasons": [],
+            "candidate": {
+              "lpips": 0.9004180431365967,
+              "psnr": 10.910244949335178,
+              "ssim": 0.34935279190540314
+            },
+            "delta": {
+              "lpips": -0.01200789213180542,
+              "psnr": 0.7056750395276534,
+              "ssim": 0.024273693561553955
+            }
+          }
+        },
+        "retain_all_tile_count": 0,
+        "status": "blocked",
+        "thresholds": {
+          "boundary": {
+            "lpips_max_delta": 0.035,
+            "psnr_min_delta": -1.0,
+            "required_improvement": {
+              "lpips": -0.025,
+              "psnr": 0.5,
+              "ssim": 0.01
+            },
+            "ssim_min_delta": -0.015
+          },
+          "horizon": {
+            "lpips_max_delta": 0.03,
+            "psnr_min_delta": -0.75,
+            "sky_score_min_ratio": 0.9,
+            "ssim_min_delta": -0.012
+          },
+          "near_detail": {
+            "lpips_max_delta": 0.035,
+            "psnr_min_delta": -1.0,
+            "ssim_min_delta": -0.015
+          }
+        },
+        "warnings": []
+      },
+      "render_sanity": {
+        "blank_view_count": 0,
+        "blank_views": [],
+        "checked_view_count": 12,
+        "status": "ok"
+      },
+      "retain_all_tile_count": 0
     },
-    "boundary": {
-      "psnr": null,
-      "ssim": null,
-      "lpips": null
-    },
-    "horizon": {
-      "psnr": null,
-      "ssim": null,
-      "lpips": null
+    "support_weighted_overlap": {
+      "artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r1-review-c00091ae-render-sanity/outputs/support_weighted_overlap/md1-r1-support-weighted-overlap-1776992010-quality/output/model.tar.gz",
+      "bucket_medians": {
+        "boundary": {
+          "lpips": 0.8232778012752533,
+          "psnr": 13.134039611111529,
+          "ssim": 0.4168241024017334
+        },
+        "horizon": {
+          "lpips": 0.8720598220825195,
+          "psnr": 16.21552459733899,
+          "ssim": 0.38312965631484985
+        },
+        "near_detail": {
+          "lpips": 0.9124259352684021,
+          "psnr": 10.204569909807525,
+          "ssim": 0.3250790983438492
+        }
+      },
+      "fallback_tile_count": 2,
+      "job_name": "md1-r1-support-weighted-overlap-1776992010-quality",
+      "promotion_decision": {
+        "block_reasons": [
+          "merge_fallback_tile_count_gt_zero",
+          "boundary_no_required_improvement"
+        ],
+        "fallback_tile_count": 2,
+        "merge_mode": "support_weighted_overlap",
+        "per_bucket": {
+          "boundary": {
+            "baseline": {
+              "lpips": 0.8232778012752533,
+              "psnr": 13.134039611111529,
+              "ssim": 0.4168241024017334
+            },
+            "block_reasons": [
+              "boundary_no_required_improvement"
+            ],
+            "candidate": {
+              "lpips": 0.8232778012752533,
+              "psnr": 13.134039611111529,
+              "ssim": 0.4168241024017334
+            },
+            "delta": {
+              "lpips": 0.0,
+              "psnr": 0.0,
+              "ssim": 0.0
+            }
+          },
+          "horizon": {
+            "baseline": {
+              "lpips": 0.8720598220825195,
+              "psnr": 16.21552459733899,
+              "ssim": 0.38312965631484985
+            },
+            "block_reasons": [],
+            "candidate": {
+              "lpips": 0.8720598220825195,
+              "psnr": 16.21552459733899,
+              "ssim": 0.38312965631484985
+            },
+            "delta": {
+              "lpips": 0.0,
+              "psnr": 0.0,
+              "ssim": 0.0
+            }
+          },
+          "near_detail": {
+            "baseline": {
+              "lpips": 0.9124259352684021,
+              "psnr": 10.204569909807525,
+              "ssim": 0.3250790983438492
+            },
+            "block_reasons": [],
+            "candidate": {
+              "lpips": 0.9124259352684021,
+              "psnr": 10.204569909807525,
+              "ssim": 0.3250790983438492
+            },
+            "delta": {
+              "lpips": 0.0,
+              "psnr": 0.0,
+              "ssim": 0.0
+            }
+          }
+        },
+        "retain_all_tile_count": 0,
+        "status": "blocked",
+        "thresholds": {
+          "boundary": {
+            "lpips_max_delta": 0.035,
+            "psnr_min_delta": -1.0,
+            "required_improvement": {
+              "lpips": -0.025,
+              "psnr": 0.5,
+              "ssim": 0.01
+            },
+            "ssim_min_delta": -0.015
+          },
+          "horizon": {
+            "lpips_max_delta": 0.03,
+            "psnr_min_delta": -0.75,
+            "sky_score_min_ratio": 0.9,
+            "ssim_min_delta": -0.012
+          },
+          "near_detail": {
+            "lpips_max_delta": 0.035,
+            "psnr_min_delta": -1.0,
+            "ssim_min_delta": -0.015
+          }
+        },
+        "warnings": []
+      },
+      "render_sanity": {
+        "blank_view_count": 0,
+        "blank_views": [],
+        "checked_view_count": 12,
+        "status": "ok"
+      },
+      "retain_all_tile_count": 0
     }
   },
   "root_cause_classification": "merge_bad",
-  "next_unblocked_step": "R1 offline merge arbitration: compare raw_union, strict_core, and support_weighted_overlap with render metrics before any new AWS training"
+  "rung": "R1_candidate_comparison_complete",
+  "version": "1.0.0"
 }
