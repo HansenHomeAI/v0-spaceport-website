@@ -82,7 +82,7 @@ def s3_json_or_none(s3_uri: str) -> dict | None:
 def download_sparse_support_dir(colmap_s3_uri: str, *, scratch_dir: Path) -> Path | None:
     sparse_dir = scratch_dir / "sparse" / "0"
     sparse_dir.mkdir(parents=True, exist_ok=True)
-    copied_any = False
+    copy_results: dict[str, subprocess.CompletedProcess[str]] = {}
     for file_name in ("images.txt", "points3D.txt"):
         source_uri = f"{normalize_s3_prefix(colmap_s3_uri)}/sparse/0/{file_name}"
         target_path = sparse_dir / file_name
@@ -92,9 +92,22 @@ def download_sparse_support_dir(colmap_s3_uri: str, *, scratch_dir: Path) -> Pat
             text=True,
             capture_output=True,
         )
-        if result.returncode == 0:
-            copied_any = True
-    return sparse_dir if copied_any else None
+        copy_results[file_name] = result
+
+    copied_files = [
+        file_name
+        for file_name, result in copy_results.items()
+        if result.returncode == 0 and (sparse_dir / file_name).exists() and (sparse_dir / file_name).stat().st_size > 0
+    ]
+    if len(copied_files) == len(copy_results):
+        return sparse_dir
+    if copied_files:
+        missing = sorted(set(copy_results) - set(copied_files))
+        raise RuntimeError(
+            "Incomplete sparse support download; refusing to synthesize ownership bounds "
+            f"from partial COLMAP sparse files. copied={copied_files} missing={missing}"
+        )
+    return None
 
 
 def get_current_branch() -> str:

@@ -1,0 +1,80 @@
+4800 (40.00%)       388.387 ms           46 m, 36 s           23.44 M               [0m
+4900 (40.83%)       374.490 ms           44 m, 18 s           24.33 M               [0m
+5000 (41.67%)       364.658 ms           42 m, 32 s           24.92 M               [0m
+5100 (42.50%)       368.551 ms           42 m, 22 s           24.66 M               [0m
+5200 (43.33%)       352.625 ms           39 m, 57 s           26.05 M               [0m
+5300 (44.17%)       370.510 ms           41 m, 22 s           24.86 M               [0m
+5400 (45.00%)       366.821 ms           40 m, 21 s           24.75 M               [0m
+5500 (45.83%)       365.720 ms           39 m, 37 s           25.25 M               [0m
+5600 (46.67%)       377.505 ms           40 m, 16 s           24.19 M               [0m
+[04:41:42] Culled 3934 gaussians (3934 below alpha thresh, 0 too bigs, 743230 remaining)        splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+4800 (40.00%)       388.387 ms           46 m, 36 s           23.44 M               [0m
+4900 (40.83%)       374.490 ms           44 m, 18 s           24.33 M               [0m
+5000 (41.67%)       364.658 ms           42 m, 32 s           24.92 M               [0m
+5100 (42.50%)       368.551 ms           42 m, 22 s           24.66 M               [0m
+5200 (43.33%)       352.625 ms           39 m, 57 s           26.05 M               [0m
+5300 (44.17%)       370.510 ms           41 m, 22 s           24.86 M               [0m
+5400 (45.00%)       366.821 ms           40 m, 21 s           24.75 M               [0m
+5500 (45.83%)       365.720 ms           39 m, 37 s           25.25 M               [0m
+5600 (46.67%)       377.505 ms           40 m, 16 s           24.19 M               [0m
+5700 (47.50%)       360.970 ms           37 m, 54 s           25.14 M               [0m
+[04:42:20] Culled 2882 gaussians (2882 below alpha thresh, 0 too bigs, 740348 remaining)        splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+4900 (40.83%)       374.490 ms           44 m, 18 s           24.33 M               [0m
+5000 (41.67%)       364.658 ms           42 m, 32 s           24.92 M               [0m
+5100 (42.50%)       368.551 ms           42 m, 22 s           24.66 M               [0m
+5200 (43.33%)       352.625 ms           39 m, 57 s           26.05 M               [0m
+5300 (44.17%)       370.510 ms           41 m, 22 s           24.86 M               [0m
+5400 (45.00%)       366.821 ms           40 m, 21 s           24.75 M               [0m
+5500 (45.83%)       365.720 ms           39 m, 37 s           25.25 M               [0m
+5600 (46.67%)       377.505 ms           40 m, 16 s           24.19 M               [0m
+5700 (47.50%)       360.970 ms           37 m, 54 s           25.14 M               [0m
+5800 (48.33%)       375.172 ms           38 m, 46 s           24.48 M               [0m
+[04:42:57] Culled 3022 gaussians (3022 below alpha thresh, 0 too bigs, 737326 remaining)        splatfactow_model.py:741
+[12A[1KStep (% Done)       Train Iter (time)    ETA (time)           Train Rays / Sec      [0m
+----------------------------------------------------------------------------------- [0m
+5000 (41.67%)       364.658 ms           42 m, 32 s           24.92 M               [0m
+5100 (42.50%)       368.551 ms           42 m, 22 s           24.66 M               [0m
+5200 (43.33%)       352.625 ms           39 m, 57 s           26.05 M               [0m
+5300 (44.17%)       370.510 ms           41 m, 22 s           24.86 M               [0m
+5400 (45.00%)       366.821 ms           40 m, 21 s           24.75 M               [0m
+5500 (45.83%)       365.720 ms           39 m, 37 s           25.25 M               [0m
+5600 (46.67%)       377.505 ms           40 m, 16 s           24.19 M               [0m
+5700 (47.50%)       360.970 ms           37 m, 54 s           25.14 M               [0m
+5800 (48.33%)       375.172 ms           38 m, 46 s           24.48 M               [0m
+5900 (49.17%)       390.322 ms           39 m, 40 s           23.65 M               [0m
+Printing profiling stats, from longest to shortest duration in seconds
+Trainer.train_iteration: 0.2285
+VanillaPipeline.get_train_loss_dict: 0.2152
+Trainer.eval_iteration: 0.0000
+Traceback (most recent call last):
+  File "/opt/conda/bin/ns-train", line 8, in <module>
+    sys.exit(entrypoint())
+  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/scripts/train.py", line 273, in entrypoint
+    main(
+  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/scripts/train.py", line 258, in main
+    launch(
+  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/scripts/train.py", line 190, in launch
+    main_func(local_rank=0, world_size=world_size, config=config)
+  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/scripts/train.py", line 101, in train_loop
+    trainer.train()
+  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/engine/trainer.py", line 266, in train
+    loss, loss_dict, metrics_dict = self.train_iteration(step)
+  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/utils/profiler.py", line 111, in inner
+    out = func(*args, **kwargs)
+  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/engine/trainer.py", line 504, in train_iteration
+    self.grad_scaler.scale(loss).backward()  # type: ignore
+  File "/opt/conda/lib/python3.10/site-packages/torch/_tensor.py", line 487, in backward
+    torch.autograd.backward(
+  File "/opt/conda/lib/python3.10/site-packages/torch/autograd/__init__.py", line 200, in backward
+    Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+  File "/opt/conda/lib/python3.10/site-packages/torch/autograd/function.py", line 274, in apply
+    return user_fn(self, *args)
+  File "/opt/conda/lib/python3.10/site-packages/gsplat/cuda/_wrapper.py", line 1227, in backward
+    v_coeffs, v_dirs = _make_lazy_cuda_func("compute_sh_bwd")(
+  File "/opt/conda/lib/python3.10/site-packages/gsplat/cuda/_wrapper.py", line 14, in call_cuda
+    return getattr(_C, name)(*args, **kwargs)
+torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 8.14 GiB (GPU 0; 22.30 GiB total capacity; 14.56 GiB already allocated; 7.27 GiB free; 14.67 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF

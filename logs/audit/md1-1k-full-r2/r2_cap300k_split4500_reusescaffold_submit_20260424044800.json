@@ -1,0 +1,84 @@
+{
+  "branch": "agent-90742618-md1-geometry-consistency",
+  "stack_name": "SpaceportMLPipelineStagingStack",
+  "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:d98d654a125339663b2aa9d6d87de2daeba5c44c83e0a6d7e4ba44cfcf66aaec",
+  "input_colmap_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p27eba1k-1776107310/colmap",
+  "tile_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p27eba1k-1776107310/colmap/3dgs_tile_manifest.json",
+  "view_bucket_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p27eba1k-1776107310/colmap/3dgs_view_buckets.json",
+  "chunk_planner_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p27eba1k-1776107310/colmap/chunk_planner_manifest.json",
+  "sfm_metadata_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p27eba1k-1776107310/colmap/sfm_metadata.json",
+  "manifest_resolution": {
+    "source_mode": "chunk_planner_synthesized_v1",
+    "chunk_planner_available": true,
+    "native_tile_manifest_available": false,
+    "native_view_buckets_available": false,
+    "ownership_bounds_available": false,
+    "tile_count": 7,
+    "scaffold_count": 240
+  },
+  "selected_tile_ids": [
+    "tile_02",
+    "tile_05"
+  ],
+  "downscale_factor": 1,
+  "proof_profile": "none",
+  "training_max_runtime_seconds": 21600,
+  "compatibility_gate": false,
+  "merge_mode": "support_weighted_overlap",
+  "scaffold_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r2-cap450k-split5000-20260424035154/T2_tiled_pipeline/md1-r2-cap450k-split5000-1777002844-tiled/output/model.tar.gz",
+  "manual_hold": null,
+  "stages": [
+    {
+      "stage_name": "T2_tiled_pipeline",
+      "stage_type": "train",
+      "training_mode": "tiled_pipeline",
+      "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r2-cap300k-split4500-reusescaffold-20260424044800/T2_tiled_pipeline",
+      "job_name": "md1-r2-cap300k-split4500-1777006128-tiled",
+      "tile_id": null,
+      "depends_on": [],
+      "environment": {
+        "AWS_DEFAULT_REGION": "us-west-2",
+        "PYTHONUNBUFFERED": "1",
+        "SAGEMAKER_PROGRAM": "train.py",
+        "TORCH_CUDA_ARCH_LIST": "8.0 8.6",
+        "CUDA_HOME": "/usr/local/cuda",
+        "LD_LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+        "LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+        "MAX_ITERATIONS": "12000",
+        "TRAINING_MODE": "tiled_pipeline",
+        "TILE_MANIFEST_PATH": "3dgs_tile_manifest.json",
+        "VIEW_BUCKET_MANIFEST_PATH": "3dgs_view_buckets.json",
+        "MODEL_VARIANT": "splatfacto-w-light",
+        "BILATERAL_PROCESSING": "false",
+        "ENABLE_BG_MODEL": "true",
+        "ENABLE_ALPHA_LOSS": "true",
+        "ENABLE_ROBUST_MASK": "true",
+        "OUTPUT_FORMAT": "ply",
+        "SOGS_COMPATIBLE": "true",
+        "COMMERCIAL_LICENSE": "true",
+        "FRAMEWORK": "nerfstudio",
+        "METHODOLOGY": "spaceport_splatfacto_w_light_skybox",
+        "TRAINING_TIMEOUT_SECONDS": "21600",
+        "GLOBAL_SCAFFOLD_MAX_ITERATIONS": "4000",
+        "TILED_MAX_TILES": "2",
+        "TILED_TILE_IDS": "tile_02,tile_05",
+        "TILED_INCLUDE_SCAFFOLD": "true",
+        "TILED_INCLUDE_MERGE": "true",
+        "MERGE_MODE": "support_weighted_overlap",
+        "GLOBAL_SCAFFOLD_INIT_MAX_POINTS": "300000",
+        "TRAINING_STOP_SPLIT_AT": "4500",
+        "TRAINING_MAX_GAUSS_RATIO": "6.0",
+        "PYTORCH_CUDA_ALLOC_CONF": "max_split_size_mb:128",
+        "GLOBAL_SCAFFOLD_SOURCE_DIR": "/opt/ml/input/data/scaffold"
+      }
+    }
+  ],
+  "submitted_jobs": [
+    {
+      "stage_name": "T2_tiled_pipeline",
+      "job_name": "md1-r2-cap300k-split4500-1777006128-tiled",
+      "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r2-cap300k-split4500-reusescaffold-20260424044800/T2_tiled_pipeline"
+    }
+  ],
+  "completed_jobs": []
+}

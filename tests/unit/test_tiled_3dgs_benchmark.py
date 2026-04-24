@@ -1,5 +1,6 @@
 import importlib.util
 import sys
+import tempfile
 import types
 import unittest
 from pathlib import Path
@@ -65,6 +66,48 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             self.assertIsNone(benchmark.s3_json_or_none("s3://bucket/missing.json"))
         finally:
             benchmark.subprocess.run = original_run
+
+    def test_download_sparse_support_dir_requires_complete_sparse_pair(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            calls = []
+
+            def fake_run(args, **_kwargs):
+                calls.append(args)
+                target = Path(args[-1])
+                if args[3].endswith("images.txt"):
+                    target.write_text("# images\n", encoding="utf-8")
+                    return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+                return types.SimpleNamespace(returncode=1, stdout="", stderr="missing")
+
+            original_run = benchmark.subprocess.run
+            try:
+                benchmark.subprocess.run = fake_run
+                with self.assertRaises(RuntimeError) as raised:
+                    benchmark.download_sparse_support_dir("s3://bucket/colmap", scratch_dir=Path(tmp))
+            finally:
+                benchmark.subprocess.run = original_run
+
+            self.assertIn("Incomplete sparse support download", str(raised.exception))
+            self.assertEqual(len(calls), 2)
+
+    def test_download_sparse_support_dir_returns_sparse_dir_when_complete(self):
+        with tempfile.TemporaryDirectory() as tmp:
+
+            def fake_run(args, **_kwargs):
+                target = Path(args[-1])
+                target.write_text("# sparse\n", encoding="utf-8")
+                return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+
+            original_run = benchmark.subprocess.run
+            try:
+                benchmark.subprocess.run = fake_run
+                sparse_dir = benchmark.download_sparse_support_dir("s3://bucket/colmap", scratch_dir=Path(tmp))
+            finally:
+                benchmark.subprocess.run = original_run
+
+            self.assertEqual(sparse_dir, Path(tmp) / "sparse" / "0")
+            self.assertTrue((sparse_dir / "images.txt").exists())
+            self.assertTrue((sparse_dir / "points3D.txt").exists())
 
     def test_build_benchmark_stages_defaults_to_single_tiled_job(self):
         manifest = {
