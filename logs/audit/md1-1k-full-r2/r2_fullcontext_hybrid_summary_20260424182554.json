@@ -1,0 +1,40 @@
+{
+  "purpose": "diagnose R2 horizon regression by rendering repaired R2 tile_02/tile_05 in full seven-tile context",
+  "artifact_type": "diagnostic_full_context_hybrid",
+  "base_tile_source_root": "/Users/gabrielhansen/worktrees/agent-86580563-hierarchical-splat-merge-plan/logs/aws/md1-1k-full-r2/remerge-fixed",
+  "replacement_tile_source_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r2_origframe_bgsh1_planner_remerge_20260424173500",
+  "replacement_tiles": [
+    "tile_02",
+    "tile_05"
+  ],
+  "merge_mode": "support_weighted_overlap",
+  "promotion_eligible": false,
+  "promotion_block_note": "diagnostic hybrid retains historical tile_06 fallback unless/until R2b repairs tile_04/tile_06; use only to separate bounded-context horizon loss from method failure",
+  "merge_report": {
+    "fallback_tile_count": 1,
+    "retain_all_tile_count": 0,
+    "source_gaussians": 4102649,
+    "retained_gaussians": 3773074,
+    "fallback_reasons": [
+      {
+        "tile_id": "tile_06",
+        "reason": "primary_and_overlap_retained_zero",
+        "retention_strategy": "centroid_voronoi_fallback"
+      }
+    ]
+  },
+  "replacement_sources": {
+    "tile_02": {
+      "source_splat": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r2_origframe_bgsh1_planner_remerge_20260424173500/tiles/tile_02/splat.ply",
+      "expanded_to_dtype_property_count": 62,
+      "source_property_count": 26,
+      "expanded_missing_sh_properties_zeroed": true
+    },
+    "tile_05": {
+      "source_splat": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r2_origframe_bgsh1_planner_remerge_20260424173500/tiles/tile_05/splat.ply",
+      "expanded_to_dtype_property_count": 62,
+      "source_property_count": 26,
+      "expanded_missing_sh_properties_zeroed": true
+    }
+  }
+}

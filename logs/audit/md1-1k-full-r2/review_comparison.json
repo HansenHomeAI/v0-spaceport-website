@@ -1,571 +1,423 @@
 {
-  "baseline_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r1-review-c00091ae-render-sanity/baselines/strict_core",
+  "version": "1.0.0",
+  "baseline_artifact": "/opt/ml/input/data/model/model.tar.gz",
+  "candidate_artifact": "/opt/ml/input/data/model/model.tar.gz",
   "camera_manifest": {
-    "buckets": {
-      "boundary": [
-        "DJI_0067.JPG",
-        "DJI_0068.JPG",
-        "DJI_0069.JPG",
-        "DJI_0070.JPG",
-        "DJI_0071.JPG",
-        "DJI_0072.JPG",
-        "DJI_0141.JPG",
-        "DJI_0146.JPG",
-        "DJI_0147.JPG",
-        "DJI_0148.JPG",
-        "DJI_0149.JPG",
-        "DJI_0150.JPG"
-      ],
-      "horizon": [
-        "DJI_0066.JPG",
-        "DJI_0073.JPG",
-        "DJI_0146.JPG",
-        "DJI_0147.JPG",
-        "DJI_0148.JPG",
-        "DJI_0149.JPG",
-        "DJI_0150.JPG",
-        "DJI_0151.JPG",
-        "DJI_0152.JPG",
-        "DJI_0153.JPG",
-        "DJI_0154.JPG",
-        "DJI_0155.JPG"
-      ],
-      "near_detail": [
+    "selected_tile_ids": [
+      "tile_02",
+      "tile_05"
+    ],
+    "review_image_names_by_bucket": {
+      "near_detail_camera_ids": [
         "DJI_0258.JPG",
         "DJI_0261.JPG",
         "DJI_0262.JPG",
-        "DJI_0263.JPG",
-        "DJI_01091.JPG",
-        "DJI_01092.JPG",
-        "DJI_01093.JPG",
-        "DJI_01094.JPG",
-        "DJI_01095.JPG",
-        "DJI_01096.JPG",
-        "DJI_01097.JPG",
-        "DJI_01098.JPG"
-      ]
-    },
-    "images_per_bucket": 12,
-    "selection": "deterministic_ordered_manifest_first_n",
-    "smoke_buckets": {
-      "boundary": [
+        "DJI_0263.JPG"
+      ],
+      "boundary_camera_ids": [
         "DJI_0067.JPG",
         "DJI_0068.JPG",
         "DJI_0069.JPG",
         "DJI_0070.JPG"
       ],
-      "horizon": [
+      "horizon_camera_ids": [
         "DJI_0066.JPG",
         "DJI_0073.JPG",
         "DJI_0146.JPG",
         "DJI_0147.JPG"
-      ],
-      "near_detail": [
-        "DJI_0258.JPG",
-        "DJI_0261.JPG",
-        "DJI_0262.JPG",
-        "DJI_0263.JPG"
       ]
     },
-    "smoke_images_per_bucket": 4,
-    "version": "1.0.0"
-  },
-  "candidate_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r1-review-c00091ae-render-sanity/outputs/raw_union/md1-r1-raw-union-1776992620-quality/output/model.tar.gz",
-  "fallback_breakdown": {
-    "baseline": {
-      "fallback_reasons": [
-        {
-          "reason": "primary_and_overlap_retained_zero",
-          "retention_strategy": "centroid_voronoi_fallback",
-          "tile_id": "tile_05"
-        },
-        {
-          "reason": "primary_and_overlap_retained_zero",
-          "retention_strategy": "centroid_voronoi_fallback",
-          "tile_id": "tile_06"
-        }
-      ],
-      "fallback_tile_count": 2,
-      "merge_mode": "strict_core",
-      "retain_all_tile_count": 0,
-      "retained_gaussians": 4500379,
-      "source_gaussians": 5103651
-    },
-    "candidate": {
-      "fallback_reasons": [],
-      "fallback_tile_count": 0,
-      "merge_mode": "raw_union",
-      "retain_all_tile_count": 0,
-      "retained_gaussians": 5103651,
-      "source_gaussians": 5103651
-    }
-  },
-  "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r1-review-c00091ae-render-sanity/outputs/raw_union/md1-r1-raw-union-1776992620-quality/output/model.tar.gz",
-  "per_bucket": {
-    "boundary": {
-      "baseline": {
-        "lpips": 0.8232778012752533,
-        "psnr": 13.134039611111529,
-        "ssim": 0.4168241024017334
+    "views": [
+      {
+        "bucket": "near_detail",
+        "image_name": "DJI_0258.JPG",
+        "frame_file_path": "images/frame_00420.JPG",
+        "boundary_context_tile_ids": []
       },
-      "block_reasons": [],
+      {
+        "bucket": "near_detail",
+        "image_name": "DJI_0261.JPG",
+        "frame_file_path": "images/frame_00435.JPG",
+        "boundary_context_tile_ids": []
+      },
+      {
+        "bucket": "near_detail",
+        "image_name": "DJI_0262.JPG",
+        "frame_file_path": "images/frame_00438.JPG",
+        "boundary_context_tile_ids": []
+      },
+      {
+        "bucket": "near_detail",
+        "image_name": "DJI_0263.JPG",
+        "frame_file_path": "images/frame_00439.JPG",
+        "boundary_context_tile_ids": []
+      },
+      {
+        "bucket": "boundary",
+        "image_name": "DJI_0067.JPG",
+        "frame_file_path": "images/frame_00002.JPG",
+        "boundary_context_tile_ids": [
+          "tile_02",
+          "tile_05"
+        ]
+      },
+      {
+        "bucket": "boundary",
+        "image_name": "DJI_0068.JPG",
+        "frame_file_path": "images/frame_00003.JPG",
+        "boundary_context_tile_ids": [
+          "tile_02",
+          "tile_05"
+        ]
+      },
+      {
+        "bucket": "boundary",
+        "image_name": "DJI_0069.JPG",
+        "frame_file_path": "images/frame_00004.JPG",
+        "boundary_context_tile_ids": [
+          "tile_02",
+          "tile_05"
+        ]
+      },
+      {
+        "bucket": "boundary",
+        "image_name": "DJI_0070.JPG",
+        "frame_file_path": "images/frame_00005.JPG",
+        "boundary_context_tile_ids": [
+          "tile_02",
+          "tile_05"
+        ]
+      },
+      {
+        "bucket": "horizon",
+        "image_name": "DJI_0066.JPG",
+        "frame_file_path": "images/frame_00001.JPG",
+        "boundary_context_tile_ids": []
+      },
+      {
+        "bucket": "horizon",
+        "image_name": "DJI_0073.JPG",
+        "frame_file_path": "images/frame_00008.JPG",
+        "boundary_context_tile_ids": []
+      },
+      {
+        "bucket": "horizon",
+        "image_name": "DJI_0146.JPG",
+        "frame_file_path": "images/frame_00075.JPG",
+        "boundary_context_tile_ids": []
+      },
+      {
+        "bucket": "horizon",
+        "image_name": "DJI_0147.JPG",
+        "frame_file_path": "images/frame_00076.JPG",
+        "boundary_context_tile_ids": []
+      }
+    ]
+  },
+  "per_bucket": {
+    "near_detail": {
+      "baseline": {
+        "psnr": 10.204569909807525,
+        "ssim": 0.3250790983438492,
+        "lpips": 0.9124259352684021
+      },
       "candidate": {
-        "lpips": 0.8111611902713776,
-        "psnr": 14.065428213190629,
-        "ssim": 0.4217575043439865
+        "psnr": 13.41298357287238,
+        "ssim": 0.3636915385723114,
+        "lpips": 0.8359178304672241
       },
       "delta": {
-        "lpips": -0.012116611003875732,
-        "psnr": 0.9313886020790996,
-        "ssim": 0.004933401942253113
-      }
+        "psnr": 3.2084136630648548,
+        "ssim": 0.03861244022846222,
+        "lpips": -0.07650810480117798
+      },
+      "block_reasons": []
+    },
+    "boundary": {
+      "baseline": {
+        "psnr": 13.134039611111529,
+        "ssim": 0.4168241024017334,
+        "lpips": 0.8232778012752533
+      },
+      "candidate": {
+        "psnr": 16.015094696971016,
+        "ssim": 0.4458271861076355,
+        "lpips": 0.7019957005977631
+      },
+      "delta": {
+        "psnr": 2.8810550858594866,
+        "ssim": 0.0290030837059021,
+        "lpips": -0.12128210067749023
+      },
+      "block_reasons": []
     },
     "horizon": {
       "baseline": {
-        "lpips": 0.8720598220825195,
         "psnr": 16.21552459733899,
-        "ssim": 0.38312965631484985
+        "ssim": 0.38312965631484985,
+        "lpips": 0.8720598220825195
       },
-      "block_reasons": [],
       "candidate": {
-        "lpips": 0.8704187870025635,
-        "psnr": 16.384478007660626,
-        "ssim": 0.38790637254714966
+        "psnr": 12.657442169043858,
+        "ssim": 0.34274475276470184,
+        "lpips": 0.9136873483657837
       },
       "delta": {
-        "lpips": -0.0016410350799560547,
-        "psnr": 0.16895341032163458,
-        "ssim": 0.004776716232299805
-      }
-    },
-    "near_detail": {
-      "baseline": {
-        "lpips": 0.9124259352684021,
-        "psnr": 10.204569909807525,
-        "ssim": 0.3250790983438492
+        "psnr": -3.5580824282951333,
+        "ssim": -0.04038490355014801,
+        "lpips": 0.04162752628326416
       },
-      "block_reasons": [],
-      "candidate": {
-        "lpips": 0.9004180431365967,
-        "psnr": 10.910244949335178,
-        "ssim": 0.34935279190540314
-      },
-      "delta": {
-        "lpips": -0.01200789213180542,
-        "psnr": 0.7056750395276534,
-        "ssim": 0.024273693561553955
-      }
+      "block_reasons": [
+        "horizon_psnr_regression",
+        "horizon_ssim_regression",
+        "horizon_lpips_regression"
+      ]
     }
   },
-  "promotion_decision": {
-    "block_reasons": [
-      "diagnostic_raw_union_not_promotable"
-    ],
-    "fallback_tile_count": 0,
-    "merge_mode": "raw_union",
-    "per_bucket": {
-      "boundary": {
-        "baseline": {
-          "lpips": 0.8232778012752533,
-          "psnr": 13.134039611111529,
-          "ssim": 0.4168241024017334
+  "fallback_breakdown": {
+    "baseline": {
+      "merge_mode": "strict_core",
+      "fallback_tile_count": 2,
+      "retain_all_tile_count": 0,
+      "source_gaussians": 5103651,
+      "retained_gaussians": 4500379,
+      "fallback_reasons": [
+        {
+          "tile_id": "tile_05",
+          "reason": "primary_and_overlap_retained_zero",
+          "retention_strategy": "centroid_voronoi_fallback"
         },
-        "block_reasons": [],
-        "candidate": {
-          "lpips": 0.8111611902713776,
-          "psnr": 14.065428213190629,
-          "ssim": 0.4217575043439865
-        },
-        "delta": {
-          "lpips": -0.012116611003875732,
-          "psnr": 0.9313886020790996,
-          "ssim": 0.004933401942253113
+        {
+          "tile_id": "tile_06",
+          "reason": "primary_and_overlap_retained_zero",
+          "retention_strategy": "centroid_voronoi_fallback"
         }
-      },
-      "horizon": {
-        "baseline": {
-          "lpips": 0.8720598220825195,
-          "psnr": 16.21552459733899,
-          "ssim": 0.38312965631484985
-        },
-        "block_reasons": [],
-        "candidate": {
-          "lpips": 0.8704187870025635,
-          "psnr": 16.384478007660626,
-          "ssim": 0.38790637254714966
-        },
-        "delta": {
-          "lpips": -0.0016410350799560547,
-          "psnr": 0.16895341032163458,
-          "ssim": 0.004776716232299805
-        }
-      },
-      "near_detail": {
-        "baseline": {
-          "lpips": 0.9124259352684021,
-          "psnr": 10.204569909807525,
-          "ssim": 0.3250790983438492
-        },
-        "block_reasons": [],
-        "candidate": {
-          "lpips": 0.9004180431365967,
-          "psnr": 10.910244949335178,
-          "ssim": 0.34935279190540314
-        },
-        "delta": {
-          "lpips": -0.01200789213180542,
-          "psnr": 0.7056750395276534,
-          "ssim": 0.024273693561553955
-        }
-      }
+      ]
     },
-    "retain_all_tile_count": 0,
-    "status": "blocked",
-    "thresholds": {
-      "boundary": {
-        "lpips_max_delta": 0.035,
-        "psnr_min_delta": -1.0,
-        "required_improvement": {
-          "lpips": -0.025,
-          "psnr": 0.5,
-          "ssim": 0.01
-        },
-        "ssim_min_delta": -0.015
-      },
-      "horizon": {
-        "lpips_max_delta": 0.03,
-        "psnr_min_delta": -0.75,
-        "sky_score_min_ratio": 0.9,
-        "ssim_min_delta": -0.012
-      },
-      "near_detail": {
-        "lpips_max_delta": 0.035,
-        "psnr_min_delta": -1.0,
-        "ssim_min_delta": -0.015
-      }
-    },
-    "warnings": []
-  },
-  "r1_candidate_decisions": {
-    "raw_union": {
-      "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r1-review-c00091ae-render-sanity/outputs/raw_union/md1-r1-raw-union-1776992620-quality/output/model.tar.gz",
-      "promotion_decision": {
-        "block_reasons": [
-          "diagnostic_raw_union_not_promotable"
-        ],
-        "fallback_tile_count": 0,
-        "merge_mode": "raw_union",
-        "per_bucket": {
-          "boundary": {
-            "baseline": {
-              "lpips": 0.8232778012752533,
-              "psnr": 13.134039611111529,
-              "ssim": 0.4168241024017334
-            },
-            "block_reasons": [],
-            "candidate": {
-              "lpips": 0.8111611902713776,
-              "psnr": 14.065428213190629,
-              "ssim": 0.4217575043439865
-            },
-            "delta": {
-              "lpips": -0.012116611003875732,
-              "psnr": 0.9313886020790996,
-              "ssim": 0.004933401942253113
-            }
-          },
-          "horizon": {
-            "baseline": {
-              "lpips": 0.8720598220825195,
-              "psnr": 16.21552459733899,
-              "ssim": 0.38312965631484985
-            },
-            "block_reasons": [],
-            "candidate": {
-              "lpips": 0.8704187870025635,
-              "psnr": 16.384478007660626,
-              "ssim": 0.38790637254714966
-            },
-            "delta": {
-              "lpips": -0.0016410350799560547,
-              "psnr": 0.16895341032163458,
-              "ssim": 0.004776716232299805
-            }
-          },
-          "near_detail": {
-            "baseline": {
-              "lpips": 0.9124259352684021,
-              "psnr": 10.204569909807525,
-              "ssim": 0.3250790983438492
-            },
-            "block_reasons": [],
-            "candidate": {
-              "lpips": 0.9004180431365967,
-              "psnr": 10.910244949335178,
-              "ssim": 0.34935279190540314
-            },
-            "delta": {
-              "lpips": -0.01200789213180542,
-              "psnr": 0.7056750395276534,
-              "ssim": 0.024273693561553955
-            }
-          }
-        },
-        "retain_all_tile_count": 0,
-        "status": "blocked",
-        "thresholds": {
-          "boundary": {
-            "lpips_max_delta": 0.035,
-            "psnr_min_delta": -1.0,
-            "required_improvement": {
-              "lpips": -0.025,
-              "psnr": 0.5,
-              "ssim": 0.01
-            },
-            "ssim_min_delta": -0.015
-          },
-          "horizon": {
-            "lpips_max_delta": 0.03,
-            "psnr_min_delta": -0.75,
-            "sky_score_min_ratio": 0.9,
-            "ssim_min_delta": -0.012
-          },
-          "near_detail": {
-            "lpips_max_delta": 0.035,
-            "psnr_min_delta": -1.0,
-            "ssim_min_delta": -0.015
-          }
-        },
-        "warnings": []
-      },
-      "sagemaker_job_name": "md1-r1-raw-union-1776992620-quality"
-    },
-    "support_weighted_overlap": {
-      "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r1-review-c00091ae-render-sanity/outputs/support_weighted_overlap/md1-r1-support-weighted-overlap-1776992010-quality/output/model.tar.gz",
-      "promotion_decision": {
-        "block_reasons": [
-          "merge_fallback_tile_count_gt_zero",
-          "boundary_no_required_improvement"
-        ],
-        "fallback_tile_count": 2,
-        "merge_mode": "support_weighted_overlap",
-        "per_bucket": {
-          "boundary": {
-            "baseline": {
-              "lpips": 0.8232778012752533,
-              "psnr": 13.134039611111529,
-              "ssim": 0.4168241024017334
-            },
-            "block_reasons": [
-              "boundary_no_required_improvement"
-            ],
-            "candidate": {
-              "lpips": 0.8232778012752533,
-              "psnr": 13.134039611111529,
-              "ssim": 0.4168241024017334
-            },
-            "delta": {
-              "lpips": 0.0,
-              "psnr": 0.0,
-              "ssim": 0.0
-            }
-          },
-          "horizon": {
-            "baseline": {
-              "lpips": 0.8720598220825195,
-              "psnr": 16.21552459733899,
-              "ssim": 0.38312965631484985
-            },
-            "block_reasons": [],
-            "candidate": {
-              "lpips": 0.8720598220825195,
-              "psnr": 16.21552459733899,
-              "ssim": 0.38312965631484985
-            },
-            "delta": {
-              "lpips": 0.0,
-              "psnr": 0.0,
-              "ssim": 0.0
-            }
-          },
-          "near_detail": {
-            "baseline": {
-              "lpips": 0.9124259352684021,
-              "psnr": 10.204569909807525,
-              "ssim": 0.3250790983438492
-            },
-            "block_reasons": [],
-            "candidate": {
-              "lpips": 0.9124259352684021,
-              "psnr": 10.204569909807525,
-              "ssim": 0.3250790983438492
-            },
-            "delta": {
-              "lpips": 0.0,
-              "psnr": 0.0,
-              "ssim": 0.0
-            }
-          }
-        },
-        "retain_all_tile_count": 0,
-        "status": "blocked",
-        "thresholds": {
-          "boundary": {
-            "lpips_max_delta": 0.035,
-            "psnr_min_delta": -1.0,
-            "required_improvement": {
-              "lpips": -0.025,
-              "psnr": 0.5,
-              "ssim": 0.01
-            },
-            "ssim_min_delta": -0.015
-          },
-          "horizon": {
-            "lpips_max_delta": 0.03,
-            "psnr_min_delta": -0.75,
-            "sky_score_min_ratio": 0.9,
-            "ssim_min_delta": -0.012
-          },
-          "near_detail": {
-            "lpips_max_delta": 0.035,
-            "psnr_min_delta": -1.0,
-            "ssim_min_delta": -0.015
-          }
-        },
-        "warnings": []
-      },
-      "sagemaker_job_name": "md1-r1-support-weighted-overlap-1776992010-quality"
+    "candidate": {
+      "merge_mode": "support_weighted_overlap",
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "source_gaussians": 457184,
+      "retained_gaussians": 397305,
+      "fallback_reasons": []
     }
   },
-  "r1_conclusion": {
-    "candidate_pair": "tile_02/tile_05",
-    "next_rung": "R2_bounded_pair_training",
-    "reason": "raw_union improves metrics but is diagnostic and not consistency-preserving; support_weighted_overlap matches strict_core and still uses merge fallback, so merge-only arbitration failed the R1 gate.",
-    "status": "blocked_for_promotion_pivot_required"
-  },
-  "sagemaker_job_name": "md1-r1-raw-union-1776992620-quality",
   "side_by_side_render_paths": [
     {
-      "boundary_composite": null,
       "bucket": "near_detail",
-      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/near_detail/DJI_0258.png",
-      "candidate_render": "/opt/ml/model/quality_review/merged/near_detail/DJI_0258.png",
       "image_name": "DJI_0258.JPG",
       "reference_image": "/opt/ml/model/quality_review/reference/near_detail/DJI_0258.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/near_detail/DJI_0258.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/near_detail/DJI_0258.png",
+      "boundary_composite": null,
       "tile_renders": []
     },
     {
-      "boundary_composite": null,
       "bucket": "near_detail",
-      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/near_detail/DJI_0261.png",
-      "candidate_render": "/opt/ml/model/quality_review/merged/near_detail/DJI_0261.png",
       "image_name": "DJI_0261.JPG",
       "reference_image": "/opt/ml/model/quality_review/reference/near_detail/DJI_0261.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/near_detail/DJI_0261.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/near_detail/DJI_0261.png",
+      "boundary_composite": null,
       "tile_renders": []
     },
     {
-      "boundary_composite": null,
       "bucket": "near_detail",
-      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/near_detail/DJI_0262.png",
-      "candidate_render": "/opt/ml/model/quality_review/merged/near_detail/DJI_0262.png",
       "image_name": "DJI_0262.JPG",
       "reference_image": "/opt/ml/model/quality_review/reference/near_detail/DJI_0262.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/near_detail/DJI_0262.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/near_detail/DJI_0262.png",
+      "boundary_composite": null,
       "tile_renders": []
     },
     {
-      "boundary_composite": null,
       "bucket": "near_detail",
-      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/near_detail/DJI_0263.png",
-      "candidate_render": "/opt/ml/model/quality_review/merged/near_detail/DJI_0263.png",
       "image_name": "DJI_0263.JPG",
       "reference_image": "/opt/ml/model/quality_review/reference/near_detail/DJI_0263.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/near_detail/DJI_0263.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/near_detail/DJI_0263.png",
+      "boundary_composite": null,
       "tile_renders": []
     },
     {
-      "boundary_composite": "/opt/ml/model/quality_review/boundary_composites/DJI_0067.png",
       "bucket": "boundary",
-      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/boundary/DJI_0067.png",
-      "candidate_render": "/opt/ml/model/quality_review/merged/boundary/DJI_0067.png",
       "image_name": "DJI_0067.JPG",
       "reference_image": "/opt/ml/model/quality_review/reference/boundary/DJI_0067.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/boundary/DJI_0067.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/boundary/DJI_0067.png",
+      "boundary_composite": "/opt/ml/model/quality_review/boundary_composites/DJI_0067.png",
       "tile_renders": [
         "/opt/ml/model/quality_review/tiles/tile_02/boundary/DJI_0067.png",
         "/opt/ml/model/quality_review/tiles/tile_05/boundary/DJI_0067.png"
       ]
     },
     {
-      "boundary_composite": "/opt/ml/model/quality_review/boundary_composites/DJI_0068.png",
       "bucket": "boundary",
-      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/boundary/DJI_0068.png",
-      "candidate_render": "/opt/ml/model/quality_review/merged/boundary/DJI_0068.png",
       "image_name": "DJI_0068.JPG",
       "reference_image": "/opt/ml/model/quality_review/reference/boundary/DJI_0068.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/boundary/DJI_0068.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/boundary/DJI_0068.png",
+      "boundary_composite": "/opt/ml/model/quality_review/boundary_composites/DJI_0068.png",
       "tile_renders": [
         "/opt/ml/model/quality_review/tiles/tile_02/boundary/DJI_0068.png",
         "/opt/ml/model/quality_review/tiles/tile_05/boundary/DJI_0068.png"
       ]
     },
     {
-      "boundary_composite": "/opt/ml/model/quality_review/boundary_composites/DJI_0069.png",
       "bucket": "boundary",
-      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/boundary/DJI_0069.png",
-      "candidate_render": "/opt/ml/model/quality_review/merged/boundary/DJI_0069.png",
       "image_name": "DJI_0069.JPG",
       "reference_image": "/opt/ml/model/quality_review/reference/boundary/DJI_0069.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/boundary/DJI_0069.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/boundary/DJI_0069.png",
+      "boundary_composite": "/opt/ml/model/quality_review/boundary_composites/DJI_0069.png",
       "tile_renders": [
         "/opt/ml/model/quality_review/tiles/tile_02/boundary/DJI_0069.png",
         "/opt/ml/model/quality_review/tiles/tile_05/boundary/DJI_0069.png"
       ]
     },
     {
-      "boundary_composite": "/opt/ml/model/quality_review/boundary_composites/DJI_0070.png",
       "bucket": "boundary",
-      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/boundary/DJI_0070.png",
-      "candidate_render": "/opt/ml/model/quality_review/merged/boundary/DJI_0070.png",
       "image_name": "DJI_0070.JPG",
       "reference_image": "/opt/ml/model/quality_review/reference/boundary/DJI_0070.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/boundary/DJI_0070.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/boundary/DJI_0070.png",
+      "boundary_composite": "/opt/ml/model/quality_review/boundary_composites/DJI_0070.png",
       "tile_renders": [
         "/opt/ml/model/quality_review/tiles/tile_02/boundary/DJI_0070.png",
         "/opt/ml/model/quality_review/tiles/tile_05/boundary/DJI_0070.png"
       ]
     },
     {
-      "boundary_composite": null,
       "bucket": "horizon",
-      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/horizon/DJI_0066.png",
-      "candidate_render": "/opt/ml/model/quality_review/merged/horizon/DJI_0066.png",
       "image_name": "DJI_0066.JPG",
       "reference_image": "/opt/ml/model/quality_review/reference/horizon/DJI_0066.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/horizon/DJI_0066.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/horizon/DJI_0066.png",
+      "boundary_composite": null,
       "tile_renders": []
     },
     {
-      "boundary_composite": null,
       "bucket": "horizon",
-      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/horizon/DJI_0073.png",
-      "candidate_render": "/opt/ml/model/quality_review/merged/horizon/DJI_0073.png",
       "image_name": "DJI_0073.JPG",
       "reference_image": "/opt/ml/model/quality_review/reference/horizon/DJI_0073.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/horizon/DJI_0073.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/horizon/DJI_0073.png",
+      "boundary_composite": null,
       "tile_renders": []
     },
     {
-      "boundary_composite": null,
       "bucket": "horizon",
-      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/horizon/DJI_0146.png",
-      "candidate_render": "/opt/ml/model/quality_review/merged/horizon/DJI_0146.png",
       "image_name": "DJI_0146.JPG",
       "reference_image": "/opt/ml/model/quality_review/reference/horizon/DJI_0146.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/horizon/DJI_0146.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/horizon/DJI_0146.png",
+      "boundary_composite": null,
       "tile_renders": []
     },
     {
-      "boundary_composite": null,
       "bucket": "horizon",
-      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/horizon/DJI_0147.png",
-      "candidate_render": "/opt/ml/model/quality_review/merged/horizon/DJI_0147.png",
       "image_name": "DJI_0147.JPG",
       "reference_image": "/opt/ml/model/quality_review/reference/horizon/DJI_0147.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/horizon/DJI_0147.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/horizon/DJI_0147.png",
+      "boundary_composite": null,
       "tile_renders": []
     }
   ],
-  "variant": "raw_union",
-  "version": "1.0.0"
+  "promotion_decision": {
+    "status": "blocked",
+    "block_reasons": [
+      "horizon_psnr_regression",
+      "horizon_ssim_regression",
+      "horizon_lpips_regression"
+    ],
+    "warnings": [],
+    "merge_mode": "support_weighted_overlap",
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "per_bucket": {
+      "near_detail": {
+        "baseline": {
+          "psnr": 10.204569909807525,
+          "ssim": 0.3250790983438492,
+          "lpips": 0.9124259352684021
+        },
+        "candidate": {
+          "psnr": 13.41298357287238,
+          "ssim": 0.3636915385723114,
+          "lpips": 0.8359178304672241
+        },
+        "delta": {
+          "psnr": 3.2084136630648548,
+          "ssim": 0.03861244022846222,
+          "lpips": -0.07650810480117798
+        },
+        "block_reasons": []
+      },
+      "boundary": {
+        "baseline": {
+          "psnr": 13.134039611111529,
+          "ssim": 0.4168241024017334,
+          "lpips": 0.8232778012752533
+        },
+        "candidate": {
+          "psnr": 16.015094696971016,
+          "ssim": 0.4458271861076355,
+          "lpips": 0.7019957005977631
+        },
+        "delta": {
+          "psnr": 2.8810550858594866,
+          "ssim": 0.0290030837059021,
+          "lpips": -0.12128210067749023
+        },
+        "block_reasons": []
+      },
+      "horizon": {
+        "baseline": {
+          "psnr": 16.21552459733899,
+          "ssim": 0.38312965631484985,
+          "lpips": 0.8720598220825195
+        },
+        "candidate": {
+          "psnr": 12.657442169043858,
+          "ssim": 0.34274475276470184,
+          "lpips": 0.9136873483657837
+        },
+        "delta": {
+          "psnr": -3.5580824282951333,
+          "ssim": -0.04038490355014801,
+          "lpips": 0.04162752628326416
+        },
+        "block_reasons": [
+          "horizon_psnr_regression",
+          "horizon_ssim_regression",
+          "horizon_lpips_regression"
+        ]
+      }
+    },
+    "thresholds": {
+      "near_detail": {
+        "psnr_min_delta": -1.0,
+        "ssim_min_delta": -0.015,
+        "lpips_max_delta": 0.035
+      },
+      "boundary": {
+        "psnr_min_delta": -1.0,
+        "ssim_min_delta": -0.015,
+        "lpips_max_delta": 0.035,
+        "required_improvement": {
+          "psnr": 0.5,
+          "ssim": 0.01,
+          "lpips": -0.025
+        }
+      },
+      "horizon": {
+        "psnr_min_delta": -0.75,
+        "ssim_min_delta": -0.012,
+        "lpips_max_delta": 0.03,
+        "sky_score_min_ratio": 0.9
+      }
+    }
+  }
 }
