@@ -170,6 +170,34 @@ def stage_review_inputs(
     }
 
 
+def stage_direct_candidate_review_input(
+    *,
+    audit_root: Path,
+    output_root_s3_uri: str,
+    candidate_label: str,
+    candidate_model_artifact_s3_uri: str,
+) -> dict[str, Any]:
+    """Stage only the frozen review manifest for an already-built candidate artifact."""
+
+    review_camera_manifest = audit_root / "review_camera_manifest.json"
+    if not review_camera_manifest.exists():
+        raise FileNotFoundError(f"Missing frozen camera manifest: {review_camera_manifest}")
+
+    review_manifest_s3_prefix = s3_prefix_join(output_root_s3_uri, "review-input")
+    aws_cp(review_camera_manifest, f"{review_manifest_s3_prefix}/review_camera_manifest.json")
+    return {
+        "review_camera_manifest_s3_uri": review_manifest_s3_prefix,
+        "variants": {
+            candidate_label: {
+                "local_model_tarball": None,
+                "model_s3_uri": candidate_model_artifact_s3_uri,
+                "merge_report": "",
+                "source": "direct_candidate_artifact",
+            }
+        },
+    }
+
+
 def run_review_jobs(
     *,
     branch_name: str,
@@ -335,6 +363,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--colmap-s3-uri", default=DEFAULT_COLMAP_S3_URI)
     parser.add_argument("--output-root-s3-uri", default="")
     parser.add_argument("--variant", action="append", choices=DEFAULT_VARIANTS, default=[])
+    parser.add_argument(
+        "--candidate-model-artifact-s3-uri",
+        default="",
+        help="Review one already-produced model.tar.gz artifact instead of staging offline R1 merge variants.",
+    )
+    parser.add_argument("--candidate-label", default="candidate", help="Label for --candidate-model-artifact-s3-uri.")
     parser.add_argument("--max-images-per-bucket", type=int, default=4)
     parser.add_argument("--camera-set", default="smoke")
     parser.add_argument("--execution-mode", choices=("processing", "training"), default="processing")
@@ -360,7 +394,10 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     branch_name = args.branch or get_current_branch()
-    variants = args.variant or list(DEFAULT_VARIANTS)
+    direct_candidate_uri = args.candidate_model_artifact_s3_uri.strip()
+    if direct_candidate_uri and args.variant:
+        raise ValueError("--candidate-model-artifact-s3-uri cannot be combined with --variant")
+    variants = [args.candidate_label.strip() or "candidate"] if direct_candidate_uri else (args.variant or list(DEFAULT_VARIANTS))
     timestamp = int(time.time())
     stack_name, outputs, stack_resolution = resolve_stack_and_outputs(branch_name, stack_name=args.stack_name)
     role_arn = get_sagemaker_role_arn(stack_name)
@@ -369,13 +406,21 @@ def main() -> int:
         f"s3://{outputs['MLBucketName']}/manual-validations/md1-geometry-r1-review-{timestamp}"
     )
 
-    staged = stage_review_inputs(
-        audit_root=args.audit_root,
-        output_root_s3_uri=output_root_s3_uri,
-        variants=variants,
-        force_tarballs=args.force_tarballs,
-        keep_local_tarballs=args.keep_local_tarballs,
-    )
+    if direct_candidate_uri:
+        staged = stage_direct_candidate_review_input(
+            audit_root=args.audit_root,
+            output_root_s3_uri=output_root_s3_uri,
+            candidate_label=variants[0],
+            candidate_model_artifact_s3_uri=direct_candidate_uri,
+        )
+    else:
+        staged = stage_review_inputs(
+            audit_root=args.audit_root,
+            output_root_s3_uri=output_root_s3_uri,
+            variants=variants,
+            force_tarballs=args.force_tarballs,
+            keep_local_tarballs=args.keep_local_tarballs,
+        )
     jobs = run_review_jobs(
         branch_name=branch_name,
         image_uri=image_uri,

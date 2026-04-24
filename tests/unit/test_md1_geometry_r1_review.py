@@ -1,5 +1,6 @@
 import importlib.util
 import sys
+import tempfile
 import types
 import unittest
 from pathlib import Path
@@ -30,6 +31,36 @@ SPEC.loader.exec_module(md1_review)
 
 
 class MD1GeometryR1ReviewTests(unittest.TestCase):
+    def test_direct_candidate_stages_only_review_manifest(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            audit_root = Path(temp_dir) / "audit"
+            audit_root.mkdir()
+            review_manifest = audit_root / "review_camera_manifest.json"
+            review_manifest.write_text("{}", encoding="utf-8")
+            uploads = []
+            original_aws_cp = md1_review.aws_cp
+            md1_review.aws_cp = lambda source, target: uploads.append((str(source), str(target)))
+            try:
+                staged = md1_review.stage_direct_candidate_review_input(
+                    audit_root=audit_root,
+                    output_root_s3_uri="s3://bucket/review",
+                    candidate_label="r2_pair",
+                    candidate_model_artifact_s3_uri="s3://bucket/r2/output/model.tar.gz",
+                )
+            finally:
+                md1_review.aws_cp = original_aws_cp
+
+        self.assertEqual(
+            uploads,
+            [(str(review_manifest), "s3://bucket/review/review-input/review_camera_manifest.json")],
+        )
+        self.assertEqual(staged["review_camera_manifest_s3_uri"], "s3://bucket/review/review-input")
+        self.assertEqual(
+            staged["variants"]["r2_pair"]["model_s3_uri"],
+            "s3://bucket/r2/output/model.tar.gz",
+        )
+        self.assertEqual(staged["variants"]["r2_pair"]["source"], "direct_candidate_artifact")
+
     def test_candidate_only_reviews_reuse_explicit_strict_baseline(self):
         jobs = md1_review.run_review_jobs(
             branch_name="agent-branch",
