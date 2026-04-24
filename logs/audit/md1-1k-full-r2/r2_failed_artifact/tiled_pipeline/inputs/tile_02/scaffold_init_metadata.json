@@ -1,0 +1,25 @@
+{
+  "scaffold_source_artifact": "/opt/ml/model/scaffold/splat.ply",
+  "scaffold_filter_bounds": {
+    "min_x": -28.4003,
+    "max_x": 28.9633,
+    "min_y": -40.9121,
+    "max_y": 20.6371,
+    "min_z": -21.3783,
+    "max_z": 15.705300000000001
+  },
+  "inherited_gaussian_count": 993705,
+  "inherited_attributes": [
+    "position",
+    "rgb_dc_proxy"
+  ],
+  "reinitialized_attributes": [
+    "scale",
+    "opacity",
+    "sh",
+    "appearance_embedding"
+  ],
+  "scaffold_inheritance_mode": "filtered_ply_as_sparse_point_cloud",
+  "output_point_cloud": "/opt/ml/model/tiled_pipeline/inputs/tile_02/sparse_pc.ply",
+  "tile_id": "tile_02"
+}

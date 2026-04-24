@@ -1,0 +1,35 @@
+{
+  "rung": "R2",
+  "failed_training_job_name": "md1-r2-pair-1776991746-tiled",
+  "status": "Failed",
+  "billable_seconds": 2904,
+  "output_model_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r2-20260424004906/3dgs/T2_tiled_pipeline/md1-r2-pair-1776991746-tiled/output/model.tar.gz",
+  "output_model_artifact_size_bytes": 634929809,
+  "failure_classification": "training_eval_oom",
+  "failure_detail": "tile_02 leaf training progressed to about 2900/12000 iterations, then Nerfstudio periodic eval attempted a background SH render allocation and hit CUDA OOM while training itself was progressing.",
+  "last_useful_signal": {
+    "scaffold_training": "completed 4000/4000",
+    "scaffold_export": "splat.ply exported",
+    "tile_02_iterations_observed": 2900,
+    "tile_02_gaussians_observed": 676114,
+    "scaffold_inherited_gaussian_count_tile_02": 993705
+  },
+  "retained_local_evidence": [
+    "scaffold/export_manifest.json",
+    "scaffold/stage_summary.json",
+    "scaffold/training_selection.json",
+    "tiled_pipeline/inputs/tile_02/scaffold_init_metadata.json",
+    "tiles/tile_02/training_selection.json"
+  ],
+  "relaunch_decision": {
+    "action": "relaunch_same_bounded_pair",
+    "reason": "The failure happened during in-training evaluation, not during geometry training or merge; disabling in-training eval preserves full-resolution training fidelity and moves image comparison to the strengthened review gate.",
+    "new_training_job_name": "md1-r2-noeval-1776994906-tiled",
+    "new_output_root": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r2-noeval-20260424014052/T2_tiled_pipeline",
+    "new_image_digest": "sha256:5f155eea78d8e448265d72084b6d410beee4a8f5ecc797b24f72725a71921739",
+    "training_overrides": {
+      "TRAINING_STEPS_PER_EVAL_IMAGE": "12001",
+      "TRAINING_STEPS_PER_EVAL_ALL_IMAGES": "12001"
+    }
+  }
+}
