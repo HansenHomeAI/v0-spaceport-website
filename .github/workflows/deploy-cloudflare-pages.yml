@@ -471,7 +471,7 @@ jobs:
             echo "Probing $URL ..."
             for i in $(seq 1 12); do
               echo "Attempt $i"
-              if curl -fsS "$URL/health.txt" >/dev/null; then echo "OK $URL/health.txt"; break; fi
+              if curl -fsS --connect-timeout 5 --max-time 10 "$URL/health.txt" >/dev/null; then echo "OK $URL/health.txt"; break; fi
               sleep 5
               if [ $i -eq 12 ]; then
                 if [ -n "$HASH_URL" ] && [ "$URL" = "$HASH_URL" ]; then
