@@ -1,0 +1,18 @@
+{
+  "mode": "gaussian_ply_export",
+  "reason": "global_scaffold exports Gaussian PLY for geometry-first leaf initialization",
+  "config": "/opt/ml/model/scaffold/config.yml",
+  "checkpoint_dir": "/opt/ml/model/scaffold/nerfstudio_models",
+  "ply": "/opt/ml/model/scaffold/splat.ply",
+  "inherited_attributes": [
+    "positions",
+    "dc_color"
+  ],
+  "reinitialized_leaf_attributes": [
+    "scale",
+    "opacity",
+    "rotation",
+    "sh_rest",
+    "appearance_embeddings"
+  ]
+}
