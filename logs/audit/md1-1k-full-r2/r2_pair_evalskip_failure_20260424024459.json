@@ -1,0 +1,42 @@
+{
+  "rung": "R2",
+  "failed_job_name": "md1-r2-evalskip-1776995639-tiled",
+  "status": "Failed",
+  "failure_time_utc": "2026-04-24T02:44:59Z",
+  "model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r2-evalskip-20260424015359/3dgs/T2_tiled_pipeline/md1-r2-evalskip-1776995639-tiled/output/model.tar.gz",
+  "artifact_size_bytes": 724388211,
+  "failure_classification": "tile_02_training_oom",
+  "root_cause_classification": "tile_training_bad",
+  "failed_stage": "tile_02 leaf_tile training",
+  "last_confirmed_step": 5900,
+  "last_confirmed_percent": 49.17,
+  "last_confirmed_gaussians": 1138496,
+  "prior_failure_point_step": 2900,
+  "prior_failure_point_result": "passed; eval metrics were successfully suppressed",
+  "oom_context": "CUDA OOM during gsplat SH backward, requested 8.14 GiB with 6.35 GiB free on 22.30 GiB A10G",
+  "full_quality_controls_preserved": {
+    "downscale_factor": 1,
+    "proof_profile": "none",
+    "tile_max_iterations": 12000,
+    "selected_tiles": ["tile_02", "tile_05"],
+    "selected_images_tile_02": 188,
+    "scaffold_enabled": true
+  },
+  "scaffold_init_metadata": {
+    "tile_id": "tile_02",
+    "inherited_gaussian_count": 1141232,
+    "scaffold_inheritance_mode": "filtered_ply_as_sparse_point_cloud",
+    "inherited_attributes": ["position", "rgb_dc_proxy"],
+    "reinitialized_attributes": ["scale", "opacity", "sh", "appearance_embedding"]
+  },
+  "quota_probe": {
+    "larger_single_gpu_training_quota_available": false,
+    "notes": "us-west-2 SageMaker quotas showed g6e and p4d/p4de training usage at 0; g5 larger sizes retain A10G-class per-GPU memory for this single-process trainer"
+  },
+  "next_retry": {
+    "job_name": "md1-r2-splitsafe-1776998926-tiled",
+    "strategy": "same bounded pair, no downscale, no iteration reduction, eval suppressed, stop splitting at step 5000 to avoid the observed gaussian-growth OOM while preserving full selected-image fidelity",
+    "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r2-splitsafe-20260424025045/3dgs/T2_tiled_pipeline"
+  },
+  "evidence_dir": "logs/audit/md1-1k-full-r2/r2_pair_evalskip_failed_20260424024459/extracted"
+}
