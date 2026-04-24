@@ -338,6 +338,25 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(payload["StoppingCondition"]["MaxRuntimeInSeconds"], 18000)
         self.assertIn({"Key": "Branch", "Value": "agent-branch"}, payload["Tags"])
 
+    def test_create_training_job_payload_can_mount_reusable_scaffold_channel(self):
+        payload = benchmark.create_training_job_payload(
+            branch_name="agent-branch",
+            job_name="bench-123",
+            image_uri="123.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:latest",
+            role_arn="arn:aws:iam::123:role/test",
+            input_s3_uri="s3://bucket/input",
+            output_s3_uri="s3://bucket/output",
+            environment={"TRAINING_MODE": "tiled_pipeline"},
+            instance_type="ml.g5.2xlarge",
+            volume_size_gb=100,
+            max_runtime_seconds=18000,
+            scaffold_artifact_s3_uri="s3://bucket/scaffold-output",
+        )
+
+        channels = {channel["ChannelName"]: channel for channel in payload["InputDataConfig"]}
+        self.assertEqual(channels["training"]["DataSource"]["S3DataSource"]["S3Uri"], "s3://bucket/input")
+        self.assertEqual(channels["scaffold"]["DataSource"]["S3DataSource"]["S3Uri"], "s3://bucket/scaffold-output")
+
     def test_create_quality_review_processing_payload_includes_model_and_colmap_inputs(self):
         payload = benchmark.create_quality_review_processing_payload(
             branch_name="agent-branch",

@@ -1,6 +1,8 @@
 import importlib.util
+import io
 import json
 import sys
+import tarfile
 import tempfile
 import types
 import unittest
@@ -274,6 +276,156 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             self.assertEqual(root_metadata["training_mode"], "tiled_pipeline")
             self.assertEqual(root_metadata["selected_tile_ids"], ["tile_00"])
             self.assertEqual(root_metadata["merge"]["tile_count"], 1)
+
+    def test_run_tiled_training_pipeline_reuses_external_scaffold_source(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source_input = root / "source"
+            output_dir = root / "output"
+            canonical_dir = root / "canonical"
+            external_scaffold = root / "external" / "scaffold"
+            source_input.mkdir()
+            output_dir.mkdir()
+            external_scaffold.mkdir(parents=True)
+            (external_scaffold / "splat.ply").write_text("ply\n", encoding="utf-8")
+            (canonical_dir / "images").mkdir(parents=True)
+            (canonical_dir / "transforms.json").write_text(json.dumps({"frames": []}), encoding="utf-8")
+            (source_input / "3dgs_tile_manifest.json").write_text(
+                json.dumps({"tiles": [{"tile_id": "tile_00"}]}),
+                encoding="utf-8",
+            )
+            (source_input / "3dgs_view_buckets.json").write_text(
+                json.dumps({"boundary_camera_ids": []}),
+                encoding="utf-8",
+            )
+
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.config = {
+                "tiling": {
+                    "training_mode": "tiled_pipeline",
+                    "tile_manifest_path": "3dgs_tile_manifest.json",
+                    "view_bucket_manifest_path": "3dgs_view_buckets.json",
+                    "global_scaffold": {"source_dir": str(root / "external")},
+                    "merge": {"mode": "strict_core"},
+                    "pipeline": {
+                        "max_tiles": 1,
+                        "tile_ids": "",
+                        "include_scaffold": True,
+                        "include_merge": True,
+                        "resume_existing": True,
+                    },
+                }
+            }
+            trainer.config_path = str(REPO_ROOT / "infrastructure" / "containers" / "3dgs" / "nerfstudio_config.yaml")
+            trainer.input_dir = source_input
+            trainer.output_dir = output_dir
+            trainer.temp_dir = root / "tmp"
+            trainer.background_selection_result = None
+            trainer.floater_pruning_result = None
+            trainer.training_selection_result = None
+
+            prepare_calls: list[dict] = []
+            stage_calls: list[dict] = []
+
+            def fake_validate():
+                trainer.input_dir = canonical_dir
+                return True
+
+            def fake_prepare(**kwargs):
+                prepare_calls.append(kwargs)
+                kwargs["stage_input_dir"].mkdir(parents=True, exist_ok=True)
+
+            def fake_stage(**kwargs):
+                stage_calls.append(kwargs)
+                kwargs["stage_output_dir"].mkdir(parents=True, exist_ok=True)
+                return {
+                    "stage_name": kwargs["stage_name"],
+                    "training_mode": kwargs["training_mode"],
+                    "tile_id": kwargs.get("tile_id"),
+                }
+
+            trainer.validate_input_data = fake_validate
+            trainer.prepare_tiled_stage_dataset = fake_prepare
+            trainer.run_prepared_training_stage = fake_stage
+
+            success = trainer.run_tiled_training_pipeline()
+
+            self.assertTrue(success)
+            self.assertEqual([call["stage_name"] for call in stage_calls], ["tile_00"])
+            self.assertEqual(prepare_calls[0]["scaffold_output_dir"], external_scaffold)
+            root_metadata = json.loads((output_dir / "training_metadata.json").read_text(encoding="utf-8"))
+            self.assertEqual(root_metadata["stages"][0]["status"], "reused_external_scaffold")
+            self.assertEqual(root_metadata["stages"][0]["splat_ply"], str(external_scaffold / "splat.ply"))
+
+    def test_external_scaffold_source_resolves_direct_splat_ply(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            scaffold_dir = root / "external" / "scaffold"
+            scaffold_dir.mkdir(parents=True)
+            (scaffold_dir / "splat.ply").write_text("ply\n", encoding="utf-8")
+
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.config = {
+                "tiling": {
+                    "global_scaffold": {
+                        "source_dir": str(root / "external"),
+                    },
+                }
+            }
+
+            resolved_dir, summary = trainer.resolve_external_scaffold_output_dir(root / "pipeline")
+
+            self.assertEqual(resolved_dir, scaffold_dir)
+            self.assertEqual(summary["status"], "reused_external_scaffold")
+            self.assertEqual(summary["splat_ply"], str(scaffold_dir / "splat.ply"))
+
+    def test_external_scaffold_source_extracts_model_artifact(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            artifact_source = root / "artifact_source" / "scaffold"
+            artifact_source.mkdir(parents=True)
+            (artifact_source / "splat.ply").write_text("ply\n", encoding="utf-8")
+            channel_dir = root / "channel"
+            channel_dir.mkdir()
+            artifact_path = channel_dir / "model.tar.gz"
+            with tarfile.open(artifact_path, "w:gz") as archive:
+                archive.add(artifact_source / "splat.ply", arcname="scaffold/splat.ply")
+
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.config = {
+                "tiling": {
+                    "global_scaffold": {
+                        "source_dir": str(channel_dir),
+                    },
+                }
+            }
+
+            resolved_dir, summary = trainer.resolve_external_scaffold_output_dir(root / "pipeline")
+
+            self.assertEqual(summary["status"], "reused_external_scaffold")
+            self.assertEqual(summary["source_artifact"], str(artifact_path))
+            self.assertTrue((resolved_dir / "splat.ply").exists())
+
+    def test_external_scaffold_artifact_rejects_unsafe_tar_members(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            artifact_path = root / "unsafe.tar.gz"
+            with tarfile.open(artifact_path, "w:gz") as archive:
+                payload = b"escape"
+                member = tarfile.TarInfo("../escape.txt")
+                member.size = len(payload)
+                archive.addfile(member, io.BytesIO(payload))
+
+            with self.assertRaises(RuntimeError):
+                module.NerfStudioTrainer.safe_extract_tar(artifact_path, root / "target")
 
     def test_apply_training_selection_records_review_buckets_and_manifest_resolution(self):
         module = load_module_with_stubs()

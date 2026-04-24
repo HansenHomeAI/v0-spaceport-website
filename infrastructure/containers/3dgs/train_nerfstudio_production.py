@@ -25,6 +25,7 @@ import hashlib
 import logging
 import argparse
 import subprocess
+import tarfile
 
 # Force modern CUDA targets before torch/cpp_extension is imported anywhere.
 os.environ.setdefault('TORCH_CUDA_ARCH_LIST', '7.0;8.0;8.6+PTX')
@@ -504,6 +505,7 @@ class NerfStudioTrainer:
             'GLOBAL_SCAFFOLD_SH_DEGREE': 'tiling.global_scaffold.sh_degree',
             'GLOBAL_SCAFFOLD_MAX_GAUSS_RATIO': 'tiling.global_scaffold.max_gauss_ratio',
             'GLOBAL_SCAFFOLD_INIT_MAX_POINTS': 'tiling.global_scaffold.max_init_points',
+            'GLOBAL_SCAFFOLD_SOURCE_DIR': 'tiling.global_scaffold.source_dir',
             'TILED_MAX_TILES': 'tiling.pipeline.max_tiles',
             'TILED_TILE_IDS': 'tiling.pipeline.tile_ids',
             'TILED_INCLUDE_SCAFFOLD': 'tiling.pipeline.include_scaffold',
@@ -1173,6 +1175,96 @@ class NerfStudioTrainer:
                     scaffold_metadata.get("inherited_gaussian_count"),
                 )
 
+    @staticmethod
+    def find_scaffold_output_dir(search_root: Path) -> Path | None:
+        candidates = sorted(search_root.rglob("splat.ply"))
+        if not candidates:
+            return None
+
+        def candidate_score(path: Path) -> tuple[int, int, str]:
+            parts = {part.lower() for part in path.parts}
+            if path.parent.name.lower() == "scaffold":
+                scaffold_score = 0
+            elif "scaffold" in parts:
+                scaffold_score = 1
+            else:
+                scaffold_score = 2
+            return scaffold_score, len(path.parts), str(path)
+
+        return sorted(candidates, key=candidate_score)[0].parent
+
+    @staticmethod
+    def safe_extract_tar(artifact_path: Path, target_dir: Path) -> None:
+        target_dir.mkdir(parents=True, exist_ok=True)
+        target_root = target_dir.resolve()
+        with tarfile.open(artifact_path, "r:*") as archive:
+            members = archive.getmembers()
+            for member in members:
+                if member.issym() or member.islnk():
+                    raise RuntimeError(f"Refusing to extract linked tar member: {member.name}")
+                destination = (target_dir / member.name).resolve()
+                if destination != target_root and target_root not in destination.parents:
+                    raise RuntimeError(f"Refusing to extract unsafe tar member: {member.name}")
+            archive.extractall(target_dir, members=members)
+
+    def resolve_external_scaffold_output_dir(
+        self,
+        pipeline_root: Path,
+    ) -> tuple[Path | None, dict[str, Any] | None]:
+        scaffold_config = self.config.get("tiling", {}).get("global_scaffold", {})
+        source_raw = str(scaffold_config.get("source_dir", "") or "").strip()
+        if not source_raw:
+            return None, None
+
+        source_path = Path(source_raw)
+        if not source_path.exists():
+            raise FileNotFoundError(f"Configured GLOBAL_SCAFFOLD_SOURCE_DIR does not exist: {source_path}")
+
+        extraction_root = pipeline_root / "external_scaffold"
+        resolved_dir: Path | None
+        source_kind = "directory"
+        extracted_artifact: str | None = None
+        if source_path.is_file():
+            if not tarfile.is_tarfile(source_path):
+                raise FileNotFoundError(f"Configured scaffold source is not a tar artifact: {source_path}")
+            if extraction_root.exists():
+                shutil.rmtree(extraction_root)
+            self.safe_extract_tar(source_path, extraction_root)
+            resolved_dir = self.find_scaffold_output_dir(extraction_root)
+            source_kind = "tar_artifact"
+            extracted_artifact = str(source_path)
+        else:
+            resolved_dir = self.find_scaffold_output_dir(source_path)
+            if resolved_dir is None:
+                tar_candidates = sorted(
+                    [path for path in source_path.rglob("*.tar.gz") if path.is_file()],
+                    key=lambda path: (len(path.parts), str(path)),
+                )
+                if not tar_candidates:
+                    raise FileNotFoundError(f"No splat.ply or .tar.gz scaffold artifact found under {source_path}")
+                if extraction_root.exists():
+                    shutil.rmtree(extraction_root)
+                self.safe_extract_tar(tar_candidates[0], extraction_root)
+                resolved_dir = self.find_scaffold_output_dir(extraction_root)
+                source_kind = "directory_tar_artifact"
+                extracted_artifact = str(tar_candidates[0])
+
+        if resolved_dir is None or not (resolved_dir / "splat.ply").exists():
+            raise FileNotFoundError(f"Could not resolve scaffold splat.ply from {source_path}")
+
+        summary = {
+            "stage_name": "scaffold",
+            "training_mode": "global_scaffold",
+            "status": "reused_external_scaffold",
+            "source_dir": str(source_path),
+            "source_kind": source_kind,
+            "source_artifact": extracted_artifact,
+            "output_dir": str(resolved_dir),
+            "splat_ply": str(resolved_dir / "splat.ply"),
+        }
+        logger.info("🌐 Reusing external scaffold PLY from %s", resolved_dir / "splat.ply")
+        return resolved_dir, summary
+
     def emit_probe_review_bundle(self) -> Optional[Dict[str, Any]]:
         if self.training_selection_result is None:
             return None
@@ -1442,7 +1534,11 @@ class NerfStudioTrainer:
 
         try:
             scaffold_summary: dict[str, Any] | None = None
-            if pipeline_options['include_scaffold']:
+            scaffold_output_dir, external_scaffold_summary = self.resolve_external_scaffold_output_dir(pipeline_root)
+            if external_scaffold_summary is not None:
+                scaffold_summary = external_scaffold_summary
+                summary['stages'].append(scaffold_summary)
+            elif pipeline_options['include_scaffold']:
                 scaffold_input_dir = pipeline_root / "inputs" / "scaffold"
                 self.prepare_tiled_stage_dataset(
                     canonical_input_dir=canonical_input_dir,
@@ -1468,6 +1564,7 @@ class NerfStudioTrainer:
                     ),
                 )
                 summary['stages'].append(scaffold_summary)
+                scaffold_output_dir = self.output_dir / "scaffold"
 
             tile_output_dirs: Dict[str, Path] = {}
             for tile_id in selected_tile_ids:
@@ -1480,7 +1577,7 @@ class NerfStudioTrainer:
                     tile_manifest_name=tile_manifest_name,
                     view_bucket_name=view_bucket_name,
                     tile_id=tile_id,
-                    scaffold_output_dir=(self.output_dir / "scaffold") if scaffold_summary else None,
+                    scaffold_output_dir=scaffold_output_dir if scaffold_summary else None,
                 )
                 tile_output_dir = self.output_dir / "tiles" / tile_id
                 tile_summary = self.run_prepared_training_stage(

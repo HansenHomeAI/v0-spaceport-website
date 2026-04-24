@@ -1,0 +1,44 @@
+{
+  "job_name": "md1-r2-cap450k-1776999423-tiled",
+  "status": "Failed",
+  "failure_classification": "tile_02_leaf_training_oom_after_capped_scaffold_init",
+  "root_cause_classification": "tile_training_bad",
+  "image": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:225b73f994499ab720d282994bed7b53c73b35090e24761a6429153075e9ce1b",
+  "instance_type": "ml.g5.2xlarge",
+  "billable_seconds": 2900,
+  "output_model_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r2-cap450k-20260424025651/T2_tiled_pipeline/md1-r2-cap450k-1776999423-tiled/output/model.tar.gz",
+  "output_model_artifact_size_mib": 629.5,
+  "tile_id": "tile_02",
+  "leaf_selected_image_count": 188,
+  "leaf_view_bucket_counts": {
+    "near_detail": 66,
+    "boundary": 176,
+    "horizon": 0
+  },
+  "scaffold_init": {
+    "source_gaussian_count": 1044540,
+    "source_filtered_gaussian_count": 1043746,
+    "inherited_gaussian_count": 450000,
+    "inherited_gaussian_cap": 450000,
+    "downsample_strategy": "spatial_key_even_sample",
+    "fallback_used": false
+  },
+  "last_reported_training_step": 5900,
+  "last_reported_percent_done": 49.17,
+  "last_reported_gaussian_count": 1136840,
+  "oom": {
+    "operation": "gsplat compute_sh_bwd",
+    "requested_gib": 8.14,
+    "gpu_total_gib": 22.30,
+    "allocated_gib": 15.26,
+    "free_gib": 6.53,
+    "reserved_gib": 15.41,
+    "pytorch_cuda_alloc_conf": "max_split_size_mb:128"
+  },
+  "evidence_files": {
+    "scaffold_init_metadata": "logs/audit/md1-1k-full-r2/r2_cap450k_failed_artifact_20260424034935/tiled_pipeline/inputs/tile_02/scaffold_init_metadata.json",
+    "tile_training_selection": "logs/audit/md1-1k-full-r2/r2_cap450k_failed_artifact_20260424034935/tiles/tile_02/training_selection.json",
+    "tile_ns_train_log": "logs/audit/md1-1k-full-r2/r2_cap450k_failed_artifact_20260424034935/tiles/tile_02/ns_train.log"
+  },
+  "next_action": "Relaunched the same tile_02,tile_05 bounded pair as md1-r2-cap450k-split5000-1777002844-tiled with GLOBAL_SCAFFOLD_INIT_MAX_POINTS=450000, TRAINING_STOP_SPLIT_AT=5000, TRAINING_MAX_GAUSS_RATIO=8.0, full image scale, 12000 leaf iterations, and eval suppression."
+}

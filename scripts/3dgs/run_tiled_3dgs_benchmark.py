@@ -515,7 +515,38 @@ def create_training_job_payload(
     instance_type: str,
     volume_size_gb: int,
     max_runtime_seconds: int,
+    scaffold_artifact_s3_uri: str = "",
 ) -> dict:
+    input_channels = [
+        {
+            "ChannelName": "training",
+            "DataSource": {
+                "S3DataSource": {
+                    "S3DataType": "S3Prefix",
+                    "S3Uri": input_s3_uri,
+                    "S3DataDistributionType": "FullyReplicated",
+                }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None",
+        }
+    ]
+    if scaffold_artifact_s3_uri:
+        input_channels.append(
+            {
+                "ChannelName": "scaffold",
+                "DataSource": {
+                    "S3DataSource": {
+                        "S3DataType": "S3Prefix",
+                        "S3Uri": scaffold_artifact_s3_uri,
+                        "S3DataDistributionType": "FullyReplicated",
+                    }
+                },
+                "CompressionType": "None",
+                "RecordWrapperType": "None",
+            }
+        )
+
     return {
         "TrainingJobName": job_name,
         "AlgorithmSpecification": {
@@ -523,20 +554,7 @@ def create_training_job_payload(
             "TrainingInputMode": "File",
         },
         "RoleArn": role_arn,
-        "InputDataConfig": [
-            {
-                "ChannelName": "training",
-                "DataSource": {
-                    "S3DataSource": {
-                        "S3DataType": "S3Prefix",
-                        "S3Uri": input_s3_uri,
-                        "S3DataDistributionType": "FullyReplicated",
-                    }
-                },
-                "CompressionType": "None",
-                "RecordWrapperType": "None",
-            }
-        ],
+        "InputDataConfig": input_channels,
         "OutputDataConfig": {
             "S3OutputPath": output_s3_uri,
         },
@@ -934,6 +952,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--env", action="append", default=[], help="Repeatable KEY=VALUE environment overrides.")
     parser.add_argument("--image-tag", default="", help="Override the ECR image tag. Defaults to current branch tag.")
     parser.add_argument("--image-uri", default="", help="Fully qualified training image URI override.")
+    parser.add_argument(
+        "--scaffold-artifact-s3-uri",
+        default="",
+        help="Optional S3 prefix containing a prior scaffold model.tar.gz or splat.ply for single-job tiled reuse.",
+    )
     parser.add_argument("--wait", action="store_true", help="Wait for submitted jobs and collect summaries.")
     parser.add_argument("--poll-seconds", type=int, default=60)
     parser.add_argument("--submit", action="store_true", help="Submit the generated training jobs.")
@@ -1039,6 +1062,8 @@ def main() -> int:
         orchestration_mode=args.orchestration_mode,
         include_review=include_review,
     )
+    if args.scaffold_artifact_s3_uri and args.orchestration_mode != "single_job":
+        raise RuntimeError("--scaffold-artifact-s3-uri is only supported for single_job orchestration")
     context = resolve_execution_context(
         branch_name=branch_name,
         timestamp=timestamp,
@@ -1074,6 +1099,10 @@ def main() -> int:
         explicit_tile_ids=args.tile_id,
         max_tiles=args.max_tiles,
     )
+    training_env_overrides = {"MERGE_MODE": args.merge_mode, **parse_env(args.env)}
+    if args.scaffold_artifact_s3_uri:
+        training_env_overrides.setdefault("GLOBAL_SCAFFOLD_SOURCE_DIR", "/opt/ml/input/data/scaffold")
+
     stages = build_benchmark_stages(
         manifest=tile_manifest,
         branch_name=branch_name,
@@ -1088,7 +1117,7 @@ def main() -> int:
         scaffold_max_iterations=args.scaffold_max_iterations,
         tile_max_iterations=args.tile_max_iterations,
         training_max_runtime_seconds=args.training_max_runtime_seconds,
-        extra_env={"MERGE_MODE": args.merge_mode, **parse_env(args.env)},
+        extra_env=training_env_overrides,
         timestamp=timestamp,
         downscale_factor=args.downscale_factor,
         include_review=include_review,
@@ -1111,6 +1140,7 @@ def main() -> int:
         "training_max_runtime_seconds": args.training_max_runtime_seconds,
         "compatibility_gate": bool(args.compatibility_gate),
         "merge_mode": args.merge_mode,
+        "scaffold_artifact_s3_uri": args.scaffold_artifact_s3_uri,
         "manual_hold": (
             {
                 "required": True,
@@ -1155,6 +1185,9 @@ def main() -> int:
             instance_type=args.instance_type,
             volume_size_gb=args.volume_size_gb,
             max_runtime_seconds=args.training_max_runtime_seconds,
+            scaffold_artifact_s3_uri=(
+                args.scaffold_artifact_s3_uri if stage.training_mode == "tiled_pipeline" else ""
+            ),
         )
         with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as handle:
             json.dump(payload, handle, indent=2)
