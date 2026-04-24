@@ -574,7 +574,62 @@ def create_quality_review_processing_payload(
     instance_type: str,
     volume_size_gb: int,
     max_runtime_seconds: int,
+    camera_manifest_s3_uri: str = "",
+    baseline_review_manifest_s3_uri: str = "",
 ) -> dict:
+    resolved_environment = dict(environment)
+    processing_inputs = [
+        {
+            "InputName": "model",
+            "S3Input": {
+                "S3Uri": model_artifact_s3_uri,
+                "LocalPath": "/opt/ml/processing/input/model",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+            },
+        },
+        {
+            "InputName": "colmap",
+            "S3Input": {
+                "S3Uri": colmap_s3_uri,
+                "LocalPath": "/opt/ml/processing/input/colmap",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+            },
+        },
+    ]
+    if camera_manifest_s3_uri:
+        _bucket, camera_key = parse_s3_uri(camera_manifest_s3_uri)
+        camera_name = Path(camera_key.rstrip("/")).name or "review_camera_manifest.json"
+        camera_local_dir = "/opt/ml/processing/input/camera"
+        processing_inputs.append(
+            {
+                "InputName": "camera",
+                "S3Input": {
+                    "S3Uri": camera_manifest_s3_uri,
+                    "LocalPath": camera_local_dir,
+                    "S3DataType": "S3Prefix",
+                    "S3InputMode": "File",
+                },
+            }
+        )
+        resolved_environment.setdefault("QUALITY_REVIEW_CAMERA_MANIFEST", f"{camera_local_dir}/{camera_name}")
+    if baseline_review_manifest_s3_uri:
+        _bucket, baseline_key = parse_s3_uri(baseline_review_manifest_s3_uri)
+        baseline_name = Path(baseline_key.rstrip("/")).name or "quality_review_manifest.json"
+        baseline_local_dir = "/opt/ml/processing/input/baseline"
+        processing_inputs.append(
+            {
+                "InputName": "baseline",
+                "S3Input": {
+                    "S3Uri": baseline_review_manifest_s3_uri,
+                    "LocalPath": baseline_local_dir,
+                    "S3DataType": "S3Prefix",
+                    "S3InputMode": "File",
+                },
+            }
+        )
+        resolved_environment.setdefault("BASELINE_REVIEW_MANIFEST_PATH", f"{baseline_local_dir}/{baseline_name}")
     return {
         "ProcessingJobName": job_name,
         "RoleArn": role_arn,
@@ -582,27 +637,8 @@ def create_quality_review_processing_payload(
             "ImageUri": image_uri,
             "ContainerEntrypoint": ["python3", "/opt/ml/code/run_tiled_quality_review.py"],
         },
-        "Environment": environment,
-        "ProcessingInputs": [
-            {
-                "InputName": "model",
-                "S3Input": {
-                    "S3Uri": model_artifact_s3_uri,
-                    "LocalPath": "/opt/ml/processing/input/model",
-                    "S3DataType": "S3Prefix",
-                    "S3InputMode": "File",
-                },
-            },
-            {
-                "InputName": "colmap",
-                "S3Input": {
-                    "S3Uri": colmap_s3_uri,
-                    "LocalPath": "/opt/ml/processing/input/colmap",
-                    "S3DataType": "S3Prefix",
-                    "S3InputMode": "File",
-                },
-            },
-        ],
+        "Environment": resolved_environment,
+        "ProcessingInputs": processing_inputs,
         "ProcessingOutputConfig": {
             "Outputs": [
                 {
@@ -811,6 +847,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--review-instance-type", default=DEFAULT_INSTANCE_TYPE)
     parser.add_argument("--review-volume-size-gb", type=int, default=DEFAULT_VOLUME_SIZE_GB)
     parser.add_argument("--review-max-runtime-seconds", type=int, default=DEFAULT_REVIEW_MAX_RUNTIME_SECONDS)
+    parser.add_argument(
+        "--review-camera-manifest-s3-uri",
+        default="",
+        help="Optional frozen review camera manifest object/prefix for quality-review processing.",
+    )
+    parser.add_argument(
+        "--baseline-review-manifest-s3-uri",
+        default="",
+        help="Optional baseline quality_review_manifest.json used for promotion deltas.",
+    )
     parser.add_argument(
         "--compatibility-gate",
         action="store_true",
@@ -1085,6 +1131,8 @@ def main() -> int:
                 instance_type=args.review_instance_type,
                 volume_size_gb=args.review_volume_size_gb,
                 max_runtime_seconds=args.review_max_runtime_seconds,
+                camera_manifest_s3_uri=args.review_camera_manifest_s3_uri,
+                baseline_review_manifest_s3_uri=args.baseline_review_manifest_s3_uri,
             )
             with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as handle:
                 json.dump(review_payload, handle, indent=2)
@@ -1103,6 +1151,8 @@ def main() -> int:
                 "processing_job_name": review_job_name,
                 "output_s3_uri": review_stage.output_s3_uri,
                 "manifest_s3_uri": review_manifest_s3_uri,
+                "baseline_review_manifest_s3_uri": args.baseline_review_manifest_s3_uri,
+                "review_camera_manifest_s3_uri": args.review_camera_manifest_s3_uri,
                 "processing_status": processing_status.get("ProcessingJobStatus"),
                 "processing_start_time": processing_status.get("ProcessingStartTime"),
                 "processing_end_time": processing_status.get("ProcessingEndTime"),

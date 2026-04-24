@@ -1,9 +1,9 @@
 reason: geometry-first md1 tiled 3DGS reset; continuing beyond offline R1 toward bounded proof gates
-current_rung: R1a review-gate hardening; embedded-pose renderer fix implemented locally after camera-viewmat smoke
+current_rung: R1a review-gate hardening; embedded-pose renderer fix deployed and 4/4/4 smoke running; local launcher now wires frozen camera/baseline review manifests for future comparative gates
 root_cause_classification: merge_bad
-live_compute_status: none; md1-r1a-viewfix-20260423235854 completed in 532 billable seconds but review output was invalid because it used freshly converted COLMAP poses instead of bundled training poses
+live_compute_status: SageMaker training job md1-r1a-embeddedposes-20260424003441 InProgress for embedded-pose review smoke; no full-scene training spend active
 current_branch: agent-53821974-md1-geometry-consistency
-current_head_at_state_write: 9fff5423f3203fcf92b55df8568454a844eaef4e plus uncommitted embedded pose-source fix
+current_head_at_state_write: e0f7abf9a9691822bd15908e16477151722333e7
 base_branch: agent-86580563-hierarchical-splat-merge-plan
 base_commit: ffef97e646046f204267ec30dd7dbf6f19027cad
 automation:
@@ -12,13 +12,13 @@ automation:
   purpose: reassess branch, PR, workflow, AWS, artifact, and audit status; keep moving the proof ladder
 exact_artifacts:
   canonical_training_tarball: s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz
-  active_smoke_review_job: md1-r1a-viewfix-20260423235854
-  active_smoke_review_output_root: s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r1a-20260423235854/review-render-job-output
-  active_smoke_review_artifact: s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r1a-20260423235854/review-render-job-output/md1-r1a-viewfix-20260423235854/output/model.tar.gz
-  active_smoke_review_image: 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:83899e61c91fef1adc932bfe33ba30e061883c8c0cb98de3e58c82ac24b10853
-  active_smoke_review_camera_manifest: s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r1a-20260423235854/inputs/review_camera_manifest.json
+  active_smoke_review_job: md1-r1a-embeddedposes-20260424003441
+  active_smoke_review_output_root: s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r1a-20260424003441/review-render-job-output
+  active_smoke_review_artifact: s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r1a-20260424003441/review-render-job-output/md1-r1a-embeddedposes-20260424003441/output/model.tar.gz
+  active_smoke_review_image: 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:0e9492295885735deb6ef1e8ce8bbe1e8d72dd84f2c38082bd601a9c9e2ab750
+  active_smoke_review_camera_manifest: s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r1a-20260424003441/inputs/review_camera_manifest.json
   preview_url: https://agent-53821974-md1-geometry.v0-spaceport-website-preview2.pages.dev
-  preview_hash_url: https://391ae750.v0-spaceport-website-preview2.pages.dev
+  preview_hash_url: https://3897fd78.v0-spaceport-website-preview2.pages.dev
   local_audit_manifest: logs/audit/md1-1k-full-r2/audit_manifest.json
   local_review_comparison: logs/audit/md1-1k-full-r2/review_comparison.json
   frozen_review_cameras: logs/audit/md1-1k-full-r2/review_camera_manifest.json
@@ -53,7 +53,10 @@ review_gate_delta:
   completed_pose_source_probe_job: md1-r1a-viewfix-20260423235854
   pose_source_root_cause: exported Nerfstudio splats are in the bundled tiled_pipeline training-pose coordinate frame, but the review renderer rebuilt COLMAP transforms in a different frame
   added_embedded_training_pose_source: true
+  embedded_pose_smoke_job_running: md1-r1a-embeddedposes-20260424003441
+  local_launcher_baseline_review_input_support: true
+  local_launcher_frozen_camera_review_input_support: true
   smoke_review_target: tile_02/tile_05 using frozen 4/4/4 camera set before bounded R2 retraining
-next_unblocked_step: commit and push embedded training-pose review fix, watch CDK/Pages/container workflows to green, rerun 4/4/4 smoke with render_scale=0.25, and require spatially credible side-by-side evidence before R2 spend
+next_unblocked_step: monitor md1-r1a-embeddedposes-20260424003441 to completion, extract review artifact, inspect side-by-side near/boundary/horizon renders, and only proceed to R2 if the review gate is spatially credible
 owner_action_needed: none
-updated: 2026-04-24T00:20:43Z
+updated: 2026-04-24T00:43:11Z

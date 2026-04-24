@@ -359,6 +359,35 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(payload["ProcessingInputs"][1]["S3Input"]["S3Uri"], "s3://bucket/colmap")
         self.assertEqual(payload["Environment"]["QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET"], "4")
 
+    def test_create_quality_review_processing_payload_can_freeze_camera_and_baseline(self):
+        payload = benchmark.create_quality_review_processing_payload(
+            branch_name="agent-branch",
+            job_name="bench-123-quality",
+            image_uri="123.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:latest",
+            role_arn="arn:aws:iam::123:role/test",
+            model_artifact_s3_uri="s3://bucket/model.tar.gz",
+            colmap_s3_uri="s3://bucket/colmap",
+            output_s3_uri="s3://bucket/review",
+            environment={"QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET": "4"},
+            instance_type="ml.g5.2xlarge",
+            volume_size_gb=100,
+            max_runtime_seconds=7200,
+            camera_manifest_s3_uri="s3://bucket/frozen/review_camera_manifest.json",
+            baseline_review_manifest_s3_uri="s3://bucket/baseline/quality_review_manifest.json",
+        )
+
+        inputs_by_name = {entry["InputName"]: entry for entry in payload["ProcessingInputs"]}
+        self.assertEqual(inputs_by_name["camera"]["S3Input"]["S3Uri"], "s3://bucket/frozen/review_camera_manifest.json")
+        self.assertEqual(inputs_by_name["baseline"]["S3Input"]["S3Uri"], "s3://bucket/baseline/quality_review_manifest.json")
+        self.assertEqual(
+            payload["Environment"]["QUALITY_REVIEW_CAMERA_MANIFEST"],
+            "/opt/ml/processing/input/camera/review_camera_manifest.json",
+        )
+        self.assertEqual(
+            payload["Environment"]["BASELINE_REVIEW_MANIFEST_PATH"],
+            "/opt/ml/processing/input/baseline/quality_review_manifest.json",
+        )
+
     def test_resolve_execution_context_accepts_explicit_role_image_and_output_without_branch_stack(self):
         original_find = benchmark.find_branch_ml_stack
         original_tag = benchmark.get_branch_ecr_tag
