@@ -1126,6 +1126,7 @@ def write_point_cloud_ply_from_gaussians(
     *,
     bounds: Mapping[str, Any] | None = None,
     padding_ratio: float = 0.1,
+    max_points: int | None = None,
 ) -> dict[str, Any]:
     if PlyData is None or PlyElement is None:
         raise ModuleNotFoundError("plyfile is required to filter scaffold point clouds")
@@ -1157,8 +1158,27 @@ def write_point_cloud_ply_from_gaussians(
         filter_bounds = None
 
     colors = _colors_from_gaussian_vertex(vertex)
+    kept_positions = positions[keep_mask]
+    kept_colors = colors[keep_mask]
+    filtered_count = int(kept_positions.shape[0])
+    inherited_cap = int(max_points or 0)
+    downsample_strategy = None
+    if inherited_cap > 0 and filtered_count > inherited_cap:
+        mins = np.min(kept_positions, axis=0)
+        spans = np.ptp(kept_positions, axis=0)
+        safe_spans = np.where(spans > 1e-8, spans, 1.0)
+        normalized = np.clip((kept_positions - mins) / safe_spans, 0.0, 1.0)
+        quantized = np.floor(normalized * 1023.0).astype(np.int64)
+        spatial_keys = (quantized[:, 0] * 1024 + quantized[:, 1]) * 1024 + quantized[:, 2]
+        spatial_order = np.argsort(spatial_keys, kind="mergesort")
+        sample_offsets = np.linspace(0, filtered_count - 1, inherited_cap, dtype=np.int64)
+        selected = spatial_order[sample_offsets]
+        kept_positions = kept_positions[selected]
+        kept_colors = kept_colors[selected]
+        downsample_strategy = "spatial_key_even_sample"
+
     point_cloud = np.empty(
-        int(np.count_nonzero(keep_mask)),
+        int(kept_positions.shape[0]),
         dtype=[
             ("x", "f4"),
             ("y", "f4"),
@@ -1168,8 +1188,6 @@ def write_point_cloud_ply_from_gaussians(
             ("blue", "u1"),
         ],
     )
-    kept_positions = positions[keep_mask]
-    kept_colors = colors[keep_mask]
     point_cloud["x"] = kept_positions[:, 0]
     point_cloud["y"] = kept_positions[:, 1]
     point_cloud["z"] = kept_positions[:, 2]
@@ -1183,10 +1201,13 @@ def write_point_cloud_ply_from_gaussians(
         "filtered_point_cloud": str(output_path),
         "scaffold_filter_bounds": filter_bounds.to_dict() if filter_bounds is not None else None,
         "source_gaussian_count": total_count,
+        "source_filtered_gaussian_count": filtered_count,
         "inherited_gaussian_count": int(len(point_cloud)),
+        "inherited_gaussian_cap": inherited_cap or None,
         "inherited_attributes": ["positions", "rgb_from_gaussian_dc"],
         "reinitialized_attributes": ["scale", "opacity", "rotation", "sh_rest", "appearance_embeddings"],
         "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+        "scaffold_init_downsample_strategy": downsample_strategy,
         "fallback_used": filter_bounds is None,
     }
 

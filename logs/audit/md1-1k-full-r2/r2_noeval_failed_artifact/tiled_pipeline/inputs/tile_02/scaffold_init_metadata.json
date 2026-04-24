@@ -1,0 +1,27 @@
+{
+  "scaffold_source_artifact": "/opt/ml/model/scaffold/splat.ply",
+  "filtered_point_cloud": "/opt/ml/model/tiled_pipeline/inputs/tile_02/scaffold_init.ply",
+  "scaffold_filter_bounds": {
+    "min_x": -28.4003,
+    "max_x": 28.9633,
+    "min_y": -40.9121,
+    "max_y": 20.6371,
+    "min_z": -21.3783,
+    "max_z": 15.705300000000001
+  },
+  "source_gaussian_count": 1027672,
+  "inherited_gaussian_count": 1027208,
+  "inherited_attributes": [
+    "positions",
+    "rgb_from_gaussian_dc"
+  ],
+  "reinitialized_attributes": [
+    "scale",
+    "opacity",
+    "rotation",
+    "sh_rest",
+    "appearance_embeddings"
+  ],
+  "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+  "fallback_used": false
+}

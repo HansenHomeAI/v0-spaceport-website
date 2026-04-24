@@ -503,6 +503,7 @@ class NerfStudioTrainer:
             'GLOBAL_SCAFFOLD_MAX_ITERATIONS': 'tiling.global_scaffold.max_iterations',
             'GLOBAL_SCAFFOLD_SH_DEGREE': 'tiling.global_scaffold.sh_degree',
             'GLOBAL_SCAFFOLD_MAX_GAUSS_RATIO': 'tiling.global_scaffold.max_gauss_ratio',
+            'GLOBAL_SCAFFOLD_INIT_MAX_POINTS': 'tiling.global_scaffold.max_init_points',
             'TILED_MAX_TILES': 'tiling.pipeline.max_tiles',
             'TILED_TILE_IDS': 'tiling.pipeline.tile_ids',
             'TILED_INCLUDE_SCAFFOLD': 'tiling.pipeline.include_scaffold',
@@ -516,7 +517,7 @@ class NerfStudioTrainer:
                 # Convert string values to appropriate types
                 if env_var in ['BILATERAL_PROCESSING', 'USE_SCALE_REGULARIZATION', 'ENABLE_BG_MODEL', 'ENABLE_ALPHA_LOSS', 'ENABLE_ROBUST_MASK', 'FLOATER_PRUNING_ENABLED', 'TILED_INCLUDE_SCAFFOLD', 'TILED_INCLUDE_MERGE', 'TILED_RESUME_EXISTING', 'VIEWER_QUIT_ON_TRAIN_COMPLETION']:
                     value = value.lower() in ('true', '1', 'yes', 'on')
-                elif env_var in ['MAX_ITERATIONS', 'LOG_INTERVAL', 'TRAINING_DATALOADER_NUM_WORKERS', 'TRAINING_MAX_SELECTED_IMAGES', 'TRAINING_SELECTION_STRIDE', 'TRAINING_REVIEW_IMAGES_PER_BUCKET', 'TRAINING_STEPS_PER_EVAL_IMAGE', 'TRAINING_STEPS_PER_EVAL_ALL_IMAGES', 'TRAINING_STEPS_PER_SAVE', 'TRAINING_STOP_SPLIT_AT', 'SH_DEGREE', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'TRAINING_DOWNSCALE_FACTOR', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT', 'GLOBAL_SCAFFOLD_MAX_IMAGES', 'GLOBAL_SCAFFOLD_FRAME_STRIDE', 'GLOBAL_SCAFFOLD_MAX_ITERATIONS', 'GLOBAL_SCAFFOLD_SH_DEGREE', 'TILED_MAX_TILES']:
+                elif env_var in ['MAX_ITERATIONS', 'LOG_INTERVAL', 'TRAINING_DATALOADER_NUM_WORKERS', 'TRAINING_MAX_SELECTED_IMAGES', 'TRAINING_SELECTION_STRIDE', 'TRAINING_REVIEW_IMAGES_PER_BUCKET', 'TRAINING_STEPS_PER_EVAL_IMAGE', 'TRAINING_STEPS_PER_EVAL_ALL_IMAGES', 'TRAINING_STEPS_PER_SAVE', 'TRAINING_STOP_SPLIT_AT', 'SH_DEGREE', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'TRAINING_DOWNSCALE_FACTOR', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT', 'GLOBAL_SCAFFOLD_MAX_IMAGES', 'GLOBAL_SCAFFOLD_FRAME_STRIDE', 'GLOBAL_SCAFFOLD_MAX_ITERATIONS', 'GLOBAL_SCAFFOLD_SH_DEGREE', 'GLOBAL_SCAFFOLD_INIT_MAX_POINTS', 'TILED_MAX_TILES']:
                     value = int(value)
                 elif env_var in ['TARGET_PSNR', 'CULL_ALPHA_THRESH', 'CULL_SCALE_THRESH', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_SKY_MIN_LUMINANCE', 'FLOATER_PRUNING_SKY_MIN_SATURATION', 'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE', 'GLOBAL_SCAFFOLD_MAX_GAUSS_RATIO']:
                     value = float(value)
@@ -1145,12 +1146,15 @@ class NerfStudioTrainer:
             scaffold_ply = scaffold_output_dir / "splat.ply"
             if scaffold_ply.exists():
                 tile_entry = resolve_tile_entry(tile_manifest, tile_id)
+                scaffold_config = self.config.get("tiling", {}).get("global_scaffold", {})
+                max_init_points = int(scaffold_config.get("max_init_points", 0) or 0)
                 scaffold_init_path = stage_input_dir / "scaffold_init.ply"
                 scaffold_metadata = write_point_cloud_ply_from_gaussians(
                     scaffold_ply,
                     scaffold_init_path,
                     bounds=tile_entry.get("overlap_bounds") or tile_entry.get("core_bounds"),
                     padding_ratio=0.1,
+                    max_points=max_init_points or None,
                 )
                 transforms_path = stage_input_dir / "transforms.json"
                 with open(transforms_path, "r", encoding="utf-8") as f:

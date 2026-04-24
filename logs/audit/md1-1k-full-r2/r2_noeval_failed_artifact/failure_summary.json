@@ -1,0 +1,52 @@
+{
+  "job_name": "md1-r2-noeval-1776994906-tiled",
+  "status": "Failed",
+  "secondary_status": "Failed",
+  "instance_type": "ml.g5.2xlarge",
+  "billable_time_seconds": 2933,
+  "started_at": "2026-04-23T19:43:18.036000-06:00",
+  "ended_at": "2026-04-23T20:32:11.342000-06:00",
+  "model_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r2-noeval-20260424014052/T2_tiled_pipeline/md1-r2-noeval-1776994906-tiled/output/model.tar.gz",
+  "failure_classification": "leaf_training_memory_bad",
+  "root_cause_classification": "merge_bad",
+  "failed_stage": "tile_02",
+  "failed_step": 5900,
+  "failed_step_percent": 49.17,
+  "failure_reason": "CUDA out of memory during training backward pass in gsplat compute_sh_bwd, not in periodic evaluation.",
+  "oom_request_gib": 8.14,
+  "gpu_total_gib": 22.3,
+  "gpu_allocated_gib": 15.46,
+  "gpu_free_gib": 4.88,
+  "gpu_reserved_gib": 17.06,
+  "tile_02_selected_images": 188,
+  "tile_02_view_bucket_counts": {
+    "near_detail": 66,
+    "boundary": 176,
+    "horizon": 0
+  },
+  "tile_02_scaffold_init": {
+    "inherited_gaussian_count": 1027208,
+    "inherited_attributes": [
+      "positions",
+      "rgb_from_gaussian_dc"
+    ],
+    "reinitialized_attributes": [
+      "scale",
+      "opacity",
+      "rotation",
+      "sh_rest",
+      "appearance_embeddings"
+    ],
+    "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud"
+  },
+  "last_reported_gaussian_count": 1176194,
+  "larger_single_gpu_option": {
+    "candidate_instance_type": "ml.g6e.2xlarge",
+    "gpu": "L40S",
+    "gpu_memory_mib": 45776,
+    "training_quota": 0.0,
+    "available": false
+  },
+  "g5_larger_instance_assessment": "ml.g5.4xlarge, ml.g5.8xlarge, ml.g5.12xlarge, and ml.g5.16xlarge quotas exist, but their per-GPU memory remains A10G 22888 MiB, so they do not address this single-process OOM.",
+  "next_action": "Implement deterministic spatial capping for scaffold point-cloud initialization, preserve full image resolution and 12000 leaf iterations, then relaunch the same tile_02/tile_05 R2 pair with GLOBAL_SCAFFOLD_INIT_MAX_POINTS set before considering lower-fidelity training knobs."
+}

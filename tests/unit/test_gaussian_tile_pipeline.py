@@ -870,6 +870,32 @@ class GaussianTilePipelineTests(unittest.TestCase):
             self.assertEqual(metadata["inherited_gaussian_count"], 1)
             self.assertEqual(metadata["scaffold_inheritance_mode"], "global_scaffold_ply_filtered_point_cloud")
 
+    def test_write_point_cloud_ply_from_gaussians_caps_scaffold_init_points(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "scaffold.ply"
+            target = root / "tile" / "scaffold_init.ply"
+            write_gaussian_test_ply(
+                source,
+                [
+                    (float(index), float(index % 3), 0.0, 0.8, 0.1, 0.1, 0.1)
+                    for index in range(10)
+                ],
+            )
+
+            metadata = tile_pipeline.write_point_cloud_ply_from_gaussians(
+                source,
+                target,
+                max_points=4,
+            )
+
+            filtered = PlyData.read(str(target))["vertex"].data
+            self.assertEqual(len(filtered), 4)
+            self.assertEqual(metadata["source_filtered_gaussian_count"], 10)
+            self.assertEqual(metadata["inherited_gaussian_count"], 4)
+            self.assertEqual(metadata["inherited_gaussian_cap"], 4)
+            self.assertEqual(metadata["scaffold_init_downsample_strategy"], "spatial_key_even_sample")
+
 
 if __name__ == "__main__":
     unittest.main()
