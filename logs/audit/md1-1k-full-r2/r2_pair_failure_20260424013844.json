@@ -1,0 +1,47 @@
+{
+  "rung": "R2",
+  "job_name": "md1-r2-pair-1776991746-tiled",
+  "status": "Failed",
+  "secondary_status": "Failed",
+  "training_start_time": "2026-04-24T00:50:20Z",
+  "training_end_time": "2026-04-24T01:38:44Z",
+  "billable_time_seconds": 2904,
+  "failure_reason": "AlgorithmError: exit code 1",
+  "model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r2-20260424004906/3dgs/T2_tiled_pipeline/md1-r2-pair-1776991746-tiled/output/model.tar.gz",
+  "artifact_inventory": {
+    "scaffold_splat_present": true,
+    "tile_02_splat_present": false,
+    "tile_05_splat_present": false,
+    "merged_splat_present": false,
+    "quality_review_present": false
+  },
+  "diagnosis": {
+    "classification": "tile_02_eval_oom",
+    "promotion_status": "not_promotable",
+    "failed_stage": "tile_02",
+    "failed_operation": "Nerfstudio eval image metrics",
+    "failed_step": 2900,
+    "failed_percent": 24.17,
+    "last_reported_gaussians": 676114,
+    "oom_allocation_gib": 8.14,
+    "gpu_total_gib": 22.30,
+    "gpu_free_gib": 6.56,
+    "evidence": "tiles/tile_02/ns_train.log shows torch.cuda.OutOfMemoryError in splatfactow_model.py background SH eval path during get_average_eval_image_metrics."
+  },
+  "bounded_retry": {
+    "job_name": "md1-r2-evalskip-1776995639-tiled",
+    "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r2-evalskip-20260424015359/3dgs/T2_tiled_pipeline",
+    "summary_json": "logs/audit/md1-1k-full-r2/r2_pair_evalskip_submit_20260424015359.json",
+    "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:3c4c34a04d411ca671bad9865f31254f685e88e28c635c18c9866e53c1e2c7c0",
+    "tile_ids": [
+      "tile_02",
+      "tile_05"
+    ],
+    "fidelity_changes": "none",
+    "compute_survival_overrides": {
+      "TRAINING_STEPS_PER_EVAL_IMAGE": "12001",
+      "TRAINING_STEPS_PER_EVAL_ALL_IMAGES": "12001",
+      "PYTORCH_CUDA_ALLOC_CONF": "max_split_size_mb:128"
+    }
+  }
+}
