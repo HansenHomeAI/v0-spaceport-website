@@ -904,7 +904,7 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             self.assertIn("--pipeline.model.stop_split_at", calls[0])
             self.assertEqual(calls[0][calls[0].index("--pipeline.model.stop_split_at") + 1], "8500")
 
-    def test_leaf_tile_export_requests_original_foreground_frame(self):
+    def test_leaf_tile_export_requests_planner_foreground_frame(self):
         module = load_module_with_stubs()
 
         with tempfile.TemporaryDirectory() as tmp:
@@ -946,7 +946,7 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             self.assertTrue(success)
             self.assertEqual(len(calls), 1)
             self.assertIn("--foreground-coordinate-frame", calls[0])
-            self.assertEqual(calls[0][calls[0].index("--foreground-coordinate-frame") + 1], "original")
+            self.assertEqual(calls[0][calls[0].index("--foreground-coordinate-frame") + 1], "planner")
 
     def test_build_sparse_point_cloud_ply_writes_ascii_vertices(self):
         module = load_module_with_stubs()
