@@ -904,6 +904,50 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             self.assertIn("--pipeline.model.stop_split_at", calls[0])
             self.assertEqual(calls[0][calls[0].index("--pipeline.model.stop_split_at") + 1], "8500")
 
+    def test_leaf_tile_export_requests_original_foreground_frame(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.config = {
+                "model": {"variant": "splatfacto-w-light"},
+                "output": {"background_skybox": {"width": 512, "height": 256, "quality": 80}},
+                "tiling": {"training_mode": "leaf_tile"},
+            }
+            trainer.output_dir = root / "output"
+            trainer.output_dir.mkdir()
+            trainer.temp_dir = root / "tmp"
+            trainer.temp_dir.mkdir()
+            trainer.prune_exported_foreground = lambda: None
+            trainer.patch_export_manifests = lambda: None
+            config_path = trainer.temp_dir / "config.yml"
+            config_path.write_text("stub: true\n", encoding="utf-8")
+            trainer.resolve_training_mode = lambda: "leaf_tile"
+            trainer.resolve_background_selection = lambda: types.SimpleNamespace(
+                camera_idx=7,
+                resolved_mode="camera",
+            )
+
+            calls: list[list[str]] = []
+
+            def fake_run(cmd, **_kwargs):
+                calls.append(list(cmd))
+                (trainer.output_dir / "splat.ply").write_text("ply\n", encoding="utf-8")
+                return types.SimpleNamespace(returncode=0, stdout="done\n", stderr="")
+
+            original_run_command = module.run_command_with_log_file
+            module.run_command_with_log_file = fake_run
+            try:
+                success = trainer.export_trained_model(config_path)
+            finally:
+                module.run_command_with_log_file = original_run_command
+
+            self.assertTrue(success)
+            self.assertEqual(len(calls), 1)
+            self.assertIn("--foreground-coordinate-frame", calls[0])
+            self.assertEqual(calls[0][calls[0].index("--foreground-coordinate-frame") + 1], "original")
+
     def test_build_sparse_point_cloud_ply_writes_ascii_vertices(self):
         module = load_module_with_stubs()
 

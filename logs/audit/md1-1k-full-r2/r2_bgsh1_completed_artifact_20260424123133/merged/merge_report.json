@@ -1,0 +1,61 @@
+{
+  "merge_mode": "support_weighted_overlap",
+  "merged_ply": "/opt/ml/model/merged/merged_splat.ply",
+  "tile_count": 2,
+  "source_gaussians": 455339,
+  "retained_gaussians": 404187,
+  "dropped_gaussians": 51152,
+  "fallback_tile_count": 1,
+  "retain_all_tile_count": 0,
+  "fallback_reasons": [
+    {
+      "tile_id": "tile_05",
+      "reason": "primary_and_overlap_retained_zero",
+      "retention_strategy": "centroid_voronoi_fallback"
+    }
+  ],
+  "tiles": [
+    {
+      "tile_id": "tile_02",
+      "source_ply": "/opt/ml/model/tiles/tile_02/splat.ply",
+      "source_gaussians": 295312,
+      "retained_gaussians": 295312,
+      "dropped_gaussians": 0,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 295312,
+        "overlap_candidate_count": 0,
+        "retained_overlap_count": 0,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty"
+      }
+    },
+    {
+      "tile_id": "tile_05",
+      "source_ply": "/opt/ml/model/tiles/tile_05/splat.ply",
+      "source_gaussians": 160027,
+      "retained_gaussians": 108875,
+      "dropped_gaussians": 51152,
+      "retention_strategy": "centroid_voronoi_fallback",
+      "fallback_used": true,
+      "fallback_reason": "primary_and_overlap_retained_zero",
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 0,
+        "overlap_candidate_count": 0,
+        "retained_overlap_count": 0,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty"
+      }
+    }
+  ],
+  "background_asset": {
+    "asset": "background_skybox.webp",
+    "source_tile_id": "tile_05",
+    "source_asset": "/opt/ml/model/tiles/tile_05/background_skybox.webp",
+    "selection_score": 0.6210106162328897,
+    "retained_gaussians": 108875
+  },
+  "resume_fingerprint": "37d16db0a1ad6a7a2e595f27d25ae58d1d21d9c523220e13f15825119837e768"
+}

@@ -2170,6 +2170,8 @@ class NerfStudioTrainer:
                 "--background-quality", str(skybox_config.get('quality', 95)),
                 "--background-appearance-mode", str(background_selection.resolved_mode),
             ]
+            if training_mode == 'leaf_tile':
+                export_cmd.extend(["--foreground-coordinate-frame", "original"])
         else:
             export_cmd = [
                 "ns-export", "gaussian-splat",
@@ -2339,6 +2341,13 @@ class NerfStudioTrainer:
             metadata['background_selection'] = self.background_selection_result.to_dict()
         if self.floater_pruning_result is not None:
             metadata['floater_pruning'] = self.floater_pruning_result.to_dict()
+        export_manifest_path = self.output_dir / "export_manifest.json"
+        if export_manifest_path.exists():
+            try:
+                with open(export_manifest_path, 'r', encoding='utf-8') as f:
+                    metadata['export_manifest'] = json.load(f)
+            except (OSError, json.JSONDecodeError) as exc:
+                logger.warning(f"⚠️ Could not read export manifest: {exc}")
         if self.training_selection_result is not None:
             metadata['training_selection'] = self.training_selection_result
         if self.tile_manifest_resolution is not None:

@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "rung": "R2",
+  "camera_set": "smoke",
+  "baseline": {
+    "artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r1-review-c00091ae-render-sanity/baselines/strict_core",
+    "review_manifest": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r1-review-c00091ae-render-sanity/baselines/strict_core/quality_review_manifest.json"
+  },
+  "candidate": {
+    "training_job": "md1-r2-cap300k-bgsh1-1777017536-tiled",
+    "artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r2-cap300k-sh1-bgsh1-split3500-noeval-reusescaffold-20260424075856/T2_tiled_pipeline/md1-r2-cap300k-bgsh1-1777017536-tiled/output/model.tar.gz",
+    "local_evidence_root": "logs/audit/md1-1k-full-r2/r2_bgsh1_completed_artifact_20260424123133",
+    "merge_report": "logs/audit/md1-1k-full-r2/r2_bgsh1_completed_artifact_20260424123133/merged/merge_report.json",
+    "selected_tile_ids": [
+      "tile_02",
+      "tile_05"
+    ],
+    "merge_mode": "support_weighted_overlap"
+  },
+  "review_attempts": [
+    {
+      "job_name": "md1-r1-r2-tile-02-05-bgsh1-1777033977-quality",
+      "status": "Stopped",
+      "billable_seconds": 321,
+      "output_root": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r2-bgsh1-smoke-review-20260424123200",
+      "quality_output_present": false,
+      "stop_reason": "candidate_preflight_later_failed_closed"
+    },
+    {
+      "job_name": "md1-r1-r2-tile-02-05-bgsh1-retry-1777034554-quality",
+      "status": "Stopped",
+      "billable_seconds": 56,
+      "output_root": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r2-bgsh1-smoke-review-retry-20260424124800/outputs/r2_tile_02_05_bgsh1_retry",
+      "quality_output_present": false,
+      "stop_reason": "fallback_tile_count_gt_0_before_render_review"
+    }
+  ],
+  "merge_preflight": {
+    "tile_count": 2,
+    "source_gaussians": 455339,
+    "retained_gaussians": 404187,
+    "fallback_tile_count": 1,
+    "retain_all_tile_count": 0,
+    "fallback_reasons": [
+      {
+        "tile_id": "tile_05",
+        "reason": "primary_and_overlap_retained_zero",
+        "retention_strategy": "centroid_voronoi_fallback"
+      }
+    ],
+    "tile_05_support_weighted_overlap": {
+      "core_candidate_count": 0,
+      "overlap_candidate_count": 0,
+      "retained_overlap_count": 0
+    }
+  },
+  "diagnosis": {
+    "root_cause_classification": "merge_bad",
+    "subclassification": "leaf_export_coordinate_frame_mismatch",
+    "evidence": [
+      "Tile manifest ownership bounds are original scene coordinates.",
+      "Extracted tile_05 scaffold/input positions are in the original scene y range while exported tile_05 splat positions are normalized around y=-1.43..1.31.",
+      "support_weighted_overlap found zero tile_05 core/overlap candidates despite valid ownership bounds."
+    ]
+  },
+  "per_bucket_metrics": null,
+  "metric_deltas": null,
+  "side_by_side_render_paths": [],
+  "block_reasons": [
+    "fallback_tile_count_gt_0",
+    "leaf_export_coordinate_frame_mismatch",
+    "render_review_stopped_before_metrics"
+  ],
+  "promotion_decision": {
+    "promoted": false,
+    "decision": "blocked",
+    "reason": "Fail-closed merge preflight blocks promotion before metric comparison; rerun bounded R2 after original-coordinate leaf export fix."
+  },
+  "updated": "2026-04-24T12:49:00Z"
+}

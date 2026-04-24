@@ -13,7 +13,7 @@ import argparse
 import json
 from collections import OrderedDict
 from pathlib import Path
-from typing import Optional
+from typing import Any, Mapping, Optional
 
 import numpy as np
 import torch
@@ -41,10 +41,185 @@ def write_ply(filename: Path, count: int, tensors: OrderedDict[str, np.ndarray])
                     ply_file.write(value.tobytes())
 
 
-def build_foreground_ply(model, output_dir: Path, camera_idx: int) -> Path:
+def tensor_to_numpy(value) -> Optional[np.ndarray]:
+    if value is None:
+        return None
+    if hasattr(value, "detach"):
+        value = value.detach()
+    if hasattr(value, "cpu"):
+        value = value.cpu()
+    try:
+        return np.asarray(value, dtype=np.float64)
+    except (TypeError, ValueError):
+        return None
+
+
+def resolve_dataparser_original_transform(pipeline) -> tuple[Optional[np.ndarray], float, str]:
+    datamanager = getattr(pipeline, "datamanager", None)
+    outputs = getattr(datamanager, "train_dataparser_outputs", None)
+    if outputs is None:
+        outputs = getattr(datamanager, "dataparser_outputs", None)
+    if outputs is None:
+        return None, 1.0, "missing_dataparser_outputs"
+
+    transform = tensor_to_numpy(getattr(outputs, "dataparser_transform", None))
+    if transform is None:
+        transform = tensor_to_numpy(getattr(outputs, "transform", None))
+    if transform is None:
+        return None, 1.0, "missing_dataparser_transform"
+    if transform.shape == (3, 4):
+        affine = np.eye(4, dtype=np.float64)
+        affine[:3, :4] = transform
+    elif transform.shape == (4, 4):
+        affine = transform
+    else:
+        return None, 1.0, f"unsupported_dataparser_transform_shape_{transform.shape}"
+
+    scale_value = getattr(outputs, "dataparser_scale", 1.0)
+    scale_array = tensor_to_numpy(scale_value)
+    if scale_array is None or scale_array.size == 0:
+        scale = 1.0
+    else:
+        scale = float(scale_array.reshape(-1)[0])
+    if not np.isfinite(scale) or abs(scale) <= 1e-9:
+        scale = 1.0
+    return affine, scale, "train_dataparser_outputs"
+
+
+def positions_to_original_space(positions: np.ndarray, pipeline) -> tuple[np.ndarray, dict]:
+    affine, scale, source = resolve_dataparser_original_transform(pipeline)
+    metadata = {
+        "coordinate_frame": "original",
+        "dataparser_transform_source": source,
+        "dataparser_scale": scale,
+        "applied": False,
+        "position_transform_applied": False,
+        "scale_transform_applied": False,
+        "rotation_transform_applied": False,
+    }
+    if affine is None:
+        return positions, metadata
+    inverse = np.linalg.inv(affine)
+    homogeneous = np.concatenate(
+        [positions.astype(np.float64) / scale, np.ones((positions.shape[0], 1), dtype=np.float64)],
+        axis=1,
+    )
+    transformed = (inverse @ homogeneous.T).T[:, :3].astype(np.float32)
+    metadata["applied"] = True
+    metadata["position_transform_applied"] = True
+    metadata["dataparser_transform"] = affine[:3, :4].tolist()
+    return transformed, metadata
+
+
+def log_scales_to_original_space(raw_scales: np.ndarray, transform_metadata: Mapping[str, Any]) -> np.ndarray:
+    if not transform_metadata.get("position_transform_applied"):
+        return raw_scales
+    scale = float(transform_metadata.get("dataparser_scale") or 1.0)
+    if not np.isfinite(scale) or scale <= 1e-9:
+        return raw_scales
+    transform_metadata["scale_transform_applied"] = True
+    return (raw_scales.astype(np.float32) - np.float32(np.log(scale))).astype(np.float32)
+
+
+def _normalize_quaternions(quats: np.ndarray) -> np.ndarray:
+    norms = np.linalg.norm(quats, axis=1, keepdims=True)
+    norms = np.where(norms > 1e-9, norms, 1.0)
+    return (quats / norms).astype(np.float32)
+
+
+def _quaternions_to_rotation_matrices(quats: np.ndarray) -> np.ndarray:
+    normalized = _normalize_quaternions(quats.astype(np.float64))
+    w = normalized[:, 0]
+    x = normalized[:, 1]
+    y = normalized[:, 2]
+    z = normalized[:, 3]
+    matrices = np.empty((len(normalized), 3, 3), dtype=np.float64)
+    matrices[:, 0, 0] = 1.0 - 2.0 * (y * y + z * z)
+    matrices[:, 0, 1] = 2.0 * (x * y - z * w)
+    matrices[:, 0, 2] = 2.0 * (x * z + y * w)
+    matrices[:, 1, 0] = 2.0 * (x * y + z * w)
+    matrices[:, 1, 1] = 1.0 - 2.0 * (x * x + z * z)
+    matrices[:, 1, 2] = 2.0 * (y * z - x * w)
+    matrices[:, 2, 0] = 2.0 * (x * z - y * w)
+    matrices[:, 2, 1] = 2.0 * (y * z + x * w)
+    matrices[:, 2, 2] = 1.0 - 2.0 * (x * x + y * y)
+    return matrices
+
+
+def _rotation_matrices_to_quaternions(matrices: np.ndarray) -> np.ndarray:
+    quats = np.empty((matrices.shape[0], 4), dtype=np.float64)
+    trace = matrices[:, 0, 0] + matrices[:, 1, 1] + matrices[:, 2, 2]
+
+    positive = trace > 0.0
+    s = np.sqrt(np.maximum(trace[positive] + 1.0, 1e-12)) * 2.0
+    quats[positive, 0] = 0.25 * s
+    quats[positive, 1] = (matrices[positive, 2, 1] - matrices[positive, 1, 2]) / s
+    quats[positive, 2] = (matrices[positive, 0, 2] - matrices[positive, 2, 0]) / s
+    quats[positive, 3] = (matrices[positive, 1, 0] - matrices[positive, 0, 1]) / s
+
+    remaining = ~positive
+    case_x = remaining & (matrices[:, 0, 0] > matrices[:, 1, 1]) & (matrices[:, 0, 0] > matrices[:, 2, 2])
+    s = np.sqrt(np.maximum(1.0 + matrices[case_x, 0, 0] - matrices[case_x, 1, 1] - matrices[case_x, 2, 2], 1e-12)) * 2.0
+    quats[case_x, 0] = (matrices[case_x, 2, 1] - matrices[case_x, 1, 2]) / s
+    quats[case_x, 1] = 0.25 * s
+    quats[case_x, 2] = (matrices[case_x, 0, 1] + matrices[case_x, 1, 0]) / s
+    quats[case_x, 3] = (matrices[case_x, 0, 2] + matrices[case_x, 2, 0]) / s
+
+    case_y = remaining & ~case_x & (matrices[:, 1, 1] > matrices[:, 2, 2])
+    s = np.sqrt(np.maximum(1.0 + matrices[case_y, 1, 1] - matrices[case_y, 0, 0] - matrices[case_y, 2, 2], 1e-12)) * 2.0
+    quats[case_y, 0] = (matrices[case_y, 0, 2] - matrices[case_y, 2, 0]) / s
+    quats[case_y, 1] = (matrices[case_y, 0, 1] + matrices[case_y, 1, 0]) / s
+    quats[case_y, 2] = 0.25 * s
+    quats[case_y, 3] = (matrices[case_y, 1, 2] + matrices[case_y, 2, 1]) / s
+
+    case_z = remaining & ~case_x & ~case_y
+    s = np.sqrt(np.maximum(1.0 + matrices[case_z, 2, 2] - matrices[case_z, 0, 0] - matrices[case_z, 1, 1], 1e-12)) * 2.0
+    quats[case_z, 0] = (matrices[case_z, 1, 0] - matrices[case_z, 0, 1]) / s
+    quats[case_z, 1] = (matrices[case_z, 0, 2] + matrices[case_z, 2, 0]) / s
+    quats[case_z, 2] = (matrices[case_z, 1, 2] + matrices[case_z, 2, 1]) / s
+    quats[case_z, 3] = 0.25 * s
+    return _normalize_quaternions(quats)
+
+
+def quaternions_to_original_space(quats: np.ndarray, transform_metadata: Mapping[str, Any]) -> np.ndarray:
+    if not transform_metadata.get("position_transform_applied"):
+        return quats
+    transform_payload = transform_metadata.get("dataparser_transform")
+    if not transform_payload:
+        return quats
+    transform = np.asarray(transform_payload, dtype=np.float64)
+    if transform.shape != (3, 4):
+        return quats
+    try:
+        model_to_original_linear = np.linalg.inv(transform[:, :3])
+    except np.linalg.LinAlgError:
+        return quats
+    u, _singular_values, vh = np.linalg.svd(model_to_original_linear)
+    model_to_original_rotation = u @ vh
+    if np.linalg.det(model_to_original_rotation) < 0.0:
+        u[:, -1] *= -1.0
+        model_to_original_rotation = u @ vh
+    gaussian_rotations = _quaternions_to_rotation_matrices(quats)
+    transformed = np.einsum("ij,njk->nik", model_to_original_rotation, gaussian_rotations)
+    transform_metadata["rotation_transform_applied"] = True
+    transform_metadata["model_to_original_rotation"] = model_to_original_rotation.tolist()
+    return _rotation_matrices_to_quaternions(transformed)
+
+
+def build_foreground_ply(model, output_dir: Path, camera_idx: int, *, pipeline=None, coordinate_frame: str = "model") -> tuple[Path, dict]:
     model.set_camera_idx(camera_idx)
 
     positions = model.means.detach().cpu().numpy()
+    transform_metadata = {"coordinate_frame": "model", "applied": False}
+    if coordinate_frame == "original":
+        if pipeline is None:
+            transform_metadata = {
+                "coordinate_frame": "original",
+                "applied": False,
+                "dataparser_transform_source": "missing_pipeline",
+            }
+        else:
+            positions, transform_metadata = positions_to_original_space(positions, pipeline)
     count = positions.shape[0]
     tensors: OrderedDict[str, np.ndarray] = OrderedDict()
 
@@ -67,10 +242,14 @@ def build_foreground_ply(model, output_dir: Path, camera_idx: int) -> Path:
     tensors["opacity"] = model.opacities.detach().cpu().numpy()
 
     scales = model.scales.detach().cpu().numpy()
+    if coordinate_frame == "original":
+        scales = log_scales_to_original_space(scales, transform_metadata)
     for axis in range(3):
         tensors[f"scale_{axis}"] = scales[:, axis, None]
 
     quats = model.quats.detach().cpu().numpy()
+    if coordinate_frame == "original":
+        quats = quaternions_to_original_space(quats, transform_metadata)
     for axis in range(4):
         tensors[f"rot_{axis}"] = quats[:, axis, None]
 
@@ -85,7 +264,7 @@ def build_foreground_ply(model, output_dir: Path, camera_idx: int) -> Path:
 
     ply_path = output_dir / "splat.ply"
     write_ply(ply_path, count, tensors)
-    return ply_path
+    return ply_path, transform_metadata
 
 
 def build_equirect_directions(width: int, height: int, device: torch.device) -> torch.Tensor:
@@ -174,6 +353,12 @@ def main() -> None:
         default="auto_camera",
     )
     parser.add_argument("--skip-background", action="store_true")
+    parser.add_argument(
+        "--foreground-coordinate-frame",
+        choices=("model", "original"),
+        default="model",
+        help="Export foreground Gaussian positions in model space or inverse dataparser original space.",
+    )
     args = parser.parse_args()
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -184,7 +369,13 @@ def main() -> None:
     if not hasattr(model, "set_camera_idx") or not hasattr(model, "bg_model"):
         raise RuntimeError("Loaded model is not compatible with Splatfacto-W asset export")
 
-    build_foreground_ply(model, args.output_dir, args.camera_idx)
+    _, foreground_transform = build_foreground_ply(
+        model,
+        args.output_dir,
+        args.camera_idx,
+        pipeline=pipeline,
+        coordinate_frame=args.foreground_coordinate_frame,
+    )
     skybox_path = None
     if not args.skip_background:
         skybox_path = build_background_skybox(
@@ -203,6 +394,8 @@ def main() -> None:
         "camera_idx": args.camera_idx,
         "background_appearance_mode": args.background_appearance_mode,
         "background_skipped": bool(args.skip_background),
+        "foreground_coordinate_frame": args.foreground_coordinate_frame,
+        "foreground_transform": foreground_transform,
     }
     (args.output_dir / "export_manifest.json").write_text(json.dumps(summary, indent=2))
 
