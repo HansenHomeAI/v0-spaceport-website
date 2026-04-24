@@ -1,9 +1,9 @@
 reason: geometry-first md1 tiled 3DGS reset; continuing beyond offline R1 toward bounded proof gates
 current_rung: R2 bounded adjacent-pair retry on tile_02/tile_05 after eval-memory failure
 root_cause_classification: tile_training_bad
-live_compute_status: SageMaker training job md1-r2-pair-1776991746-tiled failed during tile_02 eval at step 2900 with CUDA OOM; bounded retry md1-r2-evalskip-1776995639-tiled is InProgress/Pending with eval metrics suppressed and no fidelity/downscale reduction; no full-scene training spend active
+live_compute_status: SageMaker training job md1-r2-pair-1776991746-tiled failed during tile_02 eval at step 2900 with CUDA OOM; bounded retry md1-r2-evalskip-1776995639-tiled is InProgress/Training with eval metrics suppressed and no fidelity/downscale reduction; no full-scene training spend active
 current_branch: agent-53821974-md1-geometry-consistency
-current_head_at_state_write: dd8c48626075acbb8530c39f5f6764e6759d62a2
+current_head_at_state_write: fd53c9ede04849c4d6249d6f85ccdf779204c985
 base_branch: agent-86580563-hierarchical-splat-merge-plan
 base_commit: ffef97e646046f204267ec30dd7dbf6f19027cad
 automation:
@@ -26,11 +26,12 @@ exact_artifacts:
   active_r2_stage_output: s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r2-evalskip-20260424015359/3dgs/T2_tiled_pipeline
   active_r2_image: 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:3c4c34a04d411ca671bad9865f31254f685e88e28c635c18c9866e53c1e2c7c0
   active_r2_submit_summary: logs/audit/md1-1k-full-r2/r2_pair_evalskip_submit_20260424015359.json
+  r2_retry_checkpoint_head: fd53c9ede04849c4d6249d6f85ccdf779204c985
   review_gate_image_source_head: 5db6fcd22db380d2441c5dafcbb70c8989df45fa
   review_gate_image_after_absolute_floor_patch: 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:3c4c34a04d411ca671bad9865f31254f685e88e28c635c18c9866e53c1e2c7c0
   review_existing_artifact_launcher_head: dd8c48626075acbb8530c39f5f6764e6759d62a2
   preview_url: https://agent-53821974-md1-geometry.v0-spaceport-website-preview2.pages.dev
-  preview_hash_url: https://8ba4fd81.v0-spaceport-website-preview2.pages.dev
+  preview_hash_url: https://cf90d7db.v0-spaceport-website-preview2.pages.dev
   local_audit_manifest: logs/audit/md1-1k-full-r2/audit_manifest.json
   local_review_comparison: logs/audit/md1-1k-full-r2/review_comparison.json
   frozen_review_cameras: logs/audit/md1-1k-full-r2/review_camera_manifest.json
@@ -78,6 +79,7 @@ review_gate_delta:
   failed_r2_eval_oom: tile_02 reached step 2900/12000 with 676114 gaussians, then OOMed in Nerfstudio eval image metrics/background SH path; artifact contains scaffold splat and tile_02 logs but no tile_02/tile_05/merged splat, so it is not promotable
   r2_retry_eval_suppression: md1-r2-evalskip-1776995639-tiled keeps full quality/no downscale and only suppresses expensive eval metrics until after training by setting TRAINING_STEPS_PER_EVAL_IMAGE=12001 and TRAINING_STEPS_PER_EVAL_ALL_IMAGES=12001
   r2_training_target: tile_02/tile_05 using full-quality bounded scope, scaffold enabled, merge_mode=support_weighted_overlap, no proof downscale
+  checkpoint_workflows_green: CDK 24868315972 and Pages 24868324744 green for fd53c9ed; preview hash https://cf90d7db.v0-spaceport-website-preview2.pages.dev
 next_unblocked_step: monitor md1-r2-evalskip-1776995639-tiled through tile_02 past the prior step-2900 eval-OOM point, then run frozen 4/4/4 comparative review against the saved R1a baseline manifest if a merged artifact lands
 owner_action_needed: none
-updated: 2026-04-24T01:56:24Z
+updated: 2026-04-24T02:03:00Z
