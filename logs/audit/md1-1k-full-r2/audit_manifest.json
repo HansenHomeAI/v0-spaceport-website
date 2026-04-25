@@ -503,7 +503,7 @@
     "version": "1.0.0"
   },
   "frozen_review_camera_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/review_camera_manifest.json",
-  "generated_at": "2026-04-25T18:37:21Z",
+  "generated_at": "2026-04-25T18:57:45Z",
   "inventory": {
     "complete": true,
     "merge_report": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/merged/merge_report.json",
@@ -1239,6 +1239,28 @@
       "gpu_average_percent_1832z": 34.0,
       "gpu_max_percent_1832z": 68.0,
       "failure_reason": null
+    },
+    "latest_signal": {
+      "checked_at": "2026-04-25T18:57:45Z",
+      "head": "034475bd55da11a5963098098464a5796ab3a971",
+      "cdk_run": 24937859088,
+      "pages_run": 24937941013,
+      "pages_hash_url": "https://6a768396.v0-spaceport-website-preview2.pages.dev",
+      "training_time_seconds": 1929,
+      "current_tile_id": "tile_00",
+      "failure_reason": null,
+      "gpu_average_percent_windows": [
+        68.8,
+        95.2,
+        82.8,
+        91.0
+      ],
+      "gpu_memory_average_percent_windows": [
+        29.751620000000003,
+        31.82214,
+        31.13252,
+        49.46676
+      ]
     }
   }
 }
