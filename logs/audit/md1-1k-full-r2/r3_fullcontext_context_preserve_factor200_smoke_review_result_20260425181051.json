@@ -1,0 +1,425 @@
+{
+  "generated_at": "2026-04-25T18:10:51Z",
+  "rung": "R3_fullcontext_factor200_promoted_R4_ready",
+  "candidate_label": "r3-fullcontext-context-factor200",
+  "candidate_model_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r3-fullcontext-context-preserve-factor200-20260425174142/model.tar.gz",
+  "output_root_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r3-fullcontext-context-factor200-smoke-review-20260425175908",
+  "review_job": {
+    "job_name": "md1-r1-r3-fullcontext-context-factor200-1777139953-quality",
+    "execution_mode": "training",
+    "model_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r3-fullcontext-context-preserve-factor200-20260425174142/model.tar.gz",
+    "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r3-fullcontext-context-factor200-smoke-review-20260425175908/outputs/r3-fullcontext-context-factor200",
+    "baseline_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r1-review-c00091ae-render-sanity/baselines/strict_core",
+    "payload": {
+      "TrainingJobName": "md1-r1-r3-fullcontext-context-factor200-1777139953-quality",
+      "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+      "AlgorithmSpecification": {
+        "TrainingImage": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent90742618md1geometryconsistency",
+        "TrainingInputMode": "File",
+        "ContainerEntrypoint": [
+          "python3",
+          "/opt/ml/code/run_tiled_quality_review.py"
+        ]
+      },
+      "InputDataConfig": [
+        {
+          "ChannelName": "model",
+          "DataSource": {
+            "S3DataSource": {
+              "S3DataType": "S3Prefix",
+              "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r3-fullcontext-context-preserve-factor200-20260425174142/model.tar.gz",
+              "S3DataDistributionType": "FullyReplicated"
+            }
+          },
+          "CompressionType": "None",
+          "RecordWrapperType": "None"
+        },
+        {
+          "ChannelName": "colmap",
+          "DataSource": {
+            "S3DataSource": {
+              "S3DataType": "S3Prefix",
+              "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p27eba1k-1776107310/colmap",
+              "S3DataDistributionType": "FullyReplicated"
+            }
+          },
+          "CompressionType": "None",
+          "RecordWrapperType": "None"
+        },
+        {
+          "ChannelName": "review-manifest",
+          "DataSource": {
+            "S3DataSource": {
+              "S3DataType": "S3Prefix",
+              "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r3-fullcontext-context-factor200-smoke-review-20260425175908/review-input",
+              "S3DataDistributionType": "FullyReplicated"
+            }
+          },
+          "CompressionType": "None",
+          "RecordWrapperType": "None"
+        },
+        {
+          "ChannelName": "baseline-review",
+          "DataSource": {
+            "S3DataSource": {
+              "S3DataType": "S3Prefix",
+              "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r1-review-c00091ae-render-sanity/baselines/strict_core",
+              "S3DataDistributionType": "FullyReplicated"
+            }
+          },
+          "CompressionType": "None",
+          "RecordWrapperType": "None"
+        }
+      ],
+      "OutputDataConfig": {
+        "S3OutputPath": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r3-fullcontext-context-factor200-smoke-review-20260425175908/outputs/r3-fullcontext-context-factor200"
+      },
+      "ResourceConfig": {
+        "InstanceType": "ml.g5.2xlarge",
+        "InstanceCount": 1,
+        "VolumeSizeInGB": 100
+      },
+      "StoppingCondition": {
+        "MaxRuntimeInSeconds": 7200
+      },
+      "Environment": {
+        "MODEL_INPUT_DIR": "/opt/ml/input/data/model",
+        "COLMAP_INPUT_DIR": "/opt/ml/input/data/colmap",
+        "OUTPUT_DIR": "/opt/ml/model",
+        "QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET": "4",
+        "QUALITY_REVIEW_CAMERA_SET": "smoke",
+        "QUALITY_REVIEW_RENDER_SCALE": "0.25",
+        "QUALITY_REVIEW_MAX_GAUSSIANS_PER_VIEW": "500000",
+        "QUALITY_REVIEW_CULL_MARGIN": "0.5",
+        "QUALITY_REVIEW_MIN_GAUSSIANS_ON_OOM": "75000",
+        "PYTHONUNBUFFERED": "1",
+        "QUALITY_REVIEW_TILE_IDS": "tile_00,tile_01,tile_02,tile_03,tile_04,tile_05,tile_06",
+        "FROZEN_REVIEW_CAMERA_MANIFEST": "/opt/ml/input/data/review-manifest/review_camera_manifest.json",
+        "BASELINE_REVIEW_MANIFEST": "/opt/ml/input/data/baseline-review/quality_review_manifest.json"
+      },
+      "Tags": [
+        {
+          "Key": "Project",
+          "Value": "Spaceport"
+        },
+        {
+          "Key": "Component",
+          "Value": "3DGS"
+        },
+        {
+          "Key": "Benchmark",
+          "Value": "true"
+        },
+        {
+          "Key": "Branch",
+          "Value": "agent-90742618-md1-geometry-consistency"
+        },
+        {
+          "Key": "Stage",
+          "Value": "quality-review"
+        }
+      ]
+    },
+    "submitted": true,
+    "status": {
+      "TrainingJobStatus": "Completed",
+      "TrainingStartTime": "2026-04-25T12:01:14.042000-06:00",
+      "TrainingEndTime": "2026-04-25T12:10:15.138000-06:00"
+    },
+    "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r3-fullcontext-context-factor200-smoke-review-20260425175908/outputs/r3-fullcontext-context-factor200/md1-r1-r3-fullcontext-context-factor200-1777139953-quality/output/model.tar.gz"
+  },
+  "promotion_decision": {
+    "status": "promoted",
+    "block_reasons": [],
+    "warnings": [],
+    "merge_mode": "support_weighted_overlap",
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "per_bucket": {
+      "near_detail": {
+        "baseline": {
+          "psnr": 10.204569909807525,
+          "ssim": 0.3250790983438492,
+          "lpips": 0.9124259352684021
+        },
+        "candidate": {
+          "psnr": 14.15382547757398,
+          "ssim": 0.3638785183429718,
+          "lpips": 0.8229762017726898
+        },
+        "delta": {
+          "psnr": 3.949255567766455,
+          "ssim": 0.03879941999912262,
+          "lpips": -0.08944973349571228
+        },
+        "block_reasons": []
+      },
+      "boundary": {
+        "baseline": {
+          "psnr": 13.134039611111529,
+          "ssim": 0.4168241024017334,
+          "lpips": 0.8232778012752533
+        },
+        "candidate": {
+          "psnr": 15.558632634274721,
+          "ssim": 0.42599189281463623,
+          "lpips": 0.7566989362239838
+        },
+        "delta": {
+          "psnr": 2.424593023163192,
+          "ssim": 0.009167790412902832,
+          "lpips": -0.06657886505126953
+        },
+        "block_reasons": []
+      },
+      "horizon": {
+        "baseline": {
+          "psnr": 16.21552459733899,
+          "ssim": 0.38312965631484985,
+          "lpips": 0.8720598220825195
+        },
+        "candidate": {
+          "psnr": 15.493846764674029,
+          "ssim": 0.37767672538757324,
+          "lpips": 0.8934118449687958
+        },
+        "delta": {
+          "psnr": -0.7216778326649624,
+          "ssim": -0.005452930927276611,
+          "lpips": 0.021352022886276245
+        },
+        "block_reasons": []
+      }
+    },
+    "thresholds": {
+      "near_detail": {
+        "psnr_min_delta": -1.0,
+        "ssim_min_delta": -0.015,
+        "lpips_max_delta": 0.035
+      },
+      "boundary": {
+        "psnr_min_delta": -1.0,
+        "ssim_min_delta": -0.015,
+        "lpips_max_delta": 0.035,
+        "required_improvement": {
+          "psnr": 0.5,
+          "ssim": 0.01,
+          "lpips": -0.025
+        }
+      },
+      "horizon": {
+        "psnr_min_delta": -0.75,
+        "ssim_min_delta": -0.012,
+        "lpips_max_delta": 0.03,
+        "sky_score_min_ratio": 0.9
+      }
+    }
+  },
+  "fallback_breakdown": {
+    "baseline": {
+      "merge_mode": "strict_core",
+      "fallback_tile_count": 2,
+      "retain_all_tile_count": 0,
+      "source_gaussians": 5103651,
+      "retained_gaussians": 4500379,
+      "fallback_reasons": [
+        {
+          "tile_id": "tile_05",
+          "reason": "primary_and_overlap_retained_zero",
+          "retention_strategy": "centroid_voronoi_fallback"
+        },
+        {
+          "tile_id": "tile_06",
+          "reason": "primary_and_overlap_retained_zero",
+          "retention_strategy": "centroid_voronoi_fallback"
+        }
+      ]
+    },
+    "candidate": {
+      "merge_mode": "support_weighted_overlap",
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "source_gaussians": 6497198,
+      "retained_gaussians": 5690786,
+      "fallback_reasons": []
+    }
+  },
+  "per_bucket": {
+    "near_detail": {
+      "baseline": {
+        "psnr": 10.204569909807525,
+        "ssim": 0.3250790983438492,
+        "lpips": 0.9124259352684021
+      },
+      "candidate": {
+        "psnr": 14.15382547757398,
+        "ssim": 0.3638785183429718,
+        "lpips": 0.8229762017726898
+      },
+      "delta": {
+        "psnr": 3.949255567766455,
+        "ssim": 0.03879941999912262,
+        "lpips": -0.08944973349571228
+      },
+      "block_reasons": []
+    },
+    "boundary": {
+      "baseline": {
+        "psnr": 13.134039611111529,
+        "ssim": 0.4168241024017334,
+        "lpips": 0.8232778012752533
+      },
+      "candidate": {
+        "psnr": 15.558632634274721,
+        "ssim": 0.42599189281463623,
+        "lpips": 0.7566989362239838
+      },
+      "delta": {
+        "psnr": 2.424593023163192,
+        "ssim": 0.009167790412902832,
+        "lpips": -0.06657886505126953
+      },
+      "block_reasons": []
+    },
+    "horizon": {
+      "baseline": {
+        "psnr": 16.21552459733899,
+        "ssim": 0.38312965631484985,
+        "lpips": 0.8720598220825195
+      },
+      "candidate": {
+        "psnr": 15.493846764674029,
+        "ssim": 0.37767672538757324,
+        "lpips": 0.8934118449687958
+      },
+      "delta": {
+        "psnr": -0.7216778326649624,
+        "ssim": -0.005452930927276611,
+        "lpips": 0.021352022886276245
+      },
+      "block_reasons": []
+    }
+  },
+  "side_by_side_render_paths": [
+    {
+      "bucket": "near_detail",
+      "image_name": "DJI_0258.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/near_detail/DJI_0258.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/near_detail/DJI_0258.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/near_detail/DJI_0258.png",
+      "boundary_composite": null,
+      "tile_renders": []
+    },
+    {
+      "bucket": "near_detail",
+      "image_name": "DJI_0261.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/near_detail/DJI_0261.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/near_detail/DJI_0261.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/near_detail/DJI_0261.png",
+      "boundary_composite": null,
+      "tile_renders": []
+    },
+    {
+      "bucket": "near_detail",
+      "image_name": "DJI_0262.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/near_detail/DJI_0262.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/near_detail/DJI_0262.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/near_detail/DJI_0262.png",
+      "boundary_composite": null,
+      "tile_renders": []
+    },
+    {
+      "bucket": "near_detail",
+      "image_name": "DJI_0263.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/near_detail/DJI_0263.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/near_detail/DJI_0263.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/near_detail/DJI_0263.png",
+      "boundary_composite": null,
+      "tile_renders": []
+    },
+    {
+      "bucket": "boundary",
+      "image_name": "DJI_0067.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/boundary/DJI_0067.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/boundary/DJI_0067.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/boundary/DJI_0067.png",
+      "boundary_composite": "/opt/ml/model/quality_review/boundary_composites/DJI_0067.png",
+      "tile_renders": [
+        "/opt/ml/model/quality_review/tiles/tile_02/boundary/DJI_0067.png",
+        "/opt/ml/model/quality_review/tiles/tile_05/boundary/DJI_0067.png"
+      ]
+    },
+    {
+      "bucket": "boundary",
+      "image_name": "DJI_0068.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/boundary/DJI_0068.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/boundary/DJI_0068.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/boundary/DJI_0068.png",
+      "boundary_composite": "/opt/ml/model/quality_review/boundary_composites/DJI_0068.png",
+      "tile_renders": [
+        "/opt/ml/model/quality_review/tiles/tile_02/boundary/DJI_0068.png",
+        "/opt/ml/model/quality_review/tiles/tile_05/boundary/DJI_0068.png"
+      ]
+    },
+    {
+      "bucket": "boundary",
+      "image_name": "DJI_0069.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/boundary/DJI_0069.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/boundary/DJI_0069.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/boundary/DJI_0069.png",
+      "boundary_composite": "/opt/ml/model/quality_review/boundary_composites/DJI_0069.png",
+      "tile_renders": [
+        "/opt/ml/model/quality_review/tiles/tile_02/boundary/DJI_0069.png",
+        "/opt/ml/model/quality_review/tiles/tile_05/boundary/DJI_0069.png"
+      ]
+    },
+    {
+      "bucket": "boundary",
+      "image_name": "DJI_0070.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/boundary/DJI_0070.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/boundary/DJI_0070.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/boundary/DJI_0070.png",
+      "boundary_composite": "/opt/ml/model/quality_review/boundary_composites/DJI_0070.png",
+      "tile_renders": [
+        "/opt/ml/model/quality_review/tiles/tile_02/boundary/DJI_0070.png",
+        "/opt/ml/model/quality_review/tiles/tile_05/boundary/DJI_0070.png"
+      ]
+    },
+    {
+      "bucket": "horizon",
+      "image_name": "DJI_0066.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/horizon/DJI_0066.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/horizon/DJI_0066.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/horizon/DJI_0066.png",
+      "boundary_composite": null,
+      "tile_renders": []
+    },
+    {
+      "bucket": "horizon",
+      "image_name": "DJI_0073.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/horizon/DJI_0073.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/horizon/DJI_0073.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/horizon/DJI_0073.png",
+      "boundary_composite": null,
+      "tile_renders": []
+    },
+    {
+      "bucket": "horizon",
+      "image_name": "DJI_0146.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/horizon/DJI_0146.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/horizon/DJI_0146.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/horizon/DJI_0146.png",
+      "boundary_composite": null,
+      "tile_renders": []
+    },
+    {
+      "bucket": "horizon",
+      "image_name": "DJI_0147.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/horizon/DJI_0147.JPG",
+      "candidate_render": "/opt/ml/model/quality_review/merged/horizon/DJI_0147.png",
+      "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/horizon/DJI_0147.png",
+      "boundary_composite": null,
+      "tile_renders": []
+    }
+  ]
+}

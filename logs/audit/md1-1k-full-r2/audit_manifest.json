@@ -503,7 +503,7 @@
     "version": "1.0.0"
   },
   "frozen_review_camera_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/review_camera_manifest.json",
-  "generated_at": "2026-04-24T04:29:13.078927+00:00",
+  "generated_at": "2026-04-25T18:10:51Z",
   "inventory": {
     "complete": true,
     "merge_report": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/merged/merge_report.json",
@@ -531,7 +531,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "R2 bounded pair retrain for tile_02/tile_05 with geometry-first overlap/scaffold preflight; do not continue merge-only arbitration because support_weighted_overlap recovered 0% over strict_core and raw_union is diagnostic-only.",
+  "next_unblocked_step": "R4 full 7-tile 1k md1 rerun using scaffold initialization, original-frame exports, support_weighted_overlap with context preservation, SH/BG_SH=1, cap300k scaffold inheritance, stop_split_at=3500, max_gauss_ratio=3.0, and frozen review gates before R5.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -868,8 +868,8 @@
       "retain_all_tile_count": 0
     }
   },
-  "root_cause_classification": "merge_bad",
-  "rung": "R1_candidate_comparison_complete",
+  "root_cause_classification": "far_field_bad",
+  "rung": "R3_fullcontext_factor200_promoted_R4_ready",
   "support_statistics": {
     "candidate_pair_count": 5,
     "eligible_candidate_pair_count": 4,
@@ -1163,5 +1163,37 @@
         75.0
       ]
     ]
+  },
+  "r3_promoted_candidate": {
+    "label": "r3-fullcontext-context-factor200",
+    "model_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r3-fullcontext-context-preserve-factor200-20260425174142/model.tar.gz",
+    "review_output_root_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r3-fullcontext-context-factor200-smoke-review-20260425175908",
+    "review_job_name": "md1-r1-r3-fullcontext-context-factor200-1777139953-quality",
+    "promotion_status": "promoted",
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "metrics": {
+      "near_detail": {
+        "delta": {
+          "psnr": 3.949255567766455,
+          "ssim": 0.03879941999912262,
+          "lpips": -0.08944973349571228
+        }
+      },
+      "boundary": {
+        "delta": {
+          "psnr": 2.424593023163192,
+          "ssim": 0.009167790412902832,
+          "lpips": -0.06657886505126953
+        }
+      },
+      "horizon": {
+        "delta": {
+          "psnr": -0.7216778326649624,
+          "ssim": -0.005452930927276611,
+          "lpips": 0.021352022886276245
+        }
+      }
+    }
   }
 }
