@@ -1,0 +1,118 @@
+{
+  "candidate_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r3-tile03-04-06-maxruntime43200-20260425094043/T2_tiled_pipeline/md1-r3-tile03-04-06-43200-1777110103-tiled/output/model.tar.gz",
+  "created_at": "2026-04-25T17:22:10.322279+00:00",
+  "job_name": "md1-r1-r3-tile03-04-06-43200-1777136610-quality",
+  "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r3-tile03-04-06-smoke-review-20260425170325/outputs/r3-tile03-04-06-43200",
+  "promotion_decision": {
+    "block_reasons": [
+      "boundary_lpips_regression",
+      "horizon_psnr_regression",
+      "horizon_ssim_regression",
+      "horizon_lpips_regression"
+    ],
+    "fallback_tile_count": 0,
+    "merge_mode": "support_weighted_overlap",
+    "per_bucket": {
+      "boundary": {
+        "baseline": {
+          "lpips": 0.8232778012752533,
+          "psnr": 13.134039611111529,
+          "ssim": 0.4168241024017334
+        },
+        "block_reasons": [
+          "boundary_lpips_regression"
+        ],
+        "candidate": {
+          "lpips": 0.8930327296257019,
+          "psnr": 14.161071780339064,
+          "ssim": 0.4156806468963623
+        },
+        "delta": {
+          "lpips": 0.06975492835044861,
+          "psnr": 1.0270321692275353,
+          "ssim": -0.0011434555053710938
+        }
+      },
+      "horizon": {
+        "baseline": {
+          "lpips": 0.8720598220825195,
+          "psnr": 16.21552459733899,
+          "ssim": 0.38312965631484985
+        },
+        "block_reasons": [
+          "horizon_psnr_regression",
+          "horizon_ssim_regression",
+          "horizon_lpips_regression"
+        ],
+        "candidate": {
+          "lpips": 0.9738127887248993,
+          "psnr": 11.606838769127517,
+          "ssim": 0.3363351821899414
+        },
+        "delta": {
+          "lpips": 0.10175296664237976,
+          "psnr": -4.608685828211474,
+          "ssim": -0.04679447412490845
+        }
+      },
+      "near_detail": {
+        "baseline": {
+          "lpips": 0.9124259352684021,
+          "psnr": 10.204569909807525,
+          "ssim": 0.3250790983438492
+        },
+        "block_reasons": [],
+        "candidate": {
+          "lpips": 0.8177033960819244,
+          "psnr": 12.816266510275966,
+          "ssim": 0.40686480700969696
+        },
+        "delta": {
+          "lpips": -0.09472253918647766,
+          "psnr": 2.6116966004684414,
+          "ssim": 0.08178570866584778
+        }
+      }
+    },
+    "retain_all_tile_count": 0,
+    "status": "blocked",
+    "thresholds": {
+      "boundary": {
+        "lpips_max_delta": 0.035,
+        "psnr_min_delta": -1.0,
+        "required_improvement": {
+          "lpips": -0.025,
+          "psnr": 0.5,
+          "ssim": 0.01
+        },
+        "ssim_min_delta": -0.015
+      },
+      "horizon": {
+        "lpips_max_delta": 0.03,
+        "psnr_min_delta": -0.75,
+        "sky_score_min_ratio": 0.9,
+        "ssim_min_delta": -0.012
+      },
+      "near_detail": {
+        "lpips_max_delta": 0.035,
+        "psnr_min_delta": -1.0,
+        "ssim_min_delta": -0.015
+      }
+    },
+    "warnings": []
+  },
+  "quality_review_manifest_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r3-tile03-04-06-43200/quality_review_manifest.json",
+  "render_sanity": {
+    "blank_view_count": 0,
+    "blank_views": [],
+    "checked_view_count": 12,
+    "status": "ok"
+  },
+  "review_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r3-tile03-04-06-smoke-review-20260425170325/outputs/r3-tile03-04-06-43200/md1-r1-r3-tile03-04-06-43200-1777136610-quality/output/model.tar.gz",
+  "review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r3-tile03-04-06-43200/review_comparison.json",
+  "status": {
+    "TrainingEndTime": "2026-04-25T11:13:08.672000-06:00",
+    "TrainingJobStatus": "Completed",
+    "TrainingStartTime": "2026-04-25T11:04:22.789000-06:00"
+  }
+}
