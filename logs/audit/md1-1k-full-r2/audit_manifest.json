@@ -503,7 +503,7 @@
     "version": "1.0.0"
   },
   "frozen_review_camera_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/review_camera_manifest.json",
-  "generated_at": "2026-04-25T18:25:02Z",
+  "generated_at": "2026-04-25T18:37:21Z",
   "inventory": {
     "complete": true,
     "merge_report": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/merged/merge_report.json",
@@ -1198,7 +1198,7 @@
   },
   "r4_live_job": {
     "job_name": "md1-r4-7tile-1k-1777141446-tiled",
-    "status": "InProgress/Pending",
+    "status": "InProgress/Training",
     "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-7tile-1k-full-20260425182321/T2_tiled_pipeline",
     "dryrun_summary": "logs/audit/md1-1k-full-r2/r4_7tile_1k_dryrun_20260425182321.json",
     "submit_summary": "logs/audit/md1-1k-full-r2/r4_7tile_1k_submit_20260425182321.json",
@@ -1222,6 +1222,23 @@
       "stop_split_at": 3500,
       "max_gauss_ratio": 3.0,
       "suppress_training_eval": true
+    },
+    "startup_signal": {
+      "checked_at": "2026-04-25T18:37:21Z",
+      "cdk_run": 24937629756,
+      "pages_run": 24937714182,
+      "pages_hash_url": "https://e2bf2f86.v0-spaceport-website-preview2.pages.dev",
+      "tile_id": "tile_00",
+      "selected_image_count": 186,
+      "view_bucket_counts": {
+        "near_detail": 26,
+        "boundary": 0,
+        "horizon": 176
+      },
+      "inherited_gaussian_count": 300000,
+      "gpu_average_percent_1832z": 34.0,
+      "gpu_max_percent_1832z": 68.0,
+      "failure_reason": null
     }
   }
 }
