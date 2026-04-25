@@ -1,0 +1,81 @@
+{
+  "merge_mode": "support_weighted_overlap",
+  "merged_ply": "/opt/ml/model/merged/merged_splat.ply",
+  "tile_count": 3,
+  "source_gaussians": 695191,
+  "retained_gaussians": 581730,
+  "dropped_gaussians": 113461,
+  "fallback_tile_count": 0,
+  "retain_all_tile_count": 0,
+  "fallback_reasons": [],
+  "tiles": [
+    {
+      "tile_id": "tile_03",
+      "source_ply": "/opt/ml/model/tiles/tile_03/splat.ply",
+      "source_gaussians": 241267,
+      "retained_gaussians": 214906,
+      "dropped_gaussians": 26361,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 214906,
+        "overlap_candidate_count": 0,
+        "context_candidate_count": 0,
+        "retained_overlap_count": 0,
+        "retained_context_count": 0,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": false
+      }
+    },
+    {
+      "tile_id": "tile_04",
+      "source_ply": "/opt/ml/model/tiles/tile_04/splat.ply",
+      "source_gaussians": 235384,
+      "retained_gaussians": 210120,
+      "dropped_gaussians": 25264,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 207088,
+        "overlap_candidate_count": 5582,
+        "context_candidate_count": 0,
+        "retained_overlap_count": 3032,
+        "retained_context_count": 0,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": false
+      }
+    },
+    {
+      "tile_id": "tile_06",
+      "source_ply": "/opt/ml/model/tiles/tile_06/splat.ply",
+      "source_gaussians": 218540,
+      "retained_gaussians": 156704,
+      "dropped_gaussians": 61836,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 156704,
+        "overlap_candidate_count": 0,
+        "context_candidate_count": 0,
+        "retained_overlap_count": 0,
+        "retained_context_count": 0,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": false
+      }
+    }
+  ],
+  "background_asset": {
+    "asset": "background_skybox.webp",
+    "source_tile_id": "tile_06",
+    "source_asset": "/opt/ml/model/tiles/tile_06/background_skybox.webp",
+    "selection_score": 0.6283583895586156,
+    "retained_gaussians": 156704
+  },
+  "resume_fingerprint": "4839f67af881305979e24ee3e02a6c43eed9c062931a47a8ee44328a03e4a4a4"
+}

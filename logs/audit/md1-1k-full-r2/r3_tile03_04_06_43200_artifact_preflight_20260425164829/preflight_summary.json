@@ -1,0 +1,512 @@
+{
+  "artifact_complete": true,
+  "artifact_head_object": {
+    "ContentLength": 895015895,
+    "ETag": "\"f392f763c1c129055687267d999c19c9-107\"",
+    "LastModified": "2026-04-25T16:38:42+00:00"
+  },
+  "artifact_inventory_filtered_path": "artifact_inventory_filtered.txt",
+  "artifact_required_paths": {
+    "missing": [],
+    "present": [
+      "merged/background_manifest.json",
+      "merged/background_skybox.webp",
+      "merged/merge_report.json",
+      "merged/merged_splat.ply",
+      "tiled_pipeline/inputs/tile_03/3dgs_tile_manifest.json",
+      "tiled_pipeline/inputs/tile_03/3dgs_view_buckets.json",
+      "tiled_pipeline/inputs/tile_03/scaffold_init_metadata.json",
+      "tiled_pipeline/inputs/tile_04/3dgs_tile_manifest.json",
+      "tiled_pipeline/inputs/tile_04/3dgs_view_buckets.json",
+      "tiled_pipeline/inputs/tile_04/scaffold_init_metadata.json",
+      "tiled_pipeline/inputs/tile_06/3dgs_tile_manifest.json",
+      "tiled_pipeline/inputs/tile_06/3dgs_view_buckets.json",
+      "tiled_pipeline/inputs/tile_06/scaffold_init_metadata.json",
+      "tiled_pipeline_summary.json",
+      "tiles/tile_03/export_manifest.json",
+      "tiles/tile_03/floater_pruning_summary.json",
+      "tiles/tile_03/splat.ply",
+      "tiles/tile_03/stage_summary.json",
+      "tiles/tile_03/training_metadata.json",
+      "tiles/tile_03/training_selection.json",
+      "tiles/tile_04/export_manifest.json",
+      "tiles/tile_04/floater_pruning_summary.json",
+      "tiles/tile_04/splat.ply",
+      "tiles/tile_04/stage_summary.json",
+      "tiles/tile_04/training_metadata.json",
+      "tiles/tile_04/training_selection.json",
+      "tiles/tile_06/export_manifest.json",
+      "tiles/tile_06/floater_pruning_summary.json",
+      "tiles/tile_06/splat.ply",
+      "tiles/tile_06/stage_summary.json",
+      "tiles/tile_06/training_metadata.json",
+      "tiles/tile_06/training_selection.json",
+      "training_metadata.json"
+    ]
+  },
+  "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r3-tile03-04-06-maxruntime43200-20260425094043/T2_tiled_pipeline/md1-r3-tile03-04-06-43200-1777110103-tiled/output/model.tar.gz",
+  "block_reasons": [],
+  "candidate_label": "r3-tile03-04-06-43200",
+  "checked_at": "2026-04-25T16:52:17.297255+00:00",
+  "decision": "preflight_passed_run_frozen_smoke_review",
+  "job_name": "md1-r3-tile03-04-06-43200-1777110103-tiled",
+  "job_status": "Completed",
+  "merge": {
+    "background_asset": {
+      "asset": "background_skybox.webp",
+      "retained_gaussians": 156704,
+      "selection_score": 0.6283583895586156,
+      "source_asset": "/opt/ml/model/tiles/tile_06/background_skybox.webp",
+      "source_tile_id": "tile_06"
+    },
+    "dropped_gaussians": 113461,
+    "fallback_reasons": [],
+    "fallback_tile_count": 0,
+    "merge_mode": "support_weighted_overlap",
+    "retain_all_tile_count": 0,
+    "retained_gaussians": 581730,
+    "source_gaussians": 695191,
+    "tile_count": 3
+  },
+  "next_unblocked_step": "run R3 frozen-camera smoke review against the R1 strict_core baseline before any R4 spend",
+  "pipeline": {
+    "include_merge": true,
+    "include_scaffold": true,
+    "mode": "tiled_pipeline",
+    "selected_tile_ids": [
+      "tile_03",
+      "tile_04",
+      "tile_06"
+    ],
+    "tile_manifest_resolution": {
+      "chunk_planner_available": true,
+      "native_tile_manifest_available": false,
+      "native_view_buckets_available": false,
+      "ownership_bounds_available": true,
+      "scaffold_count": 240,
+      "source_mode": "chunk_planner_synthesized_v1",
+      "tile_count": 7
+    }
+  },
+  "root_training_metadata": {
+    "downscale_factor": null,
+    "enable_bg_model": null,
+    "max_iterations": null,
+    "model_variant": null,
+    "sh_degree": null,
+    "training_completed": true,
+    "training_mode": "tiled_pipeline"
+  },
+  "rung": "R3",
+  "tiles": {
+    "tile_03": {
+      "artifact_required_paths_present": {
+        "tiled_pipeline/inputs/tile_03/3dgs_tile_manifest.json": true,
+        "tiled_pipeline/inputs/tile_03/3dgs_view_buckets.json": true,
+        "tiles/tile_03/splat.ply": true
+      },
+      "downscale_factor": 1,
+      "enable_bg_model": true,
+      "evaluated_gaussians": 241300,
+      "file_size_mb": 23.929977416992188,
+      "foreground_coordinate_frame": "planner",
+      "inherited_attributes": [
+        "positions",
+        "rgb_from_gaussian_dc"
+      ],
+      "inherited_gaussian_count": 300000,
+      "manifest_selected_image_count": 188,
+      "max_iterations": 12000,
+      "merge_dropped_gaussians": 26361,
+      "merge_fallback_reason": null,
+      "merge_fallback_used": false,
+      "merge_retained_gaussians": 214906,
+      "merge_support_weighted_overlap": {
+        "context_candidate_count": 0,
+        "context_preserve_enabled": false,
+        "core_candidate_count": 214906,
+        "overlap_candidate_count": 0,
+        "retained_context_count": 0,
+        "retained_overlap_count": 0,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty"
+      },
+      "model_variant": "splatfacto-w-light",
+      "neighbor_tile_ids": [
+        "tile_04"
+      ],
+      "overlap_stats_by_neighbor": {
+        "tile_04": {
+          "border_boundary_support_count": 25,
+          "boundary_support_count": 25,
+          "boundary_support_images": [
+            "DJI_02705.JPG",
+            "DJI_02706.JPG",
+            "DJI_02707.JPG",
+            "DJI_02752.JPG",
+            "DJI_02753.JPG",
+            "DJI_02754.JPG",
+            "DJI_02757.JPG",
+            "DJI_02758.JPG",
+            "DJI_02759.JPG",
+            "DJI_02760.JPG",
+            "DJI_02802.JPG",
+            "DJI_02803.JPG",
+            "DJI_02804.JPG",
+            "DJI_02805.JPG",
+            "DJI_02806.JPG",
+            "DJI_02807.JPG",
+            "DJI_02808.JPG",
+            "DJI_02855.JPG",
+            "DJI_02856.JPG",
+            "DJI_02857.JPG",
+            "DJI_02858.JPG",
+            "DJI_02904.JPG",
+            "DJI_02905.JPG",
+            "DJI_02906.JPG",
+            "DJI_02907.JPG"
+          ],
+          "boundary_support_minimum": 4,
+          "boundary_support_quality": "border_role_overlap",
+          "boundary_support_source": "border_camera_intersection",
+          "explicit_boundary_support_count": 0,
+          "poor_boundary_support": false,
+          "shared_assigned_image_count": 41,
+          "uses_shared_assigned_fallback": false
+        }
+      },
+      "ownership_bounds_available": true,
+      "ownership_bounds_strategy": {
+        "core": "transformed_camera_centers",
+        "overlap": "transformed_camera_centers"
+      },
+      "planner_transform_applied": true,
+      "reinitialized_attributes": [
+        "scale",
+        "opacity",
+        "rotation",
+        "sh_rest",
+        "appearance_embeddings"
+      ],
+      "remaining_gaussians": 241267,
+      "removed_gaussians": 33,
+      "review_image_counts_by_bucket": {
+        "boundary_camera_ids": 0,
+        "horizon_camera_ids": 2,
+        "near_detail_camera_ids": 4
+      },
+      "scaffold_fallback_used": false,
+      "scaffold_filter_bounds": {
+        "max_x": 30.1674,
+        "max_y": 6.418900000000001,
+        "max_z": 13.5108,
+        "min_x": -7.7814,
+        "min_y": -34.5719,
+        "min_z": -20.2788
+      },
+      "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+      "scaffold_source_artifact": "/opt/ml/model/tiled_pipeline/external_scaffold/scaffold/splat.ply",
+      "selected_camera_role_counts": {
+        "base": 176,
+        "border": 0,
+        "context": 12
+      },
+      "selected_image_count": 186,
+      "sh_degree": 1,
+      "sparse_support_coverage": {
+        "core_bounds_valid": true,
+        "overlap_bounds_valid": true,
+        "ownership_bounds_available": true
+      },
+      "stage_elapsed_seconds": 7468.721,
+      "training_completed": true,
+      "training_mode": "leaf_tile",
+      "view_bucket_counts": {
+        "boundary": 0,
+        "horizon": 2,
+        "near_detail": 41
+      },
+      "view_bucket_inventory_counts": {
+        "boundary_camera_ids": 352,
+        "horizon_camera_ids": 352,
+        "near_detail_camera_ids": 352
+      }
+    },
+    "tile_04": {
+      "artifact_required_paths_present": {
+        "tiled_pipeline/inputs/tile_04/3dgs_tile_manifest.json": true,
+        "tiled_pipeline/inputs/tile_04/3dgs_view_buckets.json": true,
+        "tiles/tile_04/splat.ply": true
+      },
+      "downscale_factor": 1,
+      "enable_bg_model": true,
+      "evaluated_gaussians": 235441,
+      "file_size_mb": 23.34648895263672,
+      "foreground_coordinate_frame": "planner",
+      "inherited_attributes": [
+        "positions",
+        "rgb_from_gaussian_dc"
+      ],
+      "inherited_gaussian_count": 300000,
+      "manifest_selected_image_count": 188,
+      "max_iterations": 12000,
+      "merge_dropped_gaussians": 25264,
+      "merge_fallback_reason": null,
+      "merge_fallback_used": false,
+      "merge_retained_gaussians": 210120,
+      "merge_support_weighted_overlap": {
+        "context_candidate_count": 0,
+        "context_preserve_enabled": false,
+        "core_candidate_count": 207088,
+        "overlap_candidate_count": 5582,
+        "retained_context_count": 0,
+        "retained_overlap_count": 3032,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty"
+      },
+      "model_variant": "splatfacto-w-light",
+      "neighbor_tile_ids": [
+        "tile_06"
+      ],
+      "overlap_stats_by_neighbor": {
+        "tile_06": {
+          "border_boundary_support_count": 31,
+          "boundary_support_count": 31,
+          "boundary_support_images": [
+            "DJI_02087.JPG",
+            "DJI_02088.JPG",
+            "DJI_02102.JPG",
+            "DJI_02182.JPG",
+            "DJI_02183.JPG",
+            "DJI_02184.JPG",
+            "DJI_02185.JPG",
+            "DJI_02186.JPG",
+            "DJI_02275.JPG",
+            "DJI_02276.JPG",
+            "DJI_02277.JPG",
+            "DJI_02278.JPG",
+            "DJI_02279.JPG",
+            "DJI_02280.JPG",
+            "DJI_02281.JPG",
+            "DJI_02282.JPG",
+            "DJI_02283.JPG",
+            "DJI_02284.JPG",
+            "DJI_02285.JPG",
+            "DJI_02286.JPG",
+            "DJI_02287.JPG",
+            "DJI_02288.JPG",
+            "DJI_02289.JPG",
+            "DJI_02290.JPG",
+            "DJI_02291.JPG",
+            "DJI_02375.JPG",
+            "DJI_02376.JPG",
+            "DJI_02377.JPG",
+            "DJI_02379.JPG",
+            "DJI_02391.JPG",
+            "DJI_02676.JPG"
+          ],
+          "boundary_support_minimum": 4,
+          "boundary_support_quality": "border_role_overlap",
+          "boundary_support_source": "border_camera_intersection",
+          "explicit_boundary_support_count": 0,
+          "poor_boundary_support": false,
+          "shared_assigned_image_count": 64,
+          "uses_shared_assigned_fallback": false
+        }
+      },
+      "ownership_bounds_available": true,
+      "ownership_bounds_strategy": {
+        "core": "transformed_camera_centers",
+        "overlap": "transformed_camera_centers"
+      },
+      "planner_transform_applied": true,
+      "reinitialized_attributes": [
+        "scale",
+        "opacity",
+        "rotation",
+        "sh_rest",
+        "appearance_embeddings"
+      ],
+      "remaining_gaussians": 235384,
+      "removed_gaussians": 57,
+      "review_image_counts_by_bucket": {
+        "boundary_camera_ids": 4,
+        "horizon_camera_ids": 4,
+        "near_detail_camera_ids": 4
+      },
+      "scaffold_fallback_used": false,
+      "scaffold_filter_bounds": {
+        "max_x": 30.5894,
+        "max_y": 18.4164,
+        "max_z": 14.477100000000002,
+        "min_x": -31.4194,
+        "min_y": -41.684400000000004,
+        "min_z": -21.956100000000003
+      },
+      "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+      "scaffold_source_artifact": "/opt/ml/model/tiled_pipeline/external_scaffold/scaffold/splat.ply",
+      "selected_camera_role_counts": {
+        "base": 120,
+        "border": 56,
+        "context": 12
+      },
+      "selected_image_count": 186,
+      "sh_degree": 1,
+      "sparse_support_coverage": {
+        "core_bounds_valid": true,
+        "overlap_bounds_valid": true,
+        "ownership_bounds_available": true
+      },
+      "stage_elapsed_seconds": 8160.975,
+      "training_completed": true,
+      "training_mode": "leaf_tile",
+      "view_bucket_counts": {
+        "boundary": 14,
+        "horizon": 14,
+        "near_detail": 176
+      },
+      "view_bucket_inventory_counts": {
+        "boundary_camera_ids": 352,
+        "horizon_camera_ids": 352,
+        "near_detail_camera_ids": 352
+      }
+    },
+    "tile_06": {
+      "artifact_required_paths_present": {
+        "tiled_pipeline/inputs/tile_06/3dgs_tile_manifest.json": true,
+        "tiled_pipeline/inputs/tile_06/3dgs_view_buckets.json": true,
+        "tiles/tile_06/splat.ply": true
+      },
+      "downscale_factor": 1,
+      "enable_bg_model": true,
+      "evaluated_gaussians": 218556,
+      "file_size_mb": 21.675865173339844,
+      "foreground_coordinate_frame": "planner",
+      "inherited_attributes": [
+        "positions",
+        "rgb_from_gaussian_dc"
+      ],
+      "inherited_gaussian_count": 300000,
+      "manifest_selected_image_count": 188,
+      "max_iterations": 12000,
+      "merge_dropped_gaussians": 61836,
+      "merge_fallback_reason": null,
+      "merge_fallback_used": false,
+      "merge_retained_gaussians": 156704,
+      "merge_support_weighted_overlap": {
+        "context_candidate_count": 0,
+        "context_preserve_enabled": false,
+        "core_candidate_count": 156704,
+        "overlap_candidate_count": 0,
+        "retained_context_count": 0,
+        "retained_overlap_count": 0,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty"
+      },
+      "model_variant": "splatfacto-w-light",
+      "neighbor_tile_ids": [
+        "tile_04"
+      ],
+      "overlap_stats_by_neighbor": {
+        "tile_04": {
+          "border_boundary_support_count": 31,
+          "boundary_support_count": 31,
+          "boundary_support_images": [
+            "DJI_02087.JPG",
+            "DJI_02088.JPG",
+            "DJI_02102.JPG",
+            "DJI_02182.JPG",
+            "DJI_02183.JPG",
+            "DJI_02184.JPG",
+            "DJI_02185.JPG",
+            "DJI_02186.JPG",
+            "DJI_02275.JPG",
+            "DJI_02276.JPG",
+            "DJI_02277.JPG",
+            "DJI_02278.JPG",
+            "DJI_02279.JPG",
+            "DJI_02280.JPG",
+            "DJI_02281.JPG",
+            "DJI_02282.JPG",
+            "DJI_02283.JPG",
+            "DJI_02284.JPG",
+            "DJI_02285.JPG",
+            "DJI_02286.JPG",
+            "DJI_02287.JPG",
+            "DJI_02288.JPG",
+            "DJI_02289.JPG",
+            "DJI_02290.JPG",
+            "DJI_02291.JPG",
+            "DJI_02375.JPG",
+            "DJI_02376.JPG",
+            "DJI_02377.JPG",
+            "DJI_02379.JPG",
+            "DJI_02391.JPG",
+            "DJI_02676.JPG"
+          ],
+          "boundary_support_minimum": 4,
+          "boundary_support_quality": "border_role_overlap",
+          "boundary_support_source": "border_camera_intersection",
+          "explicit_boundary_support_count": 0,
+          "poor_boundary_support": false,
+          "shared_assigned_image_count": 64,
+          "uses_shared_assigned_fallback": false
+        }
+      },
+      "ownership_bounds_available": true,
+      "ownership_bounds_strategy": {
+        "core": "transformed_camera_centers",
+        "overlap": "transformed_camera_centers"
+      },
+      "planner_transform_applied": true,
+      "reinitialized_attributes": [
+        "scale",
+        "opacity",
+        "rotation",
+        "sh_rest",
+        "appearance_embeddings"
+      ],
+      "remaining_gaussians": 218540,
+      "removed_gaussians": 16,
+      "review_image_counts_by_bucket": {
+        "boundary_camera_ids": 4,
+        "horizon_camera_ids": 2,
+        "near_detail_camera_ids": 4
+      },
+      "scaffold_fallback_used": false,
+      "scaffold_filter_bounds": {
+        "max_x": 25.5241,
+        "max_y": 2.6487999999999996,
+        "max_z": 11.8838,
+        "min_x": -21.9971,
+        "min_y": -41.4608,
+        "min_z": -21.7018
+      },
+      "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+      "scaffold_source_artifact": "/opt/ml/model/tiled_pipeline/external_scaffold/scaffold/splat.ply",
+      "selected_camera_role_counts": {
+        "base": 176,
+        "border": 0,
+        "context": 12
+      },
+      "selected_image_count": 186,
+      "sh_degree": 1,
+      "sparse_support_coverage": {
+        "core_bounds_valid": true,
+        "overlap_bounds_valid": true,
+        "ownership_bounds_available": true
+      },
+      "stage_elapsed_seconds": 8805.187,
+      "training_completed": true,
+      "training_mode": "leaf_tile",
+      "view_bucket_counts": {
+        "boundary": 16,
+        "horizon": 2,
+        "near_detail": 52
+      },
+      "view_bucket_inventory_counts": {
+        "boundary_camera_ids": 352,
+        "horizon_camera_ids": 352,
+        "near_detail_camera_ids": 352
+      }
+    }
+  },
+  "training_time_seconds": 24943
+}
