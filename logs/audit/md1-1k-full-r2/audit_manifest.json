@@ -1241,23 +1241,24 @@
       "failure_reason": null
     },
     "latest_signal": {
-      "checked_at": "2026-04-25T19:54:20Z",
-      "head": "822357559675ac99b95365f2e555904a9141dd19",
-      "cdk_run": 24939109642,
-      "pages_run": 24939189843,
-      "pages_hash_url": "https://0707ebfc.v0-spaceport-website-preview2.pages.dev",
-      "training_time_seconds": 5280,
+      "checked_at": "2026-04-25T20:26:07Z",
+      "head": "1f2d0ecc8b4ae8724c98320c6ddb6abcaab1ebfa",
+      "cdk_run": 24939342650,
+      "pages_run": 24939423377,
+      "pages_hash_url": "https://20973635.v0-spaceport-website-preview2.pages.dev",
+      "training_time_seconds": 7242,
       "current_tile_id": "tile_00",
       "failure_reason": null,
       "s3_output_objects": 0,
       "gpu_average_percent_windows": [
-        80.8,
-        82.6,
-        75.8,
-        83.6,
-        81.8,
-        95.8
+        100.0,
+        100.0,
+        83.4,
+        97.6,
+        88.8,
+        98.2,
+        99.0
       ]
     }
-}
+  }
 }
