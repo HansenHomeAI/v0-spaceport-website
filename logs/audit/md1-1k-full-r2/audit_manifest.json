@@ -1241,24 +1241,44 @@
       "failure_reason": null
     },
     "latest_signal": {
-      "checked_at": "2026-04-25T20:26:07Z",
-      "head": "1f2d0ecc8b4ae8724c98320c6ddb6abcaab1ebfa",
-      "cdk_run": 24939342650,
-      "pages_run": 24939423377,
-      "pages_hash_url": "https://20973635.v0-spaceport-website-preview2.pages.dev",
-      "training_time_seconds": 7242,
-      "current_tile_id": "tile_00",
+      "checked_at": "2026-04-25T20:48:45Z",
+      "head": "3c39a6241c84bf5fcc222e1fb1fc972e2147666f",
+      "cdk_run": 24939941539,
+      "pages_run": 24940028390,
+      "pages_hash_url": "https://2a5fee18.v0-spaceport-website-preview2.pages.dev",
+      "training_time_seconds": 7872,
+      "current_tile_id": "tile_01",
       "failure_reason": null,
       "s3_output_objects": 0,
       "gpu_average_percent_windows": [
+        78.2,
         100.0,
-        100.0,
-        83.4,
-        97.6,
-        88.8,
-        98.2,
-        99.0
-      ]
+        31.0,
+        58.2
+      ],
+      "tile_00_completion": {
+        "completed_at": "2026-04-25T20:37:53Z",
+        "exported_ply_size_mb": 35.5,
+        "remaining_gaussians": 357811,
+        "planner_transform_applied": true,
+        "inherited_gaussian_count": 300000,
+        "selected_image_count": 186,
+        "view_bucket_counts": {
+          "near_detail": 26,
+          "boundary": 0,
+          "horizon": 176
+        }
+      },
+      "tile_01_start": {
+        "started_at": "2026-04-25T20:38:54Z",
+        "inherited_gaussian_count": 300000,
+        "selected_image_count": 188,
+        "view_bucket_counts": {
+          "near_detail": 0,
+          "boundary": 176,
+          "horizon": 188
+        }
+      }
     }
   }
 }
