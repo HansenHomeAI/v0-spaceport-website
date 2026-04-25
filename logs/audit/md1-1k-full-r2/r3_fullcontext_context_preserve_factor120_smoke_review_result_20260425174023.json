@@ -1,0 +1,113 @@
+{
+  "candidate_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r3-fullcontext-context-preserve-factor120-20260425171950/model.tar.gz",
+  "created_at": "2026-04-25T17:41:12.483359+00:00",
+  "job_name": "md1-r1-r3-fullcontext-context-factor120-1777138157-quality",
+  "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r3-fullcontext-context-factor120-smoke-review-20260425172913/outputs/r3-fullcontext-context-factor120",
+  "promotion_decision": {
+    "block_reasons": [
+      "horizon_psnr_regression",
+      "horizon_lpips_regression"
+    ],
+    "fallback_tile_count": 0,
+    "merge_mode": "support_weighted_overlap",
+    "per_bucket": {
+      "boundary": {
+        "baseline": {
+          "lpips": 0.8232778012752533,
+          "psnr": 13.134039611111529,
+          "ssim": 0.4168241024017334
+        },
+        "block_reasons": [],
+        "candidate": {
+          "lpips": 0.754738837480545,
+          "psnr": 15.406272582613335,
+          "ssim": 0.4256472587585449
+        },
+        "delta": {
+          "lpips": -0.06853896379470825,
+          "psnr": 2.272232971501806,
+          "ssim": 0.008823156356811523
+        }
+      },
+      "horizon": {
+        "baseline": {
+          "lpips": 0.8720598220825195,
+          "psnr": 16.21552459733899,
+          "ssim": 0.38312965631484985
+        },
+        "block_reasons": [
+          "horizon_psnr_regression",
+          "horizon_lpips_regression"
+        ],
+        "candidate": {
+          "lpips": 0.9180364012718201,
+          "psnr": 14.619281771579997,
+          "ssim": 0.3736283928155899
+        },
+        "delta": {
+          "lpips": 0.04597657918930054,
+          "psnr": -1.5962428257589938,
+          "ssim": -0.009501263499259949
+        }
+      },
+      "near_detail": {
+        "baseline": {
+          "lpips": 0.9124259352684021,
+          "psnr": 10.204569909807525,
+          "ssim": 0.3250790983438492
+        },
+        "block_reasons": [],
+        "candidate": {
+          "lpips": 0.8268829584121704,
+          "psnr": 13.920954969803773,
+          "ssim": 0.36929161846637726
+        },
+        "delta": {
+          "lpips": -0.08554297685623169,
+          "psnr": 3.7163850599962487,
+          "ssim": 0.044212520122528076
+        }
+      }
+    },
+    "retain_all_tile_count": 0,
+    "status": "blocked",
+    "thresholds": {
+      "boundary": {
+        "lpips_max_delta": 0.035,
+        "psnr_min_delta": -1.0,
+        "required_improvement": {
+          "lpips": -0.025,
+          "psnr": 0.5,
+          "ssim": 0.01
+        },
+        "ssim_min_delta": -0.015
+      },
+      "horizon": {
+        "lpips_max_delta": 0.03,
+        "psnr_min_delta": -0.75,
+        "sky_score_min_ratio": 0.9,
+        "ssim_min_delta": -0.012
+      },
+      "near_detail": {
+        "lpips_max_delta": 0.035,
+        "psnr_min_delta": -1.0,
+        "ssim_min_delta": -0.015
+      }
+    },
+    "warnings": []
+  },
+  "quality_review_manifest_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r3-fullcontext-context-factor120/quality_review_manifest.json",
+  "render_sanity": {
+    "blank_view_count": 0,
+    "blank_views": [],
+    "checked_view_count": 12,
+    "status": "ok"
+  },
+  "review_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r3-fullcontext-context-factor120-smoke-review-20260425172913/outputs/r3-fullcontext-context-factor120/md1-r1-r3-fullcontext-context-factor120-1777138157-quality/output/model.tar.gz",
+  "review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r3-fullcontext-context-factor120/review_comparison.json",
+  "status": {
+    "TrainingEndTime": "2026-04-25T11:40:23.465000-06:00",
+    "TrainingJobStatus": "Completed",
+    "TrainingStartTime": "2026-04-25T11:31:11.707000-06:00"
+  }
+}
