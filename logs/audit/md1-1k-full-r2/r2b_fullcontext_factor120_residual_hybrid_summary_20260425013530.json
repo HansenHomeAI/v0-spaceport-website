@@ -1,0 +1,117 @@
+{
+  "created_at": "2026-04-25T01:38:46Z",
+  "label": "r2b_fullcontext_opfac120_residual_append",
+  "purpose": "Combine R2 factor120 tile_02/tile_05 residual hybrid with R2b tile_04/tile_06 residual append to test horizon recovery without new training spend.",
+  "historical_source_root": "/private/tmp/md1-r2-factor120-202604250135",
+  "replacement_source_root": "/private/tmp/md1-r2b-root-202604250135",
+  "replacement_tiles": [
+    "tile_04",
+    "tile_06"
+  ],
+  "replacement_mode": "append",
+  "merge_mode": "support_weighted_overlap",
+  "opacity_policy": {
+    "mode": "factor",
+    "factor": 1.2,
+    "scale_start_quantile": 0.9,
+    "scale_full_quantile": 0.99,
+    "scale_weight_power": 1.0
+  },
+  "tile_policy": {
+    "tile_00": {
+      "mode": "historical",
+      "source_splat": "/private/tmp/md1-r2-factor120-202604250135/tiles/tile_00/splat.ply",
+      "storage": "hardlink_or_copy"
+    },
+    "tile_01": {
+      "mode": "historical",
+      "source_splat": "/private/tmp/md1-r2-factor120-202604250135/tiles/tile_01/splat.ply",
+      "storage": "hardlink_or_copy"
+    },
+    "tile_02": {
+      "mode": "historical",
+      "source_splat": "/private/tmp/md1-r2-factor120-202604250135/tiles/tile_02/splat.ply",
+      "storage": "hardlink_or_copy"
+    },
+    "tile_03": {
+      "mode": "historical",
+      "source_splat": "/private/tmp/md1-r2-factor120-202604250135/tiles/tile_03/splat.ply",
+      "storage": "hardlink_or_copy"
+    },
+    "tile_04": {
+      "mode": "historical_plus_replacement",
+      "source_splat": "/private/tmp/md1-r2b-root-202604250135/tiles/tile_04/splat.ply",
+      "historical_source_splat": "/private/tmp/md1-r2-factor120-202604250135/tiles/tile_04/splat.ply",
+      "source_property_count": 26,
+      "expanded_to_dtype_property_count": 62,
+      "written_gaussian_count": 972984,
+      "opacity_policy": {
+        "mode": "factor",
+        "adjusted": true,
+        "tile_id": "tile_04",
+        "old_median_opacity": -2.1972246170043945,
+        "replacement_median_opacity_before": 3.0729005336761475,
+        "full_median_shift": 5.270125150680542,
+        "opacity_factor": 1.2,
+        "opacity_logit_shift_mean": 6.324150085449219,
+        "replacement_median_opacity_after": -3.2512500286102295,
+        "weight_quantiles": [
+          1.2000000476837158,
+          1.2000000476837158,
+          1.2000000476837158,
+          1.2000000476837158,
+          1.2000000476837158,
+          1.2000000476837158,
+          1.2000000476837158
+        ],
+        "adjusted_gaussian_count": 243891,
+        "fully_adjusted_gaussian_count": 243891
+      }
+    },
+    "tile_05": {
+      "mode": "historical",
+      "source_splat": "/private/tmp/md1-r2-factor120-202604250135/tiles/tile_05/splat.ply",
+      "storage": "hardlink_or_copy"
+    },
+    "tile_06": {
+      "mode": "historical_plus_replacement",
+      "source_splat": "/private/tmp/md1-r2b-root-202604250135/tiles/tile_06/splat.ply",
+      "historical_source_splat": "/private/tmp/md1-r2-factor120-202604250135/tiles/tile_06/splat.ply",
+      "source_property_count": 26,
+      "expanded_to_dtype_property_count": 62,
+      "written_gaussian_count": 970265,
+      "opacity_policy": {
+        "mode": "factor",
+        "adjusted": true,
+        "tile_id": "tile_06",
+        "old_median_opacity": -2.1972246170043945,
+        "replacement_median_opacity_before": 2.9194846153259277,
+        "full_median_shift": 5.116709232330322,
+        "opacity_factor": 1.2,
+        "opacity_logit_shift_mean": 6.140052318572998,
+        "replacement_median_opacity_after": -3.220566749572754,
+        "weight_quantiles": [
+          1.2000000476837158,
+          1.2000000476837158,
+          1.2000000476837158,
+          1.2000000476837158,
+          1.2000000476837158,
+          1.2000000476837158,
+          1.2000000476837158
+        ],
+        "adjusted_gaussian_count": 241172,
+        "fully_adjusted_gaussian_count": 241172
+      }
+    }
+  },
+  "merge_report": {
+    "merge_mode": "support_weighted_overlap",
+    "tile_count": 7,
+    "source_gaussians": 6045898,
+    "retained_gaussians": 4383191,
+    "dropped_gaussians": 1662707,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "fallback_reasons": []
+  }
+}

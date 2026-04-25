@@ -4,8 +4,7 @@
   "candidate_artifact": "/opt/ml/input/data/model/model.tar.gz",
   "camera_manifest": {
     "selected_tile_ids": [
-      "tile_02",
-      "tile_05",
+      "tile_04",
       "tile_06"
     ],
     "review_image_names_by_bucket": {
@@ -58,8 +57,8 @@
         "image_name": "DJI_0067.JPG",
         "frame_file_path": "images/frame_00002.JPG",
         "boundary_context_tile_ids": [
-          "tile_02",
-          "tile_05"
+          "tile_04",
+          "tile_06"
         ]
       },
       {
@@ -67,8 +66,8 @@
         "image_name": "DJI_0068.JPG",
         "frame_file_path": "images/frame_00003.JPG",
         "boundary_context_tile_ids": [
-          "tile_02",
-          "tile_05"
+          "tile_04",
+          "tile_06"
         ]
       },
       {
@@ -76,8 +75,8 @@
         "image_name": "DJI_0069.JPG",
         "frame_file_path": "images/frame_00004.JPG",
         "boundary_context_tile_ids": [
-          "tile_02",
-          "tile_05"
+          "tile_04",
+          "tile_06"
         ]
       },
       {
@@ -85,8 +84,8 @@
         "image_name": "DJI_0070.JPG",
         "frame_file_path": "images/frame_00005.JPG",
         "boundary_context_tile_ids": [
-          "tile_02",
-          "tile_05"
+          "tile_04",
+          "tile_06"
         ]
       },
       {
@@ -123,14 +122,14 @@
         "lpips": 0.9124259352684021
       },
       "candidate": {
-        "psnr": 14.208713530360605,
-        "ssim": 0.3647904396057129,
-        "lpips": 0.8256374001502991
+        "psnr": 12.698064498924325,
+        "ssim": 0.40260501205921173,
+        "lpips": 0.8132293522357941
       },
       "delta": {
-        "psnr": 4.00414362055308,
-        "ssim": 0.03971134126186371,
-        "lpips": -0.08678853511810303
+        "psnr": 2.4934945891168,
+        "ssim": 0.07752591371536255,
+        "lpips": -0.09919658303260803
       },
       "block_reasons": []
     },
@@ -141,14 +140,14 @@
         "lpips": 0.8232778012752533
       },
       "candidate": {
-        "psnr": 15.949566105970694,
-        "ssim": 0.4257105588912964,
-        "lpips": 0.7536737024784088
+        "psnr": 15.574878459194384,
+        "ssim": 0.42206521332263947,
+        "lpips": 0.824084997177124
       },
       "delta": {
-        "psnr": 2.8155264948591654,
-        "ssim": 0.008886456489562988,
-        "lpips": -0.06960409879684448
+        "psnr": 2.440838848082855,
+        "ssim": 0.005241110920906067,
+        "lpips": 0.0008071959018707275
       },
       "block_reasons": []
     },
@@ -159,16 +158,20 @@
         "lpips": 0.8720598220825195
       },
       "candidate": {
-        "psnr": 15.53123595847288,
-        "ssim": 0.37450961768627167,
-        "lpips": 0.8929743766784668
+        "psnr": 13.794070856157163,
+        "ssim": 0.3428466320037842,
+        "lpips": 0.8903959393501282
       },
       "delta": {
-        "psnr": -0.6842886388661107,
-        "ssim": -0.008620038628578186,
-        "lpips": 0.020914554595947266
+        "psnr": -2.4214537411818284,
+        "ssim": -0.040283024311065674,
+        "lpips": 0.018336117267608643
       },
-      "block_reasons": []
+      "block_reasons": [
+        "horizon_psnr_regression",
+        "horizon_ssim_regression",
+        "horizon_sky_score_regression"
+      ]
     }
   },
   "fallback_breakdown": {
@@ -195,8 +198,8 @@
       "merge_mode": "support_weighted_overlap",
       "fallback_tile_count": 0,
       "retain_all_tile_count": 0,
-      "source_gaussians": 5802007,
-      "retained_gaussians": 4992988,
+      "source_gaussians": 485063,
+      "retained_gaussians": 360468,
       "fallback_reasons": []
     }
   },
@@ -245,8 +248,8 @@
       "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/boundary/DJI_0067.png",
       "boundary_composite": "/opt/ml/model/quality_review/boundary_composites/DJI_0067.png",
       "tile_renders": [
-        "/opt/ml/model/quality_review/tiles/tile_02/boundary/DJI_0067.png",
-        "/opt/ml/model/quality_review/tiles/tile_05/boundary/DJI_0067.png"
+        "/opt/ml/model/quality_review/tiles/tile_04/boundary/DJI_0067.png",
+        "/opt/ml/model/quality_review/tiles/tile_06/boundary/DJI_0067.png"
       ]
     },
     {
@@ -257,8 +260,8 @@
       "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/boundary/DJI_0068.png",
       "boundary_composite": "/opt/ml/model/quality_review/boundary_composites/DJI_0068.png",
       "tile_renders": [
-        "/opt/ml/model/quality_review/tiles/tile_02/boundary/DJI_0068.png",
-        "/opt/ml/model/quality_review/tiles/tile_05/boundary/DJI_0068.png"
+        "/opt/ml/model/quality_review/tiles/tile_04/boundary/DJI_0068.png",
+        "/opt/ml/model/quality_review/tiles/tile_06/boundary/DJI_0068.png"
       ]
     },
     {
@@ -269,8 +272,8 @@
       "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/boundary/DJI_0069.png",
       "boundary_composite": "/opt/ml/model/quality_review/boundary_composites/DJI_0069.png",
       "tile_renders": [
-        "/opt/ml/model/quality_review/tiles/tile_02/boundary/DJI_0069.png",
-        "/opt/ml/model/quality_review/tiles/tile_05/boundary/DJI_0069.png"
+        "/opt/ml/model/quality_review/tiles/tile_04/boundary/DJI_0069.png",
+        "/opt/ml/model/quality_review/tiles/tile_06/boundary/DJI_0069.png"
       ]
     },
     {
@@ -281,8 +284,8 @@
       "candidate_no_background_render": "/opt/ml/model/quality_review/merged_no_background/boundary/DJI_0070.png",
       "boundary_composite": "/opt/ml/model/quality_review/boundary_composites/DJI_0070.png",
       "tile_renders": [
-        "/opt/ml/model/quality_review/tiles/tile_02/boundary/DJI_0070.png",
-        "/opt/ml/model/quality_review/tiles/tile_05/boundary/DJI_0070.png"
+        "/opt/ml/model/quality_review/tiles/tile_04/boundary/DJI_0070.png",
+        "/opt/ml/model/quality_review/tiles/tile_06/boundary/DJI_0070.png"
       ]
     },
     {
@@ -323,8 +326,12 @@
     }
   ],
   "promotion_decision": {
-    "status": "promoted",
-    "block_reasons": [],
+    "status": "blocked",
+    "block_reasons": [
+      "horizon_psnr_regression",
+      "horizon_ssim_regression",
+      "horizon_sky_score_regression"
+    ],
     "warnings": [],
     "merge_mode": "support_weighted_overlap",
     "fallback_tile_count": 0,
@@ -337,14 +344,14 @@
           "lpips": 0.9124259352684021
         },
         "candidate": {
-          "psnr": 14.208713530360605,
-          "ssim": 0.3647904396057129,
-          "lpips": 0.8256374001502991
+          "psnr": 12.698064498924325,
+          "ssim": 0.40260501205921173,
+          "lpips": 0.8132293522357941
         },
         "delta": {
-          "psnr": 4.00414362055308,
-          "ssim": 0.03971134126186371,
-          "lpips": -0.08678853511810303
+          "psnr": 2.4934945891168,
+          "ssim": 0.07752591371536255,
+          "lpips": -0.09919658303260803
         },
         "block_reasons": []
       },
@@ -355,14 +362,14 @@
           "lpips": 0.8232778012752533
         },
         "candidate": {
-          "psnr": 15.949566105970694,
-          "ssim": 0.4257105588912964,
-          "lpips": 0.7536737024784088
+          "psnr": 15.574878459194384,
+          "ssim": 0.42206521332263947,
+          "lpips": 0.824084997177124
         },
         "delta": {
-          "psnr": 2.8155264948591654,
-          "ssim": 0.008886456489562988,
-          "lpips": -0.06960409879684448
+          "psnr": 2.440838848082855,
+          "ssim": 0.005241110920906067,
+          "lpips": 0.0008071959018707275
         },
         "block_reasons": []
       },
@@ -373,16 +380,20 @@
           "lpips": 0.8720598220825195
         },
         "candidate": {
-          "psnr": 15.53123595847288,
-          "ssim": 0.37450961768627167,
-          "lpips": 0.8929743766784668
+          "psnr": 13.794070856157163,
+          "ssim": 0.3428466320037842,
+          "lpips": 0.8903959393501282
         },
         "delta": {
-          "psnr": -0.6842886388661107,
-          "ssim": -0.008620038628578186,
-          "lpips": 0.020914554595947266
+          "psnr": -2.4214537411818284,
+          "ssim": -0.040283024311065674,
+          "lpips": 0.018336117267608643
         },
-        "block_reasons": []
+        "block_reasons": [
+          "horizon_psnr_regression",
+          "horizon_ssim_regression",
+          "horizon_sky_score_regression"
+        ]
       }
     },
     "thresholds": {

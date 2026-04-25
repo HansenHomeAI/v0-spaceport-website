@@ -31,6 +31,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument("--replacement-tile", action="append", default=[])
     parser.add_argument(
+        "--preserve-context-tile",
+        action="append",
+        default=[],
+        help="Tile id whose explicit context bounds should preserve non-core far-field gaussians during merge.",
+    )
+    parser.add_argument(
         "--replacement-mode",
         choices=["replace", "append"],
         default="replace",
@@ -46,6 +52,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--scale-start-quantile", type=float, default=0.90)
     parser.add_argument("--scale-full-quantile", type=float, default=0.99)
     parser.add_argument("--scale-weight-power", type=float, default=1.0)
+    parser.add_argument("--context-padding-ratio", type=float, default=0.0)
     parser.add_argument(
         "--skip-local-tarball",
         action="store_true",
@@ -92,6 +99,39 @@ def scale_metric(vertex: np.ndarray) -> np.ndarray:
         return np.zeros(len(vertex), dtype=np.float32)
     scales = np.stack([np.asarray(vertex[name], dtype=np.float32) for name in scale_names], axis=1)
     return np.max(scales, axis=1)
+
+
+def vertex_bounds_dict(vertex: np.ndarray, padding_ratio: float = 0.0) -> dict[str, float]:
+    if len(vertex) == 0:
+        return {
+            "min_x": 0.0,
+            "max_x": 0.0,
+            "min_y": 0.0,
+            "max_y": 0.0,
+            "min_z": 0.0,
+            "max_z": 0.0,
+        }
+    coords = np.stack(
+        [
+            np.asarray(vertex["x"], dtype=np.float32),
+            np.asarray(vertex["y"], dtype=np.float32),
+            np.asarray(vertex["z"], dtype=np.float32),
+        ],
+        axis=1,
+    )
+    mins = np.nanmin(coords, axis=0).astype(np.float64)
+    maxs = np.nanmax(coords, axis=0).astype(np.float64)
+    padding = np.maximum(maxs - mins, 1e-6) * max(float(padding_ratio), 0.0)
+    mins -= padding
+    maxs += padding
+    return {
+        "min_x": float(mins[0]),
+        "max_x": float(maxs[0]),
+        "min_y": float(mins[1]),
+        "max_y": float(maxs[1]),
+        "min_z": float(mins[2]),
+        "max_z": float(maxs[2]),
+    }
 
 
 def apply_opacity_policy(
@@ -175,6 +215,7 @@ def main() -> int:
     replacement_root = args.replacement_root.resolve()
     output_dir = args.output_dir.resolve()
     replacement_tiles = set(args.replacement_tile)
+    preserve_context_tiles = set(args.preserve_context_tile)
     if not replacement_tiles:
         raise SystemExit("At least one --replacement-tile is required")
 
@@ -235,6 +276,7 @@ def main() -> int:
             }
         else:
             source_tile_dir = historical_tile_dir
+            source_vertex = read_vertex(source_tile_dir / "splat.ply") if tile_id in preserve_context_tiles else None
             link_or_copy(source_tile_dir / "splat.ply", output_tile_dir / "splat.ply")
             copy_tile_sidecars(source_tile_dir, output_tile_dir, prefer_link=True)
             tile_policy[tile_id] = {
@@ -242,7 +284,23 @@ def main() -> int:
                 "source_splat": str(source_tile_dir / "splat.ply"),
                 "storage": "hardlink_or_copy",
             }
+            output_vertex = source_vertex
+        if tile_id in preserve_context_tiles:
+            context_vertex = output_vertex if output_vertex is not None else read_vertex(output_tile_dir / "splat.ply")
+            tile_entry["context_bounds"] = vertex_bounds_dict(context_vertex, args.context_padding_ratio)
+            tile_entry["preserve_context_gaussians"] = True
+            tile_entry["context_bounds_strategy"] = "hybrid_output_splat_extent"
+            tile_entry["context_padding_ratio"] = float(args.context_padding_ratio)
+            tile_policy[tile_id]["context_preservation"] = {
+                "enabled": True,
+                "context_bounds": tile_entry["context_bounds"],
+                "strategy": tile_entry["context_bounds_strategy"],
+                "padding_ratio": float(args.context_padding_ratio),
+            }
         tile_dirs[tile_id] = output_tile_dir
+
+    for manifest_name in ("3dgs_tile_manifest.fixed.json", "3dgs_tile_manifest.json"):
+        (output_dir / manifest_name).write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
     merge_report = merge_tile_outputs(
         tile_manifest=manifest,
@@ -258,6 +316,7 @@ def main() -> int:
         "historical_source_root": str(historical_root),
         "replacement_source_root": str(replacement_root),
         "replacement_tiles": sorted(replacement_tiles),
+        "preserve_context_tiles": sorted(preserve_context_tiles),
         "replacement_mode": args.replacement_mode,
         "merge_mode": args.merge_mode,
         "opacity_policy": {

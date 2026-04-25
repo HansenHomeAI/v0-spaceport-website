@@ -1696,7 +1696,17 @@ def _support_weighted_overlap_mask(
         if overlap_bounds is not None
         else np.zeros(len(vertex), dtype=bool)
     )
+    context_bounds = (
+        AxisAlignedBounds.from_dict(tile_entry["context_bounds"])
+        if bounds_available(tile_entry.get("context_bounds"))
+        else None
+    )
     candidate_mask = overlap_mask & ~core_mask
+    context_mask = (
+        context_bounds.contains_points(positions) & ~core_mask & ~candidate_mask
+        if context_bounds is not None and bool(tile_entry.get("preserve_context_gaussians"))
+        else np.zeros(len(vertex), dtype=bool)
+    )
     neighbor_entries = [
         tile_by_id[neighbor_id]
         for neighbor_id in ordered_unique(tile_entry.get("neighbor_tile_ids", []))
@@ -1728,11 +1738,15 @@ def _support_weighted_overlap_mask(
         ties_score = np.abs(own_scores - best_neighbor_score) <= 1e-6
         wins_tie = np.asarray([tile_id <= str(value) for value in best_neighbor_id], dtype=bool)
         keep_mask |= candidate_mask & (no_competitor | wins_score | (ties_score & wins_tie))
+    keep_mask |= context_mask
     return keep_mask, {
         "core_candidate_count": int(np.count_nonzero(core_mask)),
         "overlap_candidate_count": int(np.count_nonzero(candidate_mask)),
+        "context_candidate_count": int(np.count_nonzero(context_mask)),
         "retained_overlap_count": int(np.count_nonzero(keep_mask & candidate_mask)),
+        "retained_context_count": int(np.count_nonzero(keep_mask & context_mask)),
         "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": bool(tile_entry.get("preserve_context_gaussians")),
     }
 
 

@@ -961,6 +961,63 @@ class GaussianTilePipelineTests(unittest.TestCase):
             self.assertEqual(report["retained_gaussians"], 3)
             self.assertEqual(report["tiles"][0]["support_weighted_overlap"]["overlap_candidate_count"], 1)
 
+    def test_merge_tile_outputs_support_weighted_overlap_preserves_marked_context(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            tile_dir = root / "tiles" / "tile_00"
+            tile_dir.mkdir(parents=True)
+            write_test_ply(tile_dir / "splat.ply", [(0.5, 0.0, 0.0, 0.9), (8.0, 0.0, 0.0, 0.2)])
+
+            report = tile_pipeline.merge_tile_outputs(
+                tile_manifest={
+                    "tiles": [
+                        {
+                            "tile_id": "tile_00",
+                            "neighbor_tile_ids": [],
+                            "base_camera_ids": ["a.jpg"],
+                            "border_camera_ids": [],
+                            "image_names": ["a.jpg"],
+                            "core_bounds": {
+                                "min_x": 0.0,
+                                "max_x": 1.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                            "overlap_bounds": {
+                                "min_x": 0.0,
+                                "max_x": 1.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                            "context_bounds": {
+                                "min_x": 0.0,
+                                "max_x": 10.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                            "preserve_context_gaussians": True,
+                        }
+                    ]
+                },
+                tile_output_dirs={"tile_00": tile_dir},
+                output_dir=root / "support_weighted_context",
+                merge_mode="support_weighted_overlap",
+            )
+
+            self.assertEqual(report["fallback_tile_count"], 0)
+            self.assertEqual(report["retain_all_tile_count"], 0)
+            self.assertEqual(report["retained_gaussians"], 2)
+            stats = report["tiles"][0]["support_weighted_overlap"]
+            self.assertTrue(stats["context_preserve_enabled"])
+            self.assertEqual(stats["context_candidate_count"], 1)
+            self.assertEqual(stats["retained_context_count"], 1)
+
     def test_write_point_cloud_ply_from_gaussians_filters_scaffold_to_padded_bounds(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

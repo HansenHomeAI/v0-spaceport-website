@@ -1,0 +1,160 @@
+{
+  "merge_mode": "support_weighted_overlap",
+  "merged_ply": "/private/tmp/md1-r2b-fullcontext-tile06-context-202604250239/merged/merged_splat.ply",
+  "tile_count": 7,
+  "source_gaussians": 5802007,
+  "retained_gaussians": 4992988,
+  "dropped_gaussians": 809019,
+  "fallback_tile_count": 0,
+  "retain_all_tile_count": 0,
+  "fallback_reasons": [],
+  "tiles": [
+    {
+      "tile_id": "tile_00",
+      "source_ply": "/private/tmp/md1-r2b-fullcontext-tile06-context-202604250239/tiles/tile_00/splat.ply",
+      "source_gaussians": 729093,
+      "retained_gaussians": 726601,
+      "dropped_gaussians": 2492,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 726601,
+        "overlap_candidate_count": 0,
+        "context_candidate_count": 0,
+        "retained_overlap_count": 0,
+        "retained_context_count": 0,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": false
+      }
+    },
+    {
+      "tile_id": "tile_01",
+      "source_ply": "/private/tmp/md1-r2b-fullcontext-tile06-context-202604250239/tiles/tile_01/splat.ply",
+      "source_gaussians": 729093,
+      "retained_gaussians": 718230,
+      "dropped_gaussians": 10863,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 718230,
+        "overlap_candidate_count": 0,
+        "context_candidate_count": 0,
+        "retained_overlap_count": 0,
+        "retained_context_count": 0,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": false
+      }
+    },
+    {
+      "tile_id": "tile_02",
+      "source_ply": "/private/tmp/md1-r2b-fullcontext-tile06-context-202604250239/tiles/tile_02/splat.ply",
+      "source_gaussians": 1018716,
+      "retained_gaussians": 1004600,
+      "dropped_gaussians": 14116,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 1004525,
+        "overlap_candidate_count": 75,
+        "context_candidate_count": 0,
+        "retained_overlap_count": 75,
+        "retained_context_count": 0,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": false
+      }
+    },
+    {
+      "tile_id": "tile_03",
+      "source_ply": "/private/tmp/md1-r2b-fullcontext-tile06-context-202604250239/tiles/tile_03/splat.ply",
+      "source_gaussians": 729093,
+      "retained_gaussians": 724258,
+      "dropped_gaussians": 4835,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 724258,
+        "overlap_candidate_count": 0,
+        "context_candidate_count": 0,
+        "retained_overlap_count": 0,
+        "retained_context_count": 0,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": false
+      }
+    },
+    {
+      "tile_id": "tile_04",
+      "source_ply": "/private/tmp/md1-r2b-fullcontext-tile06-context-202604250239/tiles/tile_04/splat.ply",
+      "source_gaussians": 729093,
+      "retained_gaussians": 728771,
+      "dropped_gaussians": 322,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 728771,
+        "overlap_candidate_count": 0,
+        "context_candidate_count": 0,
+        "retained_overlap_count": 0,
+        "retained_context_count": 0,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": false
+      }
+    },
+    {
+      "tile_id": "tile_05",
+      "source_ply": "/private/tmp/md1-r2b-fullcontext-tile06-context-202604250239/tiles/tile_05/splat.ply",
+      "source_gaussians": 896654,
+      "retained_gaussians": 120263,
+      "dropped_gaussians": 776391,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 120263,
+        "overlap_candidate_count": 0,
+        "context_candidate_count": 0,
+        "retained_overlap_count": 0,
+        "retained_context_count": 0,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": false
+      }
+    },
+    {
+      "tile_id": "tile_06",
+      "source_ply": "/private/tmp/md1-r2b-fullcontext-tile06-context-202604250239/tiles/tile_06/splat.ply",
+      "source_gaussians": 970265,
+      "retained_gaussians": 970265,
+      "dropped_gaussians": 0,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 146729,
+        "overlap_candidate_count": 0,
+        "context_candidate_count": 823536,
+        "retained_overlap_count": 0,
+        "retained_context_count": 823536,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": true
+      }
+    }
+  ],
+  "background_asset": {
+    "asset": "background_skybox.webp",
+    "source_tile_id": "tile_06",
+    "source_asset": "/private/tmp/md1-r2b-fullcontext-tile06-context-202604250239/tiles/tile_06/background_skybox.webp",
+    "selection_score": 0.6283583895586156,
+    "retained_gaussians": 970265
+  }
+}
