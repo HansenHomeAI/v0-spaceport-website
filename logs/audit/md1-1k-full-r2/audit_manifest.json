@@ -1241,70 +1241,50 @@
       "failure_reason": null
     },
     "latest_signal": {
-      "checked_at": "2026-04-26T09:57:59Z",
-      "head": "925bc4635ddc41ef78dc0d49ae69d90e1b6b8a31",
-      "cdk_run": 24950658807,
-      "pages_run": 24950667728,
-      "pages_hash_url": "https://783e8ec9.v0-spaceport-website-preview2.pages.dev",
-      "training_time_seconds": 55953,
+      "checked_at": "2026-04-26T10:33:00Z",
+      "head": "aca847f488a223ae61d9cdf5f961a9db56e403a2",
+      "cdk_run": 24953922132,
+      "pages_run": 24954004765,
+      "pages_hash_url": "https://0c9b0cb2.v0-spaceport-website-preview2.pages.dev",
+      "training_time_seconds": 58077,
       "current_tile_id": "tile_06",
       "failure_reason": null,
       "s3_output_objects": 0,
       "latest_gpu_utilization": {
-        "window": "2026-04-26T09:09:00Z/2026-04-26T09:54:00Z",
+        "window": "2026-04-26T10:09:00Z/2026-04-26T10:29:00Z",
         "average_percent": [
-          44.6,
-          63.8,
-          79.8,
-          35.4,
-          58.8,
-          76.0,
-          68.0,
-          63.2,
-          36.6,
-          17.6
+          43.2,
+          91.4,
+          60.6,
+          54.6,
+          59.75
         ],
         "max_percent": [
+          61.0,
           100.0,
           100.0,
-          100.0,
-          100.0,
-          100.0,
-          100.0,
-          100.0,
-          100.0,
-          100.0,
-          52.0
+          97.0,
+          100.0
         ]
       },
       "latest_gpu_memory_utilization": {
-        "window": "2026-04-26T09:09:00Z/2026-04-26T09:54:00Z",
+        "window": "2026-04-26T10:09:00Z/2026-04-26T10:29:00Z",
         "average_percent": [
-          52.157399999999996,
-          52.146939999999994,
-          51.943740000000005,
-          52.054899999999996,
-          51.96804000000001,
-          50.015600000000006,
-          51.89164000000001,
-          52.03402,
-          21.50947304,
-          10.560169519999999
+          29.95138,
+          30.26576,
+          30.343939999999996,
+          30.33002,
+          44.028999999999996
         ],
         "max_percent": [
-          52.3884,
-          52.2581,
-          52.1105,
-          52.2147,
-          52.206,
-          51.902,
-          51.9802,
-          52.1278,
-          52.1626,
-          24.9435
+          30.7278,
+          30.7712,
+          30.5454,
+          30.5367,
+          52.7705
         ]
       },
-      "latest_log_status": "tile_05 completed/exported and tile_06 started; no final artifact exists yet.",
+      "latest_log_status": "tile_06 has useful training signal after startup; no filtered Traceback/ERROR/export/completion lines and no final artifact exists yet.",
       "last_handoff_status": "tile_05_completed_tile_06_started",
       "tile_00_completion": {
         "completed_at": "2026-04-25T20:37:53Z",
@@ -1516,6 +1496,11 @@
           "alpha_loss_enabled": true,
           "robust_mask_enabled": true
         }
+      },
+      "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
+      "pages_health": {
+        "alias_status": 200,
+        "hash_status": 200
       }
     }
   }
