@@ -1241,27 +1241,28 @@
       "failure_reason": null
     },
     "latest_signal": {
-      "checked_at": "2026-04-26T05:09:54Z",
-      "head": "8708df607291e8516636610db416af9f4f2924d2",
-      "cdk_run": 24947884506,
-      "pages_run": 24947954423,
-      "pages_hash_url": "https://d974432b.v0-spaceport-website-preview2.pages.dev",
-      "training_time_seconds": 38669,
-      "current_tile_id": "tile_04",
+      "checked_at": "2026-04-26T06:56:41Z",
+      "head": "1acc74193088c6ac108db82cc853e5520a53c23b",
+      "cdk_run": 24948932424,
+      "pages_run": 24948945696,
+      "pages_hash_url": "https://5d065df5.v0-spaceport-website-preview2.pages.dev",
+      "training_time_seconds": 45066,
+      "current_tile_id": "tile_05",
       "failure_reason": null,
       "s3_output_objects": 0,
       "latest_gpu_utilization": {
-        "window": "2026-04-26T04:24:00Z/2026-04-26T05:04:00Z",
+        "window": "2026-04-26T05:59:00Z/2026-04-26T06:44:00Z",
         "average_percent": [
-          70.4,
-          85.0,
-          96.2,
-          85.8,
-          75.4,
-          67.0,
-          79.4,
-          57.8,
-          93.0
+          65.2,
+          63.8,
+          59.0,
+          91.2,
+          80.6,
+          51.8,
+          64.0,
+          60.0,
+          100.0,
+          86.8
         ],
         "max_percent": [
           100.0,
@@ -1271,36 +1272,40 @@
           100.0,
           100.0,
           100.0,
-          77.0,
+          100.0,
+          100.0,
           100.0
         ]
       },
       "latest_gpu_memory_utilization": {
-        "window": "2026-04-26T04:24:00Z/2026-04-26T05:04:00Z",
+        "window": "2026-04-26T05:59:00Z/2026-04-26T06:44:00Z",
         "average_percent": [
-          30.43078,
-          30.342200000000002,
-          51.038720000000005,
-          53.21,
-          53.26556000000001,
-          53.119679999999995,
-          53.083220000000004,
-          53.05538,
-          53.173500000000004
+          53.06236,
+          53.09536000000001,
+          53.2187,
+          51.1065,
+          53.0363,
+          52.968560000000004,
+          52.970299999999995,
+          52.90778,
+          52.968560000000004,
+          52.90778
         ],
         "max_percent": [
-          30.8494,
-          30.7799,
-          52.9703,
-          53.474,
-          53.474,
-          53.2743,
-          53.2743,
+          53.283,
+          53.283,
+          53.283,
+          52.9877,
           53.1179,
-          53.2569
+          52.9703,
+          52.9703,
+          52.9703,
+          52.9703,
+          52.9703
         ]
       },
-      "last_handoff_status": "tile_03_completed_tile_04_started",
+      "latest_log_status": "CloudWatch proves tile_04 completed/exported cleanly and tile_05 started with intended full-fidelity settings; no filtered error/OOM/Traceback lines.",
+      "last_handoff_status": "tile_04_completed_tile_05_started",
       "tile_00_completion": {
         "completed_at": "2026-04-25T20:37:53Z",
         "exported_ply_size_mb": 35.5,
@@ -1416,6 +1421,46 @@
         "started_at": "2026-04-26T04:03:46Z",
         "inherited_gaussian_count": 300000,
         "selected_image_count": 186,
+        "training_settings": {
+          "sh_degree": 1,
+          "bg_sh_degree": 1,
+          "stop_split_at": 3500,
+          "max_gauss_ratio": 3.0,
+          "suppress_training_eval": true,
+          "background_enabled": true,
+          "alpha_loss_enabled": true,
+          "robust_mask_enabled": true
+        }
+      },
+      "tile_04_completion": {
+        "completed_at": "2026-04-26T06:50:41Z",
+        "exported_at": "2026-04-26T06:52:50Z",
+        "exported_ply_size_mb": 24.9,
+        "remaining_gaussians": 251266,
+        "planner_transform_applied": true,
+        "inherited_gaussian_count": 300000,
+        "selected_image_count": 186,
+        "view_bucket_counts": {
+          "near_detail": 176,
+          "boundary": 14,
+          "horizon": 14
+        },
+        "floater_pruning": {
+          "evaluated_gaussians": 251324,
+          "candidate_gaussians": 71320,
+          "removed_gaussians": 58,
+          "remaining_gaussians": 251266
+        }
+      },
+      "tile_05_start": {
+        "started_at": "2026-04-26T06:53:13Z",
+        "inherited_gaussian_count": 121136,
+        "selected_image_count": 188,
+        "view_bucket_counts": {
+          "near_detail": 176,
+          "boundary": 52,
+          "horizon": 0
+        },
         "training_settings": {
           "sh_degree": 1,
           "bg_sh_degree": 1,
