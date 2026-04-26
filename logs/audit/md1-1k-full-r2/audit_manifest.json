@@ -512,7 +512,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Commit and push the corrected evaluation-gate fix plus R4 promotion evidence, monitor exact-head CDK Deploy and Cloudflare Pages, then run an R5 14-tile 2k dry-run/preflight before deciding any 14-tile SageMaker spend.",
+  "next_unblocked_step": "Commit/push/gate R5 dry-run evidence, verify no live SageMaker jobs and the resolved container image again, then submit the R5 14-tile 2k SageMaker run.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -850,7 +850,7 @@
     }
   },
   "root_cause_classification": "far_field_bad",
-  "rung": "R4_repair_teacher_hybrid_build_active",
+  "rung": "R5_dryrun_passed_submit_gate_next",
   "support_statistics": {
     "candidate_pair_count": 5,
     "eligible_candidate_pair_count": 4,
@@ -1511,8 +1511,8 @@
       }
     }
   },
-  "live_compute_status": "No SageMaker Training or Processing jobs are InProgress.",
-  "current_branch_head": "4f303408bc7b5ff3c1c61d4ea5f1dcc1198c8846",
+  "live_compute_status": "No SageMaker Training or Processing jobs are InProgress as of the R5 dry-run precheck.",
+  "current_branch_head": "978a90c94a9edd5c0eac8436c43dab0534eb0012",
   "r4_full_7tile_1k_result": {
     "job_name": "md1-r4-7tile-1k-1777141446-tiled",
     "training_status": "Completed",
@@ -2145,17 +2145,8 @@
       }
     }
   },
-  "updated": "2026-04-26T21:22:28Z",
-  "current_exact_head_gate_status": {
-    "head": "4f303408bc7b5ff3c1c61d4ea5f1dcc1198c8846",
-    "cdk_deploy_run_id": 24966629232,
-    "cloudflare_pages_run_id": 24966651497,
-    "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://e552090f.v0-spaceport-website-preview2.pages.dev",
-    "health_txt_verified": true,
-    "status": "green",
-    "verified_at": "2026-04-26T20:53:59Z"
-  },
+  "updated": "2026-04-26T21:49:48Z",
+  "current_exact_head_gate_status": "green CDK Deploy 24967414400, green ML Container Build 24967414397, and green manually-triggered Cloudflare Pages 24967611972 for head 978a90c94a9edd5c0eac8436c43dab0534eb0012; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://f1b70580.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes.",
   "r4_horizon_density_repair_result": {
     "label": "r4-horizon-density-tile00-01",
     "training_job_name": "md1-r4h-horizon-density-1777213327-tiled",
@@ -2352,7 +2343,7 @@
     },
     "interpretation": "Increasing horizon-owner tile_00/tile_01 density improved horizon versus the failed full R4/context-preserve variants but still failed promotion; DJI_0146/DJI_0147 remain poor, so the next rung must preserve or distill global far-field/teacher structure instead of spending on another same-method full rerun."
   },
-  "blocked_promotion_reason": "None for R4 corrected promotion gate; R5 still requires exact-head workflow gates after committing this evidence.",
+  "blocked_promotion_reason": "None for R4 corrected promotion gate.",
   "r4_teacher_hybrid_build": {
     "status": "v3_corrected_promotion_promoted",
     "submitted_at": "2026-04-26T19:50:58Z",
@@ -2628,7 +2619,93 @@
       "candidate_manifest_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-teacher-r3base-r4h-tile00-factor4-v3-promotion/quality_review_manifest.json"
     }
   },
-  "current_rung": "R4_promoted_R5_preflight_next",
+  "current_rung": "R5_dryrun_passed_submit_gate_next",
   "latest_review_status": "Corrected 12-image promotion comparison for v3 teacher-hybrid artifact promoted with camera_coverage=ok, fallback=0/retain_all=0, render_sanity=ok, and no block reasons. Deltas vs matching 12-image strict_core baseline: near_detail +3.946 dB/+0.0188 SSIM/-0.0639 LPIPS; boundary +1.593 dB/-0.0015 SSIM/-0.0076 LPIPS; horizon +2.090 dB/+0.0050 SSIM/-0.0384 LPIPS.",
-  "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/review_comparison.json"
+  "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/review_comparison.json",
+  "exact_head_gate_status": {
+    "head": "978a90c94a9edd5c0eac8436c43dab0534eb0012",
+    "cdk_deploy_run_id": 24967414400,
+    "ml_container_build_run_id": 24967414397,
+    "cloudflare_pages_run_id": 24967611972,
+    "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
+    "pages_hash_url": "https://f1b70580.v0-spaceport-website-preview2.pages.dev",
+    "health_txt_verified": true,
+    "status": "green",
+    "verified_at": "2026-04-26T21:39:38Z"
+  },
+  "r5_14tile_2k_dryrun": {
+    "status": "passed_no_spend",
+    "verified_at": "2026-04-26T21:49:48Z",
+    "dryrun_summary": "logs/audit/md1-1k-full-r2/r5_14tile_2k_dryrun_20260426214655.json",
+    "source_head": "978a90c94a9edd5c0eac8436c43dab0534eb0012",
+    "input_colmap_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap",
+    "sfm_metadata_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap/sfm_metadata.json",
+    "chunk_planner_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap/chunk_planner_manifest.json",
+    "manifest_resolution": {
+      "source_mode": "chunk_planner_synthesized_v1",
+      "chunk_planner_available": true,
+      "native_tile_manifest_available": false,
+      "native_view_buckets_available": false,
+      "ownership_bounds_available": true,
+      "tile_count": 14,
+      "scaffold_count": 240
+    },
+    "selected_tile_ids": [
+      "tile_00",
+      "tile_01",
+      "tile_02",
+      "tile_03",
+      "tile_04",
+      "tile_05",
+      "tile_06",
+      "tile_07",
+      "tile_08",
+      "tile_09",
+      "tile_10",
+      "tile_11",
+      "tile_12",
+      "tile_13"
+    ],
+    "selected_tile_count": 14,
+    "sfm_summary": {
+      "dataset_image_count": 2157,
+      "images_registered": 2157,
+      "points_3d": 1633948,
+      "chunk_count": 14,
+      "chunk_execution_image_count": 2157,
+      "quality_check_passed": true,
+      "fallback_triggered": false,
+      "timed_out": false
+    },
+    "scaffold_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-teacher-r3base-r4h-tile00-factor4-v3-20260426201700/output/artifact/model.tar.gz",
+    "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8",
+    "merge_mode": "support_weighted_overlap",
+    "proof_profile": "none",
+    "suppress_training_eval": true,
+    "training_max_runtime_seconds": 172800,
+    "planned_job_name": "md1-r5-14tile-2k-1777240015-tiled",
+    "planned_output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-14tile-2k-full-20260426214655/T2_tiled_pipeline",
+    "stage_environment_summary": {
+      "MAX_ITERATIONS": "12000",
+      "TILED_MAX_TILES": "14",
+      "TILED_TILE_IDS": "tile_00,tile_01,tile_02,tile_03,tile_04,tile_05,tile_06,tile_07,tile_08,tile_09,tile_10,tile_11,tile_12,tile_13",
+      "GLOBAL_SCAFFOLD_INIT_MAX_POINTS": "300000",
+      "TRAINING_STOP_SPLIT_AT": "3500",
+      "TRAINING_MAX_GAUSS_RATIO": "3.0",
+      "SH_DEGREE": "1",
+      "BG_SH_DEGREE": "1",
+      "TRAINING_TIMEOUT_SECONDS": "172800",
+      "TRAINING_STEPS_PER_EVAL_IMAGE": "12001",
+      "TRAINING_STEPS_PER_EVAL_ALL_IMAGES": "12001",
+      "TRAINING_STEPS_PER_SAVE": "12001"
+    },
+    "promotion_prerequisite": {
+      "r4_corrected_promotion_gate": "passed",
+      "candidate_fallback_tile_count": 0,
+      "candidate_retain_all_tile_count": 0,
+      "camera_coverage": "ok",
+      "block_reasons": []
+    },
+    "next_gate": "exact-head workflows for the evidence commit must pass before live R5 SageMaker submit"
+  }
 }
