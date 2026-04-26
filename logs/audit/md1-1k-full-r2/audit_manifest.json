@@ -1241,23 +1241,23 @@
       "failure_reason": null
     },
     "latest_signal": {
-      "checked_at": "2026-04-26T12:19:00Z",
-      "head": "aed834faeb0b1c8b324da5cf21b16e6373f6c12a",
-      "cdk_run": 24955841510,
-      "pages_run": 24955922412,
-      "pages_hash_url": "https://c3dc749f.v0-spaceport-website-preview2.pages.dev",
-      "training_time_seconds": 64402,
+      "checked_at": "2026-04-26T12:53:00Z",
+      "head": "a0931aa121ee8620284abc918dde61f55c73c3c8",
+      "cdk_run": 24956479119,
+      "pages_run": 24956560666,
+      "pages_hash_url": "https://64750965.v0-spaceport-website-preview2.pages.dev",
+      "training_time_seconds": 66442,
       "current_tile_id": "tile_06",
       "failure_reason": null,
       "s3_output_objects": 0,
       "latest_gpu_utilization": {
-        "window": "2026-04-26T11:54:00Z/2026-04-26T12:19:00Z",
+        "window": "2026-04-26T12:29:00Z/2026-04-26T12:53:00Z",
         "average_percent": [
-          71.0,
-          53.2,
-          63.8,
-          64.8,
-          58.2
+          32.4,
+          25.0,
+          74.2,
+          40.4,
+          55.0
         ],
         "max_percent": [
           100.0,
@@ -1268,29 +1268,29 @@
         ]
       },
       "latest_gpu_memory_utilization": {
-        "window": "2026-04-26T11:54:00Z/2026-04-26T12:19:00Z",
+        "window": "2026-04-26T12:29:00Z/2026-04-26T12:53:00Z",
         "average_percent": [
-          52.50305999999999,
-          52.48566000000001,
-          52.53084,
-          52.714980000000004,
-          52.553399999999996
+          52.516920000000006,
+          52.485659999999996,
+          52.456140000000005,
+          52.51696,
+          52.390575000000005
         ],
         "max_percent": [
-          52.5621,
-          52.536,
-          52.5621,
-          52.8748,
-          52.7097
+          52.5534,
+          52.5447,
+          52.5447,
+          52.7011,
+          52.5447
         ]
       },
       "latest_log_status": "tile_06 continues with useful training signal; exact-head CDK/Pages gates are green, only this R4 job is InProgress, no filtered Traceback/ERROR/export/completion lines appeared after the prior check, S3 output has zero objects, and no final artifact exists yet.",
       "previous_gpu_utilization": {
-        "window": "2026-04-26T11:44:00Z/2026-04-26T11:57:00Z",
+        "window": "2026-04-26T12:14:00Z/2026-04-26T12:30:00Z",
         "average_percent": [
-          64.0,
-          64.0,
-          100.0
+          58.2,
+          44.2,
+          55.0
         ],
         "max_percent": [
           100.0,
@@ -1299,16 +1299,16 @@
         ]
       },
       "previous_gpu_memory_utilization": {
-        "window": "2026-04-26T11:44:00Z/2026-04-26T11:57:00Z",
+        "window": "2026-04-26T12:14:00Z/2026-04-26T12:30:00Z",
         "average_percent": [
-          52.5621,
-          52.43879999999999,
-          52.4145
+          52.553399999999996,
+          52.553399999999996,
+          52.615919999999996
         ],
         "max_percent": [
-          52.5708,
-          52.5621,
-          52.4145
+          52.7097,
+          52.5534,
+          52.7097
         ]
       },
       "last_handoff_status": "tile_05_completed_tile_06_started",
