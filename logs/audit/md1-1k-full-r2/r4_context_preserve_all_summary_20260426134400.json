@@ -1,0 +1,221 @@
+{
+  "created_at": "2026-04-26T13:46:01Z",
+  "label": "r4-context-preserve-all",
+  "purpose": "Offline R4 remerge preserving each tile context bounds after smoke review blocked on horizon/boundary SSIM.",
+  "historical_source_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_7tile_1k_remerge_source_20260426134400",
+  "replacement_source_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_7tile_1k_remerge_source_20260426134400",
+  "replacement_tiles": [
+    "tile_00",
+    "tile_01",
+    "tile_02",
+    "tile_03",
+    "tile_04",
+    "tile_05",
+    "tile_06"
+  ],
+  "preserve_context_tiles": [
+    "tile_00",
+    "tile_01",
+    "tile_02",
+    "tile_03",
+    "tile_04",
+    "tile_05",
+    "tile_06"
+  ],
+  "replacement_mode": "replace",
+  "merge_mode": "support_weighted_overlap",
+  "opacity_policy": {
+    "mode": "none",
+    "factor": 1.0,
+    "scale_start_quantile": 0.9,
+    "scale_full_quantile": 0.99,
+    "scale_weight_power": 1.0
+  },
+  "tile_policy": {
+    "tile_00": {
+      "mode": "replacement",
+      "source_splat": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_7tile_1k_remerge_source_20260426134400/tiles/tile_00/splat.ply",
+      "historical_source_splat": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_7tile_1k_remerge_source_20260426134400/tiles/tile_00/splat.ply",
+      "source_property_count": 26,
+      "expanded_to_dtype_property_count": 26,
+      "written_gaussian_count": 357811,
+      "opacity_policy": {
+        "mode": "none",
+        "adjusted": false
+      },
+      "context_preservation": {
+        "enabled": true,
+        "context_bounds": {
+          "min_x": -51.27910194396973,
+          "max_x": 31.43210563659668,
+          "min_y": -31.037102508544923,
+          "max_y": 47.18336563110351,
+          "min_z": -30.821639633178712,
+          "max_z": 25.881015396118165
+        },
+        "strategy": "hybrid_output_splat_extent",
+        "padding_ratio": 0.1
+      }
+    },
+    "tile_01": {
+      "mode": "replacement",
+      "source_splat": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_7tile_1k_remerge_source_20260426134400/tiles/tile_01/splat.ply",
+      "historical_source_splat": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_7tile_1k_remerge_source_20260426134400/tiles/tile_01/splat.ply",
+      "source_property_count": 26,
+      "expanded_to_dtype_property_count": 26,
+      "written_gaussian_count": 433468,
+      "opacity_policy": {
+        "mode": "none",
+        "adjusted": false
+      },
+      "context_preservation": {
+        "enabled": true,
+        "context_bounds": {
+          "min_x": -31.78919620513916,
+          "max_x": 37.04166240692139,
+          "min_y": -31.492097663879395,
+          "max_y": 25.506160545349122,
+          "min_z": -30.632836151123048,
+          "max_z": 16.631226348876954
+        },
+        "strategy": "hybrid_output_splat_extent",
+        "padding_ratio": 0.1
+      }
+    },
+    "tile_02": {
+      "mode": "replacement",
+      "source_splat": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_7tile_1k_remerge_source_20260426134400/tiles/tile_02/splat.ply",
+      "historical_source_splat": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_7tile_1k_remerge_source_20260426134400/tiles/tile_02/splat.ply",
+      "source_property_count": 26,
+      "expanded_to_dtype_property_count": 26,
+      "written_gaussian_count": 288880,
+      "opacity_policy": {
+        "mode": "none",
+        "adjusted": false
+      },
+      "context_preservation": {
+        "enabled": true,
+        "context_bounds": {
+          "min_x": -53.51844444274902,
+          "max_x": 42.62662544250488,
+          "min_y": -53.220628929138186,
+          "max_y": 34.96527881622315,
+          "min_z": -44.947929000854494,
+          "max_z": 21.467303848266603
+        },
+        "strategy": "hybrid_output_splat_extent",
+        "padding_ratio": 0.1
+      }
+    },
+    "tile_03": {
+      "mode": "replacement",
+      "source_splat": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_7tile_1k_remerge_source_20260426134400/tiles/tile_03/splat.ply",
+      "historical_source_splat": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_7tile_1k_remerge_source_20260426134400/tiles/tile_03/splat.ply",
+      "source_property_count": 26,
+      "expanded_to_dtype_property_count": 26,
+      "written_gaussian_count": 242431,
+      "opacity_policy": {
+        "mode": "none",
+        "adjusted": false
+      },
+      "context_preservation": {
+        "enabled": true,
+        "context_bounds": {
+          "min_x": -23.422773551940917,
+          "max_x": 60.73955173492432,
+          "min_y": -49.36320190429687,
+          "max_y": 21.59022216796875,
+          "min_z": -31.614122772216795,
+          "max_z": 14.549402618408203
+        },
+        "strategy": "hybrid_output_splat_extent",
+        "padding_ratio": 0.1
+      }
+    },
+    "tile_04": {
+      "mode": "replacement",
+      "source_splat": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_7tile_1k_remerge_source_20260426134400/tiles/tile_04/splat.ply",
+      "historical_source_splat": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_7tile_1k_remerge_source_20260426134400/tiles/tile_04/splat.ply",
+      "source_property_count": 26,
+      "expanded_to_dtype_property_count": 26,
+      "written_gaussian_count": 251266,
+      "opacity_policy": {
+        "mode": "none",
+        "adjusted": false
+      },
+      "context_preservation": {
+        "enabled": true,
+        "context_bounds": {
+          "min_x": -40.38510646820068,
+          "max_x": 71.02609577178956,
+          "min_y": -64.31077651977539,
+          "max_y": 57.552147674560544,
+          "min_z": -60.31537890434265,
+          "max_z": 12.450628519058228
+        },
+        "strategy": "hybrid_output_splat_extent",
+        "padding_ratio": 0.1
+      }
+    },
+    "tile_05": {
+      "mode": "replacement",
+      "source_splat": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_7tile_1k_remerge_source_20260426134400/tiles/tile_05/splat.ply",
+      "historical_source_splat": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_7tile_1k_remerge_source_20260426134400/tiles/tile_05/splat.ply",
+      "source_property_count": 26,
+      "expanded_to_dtype_property_count": 26,
+      "written_gaussian_count": 168565,
+      "opacity_policy": {
+        "mode": "none",
+        "adjusted": false
+      },
+      "context_preservation": {
+        "enabled": true,
+        "context_bounds": {
+          "min_x": -48.058845138549806,
+          "max_x": 24.290973281860353,
+          "min_y": -41.19681873321533,
+          "max_y": 10.220242881774903,
+          "min_z": -20.779255390167236,
+          "max_z": 11.200280666351318
+        },
+        "strategy": "hybrid_output_splat_extent",
+        "padding_ratio": 0.1
+      }
+    },
+    "tile_06": {
+      "mode": "replacement",
+      "source_splat": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_7tile_1k_remerge_source_20260426134400/tiles/tile_06/splat.ply",
+      "historical_source_splat": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_7tile_1k_remerge_source_20260426134400/tiles/tile_06/splat.ply",
+      "source_property_count": 26,
+      "expanded_to_dtype_property_count": 26,
+      "written_gaussian_count": 217541,
+      "opacity_policy": {
+        "mode": "none",
+        "adjusted": false
+      },
+      "context_preservation": {
+        "enabled": true,
+        "context_bounds": {
+          "min_x": -36.14668979644775,
+          "max_x": 41.603478813171385,
+          "min_y": -46.450712299346925,
+          "max_y": 18.374095058441164,
+          "min_z": -28.57307939529419,
+          "max_z": 11.752344417572022
+        },
+        "strategy": "hybrid_output_splat_extent",
+        "padding_ratio": 0.1
+      }
+    }
+  },
+  "merge_report": {
+    "merge_mode": "support_weighted_overlap",
+    "tile_count": 7,
+    "source_gaussians": 1959962,
+    "retained_gaussians": 1957344,
+    "dropped_gaussians": 2618,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "fallback_reasons": []
+  }
+}

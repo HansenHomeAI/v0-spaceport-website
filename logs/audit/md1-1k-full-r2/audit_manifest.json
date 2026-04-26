@@ -531,7 +531,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Monitor R4 md1-r4-7tile-1k-1777141446-tiled for startup/runtime signal and artifact formation; when complete, run artifact preflight and frozen promotion review before any R5 spend.",
+  "next_unblocked_step": "Commit/push R4 completion, blocked smoke-review evidence, and the tile_00/tile_01 horizon-density dry run; wait exact-head CDK and Cloudflare Pages gates, then submit md1-r4h-horizon-density-1777212486-tiled if no SageMaker training job is active.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -869,7 +869,7 @@
     }
   },
   "root_cause_classification": "far_field_bad",
-  "rung": "R4_full_7tile_1k_live",
+  "rung": "R4_full_7tile_1k_blocked_horizon_density_repair_ready",
   "support_statistics": {
     "candidate_pair_count": 5,
     "eligible_candidate_pair_count": 4,
@@ -1241,16 +1241,43 @@
       "failure_reason": null
     },
     "latest_signal": {
-      "checked_at": "2026-04-26T12:53:00Z",
-      "head": "a0931aa121ee8620284abc918dde61f55c73c3c8",
-      "cdk_run": 24956479119,
-      "pages_run": 24956560666,
-      "pages_hash_url": "https://64750965.v0-spaceport-website-preview2.pages.dev",
-      "training_time_seconds": 66442,
+      "checked_at": "2026-04-26T13:04:00Z",
+      "head": "df416996f3415fc58119928a93ce8932c38fd8e4",
+      "cdk_run": 24957137651,
+      "pages_run": 24957224865,
+      "pages_hash_url": "https://f627a84e.v0-spaceport-website-preview2.pages.dev",
+      "training_time_seconds": 67135,
       "current_tile_id": "tile_06",
       "failure_reason": null,
       "s3_output_objects": 0,
       "latest_gpu_utilization": {
+        "window": "2026-04-26T12:49:00Z/2026-04-26T13:04:00Z",
+        "average_percent": [
+          44.0,
+          66.2,
+          31.4
+        ],
+        "max_percent": [
+          100.0,
+          100.0,
+          77.0
+        ]
+      },
+      "latest_gpu_memory_utilization": {
+        "window": "2026-04-26T12:49:00Z/2026-04-26T13:04:00Z",
+        "average_percent": [
+          52.360620000000004,
+          52.485659999999996,
+          52.5586
+        ],
+        "max_percent": [
+          52.5447,
+          52.5447,
+          52.84
+        ]
+      },
+      "latest_log_status": "tile_06 continues with useful training signal; exact-head CDK/Pages gates are green, only this R4 job is InProgress, no filtered Traceback/ERROR/export/completion lines appeared after the prior check, S3 output has zero objects, and no final artifact exists yet.",
+      "previous_gpu_utilization": {
         "window": "2026-04-26T12:29:00Z/2026-04-26T12:53:00Z",
         "average_percent": [
           32.4,
@@ -1267,7 +1294,7 @@
           100.0
         ]
       },
-      "latest_gpu_memory_utilization": {
+      "previous_gpu_memory_utilization": {
         "window": "2026-04-26T12:29:00Z/2026-04-26T12:53:00Z",
         "average_percent": [
           52.516920000000006,
@@ -1282,33 +1309,6 @@
           52.5447,
           52.7011,
           52.5447
-        ]
-      },
-      "latest_log_status": "tile_06 continues with useful training signal; exact-head CDK/Pages gates are green, only this R4 job is InProgress, no filtered Traceback/ERROR/export/completion lines appeared after the prior check, S3 output has zero objects, and no final artifact exists yet.",
-      "previous_gpu_utilization": {
-        "window": "2026-04-26T12:14:00Z/2026-04-26T12:30:00Z",
-        "average_percent": [
-          58.2,
-          44.2,
-          55.0
-        ],
-        "max_percent": [
-          100.0,
-          100.0,
-          100.0
-        ]
-      },
-      "previous_gpu_memory_utilization": {
-        "window": "2026-04-26T12:14:00Z/2026-04-26T12:30:00Z",
-        "average_percent": [
-          52.553399999999996,
-          52.553399999999996,
-          52.615919999999996
-        ],
-        "max_percent": [
-          52.7097,
-          52.5534,
-          52.7097
         ]
       },
       "last_handoff_status": "tile_05_completed_tile_06_started",
@@ -1529,5 +1529,245 @@
         "hash_status": 200
       }
     }
-  }
+  },
+  "live_compute_status": "none; R4 full job and both frozen smoke review jobs completed, and no SageMaker training jobs are currently InProgress",
+  "current_branch_head": "df416996f3415fc58119928a93ce8932c38fd8e4",
+  "r4_full_7tile_1k_result": {
+    "job_name": "md1-r4-7tile-1k-1777141446-tiled",
+    "training_status": "Completed",
+    "training_time_seconds": 67399,
+    "model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-7tile-1k-full-20260425182321/T2_tiled_pipeline/md1-r4-7tile-1k-1777141446-tiled/output/model.tar.gz",
+    "preflight_summary_path": "logs/audit/md1-1k-full-r2/r4_7tile_1k_artifact_preflight_20260426132800/preflight_summary.json",
+    "preflight": {
+      "decision": "preflight_passed_run_frozen_smoke_review",
+      "tile_count": null,
+      "source_gaussians": null,
+      "retained_gaussians": null,
+      "fallback_tile_count": null,
+      "retain_all_tile_count": null,
+      "merge_mode": null
+    },
+    "smoke_review": {
+      "label": "r4-7tile-1k-full",
+      "review_job_name": "md1-r1-r4-7tile-1k-full-1777210194-quality",
+      "result_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-7tile-1k-full/review_comparison.json",
+      "promotion_decision": "blocked",
+      "block_reasons": [
+        "boundary_ssim_regression",
+        "horizon_psnr_regression",
+        "horizon_ssim_regression",
+        "horizon_lpips_regression"
+      ],
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "near_detail": {
+        "candidate": {
+          "psnr": 11.971891759179258,
+          "ssim": 0.3632802367210388,
+          "lpips": 0.8493655323982239
+        },
+        "delta": {
+          "psnr": 1.7673218493717329,
+          "ssim": 0.038201138377189636,
+          "lpips": -0.06306040287017822
+        },
+        "block_reasons": []
+      },
+      "boundary": {
+        "candidate": {
+          "psnr": 14.076083813131547,
+          "ssim": 0.3961317390203476,
+          "lpips": 0.7980082035064697
+        },
+        "delta": {
+          "psnr": 0.9420442020200177,
+          "ssim": -0.020692363381385803,
+          "lpips": -0.02526959776878357
+        },
+        "block_reasons": [
+          "boundary_ssim_regression"
+        ]
+      },
+      "horizon": {
+        "candidate": {
+          "psnr": 11.134374560835372,
+          "ssim": 0.3417619615793228,
+          "lpips": 0.9692957997322083
+        },
+        "delta": {
+          "psnr": -5.081150036503619,
+          "ssim": -0.04136769473552704,
+          "lpips": 0.09723597764968872
+        },
+        "block_reasons": [
+          "horizon_psnr_regression",
+          "horizon_ssim_regression",
+          "horizon_lpips_regression"
+        ]
+      }
+    },
+    "context_preserve_remerge": {
+      "label": "r4-context-preserve-all",
+      "model_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-context-preserve-all-20260426134400/model.tar.gz",
+      "review_job_name": "md1-r1-r4-context-preserve-all-1777211271-quality",
+      "result_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-context-preserve-all/review_comparison.json",
+      "promotion_decision": "blocked",
+      "block_reasons": [
+        "horizon_psnr_regression",
+        "horizon_ssim_regression",
+        "horizon_lpips_regression"
+      ],
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "merge_report_path": "logs/audit/md1-1k-full-r2/r4_context_preserve_all_merge_report_20260426134400.json",
+      "source_gaussians": 1959962,
+      "retained_gaussians": 1957344,
+      "dropped_gaussians": 2618,
+      "near_detail": {
+        "candidate": {
+          "psnr": 12.221317012242691,
+          "ssim": 0.36373282968997955,
+          "lpips": 0.8510530889034271
+        },
+        "delta": {
+          "psnr": 2.0167471024351666,
+          "ssim": 0.03865373134613037,
+          "lpips": -0.061372846364974976
+        },
+        "block_reasons": []
+      },
+      "boundary": {
+        "candidate": {
+          "psnr": 13.644978848820019,
+          "ssim": 0.40412773191928864,
+          "lpips": 0.8136936724185944
+        },
+        "delta": {
+          "psnr": 0.5109392377084898,
+          "ssim": -0.012696370482444763,
+          "lpips": -0.009584128856658936
+        },
+        "block_reasons": []
+      },
+      "horizon": {
+        "candidate": {
+          "psnr": 11.119493318041021,
+          "ssim": 0.34043437242507935,
+          "lpips": 0.9706376194953918
+        },
+        "delta": {
+          "psnr": -5.09603127929797,
+          "ssim": -0.04269528388977051,
+          "lpips": 0.09857779741287231
+        },
+        "block_reasons": [
+          "horizon_psnr_regression",
+          "horizon_ssim_regression",
+          "horizon_lpips_regression"
+        ]
+      },
+      "horizon_no_background_diagnostic": [
+        {
+          "image_name": "DJI_0066.JPG",
+          "with_background": {
+            "psnr": 13.400413315724736,
+            "ssim": 0.43081119656562805,
+            "lpips": 0.7972514629364014
+          },
+          "no_background": {
+            "psnr": 13.406927288172215,
+            "ssim": 0.4307973384857178,
+            "lpips": 0.7954609990119934
+          },
+          "alpha_mean": 0.999286949634552,
+          "visible_gaussians": 571946,
+          "rendered_gaussians": 500000
+        },
+        {
+          "image_name": "DJI_0073.JPG",
+          "with_background": {
+            "psnr": 11.551985461724348,
+            "ssim": 0.3835727870464325,
+            "lpips": 0.9355787038803101
+          },
+          "no_background": {
+            "psnr": 11.550374645831987,
+            "ssim": 0.38351377844810486,
+            "lpips": 0.9350172281265259
+          },
+          "alpha_mean": 0.9996739029884338,
+          "visible_gaussians": 43389,
+          "rendered_gaussians": 43389
+        },
+        {
+          "image_name": "DJI_0146.JPG",
+          "with_background": {
+            "psnr": 9.643443100952359,
+            "ssim": 0.2359737902879715,
+            "lpips": 1.0056965351104736
+          },
+          "no_background": {
+            "psnr": 9.64325830128381,
+            "ssim": 0.23595114052295685,
+            "lpips": 1.005367398262024
+          },
+          "alpha_mean": 0.9998029470443726,
+          "visible_gaussians": 188134,
+          "rendered_gaussians": 188134
+        },
+        {
+          "image_name": "DJI_0147.JPG",
+          "with_background": {
+            "psnr": 10.687001174357695,
+            "ssim": 0.2972959578037262,
+            "lpips": 1.0171406269073486
+          },
+          "no_background": {
+            "psnr": 10.687004585636577,
+            "ssim": 0.2972734272480011,
+            "lpips": 1.0166165828704834
+          },
+          "alpha_mean": 0.9998047351837158,
+          "visible_gaussians": 198755,
+          "rendered_gaussians": 198755
+        }
+      ]
+    },
+    "diagnosis": {
+      "classification": "far_field_bad",
+      "background_policy_result": "no-background horizon metrics are effectively unchanged because merged alpha is saturated, so the R4 failure is foreground/far-field density or tile-local geometry, not selected skybox alone",
+      "horizon_owner_tiles": [
+        "tile_00",
+        "tile_01"
+      ],
+      "evidence": "Frozen horizon smoke images are assigned only to tile_00/tile_01 in the planner manifest; R4 retained 357811/433468 gaussians for those tiles versus the promoted R3 artifact retaining 726601/718230 for the same tile ids.",
+      "r5_status": "blocked_until_r4_horizon_quality_passes_strengthened_gate"
+    }
+  },
+  "r4_horizon_density_repair_plan": {
+    "status": "dry_run_ready_for_submit_after_exact_head_gates",
+    "rung": "R4_repair_bounded_horizon_density_tile00_tile01",
+    "dryrun_summary": "logs/audit/md1-1k-full-r2/r4_horizon_density_tile00_01_dryrun_20260426143000.json",
+    "job_name": "md1-r4h-horizon-density-1777212486-tiled",
+    "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-horizon-density-20260426143000/T2_tiled_pipeline",
+    "selected_tile_ids": [
+      "tile_00",
+      "tile_01"
+    ],
+    "settings": {
+      "max_iterations": "12000",
+      "global_scaffold_init_max_points": "450000",
+      "training_stop_split_at": "5000",
+      "training_max_gauss_ratio": "4.0",
+      "sh_degree": "1",
+      "bg_sh_degree": "1",
+      "suppress_training_eval": true,
+      "merge_mode": "support_weighted_overlap",
+      "training_max_runtime_seconds": 43200
+    },
+    "scaffold_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r2-cap450k-split5000-20260424035154/T2_tiled_pipeline/md1-r2-cap450k-split5000-1777002844-tiled/output/model.tar.gz",
+    "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:54958f2c5a7984aba9549ca3a7e247d7ac79b04d248ed301d3b89710c2bbfacd",
+    "eligibility_note": "This is a targeted R4 repair because the frozen horizon bucket is owned by tile_00/tile_01; it intentionally reduces spatial scope before another full 7-tile run."
+  },
+  "updated": "2026-04-26T14:09:36Z"
 }

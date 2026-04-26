@@ -1,0 +1,160 @@
+{
+  "merge_mode": "support_weighted_overlap",
+  "merged_ply": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_context_preserve_all_20260426134400/merged/merged_splat.ply",
+  "tile_count": 7,
+  "source_gaussians": 1959962,
+  "retained_gaussians": 1957344,
+  "dropped_gaussians": 2618,
+  "fallback_tile_count": 0,
+  "retain_all_tile_count": 0,
+  "fallback_reasons": [],
+  "tiles": [
+    {
+      "tile_id": "tile_00",
+      "source_ply": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_context_preserve_all_20260426134400/tiles/tile_00/splat.ply",
+      "source_gaussians": 357811,
+      "retained_gaussians": 357811,
+      "dropped_gaussians": 0,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 329713,
+        "overlap_candidate_count": 0,
+        "context_candidate_count": 28098,
+        "retained_overlap_count": 0,
+        "retained_context_count": 28098,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": true
+      }
+    },
+    {
+      "tile_id": "tile_01",
+      "source_ply": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_context_preserve_all_20260426134400/tiles/tile_01/splat.ply",
+      "source_gaussians": 433468,
+      "retained_gaussians": 433468,
+      "dropped_gaussians": 0,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 416352,
+        "overlap_candidate_count": 0,
+        "context_candidate_count": 17116,
+        "retained_overlap_count": 0,
+        "retained_context_count": 17116,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": true
+      }
+    },
+    {
+      "tile_id": "tile_02",
+      "source_ply": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_context_preserve_all_20260426134400/tiles/tile_02/splat.ply",
+      "source_gaussians": 288880,
+      "retained_gaussians": 288880,
+      "dropped_gaussians": 0,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 280415,
+        "overlap_candidate_count": 61,
+        "context_candidate_count": 8404,
+        "retained_overlap_count": 61,
+        "retained_context_count": 8404,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": true
+      }
+    },
+    {
+      "tile_id": "tile_03",
+      "source_ply": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_context_preserve_all_20260426134400/tiles/tile_03/splat.ply",
+      "source_gaussians": 242431,
+      "retained_gaussians": 242431,
+      "dropped_gaussians": 0,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 210279,
+        "overlap_candidate_count": 0,
+        "context_candidate_count": 32152,
+        "retained_overlap_count": 0,
+        "retained_context_count": 32152,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": true
+      }
+    },
+    {
+      "tile_id": "tile_04",
+      "source_ply": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_context_preserve_all_20260426134400/tiles/tile_04/splat.ply",
+      "source_gaussians": 251266,
+      "retained_gaussians": 248648,
+      "dropped_gaussians": 2618,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 207257,
+        "overlap_candidate_count": 4861,
+        "context_candidate_count": 39148,
+        "retained_overlap_count": 2243,
+        "retained_context_count": 39148,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": true
+      }
+    },
+    {
+      "tile_id": "tile_05",
+      "source_ply": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_context_preserve_all_20260426134400/tiles/tile_05/splat.ply",
+      "source_gaussians": 168565,
+      "retained_gaussians": 168565,
+      "dropped_gaussians": 0,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 128564,
+        "overlap_candidate_count": 0,
+        "context_candidate_count": 40001,
+        "retained_overlap_count": 0,
+        "retained_context_count": 40001,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": true
+      }
+    },
+    {
+      "tile_id": "tile_06",
+      "source_ply": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_context_preserve_all_20260426134400/tiles/tile_06/splat.ply",
+      "source_gaussians": 217541,
+      "retained_gaussians": 217541,
+      "dropped_gaussians": 0,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 152873,
+        "overlap_candidate_count": 0,
+        "context_candidate_count": 64668,
+        "retained_overlap_count": 0,
+        "retained_context_count": 64668,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": true
+      }
+    }
+  ],
+  "background_asset": {
+    "asset": "background_skybox.webp",
+    "source_tile_id": "tile_06",
+    "source_asset": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/r4_context_preserve_all_20260426134400/tiles/tile_06/background_skybox.webp",
+    "selection_score": 0.6283583895586156,
+    "retained_gaussians": 217541
+  }
+}
