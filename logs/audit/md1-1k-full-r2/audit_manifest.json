@@ -1777,11 +1777,11 @@
       "pages_hash": "https://97c8dab5.v0-spaceport-website-preview2.pages.dev"
     },
     "latest_exact_head_gates": {
-      "head": "fbd956676a978d85903cbea823f093085fca7b61",
-      "cdk_run_id": 24959389009,
-      "pages_run_id": 24959467705,
+      "head": "4cb402f775b307c8f9658fea08ad8b919c4f4a5b",
+      "cdk_run_id": 24959760163,
+      "pages_run_id": 24959888955,
       "pages_alias": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-      "pages_hash": "https://54143f86.v0-spaceport-website-preview2.pages.dev",
+      "pages_hash": "https://8d539ffa.v0-spaceport-website-preview2.pages.dev",
       "health_probe_status": "alias_and_hash_passed"
     },
     "cloudwatch_log_stream": "md1-r4h-horizon-density-1777213327-tiled/algo-1-1777213410",
@@ -1806,10 +1806,10 @@
       }
     },
     "latest_monitoring": {
-      "checked_at": "2026-04-26T15:04:38Z",
+      "checked_at": "2026-04-26T15:41:02Z",
       "status": "InProgress",
       "secondary_status": "Training",
-      "training_time_seconds": 2468,
+      "training_time_seconds": 4630,
       "failure_reason": null,
       "model_artifacts": null,
       "s3_output_objects": 0,
@@ -1846,7 +1846,42 @@
         },
         {
           "timestamp": "2026-04-26T15:01:00Z",
-          "average": 78.33333333333333,
+          "average": 87.0,
+          "maximum": 100.0
+        },
+        {
+          "timestamp": "2026-04-26T15:06:00Z",
+          "average": 73.4,
+          "maximum": 100.0
+        },
+        {
+          "timestamp": "2026-04-26T15:11:00Z",
+          "average": 91.6,
+          "maximum": 100.0
+        },
+        {
+          "timestamp": "2026-04-26T15:16:00Z",
+          "average": 89.0,
+          "maximum": 100.0
+        },
+        {
+          "timestamp": "2026-04-26T15:21:00Z",
+          "average": 98.8,
+          "maximum": 100.0
+        },
+        {
+          "timestamp": "2026-04-26T15:26:00Z",
+          "average": 66.0,
+          "maximum": 100.0
+        },
+        {
+          "timestamp": "2026-04-26T15:31:00Z",
+          "average": 93.8,
+          "maximum": 100.0
+        },
+        {
+          "timestamp": "2026-04-26T15:36:00Z",
+          "average": 88.0,
           "maximum": 100.0
         }
       ],
@@ -1885,11 +1920,46 @@
           "timestamp": "2026-04-26T15:01:00Z",
           "average": 58.5172,
           "maximum": 58.7546
+        },
+        {
+          "timestamp": "2026-04-26T15:06:00Z",
+          "average": 58.6677,
+          "maximum": 58.8154
+        },
+        {
+          "timestamp": "2026-04-26T15:11:00Z",
+          "average": 58.24213999999999,
+          "maximum": 58.7285
+        },
+        {
+          "timestamp": "2026-04-26T15:16:00Z",
+          "average": 58.18484000000001,
+          "maximum": 58.633
+        },
+        {
+          "timestamp": "2026-04-26T15:21:00Z",
+          "average": 58.157,
+          "maximum": 58.1987
+        },
+        {
+          "timestamp": "2026-04-26T15:26:00Z",
+          "average": 58.018060000000006,
+          "maximum": 58.5287
+        },
+        {
+          "timestamp": "2026-04-26T15:31:00Z",
+          "average": 58.249080000000006,
+          "maximum": 58.5548
+        },
+        {
+          "timestamp": "2026-04-26T15:36:00Z",
+          "average": 58.14314,
+          "maximum": 58.3898
         }
       ],
       "filtered_error_or_export_lines": 0
     }
   },
-  "updated": "2026-04-26T15:04:38Z",
-  "current_exact_head_gate_status": "green CDK Deploy 24959389009 and green manually-triggered Cloudflare Pages 24959467705 for head fbd956676a978d85903cbea823f093085fca7b61; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://54143f86.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes."
+  "updated": "2026-04-26T15:41:02Z",
+  "current_exact_head_gate_status": "green CDK Deploy 24959760163 and green manually-triggered Cloudflare Pages 24959888955 for head 4cb402f775b307c8f9658fea08ad8b919c4f4a5b; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://8d539ffa.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes."
 }
