@@ -1241,25 +1241,27 @@
       "failure_reason": null
     },
     "latest_signal": {
-      "checked_at": "2026-04-26T04:04:42Z",
-      "head": "0c945e12710016ce1f35e879b1a56f08d7507590",
-      "cdk_run": 24945611396,
-      "pages_run": 24945685338,
-      "pages_hash_url": "https://a4db919e.v0-spaceport-website-preview2.pages.dev",
-      "training_time_seconds": 34757,
+      "checked_at": "2026-04-26T05:09:54Z",
+      "head": "8708df607291e8516636610db416af9f4f2924d2",
+      "cdk_run": 24947884506,
+      "pages_run": 24947954423,
+      "pages_hash_url": "https://d974432b.v0-spaceport-website-preview2.pages.dev",
+      "training_time_seconds": 38669,
       "current_tile_id": "tile_04",
       "failure_reason": null,
       "s3_output_objects": 0,
       "latest_gpu_utilization": {
-        "window": "2026-04-26T03:29:00Z/2026-04-26T03:59:00Z",
+        "window": "2026-04-26T04:24:00Z/2026-04-26T05:04:00Z",
         "average_percent": [
-          88.4,
-          87.8,
-          61.6,
-          82.0,
-          80.6,
-          45.8,
-          56.0
+          70.4,
+          85.0,
+          96.2,
+          85.8,
+          75.4,
+          67.0,
+          79.4,
+          57.8,
+          93.0
         ],
         "max_percent": [
           100.0,
@@ -1268,28 +1270,34 @@
           100.0,
           100.0,
           100.0,
+          100.0,
+          77.0,
           100.0
         ]
       },
       "latest_gpu_memory_utilization": {
-        "window": "2026-04-26T03:29:00Z/2026-04-26T03:59:00Z",
+        "window": "2026-04-26T04:24:00Z/2026-04-26T05:04:00Z",
         "average_percent": [
-          53.01022,
-          52.74968,
-          52.8105,
-          52.84352,
-          52.81224,
-          52.81224,
-          32.42924
+          30.43078,
+          30.342200000000002,
+          51.038720000000005,
+          53.21,
+          53.26556000000001,
+          53.119679999999995,
+          53.083220000000004,
+          53.05538,
+          53.173500000000004
         ],
         "max_percent": [
-          53.0571,
-          52.8748,
-          52.8748,
-          52.8748,
-          52.8748,
-          52.8748,
-          52.8748
+          30.8494,
+          30.7799,
+          52.9703,
+          53.474,
+          53.474,
+          53.2743,
+          53.2743,
+          53.1179,
+          53.2569
         ]
       },
       "last_handoff_status": "tile_03_completed_tile_04_started",
