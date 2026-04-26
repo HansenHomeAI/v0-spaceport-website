@@ -197,11 +197,11 @@
         "tile_02": 188,
         "tile_05": 188
       },
-      "selected_count_median": 188.0,
+      "selected_count_median": 188,
       "selected_count_ratio_valid": true,
       "eligible": true,
       "ineligible_reasons": [],
-      "score": 623.0
+      "score": 623
     },
     {
       "tile_ids": [
@@ -256,11 +256,11 @@
         "tile_04": 188,
         "tile_06": 188
       },
-      "selected_count_median": 188.0,
+      "selected_count_median": 188,
       "selected_count_ratio_valid": true,
       "eligible": true,
       "ineligible_reasons": [],
-      "score": 362.0
+      "score": 362
     },
     {
       "tile_ids": [
@@ -309,11 +309,11 @@
         "tile_03": 188,
         "tile_04": 188
       },
-      "selected_count_median": 188.0,
+      "selected_count_median": 188,
       "selected_count_ratio_valid": true,
       "eligible": true,
       "ineligible_reasons": [],
-      "score": 263.0
+      "score": 263
     },
     {
       "tile_ids": [
@@ -363,11 +363,11 @@
         "tile_00": 188,
         "tile_04": 188
       },
-      "selected_count_median": 188.0,
+      "selected_count_median": 188,
       "selected_count_ratio_valid": true,
       "eligible": true,
       "ineligible_reasons": [],
-      "score": 145.0
+      "score": 145
     },
     {
       "tile_ids": [
@@ -403,13 +403,13 @@
         "tile_00": 188,
         "tile_01": 188
       },
-      "selected_count_median": 188.0,
+      "selected_count_median": 188,
       "selected_count_ratio_valid": true,
       "eligible": false,
       "ineligible_reasons": [
         "shared_assigned_images_below_threshold"
       ],
-      "score": 75.0
+      "score": 75
     }
   ],
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
@@ -697,7 +697,7 @@
         "thresholds": {
           "boundary": {
             "lpips_max_delta": 0.035,
-            "psnr_min_delta": -1.0,
+            "psnr_min_delta": -1,
             "required_improvement": {
               "lpips": -0.025,
               "psnr": 0.5,
@@ -713,7 +713,7 @@
           },
           "near_detail": {
             "lpips_max_delta": 0.035,
-            "psnr_min_delta": -1.0,
+            "psnr_min_delta": -1,
             "ssim_min_delta": -0.015
           }
         },
@@ -771,9 +771,9 @@
               "ssim": 0.4168241024017334
             },
             "delta": {
-              "lpips": 0.0,
-              "psnr": 0.0,
-              "ssim": 0.0
+              "lpips": 0,
+              "psnr": 0,
+              "ssim": 0
             }
           },
           "horizon": {
@@ -789,9 +789,9 @@
               "ssim": 0.38312965631484985
             },
             "delta": {
-              "lpips": 0.0,
-              "psnr": 0.0,
-              "ssim": 0.0
+              "lpips": 0,
+              "psnr": 0,
+              "ssim": 0
             }
           },
           "near_detail": {
@@ -807,9 +807,9 @@
               "ssim": 0.3250790983438492
             },
             "delta": {
-              "lpips": 0.0,
-              "psnr": 0.0,
-              "ssim": 0.0
+              "lpips": 0,
+              "psnr": 0,
+              "ssim": 0
             }
           }
         },
@@ -818,7 +818,7 @@
         "thresholds": {
           "boundary": {
             "lpips_max_delta": 0.035,
-            "psnr_min_delta": -1.0,
+            "psnr_min_delta": -1,
             "required_improvement": {
               "lpips": -0.025,
               "psnr": 0.5,
@@ -834,7 +834,7 @@
           },
           "near_detail": {
             "lpips_max_delta": 0.035,
-            "psnr_min_delta": -1.0,
+            "psnr_min_delta": -1,
             "ssim_min_delta": -0.015
           }
         },
@@ -887,7 +887,7 @@
             "tile_06"
           ],
           "eligible": true,
-          "score": 362.0,
+          "score": 362,
           "shared_assigned_image_count": 64,
           "boundary_support_count": 31,
           "boundary_support_source": "border_camera_intersection",
@@ -899,7 +899,7 @@
             "tile_04"
           ],
           "eligible": true,
-          "score": 263.0,
+          "score": 263,
           "shared_assigned_image_count": 41,
           "boundary_support_count": 25,
           "boundary_support_source": "border_camera_intersection",
@@ -930,7 +930,7 @@
             "tile_06"
           ],
           "eligible": true,
-          "score": 362.0,
+          "score": 362,
           "shared_assigned_image_count": 64,
           "boundary_support_count": 31,
           "boundary_support_source": "border_camera_intersection",
@@ -942,7 +942,7 @@
             "tile_04"
           ],
           "eligible": true,
-          "score": 145.0,
+          "score": 145,
           "shared_assigned_image_count": 26,
           "boundary_support_count": 26,
           "boundary_support_source": "shared_assigned_images_fallback",
@@ -984,7 +984,7 @@
             "tile_06"
           ],
           "eligible": true,
-          "score": 362.0,
+          "score": 362,
           "shared_assigned_image_count": 64,
           "boundary_support_count": 31,
           "boundary_support_source": "border_camera_intersection",
@@ -996,7 +996,7 @@
             "tile_04"
           ],
           "eligible": true,
-          "score": 263.0,
+          "score": 263,
           "shared_assigned_image_count": 41,
           "boundary_support_count": 25,
           "boundary_support_source": "border_camera_intersection",
@@ -1036,7 +1036,7 @@
             "tile_06"
           ],
           "eligible": true,
-          "score": 362.0,
+          "score": 362,
           "shared_assigned_image_count": 64,
           "boundary_support_count": 31,
           "boundary_support_source": "border_camera_intersection",
@@ -1048,7 +1048,7 @@
             "tile_04"
           ],
           "eligible": true,
-          "score": 145.0,
+          "score": 145,
           "shared_assigned_image_count": 26,
           "boundary_support_count": 26,
           "boundary_support_source": "shared_assigned_images_fallback",
@@ -1067,7 +1067,7 @@
           "tile_05"
         ],
         true,
-        623.0
+        623
       ],
       [
         [
@@ -1075,7 +1075,7 @@
           "tile_06"
         ],
         true,
-        362.0
+        362
       ],
       [
         [
@@ -1083,7 +1083,7 @@
           "tile_04"
         ],
         true,
-        263.0
+        263
       ],
       [
         [
@@ -1091,7 +1091,7 @@
           "tile_04"
         ],
         true,
-        145.0
+        145
       ],
       [
         [
@@ -1099,7 +1099,7 @@
           "tile_01"
         ],
         false,
-        75.0
+        75
       ]
     ],
     "recomputed_shape": [
@@ -1109,7 +1109,7 @@
           "tile_05"
         ],
         true,
-        623.0
+        623
       ],
       [
         [
@@ -1117,7 +1117,7 @@
           "tile_06"
         ],
         true,
-        362.0
+        362
       ],
       [
         [
@@ -1125,7 +1125,7 @@
           "tile_04"
         ],
         true,
-        263.0
+        263
       ],
       [
         [
@@ -1133,7 +1133,7 @@
           "tile_04"
         ],
         true,
-        145.0
+        145
       ],
       [
         [
@@ -1141,7 +1141,7 @@
           "tile_01"
         ],
         false,
-        75.0
+        75
       ]
     ]
   },
@@ -1201,7 +1201,7 @@
       "sh_degree": 1,
       "bg_sh_degree": 1,
       "stop_split_at": 3500,
-      "max_gauss_ratio": 3.0,
+      "max_gauss_ratio": 3,
       "suppress_training_eval": true
     },
     "startup_signal": {
@@ -1217,8 +1217,8 @@
         "horizon": 176
       },
       "inherited_gaussian_count": 300000,
-      "gpu_average_percent_1832z": 34.0,
-      "gpu_max_percent_1832z": 68.0,
+      "gpu_average_percent_1832z": 34,
+      "gpu_max_percent_1832z": 68,
       "failure_reason": null
     },
     "latest_signal": {
@@ -1234,14 +1234,14 @@
       "latest_gpu_utilization": {
         "window": "2026-04-26T12:49:00Z/2026-04-26T13:04:00Z",
         "average_percent": [
-          44.0,
+          44,
           66.2,
           31.4
         ],
         "max_percent": [
-          100.0,
-          100.0,
-          77.0
+          100,
+          100,
+          77
         ]
       },
       "latest_gpu_memory_utilization": {
@@ -1262,17 +1262,17 @@
         "window": "2026-04-26T12:29:00Z/2026-04-26T12:53:00Z",
         "average_percent": [
           32.4,
-          25.0,
+          25,
           74.2,
           40.4,
-          55.0
+          55
         ],
         "max_percent": [
-          100.0,
-          100.0,
-          100.0,
-          100.0,
-          100.0
+          100,
+          100,
+          100,
+          100,
+          100
         ]
       },
       "previous_gpu_memory_utilization": {
@@ -1318,7 +1318,7 @@
       },
       "tile_01_completion": {
         "completed_at": "2026-04-25T22:55:44Z",
-        "exported_ply_size_mb": 43.0,
+        "exported_ply_size_mb": 43,
         "remaining_gaussians": 433468,
         "planner_transform_applied": true,
         "inherited_gaussian_count": 300000,
@@ -1343,7 +1343,7 @@
           "sh_degree": 1,
           "bg_sh_degree": 1,
           "stop_split_at": 3500,
-          "max_gauss_ratio": 3.0,
+          "max_gauss_ratio": 3,
           "suppress_training_eval": true,
           "background_enabled": true,
           "alpha_loss_enabled": true,
@@ -1377,7 +1377,7 @@
           "sh_degree": 1,
           "bg_sh_degree": 1,
           "stop_split_at": 3500,
-          "max_gauss_ratio": 3.0,
+          "max_gauss_ratio": 3,
           "suppress_training_eval": true,
           "background_enabled": true,
           "alpha_loss_enabled": true,
@@ -1387,7 +1387,7 @@
       "tile_03_completion": {
         "completed_at": "2026-04-26T04:01:43Z",
         "exported_at": "2026-04-26T04:03:27Z",
-        "exported_ply_size_mb": 24.0,
+        "exported_ply_size_mb": 24,
         "remaining_gaussians": 242431,
         "planner_transform_applied": true,
         "inherited_gaussian_count": 300000,
@@ -1412,7 +1412,7 @@
           "sh_degree": 1,
           "bg_sh_degree": 1,
           "stop_split_at": 3500,
-          "max_gauss_ratio": 3.0,
+          "max_gauss_ratio": 3,
           "suppress_training_eval": true,
           "background_enabled": true,
           "alpha_loss_enabled": true,
@@ -1452,7 +1452,7 @@
           "sh_degree": 1,
           "bg_sh_degree": 1,
           "stop_split_at": 3500,
-          "max_gauss_ratio": 3.0,
+          "max_gauss_ratio": 3,
           "suppress_training_eval": true,
           "background_enabled": true,
           "alpha_loss_enabled": true,
@@ -1497,7 +1497,7 @@
           "sh_degree": 1,
           "bg_sh_degree": 1,
           "stop_split_at": 3500,
-          "max_gauss_ratio": 3.0,
+          "max_gauss_ratio": 3,
           "suppress_training_eval": true,
           "background_enabled": true,
           "alpha_loss_enabled": true,
@@ -1512,7 +1512,7 @@
     }
   },
   "live_compute_status": "R5 SageMaker training job md1-r5-14tile-2k-1777240767-tiled is InProgress/Training as of 2026-04-26T23:11:44Z with TrainingStartTime=2026-04-26T22:01:11Z, TrainingTimeInSeconds=4235, no FailureReason, no ModelArtifacts, zero S3 output objects, and only this SageMaker training job InProgress. tile_00 is still training with useful GPU signal from 22:45Z through 23:10Z, GPU memory is stable around 53%, and no filtered error/export/handoff lines appeared.",
-  "current_branch_head": "d2f46dd5dc8beee2cecf8e01f778b5e1358e2489",
+  "current_branch_head": "fa0e33f75099ddda3a86c7784759261f2a1bfe3a",
   "r4_full_7tile_1k_result": {
     "job_name": "md1-r4-7tile-1k-1777141446-tiled",
     "training_status": "Completed",
@@ -1780,7 +1780,7 @@
         "SH_DEGREE": 1,
         "BG_SH_DEGREE": 1,
         "TRAINING_STOP_SPLIT_AT": 5000,
-        "TRAINING_MAX_GAUSS_RATIO": 4.0,
+        "TRAINING_MAX_GAUSS_RATIO": 4,
         "TRAINING_STEPS_PER_EVAL_IMAGE": 12001,
         "TRAINING_STEPS_PER_EVAL_ALL_IMAGES": 12001,
         "TRAINING_STEPS_PER_SAVE": 12001
@@ -1798,122 +1798,122 @@
         {
           "timestamp": "2026-04-26T14:31:00Z",
           "average": 51.8,
-          "maximum": 76.0
+          "maximum": 76
         },
         {
           "timestamp": "2026-04-26T14:36:00Z",
           "average": 91.8,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T14:41:00Z",
           "average": 88.4,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T14:46:00Z",
           "average": 87.6,
-          "maximum": 99.0
+          "maximum": 99
         },
         {
           "timestamp": "2026-04-26T14:51:00Z",
-          "average": 79.0,
-          "maximum": 100.0
+          "average": 79,
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T14:56:00Z",
-          "average": 92.0,
-          "maximum": 100.0
+          "average": 92,
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T15:01:00Z",
-          "average": 87.0,
-          "maximum": 100.0
+          "average": 87,
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T15:06:00Z",
           "average": 73.4,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T15:11:00Z",
           "average": 91.6,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T15:16:00Z",
-          "average": 89.0,
-          "maximum": 100.0
+          "average": 89,
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T15:21:00Z",
           "average": 98.8,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T15:26:00Z",
-          "average": 66.0,
-          "maximum": 100.0
+          "average": 66,
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T15:31:00Z",
           "average": 93.8,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T15:36:00Z",
-          "average": 88.0,
-          "maximum": 100.0
+          "average": 88,
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T15:41:00Z",
           "average": 93.8,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T15:46:00Z",
           "average": 93.5,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T15:51:00Z",
           "average": 75.6,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T15:56:00Z",
           "average": 78.4,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T16:01:00Z",
           "average": 92.2,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T16:06:00Z",
           "average": 97.2,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T16:11:00Z",
           "average": 84.4,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T16:16:00Z",
           "average": 52.4,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T16:21:00Z",
           "average": 90.6,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T16:26:00Z",
-          "average": 100.0,
-          "maximum": 100.0
+          "average": 100,
+          "maximum": 100
         }
       ],
       "gpu_memory_utilization": [
@@ -2052,23 +2052,23 @@
           92.8,
           80.8,
           98.4,
-          98.0,
-          93.0,
+          98,
+          93,
           77.8,
           80.8,
           79.2
         ],
         "max_percent": [
-          100.0,
-          100.0,
-          100.0,
-          100.0,
-          100.0,
-          100.0,
-          100.0,
-          100.0,
-          100.0,
-          100.0
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
         ]
       },
       "latest_gpu_memory_window": {
@@ -2136,7 +2136,7 @@
           "sh_degree": 1,
           "bg_sh_degree": 1,
           "stop_split_at": 5000,
-          "max_gauss_ratio": 4.0,
+          "max_gauss_ratio": 4,
           "suppress_training_eval": true,
           "background_enabled": true,
           "alpha_loss_enabled": true,
@@ -2146,7 +2146,7 @@
     }
   },
   "updated": "2026-04-26T23:11:44Z",
-  "current_exact_head_gate_status": "green CDK Deploy 24968856797 and green manually-triggered Cloudflare Pages 24968942096 for head d2f46dd5dc8beee2cecf8e01f778b5e1358e2489; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://c0483181.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes. No new ML container build was required for this evidence-only commit; R5 uses branch image digest sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8.",
+  "current_exact_head_gate_status": "green CDK Deploy 24969500199 and green manually-triggered Cloudflare Pages 24969584340 for head fa0e33f75099ddda3a86c7784759261f2a1bfe3a; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://812decde.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes. No new ML container build was required for this evidence-only commit; R5 uses branch image digest sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8.",
   "r4_horizon_density_repair_result": {
     "label": "r4-horizon-density-tile00-01",
     "training_job_name": "md1-r4h-horizon-density-1777213327-tiled",
@@ -2319,12 +2319,12 @@
       },
       "thresholds": {
         "near_detail": {
-          "psnr_min_delta": -1.0,
+          "psnr_min_delta": -1,
           "ssim_min_delta": -0.015,
           "lpips_max_delta": 0.035
         },
         "boundary": {
-          "psnr_min_delta": -1.0,
+          "psnr_min_delta": -1,
           "ssim_min_delta": -0.015,
           "lpips_max_delta": 0.035,
           "required_improvement": {
@@ -2358,7 +2358,7 @@
     "replacement_mode": "append",
     "opacity_policy": {
       "mode": "factor",
-      "factor": 4.0
+      "factor": 4
     },
     "preserve_context_tiles": [
       "tile_00"
@@ -2776,16 +2776,16 @@
       "no_active_training_jobs": true,
       "no_active_processing_jobs": true,
       "unused_dryrun_job_name": true,
-      "ml_g5_2xlarge_training_quota": 2.0,
+      "ml_g5_2xlarge_training_quota": 2,
       "preview_health_alias_and_hash": true
     },
     "next_monitoring_step": "Continue monitoring tile_00 to export/completion and tile_01 handoff, then stream preflight/review when model.tar.gz appears.",
     "latest_status_check": {
-      "checked_at": "2026-04-26T23:11:44Z",
+      "checked_at": "2026-04-26T23:24:44Z",
       "TrainingJobStatus": "InProgress",
       "SecondaryStatus": "Training",
       "TrainingStartTime": "2026-04-26T22:01:11Z",
-      "TrainingTimeInSeconds": 4235,
+      "TrainingTimeInSeconds": 5014,
       "FailureReason": null,
       "ModelArtifacts": null,
       "s3_output_object_count": 0,
@@ -2799,73 +2799,83 @@
         "tile_00 reused external scaffold PLY from /opt/ml/model/tiled_pipeline/external_scaffold/tiles/tile_00/splat.ply",
         "tile_00 prepared 300000 inherited scaffold points, selected 188 images, and launched ns-train at 2026-04-26T22:12:19Z"
       ],
-      "gpu_datapoints": 13,
-      "gpu_memory_datapoints": 13,
+      "gpu_datapoints": 15,
+      "gpu_memory_datapoints": 15,
       "gpu_utilization_windows": [
         {
           "timestamp": "2026-04-26T22:10:00Z",
           "average": 27.2,
-          "maximum": 70.0
+          "maximum": 70
         },
         {
           "timestamp": "2026-04-26T22:15:00Z",
           "average": 86.4,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T22:20:00Z",
           "average": 81.6,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T22:25:00Z",
           "average": 77.6,
-          "maximum": 95.0
+          "maximum": 95
         },
         {
           "timestamp": "2026-04-26T22:30:00Z",
           "average": 90.4,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T22:35:00Z",
           "average": 95.8,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T22:40:00Z",
           "average": 85.8,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T22:45:00Z",
           "average": 94.6,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T22:50:00Z",
           "average": 80.4,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T22:55:00Z",
           "average": 92.2,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T23:00:00Z",
           "average": 81.8,
-          "maximum": 100.0
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T23:05:00Z",
-          "average": 85.0,
-          "maximum": 100.0
+          "average": 85,
+          "maximum": 100
         },
         {
           "timestamp": "2026-04-26T23:10:00Z",
-          "average": 63.5,
-          "maximum": 68.0
+          "average": 75.2,
+          "maximum": 100
+        },
+        {
+          "timestamp": "2026-04-26T23:15:00Z",
+          "average": 97.4,
+          "maximum": 100
+        },
+        {
+          "timestamp": "2026-04-26T23:20:00Z",
+          "average": 90.8,
+          "maximum": 100
         }
       ],
       "gpu_memory_windows": [
@@ -2931,10 +2941,21 @@
         },
         {
           "timestamp": "2026-04-26T23:10:00Z",
-          "average": 52.844350000000006,
-          "maximum": 52.8487
+          "average": 53.01892,
+          "maximum": 53.1353
+        },
+        {
+          "timestamp": "2026-04-26T23:15:00Z",
+          "average": 47.571659999999994,
+          "maximum": 53.4306
+        },
+        {
+          "timestamp": "2026-04-26T23:20:00Z",
+          "average": 53.21002,
+          "maximum": 53.4219
         }
-      ]
+      ],
+      "filtered_log_findings": "no filtered ERROR/Traceback/OOM/Killed/export/handoff/completion/merge lines after tile_00 ns-train startup as of 2026-04-26T23:24:44Z"
     }
   }
 }
