@@ -1241,28 +1241,28 @@
       "failure_reason": null
     },
     "latest_signal": {
-      "checked_at": "2026-04-26T06:56:41Z",
-      "head": "1acc74193088c6ac108db82cc853e5520a53c23b",
-      "cdk_run": 24948932424,
-      "pages_run": 24948945696,
-      "pages_hash_url": "https://5d065df5.v0-spaceport-website-preview2.pages.dev",
-      "training_time_seconds": 45066,
-      "current_tile_id": "tile_05",
+      "checked_at": "2026-04-26T09:57:59Z",
+      "head": "925bc4635ddc41ef78dc0d49ae69d90e1b6b8a31",
+      "cdk_run": 24950658807,
+      "pages_run": 24950667728,
+      "pages_hash_url": "https://783e8ec9.v0-spaceport-website-preview2.pages.dev",
+      "training_time_seconds": 55953,
+      "current_tile_id": "tile_06",
       "failure_reason": null,
       "s3_output_objects": 0,
       "latest_gpu_utilization": {
-        "window": "2026-04-26T05:59:00Z/2026-04-26T06:44:00Z",
+        "window": "2026-04-26T09:09:00Z/2026-04-26T09:54:00Z",
         "average_percent": [
-          65.2,
+          44.6,
           63.8,
-          59.0,
-          91.2,
-          80.6,
-          51.8,
-          64.0,
-          60.0,
-          100.0,
-          86.8
+          79.8,
+          35.4,
+          58.8,
+          76.0,
+          68.0,
+          63.2,
+          36.6,
+          17.6
         ],
         "max_percent": [
           100.0,
@@ -1274,38 +1274,38 @@
           100.0,
           100.0,
           100.0,
-          100.0
+          52.0
         ]
       },
       "latest_gpu_memory_utilization": {
-        "window": "2026-04-26T05:59:00Z/2026-04-26T06:44:00Z",
+        "window": "2026-04-26T09:09:00Z/2026-04-26T09:54:00Z",
         "average_percent": [
-          53.06236,
-          53.09536000000001,
-          53.2187,
-          51.1065,
-          53.0363,
-          52.968560000000004,
-          52.970299999999995,
-          52.90778,
-          52.968560000000004,
-          52.90778
+          52.157399999999996,
+          52.146939999999994,
+          51.943740000000005,
+          52.054899999999996,
+          51.96804000000001,
+          50.015600000000006,
+          51.89164000000001,
+          52.03402,
+          21.50947304,
+          10.560169519999999
         ],
         "max_percent": [
-          53.283,
-          53.283,
-          53.283,
-          52.9877,
-          53.1179,
-          52.9703,
-          52.9703,
-          52.9703,
-          52.9703,
-          52.9703
+          52.3884,
+          52.2581,
+          52.1105,
+          52.2147,
+          52.206,
+          51.902,
+          51.9802,
+          52.1278,
+          52.1626,
+          24.9435
         ]
       },
-      "latest_log_status": "CloudWatch proves tile_04 completed/exported cleanly and tile_05 started with intended full-fidelity settings; no filtered error/OOM/Traceback lines.",
-      "last_handoff_status": "tile_04_completed_tile_05_started",
+      "latest_log_status": "tile_05 completed/exported and tile_06 started; no final artifact exists yet.",
+      "last_handoff_status": "tile_05_completed_tile_06_started",
       "tile_00_completion": {
         "completed_at": "2026-04-25T20:37:53Z",
         "exported_ply_size_mb": 35.5,
@@ -1460,6 +1460,51 @@
           "near_detail": 176,
           "boundary": 52,
           "horizon": 0
+        },
+        "training_settings": {
+          "sh_degree": 1,
+          "bg_sh_degree": 1,
+          "stop_split_at": 3500,
+          "max_gauss_ratio": 3.0,
+          "suppress_training_eval": true,
+          "background_enabled": true,
+          "alpha_loss_enabled": true,
+          "robust_mask_enabled": true
+        }
+      },
+      "tile_05_completion": {
+        "completed_at": "2026-04-26T09:51:16Z",
+        "exported_at": "2026-04-26T09:53:43Z",
+        "exported_ply": "splat.ply",
+        "exported_ply_size_mb": 16.7,
+        "skybox": "background_skybox.webp",
+        "exported_camera_idx": 75,
+        "background_source_image": "frame_00153.JPG",
+        "background_score": 0.6210106162328897,
+        "remaining_gaussians": 168565,
+        "planner_transform_applied": true,
+        "inherited_gaussian_count": 121136,
+        "selected_image_count": 188,
+        "view_bucket_counts": {
+          "near_detail": 176,
+          "boundary": 52,
+          "horizon": 0
+        },
+        "floater_pruning": {
+          "evaluated_gaussians": 168565,
+          "candidate_gaussians": 55578,
+          "removed_gaussians": 0,
+          "remaining_gaussians": 168565
+        }
+      },
+      "tile_06_start": {
+        "started_at": "2026-04-26T09:54:06Z",
+        "inherited_gaussian_count": 300000,
+        "selected_image_count": 186,
+        "view_bucket_counts": {
+          "near_detail": 52,
+          "boundary": 16,
+          "horizon": 2
         },
         "training_settings": {
           "sh_degree": 1,
