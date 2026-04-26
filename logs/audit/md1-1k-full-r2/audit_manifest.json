@@ -1530,8 +1530,8 @@
       }
     }
   },
-  "live_compute_status": "R4 horizon-density repair SageMaker job md1-r4h-horizon-density-1777213327-tiled is InProgress/Training on tile_00 with TrainingTimeInSeconds=7594 at 2026-04-26T16:31Z, no FailureReason, no ModelArtifacts, and no S3 output objects. It is the only InProgress SageMaker training job. CloudWatch GPU averages were 98.8%, 50.0%, 78.6%, and 71.2% from 16:10Z-16:25Z with max GPU 100% in every window; GPU memory stayed near 57.6%-57.8%, and no filtered Traceback/ERROR/export/tile_01 handoff lines appeared.",
-  "current_branch_head": "169604fab40fc2042ce027963c5d73281f7ef088",
+  "live_compute_status": "R4 horizon-density repair SageMaker job md1-r4h-horizon-density-1777213327-tiled is InProgress/Training on tile_01 with TrainingTimeInSeconds=8741 at 2026-04-26T16:49:11Z, no FailureReason, no ModelArtifacts, and no S3 output objects. tile_00 completed/exported cleanly with 825023 retained gaussians; tile_01 startup shows useful early signal with GPU avg 45.0% at 16:44Z while memory rose to 30.3% max, and no filtered Traceback/ERROR/export/failure lines appeared.",
+  "current_branch_head": "7940b7027e28997e25586b2bfe7716a75a272211",
   "r4_full_7tile_1k_result": {
     "job_name": "md1-r4-7tile-1k-1777141446-tiled",
     "training_status": "Completed",
@@ -1745,7 +1745,7 @@
     }
   },
   "r4_horizon_density_repair_plan": {
-    "status": "tile_00_training_active_gated_useful_signal",
+    "status": "tile_01_training_startup_useful_signal",
     "rung": "R4_repair_bounded_horizon_density_tile00_tile01",
     "dryrun_summary": "logs/audit/md1-1k-full-r2/r4_horizon_density_tile00_01_dryrun_20260426143000.json",
     "job_name": "md1-r4h-horizon-density-1777213327-tiled",
@@ -1777,11 +1777,11 @@
       "pages_hash": "https://97c8dab5.v0-spaceport-website-preview2.pages.dev"
     },
     "latest_exact_head_gates": {
-      "head": "169604fab40fc2042ce027963c5d73281f7ef088",
-      "cdk_run_id": 24961218330,
-      "pages_run_id": 24961312671,
+      "head": "7940b7027e28997e25586b2bfe7716a75a272211",
+      "cdk_run_id": 24961550060,
+      "pages_run_id": 24961640454,
       "pages_alias": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-      "pages_hash": "https://61f924ee.v0-spaceport-website-preview2.pages.dev",
+      "pages_hash": "https://b55420e7.v0-spaceport-website-preview2.pages.dev",
       "health_probe_status": "alias_and_hash_passed"
     },
     "cloudwatch_log_stream": "md1-r4h-horizon-density-1777213327-tiled/algo-1-1777213410",
@@ -1806,10 +1806,10 @@
       }
     },
     "latest_monitoring": {
-      "checked_at": "2026-04-26T16:31:11Z",
+      "checked_at": "2026-04-26T16:49:11Z",
       "status": "InProgress",
       "secondary_status": "Training",
-      "training_time_seconds": 7594,
+      "training_time_seconds": 8741,
       "failure_reason": null,
       "model_artifacts": null,
       "s3_output_objects": 0,
@@ -2061,40 +2061,85 @@
       "active_training_jobs": [
         "md1-r4h-horizon-density-1777213327-tiled"
       ],
-      "current_tile_id": "tile_00",
-      "latest_log_status": "No filtered Traceback/ERROR/export/tile_01 handoff lines appeared in the last 90 minutes.",
+      "current_tile_id": "tile_01",
+      "latest_log_status": "tile_01 startup has useful early GPU signal and no filtered error/export/failure lines after handoff.",
       "latest_gpu_window": {
-        "window": "2026-04-26T16:10:00Z/2026-04-26T16:25:00Z",
+        "window": "2026-04-26T16:29:00Z/2026-04-26T16:44:00Z",
         "average_percent": [
-          98.8,
-          50.0,
-          78.6,
-          71.2
+          88.2,
+          84.4,
+          29.0,
+          45.0
         ],
         "max_percent": [
           100.0,
           100.0,
           100.0,
-          100.0
+          65.0
         ]
       },
       "latest_gpu_memory_window": {
-        "window": "2026-04-26T16:10:00Z/2026-04-26T16:25:00Z",
+        "window": "2026-04-26T16:29:00Z/2026-04-26T16:44:00Z",
         "average_percent": [
-          57.63246,
-          57.59598,
-          57.75752,
-          57.63936
+          57.43096,
+          57.58556,
+          30.552378,
+          27.48308
         ],
         "max_percent": [
-          57.6516,
-          57.6081,
-          58.0337,
-          58.0076
+          57.5473,
+          57.8253,
+          57.3736,
+          30.2936
         ]
+      },
+      "tile_00_completion": {
+        "completed_at": "2026-04-26T16:40:04Z",
+        "exported_at": "2026-04-26T16:41:15Z",
+        "exported_ply": "splat.ply",
+        "exported_ply_size_mb": 81.8,
+        "skybox": "background_skybox.webp",
+        "exported_camera_idx": 20,
+        "background_source_image": "frame_00968.JPG",
+        "background_score": 0.6123972444919038,
+        "remaining_gaussians": 825023,
+        "planner_transform_applied": true,
+        "inherited_gaussian_count": 450000,
+        "selected_image_count": 186,
+        "view_bucket_counts": {
+          "near_detail": 26,
+          "boundary": 0,
+          "horizon": 176
+        },
+        "floater_pruning": {
+          "evaluated_gaussians": 825081,
+          "candidate_gaussians": 290336,
+          "removed_gaussians": 58,
+          "remaining_gaussians": 825023
+        }
+      },
+      "tile_01_start": {
+        "started_at": "2026-04-26T16:41:27Z",
+        "inherited_gaussian_count": 450000,
+        "selected_image_count": 188,
+        "view_bucket_counts": {
+          "near_detail": 0,
+          "boundary": 176,
+          "horizon": 188
+        },
+        "training_settings": {
+          "sh_degree": 1,
+          "bg_sh_degree": 1,
+          "stop_split_at": 5000,
+          "max_gauss_ratio": 4.0,
+          "suppress_training_eval": true,
+          "background_enabled": true,
+          "alpha_loss_enabled": true,
+          "robust_mask_enabled": true
+        }
       }
     }
   },
-  "updated": "2026-04-26T16:31:11Z",
-  "current_exact_head_gate_status": "green CDK Deploy 24961218330 and green manually-triggered Cloudflare Pages 24961312671 for head 169604fab40fc2042ce027963c5d73281f7ef088; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://61f924ee.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes."
+  "updated": "2026-04-26T16:49:11Z",
+  "current_exact_head_gate_status": "green CDK Deploy 24961550060 and green manually-triggered Cloudflare Pages 24961640454 for head 7940b7027e28997e25586b2bfe7716a75a272211; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://b55420e7.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes."
 }
