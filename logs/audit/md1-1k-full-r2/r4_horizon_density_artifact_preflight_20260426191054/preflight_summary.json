@@ -1,0 +1,145 @@
+{
+  "artifact_complete": true,
+  "artifact_head_object": {
+    "AcceptRanges": "bytes",
+    "ContentLength": 1064895970,
+    "ContentType": "application/gzip",
+    "ETag": "\"873005d686c56ec925844530b439ebe9-127\"",
+    "LastModified": "2026-04-26T19:05:10+00:00",
+    "Metadata": {},
+    "SSEKMSKeyId": "arn:aws:kms:us-west-2:975050048887:key/e498a88e-6b23-44e3-90bd-f35b25d6e420",
+    "ServerSideEncryption": "aws:kms",
+    "VersionId": "IYzgrhb4xKV_jQlN904PfeD89.CkkPnP"
+  },
+  "artifact_inventory_filtered_path": "artifact_inventory_filtered.txt",
+  "artifact_required_paths": {
+    "missing": [],
+    "present": [
+      "merged/merge_report.json",
+      "merged/merged_splat.ply",
+      "tiled_pipeline/inputs/tile_00/3dgs_tile_manifest.json",
+      "tiled_pipeline/inputs/tile_00/3dgs_view_buckets.json",
+      "tiled_pipeline/inputs/tile_00/scaffold_init_metadata.json",
+      "tiled_pipeline/inputs/tile_01/3dgs_tile_manifest.json",
+      "tiled_pipeline/inputs/tile_01/3dgs_view_buckets.json",
+      "tiled_pipeline/inputs/tile_01/scaffold_init_metadata.json",
+      "tiled_pipeline_summary.json",
+      "tiles/tile_00/export_manifest.json",
+      "tiles/tile_00/splat.ply",
+      "tiles/tile_00/stage_summary.json",
+      "tiles/tile_00/training_metadata.json",
+      "tiles/tile_00/training_selection.json",
+      "tiles/tile_01/export_manifest.json",
+      "tiles/tile_01/splat.ply",
+      "tiles/tile_01/stage_summary.json",
+      "tiles/tile_01/training_metadata.json",
+      "tiles/tile_01/training_selection.json",
+      "training_metadata.json"
+    ]
+  },
+  "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-horizon-density-20260426143000/T2_tiled_pipeline/md1-r4h-horizon-density-1777213327-tiled/output/model.tar.gz",
+  "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-horizon-density-20260426143000/T2_tiled_pipeline/md1-r4h-horizon-density-1777213327-tiled/output/model.tar.gz",
+  "block_reasons": [],
+  "candidate_label": "r4h-horizon-density-tile00-01",
+  "checked_at": "2026-04-26T19:12:01.645593+00:00",
+  "decision": "preflight_passed_run_frozen_smoke_review",
+  "job_name": "md1-r4h-horizon-density-1777213327-tiled",
+  "merge": {
+    "background_asset": {
+      "asset": "background_skybox.webp",
+      "retained_gaussians": 899272,
+      "selection_score": 0.6230015103696717,
+      "source_asset": "/opt/ml/model/tiles/tile_01/background_skybox.webp",
+      "source_tile_id": "tile_01"
+    },
+    "dropped_gaussians": 69188,
+    "fallback_reasons": [],
+    "fallback_tile_count": 0,
+    "merge_mode": "support_weighted_overlap",
+    "retain_all_tile_count": 0,
+    "retained_gaussians": 1699372,
+    "source_gaussians": 1768560,
+    "tile_count": 2
+  },
+  "next_unblocked_step": "run frozen-camera smoke review against the R1 strict_core baseline before any R5 spend",
+  "pipeline": {
+    "include_merge": true,
+    "include_scaffold": true,
+    "mode": "tiled_pipeline",
+    "selected_tile_ids": [
+      "tile_00",
+      "tile_01"
+    ],
+    "tile_manifest_resolution": {
+      "chunk_planner_available": true,
+      "native_tile_manifest_available": false,
+      "native_view_buckets_available": false,
+      "ownership_bounds_available": true,
+      "scaffold_count": 240,
+      "source_mode": "chunk_planner_synthesized_v1",
+      "tile_count": 7
+    }
+  },
+  "root_training_metadata": {
+    "downscale_factor": null,
+    "enable_bg_model": null,
+    "max_iterations": null,
+    "model_variant": null,
+    "sh_degree": null,
+    "training_completed": true,
+    "training_mode": "tiled_pipeline"
+  },
+  "rung": "R4_horizon_density_repair",
+  "tiles": {
+    "tile_00": {
+      "file_size_mb": 81.82814025878906,
+      "foreground_coordinate_frame": "planner",
+      "inherited_gaussian_count": 450000,
+      "max_iterations": 12000,
+      "merge_dropped_gaussians": null,
+      "merge_fallback_reason": null,
+      "merge_fallback_used": null,
+      "merge_retained_gaussians": null,
+      "model_variant": "splatfacto-w-light",
+      "planner_transform_applied": null,
+      "remaining_gaussians": null,
+      "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+      "scaffold_source_artifact": "/opt/ml/model/tiled_pipeline/external_scaffold/scaffold/splat.ply",
+      "selected_image_count": 186,
+      "sh_degree": 1,
+      "stage_elapsed_seconds": null,
+      "training_completed": true,
+      "training_mode": "leaf_tile",
+      "view_bucket_counts": {
+        "boundary": 0,
+        "horizon": 176,
+        "near_detail": 26
+      }
+    },
+    "tile_01": {
+      "file_size_mb": 93.58261108398438,
+      "foreground_coordinate_frame": "planner",
+      "inherited_gaussian_count": 450000,
+      "max_iterations": 12000,
+      "merge_dropped_gaussians": null,
+      "merge_fallback_reason": null,
+      "merge_fallback_used": null,
+      "merge_retained_gaussians": null,
+      "model_variant": "splatfacto-w-light",
+      "planner_transform_applied": null,
+      "remaining_gaussians": null,
+      "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+      "scaffold_source_artifact": "/opt/ml/model/tiled_pipeline/external_scaffold/scaffold/splat.ply",
+      "selected_image_count": 188,
+      "sh_degree": 1,
+      "stage_elapsed_seconds": null,
+      "training_completed": true,
+      "training_mode": "leaf_tile",
+      "view_bucket_counts": {
+        "boundary": 176,
+        "horizon": 188,
+        "near_detail": 0
+      }
+    }
+  }
+}

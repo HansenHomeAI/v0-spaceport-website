@@ -1,0 +1,61 @@
+{
+  "merge_mode": "support_weighted_overlap",
+  "merged_ply": "/opt/ml/model/merged/merged_splat.ply",
+  "tile_count": 2,
+  "source_gaussians": 1768560,
+  "retained_gaussians": 1699372,
+  "dropped_gaussians": 69188,
+  "fallback_tile_count": 0,
+  "retain_all_tile_count": 0,
+  "fallback_reasons": [],
+  "tiles": [
+    {
+      "tile_id": "tile_00",
+      "source_ply": "/opt/ml/model/tiles/tile_00/splat.ply",
+      "source_gaussians": 825023,
+      "retained_gaussians": 800100,
+      "dropped_gaussians": 24923,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 800100,
+        "overlap_candidate_count": 0,
+        "context_candidate_count": 0,
+        "retained_overlap_count": 0,
+        "retained_context_count": 0,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": false
+      }
+    },
+    {
+      "tile_id": "tile_01",
+      "source_ply": "/opt/ml/model/tiles/tile_01/splat.ply",
+      "source_gaussians": 943537,
+      "retained_gaussians": 899272,
+      "dropped_gaussians": 44265,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 899272,
+        "overlap_candidate_count": 0,
+        "context_candidate_count": 0,
+        "retained_overlap_count": 0,
+        "retained_context_count": 0,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": false
+      }
+    }
+  ],
+  "background_asset": {
+    "asset": "background_skybox.webp",
+    "source_tile_id": "tile_01",
+    "source_asset": "/opt/ml/model/tiles/tile_01/background_skybox.webp",
+    "selection_score": 0.6230015103696717,
+    "retained_gaussians": 899272
+  },
+  "resume_fingerprint": "b01b2a59be880639b41db69ac079b662bf8e3e26e4998be932ef66e848ff7c90"
+}

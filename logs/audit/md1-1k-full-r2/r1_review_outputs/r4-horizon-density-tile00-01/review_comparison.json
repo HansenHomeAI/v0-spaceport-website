@@ -427,12 +427,5 @@
         "sky_score_min_ratio": 0.9
       }
     }
-  },
-  "baseline_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r1-review-c00091ae-render-sanity/baselines/strict_core",
-  "candidate_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-horizon-density-20260426143000/T2_tiled_pipeline/md1-r4h-horizon-density-1777213327-tiled/output/model.tar.gz",
-  "review_output_root_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r4-horizon-density-tile00-01-smoke-review-20260426192200",
-  "review_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r4-horizon-density-tile00-01-smoke-review-20260426192200/outputs/r4-horizon-density-tile00-01/md1-r1-r4-horizon-density-tile00-01-1777230928-quality/output/model.tar.gz",
-  "review_job_name": "md1-r1-r4-horizon-density-tile00-01-1777230928-quality",
-  "candidate_label": "r4-horizon-density-tile00-01",
-  "updated_at": "2026-04-26T19:31:21Z"
+  }
 }

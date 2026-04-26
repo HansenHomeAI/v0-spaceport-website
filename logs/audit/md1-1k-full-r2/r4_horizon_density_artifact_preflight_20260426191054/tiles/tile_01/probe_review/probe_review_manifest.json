@@ -1,0 +1,12 @@
+{
+  "bucket_counts": {
+    "near_detail_camera_ids": 0,
+    "boundary_camera_ids": 4,
+    "horizon_camera_ids": 4
+  },
+  "reference_images": {
+    "near_detail_camera_ids": [],
+    "boundary_camera_ids": [],
+    "horizon_camera_ids": []
+  }
+}
