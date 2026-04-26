@@ -1241,50 +1241,58 @@
       "failure_reason": null
     },
     "latest_signal": {
-      "checked_at": "2026-04-26T10:33:00Z",
-      "head": "aca847f488a223ae61d9cdf5f961a9db56e403a2",
-      "cdk_run": 24953922132,
-      "pages_run": 24954004765,
-      "pages_hash_url": "https://0c9b0cb2.v0-spaceport-website-preview2.pages.dev",
-      "training_time_seconds": 58077,
+      "checked_at": "2026-04-26T11:06:00Z",
+      "head": "013f5442310d3521a435e0a368af878e98093841",
+      "cdk_run": 24954537876,
+      "pages_run": 24954617816,
+      "pages_hash_url": "https://e3dff0df.v0-spaceport-website-preview2.pages.dev",
+      "training_time_seconds": 60074,
       "current_tile_id": "tile_06",
       "failure_reason": null,
       "s3_output_objects": 0,
       "latest_gpu_utilization": {
-        "window": "2026-04-26T10:09:00Z/2026-04-26T10:29:00Z",
+        "window": "2026-04-26T10:34:00Z/2026-04-26T11:04:00Z",
         "average_percent": [
-          43.2,
-          91.4,
-          60.6,
-          54.6,
-          59.75
+          46.0,
+          82.2,
+          56.6,
+          72.0,
+          63.8,
+          41.2,
+          94.0
         ],
         "max_percent": [
-          61.0,
           100.0,
           100.0,
-          97.0,
+          100.0,
+          100.0,
+          100.0,
+          100.0,
           100.0
         ]
       },
       "latest_gpu_memory_utilization": {
-        "window": "2026-04-26T10:09:00Z/2026-04-26T10:29:00Z",
+        "window": "2026-04-26T10:34:00Z/2026-04-26T11:04:00Z",
         "average_percent": [
-          29.95138,
-          30.26576,
-          30.343939999999996,
-          30.33002,
-          44.028999999999996
+          52.666340000000005,
+          52.60206000000001,
+          52.833079999999995,
+          52.70452,
+          52.4492,
+          52.70282000000001,
+          52.59393333333333
         ],
         "max_percent": [
-          30.7278,
-          30.7712,
-          30.5454,
-          30.5367,
-          52.7705
+          52.7532,
+          52.7619,
+          52.8748,
+          52.8661,
+          52.4492,
+          52.8661,
+          52.5968
         ]
       },
-      "latest_log_status": "tile_06 has useful training signal after startup; no filtered Traceback/ERROR/export/completion lines and no final artifact exists yet.",
+      "latest_log_status": "tile_06 continues with useful training signal; no filtered Traceback/ERROR/export/completion lines and no final artifact exists yet.",
       "last_handoff_status": "tile_05_completed_tile_06_started",
       "tile_00_completion": {
         "completed_at": "2026-04-25T20:37:53Z",
