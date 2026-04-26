@@ -531,7 +531,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Monitor md1-r4h-horizon-density-1777213327-tiled tile_00 GPU/memory and completion/export; then monitor tile_01, final merge, streaming preflight, and frozen smoke review before any further full R4/R5 spend.",
+  "next_unblocked_step": "Monitor md1-r4h-horizon-density-1777213327-tiled tile_01 GPU/memory and completion/export; then monitor final merge, streaming preflight, and frozen smoke review before any further full R4/R5 spend.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -1530,8 +1530,8 @@
       }
     }
   },
-  "live_compute_status": "R4 horizon-density repair SageMaker job md1-r4h-horizon-density-1777213327-tiled is InProgress/Training on tile_01 with TrainingTimeInSeconds=8741 at 2026-04-26T16:49:11Z, no FailureReason, no ModelArtifacts, and no S3 output objects. tile_00 completed/exported cleanly with 825023 retained gaussians; tile_01 startup shows useful early signal with GPU avg 45.0% at 16:44Z while memory rose to 30.3% max, and no filtered Traceback/ERROR/export/failure lines appeared.",
-  "current_branch_head": "7940b7027e28997e25586b2bfe7716a75a272211",
+  "live_compute_status": "R4 horizon-density repair SageMaker job md1-r4h-horizon-density-1777213327-tiled is InProgress/Training on tile_01 with TrainingTimeInSeconds=10776 at 2026-04-26T17:23:06Z, no FailureReason, no ModelArtifacts, and no S3 output objects. tile_01 has steady useful signal with GPU averages 79.8%, 61.4%, 96.2%, 95.4%, and 97.0% from 16:58Z-17:18Z, max GPU near/at 100%, GPU memory stabilized near 59.4%-60.2%, and no filtered Traceback/ERROR/export/failure lines appeared.",
+  "current_branch_head": "300ddc0d42059dfd61362474dba17bdbd1fde3d6",
   "r4_full_7tile_1k_result": {
     "job_name": "md1-r4-7tile-1k-1777141446-tiled",
     "training_status": "Completed",
@@ -1745,7 +1745,7 @@
     }
   },
   "r4_horizon_density_repair_plan": {
-    "status": "tile_01_training_startup_useful_signal",
+    "status": "tile_01_training_active_useful_signal",
     "rung": "R4_repair_bounded_horizon_density_tile00_tile01",
     "dryrun_summary": "logs/audit/md1-1k-full-r2/r4_horizon_density_tile00_01_dryrun_20260426143000.json",
     "job_name": "md1-r4h-horizon-density-1777213327-tiled",
@@ -1777,11 +1777,11 @@
       "pages_hash": "https://97c8dab5.v0-spaceport-website-preview2.pages.dev"
     },
     "latest_exact_head_gates": {
-      "head": "7940b7027e28997e25586b2bfe7716a75a272211",
-      "cdk_run_id": 24961550060,
-      "pages_run_id": 24961640454,
+      "head": "300ddc0d42059dfd61362474dba17bdbd1fde3d6",
+      "cdk_run_id": 24961907035,
+      "pages_run_id": 24961990840,
       "pages_alias": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-      "pages_hash": "https://b55420e7.v0-spaceport-website-preview2.pages.dev",
+      "pages_hash": "https://0f67b863.v0-spaceport-website-preview2.pages.dev",
       "health_probe_status": "alias_and_hash_passed"
     },
     "cloudwatch_log_stream": "md1-r4h-horizon-density-1777213327-tiled/algo-1-1777213410",
@@ -1806,10 +1806,10 @@
       }
     },
     "latest_monitoring": {
-      "checked_at": "2026-04-26T16:49:11Z",
+      "checked_at": "2026-04-26T17:23:06Z",
       "status": "InProgress",
       "secondary_status": "Training",
-      "training_time_seconds": 8741,
+      "training_time_seconds": 10776,
       "failure_reason": null,
       "model_artifacts": null,
       "s3_output_objects": 0,
@@ -2062,35 +2062,39 @@
         "md1-r4h-horizon-density-1777213327-tiled"
       ],
       "current_tile_id": "tile_01",
-      "latest_log_status": "tile_01 startup has useful early GPU signal and no filtered error/export/failure lines after handoff.",
+      "latest_log_status": "tile_01 continues with steady useful GPU and memory signal; no filtered Traceback/ERROR/export/failure lines appeared.",
       "latest_gpu_window": {
-        "window": "2026-04-26T16:29:00Z/2026-04-26T16:44:00Z",
+        "window": "2026-04-26T16:58:00Z/2026-04-26T17:18:00Z",
         "average_percent": [
-          88.2,
-          84.4,
-          29.0,
-          45.0
+          79.8,
+          61.4,
+          96.2,
+          95.4,
+          97.0
         ],
         "max_percent": [
+          97.0,
           100.0,
           100.0,
           100.0,
-          65.0
+          100.0
         ]
       },
       "latest_gpu_memory_window": {
-        "window": "2026-04-26T16:29:00Z/2026-04-26T16:44:00Z",
+        "window": "2026-04-26T16:58:00Z/2026-04-26T17:18:00Z",
         "average_percent": [
-          57.43096,
-          57.58556,
-          30.552378,
-          27.48308
+          40.2588,
+          42.10354,
+          59.46326,
+          59.57098,
+          59.43198
         ],
         "max_percent": [
-          57.5473,
-          57.8253,
-          57.3736,
-          30.2936
+          41.6623,
+          58.8067,
+          59.8489,
+          60.0747,
+          60.2137
         ]
       },
       "tile_00_completion": {
@@ -2140,6 +2144,6 @@
       }
     }
   },
-  "updated": "2026-04-26T16:49:11Z",
-  "current_exact_head_gate_status": "green CDK Deploy 24961550060 and green manually-triggered Cloudflare Pages 24961640454 for head 7940b7027e28997e25586b2bfe7716a75a272211; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://b55420e7.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes."
+  "updated": "2026-04-26T17:23:06Z",
+  "current_exact_head_gate_status": "green CDK Deploy 24961907035 and green manually-triggered Cloudflare Pages 24961990840 for head 300ddc0d42059dfd61362474dba17bdbd1fde3d6; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://0f67b863.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes."
 }
