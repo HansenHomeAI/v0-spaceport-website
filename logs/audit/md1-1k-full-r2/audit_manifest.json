@@ -531,7 +531,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Monitor md1-r4h-horizon-density-1777213327-tiled tile_01 GPU/memory and completion/export; then monitor final merge, streaming preflight, and frozen smoke review before any further full R4/R5 spend.",
+  "next_unblocked_step": "monitor md1-r4h-horizon-density-1777213327-tiled tile_01 GPU/memory and completion/export; then monitor final merge, streaming preflight, and frozen smoke review before any further full R4/R5 spend.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -1530,8 +1530,8 @@
       }
     }
   },
-  "live_compute_status": "R4 horizon-density repair SageMaker job md1-r4h-horizon-density-1777213327-tiled is InProgress/Training on tile_01 with TrainingTimeInSeconds=10776 at 2026-04-26T17:23:06Z, no FailureReason, no ModelArtifacts, and no S3 output objects. tile_01 has steady useful signal with GPU averages 79.8%, 61.4%, 96.2%, 95.4%, and 97.0% from 16:58Z-17:18Z, max GPU near/at 100%, GPU memory stabilized near 59.4%-60.2%, and no filtered Traceback/ERROR/export/failure lines appeared.",
-  "current_branch_head": "300ddc0d42059dfd61362474dba17bdbd1fde3d6",
+  "live_compute_status": "R4 horizon-density repair SageMaker job md1-r4h-horizon-density-1777213327-tiled is InProgress/Training on tile_01 with TrainingTimeInSeconds=11501 at 2026-04-26T17:35:47Z, no FailureReason, no ModelArtifacts, and no S3 output objects. tile_01 has steady useful signal with GPU averages 62.4%, 97.0%, 97.4%, 98.0%, 87.0%, and 77.6% from 17:05Z-17:30Z, max GPU at 100%, GPU memory stabilized near 59.4%-60.2%, and no filtered Traceback/ERROR/export/failure lines appeared.",
+  "current_branch_head": "00e5ba6cfff0f15c1783ef7b150648f1216a65e7",
   "r4_full_7tile_1k_result": {
     "job_name": "md1-r4-7tile-1k-1777141446-tiled",
     "training_status": "Completed",
@@ -1777,11 +1777,11 @@
       "pages_hash": "https://97c8dab5.v0-spaceport-website-preview2.pages.dev"
     },
     "latest_exact_head_gates": {
-      "head": "300ddc0d42059dfd61362474dba17bdbd1fde3d6",
-      "cdk_run_id": 24961907035,
-      "pages_run_id": 24961990840,
+      "head": "00e5ba6cfff0f15c1783ef7b150648f1216a65e7",
+      "cdk_run_id": 24962598427,
+      "pages_run_id": 24962722539,
       "pages_alias": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-      "pages_hash": "https://0f67b863.v0-spaceport-website-preview2.pages.dev",
+      "pages_hash": "https://c57e71dd.v0-spaceport-website-preview2.pages.dev",
       "health_probe_status": "alias_and_hash_passed"
     },
     "cloudwatch_log_stream": "md1-r4h-horizon-density-1777213327-tiled/algo-1-1777213410",
@@ -1806,10 +1806,10 @@
       }
     },
     "latest_monitoring": {
-      "checked_at": "2026-04-26T17:23:06Z",
+      "checked_at": "2026-04-26T17:35:47Z",
       "status": "InProgress",
       "secondary_status": "Training",
-      "training_time_seconds": 10776,
+      "training_time_seconds": 11501,
       "failure_reason": null,
       "model_artifacts": null,
       "s3_output_objects": 0,
@@ -2062,18 +2062,20 @@
         "md1-r4h-horizon-density-1777213327-tiled"
       ],
       "current_tile_id": "tile_01",
-      "latest_log_status": "tile_01 continues with steady useful GPU and memory signal; no filtered Traceback/ERROR/export/failure lines appeared.",
+      "latest_log_status": "tile_01 continues with steady useful GPU and memory signal; no filtered Traceback/ERROR/export/failure lines appeared after the previous check.",
       "latest_gpu_window": {
-        "window": "2026-04-26T16:58:00Z/2026-04-26T17:18:00Z",
+        "window": "2026-04-26T17:05:00Z/2026-04-26T17:30:00Z",
         "average_percent": [
-          79.8,
-          61.4,
-          96.2,
-          95.4,
-          97.0
+          62.4,
+          97.0,
+          97.4,
+          98.0,
+          87.0,
+          77.6
         ],
         "max_percent": [
-          97.0,
+          100.0,
+          100.0,
           100.0,
           100.0,
           100.0,
@@ -2081,20 +2083,22 @@
         ]
       },
       "latest_gpu_memory_window": {
-        "window": "2026-04-26T16:58:00Z/2026-04-26T17:18:00Z",
+        "window": "2026-04-26T17:05:00Z/2026-04-26T17:30:00Z",
         "average_percent": [
-          40.2588,
-          42.10354,
-          59.46326,
-          59.57098,
-          59.43198
+          49.9618,
+          59.40074,
+          59.55358,
+          59.59702,
+          59.45806,
+          59.43724
         ],
         "max_percent": [
-          41.6623,
-          58.8067,
+          59.5449,
           59.8489,
           60.0747,
-          60.2137
+          60.2137,
+          59.7273,
+          59.5102
         ]
       },
       "tile_00_completion": {
@@ -2144,6 +2148,6 @@
       }
     }
   },
-  "updated": "2026-04-26T17:23:06Z",
-  "current_exact_head_gate_status": "green CDK Deploy 24961907035 and green manually-triggered Cloudflare Pages 24961990840 for head 300ddc0d42059dfd61362474dba17bdbd1fde3d6; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://0f67b863.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes."
+  "updated": "2026-04-26T17:35:47Z",
+  "current_exact_head_gate_status": "green CDK Deploy 24962598427 and green manually-triggered Cloudflare Pages 24962722539 for head 00e5ba6cfff0f15c1783ef7b150648f1216a65e7; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://c57e71dd.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes."
 }
