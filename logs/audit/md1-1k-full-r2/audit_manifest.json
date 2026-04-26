@@ -1241,24 +1241,16 @@
       "failure_reason": null
     },
     "latest_signal": {
-      "checked_at": "2026-04-25T23:02:51Z",
-      "head": "7ca8ab369b4c2a9e6cea620e558af2dce73e54e1",
-      "cdk_run": 24942026208,
-      "pages_run": 24942102836,
-      "pages_hash_url": "https://2b4cf044.v0-spaceport-website-preview2.pages.dev",
-      "training_time_seconds": 16615,
-      "current_tile_id": "tile_02",
+      "checked_at": "2026-04-26T01:34:23Z",
+      "head": "03f57170c30bb503bf1a371361529687e11d0fe9",
+      "cdk_run": 24942799910,
+      "pages_run": 24942872538,
+      "pages_hash_url": "https://8fe15de8.v0-spaceport-website-preview2.pages.dev",
+      "training_time_seconds": 25676,
+      "current_tile_id": "tile_03",
       "failure_reason": null,
       "s3_output_objects": 0,
-      "last_gpu_average_percent_windows": [
-        95.4,
-        61.0,
-        100.0,
-        84.8,
-        47.2,
-        62.6,
-        27.8
-      ],
+      "last_handoff_status": "tile_02_completed_tile_03_started",
       "tile_00_completion": {
         "completed_at": "2026-04-25T20:37:53Z",
         "exported_ply_size_mb": 35.5,
@@ -1305,6 +1297,40 @@
         "started_at": "2026-04-25T22:57:11Z",
         "inherited_gaussian_count": 300000,
         "selected_image_count": 188,
+        "training_settings": {
+          "sh_degree": 1,
+          "bg_sh_degree": 1,
+          "stop_split_at": 3500,
+          "max_gauss_ratio": 3.0,
+          "suppress_training_eval": true,
+          "background_enabled": true,
+          "alpha_loss_enabled": true,
+          "robust_mask_enabled": true
+        }
+      },
+      "tile_02_completion": {
+        "completed_at": "2026-04-26T01:23:13Z",
+        "exported_ply_size_mb": 28.7,
+        "remaining_gaussians": 288880,
+        "planner_transform_applied": true,
+        "inherited_gaussian_count": 300000,
+        "selected_image_count": 188,
+        "view_bucket_counts": {
+          "near_detail": 66,
+          "boundary": 176,
+          "horizon": 0
+        },
+        "floater_pruning": {
+          "evaluated_gaussians": 288918,
+          "candidate_gaussians": 90093,
+          "removed_gaussians": 38,
+          "remaining_gaussians": 288880
+        }
+      },
+      "tile_03_start": {
+        "started_at": "2026-04-26T01:24:56Z",
+        "inherited_gaussian_count": 300000,
+        "selected_image_count": 186,
         "training_settings": {
           "sh_degree": 1,
           "bg_sh_degree": 1,
