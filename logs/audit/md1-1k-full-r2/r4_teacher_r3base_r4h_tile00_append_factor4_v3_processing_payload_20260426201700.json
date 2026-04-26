@@ -1,0 +1,83 @@
+{
+  "ProcessingJobName": "md1-r4-teacher-tile00-f4v3-1777234616",
+  "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+  "AppSpecification": {
+    "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:54958f2c5a7984aba9549ca3a7e247d7ac79b04d248ed301d3b89710c2bbfacd",
+    "ContainerEntrypoint": [
+      "bash",
+      "/opt/ml/processing/input/scripts/build_hybrid.sh"
+    ]
+  },
+  "ProcessingInputs": [
+    {
+      "InputName": "historical",
+      "S3Input": {
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r3-fullcontext-context-preserve-factor200-20260425174142/model.tar.gz",
+        "LocalPath": "/opt/ml/processing/input/historical",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File"
+      }
+    },
+    {
+      "InputName": "replacement",
+      "S3Input": {
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-horizon-density-20260426143000/T2_tiled_pipeline/md1-r4h-horizon-density-1777213327-tiled/output/model.tar.gz",
+        "LocalPath": "/opt/ml/processing/input/replacement",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File"
+      }
+    },
+    {
+      "InputName": "scripts",
+      "S3Input": {
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-teacher-r3base-r4h-tile00-factor4-v3-20260426201700/scripts/",
+        "LocalPath": "/opt/ml/processing/input/scripts",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File"
+      }
+    }
+  ],
+  "ProcessingOutputConfig": {
+    "Outputs": [
+      {
+        "OutputName": "artifact",
+        "S3Output": {
+          "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-teacher-r3base-r4h-tile00-factor4-v3-20260426201700/output",
+          "LocalPath": "/opt/ml/processing/output",
+          "S3UploadMode": "EndOfJob"
+        }
+      }
+    ]
+  },
+  "ProcessingResources": {
+    "ClusterConfig": {
+      "InstanceType": "ml.g4dn.xlarge",
+      "InstanceCount": 1,
+      "VolumeSizeInGB": 100
+    }
+  },
+  "StoppingCondition": {
+    "MaxRuntimeInSeconds": 7200
+  },
+  "Environment": {
+    "PYTHONPATH": "/opt/ml/code"
+  },
+  "Tags": [
+    {
+      "Key": "Project",
+      "Value": "Spaceport"
+    },
+    {
+      "Key": "Component",
+      "Value": "3DGS"
+    },
+    {
+      "Key": "Branch",
+      "Value": "agent-90742618-md1-geometry-consistency"
+    },
+    {
+      "Key": "Stage",
+      "Value": "hybrid-artifact-build"
+    }
+  ]
+}

@@ -531,7 +531,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Monitor md1-r4-teacher-tile00-f4v2-1777233815 to artifact or failure. If model.tar.gz forms, run streaming preflight and frozen smoke review before any R5 or another full R4 spend.",
+  "next_unblocked_step": "Commit/push the v3 builder, preflight, and smoke-review evidence; monitor exact-head CDK/Pages; then run the 12-image-per-bucket frozen promotion review for r4-teacher-r3base-r4h-tile00-factor4-v3 before any R5 spend.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -1530,8 +1530,8 @@
       }
     }
   },
-  "live_compute_status": "Processing job md1-r4-teacher-tile00-f4v2-1777233815 is InProgress/Pending to rebuild the offline teacher-preserving hybrid with complete preflight metadata; no SageMaker training jobs are InProgress.",
-  "current_branch_head": "7063eb3f00196e53d82e66acc7be8aac5397c092",
+  "live_compute_status": "No SageMaker training or processing jobs are InProgress. v3 teacher-hybrid processing completed and wrote s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-teacher-r3base-r4h-tile00-factor4-v3-20260426201700/output/artifact/model.tar.gz; streaming preflight passed with fallback=0 retain_all=0 retained=6518301/7322221.",
+  "current_branch_head": "f06e39b2048c02aa215ac11cfb56289aae8d0eee",
   "r4_full_7tile_1k_result": {
     "job_name": "md1-r4-7tile-1k-1777141446-tiled",
     "training_status": "Completed",
@@ -2164,15 +2164,16 @@
       }
     }
   },
-  "updated": "2026-04-26T20:04:32Z",
+  "updated": "2026-04-26T20:42:15Z",
   "current_exact_head_gate_status": {
-    "head": "7063eb3f00196e53d82e66acc7be8aac5397c092",
-    "cdk_deploy_run_id": 24965188653,
-    "cloudflare_pages_run_id": 24965195770,
+    "head": "f06e39b2048c02aa215ac11cfb56289aae8d0eee",
+    "cdk_deploy_run_id": 24965861771,
+    "cloudflare_pages_run_id": 24965866063,
     "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://b9b0b585.v0-spaceport-website-preview2.pages.dev",
+    "pages_hash_url": "https://3648c803.v0-spaceport-website-preview2.pages.dev",
     "health_txt_verified": true,
-    "status": "green"
+    "status": "green",
+    "verified_at": "2026-04-26T20:12:55Z"
   },
   "r4_horizon_density_repair_result": {
     "label": "r4-horizon-density-tile00-01",
@@ -2370,9 +2371,9 @@
     },
     "interpretation": "Increasing horizon-owner tile_00/tile_01 density improved horizon versus the failed full R4/context-preserve variants but still failed promotion; DJI_0146/DJI_0147 remain poor, so the next rung must preserve or distill global far-field/teacher structure instead of spending on another same-method full rerun."
   },
-  "blocked_promotion_reason": "R4 full and context-preserve-all were fallback-free/retain-all-free but horizon-blocked; bounded horizon-density tile_00/tile_01 also blocked with boundary_ssim_regression, boundary_no_required_improvement, horizon_psnr_regression, horizon_ssim_regression, and horizon_lpips_regression. Horizon improved from full R4 delta -5.081 dB PSNR/+0.097 LPIPS to -4.173 dB/+0.052 LPIPS but remains far outside thresholds.",
+  "blocked_promotion_reason": "None for the 4-image-per-bucket smoke gate. The next gate remains a 12-image-per-bucket frozen promotion review before any R5 or 14-tile spend.",
   "r4_teacher_hybrid_build": {
-    "status": "v1_preflight_blocked_v2_submitted",
+    "status": "v3_smoke_promoted_pending_12_image_promotion_review",
     "submitted_at": "2026-04-26T19:50:58Z",
     "processing_job_name": "md1-r4-teacher-tile00-f4-1777232953",
     "instance_type": "ml.g4dn.xlarge",
@@ -2415,13 +2416,130 @@
         "retain_all_tile_count": 0
       }
     },
+    "current_processing_job_name": null,
     "v2": {
-      "status": "InProgress",
+      "status": "preflight_blocked",
       "submitted_at": "2026-04-26T20:04:32Z",
+      "completed_at": "2026-04-26T20:13:01Z",
       "processing_job_name": "md1-r4-teacher-tile00-f4v2-1777233815",
       "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-teacher-r3base-r4h-tile00-factor4-v2-20260426200335/output/artifact/model.tar.gz",
       "payload_path": "logs/audit/md1-1k-full-r2/r4_teacher_r3base_r4h_tile00_append_factor4_v2_processing_payload_20260426200335.json",
+      "preflight_summary_path": "logs/audit/md1-1k-full-r2/r4_teacher_tile00_factor4_v2_artifact_preflight_20260426201400/preflight_summary.json",
+      "preflight_decision": "preflight_blocked",
+      "block_reasons": [
+        "artifact_required_paths_missing"
+      ],
+      "missing_required_paths": [
+        "tiles/tile_01/export_manifest.json"
+      ],
+      "merge": {
+        "merge_mode": "support_weighted_overlap",
+        "tile_count": 7,
+        "source_gaussians": 7322221,
+        "retained_gaussians": 6518301,
+        "dropped_gaussians": 803920,
+        "fallback_tile_count": 0,
+        "retain_all_tile_count": 0
+      },
       "fix": "build_md1_hybrid_artifact now copies/synthesizes required tile sidecars and tiled_pipeline input metadata for hybrid artifacts."
+    },
+    "v3": {
+      "status": "smoke_promoted",
+      "submitted_at": "2026-04-26T20:18:02Z",
+      "started_at": "2026-04-26T20:18:35Z",
+      "processing_job_name": "md1-r4-teacher-tile00-f4v3-1777234616",
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-teacher-r3base-r4h-tile00-factor4-v3-20260426201700/output/artifact/model.tar.gz",
+      "payload_path": "logs/audit/md1-1k-full-r2/r4_teacher_r3base_r4h_tile00_append_factor4_v3_processing_payload_20260426201700.json",
+      "fix": "build_md1_hybrid_artifact now synthesizes export_manifest.json for missing hybrid tile sidecars.",
+      "latest_check_at": "2026-04-26T20:20:37Z",
+      "failure_reason": null,
+      "s3_output_objects": 0,
+      "completed_at": "2026-04-26T20:26:41Z",
+      "artifact_size_bytes": 802636524,
+      "preflight_summary_path": "logs/audit/md1-1k-full-r2/r4_teacher_tile00_factor4_v3_artifact_preflight_20260426202900/preflight_summary.json",
+      "preflight_decision": "preflight_passed_run_frozen_smoke_review",
+      "artifact_complete": true,
+      "merge": {
+        "background_asset": {
+          "asset": "background_skybox.webp",
+          "retained_gaussians": 1188805,
+          "selection_score": 0.6283583895586156,
+          "source_asset": "/opt/ml/processing/work/artifact/tiles/tile_06/background_skybox.webp",
+          "source_tile_id": "tile_06"
+        },
+        "dropped_gaussians": 803920,
+        "fallback_reasons": [],
+        "fallback_tile_count": 0,
+        "merge_mode": "support_weighted_overlap",
+        "retain_all_tile_count": 0,
+        "retained_gaussians": 6518301,
+        "source_gaussians": 7322221,
+        "tile_count": 7
+      },
+      "smoke_review_job_name": "md1-r1-r4-teacher-r3base-r4h-tile00-factor4-v3-1777235395-quali",
+      "smoke_review_output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r4-teacher-r3base-r4h-tile00-factor4-v3-smoke-review-20260426203000/outputs/r4-teacher-r3base-r4h-tile00-factor4-v3",
+      "smoke_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-teacher-r3base-r4h-tile00-factor4-v3/review_comparison.json",
+      "smoke_review_decision": "promoted",
+      "smoke_review_block_reasons": [],
+      "smoke_review_per_bucket": {
+        "near_detail": {
+          "baseline": {
+            "psnr": 10.204569909807525,
+            "ssim": 0.3250790983438492,
+            "lpips": 0.9124259352684021
+          },
+          "candidate": {
+            "psnr": 14.170835448850204,
+            "ssim": 0.3640611171722412,
+            "lpips": 0.82285475730896
+          },
+          "delta": {
+            "psnr": 3.966265539042679,
+            "ssim": 0.03898201882839203,
+            "lpips": -0.08957117795944214
+          },
+          "block_reasons": []
+        },
+        "boundary": {
+          "baseline": {
+            "psnr": 13.134039611111529,
+            "ssim": 0.4168241024017334,
+            "lpips": 0.8232778012752533
+          },
+          "candidate": {
+            "psnr": 15.560516808480402,
+            "ssim": 0.425962895154953,
+            "lpips": 0.754646360874176
+          },
+          "delta": {
+            "psnr": 2.4264771973688735,
+            "ssim": 0.009138792753219604,
+            "lpips": -0.06863144040107727
+          },
+          "block_reasons": []
+        },
+        "horizon": {
+          "baseline": {
+            "psnr": 16.21552459733899,
+            "ssim": 0.38312965631484985,
+            "lpips": 0.8720598220825195
+          },
+          "candidate": {
+            "psnr": 15.496827930182725,
+            "ssim": 0.3777027577161789,
+            "lpips": 0.893537163734436
+          },
+          "delta": {
+            "psnr": -0.7186966671562658,
+            "ssim": -0.0054268985986709595,
+            "lpips": 0.021477341651916504
+          },
+          "block_reasons": []
+        }
+      }
     }
-  }
+  },
+  "current_rung": "R4_repair_teacher_hybrid_smoke_promoted",
+  "latest_review_status": "Frozen smoke review md1-r1-r4-teacher-r3base-r4h-tile00-factor4-v3-1777235395-quali completed and promoted with render_sanity=ok and fallback=0/retain_all=0. Deltas vs R1 strict baseline: near_detail +3.966 dB/+0.0390 SSIM/-0.0896 LPIPS; boundary +2.426 dB/+0.0091 SSIM/-0.0686 LPIPS; horizon -0.719 dB/-0.0054 SSIM/+0.0215 LPIPS. Block reasons: none.",
+  "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/review_comparison.json"
 }

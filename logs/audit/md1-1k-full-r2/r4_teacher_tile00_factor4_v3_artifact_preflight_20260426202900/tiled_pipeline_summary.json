@@ -1,0 +1,28 @@
+{
+  "pipeline": "md1_hybrid_diagnostic",
+  "mode": "md1_hybrid_diagnostic",
+  "label": "r4_teacher_r3base_r4h_tile00_append_factor4",
+  "selected_tile_ids": [
+    "tile_00",
+    "tile_01",
+    "tile_02",
+    "tile_03",
+    "tile_04",
+    "tile_05",
+    "tile_06"
+  ],
+  "include_scaffold": false,
+  "include_merge": true,
+  "tile_manifest_resolution": "fixed",
+  "merge": {
+    "merge_mode": "support_weighted_overlap",
+    "tile_count": 7,
+    "source_gaussians": 7322221,
+    "retained_gaussians": 6518301,
+    "dropped_gaussians": 803920,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "fallback_reasons": []
+  },
+  "model_artifact": "/opt/ml/processing/work/artifact/model.tar.gz"
+}

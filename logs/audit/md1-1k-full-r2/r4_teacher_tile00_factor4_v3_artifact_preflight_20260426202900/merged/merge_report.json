@@ -1,0 +1,160 @@
+{
+  "merge_mode": "support_weighted_overlap",
+  "merged_ply": "/opt/ml/processing/work/artifact/merged/merged_splat.ply",
+  "tile_count": 7,
+  "source_gaussians": 7322221,
+  "retained_gaussians": 6518301,
+  "dropped_gaussians": 803920,
+  "fallback_tile_count": 0,
+  "retain_all_tile_count": 0,
+  "fallback_reasons": [],
+  "tiles": [
+    {
+      "tile_id": "tile_00",
+      "source_ply": "/opt/ml/processing/work/artifact/tiles/tile_00/splat.ply",
+      "source_gaussians": 1554116,
+      "retained_gaussians": 1554116,
+      "dropped_gaussians": 0,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 1526701,
+        "overlap_candidate_count": 0,
+        "context_candidate_count": 27415,
+        "retained_overlap_count": 0,
+        "retained_context_count": 27415,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": true
+      }
+    },
+    {
+      "tile_id": "tile_01",
+      "source_ply": "/opt/ml/processing/work/artifact/tiles/tile_01/splat.ply",
+      "source_gaussians": 729093,
+      "retained_gaussians": 718230,
+      "dropped_gaussians": 10863,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 718230,
+        "overlap_candidate_count": 0,
+        "context_candidate_count": 0,
+        "retained_overlap_count": 0,
+        "retained_context_count": 0,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": false
+      }
+    },
+    {
+      "tile_id": "tile_02",
+      "source_ply": "/opt/ml/processing/work/artifact/tiles/tile_02/splat.ply",
+      "source_gaussians": 1018716,
+      "retained_gaussians": 1004600,
+      "dropped_gaussians": 14116,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 1004525,
+        "overlap_candidate_count": 75,
+        "context_candidate_count": 0,
+        "retained_overlap_count": 75,
+        "retained_context_count": 0,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": false
+      }
+    },
+    {
+      "tile_id": "tile_03",
+      "source_ply": "/opt/ml/processing/work/artifact/tiles/tile_03/splat.ply",
+      "source_gaussians": 970360,
+      "retained_gaussians": 970360,
+      "dropped_gaussians": 0,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 939164,
+        "overlap_candidate_count": 0,
+        "context_candidate_count": 31196,
+        "retained_overlap_count": 0,
+        "retained_context_count": 31196,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": true
+      }
+    },
+    {
+      "tile_id": "tile_04",
+      "source_ply": "/opt/ml/processing/work/artifact/tiles/tile_04/splat.ply",
+      "source_gaussians": 964477,
+      "retained_gaussians": 961927,
+      "dropped_gaussians": 2550,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 935859,
+        "overlap_candidate_count": 5582,
+        "context_candidate_count": 23036,
+        "retained_overlap_count": 3032,
+        "retained_context_count": 23036,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": true
+      }
+    },
+    {
+      "tile_id": "tile_05",
+      "source_ply": "/opt/ml/processing/work/artifact/tiles/tile_05/splat.ply",
+      "source_gaussians": 896654,
+      "retained_gaussians": 120263,
+      "dropped_gaussians": 776391,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 120263,
+        "overlap_candidate_count": 0,
+        "context_candidate_count": 0,
+        "retained_overlap_count": 0,
+        "retained_context_count": 0,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": false
+      }
+    },
+    {
+      "tile_id": "tile_06",
+      "source_ply": "/opt/ml/processing/work/artifact/tiles/tile_06/splat.ply",
+      "source_gaussians": 1188805,
+      "retained_gaussians": 1188805,
+      "dropped_gaussians": 0,
+      "retention_strategy": "support_weighted_overlap",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true,
+      "support_weighted_overlap": {
+        "core_candidate_count": 303433,
+        "overlap_candidate_count": 0,
+        "context_candidate_count": 885372,
+        "retained_overlap_count": 0,
+        "retained_context_count": 885372,
+        "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+        "context_preserve_enabled": true
+      }
+    }
+  ],
+  "background_asset": {
+    "asset": "background_skybox.webp",
+    "source_tile_id": "tile_06",
+    "source_asset": "/opt/ml/processing/work/artifact/tiles/tile_06/background_skybox.webp",
+    "selection_score": 0.6283583895586156,
+    "retained_gaussians": 1188805
+  }
+}

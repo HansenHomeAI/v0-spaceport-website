@@ -255,6 +255,17 @@ def synthesize_required_tile_metadata(
 ) -> None:
     hybrid_mode = tile_policy.get("mode", "hybrid")
     write_json_if_missing(
+        tile_dir / "export_manifest.json",
+        {
+            "tile_id": tile_id,
+            "stage": "hybrid_artifact_build",
+            "training_completed": True,
+            "source_splat": tile_policy.get("source_splat"),
+            "written_gaussian_count": vertex_count,
+            "hybrid_tile_policy": tile_policy,
+        },
+    )
+    write_json_if_missing(
         tile_dir / "stage_summary.json",
         {
             "tile_id": tile_id,

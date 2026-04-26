@@ -1,0 +1,110 @@
+{
+  "created_at": "2026-04-26T20:09:43Z",
+  "label": "r4_teacher_r3base_r4h_tile00_append_factor4",
+  "purpose": "Preserve promoted R3 far-field teacher while appending heavily attenuated R4h tile_00 residual for horizon-owner diagnosis.",
+  "training_completed": true,
+  "training_mode": "md1_hybrid_diagnostic",
+  "model_variant": "md1_hybrid_diagnostic",
+  "historical_source_root": "/opt/ml/processing/work/historical",
+  "replacement_source_root": "/opt/ml/processing/work/replacement",
+  "replacement_tiles": [
+    "tile_00"
+  ],
+  "preserve_context_tiles": [
+    "tile_00"
+  ],
+  "replacement_mode": "append",
+  "merge_mode": "support_weighted_overlap",
+  "opacity_policy": {
+    "mode": "factor",
+    "factor": 4.0,
+    "scale_start_quantile": 0.9,
+    "scale_full_quantile": 0.99,
+    "scale_weight_power": 1.0
+  },
+  "tile_policy": {
+    "tile_00": {
+      "mode": "historical_plus_replacement",
+      "source_splat": "/opt/ml/processing/work/replacement/tiles/tile_00/splat.ply",
+      "historical_source_splat": "/opt/ml/processing/work/historical/tiles/tile_00/splat.ply",
+      "source_property_count": 26,
+      "expanded_to_dtype_property_count": 62,
+      "written_gaussian_count": 1554116,
+      "opacity_policy": {
+        "mode": "factor",
+        "adjusted": true,
+        "tile_id": "tile_00",
+        "old_median_opacity": -2.1972246170043945,
+        "replacement_median_opacity_before": 2.2753801345825195,
+        "full_median_shift": 4.472604751586914,
+        "opacity_factor": 4.0,
+        "opacity_logit_shift_mean": 17.89040756225586,
+        "replacement_median_opacity_after": -15.615038871765137,
+        "weight_quantiles": [
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "adjusted_gaussian_count": 825023,
+        "fully_adjusted_gaussian_count": 825023
+      },
+      "context_preservation": {
+        "enabled": true,
+        "context_bounds": {
+          "min_x": -55.87865447998047,
+          "max_x": 34.43183517456055,
+          "min_y": -27.71709442138672,
+          "max_y": 28.366491317749023,
+          "min_z": -25.452564239501953,
+          "max_z": 53.00217819213867
+        },
+        "strategy": "hybrid_output_splat_extent",
+        "padding_ratio": 0.0
+      }
+    },
+    "tile_01": {
+      "mode": "historical",
+      "source_splat": "/opt/ml/processing/work/historical/tiles/tile_01/splat.ply",
+      "storage": "hardlink_or_copy"
+    },
+    "tile_02": {
+      "mode": "historical",
+      "source_splat": "/opt/ml/processing/work/historical/tiles/tile_02/splat.ply",
+      "storage": "hardlink_or_copy"
+    },
+    "tile_03": {
+      "mode": "historical",
+      "source_splat": "/opt/ml/processing/work/historical/tiles/tile_03/splat.ply",
+      "storage": "hardlink_or_copy"
+    },
+    "tile_04": {
+      "mode": "historical",
+      "source_splat": "/opt/ml/processing/work/historical/tiles/tile_04/splat.ply",
+      "storage": "hardlink_or_copy"
+    },
+    "tile_05": {
+      "mode": "historical",
+      "source_splat": "/opt/ml/processing/work/historical/tiles/tile_05/splat.ply",
+      "storage": "hardlink_or_copy"
+    },
+    "tile_06": {
+      "mode": "historical",
+      "source_splat": "/opt/ml/processing/work/historical/tiles/tile_06/splat.ply",
+      "storage": "hardlink_or_copy"
+    }
+  },
+  "merge_report": {
+    "merge_mode": "support_weighted_overlap",
+    "tile_count": 7,
+    "source_gaussians": 7322221,
+    "retained_gaussians": 6518301,
+    "dropped_gaussians": 803920,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "fallback_reasons": []
+  }
+}
