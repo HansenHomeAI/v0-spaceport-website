@@ -512,7 +512,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Continue monitoring R5 ns-process-data completion, external scaffold extraction/reuse, tile_00 preparation, and first GPU datapoints; preflight/review when model.tar.gz appears.",
+  "next_unblocked_step": "Continue monitoring R5 tile_00 to export/completion and tile_01 handoff, then run streaming preflight and frozen-camera smoke/promotion review when model.tar.gz appears.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -1511,8 +1511,8 @@
       }
     }
   },
-  "live_compute_status": "R5 SageMaker training job md1-r5-14tile-2k-1777240767-tiled is InProgress/Training as of 2026-04-26T22:10:40Z with TrainingStartTime=2026-04-26T22:01:11Z, TrainingTimeInSeconds=569, no FailureReason, no ModelArtifacts, zero S3 output objects, and startup logs proving COLMAP validation plus TXT->BIN conversion and ns-process-data launch. No GPU/GPU-memory datapoints yet, expected while conversion remains CPU-side.",
-  "current_branch_head": "ec12c65e4217b22637737e5ba669afbbd9015382",
+  "live_compute_status": "R5 SageMaker training job md1-r5-14tile-2k-1777240767-tiled is InProgress/Training as of 2026-04-26T22:26:05Z with TrainingStartTime=2026-04-26T22:01:11Z, TrainingTimeInSeconds=1494, no FailureReason, no ModelArtifacts, zero S3 output objects, and only this SageMaker training job InProgress. CloudWatch proves tile_00 reused external scaffold PLY, prepared 300000 inherited points, selected 188 images, launched ns-train at 22:12:19Z, and has useful GPU signal from 22:10Z through 22:25Z.",
+  "current_branch_head": "3050f63cfa933270636a00684d4df7e968d1eb7c",
   "r4_full_7tile_1k_result": {
     "job_name": "md1-r4-7tile-1k-1777141446-tiled",
     "training_status": "Completed",
@@ -2145,8 +2145,8 @@
       }
     }
   },
-  "updated": "2026-04-26T22:10:40Z",
-  "current_exact_head_gate_status": "green CDK Deploy 24967902351 and green manually-triggered Cloudflare Pages 24967988900 for head ec12c65e4217b22637737e5ba669afbbd9015382; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://88542332.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes. No new ML container build was required for this evidence-only commit; R5 uses branch image digest sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8.",
+  "updated": "2026-04-26T22:26:05Z",
+  "current_exact_head_gate_status": "green CDK Deploy 24968337182 and green manually-triggered Cloudflare Pages 24968523044 for head 3050f63cfa933270636a00684d4df7e968d1eb7c; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://f7f25bce.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes. No new ML container build was required for this evidence-only commit; R5 uses branch image digest sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8.",
   "r4_horizon_density_repair_result": {
     "label": "r4-horizon-density-tile00-01",
     "training_job_name": "md1-r4h-horizon-density-1777213327-tiled",
@@ -2619,20 +2619,20 @@
       "candidate_manifest_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-teacher-r3base-r4h-tile00-factor4-v3-promotion/quality_review_manifest.json"
     }
   },
-  "current_rung": "R5_submitted_monitoring_startup",
+  "current_rung": "R5_submitted_monitoring_tile00_active",
   "latest_review_status": "Corrected 12-image promotion comparison for v3 teacher-hybrid artifact promoted with camera_coverage=ok, fallback=0/retain_all=0, render_sanity=ok, and no block reasons. Deltas vs matching 12-image strict_core baseline: near_detail +3.946 dB/+0.0188 SSIM/-0.0639 LPIPS; boundary +1.593 dB/-0.0015 SSIM/-0.0076 LPIPS; horizon +2.090 dB/+0.0050 SSIM/-0.0384 LPIPS.",
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/review_comparison.json",
   "exact_head_gate_status": {
-    "head": "ec12c65e4217b22637737e5ba669afbbd9015382",
-    "cdk_deploy_run_id": 24967902351,
+    "head": "3050f63cfa933270636a00684d4df7e968d1eb7c",
+    "cdk_deploy_run_id": 24968337182,
     "ml_container_build_run_id": null,
     "ml_container_build_note": "No new ML container build was triggered by this evidence-only commit; using previously gated image digest sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8 from head 978a90c94a9edd5c0eac8436c43dab0534eb0012.",
-    "cloudflare_pages_run_id": 24967988900,
+    "cloudflare_pages_run_id": 24968523044,
     "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://88542332.v0-spaceport-website-preview2.pages.dev",
+    "pages_hash_url": "https://f7f25bce.v0-spaceport-website-preview2.pages.dev",
     "health_txt_verified": true,
     "status": "green",
-    "verified_at": "2026-04-26T21:58:00Z"
+    "verified_at": "2026-04-26T22:26:05Z"
   },
   "r5_14tile_2k_dryrun": {
     "status": "passed_no_spend",
@@ -2710,7 +2710,7 @@
     "next_gate": "exact-head workflows for the evidence commit must pass before live R5 SageMaker submit"
   },
   "r5_14tile_2k_submit": {
-    "status": "training_startup_signal",
+    "status": "tile00_active_useful_signal",
     "submitted_at": "2026-04-26T22:00:10Z",
     "submit_summary": "logs/audit/md1-1k-full-r2/r5_14tile_2k_submit_20260426214655.json",
     "source_head": "ec12c65e4217b22637737e5ba669afbbd9015382",
@@ -2779,13 +2779,13 @@
       "ml_g5_2xlarge_training_quota": 2.0,
       "preview_health_alias_and_hash": true
     },
-    "next_monitoring_step": "Continue monitoring ns-process-data completion, external scaffold extraction/reuse, tile_00 preparation, and first GPU datapoints.",
+    "next_monitoring_step": "Continue monitoring tile_00 to export/completion and tile_01 handoff, then stream preflight/review when model.tar.gz appears.",
     "latest_status_check": {
-      "checked_at": "2026-04-26T22:10:40Z",
+      "checked_at": "2026-04-26T22:26:05Z",
       "TrainingJobStatus": "InProgress",
       "SecondaryStatus": "Training",
       "TrainingStartTime": "2026-04-26T22:01:11Z",
-      "TrainingTimeInSeconds": 569,
+      "TrainingTimeInSeconds": 1494,
       "FailureReason": null,
       "ModelArtifacts": null,
       "s3_output_object_count": 0,
@@ -2795,10 +2795,56 @@
         "intended R5 overrides applied: 12000 iterations, SH/BG_SH=1, stop_split_at=3500, max_gauss_ratio=3.0, global scaffold cap=300000, tile_00..tile_13, support_weighted_overlap, eval/save suppression",
         "COLMAP validation passed for 2157 registered images",
         "COLMAP TXT to BIN conversion completed successfully",
-        "ns-process-data launched from converted COLMAP binary model"
+        "ns-process-data launched from converted COLMAP binary model",
+        "tile_00 reused external scaffold PLY from /opt/ml/model/tiled_pipeline/external_scaffold/tiles/tile_00/splat.ply",
+        "tile_00 prepared 300000 inherited scaffold points, selected 188 images, and launched ns-train at 2026-04-26T22:12:19Z"
       ],
-      "gpu_datapoints": 0,
-      "gpu_memory_datapoints": 0
+      "gpu_datapoints": 4,
+      "gpu_memory_datapoints": 4,
+      "gpu_utilization_windows": [
+        {
+          "timestamp": "2026-04-26T22:10:00Z",
+          "average": 27.2,
+          "maximum": 70.0
+        },
+        {
+          "timestamp": "2026-04-26T22:15:00Z",
+          "average": 86.4,
+          "maximum": 100.0
+        },
+        {
+          "timestamp": "2026-04-26T22:20:00Z",
+          "average": 81.6,
+          "maximum": 100.0
+        },
+        {
+          "timestamp": "2026-04-26T22:25:00Z",
+          "average": 80.0,
+          "maximum": 80.0
+        }
+      ],
+      "gpu_memory_windows": [
+        {
+          "timestamp": "2026-04-26T22:10:00Z",
+          "average": 10.16587656,
+          "maximum": 25.7165
+        },
+        {
+          "timestamp": "2026-04-26T22:15:00Z",
+          "average": 27.69672,
+          "maximum": 30.6496
+        },
+        {
+          "timestamp": "2026-04-26T22:20:00Z",
+          "average": 30.936240000000005,
+          "maximum": 31.1881
+        },
+        {
+          "timestamp": "2026-04-26T22:25:00Z",
+          "average": 31.3618,
+          "maximum": 31.3618
+        }
+      ]
     }
   }
 }
