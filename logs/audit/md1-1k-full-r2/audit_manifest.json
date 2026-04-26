@@ -531,7 +531,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Commit/push R4 completion, blocked smoke-review evidence, and the tile_00/tile_01 horizon-density dry run; wait exact-head CDK and Cloudflare Pages gates, then submit md1-r4h-horizon-density-1777212486-tiled if no SageMaker training job is active.",
+  "next_unblocked_step": "Monitor md1-r4h-horizon-density-1777213327-tiled tile_00 GPU/memory and completion/export; then monitor tile_01, final merge, streaming preflight, and frozen smoke review before any further full R4/R5 spend.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -869,7 +869,7 @@
     }
   },
   "root_cause_classification": "far_field_bad",
-  "rung": "R4_full_7tile_1k_blocked_horizon_density_repair_ready",
+  "rung": "R4_repair_bounded_horizon_density_tile00_tile01_live",
   "support_statistics": {
     "candidate_pair_count": 5,
     "eligible_candidate_pair_count": 4,
@@ -1530,8 +1530,8 @@
       }
     }
   },
-  "live_compute_status": "none; R4 full job and both frozen smoke review jobs completed, and no SageMaker training jobs are currently InProgress",
-  "current_branch_head": "df416996f3415fc58119928a93ce8932c38fd8e4",
+  "live_compute_status": "md1-r4h-horizon-density-1777213327-tiled is InProgress/Training; CloudWatch log stream md1-r4h-horizon-density-1777213327-tiled/algo-1-1777213410 proves ns-process-data completed, external scaffold PLY was reused, tile_00 inherited 450000 points, selected 186 images with horizon=176, and ns-train started with SH/BG_SH=1, stop_split_at=5000, max_gauss_ratio=4.0, eval/save suppression, background, alpha loss, and robust masking.",
+  "current_branch_head": "9cc690ea9bae5a3392744cb7efb28d4e23a94320",
   "r4_full_7tile_1k_result": {
     "job_name": "md1-r4-7tile-1k-1777141446-tiled",
     "training_status": "Completed",
@@ -1745,10 +1745,10 @@
     }
   },
   "r4_horizon_density_repair_plan": {
-    "status": "dry_run_ready_for_submit_after_exact_head_gates",
+    "status": "tile_00_training_started_useful_signal",
     "rung": "R4_repair_bounded_horizon_density_tile00_tile01",
     "dryrun_summary": "logs/audit/md1-1k-full-r2/r4_horizon_density_tile00_01_dryrun_20260426143000.json",
-    "job_name": "md1-r4h-horizon-density-1777212486-tiled",
+    "job_name": "md1-r4h-horizon-density-1777213327-tiled",
     "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-horizon-density-20260426143000/T2_tiled_pipeline",
     "selected_tile_ids": [
       "tile_00",
@@ -1767,7 +1767,37 @@
     },
     "scaffold_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r2-cap450k-split5000-20260424035154/T2_tiled_pipeline/md1-r2-cap450k-split5000-1777002844-tiled/output/model.tar.gz",
     "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:54958f2c5a7984aba9549ca3a7e247d7ac79b04d248ed301d3b89710c2bbfacd",
-    "eligibility_note": "This is a targeted R4 repair because the frozen horizon bucket is owned by tile_00/tile_01; it intentionally reduces spatial scope before another full 7-tile run."
+    "eligibility_note": "This is a targeted R4 repair because the frozen horizon bucket is owned by tile_00/tile_01; it intentionally reduces spatial scope before another full 7-tile run.",
+    "submit_summary": "logs/audit/md1-1k-full-r2/r4_horizon_density_tile00_01_submit_20260426143000.json",
+    "submitted_after_gates": {
+      "head": "9cc690ea9bae5a3392744cb7efb28d4e23a94320",
+      "cdk_run_id": 24958678476,
+      "pages_run_id": 24958775514,
+      "pages_alias": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
+      "pages_hash": "https://97c8dab5.v0-spaceport-website-preview2.pages.dev"
+    },
+    "cloudwatch_log_stream": "md1-r4h-horizon-density-1777213327-tiled/algo-1-1777213410",
+    "startup_signal": {
+      "training_start_time": "2026-04-26T14:23:31Z",
+      "tile_00_ns_train_start": "2026-04-26T14:31:24Z",
+      "inherited_scaffold_points": 450000,
+      "selected_images": 186,
+      "view_bucket_counts": {
+        "near_detail": 26,
+        "boundary": 0,
+        "horizon": 176
+      },
+      "validated_settings": {
+        "SH_DEGREE": 1,
+        "BG_SH_DEGREE": 1,
+        "TRAINING_STOP_SPLIT_AT": 5000,
+        "TRAINING_MAX_GAUSS_RATIO": 4.0,
+        "TRAINING_STEPS_PER_EVAL_IMAGE": 12001,
+        "TRAINING_STEPS_PER_EVAL_ALL_IMAGES": 12001,
+        "TRAINING_STEPS_PER_SAVE": 12001
+      }
+    }
   },
-  "updated": "2026-04-26T14:09:36Z"
+  "updated": "2026-04-26T14:32:44Z",
+  "current_exact_head_gate_status": "green CDK Deploy 24958678476 and green manually-triggered Cloudflare Pages 24958775514 for head 9cc690ea9bae5a3392744cb7efb28d4e23a94320; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://97c8dab5.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes."
 }
