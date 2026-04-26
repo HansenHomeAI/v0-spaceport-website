@@ -1530,8 +1530,8 @@
       }
     }
   },
-  "live_compute_status": "R4 horizon-density repair SageMaker job md1-r4h-horizon-density-1777213327-tiled is InProgress/Training on tile_01 with TrainingTimeInSeconds=13625 at 2026-04-26T18:10:34Z, no FailureReason, no ModelArtifacts, and no S3 output objects. tile_01 has steady useful signal with GPU averages 96.0%, 94.4%, 97.8%, 94.4%, 88.8%, 68.6%, and 71.0% from 17:35Z-18:05Z, max GPU at 100%, GPU memory stabilized near 57.9%-59.7%, and no filtered Traceback/ERROR/export/failure lines appeared.",
-  "current_branch_head": "a37636372d81a8a4fd6d8db42f6fc9a4ea27b5de",
+  "live_compute_status": "R4 horizon-density repair SageMaker job md1-r4h-horizon-density-1777213327-tiled is InProgress/Training on tile_01 with TrainingTimeInSeconds=14331 at 2026-04-26T18:23:07Z, no FailureReason, no ModelArtifacts, and no S3 output objects. tile_01 has steady useful signal with GPU averages 99.2%, 94.8%, 87.0%, 86.0%, 80.4%, 52.4%, 53.6%, and 84.2% from 17:42Z-18:17Z, max GPU at 100%, GPU memory stabilized near 57.8%-59.7%, only this SageMaker training job is InProgress, and no filtered Traceback/ERROR/export/failure lines appeared.",
+  "current_branch_head": "24613ebe3b08fb8e8073218c5af2872bdabe44e9",
   "r4_full_7tile_1k_result": {
     "job_name": "md1-r4-7tile-1k-1777141446-tiled",
     "training_status": "Completed",
@@ -1777,11 +1777,11 @@
       "pages_hash": "https://97c8dab5.v0-spaceport-website-preview2.pages.dev"
     },
     "latest_exact_head_gates": {
-      "head": "a37636372d81a8a4fd6d8db42f6fc9a4ea27b5de",
-      "cdk_run_id": 24962863205,
-      "pages_run_id": 24962956641,
+      "head": "24613ebe3b08fb8e8073218c5af2872bdabe44e9",
+      "cdk_run_id": 24963558551,
+      "pages_run_id": 24963649010,
       "pages_alias": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-      "pages_hash": "https://ba452672.v0-spaceport-website-preview2.pages.dev",
+      "pages_hash": "https://1c07b491.v0-spaceport-website-preview2.pages.dev",
       "health_probe_status": "alias_and_hash_passed"
     },
     "cloudwatch_log_stream": "md1-r4h-horizon-density-1777213327-tiled/algo-1-1777213410",
@@ -1806,10 +1806,10 @@
       }
     },
     "latest_monitoring": {
-      "checked_at": "2026-04-26T18:10:34Z",
+      "checked_at": "2026-04-26T18:23:07Z",
       "status": "InProgress",
       "secondary_status": "Training",
-      "training_time_seconds": 13625,
+      "training_time_seconds": 14331,
       "failure_reason": null,
       "model_artifacts": null,
       "s3_output_objects": 0,
@@ -2062,19 +2062,21 @@
         "md1-r4h-horizon-density-1777213327-tiled"
       ],
       "current_tile_id": "tile_01",
-      "latest_log_status": "tile_01 continues with steady useful GPU and memory signal; no filtered Traceback/ERROR/export/failure lines appeared after the previous check.",
+      "latest_log_status": "tile_01 continues with steady useful GPU and memory signal; only this SageMaker training job is InProgress, and no filtered Traceback/ERROR/export/failure lines appeared after the previous check.",
       "latest_gpu_window": {
-        "window": "2026-04-26T17:35:00Z/2026-04-26T18:05:00Z",
+        "window": "2026-04-26T17:42:00Z/2026-04-26T18:17:00Z",
         "average_percent": [
-          96.0,
-          94.4,
-          97.8,
-          94.4,
-          88.8,
-          68.6,
-          71.0
+          99.2,
+          94.8,
+          87.0,
+          86.0,
+          80.4,
+          52.4,
+          53.6,
+          84.2
         ],
         "max_percent": [
+          100.0,
           100.0,
           100.0,
           100.0,
@@ -2085,24 +2087,26 @@
         ]
       },
       "latest_gpu_memory_window": {
-        "window": "2026-04-26T17:35:00Z/2026-04-26T18:05:00Z",
+        "window": "2026-04-26T17:42:00Z/2026-04-26T18:17:00Z",
         "average_percent": [
-          59.13148,
-          57.9069,
-          58.84312,
-          58.94736,
-          58.94042,
-          59.27394,
-          59.39726
+          57.78876,
+          59.0672,
+          58.831,
+          59.01684,
+          59.47196,
+          57.86346,
+          58.96126,
+          58.93694
         ],
         "max_percent": [
-          59.3712,
-          59.3973,
+          58.7719,
           59.4754,
-          59.4754,
-          59.0412,
+          59.1888,
           59.6144,
-          59.7273
+          59.7273,
+          59.2583,
+          59.0933,
+          59.0759
         ]
       },
       "tile_00_completion": {
@@ -2152,6 +2156,6 @@
       }
     }
   },
-  "updated": "2026-04-26T18:10:34Z",
-  "current_exact_head_gate_status": "green CDK Deploy 24962863205 and green manually-triggered Cloudflare Pages 24962956641 for head a37636372d81a8a4fd6d8db42f6fc9a4ea27b5de; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://ba452672.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes."
+  "updated": "2026-04-26T18:23:07Z",
+  "current_exact_head_gate_status": "green CDK Deploy 24963558551 and green manually-triggered Cloudflare Pages 24963649010 for head 24613ebe3b08fb8e8073218c5af2872bdabe44e9; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://1c07b491.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes."
 }
