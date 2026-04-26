@@ -1745,7 +1745,7 @@
     }
   },
   "r4_horizon_density_repair_plan": {
-    "status": "tile_00_training_started_useful_signal",
+    "status": "tile_00_training_active_gated_useful_signal",
     "rung": "R4_repair_bounded_horizon_density_tile00_tile01",
     "dryrun_summary": "logs/audit/md1-1k-full-r2/r4_horizon_density_tile00_01_dryrun_20260426143000.json",
     "job_name": "md1-r4h-horizon-density-1777213327-tiled",
@@ -1776,6 +1776,14 @@
       "pages_alias": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
       "pages_hash": "https://97c8dab5.v0-spaceport-website-preview2.pages.dev"
     },
+    "latest_exact_head_gates": {
+      "head": "0710915466ceee3e6d1179b3482d224c4627abf7",
+      "cdk_run_id": 24959151524,
+      "pages_run_id": 24959235666,
+      "pages_alias": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
+      "pages_hash": "https://c1f40980.v0-spaceport-website-preview2.pages.dev",
+      "health_probe_status": "alias_and_hash_passed"
+    },
     "cloudwatch_log_stream": "md1-r4h-horizon-density-1777213327-tiled/algo-1-1777213410",
     "startup_signal": {
       "training_start_time": "2026-04-26T14:23:31Z",
@@ -1796,8 +1804,52 @@
         "TRAINING_STEPS_PER_EVAL_ALL_IMAGES": 12001,
         "TRAINING_STEPS_PER_SAVE": 12001
       }
+    },
+    "latest_monitoring": {
+      "checked_at": "2026-04-26T14:44:00Z",
+      "status": "InProgress",
+      "secondary_status": "Training",
+      "training_time_seconds": 1294,
+      "failure_reason": null,
+      "model_artifacts": null,
+      "s3_output_objects": 0,
+      "gpu_utilization": [
+        {
+          "timestamp": "2026-04-26T14:31:00Z",
+          "average": 51.8,
+          "maximum": 76.0
+        },
+        {
+          "timestamp": "2026-04-26T14:36:00Z",
+          "average": 91.8,
+          "maximum": 100.0
+        },
+        {
+          "timestamp": "2026-04-26T14:41:00Z",
+          "average": 85.5,
+          "maximum": 100.0
+        }
+      ],
+      "gpu_memory_utilization": [
+        {
+          "timestamp": "2026-04-26T14:31:00Z",
+          "average": 22.0184,
+          "maximum": 28.5044
+        },
+        {
+          "timestamp": "2026-04-26T14:36:00Z",
+          "average": 31.42434,
+          "maximum": 33.3941
+        },
+        {
+          "timestamp": "2026-04-26T14:41:00Z",
+          "average": 34.987825,
+          "maximum": 36.9463
+        }
+      ],
+      "filtered_error_or_export_lines": 0
     }
   },
-  "updated": "2026-04-26T14:32:44Z",
-  "current_exact_head_gate_status": "green CDK Deploy 24958678476 and green manually-triggered Cloudflare Pages 24958775514 for head 9cc690ea9bae5a3392744cb7efb28d4e23a94320; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://97c8dab5.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes."
+  "updated": "2026-04-26T14:44:00Z",
+  "current_exact_head_gate_status": "green CDK Deploy 24959151524 and green manually-triggered Cloudflare Pages 24959235666 for head 0710915466ceee3e6d1179b3482d224c4627abf7; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://c1f40980.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes."
 }
