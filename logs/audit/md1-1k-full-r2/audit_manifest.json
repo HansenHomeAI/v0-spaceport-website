@@ -79,56 +79,37 @@
     "source": "historical_recovered_local_merge"
   },
   "baseline_metrics": {
+    "near_detail": {
+      "psnr": 10.819315237336582,
+      "ssim": 0.3586304187774658,
+      "lpips": 0.89244344830513
+    },
     "boundary": {
-      "lpips": 0.8232778012752533,
-      "psnr": 13.134039611111529,
-      "ssim": 0.4168241024017334
+      "psnr": 13.967632735507856,
+      "ssim": 0.38089896738529205,
+      "lpips": 0.840785413980484
     },
     "horizon": {
-      "lpips": 0.8720598220825195,
-      "psnr": 16.21552459733899,
-      "ssim": 0.38312965631484985
-    },
-    "near_detail": {
-      "lpips": 0.9124259352684021,
-      "psnr": 10.204569909807525,
-      "ssim": 0.3250790983438492
+      "psnr": 12.468445429376182,
+      "ssim": 0.31254833936691284,
+      "lpips": 0.9615643322467804
     }
   },
   "candidate_metrics": {
-    "raw_union": {
-      "boundary": {
-        "lpips": 0.8111611902713776,
-        "psnr": 14.065428213190629,
-        "ssim": 0.4217575043439865
-      },
-      "horizon": {
-        "lpips": 0.8704187870025635,
-        "psnr": 16.384478007660626,
-        "ssim": 0.38790637254714966
-      },
-      "near_detail": {
-        "lpips": 0.9004180431365967,
-        "psnr": 10.910244949335178,
-        "ssim": 0.34935279190540314
-      }
+    "near_detail": {
+      "psnr": 14.765217345623803,
+      "ssim": 0.3774360418319702,
+      "lpips": 0.828519195318222
     },
-    "support_weighted_overlap": {
-      "boundary": {
-        "lpips": 0.8232778012752533,
-        "psnr": 13.134039611111529,
-        "ssim": 0.4168241024017334
-      },
-      "horizon": {
-        "lpips": 0.8720598220825195,
-        "psnr": 16.21552459733899,
-        "ssim": 0.38312965631484985
-      },
-      "near_detail": {
-        "lpips": 0.9124259352684021,
-        "psnr": 10.204569909807525,
-        "ssim": 0.3250790983438492
-      }
+    "boundary": {
+      "psnr": 15.560516808480402,
+      "ssim": 0.37941549718379974,
+      "lpips": 0.8332172930240631
+    },
+    "horizon": {
+      "psnr": 14.558083618864437,
+      "ssim": 0.3175213783979416,
+      "lpips": 0.9231183528900146
     }
   },
   "candidate_pair_selection_policy": {
@@ -531,7 +512,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Commit/push the v3 builder, preflight, and smoke-review evidence; monitor exact-head CDK/Pages; then run the 12-image-per-bucket frozen promotion review for r4-teacher-r3base-r4h-tile00-factor4-v3 before any R5 spend.",
+  "next_unblocked_step": "Commit and push the corrected evaluation-gate fix plus R4 promotion evidence, monitor exact-head CDK Deploy and Cloudflare Pages, then run an R5 14-tile 2k dry-run/preflight before deciding any 14-tile SageMaker spend.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -1530,8 +1511,8 @@
       }
     }
   },
-  "live_compute_status": "No SageMaker training or processing jobs are InProgress. v3 teacher-hybrid processing completed and wrote s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-teacher-r3base-r4h-tile00-factor4-v3-20260426201700/output/artifact/model.tar.gz; streaming preflight passed with fallback=0 retain_all=0 retained=6518301/7322221.",
-  "current_branch_head": "f06e39b2048c02aa215ac11cfb56289aae8d0eee",
+  "live_compute_status": "No SageMaker Training or Processing jobs are InProgress.",
+  "current_branch_head": "4f303408bc7b5ff3c1c61d4ea5f1dcc1198c8846",
   "r4_full_7tile_1k_result": {
     "job_name": "md1-r4-7tile-1k-1777141446-tiled",
     "training_status": "Completed",
@@ -2164,16 +2145,16 @@
       }
     }
   },
-  "updated": "2026-04-26T20:42:15Z",
+  "updated": "2026-04-26T21:22:28Z",
   "current_exact_head_gate_status": {
-    "head": "f06e39b2048c02aa215ac11cfb56289aae8d0eee",
-    "cdk_deploy_run_id": 24965861771,
-    "cloudflare_pages_run_id": 24965866063,
+    "head": "4f303408bc7b5ff3c1c61d4ea5f1dcc1198c8846",
+    "cdk_deploy_run_id": 24966629232,
+    "cloudflare_pages_run_id": 24966651497,
     "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://3648c803.v0-spaceport-website-preview2.pages.dev",
+    "pages_hash_url": "https://e552090f.v0-spaceport-website-preview2.pages.dev",
     "health_txt_verified": true,
     "status": "green",
-    "verified_at": "2026-04-26T20:12:55Z"
+    "verified_at": "2026-04-26T20:53:59Z"
   },
   "r4_horizon_density_repair_result": {
     "label": "r4-horizon-density-tile00-01",
@@ -2371,9 +2352,9 @@
     },
     "interpretation": "Increasing horizon-owner tile_00/tile_01 density improved horizon versus the failed full R4/context-preserve variants but still failed promotion; DJI_0146/DJI_0147 remain poor, so the next rung must preserve or distill global far-field/teacher structure instead of spending on another same-method full rerun."
   },
-  "blocked_promotion_reason": "None for the 4-image-per-bucket smoke gate. The next gate remains a 12-image-per-bucket frozen promotion review before any R5 or 14-tile spend.",
+  "blocked_promotion_reason": "None for R4 corrected promotion gate; R5 still requires exact-head workflow gates after committing this evidence.",
   "r4_teacher_hybrid_build": {
-    "status": "v3_smoke_promoted_pending_12_image_promotion_review",
+    "status": "v3_corrected_promotion_promoted",
     "submitted_at": "2026-04-26T19:50:58Z",
     "processing_job_name": "md1-r4-teacher-tile00-f4-1777232953",
     "instance_type": "ml.g4dn.xlarge",
@@ -2537,9 +2518,117 @@
           "block_reasons": []
         }
       }
+    },
+    "promotion_review": {
+      "status": "completed_invalid_baseline",
+      "submitted_at": "2026-04-26T20:53:59Z",
+      "job_name": "md1-r1-r4-teacher-r3base-r4h-tile00-factor4-v3-promotion-177723",
+      "candidate_label": "r4-teacher-r3base-r4h-tile00-factor4-v3-promotion",
+      "candidate_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-teacher-r3base-r4h-tile00-factor4-v3-20260426201700/output/artifact/model.tar.gz",
+      "output_root_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r4-teacher-r3base-r4h-tile00-factor4-v3-promotion-review-20260426205500",
+      "summary_json_output": "logs/audit/md1-1k-full-r2/r4_teacher_tile00_factor4_v3_promotion_review_submit_20260426205500.json",
+      "camera_set": "promotion",
+      "max_images_per_bucket": 12,
+      "render_scale": 0.25,
+      "max_gaussians_per_view": 500000,
+      "exact_head_gate_status": {
+        "head": "4f303408bc7b5ff3c1c61d4ea5f1dcc1198c8846",
+        "cdk_deploy_run_id": 24966629232,
+        "cloudflare_pages_run_id": 24966651497,
+        "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
+        "pages_hash_url": "https://e552090f.v0-spaceport-website-preview2.pages.dev",
+        "health_txt_verified": true,
+        "status": "green",
+        "verified_at": "2026-04-26T20:53:59Z"
+      },
+      "completed_at": "2026-04-26T21:02:23Z",
+      "training_time_seconds": 637,
+      "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r4-teacher-r3base-r4h-tile00-factor4-v3-promotion-review-20260426205500/outputs/r4-teacher-r3base-r4h-tile00-factor4-v3-promotion/md1-r1-r4-teacher-r3base-r4h-tile00-factor4-v3-promotion-177723/output/model.tar.gz",
+      "local_manifest_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-teacher-r3base-r4h-tile00-factor4-v3-promotion/quality_review_manifest.json",
+      "local_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-teacher-r3base-r4h-tile00-factor4-v3-promotion/review_comparison.json",
+      "candidate_actual_bucket_counts": {
+        "near_detail": 12,
+        "boundary": 12,
+        "horizon": 12
+      },
+      "baseline_actual_bucket_counts_used": {
+        "near_detail": 4,
+        "boundary": 4,
+        "horizon": 4
+      },
+      "invalid_reason": "baseline_candidate_camera_coverage_mismatch",
+      "reported_block_reasons_invalid_until_recomputed": [
+        "boundary_ssim_regression",
+        "horizon_psnr_regression",
+        "horizon_ssim_regression",
+        "horizon_lpips_regression"
+      ]
+    },
+    "promotion_baseline_repair": {
+      "status": "Completed",
+      "submitted_at": "2026-04-26T21:10:27Z",
+      "job_name": "md1-r1-strict-core-promotion-baseline-1777237807-quality",
+      "source_model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r1-review-c00091ae-render-sanity/inputs/strict_core/model.tar.gz",
+      "output_root_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r1-strict-core-promotion-baseline-20260426211002",
+      "summary_json_output": "logs/audit/md1-1k-full-r2/r1_strict_core_promotion_baseline_submit_20260426211002.json",
+      "camera_set": "promotion",
+      "max_images_per_bucket": 12,
+      "render_scale": 0.25,
+      "max_gaussians_per_view": 500000,
+      "purpose": "Generate a matching 12-image-per-bucket strict_core baseline for corrected v3 teacher-hybrid promotion comparison.",
+      "completed_at": "2026-04-26T21:20:36Z",
+      "training_job_name": "md1-r1-strict-core-promotion-baseline-1777237807-quality",
+      "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r1-strict-core-promotion-baseline-20260426211002/outputs/strict-core-promotion-baseline/md1-r1-strict-core-promotion-baseline-1777237807-quality/output/model.tar.gz",
+      "local_manifest_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/strict-core-promotion-baseline/quality_review_manifest.json",
+      "baseline_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r1-strict-core-promotion-baseline-20260426211002/baselines/strict_core_promotion/quality_review_manifest.json",
+      "actual_bucket_counts": {
+        "near_detail": 12,
+        "boundary": 12,
+        "horizon": 12
+      },
+      "render_sanity": {
+        "status": "ok",
+        "checked_view_count": 34,
+        "blank_view_count": 0
+      }
+    },
+    "corrected_promotion_review": {
+      "status": "promoted",
+      "corrected_at": "2026-04-26T21:22:28Z",
+      "comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-teacher-r3base-r4h-tile00-factor4-v3-promotion/review_comparison.corrected_strict12.json",
+      "root_comparison_path": "logs/audit/md1-1k-full-r2/review_comparison.json",
+      "comparison_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r4-teacher-r3base-r4h-tile00-factor4-v3-promotion-review-20260426205500/outputs/r4-teacher-r3base-r4h-tile00-factor4-v3-promotion/review_comparison.corrected_strict12.json",
+      "camera_coverage": "ok",
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "render_sanity": {
+        "status": "ok",
+        "checked_view_count": 34,
+        "blank_view_count": 0
+      },
+      "block_reasons": [],
+      "per_bucket_delta": {
+        "near_detail": {
+          "psnr": 3.945902108287221,
+          "ssim": 0.018805623054504395,
+          "lpips": -0.06392425298690796
+        },
+        "boundary": {
+          "psnr": 1.5928840729725469,
+          "ssim": -0.0014834702014923096,
+          "lpips": -0.0075681209564208984
+        },
+        "horizon": {
+          "psnr": 2.089638189488255,
+          "ssim": 0.0049730390310287476,
+          "lpips": -0.03844597935676575
+        }
+      },
+      "baseline_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r1-strict-core-promotion-baseline-20260426211002/baselines/strict_core_promotion/quality_review_manifest.json",
+      "candidate_manifest_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-teacher-r3base-r4h-tile00-factor4-v3-promotion/quality_review_manifest.json"
     }
   },
-  "current_rung": "R4_repair_teacher_hybrid_smoke_promoted",
-  "latest_review_status": "Frozen smoke review md1-r1-r4-teacher-r3base-r4h-tile00-factor4-v3-1777235395-quali completed and promoted with render_sanity=ok and fallback=0/retain_all=0. Deltas vs R1 strict baseline: near_detail +3.966 dB/+0.0390 SSIM/-0.0896 LPIPS; boundary +2.426 dB/+0.0091 SSIM/-0.0686 LPIPS; horizon -0.719 dB/-0.0054 SSIM/+0.0215 LPIPS. Block reasons: none.",
+  "current_rung": "R4_promoted_R5_preflight_next",
+  "latest_review_status": "Corrected 12-image promotion comparison for v3 teacher-hybrid artifact promoted with camera_coverage=ok, fallback=0/retain_all=0, render_sanity=ok, and no block reasons. Deltas vs matching 12-image strict_core baseline: near_detail +3.946 dB/+0.0188 SSIM/-0.0639 LPIPS; boundary +1.593 dB/-0.0015 SSIM/-0.0076 LPIPS; horizon +2.090 dB/+0.0050 SSIM/-0.0384 LPIPS.",
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/review_comparison.json"
 }

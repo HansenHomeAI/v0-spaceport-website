@@ -109,6 +109,82 @@ def _has_required_metrics(metrics: Mapping[str, Any] | None) -> bool:
     return all(metrics.get(metric) is not None for metric in ("psnr", "ssim", "lpips"))
 
 
+def _bucket_count_from_manifest(manifest: Mapping[str, Any] | None, bucket_label: str) -> int | None:
+    if not isinstance(manifest, Mapping):
+        return None
+    for key in ("actual_bucket_counts", "expected_bucket_counts", "requested_bucket_counts"):
+        counts = manifest.get(key)
+        if isinstance(counts, Mapping) and counts.get(bucket_label) is not None:
+            return int(counts[bucket_label])
+    views = manifest.get("views")
+    if not isinstance(views, Sequence) or isinstance(views, (str, bytes)):
+        return None
+    names = {
+        str(view.get("image_name") or view.get("camera_id") or "")
+        for view in views
+        if isinstance(view, Mapping) and view.get("bucket") == bucket_label
+    }
+    names.discard("")
+    return len(names)
+
+
+def _bucket_camera_names(manifest: Mapping[str, Any] | None, bucket_key: str, bucket_label: str) -> list[str]:
+    if not isinstance(manifest, Mapping):
+        return []
+    explicit = manifest.get("review_image_names_by_bucket")
+    if isinstance(explicit, Mapping):
+        values = explicit.get(bucket_key, explicit.get(bucket_label, []))
+        if isinstance(values, Sequence) and not isinstance(values, (str, bytes)):
+            return ordered_unique([str(value) for value in values])
+    views = manifest.get("views")
+    if isinstance(views, Sequence) and not isinstance(views, (str, bytes)):
+        names = []
+        for view in views:
+            if not isinstance(view, Mapping) or view.get("bucket") != bucket_label:
+                continue
+            name = str(view.get("image_name") or view.get("camera_id") or "")
+            if name:
+                names.append(name)
+        return ordered_unique(names)
+    return []
+
+
+def review_camera_coverage(
+    baseline_manifest: Mapping[str, Any] | None,
+    candidate_manifest: Mapping[str, Any],
+) -> dict[str, Any]:
+    per_bucket: dict[str, Any] = {}
+    block_reasons: list[str] = []
+    for bucket_key, bucket_label in REVIEW_BUCKETS:
+        baseline_count = _bucket_count_from_manifest(baseline_manifest, bucket_label)
+        candidate_count = _bucket_count_from_manifest(candidate_manifest, bucket_label)
+        baseline_names = _bucket_camera_names(baseline_manifest, bucket_key, bucket_label)
+        candidate_names = _bucket_camera_names(candidate_manifest, bucket_key, bucket_label)
+        bucket_blocks: list[str] = []
+        if baseline_manifest is not None:
+            if baseline_names and candidate_names and baseline_names != candidate_names:
+                bucket_blocks.append(f"{bucket_label}_camera_set_mismatch")
+            elif (
+                baseline_count is not None
+                and candidate_count is not None
+                and int(baseline_count) != int(candidate_count)
+            ):
+                bucket_blocks.append(f"{bucket_label}_camera_count_mismatch")
+        block_reasons.extend(bucket_blocks)
+        per_bucket[bucket_label] = {
+            "baseline_count": baseline_count,
+            "candidate_count": candidate_count,
+            "baseline_cameras": baseline_names,
+            "candidate_cameras": candidate_names,
+            "block_reasons": bucket_blocks,
+        }
+    return {
+        "status": "ok" if not block_reasons else "blocked",
+        "block_reasons": list(dict.fromkeys(block_reasons)),
+        "per_bucket": per_bucket,
+    }
+
+
 def evaluate_promotion_decision(
     *,
     baseline_manifest: Mapping[str, Any] | None,
@@ -142,11 +218,14 @@ def evaluate_promotion_decision(
     if isinstance(render_sanity, Mapping) and render_sanity.get("status") == "blocked":
         block_reasons.append("candidate_render_sanity_blocked")
 
+    camera_coverage = review_camera_coverage(baseline_manifest, candidate_manifest)
     for _bucket_key, bucket_label in REVIEW_BUCKETS:
         baseline_metrics = baseline_buckets.get(bucket_label)
         candidate_metrics = candidate_buckets.get(bucket_label)
         deltas = metric_delta(baseline_metrics, candidate_metrics)
-        bucket_blocks: list[str] = []
+        bucket_blocks: list[str] = list(
+            (camera_coverage.get("per_bucket", {}).get(bucket_label, {}) or {}).get("block_reasons", [])
+        )
         if not _has_required_metrics(candidate_metrics):
             bucket_blocks.append(f"{bucket_label}_candidate_metrics_missing")
         if baseline_manifest is None or not _has_required_metrics(baseline_metrics):
@@ -197,6 +276,7 @@ def evaluate_promotion_decision(
         "retain_all_tile_count": retain_all_tile_count,
         "per_bucket": per_bucket,
         "thresholds": PROMOTION_THRESHOLDS,
+        "camera_coverage": camera_coverage,
     }
 
 
@@ -210,6 +290,7 @@ def build_review_comparison(
 ) -> dict[str, Any]:
     candidate_merge_report = candidate_manifest.get("merge_report", {})
     baseline_merge_report = (baseline_manifest or {}).get("merge_report", {})
+    camera_coverage = review_camera_coverage(baseline_manifest, candidate_manifest)
     decision = evaluate_promotion_decision(
         baseline_manifest=baseline_manifest,
         candidate_manifest=candidate_manifest,
@@ -235,6 +316,7 @@ def build_review_comparison(
         "baseline_artifact": baseline_artifact,
         "candidate_artifact": candidate_artifact,
         "camera_manifest": dict(camera_manifest or {}),
+        "camera_coverage": camera_coverage,
         "per_bucket": decision["per_bucket"],
         "fallback_breakdown": {
             "baseline": {

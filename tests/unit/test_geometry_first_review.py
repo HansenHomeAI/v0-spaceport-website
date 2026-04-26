@@ -83,6 +83,50 @@ class GeometryFirstReviewTests(unittest.TestCase):
             comparison["promotion_decision"]["block_reasons"],
         )
 
+    def test_build_review_comparison_blocks_camera_coverage_mismatch(self):
+        bucket_medians = {
+            "near_detail": {"psnr": 30.0, "ssim": 0.9, "lpips": 0.1},
+            "boundary": {"psnr": 28.0, "ssim": 0.88, "lpips": 0.12},
+            "horizon": {"psnr": 27.0, "ssim": 0.86, "lpips": 0.14},
+        }
+        baseline = {
+            "actual_bucket_counts": {"near_detail": 4, "boundary": 4, "horizon": 4},
+            "review_image_names_by_bucket": {
+                "near_detail_camera_ids": ["near_0.JPG", "near_1.JPG", "near_2.JPG", "near_3.JPG"],
+                "boundary_camera_ids": ["boundary_0.JPG", "boundary_1.JPG", "boundary_2.JPG", "boundary_3.JPG"],
+                "horizon_camera_ids": ["horizon_0.JPG", "horizon_1.JPG", "horizon_2.JPG", "horizon_3.JPG"],
+            },
+            "bucket_medians": bucket_medians,
+        }
+        candidate = {
+            "actual_bucket_counts": {"near_detail": 12, "boundary": 12, "horizon": 12},
+            "review_image_names_by_bucket": {
+                "near_detail_camera_ids": [f"near_{index}.JPG" for index in range(12)],
+                "boundary_camera_ids": [f"boundary_{index}.JPG" for index in range(12)],
+                "horizon_camera_ids": [f"horizon_{index}.JPG" for index in range(12)],
+            },
+            "bucket_medians": {
+                "near_detail": {"psnr": 10.0, "ssim": 0.5, "lpips": 0.5},
+                "boundary": {"psnr": 10.0, "ssim": 0.5, "lpips": 0.5},
+                "horizon": {"psnr": 10.0, "ssim": 0.5, "lpips": 0.5},
+            },
+            "merge_report": {"fallback_tile_count": 0, "retain_all_tile_count": 0},
+            "render_sanity": {"status": "ok", "blank_view_count": 0},
+        }
+
+        comparison = geometry_review.build_review_comparison(
+            baseline_manifest=baseline,
+            candidate_manifest=candidate,
+        )
+
+        decision = comparison["promotion_decision"]
+        self.assertEqual(decision["status"], "blocked")
+        self.assertEqual(comparison["camera_coverage"]["status"], "blocked")
+        self.assertIn("near_detail_camera_set_mismatch", decision["block_reasons"])
+        self.assertIn("boundary_camera_set_mismatch", decision["block_reasons"])
+        self.assertIn("horizon_camera_set_mismatch", decision["block_reasons"])
+        self.assertNotIn("horizon_psnr_regression", decision["block_reasons"])
+
     def test_evaluate_promotion_decision_blocks_blank_render_sanity(self):
         baseline = {
             "bucket_medians": {
