@@ -1511,8 +1511,8 @@
       }
     }
   },
-  "live_compute_status": "R5 SageMaker training job md1-r5-14tile-2k-1777240767-tiled is InProgress/Training as of 2026-04-27T19:56:39Z with TrainingStartTime=2026-04-26T22:01:11Z, TrainingTimeInSeconds=78908, no FailureReason, no ModelArtifacts, zero S3 output objects, only this SageMaker training job InProgress, and no processing jobs InProgress. Latest tile_07 useful-signal window is 19:11Z through 19:51Z with GPU avg/max 36.6/100.0, 56.8/100.0, 28.6/100.0, 63.4/100.0, 40.2/100.0, 57.2/100.0, 13.0/25.0, 38.0/100.0, and 67.4/100.0; GPU memory stayed around 54.2-55.5%. Latest 60m filtered logs had no ERROR/Traceback/OOM/Killed/export/tile_08 handoff lines. No final S3 artifact is present yet.",
-  "current_branch_head": "34334384f504d0e81dc69b4b94958c6508a03b4e",
+  "live_compute_status": "R5 SageMaker training job md1-r5-14tile-2k-1777240767-tiled is InProgress/Training as of 2026-04-27T20:28:18Z with TrainingStartTime=2026-04-26T22:01:11Z, TrainingTimeInSeconds=80810, no FailureReason, no ModelArtifacts, zero S3 output objects, only this SageMaker training job InProgress, and no processing jobs InProgress. Latest tile_07 useful-signal window is 19:43Z through 20:23Z with GPU avg/max 11.4/37.0, 46.2/100.0, 78.0/100.0, 26.2/100.0, 61.0/100.0, 60.0/100.0, 57.2/100.0, 62.4/100.0, and 54.4/100.0; GPU memory stayed around 49.6-55.2%. Latest 75m filtered logs had no ERROR/Traceback/OOM/Killed/export/tile_08 handoff lines. No final S3 artifact is present yet.",
+  "current_branch_head": "4c6c03370a6a4835304227841b0379c9b54f81a4",
   "r4_full_7tile_1k_result": {
     "job_name": "md1-r4-7tile-1k-1777141446-tiled",
     "training_status": "Completed",
@@ -2145,8 +2145,8 @@
       }
     }
   },
-  "updated": "2026-04-27T19:56:39Z",
-  "current_exact_head_gate_status": "green CDK Deploy 25014913383 and green manually-triggered Cloudflare Pages 25015105718 for head 34334384f504d0e81dc69b4b94958c6508a03b4e; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://6356c442.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes. No new ML container build was required for this evidence-only commit; R5 uses the previously gated branch image digest sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8.",
+  "updated": "2026-04-27T20:28:18Z",
+  "current_exact_head_gate_status": "green CDK Deploy 25016453961 and green manually-triggered Cloudflare Pages 25016572170 for head 4c6c03370a6a4835304227841b0379c9b54f81a4; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://c868d049.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes. No code/container changes were introduced in this evidence-only commit; R5 continues using the previously gated branch image digest sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8.",
   "r4_horizon_density_repair_result": {
     "label": "r4-horizon-density-tile00-01",
     "training_job_name": "md1-r4h-horizon-density-1777213327-tiled",
@@ -2623,15 +2623,16 @@
   "latest_review_status": "Corrected 12-image promotion comparison for v3 teacher-hybrid artifact promoted with camera_coverage=ok, fallback=0/retain_all=0, render_sanity=ok, and no block reasons. Deltas vs matching 12-image strict_core baseline: near_detail +3.946 dB/+0.0188 SSIM/-0.0639 LPIPS; boundary +1.593 dB/-0.0015 SSIM/-0.0076 LPIPS; horizon +2.090 dB/+0.0050 SSIM/-0.0384 LPIPS.",
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/review_comparison.json",
   "exact_head_gate_status": {
-    "head": "3ab28727ecaea94d46a7eadccdd71c3c8c28c163",
-    "cdk_deploy_run_id": 25009228844,
-    "cloudflare_pages_run_id": 25009253509,
+    "head": "4c6c03370a6a4835304227841b0379c9b54f81a4",
+    "cdk_deploy_run_id": 25016453961,
+    "cloudflare_pages_run_id": 25016572170,
     "cdk_conclusion": "success",
     "cloudflare_pages_conclusion": "success",
     "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://65742b17.v0-spaceport-website-preview2.pages.dev",
+    "pages_hash_url": "https://c868d049.v0-spaceport-website-preview2.pages.dev",
     "pages_health_txt_verified": true,
-    "checked_at": "2026-04-27T17:21:02Z"
+    "cancelled_duplicate_pages_run_id": 25016500002,
+    "checked_at": "2026-04-27T20:04:47Z"
   },
   "r5_14tile_2k_dryrun": {
     "status": "passed_no_spend",
@@ -2780,11 +2781,11 @@
     },
     "next_monitoring_step": "Continue monitoring R5 tile_07 to export/completion and tile_08 handoff, then run streaming preflight and frozen-camera smoke/promotion review when model.tar.gz appears.",
     "latest_status_check": {
-      "checked_at": "2026-04-27T19:56:39Z",
+      "checked_at": "2026-04-27T20:28:18Z",
       "TrainingJobStatus": "InProgress",
       "SecondaryStatus": "Training",
       "TrainingStartTime": "2026-04-26T22:01:11Z",
-      "TrainingTimeInSeconds": 78908,
+      "TrainingTimeInSeconds": 80810,
       "FailureReason": null,
       "ModelArtifacts": null,
       "s3_output_object_count": 0,
@@ -4420,96 +4421,96 @@
       "filtered_log_event_count": 0,
       "gpu_latest_window": [
         {
-          "ts": "2026-04-27T19:11:00Z",
-          "avg": 36.6,
+          "ts": "2026-04-27T19:43:00Z",
+          "avg": 11.4,
+          "max": 37.0
+        },
+        {
+          "ts": "2026-04-27T19:48:00Z",
+          "avg": 46.2,
           "max": 100.0
         },
         {
-          "ts": "2026-04-27T19:16:00Z",
-          "avg": 56.8,
+          "ts": "2026-04-27T19:53:00Z",
+          "avg": 78.0,
           "max": 100.0
         },
         {
-          "ts": "2026-04-27T19:21:00Z",
-          "avg": 28.6,
+          "ts": "2026-04-27T19:58:00Z",
+          "avg": 26.2,
           "max": 100.0
         },
         {
-          "ts": "2026-04-27T19:26:00Z",
-          "avg": 63.4,
+          "ts": "2026-04-27T20:03:00Z",
+          "avg": 61.0,
           "max": 100.0
         },
         {
-          "ts": "2026-04-27T19:31:00Z",
-          "avg": 40.2,
+          "ts": "2026-04-27T20:08:00Z",
+          "avg": 60.0,
           "max": 100.0
         },
         {
-          "ts": "2026-04-27T19:36:00Z",
+          "ts": "2026-04-27T20:13:00Z",
           "avg": 57.2,
           "max": 100.0
         },
         {
-          "ts": "2026-04-27T19:41:00Z",
-          "avg": 13.0,
-          "max": 25.0
-        },
-        {
-          "ts": "2026-04-27T19:46:00Z",
-          "avg": 38.0,
+          "ts": "2026-04-27T20:18:00Z",
+          "avg": 62.4,
           "max": 100.0
         },
         {
-          "ts": "2026-04-27T19:51:00Z",
-          "avg": 67.4,
+          "ts": "2026-04-27T20:23:00Z",
+          "avg": 54.4,
           "max": 100.0
         }
       ],
       "gpu_memory_latest_window": [
         {
-          "ts": "2026-04-27T19:11:00Z",
-          "avg": 55.34656,
-          "max": 55.4716
-        },
-        {
-          "ts": "2026-04-27T19:16:00Z",
-          "avg": 55.22146,
-          "max": 55.3153
-        },
-        {
-          "ts": "2026-04-27T19:21:00Z",
-          "avg": 55.20412,
-          "max": 55.2979
-        },
-        {
-          "ts": "2026-04-27T19:26:00Z",
-          "avg": 55.3882,
-          "max": 55.4542
-        },
-        {
-          "ts": "2026-04-27T19:31:00Z",
-          "avg": 55.22668,
-          "max": 55.2892
-        },
-        {
-          "ts": "2026-04-27T19:36:00Z",
-          "avg": 55.13812,
-          "max": 55.1416
-        },
-        {
-          "ts": "2026-04-27T19:41:00Z",
-          "avg": 54.60136,
-          "max": 55.1329
-        },
-        {
-          "ts": "2026-04-27T19:46:00Z",
+          "ts": "2026-04-27T19:43:00Z",
           "avg": 54.247,
           "max": 54.247
         },
         {
-          "ts": "2026-04-27T19:51:00Z",
-          "avg": 55.04776,
+          "ts": "2026-04-27T19:48:00Z",
+          "avg": 54.59092,
           "max": 55.1068
+        },
+        {
+          "ts": "2026-04-27T19:53:00Z",
+          "avg": 49.62134,
+          "max": 55.1068
+        },
+        {
+          "ts": "2026-04-27T19:58:00Z",
+          "avg": 55.13986,
+          "max": 55.2632
+        },
+        {
+          "ts": "2026-04-27T20:03:00Z",
+          "avg": 54.9505,
+          "max": 54.9505
+        },
+        {
+          "ts": "2026-04-27T20:08:00Z",
+          "avg": 54.99566,
+          "max": 55.0895
+        },
+        {
+          "ts": "2026-04-27T20:13:00Z",
+          "avg": 54.9331,
+          "max": 54.9331
+        },
+        {
+          "ts": "2026-04-27T20:18:00Z",
+          "avg": 55.05818,
+          "max": 55.2458
+        },
+        {
+          "ts": "2026-04-27T20:23:00Z",
+          "avg": 55.12076,
+          "max": 55.2458
         }
       ],
       "evidence": [
@@ -4517,33 +4518,38 @@
         "exact-head 45d4fb71 passed CDK 25013457429 and Pages 25013658360 with health checks while tile_07 stayed active at 2026-04-27T18:59:36Z with no final S3 artifact",
         "tile_07 remained active from 2026-04-27T18:37:00Z through 2026-04-27T19:17:00Z with sustained GPU signal, memory stable near 55%, no filtered errors or tile_08 handoff lines, and no final S3 artifact",
         "exact-head 34334384 passed CDK 25014913383 and Pages 25015105718 with health checks while tile_07 stayed active at 2026-04-27T19:32:48Z with no final S3 artifact and no tile_08 handoff lines",
-        "tile_07 remained active from 2026-04-27T19:11:00Z through 2026-04-27T19:51:00Z with sustained GPU signal except one low 19:41Z window that recovered, memory stable near 55%, no filtered errors or tile_08 handoff lines, and no final S3 artifact"
+        "tile_07 remained active from 2026-04-27T19:11:00Z through 2026-04-27T19:51:00Z with sustained GPU signal except one low 19:41Z window that recovered, memory stable near 55%, no filtered errors or tile_08 handoff lines, and no final S3 artifact",
+        "exact-head 4c6c0337 passed manually-triggered Pages 25016572170 with health checks; CDK did not trigger for this status-only evidence commit, so last CDK green remains 25014913383 at head 34334384",
+        "exact-head 4c6c0337 passed CDK 25016453961 and manually-triggered Pages 25016572170 with health checks while tile_07 stayed active",
+        "tile_07 remained active from 2026-04-27T19:43:00Z through 2026-04-27T20:23:00Z with sustained GPU signal after one low 19:43Z window, memory stable near 55%, no filtered errors or tile_08 handoff lines, and no final S3 artifact"
       ],
       "latest_tile_status": "tile_07 active; no tile_08 handoff or final model artifact yet"
     },
     "latest_exact_head_gate": {
-      "head": "3ab28727ecaea94d46a7eadccdd71c3c8c28c163",
-      "cdk_deploy_run_id": 25009228844,
-      "cloudflare_pages_run_id": 25009253509,
+      "head": "4c6c03370a6a4835304227841b0379c9b54f81a4",
+      "cdk_deploy_run_id": 25016453961,
+      "cloudflare_pages_run_id": 25016572170,
       "cdk_conclusion": "success",
       "cloudflare_pages_conclusion": "success",
       "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-      "pages_hash_url": "https://65742b17.v0-spaceport-website-preview2.pages.dev",
+      "pages_hash_url": "https://c868d049.v0-spaceport-website-preview2.pages.dev",
       "pages_health_txt_verified": true,
-      "checked_at": "2026-04-27T17:21:02Z"
+      "cancelled_duplicate_pages_run_id": 25016500002,
+      "checked_at": "2026-04-27T20:04:47Z"
     },
-    "updated": "2026-04-27T19:56:39Z"
+    "updated": "2026-04-27T20:28:18Z"
   },
   "latest_exact_head_gate": {
-    "head": "34334384f504d0e81dc69b4b94958c6508a03b4e",
-    "cdk_deploy_run_id": 25014913383,
-    "cloudflare_pages_run_id": 25015105718,
+    "head": "4c6c03370a6a4835304227841b0379c9b54f81a4",
+    "cdk_deploy_run_id": 25016453961,
+    "cloudflare_pages_run_id": 25016572170,
     "cdk_conclusion": "success",
     "cloudflare_pages_conclusion": "success",
     "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://6356c442.v0-spaceport-website-preview2.pages.dev",
+    "pages_hash_url": "https://c868d049.v0-spaceport-website-preview2.pages.dev",
     "pages_health_txt_verified": true,
-    "checked_at": "2026-04-27T19:32:48Z"
+    "cancelled_duplicate_pages_run_id": 25016500002,
+    "checked_at": "2026-04-27T20:04:47Z"
   },
-  "current_live_compute_status": "R5 SageMaker training job md1-r5-14tile-2k-1777240767-tiled is InProgress/Training as of 2026-04-27T19:56:39Z with TrainingStartTime=2026-04-26T22:01:11Z, TrainingTimeInSeconds=78908, no FailureReason, no ModelArtifacts, zero S3 output objects, only this SageMaker training job InProgress, and no processing jobs InProgress. Latest tile_07 useful-signal window is 19:11Z through 19:51Z with GPU avg/max 36.6/100.0, 56.8/100.0, 28.6/100.0, 63.4/100.0, 40.2/100.0, 57.2/100.0, 13.0/25.0, 38.0/100.0, and 67.4/100.0; GPU memory stayed around 54.2-55.5%. Latest 60m filtered logs had no ERROR/Traceback/OOM/Killed/export/tile_08 handoff lines. No final S3 artifact is present yet."
+  "current_live_compute_status": "R5 SageMaker training job md1-r5-14tile-2k-1777240767-tiled is InProgress/Training as of 2026-04-27T20:28:18Z with TrainingStartTime=2026-04-26T22:01:11Z, TrainingTimeInSeconds=80810, no FailureReason, no ModelArtifacts, zero S3 output objects, only this SageMaker training job InProgress, and no processing jobs InProgress. Latest tile_07 useful-signal window is 19:43Z through 20:23Z with GPU avg/max 11.4/37.0, 46.2/100.0, 78.0/100.0, 26.2/100.0, 61.0/100.0, 60.0/100.0, 57.2/100.0, 62.4/100.0, and 54.4/100.0; GPU memory stayed around 49.6-55.2%. Latest 75m filtered logs had no ERROR/Traceback/OOM/Killed/export/tile_08 handoff lines. No final S3 artifact is present yet."
 }
