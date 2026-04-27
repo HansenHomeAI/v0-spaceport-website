@@ -512,7 +512,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Continue monitoring R5 tile_00 to export/completion and tile_01 handoff, then run streaming preflight and frozen-camera smoke/promotion review when model.tar.gz appears.",
+  "next_unblocked_step": "Continue monitoring R5 tile_01 to export/completion and the next tile handoff, then run streaming preflight and frozen-camera smoke/promotion review when model.tar.gz appears.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -1511,8 +1511,8 @@
       }
     }
   },
-  "live_compute_status": "R5 SageMaker training job md1-r5-14tile-2k-1777240767-tiled is InProgress/Training as of 2026-04-26T23:11:44Z with TrainingStartTime=2026-04-26T22:01:11Z, TrainingTimeInSeconds=4235, no FailureReason, no ModelArtifacts, zero S3 output objects, and only this SageMaker training job InProgress. tile_00 is still training with useful GPU signal from 22:45Z through 23:10Z, GPU memory is stable around 53%, and no filtered error/export/handoff lines appeared.",
-  "current_branch_head": "9c2579589e7e85362db5ccc44dc5ab31f783f2fd",
+  "live_compute_status": "R5 SageMaker training job md1-r5-14tile-2k-1777240767-tiled is InProgress/Training as of 2026-04-27T00:33:02Z with TrainingStartTime=2026-04-26T22:01:11Z, TrainingTimeInSeconds=9064, no FailureReason, no ModelArtifacts, zero S3 output objects, and only this SageMaker training job InProgress. tile_00 completed at 00:16:12Z, exported planner-frame splat.ply 26.2 MB by 00:16:59Z, retained 264373 gaussians after pruning, and tile_01 started at 00:17:09Z with 300000 inherited scaffold points plus intended R5 settings. tile_01 startup GPU avg/max was 60.2/78, 85.0/100, and 75.5/93 from 00:20Z through 00:30Z, GPU memory rose from avg 27.0% to 33.5%, and no filtered CloudWatch ERROR/Traceback/OOM/Killed lines appeared.",
+  "current_branch_head": "2f29086d8fdcfa2248958f04ad4e99a5de11c9b9",
   "r4_full_7tile_1k_result": {
     "job_name": "md1-r4-7tile-1k-1777141446-tiled",
     "training_status": "Completed",
@@ -2145,8 +2145,8 @@
       }
     }
   },
-  "updated": "2026-04-26T23:11:44Z",
-  "current_exact_head_gate_status": "green CDK Deploy 24970291852 and green manually-triggered Cloudflare Pages 24970293952 for head 9c2579589e7e85362db5ccc44dc5ab31f783f2fd; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://fd785a7d.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes. No new ML container build was required for this evidence-only commit; R5 uses branch image digest sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8.",
+  "updated": "2026-04-27T00:33:02Z",
+  "current_exact_head_gate_status": "green CDK Deploy 24970910256 and green manually-triggered Cloudflare Pages 24970913635 for head 2f29086d8fdcfa2248958f04ad4e99a5de11c9b9; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://f82607c9.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes. No new ML container build was required for this evidence-only commit; R5 uses branch image digest sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8.",
   "r4_horizon_density_repair_result": {
     "label": "r4-horizon-density-tile00-01",
     "training_job_name": "md1-r4h-horizon-density-1777213327-tiled",
@@ -2623,16 +2623,16 @@
   "latest_review_status": "Corrected 12-image promotion comparison for v3 teacher-hybrid artifact promoted with camera_coverage=ok, fallback=0/retain_all=0, render_sanity=ok, and no block reasons. Deltas vs matching 12-image strict_core baseline: near_detail +3.946 dB/+0.0188 SSIM/-0.0639 LPIPS; boundary +1.593 dB/-0.0015 SSIM/-0.0076 LPIPS; horizon +2.090 dB/+0.0050 SSIM/-0.0384 LPIPS.",
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/review_comparison.json",
   "exact_head_gate_status": {
-    "head": "d2f46dd5dc8beee2cecf8e01f778b5e1358e2489",
-    "cdk_deploy_run_id": 24968856797,
-    "ml_container_build_run_id": null,
-    "ml_container_build_note": "No new ML container build was triggered by this evidence-only commit; using previously gated image digest sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8 from head 978a90c94a9edd5c0eac8436c43dab0534eb0012.",
-    "cloudflare_pages_run_id": 24968942096,
-    "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://c0483181.v0-spaceport-website-preview2.pages.dev",
-    "health_txt_verified": true,
     "status": "green",
-    "verified_at": "2026-04-26T22:48:40Z"
+    "head": "2f29086d8fdcfa2248958f04ad4e99a5de11c9b9",
+    "cdk_deploy_run_id": 24970910256,
+    "cloudflare_pages_run_id": 24970913635,
+    "ml_container_build_run_id": null,
+    "ml_container_build_note": "not triggered by evidence-only commit; R5 uses gated branch image digest sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8",
+    "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
+    "pages_hash_url": "https://f82607c9.v0-spaceport-website-preview2.pages.dev",
+    "health_txt_verified": true,
+    "verified_at": "2026-04-27T00:33:02Z"
   },
   "r5_14tile_2k_dryrun": {
     "status": "passed_no_spend",
@@ -2779,13 +2779,13 @@
       "ml_g5_2xlarge_training_quota": 2,
       "preview_health_alias_and_hash": true
     },
-    "next_monitoring_step": "Continue monitoring tile_00 to export/completion and tile_01 handoff, then stream preflight/review when model.tar.gz appears.",
+    "next_monitoring_step": "Continue monitoring tile_01 to export/completion and the next tile handoff, then stream preflight/review when model.tar.gz appears.",
     "latest_status_check": {
-      "checked_at": "2026-04-27T00:24:12Z",
+      "checked_at": "2026-04-27T00:33:02Z",
       "TrainingJobStatus": "InProgress",
       "SecondaryStatus": "Training",
       "TrainingStartTime": "2026-04-26T22:01:11Z",
-      "TrainingTimeInSeconds": 8582,
+      "TrainingTimeInSeconds": 9064,
       "FailureReason": null,
       "ModelArtifacts": null,
       "s3_output_object_count": 0,
@@ -2799,8 +2799,8 @@
         "tile_00 reused external scaffold PLY from /opt/ml/model/tiled_pipeline/external_scaffold/tiles/tile_00/splat.ply",
         "tile_00 prepared 300000 inherited scaffold points, selected 188 images, and launched ns-train at 2026-04-26T22:12:19Z"
       ],
-      "gpu_datapoints": 27,
-      "gpu_memory_datapoints": 27,
+      "gpu_datapoints": 30,
+      "gpu_memory_datapoints": 30,
       "gpu_utilization_windows": [
         {
           "timestamp": "2026-04-26T22:10:00Z",
@@ -2936,6 +2936,16 @@
           "timestamp": "2026-04-27T00:20:00Z",
           "average": 60.2,
           "maximum": 78
+        },
+        {
+          "timestamp": "2026-04-27T00:25:00Z",
+          "average": 85.0,
+          "maximum": 100.0
+        },
+        {
+          "timestamp": "2026-04-27T00:30:00Z",
+          "average": 75.5,
+          "maximum": 93.0
         }
       ],
       "gpu_memory_windows": [
@@ -3073,9 +3083,19 @@
           "timestamp": "2026-04-27T00:20:00Z",
           "average": 26.194225,
           "maximum": 28.7129
+        },
+        {
+          "timestamp": "2026-04-27T00:25:00Z",
+          "average": 33.00506,
+          "maximum": 34.0542
+        },
+        {
+          "timestamp": "2026-04-27T00:30:00Z",
+          "average": 33.49835,
+          "maximum": 33.5591
         }
       ],
-      "filtered_log_findings": "tile_00 completed/exported and tile_01 started; no filtered ERROR/Traceback/OOM/Killed lines as of 2026-04-27T00:24:12Z",
+      "filtered_log_findings": "tile_00 completed/exported and tile_01 startup shows useful GPU signal; no filtered ERROR/Traceback/OOM/Killed lines as of 2026-04-27T00:33:02Z",
       "current_tile": "tile_01",
       "tile_handoff_evidence": {
         "tile_00": {
