@@ -1512,7 +1512,7 @@
     }
   },
   "live_compute_status": "R5 SageMaker training job md1-r5-14tile-2k-1777240767-tiled is InProgress/Training as of 2026-04-26T23:11:44Z with TrainingStartTime=2026-04-26T22:01:11Z, TrainingTimeInSeconds=4235, no FailureReason, no ModelArtifacts, zero S3 output objects, and only this SageMaker training job InProgress. tile_00 is still training with useful GPU signal from 22:45Z through 23:10Z, GPU memory is stable around 53%, and no filtered error/export/handoff lines appeared.",
-  "current_branch_head": "10181f9563a125c9c412b1cfeaa16613d9222b87",
+  "current_branch_head": "9c2579589e7e85362db5ccc44dc5ab31f783f2fd",
   "r4_full_7tile_1k_result": {
     "job_name": "md1-r4-7tile-1k-1777141446-tiled",
     "training_status": "Completed",
@@ -2146,7 +2146,7 @@
     }
   },
   "updated": "2026-04-26T23:11:44Z",
-  "current_exact_head_gate_status": "green CDK Deploy 24969739360 and green manually-triggered Cloudflare Pages 24969745289 for head 10181f9563a125c9c412b1cfeaa16613d9222b87; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://65fdc8cb.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes. No new ML container build was required for this evidence-only commit; R5 uses branch image digest sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8.",
+  "current_exact_head_gate_status": "green CDK Deploy 24970291852 and green manually-triggered Cloudflare Pages 24970293952 for head 9c2579589e7e85362db5ccc44dc5ab31f783f2fd; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://fd785a7d.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes. No new ML container build was required for this evidence-only commit; R5 uses branch image digest sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8.",
   "r4_horizon_density_repair_result": {
     "label": "r4-horizon-density-tile00-01",
     "training_job_name": "md1-r4h-horizon-density-1777213327-tiled",
@@ -2781,11 +2781,11 @@
     },
     "next_monitoring_step": "Continue monitoring tile_00 to export/completion and tile_01 handoff, then stream preflight/review when model.tar.gz appears.",
     "latest_status_check": {
-      "checked_at": "2026-04-26T23:54:46Z",
+      "checked_at": "2026-04-27T00:24:12Z",
       "TrainingJobStatus": "InProgress",
       "SecondaryStatus": "Training",
       "TrainingStartTime": "2026-04-26T22:01:11Z",
-      "TrainingTimeInSeconds": 6816,
+      "TrainingTimeInSeconds": 8582,
       "FailureReason": null,
       "ModelArtifacts": null,
       "s3_output_object_count": 0,
@@ -2799,8 +2799,8 @@
         "tile_00 reused external scaffold PLY from /opt/ml/model/tiled_pipeline/external_scaffold/tiles/tile_00/splat.ply",
         "tile_00 prepared 300000 inherited scaffold points, selected 188 images, and launched ns-train at 2026-04-26T22:12:19Z"
       ],
-      "gpu_datapoints": 21,
-      "gpu_memory_datapoints": 21,
+      "gpu_datapoints": 27,
+      "gpu_memory_datapoints": 27,
       "gpu_utilization_windows": [
         {
           "timestamp": "2026-04-26T22:10:00Z",
@@ -2906,6 +2906,36 @@
           "timestamp": "2026-04-26T23:50:00Z",
           "average": 75.2,
           "maximum": 100
+        },
+        {
+          "timestamp": "2026-04-26T23:55:00Z",
+          "average": 80.4,
+          "maximum": 100
+        },
+        {
+          "timestamp": "2026-04-27T00:00:00Z",
+          "average": 96.4,
+          "maximum": 100
+        },
+        {
+          "timestamp": "2026-04-27T00:05:00Z",
+          "average": 99,
+          "maximum": 100
+        },
+        {
+          "timestamp": "2026-04-27T00:10:00Z",
+          "average": 91.6,
+          "maximum": 100
+        },
+        {
+          "timestamp": "2026-04-27T00:15:00Z",
+          "average": 40.6,
+          "maximum": 92
+        },
+        {
+          "timestamp": "2026-04-27T00:20:00Z",
+          "average": 60.2,
+          "maximum": 78
         }
       ],
       "gpu_memory_windows": [
@@ -3013,9 +3043,67 @@
           "timestamp": "2026-04-26T23:50:00Z",
           "average": 52.89734,
           "maximum": 52.9703
+        },
+        {
+          "timestamp": "2026-04-26T23:55:00Z",
+          "average": 53.08494,
+          "maximum": 53.1266
+        },
+        {
+          "timestamp": "2026-04-27T00:00:00Z",
+          "average": 53.12486,
+          "maximum": 53.1266
+        },
+        {
+          "timestamp": "2026-04-27T00:05:00Z",
+          "average": 53.14052,
+          "maximum": 53.2308
+        },
+        {
+          "timestamp": "2026-04-27T00:10:00Z",
+          "average": 53.11448,
+          "maximum": 53.3959
+        },
+        {
+          "timestamp": "2026-04-27T00:15:00Z",
+          "average": 21.288885999999998,
+          "maximum": 53.4046
+        },
+        {
+          "timestamp": "2026-04-27T00:20:00Z",
+          "average": 26.194225,
+          "maximum": 28.7129
         }
       ],
-      "filtered_log_findings": "no filtered ERROR/Traceback/OOM/Killed/export/handoff/completion/merge lines after tile_00 ns-train startup as of 2026-04-26T23:54:46Z"
+      "filtered_log_findings": "tile_00 completed/exported and tile_01 started; no filtered ERROR/Traceback/OOM/Killed lines as of 2026-04-27T00:24:12Z",
+      "current_tile": "tile_01",
+      "tile_handoff_evidence": {
+        "tile_00": {
+          "training_completed_at": "2026-04-27T00:16:12Z",
+          "export_completed_at": "2026-04-27T00:16:59Z",
+          "splat_ply_size_mb": 26.2,
+          "retained_gaussians": 264373,
+          "selected_image_count": 188,
+          "view_bucket_counts": {
+            "near_detail": 0,
+            "boundary": 12,
+            "horizon": 0
+          },
+          "inherited_gaussian_count": 300000,
+          "fallback_used": false
+        },
+        "tile_01": {
+          "training_started_at": "2026-04-27T00:17:09Z",
+          "inherited_gaussian_count": 300000,
+          "settings": {
+            "sh_degree": 1,
+            "bg_sh_degree": 1,
+            "stop_split_at": 3500,
+            "max_gauss_ratio": 3,
+            "eval_save_suppressed": true
+          }
+        }
+      }
     }
   }
 }
