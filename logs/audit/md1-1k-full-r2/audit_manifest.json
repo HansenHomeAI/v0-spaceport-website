@@ -1511,8 +1511,8 @@
       }
     }
   },
-  "live_compute_status": "R5 SageMaker training job md1-r5-14tile-2k-1777240767-tiled is InProgress/Training as of 2026-04-27T07:24:30Z with TrainingStartTime=2026-04-26T22:01:11Z, TrainingTimeInSeconds=33787, no FailureReason, no ModelArtifacts, zero S3 output objects, and only this SageMaker training job InProgress. tile_03 remains active. Recent tile_03 GPU avg/max was 45.4/100.0, 53.2/100.0, 54.0/100.0, 65.0/100.0, 100.0/100.0, 74.6/100.0, and 47.6/94.0 from 06:49Z through 07:19Z while GPU memory stayed stable around 54.1-54.5%; no filtered CloudWatch ERROR/Traceback/OOM/Killed/export/handoff lines appeared in the last 45m.",
-  "current_branch_head": "2742b1ee5d44176b871695d3c000d0ba24b98f9e",
+  "live_compute_status": "R5 SageMaker training job md1-r5-14tile-2k-1777240767-tiled is InProgress/Training as of 2026-04-27T07:55:29Z with TrainingStartTime=2026-04-26T22:01:11Z, TrainingTimeInSeconds=35611, no FailureReason, no ModelArtifacts, zero S3 output objects, and only this SageMaker training job InProgress. tile_03 completed training at 07:44:19Z, exported planner-frame splat.ply 44.8 MB by 07:46:29Z, retained 451601 gaussians, selected 188 images with buckets near_detail=176/boundary=0/horizon=12, and inherited 300000 scaffold points. tile_04 started at 07:46:51Z with 300000 inherited points and intended R5 settings; early tile_04 GPU avg/max was 20.0/100.0 and 30.6/37.0 from 07:44Z through 07:49Z while memory reset/ramped to about 25.1%, with no filtered ERROR/Traceback/OOM/Killed lines.",
+  "current_branch_head": "e0a7f9672873fb24d2b4fc69ef0fafe049ae574d",
   "r4_full_7tile_1k_result": {
     "job_name": "md1-r4-7tile-1k-1777141446-tiled",
     "training_status": "Completed",
@@ -2145,8 +2145,8 @@
       }
     }
   },
-  "updated": "2026-04-27T07:24:30Z",
-  "current_exact_head_gate_status": "green CDK Deploy 24980970378 and green manually-triggered Cloudflare Pages 24980978422 for head 2742b1ee5d44176b871695d3c000d0ba24b98f9e; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://53628038.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes. No new ML container build was required for this evidence-only commit; R5 uses the previously gated branch image digest sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8.",
+  "updated": "2026-04-27T07:55:29Z",
+  "current_exact_head_gate_status": "green CDK Deploy 24982035901 and green manually-triggered Cloudflare Pages 24982047043 for head e0a7f9672873fb24d2b4fc69ef0fafe049ae574d; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://c4af4253.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes. No new ML container build was required for this evidence-only commit; R5 uses the previously gated branch image digest sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8.",
   "r4_horizon_density_repair_result": {
     "label": "r4-horizon-density-tile00-01",
     "training_job_name": "md1-r4h-horizon-density-1777213327-tiled",
@@ -2619,10 +2619,10 @@
       "candidate_manifest_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-teacher-r3base-r4h-tile00-factor4-v3-promotion/quality_review_manifest.json"
     }
   },
-  "current_rung": "R5_submitted_monitoring_tile03_active",
+  "current_rung": "R5_submitted_monitoring_tile04_start",
   "latest_review_status": "Corrected 12-image promotion comparison for v3 teacher-hybrid artifact promoted with camera_coverage=ok, fallback=0/retain_all=0, render_sanity=ok, and no block reasons. Deltas vs matching 12-image strict_core baseline: near_detail +3.946 dB/+0.0188 SSIM/-0.0639 LPIPS; boundary +1.593 dB/-0.0015 SSIM/-0.0076 LPIPS; horizon +2.090 dB/+0.0050 SSIM/-0.0384 LPIPS.",
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/review_comparison.json",
-  "exact_head_gate_status": "green CDK Deploy 24980970378 and green manually-triggered Cloudflare Pages 24980978422 for head 2742b1ee5d44176b871695d3c000d0ba24b98f9e; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://53628038.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes. No new ML container build was required for this evidence-only commit; R5 uses the previously gated branch image digest sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8.",
+  "exact_head_gate_status": "green CDK Deploy 24982035901 and green manually-triggered Cloudflare Pages 24982047043 for head e0a7f9672873fb24d2b4fc69ef0fafe049ae574d; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://c4af4253.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes. No new ML container build was required for this evidence-only commit; R5 uses the previously gated branch image digest sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8.",
   "r5_14tile_2k_dryrun": {
     "status": "passed_no_spend",
     "verified_at": "2026-04-26T21:49:48Z",
@@ -2699,7 +2699,7 @@
     "next_gate": "exact-head workflows for the evidence commit must pass before live R5 SageMaker submit"
   },
   "r5_14tile_2k_submit": {
-    "status": "tile03_active",
+    "status": "tile04_started",
     "submitted_at": "2026-04-26T22:00:10Z",
     "submit_summary": "logs/audit/md1-1k-full-r2/r5_14tile_2k_submit_20260426214655.json",
     "source_head": "ec12c65e4217b22637737e5ba669afbbd9015382",
@@ -2768,13 +2768,13 @@
       "ml_g5_2xlarge_training_quota": 2,
       "preview_health_alias_and_hash": true
     },
-    "next_monitoring_step": "Continue monitoring tile_03 to export/completion and the next tile handoff, then stream preflight/review when model.tar.gz appears.",
+    "next_monitoring_step": "Continue monitoring tile_04 startup/useful-signal to export/completion and the next tile handoff, then stream preflight/review when model.tar.gz appears.",
     "latest_status_check": {
-      "checked_at": "2026-04-27T07:24:30Z",
+      "checked_at": "2026-04-27T07:55:29Z",
       "TrainingJobStatus": "InProgress",
       "SecondaryStatus": "Training",
       "TrainingStartTime": "2026-04-26T22:01:11Z",
-      "TrainingTimeInSeconds": 33787,
+      "TrainingTimeInSeconds": 35611,
       "FailureReason": null,
       "ModelArtifacts": null,
       "s3_output_object_count": 0,
@@ -2786,8 +2786,8 @@
         "tile_00 completed/exported and retained 264373 gaussians",
         "tile_01 completed/exported and retained 420538 gaussians",
         "tile_02 completed/exported and retained 493890 gaussians",
-        "tile_03 prepared 300000 inherited scaffold points and launched ns-train at 2026-04-27T05:05:09Z",
-        "tile_03 GPU signal remained useful from 2026-04-27T05:26:00Z through 2026-04-27T06:21:00Z with memory stabilized around 54.1-54.9%"
+        "tile_03 completed/exported and retained 451601 gaussians",
+        "tile_04 prepared 300000 inherited scaffold points and launched ns-train at 2026-04-27T07:46:51Z with intended R5 settings"
       ],
       "gpu_datapoints": 7,
       "gpu_memory_datapoints": 7,
@@ -3205,8 +3205,8 @@
           "maximum": 54.4815
         }
       ],
-      "filtered_log_findings": "no filtered ERROR/Traceback/OOM/Killed/export/handoff lines appeared in the last 45m as of 2026-04-27T07:24:30Z",
-      "current_tile": "tile_03",
+      "filtered_log_findings": "tile_03 completed/exported and tile_04 launched; no filtered ERROR/Traceback/OOM/Killed lines appeared as of 2026-04-27T07:55:29Z",
+      "current_tile": "tile_04",
       "tile_handoff_evidence": {
         "tile_00": {
           "training_completed_at": "2026-04-27T00:16:12Z",
@@ -3252,57 +3252,37 @@
         },
         "tile_03": {
           "training_started_at": "2026-04-27T05:05:09Z",
+          "training_completed_at": "2026-04-27T07:44:19Z",
+          "export_completed_at": "2026-04-27T07:46:29Z",
+          "splat_ply_size_mb": 44.8,
+          "retained_gaussians": 451601,
+          "selected_image_count": 188,
+          "view_bucket_counts": {
+            "near_detail": 176,
+            "boundary": 0,
+            "horizon": 12
+          },
+          "inherited_gaussian_count": 300000,
+          "fallback_used": false
+        },
+        "tile_04": {
+          "training_started_at": "2026-04-27T07:46:51Z",
           "inherited_gaussian_count": 300000,
           "active_gpu_signal": {
             "windows": [
               {
-                "timestamp": "2026-04-27T06:49:00Z",
-                "gpu_average": 45.4,
+                "timestamp": "2026-04-27T07:44:00Z",
+                "gpu_average": 20.0,
                 "gpu_maximum": 100.0,
-                "gpu_memory_average": 54.45026,
-                "gpu_memory_maximum": 54.7247
+                "gpu_memory_average": 12.20079704,
+                "gpu_memory_maximum": 54.4728
               },
               {
-                "timestamp": "2026-04-27T06:54:00Z",
-                "gpu_average": 53.2,
-                "gpu_maximum": 100.0,
-                "gpu_memory_average": 54.39118,
-                "gpu_memory_maximum": 54.7247
-              },
-              {
-                "timestamp": "2026-04-27T06:59:00Z",
-                "gpu_average": 54.0,
-                "gpu_maximum": 100.0,
-                "gpu_memory_average": 54.23488,
-                "gpu_memory_maximum": 54.2731
-              },
-              {
-                "timestamp": "2026-04-27T07:04:00Z",
-                "gpu_average": 65.0,
-                "gpu_maximum": 100.0,
-                "gpu_memory_average": 54.17232,
-                "gpu_memory_maximum": 54.3252
-              },
-              {
-                "timestamp": "2026-04-27T07:09:00Z",
-                "gpu_average": 100.0,
-                "gpu_maximum": 100.0,
-                "gpu_memory_average": 54.12016,
-                "gpu_memory_maximum": 54.2296
-              },
-              {
-                "timestamp": "2026-04-27T07:14:00Z",
-                "gpu_average": 74.6,
-                "gpu_maximum": 100.0,
-                "gpu_memory_average": 54.12016,
-                "gpu_memory_maximum": 54.2296
-              },
-              {
-                "timestamp": "2026-04-27T07:19:00Z",
-                "gpu_average": 47.6,
-                "gpu_maximum": 94.0,
-                "gpu_memory_average": 54.34426,
-                "gpu_memory_maximum": 54.4207
+                "timestamp": "2026-04-27T07:49:00Z",
+                "gpu_average": 30.6,
+                "gpu_maximum": 37.0,
+                "gpu_memory_average": 25.07906,
+                "gpu_memory_maximum": 25.1694
               }
             ]
           },
@@ -3317,89 +3297,89 @@
       },
       "recent_gpu_utilization_windows": [
         {
-          "timestamp": "2026-04-27T06:49:00Z",
-          "average": 45.4,
-          "maximum": 100.0
-        },
-        {
-          "timestamp": "2026-04-27T06:54:00Z",
-          "average": 53.2,
-          "maximum": 100.0
-        },
-        {
-          "timestamp": "2026-04-27T06:59:00Z",
-          "average": 54.0,
-          "maximum": 100.0
-        },
-        {
-          "timestamp": "2026-04-27T07:04:00Z",
-          "average": 65.0,
-          "maximum": 100.0
-        },
-        {
-          "timestamp": "2026-04-27T07:09:00Z",
-          "average": 100.0,
-          "maximum": 100.0
-        },
-        {
-          "timestamp": "2026-04-27T07:14:00Z",
-          "average": 74.6,
-          "maximum": 100.0
-        },
-        {
           "timestamp": "2026-04-27T07:19:00Z",
           "average": 47.6,
           "maximum": 94.0
+        },
+        {
+          "timestamp": "2026-04-27T07:24:00Z",
+          "average": 85.0,
+          "maximum": 100.0
+        },
+        {
+          "timestamp": "2026-04-27T07:29:00Z",
+          "average": 47.6,
+          "maximum": 100.0
+        },
+        {
+          "timestamp": "2026-04-27T07:34:00Z",
+          "average": 96.2,
+          "maximum": 100.0
+        },
+        {
+          "timestamp": "2026-04-27T07:39:00Z",
+          "average": 51.2,
+          "maximum": 100.0
+        },
+        {
+          "timestamp": "2026-04-27T07:44:00Z",
+          "average": 20.0,
+          "maximum": 100.0
+        },
+        {
+          "timestamp": "2026-04-27T07:49:00Z",
+          "average": 30.6,
+          "maximum": 37.0
         }
       ],
       "recent_gpu_memory_windows": [
         {
-          "timestamp": "2026-04-27T06:49:00Z",
-          "average": 54.45026,
-          "maximum": 54.7247
-        },
-        {
-          "timestamp": "2026-04-27T06:54:00Z",
-          "average": 54.39118,
-          "maximum": 54.7247
-        },
-        {
-          "timestamp": "2026-04-27T06:59:00Z",
-          "average": 54.23488,
-          "maximum": 54.2731
-        },
-        {
-          "timestamp": "2026-04-27T07:04:00Z",
-          "average": 54.17232,
-          "maximum": 54.3252
-        },
-        {
-          "timestamp": "2026-04-27T07:09:00Z",
-          "average": 54.12016,
-          "maximum": 54.2296
-        },
-        {
-          "timestamp": "2026-04-27T07:14:00Z",
-          "average": 54.12016,
-          "maximum": 54.2296
-        },
-        {
           "timestamp": "2026-04-27T07:19:00Z",
           "average": 54.34426,
           "maximum": 54.4207
+        },
+        {
+          "timestamp": "2026-04-27T07:24:00Z",
+          "average": 54.4867,
+          "maximum": 54.6031
+        },
+        {
+          "timestamp": "2026-04-27T07:29:00Z",
+          "average": 54.69866,
+          "maximum": 54.7942
+        },
+        {
+          "timestamp": "2026-04-27T07:34:00Z",
+          "average": 54.057680000000005,
+          "maximum": 54.2036
+        },
+        {
+          "timestamp": "2026-04-27T07:39:00Z",
+          "average": 54.236580000000004,
+          "maximum": 54.4728
+        },
+        {
+          "timestamp": "2026-04-27T07:44:00Z",
+          "average": 12.20079704,
+          "maximum": 54.4728
+        },
+        {
+          "timestamp": "2026-04-27T07:49:00Z",
+          "average": 25.07906,
+          "maximum": 25.1694
         }
       ]
     },
     "latest_exact_head_gate": {
-      "head": "2742b1ee5d44176b871695d3c000d0ba24b98f9e",
-      "cdk_deploy_run_id": 24980970378,
-      "cloudflare_pages_run_id": 24980978422,
+      "head": "e0a7f9672873fb24d2b4fc69ef0fafe049ae574d",
+      "cdk_deploy_run_id": 24982035901,
+      "cloudflare_pages_run_id": 24982047043,
       "cdk_conclusion": "success",
       "cloudflare_pages_conclusion": "success",
       "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-      "pages_hash_url": "https://53628038.v0-spaceport-website-preview2.pages.dev",
+      "pages_hash_url": "https://c4af4253.v0-spaceport-website-preview2.pages.dev",
       "pages_health_txt_verified": true,
-      "checked_at": "2026-04-27T07:02:03Z"
+      "checked_at": "2026-04-27T07:30:43Z"
     }
   }
 }
