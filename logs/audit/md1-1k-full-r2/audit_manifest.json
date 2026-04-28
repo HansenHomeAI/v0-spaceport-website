@@ -589,7 +589,7 @@
       ]
     }
   ],
-  "current_branch_head": "2d1621d963153264c9e10cd9d6b28014040d3e06",
+  "current_branch_head": "f784232e9c1935e4dfd08af48000fbfc88dc19be",
   "current_exact_head_gate_status": {
     "checked_at": "2026-04-28T22:35:04Z",
     "head": "2d1621d963153264c9e10cd9d6b28014040d3e06",
@@ -602,7 +602,7 @@
     "pages_health_txt_verified": true
   },
   "current_live_compute_status": "R5 completed/preflight passed and the smoke review blocked promotion on horizon regression. Live control plane was rechecked at 2026-04-28T23:10:19Z: R5 training and smoke-review jobs are Completed, R5 model.tar.gz is present at 2300184250 bytes, no SageMaker training jobs are InProgress, and no processing jobs were InProgress before launching the no-promotion repair proof. Submitted processing job md1-r5-teacherctx-020406-1777418027 at 2026-04-28T23:15:37Z to build an offline R5 teacher-context hybrid; initial status is InProgress with no FailureReason.",
-  "current_rung": "R5_teacher_context_020406_processing",
+  "current_rung": "R5_teacher_context_020406_v2_processing",
   "exact_head_gate_status": {
     "checked_at": "2026-04-28T22:35:04Z",
     "head": "2d1621d963153264c9e10cd9d6b28014040d3e06",
@@ -3321,7 +3321,7 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-04-28T23:15:37Z",
+  "updated": "2026-04-28T23:29:29Z",
   "version": "1.0.0",
   "r5_14tile_2k_preflight": {
     "summary_path": "logs/audit/md1-1k-full-r2/r5_14tile_2k_preflight_summary_20260428215230.json",
@@ -3791,7 +3791,7 @@
     "selected_repair": "Build an offline no-training/no-promotion R5 teacher-context hybrid with R5 as the 14-tile base and promoted teacher tile_02/tile_04/tile_06 as context-preserved replacements."
   },
   "r5_teacher_context_020406": {
-    "status": "ProcessingInProgress",
+    "status": "ProcessingFailed",
     "submitted_at": "2026-04-28T23:15:37Z",
     "processing_job_name": "md1-r5-teacherctx-020406-1777418027",
     "processing_job_arn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-r5-teacherctx-020406-1777418027",
@@ -3814,6 +3814,54 @@
     "diagnosis_path": "logs/audit/md1-1k-full-r2/r5_smoke_horizon_diagnosis_20260428231347.json",
     "script_s3_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-020406-20260428231347/scripts/",
     "output_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-020406-20260428231347/output/artifact/model.tar.gz",
+    "next_unblocked_step": "monitor processing completion, run streaming preflight if model.tar.gz appears, then run frozen smoke review before any promotion",
+    "failed_at": "2026-04-28T23:21:38Z",
+    "failure_reason": "AlgorithmError: , exit code: 1",
+    "cloudwatch_log_stream": "md1-r5-teacherctx-020406-1777418027/algo-1-1777418167",
+    "failure_diagnosis": "FileNotFoundError for /opt/ml/processing/work/historical/3dgs_tile_manifest.json; completed R5 artifact stores tile manifests under tiled_pipeline/inputs rather than tar root.",
+    "superseded_by": "r5_teacher_context_020406_v2"
+  },
+  "last_commit": "f784232e9c1935e4dfd08af48000fbfc88dc19be",
+  "last_exact_head_gates": {
+    "head": "f784232e9c1935e4dfd08af48000fbfc88dc19be",
+    "cdk_deploy_run_id": 25082674176,
+    "cloudflare_pages_run_id": 25082685986,
+    "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
+    "pages_hash_url": "https://af420bd6.v0-spaceport-website-preview2.pages.dev",
+    "health_checked_at": "2026-04-28T23:24:03Z",
+    "health_result": "alias_and_hash_ok"
+  },
+  "r5_teacher_context_020406_v2": {
+    "status": "ProcessingInProgress",
+    "submitted_at": "2026-04-28T23:29:29Z",
+    "processing_job_name": "md1-r5-teacherctx-020406-v2-1777418925",
+    "processing_job_arn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-r5-teacherctx-020406-v2-1777418925",
+    "historical_base_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-14tile-2k-full-20260426214655/T2_tiled_pipeline/md1-r5-14tile-2k-1777240767-tiled/output/model.tar.gz",
+    "replacement_teacher_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-teacher-r3base-r4h-tile00-factor4-v3-20260426201700/output/artifact/model.tar.gz",
+    "replacement_tiles": [
+      "tile_02",
+      "tile_04",
+      "tile_06"
+    ],
+    "preserve_context_tiles": [
+      "tile_02",
+      "tile_04",
+      "tile_06"
+    ],
+    "replacement_mode": "replace",
+    "opacity_policy": "none",
+    "fix": "Patched build_md1_hybrid_artifact.py to resolve nested SageMaker artifact roots and manifest/view-bucket files under tiled_pipeline/inputs.",
+    "code_path": "scripts/3dgs/build_md1_hybrid_artifact.py",
+    "entrypoint_path": "logs/audit/md1-1k-full-r2/r5_teacher_context_020406_v2_entrypoint_20260428232845.sh",
+    "payload_path": "logs/audit/md1-1k-full-r2/r5_teacher_context_020406_v2_processing_payload_20260428232845.json",
+    "script_s3_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-020406-v2-20260428232845/scripts/",
+    "output_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-020406-v2-20260428232845/output/artifact/model.tar.gz",
+    "latest_live_check": {
+      "checked_at": "2026-04-28T23:29:29Z",
+      "processing_status": "InProgress",
+      "failure_reason": null,
+      "output_object_count": 0
+    },
     "next_unblocked_step": "monitor processing completion, run streaming preflight if model.tar.gz appears, then run frozen smoke review before any promotion"
   }
 }

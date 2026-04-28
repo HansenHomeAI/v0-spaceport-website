@@ -217,6 +217,44 @@ def write_json_if_missing(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
+def resolve_artifact_root(root: Path) -> Path:
+    """Find the model artifact root even when SageMaker wraps the tarball contents."""
+    marker_names = ("3dgs_tile_manifest.fixed.json", "3dgs_tile_manifest.json")
+    if (root / "tiles").is_dir() and any((root / name).exists() for name in marker_names):
+        return root
+
+    candidates: list[Path] = []
+    for marker_name in marker_names:
+        for marker in root.rglob(marker_name):
+            candidate = marker.parent
+            if (candidate / "tiles").is_dir():
+                candidates.append(candidate)
+
+    if not candidates:
+        return root
+    return sorted(candidates, key=lambda path: (len(path.relative_to(root).parts), str(path)))[0]
+
+
+def find_tile_manifest(root: Path) -> Path:
+    for name in ("3dgs_tile_manifest.fixed.json", "3dgs_tile_manifest.json"):
+        path = root / name
+        if path.exists():
+            return path
+    nested = sorted((root / "tiled_pipeline" / "inputs").glob("*/3dgs_tile_manifest.json"))
+    if nested:
+        return nested[0]
+    return root / "3dgs_tile_manifest.json"
+
+
+def find_view_buckets(root: Path) -> Path | None:
+    for name in ("3dgs_view_buckets.fixed.json", "3dgs_view_buckets.json"):
+        path = root / name
+        if path.exists():
+            return path
+    nested = sorted((root / "tiled_pipeline" / "inputs").glob("*/3dgs_view_buckets.json"))
+    return nested[0] if nested else None
+
+
 def copy_or_synthesize_input_metadata(
     *,
     output_dir: Path,
@@ -309,8 +347,8 @@ def build_tarball(output_dir: Path) -> Path:
 
 def main() -> int:
     args = parse_args()
-    historical_root = args.historical_root.resolve()
-    replacement_root = args.replacement_root.resolve()
+    historical_root = resolve_artifact_root(args.historical_root.resolve())
+    replacement_root = resolve_artifact_root(args.replacement_root.resolve())
     output_dir = args.output_dir.resolve()
     replacement_tiles = set(args.replacement_tile)
     preserve_context_tiles = set(args.preserve_context_tile)
@@ -321,19 +359,14 @@ def main() -> int:
         shutil.rmtree(output_dir)
     (output_dir / "tiles").mkdir(parents=True, exist_ok=True)
 
-    manifest_source = historical_root / "3dgs_tile_manifest.fixed.json"
-    if not manifest_source.exists():
-        manifest_source = historical_root / "3dgs_tile_manifest.json"
+    manifest_source = find_tile_manifest(historical_root)
     manifest = load_json(manifest_source)
     shutil.copy2(manifest_source, output_dir / "3dgs_tile_manifest.fixed.json")
     shutil.copy2(manifest_source, output_dir / "3dgs_tile_manifest.json")
-    view_bucket_source = historical_root / "3dgs_view_buckets.fixed.json"
     view_buckets = {}
-    if view_bucket_source.exists():
+    view_bucket_source = find_view_buckets(historical_root)
+    if view_bucket_source is not None:
         shutil.copy2(view_bucket_source, output_dir / "3dgs_view_buckets.fixed.json")
-        view_buckets = load_json(view_bucket_source)
-    elif (historical_root / "3dgs_view_buckets.json").exists():
-        view_bucket_source = historical_root / "3dgs_view_buckets.json"
         shutil.copy2(view_bucket_source, output_dir / "3dgs_view_buckets.json")
         view_buckets = load_json(view_bucket_source)
 
