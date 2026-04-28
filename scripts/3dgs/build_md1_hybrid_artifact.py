@@ -222,6 +222,8 @@ def resolve_artifact_root(root: Path) -> Path:
     marker_names = ("3dgs_tile_manifest.fixed.json", "3dgs_tile_manifest.json")
     if (root / "tiles").is_dir() and any((root / name).exists() for name in marker_names):
         return root
+    if (root / "tiles").is_dir() and any((root / "tiled_pipeline" / "inputs").glob("*/3dgs_tile_manifest.json")):
+        return root
 
     candidates: list[Path] = []
     for marker_name in marker_names:
