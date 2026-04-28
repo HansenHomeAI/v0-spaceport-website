@@ -589,11 +589,11 @@
       ]
     }
   ],
-  "current_branch_head": "215287e0b56edee140ecc99ed5d95451acd692d7",
-  "current_exact_head_gate_status": "green CDK Deploy 25032149202 and green manually-triggered Cloudflare Pages 25032172985 for head 215287e0b56edee140ecc99ed5d95451acd692d7; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://bc5187ba.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes. No code/container changes were introduced in this evidence-only commit; R5 continues using the previously gated branch image digest sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8.",
-  "current_live_compute_status": "R5 SageMaker training job md1-r5-14tile-2k-1777240767-tiled is InProgress/Training as of 2026-04-28T04:02:58Z with TrainingStartTime=2026-04-26T22:01:11Z, TrainingTimeInSeconds=108108, no FailureReason, no ModelArtifacts, zero S3 output objects at s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-14tile-2k-full-20260426214655/T2_tiled_pipeline, only this SageMaker training job InProgress, and no processing jobs InProgress. tile_09 is active after ns-train start at 00:19:25Z; latest GPU evidence remains sustained through 04:00Z with no filtered ERROR/Traceback/OOM/Killed/export/tile_10 handoff lines after tile_09 startup, and no final S3 artifact is present yet.",
-  "current_rung": "R5_submitted_monitoring_tile09_active",
-  "exact_head_gate_status": "green CDK Deploy 25032149202 and green manually-triggered Cloudflare Pages 25032172985 for head 215287e0b56edee140ecc99ed5d95451acd692d7; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://bc5187ba.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes. No code/container changes were introduced in this evidence-only commit; R5 continues using the previously gated branch image digest sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8.",
+  "current_branch_head": "1f751f707d448ce4fe6a05544901501ae393254a",
+  "current_exact_head_gate_status": "green CDK Deploy 25033295170 and green manually-triggered Cloudflare Pages 25033302151 for head 1f751f707d448ce4fe6a05544901501ae393254a; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://0a704cfd.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes. No code/container changes were introduced in this evidence-only commit; R5 continues using the previously gated branch image digest sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8.",
+  "current_live_compute_status": "R5 SageMaker training job md1-r5-14tile-2k-1777240767-tiled is InProgress/Training as of 2026-04-28T04:14:23Z with TrainingStartTime=2026-04-26T22:01:11Z, TrainingTimeInSeconds=108793, no FailureReason, no ModelArtifacts, zero S3 output objects at s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-14tile-2k-full-20260426214655/T2_tiled_pipeline. tile_09 completed/exported planner-frame splat.ply 20.6 MB by 04:09:46Z, retained 207244 gaussians after pruning removed 31, selected 188 images with buckets near_detail=0/boundary=18/horizon=2, and inherited 300000 scaffold points. tile_10 prepared 300000 inherited scaffold points at 04:10:28Z and started ns-train at 04:10:32Z with intended R5 settings; latest transition GPU window is expectedly low/reset at 04:10Z, no filtered ERROR/Traceback/OOM/Killed/export/tile_11 handoff lines appeared after tile_10 start, and no final S3 artifact is present yet.",
+  "current_rung": "R5_submitted_monitoring_tile10_start_gated",
+  "exact_head_gate_status": "green CDK Deploy 25033295170 and green manually-triggered Cloudflare Pages 25033302151 for head 1f751f707d448ce4fe6a05544901501ae393254a; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://0a704cfd.v0-spaceport-website-preview2.pages.dev both passed /health.txt probes. No code/container changes were introduced in this evidence-only commit; R5 continues using the previously gated branch image digest sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
     "buckets": {
@@ -694,18 +694,18 @@
   },
   "latest_exact_head_gate": {
     "cdk_conclusion": "success",
-    "cdk_deploy_run_id": 25032149202,
-    "checked_at": "2026-04-28T03:29:26Z",
+    "cdk_deploy_run_id": 25033295170,
+    "checked_at": "2026-04-28T04:09:58Z",
     "cloudflare_pages_conclusion": "success",
-    "cloudflare_pages_run_id": 25032172985,
-    "head": "215287e0b56edee140ecc99ed5d95451acd692d7",
+    "cloudflare_pages_run_id": 25033302151,
+    "head": "1f751f707d448ce4fe6a05544901501ae393254a",
     "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://bc5187ba.v0-spaceport-website-preview2.pages.dev",
+    "pages_hash_url": "https://0a704cfd.v0-spaceport-website-preview2.pages.dev",
     "pages_health_txt_verified": true
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/review_comparison.json",
   "latest_review_status": "Corrected 12-image promotion comparison for v3 teacher-hybrid artifact promoted with camera_coverage=ok, fallback=0/retain_all=0, render_sanity=ok, and no block reasons. Deltas vs matching 12-image strict_core baseline: near_detail +3.946 dB/+0.0188 SSIM/-0.0639 LPIPS; boundary +1.593 dB/-0.0015 SSIM/-0.0076 LPIPS; horizon +2.090 dB/+0.0050 SSIM/-0.0384 LPIPS.",
-  "live_compute_status": "R5 SageMaker training job md1-r5-14tile-2k-1777240767-tiled is InProgress/Training as of 2026-04-28T04:02:58Z with TrainingStartTime=2026-04-26T22:01:11Z, TrainingTimeInSeconds=108108, no FailureReason, no ModelArtifacts, zero S3 output objects at s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-14tile-2k-full-20260426214655/T2_tiled_pipeline, only this SageMaker training job InProgress, and no processing jobs InProgress. tile_09 is active after ns-train start at 00:19:25Z; latest GPU evidence remains sustained through 04:00Z with no filtered ERROR/Traceback/OOM/Killed/export/tile_10 handoff lines after tile_09 startup, and no final S3 artifact is present yet.",
+  "live_compute_status": "R5 SageMaker training job md1-r5-14tile-2k-1777240767-tiled is InProgress/Training as of 2026-04-28T04:14:23Z with TrainingStartTime=2026-04-26T22:01:11Z, TrainingTimeInSeconds=108793, no FailureReason, no ModelArtifacts, zero S3 output objects at s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-14tile-2k-full-20260426214655/T2_tiled_pipeline. tile_09 completed/exported planner-frame splat.ply 20.6 MB by 04:09:46Z, retained 207244 gaussians after pruning removed 31, selected 188 images with buckets near_detail=0/boundary=18/horizon=2, and inherited 300000 scaffold points. tile_10 prepared 300000 inherited scaffold points at 04:10:28Z and started ns-train at 04:10:32Z with intended R5 settings; latest transition GPU window is expectedly low/reset at 04:10Z, no filtered ERROR/Traceback/OOM/Killed/export/tile_11 handoff lines appeared after tile_10 start, and no final S3 artifact is present yet.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
     "canonical_model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
@@ -714,7 +714,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "continue monitoring R5 tile_09 to export/handoff, then tile_10 and remaining tiles through final merge; when model.tar.gz appears run streaming preflight and frozen-camera smoke/promotion review before any next promotion.",
+  "next_unblocked_step": "Continue monitoring R5 tile_10 to sustained useful GPU signal/export/handoff, then tile_11 and remaining tiles through final merge; when model.tar.gz appears run streaming preflight and frozen-camera smoke/promotion review before any next promotion.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -2703,24 +2703,24 @@
   },
   "r5_14tile_2k_submit": {
     "expected_model_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-14tile-2k-full-20260426214655/T2_tiled_pipeline/md1-r5-14tile-2k-1777240767-tiled/output/model.tar.gz",
-    "gated_cdk_deploy_run_id": 25032149202,
-    "gated_cloudflare_pages_run_id": 25032172985,
+    "gated_cdk_deploy_run_id": 25033295170,
+    "gated_cloudflare_pages_run_id": 25033302151,
     "image_digest": "sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8",
     "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8",
     "input_colmap_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap",
     "latest_exact_head_gate": {
       "cdk_conclusion": "success",
-      "cdk_deploy_run_id": 25032149202,
-      "checked_at": "2026-04-28T03:29:26Z",
+      "cdk_deploy_run_id": 25033295170,
+      "checked_at": "2026-04-28T04:09:58Z",
       "cloudflare_pages_conclusion": "success",
-      "cloudflare_pages_run_id": 25032172985,
-      "head": "215287e0b56edee140ecc99ed5d95451acd692d7",
+      "cloudflare_pages_run_id": 25033302151,
+      "head": "1f751f707d448ce4fe6a05544901501ae393254a",
       "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-      "pages_hash_url": "https://bc5187ba.v0-spaceport-website-preview2.pages.dev",
+      "pages_hash_url": "https://0a704cfd.v0-spaceport-website-preview2.pages.dev",
       "pages_health_txt_verified": true
     },
     "latest_output_prefix_check": {
-      "checked_at": "2026-04-28T04:02:58Z",
+      "checked_at": "2026-04-28T04:14:23Z",
       "object_count": 0,
       "s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-14tile-2k-full-20260426214655/T2_tiled_pipeline",
       "total_size_bytes": 0
@@ -2731,11 +2731,11 @@
       "SecondaryStatus": "Training",
       "TrainingJobStatus": "InProgress",
       "TrainingStartTime": "2026-04-26T22:01:11Z",
-      "TrainingTimeInSeconds": 108108,
-      "active_tile": "tile_09",
-      "checked_at": "2026-04-28T04:02:58Z",
+      "TrainingTimeInSeconds": 108793,
+      "active_tile": "tile_10",
+      "checked_at": "2026-04-28T04:14:23Z",
       "cloudwatch_stream": "md1-r5-14tile-2k-1777240767-tiled/algo-1-1777240871",
-      "current_tile": "tile_09",
+      "current_tile": "tile_10",
       "evidence": [
         "tile_07 remained active from 2026-04-27T18:04:00Z through 2026-04-27T18:44:00Z with sustained GPU signal, memory stable near 55%, no filtered errors or tile_08 handoff lines, and no final S3 artifact",
         "exact-head 45d4fb71 passed CDK 25013457429 and Pages 25013658360 with health checks while tile_07 stayed active at 2026-04-27T18:59:36Z with no final S3 artifact",
@@ -2759,74 +2759,45 @@
         "only this SageMaker training job is InProgress, no processing jobs are InProgress, GPU memory remained stable around 52.6-52.9%, and no filtered error/export/tile_10 handoff lines appeared after tile_09 startup",
         "tile_09 remained active at 2026-04-28T03:22:36Z with no final S3 artifact; GPU avg/max 28.6/100.0, 79.4/100.0, 28.4/68.0, 37.0/100.0, 26.6/66.0, 27.8/100.0, 93.0/100.0, 70.4/100.0, 54.6/100.0, 37.8/100.0, 46.2/100.0, 45.4/100.0, and 100.0/100.0 from 02:20Z through 03:20Z; only this SageMaker training job was InProgress, no processing jobs were InProgress, GPU memory stayed mostly 52.6-52.9% with two lower transition windows, and filtered logs after tile_09 startup were quiet",
         "exact-head 215287e0 passed CDK 25032149202 and Pages 25032172985 with health checks while tile_09 stayed active at 2026-04-28T03:29:26Z with no FailureReason, no ModelArtifacts, zero S3 output objects, and no filtered error/export/tile_10 handoff lines after tile_09 startup",
-        "tile_09 remained active at 2026-04-28T04:02:58Z with no final S3 artifact; GPU avg/max 53.2/100.0, 60.0/100.0, 27.4/100.0, 35.0/60.0, 77.4/100.0, 19.6/49.0, 51.8/100.0, 45.2/100.0, 100.0/100.0 from 03:20Z through 04:00Z; only this SageMaker training job was InProgress, no processing jobs were InProgress, GPU memory stayed around 52.6-52.9%, and filtered logs after tile_09 startup were quiet"
+        "tile_09 remained active at 2026-04-28T04:02:58Z with no final S3 artifact; GPU avg/max 53.2/100.0, 60.0/100.0, 27.4/100.0, 35.0/60.0, 77.4/100.0, 19.6/49.0, 51.8/100.0, 45.2/100.0, 100.0/100.0 from 03:20Z through 04:00Z; only this SageMaker training job was InProgress, no processing jobs were InProgress, GPU memory stayed around 52.6-52.9%, and filtered logs after tile_09 startup were quiet",
+        "exact-head 1f751f70 passed CDK 25033295170 and Pages 25033302151 with health checks while R5 stayed active",
+        "tile_09 completed/exported at 2026-04-28T04:09:46Z with planner-frame splat.ply 20.6 MB, retained 207244 gaussians after pruning removed 31, selected 188 images with buckets near_detail=0/boundary=18/horizon=2, inherited 300000 scaffold points, and fallback_used=false",
+        "tile_10 prepared 300000 inherited scaffold points at 2026-04-28T04:10:28Z and started ns-train at 04:10:32Z with intended R5 full-fidelity settings; transition GPU window at 04:10Z was reset/low and filtered logs after tile_10 start had no errors or tile_11 handoff lines"
       ],
       "expected_model_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-14tile-2k-full-20260426214655/T2_tiled_pipeline/md1-r5-14tile-2k-1777240767-tiled/output/model.tar.gz",
       "filtered_error_export_handoff_events": [],
       "filtered_log_check": {
-        "matching_events_after_tile09_start": 0,
+        "matching_events_after_tile10_start": 0,
         "patterns": [
           "ERROR",
           "Traceback",
           "OOM",
           "Killed",
           "export",
-          "tile_10",
+          "tile_11",
           "handoff"
         ],
-        "start_after_tile09_start_ms": 1777335570000
+        "start_after_tile10_start_ms": 1777349430000
       },
       "filtered_log_findings": [],
       "final_s3_object_count": 0,
       "gpu_latest_window": [
-        "53.2/100.0",
-        "60.0/100.0",
-        "27.4/100.0",
-        "35.0/60.0",
-        "77.4/100.0",
-        "19.6/49.0",
-        "51.8/100.0",
-        "45.2/100.0",
-        "100.0/100.0"
+        "0.0/0.0"
       ],
       "gpu_memory_latest_window": [
-        "52.6/52.6",
-        "52.6/52.6",
-        "52.7/52.8",
-        "52.7/52.8",
-        "52.6/52.8",
-        "52.8/52.8",
-        "52.6/52.8",
-        "52.8/52.9",
-        "52.6/52.6"
+        "0.7/1.5"
       ],
       "gpu_window": {
         "avg_max_percent": [
-          "53.2/100.0",
-          "60.0/100.0",
-          "27.4/100.0",
-          "35.0/60.0",
-          "77.4/100.0",
-          "19.6/49.0",
-          "51.8/100.0",
-          "45.2/100.0",
-          "100.0/100.0"
+          "0.0/0.0"
         ],
-        "end": "2026-04-28T04:00:00Z",
-        "memory_percent_range": "52.6-52.9",
+        "end": "2026-04-28T04:10:00Z",
+        "memory_percent_range": "tile-transition reset 0.7/1.5 at 04:10Z",
         "period_seconds": 300,
-        "start": "2026-04-28T03:20:00Z"
+        "start": "2026-04-28T04:10:00Z"
       },
       "gpu_window_timestamps": [
-        "2026-04-28T03:20:00Z",
-        "2026-04-28T03:25:00Z",
-        "2026-04-28T03:30:00Z",
-        "2026-04-28T03:35:00Z",
-        "2026-04-28T03:40:00Z",
-        "2026-04-28T03:45:00Z",
-        "2026-04-28T03:50:00Z",
-        "2026-04-28T03:55:00Z",
-        "2026-04-28T04:00:00Z"
+        "2026-04-28T04:10:00Z"
       ],
       "inprogress_processing_jobs": [],
       "inprogress_training_jobs": [
@@ -2834,7 +2805,7 @@
       ],
       "only_training_job_inprogress": true,
       "output_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-14tile-2k-full-20260426214655/T2_tiled_pipeline",
-      "previous_tile_completed": "tile_08",
+      "previous_tile_completed": "tile_09",
       "processing_jobs_inprogress": 0,
       "s3_output_objects_total": 0,
       "tile_08_completion": {
@@ -2852,6 +2823,21 @@
           "near_detail": 52
         }
       },
+      "tile_09_completion": {
+        "export_completed_at": "2026-04-28T04:09:46Z",
+        "fallback_used": false,
+        "inherited_gaussian_count": 300000,
+        "removed_gaussians": 31,
+        "retained_gaussians": 207244,
+        "selected_image_count": 188,
+        "splat_ply_mb": 20.6,
+        "training_completed_at": "2026-04-28T04:05:43Z",
+        "view_bucket_counts": {
+          "boundary": 18,
+          "horizon": 2,
+          "near_detail": 0
+        }
+      },
       "tile_09_start": {
         "inherited_gaussian_count": 300000,
         "ns_train_started_at": "2026-04-28T00:19:25Z",
@@ -2863,6 +2849,13 @@
           "horizon": 2,
           "near_detail": 0
         }
+      },
+      "tile_10_start": {
+        "inherited_gaussian_count": 300000,
+        "ns_train_started_at": "2026-04-28T04:10:32Z",
+        "scaffold_prepared_at": "2026-04-28T04:10:28Z",
+        "selected_image_count": 188,
+        "settings": "R5 intended full 12000 iterations, SH/BG_SH=1, stop_split_at=3500, max_gauss_ratio=3.0, eval/save suppression, background, alpha loss, robust masking"
       }
     },
     "manifest_resolution": {
@@ -2874,10 +2867,10 @@
       "source_mode": "chunk_planner_synthesized_v1",
       "tile_count": 14
     },
-    "next_monitoring_step": "Continue monitoring tile_09 to export/handoff, then tile_10 and remaining tiles through final merge; when model.tar.gz appears run streaming preflight and frozen-camera smoke/promotion review before any next promotion.",
+    "next_monitoring_step": "Continue monitoring R5 tile_10 to sustained useful GPU signal/export/handoff, then tile_11 and remaining tiles through final merge; when model.tar.gz appears run streaming preflight and frozen-camera smoke/promotion review before any next promotion.",
     "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-14tile-2k-full-20260426214655/T2_tiled_pipeline",
     "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://b6d0e7fb.v0-spaceport-website-preview2.pages.dev",
+    "pages_hash_url": "https://0a704cfd.v0-spaceport-website-preview2.pages.dev",
     "pages_health_txt_verified": true,
     "pre_submit_checks": {
       "ml_g5_2xlarge_training_quota": 2,
@@ -2916,7 +2909,7 @@
       "tile_13"
     ],
     "source_head": "ec12c65e4217b22637737e5ba669afbbd9015382",
-    "status": "tile09_active",
+    "status": "tile10_started_gated",
     "submit_summary": "logs/audit/md1-1k-full-r2/r5_14tile_2k_submit_20260426214655.json",
     "submitted_at": "2026-04-26T22:00:10Z",
     "training_job_arn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-r5-14tile-2k-1777240767-tiled",
@@ -2929,7 +2922,7 @@
       "TrainingJobStatus": "InProgress",
       "TrainingStartTime": null
     },
-    "updated": "2026-04-28T04:02:58Z"
+    "updated": "2026-04-28T04:14:23Z"
   },
   "root_cause_classification": "far_field_bad",
   "rung": "R5",
@@ -2938,6 +2931,6 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-04-28T04:02:58Z",
+  "updated": "2026-04-28T04:14:23Z",
   "version": "1.0.0"
 }
