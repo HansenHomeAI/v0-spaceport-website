@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "V12, V13, V15, and V16 have identical p24 metrics and remain blocked only on horizon_psnr_regression; V14 strict_core/R2 tile_01 and V11 scale-aware opacity were worse. No promotion until a later repair passes preflight plus frozen p24 smoke review.",
+  "blocked_promotion_reason": "V16 remains blocked only on horizon_psnr_regression, with per-camera diagnosis showing DJI_0073/DJI_0146/DJI_0147 PSNR/SSIM are the remaining misses. V12/V15/V16 match exactly, V14/V11 were worse, and no promotion is allowed until a repair passes preflight plus frozen p24 smoke review.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "3106ab2de1bec4bec8634eef8f11bcc12968bee3",
-  "current_exact_head_gate_status": "green CDK Deploy 25098780839 and green manually-triggered Cloudflare Pages 25098803652 for head 3106ab2de1bec4bec8634eef8f11bcc12968bee3; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://85e62d19.v0-spaceport-website-preview2.pages.dev both passed workflow and local /health.txt probes by 2026-04-29T08:52Z.",
-  "current_live_compute_status": "V16 Processing job md1-r5-teacherctx-v12-t01ov-v16-1777450963 completed at 2026-04-29T08:33:53Z and wrote model.tar.gz at 1203321883 bytes. Streaming preflight passed with artifact_complete=true, fallback=0, retain_all=0, retained/source/dropped=8423868/8789634/365766, and no block reasons. Explicit p24 smoke job md1-r1-r5-teacher-context-v12-tile01overlap-v16-smoke-p24-17774 completed at 2026-04-29T08:51:30Z with camera coverage OK, fallback=0/retain_all=0, but promotion remains blocked only on horizon_psnr_regression. No SageMaker training or processing jobs are InProgress.",
-  "current_rung": "R5_teacher_context_v12_tile01overlap_v16_smoke_blocked",
+  "current_branch_head": "d7344dc30b3b77d6064837527955a067d20e4a2d",
+  "current_exact_head_gate_status": "green CDK Deploy 25099874808 and green manually-triggered Cloudflare Pages 25099958327 for head d7344dc30b3b77d6064837527955a067d20e4a2d; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://4db945b4.v0-spaceport-website-preview2.pages.dev both passed workflow and local /health.txt probes by 2026-04-29T09:04Z.",
+  "current_live_compute_status": "No SageMaker training or processing jobs are InProgress. V16 completed/preflighted/smoked and remains blocked; no promotion was run.",
+  "current_rung": "R5_v16_per_camera_culling_sky_diagnosis",
   "exact_head_gate_status": {
     "checked_at": "2026-04-29T08:52:45Z",
     "head": "3106ab2de1bec4bec8634eef8f11bcc12968bee3",
@@ -716,7 +716,7 @@
     "status": "green"
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-tile01overlap-v16-smoke-p24/review_comparison.json",
-  "latest_review_status": "V16 force-tile_01-overlap diagnostic matched V12/V13/V15 exactly: near_detail +1.046 dB/+0.0593 SSIM/+0.00480 LPIPS, boundary +1.108 dB/+0.0156 SSIM/-0.0410 LPIPS, horizon -1.134 dB/-0.00953 SSIM/-0.0331 LPIPS. V16 preflight passed and smoke was blocked only on horizon_psnr_regression, so tile_01 overlap ownership is not the remaining PSNR driver. Do not promote.",
+  "latest_review_status": "Targeted V16 per-camera/culling/sky diagnosis found the remaining horizon gate is PSNR/SSIM on DJI_0073, DJI_0146, and DJI_0147, not artifact integrity, max-gaussian culling, skybox-only behavior, tile_01 overlap ownership, or context padding. V16 failing frames render all visible projected gaussians below the 500k cap and no-background PSNR does not recover; LPIPS improves on every horizon frame.",
   "live_compute_status": "V16 Processing job md1-r5-teacherctx-v12-t01ov-v16-1777450963 completed at 2026-04-29T08:33:53Z and wrote model.tar.gz at 1203321883 bytes. Streaming preflight passed with artifact_complete=true, fallback=0, retain_all=0, retained/source/dropped=8423868/8789634/365766, and no block reasons. Explicit p24 smoke job md1-r1-r5-teacher-context-v12-tile01overlap-v16-smoke-p24-17774 completed at 2026-04-29T08:51:30Z with camera coverage OK, fallback=0/retain_all=0, but promotion remains blocked only on horizon_psnr_regression. No SageMaker training or processing jobs are InProgress.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
@@ -726,7 +726,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "commit/push V16 completion/preflight/smoke evidence, gate exact head, then run a targeted per-camera/culling/sky diagnosis before choosing the next bounded no-training repair",
+  "next_unblocked_step": "commit/push the V16 per-camera/culling/sky diagnosis evidence, gate exact head, then choose only a bounded no-training photometric/foreground diagnostic that directly targets DJI_0073/DJI_0146/DJI_0147 PSNR/SSIM; do not run another tile-ownership/context-processing variant without a new signal.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -3307,13 +3307,13 @@
     }
   },
   "root_cause_classification": "far_field_bad",
-  "rung": "R5_teacher_context_020406_processing",
+  "rung": "R5_v16_per_camera_culling_sky_diagnosis",
   "support_statistics": {
     "candidate_pair_count": 5,
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-04-29T04:48:01Z",
+  "updated": "2026-04-29T09:07:27Z",
   "version": "1.0.0",
   "r5_14tile_2k_preflight": {
     "summary_path": "logs/audit/md1-1k-full-r2/r5_14tile_2k_preflight_summary_20260428215230.json",
@@ -5841,5 +5841,49 @@
   },
   "r5_teacher_context_v12_tile01overlap_v16_submit_20260429082300Z": "Exact-head e2b596cb428e0fa8721afb096f41b954bc26b651 is gated green on CDK Deploy 25098132723 and manually-triggered Pages 25098167608; alias/hash /health.txt passed in workflow and local curl, hash https://7bcfec22.v0-spaceport-website-preview2.pages.dev. V15 matched V12/V13 exactly and remains blocked only on horizon_psnr_regression. Submitted V16 no-training/no-promotion Processing job md1-r5-teacherctx-v12-t01ov-v16-1777450963 to start from V12 settings and force tile_01 overlap ownership. Latest status is InProgress with no ProcessingStartTime, no FailureReason/no ExitMessage, zero output objects, no training jobs InProgress, and only this processing job InProgress.",
   "r5_teacher_context_v12_tile01overlap_v16_active_20260429082807Z": "V16 Processing job md1-r5-teacherctx-v12-t01ov-v16-1777450963 is InProgress after ProcessingStartTime 2026-04-29T08:24:41Z with no FailureReason/no ExitMessage. Expected artifact s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-tile01overlap-v16-20260429082243/output/artifact/model.tar.gz is not present yet, output prefix has zero listed objects, no SageMaker training jobs are InProgress, and this is the only Processing job InProgress.",
-  "r5_teacher_context_v12_tile01overlap_v16_smoke_blocked_20260429085245Z": "Exact-head 3106ab2de1bec4bec8634eef8f11bcc12968bee3 is gated green on CDK Deploy 25098780839 and manually-triggered Pages 25098803652; alias/hash /health.txt passed, hash https://85e62d19.v0-spaceport-website-preview2.pages.dev. V16 Processing job md1-r5-teacherctx-v12-t01ov-v16-1777450963 completed, model.tar.gz is present at 1203321883 bytes, streaming preflight logs/audit/md1-1k-full-r2/r5_teacher_context_v12_tile01overlap_v16_preflight_summary_20260429083700.json passed, and explicit p24 smoke md1-r1-r5-teacher-context-v12-tile01overlap-v16-smoke-p24-17774 completed with camera coverage OK but blocked only on horizon_psnr_regression. Metrics matched V12/V13/V15 exactly, so forcing tile_01 overlap ownership did not close the PSNR miss. No SageMaker jobs are InProgress and no promotion was run."
+  "r5_teacher_context_v12_tile01overlap_v16_smoke_blocked_20260429085245Z": "Exact-head 3106ab2de1bec4bec8634eef8f11bcc12968bee3 is gated green on CDK Deploy 25098780839 and manually-triggered Pages 25098803652; alias/hash /health.txt passed, hash https://85e62d19.v0-spaceport-website-preview2.pages.dev. V16 Processing job md1-r5-teacherctx-v12-t01ov-v16-1777450963 completed, model.tar.gz is present at 1203321883 bytes, streaming preflight logs/audit/md1-1k-full-r2/r5_teacher_context_v12_tile01overlap_v16_preflight_summary_20260429083700.json passed, and explicit p24 smoke md1-r1-r5-teacher-context-v12-tile01overlap-v16-smoke-p24-17774 completed with camera coverage OK but blocked only on horizon_psnr_regression. Metrics matched V12/V13/V15 exactly, so forcing tile_01 overlap ownership did not close the PSNR miss. No SageMaker jobs are InProgress and no promotion was run.",
+  "owner_action_needed": "none",
+  "r5_v16_per_camera_culling_sky_diagnosis_20260429090727Z": "Exact-head d7344dc30b3b77d6064837527955a067d20e4a2d is gated green on CDK Deploy 25099874808 and manually-triggered Pages 25099958327; alias/hash /health.txt passed in workflow and local curl, hash https://4db945b4.v0-spaceport-website-preview2.pages.dev. Targeted per-camera/culling/sky diagnosis logs/audit/md1-1k-full-r2/r5_v16_per_camera_culling_sky_diagnosis_20260429090620.json shows V16 remains blocked by DJI_0073/DJI_0146/DJI_0147 PSNR/SSIM, while DJI_0066 clears strict_core PSNR and all horizon LPIPS deltas improve. The failing frames render all visible gaussians below the 500k cap, no-background PSNR is as bad or worse, and V12/V15/V16 per-camera metrics match exactly; so artifact integrity, max-gaussian culling, skybox-only behavior, tile_01 overlap ownership, and context padding are not the remaining blocker. No SageMaker training or processing jobs are InProgress and no promotion was run.",
+  "r5_v16_per_camera_culling_sky_diagnosis": {
+    "created_at": "2026-04-29T09:07:27Z",
+    "path": "logs/audit/md1-1k-full-r2/r5_v16_per_camera_culling_sky_diagnosis_20260429090620.json",
+    "verdict": "V16 remaining blocker is PSNR/SSIM-sensitive photometric or low-frequency foreground mismatch on DJI_0073/DJI_0146/DJI_0147, not artifact integrity, culling cap, skybox-only, tile_01 overlap ownership, or context padding.",
+    "exact_head_gate": {
+      "head": "d7344dc30b3b77d6064837527955a067d20e4a2d",
+      "cdk_deploy_run_id": 25099874808,
+      "cloudflare_pages_run_id": 25099958327,
+      "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
+      "pages_hash_url": "https://4db945b4.v0-spaceport-website-preview2.pages.dev",
+      "pages_health_txt_verified": true
+    },
+    "problem_cameras": [
+      {
+        "image_name": "DJI_0146.JPG",
+        "psnr_delta": -1.6868,
+        "ssim_delta": -0.01651,
+        "lpips_delta": -0.03769,
+        "rendered_gaussians": 113865
+      },
+      {
+        "image_name": "DJI_0147.JPG",
+        "psnr_delta": -1.3347,
+        "ssim_delta": -0.01759,
+        "lpips_delta": -0.04845,
+        "rendered_gaussians": 120779
+      },
+      {
+        "image_name": "DJI_0073.JPG",
+        "psnr_delta": -1.2123,
+        "ssim_delta": -0.01531,
+        "lpips_delta": -0.01767,
+        "rendered_gaussians": 52352
+      }
+    ],
+    "diagnosis": {
+      "max_gaussian_cap": "not blocker: failing frames are below 500k rendered-gaussian cap",
+      "skybox": "not primary: no-background PSNR is as bad or worse for failing frames",
+      "tile_context": "not sufficient: V12/V15/V16 per-camera p24 metrics are identical"
+    },
+    "next_unblocked_step": "commit/push the V16 per-camera/culling/sky diagnosis evidence, gate exact head, then choose only a bounded no-training photometric/foreground diagnostic that directly targets DJI_0073/DJI_0146/DJI_0147 PSNR/SSIM; do not run another tile-ownership/context-processing variant without a new signal."
+  }
 }
