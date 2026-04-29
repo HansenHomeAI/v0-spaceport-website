@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "V17 artifact-level color calibration is submitted but not yet promotable; model.tar.gz, streaming preflight, and frozen p24 smoke review are required before any promotion.",
+  "blocked_promotion_reason": "V17 artifact-level color calibration completed and streaming preflight passed, but it is not promotable until explicit frozen p24 smoke review clears the V16 horizon_psnr_regression without new near/boundary regressions.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,17 +589,21 @@
       ]
     }
   ],
-  "current_branch_head": "97f41d8846a27861512b8c3e1f008bd25469caab",
-  "current_exact_head_gate_status": "Exact-head 97f41d8846a27861512b8c3e1f008bd25469caab is gated green on CDK Deploy 25101137081 and manually-triggered Pages 25101334776; alias/hash /health.txt passed locally and in workflow, hash https://6b6b752d.v0-spaceport-website-preview2.pages.dev.",
+  "current_branch_head": "a3981a78fc91e9b2d47e4305b99150a902f61000",
+  "current_exact_head_gate_status": "Exact-head a3981a78fc91e9b2d47e4305b99150a902f61000 is gated green on CDK Deploy 25102501295 and manually-triggered Pages 25102722392; alias/hash /health.txt passed locally and in workflow, hash https://447a014d.v0-spaceport-website-preview2.pages.dev.",
   "current_live_compute_status": {
-    "checked_at": "2026-04-29T09:43:59Z",
+    "checked_at": "2026-04-29T10:13:29Z",
     "in_progress_training_jobs": [],
     "in_progress_processing_jobs": [],
-    "r5_final_model_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-14tile-2k-full-20260426214655/T2_tiled_pipeline/md1-r5-14tile-2k-1777240767-tiled/output/model.tar.gz",
-    "r5_final_model_size_bytes": 2300184250
+    "v17_processing_job_name": "md1-r5-v12-color-v17-1777456483",
+    "v17_processing_status": "Completed",
+    "v17_processing_start_time": "2026-04-29T09:57:06Z",
+    "v17_processing_end_time": "2026-04-29T10:05:52Z",
+    "v17_model_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-color-v17-20260429095443/output/artifact/model.tar.gz",
+    "v17_model_size_bytes": 1204086927
   },
   "current_rung": "R5_v16_photometric_foreground_diagnosis",
-  "exact_head_gate_status": "Exact-head 97f41d8846a27861512b8c3e1f008bd25469caab is gated green on CDK Deploy 25101137081 and manually-triggered Pages 25101334776; alias/hash /health.txt passed locally and in workflow, hash https://6b6b752d.v0-spaceport-website-preview2.pages.dev.",
+  "exact_head_gate_status": "Exact-head a3981a78fc91e9b2d47e4305b99150a902f61000 is gated green on CDK Deploy 25102501295 and manually-triggered Pages 25102722392; alias/hash /health.txt passed locally and in workflow, hash https://447a014d.v0-spaceport-website-preview2.pages.dev.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
     "buckets": {
@@ -699,27 +703,29 @@
     "view_bucket_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiled_pipeline/inputs/scaffold/3dgs_view_buckets.json"
   },
   "latest_exact_head_gate": {
-    "head": "97f41d8846a27861512b8c3e1f008bd25469caab",
-    "cdk_run_id": 25101137081,
+    "head": "a3981a78fc91e9b2d47e4305b99150a902f61000",
+    "cdk_run_id": 25102501295,
     "cdk_conclusion": "success",
-    "pages_run_id": 25101334776,
+    "pages_run_id": 25102722392,
     "pages_conclusion": "success",
     "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://6b6b752d.v0-spaceport-website-preview2.pages.dev",
+    "pages_hash_url": "https://447a014d.v0-spaceport-website-preview2.pages.dev",
     "health_checks": {
       "alias": "OK",
       "hash": "OK"
     },
-    "verified_at": "2026-04-29T09:43:59Z"
+    "verified_at": "2026-04-29T10:13:29Z"
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-tile01overlap-v16-smoke-p24/review_comparison.json",
   "latest_review_status": "Photometric/foreground diagnosis in logs/audit/md1-1k-full-r2/r5_v16_photometric_foreground_diagnosis_20260429092410.json classified the remaining V16 horizon miss as photometric_low_frequency_dominant: the three failing frames average 80.8% block16 low-frequency MSE share, rendered-foreground proxy accounts for all measured error, mean candidate luma is darker by 0.079-0.125, and oracle per-camera RGB affine correction would put all three target frames above strict_core PSNR by +0.39 to +1.91 dB. This is diagnostic only and not a promotion candidate.",
   "live_compute_status": {
-    "checked_at": "2026-04-29T09:43:59Z",
+    "checked_at": "2026-04-29T10:13:29Z",
     "in_progress_training_jobs": [],
     "in_progress_processing_jobs": [],
-    "r5_final_model_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-14tile-2k-full-20260426214655/T2_tiled_pipeline/md1-r5-14tile-2k-1777240767-tiled/output/model.tar.gz",
-    "r5_final_model_size_bytes": 2300184250
+    "v17_processing_job_name": "md1-r5-v12-color-v17-1777456483",
+    "v17_processing_status": "Completed",
+    "v17_model_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-color-v17-20260429095443/output/artifact/model.tar.gz",
+    "v17_model_size_bytes": 1204086927
   },
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
@@ -729,7 +735,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Monitor md1-r5-v12-color-v17-1777456483 to completion, run scripts/3dgs/preflight_tiled_model_artifact.py on its S3 model.tar.gz, then run explicit frozen p24 smoke/promotion review before any promotion.",
+  "next_unblocked_step": "Run explicit frozen p24 smoke review against the V17 model.tar.gz before any promotion; if smoke blocks, record the metrics and choose the next bounded repair rather than promoting.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -3316,7 +3322,7 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-04-29T09:56:17Z",
+  "updated": "2026-04-29T10:13:29Z",
   "version": "1.0.0",
   "r5_14tile_2k_preflight": {
     "summary_path": "logs/audit/md1-1k-full-r2/r5_14tile_2k_preflight_summary_20260428215230.json",
@@ -3816,20 +3822,20 @@
     "failure_diagnosis": "FileNotFoundError for /opt/ml/processing/work/historical/3dgs_tile_manifest.json; completed R5 artifact stores tile manifests under tiled_pipeline/inputs rather than tar root.",
     "superseded_by": "r5_teacher_context_020406_v2"
   },
-  "last_commit": "e3fd349fcd6120acbf8ef6140a04cc4a256c9eba",
+  "last_commit": "a3981a78fc91e9b2d47e4305b99150a902f61000",
   "last_exact_head_gates": {
-    "head": "97f41d8846a27861512b8c3e1f008bd25469caab",
-    "cdk_run_id": 25101137081,
+    "head": "a3981a78fc91e9b2d47e4305b99150a902f61000",
+    "cdk_run_id": 25102501295,
     "cdk_conclusion": "success",
-    "pages_run_id": 25101334776,
+    "pages_run_id": 25102722392,
     "pages_conclusion": "success",
     "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://6b6b752d.v0-spaceport-website-preview2.pages.dev",
+    "pages_hash_url": "https://447a014d.v0-spaceport-website-preview2.pages.dev",
     "health_checks": {
       "alias": "OK",
       "hash": "OK"
     },
-    "verified_at": "2026-04-29T09:43:59Z"
+    "verified_at": "2026-04-29T10:13:29Z"
   },
   "r5_teacher_context_020406_v2": {
     "status": "PreflightBlocked",
@@ -5751,7 +5757,7 @@
     "conclusion": "V15 context padding produced identical p24 metrics to V12/V13 and remains blocked only on horizon_psnr_regression; no promotion run."
   },
   "r5_teacher_context_v12_ctx10_v15_submit_20260429071645Z": "Exact-head 0392ef97dfe5363579f2d88f90fd5e70fd03ed82 is gated green on CDK Deploy 25095508893 and manually-triggered Pages 25095528013. Submitted V15 no-training/no-promotion Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 to add 10 percent preserve-context padding to V12, including historical tile_01, with output s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-ctx10-v15-20260429071522/output/artifact/model.tar.gz. Latest status is InProgress with no ProcessingStartTime, no FailureReason/no ExitMessage, zero output objects, no training jobs InProgress, and only this processing job InProgress.",
-  "last_updated": "2026-04-29T09:43:59Z",
+  "last_updated": "2026-04-29T10:13:29Z",
   "r5_teacher_context_v12_ctx10_v15_smoke_blocked_20260429080934Z": "Exact-head d14f4a4b56aa9c3a215e1f4845450c77188a0687 is gated green on CDK Deploy 25095992000 and manually-triggered Pages 25095995605; alias/hash /health.txt passed, hash https://c896c947.v0-spaceport-website-preview2.pages.dev. V15 Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 completed, model.tar.gz is present at 1203320806 bytes, streaming preflight passed, and explicit p24 smoke md1-r1-r5-teacher-context-v12-ctx10-v15-smoke-p24-1777448068-qu completed with camera coverage OK but blocked only on horizon_psnr_regression. Metrics matched V12 exactly, so context padding did not close the PSNR miss. No SageMaker jobs are InProgress and no promotion was run.",
   "r5_teacher_context_v12_tile01overlap_v16": {
     "processing_job_name": "md1-r5-teacherctx-v12-t01ov-v16-1777450963",
@@ -6017,22 +6023,42 @@
     ],
     "merge_mode": "support_weighted_overlap",
     "latest_status": {
-      "status": "InProgress",
-      "processing_start_time": null,
+      "status": "Completed",
+      "processing_start_time": "2026-04-29T09:57:06Z",
+      "processing_end_time": "2026-04-29T10:05:52Z",
       "failure_reason": null,
       "exit_message": null,
-      "output_object_count": 0,
+      "output_object_count": 6,
       "training_jobs_in_progress": [],
-      "processing_jobs_in_progress_before_submit": []
+      "processing_jobs_in_progress": []
     },
-    "promotion_status": "not_promoted_pending_preflight_and_p24_smoke"
+    "promotion_status": "not_promoted_pending_explicit_p24_smoke",
+    "preflight_summary_path": "logs/audit/md1-1k-full-r2/r5_teacher_context_v12_color_v17_preflight_summary_20260429100900.json",
+    "result": {
+      "processing_status": "Completed",
+      "processing_end_time": "2026-04-29T10:05:52Z",
+      "artifact_content_length": 1204086927,
+      "artifact_etag": "\"7dfcb4add55c24fe37a18767a0a738a6-230\"",
+      "artifact_version_id": "45e7XFHjqCH6DyzZ.LBbWQYRcTe3jVuJ",
+      "preflight_decision": "preflight_passed_run_frozen_smoke_review",
+      "preflight_block_reasons": [],
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "retained_gaussians": 8423868,
+      "source_gaussians": 8789634,
+      "dropped_gaussians": 365766,
+      "merge_mode": "support_weighted_overlap",
+      "background_source_tile_id": "tile_10",
+      "promotion_status": "not_promoted_pending_explicit_p24_smoke"
+    }
   },
   "latest_pages_gate": {
-    "head": "aff389f48a4e493fd7fd71e8ded5df8b91903925",
-    "cdk_run_id": 25101915939,
-    "pages_run_id": 25102107121,
+    "head": "a3981a78fc91e9b2d47e4305b99150a902f61000",
+    "cdk_run_id": 25102501295,
+    "pages_run_id": 25102722392,
     "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://37332445.v0-spaceport-website-preview2.pages.dev",
+    "pages_hash_url": "https://447a014d.v0-spaceport-website-preview2.pages.dev",
     "health_txt": "OK"
-  }
+  },
+  "r5_teacher_context_v12_color_v17_preflight_20260429101025Z": "Exact-head a3981a78fc91e9b2d47e4305b99150a902f61000 is gated green on CDK Deploy 25102501295 and manually-triggered Pages 25102722392; alias/hash /health.txt passed. V17 Processing job md1-r5-v12-color-v17-1777456483 completed without FailureReason/ExitMessage, model.tar.gz is present at 1204086927 bytes, streaming preflight logs/audit/md1-1k-full-r2/r5_teacher_context_v12_color_v17_preflight_summary_20260429100900.json passed with artifact_complete=true, block_reasons=[], fallback=0, retain_all=0, retained/source/dropped gaussians 8423868/8789634/365766, and no SageMaker jobs are InProgress. No promotion was run; next gate is explicit frozen p24 smoke review."
 }
