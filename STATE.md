@@ -1,6 +1,6 @@
-reason: R0 local/static proof complete for mature-branch distributed SfM production spine; next step is push/deploy monitoring before AWS R1/R2 spend
-last_step: implemented COLMAP_PIPELINE_MODE=distributed_chunked_v1 on the mature footprint_graph_v1 path, added planner-only reporting, immutable chunk manifest digest, leaf metadata, reducer metadata, launcher planner/report flags, and R0 tests; created heartbeat automation sfm-reality-check-2
-next_unblocked_step: commit and push agent-39274108-sfm-production-spine, monitor Cloudflare Pages/CDK/container workflows, then run R1 known subset jobs only after branch image/deploy proof is green
+reason: R1 known subset proof is starting after R0 local/static proof and green branch CI/deploy gates
+last_step: pushed agent-39274108-sfm-production-spine at 30b97342189c5f2399575f8fbbdcf80be1ffdb28; GitHub Actions CDK Deploy 25136384271 succeeded, Trigger ML Container Build 25136384277 succeeded, CodeBuild spaceport-ml-containers:b10be2c4-274a-4ff6-b1aa-0302ce4916c0 succeeded; no Cloudflare Pages run was triggered for this non-web change
+next_unblocked_step: launch R1 geometry_mix, cross_pass, and horizon_context candidate jobs with COLMAP_PIPELINE_MODE=distributed_chunked_v1, then monitor to completion and parse metrics/artifacts
 owner_action_needed: none
 active_jobs: []
 latest_artifacts:
@@ -8,5 +8,5 @@ latest_artifacts:
   - logs/sfm-production-spine/frontier.json
   - logs/sfm-production-spine/final_comparison_report.json
 branch: agent-39274108-sfm-production-spine
-head: e42165e67ea6d8b635231105db1f216cdde1788d
-updated: 2026-04-29T22:06:08Z
+head: 30b97342189c5f2399575f8fbbdcf80be1ffdb28
+updated: 2026-04-29T22:26:05Z

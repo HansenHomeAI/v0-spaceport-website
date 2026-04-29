@@ -1,15 +1,18 @@
 {
   "branch": "agent-39274108-sfm-production-spine",
-  "head": "e42165e67ea6d8b635231105db1f216cdde1788d",
-  "current_rung": "R0",
-  "current_goal": "Push and validate the R0 implementation branch before AWS R1/R2 spend.",
-  "last_command": "python3 -m unittest tests.unit.test_colmap_gps_priors",
+  "head": "30b97342189c5f2399575f8fbbdcf80be1ffdb28",
+  "current_rung": "R1",
+  "current_goal": "Run known representative subset proof for geometry_mix, cross_pass, and horizon_context using distributed_chunked_v1.",
+  "last_command": "gh run list --branch agent-39274108-sfm-production-spine --limit 20 --json databaseId,workflowName,status,conclusion,headSha,createdAt,updatedAt,url",
   "active_jobs": [],
   "latest_artifacts": [
     "logs/sfm-production-spine/port_inventory.md",
     "logs/sfm-production-spine/frontier.json",
     "logs/sfm-production-spine/final_comparison_report.json",
-    "local planner-only fixture output under /var/folders/*/tmp.QU13JnNWZi/output"
+    "local planner-only fixture output under /var/folders/*/tmp.QU13JnNWZi/output",
+    "GitHub Actions CDK Deploy 25136384271 success",
+    "GitHub Actions Trigger ML Container Build 25136384277 success",
+    "CodeBuild spaceport-ml-containers:b10be2c4-274a-4ff6-b1aa-0302ce4916c0 success"
   ],
   "last_metrics": {
     "unit_tests": "98 tests OK",
@@ -22,6 +25,6 @@
   },
   "promotion_status": "blocked",
   "blockers": [],
-  "next_unblocked_step": "Commit and push the branch, watch deploy/container checks to green, then start R1 known subset jobs.",
-  "updated": "2026-04-29T22:06:08Z"
+  "next_unblocked_step": "Launch and monitor R1 known subset jobs, then parse registration, point density, runtime, sparse/0, planner, leaf, and reducer metadata.",
+  "updated": "2026-04-29T22:26:05Z"
 }
