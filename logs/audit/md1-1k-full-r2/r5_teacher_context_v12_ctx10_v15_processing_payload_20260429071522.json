@@ -1,0 +1,83 @@
+{
+  "ProcessingJobName": "md1-r5-teacherctx-v12-ctx10-v15-1777446922",
+  "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+  "AppSpecification": {
+    "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:5584d3977747757f59601579b227a5ac792986824114819aa286bbfd2d8e57a8",
+    "ContainerEntrypoint": [
+      "bash",
+      "/opt/ml/processing/input/scripts/build_hybrid.sh"
+    ]
+  },
+  "ProcessingInputs": [
+    {
+      "InputName": "historical",
+      "S3Input": {
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-14tile-2k-full-20260426214655/T2_tiled_pipeline/md1-r5-14tile-2k-1777240767-tiled/output/model.tar.gz",
+        "LocalPath": "/opt/ml/processing/input/historical",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File"
+      }
+    },
+    {
+      "InputName": "replacement",
+      "S3Input": {
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-teacher-r3base-r4h-tile00-factor4-v3-20260426201700/output/artifact/model.tar.gz",
+        "LocalPath": "/opt/ml/processing/input/replacement",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File"
+      }
+    },
+    {
+      "InputName": "scripts",
+      "S3Input": {
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-ctx10-v15-20260429071522/scripts/",
+        "LocalPath": "/opt/ml/processing/input/scripts",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File"
+      }
+    }
+  ],
+  "ProcessingOutputConfig": {
+    "Outputs": [
+      {
+        "OutputName": "artifact",
+        "S3Output": {
+          "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-ctx10-v15-20260429071522/output",
+          "LocalPath": "/opt/ml/processing/output",
+          "S3UploadMode": "EndOfJob"
+        }
+      }
+    ]
+  },
+  "ProcessingResources": {
+    "ClusterConfig": {
+      "InstanceType": "ml.g4dn.xlarge",
+      "InstanceCount": 1,
+      "VolumeSizeInGB": 100
+    }
+  },
+  "StoppingCondition": {
+    "MaxRuntimeInSeconds": 7200
+  },
+  "Environment": {
+    "PYTHONPATH": "/opt/ml/code"
+  },
+  "Tags": [
+    {
+      "Key": "Project",
+      "Value": "Spaceport"
+    },
+    {
+      "Key": "Component",
+      "Value": "3DGS"
+    },
+    {
+      "Key": "Branch",
+      "Value": "agent-90742618-md1-geometry-consistency"
+    },
+    {
+      "Key": "Stage",
+      "Value": "teacher-context-repair-v15"
+    }
+  ]
+}
