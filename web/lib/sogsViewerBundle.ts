@@ -51,7 +51,11 @@ function parseBundleUrl(rawValue: string): URL | null {
       return null;
     }
 
-    if (!parsed.pathname.endsWith(".json") && !parsed.pathname.endsWith(".ply")) {
+    if (
+      !parsed.pathname.endsWith(".json") &&
+      !parsed.pathname.endsWith(".ply") &&
+      !parsed.pathname.endsWith(".sog")
+    ) {
       parsed.pathname = parsed.pathname.replace(/\/?$/, "/meta.json");
     }
 
@@ -68,6 +72,9 @@ function convertToProxyPath(url: URL): string {
 }
 
 function shouldProxyBundleUrl(url: URL): boolean {
+  if (url.pathname.endsWith(".ply") || url.pathname.endsWith(".sog")) {
+    return false;
+  }
   return PROXY_HOSTS.has(url.host);
 }
 

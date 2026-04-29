@@ -6517,5 +6517,47 @@
       "npm_run_build": "passed_with_pre_existing_lint_warnings"
     },
     "checked_at": "2026-04-29T22:24:11Z"
+  },
+  "r5_v18_sampled_ply_pipeline_viewer_20260429230030Z": {
+    "source_model_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+    "source_raw_ply_s3_uri": "s3://spaceport-ml-processing/compressed/md1-r5-v18-raw-1777498999/merged_splat.ply",
+    "source_raw_ply_size_bytes": 876082905,
+    "full_sogs_bundle": {
+      "job_name": "md1-r5-v18-sogs4-1777498999",
+      "public_bundle_s3_prefix": "s3://spaceport-ml-processing/compressed/md1-r5-v18-sogs4-public-1777498999/supersplat_bundle/",
+      "public_bundle_https_meta": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-sogs4-public-1777498999/supersplat_bundle/meta.json",
+      "object_count": 9,
+      "total_size_bytes": 97851045,
+      "single_sog_s3_uri": "s3://spaceport-ml-processing/compressed/md1-r5-v18-sogs4-public-1777498999/md1-v18.sog",
+      "single_sog_size_bytes": 97852435,
+      "browser_smoke_result": "download_reaches_100_percent_but_full_8421604_splat_scene_did_not_become_interactive_in_playwright_smoke"
+    },
+    "sampled_viewer_asset": {
+      "s3_uri": "s3://spaceport-ml-processing/compressed/md1-r5-v18-viewer-sampled-1777498999/merged_splat_every8_shrink.ply",
+      "https_url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-viewer-sampled-1777498999/merged_splat_every8_shrink.ply",
+      "size_bytes": 109510969,
+      "source_sampling": "every_8th_vertex_from_promoted_v18_raw_ply",
+      "vertex_count": 1052984,
+      "display_adjustment": "scale_0_scale_1_scale_2_minus_2_log_units_for_browser_inspection_only",
+      "direct_range_probe": {
+        "status": "206 Partial Content",
+        "bytes": "0-1023"
+      },
+      "local_pipeline_viewer_render": "passed_interactive_browser_smoke"
+    },
+    "route_updates": [
+      "web/components/SiteChrome.tsx",
+      "web/lib/sogsViewerBundle.ts",
+      "web/components/sogs-viewer/SogsViewerDevPanel.tsx",
+      "web/trigger-dev-build.txt"
+    ],
+    "build_verification": {
+      "npm_run_build": "passed_with_pre_existing_lint_warnings",
+      "cdk_deploy_run": 25137061828,
+      "pages_run": 25137061838,
+      "ml_container_build_run": 25137061834,
+      "all_prior_exact_head_runs_for_7ab44ad8": "green"
+    },
+    "checked_at": "2026-04-29T23:00:30Z"
   }
 }
