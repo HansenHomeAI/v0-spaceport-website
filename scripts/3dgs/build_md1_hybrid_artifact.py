@@ -37,6 +37,12 @@ def parse_args() -> argparse.Namespace:
         help="Tile id whose explicit context bounds should preserve non-core far-field gaussians during merge.",
     )
     parser.add_argument(
+        "--force-overlap-tile",
+        action="append",
+        default=[],
+        help="Tile id whose overlap candidates should stay with this tile for a targeted no-training diagnostic.",
+    )
+    parser.add_argument(
         "--replacement-mode",
         choices=["replace", "append"],
         default="replace",
@@ -354,6 +360,7 @@ def main() -> int:
     output_dir = args.output_dir.resolve()
     replacement_tiles = set(args.replacement_tile)
     preserve_context_tiles = set(args.preserve_context_tile)
+    force_overlap_tiles = set(args.force_overlap_tile)
     if not replacement_tiles:
         raise SystemExit("At least one --replacement-tile is required")
 
@@ -438,6 +445,16 @@ def main() -> int:
                 "strategy": tile_entry["context_bounds_strategy"],
                 "padding_ratio": float(args.context_padding_ratio),
             }
+        if tile_id in force_overlap_tiles:
+            original_neighbor_tile_ids = list(tile_entry.get("neighbor_tile_ids", []))
+            tile_entry["neighbor_tile_ids"] = []
+            tile_entry["force_overlap_gaussians"] = True
+            tile_entry["force_overlap_strategy"] = "single_tile_overlap_ownership_diagnostic"
+            tile_policy[tile_id]["overlap_preservation"] = {
+                "enabled": True,
+                "original_neighbor_tile_ids": original_neighbor_tile_ids,
+                "strategy": tile_entry["force_overlap_strategy"],
+            }
         synthesize_required_tile_metadata(
             tile_dir=output_tile_dir,
             tile_id=tile_id,
@@ -475,6 +492,7 @@ def main() -> int:
         "replacement_source_root": str(replacement_root),
         "replacement_tiles": sorted(replacement_tiles),
         "preserve_context_tiles": sorted(preserve_context_tiles),
+        "force_overlap_tiles": sorted(force_overlap_tiles),
         "replacement_mode": args.replacement_mode,
         "merge_mode": args.merge_mode,
         "opacity_policy": {
