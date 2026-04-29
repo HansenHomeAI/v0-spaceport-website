@@ -6491,5 +6491,31 @@
       "raw_supersplat_http_status": 200
     },
     "checked_at": "2026-04-29T20:59:01Z"
+  },
+  "r5_v18_raw_ply_pipeline_viewer_20260429222411Z": {
+    "route_updates": [
+      "web/lib/sogsViewerBundle.ts",
+      "web/components/sogs-viewer/SogsViewerDevPanel.tsx",
+      "web/app/api/sogs-proxy/[...resource]/route.ts"
+    ],
+    "raw_ply_s3_uri": "s3://spaceport-ml-processing/compressed/md1-r5-v18-raw-1777498999/merged_splat.ply",
+    "raw_ply_https_url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-raw-1777498999/merged_splat.ply",
+    "raw_ply_size_bytes": 876082905,
+    "local_pipeline_viewer_http_status": 200,
+    "proxy_range_probe": {
+      "status": "206 Partial Content",
+      "content_range": "bytes 0-1023/876082905"
+    },
+    "sogs_long_timeout_job": {
+      "job_name": "md1-r5-v18-sogs4-1777498999",
+      "status_at_record": "InProgress",
+      "input_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/viewer-input/merged/",
+      "output_s3_uri": "s3://spaceport-ml-processing/compressed/md1-r5-v18-sogs4-1777498999/",
+      "expected_meta_json_url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-sogs4-1777498999/supersplat_bundle/meta.json"
+    },
+    "build_verification": {
+      "npm_run_build": "passed_with_pre_existing_lint_warnings"
+    },
+    "checked_at": "2026-04-29T22:24:11Z"
   }
 }

@@ -51,7 +51,7 @@ function parseBundleUrl(rawValue: string): URL | null {
       return null;
     }
 
-    if (!parsed.pathname.endsWith(".json")) {
+    if (!parsed.pathname.endsWith(".json") && !parsed.pathname.endsWith(".ply")) {
       parsed.pathname = parsed.pathname.replace(/\/?$/, "/meta.json");
     }
 

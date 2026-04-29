@@ -45,7 +45,7 @@ export default function SogsViewerDevPanel() {
     setError(null);
     const normalized = normalizeBundleUrl(rawValue);
     if (!normalized) {
-      setError("Enter a valid HTTPS URL to the SOGS bundle (folder or meta.json).");
+      setError("Enter a valid HTTPS URL to the SOGS bundle, meta.json, or raw .ply file.");
       setViewerState("idle");
       return false;
     }
@@ -211,7 +211,7 @@ export default function SogsViewerDevPanel() {
             type="url"
             inputMode="url"
             autoComplete="off"
-            placeholder="https://…/supersplat_bundle/ or …/meta.json"
+            placeholder="https://…/supersplat_bundle/, …/meta.json, or …/merged_splat.ply"
             value={inputUrl}
             onChange={(e) => setInputUrl(e.target.value)}
             className={error ? "sogs-input-error" : undefined}

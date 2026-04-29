@@ -229,7 +229,7 @@ class PlayCanvasSOGSCompressor:
                 cmd,
                 capture_output=True,
                 text=True,
-                timeout=1800,  # 30 minutes timeout
+                timeout=7200,  # Large merged scenes can need more than 30 minutes on T4 processing hosts.
                 cwd=output_dir
             )
             
