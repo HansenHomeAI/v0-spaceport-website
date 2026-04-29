@@ -1,0 +1,156 @@
+{
+  "branch": "agent-90742618-md1-geometry-consistency",
+  "stack_name": "SpaceportMLPipelineStagingStack",
+  "stack_resolution": "shared_staging_fallback",
+  "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent90742618md1geometryconsistency",
+  "role_arn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+  "colmap_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap",
+  "output_root_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r5-teacher-context-0002030406-v7-smoke-review-20260429022400",
+  "review_camera_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r5-teacher-context-0002030406-v7-smoke-review-20260429022400/review-input",
+  "baseline_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r1-review-c00091ae-render-sanity/baselines/strict_core",
+  "execution_mode": "training",
+  "render_settings": {
+    "render_scale": 0.25,
+    "max_gaussians_per_view": 500000,
+    "cull_margin": 0.5,
+    "min_gaussians_on_oom": 75000,
+    "tile_ids": "tile_00,tile_01,tile_02,tile_03,tile_04,tile_05,tile_06,tile_07,tile_08,tile_09,tile_10,tile_11,tile_12,tile_13"
+  },
+  "variants": [
+    "r5-teacher-context-0002030406-v7-smoke"
+  ],
+  "staged_inputs": {
+    "r5-teacher-context-0002030406-v7-smoke": {
+      "local_model_tarball": null,
+      "model_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-0002030406-v7-20260429020538/output/artifact/model.tar.gz",
+      "merge_report": "",
+      "source": "direct_candidate_artifact"
+    }
+  },
+  "jobs": {
+    "r5-teacher-context-0002030406-v7-smoke": {
+      "job_name": "md1-r1-r5-teacher-context-0002030406-v7-smoke-1777429433-qualit",
+      "execution_mode": "training",
+      "model_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-0002030406-v7-20260429020538/output/artifact/model.tar.gz",
+      "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r5-teacher-context-0002030406-v7-smoke-review-20260429022400/outputs/r5-teacher-context-0002030406-v7-smoke",
+      "baseline_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r1-review-c00091ae-render-sanity/baselines/strict_core",
+      "payload": {
+        "TrainingJobName": "md1-r1-r5-teacher-context-0002030406-v7-smoke-1777429433-qualit",
+        "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+        "AlgorithmSpecification": {
+          "TrainingImage": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent90742618md1geometryconsistency",
+          "TrainingInputMode": "File",
+          "ContainerEntrypoint": [
+            "python3",
+            "/opt/ml/code/run_tiled_quality_review.py"
+          ]
+        },
+        "InputDataConfig": [
+          {
+            "ChannelName": "model",
+            "DataSource": {
+              "S3DataSource": {
+                "S3DataType": "S3Prefix",
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-0002030406-v7-20260429020538/output/artifact/model.tar.gz",
+                "S3DataDistributionType": "FullyReplicated"
+              }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None"
+          },
+          {
+            "ChannelName": "colmap",
+            "DataSource": {
+              "S3DataSource": {
+                "S3DataType": "S3Prefix",
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap",
+                "S3DataDistributionType": "FullyReplicated"
+              }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None"
+          },
+          {
+            "ChannelName": "review-manifest",
+            "DataSource": {
+              "S3DataSource": {
+                "S3DataType": "S3Prefix",
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r5-teacher-context-0002030406-v7-smoke-review-20260429022400/review-input",
+                "S3DataDistributionType": "FullyReplicated"
+              }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None"
+          },
+          {
+            "ChannelName": "baseline-review",
+            "DataSource": {
+              "S3DataSource": {
+                "S3DataType": "S3Prefix",
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r1-review-c00091ae-render-sanity/baselines/strict_core",
+                "S3DataDistributionType": "FullyReplicated"
+              }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None"
+          }
+        ],
+        "OutputDataConfig": {
+          "S3OutputPath": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r5-teacher-context-0002030406-v7-smoke-review-20260429022400/outputs/r5-teacher-context-0002030406-v7-smoke"
+        },
+        "ResourceConfig": {
+          "InstanceType": "ml.g5.2xlarge",
+          "InstanceCount": 1,
+          "VolumeSizeInGB": 100
+        },
+        "StoppingCondition": {
+          "MaxRuntimeInSeconds": 7200
+        },
+        "Environment": {
+          "MODEL_INPUT_DIR": "/opt/ml/input/data/model",
+          "COLMAP_INPUT_DIR": "/opt/ml/input/data/colmap",
+          "OUTPUT_DIR": "/opt/ml/model",
+          "QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET": "4",
+          "QUALITY_REVIEW_CAMERA_SET": "smoke",
+          "QUALITY_REVIEW_RENDER_SCALE": "0.25",
+          "QUALITY_REVIEW_MAX_GAUSSIANS_PER_VIEW": "500000",
+          "QUALITY_REVIEW_CULL_MARGIN": "0.5",
+          "QUALITY_REVIEW_MIN_GAUSSIANS_ON_OOM": "75000",
+          "PYTHONUNBUFFERED": "1",
+          "QUALITY_REVIEW_TILE_IDS": "tile_00,tile_01,tile_02,tile_03,tile_04,tile_05,tile_06,tile_07,tile_08,tile_09,tile_10,tile_11,tile_12,tile_13",
+          "FROZEN_REVIEW_CAMERA_MANIFEST": "/opt/ml/input/data/review-manifest/review_camera_manifest.json",
+          "BASELINE_REVIEW_MANIFEST": "/opt/ml/input/data/baseline-review/quality_review_manifest.json"
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "3DGS"
+          },
+          {
+            "Key": "Benchmark",
+            "Value": "true"
+          },
+          {
+            "Key": "Branch",
+            "Value": "agent-90742618-md1-geometry-consistency"
+          },
+          {
+            "Key": "Stage",
+            "Value": "quality-review"
+          }
+        ]
+      },
+      "submitted": true,
+      "status": {
+        "TrainingJobStatus": "Completed",
+        "TrainingStartTime": "2026-04-28T20:24:54.777000-06:00",
+        "TrainingEndTime": "2026-04-28T20:37:21.936000-06:00"
+      },
+      "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r5-teacher-context-0002030406-v7-smoke-review-20260429022400/outputs/r5-teacher-context-0002030406-v7-smoke/md1-r1-r5-teacher-context-0002030406-v7-smoke-1777429433-qualit/output/model.tar.gz"
+    }
+  }
+}
