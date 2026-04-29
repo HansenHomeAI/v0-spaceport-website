@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "df4a3e80603e00a209a4aa982be84f16fe2a2331",
-  "current_exact_head_gate_status": "green CDK Deploy 25087473384 and green manually-triggered Cloudflare Pages 25087482267 for head df4a3e80603e00a209a4aa982be84f16fe2a2331; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://4f7cd28e.v0-spaceport-website-preview2.pages.dev both passed workflow and local /health.txt probes.",
-  "current_live_compute_status": "No SageMaker training or processing jobs are InProgress as of 2026-04-29T04:30:48Z. V8, V9, and V10 all completed processing, passed streaming preflight with fallback=0/retain_all=0, and completed frozen p24 smoke review. V8/V9 are current best but still blocked on horizon PSNR/SSIM; V10 append-residual was worse.",
-  "current_rung": "R5_teacher_context_v8_best_blocked_after_v10",
+  "current_branch_head": "7b4f1b3d58cff4a69815b03bda1fbe399742625d",
+  "current_exact_head_gate_status": "green CDK Deploy 25091105100 and green manually-triggered Cloudflare Pages 25091228689 for head 7b4f1b3d58cff4a69815b03bda1fbe399742625d; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://64d61cc7.v0-spaceport-website-preview2.pages.dev both passed workflow and local /health.txt probes at 2026-04-29T04:44:07Z.",
+  "current_live_compute_status": "V11 no-training/no-promotion Processing job md1-r5-teacherctx-0002040506-scale-v11-1777437986 was submitted at 2026-04-29T04:47:52Z from exact gated head 7b4f1b3d58cff4a69815b03bda1fbe399742625d. Latest check 2026-04-29T04:48:01Z: InProgress with no ProcessingStartTime yet, no FailureReason/no ExitMessage, zero output objects, no training jobs InProgress.",
+  "current_rung": "R5_teacher_context_0002040506_scale_v11_processing",
   "exact_head_gate_status": {
     "checked_at": "2026-04-28T23:51:23Z",
     "head": "4872b458fd239e267655c1c28f0ca3118344a5d3",
@@ -707,19 +707,13 @@
     "view_bucket_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiled_pipeline/inputs/scaffold/3dgs_view_buckets.json"
   },
   "latest_exact_head_gate": {
-    "checked_at": "2026-04-29T02:44:02Z",
-    "head": "df4a3e80603e00a209a4aa982be84f16fe2a2331",
-    "cdk_deploy_run_id": 25087473384,
-    "cdk_conclusion": "success",
-    "cloudflare_pages_run_id": 25087482267,
-    "cloudflare_pages_conclusion": "success",
+    "head_sha": "7b4f1b3d58cff4a69815b03bda1fbe399742625d",
+    "cdk_deploy_run_id": 25091105100,
+    "cloudflare_pages_run_id": 25091228689,
     "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://4f7cd28e.v0-spaceport-website-preview2.pages.dev",
-    "pages_health_txt_verified": true,
-    "pages_health_txt_verified_by": [
-      "workflow",
-      "local_curl"
-    ]
+    "pages_hash_url": "https://64d61cc7.v0-spaceport-website-preview2.pages.dev",
+    "health_checked_at": "2026-04-29T04:44:07Z",
+    "status": "green"
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v6-tile05-append-f4-v10-smoke-p24/review_comparison.json",
   "latest_review_status": "V8 p24 and V9 ctx10 p24 completed with camera_coverage=ok and fallback=0/retain_all=0; deltas vs strict_core were near_detail +1.055 dB/+0.0594 SSIM/+0.00509 LPIPS, boundary +1.108 dB/+0.0156 SSIM/-0.0409 LPIPS, horizon -1.135 dB/-0.0124 SSIM/-0.0227 LPIPS, blocked only by horizon_psnr_regression and horizon_ssim_regression. V10 append-residual worsened horizon to -1.414 dB/-0.0301 SSIM/+0.0172 LPIPS.",
@@ -732,7 +726,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "commit/push V8/V9/V10 preflight and frozen-smoke evidence, gate the exact head, then choose the next bounded repair frontier from V8-best evidence instead of promoting",
+  "next_unblocked_step": "commit/push V11 submission evidence, gate the exact head, monitor md1-r5-teacherctx-0002040506-scale-v11-1777437986 to model.tar.gz, run streaming preflight, then explicit p24 frozen smoke review before any promotion",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -3319,7 +3313,7 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-04-29T04:30:48Z",
+  "updated": "2026-04-29T04:48:01Z",
   "version": "1.0.0",
   "r5_14tile_2k_preflight": {
     "summary_path": "logs/audit/md1-1k-full-r2/r5_14tile_2k_preflight_summary_20260428215230.json",
@@ -5339,5 +5333,66 @@
     "p24_colmap_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap",
     "verdict": "Worse than V8; do not promote."
   },
-  "r5_teacher_context_v8_v9_v10_smoke_blocked_20260429043048Z": "Exact-head df4a3e80603e00a209a4aa982be84f16fe2a2331 is gated green on CDK Deploy 25087473384 and manually-triggered Pages 25087482267; alias/hash /health.txt passed. V8/V9/V10 completed, all preflighted with fallback=0/retain_all=0, and all smoke-reviewed against explicit p24 COLMAP. V8/V9 are best but still blocked on horizon_psnr_regression/horizon_ssim_regression; V10 append residual was worse. No SageMaker jobs are InProgress at 2026-04-29T04:30:48Z."
+  "r5_teacher_context_v8_v9_v10_smoke_blocked_20260429043048Z": "Exact-head df4a3e80603e00a209a4aa982be84f16fe2a2331 is gated green on CDK Deploy 25087473384 and manually-triggered Pages 25087482267; alias/hash /health.txt passed. V8/V9/V10 completed, all preflighted with fallback=0/retain_all=0, and all smoke-reviewed against explicit p24 COLMAP. V8/V9 are best but still blocked on horizon_psnr_regression/horizon_ssim_regression; V10 append residual was worse. No SageMaker jobs are InProgress at 2026-04-29T04:30:48Z.",
+  "r5_teacher_context_0002040506_scale_v11": {
+    "status": "ProcessingInProgress",
+    "submitted_at": "2026-04-29T04:47:52Z",
+    "latest_live_check": {
+      "checked_at": "2026-04-29T04:48:01Z",
+      "processing_status": "InProgress",
+      "processing_start_time": null,
+      "failure_reason": null,
+      "exit_message": null,
+      "output_object_count": 0,
+      "training_jobs_in_progress": []
+    },
+    "processing_job_name": "md1-r5-teacherctx-0002040506-scale-v11-1777437986",
+    "historical_base_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-14tile-2k-full-20260426214655/T2_tiled_pipeline/md1-r5-14tile-2k-1777240767-tiled/output/model.tar.gz",
+    "replacement_teacher_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-teacher-r3base-r4h-tile00-factor4-v3-20260426201700/output/artifact/model.tar.gz",
+    "replacement_tiles": [
+      "tile_00",
+      "tile_02",
+      "tile_04",
+      "tile_05",
+      "tile_06"
+    ],
+    "preserve_context_tiles": [
+      "tile_00",
+      "tile_02",
+      "tile_04",
+      "tile_05",
+      "tile_06"
+    ],
+    "preserved_r5_tiles": [
+      "tile_01",
+      "tile_03",
+      "tile_07",
+      "tile_08",
+      "tile_09",
+      "tile_10",
+      "tile_11",
+      "tile_12",
+      "tile_13"
+    ],
+    "replacement_mode": "replace",
+    "opacity_policy": "scale-aware",
+    "scale_start_quantile": 0.90,
+    "scale_full_quantile": 0.99,
+    "scale_weight_power": 1.0,
+    "merge_mode": "support_weighted_overlap",
+    "rationale": "V8/V9 nearly clear the horizon gate but still miss PSNR by 0.385 dB and SSIM by 0.00039. V11 keeps the V8 tile selection and applies scale-aware opacity normalization to test whether far-field teacher opacity can close that miss without losing V8 horizon LPIPS gain.",
+    "code_path": "scripts/3dgs/build_md1_hybrid_artifact.py",
+    "entrypoint_path": "logs/audit/md1-1k-full-r2/r5_teacher_context_0002040506_scale_v11_entrypoint_20260429044626.sh",
+    "payload_path": "logs/audit/md1-1k-full-r2/r5_teacher_context_0002040506_scale_v11_processing_payload_20260429044626.json",
+    "script_s3_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-0002040506-scale-v11-20260429044626/scripts/",
+    "output_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-0002040506-scale-v11-20260429044626/output/artifact/model.tar.gz",
+    "submit_exact_head": "7b4f1b3d58cff4a69815b03bda1fbe399742625d",
+    "submit_exact_head_gate": {
+      "cdk_deploy_run_id": 25091105100,
+      "cloudflare_pages_run_id": 25091228689,
+      "pages_hash_url": "https://64d61cc7.v0-spaceport-website-preview2.pages.dev"
+    },
+    "next_unblocked_step": "monitor completion, run streaming preflight on model.tar.gz, then explicit p24 frozen smoke review before any promotion"
+  },
+  "r5_teacher_context_scale_v11_submit_20260429044801Z": "Exact-head 7b4f1b3d58cff4a69815b03bda1fbe399742625d is gated green on CDK Deploy 25091105100 and manually-triggered Pages 25091228689 with alias/hash /health.txt OK. Submitted V11 no-training/no-promotion Processing job md1-r5-teacherctx-0002040506-scale-v11-1777437986 using V8 tile set tile_00/tile_02/tile_04/tile_05/tile_06 with scale-aware opacity normalization. Latest status 2026-04-29T04:48:01Z is InProgress with no ProcessingStartTime, no FailureReason/no ExitMessage, and zero output objects."
 }
