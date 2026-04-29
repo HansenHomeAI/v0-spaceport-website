@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "V4 smoke review remains blocked by horizon_psnr_regression, horizon_ssim_regression, and horizon_lpips_regression; no promotion is allowed until V5 or a later repair passes preflight plus frozen smoke review.",
+  "blocked_promotion_reason": "V5 smoke review remains blocked by horizon_psnr_regression, horizon_ssim_regression, and horizon_lpips_regression; no promotion is allowed until V6 or a later repair passes preflight plus frozen smoke review.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "ad77717e2a36c648572bacbeab01fed1a5317288",
-  "current_exact_head_gate_status": "green CDK Deploy 25084583145 and green manually-triggered Cloudflare Pages 25084592071 for head ad77717e2a36c648572bacbeab01fed1a5317288; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://0459cd99.v0-spaceport-website-preview2.pages.dev both passed workflow /health.txt probes at 2026-04-29T00:25:47Z and local /health.txt probes at 2026-04-29T00:26:42Z.",
-  "current_live_compute_status": "V4 full teacher tile_00 through tile_06 repair completed, passed streaming preflight, then completed frozen smoke review with promotion still blocked on horizon_psnr_regression, horizon_ssim_regression, and horizon_lpips_regression. A tile_00..tile_06-only diagnostic review against the same V4 artifact produced identical metrics because the review renders the artifact merged_splat. V5 Processing job md1-r5-teacherctx-01020406-v5-1777424697 is InProgress with no FailureReason/no ExitMessage, zero output objects, no training jobs InProgress, and it is the only Processing job InProgress.",
-  "current_rung": "R5_teacher_context_01020406_v5_processing",
+  "current_branch_head": "b9073bd47c897553d0cccd16b55748ca6bd3f18d",
+  "current_exact_head_gate_status": "green CDK Deploy 25086070429 and green manually-triggered Cloudflare Pages 25086084980 for head b9073bd47c897553d0cccd16b55748ca6bd3f18d; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://c3b9e3eb.v0-spaceport-website-preview2.pages.dev both passed workflow /health.txt probes at 2026-04-29T01:20:46Z and local /health.txt probes at 2026-04-29T01:21:02Z.",
+  "current_live_compute_status": "V5 completed/preflight passed, then frozen smoke review blocked promotion on horizon PSNR/SSIM/LPIPS. V5 worsened the horizon gate versus V3/V4, so V6 Processing job md1-r5-teacherctx-00020406-v6-1777426606 was submitted to test teacher tile_00 plus V3 tile_02/tile_04/tile_06 while excluding tile_01. V6 is InProgress/Pending with no FailureReason/no ExitMessage and is the only Processing job InProgress.",
+  "current_rung": "R5_teacher_context_00020406_v6_processing",
   "exact_head_gate_status": {
     "checked_at": "2026-04-28T23:51:23Z",
     "head": "4872b458fd239e267655c1c28f0ca3118344a5d3",
@@ -707,18 +707,22 @@
     "view_bucket_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiled_pipeline/inputs/scaffold/3dgs_view_buckets.json"
   },
   "latest_exact_head_gate": {
-    "checked_at": "2026-04-28T22:35:04Z",
-    "head": "2d1621d963153264c9e10cd9d6b28014040d3e06",
-    "cdk_deploy_run_id": 25080979158,
+    "checked_at": "2026-04-29T01:37:18Z",
+    "head": "b9073bd47c897553d0cccd16b55748ca6bd3f18d",
+    "cdk_deploy_run_id": 25086070429,
     "cdk_conclusion": "success",
-    "cloudflare_pages_run_id": 25080984721,
+    "cloudflare_pages_run_id": 25086084980,
     "cloudflare_pages_conclusion": "success",
     "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://adcb2183.v0-spaceport-website-preview2.pages.dev",
-    "pages_health_txt_verified": true
+    "pages_hash_url": "https://c3b9e3eb.v0-spaceport-website-preview2.pages.dev",
+    "pages_health_txt_verified": true,
+    "pages_health_txt_verified_by": [
+      "workflow",
+      "local_curl"
+    ]
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/review_comparison.json",
-  "latest_review_status": "V4 smoke blocked; V5 processing in progress",
+  "latest_review_status": "V5 smoke blocked; V6 processing in progress",
   "live_compute_status": "R5 completed/preflight passed and the smoke review blocked promotion on horizon regression. V3 no-training/no-promotion repair Processing job md1-r5-teacherctx-020406-v3-1777419713 is InProgress as of 2026-04-28T23:51:23Z with no FailureReason/no ExitMessage, zero output objects, no training jobs InProgress, and it is the only processing job InProgress. CloudWatch currently shows only tar extended-header warnings, no Traceback/ERROR/OOM/Killed lines.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
@@ -728,7 +732,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "monitor V5 processing completion, run streaming preflight if model.tar.gz appears, then run frozen smoke review before any promotion",
+  "next_unblocked_step": "monitor V6 processing completion, run streaming preflight if model.tar.gz appears, then run frozen smoke review before any promotion",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -3315,7 +3319,7 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-04-29T01:10:37Z",
+  "updated": "2026-04-29T01:37:18Z",
   "version": "1.0.0",
   "r5_14tile_2k_preflight": {
     "summary_path": "logs/audit/md1-1k-full-r2/r5_14tile_2k_preflight_summary_20260428215230.json",
@@ -3817,13 +3821,19 @@
   },
   "last_commit": "e3fd349fcd6120acbf8ef6140a04cc4a256c9eba",
   "last_exact_head_gates": {
-    "head": "e3fd349fcd6120acbf8ef6140a04cc4a256c9eba",
-    "cdk_deploy_run_id": 25083102507,
-    "cloudflare_pages_run_id": 25083113255,
+    "checked_at": "2026-04-29T01:37:18Z",
+    "head": "b9073bd47c897553d0cccd16b55748ca6bd3f18d",
+    "cdk_deploy_run_id": 25086070429,
+    "cdk_conclusion": "success",
+    "cloudflare_pages_run_id": 25086084980,
+    "cloudflare_pages_conclusion": "success",
     "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://737395d0.v0-spaceport-website-preview2.pages.dev",
-    "health_checked_at": "2026-04-28T23:37:30Z",
-    "health_result": "alias_and_hash_ok"
+    "pages_hash_url": "https://c3b9e3eb.v0-spaceport-website-preview2.pages.dev",
+    "pages_health_txt_verified": true,
+    "pages_health_txt_verified_by": [
+      "workflow",
+      "local_curl"
+    ]
   },
   "r5_teacher_context_020406_v2": {
     "status": "PreflightBlocked",
@@ -4358,7 +4368,7 @@
     "next_unblocked_step": "monitor V4 completion, preflight model.tar.gz, then frozen smoke review before any promotion"
   },
   "r5_teacher_context_01020406_v5": {
-    "status": "ProcessingInProgress",
+    "status": "SmokeReviewBlocked",
     "submitted_at": "2026-04-29T01:05:47Z",
     "processing_job_name": "md1-r5-teacherctx-01020406-v5-1777424697",
     "processing_job_arn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-r5-teacherctx-01020406-v5-1777424697",
@@ -4410,7 +4420,61 @@
       ],
       "training_jobs_in_progress": []
     },
-    "next_unblocked_step": "monitor processing completion, run streaming preflight if model.tar.gz appears, then run frozen smoke review before any promotion"
+    "next_unblocked_step": "monitor V6 completion, run streaming preflight, then frozen smoke review before any promotion",
+    "completed_at": "2026-04-29T01:15:22Z",
+    "artifact_head_object": {
+      "ContentLength": 990708561,
+      "ETag": "\"229ff22c92eb40a9fc36f71f8bed6df2-189\"",
+      "VersionId": "yrlozxxlCt9xaoFwtLFEMPZpsiDLk9hB",
+      "LastModified": "2026-04-29T01:15:12+00:00"
+    },
+    "preflight_summary_path": "logs/audit/md1-1k-full-r2/r5_teacher_context_01020406_v5_preflight_summary_20260429011700.json",
+    "preflight_decision": "preflight_passed_run_frozen_smoke_review",
+    "preflight_merge": {
+      "background_asset": {
+        "asset": "background_skybox.webp",
+        "retained_gaussians": 378953,
+        "selection_score": 0.6353789878019934,
+        "source_asset": "/opt/ml/processing/work/artifact/tiles/tile_10/background_skybox.webp",
+        "source_tile_id": "tile_10"
+      },
+      "dropped_gaussians": 424557,
+      "fallback_reasons": [],
+      "fallback_tile_count": 0,
+      "merge_mode": "support_weighted_overlap",
+      "retain_all_tile_count": 0,
+      "retained_gaussians": 6883076,
+      "source_gaussians": 7307633,
+      "tile_count": 14
+    },
+    "smoke_review_job_name": "md1-r1-r5-teacher-context-01020406-v5-smoke-1777425601-quality",
+    "smoke_review_submit_summary_path": "logs/audit/md1-1k-full-r2/r5_teacher_context_01020406_v5_smoke_review_submit_20260429012000.json",
+    "smoke_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-01020406-v5-smoke/review_comparison.json",
+    "smoke_review_manifest_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-01020406-v5-smoke/quality_review_manifest.json",
+    "smoke_review_status": "blocked",
+    "smoke_review_block_reasons": [
+      "horizon_psnr_regression",
+      "horizon_ssim_regression",
+      "horizon_lpips_regression"
+    ],
+    "smoke_review_bucket_deltas": {
+      "near_detail": {
+        "psnr": 0.8265752700625377,
+        "ssim": 0.05875423550605774,
+        "lpips": 0.010757356882095337
+      },
+      "boundary": {
+        "psnr": 0.9378812388673019,
+        "ssim": 0.011976778507232666,
+        "lpips": 0.012464970350265503
+      },
+      "horizon": {
+        "psnr": -1.8045556775464,
+        "ssim": -0.029660657048225403,
+        "lpips": 0.04174104332923889
+      }
+    },
+    "superseded_by": "r5_teacher_context_00020406_v6"
   },
   "r5_teacher_context_v4_smoke_blocked_v5_submit_20260429010559Z": {
     "status": "V5ProcessingInProgress",
@@ -4524,5 +4588,135 @@
       "training_jobs_in_progress": []
     },
     "next_unblocked_step": "monitor V5 completion, preflight model.tar.gz, then frozen smoke review before any promotion"
+  },
+  "r5_teacher_context_00020406_v6": {
+    "status": "ProcessingInProgress",
+    "submitted_at": "2026-04-29T01:37:18Z",
+    "processing_job_name": "md1-r5-teacherctx-00020406-v6-1777426606",
+    "historical_base_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-14tile-2k-full-20260426214655/T2_tiled_pipeline/md1-r5-14tile-2k-1777240767-tiled/output/model.tar.gz",
+    "replacement_teacher_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-teacher-r3base-r4h-tile00-factor4-v3-20260426201700/output/artifact/model.tar.gz",
+    "replacement_tiles": [
+      "tile_00",
+      "tile_02",
+      "tile_04",
+      "tile_06"
+    ],
+    "preserve_context_tiles": [
+      "tile_00",
+      "tile_02",
+      "tile_04",
+      "tile_06"
+    ],
+    "preserved_r5_tiles": [
+      "tile_01",
+      "tile_03",
+      "tile_05",
+      "tile_07",
+      "tile_08",
+      "tile_09",
+      "tile_10",
+      "tile_11",
+      "tile_12",
+      "tile_13"
+    ],
+    "replacement_mode": "replace",
+    "opacity_policy": "none",
+    "merge_mode": "support_weighted_overlap",
+    "rationale": "V5 proved adding teacher tile_01 worsened the horizon smoke gate. V6 adds teacher tile_00 to the V3 tile_02/tile_04/tile_06 repair while excluding tile_01, testing whether V4 PSNR/SSIM gains came from tile_00 without carrying V5 tile_01 regression.",
+    "code_path": "scripts/3dgs/build_md1_hybrid_artifact.py",
+    "entrypoint_path": "logs/audit/md1-1k-full-r2/r5_teacher_context_00020406_v6_entrypoint_20260429013635.sh",
+    "payload_path": "logs/audit/md1-1k-full-r2/r5_teacher_context_00020406_v6_processing_payload_20260429013635.json",
+    "script_s3_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-00020406-v6-20260429013635/scripts/",
+    "output_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-00020406-v6-20260429013635/output/artifact/model.tar.gz",
+    "latest_live_check": {
+      "checked_at": "2026-04-29T01:37:18Z",
+      "processing_status": "InProgress",
+      "secondary_status": "Pending",
+      "failure_reason": null,
+      "exit_message": null,
+      "output_object_count": 0,
+      "only_processing_job_in_progress": true,
+      "training_jobs_in_progress": []
+    },
+    "next_unblocked_step": "monitor processing completion, run streaming preflight if model.tar.gz appears, then run frozen smoke review before any promotion"
+  },
+  "r5_teacher_context_v5_smoke_blocked_v6_submit_20260429013718Z": {
+    "status": "V6ProcessingInProgress",
+    "exact_head_gate_status": {
+      "checked_at": "2026-04-29T01:37:18Z",
+      "head": "b9073bd47c897553d0cccd16b55748ca6bd3f18d",
+      "cdk_deploy_run_id": 25086070429,
+      "cdk_conclusion": "success",
+      "cloudflare_pages_run_id": 25086084980,
+      "cloudflare_pages_conclusion": "success",
+      "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
+      "pages_hash_url": "https://c3b9e3eb.v0-spaceport-website-preview2.pages.dev",
+      "pages_health_txt_verified": true,
+      "pages_health_txt_verified_by": [
+        "workflow",
+        "local_curl"
+      ]
+    },
+    "v5_processing_job_name": "md1-r5-teacherctx-01020406-v5-1777424697",
+    "v5_output_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-01020406-v5-20260429010457/output/artifact/model.tar.gz",
+    "v5_preflight_summary_path": "logs/audit/md1-1k-full-r2/r5_teacher_context_01020406_v5_preflight_summary_20260429011700.json",
+    "v5_preflight_decision": "preflight_passed_run_frozen_smoke_review",
+    "v5_preflight_merge": {
+      "background_asset": {
+        "asset": "background_skybox.webp",
+        "retained_gaussians": 378953,
+        "selection_score": 0.6353789878019934,
+        "source_asset": "/opt/ml/processing/work/artifact/tiles/tile_10/background_skybox.webp",
+        "source_tile_id": "tile_10"
+      },
+      "dropped_gaussians": 424557,
+      "fallback_reasons": [],
+      "fallback_tile_count": 0,
+      "merge_mode": "support_weighted_overlap",
+      "retain_all_tile_count": 0,
+      "retained_gaussians": 6883076,
+      "source_gaussians": 7307633,
+      "tile_count": 14
+    },
+    "v5_smoke_review_status": "blocked",
+    "v5_smoke_review_block_reasons": [
+      "horizon_psnr_regression",
+      "horizon_ssim_regression",
+      "horizon_lpips_regression"
+    ],
+    "v5_smoke_review_bucket_deltas": {
+      "near_detail": {
+        "psnr": 0.8265752700625377,
+        "ssim": 0.05875423550605774,
+        "lpips": 0.010757356882095337
+      },
+      "boundary": {
+        "psnr": 0.9378812388673019,
+        "ssim": 0.011976778507232666,
+        "lpips": 0.012464970350265503
+      },
+      "horizon": {
+        "psnr": -1.8045556775464,
+        "ssim": -0.029660657048225403,
+        "lpips": 0.04174104332923889
+      }
+    },
+    "v6_processing_job_name": "md1-r5-teacherctx-00020406-v6-1777426606",
+    "v6_replacement_tiles": [
+      "tile_00",
+      "tile_02",
+      "tile_04",
+      "tile_06"
+    ],
+    "v6_output_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-00020406-v6-20260429013635/output/artifact/model.tar.gz",
+    "latest_live_check": {
+      "checked_at": "2026-04-29T01:37:18Z",
+      "training_jobs_in_progress": [],
+      "processing_jobs_in_progress": [
+        "md1-r5-teacherctx-00020406-v6-1777426606"
+      ],
+      "v6_output_object_count": 0
+    },
+    "next_unblocked_step": "monitor V6 completion, preflight model.tar.gz, then frozen smoke review before any promotion"
   }
 }
