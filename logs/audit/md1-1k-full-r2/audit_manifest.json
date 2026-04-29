@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "V15, V13, and V12 have identical p24 metrics and remain blocked only on horizon_psnr_regression; V14 strict_core/R2 tile_01 and V11 scale-aware opacity were worse. No promotion until a later repair passes preflight plus frozen p24 smoke review.",
+  "blocked_promotion_reason": "V15, V13, and V12 have identical p24 metrics and remain blocked only on horizon_psnr_regression; V16 is a no-promotion diagnostic to test whether dropped tile_01 overlap candidates are the remaining PSNR driver. No promotion until a repair passes preflight plus frozen p24 smoke review.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,19 +589,19 @@
       ]
     }
   ],
-  "current_branch_head": "d14f4a4b56aa9c3a215e1f4845450c77188a0687",
-  "current_exact_head_gate_status": "green CDK Deploy 25095992000 and green manually-triggered Cloudflare Pages 25095995605 for head d14f4a4b56aa9c3a215e1f4845450c77188a0687; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://c896c947.v0-spaceport-website-preview2.pages.dev both passed workflow and local /health.txt probes at 2026-04-29T07:23Z.",
-  "current_live_compute_status": "V15 Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 completed at 2026-04-29T07:26:47Z and wrote model.tar.gz at 1203320806 bytes. Streaming preflight passed with artifact_complete=true, fallback=0, retain_all=0, and no block reasons. Explicit p24 smoke job md1-r1-r5-teacher-context-v12-ctx10-v15-smoke-p24-1777448068-qu completed at 2026-04-29T07:47:37Z with camera coverage OK, fallback=0/retain_all=0, but promotion remains blocked only on horizon_psnr_regression. No SageMaker training or processing jobs are InProgress.",
-  "current_rung": "R5_teacher_context_v12_ctx10_v15_smoke_blocked",
+  "current_branch_head": "e2b596cb428e0fa8721afb096f41b954bc26b651",
+  "current_exact_head_gate_status": "green CDK Deploy 25098132723 and green manually-triggered Cloudflare Pages 25098167608 for head e2b596cb428e0fa8721afb096f41b954bc26b651; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://7bcfec22.v0-spaceport-website-preview2.pages.dev both passed workflow and local /health.txt probes at 2026-04-29T08:20Z.",
+  "current_live_compute_status": "V16 no-training/no-promotion Processing job md1-r5-teacherctx-v12-t01ov-v16-1777450963 was submitted at 2026-04-29T08:22:43Z from exact gated head e2b596cb428e0fa8721afb096f41b954bc26b651. Latest check 2026-04-29T08:28:07Z: InProgress after ProcessingStartTime 2026-04-29T08:24:41Z, no FailureReason/no ExitMessage, zero output objects, no final model.tar.gz, no training jobs InProgress, and it is the only Processing job InProgress.",
+  "current_rung": "R5_teacher_context_v12_tile01overlap_v16_processing",
   "exact_head_gate_status": {
-    "checked_at": "2026-04-29T07:12:04Z",
-    "head": "0392ef97dfe5363579f2d88f90fd5e70fd03ed82",
-    "cdk_deploy_run_id": 25095508893,
+    "checked_at": "2026-04-29T08:20:14Z",
+    "head": "e2b596cb428e0fa8721afb096f41b954bc26b651",
+    "cdk_deploy_run_id": 25098132723,
     "cdk_conclusion": "success",
-    "cloudflare_pages_run_id": 25095528013,
+    "cloudflare_pages_run_id": 25098167608,
     "cloudflare_pages_conclusion": "success",
     "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://11df01ac.v0-spaceport-website-preview2.pages.dev",
+    "pages_hash_url": "https://7bcfec22.v0-spaceport-website-preview2.pages.dev",
     "pages_health_txt_verified": true,
     "pages_health_txt_verified_by": [
       "workflow",
@@ -715,9 +715,9 @@
     "health_checked_at": "2026-04-29T07:12:04Z",
     "status": "green"
   },
-  "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-strict01-v14-smoke-p24/review_comparison.json",
-  "latest_review_status": "V15 context-padding diagnostic matched V12 exactly: near_detail +1.046 dB/+0.0593 SSIM/+0.00480 LPIPS, boundary +1.108 dB/+0.0156 SSIM/-0.0410 LPIPS, horizon -1.134 dB/-0.00953 SSIM/-0.0331 LPIPS. V15 preflight passed and smoke was blocked only on horizon_psnr_regression, so 10 percent preserve-context padding did not close the remaining PSNR miss. Do not promote.",
-  "live_compute_status": "V15 Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 completed at 2026-04-29T07:26:47Z and wrote model.tar.gz at 1203320806 bytes. Streaming preflight passed with artifact_complete=true, fallback=0, retain_all=0, and no block reasons. Explicit p24 smoke job md1-r1-r5-teacher-context-v12-ctx10-v15-smoke-p24-1777448068-qu completed at 2026-04-29T07:47:37Z with camera coverage OK, fallback=0/retain_all=0, but promotion remains blocked only on horizon_psnr_regression. No SageMaker training or processing jobs are InProgress.",
+  "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-ctx10-v15-smoke-p24/review_comparison.json",
+  "latest_review_status": "V15 matched V12/V13 exactly and remains blocked only on horizon_psnr_regression. V16 now tests the next isolated no-training repair: start from V12 settings and force tile_01 overlap ownership, because horizon p24 cameras are tile_01/tile_04-owned and tile_04-only overlap retention already had no metric effect.",
+  "live_compute_status": "V16 no-training/no-promotion Processing job md1-r5-teacherctx-v12-t01ov-v16-1777450963 was submitted at 2026-04-29T08:22:43Z from exact gated head e2b596cb428e0fa8721afb096f41b954bc26b651. Latest check 2026-04-29T08:28:07Z: InProgress after ProcessingStartTime 2026-04-29T08:24:41Z, no FailureReason/no ExitMessage, zero output objects, no final model.tar.gz, no training jobs InProgress, and it is the only Processing job InProgress.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
     "canonical_model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
@@ -726,7 +726,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "commit/push V15 completion/preflight/smoke evidence, gate exact head, then choose the next bounded no-training repair from the unchanged V12/V15 metrics rather than promoting",
+  "next_unblocked_step": "monitor V16 to model.tar.gz, run streaming preflight, then explicit p24 frozen smoke review before any promotion",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -5749,6 +5749,55 @@
     "conclusion": "V15 context padding produced identical p24 metrics to V12/V13 and remains blocked only on horizon_psnr_regression; no promotion run."
   },
   "r5_teacher_context_v12_ctx10_v15_submit_20260429071645Z": "Exact-head 0392ef97dfe5363579f2d88f90fd5e70fd03ed82 is gated green on CDK Deploy 25095508893 and manually-triggered Pages 25095528013. Submitted V15 no-training/no-promotion Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 to add 10 percent preserve-context padding to V12, including historical tile_01, with output s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-ctx10-v15-20260429071522/output/artifact/model.tar.gz. Latest status is InProgress with no ProcessingStartTime, no FailureReason/no ExitMessage, zero output objects, no training jobs InProgress, and only this processing job InProgress.",
-  "last_updated": "2026-04-29T08:09:34Z",
-  "r5_teacher_context_v12_ctx10_v15_smoke_blocked_20260429080934Z": "Exact-head d14f4a4b56aa9c3a215e1f4845450c77188a0687 is gated green on CDK Deploy 25095992000 and manually-triggered Pages 25095995605; alias/hash /health.txt passed, hash https://c896c947.v0-spaceport-website-preview2.pages.dev. V15 Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 completed, model.tar.gz is present at 1203320806 bytes, streaming preflight passed, and explicit p24 smoke md1-r1-r5-teacher-context-v12-ctx10-v15-smoke-p24-1777448068-qu completed with camera coverage OK but blocked only on horizon_psnr_regression. Metrics matched V12 exactly, so context padding did not close the PSNR miss. No SageMaker jobs are InProgress and no promotion was run."
+  "last_updated": "2026-04-29T08:28:07Z",
+  "r5_teacher_context_v12_ctx10_v15_smoke_blocked_20260429080934Z": "Exact-head d14f4a4b56aa9c3a215e1f4845450c77188a0687 is gated green on CDK Deploy 25095992000 and manually-triggered Pages 25095995605; alias/hash /health.txt passed, hash https://c896c947.v0-spaceport-website-preview2.pages.dev. V15 Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 completed, model.tar.gz is present at 1203320806 bytes, streaming preflight passed, and explicit p24 smoke md1-r1-r5-teacher-context-v12-ctx10-v15-smoke-p24-1777448068-qu completed with camera coverage OK but blocked only on horizon_psnr_regression. Metrics matched V12 exactly, so context padding did not close the PSNR miss. No SageMaker jobs are InProgress and no promotion was run.",
+  "r5_teacher_context_v12_tile01overlap_v16": {
+    "processing_job_name": "md1-r5-teacherctx-v12-t01ov-v16-1777450963",
+    "submitted_at": "2026-04-29T08:22:43Z",
+    "status_at_submit_check": "InProgress",
+    "historical_source_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-14tile-2k-full-20260426214655/T2_tiled_pipeline/md1-r5-14tile-2k-1777240767-tiled/output/model.tar.gz",
+    "replacement_source_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-teacher-r3base-r4h-tile00-factor4-v3-20260426201700/output/artifact/model.tar.gz",
+    "output_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-tile01overlap-v16-20260429082243/output/artifact/model.tar.gz",
+    "code_path": "scripts/3dgs/build_md1_hybrid_artifact.py",
+    "entrypoint_path": "logs/audit/md1-1k-full-r2/r5_teacher_context_v12_tile01overlap_v16_entrypoint_20260429082243.sh",
+    "payload_path": "logs/audit/md1-1k-full-r2/r5_teacher_context_v12_tile01overlap_v16_processing_payload_20260429082243.json",
+    "script_s3_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-tile01overlap-v16-20260429082243/scripts/",
+    "replacement_tiles": [
+      "tile_00",
+      "tile_02",
+      "tile_04",
+      "tile_05",
+      "tile_06"
+    ],
+    "preserve_context_tiles": [
+      "tile_00",
+      "tile_01",
+      "tile_02",
+      "tile_04",
+      "tile_05",
+      "tile_06"
+    ],
+    "force_overlap_tiles": [
+      "tile_01"
+    ],
+    "context_padding_ratio": 0,
+    "opacity_policy": "none",
+    "merge_mode": "support_weighted_overlap",
+    "rationale": "Start from V12/V15 best blocked repair and force ownership of tile_01 overlap candidates to test whether dropped historical tile_01 horizon-owner gaussians close the remaining horizon PSNR-only miss.",
+    "latest_live_check": {
+      "checked_at": "2026-04-29T08:28:07Z",
+      "processing_status": "InProgress",
+      "processing_start_time": "2026-04-29T08:24:41Z",
+      "failure_reason": null,
+      "exit_message": null,
+      "output_object_count": 0,
+      "in_progress_training_jobs": [],
+      "in_progress_processing_jobs": [
+        "md1-r5-teacherctx-v12-t01ov-v16-1777450963"
+      ]
+    },
+    "next_unblocked_step": "monitor V16 to model.tar.gz, run streaming preflight, then explicit p24 frozen smoke review before any promotion"
+  },
+  "r5_teacher_context_v12_tile01overlap_v16_submit_20260429082300Z": "Exact-head e2b596cb428e0fa8721afb096f41b954bc26b651 is gated green on CDK Deploy 25098132723 and manually-triggered Pages 25098167608; alias/hash /health.txt passed in workflow and local curl, hash https://7bcfec22.v0-spaceport-website-preview2.pages.dev. V15 matched V12/V13 exactly and remains blocked only on horizon_psnr_regression. Submitted V16 no-training/no-promotion Processing job md1-r5-teacherctx-v12-t01ov-v16-1777450963 to start from V12 settings and force tile_01 overlap ownership. Latest status is InProgress with no ProcessingStartTime, no FailureReason/no ExitMessage, zero output objects, no training jobs InProgress, and only this processing job InProgress.",
+  "r5_teacher_context_v12_tile01overlap_v16_active_20260429082807Z": "V16 Processing job md1-r5-teacherctx-v12-t01ov-v16-1777450963 is InProgress after ProcessingStartTime 2026-04-29T08:24:41Z with no FailureReason/no ExitMessage. Expected artifact s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-tile01overlap-v16-20260429082243/output/artifact/model.tar.gz is not present yet, output prefix has zero listed objects, no SageMaker training jobs are InProgress, and this is the only Processing job InProgress."
 }
