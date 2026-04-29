@@ -1,0 +1,550 @@
+{
+  "created_at": "2026-04-29T09:24:10Z",
+  "head": "d5f5ee4a4b91f9281e665714574ab86ff7cd3308",
+  "rung": "R5_v16_photometric_foreground_diagnosis",
+  "inputs": {
+    "candidate_review_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r5-teacher-context-v12-tile01overlap-v16-smoke-review-p24-20260429083800/outputs/r5-teacher-context-v12-tile01overlap-v16-smoke-p24/md1-r1-r5-teacher-context-v12-tile01overlap-v16-smoke-p24-17774/output/model.tar.gz",
+    "local_extracted_review_root": "/tmp/r5-v16-smoke-review/quality_review",
+    "prior_diagnosis": "logs/audit/md1-1k-full-r2/r5_v16_per_camera_culling_sky_diagnosis_20260429090620.json",
+    "target_cameras": [
+      "DJI_0073.JPG",
+      "DJI_0146.JPG",
+      "DJI_0147.JPG"
+    ],
+    "control_cameras": [
+      "DJI_0066.JPG"
+    ]
+  },
+  "method": {
+    "description": "No-training diagnostic over frozen p24 review images: compare V16 candidate render and no-background render against reference, split residuals by image bands/sky-like/rendered-foreground masks, estimate low-frequency residual share, and test oracle per-camera RGB affine corrections only to classify whether the remaining PSNR/SSIM miss is mostly photometric.",
+    "masks": {
+      "reference_sky_like": "top 70 percent, bright low-saturation blue-ish reference pixels",
+      "rendered_foreground_proxy": "candidate no-background luma > 0.035",
+      "background_dominated_proxy": "candidate no-background luma <= 0.035"
+    },
+    "note": "RGB affine corrections use the reference image and are diagnostic only; they are not a promotion candidate."
+  },
+  "aggregate_findings": {
+    "problem_camera_mean_block16_low_frequency_mse_share": 0.8076189279179111,
+    "problem_camera_mean_rendered_foreground_mse_share": 1.0,
+    "problem_camera_mean_reference_sky_like_mse_share": 0.41130555144555864,
+    "problem_camera_global_affine_delta_vs_strict_core": {
+      "min": 0.3877388942920277,
+      "mean": 1.2178780228143846,
+      "max": 1.9083234410965915
+    },
+    "problem_camera_foreground_affine_delta_vs_strict_core": {
+      "min": 0.3877388942920277,
+      "mean": 1.2178780228143846,
+      "max": 1.9083234410965915
+    }
+  },
+  "per_camera": [
+    {
+      "image_name": "DJI_0073.JPG",
+      "shape": {
+        "height": 562,
+        "width": 1000
+      },
+      "prior_metrics": {
+        "strict_core_psnr": 15.307509765789067,
+        "candidate_manifest_psnr": 14.095182507299702,
+        "candidate_delta_vs_strict_core": {
+          "lpips": -0.017672479152679443,
+          "psnr": -1.2123272584893652,
+          "ssim": -0.015305519104003906
+        },
+        "no_background_delta_vs_strict_core": {
+          "lpips": 0.001804947853088379,
+          "psnr": -1.6115217977233538,
+          "ssim": -0.031167805194854736
+        },
+        "alpha_mean_delta_vs_strict_core": -0.025975286960601807,
+        "render_stats": {
+          "candidate_limited": true,
+          "candidate_rendered_gaussians": 52352,
+          "candidate_selection_reason": "projected_visibility",
+          "candidate_visible_gaussians": 52352,
+          "strict_core_limited": true,
+          "strict_core_rendered_gaussians": 159,
+          "strict_core_selection_reason": "projected_visibility",
+          "strict_core_visible_gaussians": 159
+        }
+      },
+      "recomputed_psnr": {
+        "candidate": 14.096344110846443,
+        "no_background": 13.711763987105217,
+        "per_camera_global_rgb_affine": 15.695248660081095,
+        "foreground_mask_rgb_affine": 15.695248660081095,
+        "global_affine_delta_vs_strict_core": 0.3877388942920277,
+        "foreground_affine_delta_vs_strict_core": 0.3877388942920277
+      },
+      "error_structure": {
+        "block16_low_frequency_mse_share": 0.8739680618223379,
+        "mean_luma_reference": 0.5207527875900269,
+        "mean_luma_candidate": 0.4360589385032654,
+        "mean_luma_no_background": 0.4104651212692261,
+        "mean_luma_bias_candidate_minus_reference": -0.0846937969326973,
+        "mean_rgb_bias_candidate_minus_reference": [
+          0.0072358702309429646,
+          -0.13112486898899078,
+          0.10480629652738571
+        ]
+      },
+      "mask_breakdown": {
+        "top_third": {
+          "pixel_fraction": 0.33451957295373663,
+          "mse_share": 0.5543105204632264,
+          "psnr_on_mask": 11.903028233325472,
+          "mean_luma_bias_candidate_minus_reference": -0.13065478205680847,
+          "mean_rgb_bias_candidate_minus_reference": [
+            -0.04978196322917938,
+            -0.16937944293022156,
+            0.014084880240261555
+          ],
+          "mean_no_background_luma": 0.42276814579963684
+        },
+        "middle_third": {
+          "pixel_fraction": 0.33274021352313166,
+          "mse_share": 0.24453250253243614,
+          "psnr_on_mask": 15.434031159861535,
+          "mean_luma_bias_candidate_minus_reference": -0.05949540436267853,
+          "mean_rgb_bias_candidate_minus_reference": [
+            0.03884807601571083,
+            -0.10970619320869446,
+            0.14847706258296967
+          ],
+          "mean_no_background_luma": 0.3876173496246338
+        },
+        "bottom_third": {
+          "pixel_fraction": 0.33274021352313166,
+          "mse_share": 0.20115696212865536,
+          "psnr_on_mask": 16.282046161766722,
+          "mean_luma_bias_candidate_minus_reference": -0.06368543952703476,
+          "mean_rgb_bias_candidate_minus_reference": [
+            0.03295429050922394,
+            -0.11419843882322311,
+            0.1528041511774063
+          ],
+          "mean_no_background_luma": 0.42094406485557556
+        },
+        "reference_sky_like": {
+          "pixel_fraction": 0.444932384341637,
+          "mse_share": 0.6055588520067177,
+          "psnr_on_mask": 12.757720638451758,
+          "mean_luma_bias_candidate_minus_reference": -0.15604710578918457,
+          "mean_rgb_bias_candidate_minus_reference": [
+            -0.04863734543323517,
+            -0.20616133511066437,
+            0.026860058307647705
+          ],
+          "mean_no_background_luma": 0.39585790038108826
+        },
+        "rendered_foreground_proxy": {
+          "pixel_fraction": 1.0,
+          "mse_share": 1.0,
+          "psnr_on_mask": 14.096344110846443,
+          "mean_luma_bias_candidate_minus_reference": -0.0846937969326973,
+          "mean_rgb_bias_candidate_minus_reference": [
+            0.0072358702309429646,
+            -0.13112486898899078,
+            0.10480629652738571
+          ],
+          "mean_no_background_luma": 0.4104651212692261
+        },
+        "top_10pct_error_pixels": {
+          "pixel_fraction": 0.10000533807829182,
+          "mse_share": 0.42019749907651766,
+          "psnr_on_mask": 7.862041277344113,
+          "mean_luma_bias_candidate_minus_reference": -0.40817469358444214,
+          "mean_rgb_bias_candidate_minus_reference": [
+            -0.2913506329059601,
+            -0.46348437666893005,
+            -0.20399047434329987
+          ],
+          "mean_no_background_luma": 0.43449729681015015
+        }
+      }
+    },
+    {
+      "image_name": "DJI_0146.JPG",
+      "shape": {
+        "height": 562,
+        "width": 1000
+      },
+      "prior_metrics": {
+        "strict_core_psnr": 17.702997759372764,
+        "candidate_manifest_psnr": 16.01619305762025,
+        "candidate_delta_vs_strict_core": {
+          "lpips": -0.03768974542617798,
+          "psnr": -1.6868047017525143,
+          "ssim": -0.016505509614944458
+        },
+        "no_background_delta_vs_strict_core": {
+          "lpips": -0.03909134864807129,
+          "psnr": -1.7667883754269198,
+          "ssim": -0.022239089012145996
+        },
+        "alpha_mean_delta_vs_strict_core": 0.009341418743133545,
+        "render_stats": {
+          "candidate_limited": true,
+          "candidate_rendered_gaussians": 113865,
+          "candidate_selection_reason": "projected_visibility",
+          "candidate_visible_gaussians": 113865,
+          "strict_core_limited": true,
+          "strict_core_rendered_gaussians": 26068,
+          "strict_core_selection_reason": "projected_visibility",
+          "strict_core_visible_gaussians": 26068
+        }
+      },
+      "recomputed_psnr": {
+        "candidate": 16.041487880774948,
+        "no_background": 15.954544802808721,
+        "per_camera_global_rgb_affine": 19.060569492427298,
+        "foreground_mask_rgb_affine": 19.060569492427298,
+        "global_affine_delta_vs_strict_core": 1.3575717330545345,
+        "foreground_affine_delta_vs_strict_core": 1.3575717330545345
+      },
+      "error_structure": {
+        "block16_low_frequency_mse_share": 0.7651261677693589,
+        "mean_luma_reference": 0.5028948187828064,
+        "mean_luma_candidate": 0.42415812611579895,
+        "mean_luma_no_background": 0.4199329912662506,
+        "mean_luma_bias_candidate_minus_reference": -0.07873667031526566,
+        "mean_rgb_bias_candidate_minus_reference": [
+          -0.008646379224956036,
+          -0.12042427808046341,
+          0.12998904287815094
+        ]
+      },
+      "mask_breakdown": {
+        "top_third": {
+          "pixel_fraction": 0.33451957295373663,
+          "mse_share": 0.31545848459025533,
+          "psnr_on_mask": 16.29628085515219,
+          "mean_luma_bias_candidate_minus_reference": -0.073295958340168,
+          "mean_rgb_bias_candidate_minus_reference": [
+            0.02536025270819664,
+            -0.12105046212673187,
+            0.10974735766649246
+          ],
+          "mean_no_background_luma": 0.42042866349220276
+        },
+        "middle_third": {
+          "pixel_fraction": 0.33274021352313166,
+          "mse_share": 0.3441738175653182,
+          "psnr_on_mask": 15.89476264975916,
+          "mean_luma_bias_candidate_minus_reference": -0.08700553327798843,
+          "mean_rgb_bias_candidate_minus_reference": [
+            -0.01239276397973299,
+            -0.13137349486351013,
+            0.13334812223911285
+          ],
+          "mean_no_background_luma": 0.41608965396881104
+        },
+        "bottom_third": {
+          "pixel_fraction": 0.33274021352313166,
+          "mse_share": 0.34036774440531364,
+          "psnr_on_mask": 15.943056563948312,
+          "mean_luma_bias_candidate_minus_reference": -0.07593762129545212,
+          "mean_rgb_bias_candidate_minus_reference": [
+            -0.039086535573005676,
+            -0.1093607023358345,
+            0.14727064967155457
+          ],
+          "mean_no_background_luma": 0.4232780337333679
+        },
+        "reference_sky_like": {
+          "pixel_fraction": 0.3892597864768683,
+          "mse_share": 0.2865594456349029,
+          "psnr_on_mask": 17.371735884614548,
+          "mean_luma_bias_candidate_minus_reference": -0.0950499102473259,
+          "mean_rgb_bias_candidate_minus_reference": [
+            -0.004642683081328869,
+            -0.14042796194553375,
+            0.08969821780920029
+          ],
+          "mean_no_background_luma": 0.4132695198059082
+        },
+        "rendered_foreground_proxy": {
+          "pixel_fraction": 1.0,
+          "mse_share": 1.0,
+          "psnr_on_mask": 16.041487880774948,
+          "mean_luma_bias_candidate_minus_reference": -0.07873667031526566,
+          "mean_rgb_bias_candidate_minus_reference": [
+            -0.008646379224956036,
+            -0.12042427808046341,
+            0.12998904287815094
+          ],
+          "mean_no_background_luma": 0.4199329912662506
+        },
+        "top_10pct_error_pixels": {
+          "pixel_fraction": 0.10000711743772242,
+          "mse_share": 0.3487403464148629,
+          "psnr_on_mask": 10.616774760700805,
+          "mean_luma_bias_candidate_minus_reference": -0.0259696077555418,
+          "mean_rgb_bias_candidate_minus_reference": [
+            0.05997204780578613,
+            -0.07865864038467407,
+            0.24284926056861877
+          ],
+          "mean_no_background_luma": 0.4100912809371948
+        }
+      }
+    },
+    {
+      "image_name": "DJI_0147.JPG",
+      "shape": {
+        "height": 562,
+        "width": 1000
+      },
+      "prior_metrics": {
+        "strict_core_psnr": 17.123539428888918,
+        "candidate_manifest_psnr": 15.788865556176628,
+        "candidate_delta_vs_strict_core": {
+          "lpips": -0.04844862222671509,
+          "psnr": -1.3346738727122904,
+          "ssim": -0.01758885383605957
+        },
+        "no_background_delta_vs_strict_core": {
+          "lpips": -0.052000463008880615,
+          "psnr": -1.3848814167527799,
+          "ssim": -0.022445589303970337
+        },
+        "alpha_mean_delta_vs_strict_core": 0.02639615535736084,
+        "render_stats": {
+          "candidate_limited": true,
+          "candidate_rendered_gaussians": 120779,
+          "candidate_selection_reason": "projected_visibility",
+          "candidate_visible_gaussians": 120779,
+          "strict_core_limited": true,
+          "strict_core_rendered_gaussians": 25331,
+          "strict_core_selection_reason": "projected_visibility",
+          "strict_core_visible_gaussians": 25331
+        }
+      },
+      "recomputed_psnr": {
+        "candidate": 15.780600678642084,
+        "no_background": 15.641722246286678,
+        "per_camera_global_rgb_affine": 19.03186286998551,
+        "foreground_mask_rgb_affine": 19.03186286998551,
+        "global_affine_delta_vs_strict_core": 1.9083234410965915,
+        "foreground_affine_delta_vs_strict_core": 1.9083234410965915
+      },
+      "error_structure": {
+        "block16_low_frequency_mse_share": 0.7837625541620367,
+        "mean_luma_reference": 0.5530292987823486,
+        "mean_luma_candidate": 0.4282975494861603,
+        "mean_luma_no_background": 0.4248647689819336,
+        "mean_luma_bias_candidate_minus_reference": -0.12473176419734955,
+        "mean_rgb_bias_candidate_minus_reference": [
+          -0.0591733418405056,
+          -0.16412353515625,
+          0.07183822989463806
+        ]
+      },
+      "mask_breakdown": {
+        "top_third": {
+          "pixel_fraction": 0.33451957295373663,
+          "mse_share": 0.3160711073976258,
+          "psnr_on_mask": 16.026967609081282,
+          "mean_luma_bias_candidate_minus_reference": -0.12644635140895844,
+          "mean_rgb_bias_candidate_minus_reference": [
+            -0.030571123585104942,
+            -0.1738179475069046,
+            0.061404187232255936
+          ],
+          "mean_no_background_luma": 0.42144182324409485
+        },
+        "middle_third": {
+          "pixel_fraction": 0.33274021352313166,
+          "mse_share": 0.3405371849986535,
+          "psnr_on_mask": 15.680007757268497,
+          "mean_luma_bias_candidate_minus_reference": -0.13781534135341644,
+          "mean_rgb_bias_candidate_minus_reference": [
+            -0.07198377698659897,
+            -0.1780315488576889,
+            0.06788335740566254
+          ],
+          "mean_no_background_luma": 0.41859710216522217
+        },
+        "bottom_third": {
+          "pixel_fraction": 0.33274021352313166,
+          "mse_share": 0.34339168568059425,
+          "psnr_on_mask": 15.643754926330963,
+          "mean_luma_bias_candidate_minus_reference": -0.10992444306612015,
+          "mean_rgb_bias_candidate_minus_reference": [
+            -0.0754404217004776,
+            -0.13990852236747742,
+            0.08661230653524399
+          ],
+          "mean_no_background_luma": 0.4345737099647522
+        },
+        "reference_sky_like": {
+          "pixel_fraction": 0.41308362989323844,
+          "mse_share": 0.34179835669505537,
+          "psnr_on_mask": 16.60328014834817,
+          "mean_luma_bias_candidate_minus_reference": -0.1423395723104477,
+          "mean_rgb_bias_candidate_minus_reference": [
+            -0.05848744139075279,
+            -0.18559277057647705,
+            0.04208855703473091
+          ],
+          "mean_no_background_luma": 0.4163183867931366
+        },
+        "rendered_foreground_proxy": {
+          "pixel_fraction": 1.0,
+          "mse_share": 1.0,
+          "psnr_on_mask": 15.780600678642084,
+          "mean_luma_bias_candidate_minus_reference": -0.12473176419734955,
+          "mean_rgb_bias_candidate_minus_reference": [
+            -0.0591733418405056,
+            -0.16412353515625,
+            0.07183822989463806
+          ],
+          "mean_no_background_luma": 0.4248647689819336
+        },
+        "top_10pct_error_pixels": {
+          "pixel_fraction": 0.10000355871886121,
+          "mse_share": 0.3337110249561472,
+          "psnr_on_mask": 10.547049254856287,
+          "mean_luma_bias_candidate_minus_reference": -0.15293850004673004,
+          "mean_rgb_bias_candidate_minus_reference": [
+            -0.08422130346298218,
+            -0.1971464902162552,
+            0.08306343853473663
+          ],
+          "mean_no_background_luma": 0.4016599953174591
+        }
+      }
+    },
+    {
+      "image_name": "DJI_0066.JPG",
+      "shape": {
+        "height": 562,
+        "width": 1000
+      },
+      "prior_metrics": {
+        "strict_core_psnr": 12.379131564823574,
+        "candidate_manifest_psnr": 14.37458282418435,
+        "candidate_delta_vs_strict_core": {
+          "lpips": -0.030706822872161865,
+          "psnr": 1.9954512593607756,
+          "ssim": 0.008228540420532227
+        },
+        "no_background_delta_vs_strict_core": {
+          "lpips": -0.03679400682449341,
+          "psnr": 2.4423949365749227,
+          "ssim": 0.014304518699645996
+        },
+        "alpha_mean_delta_vs_strict_core": 0.2651805877685547,
+        "render_stats": {
+          "candidate_limited": true,
+          "candidate_rendered_gaussians": 371110,
+          "candidate_selection_reason": "projected_visibility",
+          "candidate_visible_gaussians": 371110,
+          "strict_core_limited": true,
+          "strict_core_rendered_gaussians": 500000,
+          "strict_core_selection_reason": "projected_support_topk",
+          "strict_core_visible_gaussians": 3147320
+        }
+      },
+      "recomputed_psnr": {
+        "candidate": 14.38813179654107,
+        "no_background": 14.388949094107623,
+        "per_camera_global_rgb_affine": 14.875271040912486,
+        "foreground_mask_rgb_affine": 14.875271040912486,
+        "global_affine_delta_vs_strict_core": 2.4961394760889117,
+        "foreground_affine_delta_vs_strict_core": 2.4961394760889117
+      },
+      "error_structure": {
+        "block16_low_frequency_mse_share": 0.8785966875458894,
+        "mean_luma_reference": 0.5481112003326416,
+        "mean_luma_candidate": 0.536247968673706,
+        "mean_luma_no_background": 0.5360463857650757,
+        "mean_luma_bias_candidate_minus_reference": -0.011863186955451965,
+        "mean_rgb_bias_candidate_minus_reference": [
+          -0.0580827072262764,
+          -0.0034055374562740326,
+          0.039997439831495285
+        ]
+      },
+      "mask_breakdown": {
+        "top_third": {
+          "pixel_fraction": 0.33451957295373663,
+          "mse_share": 0.5507847727042908,
+          "psnr_on_mask": 12.222527413082494,
+          "mean_luma_bias_candidate_minus_reference": -0.1594218909740448,
+          "mean_rgb_bias_candidate_minus_reference": [
+            -0.20897606015205383,
+            -0.1462498903274536,
+            -0.1439559906721115
+          ],
+          "mean_no_background_luma": 0.5900372266769409
+        },
+        "middle_third": {
+          "pixel_fraction": 0.33274021352313166,
+          "mse_share": 0.2171573687597736,
+          "psnr_on_mask": 16.24143924281577,
+          "mean_luma_bias_candidate_minus_reference": 0.06095099449157715,
+          "mean_rgb_bias_candidate_minus_reference": [
+            0.008648999035358429,
+            0.07117317616939545,
+            0.11367245018482208
+          ],
+          "mean_no_background_luma": 0.5235316753387451
+        },
+        "bottom_third": {
+          "pixel_fraction": 0.33274021352313166,
+          "mse_share": 0.23205776307912612,
+          "psnr_on_mask": 15.953223713557739,
+          "mean_luma_bias_candidate_minus_reference": 0.06367042660713196,
+          "mean_rgb_bias_candidate_minus_reference": [
+            0.027025260031223297,
+            0.06569908559322357,
+            0.15138354897499084
+          ],
+          "mean_no_background_luma": 0.4942814111709595
+        },
+        "reference_sky_like": {
+          "pixel_fraction": 0.5819110320284697,
+          "mse_share": 0.6532472847469628,
+          "psnr_on_mask": 13.885921196950381,
+          "mean_luma_bias_candidate_minus_reference": -0.08169347047805786,
+          "mean_rgb_bias_candidate_minus_reference": [
+            -0.13249173760414124,
+            -0.06996745616197586,
+            -0.0488508865237236
+          ],
+          "mean_no_background_luma": 0.5652316808700562
+        },
+        "rendered_foreground_proxy": {
+          "pixel_fraction": 1.0,
+          "mse_share": 1.0,
+          "psnr_on_mask": 14.38813179654107,
+          "mean_luma_bias_candidate_minus_reference": -0.011863186955451965,
+          "mean_rgb_bias_candidate_minus_reference": [
+            -0.0580827072262764,
+            -0.0034055374562740326,
+            0.039997439831495285
+          ],
+          "mean_no_background_luma": 0.5360463857650757
+        },
+        "top_10pct_error_pixels": {
+          "pixel_fraction": 0.10000889679715302,
+          "mse_share": 0.4467918970914501,
+          "psnr_on_mask": 7.887465582293773,
+          "mean_luma_bias_candidate_minus_reference": -0.2676040530204773,
+          "mean_rgb_bias_candidate_minus_reference": [
+            -0.33739128708839417,
+            -0.2550560534000397,
+            -0.18665505945682526
+          ],
+          "mean_no_background_luma": 0.5365498661994934
+        }
+      }
+    }
+  ],
+  "verdict": "photometric_low_frequency_dominant",
+  "next_unblocked_step": "Run a bounded no-training artifact/image-level experiment that applies a conservative scene-wide or tile-group color/exposure calibration to the V12/V16 foreground contribution, then smoke-review before any promotion."
+}

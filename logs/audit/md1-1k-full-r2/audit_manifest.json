@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "V16 remains blocked only on horizon_psnr_regression, with per-camera diagnosis showing DJI_0073/DJI_0146/DJI_0147 PSNR/SSIM are the remaining misses. V12/V15/V16 match exactly, V14/V11 were worse, and no promotion is allowed until a repair passes preflight plus frozen p24 smoke review.",
+  "blocked_promotion_reason": "V16 remains blocked only on horizon_psnr_regression. The latest no-training diagnostic says the miss is mostly low-frequency photometric/foreground luma bias, not context/ownership/culling/skybox; no promotion is allowed until a bounded repair passes preflight plus frozen p24 smoke review.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,24 +589,19 @@
       ]
     }
   ],
-  "current_branch_head": "d7344dc30b3b77d6064837527955a067d20e4a2d",
-  "current_exact_head_gate_status": "green CDK Deploy 25099874808 and green manually-triggered Cloudflare Pages 25099958327 for head d7344dc30b3b77d6064837527955a067d20e4a2d; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://4db945b4.v0-spaceport-website-preview2.pages.dev both passed workflow and local /health.txt probes by 2026-04-29T09:04Z.",
+  "current_branch_head": "d5f5ee4a4b91f9281e665714574ab86ff7cd3308",
+  "current_exact_head_gate_status": "green CDK Deploy 25100487616 and green manually-triggered Cloudflare Pages 25100504070 for head d5f5ee4a4b91f9281e665714574ab86ff7cd3308; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://7532ac68.v0-spaceport-website-preview2.pages.dev both passed workflow and local /health.txt probes by 2026-04-29T09:17Z.",
   "current_live_compute_status": "No SageMaker training or processing jobs are InProgress. V16 completed/preflighted/smoked and remains blocked; no promotion was run.",
-  "current_rung": "R5_v16_per_camera_culling_sky_diagnosis",
+  "current_rung": "R5_v16_photometric_foreground_diagnosis",
   "exact_head_gate_status": {
-    "checked_at": "2026-04-29T08:52:45Z",
-    "head": "3106ab2de1bec4bec8634eef8f11bcc12968bee3",
-    "cdk_deploy_run_id": 25098780839,
-    "cdk_conclusion": "success",
-    "cloudflare_pages_run_id": 25098803652,
-    "cloudflare_pages_conclusion": "success",
+    "checked_at": "2026-04-29T09:17:00Z",
+    "head": "d5f5ee4a4b91f9281e665714574ab86ff7cd3308",
+    "cdk_deploy_run_id": 25100487616,
+    "cloudflare_pages_run_id": 25100504070,
     "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://85e62d19.v0-spaceport-website-preview2.pages.dev",
+    "pages_hash_url": "https://7532ac68.v0-spaceport-website-preview2.pages.dev",
     "pages_health_txt_verified": true,
-    "pages_health_txt_verified_by": [
-      "workflow",
-      "local_curl"
-    ]
+    "status": "green"
   },
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -716,7 +711,7 @@
     "status": "green"
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-tile01overlap-v16-smoke-p24/review_comparison.json",
-  "latest_review_status": "Targeted V16 per-camera/culling/sky diagnosis found the remaining horizon gate is PSNR/SSIM on DJI_0073, DJI_0146, and DJI_0147, not artifact integrity, max-gaussian culling, skybox-only behavior, tile_01 overlap ownership, or context padding. V16 failing frames render all visible projected gaussians below the 500k cap and no-background PSNR does not recover; LPIPS improves on every horizon frame.",
+  "latest_review_status": "Photometric/foreground diagnosis in logs/audit/md1-1k-full-r2/r5_v16_photometric_foreground_diagnosis_20260429092410.json classified the remaining V16 horizon miss as photometric_low_frequency_dominant: the three failing frames average 80.8% block16 low-frequency MSE share, rendered-foreground proxy accounts for all measured error, mean candidate luma is darker by 0.079-0.125, and oracle per-camera RGB affine correction would put all three target frames above strict_core PSNR by +0.39 to +1.91 dB. This is diagnostic only and not a promotion candidate.",
   "live_compute_status": "V16 Processing job md1-r5-teacherctx-v12-t01ov-v16-1777450963 completed at 2026-04-29T08:33:53Z and wrote model.tar.gz at 1203321883 bytes. Streaming preflight passed with artifact_complete=true, fallback=0, retain_all=0, retained/source/dropped=8423868/8789634/365766, and no block reasons. Explicit p24 smoke job md1-r1-r5-teacher-context-v12-tile01overlap-v16-smoke-p24-17774 completed at 2026-04-29T08:51:30Z with camera coverage OK, fallback=0/retain_all=0, but promotion remains blocked only on horizon_psnr_regression. No SageMaker training or processing jobs are InProgress.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
@@ -726,7 +721,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "commit/push the V16 per-camera/culling/sky diagnosis evidence, gate exact head, then choose only a bounded no-training photometric/foreground diagnostic that directly targets DJI_0073/DJI_0146/DJI_0147 PSNR/SSIM; do not run another tile-ownership/context-processing variant without a new signal.",
+  "next_unblocked_step": "Run a bounded no-training artifact/image-level experiment that applies a conservative scene-wide or tile-group color/exposure calibration to the V12/V16 foreground contribution, then smoke-review before any promotion.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -3306,8 +3301,8 @@
       }
     }
   },
-  "root_cause_classification": "far_field_bad",
-  "rung": "R5_v16_per_camera_culling_sky_diagnosis",
+  "root_cause_classification": "photometric_low_frequency_dominant",
+  "rung": "R5_v16_photometric_foreground_diagnosis",
   "support_statistics": {
     "candidate_pair_count": 5,
     "eligible_candidate_pair_count": 4,
@@ -5749,7 +5744,7 @@
     "conclusion": "V15 context padding produced identical p24 metrics to V12/V13 and remains blocked only on horizon_psnr_regression; no promotion run."
   },
   "r5_teacher_context_v12_ctx10_v15_submit_20260429071645Z": "Exact-head 0392ef97dfe5363579f2d88f90fd5e70fd03ed82 is gated green on CDK Deploy 25095508893 and manually-triggered Pages 25095528013. Submitted V15 no-training/no-promotion Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 to add 10 percent preserve-context padding to V12, including historical tile_01, with output s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-ctx10-v15-20260429071522/output/artifact/model.tar.gz. Latest status is InProgress with no ProcessingStartTime, no FailureReason/no ExitMessage, zero output objects, no training jobs InProgress, and only this processing job InProgress.",
-  "last_updated": "2026-04-29T08:52:45Z",
+  "last_updated": "2026-04-29T09:24:10Z",
   "r5_teacher_context_v12_ctx10_v15_smoke_blocked_20260429080934Z": "Exact-head d14f4a4b56aa9c3a215e1f4845450c77188a0687 is gated green on CDK Deploy 25095992000 and manually-triggered Pages 25095995605; alias/hash /health.txt passed, hash https://c896c947.v0-spaceport-website-preview2.pages.dev. V15 Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 completed, model.tar.gz is present at 1203320806 bytes, streaming preflight passed, and explicit p24 smoke md1-r1-r5-teacher-context-v12-ctx10-v15-smoke-p24-1777448068-qu completed with camera coverage OK but blocked only on horizon_psnr_regression. Metrics matched V12 exactly, so context padding did not close the PSNR miss. No SageMaker jobs are InProgress and no promotion was run.",
   "r5_teacher_context_v12_tile01overlap_v16": {
     "processing_job_name": "md1-r5-teacherctx-v12-t01ov-v16-1777450963",
@@ -5885,5 +5880,51 @@
       "tile_context": "not sufficient: V12/V15/V16 per-camera p24 metrics are identical"
     },
     "next_unblocked_step": "commit/push the V16 per-camera/culling/sky diagnosis evidence, gate exact head, then choose only a bounded no-training photometric/foreground diagnostic that directly targets DJI_0073/DJI_0146/DJI_0147 PSNR/SSIM; do not run another tile-ownership/context-processing variant without a new signal."
+  },
+  "r5_v16_photometric_foreground_diagnosis_20260429092410Z": "Exact-head d5f5ee4a4b91f9281e665714574ab86ff7cd3308 is gated green on CDK Deploy 25100487616 and manually-triggered Pages 25100504070; alias/hash /health.txt passed in workflow and local curl, hash https://7532ac68.v0-spaceport-website-preview2.pages.dev. Photometric/foreground diagnosis in logs/audit/md1-1k-full-r2/r5_v16_photometric_foreground_diagnosis_20260429092410.json classified the remaining V16 horizon miss as photometric_low_frequency_dominant: the three failing frames average 80.8% block16 low-frequency MSE share, rendered-foreground proxy accounts for all measured error, mean candidate luma is darker by 0.079-0.125, and oracle per-camera RGB affine correction would put all three target frames above strict_core PSNR by +0.39 to +1.91 dB. This is diagnostic only and not a promotion candidate. Next: Run a bounded no-training artifact/image-level experiment that applies a conservative scene-wide or tile-group color/exposure calibration to the V12/V16 foreground contribution, then smoke-review before any promotion.",
+  "r5_v16_photometric_foreground_diagnosis": {
+    "created_at": "2026-04-29T09:24:10Z",
+    "path": "logs/audit/md1-1k-full-r2/r5_v16_photometric_foreground_diagnosis_20260429092410.json",
+    "verdict": "photometric_low_frequency_dominant",
+    "exact_head_gate": {
+      "head": "d5f5ee4a4b91f9281e665714574ab86ff7cd3308",
+      "cdk_deploy_run_id": 25100487616,
+      "cloudflare_pages_run_id": 25100504070,
+      "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
+      "pages_hash_url": "https://7532ac68.v0-spaceport-website-preview2.pages.dev",
+      "pages_health_txt_verified": true
+    },
+    "aggregate_findings": {
+      "problem_camera_mean_block16_low_frequency_mse_share": 0.8076189279179111,
+      "problem_camera_mean_rendered_foreground_mse_share": 1.0,
+      "problem_camera_mean_reference_sky_like_mse_share": 0.41130555144555864,
+      "problem_camera_global_affine_delta_vs_strict_core": {
+        "min": 0.3877388942920277,
+        "mean": 1.2178780228143846,
+        "max": 1.9083234410965915
+      },
+      "problem_camera_foreground_affine_delta_vs_strict_core": {
+        "min": 0.3877388942920277,
+        "mean": 1.2178780228143846,
+        "max": 1.9083234410965915
+      }
+    },
+    "target_camera_luma_biases": {
+      "DJI_0073.JPG": -0.0846937969326973,
+      "DJI_0146.JPG": -0.07873667031526566,
+      "DJI_0147.JPG": -0.12473176419734955
+    },
+    "target_camera_global_affine_delta_vs_strict_core": {
+      "DJI_0073.JPG": 0.3877388942920277,
+      "DJI_0146.JPG": 1.3575717330545345,
+      "DJI_0147.JPG": 1.9083234410965915
+    },
+    "diagnosis": {
+      "photometric": "dominant: oracle per-camera RGB affine correction clears strict_core PSNR for all three failing target frames",
+      "low_frequency": "dominant: target frames average 80.8% block16 low-frequency MSE share",
+      "foreground_proxy": "dominant: no-background rendered-foreground proxy covers all measured error in the target frames",
+      "promotion": "not_allowed: this is reference-assisted diagnosis only, not a candidate repair"
+    },
+    "next_unblocked_step": "Run a bounded no-training artifact/image-level experiment that applies a conservative scene-wide or tile-group color/exposure calibration to the V12/V16 foreground contribution, then smoke-review before any promotion."
   }
 }
