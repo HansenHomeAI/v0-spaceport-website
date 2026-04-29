@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "V16 remains blocked only on horizon_psnr_regression. The latest no-training diagnostic says the miss is mostly low-frequency photometric/foreground luma bias, not context/ownership/culling/skybox; no promotion is allowed until a bounded repair passes preflight plus frozen p24 smoke review.",
+  "blocked_promotion_reason": "V16 remains blocked on horizon_psnr_regression. The V17 image-level color screen is diagnostic-only but shows a half-strength target-mean RGB offset would clear the p24 PSNR threshold in image space; no promotion is allowed until an artifact-level V17 preflight and frozen p24 smoke review pass.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,20 +589,17 @@
       ]
     }
   ],
-  "current_branch_head": "d5f5ee4a4b91f9281e665714574ab86ff7cd3308",
-  "current_exact_head_gate_status": "green CDK Deploy 25100487616 and green manually-triggered Cloudflare Pages 25100504070 for head d5f5ee4a4b91f9281e665714574ab86ff7cd3308; Pages alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev and hash https://7532ac68.v0-spaceport-website-preview2.pages.dev both passed workflow and local /health.txt probes by 2026-04-29T09:17Z.",
-  "current_live_compute_status": "No SageMaker training or processing jobs are InProgress. V16 completed/preflighted/smoked and remains blocked; no promotion was run.",
-  "current_rung": "R5_v16_photometric_foreground_diagnosis",
-  "exact_head_gate_status": {
-    "checked_at": "2026-04-29T09:17:00Z",
-    "head": "d5f5ee4a4b91f9281e665714574ab86ff7cd3308",
-    "cdk_deploy_run_id": 25100487616,
-    "cloudflare_pages_run_id": 25100504070,
-    "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://7532ac68.v0-spaceport-website-preview2.pages.dev",
-    "pages_health_txt_verified": true,
-    "status": "green"
+  "current_branch_head": "97f41d8846a27861512b8c3e1f008bd25469caab",
+  "current_exact_head_gate_status": "Exact-head 97f41d8846a27861512b8c3e1f008bd25469caab is gated green on CDK Deploy 25101137081 and manually-triggered Pages 25101334776; alias/hash /health.txt passed locally and in workflow, hash https://6b6b752d.v0-spaceport-website-preview2.pages.dev.",
+  "current_live_compute_status": {
+    "checked_at": "2026-04-29T09:43:59Z",
+    "in_progress_training_jobs": [],
+    "in_progress_processing_jobs": [],
+    "r5_final_model_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-14tile-2k-full-20260426214655/T2_tiled_pipeline/md1-r5-14tile-2k-1777240767-tiled/output/model.tar.gz",
+    "r5_final_model_size_bytes": 2300184250
   },
+  "current_rung": "R5_v16_photometric_foreground_diagnosis",
+  "exact_head_gate_status": "Exact-head 97f41d8846a27861512b8c3e1f008bd25469caab is gated green on CDK Deploy 25101137081 and manually-triggered Pages 25101334776; alias/hash /health.txt passed locally and in workflow, hash https://6b6b752d.v0-spaceport-website-preview2.pages.dev.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
     "buckets": {
@@ -702,17 +699,28 @@
     "view_bucket_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiled_pipeline/inputs/scaffold/3dgs_view_buckets.json"
   },
   "latest_exact_head_gate": {
-    "head_sha": "0392ef97dfe5363579f2d88f90fd5e70fd03ed82",
-    "cdk_deploy_run_id": 25095508893,
-    "cloudflare_pages_run_id": 25095528013,
+    "head": "97f41d8846a27861512b8c3e1f008bd25469caab",
+    "cdk_run_id": 25101137081,
+    "cdk_conclusion": "success",
+    "pages_run_id": 25101334776,
+    "pages_conclusion": "success",
     "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://11df01ac.v0-spaceport-website-preview2.pages.dev",
-    "health_checked_at": "2026-04-29T07:12:04Z",
-    "status": "green"
+    "pages_hash_url": "https://6b6b752d.v0-spaceport-website-preview2.pages.dev",
+    "health_checks": {
+      "alias": "OK",
+      "hash": "OK"
+    },
+    "verified_at": "2026-04-29T09:43:59Z"
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-tile01overlap-v16-smoke-p24/review_comparison.json",
   "latest_review_status": "Photometric/foreground diagnosis in logs/audit/md1-1k-full-r2/r5_v16_photometric_foreground_diagnosis_20260429092410.json classified the remaining V16 horizon miss as photometric_low_frequency_dominant: the three failing frames average 80.8% block16 low-frequency MSE share, rendered-foreground proxy accounts for all measured error, mean candidate luma is darker by 0.079-0.125, and oracle per-camera RGB affine correction would put all three target frames above strict_core PSNR by +0.39 to +1.91 dB. This is diagnostic only and not a promotion candidate.",
-  "live_compute_status": "V16 Processing job md1-r5-teacherctx-v12-t01ov-v16-1777450963 completed at 2026-04-29T08:33:53Z and wrote model.tar.gz at 1203321883 bytes. Streaming preflight passed with artifact_complete=true, fallback=0, retain_all=0, retained/source/dropped=8423868/8789634/365766, and no block reasons. Explicit p24 smoke job md1-r1-r5-teacher-context-v12-tile01overlap-v16-smoke-p24-17774 completed at 2026-04-29T08:51:30Z with camera coverage OK, fallback=0/retain_all=0, but promotion remains blocked only on horizon_psnr_regression. No SageMaker training or processing jobs are InProgress.",
+  "live_compute_status": {
+    "checked_at": "2026-04-29T09:43:59Z",
+    "in_progress_training_jobs": [],
+    "in_progress_processing_jobs": [],
+    "r5_final_model_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-14tile-2k-full-20260426214655/T2_tiled_pipeline/md1-r5-14tile-2k-1777240767-tiled/output/model.tar.gz",
+    "r5_final_model_size_bytes": 2300184250
+  },
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
     "canonical_model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
@@ -721,7 +729,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Run a bounded no-training artifact/image-level experiment that applies a conservative scene-wide or tile-group color/exposure calibration to the V12/V16 foreground contribution, then smoke-review before any promotion.",
+  "next_unblocked_step": "Commit/push the V17 color-calibration implementation and image-level screen, gate exact head, then submit the no-training V17 artifact build from V16 with rgb-offset [0.0100973, 0.0692788, -0.0511056] on tile_00/tile_01/tile_02/tile_04/tile_05/tile_06.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -3308,7 +3316,7 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-04-29T09:07:27Z",
+  "updated": "2026-04-29T09:43:59Z",
   "version": "1.0.0",
   "r5_14tile_2k_preflight": {
     "summary_path": "logs/audit/md1-1k-full-r2/r5_14tile_2k_preflight_summary_20260428215230.json",
@@ -3810,19 +3818,18 @@
   },
   "last_commit": "e3fd349fcd6120acbf8ef6140a04cc4a256c9eba",
   "last_exact_head_gates": {
-    "checked_at": "2026-04-29T02:06:44Z",
-    "head": "cd0b99ff34d2b30937c689b2b1ff7069ad0252ca",
-    "cdk_deploy_run_id": 25086736563,
+    "head": "97f41d8846a27861512b8c3e1f008bd25469caab",
+    "cdk_run_id": 25101137081,
     "cdk_conclusion": "success",
-    "cloudflare_pages_run_id": 25086743350,
-    "cloudflare_pages_conclusion": "success",
+    "pages_run_id": 25101334776,
+    "pages_conclusion": "success",
     "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://ff75b8ec.v0-spaceport-website-preview2.pages.dev",
-    "pages_health_txt_verified": true,
-    "pages_health_txt_verified_by": [
-      "workflow",
-      "local_curl"
-    ]
+    "pages_hash_url": "https://6b6b752d.v0-spaceport-website-preview2.pages.dev",
+    "health_checks": {
+      "alias": "OK",
+      "hash": "OK"
+    },
+    "verified_at": "2026-04-29T09:43:59Z"
   },
   "r5_teacher_context_020406_v2": {
     "status": "PreflightBlocked",
@@ -5744,7 +5751,7 @@
     "conclusion": "V15 context padding produced identical p24 metrics to V12/V13 and remains blocked only on horizon_psnr_regression; no promotion run."
   },
   "r5_teacher_context_v12_ctx10_v15_submit_20260429071645Z": "Exact-head 0392ef97dfe5363579f2d88f90fd5e70fd03ed82 is gated green on CDK Deploy 25095508893 and manually-triggered Pages 25095528013. Submitted V15 no-training/no-promotion Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 to add 10 percent preserve-context padding to V12, including historical tile_01, with output s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-ctx10-v15-20260429071522/output/artifact/model.tar.gz. Latest status is InProgress with no ProcessingStartTime, no FailureReason/no ExitMessage, zero output objects, no training jobs InProgress, and only this processing job InProgress.",
-  "last_updated": "2026-04-29T09:24:10Z",
+  "last_updated": "2026-04-29T09:43:59Z",
   "r5_teacher_context_v12_ctx10_v15_smoke_blocked_20260429080934Z": "Exact-head d14f4a4b56aa9c3a215e1f4845450c77188a0687 is gated green on CDK Deploy 25095992000 and manually-triggered Pages 25095995605; alias/hash /health.txt passed, hash https://c896c947.v0-spaceport-website-preview2.pages.dev. V15 Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 completed, model.tar.gz is present at 1203320806 bytes, streaming preflight passed, and explicit p24 smoke md1-r1-r5-teacher-context-v12-ctx10-v15-smoke-p24-1777448068-qu completed with camera coverage OK but blocked only on horizon_psnr_regression. Metrics matched V12 exactly, so context padding did not close the PSNR miss. No SageMaker jobs are InProgress and no promotion was run.",
   "r5_teacher_context_v12_tile01overlap_v16": {
     "processing_job_name": "md1-r5-teacherctx-v12-t01ov-v16-1777450963",
@@ -5926,5 +5933,56 @@
       "promotion": "not_allowed: this is reference-assisted diagnosis only, not a candidate repair"
     },
     "next_unblocked_step": "Run a bounded no-training artifact/image-level experiment that applies a conservative scene-wide or tile-group color/exposure calibration to the V12/V16 foreground contribution, then smoke-review before any promotion."
+  },
+  "r5_v16_image_level_color_calibration": {
+    "path": "logs/audit/md1-1k-full-r2/r5_v16_image_level_color_calibration_20260429094000.json",
+    "result": {
+      "name": "target_mean_rgb_offset_0.50",
+      "rgb_offset": [
+        0.010097309947013855,
+        0.0692787766456604,
+        -0.051105596125125885
+      ],
+      "estimated_bucket_psnr_delta_vs_strict_core": {
+        "near_detail": 1.7171560223576883,
+        "boundary": 1.4083459256332347,
+        "horizon": -0.06674641869444642
+      },
+      "rationale": "Smallest half-strength target-mean correction clears the horizon PSNR threshold in the image-level screen while preserving near_detail and boundary PSNR margins."
+    },
+    "passing_experiment_names": [
+      "target_mean_rgb_offset_0.25",
+      "target_mean_rgb_offset_0.40",
+      "target_mean_rgb_offset_0.50",
+      "target_mean_rgb_offset_0.60",
+      "target_mean_rgb_offset_0.75",
+      "target_mean_rgb_offset_1.00",
+      "green_blue_offset_g0.04_b-0.030",
+      "green_blue_offset_g0.06_b-0.045",
+      "green_blue_offset_g0.08_b-0.060",
+      "green_blue_offset_g0.10_b-0.075"
+    ],
+    "conclusion": "Image-level p24 screen supports a bounded artifact-level foreground DC color calibration; it is diagnostic only and not a promotion candidate."
+  },
+  "r5_v17_color_calibration_implementation": {
+    "code_path": "scripts/3dgs/build_md1_hybrid_artifact.py",
+    "change": "Added --color-policy rgb-offset and --color-rgb-offset to apply no-training RGB-space offsets to replacement tile f_dc coefficients.",
+    "local_validation": [
+      "python3 -m py_compile scripts/3dgs/build_md1_hybrid_artifact.py",
+      "python3 -m unittest tests.unit.test_preflight_tiled_model_artifact tests.unit.test_tiled_quality_review tests.unit.test_geometry_first_review"
+    ],
+    "selected_rgb_offset": [
+      0.010097309947013855,
+      0.0692787766456604,
+      -0.051105596125125885
+    ],
+    "planned_color_tiles": [
+      "tile_00",
+      "tile_01",
+      "tile_02",
+      "tile_04",
+      "tile_05",
+      "tile_06"
+    ]
   }
 }

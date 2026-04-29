@@ -1,0 +1,539 @@
+{
+  "created_at": "2026-04-29T09:42:55Z",
+  "head": "97f41d8846a27861512b8c3e1f008bd25469caab",
+  "rung": "R5_v17_image_level_color_calibration_screen",
+  "inputs": {
+    "review_root": "/tmp/r5-v16-smoke-review/quality_review",
+    "review_comparison": "/tmp/r5-v16-smoke-review/review_comparison.json",
+    "source_artifact_under_test": "r5_teacher_context_v12_tile01overlap_v16",
+    "prior_diagnosis": "logs/audit/md1-1k-full-r2/r5_v16_photometric_foreground_diagnosis_20260429092410.json"
+  },
+  "method": {
+    "description": "No-training image-level screen over frozen p24 V16 renders. Applies scene-wide RGB offsets to rendered images to estimate whether a conservative foreground DC color calibration is plausible before producing an artifact.",
+    "target_mean_rgb_offset_source": "Mean candidate-minus-reference RGB bias from failing horizon frames in the photometric diagnosis, inverted and scaled.",
+    "limitations": [
+      "LPIPS was not recomputed locally; this screen only gates whether PSNR direction is worth an artifact-level smoke review.",
+      "Image-space offsets are diagnostic proxies for f_dc foreground calibration, not a promotion candidate."
+    ]
+  },
+  "experiments": [
+    {
+      "name": "baseline",
+      "rgb_offset": null,
+      "rgb_gain": null,
+      "passes_psnr_thresholds_without_lpips_claim": false,
+      "bucket_metrics": {
+        "near_detail": {
+          "psnr": 11.279742409054172,
+          "global_ssim_proxy": 0.17911260004888196,
+          "delta_vs_strict_core": {
+            "psnr": 1.0751724992466478
+          }
+        },
+        "boundary": {
+          "psnr": 14.239178083178592,
+          "global_ssim_proxy": 0.1788889240423455,
+          "delta_vs_strict_core": {
+            "psnr": 1.105138472067063
+          }
+        },
+        "horizon": {
+          "psnr": 15.084366237591578,
+          "global_ssim_proxy": 0.2631162759913123,
+          "delta_vs_strict_core": {
+            "psnr": -1.1311583597474133
+          }
+        }
+      },
+      "horizon_camera_psnr": {
+        "DJI_0066.JPG": 14.38813179654107,
+        "DJI_0073.JPG": 14.096344110846443,
+        "DJI_0146.JPG": 16.041487880774948,
+        "DJI_0147.JPG": 15.780600678642084
+      },
+      "horizon_camera_luma_bias": {
+        "DJI_0066.JPG": -0.007126921787858009,
+        "DJI_0073.JPG": -0.006303553003817797,
+        "DJI_0146.JPG": 0.00028615264454856515,
+        "DJI_0147.JPG": -0.05045590549707413
+      }
+    },
+    {
+      "name": "target_mean_rgb_offset_0.25",
+      "rgb_offset": [
+        0.0050486549735069275,
+        0.0346393883228302,
+        -0.025552798062562943
+      ],
+      "rgb_gain": null,
+      "passes_psnr_thresholds_without_lpips_claim": true,
+      "bucket_metrics": {
+        "near_detail": {
+          "psnr": 11.62745135748362,
+          "global_ssim_proxy": 0.17976075805346858,
+          "delta_vs_strict_core": {
+            "psnr": 1.4228814476760956
+          }
+        },
+        "boundary": {
+          "psnr": 14.467994850653994,
+          "global_ssim_proxy": 0.1796457127942436,
+          "delta_vs_strict_core": {
+            "psnr": 1.3339552395424654
+          }
+        },
+        "horizon": {
+          "psnr": 15.59852084280617,
+          "global_ssim_proxy": 0.2657702476139892,
+          "delta_vs_strict_core": {
+            "psnr": -0.6170037545328206
+          }
+        }
+      },
+      "horizon_camera_psnr": {
+        "DJI_0066.JPG": 14.427662626578952,
+        "DJI_0073.JPG": 14.588134476071208,
+        "DJI_0146.JPG": 16.888206939187512,
+        "DJI_0147.JPG": 16.608907209541133
+      },
+      "horizon_camera_luma_bias": {
+        "DJI_0066.JPG": -0.002420189557597041,
+        "DJI_0073.JPG": -0.0015927248168736696,
+        "DJI_0146.JPG": 0.004996864590793848,
+        "DJI_0147.JPG": -0.04574575275182724
+      }
+    },
+    {
+      "name": "target_mean_rgb_offset_0.40",
+      "rgb_offset": [
+        0.008077847771346569,
+        0.05542302131652832,
+        -0.04088447615504265
+      ],
+      "rgb_gain": null,
+      "passes_psnr_thresholds_without_lpips_claim": true,
+      "bucket_metrics": {
+        "near_detail": {
+          "psnr": 11.810680443333904,
+          "global_ssim_proxy": 0.17996699730516305,
+          "delta_vs_strict_core": {
+            "psnr": 1.6061105335263797
+          }
+        },
+        "boundary": {
+          "psnr": 14.530943214614457,
+          "global_ssim_proxy": 0.17985024153703066,
+          "delta_vs_strict_core": {
+            "psnr": 1.3969036035029276
+          }
+        },
+        "horizon": {
+          "psnr": 15.945848546804857,
+          "global_ssim_proxy": 0.26695057285823137,
+          "delta_vs_strict_core": {
+            "psnr": -0.2696760505341338
+          }
+        }
+      },
+      "horizon_camera_psnr": {
+        "DJI_0066.JPG": 14.379447461346844,
+        "DJI_0073.JPG": 14.832220734545878,
+        "DJI_0146.JPG": 17.34482693129066,
+        "DJI_0147.JPG": 17.059476359063837
+      },
+      "horizon_camera_luma_bias": {
+        "DJI_0066.JPG": 0.0004015201120637357,
+        "DJI_0073.JPG": 0.0012337572406977415,
+        "DJI_0146.JPG": 0.007823271676898003,
+        "DJI_0147.JPG": -0.042919836938381195
+      }
+    },
+    {
+      "name": "target_mean_rgb_offset_0.50",
+      "rgb_offset": [
+        0.010097309947013855,
+        0.0692787766456604,
+        -0.051105596125125885
+      ],
+      "rgb_gain": null,
+      "passes_psnr_thresholds_without_lpips_claim": true,
+      "bucket_metrics": {
+        "near_detail": {
+          "psnr": 11.921725932165213,
+          "global_ssim_proxy": 0.1800357751230181,
+          "delta_vs_strict_core": {
+            "psnr": 1.7171560223576883
+          }
+        },
+        "boundary": {
+          "psnr": 14.542385536744764,
+          "global_ssim_proxy": 0.17988943322834872,
+          "delta_vs_strict_core": {
+            "psnr": 1.4083459256332347
+          }
+        },
+        "horizon": {
+          "psnr": 16.148778178644545,
+          "global_ssim_proxy": 0.26757397388321197,
+          "delta_vs_strict_core": {
+            "psnr": -0.06674641869444642
+          }
+        }
+      },
+      "horizon_camera_psnr": {
+        "DJI_0066.JPG": 14.318142744557214,
+        "DJI_0073.JPG": 14.968636558403588,
+        "DJI_0146.JPG": 17.615040142007842,
+        "DJI_0147.JPG": 17.3289197988855
+      },
+      "horizon_camera_luma_bias": {
+        "DJI_0066.JPG": 0.002280707936733961,
+        "DJI_0073.JPG": 0.003118066815659404,
+        "DJI_0146.JPG": 0.009707451798021793,
+        "DJI_0147.JPG": -0.0410359725356102
+      }
+    },
+    {
+      "name": "target_mean_rgb_offset_0.60",
+      "rgb_offset": [
+        0.012116772122681141,
+        0.08313453197479248,
+        -0.06132671609520912
+      ],
+      "rgb_gain": null,
+      "passes_psnr_thresholds_without_lpips_claim": true,
+      "bucket_metrics": {
+        "near_detail": {
+          "psnr": 12.023080116982825,
+          "global_ssim_proxy": 0.1800537523688918,
+          "delta_vs_strict_core": {
+            "psnr": 1.8185102071753008
+          }
+        },
+        "boundary": {
+          "psnr": 14.529120048144014,
+          "global_ssim_proxy": 0.17985433049711058,
+          "delta_vs_strict_core": {
+            "psnr": 1.395080437032485
+          }
+        },
+        "horizon": {
+          "psnr": 16.323788868091704,
+          "global_ssim_proxy": 0.26807153445941656,
+          "delta_vs_strict_core": {
+            "psnr": 0.10826427075271283
+          }
+        }
+      },
+      "horizon_camera_psnr": {
+        "DJI_0066.JPG": 14.234610177732062,
+        "DJI_0073.JPG": 15.081350289598198,
+        "DJI_0146.JPG": 17.849827563451637,
+        "DJI_0147.JPG": 17.56622744658521
+      },
+      "horizon_camera_luma_bias": {
+        "DJI_0066.JPG": 0.004156524781137705,
+        "DJI_0073.JPG": 0.0050023701041936874,
+        "DJI_0146.JPG": 0.011591588146984577,
+        "DJI_0147.JPG": -0.03915216028690338
+      }
+    },
+    {
+      "name": "target_mean_rgb_offset_0.75",
+      "rgb_offset": [
+        0.015145964920520782,
+        0.1039181649684906,
+        -0.07665839791297913
+      ],
+      "rgb_gain": null,
+      "passes_psnr_thresholds_without_lpips_claim": true,
+      "bucket_metrics": {
+        "near_detail": {
+          "psnr": 12.220755101928631,
+          "global_ssim_proxy": 0.1799912254990711,
+          "delta_vs_strict_core": {
+            "psnr": 2.0161851921211067
+          }
+        },
+        "boundary": {
+          "psnr": 14.463490789175433,
+          "global_ssim_proxy": 0.17966820274506273,
+          "delta_vs_strict_core": {
+            "psnr": 1.3294511780639038
+          }
+        },
+        "horizon": {
+          "psnr": 16.524804011553222,
+          "global_ssim_proxy": 0.26858895555293416,
+          "delta_vs_strict_core": {
+            "psnr": 0.309279414214231
+          }
+        }
+      },
+      "horizon_camera_psnr": {
+        "DJI_0066.JPG": 14.070490641235624,
+        "DJI_0073.JPG": 15.201721191659853,
+        "DJI_0146.JPG": 18.120531181003855,
+        "DJI_0147.JPG": 17.84788683144659
+      },
+      "horizon_camera_luma_bias": {
+        "DJI_0066.JPG": 0.006965271197259426,
+        "DJI_0073.JPG": 0.007828813046216965,
+        "DJI_0146.JPG": 0.014417680911719799,
+        "DJI_0147.JPG": -0.036326583474874496
+      }
+    },
+    {
+      "name": "target_mean_rgb_offset_1.00",
+      "rgb_offset": [
+        0.02019461989402771,
+        0.1385575532913208,
+        -0.10221119225025177
+      ],
+      "rgb_gain": null,
+      "passes_psnr_thresholds_without_lpips_claim": true,
+      "bucket_metrics": {
+        "near_detail": {
+          "psnr": 12.459950471061473,
+          "global_ssim_proxy": 0.1796697329333929,
+          "delta_vs_strict_core": {
+            "psnr": 2.255380561253949
+          }
+        },
+        "boundary": {
+          "psnr": 14.239277165079498,
+          "global_ssim_proxy": 0.17902140797654958,
+          "delta_vs_strict_core": {
+            "psnr": 1.105237553967969
+          }
+        },
+        "horizon": {
+          "psnr": 16.667527157250092,
+          "global_ssim_proxy": 0.2688669428328966,
+          "delta_vs_strict_core": {
+            "psnr": 0.45200255991110083
+          }
+        }
+      },
+      "horizon_camera_psnr": {
+        "DJI_0066.JPG": 13.707322129811404,
+        "DJI_0073.JPG": 15.261438395984541,
+        "DJI_0146.JPG": 18.30783150468751,
+        "DJI_0147.JPG": 18.07361591851564
+      },
+      "horizon_camera_luma_bias": {
+        "DJI_0066.JPG": 0.011627627536654472,
+        "DJI_0073.JPG": 0.012539546005427837,
+        "DJI_0146.JPG": 0.019127480685710907,
+        "DJI_0147.JPG": -0.031617652624845505
+      }
+    },
+    {
+      "name": "green_blue_offset_g0.04_b-0.030",
+      "rgb_offset": [
+        0.0,
+        0.04,
+        -0.03
+      ],
+      "rgb_gain": null,
+      "passes_psnr_thresholds_without_lpips_claim": true,
+      "bucket_metrics": {
+        "near_detail": {
+          "psnr": 11.72793357551084,
+          "global_ssim_proxy": 0.17982564235721316,
+          "delta_vs_strict_core": {
+            "psnr": 1.5233636657033145
+          }
+        },
+        "boundary": {
+          "psnr": 14.463001393318127,
+          "global_ssim_proxy": 0.17966154244451296,
+          "delta_vs_strict_core": {
+            "psnr": 1.3289617822065978
+          }
+        },
+        "horizon": {
+          "psnr": 15.675487590010567,
+          "global_ssim_proxy": 0.26609008185162,
+          "delta_vs_strict_core": {
+            "psnr": -0.540037007328424
+          }
+        }
+      },
+      "horizon_camera_psnr": {
+        "DJI_0066.JPG": 14.395074608941256,
+        "DJI_0073.JPG": 14.663254550228409,
+        "DJI_0146.JPG": 17.013111870063888,
+        "DJI_0147.JPG": 16.687720629792725
+      },
+      "horizon_camera_luma_bias": {
+        "DJI_0066.JPG": -0.0037997872568666935,
+        "DJI_0073.JPG": -0.002970219124108553,
+        "DJI_0146.JPG": 0.0036194915883243084,
+        "DJI_0147.JPG": -0.047123394906520844
+      }
+    },
+    {
+      "name": "green_blue_offset_g0.06_b-0.045",
+      "rgb_offset": [
+        0.0,
+        0.06,
+        -0.045
+      ],
+      "rgb_gain": null,
+      "passes_psnr_thresholds_without_lpips_claim": true,
+      "bucket_metrics": {
+        "near_detail": {
+          "psnr": 11.928834730427454,
+          "global_ssim_proxy": 0.17999427275071184,
+          "delta_vs_strict_core": {
+            "psnr": 1.7242648206199291
+          }
+        },
+        "boundary": {
+          "psnr": 14.497594701595002,
+          "global_ssim_proxy": 0.17979071893475862,
+          "delta_vs_strict_core": {
+            "psnr": 1.363555090483473
+          }
+        },
+        "horizon": {
+          "psnr": 15.987773162760423,
+          "global_ssim_proxy": 0.26715140049176855,
+          "delta_vs_strict_core": {
+            "psnr": -0.22775143457856828
+          }
+        }
+      },
+      "horizon_camera_psnr": {
+        "DJI_0066.JPG": 14.324502813562418,
+        "DJI_0073.JPG": 14.89255985800373,
+        "DJI_0146.JPG": 17.441565102834062,
+        "DJI_0147.JPG": 17.082986467517113
+      },
+      "horizon_camera_luma_bias": {
+        "DJI_0066.JPG": -0.002138762269169092,
+        "DJI_0073.JPG": -0.0013035640586167574,
+        "DJI_0146.JPG": 0.005286110565066338,
+        "DJI_0147.JPG": -0.04545734077692032
+      }
+    },
+    {
+      "name": "green_blue_offset_g0.08_b-0.060",
+      "rgb_offset": [
+        0.0,
+        0.08,
+        -0.06
+      ],
+      "rgb_gain": null,
+      "passes_psnr_thresholds_without_lpips_claim": true,
+      "bucket_metrics": {
+        "near_detail": {
+          "psnr": 12.112483227753192,
+          "global_ssim_proxy": 0.18005227671872556,
+          "delta_vs_strict_core": {
+            "psnr": 1.9079133179456669
+          }
+        },
+        "boundary": {
+          "psnr": 14.481418717205422,
+          "global_ssim_proxy": 0.17976102320046,
+          "delta_vs_strict_core": {
+            "psnr": 1.3473791060938929
+          }
+        },
+        "horizon": {
+          "psnr": 16.246447318289597,
+          "global_ssim_proxy": 0.2679447339685636,
+          "delta_vs_strict_core": {
+            "psnr": 0.03092272095060622
+          }
+        }
+      },
+      "horizon_camera_psnr": {
+        "DJI_0066.JPG": 14.207206348202682,
+        "DJI_0073.JPG": 15.07602232547005,
+        "DJI_0146.JPG": 17.806368763647082,
+        "DJI_0147.JPG": 17.416872311109145
+      },
+      "horizon_camera_luma_bias": {
+        "DJI_0066.JPG": -0.0004827103402931243,
+        "DJI_0073.JPG": 0.0003631126892287284,
+        "DJI_0146.JPG": 0.006952631287276745,
+        "DJI_0147.JPG": -0.04379136860370636
+      }
+    },
+    {
+      "name": "green_blue_offset_g0.10_b-0.075",
+      "rgb_offset": [
+        0.0,
+        0.1,
+        -0.075
+      ],
+      "rgb_gain": null,
+      "passes_psnr_thresholds_without_lpips_claim": true,
+      "bucket_metrics": {
+        "near_detail": {
+          "psnr": 12.324351206800268,
+          "global_ssim_proxy": 0.18000927430372698,
+          "delta_vs_strict_core": {
+            "psnr": 2.119781296992743
+          }
+        },
+        "boundary": {
+          "psnr": 14.415026216020882,
+          "global_ssim_proxy": 0.17958067125992744,
+          "delta_vs_strict_core": {
+            "psnr": 1.2809866049093532
+          }
+        },
+        "horizon": {
+          "psnr": 16.43928144089412,
+          "global_ssim_proxy": 0.26848058799622365,
+          "delta_vs_strict_core": {
+            "psnr": 0.2237568435551296
+          }
+        }
+      },
+      "horizon_camera_psnr": {
+        "DJI_0066.JPG": 14.04690447182176,
+        "DJI_0073.JPG": 15.207140249599615,
+        "DJI_0146.JPG": 18.08658704118809,
+        "DJI_0147.JPG": 17.671422632188623
+      },
+      "horizon_camera_luma_bias": {
+        "DJI_0066.JPG": 0.001167113776318729,
+        "DJI_0073.JPG": 0.002029778202995658,
+        "DJI_0146.JPG": 0.008619023486971855,
+        "DJI_0147.JPG": -0.042125552892684937
+      }
+    }
+  ],
+  "passing_experiment_names": [
+    "target_mean_rgb_offset_0.25",
+    "target_mean_rgb_offset_0.40",
+    "target_mean_rgb_offset_0.50",
+    "target_mean_rgb_offset_0.60",
+    "target_mean_rgb_offset_0.75",
+    "target_mean_rgb_offset_1.00",
+    "green_blue_offset_g0.04_b-0.030",
+    "green_blue_offset_g0.06_b-0.045",
+    "green_blue_offset_g0.08_b-0.060",
+    "green_blue_offset_g0.10_b-0.075"
+  ],
+  "selected_artifact_experiment": {
+    "name": "target_mean_rgb_offset_0.50",
+    "rgb_offset": [
+      0.010097309947013855,
+      0.0692787766456604,
+      -0.051105596125125885
+    ],
+    "estimated_bucket_psnr_delta_vs_strict_core": {
+      "near_detail": 1.7171560223576883,
+      "boundary": 1.4083459256332347,
+      "horizon": -0.06674641869444642
+    },
+    "rationale": "Smallest half-strength target-mean correction clears the horizon PSNR threshold in the image-level screen while preserving near_detail and boundary PSNR margins."
+  },
+  "next_unblocked_step": "Build V17 no-training artifact from V16 with the selected half-strength RGB f_dc offset on tile_00/tile_01/tile_02/tile_04/tile_05/tile_06, then preflight and explicit p24 smoke-review before any promotion."
+}

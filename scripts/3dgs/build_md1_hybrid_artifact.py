@@ -58,6 +58,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--scale-start-quantile", type=float, default=0.90)
     parser.add_argument("--scale-full-quantile", type=float, default=0.99)
     parser.add_argument("--scale-weight-power", type=float, default=1.0)
+    parser.add_argument(
+        "--color-policy",
+        choices=["none", "rgb-offset"],
+        default="none",
+        help="Optional no-training foreground color calibration for replacement tiles.",
+    )
+    parser.add_argument(
+        "--color-rgb-offset",
+        default="0,0,0",
+        help="RGB-space additive offset, e.g. '0.01,0.08,-0.06'; converted to f_dc deltas.",
+    )
     parser.add_argument("--context-padding-ratio", type=float, default=0.0)
     parser.add_argument(
         "--skip-local-tarball",
@@ -67,6 +78,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--label", default="md1_hybrid")
     parser.add_argument("--purpose", default="")
     return parser.parse_args()
+
+
+SH_C0 = 0.28209479177387814
+
+
+def parse_rgb_triplet(raw_value: str) -> tuple[float, float, float]:
+    parts = [part.strip() for part in str(raw_value).split(",")]
+    if len(parts) != 3:
+        raise ValueError(f"Expected three comma-separated RGB values, got {raw_value!r}")
+    return tuple(float(part) for part in parts)  # type: ignore[return-value]
 
 
 def read_vertex(path: Path) -> np.ndarray:
@@ -105,6 +126,21 @@ def scale_metric(vertex: np.ndarray) -> np.ndarray:
         return np.zeros(len(vertex), dtype=np.float32)
     scales = np.stack([np.asarray(vertex[name], dtype=np.float32) for name in scale_names], axis=1)
     return np.max(scales, axis=1)
+
+
+def rgb_from_dc(vertex: np.ndarray) -> np.ndarray | None:
+    names = set(vertex.dtype.names or ())
+    if not {"f_dc_0", "f_dc_1", "f_dc_2"}.issubset(names):
+        return None
+    rgb = np.stack(
+        [
+            np.asarray(vertex["f_dc_0"], dtype=np.float32),
+            np.asarray(vertex["f_dc_1"], dtype=np.float32),
+            np.asarray(vertex["f_dc_2"], dtype=np.float32),
+        ],
+        axis=1,
+    )
+    return np.clip((rgb * SH_C0) + 0.5, 0.0, 1.0)
 
 
 def vertex_bounds_dict(vertex: np.ndarray, padding_ratio: float = 0.0) -> dict[str, float]:
@@ -192,6 +228,44 @@ def apply_opacity_policy(
         "weight_quantiles": [float(value) for value in np.quantile(weights, [0.0, 0.1, 0.25, 0.5, 0.75, 0.9, 1.0])],
         "adjusted_gaussian_count": int(np.count_nonzero(weights > 0.0)),
         "fully_adjusted_gaussian_count": int(np.count_nonzero(weights >= 1.0)),
+    }
+
+
+def apply_color_policy(
+    *,
+    tile_id: str,
+    replacement_vertex: np.ndarray,
+    policy: str,
+    rgb_offset: tuple[float, float, float],
+) -> tuple[np.ndarray, dict[str, Any]]:
+    names = set(replacement_vertex.dtype.names or ())
+    if policy == "none":
+        return replacement_vertex, {"mode": policy, "adjusted": False}
+    if not {"f_dc_0", "f_dc_1", "f_dc_2"}.issubset(names):
+        return replacement_vertex, {
+            "mode": policy,
+            "adjusted": False,
+            "reason": "missing_f_dc_fields",
+        }
+    if policy != "rgb-offset":  # pragma: no cover - argparse constrains this.
+        raise ValueError(f"Unsupported color policy: {policy}")
+
+    before = rgb_from_dc(replacement_vertex)
+    adjusted = replacement_vertex.copy()
+    dc_offset = [float(value) / SH_C0 for value in rgb_offset]
+    for field_name, delta in zip(("f_dc_0", "f_dc_1", "f_dc_2"), dc_offset, strict=True):
+        adjusted[field_name] = np.asarray(adjusted[field_name], dtype=np.float32) + float(delta)
+    after = rgb_from_dc(adjusted)
+    return adjusted, {
+        "mode": policy,
+        "adjusted": True,
+        "tile_id": tile_id,
+        "rgb_offset": [float(value) for value in rgb_offset],
+        "f_dc_offset": [float(value) for value in dc_offset],
+        "rgb_mean_before": [] if before is None else [float(value) for value in np.mean(before, axis=0)],
+        "rgb_mean_after": [] if after is None else [float(value) for value in np.mean(after, axis=0)],
+        "rgb_median_before": [] if before is None else [float(value) for value in np.median(before, axis=0)],
+        "rgb_median_after": [] if after is None else [float(value) for value in np.median(after, axis=0)],
     }
 
 
@@ -361,6 +435,7 @@ def main() -> int:
     replacement_tiles = set(args.replacement_tile)
     preserve_context_tiles = set(args.preserve_context_tile)
     force_overlap_tiles = set(args.force_overlap_tile)
+    color_rgb_offset = parse_rgb_triplet(args.color_rgb_offset)
     if not replacement_tiles:
         raise SystemExit("At least one --replacement-tile is required")
 
@@ -403,6 +478,12 @@ def main() -> int:
                 scale_full_quantile=args.scale_full_quantile,
                 scale_weight_power=args.scale_weight_power,
             )
+            adjusted, color_policy_summary = apply_color_policy(
+                tile_id=tile_id,
+                replacement_vertex=adjusted,
+                policy=args.color_policy,
+                rgb_offset=color_rgb_offset,
+            )
             if args.replacement_mode == "append":
                 output_vertex = np.concatenate([historical_vertex, adjusted])
                 tile_mode = "historical_plus_replacement"
@@ -419,6 +500,7 @@ def main() -> int:
                 "expanded_to_dtype_property_count": len(reference_dtype.names or ()),
                 "written_gaussian_count": int(len(output_vertex)),
                 "opacity_policy": policy_summary,
+                "color_policy": color_policy_summary,
             }
             vertex_count = int(len(output_vertex))
         else:
@@ -501,6 +583,10 @@ def main() -> int:
             "scale_start_quantile": args.scale_start_quantile,
             "scale_full_quantile": args.scale_full_quantile,
             "scale_weight_power": args.scale_weight_power,
+        },
+        "color_policy": {
+            "mode": args.color_policy,
+            "rgb_offset": [float(value) for value in color_rgb_offset],
         },
         "tile_policy": tile_policy,
         "merge_report": {
