@@ -1,0 +1,47 @@
+{
+  "branch": "agent-90742618-md1-geometry-consistency",
+  "stack_name": "SpaceportMLPipelineStagingStack",
+  "stack_resolution": "shared_staging_fallback",
+  "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent90742618md1geometryconsistency",
+  "role_arn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+  "colmap_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap",
+  "output_root_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r5-teacher-context-v12-ctx10-v15-smoke-review-p24-20260429073319",
+  "review_camera_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r5-teacher-context-v12-ctx10-v15-smoke-review-p24-20260429073319/review-input",
+  "baseline_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r1-review-c00091ae-render-sanity/baselines/strict_core",
+  "execution_mode": "training",
+  "render_settings": {
+    "render_scale": 0.25,
+    "max_gaussians_per_view": 500000,
+    "cull_margin": 0.5,
+    "min_gaussians_on_oom": 75000,
+    "tile_ids": "tile_00,tile_01,tile_02,tile_03,tile_04,tile_05,tile_06,tile_07,tile_08,tile_09,tile_10,tile_11,tile_12,tile_13"
+  },
+  "variants": [
+    "r5-teacher-context-v12-ctx10-v15-smoke-p24"
+  ],
+  "staged_inputs": {
+    "r5-teacher-context-v12-ctx10-v15-smoke-p24": {
+      "local_model_tarball": null,
+      "model_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-ctx10-v15-20260429071522/output/artifact/model.tar.gz",
+      "merge_report": "",
+      "source": "direct_candidate_artifact"
+    }
+  },
+  "jobs": {
+    "r5-teacher-context-v12-ctx10-v15-smoke-p24": {
+      "job_name": "md1-r1-r5-teacher-context-v12-ctx10-v15-smoke-p24-1777448068-qu",
+      "execution_mode": "training",
+      "model_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-ctx10-v15-20260429071522/output/artifact/model.tar.gz",
+      "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r5-teacher-context-v12-ctx10-v15-smoke-review-p24-20260429073319/outputs/r5-teacher-context-v12-ctx10-v15-smoke-p24",
+      "baseline_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r1-review-c00091ae-render-sanity/baselines/strict_core",
+      "submitted": true,
+      "status": {
+        "TrainingJobStatus": "Completed",
+        "TrainingStartTime": "2026-04-29T01:35:15.376000-06:00",
+        "TrainingEndTime": "2026-04-29T01:47:37.104000-06:00"
+      },
+      "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r5-teacher-context-v12-ctx10-v15-smoke-review-p24-20260429073319/outputs/r5-teacher-context-v12-ctx10-v15-smoke-p24/md1-r1-r5-teacher-context-v12-ctx10-v15-smoke-p24-1777448068-qu/output/model.tar.gz",
+      "recovered_after_waiter_error": true
+    }
+  }
+}
