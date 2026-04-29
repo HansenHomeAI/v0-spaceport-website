@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "R5 smoke review blocked by horizon_psnr_regression, horizon_ssim_regression, and horizon_lpips_regression.",
+  "blocked_promotion_reason": "V3 smoke review remains blocked by horizon_psnr_regression and horizon_ssim_regression; no promotion is allowed until V4 or a later repair passes preflight plus frozen smoke review.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,30 +589,38 @@
       ]
     }
   ],
-  "current_branch_head": "e3fd349fcd6120acbf8ef6140a04cc4a256c9eba",
+  "current_branch_head": "4872b458fd239e267655c1c28f0ca3118344a5d3",
   "current_exact_head_gate_status": {
-    "checked_at": "2026-04-28T22:35:04Z",
-    "head": "2d1621d963153264c9e10cd9d6b28014040d3e06",
-    "cdk_deploy_run_id": 25080979158,
+    "checked_at": "2026-04-28T23:51:23Z",
+    "head": "4872b458fd239e267655c1c28f0ca3118344a5d3",
+    "cdk_deploy_run_id": 25083494681,
     "cdk_conclusion": "success",
-    "cloudflare_pages_run_id": 25080984721,
+    "cloudflare_pages_run_id": 25083502840,
     "cloudflare_pages_conclusion": "success",
     "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://adcb2183.v0-spaceport-website-preview2.pages.dev",
-    "pages_health_txt_verified": true
+    "pages_hash_url": "https://5db82a2a.v0-spaceport-website-preview2.pages.dev",
+    "pages_health_txt_verified": true,
+    "pages_health_txt_verified_by": [
+      "workflow",
+      "local_curl"
+    ]
   },
-  "current_live_compute_status": "R5 completed/preflight passed and the smoke review blocked promotion on horizon regression. Live control plane was rechecked at 2026-04-28T23:10:19Z: R5 training and smoke-review jobs are Completed, R5 model.tar.gz is present at 2300184250 bytes, no SageMaker training jobs are InProgress, and no processing jobs were InProgress before launching the no-promotion repair proof. Submitted processing job md1-r5-teacherctx-020406-1777418027 at 2026-04-28T23:15:37Z to build an offline R5 teacher-context hybrid; initial status is InProgress with no FailureReason.",
-  "current_rung": "R5_teacher_context_020406_v3_processing",
+  "current_live_compute_status": "R5 completed/preflight passed and the smoke review blocked promotion on horizon regression. V3 no-training/no-promotion repair md1-r5-teacherctx-020406-v3-1777419713 completed, passed streaming preflight, then completed frozen smoke review with promotion still blocked on horizon_psnr_regression and horizon_ssim_regression. Submitted V4 no-training/no-promotion Processing job md1-r5-teacherctx-0006-v4-1777421809 to replace/preserve full promoted teacher tile_00 through tile_06 on the R5 14-tile base while keeping R5 tile_07 through tile_13. V4 is InProgress with zero output objects; no training jobs are InProgress, and it is the only Processing job InProgress.",
+  "current_rung": "R5_teacher_context_teacher00_06_v4_processing",
   "exact_head_gate_status": {
-    "checked_at": "2026-04-28T22:35:04Z",
-    "head": "2d1621d963153264c9e10cd9d6b28014040d3e06",
-    "cdk_deploy_run_id": 25080979158,
+    "checked_at": "2026-04-28T23:51:23Z",
+    "head": "4872b458fd239e267655c1c28f0ca3118344a5d3",
+    "cdk_deploy_run_id": 25083494681,
     "cdk_conclusion": "success",
-    "cloudflare_pages_run_id": 25080984721,
+    "cloudflare_pages_run_id": 25083502840,
     "cloudflare_pages_conclusion": "success",
     "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://adcb2183.v0-spaceport-website-preview2.pages.dev",
-    "pages_health_txt_verified": true
+    "pages_hash_url": "https://5db82a2a.v0-spaceport-website-preview2.pages.dev",
+    "pages_health_txt_verified": true,
+    "pages_health_txt_verified_by": [
+      "workflow",
+      "local_curl"
+    ]
   },
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -725,7 +733,7 @@
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/review_comparison.json",
   "latest_review_status": "R5 14-tile 2k full smoke review blocked promotion on horizon regression despite camera_coverage=ok and fallback=0/retain_all=0; diagnosis points to lost teacher/far-field context on horizon-heavy tiles, so a no-training teacher-context repair proof is InProgress.",
-  "live_compute_status": "R5 completed/preflight passed and the smoke review blocked promotion on horizon regression. Live control plane was rechecked at 2026-04-28T23:10:19Z: R5 training and smoke-review jobs are Completed, R5 model.tar.gz is present at 2300184250 bytes, no SageMaker training jobs are InProgress, and no processing jobs were InProgress before launching the no-promotion repair proof. Submitted processing job md1-r5-teacherctx-020406-1777418027 at 2026-04-28T23:15:37Z to build an offline R5 teacher-context hybrid; initial status is InProgress with no FailureReason.",
+  "live_compute_status": "R5 completed/preflight passed and the smoke review blocked promotion on horizon regression. V3 no-training/no-promotion repair Processing job md1-r5-teacherctx-020406-v3-1777419713 is InProgress as of 2026-04-28T23:51:23Z with no FailureReason/no ExitMessage, zero output objects, no training jobs InProgress, and it is the only processing job InProgress. CloudWatch currently shows only tar extended-header warnings, no Traceback/ERROR/OOM/Killed lines.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
     "canonical_model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
@@ -734,7 +742,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "monitor md1-r5-teacherctx-020406-1777418027 to completion, run streaming preflight on its model.tar.gz if present, then run frozen smoke review before any promotion",
+  "next_unblocked_step": "monitor md1-r5-teacherctx-0006-v4-1777421809 to completion, run streaming preflight on s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-0006-v4-20260429001649/output/artifact/model.tar.gz if it appears, then run the same frozen smoke review before any promotion",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -3152,12 +3160,12 @@
         },
         "thresholds": {
           "near_detail": {
-            "psnr_min_delta": -1.0,
+            "psnr_min_delta": -1,
             "ssim_min_delta": -0.015,
             "lpips_max_delta": 0.035
           },
           "boundary": {
-            "psnr_min_delta": -1.0,
+            "psnr_min_delta": -1,
             "ssim_min_delta": -0.015,
             "lpips_max_delta": 0.035,
             "required_improvement": {
@@ -3321,7 +3329,7 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-04-28T23:42:37Z",
+  "updated": "2026-04-28T23:51:23Z",
   "version": "1.0.0",
   "r5_14tile_2k_preflight": {
     "summary_path": "logs/audit/md1-1k-full-r2/r5_14tile_2k_preflight_summary_20260428215230.json",
@@ -3570,12 +3578,12 @@
       },
       "thresholds": {
         "near_detail": {
-          "psnr_min_delta": -1.0,
+          "psnr_min_delta": -1,
           "ssim_min_delta": -0.015,
           "lpips_max_delta": 0.035
         },
         "boundary": {
-          "psnr_min_delta": -1.0,
+          "psnr_min_delta": -1,
           "ssim_min_delta": -0.015,
           "lpips_max_delta": 0.035,
           "required_improvement": {
@@ -3873,7 +3881,7 @@
     "superseded_by": "r5_teacher_context_020406_v3"
   },
   "r5_teacher_context_020406_v3": {
-    "status": "ProcessingInProgress",
+    "status": "SmokeReviewBlocked",
     "submitted_at": "2026-04-28T23:42:37Z",
     "processing_job_name": "md1-r5-teacherctx-020406-v3-1777419713",
     "processing_job_arn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-r5-teacherctx-020406-v3-1777419713",
@@ -3898,11 +3906,350 @@
     "script_s3_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-020406-v3-20260428234153/scripts/",
     "output_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-020406-v3-20260428234153/output/artifact/model.tar.gz",
     "latest_live_check": {
-      "checked_at": "2026-04-28T23:42:37Z",
+      "checked_at": "2026-04-28T23:51:23Z",
       "processing_status": "InProgress",
       "failure_reason": null,
-      "output_object_count": 0
+      "exit_message": null,
+      "output_object_count": 0,
+      "only_processing_job_in_progress": true,
+      "training_jobs_in_progress": [],
+      "cloudwatch_summary": "Only tar extended-header warnings observed so far; no Traceback/ERROR/OOM/Killed lines."
+    },
+    "next_unblocked_step": "monitor V4 completion, run streaming preflight, then frozen smoke review before any promotion",
+    "completed_at": "2026-04-28T23:52:10Z",
+    "output_artifact_head": {
+      "AcceptRanges": "bytes",
+      "ContentLength": 1005340291,
+      "ContentType": "binary/octet-stream",
+      "ETag": "\"7c22653aba352750dad1ff35758cf470-192\"",
+      "LastModified": "2026-04-28T23:52:01+00:00",
+      "Metadata": {},
+      "SSEKMSKeyId": "arn:aws:kms:us-west-2:975050048887:key/e498a88e-6b23-44e3-90bd-f35b25d6e420",
+      "ServerSideEncryption": "aws:kms",
+      "VersionId": "9HRbqAdEmY.QNAdGqIGHF_CwLvIPs.p7"
+    },
+    "preflight_summary_path": "logs/audit/md1-1k-full-r2/r5_teacher_context_020406_v3_preflight_summary_20260428235500.json",
+    "preflight_decision": "preflight_passed_run_frozen_smoke_review",
+    "preflight_artifact_complete": true,
+    "preflight_block_reasons": [],
+    "preflight_merge": {
+      "background_asset": {
+        "asset": "background_skybox.webp",
+        "retained_gaussians": 378953,
+        "selection_score": 0.6353789878019934,
+        "source_asset": "/opt/ml/processing/work/artifact/tiles/tile_10/background_skybox.webp",
+        "source_tile_id": "tile_10"
+      },
+      "dropped_gaussians": 522884,
+      "fallback_reasons": [],
+      "fallback_tile_count": 0,
+      "merge_mode": "support_weighted_overlap",
+      "retain_all_tile_count": 0,
+      "retained_gaussians": 6476194,
+      "source_gaussians": 6999078,
+      "tile_count": 14
+    },
+    "smoke_review_job_name": "md1-r1-r5-teacher-context-020406-v3-smoke-1777420722-quality",
+    "smoke_review_completed_at": "2026-04-29T00:11:47Z",
+    "smoke_review_summary_path": "logs/audit/md1-1k-full-r2/r5_teacher_context_020406_v3_smoke_review_submit_20260428235800.json",
+    "smoke_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-020406-v3-smoke/review_comparison.json",
+    "smoke_review_manifest_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-020406-v3-smoke/quality_review_manifest.json",
+    "smoke_review_status": "blocked",
+    "smoke_review_block_reasons": [
+      "horizon_psnr_regression",
+      "horizon_ssim_regression"
+    ],
+    "smoke_review_camera_coverage": {
+      "status": "ok",
+      "block_reasons": [],
+      "per_bucket": {
+        "near_detail": {
+          "baseline_count": 4,
+          "candidate_count": 4,
+          "baseline_cameras": [
+            "DJI_0258.JPG",
+            "DJI_0261.JPG",
+            "DJI_0262.JPG",
+            "DJI_0263.JPG"
+          ],
+          "candidate_cameras": [
+            "DJI_0258.JPG",
+            "DJI_0261.JPG",
+            "DJI_0262.JPG",
+            "DJI_0263.JPG"
+          ],
+          "block_reasons": []
+        },
+        "boundary": {
+          "baseline_count": 4,
+          "candidate_count": 4,
+          "baseline_cameras": [
+            "DJI_0067.JPG",
+            "DJI_0068.JPG",
+            "DJI_0069.JPG",
+            "DJI_0070.JPG"
+          ],
+          "candidate_cameras": [
+            "DJI_0067.JPG",
+            "DJI_0068.JPG",
+            "DJI_0069.JPG",
+            "DJI_0070.JPG"
+          ],
+          "block_reasons": []
+        },
+        "horizon": {
+          "baseline_count": 4,
+          "candidate_count": 4,
+          "baseline_cameras": [
+            "DJI_0066.JPG",
+            "DJI_0073.JPG",
+            "DJI_0146.JPG",
+            "DJI_0147.JPG"
+          ],
+          "candidate_cameras": [
+            "DJI_0066.JPG",
+            "DJI_0073.JPG",
+            "DJI_0146.JPG",
+            "DJI_0147.JPG"
+          ],
+          "block_reasons": []
+        }
+      }
+    },
+    "smoke_review_fallback_breakdown": {
+      "baseline": {
+        "merge_mode": "strict_core",
+        "fallback_tile_count": 2,
+        "retain_all_tile_count": 0,
+        "source_gaussians": 5103651,
+        "retained_gaussians": 4500379,
+        "fallback_reasons": [
+          {
+            "tile_id": "tile_05",
+            "reason": "primary_and_overlap_retained_zero",
+            "retention_strategy": "centroid_voronoi_fallback"
+          },
+          {
+            "tile_id": "tile_06",
+            "reason": "primary_and_overlap_retained_zero",
+            "retention_strategy": "centroid_voronoi_fallback"
+          }
+        ]
+      },
+      "candidate": {
+        "merge_mode": "support_weighted_overlap",
+        "fallback_tile_count": 0,
+        "retain_all_tile_count": 0,
+        "source_gaussians": 6999078,
+        "retained_gaussians": 6476194,
+        "fallback_reasons": []
+      }
+    },
+    "smoke_review_bucket_deltas": {
+      "near_detail": {
+        "psnr": 0.8242178986623117,
+        "ssim": 0.05843594670295715,
+        "lpips": 0.010375916957855225
+      },
+      "boundary": {
+        "psnr": 0.8727370389139253,
+        "ssim": 0.007252857089042664,
+        "lpips": 0.004712015390396118
+      },
+      "horizon": {
+        "psnr": -1.7062777773789044,
+        "ssim": -0.02610108256340027,
+        "lpips": 0.023127585649490356
+      }
+    },
+    "smoke_review_output_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r5-teacher-context-020406-v3-smoke-review-20260428235800/outputs/r5-teacher-context-020406-v3-smoke/md1-r1-r5-teacher-context-020406-v3-smoke-1777420722-quality/output/model.tar.gz",
+    "superseded_by": "r5_teacher_context_teacher00_06_v4"
+  },
+  "r5_teacher_context_v3_gate_and_monitor_20260428235123Z": {
+    "status": "ProcessingInProgress",
+    "exact_head_gate_status": {
+      "checked_at": "2026-04-28T23:51:23Z",
+      "head": "4872b458fd239e267655c1c28f0ca3118344a5d3",
+      "cdk_deploy_run_id": 25083494681,
+      "cdk_conclusion": "success",
+      "cloudflare_pages_run_id": 25083502840,
+      "cloudflare_pages_conclusion": "success",
+      "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
+      "pages_hash_url": "https://5db82a2a.v0-spaceport-website-preview2.pages.dev",
+      "pages_health_txt_verified": true,
+      "pages_health_txt_verified_by": [
+        "workflow",
+        "local_curl"
+      ]
+    },
+    "processing_job_name": "md1-r5-teacherctx-020406-v3-1777419713",
+    "output_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-020406-v3-20260428234153/output/artifact/model.tar.gz",
+    "latest_live_check": {
+      "checked_at": "2026-04-28T23:51:23Z",
+      "processing_status": "InProgress",
+      "failure_reason": null,
+      "exit_message": null,
+      "output_object_count": 0,
+      "only_processing_job_in_progress": true,
+      "training_jobs_in_progress": [],
+      "cloudwatch_summary": "Only tar extended-header warnings observed so far; no Traceback/ERROR/OOM/Killed lines."
+    },
+    "next_unblocked_step": "monitor v3 completion, preflight its model.tar.gz, then frozen smoke review before any promotion"
+  },
+  "r5_teacher_context_teacher00_06_v4": {
+    "status": "ProcessingInProgress",
+    "submitted_at": "2026-04-29T00:17:48Z",
+    "processing_job_name": "md1-r5-teacherctx-0006-v4-1777421809",
+    "processing_job_arn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-r5-teacherctx-0006-v4-1777421809",
+    "historical_base_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-14tile-2k-full-20260426214655/T2_tiled_pipeline/md1-r5-14tile-2k-1777240767-tiled/output/model.tar.gz",
+    "replacement_teacher_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-teacher-r3base-r4h-tile00-factor4-v3-20260426201700/output/artifact/model.tar.gz",
+    "replacement_tiles": [
+      "tile_00",
+      "tile_01",
+      "tile_02",
+      "tile_03",
+      "tile_04",
+      "tile_05",
+      "tile_06"
+    ],
+    "preserve_context_tiles": [
+      "tile_00",
+      "tile_01",
+      "tile_02",
+      "tile_03",
+      "tile_04",
+      "tile_05",
+      "tile_06"
+    ],
+    "preserved_r5_tiles": [
+      "tile_07",
+      "tile_08",
+      "tile_09",
+      "tile_10",
+      "tile_11",
+      "tile_12",
+      "tile_13"
+    ],
+    "replacement_mode": "replace",
+    "opacity_policy": "none",
+    "merge_mode": "support_weighted_overlap",
+    "rationale": "V3 replaced only tile_02/tile_04/tile_06 and removed the LPIPS block but still failed horizon PSNR/SSIM. V4 restores the full promoted teacher tile_00 through tile_06 context because the promoted teacher hybrid had passed smoke with horizon -0.719 dB/-0.0054 SSIM/+0.0215 LPIPS.",
+    "code_path": "scripts/3dgs/build_md1_hybrid_artifact.py",
+    "entrypoint_path": "logs/audit/md1-1k-full-r2/r5_teacher_context_teacher00_06_v4_entrypoint_20260429001649.sh",
+    "payload_path": "logs/audit/md1-1k-full-r2/r5_teacher_context_teacher00_06_v4_processing_payload_20260429001649.json",
+    "script_s3_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-0006-v4-20260429001649/scripts/",
+    "output_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-0006-v4-20260429001649/output/artifact/model.tar.gz",
+    "latest_live_check": {
+      "checked_at": "2026-04-29T00:18:28Z",
+      "processing_status": "InProgress",
+      "failure_reason": null,
+      "exit_message": null,
+      "output_object_count": 0,
+      "only_processing_job_in_progress": true,
+      "training_jobs_in_progress": []
     },
     "next_unblocked_step": "monitor processing completion, run streaming preflight if model.tar.gz appears, then run frozen smoke review before any promotion"
+  },
+  "r5_teacher_context_v3_preflight_smoke_blocked_v4_submit_20260429001828Z": {
+    "status": "V4ProcessingInProgress",
+    "exact_head_gate_status": {
+      "checked_at": "2026-04-29T00:18:28Z",
+      "head": "4872b458fd239e267655c1c28f0ca3118344a5d3",
+      "cdk_deploy_run_id": 25083494681,
+      "cdk_conclusion": "success",
+      "cloudflare_pages_run_id": 25083502840,
+      "cloudflare_pages_conclusion": "success",
+      "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
+      "pages_hash_url": "https://5db82a2a.v0-spaceport-website-preview2.pages.dev",
+      "pages_health_txt_verified": true,
+      "pages_health_txt_verified_by": [
+        "workflow",
+        "local_curl"
+      ]
+    },
+    "v3_processing_job_name": "md1-r5-teacherctx-020406-v3-1777419713",
+    "v3_output_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-020406-v3-20260428234153/output/artifact/model.tar.gz",
+    "v3_output_artifact_head": {
+      "AcceptRanges": "bytes",
+      "ContentLength": 1005340291,
+      "ContentType": "binary/octet-stream",
+      "ETag": "\"7c22653aba352750dad1ff35758cf470-192\"",
+      "LastModified": "2026-04-28T23:52:01+00:00",
+      "Metadata": {},
+      "SSEKMSKeyId": "arn:aws:kms:us-west-2:975050048887:key/e498a88e-6b23-44e3-90bd-f35b25d6e420",
+      "ServerSideEncryption": "aws:kms",
+      "VersionId": "9HRbqAdEmY.QNAdGqIGHF_CwLvIPs.p7"
+    },
+    "v3_preflight_summary_path": "logs/audit/md1-1k-full-r2/r5_teacher_context_020406_v3_preflight_summary_20260428235500.json",
+    "v3_preflight_decision": "preflight_passed_run_frozen_smoke_review",
+    "v3_preflight_merge": {
+      "background_asset": {
+        "asset": "background_skybox.webp",
+        "retained_gaussians": 378953,
+        "selection_score": 0.6353789878019934,
+        "source_asset": "/opt/ml/processing/work/artifact/tiles/tile_10/background_skybox.webp",
+        "source_tile_id": "tile_10"
+      },
+      "dropped_gaussians": 522884,
+      "fallback_reasons": [],
+      "fallback_tile_count": 0,
+      "merge_mode": "support_weighted_overlap",
+      "retain_all_tile_count": 0,
+      "retained_gaussians": 6476194,
+      "source_gaussians": 6999078,
+      "tile_count": 14
+    },
+    "v3_smoke_review_job_name": "md1-r1-r5-teacher-context-020406-v3-smoke-1777420722-quality",
+    "v3_smoke_review_status": "blocked",
+    "v3_smoke_review_block_reasons": [
+      "horizon_psnr_regression",
+      "horizon_ssim_regression"
+    ],
+    "v3_smoke_review_bucket_deltas": {
+      "near_detail": {
+        "psnr": 0.8242178986623117,
+        "ssim": 0.05843594670295715,
+        "lpips": 0.010375916957855225
+      },
+      "boundary": {
+        "psnr": 0.8727370389139253,
+        "ssim": 0.007252857089042664,
+        "lpips": 0.004712015390396118
+      },
+      "horizon": {
+        "psnr": -1.7062777773789044,
+        "ssim": -0.02610108256340027,
+        "lpips": 0.023127585649490356
+      }
+    },
+    "v4_processing_job_name": "md1-r5-teacherctx-0006-v4-1777421809",
+    "v4_output_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-0006-v4-20260429001649/output/artifact/model.tar.gz",
+    "v4_replacement_tiles": [
+      "tile_00",
+      "tile_01",
+      "tile_02",
+      "tile_03",
+      "tile_04",
+      "tile_05",
+      "tile_06"
+    ],
+    "v4_preserved_r5_tiles": [
+      "tile_07",
+      "tile_08",
+      "tile_09",
+      "tile_10",
+      "tile_11",
+      "tile_12",
+      "tile_13"
+    ],
+    "latest_live_check": {
+      "checked_at": "2026-04-29T00:18:28Z",
+      "training_jobs_in_progress": [],
+      "processing_jobs_in_progress": [
+        "md1-r5-teacherctx-0006-v4-1777421809"
+      ],
+      "v4_output_object_count": 0
+    },
+    "next_unblocked_step": "monitor V4 completion, preflight model.tar.gz, then frozen smoke review before any promotion"
   }
 }
