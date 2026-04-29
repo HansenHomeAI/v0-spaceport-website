@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "V17 cleared the prior horizon_psnr_regression but remains blocked by horizon_sky_score_regression; V18 is a no-training sky-preserving color repair and is not promotable until processing, preflight, and explicit p24 smoke pass.",
+  "blocked_promotion_reason": "none for V18 after p24 smoke plus 12-image promotion review; V18 cleared the V17 sky-score block while staying within horizon thresholds.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,23 +589,24 @@
       ]
     }
   ],
-  "current_branch_head": "9bca003bb46d97c0e56cb4313977b0990e0a9003",
-  "current_exact_head_gate_status": "Exact-head 9bca003bb46d97c0e56cb4313977b0990e0a9003 is gated green on CDK Deploy 25104769632 and manually-triggered Pages 25104950829; alias/hash /health.txt passed locally and in workflow, hash https://a681d614.v0-spaceport-website-preview2.pages.dev.",
+  "current_branch_head": "bb382f58509f971c42b5c9aa6581ee13e61d6e24",
+  "current_exact_head_gate_status": "Exact-head bb382f58509f971c42b5c9aa6581ee13e61d6e24 is gated green on CDK Deploy 25105370268 and manually-triggered Pages 25105579620; alias/hash /health.txt passed locally and in workflow, hash https://98f63279.v0-spaceport-website-preview2.pages.dev.",
   "current_live_compute_status": {
-    "checked_at": "2026-04-29T11:05:21Z",
+    "checked_at": "2026-04-29T11:55:01Z",
     "in_progress_training_jobs": [],
-    "in_progress_processing_jobs": [
-      "md1-r5-v12-sky-v18-1777460637"
-    ],
+    "in_progress_processing_jobs": [],
     "v18_processing_job_name": "md1-r5-v12-sky-v18-1777460637",
-    "v18_processing_status": "InProgress",
-    "v18_processing_start_time": null,
+    "v18_processing_status": "Completed",
+    "v18_processing_start_time": "2026-04-29T11:05:44.742Z",
+    "v18_processing_end_time": "2026-04-29T11:14:40.823Z",
     "v18_failure_reason": null,
     "v18_exit_message": null,
-    "v18_output_object_count": 0
+    "v18_output_object_count": 6,
+    "v18_model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+    "v18_model_size_bytes": 1202951599
   },
-  "current_rung": "R5_v16_photometric_foreground_diagnosis",
-  "exact_head_gate_status": "Exact-head a3981a78fc91e9b2d47e4305b99150a902f61000 is gated green on CDK Deploy 25102501295 and manually-triggered Pages 25102722392; alias/hash /health.txt passed locally and in workflow, hash https://447a014d.v0-spaceport-website-preview2.pages.dev.",
+  "current_rung": "R5_v18_sky_preserving_color_repair_promoted",
+  "exact_head_gate_status": "Exact-head bb382f58509f971c42b5c9aa6581ee13e61d6e24 is gated green on CDK Deploy 25105370268 and manually-triggered Pages 25105579620; alias/hash /health.txt passed locally and in workflow, hash https://98f63279.v0-spaceport-website-preview2.pages.dev.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
     "buckets": {
@@ -705,33 +706,34 @@
     "view_bucket_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiled_pipeline/inputs/scaffold/3dgs_view_buckets.json"
   },
   "latest_exact_head_gate": {
-    "head": "9bca003bb46d97c0e56cb4313977b0990e0a9003",
-    "cdk_run_id": 25104769632,
+    "head": "bb382f58509f971c42b5c9aa6581ee13e61d6e24",
+    "cdk_run_id": 25105370268,
     "cdk_conclusion": "success",
-    "pages_run_id": 25104950829,
+    "pages_run_id": 25105579620,
     "pages_conclusion": "success",
     "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://a681d614.v0-spaceport-website-preview2.pages.dev",
+    "pages_hash_url": "https://98f63279.v0-spaceport-website-preview2.pages.dev",
     "health_checks": {
       "alias": "OK",
       "hash": "OK"
     },
-    "verified_at": "2026-04-29T11:05:21Z"
+    "verified_at": "2026-04-29T11:16:57Z"
   },
-  "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-color-v17-smoke-p24/review_comparison.json",
-  "latest_review_status": "V18 sky-preserving image-level screen selected rgb-offset [0.008, 0.12, 0.0] to keep the V17 horizon PSNR repair direction while avoiding blue-channel suppression that caused the V17 sky-score block. The screen is diagnostic only; V18 processing is now InProgress.",
+  "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-sky-v18-promotion/review_comparison.json",
+  "latest_review_status": "V18 sky-preserving color repair passed streaming preflight, explicit p24 smoke, and 12-image promotion review. Preflight: artifact_complete=true, block_reasons=[], fallback=0, retain_all=0, retained/source/dropped=8423868/8789634/365766. p24 smoke promoted with no block reasons; promotion review promoted with no block reasons/warnings and 12/12/12 camera coverage.",
   "live_compute_status": {
-    "checked_at": "2026-04-29T11:05:21Z",
+    "checked_at": "2026-04-29T11:55:01Z",
     "in_progress_training_jobs": [],
-    "in_progress_processing_jobs": [
-      "md1-r5-v12-sky-v18-1777460637"
-    ],
+    "in_progress_processing_jobs": [],
     "v18_processing_job_name": "md1-r5-v12-sky-v18-1777460637",
-    "v18_processing_status": "InProgress",
-    "v18_processing_start_time": null,
+    "v18_processing_status": "Completed",
+    "v18_processing_start_time": "2026-04-29T11:05:44.742Z",
+    "v18_processing_end_time": "2026-04-29T11:14:40.823Z",
     "v18_failure_reason": null,
     "v18_exit_message": null,
-    "v18_output_object_count": 0
+    "v18_output_object_count": 6,
+    "v18_model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+    "v18_model_size_bytes": 1202951599
   },
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
@@ -741,7 +743,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Monitor V18 Processing job md1-r5-v12-sky-v18-1777460637 to model.tar.gz, run streaming preflight, then explicit frozen p24 smoke before any promotion.",
+  "next_unblocked_step": "Commit/push V18 processing/preflight/smoke/promotion evidence, gate the new exact head, then hand off the promoted V18 artifact for the next publish/promotion decision.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -3328,7 +3330,7 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-04-29T11:05:21Z",
+  "updated": "2026-04-29T11:55:01Z",
   "version": "1.0.0",
   "r5_14tile_2k_preflight": {
     "summary_path": "logs/audit/md1-1k-full-r2/r5_14tile_2k_preflight_summary_20260428215230.json",
@@ -3828,20 +3830,20 @@
     "failure_diagnosis": "FileNotFoundError for /opt/ml/processing/work/historical/3dgs_tile_manifest.json; completed R5 artifact stores tile manifests under tiled_pipeline/inputs rather than tar root.",
     "superseded_by": "r5_teacher_context_020406_v2"
   },
-  "last_commit": "9bca003bb46d97c0e56cb4313977b0990e0a9003",
+  "last_commit": "bb382f58509f971c42b5c9aa6581ee13e61d6e24",
   "last_exact_head_gates": {
-    "head": "9bca003bb46d97c0e56cb4313977b0990e0a9003",
-    "cdk_run_id": 25104769632,
+    "head": "bb382f58509f971c42b5c9aa6581ee13e61d6e24",
+    "cdk_run_id": 25105370268,
     "cdk_conclusion": "success",
-    "pages_run_id": 25104950829,
+    "pages_run_id": 25105579620,
     "pages_conclusion": "success",
     "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://a681d614.v0-spaceport-website-preview2.pages.dev",
+    "pages_hash_url": "https://98f63279.v0-spaceport-website-preview2.pages.dev",
     "health_checks": {
       "alias": "OK",
       "hash": "OK"
     },
-    "verified_at": "2026-04-29T11:05:21Z"
+    "verified_at": "2026-04-29T11:16:57Z"
   },
   "r5_teacher_context_020406_v2": {
     "status": "PreflightBlocked",
@@ -5763,7 +5765,7 @@
     "conclusion": "V15 context padding produced identical p24 metrics to V12/V13 and remains blocked only on horizon_psnr_regression; no promotion run."
   },
   "r5_teacher_context_v12_ctx10_v15_submit_20260429071645Z": "Exact-head 0392ef97dfe5363579f2d88f90fd5e70fd03ed82 is gated green on CDK Deploy 25095508893 and manually-triggered Pages 25095528013. Submitted V15 no-training/no-promotion Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 to add 10 percent preserve-context padding to V12, including historical tile_01, with output s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-ctx10-v15-20260429071522/output/artifact/model.tar.gz. Latest status is InProgress with no ProcessingStartTime, no FailureReason/no ExitMessage, zero output objects, no training jobs InProgress, and only this processing job InProgress.",
-  "last_updated": "2026-04-29T11:05:21Z",
+  "last_updated": "2026-04-29T11:55:01Z",
   "r5_teacher_context_v12_ctx10_v15_smoke_blocked_20260429080934Z": "Exact-head d14f4a4b56aa9c3a215e1f4845450c77188a0687 is gated green on CDK Deploy 25095992000 and manually-triggered Pages 25095995605; alias/hash /health.txt passed, hash https://c896c947.v0-spaceport-website-preview2.pages.dev. V15 Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 completed, model.tar.gz is present at 1203320806 bytes, streaming preflight passed, and explicit p24 smoke md1-r1-r5-teacher-context-v12-ctx10-v15-smoke-p24-1777448068-qu completed with camera coverage OK but blocked only on horizon_psnr_regression. Metrics matched V12 exactly, so context padding did not close the PSNR miss. No SageMaker jobs are InProgress and no promotion was run.",
   "r5_teacher_context_v12_tile01overlap_v16": {
     "processing_job_name": "md1-r5-teacherctx-v12-t01ov-v16-1777450963",
@@ -6162,11 +6164,11 @@
     }
   },
   "latest_pages_gate": {
-    "head": "9bca003bb46d97c0e56cb4313977b0990e0a9003",
-    "cdk_run_id": 25104769632,
-    "pages_run_id": 25104950829,
+    "head": "bb382f58509f971c42b5c9aa6581ee13e61d6e24",
+    "cdk_run_id": 25105370268,
+    "pages_run_id": 25105579620,
     "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://a681d614.v0-spaceport-website-preview2.pages.dev",
+    "pages_hash_url": "https://98f63279.v0-spaceport-website-preview2.pages.dev",
     "health_txt": "OK"
   },
   "r5_teacher_context_v12_color_v17_preflight_20260429101025Z": "Exact-head a3981a78fc91e9b2d47e4305b99150a902f61000 is gated green on CDK Deploy 25102501295 and manually-triggered Pages 25102722392; alias/hash /health.txt passed. V17 Processing job md1-r5-v12-color-v17-1777456483 completed without FailureReason/ExitMessage, model.tar.gz is present at 1204086927 bytes, streaming preflight logs/audit/md1-1k-full-r2/r5_teacher_context_v12_color_v17_preflight_summary_20260429100900.json passed with artifact_complete=true, block_reasons=[], fallback=0, retain_all=0, retained/source/dropped gaussians 8423868/8789634/365766, and no SageMaker jobs are InProgress. No promotion was run; next gate is explicit frozen p24 smoke review.",
@@ -6315,16 +6317,139 @@
     ],
     "merge_mode": "support_weighted_overlap",
     "latest_status": {
-      "status": "InProgress",
-      "processing_start_time": null,
+      "status": "Completed",
+      "processing_start_time": "2026-04-29T11:05:44.742Z",
+      "processing_end_time": "2026-04-29T11:14:40.823Z",
       "failure_reason": null,
       "exit_message": null,
-      "output_object_count": 0,
+      "output_object_count": 6,
       "training_jobs_in_progress": [],
-      "processing_jobs_in_progress": [
-        "md1-r5-v12-sky-v18-1777460637"
-      ]
+      "processing_jobs_in_progress": []
     },
-    "promotion_status": "not_promoted_pending_processing_preflight_p24_smoke"
+    "promotion_status": "promoted_after_p24_smoke_and_12image_promotion_review",
+    "result": {
+      "status": "Completed",
+      "model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "model_size_bytes": 1202951599,
+      "etag": "\"af5fe665b60aa04804cf3645b2e12dc8-230\"",
+      "version_id": "W4M6pPR2t_8G8ckgxmaGEL.29QLYWr2y",
+      "last_modified": "2026-04-29T11:14:33Z",
+      "processing_start_time": "2026-04-29T11:05:44.742Z",
+      "processing_end_time": "2026-04-29T11:14:40.823Z"
+    },
+    "preflight": {
+      "summary_path": "logs/audit/md1-1k-full-r2/r5_teacher_context_v12_sky_v18_preflight_summary_20260429111738.json",
+      "extracted_dir": "logs/audit/md1-1k-full-r2/r5_teacher_context_v12_sky_v18_preflight_20260429111738",
+      "decision": "preflight_passed_run_frozen_smoke_review",
+      "artifact_complete": true,
+      "block_reasons": [],
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "retained_gaussians": 8423868,
+      "source_gaussians": 8789634,
+      "dropped_gaussians": 365766,
+      "merge_mode": "support_weighted_overlap",
+      "background_source_tile_id": "tile_10"
+    },
+    "smoke_review_p24": {
+      "submit_summary_path": "logs/audit/md1-1k-full-r2/r5_teacher_context_v12_sky_v18_smoke_review_p24_submit_20260429111915.json",
+      "job_name": "md1-r1-r5-teacher-context-v12-sky-v18-smoke-p24-1777461569-qual",
+      "status": "Completed",
+      "training_start_time": "2026-04-29T11:20:16.690Z",
+      "training_end_time": "2026-04-29T11:32:33.515Z",
+      "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r5-teacher-context-v12-sky-v18-smoke-review-p24-20260429111915/outputs/r5-teacher-context-v12-sky-v18-smoke-p24/md1-r1-r5-teacher-context-v12-sky-v18-smoke-p24-1777461569-qual/output/model.tar.gz",
+      "review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-sky-v18-smoke-p24/review_comparison.json",
+      "quality_review_manifest_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-sky-v18-smoke-p24/quality_review_manifest.json",
+      "promotion_decision": "promoted",
+      "block_reasons": [],
+      "camera_coverage": "ok",
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "bucket_deltas": {
+        "near_detail": {
+          "psnr": 1.138236769769362,
+          "ssim": 0.06091485917568207,
+          "lpips": 0.0034894943237304688
+        },
+        "boundary": {
+          "psnr": 1.181916128330215,
+          "ssim": 0.015940040349960327,
+          "lpips": -0.043248146772384644
+        },
+        "horizon": {
+          "psnr": -0.6967387349001264,
+          "ssim": -0.005633249878883362,
+          "lpips": -0.04167655110359192
+        }
+      }
+    },
+    "promotion_review": {
+      "submit_summary_path": "logs/audit/md1-1k-full-r2/r5_teacher_context_v12_sky_v18_promotion_review_submit_20260429113535.json",
+      "job_name": "md1-r1-r5-teacher-context-v12-sky-v18-promotion-1777462549-qual",
+      "status": "Completed",
+      "training_start_time": "2026-04-29T11:37:02.386Z",
+      "training_end_time": "2026-04-29T11:49:47.439Z",
+      "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-r5-teacher-context-v12-sky-v18-promotion-review-20260429113535/outputs/r5-teacher-context-v12-sky-v18-promotion/md1-r1-r5-teacher-context-v12-sky-v18-promotion-1777462549-qual/output/model.tar.gz",
+      "review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-sky-v18-promotion/review_comparison.json",
+      "quality_review_manifest_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-sky-v18-promotion/quality_review_manifest.json",
+      "promotion_decision": "promoted",
+      "block_reasons": [],
+      "warnings": [],
+      "camera_coverage": "ok",
+      "per_bucket_camera_counts": {
+        "near_detail": 12,
+        "boundary": 12,
+        "horizon": 12
+      },
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "bucket_deltas": {
+        "near_detail": {
+          "psnr": 1.7541225422484032,
+          "ssim": 0.016902565956115723,
+          "lpips": 0.019931524991989136
+        },
+        "boundary": {
+          "psnr": 0.9597201974606335,
+          "ssim": -0.008426681160926819,
+          "lpips": -0.018110543489456177
+        },
+        "horizon": {
+          "psnr": 2.04008179511748,
+          "ssim": 0.012513518333435059,
+          "lpips": -0.08369806408882141
+        }
+      }
+    }
+  },
+  "gates_20260429111657Z": {
+    "head": "bb382f58509f971c42b5c9aa6581ee13e61d6e24",
+    "cdk_run_id": 25105370268,
+    "cdk_conclusion": "success",
+    "pages_run_id": 25105579620,
+    "pages_conclusion": "success",
+    "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
+    "pages_hash_url": "https://98f63279.v0-spaceport-website-preview2.pages.dev",
+    "health_checks": {
+      "alias": "OK",
+      "hash": "OK"
+    },
+    "verified_at": "2026-04-29T11:16:57Z"
+  },
+  "r5_teacher_context_v12_sky_v18_promoted_20260429114947Z": {
+    "processing_job_name": "md1-r5-v12-sky-v18-1777460637",
+    "model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+    "model_size_bytes": 1202951599,
+    "preflight_summary_path": "logs/audit/md1-1k-full-r2/r5_teacher_context_v12_sky_v18_preflight_summary_20260429111738.json",
+    "smoke_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-sky-v18-smoke-p24/review_comparison.json",
+    "promotion_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-sky-v18-promotion/review_comparison.json",
+    "preflight_decision": "preflight_passed_run_frozen_smoke_review",
+    "smoke_promotion_decision": "promoted",
+    "promotion_review_decision": "promoted",
+    "block_reasons": [],
+    "warnings": [],
+    "live_training_jobs_in_progress": [],
+    "live_processing_jobs_in_progress": [],
+    "completed_at": "2026-04-29T11:49:47Z"
   }
 }
