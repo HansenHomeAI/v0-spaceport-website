@@ -23,6 +23,210 @@ SPEC.loader.exec_module(run_colmap_sfm)
 
 
 class ColmapGpsPriorTests(unittest.TestCase):
+    def test_distributed_chunked_mode_uses_mature_chunked_defaults(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {"COLMAP_PIPELINE_MODE": "distributed_chunked_v1"},
+            clear=True,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+
+            self.assertEqual(pipeline.pipeline_mode, "distributed_chunked_v1")
+            self.assertTrue(pipeline.enable_spatial_chunking)
+            self.assertEqual(pipeline.chunk_planner, "footprint_graph_v1")
+
+    def test_unset_pipeline_mode_keeps_legacy_defaults(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(os.environ, {}, clear=True):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+
+            self.assertEqual(pipeline.pipeline_mode, "")
+            self.assertFalse(pipeline.enable_spatial_chunking)
+            self.assertEqual(pipeline.chunk_planner, "legacy_spatial_heading")
+
+    def test_planner_static_report_uses_required_schema(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.capture_ordered_names = ["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg"]
+            pipeline.dataset_image_count = 3
+            pipeline.gps_image_count = 2
+            pipeline.orientation_prior_count = 2
+            pipeline.heading_prior_source = "flight_yaw"
+            pipeline.exif_records = {name: {} for name in pipeline.capture_ordered_names}
+            pipeline.image_list_path.write_text(
+                "IMG_01.jpg\nIMG_02.jpg\nIMG_03.jpg\n",
+                encoding="utf-8",
+            )
+            edge = run_colmap_sfm.CandidateEdge(
+                first_name="IMG_01.jpg",
+                second_name="IMG_02.jpg",
+                score=0.9,
+                footprint_overlap=0.5,
+                scale_similarity=0.5,
+                viewpoint_complementarity=0.5,
+                distance_consistency=0.5,
+                temporal_bonus=0.0,
+                xy_distance_m=10.0,
+                xyz_distance_m=10.0,
+                view_delta_deg=5.0,
+            )
+            pipeline.graph_neighbors = {
+                "IMG_01.jpg": [edge],
+                "IMG_02.jpg": [edge],
+            }
+            pipeline.graph_edges_by_pair = {("IMG_01.jpg", "IMG_02.jpg"): edge}
+            chunk_plans = [
+                run_colmap_sfm.ChunkPlan(
+                    index=0,
+                    core_names=["IMG_01.jpg", "IMG_02.jpg"],
+                    image_names=["IMG_01.jpg", "IMG_02.jpg"],
+                    overlap_names=[],
+                ),
+                run_colmap_sfm.ChunkPlan(
+                    index=1,
+                    core_names=["IMG_03.jpg"],
+                    image_names=["IMG_02.jpg", "IMG_03.jpg"],
+                    overlap_names=["IMG_02.jpg"],
+                ),
+            ]
+
+            report = pipeline.build_planner_static_report(chunk_plans)
+
+            self.assertEqual(report["dataset_image_count"], 3)
+            self.assertEqual(report["gps_coverage_ratio"], 0.6667)
+            self.assertEqual(report["orientation_coverage_ratio"], 0.6667)
+            self.assertEqual(report["selected_orientation_source"], "exif")
+            self.assertEqual(report["connected_component_count"], 1)
+            self.assertEqual(report["chunk_count"], 2)
+            self.assertEqual(report["chunk_sizes"], [2, 2])
+            self.assertEqual(report["orphan_image_count"], 0)
+            self.assertEqual(report["estimated_leaf_jobs"], 2)
+            self.assertEqual(report["expected_output_kind"], "single_merged_model")
+            self.assertEqual(
+                sorted(report["candidate_pair_counts"]),
+                ["footprint", "retrieval", "sequence", "spatial"],
+            )
+
+    def test_planner_static_report_fails_closed_without_image_list_or_chunks(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.dataset_image_count = 1
+
+            with self.assertRaisesRegex(RuntimeError, "standard image list"):
+                pipeline.build_planner_static_report([])
+
+            pipeline.image_list_path.write_text("IMG_01.jpg\n", encoding="utf-8")
+            with self.assertRaisesRegex(RuntimeError, "empty chunk plan"):
+                pipeline.build_planner_static_report([])
+
+    def test_chunk_planner_manifest_is_stable_and_immutable(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.pipeline_mode = "distributed_chunked_v1"
+            pipeline.chunk_planner = "footprint_graph_v1"
+            pipeline.chunk_matcher_strategy = "pair_list"
+            pipeline.chunk_sizes = [2]
+            chunk_plans = [
+                run_colmap_sfm.ChunkPlan(
+                    index=0,
+                    core_names=["IMG_01.jpg", "IMG_02.jpg"],
+                    image_names=["IMG_01.jpg", "IMG_02.jpg"],
+                    overlap_names=[],
+                )
+            ]
+
+            with mock.patch.object(pipeline, "build_chunk_plans", return_value=chunk_plans):
+                first_manifest = pipeline.write_chunk_planner_manifest(include_archives=False)
+                second_manifest = pipeline.write_chunk_planner_manifest(include_archives=False)
+
+            self.assertEqual(first_manifest, second_manifest)
+            self.assertTrue(first_manifest["immutable_manifest"])
+            self.assertEqual(first_manifest["pipeline_mode"], "distributed_chunked_v1")
+            self.assertEqual(first_manifest["planner"], "footprint_graph_v1")
+            self.assertEqual(first_manifest["chunks"][0]["image_names"], ["IMG_01.jpg", "IMG_02.jpg"])
+
+    def test_leaf_metadata_schema_reports_retries_and_quality_counts(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.chunk_run_metrics = [
+                {
+                    "chunk_index": 2,
+                    "image_count": 100,
+                    "registered_count": 99,
+                    "registered_ratio": 0.91,
+                    "core_registered_ratio": 0.88,
+                    "recovered_registered_ratio": 0.99,
+                    "recovered_core_registered_ratio": 0.95,
+                    "verified_pair_count": 123,
+                    "points3d_count": 9900,
+                    "timings_sec": {"mapper_initial": 1.0, "mapper_recovery": 2.0},
+                    "failure": False,
+                }
+            ]
+
+            records = pipeline.build_leaf_metadata_records()
+
+            self.assertEqual(len(records), 1)
+            self.assertEqual(records[0]["chunk_index"], 2)
+            self.assertEqual(records[0]["status"], "retried")
+            self.assertEqual(records[0]["mapper_mode"], "incremental")
+            self.assertEqual(records[0]["registered_count"], 99)
+            self.assertEqual(records[0]["registered_ratio"], 0.99)
+            self.assertEqual(records[0]["points3d_count"], 9900)
+            self.assertEqual(records[0]["points_per_registered_image"], 100.0)
+            self.assertEqual(records[0]["fallbacks_used"], ["bounded_chunk_recovery"])
+
+    def test_reducer_metadata_schema_blocks_missing_sparse0_or_failed_leaf(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {
+                "SFM_BRANCH_NAME": "agent-73948216-sfm-production-spine",
+                "SFM_GIT_HEAD": "abc123",
+                "SFM_INPUT_URI": "s3://bucket/input.zip",
+                "SFM_OUTPUT_URI": "s3://bucket/output",
+            },
+            clear=False,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.planner_static_report = {"connected_component_count": 1}
+            pipeline.chunk_merge_proof = {"pre_merge_retention_ratio": 1.0}
+            pipeline.merged_component_count = 1
+            pipeline.chunk_run_metrics = [
+                {
+                    "chunk_index": 0,
+                    "image_count": 10,
+                    "registered_ratio": 0.5,
+                    "core_registered_ratio": 0.5,
+                    "verified_pair_count": 12,
+                    "points3d_count": 100,
+                    "failure": True,
+                    "failure_stage": "chunk_00_mapper_initial",
+                    "failure_reason": "mapper failed",
+                }
+            ]
+
+            metadata = pipeline.build_reducer_metadata()
+
+            self.assertEqual(metadata["branch"], "agent-73948216-sfm-production-spine")
+            self.assertEqual(metadata["head"], "abc123")
+            self.assertEqual(metadata["input_uri"], "s3://bucket/input.zip")
+            self.assertEqual(metadata["output_uri"], "s3://bucket/output")
+            self.assertEqual(metadata["leaf_count"], 1)
+            self.assertEqual(metadata["failed_leaf_count"], 1)
+            self.assertEqual(metadata["merge_strategy"], "overlap_first_balanced")
+            self.assertEqual(metadata["ba_policy"], "local_or_deferred_global")
+            self.assertFalse(metadata["standard_sparse0_exists"])
+            self.assertEqual(
+                metadata["promotion_blockers"],
+                ["failed_leaf", "missing_sparse0"],
+            )
+
     def test_match_profile_picks_profile_defaults(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
             os.environ,

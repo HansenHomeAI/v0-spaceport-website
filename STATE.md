@@ -1,5 +1,13 @@
-reason: full MD1 job md1p24e75full-1776351737 on 4e7564d2 failed at merge_sequence=19 with two residual disconnected components and no ranked bridge candidates. The final pending stages were chunk_07_mapper_initial, chunk_15_mapper_initial, chunk_model_seam_10_retry_point_triangulator_01, and chunk_model_seam_18_point_triangulator_02, and the emitted merge_component_recovery_records showed status=no_candidate rather than a bad seam solve.
-last_step: I created child branch/worktree agent-31459027-sfm-final-bridge-fallback from 4e7564d2, patched ranked_bridge_chunk_pairs() so final two-component bridge recovery can try one bounded zero-signal chunk pair as a last resort instead of aborting immediately, added a regression that exercises that exact fallback, and validated with python3 -m unittest tests.unit.test_colmap_gps_priors tests.unit.test_prior_chunk_benchmark_subset (97 tests, OK).
-next_unblocked_step: commit and push the final-bridge fallback fix, watch Trigger ML Container Build / CDK Deploy / Pages to green, resolve the fresh branch digest, rerun ladder_2000 on the repaired image, and promote to full MD1 only if ladder_2000 stays connected and green.
+reason: building the mature-branch distributed SfM production spine from origin/agent-31459027-sfm-final-bridge-fallback without mutating the mature branch.
+last_step: implemented distributed_chunked_v1, planner report-only output, immutable manifest fields, leaf/reducer metadata schemas, launcher propagation, and R0 tests; verified with launcher help, 101 unit tests OK, and an 8-image local planner fixture.
+next_unblocked_step: commit, push, watch Pages/CDK/container workflows, then run R1 subset proof only after deploy image is green.
 owner_action_needed: none
-updated: 2026-04-17T04:18:00Z
+active_jobs: []
+latest_artifacts:
+  - logs/sfm-production-spine/port_inventory.md
+  - logs/sfm-production-spine/frontier.json
+  - logs/sfm-production-spine/comparison_report.json
+  - logs/sfm-production-spine/r0_planner_fixture/output/planner_static_report.json
+branch: agent-73948216-sfm-production-spine
+head: 78b465fdc6c78678801888b99c09bc367055b809
+updated: 2026-04-29T22:06:58Z

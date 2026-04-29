@@ -554,16 +554,29 @@ class ColmapPipeline:
             "COLMAP_MATCHING_OPTION_FAMILY",
             MATCHING_OPTION_FAMILIES[0],
         )
+        self.pipeline_mode = os.environ.get("COLMAP_PIPELINE_MODE", "").strip().lower()
+        if self.pipeline_mode and self.pipeline_mode not in {"distributed_chunked_v1"}:
+            raise RuntimeError(
+                "Unsupported COLMAP_PIPELINE_MODE="
+                f"{self.pipeline_mode}; expected distributed_chunked_v1 or unset"
+            )
         self.enable_spatial_matcher = os.environ.get("COLMAP_ENABLE_SPATIAL_MATCHER", "1") != "0"
         self.enable_sequential_matcher = (
             os.environ.get("COLMAP_ENABLE_SEQUENTIAL_MATCHER", "1") != "0"
         )
         self.enable_spatial_chunking = (
-            os.environ.get("COLMAP_ENABLE_SPATIAL_CHUNKING", "0") != "0"
+            True
+            if self.pipeline_mode == "distributed_chunked_v1"
+            else os.environ.get("COLMAP_ENABLE_SPATIAL_CHUNKING", "0") != "0"
+        )
+        default_chunk_planner = (
+            "footprint_graph_v1"
+            if self.pipeline_mode == "distributed_chunked_v1"
+            else "legacy_spatial_heading"
         )
         self.chunk_planner = (
-            os.environ.get("COLMAP_CHUNK_PLANNER", "legacy_spatial_heading").strip().lower()
-            or "legacy_spatial_heading"
+            os.environ.get("COLMAP_CHUNK_PLANNER", default_chunk_planner).strip().lower()
+            or default_chunk_planner
         )
         if self.chunk_planner not in {"legacy_spatial_heading", "footprint_graph_v1"}:
             raise RuntimeError(
@@ -880,6 +893,7 @@ class ColmapPipeline:
         self.chunk_execution_image_count = 0
         self.capability_snapshot_only = os.environ.get("SFM_CAPABILITY_SNAPSHOT_ONLY", "0") == "1"
         self.planner_snapshot_only = os.environ.get("SFM_PLANNER_SNAPSHOT_ONLY", "0") == "1"
+        self.planner_report_only = os.environ.get("SFM_PLANNER_REPORT_ONLY", "0") == "1"
         self.heading_source_min_dispersion_deg = float(
             os.environ.get("COLMAP_HEADING_SOURCE_MIN_DISPERSION_DEGREES", "5.0")
         )
@@ -898,6 +912,8 @@ class ColmapPipeline:
         self.chunk_role_by_image: Dict[str, str] = {}
         self.chunk_graph_probe_manifest: dict[str, object] = {}
         self.chunk_run_metrics: List[dict[str, object]] = []
+        self.planner_static_report: dict[str, object] = {}
+        self.reducer_metadata: dict[str, object] = {}
         self.chunk_merge_proof: dict[str, object] = {}
         self.chunk_merge_summary: dict[str, object] = {}
         self.filtered_sparse_summary: dict[str, object] = {}
@@ -992,6 +1008,12 @@ class ColmapPipeline:
     def write_failure_metadata(self) -> None:
         if self.chunk_planner == "footprint_graph_v1" and self.exif_records:
             self.write_chunk_planner_manifest(include_archives=False)
+            if self.pipeline_mode == "distributed_chunked_v1" or self.planner_report_only:
+                try:
+                    self.write_planner_static_report()
+                except Exception:
+                    logger.exception("Failed to write planner static report for failure metadata")
+        self.write_production_spine_metadata()
         metadata = self.build_metadata(
             best_model=None,
             quality_check_passed=False,
@@ -1026,11 +1048,14 @@ class ColmapPipeline:
                 1 for record in self.exif_records.values() if record.get("heading_deg") is not None
             )
             self.prepare_capture_ordered_image_list()
-            if self.planner_snapshot_only:
+            if self.planner_snapshot_only or self.planner_report_only:
                 self.write_chunk_planner_manifest()
+                self.write_planner_static_report()
+                self.write_production_spine_metadata()
                 metadata = self.build_metadata(best_model=None, quality_check_passed=True)
                 metadata["capability_snapshot_only"] = False
                 metadata["planner_snapshot_only"] = True
+                metadata["planner_report_only"] = self.planner_report_only
                 with open(self.output_dir / "sfm_metadata.json", "w", encoding="utf-8") as handle:
                     json.dump(metadata, handle, indent=2)
                 return 0
@@ -4560,17 +4585,317 @@ class ColmapPipeline:
         self.chunk_matcher_strategy = "spatial_sequential"
         return self.build_spatial_heading_chunks()
 
+    def selected_orientation_source_kind(self) -> str:
+        if self.orientation_prior_count <= 0:
+            return "none"
+        if self.heading_prior_source in {"", "uninitialized", "none"}:
+            return "none"
+        return "exif"
+
+    def candidate_pair_counts(self) -> dict[str, int]:
+        graph_pairs = {
+            tuple(sorted((edge.first_name, edge.second_name)))
+            for edges in self.graph_neighbors.values()
+            for edge in edges
+        }
+        sequence_pairs: Set[tuple[str, str]] = set()
+        if self.sequential_overlap > 0:
+            ordered_names = [
+                image_name
+                for image_name in self.capture_ordered_names
+                if image_name in self.exif_records
+            ]
+            for first_index, first_name in enumerate(ordered_names):
+                for second_name in ordered_names[
+                    first_index + 1 : first_index + 1 + self.sequential_overlap
+                ]:
+                    sequence_pairs.add(tuple(sorted((first_name, second_name))))
+        return {
+            "spatial": len(graph_pairs),
+            "sequence": len(sequence_pairs),
+            "footprint": sum(
+                1
+                for edge in self.graph_edges_by_pair.values()
+                if edge.footprint_overlap > 0.0
+            ),
+            "retrieval": 0,
+        }
+
+    def chunk_plan_components(self, chunk_plans: Sequence[ChunkPlan]) -> List[Set[int]]:
+        if not chunk_plans:
+            return []
+        adjacency: Dict[int, Set[int]] = {chunk_plan.index: set() for chunk_plan in chunk_plans}
+        for first_position, first_plan in enumerate(chunk_plans):
+            first_names = set(first_plan.image_names)
+            for second_plan in chunk_plans[first_position + 1 :]:
+                second_names = set(second_plan.image_names)
+                shared_count = len(first_names.intersection(second_names))
+                cross_edge_count = self.cross_chunk_edge_count(
+                    first_plan.image_names,
+                    second_plan.image_names,
+                ) + self.cross_chunk_edge_count(
+                    second_plan.image_names,
+                    first_plan.image_names,
+                )
+                if shared_count > 0 or cross_edge_count >= self.chunk_cross_edge_min_count:
+                    adjacency[first_plan.index].add(second_plan.index)
+                    adjacency[second_plan.index].add(first_plan.index)
+        components: List[Set[int]] = []
+        unvisited = set(adjacency)
+        while unvisited:
+            seed_index = min(unvisited)
+            unvisited.remove(seed_index)
+            component = {seed_index}
+            pending = [seed_index]
+            while pending:
+                current_index = pending.pop()
+                for neighbor_index in sorted(adjacency[current_index]):
+                    if neighbor_index not in unvisited:
+                        continue
+                    unvisited.remove(neighbor_index)
+                    component.add(neighbor_index)
+                    pending.append(neighbor_index)
+            components.append(component)
+        return components
+
+    def risky_chunk_bridges(
+        self,
+        *,
+        chunk_plans: Sequence[ChunkPlan],
+        components: Sequence[Set[int]],
+    ) -> List[dict[str, object]]:
+        if len(components) <= 1:
+            return []
+        plan_by_index = {chunk_plan.index: chunk_plan for chunk_plan in chunk_plans}
+        risky_bridges: List[dict[str, object]] = []
+        for first_component_index, first_component in enumerate(components):
+            for second_component_index in range(first_component_index + 1, len(components)):
+                second_component = components[second_component_index]
+                best_record: dict[str, object] | None = None
+                best_score: tuple[int, int, int] | None = None
+                for first_chunk_index in first_component:
+                    first_plan = plan_by_index[first_chunk_index]
+                    first_names = set(first_plan.image_names)
+                    for second_chunk_index in second_component:
+                        second_plan = plan_by_index[second_chunk_index]
+                        shared_count = len(first_names.intersection(second_plan.image_names))
+                        cross_edge_count = self.cross_chunk_edge_count(
+                            first_plan.image_names,
+                            second_plan.image_names,
+                        ) + self.cross_chunk_edge_count(
+                            second_plan.image_names,
+                            first_plan.image_names,
+                        )
+                        score = (
+                            shared_count,
+                            cross_edge_count,
+                            -abs(first_chunk_index - second_chunk_index),
+                        )
+                        if best_score is None or score > best_score:
+                            best_score = score
+                            best_record = {
+                                "first_component_index": first_component_index,
+                                "second_component_index": second_component_index,
+                                "first_chunk_index": first_chunk_index,
+                                "second_chunk_index": second_chunk_index,
+                                "planned_shared_images": shared_count,
+                                "cross_edge_count": cross_edge_count,
+                                "reason": "disconnected_without_visual_overlap",
+                            }
+                if best_record is not None:
+                    risky_bridges.append(best_record)
+        return risky_bridges
+
+    def ensure_planner_report_inputs(self, chunk_plans: Sequence[ChunkPlan]) -> None:
+        if not self.image_list_path.exists() or count_text_rows(self.image_list_path) <= 0:
+            raise RuntimeError("Planner report requires a non-empty standard image list")
+        if self.dataset_image_count <= 0:
+            raise RuntimeError("Planner report requires at least one extracted image")
+        if not chunk_plans:
+            raise RuntimeError("Planner report produced an empty chunk plan")
+
+    def build_planner_static_report(
+        self,
+        chunk_plans: Sequence[ChunkPlan],
+    ) -> dict[str, object]:
+        self.ensure_planner_report_inputs(chunk_plans)
+        components = self.chunk_plan_components(chunk_plans)
+        planned_image_names = {
+            image_name
+            for chunk_plan in chunk_plans
+            for image_name in chunk_plan.image_names
+        }
+        expected_output_kind = (
+            "single_merged_model"
+            if len(components) <= 1
+            else "geo_aligned_components"
+        )
+        report = {
+            "dataset_image_count": self.dataset_image_count,
+            "gps_coverage_ratio": round(
+                self.gps_image_count / self.dataset_image_count,
+                4,
+            )
+            if self.dataset_image_count
+            else 0.0,
+            "orientation_coverage_ratio": round(
+                self.orientation_prior_count / self.dataset_image_count,
+                4,
+            )
+            if self.dataset_image_count
+            else 0.0,
+            "selected_orientation_source": self.selected_orientation_source_kind(),
+            "candidate_pair_counts": self.candidate_pair_counts(),
+            "verified_pair_count": self.verified_pairs_total,
+            "connected_component_count": len(components),
+            "chunk_count": len(chunk_plans),
+            "chunk_sizes": [len(chunk_plan.image_names) for chunk_plan in chunk_plans],
+            "orphan_image_count": len(
+                set(self.capture_ordered_names).difference(planned_image_names)
+            ),
+            "risky_bridges": self.risky_chunk_bridges(
+                chunk_plans=chunk_plans,
+                components=components,
+            ),
+            "estimated_leaf_jobs": len(chunk_plans),
+            "expected_output_kind": expected_output_kind,
+        }
+        self.planner_static_report = report
+        return report
+
+    def write_planner_static_report(self) -> dict[str, object]:
+        chunk_plans = self.chunk_plans or self.build_chunk_plans()
+        report = self.build_planner_static_report(chunk_plans)
+        with open(self.output_dir / "planner_static_report.json", "w", encoding="utf-8") as handle:
+            json.dump(report, handle, indent=2)
+        return report
+
+    def build_leaf_metadata_records(self) -> List[dict[str, object]]:
+        records: List[dict[str, object]] = []
+        for metric in self.chunk_run_metrics:
+            image_count = int(metric.get("image_count") or 0)
+            registered_ratio = float(metric.get("registered_ratio") or 0.0)
+            recovered_registered_ratio = metric.get("recovered_registered_ratio")
+            recovered_core_ratio = metric.get("recovered_core_registered_ratio")
+            final_registered_ratio = (
+                float(recovered_registered_ratio)
+                if recovered_registered_ratio is not None
+                else registered_ratio
+            )
+            final_core_ratio = (
+                float(recovered_core_ratio)
+                if recovered_core_ratio is not None
+                else float(metric.get("core_registered_ratio") or 0.0)
+            )
+            registered_count = int(
+                metric.get("registered_count")
+                or round(final_registered_ratio * image_count)
+            )
+            points3d_count = int(metric.get("points3d_count") or 0)
+            fallbacks_used: List[str] = []
+            if recovered_registered_ratio is not None:
+                fallbacks_used.append("bounded_chunk_recovery")
+            if metric.get("partial_result_accepted"):
+                fallbacks_used.append(str(metric.get("partial_result_reason") or "partial_result"))
+            status = "failed" if metric.get("failure") else "passed"
+            if status == "passed" and fallbacks_used:
+                status = "retried"
+            record = {
+                "chunk_index": int(metric.get("chunk_index") or 0),
+                "status": status,
+                "mapper_mode": "incremental",
+                "image_count": image_count,
+                "registered_count": registered_count,
+                "registered_ratio": round(final_registered_ratio, 4),
+                "core_registered_ratio": round(final_core_ratio, 4),
+                "verified_pair_count": int(metric.get("verified_pair_count") or self.verified_pairs_total),
+                "points3d_count": points3d_count,
+                "points_per_registered_image": round(
+                    points3d_count / registered_count,
+                    2,
+                )
+                if registered_count
+                else 0.0,
+                "timings_sec": metric.get("timings_sec") or {},
+                "peak_memory_mb": None,
+                "failure_stage": metric.get("failure_stage"),
+                "failure_reason": metric.get("failure_reason"),
+                "fallbacks_used": fallbacks_used,
+            }
+            records.append(record)
+        return records
+
+    def standard_sparse0_exists(self) -> bool:
+        sparse0 = self.output_dir / "sparse" / "0"
+        return all(
+            (sparse0 / file_name).exists()
+            for file_name in ("cameras.txt", "images.txt", "points3D.txt")
+        )
+
+    def build_reducer_metadata(self) -> dict[str, object]:
+        leaf_records = self.build_leaf_metadata_records()
+        failed_leaf_count = sum(1 for record in leaf_records if record["status"] == "failed")
+        standard_sparse0_exists = self.standard_sparse0_exists()
+        expected_component_count = int(
+            self.planner_static_report.get("connected_component_count") or 1
+        )
+        promotion_blockers: List[str] = []
+        if failed_leaf_count:
+            promotion_blockers.append("failed_leaf")
+        if not standard_sparse0_exists:
+            promotion_blockers.append("missing_sparse0")
+        if expected_component_count <= 1 and self.merged_component_count > 1:
+            promotion_blockers.append("unexpected_component_split")
+        if self.chunk_merge_proof.get("pre_merge_retention_ratio", 1.0) < 0.98:
+            promotion_blockers.append("merge_retention_below_gate")
+        metadata = {
+            "branch": os.environ.get("SFM_BRANCH_NAME", ""),
+            "head": os.environ.get("SFM_GIT_HEAD", ""),
+            "input_uri": os.environ.get("SFM_INPUT_URI", ""),
+            "output_uri": os.environ.get("SFM_OUTPUT_URI", ""),
+            "planner_manifest": "chunk_planner_manifest.json"
+            if (self.output_dir / "chunk_planner_manifest.json").exists()
+            else "",
+            "leaf_count": len(leaf_records),
+            "passed_leaf_count": sum(1 for record in leaf_records if record["status"] in {"passed", "retried"}),
+            "failed_leaf_count": failed_leaf_count,
+            "merge_strategy": "overlap_first_balanced",
+            "merged_component_count": self.merged_component_count,
+            "expected_component_count": expected_component_count,
+            "ba_policy": "local_or_deferred_global",
+            "standard_sparse0_exists": standard_sparse0_exists,
+            "promotion_blockers": promotion_blockers,
+        }
+        self.reducer_metadata = metadata
+        return metadata
+
+    def write_production_spine_metadata(self) -> None:
+        if self.pipeline_mode != "distributed_chunked_v1" and not self.planner_report_only:
+            return
+        leaf_records = self.build_leaf_metadata_records()
+        if leaf_records:
+            with open(self.output_dir / "leaf_metadata.json", "w", encoding="utf-8") as handle:
+                json.dump(leaf_records, handle, indent=2)
+        reducer_metadata = self.build_reducer_metadata()
+        with open(self.output_dir / "reducer_metadata.json", "w", encoding="utf-8") as handle:
+            json.dump(reducer_metadata, handle, indent=2)
+
     def should_write_subset_archives(self) -> bool:
         return self.planner_snapshot_only
 
-    def write_chunk_planner_manifest(self, *, include_archives: bool | None = None) -> None:
+    def write_chunk_planner_manifest(self, *, include_archives: bool | None = None) -> dict[str, object]:
         if self.chunk_planner == "footprint_graph_v1":
             chunk_plans = self.build_chunk_plans()
         else:
             chunk_plans = self.build_chunk_plans()
+        self.chunk_plans = list(chunk_plans)
+        self.chunk_plans_by_index = {chunk_plan.index: chunk_plan for chunk_plan in chunk_plans}
         manifest = {
+            "pipeline_mode": self.pipeline_mode or "default",
             "planner": self.chunk_planner,
             "chunk_matcher_strategy": self.chunk_matcher_strategy,
+            "immutable_manifest": True,
+            "selected_chunk_indexes": sorted(self.only_chunk_indexes),
             "colmap_capabilities": self.colmap_capabilities,
             "chunk_count": len(chunk_plans),
             "chunk_sizes": self.chunk_sizes,
@@ -4599,10 +4924,10 @@ class ColmapPipeline:
         if include_archives is None:
             include_archives = self.should_write_subset_archives()
         if not include_archives:
-            return
+            return manifest
         if not self.probe_subsets:
             if not self.ladder_subsets:
-                return
+                return manifest
         probes_dir = self.output_dir / "probes"
         probes_dir.mkdir(parents=True, exist_ok=True)
         for probe_name, image_names in self.probe_subsets.items():
@@ -4621,6 +4946,7 @@ class ColmapPipeline:
                     image_path = self.images_dir / image_name
                     if image_path.exists():
                         archive.write(image_path, arcname=image_name)
+        return manifest
 
     def write_chunk_image_list(self, chunk_plan: ChunkPlan) -> Path:
         chunk_dir = self.work_dir / f"chunk_{chunk_plan.index:02d}"
@@ -5765,6 +6091,12 @@ class ColmapPipeline:
                     {
                         "chunk_index": chunk_plan.index,
                         "image_count": len(chunk_plan.image_names),
+                        "registered_count": initial_model.images_registered,
+                        "points3d_count": initial_model.points_3d,
+                        "verified_pair_count": self.verified_pairs_total,
+                        "timings_sec": {
+                            "mapper_initial": self.timings.get(f"{chunk_stage_prefix}_mapper_initial_seconds", 0.0),
+                        },
                         "registered_ratio": round(registered_ratio, 4),
                         "core_registered_ratio": round(core_registered_ratio, 4),
                         "recovered_registered_ratio": None,
@@ -5788,6 +6120,12 @@ class ColmapPipeline:
                     {
                         "chunk_index": chunk_plan.index,
                         "image_count": len(chunk_plan.image_names),
+                        "registered_count": initial_model.images_registered,
+                        "points3d_count": initial_model.points_3d,
+                        "verified_pair_count": self.verified_pairs_total,
+                        "timings_sec": {
+                            "mapper_initial": self.timings.get(f"{chunk_stage_prefix}_mapper_initial_seconds", 0.0),
+                        },
                         "registered_ratio": round(registered_ratio, 4),
                         "core_registered_ratio": round(core_registered_ratio, 4),
                         "recovered_registered_ratio": None,
@@ -5817,6 +6155,12 @@ class ColmapPipeline:
                     {
                         "chunk_index": chunk_plan.index,
                         "image_count": len(chunk_plan.image_names),
+                        "registered_count": initial_model.images_registered,
+                        "points3d_count": initial_model.points_3d,
+                        "verified_pair_count": self.verified_pairs_total,
+                        "timings_sec": {
+                            "mapper_initial": self.timings.get(f"{chunk_stage_prefix}_mapper_initial_seconds", 0.0),
+                        },
                         "registered_ratio": round(registered_ratio, 4),
                         "core_registered_ratio": round(core_registered_ratio, 4),
                         "recovered_registered_ratio": None,
@@ -5862,6 +6206,12 @@ class ColmapPipeline:
                     {
                         "chunk_index": chunk_plan.index,
                         "image_count": len(chunk_plan.image_names),
+                        "registered_count": initial_model.images_registered,
+                        "points3d_count": initial_model.points_3d,
+                        "verified_pair_count": self.verified_pairs_total,
+                        "timings_sec": {
+                            "mapper_initial": self.timings.get(f"{chunk_stage_prefix}_mapper_initial_seconds", 0.0),
+                        },
                         "registered_ratio": round(registered_ratio, 4),
                         "core_registered_ratio": round(core_registered_ratio, 4),
                         "recovered_registered_ratio": None,
@@ -5933,6 +6283,13 @@ class ColmapPipeline:
                     {
                         "chunk_index": chunk_plan.index,
                         "image_count": len(chunk_plan.image_names),
+                        "registered_count": recovered_model.images_registered,
+                        "points3d_count": recovered_model.points_3d,
+                        "verified_pair_count": self.verified_pairs_total,
+                        "timings_sec": {
+                            "mapper_initial": self.timings.get(f"{chunk_stage_prefix}_mapper_initial_seconds", 0.0),
+                            "mapper_recovery": self.timings.get(f"{chunk_stage_prefix}_mapper_recovery_seconds", 0.0),
+                        },
                         "registered_ratio": round(registered_ratio, 4),
                         "core_registered_ratio": round(core_registered_ratio, 4),
                         "recovered_registered_ratio": round(recovered_ratio, 4),
@@ -5956,6 +6313,13 @@ class ColmapPipeline:
                     {
                         "chunk_index": chunk_plan.index,
                         "image_count": len(chunk_plan.image_names),
+                        "registered_count": recovered_model.images_registered,
+                        "points3d_count": recovered_model.points_3d,
+                        "verified_pair_count": self.verified_pairs_total,
+                        "timings_sec": {
+                            "mapper_initial": self.timings.get(f"{chunk_stage_prefix}_mapper_initial_seconds", 0.0),
+                            "mapper_recovery": self.timings.get(f"{chunk_stage_prefix}_mapper_recovery_seconds", 0.0),
+                        },
                         "registered_ratio": round(registered_ratio, 4),
                         "core_registered_ratio": round(core_registered_ratio, 4),
                         "recovered_registered_ratio": round(recovered_ratio, 4),
@@ -5987,6 +6351,13 @@ class ColmapPipeline:
                     {
                         "chunk_index": chunk_plan.index,
                         "image_count": len(chunk_plan.image_names),
+                        "registered_count": recovered_model.images_registered,
+                        "points3d_count": recovered_model.points_3d,
+                        "verified_pair_count": self.verified_pairs_total,
+                        "timings_sec": {
+                            "mapper_initial": self.timings.get(f"{chunk_stage_prefix}_mapper_initial_seconds", 0.0),
+                            "mapper_recovery": self.timings.get(f"{chunk_stage_prefix}_mapper_recovery_seconds", 0.0),
+                        },
                         "registered_ratio": round(registered_ratio, 4),
                         "core_registered_ratio": round(core_registered_ratio, 4),
                         "recovered_registered_ratio": round(recovered_ratio, 4),
@@ -6017,6 +6388,13 @@ class ColmapPipeline:
                     {
                         "chunk_index": chunk_plan.index,
                         "image_count": len(chunk_plan.image_names),
+                        "registered_count": recovered_model.images_registered,
+                        "points3d_count": recovered_model.points_3d,
+                        "verified_pair_count": self.verified_pairs_total,
+                        "timings_sec": {
+                            "mapper_initial": self.timings.get(f"{chunk_stage_prefix}_mapper_initial_seconds", 0.0),
+                            "mapper_recovery": self.timings.get(f"{chunk_stage_prefix}_mapper_recovery_seconds", 0.0),
+                        },
                         "registered_ratio": round(registered_ratio, 4),
                         "core_registered_ratio": round(core_registered_ratio, 4),
                         "recovered_registered_ratio": round(recovered_ratio, 4),
@@ -6045,11 +6423,20 @@ class ColmapPipeline:
                 {
                     "chunk_index": chunk_plan.index,
                     "image_count": len(chunk_plan.image_names),
+                    "registered_count": recovered_model.images_registered,
+                    "points3d_count": recovered_model.points_3d,
+                    "verified_pair_count": self.verified_pairs_total,
+                    "timings_sec": {
+                        "mapper_initial": self.timings.get(f"{chunk_stage_prefix}_mapper_initial_seconds", 0.0),
+                        "mapper_recovery": self.timings.get(f"{chunk_stage_prefix}_mapper_recovery_seconds", 0.0),
+                    },
                     "registered_ratio": round(registered_ratio, 4),
                     "core_registered_ratio": round(core_registered_ratio, 4),
                     "recovered_registered_ratio": round(recovered_ratio, 4),
                     "recovered_core_registered_ratio": round(recovered_core_ratio, 4),
                     "failure": True,
+                    "failure_stage": self.failure_stage,
+                    "failure_reason": self.failure_reason_detail,
                 }
             )
             raise RuntimeError(self.failure_reason_detail)
@@ -6444,7 +6831,11 @@ class ColmapPipeline:
         self.chunk_merge_seconds = round(time.time() - merge_started, 2)
         self.timings["chunk_model_merge_seconds"] = self.chunk_merge_seconds
         self.merged_component_count = 1
-        self.pipeline_name = "colmap_gpu_spatial_heading_chunked"
+        self.pipeline_name = (
+            "colmap_gpu_distributed_chunked_v1"
+            if self.pipeline_mode == "distributed_chunked_v1"
+            else "colmap_gpu_spatial_heading_chunked"
+        )
         current_model = pending_models[0]
         should_run_ba, ba_reason = self.should_run_parent_bundle_adjustment(current_model.images_registered)
         adjusted_model = current_model
@@ -7157,11 +7548,12 @@ class ColmapPipeline:
 
     def run_spatial_heading_chunked_path(self) -> ModelSummary:
         self.chunking_attempted = True
-        self.pipeline_name = (
-            "colmap_gpu_footprint_graph_chunked"
-            if self.chunk_planner == "footprint_graph_v1"
-            else "colmap_gpu_spatial_heading_chunked"
-        )
+        if self.pipeline_mode == "distributed_chunked_v1":
+            self.pipeline_name = "colmap_gpu_distributed_chunked_v1"
+        elif self.chunk_planner == "footprint_graph_v1":
+            self.pipeline_name = "colmap_gpu_footprint_graph_chunked"
+        else:
+            self.pipeline_name = "colmap_gpu_spatial_heading_chunked"
         if self.chunk_planner == "footprint_graph_v1":
             self.enable_sequential_matcher = False
         self.chunk_plans = self.build_chunk_plans()
@@ -7337,17 +7729,25 @@ class ColmapPipeline:
                 registered_ratio=merged_ratio,
             )
             raise RuntimeError(self.failure_reason_detail)
-        self.final_matcher_mode = (
-            (
-                "footprint_graph_chunked_subset"
+        if self.pipeline_mode == "distributed_chunked_v1":
+            self.final_matcher_mode = (
+                "distributed_chunked_v1_subset"
                 if self.only_chunk_indexes
-                else "footprint_graph_chunked"
+                else "distributed_chunked_v1"
             )
-            if self.chunk_planner == "footprint_graph_v1"
-            else (
-                "spatial_heading_chunked_subset" if self.only_chunk_indexes else "spatial_heading_chunked"
-            )
-        )
+        else:
+            if self.chunk_planner == "footprint_graph_v1":
+                self.final_matcher_mode = (
+                    "footprint_graph_chunked_subset"
+                    if self.only_chunk_indexes
+                    else "footprint_graph_chunked"
+                )
+            else:
+                self.final_matcher_mode = (
+                    "spatial_heading_chunked_subset"
+                    if self.only_chunk_indexes
+                    else "spatial_heading_chunked"
+                )
         return merged_model
 
     def run_matching_and_mapping(self) -> ModelSummary:
@@ -7496,6 +7896,7 @@ class ColmapPipeline:
             role_counts[role] += 1
         return {
             "pipeline": self.pipeline_name,
+            "pipeline_mode": self.pipeline_mode or "default",
             "processing_time_seconds": round(time.time() - self.start_time, 2),
             "timings": self.timings,
             "dataset_image_count": self.dataset_image_count,
@@ -7597,6 +7998,9 @@ class ColmapPipeline:
             "timed_out": self.timed_out,
             "selected_chunk_indexes": sorted(self.only_chunk_indexes),
             "planner_snapshot_only": self.planner_snapshot_only,
+            "planner_report_only": self.planner_report_only,
+            "planner_static_report": self.planner_static_report,
+            "reducer_metadata": self.reducer_metadata,
             "capability_snapshot_only": self.capability_snapshot_only,
             "probe_subsets": {
                 probe_name: len(image_names)
@@ -7637,14 +8041,17 @@ class ColmapPipeline:
             and best_model.images_registered > 0
             and best_model.cameras_registered > 0
         )
+        if self.chunk_planner == "footprint_graph_v1":
+            self.write_chunk_planner_manifest(include_archives=False)
+            if self.pipeline_mode == "distributed_chunked_v1":
+                self.write_planner_static_report()
+        self.write_production_spine_metadata()
         metadata = self.build_metadata(
             best_model=best_model,
             quality_check_passed=quality_check_passed,
         )
         with open(self.output_dir / "sfm_metadata.json", "w", encoding="utf-8") as handle:
             json.dump(metadata, handle, indent=2)
-        if self.chunk_planner == "footprint_graph_v1":
-            self.write_chunk_planner_manifest(include_archives=False)
 
         if not metadata["quality_check_passed"]:
             raise RuntimeError(

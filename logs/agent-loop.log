@@ -1,0 +1,3 @@
+[2026-04-29T21:54:55Z] setup -> created worktree agent-73948216-sfm-production-spine from origin/agent-31459027-sfm-final-bridge-fallback@e42165e67ea6d8b635231105db1f216cdde1788d and wrote port inventory/frontier -> implement R0 controls
+[2026-04-29T22:04:49Z] R0 local/static -> launcher help OK, tests.unit.test_colmap_gps_priors 101 tests OK, 8-image planner fixture produced 2 chunks and single_merged_model report -> commit/push and monitor deploy workflows
+[2026-04-29T22:06:58Z] commit -> created 78b465fdc6c78678801888b99c09bc367055b809 with R0 spine implementation -> amend ledger head and push

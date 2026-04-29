@@ -1,0 +1,18 @@
+{
+  "branch": "",
+  "head": "",
+  "input_uri": "",
+  "output_uri": "",
+  "planner_manifest": "chunk_planner_manifest.json",
+  "leaf_count": 0,
+  "passed_leaf_count": 0,
+  "failed_leaf_count": 0,
+  "merge_strategy": "overlap_first_balanced",
+  "merged_component_count": 0,
+  "expected_component_count": 1,
+  "ba_policy": "local_or_deferred_global",
+  "standard_sparse0_exists": false,
+  "promotion_blockers": [
+    "missing_sparse0"
+  ]
+}

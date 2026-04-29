@@ -1,0 +1,290 @@
+{
+  "pipeline_mode": "distributed_chunked_v1",
+  "planner": "footprint_graph_v1",
+  "chunk_matcher_strategy": "pair_list",
+  "immutable_manifest": true,
+  "selected_chunk_indexes": [],
+  "colmap_capabilities": {
+    "available_commands": [
+      "automatic_reconstructor",
+      "bundle_adjuster",
+      "color_extractor",
+      "database_cleaner",
+      "database_creator",
+      "database_merger",
+      "delaunay_mesher",
+      "exhaustive_matcher",
+      "feature_extractor",
+      "feature_importer",
+      "gui",
+      "help",
+      "hierarchical_mapper",
+      "image_deleter",
+      "image_filterer",
+      "image_rectifier",
+      "image_registrator",
+      "image_undistorter",
+      "image_undistorter_standalone",
+      "mapper",
+      "matches_importer",
+      "model_aligner",
+      "model_analyzer",
+      "model_comparer",
+      "model_converter",
+      "model_cropper",
+      "model_merger",
+      "model_orientation_aligner",
+      "model_splitter",
+      "model_transformer",
+      "patch_match_stereo",
+      "point_filtering",
+      "point_triangulator",
+      "poisson_mesher",
+      "pose_prior_mapper",
+      "project_generator",
+      "rig_bundle_adjuster",
+      "sequential_matcher",
+      "spatial_matcher",
+      "stereo_fusion",
+      "transitive_matcher",
+      "vocab_tree_builder",
+      "vocab_tree_matcher",
+      "vocab_tree_retriever"
+    ],
+    "supports_matches_importer": true,
+    "supports_exhaustive_matcher": true,
+    "supports_pose_prior_mapper": true,
+    "supports_hierarchical_mapper": true,
+    "supports_global_mapper": false
+  },
+  "chunk_count": 2,
+  "chunk_sizes": [
+    5,
+    5
+  ],
+  "chunk_overlap_image_count": 2,
+  "chunk_group_count": 8,
+  "chunk_segment_count": 0,
+  "image_roles": {
+    "IMG_0001.jpg": "bridge_context",
+    "IMG_0002.jpg": "bridge_context",
+    "IMG_0003.jpg": "bridge_context",
+    "IMG_0004.jpg": "bridge_context",
+    "IMG_0005.jpg": "bridge_context",
+    "IMG_0006.jpg": "bridge_context",
+    "IMG_0007.jpg": "bridge_context",
+    "IMG_0008.jpg": "bridge_context"
+  },
+  "probe_subsets": {
+    "geometry_mix": [
+      "IMG_0001.jpg",
+      "IMG_0002.jpg",
+      "IMG_0003.jpg",
+      "IMG_0004.jpg",
+      "IMG_0005.jpg",
+      "IMG_0006.jpg",
+      "IMG_0007.jpg",
+      "IMG_0008.jpg"
+    ],
+    "cross_pass": [
+      "IMG_0001.jpg",
+      "IMG_0002.jpg",
+      "IMG_0003.jpg",
+      "IMG_0004.jpg",
+      "IMG_0005.jpg",
+      "IMG_0006.jpg",
+      "IMG_0007.jpg",
+      "IMG_0008.jpg"
+    ],
+    "horizon_context": [
+      "IMG_0001.jpg",
+      "IMG_0002.jpg",
+      "IMG_0003.jpg",
+      "IMG_0004.jpg",
+      "IMG_0005.jpg",
+      "IMG_0006.jpg",
+      "IMG_0007.jpg",
+      "IMG_0008.jpg"
+    ]
+  },
+  "probe_subset_details": {
+    "geometry_mix": {
+      "seed_chunk_index": 0,
+      "source_chunk_indexes": [
+        0,
+        1
+      ],
+      "image_count": 8
+    },
+    "cross_pass": {
+      "seed_chunk_index": 0,
+      "source_chunk_indexes": [
+        0,
+        1
+      ],
+      "image_count": 8
+    },
+    "horizon_context": {
+      "seed_chunk_index": 0,
+      "source_chunk_indexes": [
+        0,
+        1
+      ],
+      "image_count": 8
+    }
+  },
+  "ladder_subsets": {
+    "ladder_1000": [
+      "IMG_0001.jpg",
+      "IMG_0002.jpg",
+      "IMG_0003.jpg",
+      "IMG_0004.jpg",
+      "IMG_0005.jpg",
+      "IMG_0006.jpg",
+      "IMG_0007.jpg",
+      "IMG_0008.jpg"
+    ],
+    "ladder_2000": [
+      "IMG_0001.jpg",
+      "IMG_0002.jpg",
+      "IMG_0003.jpg",
+      "IMG_0004.jpg",
+      "IMG_0005.jpg",
+      "IMG_0006.jpg",
+      "IMG_0007.jpg",
+      "IMG_0008.jpg"
+    ]
+  },
+  "ladder_subset_details": {
+    "ladder_1000": {
+      "target_image_count": 1000,
+      "image_count": 8,
+      "source_chunk_indexes": [
+        0,
+        1
+      ]
+    },
+    "ladder_2000": {
+      "target_image_count": 2000,
+      "image_count": 8,
+      "source_chunk_indexes": [
+        0,
+        1
+      ]
+    }
+  },
+  "chunks": [
+    {
+      "index": 0,
+      "core_names": [
+        "IMG_0006.jpg",
+        "IMG_0007.jpg",
+        "IMG_0008.jpg"
+      ],
+      "overlap_names": [
+        "IMG_0003.jpg",
+        "IMG_0005.jpg"
+      ],
+      "image_names": [
+        "IMG_0003.jpg",
+        "IMG_0005.jpg",
+        "IMG_0006.jpg",
+        "IMG_0007.jpg",
+        "IMG_0008.jpg"
+      ]
+    },
+    {
+      "index": 1,
+      "core_names": [
+        "IMG_0001.jpg",
+        "IMG_0002.jpg",
+        "IMG_0003.jpg",
+        "IMG_0004.jpg",
+        "IMG_0005.jpg"
+      ],
+      "overlap_names": [],
+      "image_names": [
+        "IMG_0001.jpg",
+        "IMG_0002.jpg",
+        "IMG_0003.jpg",
+        "IMG_0004.jpg",
+        "IMG_0005.jpg"
+      ]
+    }
+  ],
+  "footprint_graph_manifest": {
+    "planner": "footprint_graph_v1",
+    "role_counts": {
+      "bridge_context": 8
+    },
+    "chunk_pair_budget": 25000,
+    "leaf_target_images": 4,
+    "leaf_hard_cap_images": 5,
+    "chunk_count": 2,
+    "chunk_sizes": [
+      5,
+      5
+    ],
+    "image_roles": {
+      "IMG_0001.jpg": "bridge_context",
+      "IMG_0002.jpg": "bridge_context",
+      "IMG_0003.jpg": "bridge_context",
+      "IMG_0004.jpg": "bridge_context",
+      "IMG_0005.jpg": "bridge_context",
+      "IMG_0006.jpg": "bridge_context",
+      "IMG_0007.jpg": "bridge_context",
+      "IMG_0008.jpg": "bridge_context"
+    },
+    "candidate_neighbor_count": {
+      "IMG_0001.jpg": 7,
+      "IMG_0002.jpg": 7,
+      "IMG_0003.jpg": 7,
+      "IMG_0004.jpg": 7,
+      "IMG_0005.jpg": 7,
+      "IMG_0006.jpg": 7,
+      "IMG_0007.jpg": 7,
+      "IMG_0008.jpg": 7
+    },
+    "chunks": [
+      {
+        "index": 0,
+        "core_names": [
+          "IMG_0006.jpg",
+          "IMG_0007.jpg",
+          "IMG_0008.jpg"
+        ],
+        "overlap_names": [
+          "IMG_0003.jpg",
+          "IMG_0005.jpg"
+        ],
+        "image_names": [
+          "IMG_0003.jpg",
+          "IMG_0005.jpg",
+          "IMG_0006.jpg",
+          "IMG_0007.jpg",
+          "IMG_0008.jpg"
+        ],
+        "predicted_pair_count": 10
+      },
+      {
+        "index": 1,
+        "core_names": [
+          "IMG_0001.jpg",
+          "IMG_0002.jpg",
+          "IMG_0003.jpg",
+          "IMG_0004.jpg",
+          "IMG_0005.jpg"
+        ],
+        "overlap_names": [],
+        "image_names": [
+          "IMG_0001.jpg",
+          "IMG_0002.jpg",
+          "IMG_0003.jpg",
+          "IMG_0004.jpg",
+          "IMG_0005.jpg"
+        ],
+        "predicted_pair_count": 10
+      }
+    ]
+  }
+}

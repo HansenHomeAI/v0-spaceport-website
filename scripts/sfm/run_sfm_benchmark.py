@@ -48,6 +48,11 @@ def get_branch_ecr_tag(branch_name: str) -> str:
     return result.stdout.strip()
 
 
+def get_branch_head(branch_name: str) -> str:
+    result = run_command(["git", "rev-parse", branch_name], capture_output=True)
+    return result.stdout.strip()
+
+
 def stack_outputs(stack: dict) -> Dict[str, str]:
     outputs = {}
     for entry in stack.get("Outputs", []):
@@ -150,6 +155,11 @@ def parse_args() -> argparse.Namespace:
         default="",
         help="Optional comma-separated chunk indexes to run when --mode=chunked.",
     )
+    parser.add_argument(
+        "--planner-report-only",
+        action="store_true",
+        help="Run only the immutable chunk planner/report path in the container.",
+    )
     parser.add_argument("--wait", action="store_true", help="Wait for job completion and print metadata")
     parser.add_argument("--poll-seconds", type=int, default=60)
     return parser.parse_args()
@@ -182,6 +192,9 @@ def build_summary_row(
         "chunk_matcher_strategy": metadata.get("chunk_matcher_strategy"),
         "chunk_role_counts": metadata.get("chunk_role_counts"),
         "planner_snapshot_only": metadata.get("planner_snapshot_only"),
+        "planner_report_only": metadata.get("planner_report_only"),
+        "planner_static_report": metadata.get("planner_static_report"),
+        "reducer_metadata": metadata.get("reducer_metadata"),
         "capability_snapshot_only": metadata.get("capability_snapshot_only"),
         "probe_subsets": metadata.get("probe_subsets"),
     }
@@ -192,6 +205,7 @@ def main() -> int:
     branch_name = args.branch or get_current_branch()
     stack_name, outputs = find_branch_ml_stack(branch_name)
     role_arn = get_sagemaker_role_arn(stack_name)
+    branch_head = get_branch_head(branch_name)
     branch_tag = get_branch_ecr_tag(branch_name) or "latest"
     selected_tag = args.image_tag or branch_tag
     image_uri = args.image_uri or f"{outputs['SfMRepositoryUri']}:{selected_tag}"
@@ -206,8 +220,15 @@ def main() -> int:
         "AWS_DEFAULT_REGION": "us-west-2",
         "PYTHONUNBUFFERED": "1",
         "SFM_BENCHMARK_SUBSET_STRATEGY": args.subset_strategy,
+        "SFM_BRANCH_NAME": branch_name,
+        "SFM_GIT_HEAD": branch_head,
+        "SFM_INPUT_URI": args.input_s3_uri,
+        "SFM_OUTPUT_URI": output_s3_uri,
+        "SFM_JOB_NAME": job_name,
         **parse_env(args.env),
     }
+    if args.planner_report_only:
+        environment["SFM_PLANNER_REPORT_ONLY"] = "1"
     if args.mode == "chunked":
         environment.setdefault("COLMAP_ENABLE_SPATIAL_CHUNKING", "1")
         if args.only_chunk_indexes:
@@ -287,6 +308,7 @@ def main() -> int:
         "stack_name": stack_name,
         "job_name": job_name,
         "mode": args.mode,
+        "branch_head": branch_head,
         "image_uri": image_uri,
         "selected_tag": selected_tag if not args.image_uri else "",
         "input_s3_uri": args.input_s3_uri,

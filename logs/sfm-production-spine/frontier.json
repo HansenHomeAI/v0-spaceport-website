@@ -1,0 +1,26 @@
+{
+  "branch": "agent-73948216-sfm-production-spine",
+  "head": "78b465fdc6c78678801888b99c09bc367055b809",
+  "current_rung": "R0",
+  "current_goal": "Push R0 implementation and monitor branch deployment workflows before bounded AWS subset proof.",
+  "last_command": "COLMAP_PIPELINE_MODE=distributed_chunked_v1 SFM_PLANNER_REPORT_ONLY=1 COLMAP_CHUNK_TARGET_IMAGES=4 COLMAP_CHUNK_MIN_IMAGES=2 COLMAP_CHUNK_HARD_MAX_IMAGES=5 COLMAP_LEAF_TARGET_IMAGES=4 COLMAP_LEAF_HARD_CAP=5 COLMAP_CHUNK_CROSS_EDGE_MIN_COUNT=1 python3 infrastructure/containers/sfm/run_colmap_sfm.py logs/sfm-production-spine/r0_planner_fixture/input logs/sfm-production-spine/r0_planner_fixture/output",
+  "active_jobs": [],
+  "latest_artifacts": [
+    "logs/sfm-production-spine/port_inventory.md",
+    "logs/sfm-production-spine/r0_planner_fixture/output/chunk_planner_manifest.json",
+    "logs/sfm-production-spine/r0_planner_fixture/output/planner_static_report.json",
+    "logs/sfm-production-spine/r0_planner_fixture/output/reducer_metadata.json",
+    "logs/sfm-production-spine/r0_planner_fixture/output/sfm_metadata.json"
+  ],
+  "last_metrics": {
+    "r0_unit_tests": "python3 -m unittest tests.unit.test_colmap_gps_priors: 101 tests OK",
+    "planner_fixture_dataset_image_count": 8,
+    "planner_fixture_chunk_count": 2,
+    "planner_fixture_connected_component_count": 1,
+    "planner_fixture_expected_output_kind": "single_merged_model"
+  },
+  "promotion_status": "not_started",
+  "blockers": [],
+  "next_unblocked_step": "Commit, push, watch Pages/CDK/container workflows, then run R1 subset proof only after deploy image is green.",
+  "updated": "2026-04-29T22:06:58Z"
+}
