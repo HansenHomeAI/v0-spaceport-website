@@ -34,6 +34,14 @@ def get_current_branch() -> str:
     return result.stdout.strip()
 
 
+def get_branch_head(branch_name: str) -> str:
+    try:
+        result = run_command(["git", "rev-parse", branch_name], capture_output=True)
+    except subprocess.CalledProcessError:
+        return ""
+    return result.stdout.strip()
+
+
 def get_branch_ecr_tag(branch_name: str) -> str:
     result = run_command(
         [
@@ -150,6 +158,16 @@ def parse_args() -> argparse.Namespace:
         default="",
         help="Optional comma-separated chunk indexes to run when --mode=chunked.",
     )
+    parser.add_argument(
+        "--planner-only",
+        action="store_true",
+        help="Run image extraction plus planner/report generation only.",
+    )
+    parser.add_argument(
+        "--report-only",
+        action="store_true",
+        help="Alias for --planner-only.",
+    )
     parser.add_argument("--wait", action="store_true", help="Wait for job completion and print metadata")
     parser.add_argument("--poll-seconds", type=int, default=60)
     return parser.parse_args()
@@ -161,11 +179,14 @@ def build_summary_row(
     mode: str,
     input_s3_uri: str,
     metadata: dict,
+    planner_report: dict | None = None,
+    reducer_metadata: dict | None = None,
 ) -> dict:
     return {
         "job_name": job_name,
         "mode": mode,
         "input_s3_uri": input_s3_uri,
+        "pipeline_mode": metadata.get("pipeline_mode"),
         "processing_time_seconds": metadata.get("processing_time_seconds"),
         "chunk_mapper_seconds": metadata.get("chunk_mapper_seconds"),
         "mapper_seconds_per_registered_image": metadata.get("mapper_seconds_per_registered_image"),
@@ -183,6 +204,9 @@ def build_summary_row(
         "chunk_role_counts": metadata.get("chunk_role_counts"),
         "planner_snapshot_only": metadata.get("planner_snapshot_only"),
         "capability_snapshot_only": metadata.get("capability_snapshot_only"),
+        "planner_report": planner_report or metadata.get("planner_report"),
+        "leaf_metadata_count": metadata.get("leaf_metadata_count"),
+        "reducer_metadata": reducer_metadata or metadata.get("reducer_metadata"),
         "probe_subsets": metadata.get("probe_subsets"),
     }
 
@@ -190,6 +214,7 @@ def build_summary_row(
 def main() -> int:
     args = parse_args()
     branch_name = args.branch or get_current_branch()
+    branch_head = get_branch_head(branch_name)
     stack_name, outputs = find_branch_ml_stack(branch_name)
     role_arn = get_sagemaker_role_arn(stack_name)
     branch_tag = get_branch_ecr_tag(branch_name) or "latest"
@@ -206,6 +231,10 @@ def main() -> int:
         "AWS_DEFAULT_REGION": "us-west-2",
         "PYTHONUNBUFFERED": "1",
         "SFM_BENCHMARK_SUBSET_STRATEGY": args.subset_strategy,
+        "SPACEPORT_BRANCH": branch_name,
+        "SPACEPORT_HEAD": branch_head,
+        "SFM_INPUT_S3_URI": args.input_s3_uri,
+        "SFM_OUTPUT_S3_URI": output_s3_uri,
         **parse_env(args.env),
     }
     if args.mode == "chunked":
@@ -214,6 +243,8 @@ def main() -> int:
             environment["COLMAP_ONLY_CHUNK_INDEXES"] = args.only_chunk_indexes
     else:
         environment.setdefault("COLMAP_ENABLE_SPATIAL_CHUNKING", "0")
+    if args.planner_only or args.report_only:
+        environment["SFM_PLANNER_SNAPSHOT_ONLY"] = "1"
 
     payload = {
         "ProcessingJobName": job_name,
@@ -284,6 +315,7 @@ def main() -> int:
 
     summary = {
         "branch": branch_name,
+        "head": branch_head,
         "stack_name": stack_name,
         "job_name": job_name,
         "mode": args.mode,
@@ -321,14 +353,23 @@ def main() -> int:
             break
         time.sleep(max(args.poll_seconds, 15))
 
-    metadata = load_s3_json(f"{output_s3_uri.rstrip('/')}/sfm_metadata.json")
+    output_prefix = output_s3_uri.rstrip("/")
+    metadata = load_s3_json(f"{output_prefix}/sfm_metadata.json")
+    planner_report = load_s3_json(f"{output_prefix}/sfm_planner_report.json")
+    reducer_metadata = load_s3_json(f"{output_prefix}/reducer_metadata.json")
     if metadata:
         print(json.dumps({"sfm_metadata": metadata}, indent=2))
+        if planner_report:
+            print(json.dumps({"sfm_planner_report": planner_report}, indent=2))
+        if reducer_metadata:
+            print(json.dumps({"reducer_metadata": reducer_metadata}, indent=2))
         summary_row = build_summary_row(
             job_name=job_name,
             mode=args.mode,
             input_s3_uri=args.input_s3_uri,
             metadata=metadata,
+            planner_report=planner_report,
+            reducer_metadata=reducer_metadata,
         )
         print(json.dumps({"benchmark_summary": summary_row}, indent=2))
         if args.summary_json_output:

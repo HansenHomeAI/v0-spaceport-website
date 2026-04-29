@@ -1,0 +1,37 @@
+{
+  "branch": "agent-39274108-sfm-production-spine",
+  "head": "e42165e67ea6d8b635231105db1f216cdde1788d",
+  "mode": "distributed_chunked_v1",
+  "dataset": "R0 local planner fixture",
+  "baseline_mature": {
+    "job": "md1p24e752k-1776314974",
+    "registered": 2157,
+    "total": 2157,
+    "points": 1633948,
+    "runtime_sec": 36033.85
+  },
+  "baseline_stock_hierarchical": {
+    "job": "stockhier2000fix-1776973734",
+    "registered": 1830,
+    "total": 2013,
+    "points": 243102,
+    "runtime_sec": 12249.67
+  },
+  "candidate": {
+    "jobs": [],
+    "registered": 0,
+    "total": 0,
+    "points": 0,
+    "points_per_registered_image": 0.0,
+    "runtime_sec": 0.0,
+    "merged_component_count": 0,
+    "fallbacks_used": [],
+    "sparse0_uri": "",
+    "pipeline_viewer_url": ""
+  },
+  "decision": "needs_more_proof",
+  "block_reasons": [
+    "R1/R2 AWS proof has not run yet",
+    "No promoted sparse/0 result exists yet"
+  ]
+}

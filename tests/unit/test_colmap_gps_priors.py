@@ -23,6 +23,28 @@ SPEC.loader.exec_module(run_colmap_sfm)
 
 
 class ColmapGpsPriorTests(unittest.TestCase):
+    def test_pipeline_mode_defaults_remain_unchanged_when_unset(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(os.environ, {}, clear=True):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+
+            self.assertEqual(pipeline.pipeline_mode, "default")
+            self.assertEqual(pipeline.chunk_planner, "legacy_spatial_heading")
+            self.assertFalse(pipeline.enable_spatial_chunking)
+
+    def test_distributed_chunked_mode_selects_footprint_graph_primary(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {"COLMAP_PIPELINE_MODE": "distributed_chunked_v1"},
+            clear=True,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+
+            self.assertEqual(pipeline.pipeline_mode, "distributed_chunked_v1")
+            self.assertEqual(pipeline.chunk_planner, "footprint_graph_v1")
+            self.assertTrue(pipeline.enable_spatial_chunking)
+
     def test_match_profile_picks_profile_defaults(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
             os.environ,
@@ -6156,15 +6178,127 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 )
             ]
 
-            pipeline.write_chunk_planner_manifest()
+            with mock.patch.object(pipeline, "build_chunk_plans", return_value=pipeline.chunk_plans):
+                pipeline.write_chunk_planner_manifest()
             self.assertTrue((pipeline.output_dir / "chunk_planner_manifest.json").exists())
             self.assertFalse((pipeline.output_dir / "probes").exists())
             self.assertFalse((pipeline.output_dir / "ladders").exists())
 
             pipeline.planner_snapshot_only = True
-            pipeline.write_chunk_planner_manifest()
+            with mock.patch.object(pipeline, "build_chunk_plans", return_value=pipeline.chunk_plans):
+                pipeline.write_chunk_planner_manifest()
             self.assertTrue((pipeline.output_dir / "probes" / "geometry_mix.zip").exists())
             self.assertTrue((pipeline.output_dir / "ladders" / "ladder_1000.zip").exists())
+
+    def test_planner_report_generation_marks_connected_plan(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {"COLMAP_PIPELINE_MODE": "distributed_chunked_v1"},
+            clear=True,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.capture_ordered_names = ["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg"]
+            pipeline.dataset_image_count = 3
+            pipeline.gps_image_count = 3
+            pipeline.orientation_prior_count = 3
+            pipeline.heading_prior_source = "gps_img_direction"
+            for index, image_name in enumerate(pipeline.capture_ordered_names):
+                pipeline.exif_records[image_name] = {
+                    "file_name": image_name,
+                    "local_x_m": float(index * 5),
+                    "local_y_m": 0.0,
+                    "local_z_m": 10.0,
+                    "heading_deg": 0.0,
+                    "pitch_deg": -45.0,
+                    "relative_altitude": 10.0,
+                    "absolute_altitude": 1500.0,
+                    "focal_length_mm": 24.0,
+                    "focal_length_35mm_mm": 24.0,
+                    "image_width_px": 4000,
+                    "image_height_px": 3000,
+                    "capture_time_s": float(index),
+                }
+            chunk_plans = [
+                run_colmap_sfm.ChunkPlan(
+                    index=0,
+                    core_names=["IMG_01.jpg"],
+                    image_names=["IMG_01.jpg", "IMG_02.jpg"],
+                    overlap_names=["IMG_02.jpg"],
+                ),
+                run_colmap_sfm.ChunkPlan(
+                    index=1,
+                    core_names=["IMG_03.jpg"],
+                    image_names=["IMG_02.jpg", "IMG_03.jpg"],
+                    overlap_names=["IMG_02.jpg"],
+                ),
+            ]
+
+            pipeline.write_planner_report(chunk_plans)
+
+            report = json.loads((pipeline.output_dir / "sfm_planner_report.json").read_text())
+            self.assertEqual(report["dataset_image_count"], 3)
+            self.assertEqual(report["selected_orientation_source"], "exif")
+            self.assertEqual(report["connected_component_count"], 1)
+            self.assertEqual(report["chunk_sizes"], [2, 2])
+            self.assertEqual(report["expected_output_kind"], "single_merged_model")
+            self.assertIn("manifest_digest", report)
+
+    def test_leaf_and_reducer_metadata_schema_are_written(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {
+                "SPACEPORT_BRANCH": "agent-test",
+                "SPACEPORT_HEAD": "abc123",
+                "SFM_INPUT_S3_URI": "s3://bucket/input",
+                "SFM_OUTPUT_S3_URI": "s3://bucket/output",
+            },
+            clear=True,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            chunk_plan = run_colmap_sfm.ChunkPlan(
+                index=0,
+                core_names=["IMG_01.jpg"],
+                image_names=["IMG_01.jpg"],
+                overlap_names=[],
+            )
+            model = run_colmap_sfm.ModelSummary(
+                stage="chunk_00_mapper_initial",
+                text_dir=root / "text",
+                cameras_registered=1,
+                images_registered=1,
+                points_3d=100,
+                binary_dir=root / "binary",
+            )
+            pipeline.chunking_attempted = True
+            pipeline.chunk_plans = [chunk_plan]
+            pipeline.planner_report = {"connected_component_count": 1}
+
+            leaf = pipeline.write_leaf_metadata(
+                chunk_plan=chunk_plan,
+                status="passed",
+                mapper_mode="incremental",
+                stage_prefix="chunk_00",
+                started_at=time.time(),
+                model=model,
+                registered_ratio=1.0,
+                core_registered_ratio=1.0,
+                verified_pair_count=3,
+            )
+            reducer = pipeline.write_reducer_metadata(
+                best_model=model,
+                standard_sparse0_exists=False,
+            )
+
+            self.assertEqual(leaf["status"], "passed")
+            self.assertEqual(leaf["mapper_mode"], "incremental")
+            self.assertTrue((pipeline.output_dir / "leaf_metadata" / "chunk_00.json").exists())
+            self.assertEqual(reducer["branch"], "agent-test")
+            self.assertEqual(reducer["head"], "abc123")
+            self.assertEqual(reducer["leaf_count"], 1)
+            self.assertIn("missing_sparse0", reducer["promotion_blockers"])
+            self.assertTrue((pipeline.output_dir / "reducer_metadata.json").exists())
 
     def test_run_spatial_heading_chunked_path_accepts_merged_ratio_at_gps_threshold(self):
         with tempfile.TemporaryDirectory() as tmp:

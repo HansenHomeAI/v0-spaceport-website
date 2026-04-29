@@ -1,0 +1,27 @@
+{
+  "branch": "agent-39274108-sfm-production-spine",
+  "head": "e42165e67ea6d8b635231105db1f216cdde1788d",
+  "current_rung": "R0",
+  "current_goal": "Push and validate the R0 implementation branch before AWS R1/R2 spend.",
+  "last_command": "python3 -m unittest tests.unit.test_colmap_gps_priors",
+  "active_jobs": [],
+  "latest_artifacts": [
+    "logs/sfm-production-spine/port_inventory.md",
+    "logs/sfm-production-spine/frontier.json",
+    "logs/sfm-production-spine/final_comparison_report.json",
+    "local planner-only fixture output under /var/folders/*/tmp.QU13JnNWZi/output"
+  ],
+  "last_metrics": {
+    "unit_tests": "98 tests OK",
+    "planner_fixture": {
+      "dataset_image_count": 4,
+      "chunk_count": 2,
+      "connected_component_count": 1,
+      "expected_output_kind": "single_merged_model"
+    }
+  },
+  "promotion_status": "blocked",
+  "blockers": [],
+  "next_unblocked_step": "Commit and push the branch, watch deploy/container checks to green, then start R1 known subset jobs.",
+  "updated": "2026-04-29T22:06:08Z"
+}
