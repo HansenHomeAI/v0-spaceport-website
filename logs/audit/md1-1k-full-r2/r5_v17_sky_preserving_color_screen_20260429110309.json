@@ -1,0 +1,361 @@
+{
+  "created_at": "2026-04-29T11:03:09Z",
+  "head": "9bca003bb46d97c0e56cb4313977b0990e0a9003",
+  "rung": "R5_v18_sky_preserving_color_screen",
+  "inputs": {
+    "review_root": "/tmp/r5-v16-smoke-review/quality_review",
+    "source_artifact_under_test": "r5_teacher_context_v12_tile01overlap_v16_smoke_p24_image_outputs",
+    "prior_artifact_smoke": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-color-v17-smoke-p24/review_comparison.json",
+    "strict_core_manifest": "logs/audit/md1-1k-full-r2/r1_review_outputs/strict_core/quality_review_manifest.json"
+  },
+  "method": {
+    "description": "No-training image-level proxy screen over frozen p24 V16 renders, focused on offsets that reduce or remove V17 blue-channel suppression to recover horizon sky score.",
+    "limitations": [
+      "Uses image-space RGB offsets as a proxy for f_dc foreground offsets.",
+      "LPIPS and production SSIM are not recomputed here.",
+      "Sky score omits Canny edge penalty because local cv2 is unavailable; this is only a selection screen, not promotion evidence."
+    ]
+  },
+  "experiments": [
+    {
+      "name": "v17_rgb_offset_artifact_input",
+      "rgb_offset": [
+        0.0100973,
+        0.0692788,
+        -0.0511056
+      ],
+      "bucket_metrics": {
+        "near_detail": {
+          "psnr": 11.921726180660066,
+          "delta_psnr_vs_strict_core": 1.7171562708525414
+        },
+        "boundary": {
+          "psnr": 14.542385536744764,
+          "delta_psnr_vs_strict_core": 1.4083459256332347
+        },
+        "horizon": {
+          "psnr": 16.1487788699392,
+          "delta_psnr_vs_strict_core": -0.06674572739979112
+        }
+      },
+      "sky_metrics": {
+        "near_detail": {
+          "score_no_edge_proxy": 0.44216562762109657,
+          "ratio_vs_strict_core_score": 0.8079663864869824,
+          "blue_dominance": 0.5148284023668639
+        },
+        "boundary": {
+          "score_no_edge_proxy": 0.3971388276980826,
+          "ratio_vs_strict_core_score": 0.7040534169212255,
+          "blue_dominance": 0.49345857988165676
+        },
+        "horizon": {
+          "score_no_edge_proxy": 0.3844889607007334,
+          "ratio_vs_strict_core_score": 0.6697333398507228,
+          "blue_dominance": 0.5466952662721893
+        }
+      },
+      "horizon_camera_metrics": {
+        "DJI_0066.JPG": {
+          "psnr": 14.318143181836323,
+          "delta_psnr_vs_strict_core_median": -1.897381415502668,
+          "sky_score_no_edge_proxy": 0.2844889638926503,
+          "blue_dominance": 0.1690532544378698
+        },
+        "DJI_0073.JPG": {
+          "psnr": 14.968637066338557,
+          "delta_psnr_vs_strict_core_median": -1.246887531000434,
+          "sky_score_no_edge_proxy": 0.5525902191472124,
+          "blue_dominance": 0.8496686390532544
+        },
+        "DJI_0146.JPG": {
+          "psnr": 17.615040142007842,
+          "delta_psnr_vs_strict_core_median": 1.3995155446688514,
+          "sky_score_no_edge_proxy": 0.381120367891725,
+          "blue_dominance": 0.5389822485207101
+        },
+        "DJI_0147.JPG": {
+          "psnr": 17.32892067353984,
+          "delta_psnr_vs_strict_core_median": 1.11339607620085,
+          "sky_score_no_edge_proxy": 0.3878575535097418,
+          "blue_dominance": 0.5544082840236686
+        }
+      },
+      "passes_proxy_gate_without_ssim_lpips_claim": false
+    },
+    {
+      "name": "same_red_green_less_blue",
+      "rgb_offset": [
+        0.0100973,
+        0.0692788,
+        -0.025
+      ],
+      "bucket_metrics": {
+        "near_detail": {
+          "psnr": 11.643241604249289,
+          "delta_psnr_vs_strict_core": 1.438671694441764
+        },
+        "boundary": {
+          "psnr": 14.558156669962067,
+          "delta_psnr_vs_strict_core": 1.4241170588505376
+        },
+        "horizon": {
+          "psnr": 16.0025730635746,
+          "delta_psnr_vs_strict_core": -0.21295153376438947
+        }
+      },
+      "sky_metrics": {
+        "near_detail": {
+          "score_no_edge_proxy": 0.5705843160604673,
+          "ratio_vs_strict_core_score": 1.042625023826086,
+          "blue_dominance": 0.7825621301775147
+        },
+        "boundary": {
+          "score_no_edge_proxy": 0.4468699291377025,
+          "ratio_vs_strict_core_score": 0.7922174277251217,
+          "blue_dominance": 0.5902988165680474
+        },
+        "horizon": {
+          "score_no_edge_proxy": 0.4741881404501094,
+          "ratio_vs_strict_core_score": 0.8259784791804287,
+          "blue_dominance": 0.7299970414201183
+        }
+      },
+      "horizon_camera_metrics": {
+        "DJI_0066.JPG": {
+          "psnr": 14.314060913976496,
+          "delta_psnr_vs_strict_core_median": -1.9014636833624952,
+          "sky_score_no_edge_proxy": 0.3317994512891628,
+          "blue_dominance": 0.2666627218934911
+        },
+        "DJI_0073.JPG": {
+          "psnr": 14.812586392789857,
+          "delta_psnr_vs_strict_core_median": -1.4029382045491339,
+          "sky_score_no_edge_proxy": 0.5939778240381614,
+          "blue_dominance": 0.9219704142011834
+        },
+        "DJI_0146.JPG": {
+          "psnr": 17.23055380979758,
+          "delta_psnr_vs_strict_core_median": 1.0150292124585896,
+          "sky_score_no_edge_proxy": 0.4678724579349777,
+          "blue_dominance": 0.7161005917159763
+        },
+        "DJI_0147.JPG": {
+          "psnr": 17.192559734359346,
+          "delta_psnr_vs_strict_core_median": 0.9770351370203549,
+          "sky_score_no_edge_proxy": 0.4805038229652411,
+          "blue_dominance": 0.7438934911242604
+        }
+      },
+      "passes_proxy_gate_without_ssim_lpips_claim": false
+    },
+    {
+      "name": "sky_preserving_green_0p10_blue_0",
+      "rgb_offset": [
+        0.008,
+        0.1,
+        0.0
+      ],
+      "bucket_metrics": {
+        "near_detail": {
+          "psnr": 11.424418594053737,
+          "delta_psnr_vs_strict_core": 1.2198486842462124
+        },
+        "boundary": {
+          "psnr": 14.491724620948942,
+          "delta_psnr_vs_strict_core": 1.3576850098374127
+        },
+        "horizon": {
+          "psnr": 15.848636806859812,
+          "delta_psnr_vs_strict_core": -0.3668877904791792
+        }
+      },
+      "sky_metrics": {
+        "near_detail": {
+          "score_no_edge_proxy": 0.6337717259018202,
+          "ratio_vs_strict_core_score": 1.1580869684273944,
+          "blue_dominance": 0.9106272189349112
+        },
+        "boundary": {
+          "score_no_edge_proxy": 0.45603590442732245,
+          "ratio_vs_strict_core_score": 0.8084670003480697,
+          "blue_dominance": 0.5778757396449704
+        },
+        "horizon": {
+          "score_no_edge_proxy": 0.5334405974302948,
+          "ratio_vs_strict_core_score": 0.9291891040976636,
+          "blue_dominance": 0.8541183431952662
+        }
+      },
+      "horizon_camera_metrics": {
+        "DJI_0066.JPG": {
+          "psnr": 14.064664885256516,
+          "delta_psnr_vs_strict_core_median": -2.1508597120824753,
+          "sky_score_no_edge_proxy": 0.34220070212113085,
+          "blue_dominance": 0.2559644970414201
+        },
+        "DJI_0073.JPG": {
+          "psnr": 14.738716424584075,
+          "delta_psnr_vs_strict_core_median": -1.4768081727549163,
+          "sky_score_no_edge_proxy": 0.6156981253878252,
+          "blue_dominance": 0.9474437869822485
+        },
+        "DJI_0146.JPG": {
+          "psnr": 16.95855718913555,
+          "delta_psnr_vs_strict_core_median": 0.7430325917965597,
+          "sky_score_no_edge_proxy": 0.5293267843122313,
+          "blue_dominance": 0.8451952662721893
+        },
+        "DJI_0147.JPG": {
+          "psnr": 17.323105929346944,
+          "delta_psnr_vs_strict_core_median": 1.1075813320079533,
+          "sky_score_no_edge_proxy": 0.5375544105483583,
+          "blue_dominance": 0.8630414201183432
+        }
+      },
+      "passes_proxy_gate_without_ssim_lpips_claim": true
+    },
+    {
+      "name": "sky_preserving_green_0p12_blue_0",
+      "rgb_offset": [
+        0.008,
+        0.12,
+        0.0
+      ],
+      "bucket_metrics": {
+        "near_detail": {
+          "psnr": 11.446472268704039,
+          "delta_psnr_vs_strict_core": 1.241902358896514
+        },
+        "boundary": {
+          "psnr": 14.437628504423532,
+          "delta_psnr_vs_strict_core": 1.3035888933120034
+        },
+        "horizon": {
+          "psnr": 15.88235257948638,
+          "delta_psnr_vs_strict_core": -0.3331720178526112
+        }
+      },
+      "sky_metrics": {
+        "near_detail": {
+          "score_no_edge_proxy": 0.5785489203579679,
+          "ratio_vs_strict_core_score": 1.0571786936549055,
+          "blue_dominance": 0.791707100591716
+        },
+        "boundary": {
+          "score_no_edge_proxy": 0.42360701228842224,
+          "ratio_vs_strict_core_score": 0.7509765946637383,
+          "blue_dominance": 0.49345857988165676
+        },
+        "horizon": {
+          "score_no_edge_proxy": 0.5171199218989301,
+          "ratio_vs_strict_core_score": 0.900760458155996,
+          "blue_dominance": 0.8213579881656805
+        }
+      },
+      "horizon_camera_metrics": {
+        "DJI_0066.JPG": {
+          "psnr": 13.910454221944974,
+          "delta_psnr_vs_strict_core_median": -2.305070375394017,
+          "sky_score_no_edge_proxy": 0.3106893664206979,
+          "blue_dominance": 0.1690532544378698
+        },
+        "DJI_0073.JPG": {
+          "psnr": 14.775386010932843,
+          "delta_psnr_vs_strict_core_median": -1.4401385864061478,
+          "sky_score_no_edge_proxy": 0.6069739314041195,
+          "blue_dominance": 0.9259349112426035
+        },
+        "DJI_0146.JPG": {
+          "psnr": 16.989319148039918,
+          "delta_psnr_vs_strict_core_median": 0.7737945507009272,
+          "sky_score_no_edge_proxy": 0.5128700824325607,
+          "blue_dominance": 0.8121479289940828
+        },
+        "DJI_0147.JPG": {
+          "psnr": 17.49547606608934,
+          "delta_psnr_vs_strict_core_median": 1.2799514687503475,
+          "sky_score_no_edge_proxy": 0.5213697613652994,
+          "blue_dominance": 0.8305680473372781
+        }
+      },
+      "passes_proxy_gate_without_ssim_lpips_claim": true
+    },
+    {
+      "name": "sky_preserving_green_0p16_blue_0p02",
+      "rgb_offset": [
+        0.0,
+        0.16,
+        0.02
+      ],
+      "bucket_metrics": {
+        "near_detail": {
+          "psnr": 11.266557040845601,
+          "delta_psnr_vs_strict_core": 1.0619871310380766
+        },
+        "boundary": {
+          "psnr": 14.14318245097153,
+          "delta_psnr_vs_strict_core": 1.0091428398600009
+        },
+        "horizon": {
+          "psnr": 15.527118098753904,
+          "delta_psnr_vs_strict_core": -0.6884064985850866
+        }
+      },
+      "sky_metrics": {
+        "near_detail": {
+          "score_no_edge_proxy": 0.5647040991625665,
+          "ratio_vs_strict_core_score": 1.0318801415874603,
+          "blue_dominance": 0.7492633136094675
+        },
+        "boundary": {
+          "score_no_edge_proxy": 0.41172491983097687,
+          "ratio_vs_strict_core_score": 0.7299118505204178,
+          "blue_dominance": 0.42544970414201183
+        },
+        "horizon": {
+          "score_no_edge_proxy": 0.5186056849444582,
+          "ratio_vs_strict_core_score": 0.903348477965186,
+          "blue_dominance": 0.8068520710059172
+        }
+      },
+      "horizon_camera_metrics": {
+        "DJI_0066.JPG": {
+          "psnr": 13.44710993487697,
+          "delta_psnr_vs_strict_core_median": -2.768414662462021,
+          "sky_score_no_edge_proxy": 0.293195533504218,
+          "blue_dominance": 0.08459171597633136
+        },
+        "DJI_0073.JPG": {
+          "psnr": 14.558304556867697,
+          "delta_psnr_vs_strict_core_median": -1.6572200404712945,
+          "sky_score_no_edge_proxy": 0.6003176403981694,
+          "blue_dominance": 0.8858402366863906
+        },
+        "DJI_0146.JPG": {
+          "psnr": 16.495931640640112,
+          "delta_psnr_vs_strict_core_median": 0.2804070433011212,
+          "sky_score_no_edge_proxy": 0.51583665550792,
+          "blue_dominance": 0.8008994082840236
+        },
+        "DJI_0147.JPG": {
+          "psnr": 17.317801007515644,
+          "delta_psnr_vs_strict_core_median": 1.1022764101766533,
+          "sky_score_no_edge_proxy": 0.5213747143809965,
+          "blue_dominance": 0.8128047337278107
+        }
+      },
+      "passes_proxy_gate_without_ssim_lpips_claim": true
+    }
+  ],
+  "selected_artifact_experiment": {
+    "name": "sky_preserving_green_0p12_blue_0",
+    "rgb_offset": [
+      0.008,
+      0.12,
+      0.0
+    ],
+    "rationale": "Keeps the blue channel unsuppressed to target the V17 sky-score miss, while the image proxy still clears the horizon PSNR floor and preserves near/boundary PSNR margins."
+  },
+  "next_unblocked_step": "Build V18 no-training artifact from V16 with rgb-offset [0.008,0.12,0.0] on tile_00/tile_01/tile_02/tile_04/tile_05/tile_06, then streaming preflight and explicit p24 smoke before any promotion."
+}
