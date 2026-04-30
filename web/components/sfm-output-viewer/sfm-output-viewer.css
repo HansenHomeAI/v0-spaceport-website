@@ -1,0 +1,133 @@
+.sfm-shell {
+  position: fixed;
+  inset: 0;
+  margin: 0;
+  overflow: hidden;
+  background: #020204;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: system-ui, "Segoe UI", sans-serif;
+}
+
+.sfm-canvas {
+  position: absolute !important;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.sfm-panel {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: min(430px, calc(100vw - 20px));
+  padding: 9px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  background: #141416;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+}
+
+.sfm-panel label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.46);
+}
+
+.sfm-url-row {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+
+.sfm-url-row input[type="url"] {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  background: #09090a;
+  color: #f0f0f1;
+  font: 400 12px/1.3 system-ui, sans-serif;
+  outline: none;
+}
+
+.sfm-url-row input[type="url"]:focus {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.sfm-url-row button,
+.sfm-controls button {
+  min-height: 30px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  background: #202024;
+  color: rgba(255, 255, 255, 0.88);
+  font: 600 12px/1 system-ui, sans-serif;
+  cursor: pointer;
+}
+
+.sfm-url-row button {
+  background: #9a2f24;
+  color: #fff;
+}
+
+.sfm-url-row button:hover:not(:disabled),
+.sfm-controls button:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.sfm-url-row button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.sfm-controls {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.sfm-controls button.sfm-active {
+  background: #2e3430;
+  border-color: rgba(146, 213, 141, 0.42);
+  color: #ddf4df;
+}
+
+.sfm-slider-label {
+  margin-top: 1px;
+}
+
+.sfm-panel input[type="range"] {
+  width: 100%;
+  accent-color: #d18b39;
+}
+
+.sfm-error,
+.sfm-stats {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.sfm-error {
+  color: #e08078;
+}
+
+.sfm-stats {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+@media (max-width: 560px) {
+  .sfm-panel {
+    top: 8px;
+    left: 8px;
+    width: calc(100vw - 16px);
+  }
+}
