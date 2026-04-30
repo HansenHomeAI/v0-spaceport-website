@@ -1,19 +1,30 @@
 {
-  "lodUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-production-lod-public-1777560644/lod-meta.json",
+  "lodUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json",
   "results": [
     {
       "scenario": "desktop",
       "metrics": {
         "bundleKind": "lod-streaming",
         "rootFile": "lod-meta.json",
-        "sourceUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-production-lod-public-1777560644/lod-meta.json",
-        "viewerUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-production-lod-public-1777560644/lod-meta.json",
+        "sourceUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json",
+        "viewerUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json",
         "lodLevels": 4,
-        "chunkFiles": 128,
-        "chunkMetaRequests": 2,
-        "firstFrameMs": 111.40000000596046,
+        "chunkFiles": 44,
+        "chunkMetaRequests": 5,
+        "firstFrameMs": 88.3999999910593,
         "lodMin": 0,
         "lodMax": 3
+      },
+      "visualStats": {
+        "width": 1440,
+        "height": 960,
+        "sampled": 38400,
+        "visibleRatio": 1,
+        "brightRatio": 0.8682552083333334,
+        "darkRatio": 0,
+        "meanLuma": 197.31626528645893,
+        "lumaStdDev": 71.76446044432784,
+        "meanColorSpread": 18.33203125
       },
       "chunkMetaResponses": 7,
       "screenshotPath": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/md1-production-viewer-desktop.png"
@@ -23,16 +34,27 @@
       "metrics": {
         "bundleKind": "lod-streaming",
         "rootFile": "lod-meta.json",
-        "sourceUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-production-lod-public-1777560644/lod-meta.json",
-        "viewerUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-production-lod-public-1777560644/lod-meta.json",
+        "sourceUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json",
+        "viewerUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json",
         "lodLevels": 4,
-        "chunkFiles": 128,
-        "chunkMetaRequests": 2,
-        "firstFrameMs": 32.400000005960464,
-        "lodMin": 3,
+        "chunkFiles": 44,
+        "chunkMetaRequests": 15,
+        "firstFrameMs": 37.599999994039536,
+        "lodMin": 2,
         "lodMax": 3
       },
-      "chunkMetaResponses": 8,
+      "visualStats": {
+        "width": 414,
+        "height": 896,
+        "sampled": 92736,
+        "visibleRatio": 1,
+        "brightRatio": 0.6258195307108351,
+        "darkRatio": 0,
+        "meanLuma": 142.49973459928557,
+        "lumaStdDev": 78.36943360402658,
+        "meanColorSpread": 11.974227915804002
+      },
+      "chunkMetaResponses": 19,
       "screenshotPath": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/md1-production-viewer-mobile.png"
     }
   ]

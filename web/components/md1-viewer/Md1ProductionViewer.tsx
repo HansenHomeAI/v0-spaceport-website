@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   MD1_STREAMING_CONFIG,
+  MD1_V18_COMPRESSION,
   MD1_V18_COMPUTE,
   MD1_V18_LINEAGE,
   MD1_V18_PRODUCTION_LOD_URL,
@@ -43,6 +44,23 @@ type StreamingOverrides = {
   splatBudget?: number | null;
   lodRangeMin?: number | null;
   lodRangeMax?: number | null;
+};
+
+type ViewerWindow = Window & {
+  __sogsNetworkMetrics?: {
+    rootManifestType?: string | null;
+    rootManifestUrl?: string | null;
+    loadStartedAt?: number | null;
+    firstFrame?: { at?: number | null; chunkMetaRequestCount?: number | null } | null;
+    events?: unknown[];
+    uniqueChunkMetaUrls?: string[];
+  };
+  __sogsInitialViewerConfig?: {
+    splatBudget?: number | null;
+    lodRangeMin?: number | null;
+    lodRangeMax?: number | null;
+    lodDistances?: number[] | null;
+  };
 };
 
 const EMPTY_TELEMETRY: ViewerTelemetry = {
@@ -214,6 +232,54 @@ export default function Md1ProductionViewer() {
     return () => window.clearInterval(interval);
   }, [postToViewer, iframeKey]);
 
+  const readIframeTelemetry = useCallback(() => {
+    const viewerWindow = iframeRef.current?.contentWindow as ViewerWindow | null | undefined;
+    const network = viewerWindow?.__sogsNetworkMetrics;
+    if (!network) {
+      return;
+    }
+    const config = viewerWindow?.__sogsInitialViewerConfig;
+    const firstFrameAt = readNumber(network.firstFrame?.at);
+    const loadStartedAt = readNumber(network.loadStartedAt);
+    const firstFrameMs =
+      firstFrameAt != null && loadStartedAt != null ? firstFrameAt - loadStartedAt : null;
+    if (firstFrameMs != null) {
+      setViewerState("ready");
+    }
+    setTelemetry((current) => ({
+      loadedNodeCount: current.loadedNodeCount,
+      chunkMetaRequestCount: Math.max(
+        current.chunkMetaRequestCount,
+        Array.isArray(network.uniqueChunkMetaUrls) ? network.uniqueChunkMetaUrls.length : 0,
+      ),
+      chunkMetaAtFirstFrame:
+        readNumber(network.firstFrame?.chunkMetaRequestCount) ?? current.chunkMetaAtFirstFrame,
+      totalRequestCount: Math.max(
+        current.totalRequestCount,
+        Array.isArray(network.events) ? network.events.length : 0,
+      ),
+      firstFrameMs: firstFrameMs ?? current.firstFrameMs,
+      splatBudget: readNumber(config?.splatBudget) ?? current.splatBudget,
+      lodRangeMin: readNumber(config?.lodRangeMin) ?? current.lodRangeMin,
+      lodRangeMax: readNumber(config?.lodRangeMax) ?? current.lodRangeMax,
+      lodDistances: readNumberList(config?.lodDistances) ?? current.lodDistances,
+      rootManifestType:
+        typeof network.rootManifestType === "string"
+          ? network.rootManifestType
+          : current.rootManifestType,
+      rootManifestUrl:
+        typeof network.rootManifestUrl === "string"
+          ? network.rootManifestUrl
+          : current.rootManifestUrl,
+    }));
+  }, []);
+
+  useEffect(() => {
+    readIframeTelemetry();
+    const interval = window.setInterval(readIframeTelemetry, 1000);
+    return () => window.clearInterval(interval);
+  }, [iframeKey, readIframeTelemetry]);
+
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
       if (event.source !== iframeRef.current?.contentWindow) {
@@ -268,10 +334,17 @@ export default function Md1ProductionViewer() {
 
   const isMd1ProductionManifest =
     activeManifestUrl === MD1_V18_PRODUCTION_LOD_URL ||
+    activeManifestUrl.includes("/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/") ||
     activeManifestUrl.includes("/md1-r5-v18-production-lod-1777560644/lod-meta.json");
   const isLodManifest = activeManifestUrl.includes("/lod-meta.json");
   const bundleSummary = resolvedBundle?.summary;
-  const totalChunks = bundleSummary?.chunkFiles ?? null;
+  const effectiveBundleKind = bundleSummary?.bundleKind ?? (isLodManifest ? "lod-streaming" : "");
+  const effectiveRootFile =
+    bundleSummary?.rootFile ?? telemetry.rootManifestType ?? (isLodManifest ? "lod-meta.json" : "");
+  const effectiveLodLevels = bundleSummary?.lodLevels ?? (isMd1ProductionManifest ? MD1_V18_COMPRESSION.lodLevels : null);
+  const effectiveChunkFiles =
+    bundleSummary?.chunkFiles ?? (isMd1ProductionManifest ? MD1_V18_COMPRESSION.chunkFiles : null);
+  const totalChunks = effectiveChunkFiles ?? null;
 
   return (
     <main className="md1-shell">
@@ -306,6 +379,13 @@ export default function Md1ProductionViewer() {
               <div>
                 <dt>Production manifest</dt>
                 <dd>{MD1_V18_PRODUCTION_MANIFEST_URL}</dd>
+              </div>
+              <div>
+                <dt>Compression path</dt>
+                <dd>
+                  {MD1_V18_COMPRESSION.compressor} {MD1_V18_COMPRESSION.compressorVersion},{" "}
+                  {MD1_V18_COMPRESSION.mode}, {compactNumber(MD1_V18_COMPRESSION.chunkFiles)} chunks.
+                </dd>
               </div>
               <div>
                 <dt>SfM diagnostic JSON</dt>
@@ -396,11 +476,11 @@ export default function Md1ProductionViewer() {
           </div>
           <div>
             <span>Manifest</span>
-            <strong>{bundleSummary?.rootFile ?? telemetry.rootManifestType ?? "pending"}</strong>
+            <strong>{effectiveRootFile || "pending"}</strong>
           </div>
           <div>
             <span>Engine</span>
-            <strong>{bundleSummary?.bundleKind === "lod-streaming" || isLodManifest ? "SOGS LOD" : "SOGS"}</strong>
+            <strong>{effectiveBundleKind === "lod-streaming" || isLodManifest ? "SOGS LOD" : "SOGS"}</strong>
           </div>
         </div>
 
@@ -415,13 +495,13 @@ export default function Md1ProductionViewer() {
         <div
           data-testid="md1-bundle-metrics"
           className="md1-hidden-metrics"
-          data-bundle-kind={bundleSummary?.bundleKind ?? ""}
+          data-bundle-kind={effectiveBundleKind}
           data-transport={bundleSummary?.transport ?? ""}
-          data-root-file={bundleSummary?.rootFile ?? telemetry.rootManifestType ?? ""}
+          data-root-file={effectiveRootFile}
           data-source-url={bundleSummary?.sourceUrl ?? activeManifestUrl}
           data-viewer-url={activeContentUrl}
-          data-lod-levels={bundleSummary?.lodLevels ?? ""}
-          data-chunk-files={bundleSummary?.chunkFiles ?? ""}
+          data-lod-levels={effectiveLodLevels ?? ""}
+          data-chunk-files={effectiveChunkFiles ?? ""}
           data-loaded-nodes={telemetry.loadedNodeCount}
           data-chunk-meta-requests={telemetry.chunkMetaRequestCount}
           data-chunk-meta-at-first-frame={telemetry.chunkMetaAtFirstFrame ?? ""}

@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "artifactName": "md1-v18-splattransform-lod-nosingle-public-1777575472",
+  "createdAt": "2026-04-30T21:10:15Z",
+  "source": {
+    "promotedArtifactUri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+    "rawPlyUri": "s3://spaceport-ml-processing/compressed/md1-r5-v18-raw-1777498999/merged_splat.ply",
+    "rawPlyUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-raw-1777498999/merged_splat.ply",
+    "rawPlySha256": "c45c819e6586efa76288a11ef99b7517d3fd41f4ac1d906c5547e1f33f732dea",
+    "rawPlyBytes": 876082905,
+    "promotedGaussianCount": 8423868,
+    "sourceGaussianCount": 8789634,
+    "droppedGaussianCount": 365766
+  },
+  "compression": {
+    "mode": "validated-splat-transform-lod-only",
+    "compressor": "@playcanvas/splat-transform",
+    "compressorVersion": "1.10.2",
+    "imageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:645fd74b9217fc8441f242d8b89aefb36ef9c88192bf006ade3cfeb355bd4de3",
+    "processingJobName": "md1-v18-splat-lod-nosingle-1777575472",
+    "supersededProcessingJobName": "md1-v18-splat-lod-1777573315",
+    "supersededReason": "The first job used the validated container default path but spent time creating a single full bundle known to stall in browser prepare. The LOD-only job uses the same splat-transform container and skips that fallback.",
+    "inputLodGaussianCounts": {
+      "0": 8423868,
+      "1": 2527160,
+      "2": 842387,
+      "3": 252716
+    },
+    "lodLevels": 4,
+    "chunkFiles": 44,
+    "objectCount": 357,
+    "bundleBytes": 165902596,
+    "chunkTargetThousands": 256,
+    "chunkExtent": 32,
+    "decimation": "30%,10%,3%"
+  },
+  "bundle": {
+    "privateOutputPrefix": "s3://spaceport-ml-processing/compressed/md1-r5-v18-splattransform-lod-nosingle-1777575472/",
+    "publicOutputPrefix": "s3://spaceport-ml-processing/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/",
+    "lodMetaUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json",
+    "summaryUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/sogs_compression_summary.json",
+    "productionManifestUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/production_manifest.json",
+    "serverSideEncryption": "AES256",
+    "rangeProbe": {
+      "status": 206,
+      "contentRange": "bytes 0-255/271219",
+      "acceptRanges": "bytes"
+    }
+  },
+  "sfm": {
+    "inputColmapPrefix": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap",
+    "viewerUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-sfm-viewer-1776314974/sfm_points_every4.json",
+    "sourcePointCount": 1312804,
+    "sampledPointCount": 328201,
+    "sourceCameraCount": 2157,
+    "viewerCameraCount": 2143
+  }
+}

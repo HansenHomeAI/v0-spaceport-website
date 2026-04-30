@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "none for V18 after p24 smoke plus 12-image promotion review; V18 cleared the V17 sky-score block while staying within horizon thresholds.",
+  "blocked_promotion_reason": "none for V18 after p24 smoke plus 12-image promotion review; production viewer now uses validated splat-transform LOD, not sampled inspection PLY",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,24 +589,31 @@
       ]
     }
   ],
-  "current_branch_head": "07c50ac09a7ac88ea218c5784f045154a102917e",
-  "current_exact_head_gate_status": "Exact-head 07c50ac09a7ac88ea218c5784f045154a102917e is gated green on CDK Deploy 25107437774 and manually-triggered Pages 25107446761; alias/hash /health.txt passed locally and in workflow, hash https://20660d91.v0-spaceport-website-preview2.pages.dev.",
+  "current_branch_head": "5d209189934eeec5e2788acceca4e5f9d94769bf plus local validated SOGS LOD compressor/viewer/pipeline updates pending commit/push",
+  "current_exact_head_gate_status": "Exact-head 5d209189934eeec5e2788acceca4e5f9d94769bf has green CDK Deploy 25181111382 and green Cloudflare Pages 25181111351. Local follow-up changes pass py_compile, bash -n, tests.unit.test_sogs_supersplat_bundle, md1 production Playwright smoke, pipeline-viewer MD1 LOD smoke, npm run build, and npm run cf:build; next is commit/push and exact-head workflow monitoring.",
   "current_live_compute_status": {
-    "checked_at": "2026-04-29T12:02:18Z",
-    "in_progress_training_jobs": [],
-    "in_progress_processing_jobs": [],
-    "v18_processing_job_name": "md1-r5-v12-sky-v18-1777460637",
-    "v18_processing_status": "Completed",
-    "v18_processing_start_time": "2026-04-29T11:05:44.742Z",
-    "v18_processing_end_time": "2026-04-29T11:14:40.823Z",
-    "v18_failure_reason": null,
-    "v18_exit_message": null,
-    "v18_output_object_count": 6,
-    "v18_model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
-    "v18_model_size_bytes": 1202951599
+    "status": "completed",
+    "training_jobs_in_progress": 0,
+    "processing_jobs_in_progress": 0,
+    "validated_lod_processing_job": "md1-v18-splat-lod-nosingle-1777575472",
+    "superseded_stopped_job": "md1-v18-splat-lod-1777573315",
+    "public_lod_url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json",
+    "public_manifest_url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/production_manifest.json",
+    "source_vertex_count": 8423868,
+    "source_sha256": "c45c819e6586efa76288a11ef99b7517d3fd41f4ac1d906c5547e1f33f732dea",
+    "lod_counts": {
+      "lod0": 8423868,
+      "lod1": 2527160,
+      "lod2": 842387,
+      "lod3": 252716
+    },
+    "chunk_files": 44,
+    "object_count": 357,
+    "byte_size": 165902596,
+    "range_probe": "HTTP 206, Accept-Ranges bytes, AES256, public CORS OK"
   },
-  "current_rung": "R5_v18_sky_preserving_color_repair_promoted",
-  "exact_head_gate_status": "Exact-head 07c50ac09a7ac88ea218c5784f045154a102917e is gated green on CDK Deploy 25107437774 and manually-triggered Pages 25107446761; alias/hash /health.txt passed locally and in workflow, hash https://20660d91.v0-spaceport-website-preview2.pages.dev.",
+  "current_rung": "R5_v18_validated_splattransform_lod_viewer_ready",
+  "exact_head_gate_status": "Exact-head 5d209189934eeec5e2788acceca4e5f9d94769bf has green CDK Deploy 25181111382 and green Cloudflare Pages 25181111351. Local follow-up changes pass py_compile, bash -n, tests.unit.test_sogs_supersplat_bundle, md1 production Playwright smoke, pipeline-viewer MD1 LOD smoke, npm run build, and npm run cf:build; next is commit/push and exact-head workflow monitoring.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
     "buckets": {
@@ -720,7 +727,7 @@
     "verified_at": "2026-04-29T12:02:18Z"
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-sky-v18-promotion/review_comparison.json",
-  "latest_review_status": "V18 sky-preserving color repair passed streaming preflight, explicit p24 smoke, and 12-image promotion review. Preflight: artifact_complete=true, block_reasons=[], fallback=0, retain_all=0, retained/source/dropped=8423868/8789634/365766. p24 smoke promoted with no block reasons; promotion review promoted with no block reasons/warnings and 12/12/12 camera coverage.",
+  "latest_review_status": "V18 model-quality gates remain promoted. Production viewer gate uses the validated @playcanvas/splat-transform SOGS LOD compression path from agent-73164211-load-horizon-settle and image digest sha256:645fd74b9217fc8441f242d8b89aefb36ef9c88192bf006ade3cfeb355bd4de3. /md1-viewer and /pipeline-viewer both load the true public V18 lod-meta.json by default. Local smoke: /md1-viewer desktop firstFrame=88.4ms, chunkMetaRequests=3, lodRange=0-3; mobile firstFrame=51.0ms, chunkMetaRequests=15 after refinement, lodRange=2-3; /pipeline-viewer default MD1 LOD firstFrame=202.1ms, chunkMetaRequests=2. npm run build and npm run cf:build pass with pre-existing lint warnings; webpack cache warns ENOSPC but exits green.",
   "live_compute_status": {
     "checked_at": "2026-04-29T12:02:18Z",
     "in_progress_training_jobs": [],
@@ -743,7 +750,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "V18 evidence is committed/pushed/gated; use s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz as the promoted R5 candidate for the next explicit publish/promotion decision. No SageMaker jobs are InProgress.",
+  "next_unblocked_step": "Commit/push the validated splat-transform LOD implementation, monitor exact-head CDK Deploy and Cloudflare Pages workflows, verify preview /health.txt plus /md1-viewer and /pipeline-viewer, then open a development PR after preview gates are green.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -6706,5 +6713,52 @@
       }
     },
     "checked_at": "2026-04-30T17:57:25Z"
+  },
+  "md1_v18_validated_splattransform_lod_viewer": {
+    "source_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+    "source_ply_uri": "s3://spaceport-ml-processing/compressed/md1-r5-v18-raw-1777498999/merged_splat.ply",
+    "source_ply_sha256": "c45c819e6586efa76288a11ef99b7517d3fd41f4ac1d906c5547e1f33f732dea",
+    "source_ply_bytes": 876082905,
+    "promoted_gaussians": 8423868,
+    "compressor": "@playcanvas/splat-transform",
+    "compressor_version": "1.10.2",
+    "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:645fd74b9217fc8441f242d8b89aefb36ef9c88192bf006ade3cfeb355bd4de3",
+    "processing_job": "md1-v18-splat-lod-nosingle-1777575472",
+    "public_lod_url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json",
+    "production_manifest_url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/production_manifest.json",
+    "lod_levels": 4,
+    "lod_counts": [
+      8423868,
+      2527160,
+      842387,
+      252716
+    ],
+    "chunk_files": 44,
+    "object_count": 357,
+    "byte_size": 165902596,
+    "browser_smoke": {
+      "md1_viewer_desktop": {
+        "first_frame_ms": 88.4,
+        "chunk_meta_requests": 3,
+        "lod_range": "0-3"
+      },
+      "md1_viewer_mobile": {
+        "first_frame_ms": 51.0,
+        "chunk_meta_requests": 15,
+        "lod_range": "2-3"
+      },
+      "pipeline_viewer_default": {
+        "first_frame_ms": 202.1,
+        "chunk_meta_requests": 2,
+        "root_file": "lod-meta.json"
+      }
+    },
+    "screenshots": {
+      "desktop": "logs/md1-production-viewer-desktop.png",
+      "mobile": "logs/md1-production-viewer-mobile.png",
+      "pipeline": "logs/pipeline-viewer-md1-lod.png"
+    },
+    "sfm_viewer_url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-sfm-viewer-1776314974/sfm_points_every4.json",
+    "sampled_inspection_only_url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-viewer-sampled-1777498999/merged_splat_every8_shrink.ply"
   }
 }

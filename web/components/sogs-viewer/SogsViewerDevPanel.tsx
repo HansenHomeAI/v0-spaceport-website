@@ -14,7 +14,8 @@ import {
 } from "../../lib/sogsViewerBundle";
 import "./sogs-viewer.css";
 
-const VIEWER_BASE = "/supersplat-viewer/index.html";
+const VIEWER_BASE = "/supersplat-lod-viewer/index.html";
+const VIEWER_SETTINGS = "/supersplat-lod-viewer/settings.json";
 const REQUEST_STATE_INTERVAL_MS = 1500;
 
 type StreamingConfig = {
@@ -36,6 +37,26 @@ type ViewerTelemetry = {
   rootManifestUrl: string | null;
 };
 
+type SogsViewerDevPanelProps = {
+  defaultBundleUrl?: string;
+};
+
+type ViewerWindow = Window & {
+  __sogsNetworkMetrics?: {
+    rootManifestType?: string | null;
+    rootManifestUrl?: string | null;
+    loadStartedAt?: number | null;
+    firstFrame?: { at?: number | null; chunkMetaRequestCount?: number | null } | null;
+    events?: unknown[];
+    uniqueChunkMetaUrls?: string[];
+  };
+  __sogsInitialViewerConfig?: {
+    splatBudget?: number | null;
+    lodRangeMin?: number | null;
+    lodRangeMax?: number | null;
+  };
+};
+
 const EMPTY_TELEMETRY: ViewerTelemetry = {
   loadedNodeCount: 0,
   chunkMetaRequestCount: 0,
@@ -48,6 +69,10 @@ const EMPTY_TELEMETRY: ViewerTelemetry = {
   rootManifestType: null,
   rootManifestUrl: null,
 };
+
+function readFiniteNumber(value: unknown): number | null {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
 
 function formatInteger(value: number | null | undefined): string {
   return typeof value === "number" && Number.isFinite(value) ? value.toLocaleString() : "auto";
@@ -78,14 +103,16 @@ function parseStreamingConfig(config: StreamingConfig) {
   };
 }
 
-export default function SogsViewerDevPanel() {
+export default function SogsViewerDevPanel({
+  defaultBundleUrl = DEFAULT_SOGS_BUNDLE_URL,
+}: SogsViewerDevPanelProps = {}) {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   /** Skip first sogs:state after each iframe load — it reflects viewer defaults before SOGS_DEFAULT_SCENE is applied. */
   const ignoreNextSogsStateRef = useRef(false);
 
-  const [inputUrl, setInputUrl] = useState(DEFAULT_SOGS_BUNDLE_URL);
-  const [loadedInputUrl, setLoadedInputUrl] = useState(DEFAULT_SOGS_BUNDLE_URL);
+  const [inputUrl, setInputUrl] = useState(defaultBundleUrl);
+  const [loadedInputUrl, setLoadedInputUrl] = useState(defaultBundleUrl);
   const [activeUrl, setActiveUrl] = useState("");
   const [resolvedBundle, setResolvedBundle] = useState<ResolvedSogsViewerBundle | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -126,6 +153,50 @@ export default function SogsViewerDevPanel() {
     });
   }, [postToIframe, streamingConfig]);
 
+  const readIframeTelemetry = useCallback(() => {
+    const viewerWindow = iframeRef.current?.contentWindow as ViewerWindow | null | undefined;
+    const network = viewerWindow?.__sogsNetworkMetrics;
+    if (!network) {
+      return;
+    }
+
+    const config = viewerWindow?.__sogsInitialViewerConfig;
+    const firstFrameAt = readFiniteNumber(network.firstFrame?.at);
+    const loadStartedAt = readFiniteNumber(network.loadStartedAt);
+    const firstFrameMs =
+      firstFrameAt != null && loadStartedAt != null ? firstFrameAt - loadStartedAt : null;
+
+    if (firstFrameMs != null) {
+      setViewerState("ready");
+    }
+
+    setTelemetry((current) => ({
+      loadedNodeCount: current.loadedNodeCount,
+      chunkMetaRequestCount: Math.max(
+        current.chunkMetaRequestCount,
+        Array.isArray(network.uniqueChunkMetaUrls) ? network.uniqueChunkMetaUrls.length : 0,
+      ),
+      chunkMetaAtFirstFrame:
+        readFiniteNumber(network.firstFrame?.chunkMetaRequestCount) ?? current.chunkMetaAtFirstFrame,
+      totalRequestCount: Math.max(
+        current.totalRequestCount,
+        Array.isArray(network.events) ? network.events.length : 0,
+      ),
+      firstFrameMs: firstFrameMs ?? current.firstFrameMs,
+      splatBudget: readFiniteNumber(config?.splatBudget) ?? current.splatBudget,
+      lodRangeMin: readFiniteNumber(config?.lodRangeMin) ?? current.lodRangeMin,
+      lodRangeMax: readFiniteNumber(config?.lodRangeMax) ?? current.lodRangeMax,
+      rootManifestType:
+        typeof network.rootManifestType === "string"
+          ? network.rootManifestType
+          : current.rootManifestType,
+      rootManifestUrl:
+        typeof network.rootManifestUrl === "string"
+          ? network.rootManifestUrl
+          : current.rootManifestUrl,
+    }));
+  }, []);
+
   const attemptLoad = useCallback(async (rawValue: string) => {
     setError(null);
     const normalized = normalizeBundleUrl(rawValue);
@@ -156,7 +227,7 @@ export default function SogsViewerDevPanel() {
       return null;
     }
     const params = new URLSearchParams({
-      settings: "/supersplat-viewer/settings.json",
+      settings: VIEWER_SETTINGS,
       content: activeUrl,
     });
     if (resolvedBundle?.skyboxUrl?.trim()) {
@@ -241,7 +312,7 @@ export default function SogsViewerDevPanel() {
     }
     const params = new URLSearchParams(window.location.search);
     const q = params.get("url");
-    const raw = q?.trim() ? q.trim() : DEFAULT_SOGS_BUNDLE_URL;
+    const raw = q?.trim() ? q.trim() : defaultBundleUrl;
     const budget = String(parseOptionalInteger(params.get("budget") ?? "") ?? getDefaultBudget());
     const lodMin = params.get("lodMin")?.trim() || "0";
     const lodMax = params.get("lodMax")?.trim() || "3";
@@ -249,7 +320,7 @@ export default function SogsViewerDevPanel() {
     setLoadedInputUrl(raw);
     setStreamingConfig({ budget, lodMin, lodMax });
     void attemptLoad(raw);
-  }, [attemptLoad]);
+  }, [attemptLoad, defaultBundleUrl]);
 
   useEffect(() => {
     if (!activeUrl || viewerState !== "ready") {
@@ -258,6 +329,15 @@ export default function SogsViewerDevPanel() {
     applyStreamingConfigToIframe();
     postToIframe({ type: "sogs:requestState" });
   }, [activeUrl, applyStreamingConfigToIframe, postToIframe, viewerState, iframeKey]);
+
+  useEffect(() => {
+    if (!activeUrl) {
+      return;
+    }
+    readIframeTelemetry();
+    const interval = window.setInterval(readIframeTelemetry, 1000);
+    return () => window.clearInterval(interval);
+  }, [activeUrl, iframeKey, readIframeTelemetry]);
 
   useEffect(() => {
     if (!activeUrl || viewerState !== "ready") {

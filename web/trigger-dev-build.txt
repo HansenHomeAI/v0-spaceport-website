@@ -99,3 +99,4 @@ md1-v18-pipeline-viewer-sampled-ply-direct 2026-04-29T17:00:30-0600
 md1-v18-sfm-output-viewer 2026-04-30T07:29:38-0600
 md1-v18-production-lod-viewer 2026-04-30T11:33:45-0600
 md1-viewer-edge-runtime-fix 2026-04-30T11:57:25-0600
+md1-v18-validated-splattransform-lod 2026-04-30T15:28:00-0600

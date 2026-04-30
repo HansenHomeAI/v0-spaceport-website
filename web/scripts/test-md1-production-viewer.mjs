@@ -21,8 +21,8 @@ const logsDir = path.join(repoRoot, "logs");
 const baseUrl = (process.env.MD1_VIEWER_URL ?? "http://127.0.0.1:3031").replace(/\/$/, "");
 const lodUrl =
   process.env.MD1_LOD_URL ??
-  "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-production-lod-public-1777560644/lod-meta.json";
-const expectedChunkSubstring = process.env.MD1_EXPECT_CHUNK_SUBSTRING ?? "/compressed_lod";
+  "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json";
+const expectedChunkSubstring = process.env.MD1_EXPECT_CHUNK_SUBSTRING?.trim() || "";
 const playwrightChannel = process.env.PLAYWRIGHT_CHANNEL?.trim() || "";
 
 const scenarios = [
@@ -48,6 +48,116 @@ function parseIntOrNull(value) {
 function parseFloatOrNull(value) {
   const parsed = Number.parseFloat(value ?? "");
   return Number.isFinite(parsed) ? parsed : null;
+}
+
+function unfilterPngScanline(filter, line, previous, bytesPerPixel) {
+  const output = Buffer.allocUnsafe(line.length);
+  for (let index = 0; index < line.length; index += 1) {
+    const left = index >= bytesPerPixel ? output[index - bytesPerPixel] : 0;
+    const up = previous ? previous[index] : 0;
+    const upLeft = previous && index >= bytesPerPixel ? previous[index - bytesPerPixel] : 0;
+    let predictor = 0;
+    if (filter === 1) {
+      predictor = left;
+    } else if (filter === 2) {
+      predictor = up;
+    } else if (filter === 3) {
+      predictor = Math.floor((left + up) / 2);
+    } else if (filter === 4) {
+      const p = left + up - upLeft;
+      const pa = Math.abs(p - left);
+      const pb = Math.abs(p - up);
+      const pc = Math.abs(p - upLeft);
+      predictor = pa <= pb && pa <= pc ? left : pb <= pc ? up : upLeft;
+    }
+    output[index] = (line[index] + predictor) & 0xff;
+  }
+  return output;
+}
+
+async function analyzePng(pathname) {
+  const zlib = await import("node:zlib");
+  const file = await fs.readFile(pathname);
+  assert(file.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])), "screenshot is not PNG");
+  let offset = 8;
+  let width = 0;
+  let height = 0;
+  let colorType = 0;
+  const idat = [];
+  while (offset < file.length) {
+    const length = file.readUInt32BE(offset);
+    const type = file.toString("ascii", offset + 4, offset + 8);
+    const data = file.subarray(offset + 8, offset + 8 + length);
+    if (type === "IHDR") {
+      width = data.readUInt32BE(0);
+      height = data.readUInt32BE(4);
+      colorType = data[9];
+      assert(data[8] === 8, "only 8-bit PNG screenshots are supported");
+      assert(colorType === 2 || colorType === 6, "only RGB/RGBA PNG screenshots are supported");
+    } else if (type === "IDAT") {
+      idat.push(data);
+    } else if (type === "IEND") {
+      break;
+    }
+    offset += 12 + length;
+  }
+  const channels = colorType === 6 ? 4 : 3;
+  const rowLength = width * channels;
+  const inflated = zlib.inflateSync(Buffer.concat(idat));
+  let rowOffset = 0;
+  let previous = null;
+  let sampled = 0;
+  let visible = 0;
+  let bright = 0;
+  let dark = 0;
+  let sum = 0;
+  let sumSquared = 0;
+  let colorSpread = 0;
+  const step = Math.max(1, Math.floor(Math.min(width, height) / 160));
+
+  for (let y = 0; y < height; y += 1) {
+    const filter = inflated[rowOffset];
+    const line = inflated.subarray(rowOffset + 1, rowOffset + 1 + rowLength);
+    const row = unfilterPngScanline(filter, line, previous, channels);
+    if (y % step === 0) {
+      for (let x = 0; x < width; x += step) {
+        const index = x * channels;
+        const r = row[index];
+        const g = row[index + 1];
+        const b = row[index + 2];
+        const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        sampled += 1;
+        sum += luma;
+        sumSquared += luma * luma;
+        colorSpread += Math.max(r, g, b) - Math.min(r, g, b);
+        if (luma > 8) {
+          visible += 1;
+        }
+        if (luma > 96) {
+          bright += 1;
+        }
+        if (luma < 5) {
+          dark += 1;
+        }
+      }
+    }
+    previous = row;
+    rowOffset += rowLength + 1;
+  }
+
+  const mean = sum / Math.max(sampled, 1);
+  const variance = sumSquared / Math.max(sampled, 1) - mean * mean;
+  return {
+    width,
+    height,
+    sampled,
+    visibleRatio: visible / Math.max(sampled, 1),
+    brightRatio: bright / Math.max(sampled, 1),
+    darkRatio: dark / Math.max(sampled, 1),
+    meanLuma: mean,
+    lumaStdDev: Math.sqrt(Math.max(variance, 0)),
+    meanColorSpread: colorSpread / Math.max(sampled, 1),
+  };
 }
 
 async function readMetrics(page) {
@@ -176,12 +286,12 @@ async function runScenario(scenario) {
         },
       );
     }
-    if (scenario.name !== "mobile") {
-      await waitForChunkTelemetry(page);
-    }
+    await waitForChunkTelemetry(page);
+    await page.waitForTimeout(scenario.name === "mobile" ? 5000 : 1000);
     const metrics = await readMetrics(page);
     const screenshotPath = path.join(logsDir, `md1-production-viewer-${scenario.name}.png`);
     await page.screenshot({ path: screenshotPath, fullPage: false });
+    const visualStats = await analyzePng(screenshotPath);
     await closeScenarioContext(context, page);
 
     const chunkMetaResponses = responses.filter((event) => event.url.endsWith("/meta.json"));
@@ -189,16 +299,18 @@ async function runScenario(scenario) {
     assert(metrics.rootFile === "lod-meta.json", `${scenario.name}: expected lod-meta.json, got ${metrics.rootFile}`);
     assert(metrics.sourceUrl.includes("lod-meta.json"), `${scenario.name}: source URL should be lod-meta.json`);
     assert(metrics.chunkFiles && metrics.chunkFiles > 0, `${scenario.name}: manifest should advertise chunk files`);
-    if (scenario.name !== "mobile") {
-      assert(metrics.chunkMetaRequests > 0, `${scenario.name}: viewer should request chunk meta files`);
-    }
+    assert(metrics.chunkMetaRequests > 0, `${scenario.name}: viewer should request chunk meta files`);
     assert(metrics.firstFrameMs && metrics.firstFrameMs < 10000, `${scenario.name}: first frame exceeded 10s`);
-    if (scenario.name !== "mobile") {
+    if (expectedChunkSubstring) {
       assert(
         chunkMetaResponses.some((event) => event.url.includes(expectedChunkSubstring)),
         `${scenario.name}: expected chunk URL containing ${expectedChunkSubstring}`,
       );
+    } else {
+      assert(chunkMetaResponses.length > 0, `${scenario.name}: expected at least one chunk meta response`);
     }
+    assert(visualStats.visibleRatio > 0.03, `${scenario.name}: screenshot is visually empty`);
+    assert(visualStats.lumaStdDev > 6, `${scenario.name}: screenshot has too little visual variation`);
 
     if (scenario.name === "coarse-lod") {
       assert(metrics.lodMin === 3 && metrics.lodMax === 3, "coarse-lod: URL LOD override was not applied");
@@ -207,6 +319,7 @@ async function runScenario(scenario) {
     return {
       scenario: scenario.name,
       metrics,
+      visualStats,
       chunkMetaResponses: chunkMetaResponses.length,
       screenshotPath,
     };

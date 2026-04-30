@@ -1,0 +1,77 @@
+{
+  "ProcessingJobName": "md1-v18-splat-lod-nosingle-1777575472",
+  "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+  "AppSpecification": {
+    "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:645fd74b9217fc8441f242d8b89aefb36ef9c88192bf006ade3cfeb355bd4de3",
+    "ContainerEntrypoint": [
+      "/bin/bash",
+      "/opt/ml/processing/script/md1_splat_transform_direct_lod.sh"
+    ]
+  },
+  "ProcessingInputs": [
+    {
+      "InputName": "source-ply",
+      "S3Input": {
+        "S3Uri": "s3://spaceport-ml-processing/compressed/md1-r5-v18-raw-1777498999/",
+        "LocalPath": "/opt/ml/processing/input",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3DataDistributionType": "FullyReplicated",
+        "S3CompressionType": "None"
+      }
+    },
+    {
+      "InputName": "direct-lod-entrypoint",
+      "S3Input": {
+        "S3Uri": "s3://spaceport-ml-processing/compressed/md1-r5-v18-splattransform-lod-nosingle-1777575472/entrypoint/",
+        "LocalPath": "/opt/ml/processing/script",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3DataDistributionType": "FullyReplicated",
+        "S3CompressionType": "None"
+      }
+    }
+  ],
+  "ProcessingOutputConfig": {
+    "Outputs": [
+      {
+        "OutputName": "supersplat-bundle",
+        "S3Output": {
+          "S3Uri": "s3://spaceport-ml-processing/compressed/md1-r5-v18-splattransform-lod-nosingle-1777575472/",
+          "LocalPath": "/opt/ml/processing/output",
+          "S3UploadMode": "EndOfJob"
+        }
+      }
+    ]
+  },
+  "ProcessingResources": {
+    "ClusterConfig": {
+      "InstanceCount": 1,
+      "InstanceType": "ml.m5.4xlarge",
+      "VolumeSizeInGB": 200
+    }
+  },
+  "StoppingCondition": {
+    "MaxRuntimeInSeconds": 21600
+  },
+  "Environment": {
+    "SOGS_DEVICE": "cpu",
+    "SOGS_LOD_DECIMATION": "30%,10%,3%",
+    "SOGS_LOD_CHUNK_COUNT": "256",
+    "SOGS_LOD_CHUNK_EXTENT": "32"
+  },
+  "Tags": [
+    {
+      "Key": "project",
+      "Value": "md1-v18-production-viewer"
+    },
+    {
+      "Key": "source",
+      "Value": "validated-splat-transform-lod-compressor-direct-lod"
+    },
+    {
+      "Key": "branch",
+      "Value": "agent-90742618-md1-geometry-consistency"
+    }
+  ]
+}
