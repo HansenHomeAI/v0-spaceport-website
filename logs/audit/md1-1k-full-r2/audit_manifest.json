@@ -6690,9 +6690,21 @@
       "python_py_compile": "passed",
       "git_diff_check": "passed",
       "npm_run_build": "passed_with_pre_existing_lint_warnings",
+      "npm_run_cf_build": "passed_after_edge_runtime_fix_with_pre_existing_lint_warnings",
       "playwright_desktop_mobile_smoke": "passed",
-      "in_app_browser": "passed"
+      "in_app_browser": "passed",
+      "first_pushed_cdk_deploy": {
+        "head": "741619b9eafb1fe0880ee05f265b85e831f7041d",
+        "run_id": "25180463875",
+        "conclusion": "success"
+      },
+      "first_pushed_cloudflare_pages": {
+        "head": "741619b9eafb1fe0880ee05f265b85e831f7041d",
+        "run_id": "25180463882",
+        "conclusion": "failure",
+        "failure_reason": "next-on-pages requires non-static /md1-viewer to export Edge runtime; fixed locally by adding export const runtime = \"edge\""
+      }
     },
-    "checked_at": "2026-04-30T17:33:45Z"
+    "checked_at": "2026-04-30T17:57:25Z"
   }
 }
