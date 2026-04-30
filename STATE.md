@@ -1,9 +1,9 @@
 reason: building the mature-branch distributed SfM production spine from origin/agent-31459027-sfm-final-bridge-fallback without mutating the mature branch.
-last_step: R4 exact 2157-image proof launched as SageMaker job r4exact739-1777570477 using full input s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip plus mature ladder_2000 manifest subset s3://spaceport-ml-processing-staging/manual-validations/md1p2dd70full-1776233149/colmap/chunk_planner_manifest.json. Compute image tag agent73948216sfmproductionspine resolves to sha256:9714d61c9219166a626462e84857ca6a326b1e21fa4ce9c80d2f433dd47352b3 and SFM_GIT_HEAD is pinned to 9f7bd89637c60f930eca1c14f1de340a14edfdf9. Initial SageMaker status is InProgress; ProcessingStartTime is not set yet.
+last_step: R4 exact 2157-image proof launched as SageMaker job r4exact739-1777570477 using full input s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip plus mature ladder_2000 manifest subset s3://spaceport-ml-processing-staging/manual-validations/md1p2dd70full-1776233149/colmap/chunk_planner_manifest.json. Compute image tag agent73948216sfmproductionspine resolves to sha256:9714d61c9219166a626462e84857ca6a326b1e21fa4ce9c80d2f433dd47352b3 and SFM_GIT_HEAD is pinned to 9f7bd89637c60f930eca1c14f1de340a14edfdf9. SageMaker status is InProgress; ProcessingStartTime is 2026-04-30T17:35:24.315Z; no FailureReason and no EndOfJob S3 output yet.
 next_unblocked_step: monitor R4 job r4exact739-1777570477 through planner, leaf chunks, bridge/merge, S3 upload, metadata parsing, sparse/0 proof, and pipeline-viewer proof.
 owner_action_needed: none
 active_jobs:
-  - r4exact739-1777570477 -> InProgress; input s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip; subset ladder_2000 from s3://spaceport-ml-processing-staging/manual-validations/md1p2dd70full-1776233149/colmap/chunk_planner_manifest.json; output s3://spaceport-ml-processing-staging/manual-validations/r4exact739-1777570477/colmap
+  - r4exact739-1777570477 -> InProgress, ProcessingStartTime 2026-04-30T17:35:24.315Z, no FailureReason, no EndOfJob S3 output yet; input s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip; subset ladder_2000 from s3://spaceport-ml-processing-staging/manual-validations/md1p2dd70full-1776233149/colmap/chunk_planner_manifest.json; output s3://spaceport-ml-processing-staging/manual-validations/r4exact739-1777570477/colmap
 latest_artifacts:
   - logs/sfm-production-spine/port_inventory.md
   - logs/sfm-production-spine/frontier.json
@@ -48,5 +48,5 @@ latest_artifacts:
   - https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev
   - https://9b941756.v0-spaceport-website-preview2.pages.dev
 branch: agent-73948216-sfm-production-spine
-head: 51373592b190671a3d20f702b1e02f0f0cc701d0
-updated: 2026-04-30T17:34:38Z
+head: d991bbf5234eaf40d6f6d965ee4ffe28b03f5957
+updated: 2026-04-30T17:41:27Z

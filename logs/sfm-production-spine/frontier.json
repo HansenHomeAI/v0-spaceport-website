@@ -1,6 +1,6 @@
 {
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "51373592b190671a3d20f702b1e02f0f0cc701d0",
+  "head": "d991bbf5234eaf40d6f6d965ee4ffe28b03f5957",
   "current_rung": "R4",
   "current_goal": "Monitor exact 2157-image proof r4exact739-1777570477 to completion, then validate metadata, sparse/0, and pipeline-viewer proof.",
   "last_command": "python3 scripts/sfm/run_sfm_benchmark.py --branch agent-73948216-sfm-production-spine --mode chunked --input-s3-uri s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip --job-prefix r4exact739 --instance-type ml.g4dn.xlarge --volume-size-gb 120 --image-tag agent73948216sfmproductionspine --subset-strategy md1_phase2_candidate_ladder_2000 --env SFM_GIT_HEAD=9f7bd89637c60f930eca1c14f1de340a14edfdf9 --env COLMAP_PIPELINE_MODE=distributed_chunked_v1 --env COLMAP_CHUNK_PLANNER=footprint_graph_v1 --env COLMAP_MATCH_PROFILE=P3 --env COLMAP_CHUNK_TARGET_IMAGES=200 --env COLMAP_CHUNK_HARD_MAX_IMAGES=320 --env COLMAP_LEAF_TARGET_IMAGES=200 --env COLMAP_LEAF_HARD_CAP=320 --env COLMAP_PAIR_CAP_LOCAL=24 --env COLMAP_PAIR_CAP_REVISIT=10 --env COLMAP_PAIR_CAP_SEAM=10 --env COLMAP_PARENT_MERGE_MODE=legacy_rerun --env COLMAP_INPUT_SUBSET_MANIFEST_URI=s3://spaceport-ml-processing-staging/manual-validations/md1p2dd70full-1776233149/colmap/chunk_planner_manifest.json --env COLMAP_INPUT_SUBSET_NAME=ladder_2000 --summary-json-output logs/sfm-production-spine/r4_exact_2157_submit.json",
@@ -12,7 +12,7 @@
       "input_subset_name": "ladder_2000",
       "expected_image_count": 2157,
       "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739-1777570477/colmap",
-      "status": "InProgress; ProcessingStartTime not set at first describe; image digest sha256:9714d61c9219166a626462e84857ca6a326b1e21fa4ce9c80d2f433dd47352b3; SFM_GIT_HEAD pinned to 9f7bd89637c60f930eca1c14f1de340a14edfdf9",
+      "status": "InProgress; ProcessingStartTime 2026-04-30T17:35:24.315Z; no FailureReason; no EndOfJob S3 output yet; image digest sha256:9714d61c9219166a626462e84857ca6a326b1e21fa4ce9c80d2f433dd47352b3; SFM_GIT_HEAD pinned to 9f7bd89637c60f930eca1c14f1de340a14edfdf9",
       "created": "2026-04-30T17:34:38Z"
     }
   ],
@@ -104,7 +104,7 @@
     "r3_input_discovery": "s3://spaceport-ml-processing-staging/manual-validations/md1p27eba1k-1776107310/colmap/ladders/ladder_1000.zip",
     "r3_job": "r3lad1000a739-1777554908 submitted at 2026-04-30T13:15:09Z on ml.g4dn.xlarge, output s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap",
     "r3_job_head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
-    "current_ledger_head": "51373592b190671a3d20f702b1e02f0f0cc701d0",
+    "current_ledger_head": "d991bbf5234eaf40d6f6d965ee4ffe28b03f5957",
     "r3_latest_log": "Feature extraction completed 1079/1079 in 41.633 minutes; chunk_00_mapper_initial registered 160/160 with 121178 points; chunk_01 model0 registered 291/320 with 209043 points and 291/291 core images; secondary model1 registered 28/320 with 18602 points; chunk_02_mapper_initial registered 319/320 images with 240458 points; chunk_03_mapper_initial model2 registered 136/176 images with 122190 points and 120/120 core images; chunk_04_matches_importer added 2142 verified pairs; chunk_04_mapper_initial model0 registered 253/284 images with 196017 points, secondary model1 30/284 with 19853 points, and core gate 253/253 so boundary recovery was skipped; registered chunk-overlap graph had 3 components, so bounded bridge recovery started chunk_00_03_merge_bridge across 296 images; bridge matches_importer added 2632 verified pairs; chunk_00_03_merge_bridge_mapper_initial model1 registered 296/296 images with 243774 points and overlapped both bridge targets with 296 shared registered images; registered chunk overlap graph then had 2 components, so bounded bridge chunk 2-4 started across 590 images; chunk_02_04_merge_bridge_matches_importer added 4780 verified pairs; chunk_02_04_merge_bridge_mapper_initial model0 registered 590/590 images with 450270 points and overlapped both bridge targets with 590 shared registered images; chunk model merger attempts 01-06 completed merged reconstructions through 2026-04-30T17:17:38Z; reported fallback: COLMAP structure-less registration in bridge recovery; S3 output still empty before EndOfJob upload",
     "pipeline_viewer_local": "Added /pipeline-viewer and /sfm-preview COLMAP sparse viewer; npm run build passed; local API loaded r1cross739x2 with 485 cameras, 325930 points, 2 chunks; Playwright Chrome screenshots saved for desktop/mobile with nonblank image means 0.158561/0.162179",
     "branch_workflow_current": "Ledger commit 51373592b190671a3d20f702b1e02f0f0cc701d0 pushed; CDK Deploy 25173892902 succeeded. No Pages run for this ledger-only head appeared. Previous chrome-free preview remains green at PREVIEW_URL=https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev",
@@ -120,15 +120,16 @@
     "r3_status": "passed: 1079/1079, 851843 API/metadata points, 789.47 metadata pts/image, standard sparse0 true, pipeline-viewer screenshot proof saved, SageMaker Completed",
     "r3_runtime_gate": "accepted as scope-normalized proof: 14363.12s total, 13.31s/image, versus mature full baseline 36033.85s total, 16.71s/image; no strict same-scope serial 1000-image baseline found, so this is not recorded as exact same-scope proof",
     "r4_input_discovery": "baseline md1p24e752k used input s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip with COLMAP_INPUT_SUBSET_MANIFEST_URI=s3://spaceport-ml-processing-staging/manual-validations/md1p2dd70full-1776233149/colmap/chunk_planner_manifest.json and COLMAP_INPUT_SUBSET_NAME=ladder_2000 for 2157 images",
-    "r4_job": "r4exact739-1777570477 launched for exact ladder_2000 2157-image proof; input s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip; output s3://spaceport-ml-processing-staging/manual-validations/r4exact739-1777570477/colmap",
+    "r4_job": "r4exact739-1777570477 InProgress; ProcessingStartTime 2026-04-30T17:35:24.315Z; no FailureReason; input s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip; output s3://spaceport-ml-processing-staging/manual-validations/r4exact739-1777570477/colmap",
     "r4_job_head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
     "r4_compute_image": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine digest sha256:9714d61c9219166a626462e84857ca6a326b1e21fa4ce9c80d2f433dd47352b3, pushed 2026-04-29T22:35:27.116Z",
-    "r4_expected_gate": "registration >=0.98 target 2157/2157; points per registered image >=568 target near 757.51; sparse/0 and pipeline-viewer proof required"
+    "r4_expected_gate": "registration >=0.98 target 2157/2157; points per registered image >=568 target near 757.51; sparse/0 and pipeline-viewer proof required",
+    "r3_r4_ledger_push": "commit d991bbf5234eaf40d6f6d965ee4ffe28b03f5957 pushed to origin/agent-73948216-sfm-production-spine"
   },
   "promotion_status": "blocked",
   "blockers": [
     "R4 exact 2157-image proof is running and not yet validated; R5 huge-acreage proof has not run."
   ],
   "next_unblocked_step": "Monitor r4exact739-1777570477 until terminal status and parse live logs for planner/chunk/merge progress.",
-  "updated": "2026-04-30T17:34:38Z"
+  "updated": "2026-04-30T17:41:27Z"
 }
