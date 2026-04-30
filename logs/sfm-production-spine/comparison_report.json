@@ -117,7 +117,7 @@
     "bounded_chunk_retry_result": "terminal Completed: ladder_2000 chunk_00 only with 7200s chunk/bridge mapper timeouts passed with 320/320 registered, 238876 raw points, 746.49 pts/image, leaf status passed, reducer standard_sparse0_exists=true, promotion_blockers=[], sparse/0 exists",
     "active_exact_retry_job": "r4exact739x2-1777587765",
     "active_exact_retry_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739x2-1777587765/colmap",
-    "active_exact_retry_latest_progress": "InProgress; ProcessingStartTime 2026-04-30T22:23:42.658Z; no log stream yet and S3 output empty before EndOfJob upload; terminal metrics and viewer proof not yet available",
+    "active_exact_retry_latest_progress": "InProgress; ProcessingStartTime 2026-04-30T22:23:42.658Z; CloudWatch stream r4exact739x2-1777587765/algo-1-1777587822 started; extracted 2157 images, detected GPS/orientation priors on 2157/2157 images, prepared image list, and started GPU feature extraction at 2026-04-30T22:30:57Z; S3 output empty before EndOfJob upload; terminal metrics and viewer proof not yet available",
     "duplicate_exact_retry_cleanup": "r4exact739t-1777588010 is a non-canonical duplicate; stop requested and control plane is Stopping after ProcessingStartTime 2026-04-30T22:27:33.070Z"
   }
 }

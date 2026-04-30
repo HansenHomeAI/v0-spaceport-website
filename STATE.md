@@ -1,9 +1,9 @@
 reason: building the mature-branch distributed SfM production spine from origin/agent-31459027-sfm-final-bridge-fallback without mutating the mature branch; sfm-reality-check heartbeat stays active until full verified end-goal proof or explicit owner stop.
-last_step: R4 chunk_00 retry r4c0t739-1777579549 reached SageMaker Completed with standard sparse/0 and passed metadata gates: 320/320 registered, 238876 raw points, 746.49 pts/registered image, leaf status passed, reducer standard_sparse0_exists=true, promotion_blockers=[]; full exact R4 retry r4exact739x2-1777587765 is InProgress and CloudWatch stream r4exact739x2-1777587765/algo-1-1777587822 started extraction at 2026-04-30T22:29:45Z.
-next_unblocked_step: monitor r4exact739x2-1777587765 through terminal completion, collect sfm/leaf/reducer/planner metadata and pipeline-viewer proof if it passes; do not run R5 until R4 exact is green and recorded.
+last_step: R4 exact retry r4exact739x2-1777587765 started CloudWatch stream r4exact739x2-1777587765/algo-1-1777587822, verified Tesla T4 runtime, extracted 2157 images, detected GPS/orientation priors on 2157/2157 images, prepared the image list, and started GPU feature extraction at 2026-04-30T22:30:57Z.
+next_unblocked_step: monitor r4exact739x2-1777587765 feature extraction progress, chunk planning/matching, chunk mapper gates, terminal metadata, sparse/0, and pipeline-viewer proof if it passes; do not run R5 until R4 exact is green and recorded.
 owner_action_needed: none
 active_jobs:
-  - r4exact739x2-1777587765 -> canonical full exact R4 retry, InProgress; ProcessingStartTime 2026-04-30T22:23:42.658Z; CloudWatch stream r4exact739x2-1777587765/algo-1-1777587822; output s3://spaceport-ml-processing-staging/manual-validations/r4exact739x2-1777587765/colmap; 2157-image ladder_2000 input, distributed_chunked_v1, footprint_graph_v1, P3 matching, 7200s chunk/bridge mapper timeouts; extraction started 2026-04-30T22:29:45Z and S3 output remains empty before EndOfJob upload
+  - r4exact739x2-1777587765 -> canonical full exact R4 retry, InProgress; ProcessingStartTime 2026-04-30T22:23:42.658Z; CloudWatch stream r4exact739x2-1777587765/algo-1-1777587822; extracted 2157 images and started GPU feature extraction at 2026-04-30T22:30:57Z; output s3://spaceport-ml-processing-staging/manual-validations/r4exact739x2-1777587765/colmap; 2157-image ladder_2000 input, distributed_chunked_v1, footprint_graph_v1, P3 matching, 7200s chunk/bridge mapper timeouts; S3 output remains empty before EndOfJob upload
   - r4exact739t-1777588010 -> duplicate full exact retry submitted after handoff confusion; stop requested and control plane is Stopping after ProcessingStartTime 2026-04-30T22:27:33.070Z; monitor only until terminal Stopped; not canonical
   - r4c0t739-1777579549 -> Completed; output s3://spaceport-ml-processing-staging/manual-validations/r4c0t739-1777579549/colmap has sparse/0, sfm_metadata, leaf_metadata, reducer_metadata; 320/320 registered, 238876 raw points, 746.49 pts/image, standard_sparse0_exists=true, promotion_blockers=[]
   - r4c0retry739-1777579567 -> duplicate retry, Stopped at 2026-04-30T20:08:44.193Z; do not monitor as canonical
@@ -65,4 +65,4 @@ latest_artifacts:
   - https://9b941756.v0-spaceport-website-preview2.pages.dev
 branch: agent-73948216-sfm-production-spine
 head: 08abda791c725c7ec3d5202409099c0d856f6d0a
-updated: 2026-04-30T22:31:00Z
+updated: 2026-04-30T22:31:09Z

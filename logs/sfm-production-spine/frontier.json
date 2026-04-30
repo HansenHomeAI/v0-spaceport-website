@@ -12,7 +12,7 @@
       "input_subset_name": "ladder_2000",
       "expected_image_count": 2157,
       "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739x2-1777587765/colmap",
-      "status": "InProgress; ProcessingStartTime 2026-04-30T22:23:42.658Z; no log stream yet; S3 output empty as expected before EndOfJob upload; output s3://spaceport-ml-processing-staging/manual-validations/r4exact739x2-1777587765/colmap; 2157-image ladder_2000 exact retry with COLMAP_CHUNK_MAPPER_TIMEOUT_SECONDS=7200 and COLMAP_BRIDGE_MAPPER_TIMEOUT_SECONDS=7200",
+      "status": "InProgress; ProcessingStartTime 2026-04-30T22:23:42.658Z; CloudWatch stream r4exact739x2-1777587765/algo-1-1777587822 live; extracted 2157 images and started GPU feature extraction at 2026-04-30T22:30:57Z; S3 output empty as expected before EndOfJob upload; output s3://spaceport-ml-processing-staging/manual-validations/r4exact739x2-1777587765/colmap; 2157-image ladder_2000 exact retry with COLMAP_CHUNK_MAPPER_TIMEOUT_SECONDS=7200 and COLMAP_BRIDGE_MAPPER_TIMEOUT_SECONDS=7200",
       "created": "2026-04-30T22:22:52Z"
     },
     {
@@ -159,7 +159,7 @@
     "r4_timeout_retry_ledger_push": "commit 08abda791c725c7ec3d5202409099c0d856f6d0a pushed to origin/agent-73948216-sfm-production-spine",
     "heartbeat_correction_live": "sfm-reality-check automation is ACTIVE every 30 minutes and must remain active until complete verified end-goal proof or explicit owner stop; duplicate sfm-reality-check-2 remains paused, not deleted",
     "r4_chunk0_retry_terminal": "SageMaker r4c0t739-1777579549 Completed; ProcessingEndTime 2026-04-30T22:17:24.812Z; no FailureReason",
-    "r4_exact_retry_job": "r4exact739x2-1777587765 InProgress; ProcessingStartTime 2026-04-30T22:23:42.658Z; no log stream yet; S3 output empty before EndOfJob upload; input s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip; subset manifest s3://spaceport-ml-processing-staging/manual-validations/md1p2dd70full-1776233149/colmap/chunk_planner_manifest.json; subset ladder_2000; output s3://spaceport-ml-processing-staging/manual-validations/r4exact739x2-1777587765/colmap; 7200s chunk/bridge mapper timeouts",
+    "r4_exact_retry_job": "r4exact739x2-1777587765 InProgress; ProcessingStartTime 2026-04-30T22:23:42.658Z; CloudWatch stream r4exact739x2-1777587765/algo-1-1777587822 live; extracted 2157 images and started GPU feature extraction at 2026-04-30T22:30:57Z; S3 output empty before EndOfJob upload; input s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip; subset manifest s3://spaceport-ml-processing-staging/manual-validations/md1p2dd70full-1776233149/colmap/chunk_planner_manifest.json; subset ladder_2000; output s3://spaceport-ml-processing-staging/manual-validations/r4exact739x2-1777587765/colmap; 7200s chunk/bridge mapper timeouts",
     "r4_duplicate_full_retry_cleanup": "r4exact739t-1777588010 was duplicate full exact retry; stop requested and control plane is Stopping after ProcessingStartTime 2026-04-30T22:27:33.070Z; it is not canonical",
     "r4_exact_retry_startup": "r4exact739x2-1777587765 CloudWatch stream r4exact739x2-1777587765/algo-1-1777587822 started; container verified Tesla T4, 15GiB RAM, input zip 12.8GB, began extracting archive at 2026-04-30T22:29:45Z"
   },
@@ -169,6 +169,6 @@
     "R4 exact retry r4exact739x2-1777587765 is running but has not yet produced terminal metrics or viewer proof.",
     "R5 huge-acreage proof has not run."
   ],
-  "next_unblocked_step": "Monitor r4exact739x2-1777587765 through terminal completion, collect sfm/leaf/reducer/planner metadata and pipeline-viewer proof if it passes; do not run R5 until R4 exact is green and recorded.",
-  "updated": "2026-04-30T22:31:00Z"
+  "next_unblocked_step": "Monitor r4exact739x2-1777587765 feature extraction progress, chunk planning/matching, chunk mapper gates, terminal metadata, sparse/0, and pipeline-viewer proof if it passes; do not run R5 until R4 exact is green and recorded.",
+  "updated": "2026-04-30T22:31:09Z"
 }
