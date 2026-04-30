@@ -43,3 +43,5 @@
 [2026-04-30T03:39:21Z] R2 monitor -> c0 reached chunk_00_mapper_initial num_reg_frames=296 after a long BA pause; c1 remains completed with metadata fetched -> continue polling c0 to completion
 [2026-04-30T03:40:45Z] R2 monitor -> c0 reached chunk_00_mapper_initial num_reg_frames=319 and remains InProgress with no S3 output yet; c1 remains Completed -> continue polling c0 to upload and fetch metadata
 [2026-04-30T03:44:52Z] R2 validate -> c0 Completed and metadata fetched; leaf 0 passed 320/320 with 209873 points, leaf 1 passed 220/220 with 156826 points, both sparse0 true and no fallbacks -> record R2 passed and prepare final proof ledger
+[2026-04-30T03:46:59Z] final verification -> py_compile passed, unit tests ran 101 OK, both R2 SageMaker jobs Completed, no local monitor processes remain -> commit and push proof ledger
+[2026-04-30T03:47:43Z] heartbeat cleanup -> deleted sfm-reality-check because accepted R0/R1/R2 proof milestone is complete -> commit and push proof ledger
