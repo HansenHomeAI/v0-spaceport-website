@@ -1,15 +1,15 @@
 {
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
+  "head": "567b7bbc9e64dfc64311e76a2a92f4285304ece2",
   "current_rung": "R3",
-  "current_goal": "Launch and monitor R3 1000-image ladder after restoring the heartbeat automation.",
+  "current_goal": "Monitor R3 1000-image ladder after restoring the heartbeat automation.",
   "last_command": "python3 scripts/sfm/run_sfm_benchmark.py --branch agent-73948216-sfm-production-spine --mode chunked --input-s3-uri s3://spaceport-ml-processing-staging/manual-validations/md1p27eba1k-1776107310/colmap/ladders/ladder_1000.zip --output-s3-uri s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap --job-prefix r3lad1000a739 --instance-type ml.g4dn.xlarge --volume-size-gb 120 --env COLMAP_PIPELINE_MODE=distributed_chunked_v1 --env COLMAP_CHUNK_PLANNER=footprint_graph_v1 --env COLMAP_MATCH_PROFILE=P3 --env COLMAP_CHUNK_TARGET_IMAGES=200 --env COLMAP_CHUNK_HARD_MAX_IMAGES=320 --env COLMAP_LEAF_TARGET_IMAGES=200 --env COLMAP_LEAF_HARD_CAP=320 --env COLMAP_PAIR_CAP_LOCAL=24 --env COLMAP_PAIR_CAP_REVISIT=10 --env COLMAP_PAIR_CAP_SEAM=10 --env COLMAP_PARENT_MERGE_MODE=legacy_rerun --summary-json-output logs/sfm-production-spine/r3_ladder_1000_submit.json",
   "active_jobs": [
     {
       "job_name": "r3lad1000a739-1777554908",
       "input_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p27eba1k-1776107310/colmap/ladders/ladder_1000.zip",
       "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap",
-      "status": "InProgress",
+      "status": "InProgress: chunk_01_mapper_initial num_reg_frames=233 after chunk 0 passed 160/160",
       "created": "2026-04-30T13:15:09Z"
     }
   ],
@@ -50,6 +50,8 @@
     "logs/sfm-production-spine/r2_leaf_fanout_summary.json",
     "s3://spaceport-ml-processing-staging/manual-validations/r2leaf739c0-1777517712/colmap/sparse/0/",
     "logs/sfm-production-spine/r3_ladder_1000_submit.json",
+    "logs/sfm-production-spine/pipeline-viewer-r1-desktop.png",
+    "logs/sfm-production-spine/pipeline-viewer-r1-mobile.png",
     "s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap",
     "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev",
     "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine@sha256:9714d61c9219166a626462e84857ca6a326b1e21fa4ce9c80d2f433dd47352b3"
@@ -83,12 +85,18 @@
     "heartbeat": "sfm-reality-check restored and must remain active until R3/R4/R5 final end-goal proof or explicit owner stop",
     "final_branch_workflow": "CDK Deploy 25146372973 success at 9f7bd89637c60f930eca1c14f1de340a14edfdf9",
     "r3_input_discovery": "s3://spaceport-ml-processing-staging/manual-validations/md1p27eba1k-1776107310/colmap/ladders/ladder_1000.zip",
-    "r3_job": "r3lad1000a739-1777554908 submitted at 2026-04-30T13:15:09Z on ml.g4dn.xlarge, output s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap"
+    "r3_job": "r3lad1000a739-1777554908 submitted at 2026-04-30T13:15:09Z on ml.g4dn.xlarge, output s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap",
+    "r3_job_head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
+    "current_ledger_head": "567b7bbc9e64dfc64311e76a2a92f4285304ece2",
+    "r3_latest_log": "Feature extraction completed 1079/1079 in 41.633 minutes; chunk_00_matches_importer added 1212 verified pairs; chunk_00_mapper_initial registered 160/160 with 121178 points; chunk_01_matches_importer added 2362 verified pairs; chunk_01_mapper_initial reached num_reg_frames=233 at 2026-04-30T14:36:05Z",
+    "pipeline_viewer_local": "Added /pipeline-viewer and /sfm-preview COLMAP sparse viewer; npm run build passed; local API loaded r1cross739x2 with 485 cameras, 325930 points, 2 chunks; Playwright Chrome screenshots saved for desktop/mobile with nonblank image means 0.158561/0.162179",
+    "branch_workflow_current": "CDK Deploy 25167546004 succeeded at 567b7bbc9e64dfc64311e76a2a92f4285304ece2",
+    "heartbeat_correction": "sfm-reality-check is ACTIVE; duplicate sfm-reality-check-2 is PAUSED, not deleted, to prevent competing workers while preserving the canonical heartbeat"
   },
   "promotion_status": "blocked",
   "blockers": [
     "R3 1000-image and R4 2157-image gates have not run; no full production promotion is claimed."
   ],
   "next_unblocked_step": "Monitor R3 job r3lad1000a739-1777554908 to completion, fetch metadata/sparse proof, and gate R3 before any R4 launch.",
-  "updated": "2026-04-30T13:15:32Z"
+  "updated": "2026-04-30T14:36:06Z"
 }

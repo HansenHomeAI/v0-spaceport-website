@@ -1,9 +1,9 @@
 reason: building the mature-branch distributed SfM production spine from origin/agent-31459027-sfm-final-bridge-fallback without mutating the mature branch.
-last_step: Launched R3 1000-image ladder job r3lad1000a739-1777554908 on distributed_chunked_v1 from the recovered ladder_1000.zip input.
+last_step: R3 job r3lad1000a739-1777554908 completed chunk_00_mapper_initial at 160/160 registered images with 121178 points; chunk_01_matches_importer added 2362 verified pairs and chunk_01_mapper_initial reached num_reg_frames=233 at 2026-04-30T14:36:05Z. Added and locally verified /pipeline-viewer for COLMAP sparse outputs against R1 cross_pass.
 next_unblocked_step: monitor R3 job r3lad1000a739-1777554908 to completion, fetch metadata/sparse proof, then gate R3 before any R4 launch.
 owner_action_needed: none
 active_jobs:
-  - r3lad1000a739-1777554908 -> InProgress, R3 1000-image ladder, s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap
+  - r3lad1000a739-1777554908 -> InProgress, chunk_01_mapper_initial num_reg_frames=233 after chunk 0 passed 160/160, R3 1000-image ladder, s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap
 latest_artifacts:
   - logs/sfm-production-spine/port_inventory.md
   - logs/sfm-production-spine/frontier.json
@@ -29,8 +29,10 @@ latest_artifacts:
   - logs/sfm-production-spine/r2_leaf_fanout_summary.json
   - s3://spaceport-ml-processing-staging/manual-validations/r2leaf739c0-1777517712/colmap/sparse/0/
   - logs/sfm-production-spine/r3_ladder_1000_submit.json
+  - logs/sfm-production-spine/pipeline-viewer-r1-desktop.png
+  - logs/sfm-production-spine/pipeline-viewer-r1-mobile.png
   - s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap
   - https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev
 branch: agent-73948216-sfm-production-spine
-head: 9f7bd89637c60f930eca1c14f1de340a14edfdf9
-updated: 2026-04-30T13:15:32Z
+head: 567b7bbc9e64dfc64311e76a2a92f4285304ece2
+updated: 2026-04-30T14:36:06Z
