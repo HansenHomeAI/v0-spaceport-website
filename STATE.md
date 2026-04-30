@@ -1,9 +1,9 @@
 reason: building the mature-branch distributed SfM production spine from origin/agent-31459027-sfm-final-bridge-fallback without mutating the mature branch.
-last_step: R3 chunk_04_matches_importer added 2142 verified image pairs and chunk_04_mapper_initial reached num_reg_frames=12 at 2026-04-30T15:21:31Z. Chrome-free preview deploy 25172986616 succeeded for e38793054d552e6b10e7f7b673d05beb7f778da8; /pipeline-viewer and /sfm-preview returned HTTP 200 and the preview API loaded r1cross739x2 metrics.
-next_unblocked_step: monitor R3 job r3lad1000a739-1777554908 to completion, fetch metadata/sparse proof, then gate R3 before any R4 launch.
+last_step: R4 exact 2157-image proof launched as SageMaker job r4exact739-1777570477 using full input s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip plus mature ladder_2000 manifest subset s3://spaceport-ml-processing-staging/manual-validations/md1p2dd70full-1776233149/colmap/chunk_planner_manifest.json. Compute image tag agent73948216sfmproductionspine resolves to sha256:9714d61c9219166a626462e84857ca6a326b1e21fa4ce9c80d2f433dd47352b3 and SFM_GIT_HEAD is pinned to 9f7bd89637c60f930eca1c14f1de340a14edfdf9. Initial SageMaker status is InProgress; ProcessingStartTime is not set yet.
+next_unblocked_step: monitor R4 job r4exact739-1777570477 through planner, leaf chunks, bridge/merge, S3 upload, metadata parsing, sparse/0 proof, and pipeline-viewer proof.
 owner_action_needed: none
 active_jobs:
-  - r3lad1000a739-1777554908 -> InProgress, chunk_04_mapper_initial num_reg_frames=12 after chunk_03 registered 136/176 total and 120/120 core, R3 1000-image ladder, s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap
+  - r4exact739-1777570477 -> InProgress; input s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip; subset ladder_2000 from s3://spaceport-ml-processing-staging/manual-validations/md1p2dd70full-1776233149/colmap/chunk_planner_manifest.json; output s3://spaceport-ml-processing-staging/manual-validations/r4exact739-1777570477/colmap
 latest_artifacts:
   - logs/sfm-production-spine/port_inventory.md
   - logs/sfm-production-spine/frontier.json
@@ -29,11 +29,24 @@ latest_artifacts:
   - logs/sfm-production-spine/r2_leaf_fanout_summary.json
   - s3://spaceport-ml-processing-staging/manual-validations/r2leaf739c0-1777517712/colmap/sparse/0/
   - logs/sfm-production-spine/r3_ladder_1000_submit.json
+  - logs/sfm-production-spine/r4_exact_2157_submit.json
+  - logs/sfm-production-spine/r3_ladder_1000_summary.json
+  - logs/sfm-production-spine/r3lad1000a739-1777554908-sfm_metadata.json
+  - logs/sfm-production-spine/r3lad1000a739-1777554908-leaf_metadata.json
+  - logs/sfm-production-spine/r3lad1000a739-1777554908-reducer_metadata.json
+  - logs/sfm-production-spine/r3lad1000a739-1777554908-planner_static_report.json
+  - logs/sfm-production-spine/r3lad1000a739-1777554908-chunk_planner_manifest.json
+  - logs/sfm-production-spine/pipeline-viewer-r3-dom-snapshot.md
+  - logs/sfm-production-spine/pipeline-viewer-r3-desktop.png
+  - logs/sfm-production-spine/pipeline-viewer-preview-r3-desktop.png
+  - logs/sfm-production-spine/pipeline-viewer-preview-r3-canvas.png
+  - s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap/sparse/0/
   - logs/sfm-production-spine/pipeline-viewer-r1-desktop.png
   - logs/sfm-production-spine/pipeline-viewer-r1-mobile.png
+  - logs/sfm-production-spine/pipeline-viewer-preview-r1-desktop.png
   - s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap
   - https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev
   - https://9b941756.v0-spaceport-website-preview2.pages.dev
 branch: agent-73948216-sfm-production-spine
-head: e38793054d552e6b10e7f7b673d05beb7f778da8
-updated: 2026-04-30T15:22:23Z
+head: 51373592b190671a3d20f702b1e02f0f0cc701d0
+updated: 2026-04-30T17:34:38Z

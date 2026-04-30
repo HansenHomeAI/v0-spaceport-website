@@ -1,0 +1,40 @@
+{
+  "branch": "agent-73948216-sfm-production-spine",
+  "head": "51373592b190671a3d20f702b1e02f0f0cc701d0",
+  "compute_head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
+  "mode": "distributed_chunked_v1",
+  "planner": "footprint_graph_v1",
+  "rung": "R4",
+  "job_name": "r4exact739-1777570477",
+  "status": "InProgress",
+  "created": "2026-04-30T17:34:38.562Z",
+  "input_s3_uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+  "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739-1777570477/colmap",
+  "instance_type": "ml.g4dn.xlarge",
+  "volume_size_gb": 120,
+  "environment": {
+    "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+    "COLMAP_CHUNK_PLANNER": "footprint_graph_v1",
+    "COLMAP_INPUT_SUBSET_MANIFEST_URI": "s3://spaceport-ml-processing-staging/manual-validations/md1p2dd70full-1776233149/colmap/chunk_planner_manifest.json",
+    "COLMAP_INPUT_SUBSET_NAME": "ladder_2000",
+    "COLMAP_MATCH_PROFILE": "P3",
+    "COLMAP_CHUNK_TARGET_IMAGES": "200",
+    "COLMAP_CHUNK_HARD_MAX_IMAGES": "320",
+    "COLMAP_LEAF_TARGET_IMAGES": "200",
+    "COLMAP_LEAF_HARD_CAP": "320",
+    "COLMAP_PAIR_CAP_LOCAL": "24",
+    "COLMAP_PAIR_CAP_REVISIT": "10",
+    "COLMAP_PAIR_CAP_SEAM": "10",
+    "COLMAP_PARENT_MERGE_MODE": "legacy_rerun"
+  },
+  "command": "python3 scripts/sfm/run_sfm_benchmark.py --branch agent-73948216-sfm-production-spine --mode chunked --input-s3-uri s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip --output-s3-uri s3://spaceport-ml-processing-staging/manual-validations/r4exact739-1777570477/colmap --job-prefix r4exact739 --instance-type ml.g4dn.xlarge --volume-size-gb 120 --env COLMAP_PIPELINE_MODE=distributed_chunked_v1 --env COLMAP_CHUNK_PLANNER=footprint_graph_v1 --env COLMAP_INPUT_SUBSET_MANIFEST_URI=s3://spaceport-ml-processing-staging/manual-validations/md1p2dd70full-1776233149/colmap/chunk_planner_manifest.json --env COLMAP_INPUT_SUBSET_NAME=ladder_2000 --env COLMAP_MATCH_PROFILE=P3 --env COLMAP_CHUNK_TARGET_IMAGES=200 --env COLMAP_CHUNK_HARD_MAX_IMAGES=320 --env COLMAP_LEAF_TARGET_IMAGES=200 --env COLMAP_LEAF_HARD_CAP=320 --env COLMAP_PAIR_CAP_LOCAL=24 --env COLMAP_PAIR_CAP_REVISIT=10 --env COLMAP_PAIR_CAP_SEAM=10 --env COLMAP_PARENT_MERGE_MODE=legacy_rerun --summary-json-output logs/sfm-production-spine/r4_exact_2157_submit.json",
+  "baseline_mature": {
+    "job": "md1p24e752k-1776314974",
+    "registered": 2157,
+    "total": 2157,
+    "points": 1633948,
+    "points_per_registered_image": 757.51,
+    "runtime_sec": 36033.85
+  },
+  "updated": "2026-04-30T17:35:09Z"
+}

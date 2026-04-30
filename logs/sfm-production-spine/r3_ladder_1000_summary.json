@@ -1,0 +1,118 @@
+{
+  "branch": "agent-73948216-sfm-production-spine",
+  "current_branch_head": "51373592b190671a3d20f702b1e02f0f0cc701d0",
+  "compute_head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
+  "mode": "distributed_chunked_v1",
+  "planner": "footprint_graph_v1",
+  "rung": "R3",
+  "job": {
+    "name": "r3lad1000a739-1777554908",
+    "sagemaker_status": "Completed",
+    "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p27eba1k-1776107310/colmap/ladders/ladder_1000.zip",
+    "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap",
+    "instance_type": "ml.g4dn.xlarge",
+    "volume_size_gb": 120
+  },
+  "metrics": {
+    "dataset_image_count": 1079,
+    "registered": 1079,
+    "registration_ratio": 1.0,
+    "metadata_points_3d": 851843,
+    "metadata_points_per_registered_image": 789.47,
+    "export_log_points_3d": 700026,
+    "export_log_points_per_registered_image": 648.77,
+    "processing_time_seconds": 14363.12,
+    "quality_check_passed": true
+  },
+  "planner_report": {
+    "gps_coverage_ratio": 1.0,
+    "orientation_coverage_ratio": 1.0,
+    "selected_orientation_source": "exif",
+    "candidate_pair_counts": {
+      "spatial": 36881,
+      "sequence": 10735,
+      "footprint": 10587,
+      "retrieval": 0
+    },
+    "verified_pair_count": 4780,
+    "connected_component_count": 1,
+    "chunk_count": 5,
+    "chunk_sizes": [160, 320, 320, 176, 284],
+    "orphan_image_count": 0,
+    "risky_bridges": [],
+    "expected_output_kind": "single_merged_model"
+  },
+  "reducer": {
+    "leaf_count": 7,
+    "passed_leaf_count": 7,
+    "failed_leaf_count": 0,
+    "merge_strategy": "overlap_first_balanced",
+    "merged_component_count": 1,
+    "expected_component_count": 1,
+    "ba_policy": "local_or_deferred_global",
+    "standard_sparse0_exists": true,
+    "promotion_blockers": []
+  },
+  "bridge_proof": [
+    {
+      "name": "chunk_00_03_merge_bridge",
+      "registered": 296,
+      "total": 296,
+      "points": 243774,
+      "shared_registered_images": 296
+    },
+    {
+      "name": "chunk_02_04_merge_bridge",
+      "registered": 590,
+      "total": 590,
+      "points": 450270,
+      "shared_registered_images": 590
+    }
+  ],
+  "viewer_proof": {
+    "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fr3lad1000a739-1777554852%2Fcolmap",
+    "api_status": 200,
+    "api_registered_image_count": 1079,
+    "api_exact_point_count": 851843,
+    "api_sampled_point_count": 18000,
+    "api_chunk_count": 5,
+    "dom_summary": "18,000 / 851,843 points, 1,079 cameras, 5 chunks",
+    "canvas_count": 1,
+    "screenshot": "logs/sfm-production-spine/pipeline-viewer-r3-desktop.png",
+    "screenshot_mean": 0.040091,
+    "screenshot_stddev": 0.068285,
+    "latest_preview_screenshot": "logs/sfm-production-spine/pipeline-viewer-preview-r3-desktop.png",
+    "latest_canvas_screenshot": "logs/sfm-production-spine/pipeline-viewer-preview-r3-canvas.png",
+    "latest_screenshot_mean": 0.0361916,
+    "latest_screenshot_stddev": 0.0563861,
+    "console_messages": [],
+    "page_errors": []
+  },
+  "gate_status": {
+    "registration_gate": "passed",
+    "points_per_registered_image_gate": "passed",
+    "standard_sparse0_gate": "passed",
+    "pipeline_viewer_gate": "passed",
+    "runtime_gate": "accepted_scope_normalized_not_exact_same_scope",
+    "sagemaker_terminal_status_gate": "passed"
+  },
+  "artifacts": [
+    "logs/sfm-production-spine/r3lad1000a739-1777554908-sfm_metadata.json",
+    "logs/sfm-production-spine/r3lad1000a739-1777554908-leaf_metadata.json",
+    "logs/sfm-production-spine/r3lad1000a739-1777554908-reducer_metadata.json",
+    "logs/sfm-production-spine/r3lad1000a739-1777554908-planner_static_report.json",
+    "logs/sfm-production-spine/r3lad1000a739-1777554908-chunk_planner_manifest.json",
+    "logs/sfm-production-spine/pipeline-viewer-r3-dom-snapshot.md",
+    "logs/sfm-production-spine/pipeline-viewer-r3-desktop.png",
+    "logs/sfm-production-spine/pipeline-viewer-preview-r3-desktop.png",
+    "logs/sfm-production-spine/pipeline-viewer-preview-r3-canvas.png",
+    "s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap/sparse/0/"
+  ],
+  "notes": [
+    "SageMaker control-plane status reached Completed with ProcessingEndTime 2026-04-30T17:19:48.503Z.",
+    "Metadata reports 851843 merged points; the runtime export log also printed 700026 points during validation. The preview API and viewer loaded 851843 exact points from the published artifact.",
+    "A COLMAP structure-less registration fallback was used during bridge recovery and remains explicitly reported in the ledger.",
+    "Runtime was 14363.12s, or 13.31s/image, versus mature full baseline 36033.85s, or 16.71s/image. No strict same-scope serial 1000-image baseline was found, so this is recorded as scope-normalized stage-timing proof."
+  ],
+  "updated": "2026-04-30T17:32:59Z"
+}

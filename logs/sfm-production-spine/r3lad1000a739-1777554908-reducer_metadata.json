@@ -1,0 +1,16 @@
+{
+  "branch": "agent-73948216-sfm-production-spine",
+  "head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
+  "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p27eba1k-1776107310/colmap/ladders/ladder_1000.zip",
+  "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap",
+  "planner_manifest": "chunk_planner_manifest.json",
+  "leaf_count": 7,
+  "passed_leaf_count": 7,
+  "failed_leaf_count": 0,
+  "merge_strategy": "overlap_first_balanced",
+  "merged_component_count": 1,
+  "expected_component_count": 1,
+  "ba_policy": "local_or_deferred_global",
+  "standard_sparse0_exists": true,
+  "promotion_blockers": []
+}

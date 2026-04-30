@@ -1,0 +1,11 @@
+- main:
+  - generic: COLMAP output
+  - textbox "COLMAP output": s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap
+  - button "Load"
+  - button "Chunk color"
+  - button "Cameras"
+  - button "Path"
+  - generic: Point size
+  - slider "Point size": "0.012"
+  - paragraph: 18,000 / 851,843 points, 1,079 cameras, 5 chunks
+- alert
