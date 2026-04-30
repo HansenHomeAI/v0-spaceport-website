@@ -1,6 +1,7 @@
 {
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "aa83b9b5c0bd105be183afffd3896aa5d20f98bd",
+  "head": "1baa0a9fdd546117d4fc52f59d8813a54d70ad3a",
+  "proof_job_head": "aa83b9b5c0bd105be183afffd3896aa5d20f98bd",
   "mode": "distributed_chunked_v1",
   "dataset": "md1 representative subsets plus cross_pass distributed leaves",
   "baseline_mature": {
