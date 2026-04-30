@@ -45,4 +45,6 @@
 [2026-04-30T03:44:52Z] R2 validate -> c0 Completed and metadata fetched; leaf 0 passed 320/320 with 209873 points, leaf 1 passed 220/220 with 156826 points, both sparse0 true and no fallbacks -> record R2 passed and prepare final proof ledger
 [2026-04-30T03:46:59Z] final verification -> py_compile passed, unit tests ran 101 OK, both R2 SageMaker jobs Completed, no local monitor processes remain -> commit and push proof ledger
 [2026-04-30T03:47:43Z] heartbeat cleanup -> deleted sfm-reality-check because accepted R0/R1/R2 proof milestone is complete -> commit and push proof ledger
+[2026-04-30T13:14:34Z] correction -> user flagged premature automation deletion; restored sfm-reality-check heartbeat, verified branch workflow 25146372973 success, found R3 input ladder_1000.zip -> launch R3 ladder and keep automation active until full end goal
+[2026-04-30T13:15:32Z] R3 launch -> submitted r3lad1000a739-1777554908 using ladder_1000.zip, distributed_chunked_v1, footprint_graph_v1, ml.g4dn.xlarge, output s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap -> monitor to completion
 [2026-04-30T03:47:49Z] ledger -> created proof ledger commit 1baa0a9fdd546117d4fc52f59d8813a54d70ad3a and reran help, JSON validation, and tests.unit.test_colmap_gps_priors -> amend current-head breadcrumbs and push

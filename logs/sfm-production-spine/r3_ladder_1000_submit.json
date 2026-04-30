@@ -1,0 +1,25 @@
+{
+  "branch": "agent-73948216-sfm-production-spine",
+  "head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
+  "mode": "distributed_chunked_v1",
+  "job_name": "r3lad1000a739-1777554908",
+  "input_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p27eba1k-1776107310/colmap/ladders/ladder_1000.zip",
+  "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap",
+  "instance_type": "ml.g4dn.xlarge",
+  "volume_size_gb": 120,
+  "submitted_at": "2026-04-30T13:15:32Z",
+  "env": {
+    "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+    "COLMAP_CHUNK_PLANNER": "footprint_graph_v1",
+    "COLMAP_MATCH_PROFILE": "P3",
+    "COLMAP_CHUNK_TARGET_IMAGES": "200",
+    "COLMAP_CHUNK_HARD_MAX_IMAGES": "320",
+    "COLMAP_LEAF_TARGET_IMAGES": "200",
+    "COLMAP_LEAF_HARD_CAP": "320",
+    "COLMAP_PAIR_CAP_LOCAL": "24",
+    "COLMAP_PAIR_CAP_REVISIT": "10",
+    "COLMAP_PAIR_CAP_SEAM": "10",
+    "COLMAP_PARENT_MERGE_MODE": "legacy_rerun"
+  },
+  "status": "InProgress"
+}
