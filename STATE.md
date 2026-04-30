@@ -1,9 +1,9 @@
 reason: building the mature-branch distributed SfM production spine from origin/agent-31459027-sfm-final-bridge-fallback without mutating the mature branch.
-last_step: R3 job r3lad1000a739-1777554908 completed chunk_00_mapper_initial at 160/160 registered images with 121178 points; chunk_01_matches_importer added 2362 verified pairs and chunk_01_mapper_initial reached num_reg_frames=233 at 2026-04-30T14:36:05Z. Added and locally verified /pipeline-viewer for COLMAP sparse outputs against R1 cross_pass.
+last_step: Pages run 25171611289 succeeded for pushed head edad923869e9d32af729821cb839e881cfa11e05, and live API loaded r1cross739x2 metrics, but browser proof found header/footer feedback chrome obstructing /pipeline-viewer. Patched Header/Footer to suppress site chrome on /pipeline-viewer and /sfm-preview; npm run build now passes after clearing generated disk-cache artifacts. R3 chunk_02_mapper_initial reached num_reg_frames=296 at 2026-04-30T15:03:30Z with no SageMaker failure reason.
 next_unblocked_step: monitor R3 job r3lad1000a739-1777554908 to completion, fetch metadata/sparse proof, then gate R3 before any R4 launch.
 owner_action_needed: none
 active_jobs:
-  - r3lad1000a739-1777554908 -> InProgress, chunk_01_mapper_initial num_reg_frames=233 after chunk 0 passed 160/160, R3 1000-image ladder, s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap
+  - r3lad1000a739-1777554908 -> InProgress, chunk_02_mapper_initial num_reg_frames=296 after chunk_01 core gate 291/291 core and secondary model 28/320 recorded, R3 1000-image ladder, s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap
 latest_artifacts:
   - logs/sfm-production-spine/port_inventory.md
   - logs/sfm-production-spine/frontier.json
@@ -34,5 +34,5 @@ latest_artifacts:
   - s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap
   - https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev
 branch: agent-73948216-sfm-production-spine
-head: 567b7bbc9e64dfc64311e76a2a92f4285304ece2
-updated: 2026-04-30T14:36:06Z
+head: edad923869e9d32af729821cb839e881cfa11e05
+updated: 2026-04-30T15:03:54Z

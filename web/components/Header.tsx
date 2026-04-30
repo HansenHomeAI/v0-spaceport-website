@@ -8,6 +8,10 @@ export default function Header(): JSX.Element {
   const [expanded, setExpanded] = useState(false);
   const pathname = usePathname();
 
+  if (pathname === '/pipeline-viewer' || pathname === '/sfm-preview') {
+    return <></>;
+  }
+
   const close = () => setExpanded(false);
 
   return (
