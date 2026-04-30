@@ -11,6 +11,8 @@ function isStandalonePath(pathname: string): boolean {
     pathname.startsWith("/sogs-migrated-viewer/") ||
     pathname === "/pipeline-viewer" ||
     pathname.startsWith("/pipeline-viewer/") ||
+    pathname === "/md1-viewer" ||
+    pathname.startsWith("/md1-viewer/") ||
     pathname === "/sfm-output-viewer" ||
     pathname.startsWith("/sfm-output-viewer/")
   );

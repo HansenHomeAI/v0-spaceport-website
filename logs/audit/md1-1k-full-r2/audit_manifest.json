@@ -6617,5 +6617,82 @@
       "playwright_mcp_mobile_screenshot": "sfm-output-viewer-mobile.png"
     },
     "checked_at": "2026-04-30T13:29:38Z"
+  },
+  "r5_v18_production_lod_viewer_20260430173345Z": {
+    "production_lod_manifest_url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-production-lod-public-1777560644/lod-meta.json",
+    "production_manifest_url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-production-lod-public-1777560644/production_manifest.json",
+    "source_promoted_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+    "source_raw_ply_s3_uri": "s3://spaceport-ml-processing/compressed/md1-r5-v18-raw-1777498999/merged_splat.ply",
+    "source_raw_ply_sha256": "c45c819e6586efa76288a11ef99b7517d3fd41f4ac1d906c5547e1f33f732dea",
+    "production_lod_packager_job": {
+      "processing_job_name": "md1-v18-prod-lod-1777560644",
+      "status": "Completed",
+      "processing_start_time": "2026-04-30T08:51:55.767000-06:00",
+      "processing_end_time": "2026-04-30T10:15:10.419000-06:00",
+      "failure_reason": null,
+      "exit_message": null
+    },
+    "artifact_gate": {
+      "source_vertex_count": 8423868,
+      "chunk_count": 128,
+      "lod_splat_counts": {
+        "0": 8421408,
+        "1": 2097152,
+        "2": 524288,
+        "3": 131072
+      },
+      "square_trim_dropped_by_lod": {
+        "0": 2460,
+        "1": 8832,
+        "2": 2240,
+        "3": 576
+      },
+      "compressed_byte_size": 146389458,
+      "range_probe": {
+        "url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-production-lod-public-1777560644/compressed_lod3_g00/meta.json",
+        "status": "206 Partial Content",
+        "server_side_encryption": "AES256",
+        "bytes_checked": 128
+      }
+    },
+    "viewer_gate": {
+      "route": "/md1-viewer",
+      "default_manifest": "public V18 production LOD lod-meta.json",
+      "viewer_engine": "validated SOGS LOD viewer copied from agent-73164211-load-horizon-settle into web/public/supersplat-lod-viewer",
+      "sampled_ply_default": false,
+      "sampled_ply_link_role": "explicit inspection fallback only",
+      "in_app_browser_status": "Ready / SOGS LOD / lod-meta.json / Full source 8,423,868",
+      "local_smoke_results_json": "logs/md1-production-viewer-results.json",
+      "desktop": {
+        "first_frame_ms": 111.4,
+        "lod_range": "0-3",
+        "chunk_meta_requests": 2,
+        "chunk_meta_responses": 7,
+        "screenshot": "logs/md1-production-viewer-desktop.png"
+      },
+      "mobile": {
+        "first_frame_ms": 32.4,
+        "lod_range": "3-3",
+        "chunk_meta_requests": 2,
+        "chunk_meta_responses": 8,
+        "screenshot": "logs/md1-production-viewer-mobile.png"
+      }
+    },
+    "route_updates": [
+      "web/app/md1-viewer/page.tsx",
+      "web/components/md1-viewer/Md1ProductionViewer.tsx",
+      "web/components/md1-viewer/md1-viewer.css",
+      "web/lib/md1ProductionViewer.ts",
+      "web/public/supersplat-lod-viewer",
+      "web/scripts/test-md1-production-viewer.mjs"
+    ],
+    "verification": {
+      "python_py_compile": "passed",
+      "git_diff_check": "passed",
+      "npm_run_build": "passed_with_pre_existing_lint_warnings",
+      "playwright_desktop_mobile_smoke": "passed",
+      "in_app_browser": "passed"
+    },
+    "checked_at": "2026-04-30T17:33:45Z"
   }
 }

@@ -1,16 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>SuperSplat Viewer</title>
+        <title>Incognito</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
         <base href="">
+        <link rel="icon" href="../favicon.svg" type="image/svg+xml">
         <link rel="stylesheet" href="./index.css">
         <script type="module">
             const createImage = (url) => {
                 const img = new Image();
                 img.src = url;
                 return img;
+            };
+
+            const LOCAL_KLOPPENHEIM_SKYBOX = './skybox/kloppenheim_06_puresky_equirect.webp';
+
+            const resolveViewerSkyboxUrl = (resolvedUrl) => {
+                if (!resolvedUrl) {
+                    return null;
+                }
+                try {
+                    const parsed = new URL(resolvedUrl, location.href);
+                    if (parsed.pathname.endsWith('/skybox/kloppenheim_06_puresky_equirect.webp')) {
+                        return new URL(LOCAL_KLOPPENHEIM_SKYBOX, location.href).toString();
+                    }
+                    return parsed.toString();
+                } catch {
+                    return resolvedUrl;
+                }
+            };
+
+            const resolveBundleSkyboxUrl = async (contentUrl, explicitSkyboxUrl) => {
+                if (explicitSkyboxUrl) {
+                    return explicitSkyboxUrl;
+                }
+                try {
+                    const content = new URL(contentUrl, location.href);
+                    const bundleUrl = new URL('spaceport_bundle.json', content);
+                    const response = await fetch(bundleUrl.toString());
+                    if (!response.ok) {
+                        return null;
+                    }
+                    const bundle = await response.json();
+                    const skyboxPath = bundle?.skybox?.path;
+                    return typeof skyboxPath === 'string' && skyboxPath.length
+                        ? new URL(skyboxPath, bundleUrl).toString()
+                        : null;
+                } catch {
+                    return null;
+                }
             };
 
             const url = new URL(location.href);
@@ -22,6 +61,7 @@
                 const parts = value.split(',').map(part => Number.parseFloat(part.trim()));
                 return parts.length === 3 && parts.every(Number.isFinite) ? parts : null;
             };
+
             const resolveAbsoluteUrl = (value) => {
                 try {
                     return new URL(value, location.href).toString();
@@ -31,7 +71,11 @@
             };
 
             const posterUrl = url.searchParams.get('poster');
-            const skyboxUrl = url.searchParams.get('skybox');
+            const explicitSkyboxUrl = url.searchParams.get('skybox');
+            const skyboxPitch = Number.parseFloat(url.searchParams.get('skyboxPitch') ?? '');
+            const skyboxVOffset = Number.parseFloat(url.searchParams.get('skyboxVOffset') ?? '');
+            const quality = url.searchParams.get('quality') === 'lq' ? 'lq' : 'hq';
+            const lowQuality = quality === 'lq';
             const settingsUrl = url.searchParams.has('settings') ? url.searchParams.get('settings') : './settings.json';
             const contentUrl = url.searchParams.has('content') ? url.searchParams.get('content') : './scene.compressed.ply';
             const contentAbsoluteUrl = resolveAbsoluteUrl(contentUrl) ?? contentUrl;
@@ -44,8 +88,10 @@
                 uniqueChunkMetaUrls: [],
                 uniqueChunkTextureUrls: []
             };
-            const isChunkMetaUrl = (absoluteUrl) => /\/(?:compressed_)?(?:lod\d+_g\d+|\d+_\d+)\/meta\.json(?:\?|$)/.test(absoluteUrl);
-            const isChunkTextureUrl = (absoluteUrl) => /\/(?:compressed_)?(?:lod\d+_g\d+|\d+_\d+)\/.+\.webp(?:\?|$)/.test(absoluteUrl);
+            const isChunkMetaUrl = (absoluteUrl) =>
+                /\/(?:compressed_)?(?:lod\d+_g\d+|\d+_\d+)\/meta\.json(?:\?|$)/.test(absoluteUrl);
+            const isChunkTextureUrl = (absoluteUrl) =>
+                /\/(?:compressed_)?(?:lod\d+_g\d+|\d+_\d+)\/.+\.webp(?:\?|$)/.test(absoluteUrl);
             const classifyUrl = (absoluteUrl) => {
                 if (absoluteUrl.endsWith('/lod-meta.json') || absoluteUrl.includes('/lod-meta.json?')) {
                     return 'lod-root';
@@ -86,6 +132,7 @@
                     pushUnique(networkMetrics.uniqueChunkTextureUrls, absoluteUrl);
                 }
             };
+
             const originalFetch = window.fetch.bind(window);
             window.fetch = async (...args) => {
                 const [input] = args;
@@ -110,6 +157,7 @@
                     throw error;
                 }
             };
+
             const xhrOpen = XMLHttpRequest.prototype.open;
             const xhrSend = XMLHttpRequest.prototype.send;
             XMLHttpRequest.prototype.open = function(method, requestUrl, ...rest) {
@@ -124,6 +172,7 @@
                 });
                 return xhrSend.apply(this, args);
             };
+
             const parseOptionalInteger = (value) => {
                 const parsed = Number.parseInt(value ?? '', 10);
                 return Number.isFinite(parsed) ? parsed : null;
@@ -142,6 +191,7 @@
                     .filter((entry) => Number.isFinite(entry));
                 return parsed.length > 0 ? parsed : null;
             };
+
             window.__sogsLoadStartedAt = loadStartedAt;
             window.__sogsNetworkMetrics = networkMetrics;
             window.__sogsInitialViewerConfig = {
@@ -158,20 +208,6 @@
                 colorUpdateDistanceLodScale: parseOptionalNumber(url.searchParams.get('colorUpdateDistanceLodScale')),
                 colorUpdateAngleLodScale: parseOptionalNumber(url.searchParams.get('colorUpdateAngleLodScale'))
             };
-            window.__sogsInitialCameraPose = (() => {
-                const position = parseVector(url.searchParams.get('camPos'));
-                const target = parseVector(url.searchParams.get('camTarget'));
-                if (!position || !target) {
-                    return null;
-                }
-                const fovRaw = url.searchParams.get('camFov');
-                const fov = fovRaw == null ? null : Number.parseFloat(fovRaw);
-                return {
-                    position,
-                    target,
-                    fov: Number.isFinite(fov) ? fov : null
-                };
-            })();
             window.__sogsInitialScenePayload = (() => {
                 const position = parseVector(url.searchParams.get('scenePos'));
                 const rotation = parseVector(url.searchParams.get('sceneRot'));
@@ -189,22 +225,60 @@
                     fov: Number.isFinite(fov) ? fov : null
                 };
             })();
+            window.__sogsInitialSkyboxRotation = parseVector(url.searchParams.get('sceneSkyboxRot'));
+            window.__sogsInitialCameraPose = (() => {
+                const position = parseVector(url.searchParams.get('camPos'));
+                const target = parseVector(url.searchParams.get('camTarget'));
+                if (!position || !target) {
+                    return null;
+                }
+                const fovRaw = url.searchParams.get('camFov');
+                const fov = fovRaw == null ? null : Number.parseFloat(fovRaw);
+                return {
+                    position,
+                    target,
+                    fov: Number.isFinite(fov) ? fov : null
+                };
+            })();
 
-            const sseConfig = {
-                poster: posterUrl && createImage(posterUrl),
-                skyboxUrl,
-                contentUrl,
-                contents: fetch(contentUrl),
-                noui: url.searchParams.has('noui'),
-                noanim: url.searchParams.has('noanim'),
-                ministats: url.searchParams.has('ministats'),
-                unified: url.searchParams.has('unified'),
-                aa: url.searchParams.has('aa')
-            };
+            const sseConfigPromise = (async () => {
+                const resolvedSkyboxUrl = await resolveBundleSkyboxUrl(contentUrl, explicitSkyboxUrl);
+                const skyboxUrl = resolveViewerSkyboxUrl(resolvedSkyboxUrl);
+                return {
+                    poster: posterUrl && createImage(posterUrl),
+                    skyboxUrl: lowQuality ? null : skyboxUrl,
+                    deferredSkyboxUrl: lowQuality ? skyboxUrl : null,
+                    skyboxVOffset: Number.isFinite(skyboxVOffset) ? skyboxVOffset : 0,
+                    contentUrl,
+                    contents: fetch(contentUrl),
+                    lowQuality,
+                    noui: url.searchParams.has('noui'),
+                    noanim: url.searchParams.has('noanim'),
+                    nofx: url.searchParams.has('nofx'),
+                    ministats: url.searchParams.has('ministats'),
+                    unified: url.searchParams.has('unified'),
+                    webgpu: url.searchParams.has('webgpu'),
+                    gpusort: url.searchParams.has('gpusort'),
+                    aa: url.searchParams.has('aa')
+                };
+            })();
 
             window.sse = {
-                config: sseConfig,
-                settings: fetch(settingsUrl).then(response => response.json())
+                configReady: sseConfigPromise,
+                settings: fetch(settingsUrl).then(response => response.json()).then((settings) => {
+                    if (!Number.isFinite(skyboxPitch) || skyboxPitch === 0) {
+                        return settings;
+                    }
+                    const render = settings.render ?? {};
+                    const existingRotation = Array.isArray(render.skyboxRotation) ? render.skyboxRotation : [0, 0, 0];
+                    return {
+                        ...settings,
+                        render: {
+                            ...render,
+                            skyboxRotation: [skyboxPitch, existingRotation[1] ?? 0, existingRotation[2] ?? 0]
+                        }
+                    };
+                })
             };
         </script>
     </head>
@@ -220,7 +294,7 @@
                     <pc-light color="white" intensity="1.5"></pc-light>
                 </pc-entity>
                 <!-- Splat -->
-                <pc-entity name="splat" rotation="0 0 180">
+                <pc-entity name="splat" rotation="0 0 0">
                 </pc-entity>
             </pc-scene>
         </pc-app>
@@ -356,7 +430,7 @@
                             </div>
                             <div class="control-item">
                                 <span class="control-action">Set Focus</span>
-                                <span class="control-key">Double Click</span>
+                                <span class="control-key">Click (no drag)</span>
                             </div>
                             <div class="control-spacer"></div>
                             <h1>Fly Mode</h1>
@@ -395,7 +469,7 @@
                             </div>
                             <div class="control-item">
                                 <span class="control-action">Set Focus</span>
-                                <span class="control-key">Double Tap</span>
+                                <span class="control-key">Tap (no drag)</span>
                             </div>
                             <div class="control-spacer"></div>
                             <h1>Fly Mode</h1>
@@ -470,6 +544,23 @@
                 <path d="M16 2.09961C16.4971 2.09961 16.9004 2.50294 16.9004 3V7.09961H21C21.4971 7.09961 21.9004 7.50294 21.9004 8C21.9004 8.49706 21.4971 8.90039 21 8.90039H16C15.5029 8.90039 15.0996 8.49706 15.0996 8V3C15.0996 2.50294 15.5029 2.09961 16 2.09961Z" />
             </symbol>
         </svg>
+
+        <script>
+            (() => {
+                const params = new URLSearchParams(window.location.search);
+                const quality = params.get('quality') === 'lq' ? 'lq' : 'hq';
+                window.__sogsBootOptions = {
+                    quality,
+                    lowQuality: quality === 'lq'
+                };
+                if (quality === 'lq') {
+                    const app = document.querySelector('pc-app');
+                    if (app) {
+                        app.setAttribute('high-resolution', 'false');
+                    }
+                }
+            })();
+        </script>
 
         <!-- Application Script (Spaceport SOGS bridge: postMessage + guides) -->
         <script type="module" src="./sogs-bridge.mjs"></script>

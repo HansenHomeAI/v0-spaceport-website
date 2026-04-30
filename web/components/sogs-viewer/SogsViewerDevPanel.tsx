@@ -1,15 +1,82 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   buildSogsSceneExport,
   createDefaultScenePayload,
   type SogsScenePayload,
 } from "../../lib/sogsViewerSceneDefaults";
-import { DEFAULT_SOGS_BUNDLE_URL, normalizeBundleUrl } from "../../lib/sogsViewerBundle";
+import {
+  DEFAULT_SOGS_BUNDLE_URL,
+  normalizeBundleUrl,
+  resolveSogsViewerBundle,
+  type ResolvedSogsViewerBundle,
+} from "../../lib/sogsViewerBundle";
 import "./sogs-viewer.css";
 
 const VIEWER_BASE = "/supersplat-viewer/index.html";
+const REQUEST_STATE_INTERVAL_MS = 1500;
+
+type StreamingConfig = {
+  budget: string;
+  lodMin: string;
+  lodMax: string;
+};
+
+type ViewerTelemetry = {
+  loadedNodeCount: number;
+  chunkMetaRequestCount: number;
+  chunkMetaAtFirstFrame: number | null;
+  totalRequestCount: number;
+  firstFrameMs: number | null;
+  splatBudget: number | null;
+  lodRangeMin: number | null;
+  lodRangeMax: number | null;
+  rootManifestType: string | null;
+  rootManifestUrl: string | null;
+};
+
+const EMPTY_TELEMETRY: ViewerTelemetry = {
+  loadedNodeCount: 0,
+  chunkMetaRequestCount: 0,
+  chunkMetaAtFirstFrame: null,
+  totalRequestCount: 0,
+  firstFrameMs: null,
+  splatBudget: null,
+  lodRangeMin: null,
+  lodRangeMax: null,
+  rootManifestType: null,
+  rootManifestUrl: null,
+};
+
+function formatInteger(value: number | null | undefined): string {
+  return typeof value === "number" && Number.isFinite(value) ? value.toLocaleString() : "auto";
+}
+
+function formatDurationMs(value: number | null | undefined): string {
+  return typeof value === "number" && Number.isFinite(value) ? `${(value / 1000).toFixed(1)}s` : "-";
+}
+
+function getDefaultBudget(): number {
+  if (typeof window === "undefined") {
+    return 3_000_000;
+  }
+  const ua = window.navigator.userAgent.toLowerCase();
+  return /iphone|ipad|android|mobile|touch/.test(ua) || window.innerWidth <= 768 ? 1_000_000 : 3_000_000;
+}
+
+function parseOptionalInteger(value: string): number | null {
+  const parsed = Number.parseInt(value.trim(), 10);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function parseStreamingConfig(config: StreamingConfig) {
+  return {
+    splatBudget: parseOptionalInteger(config.budget),
+    lodRangeMin: parseOptionalInteger(config.lodMin),
+    lodRangeMax: parseOptionalInteger(config.lodMax),
+  };
+}
 
 export default function SogsViewerDevPanel() {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
@@ -18,14 +85,22 @@ export default function SogsViewerDevPanel() {
   const ignoreNextSogsStateRef = useRef(false);
 
   const [inputUrl, setInputUrl] = useState(DEFAULT_SOGS_BUNDLE_URL);
+  const [loadedInputUrl, setLoadedInputUrl] = useState(DEFAULT_SOGS_BUNDLE_URL);
   const [activeUrl, setActiveUrl] = useState("");
+  const [resolvedBundle, setResolvedBundle] = useState<ResolvedSogsViewerBundle | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [iframeKey, setIframeKey] = useState(0);
   const [viewerState, setViewerState] = useState<"idle" | "loading" | "ready">("idle");
+  const [telemetry, setTelemetry] = useState<ViewerTelemetry>(EMPTY_TELEMETRY);
 
   const [devOpen, setDevOpen] = useState(false);
   const [guides, setGuides] = useState(false);
   const [copyFeedback, setCopyFeedback] = useState<string | null>(null);
+  const [streamingConfig, setStreamingConfig] = useState<StreamingConfig>({
+    budget: "",
+    lodMin: "0",
+    lodMax: "3",
+  });
 
   const [form, setForm] = useState<SogsScenePayload>(() => createDefaultScenePayload());
 
@@ -41,7 +116,17 @@ export default function SogsViewerDevPanel() {
     }
   }, []);
 
-  const attemptLoad = useCallback((rawValue: string) => {
+  const applyStreamingConfigToIframe = useCallback(() => {
+    const parsed = parseStreamingConfig(streamingConfig);
+    postToIframe({
+      type: "sogs:config",
+      splatBudget: parsed.splatBudget,
+      lodRangeMin: parsed.lodRangeMin,
+      lodRangeMax: parsed.lodRangeMax,
+    });
+  }, [postToIframe, streamingConfig]);
+
+  const attemptLoad = useCallback(async (rawValue: string) => {
     setError(null);
     const normalized = normalizeBundleUrl(rawValue);
     if (!normalized) {
@@ -51,13 +136,22 @@ export default function SogsViewerDevPanel() {
     }
 
     setViewerState("loading");
-    setActiveUrl(normalized);
+    setTelemetry(EMPTY_TELEMETRY);
+    const resolved = await resolveSogsViewerBundle(rawValue);
+    if (!resolved) {
+      setError("Could not fetch a valid SOGS bundle, LOD manifest, .sog, or raw .ply file.");
+      setViewerState("idle");
+      return false;
+    }
+    setResolvedBundle(resolved);
+    setLoadedInputUrl(rawValue.trim());
+    setActiveUrl(resolved.contentUrl);
     setIframeKey((prev) => prev + 1);
     ignoreNextSogsStateRef.current = true;
     return true;
   }, []);
 
-  const viewerSrc = (() => {
+  const viewerSrc = useMemo(() => {
     if (!activeUrl) {
       return null;
     }
@@ -65,52 +159,81 @@ export default function SogsViewerDevPanel() {
       settings: "/supersplat-viewer/settings.json",
       content: activeUrl,
     });
+    if (resolvedBundle?.skyboxUrl?.trim()) {
+      params.set("skybox", resolvedBundle.skyboxUrl.trim());
+    }
+    const parsed = parseStreamingConfig(streamingConfig);
+    if (parsed.splatBudget != null) {
+      params.set("budget", String(parsed.splatBudget));
+    }
+    if (parsed.lodRangeMin != null) {
+      params.set("lodMin", String(parsed.lodRangeMin));
+    }
+    if (parsed.lodRangeMax != null) {
+      params.set("lodMax", String(parsed.lodRangeMax));
+    }
     return `${VIEWER_BASE}?${params.toString()}`;
-  })();
+  }, [activeUrl, resolvedBundle, streamingConfig]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    attemptLoad(inputUrl);
+    void attemptLoad(inputUrl);
   };
 
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
       if (event.data?.type === "supersplat:firstFrame" && event.source === iframeRef.current?.contentWindow) {
         const d = createDefaultScenePayload();
-        try {
-          (event.source as Window).postMessage(
-            {
-              type: "sogs:apply",
-              position: d.position,
-              rotation: d.rotation,
-              scale: d.scale,
-              fov: d.fov,
-            },
-            "*",
-          );
-        } catch {
-          /* ignore */
+        if (resolvedBundle?.summary?.bundleKind !== "lod-streaming") {
+          try {
+            (event.source as Window).postMessage(
+              {
+                type: "sogs:apply",
+                position: d.position,
+                rotation: d.rotation,
+                scale: d.scale,
+                fov: d.fov,
+              },
+              "*",
+            );
+          } catch {
+            /* ignore */
+          }
         }
         setForm(d);
         setViewerState("ready");
+        applyStreamingConfigToIframe();
+        postToIframe({ type: "sogs:requestState" });
       }
       if (event.data?.type === "sogs:state" && event.source === iframeRef.current?.contentWindow) {
         if (ignoreNextSogsStateRef.current) {
           ignoreNextSogsStateRef.current = false;
           return;
         }
-        const d = event.data as { position?: number[] };
+        const d = event.data as Record<string, unknown> & { position?: number[] };
         if (Array.isArray(d.position) && d.position.length === 3) {
           setForm((f) => ({
             ...f,
             position: [d.position[0], d.position[1], d.position[2]] as [number, number, number],
           }));
         }
+        setTelemetry({
+          loadedNodeCount: typeof d.loadedNodeCount === "number" ? d.loadedNodeCount : 0,
+          chunkMetaRequestCount: typeof d.chunkMetaRequestCount === "number" ? d.chunkMetaRequestCount : 0,
+          chunkMetaAtFirstFrame: typeof d.chunkMetaAtFirstFrame === "number" ? d.chunkMetaAtFirstFrame : null,
+          totalRequestCount: typeof d.totalRequestCount === "number" ? d.totalRequestCount : 0,
+          firstFrameMs: typeof d.firstFrameMs === "number" ? d.firstFrameMs : null,
+          splatBudget: typeof d.splatBudget === "number" ? d.splatBudget : null,
+          lodRangeMin: typeof d.lodRangeMin === "number" ? d.lodRangeMin : null,
+          lodRangeMax: typeof d.lodRangeMax === "number" ? d.lodRangeMax : null,
+          rootManifestType: typeof d.rootManifestType === "string" ? d.rootManifestType : null,
+          rootManifestUrl: typeof d.rootManifestUrl === "string" ? d.rootManifestUrl : null,
+        });
       }
     };
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, []);
+  }, [applyStreamingConfigToIframe, postToIframe, resolvedBundle]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -119,9 +242,55 @@ export default function SogsViewerDevPanel() {
     const params = new URLSearchParams(window.location.search);
     const q = params.get("url");
     const raw = q?.trim() ? q.trim() : DEFAULT_SOGS_BUNDLE_URL;
+    const budget = String(parseOptionalInteger(params.get("budget") ?? "") ?? getDefaultBudget());
+    const lodMin = params.get("lodMin")?.trim() || "0";
+    const lodMax = params.get("lodMax")?.trim() || "3";
     setInputUrl(raw);
-    attemptLoad(raw);
+    setLoadedInputUrl(raw);
+    setStreamingConfig({ budget, lodMin, lodMax });
+    void attemptLoad(raw);
   }, [attemptLoad]);
+
+  useEffect(() => {
+    if (!activeUrl || viewerState !== "ready") {
+      return;
+    }
+    applyStreamingConfigToIframe();
+    postToIframe({ type: "sogs:requestState" });
+  }, [activeUrl, applyStreamingConfigToIframe, postToIframe, viewerState, iframeKey]);
+
+  useEffect(() => {
+    if (!activeUrl || viewerState !== "ready") {
+      return;
+    }
+    const interval = window.setInterval(() => postToIframe({ type: "sogs:requestState" }), REQUEST_STATE_INTERVAL_MS);
+    return () => window.clearInterval(interval);
+  }, [activeUrl, postToIframe, viewerState]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !activeUrl || !loadedInputUrl.trim()) {
+      return;
+    }
+    const params = new URLSearchParams(window.location.search);
+    params.set("url", loadedInputUrl.trim());
+    const parsed = parseStreamingConfig(streamingConfig);
+    if (parsed.splatBudget != null) {
+      params.set("budget", String(parsed.splatBudget));
+    } else {
+      params.delete("budget");
+    }
+    if (parsed.lodRangeMin != null) {
+      params.set("lodMin", String(parsed.lodRangeMin));
+    } else {
+      params.delete("lodMin");
+    }
+    if (parsed.lodRangeMax != null) {
+      params.set("lodMax", String(parsed.lodRangeMax));
+    } else {
+      params.delete("lodMax");
+    }
+    window.history.replaceState({}, "", `${window.location.pathname}?${params.toString()}`);
+  }, [activeUrl, loadedInputUrl, streamingConfig]);
 
   useEffect(() => {
     if (!activeUrl) {
@@ -172,7 +341,7 @@ export default function SogsViewerDevPanel() {
 
   const copySceneJson = async () => {
     const payload = buildSogsSceneExport({
-      bundleUrl: activeUrl || inputUrl.trim() || "",
+      bundleUrl: resolvedBundle?.summary?.sourceUrl || activeUrl || inputUrl.trim() || "",
       scene: form,
       guides,
     });
@@ -187,6 +356,20 @@ export default function SogsViewerDevPanel() {
   };
 
   const isSubmitDisabled = !inputUrl.trim();
+  const summary = resolvedBundle?.summary;
+  const parsedStreaming = parseStreamingConfig(streamingConfig);
+  const statusText =
+    viewerState === "ready" && summary
+      ? summary.bundleKind === "lod-streaming"
+        ? `Ready - Streaming LOD · ${formatInteger(summary.lodLevels)} levels · ${formatInteger(summary.chunkFiles)} chunks`
+        : summary.bundleKind === "asset"
+          ? "Ready - Inspection asset"
+          : `Ready - Single SOG · ${formatInteger(summary.splatCount)} splats`
+      : viewerState === "loading" && activeUrl
+        ? "Loading bundle..."
+        : activeUrl
+          ? "Idle"
+          : "Paste a public HTTPS URL, then Load.";
 
   return (
     <main className="sogs-shell">
@@ -221,6 +404,57 @@ export default function SogsViewerDevPanel() {
           </button>
         </div>
         <div className="sogs-toolbar-row">
+          <div className="sogs-stream-row" aria-label="Streaming controls">
+            <div className="sogs-stream-field">
+              <label htmlFor="sogs-budget-input">Budget</label>
+              <input
+                id="sogs-budget-input"
+                type="number"
+                min={1}
+                step={1000}
+                value={streamingConfig.budget}
+                onChange={(event) =>
+                  setStreamingConfig((current) => ({
+                    ...current,
+                    budget: event.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="sogs-stream-field">
+              <label htmlFor="sogs-lod-min-input">LOD min</label>
+              <input
+                id="sogs-lod-min-input"
+                type="number"
+                min={0}
+                step={1}
+                value={streamingConfig.lodMin}
+                onChange={(event) =>
+                  setStreamingConfig((current) => ({
+                    ...current,
+                    lodMin: event.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="sogs-stream-field">
+              <label htmlFor="sogs-lod-max-input">LOD max</label>
+              <input
+                id="sogs-lod-max-input"
+                type="number"
+                min={0}
+                step={1}
+                placeholder="auto"
+                value={streamingConfig.lodMax}
+                onChange={(event) =>
+                  setStreamingConfig((current) => ({
+                    ...current,
+                    lodMax: event.target.value,
+                  }))
+                }
+              />
+            </div>
+          </div>
           <div className="sogs-dropdown-wrap" ref={dropdownRef}>
             <button
               type="button"
@@ -366,15 +600,62 @@ export default function SogsViewerDevPanel() {
             ) : null}
           </div>
         </div>
-        <p className="sogs-hint">
-          {viewerState === "ready" && activeUrl
-            ? "Ready — two-finger touch or two-finger trackpad scroll moves the splat on X/Z (middle mouse on desktop); left-drag orbits."
-            : viewerState === "loading" && activeUrl
-              ? "Loading bundle…"
-              : activeUrl
-                ? "Idle"
-                : "Paste a public HTTPS URL, then Load."}
-        </p>
+        <div className="sogs-status-card">
+          <p className="sogs-hint">{error ?? statusText}</p>
+          {summary ? (
+            <div className="sogs-status-grid">
+              <div>
+                <span className="sogs-status-label">Transport</span>
+                <strong>{summary.transport}</strong>
+              </div>
+              <div>
+                <span className="sogs-status-label">Manifest</span>
+                <strong>{summary.rootFile}</strong>
+              </div>
+              <div>
+                <span className="sogs-status-label">Budget</span>
+                <strong>{formatInteger(telemetry.splatBudget ?? parsedStreaming.splatBudget)}</strong>
+              </div>
+              <div>
+                <span className="sogs-status-label">Loaded chunks</span>
+                <strong>
+                  {summary.bundleKind === "lod-streaming"
+                    ? `${formatInteger(telemetry.loadedNodeCount)}/${formatInteger(summary.chunkFiles)}`
+                    : "n/a"}
+                </strong>
+              </div>
+              <div>
+                <span className="sogs-status-label">First frame</span>
+                <strong>{formatDurationMs(telemetry.firstFrameMs)}</strong>
+              </div>
+              <div>
+                <span className="sogs-status-label">Chunk requests</span>
+                <strong>{formatInteger(telemetry.chunkMetaRequestCount)}</strong>
+              </div>
+            </div>
+          ) : null}
+          {summary?.sourceUrl ? <p className="sogs-source-url">{summary.sourceUrl}</p> : null}
+        </div>
+
+        <div
+          data-testid="sogs-bundle-metrics"
+          className="sogs-hidden-metrics"
+          data-bundle-kind={summary?.bundleKind ?? ""}
+          data-transport={summary?.transport ?? ""}
+          data-root-file={summary?.rootFile ?? telemetry.rootManifestType ?? ""}
+          data-source-url={summary?.sourceUrl ?? inputUrl}
+          data-lod-levels={summary?.lodLevels ?? ""}
+          data-chunk-files={summary?.chunkFiles ?? ""}
+          data-loaded-nodes={telemetry.loadedNodeCount}
+          data-chunk-meta-requests={telemetry.chunkMetaRequestCount}
+          data-chunk-meta-at-first-frame={telemetry.chunkMetaAtFirstFrame ?? ""}
+          data-first-frame-ms={telemetry.firstFrameMs ?? ""}
+          data-splat-budget={telemetry.splatBudget ?? parsedStreaming.splatBudget ?? ""}
+          data-lod-min={telemetry.lodRangeMin ?? parsedStreaming.lodRangeMin ?? ""}
+          data-lod-max={telemetry.lodRangeMax ?? parsedStreaming.lodRangeMax ?? ""}
+          data-bounds-min={summary?.bounds ? summary.bounds.min.join(",") : ""}
+          data-bounds-max={summary?.bounds ? summary.bounds.max.join(",") : ""}
+        />
         {error ? <p className="sogs-error">{error}</p> : null}
       </form>
     </main>

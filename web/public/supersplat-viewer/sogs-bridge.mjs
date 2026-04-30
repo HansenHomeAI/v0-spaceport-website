@@ -28,7 +28,89 @@ const FOCUS_Y = 0;
 const AXIS_LEN = 45;
 const AXIS_RADIUS = 0.28;
 
+function finiteNumber(value) {
+  return typeof value === "number" && Number.isFinite(value);
+}
+
+function sanitizeNumberList(value) {
+  if (!Array.isArray(value) || value.length === 0) {
+    return null;
+  }
+  const parsed = value.map((entry) => Number(entry));
+  return parsed.every((entry) => Number.isFinite(entry)) ? parsed : null;
+}
+
+function resolveIntegerConfig(currentValue, incomingValue, min = 0) {
+  if (finiteNumber(incomingValue) && incomingValue >= min) {
+    return Math.trunc(incomingValue);
+  }
+  return currentValue ?? null;
+}
+
+function resolveNumberConfig(currentValue, incomingValue, min = 0) {
+  if (finiteNumber(incomingValue) && incomingValue >= min) {
+    return Number(incomingValue);
+  }
+  return currentValue ?? null;
+}
+
+function metricsSnapshot() {
+  const metrics = window.__sogsNetworkMetrics ?? {};
+  const firstFrame = metrics.firstFrame ?? null;
+  return {
+    loadedNodeCount: Array.isArray(metrics.uniqueChunkMetaUrls) ? metrics.uniqueChunkMetaUrls.length : 0,
+    chunkMetaRequestCount: Array.isArray(metrics.uniqueChunkMetaUrls) ? metrics.uniqueChunkMetaUrls.length : 0,
+    chunkMetaAtFirstFrame:
+      firstFrame && finiteNumber(firstFrame.chunkMetaRequestCount) ? firstFrame.chunkMetaRequestCount : null,
+    totalRequestCount: Array.isArray(metrics.events) ? metrics.events.length : 0,
+    firstFrameMs:
+      firstFrame && finiteNumber(firstFrame.at) && finiteNumber(metrics.loadStartedAt)
+        ? firstFrame.at - metrics.loadStartedAt
+        : null,
+    rootManifestType: typeof metrics.rootManifestType === "string" ? metrics.rootManifestType : null,
+    rootManifestUrl: typeof metrics.rootManifestUrl === "string" ? metrics.rootManifestUrl : null,
+  };
+}
+
+function markFirstFrameIfReady() {
+  const metrics = window.__sogsNetworkMetrics;
+  if (!metrics || metrics.firstFrame) {
+    return false;
+  }
+
+  const ctx = window.__sogsCtx;
+  const hasGsplat = !!ctx?.app?.root?.findByName("gsplat");
+  const chunkMetaRequestCount = Array.isArray(metrics.uniqueChunkMetaUrls)
+    ? metrics.uniqueChunkMetaUrls.length
+    : 0;
+  const hasLodActivity =
+    typeof metrics.rootManifestType === "string" &&
+    metrics.rootManifestType === "lod-meta.json" &&
+    chunkMetaRequestCount > 0;
+
+  if (!hasGsplat || !hasLodActivity) {
+    return false;
+  }
+
+  metrics.firstFrame = {
+    at: performance.now(),
+    chunkMetaRequestCount,
+    totalRequestCount: Array.isArray(metrics.events) ? metrics.events.length : 0,
+    source: "lod-telemetry",
+  };
+  window.parent.postMessage({ type: "supersplat:firstFrame" }, "*");
+  return true;
+}
+
 window.firstFrame = function sogsFirstFrameHook() {
+  const metrics = window.__sogsNetworkMetrics;
+  if (metrics && !metrics.firstFrame) {
+    metrics.firstFrame = {
+      at: performance.now(),
+      chunkMetaRequestCount: Array.isArray(metrics.uniqueChunkMetaUrls) ? metrics.uniqueChunkMetaUrls.length : 0,
+      totalRequestCount: Array.isArray(metrics.events) ? metrics.events.length : 0,
+    };
+  }
   window.parent.postMessage({ type: "supersplat:firstFrame" }, "*");
   queueMicrotask(() => postSogsState());
 };
@@ -46,6 +128,10 @@ function postSogsState() {
     const p = g.getLocalPosition();
     const e = g.getLocalEulerAngles();
     const sc = g.getLocalScale();
+    const gsplatComponent = g.gsplat ?? null;
+    const sceneGsplat = ctx.app.scene?.gsplat;
+    markFirstFrameIfReady();
+    const telemetry = metricsSnapshot();
     window.parent.postMessage(
       {
         type: "sogs:state",
@@ -53,12 +139,41 @@ function postSogsState() {
         rotation: [e.x, e.y, e.z],
         scale: sc.x,
         fov: ctx.camera.camera.fov,
+        splatBudget: finiteNumber(sceneGsplat?.splatBudget) ? sceneGsplat.splatBudget : null,
+        lodRangeMin: finiteNumber(sceneGsplat?.lodRangeMin) ? sceneGsplat.lodRangeMin : null,
+        lodRangeMax: finiteNumber(sceneGsplat?.lodRangeMax) ? sceneGsplat.lodRangeMax : null,
+        lodDistances: sanitizeNumberList(gsplatComponent?.lodDistances),
+        lodUnderfillLimit: finiteNumber(sceneGsplat?.lodUnderfillLimit) ? sceneGsplat.lodUnderfillLimit : null,
+        lodBehindPenalty: finiteNumber(sceneGsplat?.lodBehindPenalty) ? sceneGsplat.lodBehindPenalty : null,
+        lodUpdateDistance: finiteNumber(sceneGsplat?.lodUpdateDistance) ? sceneGsplat.lodUpdateDistance : null,
+        lodUpdateAngle: finiteNumber(sceneGsplat?.lodUpdateAngle) ? sceneGsplat.lodUpdateAngle : null,
+        colorUpdateDistance: finiteNumber(sceneGsplat?.colorUpdateDistance) ? sceneGsplat.colorUpdateDistance : null,
+        colorUpdateAngle: finiteNumber(sceneGsplat?.colorUpdateAngle) ? sceneGsplat.colorUpdateAngle : null,
+        colorUpdateDistanceLodScale: finiteNumber(sceneGsplat?.colorUpdateDistanceLodScale)
+          ? sceneGsplat.colorUpdateDistanceLodScale
+          : null,
+        colorUpdateAngleLodScale: finiteNumber(sceneGsplat?.colorUpdateAngleLodScale)
+          ? sceneGsplat.colorUpdateAngleLodScale
+          : null,
+        ...telemetry,
       },
       "*",
     );
   } catch {
     /* ignore */
   }
+}
+
+function startSogsTelemetryPump() {
+  const startedAt = performance.now();
+  const id = window.setInterval(() => {
+    markFirstFrameIfReady();
+    postSogsState();
+    const elapsed = performance.now() - startedAt;
+    if (elapsed > 60000) {
+      window.clearInterval(id);
+    }
+  }, 500);
 }
 
 /**
@@ -139,6 +254,23 @@ function setupCameraManagerBridge(cameraManager) {
       postCameraPoseFromViewer(cameraManager);
     }
   };
+}
+
+function installInitialCameraRelease(app) {
+  if (window.__sogsInitialCameraReleaseInstalled) {
+    return;
+  }
+  const release = () => {
+    if (!window.__sogsScriptedCamera) {
+      return;
+    }
+    window.__sogsScriptedCamera = false;
+    app.renderNextFrame = true;
+  };
+  window.addEventListener("pointerdown", release, { capture: true });
+  window.addEventListener("wheel", release, { capture: true, passive: true });
+  window.addEventListener("keydown", release, { capture: true });
+  window.__sogsInitialCameraReleaseInstalled = true;
 }
 
 function axisMaterial(rgb) {
@@ -226,6 +358,99 @@ function syncSogsAxesGuides(app) {
   app.renderNextFrame = true;
 }
 
+function applyScenePayload(app, payload) {
+  const g = app.root.findByName("gsplat");
+  if (!g || !payload || typeof payload !== "object") {
+    return;
+  }
+  if (Array.isArray(payload.position) && payload.position.length === 3) {
+    g.setLocalPosition(payload.position[0], payload.position[1], payload.position[2]);
+  }
+  if (Array.isArray(payload.rotation) && payload.rotation.length === 3) {
+    g.setLocalEulerAngles(payload.rotation[0], payload.rotation[1], payload.rotation[2]);
+  }
+  if (typeof payload.scale === "number" && Number.isFinite(payload.scale)) {
+    g.setLocalScale(payload.scale, payload.scale, payload.scale);
+  }
+  if (typeof payload.fov === "number" && Number.isFinite(payload.fov)) {
+    window.__sogsUserFov = payload.fov;
+  }
+  app.renderNextFrame = true;
+}
+
+function applyViewerConfig(app, incomingConfig) {
+  if (!app?.scene?.gsplat || !incomingConfig || typeof incomingConfig !== "object") {
+    return;
+  }
+
+  const current = window.__sogsViewerConfig ?? {};
+  const merged = {
+    splatBudget: resolveIntegerConfig(current.splatBudget, incomingConfig.splatBudget, 0),
+    lodRangeMin: resolveIntegerConfig(current.lodRangeMin, incomingConfig.lodRangeMin, 0),
+    lodRangeMax: resolveIntegerConfig(current.lodRangeMax, incomingConfig.lodRangeMax, 0),
+    lodDistances: sanitizeNumberList(incomingConfig.lodDistances) ?? current.lodDistances ?? null,
+    lodUnderfillLimit: resolveIntegerConfig(current.lodUnderfillLimit, incomingConfig.lodUnderfillLimit, 0),
+    lodBehindPenalty: resolveNumberConfig(current.lodBehindPenalty, incomingConfig.lodBehindPenalty, 0),
+    lodUpdateDistance: resolveNumberConfig(current.lodUpdateDistance, incomingConfig.lodUpdateDistance, 0),
+    lodUpdateAngle: resolveNumberConfig(current.lodUpdateAngle, incomingConfig.lodUpdateAngle, 0),
+    colorUpdateDistance: resolveNumberConfig(current.colorUpdateDistance, incomingConfig.colorUpdateDistance, 0),
+    colorUpdateAngle: resolveNumberConfig(current.colorUpdateAngle, incomingConfig.colorUpdateAngle, 0),
+    colorUpdateDistanceLodScale: resolveNumberConfig(
+      current.colorUpdateDistanceLodScale,
+      incomingConfig.colorUpdateDistanceLodScale,
+      0,
+    ),
+    colorUpdateAngleLodScale: resolveNumberConfig(
+      current.colorUpdateAngleLodScale,
+      incomingConfig.colorUpdateAngleLodScale,
+      0,
+    ),
+  };
+
+  window.__sogsViewerConfig = merged;
+
+  const sceneGsplat = app.scene.gsplat;
+  if (finiteNumber(merged.splatBudget) && merged.splatBudget >= 0) {
+    sceneGsplat.splatBudget = merged.splatBudget;
+  }
+  if (finiteNumber(merged.lodRangeMin) && merged.lodRangeMin >= 0) {
+    sceneGsplat.lodRangeMin = merged.lodRangeMin;
+  }
+  if (finiteNumber(merged.lodRangeMax) && merged.lodRangeMax >= 0) {
+    sceneGsplat.lodRangeMax = merged.lodRangeMax;
+  }
+  if (finiteNumber(merged.lodUnderfillLimit) && merged.lodUnderfillLimit >= 0) {
+    sceneGsplat.lodUnderfillLimit = merged.lodUnderfillLimit;
+  }
+  if (finiteNumber(merged.lodBehindPenalty) && merged.lodBehindPenalty >= 0) {
+    sceneGsplat.lodBehindPenalty = merged.lodBehindPenalty;
+  }
+  if (finiteNumber(merged.lodUpdateDistance) && merged.lodUpdateDistance >= 0) {
+    sceneGsplat.lodUpdateDistance = merged.lodUpdateDistance;
+  }
+  if (finiteNumber(merged.lodUpdateAngle) && merged.lodUpdateAngle >= 0) {
+    sceneGsplat.lodUpdateAngle = merged.lodUpdateAngle;
+  }
+  if (finiteNumber(merged.colorUpdateDistance) && merged.colorUpdateDistance >= 0) {
+    sceneGsplat.colorUpdateDistance = merged.colorUpdateDistance;
+  }
+  if (finiteNumber(merged.colorUpdateAngle) && merged.colorUpdateAngle >= 0) {
+    sceneGsplat.colorUpdateAngle = merged.colorUpdateAngle;
+  }
+  if (finiteNumber(merged.colorUpdateDistanceLodScale) && merged.colorUpdateDistanceLodScale >= 0) {
+    sceneGsplat.colorUpdateDistanceLodScale = merged.colorUpdateDistanceLodScale;
+  }
+  if (finiteNumber(merged.colorUpdateAngleLodScale) && merged.colorUpdateAngleLodScale >= 0) {
+    sceneGsplat.colorUpdateAngleLodScale = merged.colorUpdateAngleLodScale;
+  }
+
+  const gsplatEntity = app.root.findByName("gsplat");
+  if (gsplatEntity?.gsplat && Array.isArray(merged.lodDistances) && merged.lodDistances.length > 0) {
+    gsplatEntity.gsplat.lodDistances = merged.lodDistances;
+  }
+  app.renderNextFrame = true;
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   const { config, settings } = window.sse;
   const { poster } = config;
@@ -271,9 +496,34 @@ document.addEventListener("DOMContentLoaded", async () => {
     }, 30);
   });
 
+  applyScenePayload(app, window.__sogsInitialScenePayload ?? {});
+  applyViewerConfig(app, window.__sogsInitialViewerConfig ?? {});
   setupCameraManagerBridge(viewer.cameraManager);
+  const initialCameraPose = window.__sogsInitialCameraPose;
+  if (
+    initialCameraPose?.position?.length === 3 &&
+    initialCameraPose?.target?.length === 3
+  ) {
+    window.__sogsCameraPose = {
+      position: initialCameraPose.position,
+      target: initialCameraPose.target,
+      fov: initialCameraPose.fov ?? null,
+    };
+    window.__sogsScriptedCamera = true;
+    tmpFrom.set(initialCameraPose.position[0], initialCameraPose.position[1], initialCameraPose.position[2]);
+    tmpTo.set(initialCameraPose.target[0], initialCameraPose.target[1], initialCameraPose.target[2]);
+    viewer.cameraManager.camera.look(tmpFrom, tmpTo);
+    if (finiteNumber(initialCameraPose.fov)) {
+      viewer.cameraManager.camera.fov = initialCameraPose.fov;
+      window.__sogsUserFov = initialCameraPose.fov;
+    }
+    installInitialCameraRelease(app);
+    app.renderNextFrame = true;
+  }
   /** Primary pointer + pointermove pan was removed: it fought orbit/touch and caused bounce. */
   window.__sogsSplatXzDragReady = true;
+  startSogsTelemetryPump();
+  postSogsState();
 
   window.addEventListener("message", (event) => {
     const d = event.data;
@@ -281,23 +531,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
     if (d.type === "sogs:apply") {
-      const g = app.root.findByName("gsplat");
-      if (!g) {
-        return;
-      }
-      if (Array.isArray(d.position) && d.position.length === 3) {
-        g.setLocalPosition(d.position[0], d.position[1], d.position[2]);
-      }
-      if (Array.isArray(d.rotation) && d.rotation.length === 3) {
-        g.setLocalEulerAngles(d.rotation[0], d.rotation[1], d.rotation[2]);
-      }
-      if (typeof d.scale === "number" && Number.isFinite(d.scale)) {
-        g.setLocalScale(d.scale, d.scale, d.scale);
-      }
-      if (typeof d.fov === "number" && Number.isFinite(d.fov)) {
-        window.__sogsUserFov = d.fov;
-      }
-      app.renderNextFrame = true;
+      applyScenePayload(app, d);
       postSogsState();
     }
     if (d.type === "sogs:guides") {
@@ -305,6 +539,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       syncSogsAxesGuides(app);
     }
     if (d.type === "sogs:requestState") {
+      postSogsState();
+    }
+    if (d.type === "sogs:config") {
+      applyViewerConfig(app, d);
       postSogsState();
     }
     if (d.type === "sogs:cameraLookAt") {
