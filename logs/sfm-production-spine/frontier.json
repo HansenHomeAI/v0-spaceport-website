@@ -1,6 +1,6 @@
 {
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "edad923869e9d32af729821cb839e881cfa11e05",
+  "head": "e38793054d552e6b10e7f7b673d05beb7f778da8",
   "current_rung": "R3",
   "current_goal": "Monitor R3 1000-image ladder, verify the pushed pipeline-viewer preview, and keep the heartbeat active until full end-goal proof.",
   "last_command": "python3 scripts/sfm/run_sfm_benchmark.py --branch agent-73948216-sfm-production-spine --mode chunked --input-s3-uri s3://spaceport-ml-processing-staging/manual-validations/md1p27eba1k-1776107310/colmap/ladders/ladder_1000.zip --output-s3-uri s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap --job-prefix r3lad1000a739 --instance-type ml.g4dn.xlarge --volume-size-gb 120 --env COLMAP_PIPELINE_MODE=distributed_chunked_v1 --env COLMAP_CHUNK_PLANNER=footprint_graph_v1 --env COLMAP_MATCH_PROFILE=P3 --env COLMAP_CHUNK_TARGET_IMAGES=200 --env COLMAP_CHUNK_HARD_MAX_IMAGES=320 --env COLMAP_LEAF_TARGET_IMAGES=200 --env COLMAP_LEAF_HARD_CAP=320 --env COLMAP_PAIR_CAP_LOCAL=24 --env COLMAP_PAIR_CAP_REVISIT=10 --env COLMAP_PAIR_CAP_SEAM=10 --env COLMAP_PARENT_MERGE_MODE=legacy_rerun --summary-json-output logs/sfm-production-spine/r3_ladder_1000_submit.json",
@@ -9,7 +9,7 @@
       "job_name": "r3lad1000a739-1777554908",
       "input_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p27eba1k-1776107310/colmap/ladders/ladder_1000.zip",
       "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap",
-      "status": "InProgress: chunk_02_mapper_initial num_reg_frames=296 after chunk_01 core gate 291/291 core and secondary model 28/320 recorded",
+      "status": "InProgress: chunk_04_mapper_initial num_reg_frames=12 after chunk_04_matches_importer added 2142 verified pairs",
       "created": "2026-04-30T13:15:09Z"
     }
   ],
@@ -88,16 +88,16 @@
     "r3_job": "r3lad1000a739-1777554908 submitted at 2026-04-30T13:15:09Z on ml.g4dn.xlarge, output s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap",
     "r3_job_head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
     "current_ledger_head": "567b7bbc9e64dfc64311e76a2a92f4285304ece2",
-    "r3_latest_log": "Feature extraction completed 1079/1079 in 41.633 minutes; chunk_00_mapper_initial registered 160/160 with 121178 points; chunk_01_matches_importer added 2362 verified pairs; chunk_01_mapper_initial model0 registered 291/320 with 209043 points and 291/291 core images; secondary model1 registered 28/320 with 18602 points and remains recorded for R3 gate review; chunk_02_matches_importer added 2281 verified pairs; chunk_02_mapper_initial reached num_reg_frames=296 at 2026-04-30T15:03:30Z",
+    "r3_latest_log": "Feature extraction completed 1079/1079 in 41.633 minutes; chunk_00_mapper_initial registered 160/160 with 121178 points; chunk_01 model0 registered 291/320 with 209043 points and 291/291 core images; secondary model1 registered 28/320 with 18602 points; chunk_02_mapper_initial registered 319/320 images with 240458 points; chunk_03_mapper_initial model2 registered 136/176 images with 122190 points and 120/120 core images; chunk_04_matches_importer added 2142 verified pairs and chunk_04_mapper_initial reached num_reg_frames=12 at 2026-04-30T15:21:31Z",
     "pipeline_viewer_local": "Added /pipeline-viewer and /sfm-preview COLMAP sparse viewer; npm run build passed; local API loaded r1cross739x2 with 485 cameras, 325930 points, 2 chunks; Playwright Chrome screenshots saved for desktop/mobile with nonblank image means 0.158561/0.162179",
-    "branch_workflow_current": "CDK Deploy 25171611287 and Pages 25171611289 succeeded at edad923869e9d32af729821cb839e881cfa11e05; live preview /pipeline-viewer returned HTTP 200 and API metrics, but browser proof found header/footer obstruction, so chrome-suppression fix is local and ready to commit/push",
-    "pipeline_viewer_preview": "Live preview https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/pipeline-viewer returned HTTP 200 and API loaded r1cross739x2 with 485 cameras, 325930 points, 2 chunks; browser proof found feedback overlay obstruction, fixed locally and npm run build passed",
+    "branch_workflow_current": "CDK Deploy 25172986663 and Pages 25172986616 succeeded at e38793054d552e6b10e7f7b673d05beb7f778da8; PREVIEW_URL=https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev and HASH_URL=https://9b941756.v0-spaceport-website-preview2.pages.dev",
+    "pipeline_viewer_preview": "Post-fix live preview returned HTTP 200 for /pipeline-viewer and /sfm-preview; API loaded r1cross739x2 with registeredImageCount 485, exactPointCount 325930, sampledPointCount 1000, chunkCount 2",
     "heartbeat_correction": "sfm-reality-check is ACTIVE in the app and must not be deleted until full verified end-goal proof or explicit owner stop; duplicate sfm-reality-check-2 is PAUSED, not deleted, to prevent competing workers"
   },
   "promotion_status": "blocked",
   "blockers": [
     "R3 1000-image and R4 2157-image gates have not run; no full production promotion is claimed."
   ],
-  "next_unblocked_step": "Commit/push viewer chrome-suppression fix, monitor the new GitHub deploy, verify live pipeline-viewer preview unobstructed, and keep monitoring R3 to completion before R4.",
-  "updated": "2026-04-30T15:03:54Z"
+  "next_unblocked_step": "Monitor R3 to completion, fetch metadata and sparse/0 proof, gate R3 honestly, and only then decide whether R4 is unblocked.",
+  "updated": "2026-04-30T15:22:23Z"
 }

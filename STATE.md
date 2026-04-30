@@ -1,9 +1,9 @@
 reason: building the mature-branch distributed SfM production spine from origin/agent-31459027-sfm-final-bridge-fallback without mutating the mature branch.
-last_step: Pages run 25171611289 succeeded for pushed head edad923869e9d32af729821cb839e881cfa11e05, and live API loaded r1cross739x2 metrics, but browser proof found header/footer feedback chrome obstructing /pipeline-viewer. Patched Header/Footer to suppress site chrome on /pipeline-viewer and /sfm-preview; npm run build now passes after clearing generated disk-cache artifacts. R3 chunk_02_mapper_initial reached num_reg_frames=296 at 2026-04-30T15:03:30Z with no SageMaker failure reason.
+last_step: R3 chunk_04_matches_importer added 2142 verified image pairs and chunk_04_mapper_initial reached num_reg_frames=12 at 2026-04-30T15:21:31Z. Chrome-free preview deploy 25172986616 succeeded for e38793054d552e6b10e7f7b673d05beb7f778da8; /pipeline-viewer and /sfm-preview returned HTTP 200 and the preview API loaded r1cross739x2 metrics.
 next_unblocked_step: monitor R3 job r3lad1000a739-1777554908 to completion, fetch metadata/sparse proof, then gate R3 before any R4 launch.
 owner_action_needed: none
 active_jobs:
-  - r3lad1000a739-1777554908 -> InProgress, chunk_02_mapper_initial num_reg_frames=296 after chunk_01 core gate 291/291 core and secondary model 28/320 recorded, R3 1000-image ladder, s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap
+  - r3lad1000a739-1777554908 -> InProgress, chunk_04_mapper_initial num_reg_frames=12 after chunk_03 registered 136/176 total and 120/120 core, R3 1000-image ladder, s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap
 latest_artifacts:
   - logs/sfm-production-spine/port_inventory.md
   - logs/sfm-production-spine/frontier.json
@@ -33,6 +33,7 @@ latest_artifacts:
   - logs/sfm-production-spine/pipeline-viewer-r1-mobile.png
   - s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap
   - https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev
+  - https://9b941756.v0-spaceport-website-preview2.pages.dev
 branch: agent-73948216-sfm-production-spine
-head: edad923869e9d32af729821cb839e881cfa11e05
-updated: 2026-04-30T15:03:54Z
+head: e38793054d552e6b10e7f7b673d05beb7f778da8
+updated: 2026-04-30T15:22:23Z
