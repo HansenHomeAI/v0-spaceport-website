@@ -1,0 +1,44 @@
+[
+  {
+    "chunk_index": 0,
+    "status": "retried",
+    "mapper_mode": "incremental",
+    "image_count": 280,
+    "registered_count": 214,
+    "registered_ratio": 0.7616,
+    "core_registered_ratio": 0.7643,
+    "verified_pair_count": 1470,
+    "points3d_count": 133080,
+    "points_per_registered_image": 621.87,
+    "timings_sec": {
+      "mapper_initial": 1155.17,
+      "mapper_recovery": 1143.05
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": [
+      "bounded_chunk_recovery",
+      "seam_only_leaf_seed"
+    ]
+  },
+  {
+    "chunk_index": 1,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 265,
+    "registered_count": 265,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 1470,
+    "points3d_count": 173891,
+    "points_per_registered_image": 656.19,
+    "timings_sec": {
+      "mapper_initial": 1165.84
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  }
+]

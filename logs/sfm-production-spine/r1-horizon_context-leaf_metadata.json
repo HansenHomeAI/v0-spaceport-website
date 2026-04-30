@@ -1,0 +1,78 @@
+[
+  {
+    "chunk_index": 0,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 146,
+    "registered_count": 146,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 449,
+    "points3d_count": 84795,
+    "points_per_registered_image": 580.79,
+    "timings_sec": {
+      "mapper_initial": 304.08
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  },
+  {
+    "chunk_index": 1,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 180,
+    "registered_count": 128,
+    "registered_ratio": 0.7111,
+    "core_registered_ratio": 0.9,
+    "verified_pair_count": 520,
+    "points3d_count": 74546,
+    "points_per_registered_image": 582.39,
+    "timings_sec": {
+      "mapper_initial": 568.75
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  },
+  {
+    "chunk_index": 2,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 220,
+    "registered_count": 220,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 778,
+    "points3d_count": 139983,
+    "points_per_registered_image": 636.29,
+    "timings_sec": {
+      "mapper_initial": 796.4
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  },
+  {
+    "chunk_index": 3,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 124,
+    "registered_count": 124,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 778,
+    "points3d_count": 82636,
+    "points_per_registered_image": 666.42,
+    "timings_sec": {
+      "mapper_initial": 268.08
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  }
+]

@@ -1,0 +1,53 @@
+{
+  "branch": "agent-73948216-sfm-production-spine",
+  "proof_head": "aa83b9b5c0bd105be183afffd3896aa5d20f98bd",
+  "mode": "distributed_chunked_v1",
+  "dataset": "cross_pass",
+  "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1probesnap-1775766965/colmap/probes/cross_pass.zip",
+  "leaf_count": 2,
+  "passed_leaf_count": 2,
+  "failed_leaf_count": 0,
+  "standard_sparse0_exists": true,
+  "promotion_blockers": [],
+  "leaves": [
+    {
+      "job_id": "r2leaf739c0-1777517712",
+      "chunk_index": 0,
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r2leaf739c0-1777517712/colmap",
+      "status": "passed",
+      "registered": 320,
+      "total": 320,
+      "registered_ratio": 1.0,
+      "core_registered_ratio": 1.0,
+      "points": 209873,
+      "points_per_registered_image": 655.85,
+      "runtime_sec": 2637.42,
+      "verified_pair_count": 2473,
+      "fallbacks_used": [],
+      "sparse0_uri": "s3://spaceport-ml-processing-staging/manual-validations/r2leaf739c0-1777517712/colmap/sparse/0/"
+    },
+    {
+      "job_id": "r2leaf739c1-1777517712",
+      "chunk_index": 1,
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r2leaf739c1-1777517712/colmap",
+      "status": "passed",
+      "registered": 220,
+      "total": 220,
+      "registered_ratio": 1.0,
+      "core_registered_ratio": 1.0,
+      "points": 156826,
+      "points_per_registered_image": 712.85,
+      "runtime_sec": 2032.39,
+      "verified_pair_count": 1781,
+      "fallbacks_used": [],
+      "sparse0_uri": "s3://spaceport-ml-processing-staging/manual-validations/r2leaf739c1-1777517712/colmap/sparse/0/"
+    }
+  ],
+  "aggregate_registered": 540,
+  "aggregate_total": 540,
+  "aggregate_points": 366699,
+  "weighted_points_per_registered_image": 679.07,
+  "parallel_wall_runtime_sec": 2768.0,
+  "rerun_evidence": "The two leaf jobs used --only-chunk-indexes 0 and 1 as independent jobs; any failed leaf can be rerun by relaunching the same command with the failed chunk index only.",
+  "updated": "2026-04-30T03:44:52Z"
+}

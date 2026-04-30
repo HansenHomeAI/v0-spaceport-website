@@ -1,0 +1,256 @@
+{
+  "pipeline": "colmap_gpu_spatial_heading_chunked",
+  "processing_time_seconds": 5711.4,
+  "timings": {
+    "extract_images_seconds": 3.33,
+    "feature_extractor_seconds": 1123.67,
+    "chunk_00_matches_importer_seconds": 177.87,
+    "chunk_00_mapper_initial_seconds": 1124.26,
+    "chunk_01_matches_importer_seconds": 79.25,
+    "chunk_01_mapper_initial_seconds": 491.8,
+    "chunk_01_recovery_matches_importer_seconds": 90.11,
+    "chunk_01_mapper_recovery_seconds": 455.11,
+    "chunk_01_02_adjacent_merge_matches_importer_seconds": 314.97,
+    "chunk_01_02_adjacent_merge_mapper_initial_seconds": 1525.09,
+    "chunk_model_merge_seconds": 18.41,
+    "chunk_bundle_adjuster_seconds": 213.26
+  },
+  "dataset_image_count": 485,
+  "chunk_execution_image_count": 485,
+  "cameras_registered": 1,
+  "images_registered": 485,
+  "points_3d": 357637,
+  "quality_check_passed": true,
+  "gpu_enabled": true,
+  "gps_priors_detected": 485,
+  "gps_exif_count": 485,
+  "orientation_prior_count": 485,
+  "heading_prior_source": "flight_yaw",
+  "heading_prior_dispersion_deg": 179.89,
+  "pitch_prior_source": "flight_pitch",
+  "pitch_prior_dispersion_deg": 50.7,
+  "pose_priors_written_count": 485,
+  "pose_priors_source": "feature_extractor",
+  "gps_prior_coverage": 1.0,
+  "matchers_run": [
+    "chunk_matches_importer",
+    "chunk_matches_importer",
+    "chunk_matches_importer",
+    "chunk_matches_importer"
+  ],
+  "matcher_pair_deltas": {
+    "chunk_matches_importer": 24512
+  },
+  "verified_pairs_total": 10802,
+  "spatial_matcher_enabled": true,
+  "sequential_matcher_enabled": false,
+  "sequential_pair_delta": 0,
+  "match_profile": "P1",
+  "gps_first_attempted": false,
+  "gps_first_skipped_reason": "eligible",
+  "chunking_enabled": true,
+  "chunking_attempted": true,
+  "chunking_skipped_reason": "eligible",
+  "chunk_planner": "footprint_graph_v1",
+  "chunk_matcher_strategy": "pair_list",
+  "chunk_count": 3,
+  "chunk_sizes": [
+    253,
+    120,
+    247
+  ],
+  "chunk_overlap_image_count": 60,
+  "chunk_group_count": 485,
+  "chunk_segment_count": 0,
+  "chunk_pair_budget": 25000,
+  "chunk_role_counts": {
+    "geometry_anchor": 465,
+    "bridge_context": 20
+  },
+  "chunk_mapper_seconds": 3596.26,
+  "chunk_merge_seconds": 18.41,
+  "chunk_merge_proof": {
+    "chunk_model_count": 2,
+    "pre_merge_unique_registered_images": 485,
+    "final_merged_registered_images": 485,
+    "retained_registered_images": 485,
+    "pre_merge_retention_ratio": 1.0
+  },
+  "chunk_recovery_mode": "prior_aware_retry_adjacent_merge_no_vocab",
+  "chunk_run_metrics": [
+    {
+      "chunk_index": 0,
+      "image_count": 253,
+      "registered_ratio": 1.0,
+      "core_registered_ratio": 1.0,
+      "recovered_registered_ratio": null,
+      "recovered_core_registered_ratio": null,
+      "failure": false
+    },
+    {
+      "chunk_index": 1,
+      "image_count": 120,
+      "registered_ratio": 0.7083,
+      "core_registered_ratio": 0.7083,
+      "recovered_registered_ratio": 0.5903,
+      "recovered_core_registered_ratio": 0.7083,
+      "failure": true
+    },
+    {
+      "chunk_index": 2,
+      "image_count": 312,
+      "registered_ratio": 0.9904,
+      "core_registered_ratio": 0.9898,
+      "recovered_registered_ratio": null,
+      "recovered_core_registered_ratio": null,
+      "failure": false
+    }
+  ],
+  "boundary_recovery_triggered": true,
+  "adjacent_chunk_merge_triggered": true,
+  "merge_bridge_recovery_triggered": false,
+  "merged_component_count": 1,
+  "final_points_per_registered_image": 737.4,
+  "mapper_seconds_per_registered_image": 0.0,
+  "fallback_triggered": false,
+  "fallback_reason": "not_needed",
+  "final_matcher_mode": "footprint_graph_chunked",
+  "model_summaries": [
+    {
+      "stage": "chunk_00_mapper_initial",
+      "cameras_registered": 1,
+      "images_registered": 253,
+      "points_3d": 183718
+    },
+    {
+      "stage": "chunk_01_mapper_initial",
+      "cameras_registered": 1,
+      "images_registered": 85,
+      "points_3d": 67310
+    },
+    {
+      "stage": "chunk_01_mapper_recovery",
+      "cameras_registered": 1,
+      "images_registered": 85,
+      "points_3d": 67412
+    },
+    {
+      "stage": "chunk_01_02_adjacent_merge_mapper_initial",
+      "cameras_registered": 1,
+      "images_registered": 309,
+      "points_3d": 237155
+    }
+  ],
+  "vocab_tree_path": "/opt/ml/code/resources/vocab_tree_flickr100K_words256K.bin",
+  "vocab_tree_bytes": 0,
+  "vocab_tree_source": "uninitialized",
+  "sift_max_num_features": 8192,
+  "spatial_matcher_neighbors": 12,
+  "spatial_matcher_distance_m": 120.0,
+  "vocab_tree_num_images": 40,
+  "vocab_tree_num_visual_words": 8192,
+  "vocab_tree_max_num_descriptors": 100000,
+  "benchmark_subset_strategy": "md1_phase1_footprint_graph_cross_pass",
+  "colmap_capabilities": {
+    "available_commands": [
+      "automatic_reconstructor",
+      "bundle_adjuster",
+      "color_extractor",
+      "database_cleaner",
+      "database_creator",
+      "database_merger",
+      "delaunay_mesher",
+      "exhaustive_matcher",
+      "feature_extractor",
+      "feature_importer",
+      "geometric_verifier",
+      "global_mapper",
+      "gui",
+      "guided_geometric_verifier",
+      "help",
+      "hierarchical_mapper",
+      "image_deleter",
+      "image_filterer",
+      "image_rectifier",
+      "image_registrator",
+      "image_undistorter",
+      "image_undistorter_standalone",
+      "mapper",
+      "matches_importer",
+      "mesh_simplifier",
+      "mesh_texturer",
+      "model_aligner",
+      "model_analyzer",
+      "model_clusterer",
+      "model_comparer",
+      "model_converter",
+      "model_cropper",
+      "model_merger",
+      "model_orientation_aligner",
+      "model_splitter",
+      "model_transformer",
+      "patch_match_stereo",
+      "point_filtering",
+      "point_triangulator",
+      "poisson_mesher",
+      "pose_prior_mapper",
+      "project_generator",
+      "rig_configurator",
+      "rotation_averager",
+      "sequential_matcher",
+      "spatial_matcher",
+      "stereo_fusion",
+      "transitive_matcher",
+      "view_graph_calibrator",
+      "vocab_tree_builder",
+      "vocab_tree_matcher",
+      "vocab_tree_retriever"
+    ],
+    "supports_matches_importer": true,
+    "supports_exhaustive_matcher": true,
+    "supports_pose_prior_mapper": true,
+    "supports_hierarchical_mapper": true,
+    "supports_global_mapper": true
+  },
+  "failure_stage": "",
+  "failure_reason_detail": "",
+  "failed_chunk_index": null,
+  "failed_chunk_registered_ratio": 0.0,
+  "failed_chunk_core_registered_ratio": 0.0,
+  "timed_out": false,
+  "selected_chunk_indexes": [],
+  "planner_snapshot_only": false,
+  "capability_snapshot_only": false,
+  "probe_subsets": {
+    "geometry_mix": 440,
+    "cross_pass": 440,
+    "horizon_context": 440
+  },
+  "probe_subset_details": {
+    "geometry_mix": {
+      "seed_chunk_index": 0,
+      "source_chunk_indexes": [
+        0,
+        2
+      ],
+      "image_count": 440
+    },
+    "cross_pass": {
+      "seed_chunk_index": 0,
+      "source_chunk_indexes": [
+        0,
+        2
+      ],
+      "image_count": 440
+    },
+    "horizon_context": {
+      "seed_chunk_index": 0,
+      "source_chunk_indexes": [
+        0,
+        2
+      ],
+      "image_count": 440
+    }
+  },
+  "timestamp": "2026-04-10T08:11:36Z"
+}

@@ -1,26 +1,106 @@
 {
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "78b465fdc6c78678801888b99c09bc367055b809",
-  "current_rung": "R0",
-  "current_goal": "Push R0 implementation and monitor branch deployment workflows before bounded AWS subset proof.",
-  "last_command": "COLMAP_PIPELINE_MODE=distributed_chunked_v1 SFM_PLANNER_REPORT_ONLY=1 COLMAP_CHUNK_TARGET_IMAGES=4 COLMAP_CHUNK_MIN_IMAGES=2 COLMAP_CHUNK_HARD_MAX_IMAGES=5 COLMAP_LEAF_TARGET_IMAGES=4 COLMAP_LEAF_HARD_CAP=5 COLMAP_CHUNK_CROSS_EDGE_MIN_COUNT=1 python3 infrastructure/containers/sfm/run_colmap_sfm.py logs/sfm-production-spine/r0_planner_fixture/input logs/sfm-production-spine/r0_planner_fixture/output",
-  "active_jobs": [],
+  "head": "aa83b9b5c0bd105be183afffd3896aa5d20f98bd",
+  "current_rung": "R3",
+  "current_goal": "R0/R1/R2 accepted milestone is complete; next unblocked gate is the 1000-image R3 ladder.",
+  "last_command": "python3 scripts/sfm/run_sfm_benchmark.py --branch agent-73948216-sfm-production-spine --mode chunked --input-s3-uri s3://spaceport-ml-processing-staging/manual-validations/md1probesnap-1775766965/colmap/probes/cross_pass.zip --output-s3-uri s3://spaceport-ml-processing-staging/manual-validations/r2leaf739c{0,1}-1777517712/colmap --job-prefix r2leaf739c{0,1} --instance-type ml.g4dn.xlarge --volume-size-gb 120 --only-chunk-indexes {0,1} --env COLMAP_PIPELINE_MODE=distributed_chunked_v1 --env COLMAP_CHUNK_PLANNER=footprint_graph_v1 --env COLMAP_MATCH_PROFILE=P3 --env COLMAP_CHUNK_TARGET_IMAGES=200 --env COLMAP_CHUNK_HARD_MAX_IMAGES=320 --env COLMAP_LEAF_TARGET_IMAGES=200 --env COLMAP_LEAF_HARD_CAP=320 --env COLMAP_PAIR_CAP_LOCAL=24 --env COLMAP_PAIR_CAP_REVISIT=10 --env COLMAP_PAIR_CAP_SEAM=10 --env COLMAP_PARENT_MERGE_MODE=legacy_rerun",
+  "active_jobs": [
+    {
+      "job_name": "r2leaf739c0-1777517712",
+      "input_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1probesnap-1775766965/colmap/probes/cross_pass.zip",
+      "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/r2leaf739c0-1777517712/colmap",
+      "only_chunk_indexes": "0",
+      "status": "Completed",
+      "started": "2026-04-30T02:55:59Z"
+    },
+    {
+      "job_name": "r2leaf739c1-1777517712",
+      "input_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1probesnap-1775766965/colmap/probes/cross_pass.zip",
+      "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/r2leaf739c1-1777517712/colmap",
+      "only_chunk_indexes": "1",
+      "status": "Completed",
+      "started": "2026-04-30T02:55:53Z"
+    },
+    {
+      "job_name": "r2leaf0a739-1777517926",
+      "input_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1probesnap-1775766965/colmap/probes/cross_pass.zip",
+      "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/r2leaf0a739-1777517926/colmap",
+      "only_chunk_indexes": "0",
+      "status": "Stopped duplicate"
+    },
+    {
+      "job_name": "r2leaf1a739-1777517926",
+      "input_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1probesnap-1775766965/colmap/probes/cross_pass.zip",
+      "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/r2leaf1a739-1777517926/colmap",
+      "only_chunk_indexes": "1",
+      "status": "Stopped duplicate"
+    }
+  ],
   "latest_artifacts": [
     "logs/sfm-production-spine/port_inventory.md",
     "logs/sfm-production-spine/r0_planner_fixture/output/chunk_planner_manifest.json",
     "logs/sfm-production-spine/r0_planner_fixture/output/planner_static_report.json",
     "logs/sfm-production-spine/r0_planner_fixture/output/reducer_metadata.json",
-    "logs/sfm-production-spine/r0_planner_fixture/output/sfm_metadata.json"
+    "logs/sfm-production-spine/r0_planner_fixture/output/sfm_metadata.json",
+    "logs/sfm-production-spine/r1-geometry_mix-sfm_metadata.json",
+    "logs/sfm-production-spine/r1-geometry_mix-leaf_metadata.json",
+    "logs/sfm-production-spine/r1-geometry_mix-reducer_metadata.json",
+    "logs/sfm-production-spine/r1-horizon_context-sfm_metadata.json",
+    "logs/sfm-production-spine/r1-horizon_context-leaf_metadata.json",
+    "logs/sfm-production-spine/r1-horizon_context-reducer_metadata.json",
+    "logs/sfm-production-spine/r1-cross_pass-failed-sfm_metadata.json",
+    "logs/sfm-production-spine/r1-cross_pass-failed-leaf_metadata.json",
+    "logs/sfm-production-spine/r1-cross_pass-failed-reducer_metadata.json",
+    "logs/sfm-production-spine/r1-cross_pass-rerun1-sfm_metadata.json",
+    "logs/sfm-production-spine/r1-cross_pass-rerun1-leaf_metadata.json",
+    "logs/sfm-production-spine/r1-cross_pass-rerun1-reducer_metadata.json",
+    "logs/sfm-production-spine/r1cross739x2-1777513705-sfm_metadata.json",
+    "logs/sfm-production-spine/r1cross739x2-1777513705-leaf_metadata.json",
+    "logs/sfm-production-spine/r1cross739x2-1777513705-reducer_metadata.json",
+    "logs/sfm-production-spine/r1cross739x2-1777513705-planner_static_report.json",
+    "s3://spaceport-ml-processing-staging/manual-validations/r1cross739x2-1777513705/colmap/sparse/0/",
+    "s3://spaceport-ml-processing-staging/manual-validations/r2leaf739c0-1777517712/colmap",
+    "s3://spaceport-ml-processing-staging/manual-validations/r2leaf739c1-1777517712/colmap",
+    "logs/sfm-production-spine/r2leaf739c1-1777517712-sfm_metadata.json",
+    "logs/sfm-production-spine/r2leaf739c1-1777517712-leaf_metadata.json",
+    "logs/sfm-production-spine/r2leaf739c1-1777517712-reducer_metadata.json",
+    "logs/sfm-production-spine/r2leaf739c1-1777517712-planner_static_report.json",
+    "s3://spaceport-ml-processing-staging/manual-validations/r2leaf739c1-1777517712/colmap/sparse/0/",
+    "logs/sfm-production-spine/r2leaf739c0-1777517712-sfm_metadata.json",
+    "logs/sfm-production-spine/r2leaf739c0-1777517712-leaf_metadata.json",
+    "logs/sfm-production-spine/r2leaf739c0-1777517712-reducer_metadata.json",
+    "logs/sfm-production-spine/r2leaf739c0-1777517712-planner_static_report.json",
+    "logs/sfm-production-spine/r2_leaf_fanout_summary.json",
+    "s3://spaceport-ml-processing-staging/manual-validations/r2leaf739c0-1777517712/colmap/sparse/0/",
+    "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev",
+    "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine@sha256:9714d61c9219166a626462e84857ca6a326b1e21fa4ce9c80d2f433dd47352b3"
   ],
   "last_metrics": {
     "r0_unit_tests": "python3 -m unittest tests.unit.test_colmap_gps_priors: 101 tests OK",
     "planner_fixture_dataset_image_count": 8,
     "planner_fixture_chunk_count": 2,
     "planner_fixture_connected_component_count": 1,
-    "planner_fixture_expected_output_kind": "single_merged_model"
+    "planner_fixture_expected_output_kind": "single_merged_model",
+    "cdk_run": "25136403853 success",
+    "pages_run": "25137206532 success",
+    "container_run": "25136403855 success",
+    "preview_url_status": "HTTP 200",
+    "r1_geometry_mix": "r1geom739-1777502427 passed 467/467, 320022 points, 685.27 pts/image, 4204.54s, sparse0 true",
+    "r1_horizon_context": "r1horiz739-1777502427 passed 467/467, 334417 points, 716.10 pts/image, 4194.59s, sparse0 true",
+    "r1_cross_pass_first_attempt": "r1cross739-1777502427 failed chunked_merge_threshold, retained 397/485, missing sparse0",
+    "r1_cross_pass_rerun1": "r1cross739x1-1777507605 failed chunked_merge_threshold, retained 461/485, missing sparse0; improved from 397/485",
+    "r1_cross_pass_duplicate": "r1cross739x2-1777513659 stopped after lower-signal duplicate became unnecessary",
+    "r1_cross_pass_final": "r1cross739x2-1777513705 passed 485/485, 325930 points, 672.02 pts/image, 3713.95s, sparse0 true",
+    "r1_status": "passed: geometry_mix 467/467 685.27 pts/image; horizon_context 467/467 716.10 pts/image; cross_pass 485/485 672.02 pts/image",
+    "r2_leaf_0_status": "r2leaf739c0-1777517712 Completed; leaf passed 320/320, 209873 raw points, 655.85 pts/image, 2637.42s, sparse0 true, no fallbacks",
+    "r2_leaf_1_status": "r2leaf739c1-1777517712 Completed; leaf passed 220/220, 156826 raw points, 712.85 pts/image, 2032.39s, sparse0 true, no fallbacks",
+    "r2_status": "passed: two independent leaves completed via --only-chunk-indexes with aggregate 540/540, 366699 raw points, weighted 679.07 pts/image, both sparse0 true",
+    "r2_duplicate_jobs": "r2leaf0a739-1777517926 and r2leaf1a739-1777517926 Stopped after duplicate launch"
   },
-  "promotion_status": "not_started",
-  "blockers": [],
-  "next_unblocked_step": "Commit, push, watch Pages/CDK/container workflows, then run R1 subset proof only after deploy image is green.",
-  "updated": "2026-04-29T22:06:58Z"
+  "promotion_status": "blocked",
+  "blockers": [
+    "R3 1000-image and R4 2157-image gates have not run; no full production promotion is claimed."
+  ],
+  "next_unblocked_step": "Run R3 1000-image ladder with distributed_chunked_v1 only after accepting the completed R0/R1/R2 proof ledger and budget/runtime choice.",
+  "updated": "2026-04-30T03:44:52Z"
 }

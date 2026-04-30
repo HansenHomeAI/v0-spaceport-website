@@ -1,0 +1,21 @@
+[
+  {
+    "chunk_index": 1,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 220,
+    "registered_count": 220,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 1781,
+    "points3d_count": 156826,
+    "points_per_registered_image": 712.85,
+    "timings_sec": {
+      "mapper_initial": 827.59
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  }
+]

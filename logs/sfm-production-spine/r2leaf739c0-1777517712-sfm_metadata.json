@@ -1,0 +1,334 @@
+{
+  "pipeline": "colmap_gpu_distributed_chunked_v1",
+  "pipeline_mode": "distributed_chunked_v1",
+  "processing_time_seconds": 2637.42,
+  "timings": {
+    "extract_images_seconds": 3.21,
+    "feature_extractor_seconds": 1123.79,
+    "chunk_00_matches_importer_seconds": 57.83,
+    "chunk_00_mapper_initial_seconds": 1416.98
+  },
+  "dataset_image_count": 485,
+  "chunk_execution_image_count": 320,
+  "cameras_registered": 1,
+  "images_registered": 320,
+  "points_3d": 209873,
+  "quality_check_passed": true,
+  "gpu_enabled": true,
+  "gps_priors_detected": 485,
+  "gps_exif_count": 485,
+  "orientation_prior_count": 485,
+  "heading_prior_source": "flight_yaw",
+  "heading_prior_dispersion_deg": 179.89,
+  "pitch_prior_source": "flight_pitch",
+  "pitch_prior_dispersion_deg": 50.7,
+  "pose_priors_written_count": 485,
+  "pose_priors_source": "feature_extractor",
+  "gps_prior_coverage": 1.0,
+  "matchers_run": [
+    "chunk_matches_importer"
+  ],
+  "matcher_pair_deltas": {
+    "chunk_matches_importer": 2473
+  },
+  "verified_pairs_total": 2473,
+  "spatial_matcher_enabled": true,
+  "sequential_matcher_enabled": false,
+  "sequential_pair_delta": 0,
+  "match_profile": "P3",
+  "gps_first_attempted": false,
+  "gps_first_skipped_reason": "eligible",
+  "chunking_enabled": true,
+  "chunking_attempted": true,
+  "chunking_skipped_reason": "single_chunk_selected",
+  "chunk_planner": "footprint_graph_v1",
+  "chunk_matcher_strategy": "pair_list",
+  "chunk_count": 2,
+  "chunk_sizes": [
+    320,
+    220
+  ],
+  "chunk_overlap_image_count": 55,
+  "chunk_group_count": 485,
+  "chunk_segment_count": 0,
+  "chunk_pair_budget": 25000,
+  "chunk_role_counts": {
+    "geometry_anchor": 465,
+    "bridge_context": 20
+  },
+  "chunk_mapper_seconds": 1416.98,
+  "chunk_merge_seconds": 0.0,
+  "chunk_merge_proof": {
+    "chunk_model_count": 1,
+    "pre_merge_unique_registered_images": 320,
+    "final_merged_registered_images": 320,
+    "pre_merge_retention_ratio": 1.0,
+    "merge_component_recovery_records": []
+  },
+  "chunk_merge_summary": {
+    "pending_component_count": 1,
+    "pending_components": [
+      {
+        "component_index": 0,
+        "pending_model_indexes": [
+          0
+        ],
+        "stages": [
+          "chunk_00_mapper_initial"
+        ],
+        "source_chunk_indexes": [
+          0
+        ],
+        "source_image_count": 320,
+        "registered_image_count": 320
+      }
+    ],
+    "merge_component_recovery_records": []
+  },
+  "parent_merge_mode": "legacy_rerun",
+  "hierarchy_mode": "balanced_tree_v1",
+  "seam_frontier_mode": "frontier_only",
+  "parent_seam_registration_cycles": 2,
+  "top_level_ba_mode": "below_threshold",
+  "top_level_ba_image_threshold": 900,
+  "seam_only_leaf_min_registered_ratio": 0.0,
+  "seam_only_leaf_min_core_ratio": 0.0,
+  "bundle_adjusted_node_count": 0,
+  "max_bundle_adjusted_image_count": 0,
+  "skipped_seam_merge_count": 0,
+  "merge_node_records": [],
+  "chunk_recovery_mode": "prior_aware_retry_no_vocab",
+  "chunk_run_metrics": [
+    {
+      "chunk_index": 0,
+      "image_count": 320,
+      "registered_count": 320,
+      "points3d_count": 209873,
+      "verified_pair_count": 2473,
+      "timings_sec": {
+        "mapper_initial": 1416.98
+      },
+      "registered_ratio": 1.0,
+      "core_registered_ratio": 1.0,
+      "recovered_registered_ratio": null,
+      "recovered_core_registered_ratio": null,
+      "failure": false
+    }
+  ],
+  "boundary_recovery_triggered": false,
+  "adjacent_chunk_merge_triggered": false,
+  "merge_bridge_recovery_triggered": false,
+  "merged_component_count": 1,
+  "filtered_sparse_summary": {
+    "raw_points_3d": 209873,
+    "filtered_points_3d": 199600,
+    "core_filtered_points_3d": 194189,
+    "far_context_points_3d": 5411,
+    "weak_far_context_points_rejected": 2172,
+    "absurd_outlier_points_removed": 0,
+    "outlier_limit": 1000.0,
+    "core_min_track_len": 3,
+    "core_max_reproj_error": 2.0,
+    "far_context_track_len": 2,
+    "far_context_max_reproj_error": 1.0,
+    "far_context_min_baseline_m": 12.0
+  },
+  "final_points_per_registered_image": 655.85,
+  "mapper_seconds_per_registered_image": 0.0,
+  "fallback_triggered": false,
+  "fallback_reason": "not_needed",
+  "final_matcher_mode": "distributed_chunked_v1_subset",
+  "model_summaries": [
+    {
+      "stage": "chunk_00_mapper_initial",
+      "cameras_registered": 1,
+      "images_registered": 320,
+      "points_3d": 209873
+    }
+  ],
+  "vocab_tree_path": "/opt/ml/code/resources/vocab_tree_flickr100K_words256K.bin",
+  "vocab_tree_bytes": 0,
+  "vocab_tree_source": "uninitialized",
+  "sift_max_num_features": 8192,
+  "spatial_matcher_neighbors": 16,
+  "spatial_matcher_distance_m": 160.0,
+  "vocab_tree_num_images": 40,
+  "vocab_tree_num_visual_words": 8192,
+  "vocab_tree_max_num_descriptors": 100000,
+  "benchmark_subset_strategy": "r2_cross_pass_leaf_0",
+  "input_subset_manifest_uri": "",
+  "input_subset_name": "",
+  "input_subset_requested": false,
+  "input_subset_requested_image_count": 0,
+  "colmap_capabilities": {
+    "available_commands": [
+      "automatic_reconstructor",
+      "bundle_adjuster",
+      "color_extractor",
+      "database_cleaner",
+      "database_creator",
+      "database_merger",
+      "delaunay_mesher",
+      "exhaustive_matcher",
+      "feature_extractor",
+      "feature_importer",
+      "geometric_verifier",
+      "global_mapper",
+      "gui",
+      "guided_geometric_verifier",
+      "help",
+      "hierarchical_mapper",
+      "image_deleter",
+      "image_filterer",
+      "image_rectifier",
+      "image_registrator",
+      "image_undistorter",
+      "image_undistorter_standalone",
+      "mapper",
+      "matches_importer",
+      "mesh_simplifier",
+      "mesh_texturer",
+      "model_aligner",
+      "model_analyzer",
+      "model_clusterer",
+      "model_comparer",
+      "model_converter",
+      "model_cropper",
+      "model_merger",
+      "model_orientation_aligner",
+      "model_splitter",
+      "model_transformer",
+      "patch_match_stereo",
+      "point_filtering",
+      "point_triangulator",
+      "poisson_mesher",
+      "pose_prior_mapper",
+      "project_generator",
+      "rig_configurator",
+      "rotation_averager",
+      "sequential_matcher",
+      "spatial_matcher",
+      "stereo_fusion",
+      "transitive_matcher",
+      "view_graph_calibrator",
+      "vocab_tree_builder",
+      "vocab_tree_matcher",
+      "vocab_tree_retriever"
+    ],
+    "supports_matches_importer": true,
+    "supports_exhaustive_matcher": true,
+    "supports_pose_prior_mapper": true,
+    "supports_hierarchical_mapper": true,
+    "supports_global_mapper": true
+  },
+  "leaf_target_images": 200,
+  "leaf_hard_cap_images": 320,
+  "pair_cap_local": 24,
+  "pair_cap_revisit": 10,
+  "pair_cap_seam": 10,
+  "failure_stage": "",
+  "failure_reason_detail": "",
+  "failed_chunk_index": null,
+  "failed_chunk_registered_ratio": 0.0,
+  "failed_chunk_core_registered_ratio": 0.0,
+  "timed_out": false,
+  "selected_chunk_indexes": [
+    0
+  ],
+  "planner_snapshot_only": false,
+  "planner_report_only": false,
+  "planner_static_report": {
+    "dataset_image_count": 485,
+    "gps_coverage_ratio": 1.0,
+    "orientation_coverage_ratio": 1.0,
+    "selected_orientation_source": "exif",
+    "candidate_pair_counts": {
+      "spatial": 17710,
+      "sequence": 4795,
+      "footprint": 3957,
+      "retrieval": 0
+    },
+    "verified_pair_count": 2473,
+    "connected_component_count": 1,
+    "chunk_count": 2,
+    "chunk_sizes": [
+      320,
+      220
+    ],
+    "orphan_image_count": 0,
+    "risky_bridges": [],
+    "estimated_leaf_jobs": 2,
+    "expected_output_kind": "single_merged_model"
+  },
+  "reducer_metadata": {
+    "branch": "agent-73948216-sfm-production-spine",
+    "head": "aa83b9b5c0bd105be183afffd3896aa5d20f98bd",
+    "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1probesnap-1775766965/colmap/probes/cross_pass.zip",
+    "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r2leaf739c0-1777517712/colmap",
+    "planner_manifest": "chunk_planner_manifest.json",
+    "leaf_count": 1,
+    "passed_leaf_count": 1,
+    "failed_leaf_count": 0,
+    "merge_strategy": "overlap_first_balanced",
+    "merged_component_count": 1,
+    "expected_component_count": 1,
+    "ba_policy": "local_or_deferred_global",
+    "standard_sparse0_exists": true,
+    "promotion_blockers": []
+  },
+  "capability_snapshot_only": false,
+  "probe_subsets": {
+    "geometry_mix": 485,
+    "cross_pass": 485,
+    "horizon_context": 485
+  },
+  "probe_subset_details": {
+    "geometry_mix": {
+      "seed_chunk_index": 0,
+      "source_chunk_indexes": [
+        0,
+        1
+      ],
+      "image_count": 485
+    },
+    "cross_pass": {
+      "seed_chunk_index": 0,
+      "source_chunk_indexes": [
+        0,
+        1
+      ],
+      "image_count": 485
+    },
+    "horizon_context": {
+      "seed_chunk_index": 0,
+      "source_chunk_indexes": [
+        0,
+        1
+      ],
+      "image_count": 485
+    }
+  },
+  "ladder_subsets": {
+    "ladder_1000": 485,
+    "ladder_2000": 485
+  },
+  "ladder_subset_details": {
+    "ladder_1000": {
+      "target_image_count": 1000,
+      "image_count": 485,
+      "source_chunk_indexes": [
+        0,
+        1
+      ]
+    },
+    "ladder_2000": {
+      "target_image_count": 2000,
+      "image_count": 485,
+      "source_chunk_indexes": [
+        0,
+        1
+      ]
+    }
+  },
+  "timestamp": "2026-04-30T03:41:33Z"
+}

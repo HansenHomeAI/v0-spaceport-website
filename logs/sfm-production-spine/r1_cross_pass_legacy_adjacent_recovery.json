@@ -1,0 +1,73 @@
+{
+  "job_name": "r1cross739x2-1777513705",
+  "mode": "chunked",
+  "input_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1probesnap-1775766965/colmap/probes/cross_pass.zip",
+  "processing_time_seconds": 3713.95,
+  "chunk_mapper_seconds": 2265.91,
+  "mapper_seconds_per_registered_image": 0.0,
+  "images_registered": 485,
+  "dataset_image_count": 485,
+  "points_3d": 325930,
+  "final_points_per_registered_image": 672.02,
+  "final_matcher_mode": "distributed_chunked_v1",
+  "fallback_reason": "not_needed",
+  "merged_component_count": 1,
+  "chunk_count": 2,
+  "chunk_sizes": [
+    320,
+    220
+  ],
+  "chunk_planner": "footprint_graph_v1",
+  "chunk_matcher_strategy": "pair_list",
+  "chunk_role_counts": {
+    "geometry_anchor": 465,
+    "bridge_context": 20
+  },
+  "planner_snapshot_only": false,
+  "planner_report_only": false,
+  "planner_static_report": {
+    "dataset_image_count": 485,
+    "gps_coverage_ratio": 1.0,
+    "orientation_coverage_ratio": 1.0,
+    "selected_orientation_source": "exif",
+    "candidate_pair_counts": {
+      "spatial": 17710,
+      "sequence": 4795,
+      "footprint": 3957,
+      "retrieval": 0
+    },
+    "verified_pair_count": 2473,
+    "connected_component_count": 1,
+    "chunk_count": 2,
+    "chunk_sizes": [
+      320,
+      220
+    ],
+    "orphan_image_count": 0,
+    "risky_bridges": [],
+    "estimated_leaf_jobs": 2,
+    "expected_output_kind": "single_merged_model"
+  },
+  "reducer_metadata": {
+    "branch": "agent-73948216-sfm-production-spine",
+    "head": "aa83b9b5c0bd105be183afffd3896aa5d20f98bd",
+    "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1probesnap-1775766965/colmap/probes/cross_pass.zip",
+    "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r1cross739x2-1777513705/colmap",
+    "planner_manifest": "chunk_planner_manifest.json",
+    "leaf_count": 2,
+    "passed_leaf_count": 2,
+    "failed_leaf_count": 0,
+    "merge_strategy": "overlap_first_balanced",
+    "merged_component_count": 1,
+    "expected_component_count": 1,
+    "ba_policy": "local_or_deferred_global",
+    "standard_sparse0_exists": true,
+    "promotion_blockers": []
+  },
+  "capability_snapshot_only": false,
+  "probe_subsets": {
+    "geometry_mix": 485,
+    "cross_pass": 485,
+    "horizon_context": 485
+  }
+}

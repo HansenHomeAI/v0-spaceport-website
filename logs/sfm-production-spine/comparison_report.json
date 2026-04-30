@@ -1,8 +1,8 @@
 {
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "78b465fdc6c78678801888b99c09bc367055b809",
+  "head": "aa83b9b5c0bd105be183afffd3896aa5d20f98bd",
   "mode": "distributed_chunked_v1",
-  "dataset": "R0 local planner fixture",
+  "dataset": "md1 representative subsets plus cross_pass distributed leaves",
   "baseline_mature": {
     "job": "md1p24e752k-1776314974",
     "registered": 2157,
@@ -18,20 +18,74 @@
     "runtime_sec": 12249.67
   },
   "candidate": {
-    "jobs": [],
-    "registered": 0,
-    "total": 8,
-    "points": 0,
-    "points_per_registered_image": 0.0,
-    "runtime_sec": 0.0,
-    "merged_component_count": 0,
+    "jobs": [
+      "r1geom739-1777502427",
+      "r1horiz739-1777502427",
+      "r1cross739x2-1777513705",
+      "r2leaf739c0-1777517712",
+      "r2leaf739c1-1777517712"
+    ],
+    "registered": 485,
+    "total": 485,
+    "points": 325930,
+    "points_per_registered_image": 672.02,
+    "runtime_sec": 3713.95,
+    "merged_component_count": 1,
     "fallbacks_used": [],
-    "sparse0_uri": "",
-    "pipeline_viewer_url": ""
+    "sparse0_uri": "s3://spaceport-ml-processing-staging/manual-validations/r1cross739x2-1777513705/colmap/sparse/0/",
+    "pipeline_viewer_url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/pipeline-viewer?url=s3://spaceport-ml-processing-staging/manual-validations/r1cross739x2-1777513705/colmap"
   },
   "decision": "needs_more_proof",
   "block_reasons": [
-    "R1/R2 AWS subset and distributed leaf proof have not run yet",
-    "R0 planner-only fixture intentionally does not produce sparse/0"
-  ]
+    "R0, R1, and R2 passed, but R3 1000-image and R4 2157-image production-scale gates have not run.",
+    "No full-dataset promotion is claimed from subset and leaf-fanout proof alone."
+  ],
+  "r1_summary": {
+    "geometry_mix": {
+      "job": "r1geom739-1777502427",
+      "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1probesnap-1775766965/colmap/probes/geometry_mix.zip",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r1geom739-1777502427/colmap",
+      "registered": 467,
+      "total": 467,
+      "points": 320022,
+      "points_per_registered_image": 685.27,
+      "runtime_sec": 4204.54,
+      "sparse0": true
+    },
+    "horizon_context": {
+      "job": "r1horiz739-1777502427",
+      "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1probesnap-1775766965/colmap/probes/horizon_context.zip",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r1horiz739-1777502427/colmap",
+      "registered": 467,
+      "total": 467,
+      "points": 334417,
+      "points_per_registered_image": 716.1,
+      "runtime_sec": 4194.59,
+      "sparse0": true
+    },
+    "cross_pass": {
+      "job": "r1cross739x2-1777513705",
+      "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1probesnap-1775766965/colmap/probes/cross_pass.zip",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r1cross739x2-1777513705/colmap",
+      "registered": 485,
+      "total": 485,
+      "points": 325930,
+      "points_per_registered_image": 672.02,
+      "runtime_sec": 3713.95,
+      "sparse0": true
+    }
+  },
+  "r2_summary": {
+    "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1probesnap-1775766965/colmap/probes/cross_pass.zip",
+    "leaf_count": 2,
+    "passed_leaf_count": 2,
+    "failed_leaf_count": 0,
+    "aggregate_registered": 540,
+    "aggregate_total": 540,
+    "aggregate_points": 366699,
+    "weighted_points_per_registered_image": 679.07,
+    "parallel_wall_runtime_sec": 2768.0,
+    "standard_sparse0_exists": true,
+    "promotion_blockers": []
+  }
 }

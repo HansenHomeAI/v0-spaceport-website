@@ -85,6 +85,20 @@ def get_sagemaker_role_arn(stack_name: str) -> str:
         role_name = physical_id
         role = aws_json("iam", "get-role", "--role-name", role_name)
         return role["Role"]["Arn"]
+    stack = aws_json("cloudformation", "describe-stacks", "--stack-name", stack_name)["Stacks"][0]
+    outputs = stack_outputs(stack)
+    environment_name = outputs.get("EnvironmentName", "")
+    fallback_role_names: List[str] = []
+    if environment_name == "branch-preview":
+        fallback_role_names.append("Spaceport-SageMaker-Role-staging")
+    if environment_name:
+        fallback_role_names.append(f"Spaceport-SageMaker-Role-{environment_name}")
+    for role_name in dict.fromkeys(fallback_role_names):
+        try:
+            role = aws_json("iam", "get-role", "--role-name", role_name)
+        except subprocess.CalledProcessError:
+            continue
+        return role["Role"]["Arn"]
     raise RuntimeError(f"Could not resolve SageMakerExecutionRole from stack {stack_name}")
 
 
@@ -160,6 +174,16 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Run only the immutable chunk planner/report path in the container.",
     )
+    parser.add_argument(
+        "--planner-only",
+        action="store_true",
+        help="Alias for --planner-report-only.",
+    )
+    parser.add_argument(
+        "--report-only",
+        action="store_true",
+        help="Alias for --planner-report-only.",
+    )
     parser.add_argument("--wait", action="store_true", help="Wait for job completion and print metadata")
     parser.add_argument("--poll-seconds", type=int, default=60)
     return parser.parse_args()
@@ -227,7 +251,7 @@ def main() -> int:
         "SFM_JOB_NAME": job_name,
         **parse_env(args.env),
     }
-    if args.planner_report_only:
+    if args.planner_report_only or args.planner_only or args.report_only:
         environment["SFM_PLANNER_REPORT_ONLY"] = "1"
     if args.mode == "chunked":
         environment.setdefault("COLMAP_ENABLE_SPATIAL_CHUNKING", "1")
