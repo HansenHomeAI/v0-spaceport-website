@@ -1,9 +1,9 @@
 reason: building the mature-branch distributed SfM production spine from origin/agent-31459027-sfm-final-bridge-fallback without mutating the mature branch.
-last_step: R4 exact 2157-image proof launched as SageMaker job r4exact739-1777570477 using full input s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip plus mature ladder_2000 manifest subset s3://spaceport-ml-processing-staging/manual-validations/md1p2dd70full-1776233149/colmap/chunk_planner_manifest.json. Compute image tag agent73948216sfmproductionspine resolves to sha256:9714d61c9219166a626462e84857ca6a326b1e21fa4ce9c80d2f433dd47352b3 and SFM_GIT_HEAD is pinned to 9f7bd89637c60f930eca1c14f1de340a14edfdf9. SageMaker status is InProgress; ProcessingStartTime is 2026-04-30T17:35:24.315Z; no FailureReason and no EndOfJob S3 output yet.
-next_unblocked_step: monitor R4 job r4exact739-1777570477 through planner, leaf chunks, bridge/merge, S3 upload, metadata parsing, sparse/0 proof, and pipeline-viewer proof.
+last_step: R4 first exact attempt r4exact739-1777570477 reached terminal SageMaker Failed with AlgorithmError exit code 1 after the chunk_00 timeout; bounded R4 chunk_00 retry r4c0t739-1777579549 was submitted with COLMAP_CHUNK_MAPPER_TIMEOUT_SECONDS=7200 and COLMAP_BRIDGE_MAPPER_TIMEOUT_SECONDS=7200.
+next_unblocked_step: monitor r4c0t739-1777579549 startup, logs, chunk_00 mapper progress, leaf metadata, sparse/0, and whether the raised timeout clears the 171/320 frame failure.
 owner_action_needed: none
 active_jobs:
-  - r4exact739-1777570477 -> InProgress, ProcessingStartTime 2026-04-30T17:35:24.315Z, no FailureReason, no EndOfJob S3 output yet; input s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip; subset ladder_2000 from s3://spaceport-ml-processing-staging/manual-validations/md1p2dd70full-1776233149/colmap/chunk_planner_manifest.json; output s3://spaceport-ml-processing-staging/manual-validations/r4exact739-1777570477/colmap
+  - r4c0t739-1777579549 -> InProgress startup pending ProcessingStartTime; targeted chunk_00 retry for exact ladder_2000 using same input/manifest, --only-chunk-indexes 0, COLMAP_CHUNK_MAPPER_TIMEOUT_SECONDS=7200, COLMAP_BRIDGE_MAPPER_TIMEOUT_SECONDS=7200; output s3://spaceport-ml-processing-staging/manual-validations/r4c0t739-1777579549/colmap
 latest_artifacts:
   - logs/sfm-production-spine/port_inventory.md
   - logs/sfm-production-spine/frontier.json
@@ -30,6 +30,12 @@ latest_artifacts:
   - s3://spaceport-ml-processing-staging/manual-validations/r2leaf739c0-1777517712/colmap/sparse/0/
   - logs/sfm-production-spine/r3_ladder_1000_submit.json
   - logs/sfm-production-spine/r4_exact_2157_submit.json
+  - logs/sfm-production-spine/r4exact739-1777570477-sfm_metadata.json
+  - logs/sfm-production-spine/r4exact739-1777570477-planner_static_report.json
+  - logs/sfm-production-spine/r4exact739-1777570477-reducer_metadata.json
+  - logs/sfm-production-spine/r4exact739-1777570477-chunk_planner_manifest.json
+  - logs/sfm-production-spine/r4_chunk0_timeout_retry_submit.json
+  - s3://spaceport-ml-processing-staging/manual-validations/r4c0t739-1777579549/colmap
   - logs/sfm-production-spine/r3_ladder_1000_summary.json
   - logs/sfm-production-spine/r3lad1000a739-1777554908-sfm_metadata.json
   - logs/sfm-production-spine/r3lad1000a739-1777554908-leaf_metadata.json
@@ -48,5 +54,5 @@ latest_artifacts:
   - https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev
   - https://9b941756.v0-spaceport-website-preview2.pages.dev
 branch: agent-73948216-sfm-production-spine
-head: d991bbf5234eaf40d6f6d965ee4ffe28b03f5957
-updated: 2026-04-30T17:41:27Z
+head: 1c3dcbdb5f1ec5705e31ec12dadf0c3ce09bf39e
+updated: 2026-04-30T20:05:49Z
