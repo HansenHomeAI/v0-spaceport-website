@@ -1,9 +1,9 @@
 {
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "1baa0a9fdd546117d4fc52f59d8813a54d70ad3a",
-  "proof_job_head": "aa83b9b5c0bd105be183afffd3896aa5d20f98bd",
+  "head": "08abda791c725c7ec3d5202409099c0d856f6d0a",
+  "proof_job_head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
   "mode": "distributed_chunked_v1",
-  "dataset": "md1 representative subsets plus cross_pass distributed leaves",
+  "dataset": "md1 representative subsets, R3 ladder_1000 proof, and active R4 ladder_2000 exact retry",
   "baseline_mature": {
     "job": "md1p24e752k-1776314974",
     "registered": 2157,
@@ -20,26 +20,33 @@
   },
   "candidate": {
     "jobs": [
+      "r1cross739x2-1777513705",
       "r1geom739-1777502427",
       "r1horiz739-1777502427",
-      "r1cross739x2-1777513705",
       "r2leaf739c0-1777517712",
-      "r2leaf739c1-1777517712"
+      "r2leaf739c1-1777517712",
+      "r3lad1000a739-1777554908",
+      "r4c0t739-1777579549",
+      "r4exact739-1777570477",
+      "r4exact739x2-1777587765"
     ],
-    "registered": 485,
-    "total": 485,
-    "points": 325930,
-    "points_per_registered_image": 672.02,
-    "runtime_sec": 3713.95,
+    "registered": 1079,
+    "total": 1079,
+    "points": 851843,
+    "points_per_registered_image": 789.47,
+    "runtime_sec": 14363.12,
     "merged_component_count": 1,
     "fallbacks_used": [],
-    "sparse0_uri": "s3://spaceport-ml-processing-staging/manual-validations/r1cross739x2-1777513705/colmap/sparse/0/",
-    "pipeline_viewer_url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/pipeline-viewer?url=s3://spaceport-ml-processing-staging/manual-validations/r1cross739x2-1777513705/colmap"
+    "sparse0_uri": "s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap/sparse/0/",
+    "pipeline_viewer_url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/pipeline-viewer?url=s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap"
   },
   "decision": "needs_more_proof",
   "block_reasons": [
-    "R0, R1, and R2 passed, but R3 1000-image and R4 2157-image production-scale gates have not run.",
-    "No full-dataset promotion is claimed from subset and leaf-fanout proof alone."
+    "R0, R1, R2, and R3 passed, but R4 exact 2157-image proof has not passed yet.",
+    "First R4 exact attempt r4exact739-1777570477 failed at chunk_00_mapper_initial after the 2700s mapper timeout with no sparse/0.",
+    "Bounded R4 chunk_00 retry r4c0t739-1777579549 passed terminal Completed with 320/320 registered, 238876 raw points, 746.49 pts/image, and sparse/0.",
+    "Full exact 2157-image R4 retry r4exact739x2-1777587765 is now InProgress with 7200s chunk/bridge mapper timeouts, but terminal metrics and viewer proof are not yet available.",
+    "R5 huge-acreage proof has not run."
   ],
   "r1_summary": {
     "geometry_mix": {
@@ -88,5 +95,29 @@
     "parallel_wall_runtime_sec": 2768.0,
     "standard_sparse0_exists": true,
     "promotion_blockers": []
+  },
+  "r3_summary": {
+    "job": "r3lad1000a739-1777554908",
+    "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p27eba1k-1776107310/colmap/ladders/ladder_1000.zip",
+    "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap",
+    "registered": 1079,
+    "total": 1079,
+    "points": 851843,
+    "points_per_registered_image": 789.47,
+    "runtime_sec": 14363.12,
+    "sparse0": true,
+    "pipeline_viewer_proof": "logs/sfm-production-spine/pipeline-viewer-preview-r3-desktop.png"
+  },
+  "r4_status": {
+    "first_exact_job": "r4exact739-1777570477",
+    "first_exact_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739-1777570477/colmap",
+    "first_exact_result": "failed: chunk_00_mapper_initial timed out after 2700s at 171/320 registered frames; no sparse/0",
+    "bounded_chunk_retry_job": "r4c0t739-1777579549",
+    "bounded_chunk_retry_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4c0t739-1777579549/colmap",
+    "bounded_chunk_retry_result": "terminal Completed: ladder_2000 chunk_00 only with 7200s chunk/bridge mapper timeouts passed with 320/320 registered, 238876 raw points, 746.49 pts/image, leaf status passed, reducer standard_sparse0_exists=true, promotion_blockers=[], sparse/0 exists",
+    "active_exact_retry_job": "r4exact739x2-1777587765",
+    "active_exact_retry_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739x2-1777587765/colmap",
+    "active_exact_retry_latest_progress": "InProgress; ProcessingStartTime 2026-04-30T22:23:42.658Z; no log stream yet and S3 output empty before EndOfJob upload; terminal metrics and viewer proof not yet available",
+    "duplicate_exact_retry_cleanup": "r4exact739t-1777588010 is a non-canonical duplicate; stop requested and control plane is Stopping after ProcessingStartTime 2026-04-30T22:27:33.070Z"
   }
 }
