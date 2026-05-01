@@ -1,8 +1,8 @@
 {
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "08abda791c725c7ec3d5202409099c0d856f6d0a",
+  "head": "f7a5c017ad79bfa2fd008cc8ff9f10271dec0492",
   "current_rung": "R4",
-  "current_goal": "Monitor full exact 2157-image R4 retry after bounded chunk_00 timeout fix passed.",
+    "current_goal": "Convert the R4 exact merge failure into the next bounded R4 retry after SageMaker terminal status settles.",
   "last_command": "python3 scripts/sfm/run_sfm_benchmark.py --branch agent-73948216-sfm-production-spine --mode chunked --input-s3-uri s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip --job-prefix r4exact739x2 --instance-type ml.g4dn.xlarge --volume-size-gb 120 --image-tag agent73948216sfmproductionspine --subset-strategy md1_phase2_candidate_ladder_2000 --env SFM_GIT_HEAD=9f7bd89637c60f930eca1c14f1de340a14edfdf9 --env COLMAP_PIPELINE_MODE=distributed_chunked_v1 --env COLMAP_CHUNK_PLANNER=footprint_graph_v1 --env COLMAP_MATCH_PROFILE=P3 --env COLMAP_CHUNK_TARGET_IMAGES=200 --env COLMAP_CHUNK_HARD_MAX_IMAGES=320 --env COLMAP_LEAF_TARGET_IMAGES=200 --env COLMAP_LEAF_HARD_CAP=320 --env COLMAP_PAIR_CAP_LOCAL=24 --env COLMAP_PAIR_CAP_REVISIT=10 --env COLMAP_PAIR_CAP_SEAM=10 --env COLMAP_PARENT_MERGE_MODE=legacy_rerun --env COLMAP_INPUT_SUBSET_MANIFEST_URI=s3://spaceport-ml-processing-staging/manual-validations/md1p2dd70full-1776233149/colmap/chunk_planner_manifest.json --env COLMAP_INPUT_SUBSET_NAME=ladder_2000 --env COLMAP_CHUNK_MAPPER_TIMEOUT_SECONDS=7200 --env COLMAP_BRIDGE_MAPPER_TIMEOUT_SECONDS=7200 --summary-json-output logs/sfm-production-spine/r4_exact_2157_timeout_retry_submit.json",
   "active_jobs": [
     {
@@ -12,7 +12,7 @@
       "input_subset_name": "ladder_2000",
       "expected_image_count": 2157,
       "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739x2-1777587765/colmap",
-      "status": "InProgress; ProcessingStartTime 2026-04-30T22:23:42.658Z; CloudWatch stream r4exact739x2-1777587765/algo-1-1777587822 live; extracted 2157 images and started GPU feature extraction at 2026-04-30T22:30:57Z; S3 output empty as expected before EndOfJob upload; output s3://spaceport-ml-processing-staging/manual-validations/r4exact739x2-1777587765/colmap; 2157-image ladder_2000 exact retry with COLMAP_CHUNK_MAPPER_TIMEOUT_SECONDS=7200 and COLMAP_BRIDGE_MAPPER_TIMEOUT_SECONDS=7200",
+            "status": "Runtime merge failed at 2026-05-01T04:53:11Z after chunk_07 passed and balanced merge reached 1828 images/1356837 points; final pending stages chunk_00_mapper_initial and chunk_model_merger_05_output_attempt_01 had no overlapping registered images. S3 metadata exists but sparse/0 is missing; stop requested after stale InProgress control-plane state; current SageMaker status Stopping/no FailureReason.",
       "created": "2026-04-30T22:22:52Z"
     },
     {
@@ -22,7 +22,7 @@
       "input_subset_name": "ladder_2000",
       "expected_image_count": 2157,
       "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739t-1777588010/colmap",
-      "status": "Duplicate full exact retry submitted after handoff confusion; stop requested and control plane is Stopping after ProcessingStartTime 2026-04-30T22:27:33.070Z; not canonical.",
+      "status": "Duplicate full exact retry submitted after handoff confusion; terminal Stopped at 2026-04-30T22:29:24.397Z; not canonical.",
       "created": "2026-04-30T22:26:51Z"
     }
   ],
@@ -75,7 +75,12 @@
     "logs/sfm-production-spine/r3lad1000a739-1777554908-sfm_metadata.json",
     "logs/sfm-production-spine/r4_chunk0_timeout_retry_submit.json",
     "logs/sfm-production-spine/r4_exact_2157_submit.json",
-    "logs/sfm-production-spine/r4_exact_2157_timeout_retry_submit.json",
+        "logs/sfm-production-spine/r4_exact_2157_timeout_retry_submit.json",
+        "logs/sfm-production-spine/r4exact739x2-1777587765-chunk_planner_manifest.json",
+        "logs/sfm-production-spine/r4exact739x2-1777587765-leaf_metadata.json",
+        "logs/sfm-production-spine/r4exact739x2-1777587765-planner_static_report.json",
+        "logs/sfm-production-spine/r4exact739x2-1777587765-reducer_metadata.json",
+        "logs/sfm-production-spine/r4exact739x2-1777587765-sfm_metadata.json",
     "logs/sfm-production-spine/r4c0t739-1777579549-leaf_metadata.json",
     "logs/sfm-production-spine/r4c0t739-1777579549-planner_static_report.json",
     "logs/sfm-production-spine/r4c0t739-1777579549-reducer_metadata.json",
@@ -154,21 +159,38 @@
     "r4_duplicate_retry_cleanup": "duplicate r4c0retry739-1777579567 stopped at 2026-04-30T20:08:44.193Z and is not canonical",
     "r4_chunk0_retry_startup": "r4c0t739-1777579549 feature_extractor completed 2157/2157 images at 2026-04-30T21:37:36Z in 82.336 minutes; chunk_00_matches_importer added 2349 verified pairs; chunk_00_mapper_initial registered 320/320 with 238876 raw points and runtime completed successfully at 2026-04-30T22:16:30Z; sparse/0 exists",
     "r4_chunk0_retry_result": "terminal Completed: r4c0t739-1777579549 passed bounded chunk gate with 320/320 registered, 238876 raw points, 746.49 pts/image, leaf status passed, reducer standard_sparse0_exists=true, promotion_blockers=[]; S3 sparse/0 has cameras.txt/images.txt/points3D.txt plus frames/rigs",
-    "current_head_cdk_run": "CDK Deploy 25186846234 for 08abda791c725c7ec3d5202409099c0d856f6d0a completed success at 2026-04-30T20:21:08Z",
+    "current_head_cdk_run": "CDK Deploy 25192630259 for f7a5c017ad79bfa2fd008cc8ff9f10271dec0492 completed success at 2026-04-30T22:45:31Z",
     "r4_retry_workflow_current": "CDK Deploy 25186846234 for 08abda791c725c7ec3d5202409099c0d856f6d0a completed success at 2026-04-30T20:21:08Z",
     "r4_timeout_retry_ledger_push": "commit 08abda791c725c7ec3d5202409099c0d856f6d0a pushed to origin/agent-73948216-sfm-production-spine",
     "heartbeat_correction_live": "sfm-reality-check automation is ACTIVE every 30 minutes and must remain active until complete verified end-goal proof or explicit owner stop; duplicate sfm-reality-check-2 remains paused, not deleted",
     "r4_chunk0_retry_terminal": "SageMaker r4c0t739-1777579549 Completed; ProcessingEndTime 2026-04-30T22:17:24.812Z; no FailureReason",
-    "r4_exact_retry_job": "r4exact739x2-1777587765 InProgress; ProcessingStartTime 2026-04-30T22:23:42.658Z; CloudWatch stream r4exact739x2-1777587765/algo-1-1777587822 live; extracted 2157 images and started GPU feature extraction at 2026-04-30T22:30:57Z; S3 output empty before EndOfJob upload; input s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip; subset manifest s3://spaceport-ml-processing-staging/manual-validations/md1p2dd70full-1776233149/colmap/chunk_planner_manifest.json; subset ladder_2000; output s3://spaceport-ml-processing-staging/manual-validations/r4exact739x2-1777587765/colmap; 7200s chunk/bridge mapper timeouts",
-    "r4_duplicate_full_retry_cleanup": "r4exact739t-1777588010 was duplicate full exact retry; stop requested and control plane is Stopping after ProcessingStartTime 2026-04-30T22:27:33.070Z; it is not canonical",
-    "r4_exact_retry_startup": "r4exact739x2-1777587765 CloudWatch stream r4exact739x2-1777587765/algo-1-1777587822 started; container verified Tesla T4, 15GiB RAM, input zip 12.8GB, began extracting archive at 2026-04-30T22:29:45Z"
+    "r4_exact_retry_job": "r4exact739x2-1777587765 InProgress; ProcessingStartTime 2026-04-30T22:23:42.658Z; CloudWatch stream r4exact739x2-1777587765/algo-1-1777587822 live; feature extraction completed 2157/2157; chunk_00 passed in the full run with 320/320 images and 227004 points after 54.438 minutes; chunk_01_mapper_initial active; S3 output empty before EndOfJob upload; input s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip; subset manifest s3://spaceport-ml-processing-staging/manual-validations/md1p2dd70full-1776233149/colmap/chunk_planner_manifest.json; subset ladder_2000; output s3://spaceport-ml-processing-staging/manual-validations/r4exact739x2-1777587765/colmap; 7200s chunk/bridge mapper timeouts",
+    "r4_exact_retry_feature_progress": "feature_extractor completed 2157/2157 images; SageMaker InProgress with no FailureReason",
+    "r4_duplicate_full_retry_cleanup": "r4exact739t-1777588010 was duplicate full exact retry; terminal Stopped at 2026-04-30T22:29:24.397Z; it is not canonical",
+    "r4_exact_retry_startup": "r4exact739x2-1777587765 CloudWatch stream r4exact739x2-1777587765/algo-1-1777587822 started; container verified Tesla T4, 15GiB RAM, input zip 12.8GB, began extracting archive at 2026-04-30T22:29:45Z",
+        "r4_exact_retry_latest_log": "runtime merge failure at 2026-05-01T04:53:11Z: no overlapping registered images produced a usable merge among pending stages ['chunk_00_mapper_initial', 'chunk_model_merger_05_output_attempt_01']; S3 metadata uploaded but sparse/0 is missing; stop requested at 2026-05-01T05:01:20Z after stale InProgress control-plane state; status Stopping/no FailureReason",
+    "r4_exact_retry_chunk00_full_run": "passed: 320/320 images, 227004 points, 54.438 minutes, nonterminal COLMAP linear-solver warnings did not stop reconstruction",
+    "r4_exact_retry_chunk01_progress": "passed: chunk_01_matches_importer added 2451 verified pairs; chunk_01_mapper_initial registered 320/320 images with 234491 points in 24.327 minutes",
+        "r4_exact_retry_passed_chunks": "chunk_00 320/320 227004 points; chunk_01 320/320 234491 points; chunk_03 320/320 235960 points; chunk_04 320/320 223294 points; chunk_05 320/320 227653 points; chunk_06 320/320 252727 points; chunk_07 320/320 255192 points; chunk_02 required adjacent rerun and produced 431/447 plus 16/447 split requiring later merge/reducer resolution",
+    "r4_exact_retry_chunk02_progress": "initial and bounded recovery fragmented; adjacent final local rerun with chunk_01 across 447 images completed with model0 431/447 images and 321534 points plus model1 16/447 images and 10372 points; runtime advanced to chunk_03, but final merge/reducer must prove this split is resolved or honestly reported",
+    "r4_exact_retry_chunk01_02_adjacent_merge_progress": "completed with split output: model0 431/447 images, 321534 points; model1 16/447 images, 10372 points; chunk_03 started afterward; merge-quality risk remains until reducer/merge metadata is available",
+    "heartbeat_automation_status": "sfm-reality-check ACTIVE every 30 minutes; do not delete until full R3/R4/R5 promotion proof or explicit owner stop; sfm-reality-check-2 remains paused duplicate",
+    "r4_exact_retry_chunk03_progress": "passed full model: chunk_03_matches_importer added 2550 verified pairs; chunk_03_mapper_initial model1 registered 320/320 images with 235960 points in 21.499 minutes; small secondary model0 registered 3/320 with 3693 points; structure-less fallback attempts observed earlier in COLMAP log and must be reported if used in final metadata",
+    "r4_exact_retry_chunk04_progress": "passed: chunk_04_matches_importer added 2506 verified pairs; chunk_04_mapper_initial registered 320/320 images with 223294 points in 45.749 minutes; one earlier nonterminal COLMAP linear-solver warning observed",
+    "r4_exact_retry_chunk05_progress": "passed: chunk_05_matches_importer added 2433 verified pairs; chunk_05_mapper_initial registered 320/320 images with 227653 points in 21.586 minutes",
+    "r4_exact_retry_chunk06_progress": "passed: chunk_06_matches_importer added 2510 verified pairs; chunk_06_mapper_initial registered 320/320 images with 252727 points in 26.577 minutes",
+        "r4_exact_retry_chunk07_progress": "passed: chunk_07_matches_importer added 2422 verified pairs; chunk_07_mapper_initial registered 320/320 images with 255192 points at 2026-05-01T04:50:08Z; SageMaker InProgress/no FailureReason and S3 output empty before EndOfJob upload",
+        "r4_exact_retry_merge_progress": "running: chunk_model_merger_01 merged chunk_06+07 into 580 images and 465314 points at 2026-05-01T04:50:20Z; monitor remaining merge/reducer metadata and sparse/0"
+        ,
+        "r4_exact_retry_failed_merge": "r4exact739x2-1777587765 failed promotion: chunk_model_merger_05 merged to 1828 images and 1356837 points, but final merge with chunk_00_mapper_initial had no registered-image overlap; reducer leaf_count=9 passed_leaf_count=8 failed_leaf_count=1 merged_component_count=2 expected_component_count=1 standard_sparse0_exists=false promotion_blockers=[failed_leaf, missing_sparse0, unexpected_component_split, merge_retention_below_gate]",
+        "r4_next_experiment": "launch R4 exact retry with COLMAP_PARENT_MERGE_MODE=seam_only_v1 instead of the legacy_rerun override after r4exact739x2 reaches terminal Stopped/Failed status"
   },
   "promotion_status": "blocked",
   "blockers": [
     "R4 exact first attempt failed because chunk_00_mapper_initial hit the 2700s mapper timeout before sparse/0 was produced.",
-    "R4 exact retry r4exact739x2-1777587765 is running but has not yet produced terminal metrics or viewer proof.",
+        "R4 exact retry r4exact739x2-1777587765 failed at merge: metadata exists, but sparse/0 is missing and reducer reports merged_component_count=2 where expected_component_count=1.",
     "R5 huge-acreage proof has not run."
   ],
-  "next_unblocked_step": "Monitor r4exact739x2-1777587765 feature extraction progress, chunk planning/matching, chunk mapper gates, terminal metadata, sparse/0, and pipeline-viewer proof if it passes; do not run R5 until R4 exact is green and recorded.",
-  "updated": "2026-04-30T22:31:09Z"
+    "next_unblocked_step": "wait for r4exact739x2-1777587765 terminal Stopped/Failed status, then launch the next R4 exact retry with seam-only parent merge enabled instead of the legacy rerun override so bridge/seam recovery can preserve merge overlap; do not run R5 until R4 exact is green and recorded.",
+    "updated": "2026-05-01T05:01:20Z"
 }

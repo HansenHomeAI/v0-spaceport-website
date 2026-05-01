@@ -1,0 +1,176 @@
+[
+  {
+    "chunk_index": 0,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 320,
+    "registered_count": 320,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 2349,
+    "points3d_count": 227004,
+    "points_per_registered_image": 709.39,
+    "timings_sec": {
+      "mapper_initial": 3267.85
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  },
+  {
+    "chunk_index": 1,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 320,
+    "registered_count": 320,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 2451,
+    "points3d_count": 234491,
+    "points_per_registered_image": 732.78,
+    "timings_sec": {
+      "mapper_initial": 1460.93
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  },
+  {
+    "chunk_index": 2,
+    "status": "failed",
+    "mapper_mode": "incremental",
+    "image_count": 167,
+    "registered_count": 69,
+    "registered_ratio": 0.3613,
+    "core_registered_ratio": 0.3833,
+    "verified_pair_count": 2451,
+    "points3d_count": 55640,
+    "points_per_registered_image": 806.38,
+    "timings_sec": {
+      "mapper_initial": 528.14,
+      "mapper_recovery": 755.17
+    },
+    "peak_memory_mb": null,
+    "failure_stage": "chunk_02_recovery_failed",
+    "failure_reason": "chunk 2 remained below threshold after prior-aware retry: registered=69/191 core=46/120 missing_core=['DJI_01038.JPG', 'DJI_01039.JPG', 'DJI_01040.JPG', 'DJI_01041.JPG', 'DJI_01057.JPG', 'DJI_01058.JPG', 'DJI_01059.JPG', 'DJI_01060.JPG', 'DJI_01061.JPG', 'DJI_01074.JPG', 'DJI_01075.JPG', 'DJI_01076.JPG', 'DJI_01077.JPG', 'DJI_01078.JPG', 'DJI_01079.JPG', 'DJI_01080.JPG', 'DJI_01081.JPG', 'DJI_01082.JPG', 'DJI_01083.JPG', 'DJI_01084.JPG', 'DJI_01085.JPG', 'DJI_01086.JPG', 'DJI_01087.JPG', 'DJI_01088.JPG', 'DJI_01089.JPG', 'DJI_01127.JPG', 'DJI_01128.JPG', 'DJI_01129.JPG', 'DJI_01130.JPG', 'DJI_01131.JPG', 'DJI_01132.JPG', 'DJI_01133.JPG', 'DJI_01134.JPG', 'DJI_01135.JPG', 'DJI_01136.JPG', 'DJI_01137.JPG', 'DJI_01138.JPG', 'DJI_01139.JPG', 'DJI_01140.JPG', 'DJI_01141.JPG', 'DJI_01144.JPG', 'DJI_01177.JPG', 'DJI_01178.JPG', 'DJI_01179.JPG', 'DJI_01180.JPG', 'DJI_01181.JPG', 'DJI_01182.JPG', 'DJI_01183.JPG', 'DJI_01184.JPG', 'DJI_01185.JPG', 'DJI_01186.JPG', 'DJI_01187.JPG', 'DJI_01188.JPG', 'DJI_01189.JPG', 'DJI_01190.JPG', 'DJI_01191.JPG', 'DJI_01192.JPG', 'DJI_01193.JPG', 'DJI_01194.JPG', 'DJI_01195.JPG', 'DJI_01196.JPG', 'DJI_01197.JPG', 'DJI_01198.JPG', 'DJI_01199.JPG', 'DJI_01240.JPG', 'DJI_01674.JPG', 'DJI_01675.JPG', 'DJI_01676.JPG', 'DJI_01677.JPG', 'DJI_01678.JPG', 'DJI_01679.JPG', 'DJI_01680.JPG', 'DJI_01681.JPG', 'DJI_01682.JPG']",
+    "fallbacks_used": [
+      "bounded_chunk_recovery"
+    ]
+  },
+  {
+    "chunk_index": 2,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 447,
+    "registered_count": 431,
+    "registered_ratio": 0.9642,
+    "core_registered_ratio": 0.967,
+    "verified_pair_count": 3388,
+    "points3d_count": 321534,
+    "points_per_registered_image": 746.02,
+    "timings_sec": {
+      "mapper_initial": 2345.61
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  },
+  {
+    "chunk_index": 3,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 320,
+    "registered_count": 320,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 3388,
+    "points3d_count": 235960,
+    "points_per_registered_image": 737.38,
+    "timings_sec": {
+      "mapper_initial": 1291.22
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  },
+  {
+    "chunk_index": 4,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 320,
+    "registered_count": 320,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 3388,
+    "points3d_count": 223294,
+    "points_per_registered_image": 697.79,
+    "timings_sec": {
+      "mapper_initial": 2746.43
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  },
+  {
+    "chunk_index": 5,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 320,
+    "registered_count": 320,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 3388,
+    "points3d_count": 227653,
+    "points_per_registered_image": 711.42,
+    "timings_sec": {
+      "mapper_initial": 1296.55
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  },
+  {
+    "chunk_index": 6,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 320,
+    "registered_count": 320,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 3388,
+    "points3d_count": 252727,
+    "points_per_registered_image": 789.77,
+    "timings_sec": {
+      "mapper_initial": 1595.98
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  },
+  {
+    "chunk_index": 7,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 320,
+    "registered_count": 320,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 3388,
+    "points3d_count": 255192,
+    "points_per_registered_image": 797.48,
+    "timings_sec": {
+      "mapper_initial": 1240.29
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  }
+]

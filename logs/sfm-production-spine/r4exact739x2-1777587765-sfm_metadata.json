@@ -1,0 +1,739 @@
+{
+  "pipeline": "colmap_gpu_distributed_chunked_v1",
+  "pipeline_mode": "distributed_chunked_v1",
+  "processing_time_seconds": 23006.11,
+  "timings": {
+    "extract_images_seconds": 40.7,
+    "feature_extractor_seconds": 4984.42,
+    "chunk_00_matches_importer_seconds": 57.7,
+    "chunk_00_mapper_initial_seconds": 3267.85,
+    "chunk_01_matches_importer_seconds": 55.32,
+    "chunk_01_mapper_initial_seconds": 1460.93,
+    "chunk_02_matches_importer_seconds": 28.12,
+    "chunk_02_mapper_initial_seconds": 528.14,
+    "chunk_02_recovery_matches_importer_seconds": 32.93,
+    "chunk_02_mapper_recovery_seconds": 755.17,
+    "chunk_01_02_adjacent_merge_matches_importer_seconds": 78.12,
+    "chunk_01_02_adjacent_merge_mapper_initial_seconds": 2345.61,
+    "chunk_03_matches_importer_seconds": 54.27,
+    "chunk_03_mapper_initial_seconds": 1291.22,
+    "chunk_04_matches_importer_seconds": 65.64,
+    "chunk_04_mapper_initial_seconds": 2746.43,
+    "chunk_05_matches_importer_seconds": 54.99,
+    "chunk_05_mapper_initial_seconds": 1296.55,
+    "chunk_06_matches_importer_seconds": 53.96,
+    "chunk_06_mapper_initial_seconds": 1595.98,
+    "chunk_07_matches_importer_seconds": 56.72,
+    "chunk_07_mapper_initial_seconds": 1240.29
+  },
+  "dataset_image_count": 2157,
+  "chunk_execution_image_count": 2157,
+  "cameras_registered": 0,
+  "images_registered": 0,
+  "points_3d": 0,
+  "quality_check_passed": false,
+  "gpu_enabled": true,
+  "gps_priors_detected": 2157,
+  "gps_exif_count": 2157,
+  "orientation_prior_count": 2157,
+  "heading_prior_source": "flight_yaw",
+  "heading_prior_dispersion_deg": 179.95,
+  "pitch_prior_source": "flight_pitch",
+  "pitch_prior_dispersion_deg": 63.9,
+  "pose_priors_written_count": 2157,
+  "pose_priors_source": "feature_extractor",
+  "gps_prior_coverage": 1.0,
+  "matchers_run": [
+    "chunk_matches_importer",
+    "chunk_matches_importer",
+    "chunk_matches_importer",
+    "chunk_matches_importer",
+    "chunk_matches_importer",
+    "chunk_matches_importer",
+    "chunk_matches_importer",
+    "chunk_matches_importer",
+    "chunk_matches_importer",
+    "chunk_matches_importer"
+  ],
+  "matcher_pair_deltas": {
+    "chunk_matches_importer": 23332
+  },
+  "verified_pairs_total": 3388,
+  "spatial_matcher_enabled": true,
+  "sequential_matcher_enabled": false,
+  "sequential_pair_delta": 0,
+  "match_profile": "P3",
+  "gps_first_attempted": false,
+  "gps_first_skipped_reason": "eligible",
+  "chunking_enabled": true,
+  "chunking_attempted": true,
+  "chunking_skipped_reason": "eligible",
+  "chunk_planner": "footprint_graph_v1",
+  "chunk_matcher_strategy": "pair_list",
+  "chunk_count": 8,
+  "chunk_sizes": [
+    320,
+    320,
+    167,
+    320,
+    320,
+    320,
+    320,
+    320
+  ],
+  "chunk_overlap_image_count": 217,
+  "chunk_group_count": 2157,
+  "chunk_segment_count": 0,
+  "chunk_pair_budget": 25000,
+  "chunk_role_counts": {
+    "geometry_anchor": 2039,
+    "bridge_context": 118
+  },
+  "chunk_mapper_seconds": 16528.17,
+  "chunk_merge_seconds": 0.0,
+  "chunk_merge_proof": {
+    "chunk_model_count": 7,
+    "pre_merge_unique_registered_images": 2148,
+    "final_merged_registered_images": 0,
+    "retained_registered_images": 0,
+    "pre_merge_retention_ratio": 0.0,
+    "hierarchy_mode": "balanced_tree_v1",
+    "top_level_ba_mode": "below_threshold",
+    "top_level_ba_image_threshold": 900,
+    "top_level_ba_ran": false,
+    "top_level_ba_reason": "merge_failed",
+    "merge_nodes": [
+      {
+        "sequence": 1,
+        "left_stage": "chunk_06_mapper_initial",
+        "right_stage": "chunk_07_mapper_initial",
+        "left_source_image_count": 320,
+        "right_source_image_count": 320,
+        "shared_registered_image_count": 60,
+        "cross_edge_count": 2050,
+        "raw_merged_registered_image_count": 580,
+        "raw_merged_point_count": 465314,
+        "seam_frontier_image_count": 0,
+        "seam_refinement_skipped": true,
+        "seam_refinement_reason": "legacy_mode",
+        "bundle_adjusted": false,
+        "bundle_adjustment_reason": "not_run_yet"
+      },
+      {
+        "sequence": 2,
+        "left_stage": "chunk_01_02_adjacent_merge_mapper_initial",
+        "right_stage": "chunk_04_mapper_initial",
+        "left_source_image_count": 447,
+        "right_source_image_count": 320,
+        "shared_registered_image_count": 33,
+        "cross_edge_count": 1652,
+        "raw_merged_registered_image_count": 718,
+        "raw_merged_point_count": 516946,
+        "seam_frontier_image_count": 0,
+        "seam_refinement_skipped": true,
+        "seam_refinement_reason": "legacy_mode",
+        "bundle_adjusted": false,
+        "bundle_adjustment_reason": "not_run_yet"
+      },
+      {
+        "sequence": 3,
+        "left_stage": "chunk_03_mapper_initial",
+        "right_stage": "chunk_05_mapper_initial",
+        "left_source_image_count": 320,
+        "right_source_image_count": 320,
+        "shared_registered_image_count": 41,
+        "cross_edge_count": 1682,
+        "raw_merged_registered_image_count": 599,
+        "raw_merged_point_count": 430877,
+        "seam_frontier_image_count": 0,
+        "seam_refinement_skipped": true,
+        "seam_refinement_reason": "legacy_mode",
+        "bundle_adjusted": false,
+        "bundle_adjustment_reason": "not_run_yet"
+      },
+      {
+        "sequence": 4,
+        "left_stage": "chunk_model_merger_01_output_attempt_01",
+        "right_stage": "chunk_model_merger_03_output_attempt_01",
+        "left_source_image_count": 580,
+        "right_source_image_count": 599,
+        "shared_registered_image_count": 60,
+        "cross_edge_count": 1935,
+        "raw_merged_registered_image_count": 1119,
+        "raw_merged_point_count": 849270,
+        "seam_frontier_image_count": 0,
+        "seam_refinement_skipped": true,
+        "seam_refinement_reason": "legacy_mode",
+        "bundle_adjusted": false,
+        "bundle_adjustment_reason": "not_run_yet"
+      },
+      {
+        "sequence": 5,
+        "left_stage": "chunk_model_merger_02_output_attempt_01",
+        "right_stage": "chunk_model_merger_04_output_attempt_01",
+        "left_source_image_count": 727,
+        "right_source_image_count": 1119,
+        "shared_registered_image_count": 9,
+        "cross_edge_count": 471,
+        "raw_merged_registered_image_count": 1828,
+        "raw_merged_point_count": 1356837,
+        "seam_frontier_image_count": 0,
+        "seam_refinement_skipped": true,
+        "seam_refinement_reason": "legacy_mode",
+        "bundle_adjusted": false,
+        "bundle_adjustment_reason": "not_run_yet"
+      }
+    ],
+    "merge_component_recovery_records": [],
+    "pending_component_count": 2,
+    "pending_components": [
+      {
+        "component_index": 0,
+        "pending_model_indexes": [
+          0
+        ],
+        "stages": [
+          "chunk_00_mapper_initial"
+        ],
+        "source_chunk_indexes": [
+          3
+        ],
+        "source_image_count": 320,
+        "registered_image_count": 320
+      },
+      {
+        "component_index": 1,
+        "pending_model_indexes": [
+          1
+        ],
+        "stages": [
+          "chunk_model_merger_05_output_attempt_01"
+        ],
+        "source_chunk_indexes": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          7
+        ],
+        "source_image_count": 1837,
+        "registered_image_count": 1828
+      }
+    ],
+    "pending_stages": [
+      "chunk_00_mapper_initial",
+      "chunk_model_merger_05_output_attempt_01"
+    ]
+  },
+  "chunk_merge_summary": {},
+  "parent_merge_mode": "legacy_rerun",
+  "hierarchy_mode": "balanced_tree_v1",
+  "seam_frontier_mode": "frontier_only",
+  "parent_seam_registration_cycles": 2,
+  "top_level_ba_mode": "below_threshold",
+  "top_level_ba_image_threshold": 900,
+  "seam_only_leaf_min_registered_ratio": 0.0,
+  "seam_only_leaf_min_core_ratio": 0.0,
+  "bundle_adjusted_node_count": 0,
+  "max_bundle_adjusted_image_count": 0,
+  "skipped_seam_merge_count": 0,
+  "merge_node_records": [
+    {
+      "sequence": 1,
+      "left_stage": "chunk_06_mapper_initial",
+      "right_stage": "chunk_07_mapper_initial",
+      "left_source_image_count": 320,
+      "right_source_image_count": 320,
+      "shared_registered_image_count": 60,
+      "cross_edge_count": 2050,
+      "raw_merged_registered_image_count": 580,
+      "raw_merged_point_count": 465314,
+      "seam_frontier_image_count": 0,
+      "seam_refinement_skipped": true,
+      "seam_refinement_reason": "legacy_mode",
+      "bundle_adjusted": false,
+      "bundle_adjustment_reason": "not_run_yet"
+    },
+    {
+      "sequence": 2,
+      "left_stage": "chunk_01_02_adjacent_merge_mapper_initial",
+      "right_stage": "chunk_04_mapper_initial",
+      "left_source_image_count": 447,
+      "right_source_image_count": 320,
+      "shared_registered_image_count": 33,
+      "cross_edge_count": 1652,
+      "raw_merged_registered_image_count": 718,
+      "raw_merged_point_count": 516946,
+      "seam_frontier_image_count": 0,
+      "seam_refinement_skipped": true,
+      "seam_refinement_reason": "legacy_mode",
+      "bundle_adjusted": false,
+      "bundle_adjustment_reason": "not_run_yet"
+    },
+    {
+      "sequence": 3,
+      "left_stage": "chunk_03_mapper_initial",
+      "right_stage": "chunk_05_mapper_initial",
+      "left_source_image_count": 320,
+      "right_source_image_count": 320,
+      "shared_registered_image_count": 41,
+      "cross_edge_count": 1682,
+      "raw_merged_registered_image_count": 599,
+      "raw_merged_point_count": 430877,
+      "seam_frontier_image_count": 0,
+      "seam_refinement_skipped": true,
+      "seam_refinement_reason": "legacy_mode",
+      "bundle_adjusted": false,
+      "bundle_adjustment_reason": "not_run_yet"
+    },
+    {
+      "sequence": 4,
+      "left_stage": "chunk_model_merger_01_output_attempt_01",
+      "right_stage": "chunk_model_merger_03_output_attempt_01",
+      "left_source_image_count": 580,
+      "right_source_image_count": 599,
+      "shared_registered_image_count": 60,
+      "cross_edge_count": 1935,
+      "raw_merged_registered_image_count": 1119,
+      "raw_merged_point_count": 849270,
+      "seam_frontier_image_count": 0,
+      "seam_refinement_skipped": true,
+      "seam_refinement_reason": "legacy_mode",
+      "bundle_adjusted": false,
+      "bundle_adjustment_reason": "not_run_yet"
+    },
+    {
+      "sequence": 5,
+      "left_stage": "chunk_model_merger_02_output_attempt_01",
+      "right_stage": "chunk_model_merger_04_output_attempt_01",
+      "left_source_image_count": 727,
+      "right_source_image_count": 1119,
+      "shared_registered_image_count": 9,
+      "cross_edge_count": 471,
+      "raw_merged_registered_image_count": 1828,
+      "raw_merged_point_count": 1356837,
+      "seam_frontier_image_count": 0,
+      "seam_refinement_skipped": true,
+      "seam_refinement_reason": "legacy_mode",
+      "bundle_adjusted": false,
+      "bundle_adjustment_reason": "not_run_yet"
+    }
+  ],
+  "chunk_recovery_mode": "prior_aware_retry_adjacent_merge_no_vocab",
+  "chunk_run_metrics": [
+    {
+      "chunk_index": 0,
+      "image_count": 320,
+      "registered_count": 320,
+      "points3d_count": 227004,
+      "verified_pair_count": 2349,
+      "timings_sec": {
+        "mapper_initial": 3267.85
+      },
+      "registered_ratio": 1.0,
+      "core_registered_ratio": 1.0,
+      "recovered_registered_ratio": null,
+      "recovered_core_registered_ratio": null,
+      "failure": false
+    },
+    {
+      "chunk_index": 1,
+      "image_count": 320,
+      "registered_count": 320,
+      "points3d_count": 234491,
+      "verified_pair_count": 2451,
+      "timings_sec": {
+        "mapper_initial": 1460.93
+      },
+      "registered_ratio": 1.0,
+      "core_registered_ratio": 1.0,
+      "recovered_registered_ratio": null,
+      "recovered_core_registered_ratio": null,
+      "failure": false
+    },
+    {
+      "chunk_index": 2,
+      "image_count": 167,
+      "registered_count": 69,
+      "points3d_count": 55640,
+      "verified_pair_count": 2451,
+      "timings_sec": {
+        "mapper_initial": 528.14,
+        "mapper_recovery": 755.17
+      },
+      "registered_ratio": 0.5749,
+      "core_registered_ratio": 0.5,
+      "recovered_registered_ratio": 0.3613,
+      "recovered_core_registered_ratio": 0.3833,
+      "failure": true,
+      "failure_stage": "chunk_02_recovery_failed",
+      "failure_reason": "chunk 2 remained below threshold after prior-aware retry: registered=69/191 core=46/120 missing_core=['DJI_01038.JPG', 'DJI_01039.JPG', 'DJI_01040.JPG', 'DJI_01041.JPG', 'DJI_01057.JPG', 'DJI_01058.JPG', 'DJI_01059.JPG', 'DJI_01060.JPG', 'DJI_01061.JPG', 'DJI_01074.JPG', 'DJI_01075.JPG', 'DJI_01076.JPG', 'DJI_01077.JPG', 'DJI_01078.JPG', 'DJI_01079.JPG', 'DJI_01080.JPG', 'DJI_01081.JPG', 'DJI_01082.JPG', 'DJI_01083.JPG', 'DJI_01084.JPG', 'DJI_01085.JPG', 'DJI_01086.JPG', 'DJI_01087.JPG', 'DJI_01088.JPG', 'DJI_01089.JPG', 'DJI_01127.JPG', 'DJI_01128.JPG', 'DJI_01129.JPG', 'DJI_01130.JPG', 'DJI_01131.JPG', 'DJI_01132.JPG', 'DJI_01133.JPG', 'DJI_01134.JPG', 'DJI_01135.JPG', 'DJI_01136.JPG', 'DJI_01137.JPG', 'DJI_01138.JPG', 'DJI_01139.JPG', 'DJI_01140.JPG', 'DJI_01141.JPG', 'DJI_01144.JPG', 'DJI_01177.JPG', 'DJI_01178.JPG', 'DJI_01179.JPG', 'DJI_01180.JPG', 'DJI_01181.JPG', 'DJI_01182.JPG', 'DJI_01183.JPG', 'DJI_01184.JPG', 'DJI_01185.JPG', 'DJI_01186.JPG', 'DJI_01187.JPG', 'DJI_01188.JPG', 'DJI_01189.JPG', 'DJI_01190.JPG', 'DJI_01191.JPG', 'DJI_01192.JPG', 'DJI_01193.JPG', 'DJI_01194.JPG', 'DJI_01195.JPG', 'DJI_01196.JPG', 'DJI_01197.JPG', 'DJI_01198.JPG', 'DJI_01199.JPG', 'DJI_01240.JPG', 'DJI_01674.JPG', 'DJI_01675.JPG', 'DJI_01676.JPG', 'DJI_01677.JPG', 'DJI_01678.JPG', 'DJI_01679.JPG', 'DJI_01680.JPG', 'DJI_01681.JPG', 'DJI_01682.JPG']"
+    },
+    {
+      "chunk_index": 2,
+      "image_count": 447,
+      "registered_count": 431,
+      "points3d_count": 321534,
+      "verified_pair_count": 3388,
+      "timings_sec": {
+        "mapper_initial": 2345.61
+      },
+      "registered_ratio": 0.9642,
+      "core_registered_ratio": 0.967,
+      "recovered_registered_ratio": null,
+      "recovered_core_registered_ratio": null,
+      "failure": false
+    },
+    {
+      "chunk_index": 3,
+      "image_count": 320,
+      "registered_count": 320,
+      "points3d_count": 235960,
+      "verified_pair_count": 3388,
+      "timings_sec": {
+        "mapper_initial": 1291.22
+      },
+      "registered_ratio": 1.0,
+      "core_registered_ratio": 1.0,
+      "recovered_registered_ratio": null,
+      "recovered_core_registered_ratio": null,
+      "failure": false
+    },
+    {
+      "chunk_index": 4,
+      "image_count": 320,
+      "registered_count": 320,
+      "points3d_count": 223294,
+      "verified_pair_count": 3388,
+      "timings_sec": {
+        "mapper_initial": 2746.43
+      },
+      "registered_ratio": 1.0,
+      "core_registered_ratio": 1.0,
+      "recovered_registered_ratio": null,
+      "recovered_core_registered_ratio": null,
+      "failure": false
+    },
+    {
+      "chunk_index": 5,
+      "image_count": 320,
+      "registered_count": 320,
+      "points3d_count": 227653,
+      "verified_pair_count": 3388,
+      "timings_sec": {
+        "mapper_initial": 1296.55
+      },
+      "registered_ratio": 1.0,
+      "core_registered_ratio": 1.0,
+      "recovered_registered_ratio": null,
+      "recovered_core_registered_ratio": null,
+      "failure": false
+    },
+    {
+      "chunk_index": 6,
+      "image_count": 320,
+      "registered_count": 320,
+      "points3d_count": 252727,
+      "verified_pair_count": 3388,
+      "timings_sec": {
+        "mapper_initial": 1595.98
+      },
+      "registered_ratio": 1.0,
+      "core_registered_ratio": 1.0,
+      "recovered_registered_ratio": null,
+      "recovered_core_registered_ratio": null,
+      "failure": false
+    },
+    {
+      "chunk_index": 7,
+      "image_count": 320,
+      "registered_count": 320,
+      "points3d_count": 255192,
+      "verified_pair_count": 3388,
+      "timings_sec": {
+        "mapper_initial": 1240.29
+      },
+      "registered_ratio": 1.0,
+      "core_registered_ratio": 1.0,
+      "recovered_registered_ratio": null,
+      "recovered_core_registered_ratio": null,
+      "failure": false
+    }
+  ],
+  "boundary_recovery_triggered": true,
+  "adjacent_chunk_merge_triggered": true,
+  "merge_bridge_recovery_triggered": false,
+  "merged_component_count": 2,
+  "filtered_sparse_summary": {},
+  "final_points_per_registered_image": 0.0,
+  "mapper_seconds_per_registered_image": 0.0,
+  "fallback_triggered": false,
+  "fallback_reason": "not_needed",
+  "final_matcher_mode": "uninitialized",
+  "model_summaries": [
+    {
+      "stage": "chunk_00_mapper_initial",
+      "cameras_registered": 1,
+      "images_registered": 320,
+      "points_3d": 227004
+    },
+    {
+      "stage": "chunk_01_mapper_initial",
+      "cameras_registered": 1,
+      "images_registered": 320,
+      "points_3d": 234491
+    },
+    {
+      "stage": "chunk_02_mapper_initial",
+      "cameras_registered": 1,
+      "images_registered": 96,
+      "points_3d": 78174
+    },
+    {
+      "stage": "chunk_02_mapper_recovery",
+      "cameras_registered": 1,
+      "images_registered": 69,
+      "points_3d": 55640
+    },
+    {
+      "stage": "chunk_01_02_adjacent_merge_mapper_initial",
+      "cameras_registered": 1,
+      "images_registered": 431,
+      "points_3d": 321534
+    },
+    {
+      "stage": "chunk_03_mapper_initial",
+      "cameras_registered": 1,
+      "images_registered": 320,
+      "points_3d": 235960
+    },
+    {
+      "stage": "chunk_04_mapper_initial",
+      "cameras_registered": 1,
+      "images_registered": 320,
+      "points_3d": 223294
+    },
+    {
+      "stage": "chunk_05_mapper_initial",
+      "cameras_registered": 1,
+      "images_registered": 320,
+      "points_3d": 227653
+    },
+    {
+      "stage": "chunk_06_mapper_initial",
+      "cameras_registered": 1,
+      "images_registered": 320,
+      "points_3d": 252727
+    },
+    {
+      "stage": "chunk_07_mapper_initial",
+      "cameras_registered": 1,
+      "images_registered": 320,
+      "points_3d": 255192
+    }
+  ],
+  "vocab_tree_path": "/opt/ml/code/resources/vocab_tree_flickr100K_words256K.bin",
+  "vocab_tree_bytes": 0,
+  "vocab_tree_source": "uninitialized",
+  "sift_max_num_features": 8192,
+  "spatial_matcher_neighbors": 16,
+  "spatial_matcher_distance_m": 160.0,
+  "vocab_tree_num_images": 40,
+  "vocab_tree_num_visual_words": 8192,
+  "vocab_tree_max_num_descriptors": 100000,
+  "benchmark_subset_strategy": "md1_phase2_candidate_ladder_2000",
+  "input_subset_manifest_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p2dd70full-1776233149/colmap/chunk_planner_manifest.json",
+  "input_subset_name": "ladder_2000",
+  "input_subset_requested": true,
+  "input_subset_requested_image_count": 2157,
+  "colmap_capabilities": {
+    "available_commands": [
+      "automatic_reconstructor",
+      "bundle_adjuster",
+      "color_extractor",
+      "database_cleaner",
+      "database_creator",
+      "database_merger",
+      "delaunay_mesher",
+      "exhaustive_matcher",
+      "feature_extractor",
+      "feature_importer",
+      "geometric_verifier",
+      "global_mapper",
+      "gui",
+      "guided_geometric_verifier",
+      "help",
+      "hierarchical_mapper",
+      "image_deleter",
+      "image_filterer",
+      "image_rectifier",
+      "image_registrator",
+      "image_undistorter",
+      "image_undistorter_standalone",
+      "mapper",
+      "matches_importer",
+      "mesh_simplifier",
+      "mesh_texturer",
+      "model_aligner",
+      "model_analyzer",
+      "model_clusterer",
+      "model_comparer",
+      "model_converter",
+      "model_cropper",
+      "model_merger",
+      "model_orientation_aligner",
+      "model_splitter",
+      "model_transformer",
+      "patch_match_stereo",
+      "point_filtering",
+      "point_triangulator",
+      "poisson_mesher",
+      "pose_prior_mapper",
+      "project_generator",
+      "rig_configurator",
+      "rotation_averager",
+      "sequential_matcher",
+      "spatial_matcher",
+      "stereo_fusion",
+      "transitive_matcher",
+      "view_graph_calibrator",
+      "vocab_tree_builder",
+      "vocab_tree_matcher",
+      "vocab_tree_retriever"
+    ],
+    "supports_matches_importer": true,
+    "supports_exhaustive_matcher": true,
+    "supports_pose_prior_mapper": true,
+    "supports_hierarchical_mapper": true,
+    "supports_global_mapper": true
+  },
+  "leaf_target_images": 200,
+  "leaf_hard_cap_images": 320,
+  "pair_cap_local": 24,
+  "pair_cap_revisit": 10,
+  "pair_cap_seam": 10,
+  "failure_stage": "pipeline",
+  "failure_reason_detail": "Failed to merge chunk models: no overlapping registered images produced a usable merge among pending stages ['chunk_00_mapper_initial', 'chunk_model_merger_05_output_attempt_01']",
+  "failed_chunk_index": null,
+  "failed_chunk_registered_ratio": 0.0,
+  "failed_chunk_core_registered_ratio": 0.0,
+  "timed_out": false,
+  "selected_chunk_indexes": [],
+  "planner_snapshot_only": false,
+  "planner_report_only": false,
+  "planner_static_report": {
+    "dataset_image_count": 2157,
+    "gps_coverage_ratio": 1.0,
+    "orientation_coverage_ratio": 1.0,
+    "selected_orientation_source": "exif",
+    "candidate_pair_counts": {
+      "spatial": 72384,
+      "sequence": 21515,
+      "footprint": 18580,
+      "retrieval": 0
+    },
+    "verified_pair_count": 3388,
+    "connected_component_count": 1,
+    "chunk_count": 8,
+    "chunk_sizes": [
+      320,
+      320,
+      167,
+      320,
+      320,
+      320,
+      320,
+      320
+    ],
+    "orphan_image_count": 0,
+    "risky_bridges": [],
+    "estimated_leaf_jobs": 8,
+    "expected_output_kind": "single_merged_model"
+  },
+  "reducer_metadata": {
+    "branch": "agent-73948216-sfm-production-spine",
+    "head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
+    "input_uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+    "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739x2-1777587765/colmap",
+    "planner_manifest": "chunk_planner_manifest.json",
+    "leaf_count": 9,
+    "passed_leaf_count": 8,
+    "failed_leaf_count": 1,
+    "merge_strategy": "overlap_first_balanced",
+    "merged_component_count": 2,
+    "expected_component_count": 1,
+    "ba_policy": "local_or_deferred_global",
+    "standard_sparse0_exists": false,
+    "promotion_blockers": [
+      "failed_leaf",
+      "missing_sparse0",
+      "unexpected_component_split",
+      "merge_retention_below_gate"
+    ]
+  },
+  "capability_snapshot_only": false,
+  "probe_subsets": {
+    "geometry_mix": 487,
+    "cross_pass": 640,
+    "horizon_context": 640
+  },
+  "probe_subset_details": {
+    "geometry_mix": {
+      "seed_chunk_index": 5,
+      "source_chunk_indexes": [
+        5,
+        2
+      ],
+      "image_count": 487
+    },
+    "cross_pass": {
+      "seed_chunk_index": 3,
+      "source_chunk_indexes": [
+        3,
+        6
+      ],
+      "image_count": 640
+    },
+    "horizon_context": {
+      "seed_chunk_index": 3,
+      "source_chunk_indexes": [
+        3,
+        6
+      ],
+      "image_count": 640
+    }
+  },
+  "ladder_subsets": {
+    "ladder_1000": 1027,
+    "ladder_2000": 2157
+  },
+  "ladder_subset_details": {
+    "ladder_1000": {
+      "target_image_count": 1000,
+      "image_count": 1027,
+      "source_chunk_indexes": [
+        5,
+        2,
+        6,
+        1
+      ]
+    },
+    "ladder_2000": {
+      "target_image_count": 2000,
+      "image_count": 2157,
+      "source_chunk_indexes": [
+        5,
+        2,
+        6,
+        1,
+        3,
+        4,
+        7,
+        0
+      ]
+    }
+  },
+  "timestamp": "2026-05-01T04:53:11Z"
+}

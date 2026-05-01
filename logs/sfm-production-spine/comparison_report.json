@@ -1,6 +1,6 @@
 {
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "08abda791c725c7ec3d5202409099c0d856f6d0a",
+  "head": "f7a5c017ad79bfa2fd008cc8ff9f10271dec0492",
   "proof_job_head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
   "mode": "distributed_chunked_v1",
   "dataset": "md1 representative subsets, R3 ladder_1000 proof, and active R4 ladder_2000 exact retry",
@@ -45,7 +45,7 @@
     "R0, R1, R2, and R3 passed, but R4 exact 2157-image proof has not passed yet.",
     "First R4 exact attempt r4exact739-1777570477 failed at chunk_00_mapper_initial after the 2700s mapper timeout with no sparse/0.",
     "Bounded R4 chunk_00 retry r4c0t739-1777579549 passed terminal Completed with 320/320 registered, 238876 raw points, 746.49 pts/image, and sparse/0.",
-    "Full exact 2157-image R4 retry r4exact739x2-1777587765 is now InProgress with 7200s chunk/bridge mapper timeouts, but terminal metrics and viewer proof are not yet available.",
+        "Full exact 2157-image R4 retry r4exact739x2-1777587765 failed at merge: metadata exists, but sparse/0 is missing and reducer reports merged_component_count=2 where expected_component_count=1.",
     "R5 huge-acreage proof has not run."
   ],
   "r1_summary": {
@@ -117,7 +117,178 @@
     "bounded_chunk_retry_result": "terminal Completed: ladder_2000 chunk_00 only with 7200s chunk/bridge mapper timeouts passed with 320/320 registered, 238876 raw points, 746.49 pts/image, leaf status passed, reducer standard_sparse0_exists=true, promotion_blockers=[], sparse/0 exists",
     "active_exact_retry_job": "r4exact739x2-1777587765",
     "active_exact_retry_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739x2-1777587765/colmap",
-    "active_exact_retry_latest_progress": "InProgress; ProcessingStartTime 2026-04-30T22:23:42.658Z; CloudWatch stream r4exact739x2-1777587765/algo-1-1777587822 started; extracted 2157 images, detected GPS/orientation priors on 2157/2157 images, prepared image list, and started GPU feature extraction at 2026-04-30T22:30:57Z; S3 output empty before EndOfJob upload; terminal metrics and viewer proof not yet available",
-    "duplicate_exact_retry_cleanup": "r4exact739t-1777588010 is a non-canonical duplicate; stop requested and control plane is Stopping after ProcessingStartTime 2026-04-30T22:27:33.070Z"
-  }
+        "active_exact_retry_latest_progress": "Runtime failed at merge at 2026-05-01T04:53:11Z after chunks 00, 01, 03, 04, 05, 06, and 07 passed full 320/320 models and chunk_02 adjacent rerun passed 431/447; final pending stages chunk_00_mapper_initial and chunk_model_merger_05_output_attempt_01 had no overlapping registered images. S3 metadata exists but sparse/0 is missing; stop requested at 2026-05-01T05:01:20Z after stale InProgress control-plane state; current status Stopping/no FailureReason.",
+    "active_exact_retry_chunk00_full_run": {
+      "status": "passed",
+      "registered": 320,
+      "total": 320,
+      "points": 227004,
+      "mapper_runtime_min": 54.438,
+      "warnings": "nonterminal COLMAP linear-solver warnings observed"
+    },
+    "active_exact_retry_chunk01_progress": {
+      "status": "passed",
+      "verified_pair_count": 2451,
+      "registered": 320,
+      "total": 320,
+      "points": 234491,
+      "mapper_runtime_min": 24.327,
+      "latest_log_time": "2026-05-01T01:17:12Z"
+    },
+    "active_exact_retry_chunk02_progress": {
+      "status": "adjacent_rerun_completed_split",
+      "initial_verified_pair_count": 1257,
+      "initial_models": [
+        "96/167 images, 78174 points",
+        "16/167 images, 10330 points",
+        "12/167 images, 5271 points",
+        "51/167 images, 39491 points"
+      ],
+      "recovery_verified_pair_count": 1466,
+      "recovery_registered_latest": 431,
+      "latest_log_time": "2026-05-01T02:25:37Z",
+      "warnings": "adjacent final local rerun advanced the runtime but produced a 431/447 plus 16/447 split; reducer/merge metadata must prove the split is resolved or honestly report it",
+      "adjacent_rerun_models": [
+        {
+          "model": 0,
+          "registered": 431,
+          "total": 447,
+          "points": 321534
+        },
+        {
+          "model": 1,
+          "registered": 16,
+          "total": 447,
+          "points": 10372
+        }
+      ]
+    },
+    "active_exact_retry_chunk01_02_adjacent_merge_progress": {
+      "status": "completed_split",
+      "image_count": 447,
+      "verified_pair_count": 3388,
+      "models": [
+        {
+          "model": 0,
+          "registered": 431,
+          "total": 447,
+          "points": 321534
+        },
+        {
+          "model": 1,
+          "registered": 16,
+          "total": 447,
+          "points": 10372
+        }
+      ],
+      "latest_log_time": "2026-05-01T02:25:37Z",
+      "merge_quality_risk": "secondary 16-image model must be resolved in later merge/reducer metadata before R4 can pass"
+    },
+    "duplicate_exact_retry_cleanup": "r4exact739t-1777588010 is a non-canonical duplicate; terminal Stopped at 2026-04-30T22:29:24.397Z",
+    "active_exact_retry_chunk03_progress": {
+      "status": "passed_full_model",
+      "verified_pair_count": 2550,
+      "selected_model": 1,
+      "registered": 320,
+      "total": 320,
+      "points": 235960,
+      "mapper_runtime_min": 21.499,
+      "secondary_models": [
+        {
+          "model": 0,
+          "registered": 3,
+          "total": 320,
+          "points": 3693
+        }
+      ],
+      "latest_log_time": "2026-05-01T02:47:03Z",
+      "fallbacks_observed": [
+        "COLMAP structure-less registration attempts"
+      ],
+      "sagemaker_status": "InProgress",
+      "sagemaker_failure_reason": null,
+      "s3_output_objects": 0
+    },
+    "active_exact_retry_chunk04_progress": {
+      "status": "passed",
+      "verified_pair_count": 2506,
+      "registered": 320,
+      "total": 320,
+      "points": 223294,
+      "mapper_runtime_min": 45.749,
+      "latest_log_time": "2026-05-01T03:35:04Z",
+      "warnings": "one earlier nonterminal COLMAP linear-solver warning observed",
+      "sagemaker_status": "InProgress",
+      "sagemaker_failure_reason": null,
+      "s3_output_objects": 0
+    },
+    "active_exact_retry_chunk05_progress": {
+      "status": "passed",
+      "verified_pair_count": 2433,
+      "registered": 320,
+      "total": 320,
+      "points": 227653,
+      "mapper_runtime_min": 21.586,
+      "latest_log_time": "2026-05-01T03:58:44Z",
+      "sagemaker_status": "InProgress",
+      "sagemaker_failure_reason": null,
+      "s3_output_objects": 0
+    },
+    "active_exact_retry_chunk06_progress": {
+      "status": "passed",
+      "verified_pair_count": 2510,
+      "registered": 320,
+      "total": 320,
+      "points": 252727,
+      "mapper_runtime_min": 26.577,
+      "latest_log_time": "2026-05-01T04:27:23Z",
+      "sagemaker_status": "InProgress",
+      "sagemaker_failure_reason": null,
+      "s3_output_objects": 0
+    },
+    "active_exact_retry_chunk07_progress": {
+            "status": "passed",
+            "verified_pair_count": 2422,
+            "registered_latest": 320,
+            "total": 320,
+            "points": 255192,
+            "latest_registration_log_time": "2026-05-01T04:50:08Z",
+            "sagemaker_status": "InProgress",
+            "sagemaker_failure_reason": null,
+            "s3_output_objects": 0
+        },
+        "active_exact_retry_merge_progress": {
+            "status": "failed",
+            "latest_merge": "chunk_model_merger_01",
+            "input_models": [
+                "chunk_06 320/320 images, 252727 points",
+                "chunk_07 320/320 images, 255192 points"
+            ],
+            "merged_images": 580,
+            "merged_points": 465314,
+            "latest_log_time": "2026-05-01T04:50:20Z",
+            "sagemaker_status": "InProgress",
+            "sagemaker_failure_reason": null,
+            "s3_output_objects": 0
+        },
+        "active_exact_retry_failure": {
+            "failure_stage": "pipeline",
+            "failure_reason_detail": "Failed to merge chunk models: no overlapping registered images produced a usable merge among pending stages ['chunk_00_mapper_initial', 'chunk_model_merger_05_output_attempt_01']",
+            "leaf_count": 9,
+            "passed_leaf_count": 8,
+            "failed_leaf_count": 1,
+            "merged_component_count": 2,
+            "expected_component_count": 1,
+            "standard_sparse0_exists": false,
+            "promotion_blockers": [
+                "failed_leaf",
+                "missing_sparse0",
+                "unexpected_component_split",
+                "merge_retention_below_gate"
+            ],
+            "s3_metadata_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739x2-1777587765/colmap",
+            "sparse0": false,
+            "next_experiment": "retry R4 exact with COLMAP_PARENT_MERGE_MODE=seam_only_v1 instead of legacy_rerun after SageMaker reaches terminal Stopped/Failed status"
+        }
+    }
 }
