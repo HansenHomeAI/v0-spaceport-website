@@ -663,9 +663,12 @@ def validate_submit_guardrails(args: argparse.Namespace, summary: dict) -> None:
     estimate = (summary.get("cost_estimate") or {}).get("estimated_usd")
     if estimate is not None and max_estimated_usd > 0 and float(estimate) > max_estimated_usd:
         errors.append(f"estimated cost ${float(estimate):.2f} exceeds --max-estimated-usd ${max_estimated_usd:.2f}")
+    checkpoints_requested = bool(
+        getattr(args, "enable_checkpoints", False) or getattr(args, "enable_spot", False)
+    )
+    if checkpoints_requested and not str(getattr(args, "checkpoint_s3_prefix", "") or "").strip():
+        errors.append("--checkpoint-s3-prefix is required when checkpoints or Spot are enabled")
     if getattr(args, "enable_spot", False):
-        if not str(getattr(args, "checkpoint_s3_prefix", "") or "").strip():
-            errors.append("--checkpoint-s3-prefix is required when --enable-spot is set")
         if not getattr(args, "spot_restart_proof_passed", False):
             errors.append("--spot-restart-proof-passed is required before submitting spot training")
     if getattr(args, "reuse_tile_cache", False):
@@ -911,6 +914,7 @@ def build_benchmark_stages(
     scaffold_artifact_s3_uri: str = "",
     instance_type: str | None = None,
     enable_spot: bool = False,
+    enable_checkpoints: bool = False,
     checkpoint_s3_prefix: str = "",
     reuse_tile_cache: bool = False,
     tile_cache_manifest: dict[str, dict] | None = None,
@@ -1012,7 +1016,7 @@ def build_benchmark_stages(
         tile_entry = tiles_by_id.get(str(tile_id), {"tile_id": tile_id})
         checkpoint_uri = (
             f"{normalize_s3_prefix(checkpoint_s3_prefix)}/{sanitize_sagemaker_job_name(f'{job_prefix}-{timestamp}-{tile_id}')}"
-            if checkpoint_s3_prefix and enable_spot
+            if checkpoint_s3_prefix and (enable_spot or enable_checkpoints)
             else None
         )
         tile_budget = build_tile_budget_plan(
@@ -1137,6 +1141,7 @@ def create_training_job_payload(
     max_runtime_seconds: int,
     scaffold_artifact_s3_uri: str = "",
     enable_spot: bool = False,
+    enable_checkpoints: bool = False,
     checkpoint_s3_uri: str = "",
     max_wait_seconds: int | None = None,
     experiment_id: str = "",
@@ -1201,14 +1206,15 @@ def create_training_job_payload(
         "Environment": environment,
         "Tags": tags,
     }
-    if enable_spot:
+    if enable_spot or enable_checkpoints:
         if not checkpoint_s3_uri:
-            raise ValueError("checkpoint_s3_uri is required when enable_spot=True")
-        payload["EnableManagedSpotTraining"] = True
+            raise ValueError("checkpoint_s3_uri is required when checkpointing is enabled")
         payload["CheckpointConfig"] = {
             "S3Uri": checkpoint_s3_uri,
             "LocalPath": "/opt/ml/checkpoints",
         }
+    if enable_spot:
+        payload["EnableManagedSpotTraining"] = True
         payload["StoppingCondition"]["MaxWaitTimeInSeconds"] = int(max_wait_seconds or max_runtime_seconds)
     return payload
 
@@ -1645,15 +1651,20 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--enable-spot", action="store_true", help="Use SageMaker Managed Spot Training.")
     parser.add_argument(
+        "--enable-checkpoints",
+        action="store_true",
+        help="Attach SageMaker CheckpointConfig and checkpoint env without enabling Managed Spot.",
+    )
+    parser.add_argument(
         "--checkpoint-s3-prefix",
         default="",
-        help="S3 prefix for SageMaker training checkpoints when --enable-spot is set.",
+        help="S3 prefix for SageMaker training checkpoints when checkpoints or Spot are enabled.",
     )
     parser.add_argument(
         "--checkpoint-save-steps",
         type=int,
         default=DEFAULT_CHECKPOINT_SAVE_STEPS,
-        help="Default TRAINING_STEPS_PER_SAVE for checkpointed spot runs unless --env overrides it.",
+        help="Default TRAINING_STEPS_PER_SAVE for checkpointed runs unless --env overrides it.",
     )
     parser.add_argument(
         "--spot-max-wait-seconds",
@@ -1864,7 +1875,8 @@ def main() -> int:
     training_env_overrides = {"MERGE_MODE": args.merge_mode, **explicit_env}
     if args.suppress_training_eval:
         apply_training_eval_suppression(training_env_overrides, max_iterations=args.tile_max_iterations)
-    if args.enable_spot:
+    checkpoints_requested = bool(args.enable_checkpoints or args.enable_spot)
+    if checkpoints_requested:
         training_env_overrides.setdefault("TRAINING_CHECKPOINT_DIR", "/opt/ml/checkpoints")
         training_env_overrides.setdefault("TRAINING_ENABLE_CHECKPOINTS", "true")
         if "TRAINING_STEPS_PER_SAVE" not in explicit_env:
@@ -1898,6 +1910,7 @@ def main() -> int:
         scaffold_artifact_s3_uri=args.scaffold_artifact_s3_uri,
         instance_type=args.instance_type,
         enable_spot=args.enable_spot,
+        enable_checkpoints=args.enable_checkpoints,
         checkpoint_s3_prefix=args.checkpoint_s3_prefix,
         reuse_tile_cache=args.reuse_tile_cache,
         tile_cache_manifest=tile_cache_manifest,
@@ -1939,6 +1952,7 @@ def main() -> int:
         "tile_cache_manifest_json": args.tile_cache_manifest_json,
         "tile_cache_entry_count": len(tile_cache_manifest),
         "enable_spot": bool(args.enable_spot),
+        "enable_checkpoints": bool(args.enable_checkpoints),
         "checkpoint_s3_prefix": args.checkpoint_s3_prefix,
         "checkpoint_save_steps": args.checkpoint_save_steps,
         "max_estimated_usd": args.max_estimated_usd,
@@ -2001,10 +2015,11 @@ def main() -> int:
             max_runtime_seconds=args.training_max_runtime_seconds,
             scaffold_artifact_s3_uri=scaffold_artifact_s3_uri,
             enable_spot=args.enable_spot,
+            enable_checkpoints=args.enable_checkpoints,
             checkpoint_s3_uri=stage.checkpoint_uri
             or (
                 f"{normalize_s3_prefix(args.checkpoint_s3_prefix)}/{stage.job_name or stage.stage_name}"
-                if args.enable_spot and args.checkpoint_s3_prefix
+                if checkpoints_requested and args.checkpoint_s3_prefix
                 else ""
             ),
             max_wait_seconds=args.spot_max_wait_seconds or (args.training_max_runtime_seconds + 3600),

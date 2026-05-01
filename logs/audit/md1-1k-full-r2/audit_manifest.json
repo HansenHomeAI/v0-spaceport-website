@@ -6786,7 +6786,8 @@
       "training cost and health monitor script",
       "production-shaped manifest override support for no-spend full-input planning without downloading 1GB COLMAP TXT support files",
       "validated per-tile cache hits become cached_tile stages and skip SageMaker training when input hashes and quality status match",
-      "external scaffold mounting for fanout leaf-tile jobs via the scaffold input channel"
+      "external scaffold mounting for fanout leaf-tile jobs via the scaffold input channel",
+      "on-demand SageMaker CheckpointConfig support separated from Managed Spot so restart proof can run before Spot is enabled"
     ],
     "dry_run": {
       "path": "logs/md1-cost-reduction-adaptive-dryrun-20260501.json",
@@ -6816,9 +6817,11 @@
       "json_and_diff_check_latest": "json.tool passed for prior stats, R1 dry-run, and audit_manifest; git diff --check passed",
       "cache_hash_guardrail_latest": "tile input hash now changes when tile geometry/ownership bounds change; unit coverage added",
       "manifest_override_guardrail_latest": "tile/view manifest overrides must be provided together to avoid silent chunk-planner fallback; unit coverage added",
-      "cache_submit_guardrail_latest": "submit guardrails block all-cache runs that would still train scaffold and cached artifacts are probed with aws s3 ls before paid cache reuse"
+      "cache_submit_guardrail_latest": "submit guardrails block all-cache runs that would still train scaffold and cached artifacts are probed with aws s3 ls before paid cache reuse",
+      "checkpoint_without_spot_unit_tests": "python3 -m unittest tests.unit.test_tiled_3dgs_benchmark -> 47 tests OK after adding on-demand checkpoint planning and payload coverage",
+      "r2_checkpoint_dry_run": "no-spend R2 tile_11 dry-run planned on-demand checkpoints with submitted_jobs=[] and estimated $0.3787 / worst-case $1.515 under max_estimated_usd $2.00"
     },
-    "next_paid_gate": "R2 tiny one-tile checkpoint/restart smoke before enabling Managed Spot or any full fanout run",
+    "next_paid_gate": "R2 tiny one-tile on-demand checkpoint/restart smoke with strict $2 cap; Managed Spot remains blocked until this restart proof passes",
     "latest_update": {
       "updated_at": "2026-05-01T17:37:19Z",
       "base_head_before_commit": "f0ecc982df6baaea1ff61327ea57217dd21e98ef",
@@ -6853,6 +6856,31 @@
       },
       "paid_training_launched": false,
       "next_unblocked_step": "R2 tiny one-tile checkpoint/restart smoke with strict dollar cap, then representative R3 tile tests before any full fanout run."
+    },
+    "latest_checkpoint_update": {
+      "updated_at": "2026-05-01T18:02:00Z",
+      "base_head_before_commit": "4fe932ae24b58f1f1184057f88c3e36e983236c1",
+      "r2_checkpoint_dry_run": {
+        "path": "logs/md1-cost-reduction-r2-checkpoint-dryrun-20260501.json",
+        "input_colmap_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap",
+        "selected_tile_ids": [
+          "tile_11"
+        ],
+        "budget_class": "tiny",
+        "max_iterations": 3000,
+        "max_selected_images": 96,
+        "enable_checkpoints": true,
+        "enable_spot": false,
+        "checkpoint_s3_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r2-checkpoint-dryrun-20260501/checkpoints",
+        "checkpoint_save_steps": 250,
+        "estimated_usd": 0.3787,
+        "worst_case_usd": 1.515,
+        "max_estimated_usd": 2.0,
+        "submitted_jobs": 0
+      },
+      "spot_status": "blocked until paid one-tile checkpoint/restart proof passes",
+      "paid_training_launched": false,
+      "next_unblocked_step": "Submit the R2 tiny tile_11 checkpoint/restart smoke only when ready, with --enable-checkpoints, --enable-spot false, --max-estimated-usd 2.00, --wait, and the V18 comparison manifest; then inspect checkpoint objects and restart/resume behavior before any Spot run."
     }
   }
 }

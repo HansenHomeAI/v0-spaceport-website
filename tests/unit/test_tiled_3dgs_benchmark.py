@@ -779,6 +779,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             v18_review_manifest_s3_uri="",
             baseline_review_manifest_s3_uri="",
             enable_spot=False,
+            enable_checkpoints=False,
             checkpoint_s3_prefix="",
             spot_restart_proof_passed=False,
         )
@@ -799,6 +800,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             v18_review_manifest_s3_uri="s3://bucket/v18-review",
             baseline_review_manifest_s3_uri="",
             enable_spot=True,
+            enable_checkpoints=False,
             checkpoint_s3_prefix="s3://bucket/checkpoints",
             spot_restart_proof_passed=False,
         )
@@ -818,6 +820,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             v18_review_manifest_s3_uri="s3://bucket/v18-review",
             baseline_review_manifest_s3_uri="",
             enable_spot=False,
+            enable_checkpoints=False,
             checkpoint_s3_prefix="",
             spot_restart_proof_passed=False,
             reuse_tile_cache=True,
@@ -836,6 +839,25 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             )
 
         self.assertIn("scaffold training is still planned", str(raised.exception))
+
+    def test_validate_submit_guardrails_requires_checkpoint_prefix_without_spot(self):
+        args = types.SimpleNamespace(
+            submit=True,
+            max_estimated_usd=1.0,
+            experiment_id="r2-checkpoint",
+            v18_review_manifest_s3_uri="s3://bucket/v18-review",
+            baseline_review_manifest_s3_uri="",
+            enable_spot=False,
+            enable_checkpoints=True,
+            checkpoint_s3_prefix="",
+            spot_restart_proof_passed=False,
+            reuse_tile_cache=False,
+        )
+
+        with self.assertRaises(RuntimeError) as raised:
+            benchmark.validate_submit_guardrails(args, {"cost_estimate": {"estimated_usd": 0.25}})
+
+        self.assertIn("--checkpoint-s3-prefix", str(raised.exception))
 
     def test_assert_s3_object_exists_probes_cache_artifact_uri(self):
         with mock.patch.object(benchmark, "run_command") as run_command:
@@ -869,6 +891,54 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(payload["CheckpointConfig"]["LocalPath"], "/opt/ml/checkpoints")
         self.assertEqual(payload["StoppingCondition"]["MaxWaitTimeInSeconds"], 24000)
         self.assertIn({"Key": "ExperimentId", "Value": "r2-smoke"}, payload["Tags"])
+
+    def test_create_training_job_payload_can_checkpoint_without_spot(self):
+        payload = benchmark.create_training_job_payload(
+            branch_name="agent-branch",
+            job_name="bench-checkpoint",
+            image_uri="123.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:latest",
+            role_arn="arn:aws:iam::123:role/test",
+            input_s3_uri="s3://bucket/input",
+            output_s3_uri="s3://bucket/output",
+            environment={"TRAINING_MODE": "leaf_tile"},
+            instance_type="ml.g5.2xlarge",
+            volume_size_gb=100,
+            max_runtime_seconds=3600,
+            enable_checkpoints=True,
+            checkpoint_s3_uri="s3://bucket/checkpoints/bench-checkpoint",
+            experiment_id="r2-checkpoint",
+        )
+
+        self.assertNotIn("EnableManagedSpotTraining", payload)
+        self.assertEqual(payload["CheckpointConfig"]["S3Uri"], "s3://bucket/checkpoints/bench-checkpoint")
+        self.assertEqual(payload["CheckpointConfig"]["LocalPath"], "/opt/ml/checkpoints")
+
+    def test_build_benchmark_stages_can_plan_checkpoint_uri_without_spot(self):
+        stages = benchmark.build_benchmark_stages(
+            manifest={"tiles": [{"tile_id": "tile_11"}]},
+            branch_name="agent-branch",
+            output_root_s3_uri="s3://bucket/out",
+            job_prefix="bench",
+            include_monolithic=False,
+            include_scaffold=False,
+            include_merge=False,
+            orchestration_mode="fanout",
+            tile_ids=["tile_11"],
+            monolithic_max_iterations=8000,
+            scaffold_max_iterations=2000,
+            tile_max_iterations=3000,
+            training_max_runtime_seconds=3600,
+            extra_env={"TRAINING_ENABLE_CHECKPOINTS": "true"},
+            timestamp=456,
+            downscale_factor=1,
+            include_review=False,
+            proof_profile=benchmark.PROOF_PROFILE_NONE,
+            enable_checkpoints=True,
+            checkpoint_s3_prefix="s3://bucket/checkpoints",
+        )
+
+        self.assertEqual(stages[0].checkpoint_uri, "s3://bucket/checkpoints/bench-456-tile-11")
+        self.assertFalse(stages[0].spot_enabled)
 
     def test_create_training_job_payload_includes_branch_tag(self):
         payload = benchmark.create_training_job_payload(
