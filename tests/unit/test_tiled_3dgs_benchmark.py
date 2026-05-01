@@ -4,6 +4,7 @@ import tempfile
 import types
 import unittest
 from pathlib import Path
+from unittest import mock
 
 tile_pipeline_stub = types.SimpleNamespace(
     resolve_tiled_input_manifests=lambda **kwargs: (
@@ -482,6 +483,38 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(budget.budget_class, "tiny")
         self.assertEqual(budget.max_iterations, 3000)
 
+    def test_tile_input_hash_changes_when_geometry_changes(self):
+        base_tile = {
+            "tile_id": "tile_00",
+            "base_camera_ids": ["DJI_0001.JPG", "DJI_0002.JPG"],
+            "ownership_bounds": {"min_x": 0, "max_x": 10, "min_y": 0, "max_y": 10},
+        }
+        moved_tile = {
+            **base_tile,
+            "ownership_bounds": {"min_x": 5, "max_x": 15, "min_y": 0, "max_y": 10},
+        }
+
+        base_hash = benchmark.build_tile_input_hash(
+            tile_entry=base_tile,
+            budget_class="standard",
+            max_iterations=8000,
+            max_selected_images=96,
+            input_colmap_s3_uri="s3://bucket/colmap",
+            image_uri="image",
+            scaffold_artifact_s3_uri="s3://bucket/scaffold/model.tar.gz",
+        )
+        moved_hash = benchmark.build_tile_input_hash(
+            tile_entry=moved_tile,
+            budget_class="standard",
+            max_iterations=8000,
+            max_selected_images=96,
+            input_colmap_s3_uri="s3://bucket/colmap",
+            image_uri="image",
+            scaffold_artifact_s3_uri="s3://bucket/scaffold/model.tar.gz",
+        )
+
+        self.assertNotEqual(base_hash, moved_hash)
+
     def test_reuse_tile_cache_turns_matching_tile_into_non_training_stage(self):
         tile_entry = {
             "tile_id": "tile_11",
@@ -589,6 +622,15 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(stages[0].stage_type, "train")
         self.assertEqual(stages[0].cache_status, "miss")
         self.assertIn("input_hash_mismatch", stages[0].cache_rejection_reasons)
+
+    def test_manifest_overrides_must_be_provided_as_a_pair(self):
+        with self.assertRaises(RuntimeError) as raised:
+            benchmark.validate_manifest_override_args(
+                tile_manifest_json="local/3dgs_tile_manifest.json",
+                view_bucket_json="",
+            )
+
+        self.assertIn("--tile-manifest-json and --view-bucket-json", str(raised.exception))
 
     def test_build_adaptive_tile_budget_plan_keeps_horizon_tile_hard(self):
         tile = {
@@ -767,6 +809,42 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         message = str(raised.exception)
         self.assertIn("estimated cost", message)
         self.assertIn("--spot-restart-proof-passed", message)
+
+    def test_validate_submit_guardrails_blocks_all_cache_hit_scaffold_spend(self):
+        args = types.SimpleNamespace(
+            submit=True,
+            max_estimated_usd=1.0,
+            experiment_id="cache-proof",
+            v18_review_manifest_s3_uri="s3://bucket/v18-review",
+            baseline_review_manifest_s3_uri="",
+            enable_spot=False,
+            checkpoint_s3_prefix="",
+            spot_restart_proof_passed=False,
+            reuse_tile_cache=True,
+        )
+
+        with self.assertRaises(RuntimeError) as raised:
+            benchmark.validate_submit_guardrails(
+                args,
+                {
+                    "cost_estimate": {"estimated_usd": 0.25},
+                    "stages": [
+                        {"stage_type": "train", "training_mode": "global_scaffold"},
+                        {"stage_type": "cached_tile", "training_mode": "leaf_tile"},
+                    ],
+                },
+            )
+
+        self.assertIn("scaffold training is still planned", str(raised.exception))
+
+    def test_assert_s3_object_exists_probes_cache_artifact_uri(self):
+        with mock.patch.object(benchmark, "run_command") as run_command:
+            benchmark.assert_s3_object_exists("s3://bucket/cache/tile_00/model.tar.gz")
+
+        run_command.assert_called_once_with(
+            ["aws", "s3", "ls", "s3://bucket/cache/tile_00/model.tar.gz"],
+            capture_output=True,
+        )
 
     def test_create_training_job_payload_can_enable_spot_checkpointing(self):
         payload = benchmark.create_training_job_payload(

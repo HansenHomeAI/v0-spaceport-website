@@ -6811,9 +6811,12 @@
       "paid_training_launched": false,
       "r1_tile11_dry_run": "production-shaped no-spend fanout dry-run used full MD1/V18 tile manifests, classified tile_11 as tiny, estimated $0.3787, and submitted_jobs=[]",
       "tile_cache_unit_tests": "test_reuse_tile_cache_turns_matching_tile_into_non_training_stage and stale-hash rejection added; targeted unit suite passed before full verification",
-      "unit_tests_latest": "python3 -m unittest tests.unit.test_tiled_3dgs_benchmark tests.unit.test_geometry_first_review tests.unit.test_3dgs_training_monitor tests.unit.test_tiled_nerfstudio_dispatcher -> 74 tests OK",
+      "unit_tests_latest": "python3 -m unittest tests.unit.test_tiled_3dgs_benchmark tests.unit.test_geometry_first_review tests.unit.test_3dgs_training_monitor tests.unit.test_tiled_nerfstudio_dispatcher -> 78 tests OK",
       "py_compile_latest": "python3 -m py_compile scripts/3dgs/run_tiled_3dgs_benchmark.py scripts/3dgs/monitor_3dgs_training_cost.py infrastructure/containers/3dgs/geometry_review.py infrastructure/containers/3dgs/train_nerfstudio_production.py -> passed",
-      "json_and_diff_check_latest": "json.tool passed for prior stats, R1 dry-run, and audit_manifest; git diff --check passed"
+      "json_and_diff_check_latest": "json.tool passed for prior stats, R1 dry-run, and audit_manifest; git diff --check passed",
+      "cache_hash_guardrail_latest": "tile input hash now changes when tile geometry/ownership bounds change; unit coverage added",
+      "manifest_override_guardrail_latest": "tile/view manifest overrides must be provided together to avoid silent chunk-planner fallback; unit coverage added",
+      "cache_submit_guardrail_latest": "submit guardrails block all-cache runs that would still train scaffold and cached artifacts are probed with aws s3 ls before paid cache reuse"
     },
     "next_paid_gate": "R2 tiny one-tile checkpoint/restart smoke before enabling Managed Spot or any full fanout run",
     "latest_update": {
@@ -6835,7 +6838,8 @@
         "worst_case_usd": 1.515,
         "submitted_jobs": 0,
         "global_scaffold_source_dir": "/opt/ml/input/data/scaffold",
-        "tile_input_hash": "78450a783ed632900fd7ee57fec63689da4b3a905c21e15a75261149efb61f6e"
+        "tile_input_hash": "234f11a6ba7843093eb81e94a517dee3e5abf2fd995bcb0f5f07c88e5f11cd53",
+        "hash_scope": "includes stable tile manifest geometry/ownership fields, selected images, budget, COLMAP URI, image URI, and scaffold URI"
       },
       "v18_reference_s3": {
         "review_input": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/review-input/review_camera_manifest.json",

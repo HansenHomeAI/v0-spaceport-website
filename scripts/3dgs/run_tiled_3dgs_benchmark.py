@@ -431,9 +431,24 @@ def build_tile_input_hash(
     image_uri: str = "",
     scaffold_artifact_s3_uri: str = "",
 ) -> str:
+    ignored_tile_entry_fields = {
+        "source_artifact_uri",
+        "cache_artifact_s3_uri",
+        "model_artifact_s3_uri",
+        "prior_retained_gaussians",
+        "prior_selected_image_count",
+        "prior_duration_hours",
+        "prior_billable_time_seconds",
+    }
+    stable_tile_entry = {
+        key: value
+        for key, value in tile_entry.items()
+        if key not in ignored_tile_entry_fields
+    }
     payload = {
         "tile_id": tile_entry.get("tile_id"),
         "selected_image_names": tile_selected_image_names(tile_entry),
+        "tile_entry": stable_tile_entry,
         "budget_class": budget_class,
         "max_iterations": max_iterations,
         "max_selected_images": max_selected_images,
@@ -653,8 +668,25 @@ def validate_submit_guardrails(args: argparse.Namespace, summary: dict) -> None:
             errors.append("--checkpoint-s3-prefix is required when --enable-spot is set")
         if not getattr(args, "spot_restart_proof_passed", False):
             errors.append("--spot-restart-proof-passed is required before submitting spot training")
+    if getattr(args, "reuse_tile_cache", False):
+        stages = summary.get("stages") or []
+        scaffold_train_planned = any(
+            stage.get("stage_type") == "train" and stage.get("training_mode") == "global_scaffold"
+            for stage in stages
+        )
+        leaf_train_planned = any(
+            stage.get("stage_type") == "train" and stage.get("training_mode") == "leaf_tile"
+            for stage in stages
+        )
+        if scaffold_train_planned and not leaf_train_planned:
+            errors.append("all selected leaf tiles are cache hits, but scaffold training is still planned; pass --skip-scaffold")
     if errors:
         raise RuntimeError("; ".join(errors))
+
+
+def validate_manifest_override_args(*, tile_manifest_json: str, view_bucket_json: str) -> None:
+    if bool(tile_manifest_json) != bool(view_bucket_json):
+        raise RuntimeError("--tile-manifest-json and --view-bucket-json must be provided together")
 
 
 def sanitize_sagemaker_job_name(raw_name: str, *, max_length: int = 63) -> str:
@@ -1456,6 +1488,12 @@ def download_and_extract_model_artifact(
     return target_dir
 
 
+def assert_s3_object_exists(s3_uri: str) -> None:
+    if not s3_uri.startswith("s3://"):
+        raise RuntimeError(f"Expected an s3:// artifact URI, got {s3_uri}")
+    run_command(["aws", "s3", "ls", s3_uri], capture_output=True)
+
+
 def summarize_training_metadata(stage_name: str, extracted_dir: Path, describe_payload: dict) -> dict:
     metadata_path = extracted_dir / "training_metadata.json"
     selection_path = extracted_dir / "training_selection.json"
@@ -1783,6 +1821,11 @@ def main() -> int:
     chunk_planner_s3_uri = f"{colmap_s3_uri}/chunk_planner_manifest.json"
     sfm_metadata_s3_uri = f"{colmap_s3_uri}/sfm_metadata.json"
 
+    validate_manifest_override_args(
+        tile_manifest_json=args.tile_manifest_json,
+        view_bucket_json=args.view_bucket_json,
+    )
+
     tile_manifest_payload = (
         load_json_path_or_s3(args.tile_manifest_json)
         if args.tile_manifest_json
@@ -2007,6 +2050,7 @@ def main() -> int:
         model_artifacts_s3_uri = str(stage.source_artifact_uri or "").strip()
         if not model_artifacts_s3_uri:
             raise RuntimeError(f"Cached stage {stage.stage_name} is missing source_artifact_uri")
+        assert_s3_object_exists(model_artifacts_s3_uri)
         extracted_dir = None
         if merge_root is not None:
             stage_dir = merge_root / stage.stage_name
