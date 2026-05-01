@@ -602,7 +602,7 @@
     "last_r2_smoke_estimated_usd": 0.526,
     "checkpoint_persistence_gate": "failed_empty_s3_prefix"
   },
-  "current_rung": "R2_cost_reduction_checkpoint_persistence_fix_ready",
+  "current_rung": "R2_cost_reduction_restart_raw_checkpoint_fallback_ready",
   "exact_head_gate_status": "Exact-head 5d209189934eeec5e2788acceca4e5f9d94769bf has green CDK Deploy 25181111382 and green Cloudflare Pages 25181111351. Local follow-up changes pass py_compile, bash -n, tests.unit.test_sogs_supersplat_bundle, md1 production Playwright smoke, pipeline-viewer MD1 LOD smoke, npm run build, and npm run cf:build; next is commit/push and exact-head workflow monitoring.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -717,20 +717,16 @@
     "verified_at": "2026-04-29T12:02:18Z"
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-sky-v18-promotion/review_comparison.json",
-  "latest_review_status": "V18 remains the promoted quality bar. R2 smoke2 proved the tiny tile_11 training shape and tile-selection manifest channel, but checkpoint persistence did not pass because the old container deleted the checkpoint scratch tree before sync. Local fixes now stage/upload compact checkpoints, preserve resume_checkpoint during cleanup, retry transient AWS JSON reads, and resume from compact or raw SageMaker checkpoint-tree layouts; restart dry-run remains no-spend with submitted_jobs=[] and under $2 cap. Full targeted verification passed: 88 unit tests, py_compile, JSON validation, and git diff --check.",
+  "latest_review_status": "V18 remains the promoted quality bar. R2 smoke2 proved the tiny tile_11 training shape and tile-selection manifest channel, but checkpoint persistence did not pass because the old container deleted the checkpoint scratch tree before sync. Local fixes now stage/upload compact checkpoints, preserve resume_checkpoint during cleanup, retry transient AWS JSON reads, resume from compact checkpoints, and resume from raw SageMaker-restored checkpoint trees under /opt/ml/checkpoints. Restart dry-run remains no-spend with submitted_jobs=[] and under $2 cap. Fresh targeted verification passed: 88 unit tests and py_compile.",
   "live_compute_status": {
-    "checked_at": "2026-04-29T12:02:18Z",
+    "checked_at": "2026-05-01T23:14:40Z",
     "in_progress_training_jobs": [],
-    "in_progress_processing_jobs": [],
-    "v18_processing_job_name": "md1-r5-v12-sky-v18-1777460637",
-    "v18_processing_status": "Completed",
-    "v18_processing_start_time": "2026-04-29T11:05:44.742Z",
-    "v18_processing_end_time": "2026-04-29T11:14:40.823Z",
-    "v18_failure_reason": null,
-    "v18_exit_message": null,
-    "v18_output_object_count": 6,
-    "v18_model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
-    "v18_model_size_bytes": 1202951599
+    "in_progress_processing_jobs": [
+      "r5l160c1-1777677041",
+      "r5l160c4-1777677041",
+      "r5l160c6-1777677041"
+    ],
+    "processing_note": "Unrelated COLMAP processing jobs reading s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip and writing manual-validations/r5l160c*/colmap; not launched by MD1 3DGS cost-reduction loop."
   },
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
@@ -6909,6 +6905,24 @@
       "restart_dry_run_max_estimated_usd": 2.0,
       "next_gate": "Build patched container, then run only an R2b tile_11 checkpoint persistence/restart proof with strict $2 cap before Spot/full fanout",
       "verification_status": "passed_local_targeted_verification"
-    }
-  }
+    },
+    "r2_raw_checkpoint_fallback": {
+      "implemented_at": "2026-05-01T23:13:33Z",
+      "base_head": "9e1b9998053125a548a45d3408092189058e7d84",
+      "reason": "Managed Spot interruption restores raw checkpoint contents under /opt/ml/checkpoints; resume_model_dir must find nerfstudio_runs/**/nerfstudio_models, not only compact resume_checkpoint.",
+      "code_paths": [
+        "infrastructure/containers/3dgs/train_nerfstudio_production.py",
+        "tests/unit/test_tiled_nerfstudio_dispatcher.py"
+      ],
+      "verification": [
+        "python3 -m unittest tests.unit.test_tiled_3dgs_benchmark tests.unit.test_tiled_nerfstudio_dispatcher tests.unit.test_geometry_first_review tests.unit.test_3dgs_training_monitor -> 88 tests OK",
+        "python3 -m py_compile scripts/3dgs/run_tiled_3dgs_benchmark.py scripts/3dgs/monitor_3dgs_training_cost.py infrastructure/containers/3dgs/train_nerfstudio_production.py infrastructure/containers/3dgs/geometry_review.py infrastructure/containers/3dgs/tile_pipeline.py -> exit 0"
+      ],
+      "next_gate": "Commit/push, monitor exact-head CDK and Trigger ML Container Build, then launch only the $2-capped R2b tile_11 checkpoint persistence/restart proof."
+    },
+    "latest_raw_checkpoint_update": "2026-05-01T23:13:33Z raw SageMaker checkpoint-tree resume fallback added before paid R2b; exact-head 9e1b9998 prior checkpoint fix gates green on CDK/ML container build, but new fallback still needs commit/push and exact-head gates.",
+    "latest_live_compute_status": "2026-05-01T23:14:40Z: no SageMaker training jobs InProgress; unrelated processing jobs r5l160c1/4/6-1777677041 are InProgress on Meadow archive COLMAP outputs."
+  },
+  "latest_training_cost_reduction_status": "Exact-head 9e1b9998053125a548a45d3408092189058e7d84 is gated green on CDK Deploy 25236823662 and Trigger ML Container Build 25236823661. Before launching paid R2b, raw SageMaker checkpoint-tree resume fallback was added so Spot-restored /opt/ml/checkpoints/nerfstudio_runs checkpoints are usable, not only compact resume_checkpoint copies. Fresh targeted verification passed: 88 unit tests and py_compile.",
+  "latest_live_compute_status": "2026-05-01T23:14:40Z: no SageMaker training jobs InProgress; unrelated processing jobs r5l160c1/4/6-1777677041 are InProgress on Meadow archive COLMAP outputs."
 }

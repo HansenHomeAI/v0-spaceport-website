@@ -1878,11 +1878,22 @@ class NerfStudioTrainer:
         preferred_model_dir = compact_dir / "nerfstudio_models"
         if preferred_model_dir.exists() and any(preferred_model_dir.glob("*.ckpt")):
             return preferred_model_dir
+
         candidate_model_dirs: list[Path] = []
-        if compact_dir.exists():
-            for model_dir in compact_dir.glob("**/nerfstudio_models"):
-                if model_dir == preferred_model_dir:
+        search_roots = [compact_dir]
+        checkpoint_dir = getattr(self, "checkpoint_dir", None)
+        if checkpoint_dir and Path(checkpoint_dir).exists():
+            checkpoint_path = Path(checkpoint_dir)
+            if checkpoint_path not in search_roots:
+                search_roots.append(checkpoint_path)
+        seen: set[Path] = {preferred_model_dir}
+        for root in search_roots:
+            if not root.exists():
+                continue
+            for model_dir in root.glob("**/nerfstudio_models"):
+                if model_dir in seen:
                     continue
+                seen.add(model_dir)
                 if any(model_dir.glob("*.ckpt")):
                     candidate_model_dirs.append(model_dir)
         if candidate_model_dirs:

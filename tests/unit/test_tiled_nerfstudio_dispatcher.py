@@ -281,7 +281,6 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             checkpoint_dir = root / "checkpoints"
             model_dir = (
                 checkpoint_dir
-                / "resume_checkpoint"
                 / "nerfstudio_runs"
                 / "data"
                 / "splatfacto-w-light"
