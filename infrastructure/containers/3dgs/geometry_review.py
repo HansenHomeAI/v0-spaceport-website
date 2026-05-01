@@ -38,6 +38,15 @@ PROMOTION_THRESHOLDS = {
     },
 }
 
+V18_NON_REGRESSION_THRESHOLDS = {
+    "median_psnr_min_delta": -0.25,
+    "median_ssim_min_delta": -0.005,
+    "median_lpips_max_delta": 0.010,
+    "single_camera_psnr_min_delta": -0.75,
+    "single_camera_lpips_max_delta": 0.025,
+    "horizon_sky_score_min_ratio": 0.98,
+}
+
 
 def ordered_unique(items: Sequence[str]) -> list[str]:
     seen: set[str] = set()
@@ -107,6 +116,127 @@ def _has_required_metrics(metrics: Mapping[str, Any] | None) -> bool:
     if not isinstance(metrics, Mapping):
         return False
     return all(metrics.get(metric) is not None for metric in ("psnr", "ssim", "lpips"))
+
+
+def _view_key(view: Mapping[str, Any]) -> tuple[str, str] | None:
+    bucket = str(view.get("bucket") or "").strip()
+    image_name = str(view.get("image_name") or "").strip()
+    if not bucket or not image_name:
+        return None
+    return bucket, Path(image_name.lstrip("./")).name
+
+
+def _views_by_bucket_and_image(manifest: Mapping[str, Any] | None) -> dict[tuple[str, str], Mapping[str, Any]]:
+    by_key: dict[tuple[str, str], Mapping[str, Any]] = {}
+    for view in (manifest or {}).get("views", []):
+        if not isinstance(view, Mapping):
+            continue
+        key = _view_key(view)
+        if key is None:
+            continue
+        by_key[key] = view
+    return by_key
+
+
+def evaluate_v18_non_regression_decision(
+    *,
+    v18_manifest: Mapping[str, Any] | None,
+    candidate_manifest: Mapping[str, Any],
+    thresholds: Mapping[str, float] | None = None,
+) -> dict[str, Any]:
+    """Strictly compare a cheaper candidate against the promoted V18 review surface."""
+    effective_thresholds = dict(V18_NON_REGRESSION_THRESHOLDS)
+    effective_thresholds.update(dict(thresholds or {}))
+    v18_buckets = (v18_manifest or {}).get("bucket_medians", {})
+    candidate_buckets = candidate_manifest.get("bucket_medians", {})
+    v18_sky = (v18_manifest or {}).get("sky_bucket_medians", {})
+    candidate_sky = candidate_manifest.get("sky_bucket_medians", {})
+    block_reasons: list[str] = []
+    warnings: list[str] = []
+    per_bucket: dict[str, Any] = {}
+
+    for _bucket_key, bucket_label in REVIEW_BUCKETS:
+        baseline_metrics = v18_buckets.get(bucket_label)
+        candidate_metrics = candidate_buckets.get(bucket_label)
+        bucket_blocks: list[str] = []
+        if not _has_required_metrics(baseline_metrics):
+            bucket_blocks.append(f"{bucket_label}_v18_baseline_metrics_missing")
+        if not _has_required_metrics(candidate_metrics):
+            bucket_blocks.append(f"{bucket_label}_candidate_metrics_missing")
+        deltas = metric_delta(baseline_metrics, candidate_metrics)
+        if not bucket_blocks:
+            if (
+                deltas["psnr"] is not None
+                and deltas["psnr"] < effective_thresholds["median_psnr_min_delta"]
+            ):
+                bucket_blocks.append(f"{bucket_label}_v18_median_psnr_regression")
+            if (
+                deltas["ssim"] is not None
+                and deltas["ssim"] < effective_thresholds["median_ssim_min_delta"]
+            ):
+                bucket_blocks.append(f"{bucket_label}_v18_median_ssim_regression")
+            if (
+                deltas["lpips"] is not None
+                and deltas["lpips"] > effective_thresholds["median_lpips_max_delta"]
+            ):
+                bucket_blocks.append(f"{bucket_label}_v18_median_lpips_regression")
+            if bucket_label == "horizon":
+                v18_sky_score = (v18_sky.get(bucket_label) or {}).get("score")
+                candidate_sky_score = (candidate_sky.get(bucket_label) or {}).get("score")
+                if v18_sky_score is not None and candidate_sky_score is not None:
+                    if float(candidate_sky_score) < float(v18_sky_score) * effective_thresholds["horizon_sky_score_min_ratio"]:
+                        bucket_blocks.append("horizon_v18_sky_score_regression")
+                else:
+                    warnings.append("horizon_v18_sky_score_unavailable")
+        block_reasons.extend(bucket_blocks)
+        per_bucket[bucket_label] = {
+            "v18": dict(baseline_metrics or {}),
+            "candidate": dict(candidate_metrics or {}),
+            "delta": deltas,
+            "block_reasons": bucket_blocks,
+        }
+
+    v18_views = _views_by_bucket_and_image(v18_manifest)
+    candidate_views = _views_by_bucket_and_image(candidate_manifest)
+    per_camera_blocks: list[dict[str, Any]] = []
+    for key, v18_view in v18_views.items():
+        candidate_view = candidate_views.get(key)
+        if not isinstance(candidate_view, Mapping):
+            continue
+        bucket_label, image_name = key
+        deltas = metric_delta(v18_view.get("metrics"), candidate_view.get("metrics"))
+        camera_blocks: list[str] = []
+        if (
+            deltas["psnr"] is not None
+            and deltas["psnr"] < effective_thresholds["single_camera_psnr_min_delta"]
+        ):
+            camera_blocks.append(f"{bucket_label}_v18_single_camera_psnr_regression")
+        if (
+            deltas["lpips"] is not None
+            and deltas["lpips"] > effective_thresholds["single_camera_lpips_max_delta"]
+        ):
+            camera_blocks.append(f"{bucket_label}_v18_single_camera_lpips_regression")
+        if not camera_blocks:
+            continue
+        block_reasons.extend(camera_blocks)
+        per_camera_blocks.append(
+            {
+                "bucket": bucket_label,
+                "image_name": image_name,
+                "delta": deltas,
+                "block_reasons": camera_blocks,
+            }
+        )
+
+    unique_block_reasons = list(dict.fromkeys(block_reasons))
+    return {
+        "status": "promoted" if not unique_block_reasons else "blocked",
+        "block_reasons": unique_block_reasons,
+        "warnings": list(dict.fromkeys(warnings)),
+        "thresholds": effective_thresholds,
+        "per_bucket": per_bucket,
+        "per_camera_blocks": per_camera_blocks,
+    }
 
 
 def _bucket_count_from_manifest(manifest: Mapping[str, Any] | None, bucket_label: str) -> int | None:
@@ -338,6 +468,10 @@ def build_review_comparison(
         },
         "side_by_side_render_paths": side_by_side_paths,
         "promotion_decision": decision,
+        "v18_non_regression_decision": evaluate_v18_non_regression_decision(
+            v18_manifest=baseline_manifest,
+            candidate_manifest=candidate_manifest,
+        ),
     }
 
 

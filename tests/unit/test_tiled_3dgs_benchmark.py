@@ -371,6 +371,227 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(stages[3].stage_type, "merge")
         self.assertEqual(stages[1].job_name, "bench-456-tile-00")
 
+    def test_build_adaptive_tile_budget_plan_downshifts_low_retained_tile(self):
+        tile = {
+            "tile_id": "tile_11",
+            "base_camera_ids": [f"frame_{index:03d}.jpg" for index in range(188)],
+            "prior_retained_gaussians": 68,
+        }
+
+        budget = benchmark.build_tile_budget_plan(
+            tile,
+            mode="adaptive",
+            tile_max_iterations=12000,
+            max_images_per_tile=188,
+        )
+
+        self.assertEqual(budget.budget_class, "tiny")
+        self.assertEqual(budget.max_iterations, 3000)
+        self.assertEqual(budget.max_selected_images, 96)
+        self.assertIn("low_prior_retained_gaussians", budget.reasons)
+
+    def test_build_adaptive_tile_budget_plan_keeps_horizon_tile_hard(self):
+        tile = {
+            "tile_id": "tile_08",
+            "base_camera_ids": [f"frame_{index:03d}.jpg" for index in range(160)],
+            "selected_cameras_by_role": {
+                "horizon": [f"horizon_{index:03d}.jpg" for index in range(24)],
+                "boundary": [f"boundary_{index:03d}.jpg" for index in range(12)],
+            },
+        }
+
+        budget = benchmark.build_tile_budget_plan(
+            tile,
+            mode="adaptive",
+            tile_max_iterations=12000,
+            max_images_per_tile=128,
+        )
+
+        self.assertEqual(budget.budget_class, "hard")
+        self.assertEqual(budget.max_iterations, 12000)
+        self.assertEqual(budget.max_selected_images, 128)
+        self.assertIn("horizon_support", budget.reasons)
+
+    def test_build_benchmark_stages_applies_adaptive_leaf_budgets(self):
+        manifest = {
+            "tiles": [
+                {
+                    "tile_id": "tile_11",
+                    "base_camera_ids": [f"frame_{index:03d}.jpg" for index in range(188)],
+                    "prior_retained_gaussians": 68,
+                },
+                {
+                    "tile_id": "tile_08",
+                    "base_camera_ids": [f"frame_{index:03d}.jpg" for index in range(188)],
+                    "selected_cameras_by_role": {"horizon": [f"horizon_{index:03d}.jpg" for index in range(24)]},
+                },
+            ]
+        }
+
+        stages = benchmark.build_benchmark_stages(
+            manifest=manifest,
+            branch_name="agent-branch",
+            output_root_s3_uri="s3://bucket/out",
+            job_prefix="bench",
+            include_monolithic=False,
+            include_scaffold=False,
+            include_merge=True,
+            orchestration_mode="fanout",
+            tile_ids=["tile_11", "tile_08"],
+            monolithic_max_iterations=8000,
+            scaffold_max_iterations=2000,
+            tile_max_iterations=12000,
+            training_max_runtime_seconds=21600,
+            extra_env={},
+            timestamp=456,
+            downscale_factor=1,
+            include_review=False,
+            proof_profile=benchmark.PROOF_PROFILE_NONE,
+            tile_budget_mode="adaptive",
+            max_images_per_tile=188,
+            input_colmap_s3_uri="s3://bucket/colmap",
+            image_uri="123.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:test",
+        )
+
+        tile_11 = next(stage for stage in stages if stage.tile_id == "tile_11")
+        tile_08 = next(stage for stage in stages if stage.tile_id == "tile_08")
+        self.assertEqual(tile_11.environment["MAX_ITERATIONS"], "3000")
+        self.assertEqual(tile_11.environment["TRAINING_MAX_SELECTED_IMAGES"], "96")
+        self.assertEqual(tile_11.environment["TILE_BUDGET_CLASS"], "tiny")
+        self.assertEqual(tile_08.environment["MAX_ITERATIONS"], "12000")
+        self.assertEqual(tile_08.environment["TRAINING_MAX_SELECTED_IMAGES"], "188")
+        self.assertEqual(tile_08.environment["TILE_BUDGET_CLASS"], "hard")
+        self.assertRegex(tile_08.environment["TILE_INPUT_HASH"], r"^[0-9a-f]{64}$")
+
+    def test_estimate_training_cost_uses_stage_iteration_budgets(self):
+        stages = [
+            benchmark.BenchmarkStage(
+                stage_name="T0_tile_11",
+                stage_type="train",
+                training_mode="leaf_tile",
+                output_s3_uri="s3://bucket/out/tile_11",
+                environment={"MAX_ITERATIONS": "3000"},
+            ),
+            benchmark.BenchmarkStage(
+                stage_name="T0_tile_08",
+                stage_type="train",
+                training_mode="leaf_tile",
+                output_s3_uri="s3://bucket/out/tile_08",
+                environment={"MAX_ITERATIONS": "12000"},
+            ),
+        ]
+
+        estimate = benchmark.estimate_training_cost(
+            stages,
+            instance_type="ml.g5.2xlarge",
+            max_runtime_seconds=14400,
+            baseline_iterations=12000,
+        )
+
+        self.assertAlmostEqual(estimate["estimated_usd"], 7.575, places=3)
+        self.assertEqual(estimate["train_stage_count"], 2)
+        self.assertAlmostEqual(estimate["estimated_billable_hours"], 5.0, places=3)
+
+    def test_estimate_training_cost_accounts_for_serial_tiled_pipeline_tiles(self):
+        stages = [
+            benchmark.BenchmarkStage(
+                stage_name="T2_tiled_pipeline",
+                stage_type="train",
+                training_mode="tiled_pipeline",
+                output_s3_uri="s3://bucket/out/tiled",
+                environment={"MAX_ITERATIONS": "12000", "TILED_MAX_TILES": "14"},
+            ),
+        ]
+
+        estimate = benchmark.estimate_training_cost(
+            stages,
+            instance_type="ml.g5.2xlarge",
+            max_runtime_seconds=14400,
+            baseline_iterations=12000,
+        )
+
+        self.assertAlmostEqual(estimate["estimated_billable_hours"], 56.0, places=3)
+        self.assertAlmostEqual(estimate["estimated_usd"], 84.84, places=2)
+
+    def test_fanout_execution_batches_group_leaf_tiles_by_concurrency(self):
+        stages = [
+            benchmark.BenchmarkStage("S0_scaffold", "train", "global_scaffold", "s3://bucket/scaffold"),
+            benchmark.BenchmarkStage("T0_tile_00", "train", "leaf_tile", "s3://bucket/tile_00", tile_id="tile_00"),
+            benchmark.BenchmarkStage("T0_tile_01", "train", "leaf_tile", "s3://bucket/tile_01", tile_id="tile_01"),
+            benchmark.BenchmarkStage("T0_tile_02", "train", "leaf_tile", "s3://bucket/tile_02", tile_id="tile_02"),
+            benchmark.BenchmarkStage("MERGE", "merge", "strict_core", "s3://bucket/merge"),
+        ]
+
+        batches = benchmark.fanout_execution_batches(stages, max_tile_concurrency=2)
+
+        self.assertEqual(
+            [[stage.stage_name for stage in batch] for batch in batches],
+            [["S0_scaffold"], ["T0_tile_00", "T0_tile_01"], ["T0_tile_02"]],
+        )
+
+    def test_validate_submit_guardrails_requires_cost_experiment_and_v18_plan(self):
+        args = types.SimpleNamespace(
+            submit=True,
+            max_estimated_usd=0.0,
+            experiment_id="",
+            v18_review_manifest_s3_uri="",
+            baseline_review_manifest_s3_uri="",
+            enable_spot=False,
+            checkpoint_s3_prefix="",
+            spot_restart_proof_passed=False,
+        )
+
+        with self.assertRaises(RuntimeError) as raised:
+            benchmark.validate_submit_guardrails(args, {"cost_estimate": {"estimated_usd": 1.0}})
+
+        message = str(raised.exception)
+        self.assertIn("--max-estimated-usd", message)
+        self.assertIn("--experiment-id", message)
+        self.assertIn("--v18-review-manifest-s3-uri", message)
+
+    def test_validate_submit_guardrails_blocks_over_budget_and_unsafe_spot(self):
+        args = types.SimpleNamespace(
+            submit=True,
+            max_estimated_usd=2.0,
+            experiment_id="r2-smoke",
+            v18_review_manifest_s3_uri="s3://bucket/v18-review",
+            baseline_review_manifest_s3_uri="",
+            enable_spot=True,
+            checkpoint_s3_prefix="s3://bucket/checkpoints",
+            spot_restart_proof_passed=False,
+        )
+
+        with self.assertRaises(RuntimeError) as raised:
+            benchmark.validate_submit_guardrails(args, {"cost_estimate": {"estimated_usd": 3.0}})
+
+        message = str(raised.exception)
+        self.assertIn("estimated cost", message)
+        self.assertIn("--spot-restart-proof-passed", message)
+
+    def test_create_training_job_payload_can_enable_spot_checkpointing(self):
+        payload = benchmark.create_training_job_payload(
+            branch_name="agent-branch",
+            job_name="bench-spot",
+            image_uri="123.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:latest",
+            role_arn="arn:aws:iam::123:role/test",
+            input_s3_uri="s3://bucket/input",
+            output_s3_uri="s3://bucket/output",
+            environment={"TRAINING_MODE": "leaf_tile"},
+            instance_type="ml.g5.2xlarge",
+            volume_size_gb=100,
+            max_runtime_seconds=18000,
+            enable_spot=True,
+            checkpoint_s3_uri="s3://bucket/checkpoints/bench-spot",
+            max_wait_seconds=24000,
+            experiment_id="r2-smoke",
+        )
+
+        self.assertTrue(payload["EnableManagedSpotTraining"])
+        self.assertEqual(payload["CheckpointConfig"]["S3Uri"], "s3://bucket/checkpoints/bench-spot")
+        self.assertEqual(payload["CheckpointConfig"]["LocalPath"], "/opt/ml/checkpoints")
+        self.assertEqual(payload["StoppingCondition"]["MaxWaitTimeInSeconds"], 24000)
+        self.assertIn({"Key": "ExperimentId", "Value": "r2-smoke"}, payload["Tags"])
+
     def test_create_training_job_payload_includes_branch_tag(self):
         payload = benchmark.create_training_job_payload(
             branch_name="agent-branch",

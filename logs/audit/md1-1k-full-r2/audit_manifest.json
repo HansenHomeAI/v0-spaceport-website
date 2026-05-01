@@ -6760,5 +6760,53 @@
     },
     "sfm_viewer_url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-sfm-viewer-1776314974/sfm_points_every4.json",
     "sampled_inspection_only_url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-viewer-sampled-1777498999/merged_splat_every8_shrink.ply"
+  },
+  "md1_training_cost_reduction_controls": {
+    "implemented_at": "2026-05-01T14:15:10Z",
+    "base_head_before_commit": "9535796028311b9e21004e40f391907103c7240a",
+    "goal": "reduce accepted MD1-quality 3DGS training cost from the V18 $72.16 leg toward $18-$25 while preserving V18 as the quality bar",
+    "baseline_cost": {
+      "job_name": "md1-r5-14tile-2k-1777240767-tiled",
+      "instance_type": "ml.g5.2xlarge",
+      "billable_seconds": 171467,
+      "billable_hours": 47.63,
+      "hourly_rate_usd": 1.515,
+      "estimated_usd": 72.16
+    },
+    "controls_added": [
+      "adaptive tile budget classifier with skip/tiny/standard/hard classes",
+      "bucket-preserving selected-image caps via TRAINING_MAX_SELECTED_IMAGES",
+      "per-tile input hashes for future reuse lineage",
+      "estimated-cost ledger in dry-run summaries",
+      "paid-run guardrails requiring max_estimated_usd, experiment_id, and V18 review manifest",
+      "bounded fanout execution batches for leaf tile jobs",
+      "Managed Spot payload/checkpoint support gated by restart-proof flag",
+      "SageMaker checkpoint directory routing to /opt/ml/checkpoints",
+      "V18 non-regression review thresholds",
+      "training cost and health monitor script"
+    ],
+    "dry_run": {
+      "path": "logs/md1-cost-reduction-adaptive-dryrun-20260501.json",
+      "input_colmap_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p27eba1k-1776107310/colmap",
+      "orchestration_mode": "fanout",
+      "tile_budget_mode": "adaptive",
+      "max_images_per_tile": 128,
+      "max_tile_concurrency": 2,
+      "selected_tile_ids": [
+        "tile_00",
+        "tile_01",
+        "tile_02",
+        "tile_03"
+      ],
+      "estimated_usd": 18.18,
+      "submitted_jobs": 0
+    },
+    "verification": {
+      "unit_tests": "python3 -m unittest tests.unit.test_tiled_3dgs_benchmark tests.unit.test_geometry_first_review tests.unit.test_3dgs_training_monitor tests.unit.test_tiled_nerfstudio_dispatcher -> 68 tests OK",
+      "py_compile": "passed for tiled benchmark, monitor, geometry review, and nerfstudio trainer",
+      "git_diff_check": "passed",
+      "paid_training_launched": false
+    },
+    "next_paid_gate": "R2 tiny one-tile checkpoint/restart smoke before enabling Managed Spot or any full fanout run"
   }
 }

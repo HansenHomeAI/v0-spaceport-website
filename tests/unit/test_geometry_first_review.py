@@ -127,6 +127,92 @@ class GeometryFirstReviewTests(unittest.TestCase):
         self.assertIn("horizon_camera_set_mismatch", decision["block_reasons"])
         self.assertNotIn("horizon_psnr_regression", decision["block_reasons"])
 
+    def test_evaluate_v18_non_regression_accepts_small_bucket_deltas(self):
+        v18 = {
+            "bucket_medians": {
+                "near_detail": {"psnr": 30.0, "ssim": 0.9, "lpips": 0.1},
+                "boundary": {"psnr": 28.0, "ssim": 0.88, "lpips": 0.12},
+                "horizon": {"psnr": 27.0, "ssim": 0.86, "lpips": 0.14},
+            },
+            "sky_bucket_medians": {"horizon": {"score": 0.8}},
+        }
+        candidate = {
+            "bucket_medians": {
+                "near_detail": {"psnr": 29.9, "ssim": 0.897, "lpips": 0.105},
+                "boundary": {"psnr": 27.9, "ssim": 0.878, "lpips": 0.125},
+                "horizon": {"psnr": 26.9, "ssim": 0.857, "lpips": 0.145},
+            },
+            "sky_bucket_medians": {"horizon": {"score": 0.79}},
+        }
+
+        decision = geometry_review.evaluate_v18_non_regression_decision(
+            v18_manifest=v18,
+            candidate_manifest=candidate,
+        )
+
+        self.assertEqual(decision["status"], "promoted")
+        self.assertEqual(decision["block_reasons"], [])
+
+    def test_evaluate_v18_non_regression_blocks_bucket_sky_and_single_camera_regressions(self):
+        v18 = {
+            "bucket_medians": {
+                "near_detail": {"psnr": 30.0, "ssim": 0.9, "lpips": 0.1},
+                "boundary": {"psnr": 28.0, "ssim": 0.88, "lpips": 0.12},
+                "horizon": {"psnr": 27.0, "ssim": 0.86, "lpips": 0.14},
+            },
+            "sky_bucket_medians": {"horizon": {"score": 0.8}},
+            "views": [
+                {
+                    "bucket": "near_detail",
+                    "image_name": "near_0.jpg",
+                    "metrics": {"psnr": 30.0, "ssim": 0.9, "lpips": 0.1},
+                }
+            ],
+        }
+        candidate = {
+            "bucket_medians": {
+                "near_detail": {"psnr": 29.9, "ssim": 0.897, "lpips": 0.105},
+                "boundary": {"psnr": 27.7, "ssim": 0.878, "lpips": 0.125},
+                "horizon": {"psnr": 26.9, "ssim": 0.857, "lpips": 0.145},
+            },
+            "sky_bucket_medians": {"horizon": {"score": 0.77}},
+            "views": [
+                {
+                    "bucket": "near_detail",
+                    "image_name": "near_0.jpg",
+                    "metrics": {"psnr": 29.0, "ssim": 0.9, "lpips": 0.13},
+                }
+            ],
+        }
+
+        decision = geometry_review.evaluate_v18_non_regression_decision(
+            v18_manifest=v18,
+            candidate_manifest=candidate,
+        )
+
+        self.assertEqual(decision["status"], "blocked")
+        self.assertIn("boundary_v18_median_psnr_regression", decision["block_reasons"])
+        self.assertIn("horizon_v18_sky_score_regression", decision["block_reasons"])
+        self.assertIn("near_detail_v18_single_camera_psnr_regression", decision["block_reasons"])
+        self.assertIn("near_detail_v18_single_camera_lpips_regression", decision["block_reasons"])
+
+    def test_build_review_comparison_includes_v18_non_regression_decision(self):
+        manifest = {
+            "bucket_medians": {
+                "near_detail": {"psnr": 30.0, "ssim": 0.9, "lpips": 0.1},
+                "boundary": {"psnr": 28.0, "ssim": 0.88, "lpips": 0.12},
+                "horizon": {"psnr": 27.0, "ssim": 0.86, "lpips": 0.14},
+            },
+            "sky_bucket_medians": {"horizon": {"score": 0.8}},
+        }
+
+        comparison = geometry_review.build_review_comparison(
+            baseline_manifest=manifest,
+            candidate_manifest=manifest,
+        )
+
+        self.assertEqual(comparison["v18_non_regression_decision"]["status"], "promoted")
+
     def test_evaluate_promotion_decision_blocks_blank_render_sanity(self):
         baseline = {
             "bucket_medians": {

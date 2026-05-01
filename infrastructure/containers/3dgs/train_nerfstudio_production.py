@@ -426,7 +426,14 @@ class NerfStudioTrainer:
         # SageMaker environment paths
         self.input_dir = Path(os.environ.get("SM_CHANNEL_TRAINING", "/opt/ml/input/data/training"))
         self.output_dir = Path(os.environ.get("SM_MODEL_DIR", "/opt/ml/model"))
-        self.temp_dir = Path("/tmp/nerfstudio_training")
+        checkpoint_dir = Path(str(os.environ.get("TRAINING_CHECKPOINT_DIR", "")).strip() or "/opt/ml/checkpoints")
+        checkpointing_enabled = str(os.environ.get("TRAINING_ENABLE_CHECKPOINTS", "")).lower() in {
+            "1",
+            "true",
+            "yes",
+            "on",
+        }
+        self.temp_dir = checkpoint_dir / "nerfstudio_training" if checkpointing_enabled else Path("/tmp/nerfstudio_training")
         
         # Create necessary directories
         self.output_dir.mkdir(exist_ok=True, parents=True)
@@ -443,6 +450,8 @@ class NerfStudioTrainer:
         logger.info(f"📁 Input directory: {self.input_dir}")
         logger.info(f"📁 Output directory: {self.output_dir}")
         logger.info(f"📁 Temp directory: {self.temp_dir}")
+        if checkpointing_enabled:
+            logger.info(f"📁 SageMaker checkpoint directory: {checkpoint_dir}")
     
     def apply_step_functions_params(self):
         """Apply parameters passed from Step Functions via environment variables"""

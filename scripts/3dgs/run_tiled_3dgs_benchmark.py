@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import shutil
@@ -31,12 +32,27 @@ DEFAULT_INSTANCE_TYPE = "ml.g5.2xlarge"
 DEFAULT_VOLUME_SIZE_GB = 100
 DEFAULT_TRAINING_MAX_RUNTIME_SECONDS = 14400
 DEFAULT_REVIEW_MAX_RUNTIME_SECONDS = 7200
+DEFAULT_CHECKPOINT_SAVE_STEPS = 1000
 UNSUPPORTED_BILATERAL_VARIANTS = {"splatfacto-w-light", "splatfacto-w"}
 PROOF_PROFILE_NONE = "none"
 PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY = "quality_gate_low_memory"
 QUALITY_GATE_LOW_MEMORY_STOP_SPLIT_AT = 8500
 QUALITY_GATE_MULTI_TILE_STOP_SPLIT_AT = 7000
 QUALITY_GATE_MULTI_TILE_MAX_GAUSS_RATIO = "8.0"
+INSTANCE_HOURLY_RATES_USD = {
+    "ml.g5.2xlarge": 1.515,
+    "ml.g5.xlarge": 1.408,
+    "ml.g6.xlarge": 1.127,
+    "ml.g4dn.xlarge": 0.736,
+}
+DEFAULT_V18_NON_REGRESSION_THRESHOLDS = {
+    "median_psnr_min_delta": -0.25,
+    "median_ssim_min_delta": -0.005,
+    "median_lpips_max_delta": 0.010,
+    "single_camera_psnr_min_delta": -0.75,
+    "single_camera_lpips_max_delta": 0.025,
+    "horizon_sky_score_min_ratio": 0.98,
+}
 
 
 def run_command(command: Sequence[str], *, capture_output: bool = False) -> subprocess.CompletedProcess[str]:
@@ -209,6 +225,311 @@ def select_tile_ids(
     return tile_ids
 
 
+def ordered_unique(values: Iterable[object]) -> list[str]:
+    unique: list[str] = []
+    seen: set[str] = set()
+    for raw_value in values:
+        value = str(raw_value).strip()
+        if not value or value in seen:
+            continue
+        seen.add(value)
+        unique.append(value)
+    return unique
+
+
+def tile_selected_image_names(tile_entry: dict) -> list[str]:
+    return ordered_unique(
+        [
+            *tile_entry.get("selected_image_names", []),
+            *tile_entry.get("image_names", []),
+            *tile_entry.get("camera_ids", []),
+            *tile_entry.get("assigned_camera_ids", []),
+            *tile_entry.get("base_camera_ids", []),
+            *tile_entry.get("border_camera_ids", []),
+            *tile_entry.get("context_camera_ids", []),
+        ]
+    )
+
+
+def tile_role_count(tile_entry: dict, role_name: str) -> int:
+    selected_by_role = tile_entry.get("selected_cameras_by_role") or {}
+    if isinstance(selected_by_role, dict):
+        if role_name in selected_by_role or f"{role_name}_camera_ids" in selected_by_role:
+            values = selected_by_role.get(role_name) or selected_by_role.get(f"{role_name}_camera_ids") or []
+            return len(ordered_unique(values))
+    view_bucket_counts = tile_entry.get("view_bucket_counts") or {}
+    if isinstance(view_bucket_counts, dict):
+        return int(view_bucket_counts.get(role_name, 0) or view_bucket_counts.get(f"{role_name}_camera_ids", 0) or 0)
+    return 0
+
+
+def tile_prior_retained_gaussians(tile_entry: dict) -> int | None:
+    for key in ("prior_retained_gaussians", "retained_gaussians", "previous_retained_gaussians"):
+        value = tile_entry.get(key)
+        if value in (None, ""):
+            continue
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            continue
+    return None
+
+
+@dataclass(frozen=True)
+class TileBudgetPlan:
+    tile_id: str
+    budget_class: str
+    selected_image_count: int
+    max_iterations: int
+    max_selected_images: int
+    input_hash: str
+    reasons: list[str]
+    instance_type: str | None = None
+    spot_enabled: bool = False
+    checkpoint_uri: str | None = None
+    source_artifact_uri: str | None = None
+    quality_gate_status: str = "planned"
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+
+def build_tile_input_hash(
+    *,
+    tile_entry: dict,
+    budget_class: str,
+    max_iterations: int,
+    max_selected_images: int,
+    input_colmap_s3_uri: str = "",
+    image_uri: str = "",
+    scaffold_artifact_s3_uri: str = "",
+) -> str:
+    payload = {
+        "tile_id": tile_entry.get("tile_id"),
+        "selected_image_names": tile_selected_image_names(tile_entry),
+        "budget_class": budget_class,
+        "max_iterations": max_iterations,
+        "max_selected_images": max_selected_images,
+        "input_colmap_s3_uri": normalize_s3_prefix(input_colmap_s3_uri) if input_colmap_s3_uri else "",
+        "image_uri": image_uri,
+        "scaffold_artifact_s3_uri": normalize_s3_prefix(scaffold_artifact_s3_uri) if scaffold_artifact_s3_uri else "",
+    }
+    return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+
+
+def budget_image_cap(*, default_cap: int, max_images_per_tile: int) -> int:
+    if max_images_per_tile > 0:
+        return min(default_cap, max_images_per_tile)
+    return default_cap
+
+
+def build_tile_budget_plan(
+    tile_entry: dict,
+    *,
+    mode: str,
+    tile_max_iterations: int,
+    max_images_per_tile: int = 0,
+    input_colmap_s3_uri: str = "",
+    image_uri: str = "",
+    scaffold_artifact_s3_uri: str = "",
+    instance_type: str | None = None,
+    spot_enabled: bool = False,
+    checkpoint_uri: str | None = None,
+) -> TileBudgetPlan:
+    tile_id = str(tile_entry.get("tile_id", "")).strip()
+    selected_count = int(tile_entry.get("selected_image_count") or len(tile_selected_image_names(tile_entry)))
+    prior_retained = tile_prior_retained_gaussians(tile_entry)
+    horizon_count = tile_role_count(tile_entry, "horizon")
+    boundary_count = tile_role_count(tile_entry, "boundary")
+    near_detail_count = tile_role_count(tile_entry, "near_detail")
+    source_artifact_uri = str(
+        tile_entry.get("source_artifact_uri")
+        or tile_entry.get("cache_artifact_s3_uri")
+        or tile_entry.get("model_artifact_s3_uri")
+        or ""
+    ).strip() or None
+
+    reasons: list[str] = []
+    if mode != "adaptive":
+        budget_class = "hard"
+        max_iterations = tile_max_iterations
+        max_selected_images = max_images_per_tile if max_images_per_tile > 0 else 0
+        reasons.append("fixed_budget")
+    elif source_artifact_uri:
+        budget_class = "skip"
+        max_iterations = 0
+        max_selected_images = 0
+        reasons.append("source_artifact_reuse")
+    elif selected_count <= 0:
+        budget_class = "skip"
+        max_iterations = 0
+        max_selected_images = 0
+        reasons.append("zero_selected_images")
+    elif prior_retained is not None and prior_retained <= 100:
+        budget_class = "tiny"
+        max_iterations = min(tile_max_iterations, 3000)
+        max_selected_images = budget_image_cap(default_cap=96, max_images_per_tile=max_images_per_tile)
+        reasons.append("low_prior_retained_gaussians")
+    elif selected_count <= 24:
+        budget_class = "tiny"
+        max_iterations = min(tile_max_iterations, 3000)
+        max_selected_images = budget_image_cap(default_cap=96, max_images_per_tile=max_images_per_tile)
+        reasons.append("low_selected_image_count")
+    elif horizon_count >= 12:
+        budget_class = "hard"
+        max_iterations = min(tile_max_iterations, 12000)
+        max_selected_images = budget_image_cap(default_cap=188, max_images_per_tile=max_images_per_tile)
+        reasons.append("horizon_support")
+    elif boundary_count >= 48 or near_detail_count >= 48:
+        budget_class = "hard"
+        max_iterations = min(tile_max_iterations, 12000)
+        max_selected_images = budget_image_cap(default_cap=188, max_images_per_tile=max_images_per_tile)
+        reasons.append("dense_detail_or_boundary_support")
+    else:
+        budget_class = "standard"
+        max_iterations = min(tile_max_iterations, 8000)
+        max_selected_images = budget_image_cap(default_cap=128, max_images_per_tile=max_images_per_tile)
+        reasons.append("standard_visibility")
+
+    input_hash = build_tile_input_hash(
+        tile_entry=tile_entry,
+        budget_class=budget_class,
+        max_iterations=max_iterations,
+        max_selected_images=max_selected_images,
+        input_colmap_s3_uri=input_colmap_s3_uri,
+        image_uri=image_uri,
+        scaffold_artifact_s3_uri=scaffold_artifact_s3_uri,
+    )
+    return TileBudgetPlan(
+        tile_id=tile_id,
+        budget_class=budget_class,
+        selected_image_count=selected_count,
+        max_iterations=max_iterations,
+        max_selected_images=max_selected_images,
+        input_hash=input_hash,
+        reasons=reasons,
+        instance_type=instance_type,
+        spot_enabled=spot_enabled,
+        checkpoint_uri=checkpoint_uri,
+        source_artifact_uri=source_artifact_uri,
+    )
+
+
+def estimate_training_cost(
+    stages: Sequence["BenchmarkStage"],
+    *,
+    instance_type: str,
+    max_runtime_seconds: int,
+    baseline_iterations: int,
+    instance_hourly_rates: dict[str, float] | None = None,
+) -> dict:
+    rates = instance_hourly_rates or INSTANCE_HOURLY_RATES_USD
+    hourly_rate = float(rates.get(instance_type, rates[DEFAULT_INSTANCE_TYPE]))
+    max_hours_per_stage = max_runtime_seconds / 3600.0
+    estimated_hours = 0.0
+    worst_case_hours = 0.0
+    train_stage_count = 0
+    stage_estimates: list[dict] = []
+    for stage in stages:
+        if stage.stage_type != "train":
+            continue
+        train_stage_count += 1
+        env = stage.environment or {}
+        try:
+            stage_iterations = int(env.get("MAX_ITERATIONS", baseline_iterations) or baseline_iterations)
+        except (TypeError, ValueError):
+            stage_iterations = baseline_iterations
+        fraction = 0.0 if stage_iterations <= 0 else min(1.0, max(0.05, stage_iterations / max(1, baseline_iterations)))
+        stage_multiplier = 1
+        if stage.training_mode == "tiled_pipeline":
+            try:
+                stage_multiplier = max(1, int(env.get("TILED_MAX_TILES", 1) or 1))
+            except (TypeError, ValueError):
+                stage_multiplier = 1
+        stage_hours = max_hours_per_stage * fraction * stage_multiplier
+        estimated_hours += stage_hours
+        worst_case_hours += max_hours_per_stage * stage_multiplier
+        stage_estimates.append(
+            {
+                "stage_name": stage.stage_name,
+                "training_mode": stage.training_mode,
+                "tile_id": stage.tile_id,
+                "max_iterations": stage_iterations,
+                "stage_multiplier": stage_multiplier,
+                "estimated_billable_hours": round(stage_hours, 4),
+                "estimated_usd": round(stage_hours * hourly_rate, 4),
+                "budget_class": stage.budget_class,
+            }
+        )
+    return {
+        "instance_type": instance_type,
+        "hourly_rate_usd": hourly_rate,
+        "train_stage_count": train_stage_count,
+        "estimated_billable_hours": round(estimated_hours, 4),
+        "estimated_usd": round(estimated_hours * hourly_rate, 4),
+        "worst_case_billable_hours": round(worst_case_hours, 4),
+        "worst_case_usd": round(worst_case_hours * hourly_rate, 4),
+        "baseline_iterations": baseline_iterations,
+        "stage_estimates": stage_estimates,
+        "pricing_source": "static_us-west-2-rates-verified-2026-04-30",
+    }
+
+
+def fanout_execution_batches(
+    stages: Sequence["BenchmarkStage"],
+    *,
+    max_tile_concurrency: int,
+) -> list[list["BenchmarkStage"]]:
+    if max_tile_concurrency < 1:
+        raise ValueError("max_tile_concurrency must be >= 1")
+    batches: list[list[BenchmarkStage]] = []
+    leaf_batch: list[BenchmarkStage] = []
+
+    def flush_leaf_batch() -> None:
+        nonlocal leaf_batch
+        if leaf_batch:
+            batches.append(leaf_batch)
+            leaf_batch = []
+
+    for stage in stages:
+        if stage.stage_type != "train":
+            continue
+        if stage.training_mode == "leaf_tile":
+            leaf_batch.append(stage)
+            if len(leaf_batch) >= max_tile_concurrency:
+                flush_leaf_batch()
+            continue
+        flush_leaf_batch()
+        batches.append([stage])
+    flush_leaf_batch()
+    return batches
+
+
+def validate_submit_guardrails(args: argparse.Namespace, summary: dict) -> None:
+    if not getattr(args, "submit", False):
+        return
+    errors: list[str] = []
+    max_estimated_usd = float(getattr(args, "max_estimated_usd", 0.0) or 0.0)
+    experiment_id = str(getattr(args, "experiment_id", "") or "").strip()
+    v18_review_manifest_s3_uri = str(getattr(args, "v18_review_manifest_s3_uri", "") or "").strip()
+    if max_estimated_usd <= 0:
+        errors.append("--max-estimated-usd is required for submitted training runs")
+    if not experiment_id:
+        errors.append("--experiment-id is required for submitted training runs")
+    if not v18_review_manifest_s3_uri:
+        errors.append("--v18-review-manifest-s3-uri is required so every paid run has a V18 comparison plan")
+    estimate = (summary.get("cost_estimate") or {}).get("estimated_usd")
+    if estimate is not None and max_estimated_usd > 0 and float(estimate) > max_estimated_usd:
+        errors.append(f"estimated cost ${float(estimate):.2f} exceeds --max-estimated-usd ${max_estimated_usd:.2f}")
+    if getattr(args, "enable_spot", False):
+        if not str(getattr(args, "checkpoint_s3_prefix", "") or "").strip():
+            errors.append("--checkpoint-s3-prefix is required when --enable-spot is set")
+        if not getattr(args, "spot_restart_proof_passed", False):
+            errors.append("--spot-restart-proof-passed is required before submitting spot training")
+    if errors:
+        raise RuntimeError("; ".join(errors))
+
+
 def sanitize_sagemaker_job_name(raw_name: str, *, max_length: int = 63) -> str:
     sanitized = re.sub(r"[^A-Za-z0-9-]+", "-", raw_name).strip("-")
     sanitized = re.sub(r"-{2,}", "-", sanitized)
@@ -273,6 +594,15 @@ class BenchmarkStage:
     tile_id: str | None = None
     depends_on: list[str] | None = None
     environment: Dict[str, str] | None = None
+    budget_class: str | None = None
+    selected_image_count: int | None = None
+    max_iterations: int | None = None
+    max_selected_images: int | None = None
+    input_hash: str | None = None
+    source_artifact_uri: str | None = None
+    checkpoint_uri: str | None = None
+    spot_enabled: bool = False
+    quality_gate_status: str | None = None
 
     def to_dict(self) -> dict:
         payload = asdict(self)
@@ -389,6 +719,14 @@ def build_benchmark_stages(
     downscale_factor: int,
     include_review: bool,
     proof_profile: str = PROOF_PROFILE_NONE,
+    tile_budget_mode: str = "fixed",
+    max_images_per_tile: int = 0,
+    input_colmap_s3_uri: str = "",
+    image_uri: str = "",
+    scaffold_artifact_s3_uri: str = "",
+    instance_type: str | None = None,
+    enable_spot: bool = False,
+    checkpoint_s3_prefix: str = "",
 ) -> list[BenchmarkStage]:
     output_root = normalize_s3_prefix(output_root_s3_uri)
     tile_manifest_name = "3dgs_tile_manifest.json"
@@ -481,8 +819,35 @@ def build_benchmark_stages(
             )
         )
 
+    tiles_by_id = {str(tile.get("tile_id")): dict(tile) for tile in manifest.get("tiles", [])}
     selected_tiles = list(tile_ids)
     for tile_id in selected_tiles:
+        tile_entry = tiles_by_id.get(str(tile_id), {"tile_id": tile_id})
+        checkpoint_uri = (
+            f"{normalize_s3_prefix(checkpoint_s3_prefix)}/{sanitize_sagemaker_job_name(f'{job_prefix}-{timestamp}-{tile_id}')}"
+            if checkpoint_s3_prefix and enable_spot
+            else None
+        )
+        tile_budget = build_tile_budget_plan(
+            tile_entry,
+            mode=tile_budget_mode,
+            tile_max_iterations=tile_max_iterations,
+            max_images_per_tile=max_images_per_tile,
+            input_colmap_s3_uri=input_colmap_s3_uri,
+            image_uri=image_uri,
+            scaffold_artifact_s3_uri=scaffold_artifact_s3_uri,
+            instance_type=instance_type,
+            spot_enabled=enable_spot,
+            checkpoint_uri=checkpoint_uri,
+        )
+        stage_env = dict(extra_env)
+        stage_max_iterations = tile_max_iterations
+        if tile_budget_mode == "adaptive" or max_images_per_tile > 0:
+            stage_max_iterations = tile_budget.max_iterations
+            stage_env.setdefault("TILE_BUDGET_CLASS", tile_budget.budget_class)
+            stage_env.setdefault("TILE_INPUT_HASH", tile_budget.input_hash)
+            if tile_budget.max_selected_images > 0:
+                stage_env.setdefault("TRAINING_MAX_SELECTED_IMAGES", str(tile_budget.max_selected_images))
         stages.append(
             BenchmarkStage(
                 stage_name=f"T0_{tile_id}",
@@ -497,11 +862,20 @@ def build_benchmark_stages(
                     tile_manifest_name=tile_manifest_name,
                     view_bucket_manifest_name=view_bucket_manifest_name,
                     tile_id=tile_id,
-                    max_iterations=tile_max_iterations,
-                    extra_env=extra_env,
+                    max_iterations=stage_max_iterations,
+                    extra_env=stage_env,
                     training_timeout_seconds=training_max_runtime_seconds,
                     downscale_factor=downscale_factor,
                 ),
+                budget_class=tile_budget.budget_class if tile_budget_mode == "adaptive" else None,
+                selected_image_count=tile_budget.selected_image_count if tile_budget_mode == "adaptive" else None,
+                max_iterations=tile_budget.max_iterations if tile_budget_mode == "adaptive" else None,
+                max_selected_images=tile_budget.max_selected_images if tile_budget_mode == "adaptive" else None,
+                input_hash=tile_budget.input_hash if tile_budget_mode == "adaptive" else None,
+                source_artifact_uri=tile_budget.source_artifact_uri,
+                checkpoint_uri=tile_budget.checkpoint_uri,
+                spot_enabled=tile_budget.spot_enabled,
+                quality_gate_status=tile_budget.quality_gate_status if tile_budget_mode == "adaptive" else None,
             )
         )
 
@@ -533,6 +907,10 @@ def create_training_job_payload(
     volume_size_gb: int,
     max_runtime_seconds: int,
     scaffold_artifact_s3_uri: str = "",
+    enable_spot: bool = False,
+    checkpoint_s3_uri: str = "",
+    max_wait_seconds: int | None = None,
+    experiment_id: str = "",
 ) -> dict:
     input_channels = [
         {
@@ -564,7 +942,15 @@ def create_training_job_payload(
             }
         )
 
-    return {
+    tags = [
+        {"Key": "Project", "Value": "Spaceport"},
+        {"Key": "Component", "Value": "3DGS"},
+        {"Key": "Benchmark", "Value": "true"},
+        {"Key": "Branch", "Value": branch_name},
+    ]
+    if experiment_id:
+        tags.append({"Key": "ExperimentId", "Value": experiment_id})
+    payload = {
         "TrainingJobName": job_name,
         "AlgorithmSpecification": {
             "TrainingImage": image_uri,
@@ -584,13 +970,18 @@ def create_training_job_payload(
             "MaxRuntimeInSeconds": max_runtime_seconds,
         },
         "Environment": environment,
-        "Tags": [
-            {"Key": "Project", "Value": "Spaceport"},
-            {"Key": "Component", "Value": "3DGS"},
-            {"Key": "Benchmark", "Value": "true"},
-            {"Key": "Branch", "Value": branch_name},
-        ],
+        "Tags": tags,
     }
+    if enable_spot:
+        if not checkpoint_s3_uri:
+            raise ValueError("checkpoint_s3_uri is required when enable_spot=True")
+        payload["EnableManagedSpotTraining"] = True
+        payload["CheckpointConfig"] = {
+            "S3Uri": checkpoint_s3_uri,
+            "LocalPath": "/opt/ml/checkpoints",
+        }
+        payload["StoppingCondition"]["MaxWaitTimeInSeconds"] = int(max_wait_seconds or max_runtime_seconds)
+    return payload
 
 
 def create_quality_review_processing_payload(
@@ -960,9 +1351,66 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--instance-type", default=DEFAULT_INSTANCE_TYPE)
     parser.add_argument("--volume-size-gb", type=int, default=DEFAULT_VOLUME_SIZE_GB)
     parser.add_argument("--training-max-runtime-seconds", type=int, default=DEFAULT_TRAINING_MAX_RUNTIME_SECONDS)
+    parser.add_argument(
+        "--max-estimated-usd",
+        type=float,
+        default=0.0,
+        help="Required with --submit. Blocks paid runs whose estimated training cost exceeds this cap.",
+    )
+    parser.add_argument(
+        "--experiment-id",
+        default="",
+        help="Required with --submit. Stable ID written to summaries and SageMaker tags.",
+    )
     parser.add_argument("--monolithic-max-iterations", type=int, default=DEFAULT_TILE_MAX_ITERATIONS)
     parser.add_argument("--scaffold-max-iterations", type=int, default=DEFAULT_SCAFFOLD_MAX_ITERATIONS)
     parser.add_argument("--tile-max-iterations", type=int, default=DEFAULT_TILE_MAX_ITERATIONS)
+    parser.add_argument(
+        "--tile-budget-mode",
+        choices=["fixed", "adaptive"],
+        default="fixed",
+        help="Use adaptive per-tile iteration/image budgets for fanout leaf jobs.",
+    )
+    parser.add_argument(
+        "--max-images-per-tile",
+        type=int,
+        default=0,
+        help="Upper bound for per-tile selected images; adaptive class defaults still apply below this cap.",
+    )
+    parser.add_argument(
+        "--max-tile-concurrency",
+        type=int,
+        default=1,
+        help="Maximum concurrently active leaf-tile jobs in fanout mode when --wait is used.",
+    )
+    parser.add_argument(
+        "--reuse-tile-cache",
+        action="store_true",
+        help="Record tile input hashes/source artifact lineage for reuse-aware runs.",
+    )
+    parser.add_argument("--enable-spot", action="store_true", help="Use SageMaker Managed Spot Training.")
+    parser.add_argument(
+        "--checkpoint-s3-prefix",
+        default="",
+        help="S3 prefix for SageMaker training checkpoints when --enable-spot is set.",
+    )
+    parser.add_argument(
+        "--checkpoint-save-steps",
+        type=int,
+        default=DEFAULT_CHECKPOINT_SAVE_STEPS,
+        help="Default TRAINING_STEPS_PER_SAVE for checkpointed spot runs unless --env overrides it.",
+    )
+    parser.add_argument(
+        "--spot-max-wait-seconds",
+        type=int,
+        default=0,
+        help="Optional MaxWaitTimeInSeconds for managed spot jobs. Defaults to runtime plus one hour.",
+    )
+    parser.add_argument(
+        "--spot-restart-proof-passed",
+        action="store_true",
+        help="Required before --submit with --enable-spot; documents the one-tile checkpoint restart proof gate.",
+    )
     parser.add_argument("--downscale-factor", type=int, default=1, help="Optional per-stage image downscale factor for cheap proof runs.")
     parser.add_argument("--max-tiles", type=int, default=4, help="Cap leaf-tile jobs for cheap ladder runs.")
     parser.add_argument("--tile-id", action="append", default=[], help="Repeatable tile_id filter.")
@@ -1011,6 +1459,21 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--review-instance-type", default=DEFAULT_INSTANCE_TYPE)
     parser.add_argument("--review-volume-size-gb", type=int, default=DEFAULT_VOLUME_SIZE_GB)
     parser.add_argument("--review-max-runtime-seconds", type=int, default=DEFAULT_REVIEW_MAX_RUNTIME_SECONDS)
+    parser.add_argument(
+        "--review-camera-manifest-s3-uri",
+        default="",
+        help="Optional frozen camera manifest prefix for quality review.",
+    )
+    parser.add_argument(
+        "--baseline-review-manifest-s3-uri",
+        default="",
+        help="Optional baseline quality_review_manifest.json prefix for quality review.",
+    )
+    parser.add_argument(
+        "--v18-review-manifest-s3-uri",
+        default="",
+        help="Required with --submit. V18 quality_review_manifest.json prefix used for non-regression comparison.",
+    )
     parser.add_argument(
         "--compatibility-gate",
         action="store_true",
@@ -1082,6 +1545,8 @@ def main() -> int:
     branch_name = args.branch or get_current_branch()
     timestamp = int(time.time())
     include_review = not args.skip_review
+    if args.max_tile_concurrency < 1:
+        raise RuntimeError("--max-tile-concurrency must be >= 1")
     resolved_proof_profile = resolve_proof_profile(
         args.proof_profile,
         orchestration_mode=args.orchestration_mode,
@@ -1124,9 +1589,15 @@ def main() -> int:
         explicit_tile_ids=args.tile_id,
         max_tiles=args.max_tiles,
     )
-    training_env_overrides = {"MERGE_MODE": args.merge_mode, **parse_env(args.env)}
+    explicit_env = parse_env(args.env)
+    training_env_overrides = {"MERGE_MODE": args.merge_mode, **explicit_env}
     if args.suppress_training_eval:
         apply_training_eval_suppression(training_env_overrides, max_iterations=args.tile_max_iterations)
+    if args.enable_spot:
+        training_env_overrides.setdefault("TRAINING_CHECKPOINT_DIR", "/opt/ml/checkpoints")
+        training_env_overrides.setdefault("TRAINING_ENABLE_CHECKPOINTS", "true")
+        if "TRAINING_STEPS_PER_SAVE" not in explicit_env:
+            training_env_overrides["TRAINING_STEPS_PER_SAVE"] = str(args.checkpoint_save_steps)
     if args.scaffold_artifact_s3_uri:
         training_env_overrides.setdefault("GLOBAL_SCAFFOLD_SOURCE_DIR", "/opt/ml/input/data/scaffold")
 
@@ -1149,10 +1620,25 @@ def main() -> int:
         downscale_factor=args.downscale_factor,
         include_review=include_review,
         proof_profile=resolved_proof_profile,
+        tile_budget_mode=args.tile_budget_mode,
+        max_images_per_tile=args.max_images_per_tile,
+        input_colmap_s3_uri=colmap_s3_uri,
+        image_uri=context.image_uri,
+        scaffold_artifact_s3_uri=args.scaffold_artifact_s3_uri,
+        instance_type=args.instance_type,
+        enable_spot=args.enable_spot,
+        checkpoint_s3_prefix=args.checkpoint_s3_prefix,
+    )
+    cost_estimate = estimate_training_cost(
+        stages,
+        instance_type=args.instance_type,
+        max_runtime_seconds=args.training_max_runtime_seconds,
+        baseline_iterations=args.tile_max_iterations,
     )
 
     summary: dict = {
         "branch": branch_name,
+        "experiment_id": args.experiment_id,
         "stack_name": context.stack_name,
         "image_uri": context.image_uri,
         "input_colmap_s3_uri": colmap_s3_uri,
@@ -1169,6 +1655,19 @@ def main() -> int:
         "suppress_training_eval": bool(args.suppress_training_eval),
         "merge_mode": args.merge_mode,
         "scaffold_artifact_s3_uri": args.scaffold_artifact_s3_uri,
+        "tile_budget_mode": args.tile_budget_mode,
+        "max_images_per_tile": args.max_images_per_tile,
+        "max_tile_concurrency": args.max_tile_concurrency,
+        "reuse_tile_cache": bool(args.reuse_tile_cache),
+        "enable_spot": bool(args.enable_spot),
+        "checkpoint_s3_prefix": args.checkpoint_s3_prefix,
+        "checkpoint_save_steps": args.checkpoint_save_steps,
+        "max_estimated_usd": args.max_estimated_usd,
+        "review_camera_manifest_s3_uri": args.review_camera_manifest_s3_uri,
+        "baseline_review_manifest_s3_uri": args.baseline_review_manifest_s3_uri,
+        "v18_review_manifest_s3_uri": args.v18_review_manifest_s3_uri,
+        "v18_non_regression_thresholds": DEFAULT_V18_NON_REGRESSION_THRESHOLDS,
+        "cost_estimate": cost_estimate,
         "manual_hold": (
             {
                 "required": True,
@@ -1188,6 +1687,8 @@ def main() -> int:
             Path(args.summary_json_output).write_text(json.dumps(summary, indent=2), encoding="utf-8")
         return 0
 
+    validate_submit_guardrails(args, summary)
+
     if args.orchestration_mode == "fanout" and not args.wait:
         raise RuntimeError("Fanout submission requires --wait so scaffold and tile dependencies can be enforced safely")
 
@@ -1199,9 +1700,7 @@ def main() -> int:
     merge_root = Path(args.local_merge_output_dir) if args.local_merge_output_dir else None
     extracted_stage_dirs: Dict[str, Path] = {}
 
-    for stage in stages:
-        if stage.stage_type != "train":
-            continue
+    def submit_training_stage(stage: BenchmarkStage) -> None:
         payload = create_training_job_payload(
             branch_name=branch_name,
             job_name=stage.job_name or stage.stage_name,
@@ -1216,6 +1715,15 @@ def main() -> int:
             scaffold_artifact_s3_uri=(
                 args.scaffold_artifact_s3_uri if stage.training_mode == "tiled_pipeline" else ""
             ),
+            enable_spot=args.enable_spot,
+            checkpoint_s3_uri=stage.checkpoint_uri
+            or (
+                f"{normalize_s3_prefix(args.checkpoint_s3_prefix)}/{stage.job_name or stage.stage_name}"
+                if args.enable_spot and args.checkpoint_s3_prefix
+                else ""
+            ),
+            max_wait_seconds=args.spot_max_wait_seconds or (args.training_max_runtime_seconds + 3600),
+            experiment_id=args.experiment_id,
         )
         with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as handle:
             json.dump(payload, handle, indent=2)
@@ -1234,24 +1742,35 @@ def main() -> int:
             }
         )
 
-        if args.orchestration_mode == "fanout" and args.wait:
-            describe_payload = wait_for_training_job(submitted_stage_to_job[stage.stage_name], poll_seconds=args.poll_seconds)
-            model_artifacts_s3_uri = describe_payload.get("ModelArtifacts", {}).get("S3ModelArtifacts")
-            if not model_artifacts_s3_uri:
-                raise RuntimeError(f"Training job {stage.job_name} completed without model artifacts")
-            extracted_dir = None
-            if merge_root is not None:
-                stage_dir = merge_root / stage.stage_name
-                extracted_dir = download_and_extract_model_artifact(
-                    s3_uri=model_artifacts_s3_uri,
-                    target_dir=stage_dir,
-                    members=artifact_members_for_stage(stage),
-                )
-            if stage.tile_id and extracted_dir is not None:
-                extracted_stage_dirs[stage.tile_id] = extracted_dir
-            completed = summarize_training_metadata(stage.stage_name, extracted_dir or Path("/nonexistent"), describe_payload)
-            summary["completed_jobs"].append(completed)
-            completed_stage_outputs[stage.stage_name] = completed
+    def collect_completed_training_stage(stage: BenchmarkStage) -> None:
+        describe_payload = wait_for_training_job(submitted_stage_to_job[stage.stage_name], poll_seconds=args.poll_seconds)
+        model_artifacts_s3_uri = describe_payload.get("ModelArtifacts", {}).get("S3ModelArtifacts")
+        if not model_artifacts_s3_uri:
+            raise RuntimeError(f"Training job {stage.job_name} completed without model artifacts")
+        extracted_dir = None
+        if merge_root is not None:
+            stage_dir = merge_root / stage.stage_name
+            extracted_dir = download_and_extract_model_artifact(
+                s3_uri=model_artifacts_s3_uri,
+                target_dir=stage_dir,
+                members=artifact_members_for_stage(stage),
+            )
+        if stage.tile_id and extracted_dir is not None:
+            extracted_stage_dirs[stage.tile_id] = extracted_dir
+        completed = summarize_training_metadata(stage.stage_name, extracted_dir or Path("/nonexistent"), describe_payload)
+        summary["completed_jobs"].append(completed)
+        completed_stage_outputs[stage.stage_name] = completed
+
+    train_stages = [stage for stage in stages if stage.stage_type == "train"]
+    if args.orchestration_mode == "fanout" and args.wait:
+        for batch in fanout_execution_batches(train_stages, max_tile_concurrency=args.max_tile_concurrency):
+            for stage in batch:
+                submit_training_stage(stage)
+            for stage in batch:
+                collect_completed_training_stage(stage)
+    else:
+        for stage in train_stages:
+            submit_training_stage(stage)
 
     review_stage = next((stage for stage in stages if stage.stage_type == "review"), None)
     if args.wait and args.orchestration_mode != "fanout":
@@ -1259,23 +1778,7 @@ def main() -> int:
         for stage in stages:
             if stage.stage_type != "train":
                 continue
-            describe_payload = wait_for_training_job(submitted_stage_to_job[stage.stage_name], poll_seconds=args.poll_seconds)
-            model_artifacts_s3_uri = describe_payload.get("ModelArtifacts", {}).get("S3ModelArtifacts")
-            if not model_artifacts_s3_uri:
-                raise RuntimeError(f"Training job {stage.job_name} completed without model artifacts")
-            extracted_dir = None
-            if merge_root is not None:
-                stage_dir = merge_root / stage.stage_name
-                extracted_dir = download_and_extract_model_artifact(
-                    s3_uri=model_artifacts_s3_uri,
-                    target_dir=stage_dir,
-                    members=artifact_members_for_stage(stage),
-                )
-            if stage.tile_id and extracted_dir is not None:
-                extracted_stage_dirs[stage.tile_id] = extracted_dir
-            completed = summarize_training_metadata(stage.stage_name, extracted_dir or Path("/nonexistent"), describe_payload)
-            summary["completed_jobs"].append(completed)
-            completed_stage_outputs[stage.stage_name] = completed
+            collect_completed_training_stage(stage)
 
         if review_stage is not None:
             tiled_stage_output = completed_stage_outputs.get("T2_tiled_pipeline")
@@ -1298,6 +1801,9 @@ def main() -> int:
                 instance_type=args.review_instance_type,
                 volume_size_gb=args.review_volume_size_gb,
                 max_runtime_seconds=args.review_max_runtime_seconds,
+                review_camera_manifest_s3_uri=args.review_camera_manifest_s3_uri,
+                baseline_review_manifest_s3_uri=args.v18_review_manifest_s3_uri
+                or args.baseline_review_manifest_s3_uri,
             )
             with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as handle:
                 json.dump(review_payload, handle, indent=2)

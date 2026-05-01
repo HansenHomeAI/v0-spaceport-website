@@ -123,6 +123,33 @@ def load_module_with_stubs():
 
 
 class TiledNerfStudioDispatcherTests(unittest.TestCase):
+    def test_trainer_uses_sagemaker_checkpoint_dir_when_enabled(self):
+        module = load_module_with_stubs()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config_path = root / "config.yml"
+            config_path.write_text("{}", encoding="utf-8")
+            checkpoint_dir = root / "checkpoints"
+            output_dir = root / "model"
+
+            original_environ = module.os.environ.copy()
+            try:
+                module.os.environ.clear()
+                module.os.environ.update(
+                    {
+                        "SM_MODEL_DIR": str(output_dir),
+                        "TRAINING_ENABLE_CHECKPOINTS": "true",
+                        "TRAINING_CHECKPOINT_DIR": str(checkpoint_dir),
+                    }
+                )
+                trainer = module.NerfStudioTrainer(str(config_path))
+            finally:
+                module.os.environ.clear()
+                module.os.environ.update(original_environ)
+
+            self.assertEqual(trainer.temp_dir, checkpoint_dir / "nerfstudio_training")
+            self.assertTrue(trainer.temp_dir.exists())
+
     def test_apply_training_proof_profile_defaults_sets_low_memory_defaults(self):
         module = load_module_with_stubs()
         config = {"training": {"max_iterations": 12000}}
