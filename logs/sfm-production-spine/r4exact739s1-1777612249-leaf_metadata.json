@@ -1,0 +1,158 @@
+[
+  {
+    "chunk_index": 0,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 320,
+    "registered_count": 320,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 2349,
+    "points3d_count": 226547,
+    "points_per_registered_image": 707.96,
+    "timings_sec": {
+      "mapper_initial": 6555.42
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  },
+  {
+    "chunk_index": 1,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 320,
+    "registered_count": 320,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 2451,
+    "points3d_count": 235914,
+    "points_per_registered_image": 737.23,
+    "timings_sec": {
+      "mapper_initial": 1658.33
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  },
+  {
+    "chunk_index": 2,
+    "status": "retried",
+    "mapper_mode": "incremental",
+    "image_count": 167,
+    "registered_count": 68,
+    "registered_ratio": 0.356,
+    "core_registered_ratio": 0.3833,
+    "verified_pair_count": 2451,
+    "points3d_count": 54997,
+    "points_per_registered_image": 808.78,
+    "timings_sec": {
+      "mapper_initial": 538.28,
+      "mapper_recovery": 817.36
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": [
+      "bounded_chunk_recovery",
+      "seam_only_leaf_seed"
+    ]
+  },
+  {
+    "chunk_index": 3,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 320,
+    "registered_count": 320,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 2550,
+    "points3d_count": 235822,
+    "points_per_registered_image": 736.94,
+    "timings_sec": {
+      "mapper_initial": 1316.2
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  },
+  {
+    "chunk_index": 4,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 320,
+    "registered_count": 320,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 2550,
+    "points3d_count": 219211,
+    "points_per_registered_image": 685.03,
+    "timings_sec": {
+      "mapper_initial": 2105.87
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  },
+  {
+    "chunk_index": 5,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 320,
+    "registered_count": 320,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 2550,
+    "points3d_count": 227343,
+    "points_per_registered_image": 710.45,
+    "timings_sec": {
+      "mapper_initial": 1357.22
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  },
+  {
+    "chunk_index": 6,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 320,
+    "registered_count": 320,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 2550,
+    "points3d_count": 253117,
+    "points_per_registered_image": 790.99,
+    "timings_sec": {
+      "mapper_initial": 1614.31
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  },
+  {
+    "chunk_index": 7,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 320,
+    "registered_count": 320,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 2550,
+    "points3d_count": 254142,
+    "points_per_registered_image": 794.19,
+    "timings_sec": {
+      "mapper_initial": 1332.8
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  }
+]

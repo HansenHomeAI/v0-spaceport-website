@@ -1,24 +1,28 @@
 {
-  "branch": "agent-73948216-sfm-production-spine",
-    "head": "36d33e15e8b5344286b5c18956d5b6320ea62c58",
-  "proof_job_head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
-  "mode": "distributed_chunked_v1",
-  "dataset": "md1 representative subsets, R3 ladder_1000 proof, and active R4 ladder_2000 exact retry",
   "baseline_mature": {
     "job": "md1p24e752k-1776314974",
-    "registered": 2157,
-    "total": 2157,
     "points": 1633948,
-    "runtime_sec": 36033.85
+    "registered": 2157,
+    "runtime_sec": 36033.85,
+    "total": 2157
   },
   "baseline_stock_hierarchical": {
     "job": "stockhier2000fix-1776973734",
-    "registered": 1830,
-    "total": 2013,
     "points": 243102,
-    "runtime_sec": 12249.67
+    "registered": 1830,
+    "runtime_sec": 12249.67,
+    "total": 2013
   },
+  "block_reasons": [
+    "R4 exact 2157 proof passed its registration, density, runtime, sparse/0, reducer, and pipeline-viewer gates, but final promotion still requires R5 huge-acreage proof.",
+    "R5 Meadow huge-acreage job r5meadow739-1777643311 is active and has not produced terminal metrics, sparse/0, reducer metadata, or viewer proof yet."
+  ],
+  "branch": "agent-73948216-sfm-production-spine",
   "candidate": {
+    "fallbacks_used": [
+      "bounded_chunk_recovery",
+      "seam_only_leaf_seed"
+    ],
     "jobs": [
       "r1cross739x2-1777513705",
       "r1geom739-1777502427",
@@ -26,291 +30,739 @@
       "r2leaf739c0-1777517712",
       "r2leaf739c1-1777517712",
       "r3lad1000a739-1777554908",
-            "r4c0t739-1777579549",
-            "r4exact739-1777570477",
-            "r4exact739x2-1777587765",
-            "r4exact739s1-1777612249"
+      "r4c0t739-1777579549",
+      "r4exact739-1777570477",
+      "r4exact739s1-1777612249",
+      "r4exact739x2-1777587765",
+      "r5meadow739-1777643311"
     ],
-    "registered": 1079,
-    "total": 1079,
-    "points": 851843,
-    "points_per_registered_image": 789.47,
-    "runtime_sec": 14363.12,
     "merged_component_count": 1,
-    "fallbacks_used": [],
-    "sparse0_uri": "s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap/sparse/0/",
-    "pipeline_viewer_url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/pipeline-viewer?url=s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap"
+    "pipeline_viewer_url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fr4exact739s1-1777612249%2Fcolmap",
+    "points": 1708813,
+    "points_per_registered_image": 792.22,
+    "registered": 2157,
+    "runtime_sec": 26614.34,
+    "sparse0_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/sparse/0/",
+    "total": 2157
   },
+  "dataset": "md1 representative subsets, R3 ladder_1000 proof, R4 exact 2157 proof, and active R5 Meadow huge-acreage proof",
   "decision": "needs_more_proof",
-  "block_reasons": [
-    "R0, R1, R2, and R3 passed, but R4 exact 2157-image proof has not passed yet.",
-    "First R4 exact attempt r4exact739-1777570477 failed at chunk_00_mapper_initial after the 2700s mapper timeout with no sparse/0.",
-    "Bounded R4 chunk_00 retry r4c0t739-1777579549 passed terminal Completed with 320/320 registered, 238876 raw points, 746.49 pts/image, and sparse/0.",
-        "Full exact 2157-image R4 retry r4exact739x2-1777587765 failed at merge: metadata exists, but sparse/0 is missing and reducer reports merged_component_count=2 where expected_component_count=1.",
-        "R4 seam-only retry r4exact739s1-1777612249 is running; terminal merged metrics and viewer proof are not yet available.",
-        "R5 huge-acreage proof has not run."
-  ],
+  "head": "2f740363e98219db393200196e05dd49d7d9641a",
+  "mode": "distributed_chunked_v1",
+  "proof_job_head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
   "r1_summary": {
-    "geometry_mix": {
-      "job": "r1geom739-1777502427",
-      "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1probesnap-1775766965/colmap/probes/geometry_mix.zip",
-      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r1geom739-1777502427/colmap",
-      "registered": 467,
-      "total": 467,
-      "points": 320022,
-      "points_per_registered_image": 685.27,
-      "runtime_sec": 4204.54,
-      "sparse0": true
-    },
-    "horizon_context": {
-      "job": "r1horiz739-1777502427",
-      "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1probesnap-1775766965/colmap/probes/horizon_context.zip",
-      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r1horiz739-1777502427/colmap",
-      "registered": 467,
-      "total": 467,
-      "points": 334417,
-      "points_per_registered_image": 716.1,
-      "runtime_sec": 4194.59,
-      "sparse0": true
-    },
     "cross_pass": {
-      "job": "r1cross739x2-1777513705",
       "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1probesnap-1775766965/colmap/probes/cross_pass.zip",
+      "job": "r1cross739x2-1777513705",
       "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r1cross739x2-1777513705/colmap",
-      "registered": 485,
-      "total": 485,
       "points": 325930,
       "points_per_registered_image": 672.02,
+      "registered": 485,
       "runtime_sec": 3713.95,
-      "sparse0": true
+      "sparse0": true,
+      "total": 485
+    },
+    "geometry_mix": {
+      "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1probesnap-1775766965/colmap/probes/geometry_mix.zip",
+      "job": "r1geom739-1777502427",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r1geom739-1777502427/colmap",
+      "points": 320022,
+      "points_per_registered_image": 685.27,
+      "registered": 467,
+      "runtime_sec": 4204.54,
+      "sparse0": true,
+      "total": 467
+    },
+    "horizon_context": {
+      "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1probesnap-1775766965/colmap/probes/horizon_context.zip",
+      "job": "r1horiz739-1777502427",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r1horiz739-1777502427/colmap",
+      "points": 334417,
+      "points_per_registered_image": 716.1,
+      "registered": 467,
+      "runtime_sec": 4194.59,
+      "sparse0": true,
+      "total": 467
     }
   },
   "r2_summary": {
-    "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1probesnap-1775766965/colmap/probes/cross_pass.zip",
-    "leaf_count": 2,
-    "passed_leaf_count": 2,
-    "failed_leaf_count": 0,
+    "aggregate_points": 366699,
     "aggregate_registered": 540,
     "aggregate_total": 540,
-    "aggregate_points": 366699,
-    "weighted_points_per_registered_image": 679.07,
+    "failed_leaf_count": 0,
+    "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1probesnap-1775766965/colmap/probes/cross_pass.zip",
+    "leaf_count": 2,
     "parallel_wall_runtime_sec": 2768.0,
+    "passed_leaf_count": 2,
+    "promotion_blockers": [],
     "standard_sparse0_exists": true,
-    "promotion_blockers": []
+    "weighted_points_per_registered_image": 679.07
   },
   "r3_summary": {
-    "job": "r3lad1000a739-1777554908",
     "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p27eba1k-1776107310/colmap/ladders/ladder_1000.zip",
+    "job": "r3lad1000a739-1777554908",
     "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap",
-    "registered": 1079,
-    "total": 1079,
+    "pipeline_viewer_proof": "logs/sfm-production-spine/pipeline-viewer-preview-r3-desktop.png",
     "points": 851843,
     "points_per_registered_image": 789.47,
+    "registered": 1079,
     "runtime_sec": 14363.12,
     "sparse0": true,
-    "pipeline_viewer_proof": "logs/sfm-production-spine/pipeline-viewer-preview-r3-desktop.png"
+    "total": 1079
   },
   "r4_status": {
-    "first_exact_job": "r4exact739-1777570477",
-    "first_exact_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739-1777570477/colmap",
-    "first_exact_result": "failed: chunk_00_mapper_initial timed out after 2700s at 171/320 registered frames; no sparse/0",
-    "bounded_chunk_retry_job": "r4c0t739-1777579549",
-    "bounded_chunk_retry_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4c0t739-1777579549/colmap",
-    "bounded_chunk_retry_result": "terminal Completed: ladder_2000 chunk_00 only with 7200s chunk/bridge mapper timeouts passed with 320/320 registered, 238876 raw points, 746.49 pts/image, leaf status passed, reducer standard_sparse0_exists=true, promotion_blockers=[], sparse/0 exists",
-    "active_exact_retry_job": "r4exact739x2-1777587765",
-    "active_exact_retry_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739x2-1777587765/colmap",
-        "active_exact_retry_latest_progress": "Runtime failed at merge at 2026-05-01T04:53:11Z after chunks 00, 01, 03, 04, 05, 06, and 07 passed full 320/320 models and chunk_02 adjacent rerun passed 431/447; final pending stages chunk_00_mapper_initial and chunk_model_merger_05_output_attempt_01 had no overlapping registered images. S3 metadata exists but sparse/0 is missing; stop requested at 2026-05-01T05:01:20Z after stale InProgress control-plane state; current status Stopping/no FailureReason.",
     "active_exact_retry_chunk00_full_run": {
-      "status": "passed",
-      "registered": 320,
-      "total": 320,
-      "points": 227004,
       "mapper_runtime_min": 54.438,
+      "points": 227004,
+      "registered": 320,
+      "status": "passed",
+      "total": 320,
       "warnings": "nonterminal COLMAP linear-solver warnings observed"
     },
+    "active_exact_retry_chunk01_02_adjacent_merge_progress": {
+      "image_count": 447,
+      "latest_log_time": "2026-05-01T02:25:37Z",
+      "merge_quality_risk": "secondary 16-image model must be resolved in later merge/reducer metadata before R4 can pass",
+      "models": [
+        {
+          "model": 0,
+          "points": 321534,
+          "registered": 431,
+          "total": 447
+        },
+        {
+          "model": 1,
+          "points": 10372,
+          "registered": 16,
+          "total": 447
+        }
+      ],
+      "status": "completed_split",
+      "verified_pair_count": 3388
+    },
     "active_exact_retry_chunk01_progress": {
-      "status": "passed",
-      "verified_pair_count": 2451,
-      "registered": 320,
-      "total": 320,
-      "points": 234491,
+      "latest_log_time": "2026-05-01T01:17:12Z",
       "mapper_runtime_min": 24.327,
-      "latest_log_time": "2026-05-01T01:17:12Z"
+      "points": 234491,
+      "registered": 320,
+      "status": "passed",
+      "total": 320,
+      "verified_pair_count": 2451
     },
     "active_exact_retry_chunk02_progress": {
-      "status": "adjacent_rerun_completed_split",
-      "initial_verified_pair_count": 1257,
+      "adjacent_rerun_models": [
+        {
+          "model": 0,
+          "points": 321534,
+          "registered": 431,
+          "total": 447
+        },
+        {
+          "model": 1,
+          "points": 10372,
+          "registered": 16,
+          "total": 447
+        }
+      ],
       "initial_models": [
         "96/167 images, 78174 points",
         "16/167 images, 10330 points",
         "12/167 images, 5271 points",
         "51/167 images, 39491 points"
       ],
-      "recovery_verified_pair_count": 1466,
+      "initial_verified_pair_count": 1257,
+      "latest_log_time": "2026-05-01T02:25:37Z",
       "recovery_registered_latest": 431,
-      "latest_log_time": "2026-05-01T02:25:37Z",
-      "warnings": "adjacent final local rerun advanced the runtime but produced a 431/447 plus 16/447 split; reducer/merge metadata must prove the split is resolved or honestly report it",
-      "adjacent_rerun_models": [
-        {
-          "model": 0,
-          "registered": 431,
-          "total": 447,
-          "points": 321534
-        },
-        {
-          "model": 1,
-          "registered": 16,
-          "total": 447,
-          "points": 10372
-        }
-      ]
+      "recovery_verified_pair_count": 1466,
+      "status": "adjacent_rerun_completed_split",
+      "warnings": "adjacent final local rerun advanced the runtime but produced a 431/447 plus 16/447 split; reducer/merge metadata must prove the split is resolved or honestly report it"
     },
-    "active_exact_retry_chunk01_02_adjacent_merge_progress": {
-      "status": "completed_split",
-      "image_count": 447,
-      "verified_pair_count": 3388,
-      "models": [
-        {
-          "model": 0,
-          "registered": 431,
-          "total": 447,
-          "points": 321534
-        },
-        {
-          "model": 1,
-          "registered": 16,
-          "total": 447,
-          "points": 10372
-        }
-      ],
-      "latest_log_time": "2026-05-01T02:25:37Z",
-      "merge_quality_risk": "secondary 16-image model must be resolved in later merge/reducer metadata before R4 can pass"
-    },
-    "duplicate_exact_retry_cleanup": "r4exact739t-1777588010 is a non-canonical duplicate; terminal Stopped at 2026-04-30T22:29:24.397Z",
     "active_exact_retry_chunk03_progress": {
-      "status": "passed_full_model",
-      "verified_pair_count": 2550,
-      "selected_model": 1,
-      "registered": 320,
-      "total": 320,
-      "points": 235960,
-      "mapper_runtime_min": 21.499,
-      "secondary_models": [
-        {
-          "model": 0,
-          "registered": 3,
-          "total": 320,
-          "points": 3693
-        }
-      ],
-      "latest_log_time": "2026-05-01T02:47:03Z",
       "fallbacks_observed": [
         "COLMAP structure-less registration attempts"
       ],
-      "sagemaker_status": "InProgress",
+      "latest_log_time": "2026-05-01T02:47:03Z",
+      "mapper_runtime_min": 21.499,
+      "points": 235960,
+      "registered": 320,
+      "s3_output_objects": 0,
       "sagemaker_failure_reason": null,
-      "s3_output_objects": 0
+      "sagemaker_status": "InProgress",
+      "secondary_models": [
+        {
+          "model": 0,
+          "points": 3693,
+          "registered": 3,
+          "total": 320
+        }
+      ],
+      "selected_model": 1,
+      "status": "passed_full_model",
+      "total": 320,
+      "verified_pair_count": 2550
     },
     "active_exact_retry_chunk04_progress": {
-      "status": "passed",
-      "verified_pair_count": 2506,
-      "registered": 320,
-      "total": 320,
-      "points": 223294,
-      "mapper_runtime_min": 45.749,
       "latest_log_time": "2026-05-01T03:35:04Z",
-      "warnings": "one earlier nonterminal COLMAP linear-solver warning observed",
-      "sagemaker_status": "InProgress",
+      "mapper_runtime_min": 45.749,
+      "points": 223294,
+      "registered": 320,
+      "s3_output_objects": 0,
       "sagemaker_failure_reason": null,
-      "s3_output_objects": 0
+      "sagemaker_status": "InProgress",
+      "status": "passed",
+      "total": 320,
+      "verified_pair_count": 2506,
+      "warnings": "one earlier nonterminal COLMAP linear-solver warning observed"
     },
     "active_exact_retry_chunk05_progress": {
-      "status": "passed",
-      "verified_pair_count": 2433,
-      "registered": 320,
-      "total": 320,
-      "points": 227653,
-      "mapper_runtime_min": 21.586,
       "latest_log_time": "2026-05-01T03:58:44Z",
-      "sagemaker_status": "InProgress",
+      "mapper_runtime_min": 21.586,
+      "points": 227653,
+      "registered": 320,
+      "s3_output_objects": 0,
       "sagemaker_failure_reason": null,
-      "s3_output_objects": 0
+      "sagemaker_status": "InProgress",
+      "status": "passed",
+      "total": 320,
+      "verified_pair_count": 2433
     },
     "active_exact_retry_chunk06_progress": {
-      "status": "passed",
-      "verified_pair_count": 2510,
-      "registered": 320,
-      "total": 320,
-      "points": 252727,
-      "mapper_runtime_min": 26.577,
       "latest_log_time": "2026-05-01T04:27:23Z",
-      "sagemaker_status": "InProgress",
+      "mapper_runtime_min": 26.577,
+      "points": 252727,
+      "registered": 320,
+      "s3_output_objects": 0,
       "sagemaker_failure_reason": null,
-      "s3_output_objects": 0
+      "sagemaker_status": "InProgress",
+      "status": "passed",
+      "total": 320,
+      "verified_pair_count": 2510
     },
     "active_exact_retry_chunk07_progress": {
-            "status": "passed",
-            "verified_pair_count": 2422,
-            "registered_latest": 320,
-            "total": 320,
-            "points": 255192,
-            "latest_registration_log_time": "2026-05-01T04:50:08Z",
-            "sagemaker_status": "InProgress",
-            "sagemaker_failure_reason": null,
-            "s3_output_objects": 0
-        },
-        "active_exact_retry_merge_progress": {
-            "status": "failed",
-            "latest_merge": "chunk_model_merger_01",
-            "input_models": [
-                "chunk_06 320/320 images, 252727 points",
-                "chunk_07 320/320 images, 255192 points"
-            ],
-            "merged_images": 580,
-            "merged_points": 465314,
-            "latest_log_time": "2026-05-01T04:50:20Z",
-            "sagemaker_status": "InProgress",
-            "sagemaker_failure_reason": null,
-            "s3_output_objects": 0
-        },
-        "active_exact_retry_failure": {
-            "failure_stage": "pipeline",
-            "failure_reason_detail": "Failed to merge chunk models: no overlapping registered images produced a usable merge among pending stages ['chunk_00_mapper_initial', 'chunk_model_merger_05_output_attempt_01']",
-            "leaf_count": 9,
-            "passed_leaf_count": 8,
-            "failed_leaf_count": 1,
-            "merged_component_count": 2,
-            "expected_component_count": 1,
-            "standard_sparse0_exists": false,
-            "promotion_blockers": [
-                "failed_leaf",
-                "missing_sparse0",
-                "unexpected_component_split",
-                "merge_retention_below_gate"
-            ],
-            "s3_metadata_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739x2-1777587765/colmap",
-            "sparse0": false,
-            "next_experiment": "retry R4 exact with COLMAP_PARENT_MERGE_MODE=seam_only_v1 instead of legacy_rerun after SageMaker reaches terminal Stopped/Failed status"
-        },
-        "active_seam_retry_job": {
-            "job": "r4exact739s1-1777612249",
-            "input_uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
-            "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap",
-            "branch_head": "36d33e15e8b5344286b5c18956d5b6320ea62c58",
-            "proof_code_head_env": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
-            "status": "InProgress with ProcessingStartTime 2026-05-01T05:11:33Z; CloudWatch stream r4exact739s1-1777612249/algo-1-1777612292 live; startup verified Tesla T4/15GiB, input zip 12.8GB, extracted 2157 images, detected 2157 GPS/orientation priors, feature extraction reached 192/2157 by 2026-05-01T05:27:25Z",
-            "mode": "distributed_chunked_v1",
-            "parent_merge_mode": "seam_only_v1",
-            "seam_frontier_max_images": 256,
-            "seam_frontier_retry_max_images": 480,
-            "parent_seam_retry_pair_cap": 24,
-            "chunk_bridge_recovery_max_images": 720,
-            "submitted_at": "2026-05-01T05:10:50Z",
-            "processing_start_time": "2026-05-01T05:11:33Z",
-            "cloudwatch_stream": "r4exact739s1-1777612249/algo-1-1777612292",
-            "latest_log_time": "2026-05-01T05:27:25Z",
-            "s3_output_objects": 0,
-            "parallel_hardening_ready_for_next_retry": "bounded source-chunk pending merge bridge recovery implemented locally and verified with 102 GPS-prior unit tests; current running job still uses branch head 36d33e15e8b5344286b5c18956d5b6320ea62c58"
+      "latest_registration_log_time": "2026-05-01T04:50:08Z",
+      "points": 255192,
+      "registered_latest": 320,
+      "s3_output_objects": 0,
+      "sagemaker_failure_reason": null,
+      "sagemaker_status": "InProgress",
+      "status": "passed",
+      "total": 320,
+      "verified_pair_count": 2422
+    },
+    "active_exact_retry_failure": {
+      "expected_component_count": 1,
+      "failed_leaf_count": 1,
+      "failure_reason_detail": "Failed to merge chunk models: no overlapping registered images produced a usable merge among pending stages ['chunk_00_mapper_initial', 'chunk_model_merger_05_output_attempt_01']",
+      "failure_stage": "pipeline",
+      "leaf_count": 9,
+      "merged_component_count": 2,
+      "next_experiment": "retry R4 exact with COLMAP_PARENT_MERGE_MODE=seam_only_v1 instead of legacy_rerun after SageMaker reaches terminal Stopped/Failed status",
+      "passed_leaf_count": 8,
+      "promotion_blockers": [
+        "failed_leaf",
+        "missing_sparse0",
+        "unexpected_component_split",
+        "merge_retention_below_gate"
+      ],
+      "s3_metadata_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739x2-1777587765/colmap",
+      "sparse0": false,
+      "standard_sparse0_exists": false
+    },
+    "active_exact_retry_job": "r4exact739x2-1777587765",
+    "active_exact_retry_latest_progress": "Terminal Failed with AlgorithmError exit code 1 after runtime merge failure at 2026-05-01T04:53:11Z. Chunks 00, 01, 03, 04, 05, 06, and 07 passed full 320/320 models and chunk_02 adjacent rerun passed 431/447; final pending stages chunk_00_mapper_initial and chunk_model_merger_05_output_attempt_01 had no overlapping registered images. S3 metadata exists but sparse/0 is missing.",
+    "active_exact_retry_merge_progress": {
+      "input_models": [
+        "chunk_06 320/320 images, 252727 points",
+        "chunk_07 320/320 images, 255192 points"
+      ],
+      "latest_log_time": "2026-05-01T04:50:20Z",
+      "latest_merge": "chunk_model_merger_01",
+      "merged_images": 580,
+      "merged_points": 465314,
+      "s3_output_objects": 0,
+      "sagemaker_failure_reason": null,
+      "sagemaker_status": "InProgress",
+      "status": "failed"
+    },
+    "active_exact_retry_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739x2-1777587765/colmap",
+    "active_seam_retry_job": {
+      "branch_head": "36d33e15e8b5344286b5c18956d5b6320ea62c58",
+      "chunk00_result": {
+        "mapper_runtime_min": 109.23,
+        "points": 226547,
+        "registered": 320,
+        "status": "passed",
+        "total": 320,
+        "verified_pair_count": 2349
+      },
+      "chunk01_progress": {
+        "latest_log_time": "2026-05-01T09:04:42Z",
+        "mapper_runtime_min": 27.617,
+        "points": 235914,
+        "registered": 320,
+        "status": "passed",
+        "total": 320,
+        "verified_pair_count": 2451
+      },
+      "chunk02_progress": {
+        "initial_core_registered": 60,
+        "initial_core_total": 120,
+        "initial_models": [
+          {
+            "model": 0,
+            "points": 78174,
+            "registered": 96,
+            "total": 167
+          },
+          {
+            "model": 1,
+            "points": 736,
+            "registered": 13,
+            "total": 167
+          },
+          {
+            "model": 2,
+            "points": 4213,
+            "registered": 11,
+            "total": 167
+          },
+          {
+            "model": 3,
+            "points": 38594,
+            "registered": 51,
+            "total": 167
+          }
+        ],
+        "initial_verified_pair_count": 1257,
+        "latest_log_time": "2026-05-01T09:30:38Z",
+        "recovery_best_registered": 68,
+        "recovery_core_registered": 46,
+        "recovery_core_total": 120,
+        "recovery_models": [
+          {
+            "model": 0,
+            "points": 1,
+            "registered": 7,
+            "total": 191
+          },
+          {
+            "model": 1,
+            "points": 5055,
+            "registered": 16,
+            "total": 191
+          },
+          {
+            "model": 2,
+            "points": 49269,
+            "registered": 68,
+            "total": 191
+          },
+          {
+            "model": 3,
+            "points": 54997,
+            "registered": 68,
+            "total": 191
+          },
+          {
+            "model": 4,
+            "points": 32070,
+            "registered": 38,
+            "total": 191
+          },
+          {
+            "model": 5,
+            "points": 32258,
+            "registered": 42,
+            "total": 191
+          },
+          {
+            "model": 6,
+            "points": 24510,
+            "registered": 25,
+            "total": 191
+          },
+          {
+            "model": 7,
+            "points": 16641,
+            "registered": 23,
+            "total": 191
+          }
+        ],
+        "recovery_verified_pair_count": 1459,
+        "status": "below_gate_carried_as_seam_seed",
+        "warnings": "recovery stayed below standard threshold and was carried as a seam-only leaf seed; reducer must report this honestly and promotion is blocked unless later seam/merge output resolves the gap with evidence"
+      },
+      "chunk03_progress": {
+        "latest_log_time": "2026-05-01T09:54:37Z",
+        "mapper_runtime_min": 21.915,
+        "points": 235822,
+        "registered": 320,
+        "s3_output_objects": 0,
+        "sagemaker_failure_reason": null,
+        "sagemaker_status": "InProgress",
+        "status": "passed",
+        "total": 320,
+        "verified_pair_count": 2550
+      },
+      "chunk04_progress": {
+        "latest_log_time": "2026-05-01T10:31:57Z",
+        "mapper_runtime_min": 35.073,
+        "points": 219211,
+        "registered": 320,
+        "s3_output_objects": 0,
+        "sagemaker_failure_reason": null,
+        "sagemaker_status": "InProgress",
+        "status": "passed",
+        "total": 320,
+        "verified_pair_count": 2506
+      },
+      "chunk05_progress": {
+        "latest_log_time": "2026-05-01T10:56:38Z",
+        "mapper_runtime_min": 22.598,
+        "points": 227343,
+        "registered": 320,
+        "s3_output_objects": 0,
+        "sagemaker_failure_reason": null,
+        "sagemaker_status": "InProgress",
+        "status": "passed",
+        "total": 320,
+        "verified_pair_count": 2433
+      },
+      "chunk06_progress": {
+        "latest_log_time": "2026-05-01T11:25:34Z",
+        "mapper_runtime_min": 26.882,
+        "points": 253117,
+        "registered": 320,
+        "s3_output_objects": 0,
+        "sagemaker_failure_reason": null,
+        "sagemaker_status": "InProgress",
+        "status": "passed",
+        "total": 320,
+        "verified_pair_count": 2510
+      },
+      "chunk07_progress": {
+        "latest_log_time": "2026-05-01T11:49:53Z",
+        "mapper_runtime_min": 22.189,
+        "points": 254142,
+        "registered": 320,
+        "s3_output_objects": 0,
+        "sagemaker_failure_reason": null,
+        "sagemaker_status": "InProgress",
+        "status": "passed",
+        "total": 320,
+        "verified_pair_count": 2422
+      },
+      "chunk_bridge_recovery_max_images": 720,
+      "cloudwatch_stream": "r4exact739s1-1777612249/algo-1-1777612292",
+      "input_uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+      "job": "r4exact739s1-1777612249",
+      "latest_log_time": "2026-05-01T12:36:23Z",
+      "merge_progress": {
+        "active_stage": "chunk_model_seam_04_point_triangulator_02",
+        "active_stage_triangulated_images": 455,
+        "active_stage_verified_pairs": 6406,
+        "latest_event": "extracting colors",
+        "latest_log_time": "2026-05-01T12:36:23Z",
+        "latest_merges": [
+          {
+            "images": 640,
+            "points": 567296,
+            "result": "succeeded",
+            "source": "chunk_03 plus seam-refined chunk_00/01 output",
+            "stage": "chunk_model_merger_02",
+            "time": "2026-05-01T12:24:31Z"
+          },
+          {
+            "images": 580,
+            "points": 464697,
+            "result": "succeeded",
+            "source": "chunk_06 plus chunk_07",
+            "stage": "chunk_model_merger_03",
+            "time": "2026-05-01T12:24:54Z"
+          },
+          {
+            "images": 363,
+            "points": 264582,
+            "result": "succeeded",
+            "source": "chunk_01 plus chunk_02 recovery model 3",
+            "stage": "chunk_model_merger_04",
+            "time": "2026-05-01T12:25:13Z"
+          }
+        ],
+        "s3_output_objects": 0,
+        "sagemaker_failure_reason": null,
+        "sagemaker_status": "InProgress",
+        "status": "seam_refinement_in_progress"
+      },
+      "mode": "distributed_chunked_v1",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap",
+      "parallel_hardening_ready_for_next_retry": "bounded source-chunk pending merge bridge recovery pushed as 2f740363e98219db393200196e05dd49d7d9641a, verified with 102 GPS-prior unit tests, and built into ECR digest sha256:b0d08817a8548ae9aaae0eec4d680db485a5c81301c511b7c6e19f9a54532b49; current running job still uses launched branch head 36d33e15e8b5344286b5c18956d5b6320ea62c58",
+      "parent_merge_mode": "seam_only_v1",
+      "parent_seam_retry_pair_cap": 24,
+      "processing_start_time": "2026-05-01T05:11:33Z",
+      "proof_code_head_env": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
+      "s3_output_objects": 0,
+      "sagemaker_failure_reason": null,
+      "sagemaker_status": "InProgress",
+      "seam_frontier_max_images": 256,
+      "seam_frontier_retry_max_images": 480,
+      "status": "InProgress with ProcessingStartTime 2026-05-01T05:11:33Z; merge has produced chunk_model_merger_02 640 images/567296 points, chunk_model_merger_03 580 images/464697 points, and chunk_model_merger_04 363 images/264582 points; seam refinement 04 triangulated 455 images and reached extracting colors at 2026-05-01T12:36:23Z; terminal merged metrics and viewer proof are not available yet.",
+      "submitted_at": "2026-05-01T05:10:50Z"
+    },
+    "bounded_chunk_retry_job": "r4c0t739-1777579549",
+    "bounded_chunk_retry_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4c0t739-1777579549/colmap",
+    "bounded_chunk_retry_result": "terminal Completed: ladder_2000 chunk_00 only with 7200s chunk/bridge mapper timeouts passed with 320/320 registered, 238876 raw points, 746.49 pts/image, leaf status passed, reducer standard_sparse0_exists=true, promotion_blockers=[], sparse/0 exists",
+    "duplicate_exact_retry_cleanup": "r4exact739t-1777588010 is a non-canonical duplicate; terminal Stopped at 2026-04-30T22:29:24.397Z",
+    "first_exact_job": "r4exact739-1777570477",
+    "first_exact_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739-1777570477/colmap",
+    "first_exact_result": "failed: chunk_00_mapper_initial timed out after 2700s at 171/320 registered frames; no sparse/0"
+  },
+  "r4_summary": {
+    "artifacts": [
+      "logs/sfm-production-spine/r4exact739s1-1777612249-sfm_metadata.json",
+      "logs/sfm-production-spine/r4exact739s1-1777612249-leaf_metadata.json",
+      "logs/sfm-production-spine/r4exact739s1-1777612249-reducer_metadata.json",
+      "logs/sfm-production-spine/r4exact739s1-1777612249-planner_static_report.json",
+      "logs/sfm-production-spine/r4exact739s1-1777612249-chunk_planner_manifest.json",
+      "logs/sfm-production-spine/pipeline-viewer-r4-proof.json",
+      "logs/sfm-production-spine/pipeline-viewer-r4-dom-snapshot.md",
+      "logs/sfm-production-spine/pipeline-viewer-preview-r4-desktop.png",
+      "logs/sfm-production-spine/pipeline-viewer-preview-r4-canvas.png",
+      "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/sparse/0/"
+    ],
+    "branch": "agent-73948216-sfm-production-spine",
+    "compute_head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
+    "current_branch_head": "2f740363e98219db393200196e05dd49d7d9641a",
+    "gate_status": {
+      "leaf_gate_caveat": "chunk_02 leaf was below default leaf ratio but was explicitly retried/reported and final merged output registered all 2157 images",
+      "pipeline_viewer_gate": "passed",
+      "points_per_registered_image_gate": "passed",
+      "reducer_gate": "passed",
+      "registration_gate": "passed",
+      "runtime_gate": "passed_26.14_percent_faster_than_mature_36033.85s",
+      "sagemaker_terminal_status_gate": "passed",
+      "standard_sparse0_gate": "passed"
+    },
+    "job": {
+      "input_uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+      "instance_type": "ml.g4dn.xlarge",
+      "name": "r4exact739s1-1777612249",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap",
+      "processing_end_time": "2026-05-01T12:43:15.642Z",
+      "sagemaker_status": "Completed",
+      "volume_size_gb": 120
+    },
+    "leaf_metadata_summary": {
+      "fallbacks_used": [
+        "bounded_chunk_recovery",
+        "seam_only_leaf_seed"
+      ],
+      "leaf_count": 8,
+      "leaf_gate_caveats": [
+        {
+          "chunk_index": 2,
+          "core_registered_ratio": 0.3833,
+          "fallbacks_used": [
+            "bounded_chunk_recovery",
+            "seam_only_leaf_seed"
+          ],
+          "registered_ratio": 0.356,
+          "resolution": "final merged model registered all dataset images; fallback is explicitly reported and kept as R4 promotion caveat",
+          "status": "retried"
         }
+      ],
+      "leaf_statuses": [
+        {
+          "chunk_index": 0,
+          "core_registered_ratio": 1.0,
+          "fallbacks_used": [],
+          "image_count": 320,
+          "points3d_count": 226547,
+          "registered_count": 320,
+          "registered_ratio": 1.0,
+          "status": "passed"
+        },
+        {
+          "chunk_index": 1,
+          "core_registered_ratio": 1.0,
+          "fallbacks_used": [],
+          "image_count": 320,
+          "points3d_count": 235914,
+          "registered_count": 320,
+          "registered_ratio": 1.0,
+          "status": "passed"
+        },
+        {
+          "chunk_index": 2,
+          "core_registered_ratio": 0.3833,
+          "fallbacks_used": [
+            "bounded_chunk_recovery",
+            "seam_only_leaf_seed"
+          ],
+          "image_count": 167,
+          "points3d_count": 54997,
+          "registered_count": 68,
+          "registered_ratio": 0.356,
+          "status": "retried"
+        },
+        {
+          "chunk_index": 3,
+          "core_registered_ratio": 1.0,
+          "fallbacks_used": [],
+          "image_count": 320,
+          "points3d_count": 235822,
+          "registered_count": 320,
+          "registered_ratio": 1.0,
+          "status": "passed"
+        },
+        {
+          "chunk_index": 4,
+          "core_registered_ratio": 1.0,
+          "fallbacks_used": [],
+          "image_count": 320,
+          "points3d_count": 219211,
+          "registered_count": 320,
+          "registered_ratio": 1.0,
+          "status": "passed"
+        },
+        {
+          "chunk_index": 5,
+          "core_registered_ratio": 1.0,
+          "fallbacks_used": [],
+          "image_count": 320,
+          "points3d_count": 227343,
+          "registered_count": 320,
+          "registered_ratio": 1.0,
+          "status": "passed"
+        },
+        {
+          "chunk_index": 6,
+          "core_registered_ratio": 1.0,
+          "fallbacks_used": [],
+          "image_count": 320,
+          "points3d_count": 253117,
+          "registered_count": 320,
+          "registered_ratio": 1.0,
+          "status": "passed"
+        },
+        {
+          "chunk_index": 7,
+          "core_registered_ratio": 1.0,
+          "fallbacks_used": [],
+          "image_count": 320,
+          "points3d_count": 254142,
+          "registered_count": 320,
+          "registered_ratio": 1.0,
+          "status": "passed"
+        }
+      ]
+    },
+    "merge_proof": {
+      "chunk_model_count": 9,
+      "final_merged_registered_images": 2157,
+      "hierarchy_mode": "balanced_tree_v1",
+      "pre_merge_retention_ratio": 1.0,
+      "pre_merge_unique_registered_images": 2109,
+      "retained_registered_images": 2109,
+      "top_level_ba_image_threshold": 900,
+      "top_level_ba_mode": "below_threshold",
+      "top_level_ba_ran": false,
+      "top_level_ba_reason": "above_threshold:900"
+    },
+    "metrics": {
+      "dataset_image_count": 2157,
+      "metadata_points_3d": 1708813,
+      "metadata_points_per_registered_image": 792.22,
+      "processing_time_seconds": 26614.34,
+      "quality_check_passed": true,
+      "registered": 2157,
+      "registration_ratio": 1.0,
+      "runtime_improvement_vs_mature_percent": 26.14
+    },
+    "mode": "distributed_chunked_v1",
+    "notes": [
+      "R4 exact seam-only retry reached SageMaker Completed with no FailureReason and uploaded standard sparse/0.",
+      "Final merged model registers 2157/2157 images with 1708813 points and 792.22 pts/image.",
+      "Runtime 26614.34s is 26.14 percent faster than the mature 36033.85s baseline while exceeding the mature point count.",
+      "Global top-level BA was deferred above the 900-image threshold and recorded in metadata.",
+      "Chunk_02 leaf used bounded_chunk_recovery and seam_only_leaf_seed; this fallback is not hidden and final merge resolved to a single component."
+    ],
+    "planner": "footprint_graph_v1",
+    "planner_report": {
+      "candidate_pair_counts": {
+        "footprint": 18656,
+        "retrieval": 0,
+        "sequence": 21515,
+        "spatial": 72384
+      },
+      "chunk_count": 8,
+      "chunk_sizes": [
+        320,
+        320,
+        167,
+        320,
+        320,
+        320,
+        320,
+        320
+      ],
+      "connected_component_count": 1,
+      "dataset_image_count": 2157,
+      "estimated_leaf_jobs": 8,
+      "expected_output_kind": "single_merged_model",
+      "gps_coverage_ratio": 1.0,
+      "orientation_coverage_ratio": 1.0,
+      "orphan_image_count": 0,
+      "risky_bridges": [],
+      "selected_orientation_source": "exif",
+      "verified_pair_count": 11368
+    },
+    "reducer": {
+      "ba_policy": "local_or_deferred_global",
+      "branch": "agent-73948216-sfm-production-spine",
+      "expected_component_count": 1,
+      "failed_leaf_count": 0,
+      "head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
+      "input_uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+      "leaf_count": 8,
+      "merge_strategy": "overlap_first_balanced",
+      "merged_component_count": 1,
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap",
+      "passed_leaf_count": 8,
+      "planner_manifest": "chunk_planner_manifest.json",
+      "promotion_blockers": [],
+      "standard_sparse0_exists": true
+    },
+    "rung": "R4",
+    "updated": "2026-05-01T13:50:35Z",
+    "viewer_proof": {
+      "api_chunk_count": 8,
+      "api_exact_point_count": 1708813,
+      "api_registered_image_count": 2157,
+      "api_sampled_point_count": 18000,
+      "api_status": 200,
+      "canvas_count": 1,
+      "canvas_screenshot": "logs/sfm-production-spine/pipeline-viewer-preview-r4-canvas.png",
+      "console_messages": [],
+      "dom_summary": "18,000 / 1,708,813 points, 2,157 cameras, 8 chunks",
+      "page_errors": [],
+      "screenshot": "logs/sfm-production-spine/pipeline-viewer-preview-r4-desktop.png",
+      "screenshot_mean": 0.0352574,
+      "screenshot_stddev": 0.0517205,
+      "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fr4exact739s1-1777612249%2Fcolmap"
     }
+  },
+  "r5_summary": {
+    "baseline_prior_job": "meadowfullpriorfixv2-1775780246",
+    "baseline_prior_points": 940147,
+    "baseline_prior_registered": 1452,
+    "baseline_prior_runtime_sec": 26587.87,
+    "baseline_prior_total": 1456,
+    "branch_head": "2f740363e98219db393200196e05dd49d7d9641a",
+    "input_uri": "s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip",
+    "job": "r5meadow739-1777643311",
+    "next_gate": "terminal SageMaker status, parsed metadata, sparse/0, reducer metadata, and pipeline-viewer proof",
+    "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r5meadow739-1777643311/colmap",
+    "status": "active"
+  }
 }

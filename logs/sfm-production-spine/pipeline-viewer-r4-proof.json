@@ -1,0 +1,31 @@
+{
+  "title": "Pipeline Viewer",
+  "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fr4exact739s1-1777612249%2Fcolmap",
+  "inputValue": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap",
+  "stats": [
+    "18,000 / 1,708,813 points, 2,157 cameras, 8 chunks"
+  ],
+  "error": null,
+  "bodyText": "COLMAP OUTPUT\nLoad\nChunk color\nCameras\nPath\nPOINT SIZE\n\n18,000 / 1,708,813 points, 2,157 cameras, 8 chunks",
+  "canvasCount": 1,
+  "canvases": [
+    {
+      "width": 1440,
+      "height": 1000
+    }
+  ],
+  "hasHeader": false,
+  "hasFooter": false,
+  "apiResponses": [
+    {
+      "status": 200,
+      "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sfm-preview?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fr4exact739s1-1777612249%2Fcolmap"
+    }
+  ],
+  "consoleMessages": [],
+  "pageErrors": [],
+  "screenshots": {
+    "desktop": "logs/sfm-production-spine/pipeline-viewer-preview-r4-desktop.png",
+    "canvas": "logs/sfm-production-spine/pipeline-viewer-preview-r4-canvas.png"
+  }
+}

@@ -1,0 +1,235 @@
+{
+  "artifacts": [
+    "logs/sfm-production-spine/r4exact739s1-1777612249-sfm_metadata.json",
+    "logs/sfm-production-spine/r4exact739s1-1777612249-leaf_metadata.json",
+    "logs/sfm-production-spine/r4exact739s1-1777612249-reducer_metadata.json",
+    "logs/sfm-production-spine/r4exact739s1-1777612249-planner_static_report.json",
+    "logs/sfm-production-spine/r4exact739s1-1777612249-chunk_planner_manifest.json",
+    "logs/sfm-production-spine/pipeline-viewer-r4-proof.json",
+    "logs/sfm-production-spine/pipeline-viewer-r4-dom-snapshot.md",
+    "logs/sfm-production-spine/pipeline-viewer-preview-r4-desktop.png",
+    "logs/sfm-production-spine/pipeline-viewer-preview-r4-canvas.png",
+    "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/sparse/0/"
+  ],
+  "branch": "agent-73948216-sfm-production-spine",
+  "compute_head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
+  "current_branch_head": "2f740363e98219db393200196e05dd49d7d9641a",
+  "gate_status": {
+    "leaf_gate_caveat": "chunk_02 leaf was below default leaf ratio but was explicitly retried/reported and final merged output registered all 2157 images",
+    "pipeline_viewer_gate": "passed",
+    "points_per_registered_image_gate": "passed",
+    "reducer_gate": "passed",
+    "registration_gate": "passed",
+    "runtime_gate": "passed_26.14_percent_faster_than_mature_36033.85s",
+    "sagemaker_terminal_status_gate": "passed",
+    "standard_sparse0_gate": "passed"
+  },
+  "job": {
+    "input_uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+    "instance_type": "ml.g4dn.xlarge",
+    "name": "r4exact739s1-1777612249",
+    "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap",
+    "processing_end_time": "2026-05-01T12:43:15.642Z",
+    "sagemaker_status": "Completed",
+    "volume_size_gb": 120
+  },
+  "leaf_metadata_summary": {
+    "fallbacks_used": [
+      "bounded_chunk_recovery",
+      "seam_only_leaf_seed"
+    ],
+    "leaf_count": 8,
+    "leaf_gate_caveats": [
+      {
+        "chunk_index": 2,
+        "core_registered_ratio": 0.3833,
+        "fallbacks_used": [
+          "bounded_chunk_recovery",
+          "seam_only_leaf_seed"
+        ],
+        "registered_ratio": 0.356,
+        "resolution": "final merged model registered all dataset images; fallback is explicitly reported and kept as R4 promotion caveat",
+        "status": "retried"
+      }
+    ],
+    "leaf_statuses": [
+      {
+        "chunk_index": 0,
+        "core_registered_ratio": 1.0,
+        "fallbacks_used": [],
+        "image_count": 320,
+        "points3d_count": 226547,
+        "registered_count": 320,
+        "registered_ratio": 1.0,
+        "status": "passed"
+      },
+      {
+        "chunk_index": 1,
+        "core_registered_ratio": 1.0,
+        "fallbacks_used": [],
+        "image_count": 320,
+        "points3d_count": 235914,
+        "registered_count": 320,
+        "registered_ratio": 1.0,
+        "status": "passed"
+      },
+      {
+        "chunk_index": 2,
+        "core_registered_ratio": 0.3833,
+        "fallbacks_used": [
+          "bounded_chunk_recovery",
+          "seam_only_leaf_seed"
+        ],
+        "image_count": 167,
+        "points3d_count": 54997,
+        "registered_count": 68,
+        "registered_ratio": 0.356,
+        "status": "retried"
+      },
+      {
+        "chunk_index": 3,
+        "core_registered_ratio": 1.0,
+        "fallbacks_used": [],
+        "image_count": 320,
+        "points3d_count": 235822,
+        "registered_count": 320,
+        "registered_ratio": 1.0,
+        "status": "passed"
+      },
+      {
+        "chunk_index": 4,
+        "core_registered_ratio": 1.0,
+        "fallbacks_used": [],
+        "image_count": 320,
+        "points3d_count": 219211,
+        "registered_count": 320,
+        "registered_ratio": 1.0,
+        "status": "passed"
+      },
+      {
+        "chunk_index": 5,
+        "core_registered_ratio": 1.0,
+        "fallbacks_used": [],
+        "image_count": 320,
+        "points3d_count": 227343,
+        "registered_count": 320,
+        "registered_ratio": 1.0,
+        "status": "passed"
+      },
+      {
+        "chunk_index": 6,
+        "core_registered_ratio": 1.0,
+        "fallbacks_used": [],
+        "image_count": 320,
+        "points3d_count": 253117,
+        "registered_count": 320,
+        "registered_ratio": 1.0,
+        "status": "passed"
+      },
+      {
+        "chunk_index": 7,
+        "core_registered_ratio": 1.0,
+        "fallbacks_used": [],
+        "image_count": 320,
+        "points3d_count": 254142,
+        "registered_count": 320,
+        "registered_ratio": 1.0,
+        "status": "passed"
+      }
+    ]
+  },
+  "merge_proof": {
+    "chunk_model_count": 9,
+    "final_merged_registered_images": 2157,
+    "hierarchy_mode": "balanced_tree_v1",
+    "pre_merge_retention_ratio": 1.0,
+    "pre_merge_unique_registered_images": 2109,
+    "retained_registered_images": 2109,
+    "top_level_ba_image_threshold": 900,
+    "top_level_ba_mode": "below_threshold",
+    "top_level_ba_ran": false,
+    "top_level_ba_reason": "above_threshold:900"
+  },
+  "metrics": {
+    "dataset_image_count": 2157,
+    "metadata_points_3d": 1708813,
+    "metadata_points_per_registered_image": 792.22,
+    "processing_time_seconds": 26614.34,
+    "quality_check_passed": true,
+    "registered": 2157,
+    "registration_ratio": 1.0,
+    "runtime_improvement_vs_mature_percent": 26.14
+  },
+  "mode": "distributed_chunked_v1",
+  "notes": [
+    "R4 exact seam-only retry reached SageMaker Completed with no FailureReason and uploaded standard sparse/0.",
+    "Final merged model registers 2157/2157 images with 1708813 points and 792.22 pts/image.",
+    "Runtime 26614.34s is 26.14 percent faster than the mature 36033.85s baseline while exceeding the mature point count.",
+    "Global top-level BA was deferred above the 900-image threshold and recorded in metadata.",
+    "Chunk_02 leaf used bounded_chunk_recovery and seam_only_leaf_seed; this fallback is not hidden and final merge resolved to a single component."
+  ],
+  "planner": "footprint_graph_v1",
+  "planner_report": {
+    "candidate_pair_counts": {
+      "footprint": 18656,
+      "retrieval": 0,
+      "sequence": 21515,
+      "spatial": 72384
+    },
+    "chunk_count": 8,
+    "chunk_sizes": [
+      320,
+      320,
+      167,
+      320,
+      320,
+      320,
+      320,
+      320
+    ],
+    "connected_component_count": 1,
+    "dataset_image_count": 2157,
+    "estimated_leaf_jobs": 8,
+    "expected_output_kind": "single_merged_model",
+    "gps_coverage_ratio": 1.0,
+    "orientation_coverage_ratio": 1.0,
+    "orphan_image_count": 0,
+    "risky_bridges": [],
+    "selected_orientation_source": "exif",
+    "verified_pair_count": 11368
+  },
+  "reducer": {
+    "ba_policy": "local_or_deferred_global",
+    "branch": "agent-73948216-sfm-production-spine",
+    "expected_component_count": 1,
+    "failed_leaf_count": 0,
+    "head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
+    "input_uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+    "leaf_count": 8,
+    "merge_strategy": "overlap_first_balanced",
+    "merged_component_count": 1,
+    "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap",
+    "passed_leaf_count": 8,
+    "planner_manifest": "chunk_planner_manifest.json",
+    "promotion_blockers": [],
+    "standard_sparse0_exists": true
+  },
+  "rung": "R4",
+  "updated": "2026-05-01T13:50:35Z",
+  "viewer_proof": {
+    "api_chunk_count": 8,
+    "api_exact_point_count": 1708813,
+    "api_registered_image_count": 2157,
+    "api_sampled_point_count": 18000,
+    "api_status": 200,
+    "canvas_count": 1,
+    "canvas_screenshot": "logs/sfm-production-spine/pipeline-viewer-preview-r4-canvas.png",
+    "console_messages": [],
+    "dom_summary": "18,000 / 1,708,813 points, 2,157 cameras, 8 chunks",
+    "page_errors": [],
+    "screenshot": "logs/sfm-production-spine/pipeline-viewer-preview-r4-desktop.png",
+    "screenshot_mean": 0.0352574,
+    "screenshot_stddev": 0.0517205,
+    "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fr4exact739s1-1777612249%2Fcolmap"
+  }
+}

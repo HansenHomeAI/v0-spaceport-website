@@ -1,0 +1,26 @@
+{
+  "baseline_context": {
+    "prior_input_uri": "s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip",
+    "prior_job": "meadowfullpriorfixv2-1775780246",
+    "prior_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/meadowfullpriorfixv2-1775780246/colmap",
+    "prior_pipeline": "colmap_gpu_spatial_heading_chunked",
+    "prior_points": 940147,
+    "prior_registered": 1452,
+    "prior_runtime_sec": 26587.87,
+    "prior_total": 1456
+  },
+  "branch": "agent-73948216-sfm-production-spine",
+  "branch_head": "2f740363e98219db393200196e05dd49d7d9641a",
+  "command": "python3 scripts/sfm/run_sfm_benchmark.py --branch agent-73948216-sfm-production-spine --mode chunked --input-s3-uri s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip --job-prefix r5meadow739 --instance-type ml.g4dn.xlarge --volume-size-gb 120 --image-tag agent73948216sfmproductionspine --env SFM_GIT_HEAD=2f740363e98219db393200196e05dd49d7d9641a --env COLMAP_PIPELINE_MODE=distributed_chunked_v1 --env COLMAP_CHUNK_PLANNER=footprint_graph_v1 --env COLMAP_MATCH_PROFILE=P3 --env COLMAP_CHUNK_TARGET_IMAGES=200 --env COLMAP_CHUNK_HARD_MAX_IMAGES=320 --env COLMAP_LEAF_TARGET_IMAGES=200 --env COLMAP_LEAF_HARD_CAP=320 --env COLMAP_PAIR_CAP_LOCAL=24 --env COLMAP_PAIR_CAP_REVISIT=10 --env COLMAP_PAIR_CAP_SEAM=10 --env COLMAP_PARENT_MERGE_MODE=seam_only_v1 --env COLMAP_SEAM_FRONTIER_MAX_IMAGES=256 --env COLMAP_SEAM_FRONTIER_RETRY_MAX_IMAGES=480 --env COLMAP_PARENT_SEAM_RETRY_PAIR_CAP=24 --env COLMAP_CHUNK_BRIDGE_RECOVERY_MAX_IMAGES=720 --env COLMAP_CHUNK_MAPPER_TIMEOUT_SECONDS=7200 --env COLMAP_BRIDGE_MAPPER_TIMEOUT_SECONDS=7200 --summary-json-output logs/sfm-production-spine/r5_meadow_full_submit.json",
+  "created": "2026-05-01T13:50:35Z",
+  "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine",
+  "input_s3_uri": "s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip",
+  "instance_type": "ml.g4dn.xlarge",
+  "job_name": "r5meadow739-1777643311",
+  "mode": "distributed_chunked_v1",
+  "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/r5meadow739-1777643311/colmap",
+  "planner": "footprint_graph_v1",
+  "rung": "R5",
+  "sagemaker_status_at_submit_check": "InProgress",
+  "volume_size_gb": 120
+}
