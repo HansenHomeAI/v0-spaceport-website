@@ -7079,6 +7079,58 @@ class ColmapPipeline:
             )
         return chunk_plans
 
+    def build_pending_merge_bridge_chunk_plans(
+        self,
+        *,
+        pending_models: Sequence[ModelSummary],
+        components: Sequence[Set[int]],
+    ) -> tuple[List[ChunkPlan], List[Set[int]], List[int]]:
+        chunk_plans: List[ChunkPlan] = []
+        bridge_components: List[Set[int]] = []
+        plan_model_indexes: List[int] = []
+        for component in components:
+            component_plan_indexes: Set[int] = set()
+            for model_index in sorted(component):
+                model = pending_models[model_index]
+                model_names = self.model_source_image_names(model)
+                model_name_set = set(model_names)
+                source_chunk_indexes = self.model_source_chunk_indexes(model)
+                split_plan_added = False
+                if source_chunk_indexes and self.chunk_plans_by_index:
+                    for source_chunk_index in source_chunk_indexes:
+                        source_plan = self.chunk_plans_by_index.get(source_chunk_index)
+                        if source_plan is None:
+                            continue
+                        source_names = self.sorted_capture_names(
+                            model_name_set.intersection(source_plan.image_names)
+                        )
+                        if not source_names:
+                            continue
+                        component_plan_indexes.add(len(chunk_plans))
+                        plan_model_indexes.append(model_index)
+                        chunk_plans.append(
+                            self.build_chunk_plan_from_image_names(
+                                index=source_chunk_index,
+                                image_names=source_names,
+                                source_chunk_indexes=[source_chunk_index],
+                            )
+                        )
+                        split_plan_added = True
+                if split_plan_added:
+                    continue
+                fallback_source_indexes = source_chunk_indexes or [model_index]
+                component_plan_indexes.add(len(chunk_plans))
+                plan_model_indexes.append(model_index)
+                chunk_plans.append(
+                    self.build_chunk_plan_from_image_names(
+                        index=min(fallback_source_indexes),
+                        image_names=model_names,
+                        source_chunk_indexes=fallback_source_indexes,
+                    )
+                )
+            bridge_components.append(component_plan_indexes)
+        return chunk_plans, bridge_components, plan_model_indexes
+
     def attempt_pending_merge_bridge_recovery(
         self,
         *,
@@ -7093,10 +7145,17 @@ class ColmapPipeline:
             registered_name_sets=registered_name_sets,
             components=components,
         )
-        pending_chunk_plans = self.build_pending_merge_chunk_plans(pending_models)
+        (
+            pending_chunk_plans,
+            bridge_components,
+            bridge_plan_model_indexes,
+        ) = self.build_pending_merge_bridge_chunk_plans(
+            pending_models=pending_models,
+            components=components,
+        )
         ranked_candidates = self.ranked_bridge_chunk_pairs(
             chunk_plans=pending_chunk_plans,
-            components=components,
+            components=bridge_components,
             excluded_pairs=excluded_pairs,
         )
         recovery_record: dict[str, object] = {
@@ -7120,6 +7179,8 @@ class ColmapPipeline:
         second_index = int(selected_candidate["second_index"])
         first_component = components[int(selected_candidate["first_component_index"])]
         second_component = components[int(selected_candidate["second_component_index"])]
+        first_model_index = bridge_plan_model_indexes[first_index]
+        second_model_index = bridge_plan_model_indexes[second_index]
         first_plan = pending_chunk_plans[first_index]
         second_plan = pending_chunk_plans[second_index]
         excluded_pairs.add(self.chunk_pair_source_key(first_plan, second_plan))
@@ -7144,12 +7205,30 @@ class ColmapPipeline:
         component_scope_image_names = self.sorted_capture_names(
             first_component_source_names.union(second_component_source_names)
         )
-        merged_source_chunk_indexes = sorted(
-            first_component_source_chunk_indexes.union(second_component_source_chunk_indexes)
+        bounded_scope_image_names = self.sorted_capture_names(
+            set(first_plan.image_names).union(second_plan.image_names)
         )
+        if len(component_scope_image_names) <= max(
+            self.chunk_bridge_recovery_max_images,
+            len(bounded_scope_image_names),
+        ):
+            bridge_scope_image_names = component_scope_image_names
+            bridge_scope_selection = "full_component_scope"
+            bridge_source_chunk_indexes = sorted(
+                first_component_source_chunk_indexes.union(second_component_source_chunk_indexes)
+            )
+        else:
+            bridge_scope_image_names = bounded_scope_image_names
+            bridge_scope_selection = "bounded_source_chunk_pair"
+            bridge_source_chunk_indexes = sorted(
+                set(first_plan.source_chunk_indexes or [first_plan.index]).union(
+                    second_plan.source_chunk_indexes or [second_plan.index]
+                )
+            )
+        merged_source_chunk_indexes = bridge_source_chunk_indexes
         merged_chunk_plan = self.build_chunk_plan_from_image_names(
             index=min(merged_source_chunk_indexes, default=min(first_plan.index, second_plan.index)),
-            image_names=component_scope_image_names,
+            image_names=bridge_scope_image_names,
             source_chunk_indexes=merged_source_chunk_indexes,
         )
         merged_stage_prefix = (
@@ -7159,7 +7238,9 @@ class ColmapPipeline:
         )
         recovery_record["status"] = "attempted"
         recovery_record["stage_prefix"] = merged_stage_prefix
-        recovery_record["scope_image_count"] = len(component_scope_image_names)
+        recovery_record["component_scope_image_count"] = len(component_scope_image_names)
+        recovery_record["scope_image_count"] = len(bridge_scope_image_names)
+        recovery_record["scope_selection"] = bridge_scope_selection
         recovery_record["required_image_count"] = len(
             {
                 image_name
@@ -7169,7 +7250,7 @@ class ColmapPipeline:
         )
         self.merge_bridge_recovery_triggered = True
 
-        seed_models = [pending_models[first_index], pending_models[second_index]]
+        seed_models = [pending_models[first_model_index], pending_models[second_model_index]]
         seed_models.sort(
             key=lambda model: bridge_model_sort_key(
                 model,
@@ -7190,8 +7271,8 @@ class ColmapPipeline:
             try:
                 candidate_model, _, _, _ = self.run_parent_seam_registration_with_retry(
                     seed_model=seed_model,
-                    left_source_names=self.sorted_capture_names(first_component_source_names),
-                    right_source_names=self.sorted_capture_names(second_component_source_names),
+                    left_source_names=first_plan.image_names,
+                    right_source_names=second_plan.image_names,
                     source_chunk_indexes=merged_chunk_plan.source_chunk_indexes or merged_source_chunk_indexes,
                     stage_prefix=f"{merged_stage_prefix}_seed_{seed_attempt:02d}",
                     dir_name=f"{merged_stage_prefix}_seed_{seed_attempt:02d}",
@@ -7203,7 +7284,7 @@ class ColmapPipeline:
                             for image_name in target_name_set
                         }
                     ),
-                    scope_image_names=component_scope_image_names,
+                    scope_image_names=bridge_scope_image_names,
                     run_final_bundle_adjustment=False,
                 )
             except RuntimeError as seam_error:

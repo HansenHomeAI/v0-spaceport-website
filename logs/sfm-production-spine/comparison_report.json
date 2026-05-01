@@ -1,6 +1,6 @@
 {
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "f7a5c017ad79bfa2fd008cc8ff9f10271dec0492",
+    "head": "36d33e15e8b5344286b5c18956d5b6320ea62c58",
   "proof_job_head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
   "mode": "distributed_chunked_v1",
   "dataset": "md1 representative subsets, R3 ladder_1000 proof, and active R4 ladder_2000 exact retry",
@@ -26,9 +26,10 @@
       "r2leaf739c0-1777517712",
       "r2leaf739c1-1777517712",
       "r3lad1000a739-1777554908",
-      "r4c0t739-1777579549",
-      "r4exact739-1777570477",
-      "r4exact739x2-1777587765"
+            "r4c0t739-1777579549",
+            "r4exact739-1777570477",
+            "r4exact739x2-1777587765",
+            "r4exact739s1-1777612249"
     ],
     "registered": 1079,
     "total": 1079,
@@ -46,7 +47,8 @@
     "First R4 exact attempt r4exact739-1777570477 failed at chunk_00_mapper_initial after the 2700s mapper timeout with no sparse/0.",
     "Bounded R4 chunk_00 retry r4c0t739-1777579549 passed terminal Completed with 320/320 registered, 238876 raw points, 746.49 pts/image, and sparse/0.",
         "Full exact 2157-image R4 retry r4exact739x2-1777587765 failed at merge: metadata exists, but sparse/0 is missing and reducer reports merged_component_count=2 where expected_component_count=1.",
-    "R5 huge-acreage proof has not run."
+        "R4 seam-only retry r4exact739s1-1777612249 is running; terminal merged metrics and viewer proof are not yet available.",
+        "R5 huge-acreage proof has not run."
   ],
   "r1_summary": {
     "geometry_mix": {
@@ -289,6 +291,26 @@
             "s3_metadata_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739x2-1777587765/colmap",
             "sparse0": false,
             "next_experiment": "retry R4 exact with COLMAP_PARENT_MERGE_MODE=seam_only_v1 instead of legacy_rerun after SageMaker reaches terminal Stopped/Failed status"
+        },
+        "active_seam_retry_job": {
+            "job": "r4exact739s1-1777612249",
+            "input_uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+            "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap",
+            "branch_head": "36d33e15e8b5344286b5c18956d5b6320ea62c58",
+            "proof_code_head_env": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
+            "status": "InProgress with ProcessingStartTime 2026-05-01T05:11:33Z; CloudWatch stream r4exact739s1-1777612249/algo-1-1777612292 live; startup verified Tesla T4/15GiB, input zip 12.8GB, extracted 2157 images, detected 2157 GPS/orientation priors, feature extraction reached 192/2157 by 2026-05-01T05:27:25Z",
+            "mode": "distributed_chunked_v1",
+            "parent_merge_mode": "seam_only_v1",
+            "seam_frontier_max_images": 256,
+            "seam_frontier_retry_max_images": 480,
+            "parent_seam_retry_pair_cap": 24,
+            "chunk_bridge_recovery_max_images": 720,
+            "submitted_at": "2026-05-01T05:10:50Z",
+            "processing_start_time": "2026-05-01T05:11:33Z",
+            "cloudwatch_stream": "r4exact739s1-1777612249/algo-1-1777612292",
+            "latest_log_time": "2026-05-01T05:27:25Z",
+            "s3_output_objects": 0,
+            "parallel_hardening_ready_for_next_retry": "bounded source-chunk pending merge bridge recovery implemented locally and verified with 102 GPS-prior unit tests; current running job still uses branch head 36d33e15e8b5344286b5c18956d5b6320ea62c58"
         }
     }
 }

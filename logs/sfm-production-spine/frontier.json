@@ -1,11 +1,21 @@
 {
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "f7a5c017ad79bfa2fd008cc8ff9f10271dec0492",
+    "head": "36d33e15e8b5344286b5c18956d5b6320ea62c58",
   "current_rung": "R4",
-    "current_goal": "Convert the R4 exact merge failure into the next bounded R4 retry after SageMaker terminal status settles.",
-  "last_command": "python3 scripts/sfm/run_sfm_benchmark.py --branch agent-73948216-sfm-production-spine --mode chunked --input-s3-uri s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip --job-prefix r4exact739x2 --instance-type ml.g4dn.xlarge --volume-size-gb 120 --image-tag agent73948216sfmproductionspine --subset-strategy md1_phase2_candidate_ladder_2000 --env SFM_GIT_HEAD=9f7bd89637c60f930eca1c14f1de340a14edfdf9 --env COLMAP_PIPELINE_MODE=distributed_chunked_v1 --env COLMAP_CHUNK_PLANNER=footprint_graph_v1 --env COLMAP_MATCH_PROFILE=P3 --env COLMAP_CHUNK_TARGET_IMAGES=200 --env COLMAP_CHUNK_HARD_MAX_IMAGES=320 --env COLMAP_LEAF_TARGET_IMAGES=200 --env COLMAP_LEAF_HARD_CAP=320 --env COLMAP_PAIR_CAP_LOCAL=24 --env COLMAP_PAIR_CAP_REVISIT=10 --env COLMAP_PAIR_CAP_SEAM=10 --env COLMAP_PARENT_MERGE_MODE=legacy_rerun --env COLMAP_INPUT_SUBSET_MANIFEST_URI=s3://spaceport-ml-processing-staging/manual-validations/md1p2dd70full-1776233149/colmap/chunk_planner_manifest.json --env COLMAP_INPUT_SUBSET_NAME=ladder_2000 --env COLMAP_CHUNK_MAPPER_TIMEOUT_SECONDS=7200 --env COLMAP_BRIDGE_MAPPER_TIMEOUT_SECONDS=7200 --summary-json-output logs/sfm-production-spine/r4_exact_2157_timeout_retry_submit.json",
-  "active_jobs": [
-    {
+    "current_goal": "Monitor the seam-only R4 exact retry through feature extraction, chunk gates, seam/merge recovery, sparse/0, and viewer proof.",
+    "last_command": "python3 scripts/sfm/run_sfm_benchmark.py --branch agent-73948216-sfm-production-spine --mode chunked --input-s3-uri s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip --job-prefix r4exact739s1 --instance-type ml.g4dn.xlarge --volume-size-gb 120 --image-tag agent73948216sfmproductionspine --subset-strategy md1_phase2_candidate_ladder_2000 --env SFM_GIT_HEAD=9f7bd89637c60f930eca1c14f1de340a14edfdf9 --env COLMAP_PIPELINE_MODE=distributed_chunked_v1 --env COLMAP_CHUNK_PLANNER=footprint_graph_v1 --env COLMAP_MATCH_PROFILE=P3 --env COLMAP_CHUNK_TARGET_IMAGES=200 --env COLMAP_CHUNK_HARD_MAX_IMAGES=320 --env COLMAP_LEAF_TARGET_IMAGES=200 --env COLMAP_LEAF_HARD_CAP=320 --env COLMAP_PAIR_CAP_LOCAL=24 --env COLMAP_PAIR_CAP_REVISIT=10 --env COLMAP_PAIR_CAP_SEAM=10 --env COLMAP_PARENT_MERGE_MODE=seam_only_v1 --env COLMAP_SEAM_FRONTIER_MAX_IMAGES=256 --env COLMAP_SEAM_FRONTIER_RETRY_MAX_IMAGES=480 --env COLMAP_PARENT_SEAM_RETRY_PAIR_CAP=24 --env COLMAP_CHUNK_BRIDGE_RECOVERY_MAX_IMAGES=720 --env COLMAP_INPUT_SUBSET_MANIFEST_URI=s3://spaceport-ml-processing-staging/manual-validations/md1p2dd70full-1776233149/colmap/chunk_planner_manifest.json --env COLMAP_INPUT_SUBSET_NAME=ladder_2000 --env COLMAP_CHUNK_MAPPER_TIMEOUT_SECONDS=7200 --env COLMAP_BRIDGE_MAPPER_TIMEOUT_SECONDS=7200 --summary-json-output logs/sfm-production-spine/r4_exact_2157_seam_retry_submit.json",
+    "active_jobs": [
+        {
+            "job_name": "r4exact739s1-1777612249",
+            "input_s3_uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+            "input_subset_manifest_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p2dd70full-1776233149/colmap/chunk_planner_manifest.json",
+            "input_subset_name": "ladder_2000",
+            "expected_image_count": 2157,
+            "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap",
+            "status": "Canonical seam-only full exact R4 retry submitted at 2026-05-01T05:10:50Z; SageMaker InProgress with ProcessingStartTime 2026-05-01T05:11:33Z and no FailureReason; CloudWatch stream r4exact739s1-1777612249/algo-1-1777612292 live; startup verified Tesla T4/15GiB, input zip 12.8GB, 2157 images extracted, 2157 GPS/orientation priors detected, feature extraction reached 192/2157 by 2026-05-01T05:27:25Z; COLMAP_PARENT_MERGE_MODE=seam_only_v1, seam frontier 256/480, parent seam retry pair cap 24, chunk bridge recovery max images 720.",
+            "created": "2026-05-01T05:10:50Z"
+        },
+        {
       "job_name": "r4exact739x2-1777587765",
       "input_s3_uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
       "input_subset_manifest_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p2dd70full-1776233149/colmap/chunk_planner_manifest.json",
@@ -74,7 +84,8 @@
     "logs/sfm-production-spine/r3lad1000a739-1777554908-reducer_metadata.json",
     "logs/sfm-production-spine/r3lad1000a739-1777554908-sfm_metadata.json",
     "logs/sfm-production-spine/r4_chunk0_timeout_retry_submit.json",
-    "logs/sfm-production-spine/r4_exact_2157_submit.json",
+        "logs/sfm-production-spine/r4_exact_2157_submit.json",
+        "logs/sfm-production-spine/r4_exact_2157_seam_retry_submit.json",
         "logs/sfm-production-spine/r4_exact_2157_timeout_retry_submit.json",
         "logs/sfm-production-spine/r4exact739x2-1777587765-chunk_planner_manifest.json",
         "logs/sfm-production-spine/r4exact739x2-1777587765-leaf_metadata.json",
@@ -97,9 +108,10 @@
     "s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap",
     "s3://spaceport-ml-processing-staging/manual-validations/r3lad1000a739-1777554852/colmap/sparse/0/",
     "s3://spaceport-ml-processing-staging/manual-validations/r4c0t739-1777579549/colmap",
-    "s3://spaceport-ml-processing-staging/manual-validations/r4c0t739-1777579549/colmap/sparse/0/",
-    "s3://spaceport-ml-processing-staging/manual-validations/r4exact739-1777570477/colmap",
-    "s3://spaceport-ml-processing-staging/manual-validations/r4exact739x2-1777587765/colmap"
+        "s3://spaceport-ml-processing-staging/manual-validations/r4c0t739-1777579549/colmap/sparse/0/",
+        "s3://spaceport-ml-processing-staging/manual-validations/r4exact739-1777570477/colmap",
+        "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap",
+        "s3://spaceport-ml-processing-staging/manual-validations/r4exact739x2-1777587765/colmap"
   ],
   "last_metrics": {
     "r0_unit_tests": "python3 -m unittest tests.unit.test_colmap_gps_priors: 101 tests OK",
@@ -183,14 +195,20 @@
         "r4_exact_retry_merge_progress": "running: chunk_model_merger_01 merged chunk_06+07 into 580 images and 465314 points at 2026-05-01T04:50:20Z; monitor remaining merge/reducer metadata and sparse/0"
         ,
         "r4_exact_retry_failed_merge": "r4exact739x2-1777587765 failed promotion: chunk_model_merger_05 merged to 1828 images and 1356837 points, but final merge with chunk_00_mapper_initial had no registered-image overlap; reducer leaf_count=9 passed_leaf_count=8 failed_leaf_count=1 merged_component_count=2 expected_component_count=1 standard_sparse0_exists=false promotion_blockers=[failed_leaf, missing_sparse0, unexpected_component_split, merge_retention_below_gate]",
-        "r4_next_experiment": "launch R4 exact retry with COLMAP_PARENT_MERGE_MODE=seam_only_v1 instead of the legacy_rerun override after r4exact739x2 reaches terminal Stopped/Failed status"
+        "r4_next_experiment": "launched r4exact739s1-1777612249 with COLMAP_PARENT_MERGE_MODE=seam_only_v1 instead of the legacy_rerun override; monitor startup and seam merge gates",
+        "r4_seam_retry_job": "r4exact739s1-1777612249 submitted at 2026-05-01T05:10:50Z; branch_head=36d33e15e8b5344286b5c18956d5b6320ea62c58; proof code env SFM_GIT_HEAD=9f7bd89637c60f930eca1c14f1de340a14edfdf9; output=s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap; SageMaker InProgress with ProcessingStartTime 2026-05-01T05:11:33Z; CloudWatch stream r4exact739s1-1777612249/algo-1-1777612292 live",
+        "r4_seam_retry_startup": "startup verified at 2026-05-01T05:20:45Z: Tesla T4/15GiB, input zip 12.8GB, extracted 2157 images, detected 2157 GPS and 2157 orientation priors, prepared 2157 image list, feature_extractor started and reached 192/2157 images by 2026-05-01T05:27:25Z; S3 output empty before EndOfJob upload",
+        "r4_merge_bridge_hardening": "implemented bounded source-chunk candidate planning for pending merge bridge recovery so a large final component can choose a <=COLMAP_CHUNK_BRIDGE_RECOVERY_MAX_IMAGES original chunk-pair bridge instead of failing candidate selection on the whole component union; preserves full component scope for small components",
+        "r4_merge_bridge_hardening_validation": "python3 -m py_compile infrastructure/containers/sfm/run_colmap_sfm.py scripts/sfm/run_sfm_benchmark.py passed; python3 -m unittest tests.unit.test_colmap_gps_priors ran 102 tests OK",
+        "current_head_cdk_run": "CDK Deploy 25203149310 for 36d33e15e8b5344286b5c18956d5b6320ea62c58 completed success at 2026-05-01T05:19:06Z"
   },
   "promotion_status": "blocked",
   "blockers": [
     "R4 exact first attempt failed because chunk_00_mapper_initial hit the 2700s mapper timeout before sparse/0 was produced.",
         "R4 exact retry r4exact739x2-1777587765 failed at merge: metadata exists, but sparse/0 is missing and reducer reports merged_component_count=2 where expected_component_count=1.",
+        "R4 seam-only retry r4exact739s1-1777612249 is running; terminal merged metrics and viewer proof are not yet available.",
     "R5 huge-acreage proof has not run."
   ],
-    "next_unblocked_step": "wait for r4exact739x2-1777587765 terminal Stopped/Failed status, then launch the next R4 exact retry with seam-only parent merge enabled instead of the legacy rerun override so bridge/seam recovery can preserve merge overlap; do not run R5 until R4 exact is green and recorded.",
-    "updated": "2026-05-01T05:01:20Z"
+    "next_unblocked_step": "monitor r4exact739s1-1777612249 for its CloudWatch log stream/startup, feature extraction, chunk gates, seam/merge recovery, reducer metadata, sparse/0, terminal SageMaker status, and pipeline-viewer proof if it passes; keep r4exact739x2 only until terminal Stopped/Failed; do not run R5 until R4 exact is green and recorded.",
+    "updated": "2026-05-01T05:35:38Z"
 }

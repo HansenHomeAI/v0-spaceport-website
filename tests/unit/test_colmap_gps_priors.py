@@ -4286,6 +4286,92 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 "chunk_model_component_bridge_04_00_02_seed_01",
             )
 
+    def test_attempt_pending_merge_bridge_recovery_bounds_large_component_scope_to_source_pair(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.chunk_planner = "footprint_graph_v1"
+            pipeline.parent_merge_mode = "seam_only_v1"
+            pipeline.chunk_bridge_recovery_max_images = 6
+            pipeline.capture_ordered_names = [f"IMG_{index:02d}.jpg" for index in range(12)]
+            pipeline.exif_records = {name: {} for name in pipeline.capture_ordered_names}
+            pipeline.chunk_plans_by_index = {
+                chunk_index: pipeline.build_chunk_plan_from_image_names(
+                    index=chunk_index,
+                    image_names=pipeline.capture_ordered_names[chunk_index * 3 : chunk_index * 3 + 3],
+                    source_chunk_indexes=[chunk_index],
+                )
+                for chunk_index in range(4)
+            }
+            pipeline.chunk_cross_edge_counts[(0, 1)] = 5
+            pending_models = [
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_00_mapper_initial",
+                    text_dir=root / "chunk0_text",
+                    cameras_registered=1,
+                    images_registered=3,
+                    points_3d=100,
+                    binary_dir=root / "chunk0_bin",
+                    image_names=pipeline.capture_ordered_names[0:3],
+                    source_chunk_indexes=[0],
+                ),
+                run_colmap_sfm.ModelSummary(
+                    stage="chunk_model_merger_05_output_attempt_01",
+                    text_dir=root / "merged_text",
+                    cameras_registered=1,
+                    images_registered=9,
+                    points_3d=100,
+                    binary_dir=root / "merged_bin",
+                    image_names=pipeline.capture_ordered_names[3:12],
+                    source_chunk_indexes=[1, 2, 3],
+                ),
+            ]
+            connector_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_model_component_bridge_06_00_01_seed_01_point_triangulator_01",
+                text_dir=root / "connector_text",
+                cameras_registered=1,
+                images_registered=2,
+                points_3d=50,
+                binary_dir=root / "connector_bin",
+                image_names=pipeline.capture_ordered_names[0:6],
+                source_chunk_indexes=[0, 1],
+            )
+            registered_names_by_stage = {
+                "chunk_00_mapper_initial": set(pipeline.capture_ordered_names[0:3]),
+                "chunk_model_merger_05_output_attempt_01": set(pipeline.capture_ordered_names[3:12]),
+                connector_model.stage: {
+                    pipeline.capture_ordered_names[2],
+                    pipeline.capture_ordered_names[3],
+                },
+            }
+
+            with mock.patch.object(
+                pipeline,
+                "merged_image_names",
+                side_effect=lambda model: registered_names_by_stage[model.stage],
+            ), mock.patch.object(
+                pipeline,
+                "run_parent_seam_registration_with_retry",
+                return_value=(connector_model, pipeline.capture_ordered_names[2:4], False, "frontier_only"),
+            ) as seam_mock:
+                repaired_model, recovery_record = pipeline.attempt_pending_merge_bridge_recovery(
+                    pending_models=pending_models,
+                    registered_names_by_stage=registered_names_by_stage,
+                    merge_sequence=6,
+                    excluded_pairs=set(),
+                )
+
+            self.assertIs(repaired_model, connector_model)
+            self.assertEqual(recovery_record["status"], "connector_inserted")
+            self.assertEqual(recovery_record["component_scope_image_count"], 12)
+            self.assertEqual(recovery_record["scope_image_count"], 6)
+            self.assertEqual(recovery_record["scope_selection"], "bounded_source_chunk_pair")
+            self.assertEqual(recovery_record["selected_candidate"]["combined_image_count"], 6)
+            self.assertEqual(seam_mock.call_args.kwargs["left_source_names"], pipeline.capture_ordered_names[0:3])
+            self.assertEqual(seam_mock.call_args.kwargs["right_source_names"], pipeline.capture_ordered_names[3:6])
+            self.assertEqual(seam_mock.call_args.kwargs["scope_image_names"], pipeline.capture_ordered_names[0:6])
+            self.assertEqual(seam_mock.call_args.kwargs["source_chunk_indexes"], [0, 1])
+
     def test_attempt_pending_merge_bridge_recovery_allows_zero_signal_fallback_for_final_two_components(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
