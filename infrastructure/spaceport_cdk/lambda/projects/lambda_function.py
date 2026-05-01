@@ -5,7 +5,7 @@ import time
 import urllib.request
 from decimal import Decimal
 from typing import Any, Dict, Optional
-from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
+from urllib.parse import parse_qs, quote, urlencode, urlparse, urlunparse
 
 import boto3
 from botocore.config import Config
@@ -53,6 +53,11 @@ R2_ACCESS_KEY_ID = os.environ.get('R2_ACCESS_KEY_ID')
 R2_SECRET_ACCESS_KEY = os.environ.get('R2_SECRET_ACCESS_KEY')
 R2_BUCKET_NAME = os.environ.get('R2_BUCKET_NAME', 'spaces-viewers')
 R2_REGION = os.environ.get('R2_REGION', 'auto')
+R2_PUBLIC_BASE_URL = (os.environ.get('R2_PUBLIC_BASE_URL') or '').rstrip('/')
+
+MAX_STATIC_PHOTO_FILES = 500
+MAX_STATIC_PHOTO_SIZE_BYTES = 50 * 1024 * 1024
+STATIC_PHOTO_UPLOAD_EXPIRES_SECONDS = 15 * 60
 
 
 def _cors_headers() -> Dict[str, str]:
@@ -108,6 +113,113 @@ def _get_r2_client() -> Optional[Any]:
         aws_secret_access_key=R2_SECRET_ACCESS_KEY,
         config=Config(signature_version='s3v4'),
     )
+
+
+def _safe_key_segment(value: str) -> str:
+    cleaned = ''.join(ch for ch in str(value or '').strip() if ch not in '\x00\r\n')
+    if cleaned in ('', '.', '..'):
+        cleaned = 'untitled'
+    return quote(cleaned, safe='._-()')
+
+
+def _sanitize_relative_path(relative_path: str) -> str:
+    normalized = str(relative_path or '').replace('\\', '/').strip('/')
+    parts = []
+    for raw_part in normalized.split('/'):
+        part = raw_part.strip()
+        if not part or part in ('.', '..'):
+            continue
+        parts.append(_safe_key_segment(part))
+    if not parts:
+        parts.append('untitled')
+    return '/'.join(parts)
+
+
+def _build_static_photo_key(user_sub: str, project_id: str, relative_path: str) -> str:
+    return '/'.join([
+        'users',
+        _safe_key_segment(user_sub),
+        'projects',
+        _safe_key_segment(project_id),
+        'photos',
+        _sanitize_relative_path(relative_path),
+    ])
+
+
+def _public_url_for_key(object_key: str) -> str:
+    if not R2_PUBLIC_BASE_URL:
+        raise RuntimeError('R2_PUBLIC_BASE_URL is not configured for static photo uploads.')
+    return f"{R2_PUBLIC_BASE_URL}/{object_key}"
+
+
+def _validate_static_photo_request(files: Any) -> list[Dict[str, Any]]:
+    if not isinstance(files, list) or not files:
+        raise ValueError('files must be a non-empty list')
+    if len(files) > MAX_STATIC_PHOTO_FILES:
+        raise ValueError(f'files cannot exceed {MAX_STATIC_PHOTO_FILES} items')
+
+    validated = []
+    for index, file_info in enumerate(files):
+        if not isinstance(file_info, dict):
+            raise ValueError(f'files[{index}] must be an object')
+        name = (file_info.get('name') or '').strip()
+        relative_path = (file_info.get('relativePath') or name).strip()
+        content_type = (file_info.get('contentType') or 'application/octet-stream').strip()
+        size_bytes = int(file_info.get('sizeBytes') or 0)
+        if not name:
+            raise ValueError(f'files[{index}].name is required')
+        if not content_type.startswith('image/'):
+            raise ValueError(f'files[{index}] must be an image')
+        if size_bytes <= 0:
+            raise ValueError(f'files[{index}].sizeBytes must be positive')
+        if size_bytes > MAX_STATIC_PHOTO_SIZE_BYTES:
+            raise ValueError(f'files[{index}] exceeds the 50MB per-photo limit')
+        validated.append({
+            'name': name,
+            'relativePath': relative_path,
+            'contentType': content_type,
+            'sizeBytes': size_bytes,
+        })
+    return validated
+
+
+def _create_static_photo_upload_urls(user_sub: str, project_id: str, files: Any) -> Dict[str, Any]:
+    client = _get_r2_client()
+    if not client:
+        raise RuntimeError('R2 is not configured for static photo uploads.')
+    if not R2_PUBLIC_BASE_URL:
+        raise RuntimeError('R2_PUBLIC_BASE_URL is not configured for static photo uploads.')
+
+    validated_files = _validate_static_photo_request(files)
+    results = []
+    for file_info in validated_files:
+        object_key = _build_static_photo_key(
+            user_sub=user_sub,
+            project_id=project_id,
+            relative_path=file_info['relativePath'],
+        )
+        upload_url = client.generate_presigned_url(
+            'put_object',
+            Params={
+                'Bucket': R2_BUCKET_NAME,
+                'Key': object_key,
+                'ContentType': file_info['contentType'],
+            },
+            ExpiresIn=STATIC_PHOTO_UPLOAD_EXPIRES_SECONDS,
+        )
+        results.append({
+            **file_info,
+            'objectKey': object_key,
+            'publicUrl': _public_url_for_key(object_key),
+            'uploadUrl': upload_url,
+        })
+
+    return {
+        'bucket': R2_BUCKET_NAME,
+        'publicBaseUrl': R2_PUBLIC_BASE_URL,
+        'expiresIn': STATIC_PHOTO_UPLOAD_EXPIRES_SECONDS,
+        'files': results,
+    }
 
 
 def _resolve_viewer_slug(project: Dict[str, Any]) -> Optional[str]:
@@ -344,6 +456,25 @@ def lambda_handler(event, context):
             items = res.get('Items', [])
             return _response(200, {'projects': items})
 
+        if method == 'POST' and project_id and path.endswith('/photo-upload-urls'):
+            res = table.get_item(Key={'userSub': user_sub, 'projectId': project_id})
+            project = res.get('Item')
+            if not project:
+                return _response(404, {'error': 'Not found'})
+
+            try:
+                upload_payload = _create_static_photo_upload_urls(
+                    user_sub=user_sub,
+                    project_id=project_id,
+                    files=body.get('files'),
+                )
+            except ValueError as exc:
+                return _response(400, {'error': str(exc)})
+            except RuntimeError as exc:
+                return _response(500, {'error': str(exc)})
+
+            return _response(200, upload_payload)
+
         if method == 'POST' and not project_id:
             # Create project
             import uuid
@@ -366,7 +497,7 @@ def lambda_handler(event, context):
         if method in ('PUT', 'PATCH') and project_id:
             # Update mutable fields
             update_fields = {}
-            for key in ('title', 'status', 'progress', 'params', 'upload', 'ml'):
+            for key in ('title', 'status', 'progress', 'params', 'upload', 'ml', 'photoLibrary'):
                 if key in body:
                     # Convert floats to Decimal for DynamoDB compatibility
                     update_fields[key] = convert_floats_to_decimal(body[key])

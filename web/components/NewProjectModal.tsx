@@ -18,6 +18,22 @@ type OptimizedParams = {
   formToTerrain: boolean;
 };
 
+type UploadMode = 'model_photos' | 'static_photos';
+
+type StaticPhotoFile = File & {
+  webkitRelativePath?: string;
+};
+
+type UploadedStaticPhoto = {
+  originalName: string;
+  relativePath: string;
+  contentType: string;
+  sizeBytes: number;
+  objectKey: string;
+  publicUrl: string;
+  uploadedAt: number;
+};
+
 function normalizeTerrainToggle(value: unknown): boolean {
   return value === true || value === "true";
 }
@@ -37,13 +53,13 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
   // Use centralized API configuration instead of hardcoded values
   const API_ENHANCED_BASE = buildApiUrl.dronePath.optimizeSpiral().replace('/api/optimize-spiral', '');
-  const API_UPLOAD = {
+  const API_UPLOAD = useMemo(() => ({
     START_UPLOAD: buildApiUrl.fileUpload.startUpload(),
     GET_PRESIGNED_URL: buildApiUrl.fileUpload.getPresignedUrl(),
     COMPLETE_UPLOAD: buildApiUrl.fileUpload.completeUpload(),
     SAVE_SUBMISSION: buildApiUrl.fileUpload.saveSubmission(),
     START_ML_PROCESSING: buildApiUrl.mlPipeline.startJob(),
-  } as const;
+  } as const), []);
 
   const CHUNK_SIZE = 64 * 1024 * 1024; // 64MB - industry standard for optimal speed/reliability balance
   const MAX_FILE_SIZE = 20 * 1024 * 1024 * 1024; // 20GB
@@ -65,6 +81,10 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [locationCityState, setLocationCityState] = useState<string>("");
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadMode, setUploadMode] = useState<UploadMode>('model_photos');
+  const [selectedStaticFiles, setSelectedStaticFiles] = useState<StaticPhotoFile[]>([]);
+  const [uploadedStaticPhotos, setUploadedStaticPhotos] = useState<UploadedStaticPhoto[]>([]);
+  const [copiedPhotoUrl, setCopiedPhotoUrl] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [uploadLoading, setUploadLoading] = useState<boolean>(false);
   const [mlLoading, setMlLoading] = useState<boolean>(false);
@@ -195,6 +215,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setUploadLoading(false);
     setMlLoading(false);
     setUploadStage('');
+    setUploadMode(project?.photoLibrary?.mode === 'static_photos' ? 'static_photos' : 'model_photos');
+    setSelectedFile(null);
+    setSelectedStaticFiles([]);
+    setUploadedStaticPhotos(Array.isArray(project?.photoLibrary?.files) ? project.photoLibrary.files : []);
+    setCopiedPhotoUrl(null);
     setOptimizedParamsWithLogging(null, 'Modal opened/reset');
     setDownloadingBatteries(new Set());
     setSetupOpen(true);
@@ -794,9 +819,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   }, [API_ENHANCED_BASE, projectTitle, downloadingBatteries]);
 
   // SIMPLE, ROBUST save function with rate limiting
-  const saveProject = useCallback(async () => {
+  const saveProject = useCallback(async (): Promise<string | null> => {
     // Prevent multiple simultaneous saves
-    if (isSaving) return;
+    if (isSaving) return currentProjectId;
     
     try {
       setIsSaving(true);
@@ -850,13 +875,19 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       if (!currentProjectId) {
         const data = await res.json().catch(() => ({} as any));
         const created = (data && (data.project || data)) as any;
-        if (created && created.projectId) setCurrentProjectId(created.projectId);
+        if (created && created.projectId) {
+          setCurrentProjectId(created.projectId);
+          onSaved?.();
+          return created.projectId;
+        }
       }
       
       onSaved?.();
+      return currentProjectId;
     } catch (e: any) {
       console.error('Save failed:', e);
       showSystemNotification('error', e?.message || 'Failed to save project');
+      return null;
     } finally {
       setIsSaving(false);
     }
@@ -887,10 +918,17 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     const hasBatteryData = Boolean(batteryMinutes || numBatteries);
     const hasAltitudeData = Boolean(minHeightFeet || maxHeightFeet);
     const hasTitleChange = projectTitle !== 'Untitled' && projectTitle.trim();
-    const hasUploadData = Boolean(propertyTitle.trim() || listingDescription.trim() || contactEmail.trim() || selectedFile);
+    const hasUploadData = Boolean(
+      propertyTitle.trim()
+      || listingDescription.trim()
+      || contactEmail.trim()
+      || selectedFile
+      || selectedStaticFiles.length > 0
+      || uploadMode === 'static_photos'
+    );
     
     return hasLocation || hasBatteryData || hasAltitudeData || hasTitleChange || hasUploadData;
-  }, [currentProjectId, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, projectTitle, propertyTitle, listingDescription, contactEmail, selectedFile, selectedCoords]);
+  }, [currentProjectId, addressSearch, batteryMinutes, numBatteries, minHeightFeet, maxHeightFeet, projectTitle, propertyTitle, listingDescription, contactEmail, selectedFile, selectedStaticFiles.length, selectedCoords, uploadMode]);
 
   // SIMPLE debounced save trigger
   const triggerSave = useCallback(() => {
@@ -1007,7 +1045,25 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     setSelectedFile(file);
   }, []);
 
+  const getStaticPhotoRelativePath = useCallback((file: StaticPhotoFile) => {
+    return file.webkitRelativePath || file.name;
+  }, []);
+
+  const onStaticFilesChosen = useCallback((files: FileList | File[] | null) => {
+    const imageFiles = Array.from(files || [])
+      .filter((file): file is StaticPhotoFile => file.type.startsWith('image/'));
+    setSelectedStaticFiles(imageFiles);
+    setUploadedStaticPhotos([]);
+    setCopiedPhotoUrl(null);
+  }, []);
+
   const validateUpload = useCallback(() => {
+    if (uploadMode === 'static_photos') {
+      if (selectedStaticFiles.length === 0) return 'Please select at least one image';
+      const tooLarge = selectedStaticFiles.find((file) => file.size > 50 * 1024 * 1024);
+      if (tooLarge) return `${tooLarge.name} exceeds the 50MB per-photo limit`;
+      return null;
+    }
     if (!propertyTitle.trim()) return 'Property title is required';
     if (!contactEmail.trim()) return 'Email address is required';
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1016,9 +1072,149 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     if (!selectedFile.name.toLowerCase().endsWith('.zip')) return 'Please upload a .zip file only';
     if (selectedFile.size > MAX_FILE_SIZE) return 'File size exceeds 20GB limit';
     return null;
-  }, [propertyTitle, contactEmail, selectedFile]);
+  }, [MAX_FILE_SIZE, contactEmail, propertyTitle, selectedFile, selectedStaticFiles, uploadMode]);
+
+  const copyPhotoUrl = useCallback(async (url: string) => {
+    await navigator.clipboard.writeText(url);
+    setCopiedPhotoUrl(url);
+    setTimeout(() => setCopiedPhotoUrl((current) => current === url ? null : current), 1800);
+  }, []);
+
+  const startStaticPhotoUpload = useCallback(async () => {
+    const validationError = validateUpload();
+    if (validationError) {
+      showSystemNotification('error', validationError);
+      return;
+    }
+
+    setUploadLoading(true);
+    setMlLoading(false);
+    setUploadProgress(0);
+    setUploadStage('Preparing photo upload...');
+    try {
+      const { Auth } = await import('aws-amplify');
+      const session = await Auth.currentSession();
+      const idToken = session.getIdToken().getJwtToken();
+      const apiEnv = process.env.NEXT_PUBLIC_PROJECTS_API_URL;
+      if (!apiEnv) throw new Error('Projects API URL is not configured');
+      const apiBase = apiEnv.replace(/\/$/, '');
+      const projectId = currentProjectId || await saveProject();
+      if (!projectId) throw new Error('Create or save the project before uploading photos');
+
+      const requestFiles = selectedStaticFiles.map((file) => ({
+        name: file.name,
+        relativePath: getStaticPhotoRelativePath(file),
+        contentType: file.type || 'application/octet-stream',
+        sizeBytes: file.size,
+      }));
+
+      const presignRes = await fetch(`${apiBase}/${encodeURIComponent(projectId)}/photo-upload-urls`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', Authorization: `Bearer ${idToken}` },
+        body: JSON.stringify({ files: requestFiles }),
+      });
+      if (!presignRes.ok) {
+        const message = await readApiErrorMessage(presignRes, `Photo upload setup failed: ${presignRes.status}`);
+        throw new Error(message);
+      }
+
+      const presigned = await presignRes.json();
+      const uploadTargets = Array.isArray(presigned.files) ? presigned.files : [];
+      if (uploadTargets.length !== selectedStaticFiles.length) {
+        throw new Error('Photo upload setup returned an unexpected file count');
+      }
+
+      const uploadedAt = Date.now();
+      const uploaded: UploadedStaticPhoto[] = [];
+      const uploadOne = async (index: number) => {
+        const file = selectedStaticFiles[index];
+        const target = uploadTargets[index];
+        const putRes = await fetch(target.uploadUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': target.contentType || file.type || 'application/octet-stream' },
+          body: file,
+        });
+        if (!putRes.ok) throw new Error(`Failed to upload ${file.name}: ${putRes.status}`);
+        uploaded[index] = {
+          originalName: file.name,
+          relativePath: getStaticPhotoRelativePath(file),
+          contentType: target.contentType || file.type || 'application/octet-stream',
+          sizeBytes: file.size,
+          objectKey: target.objectKey,
+          publicUrl: target.publicUrl,
+          uploadedAt,
+        };
+        setUploadProgress(((uploaded.filter(Boolean).length) / selectedStaticFiles.length) * 95);
+      };
+
+      setUploadStage(`Uploading ${selectedStaticFiles.length} photo${selectedStaticFiles.length === 1 ? '' : 's'}...`);
+      const maxConcurrentUploads = 6;
+      let nextIndex = 0;
+      const workers = Array.from({ length: Math.min(maxConcurrentUploads, selectedStaticFiles.length) }, async () => {
+        while (nextIndex < selectedStaticFiles.length) {
+          const index = nextIndex;
+          nextIndex += 1;
+          await uploadOne(index);
+        }
+      });
+      await Promise.all(workers);
+
+      const folderSet = new Set(uploaded.map((file) => {
+        const parts = file.relativePath.split('/').filter(Boolean);
+        parts.pop();
+        return parts.join('/') || 'Root';
+      }));
+      const photoLibrary = {
+        mode: 'static_photos',
+        bucket: presigned.bucket,
+        publicBaseUrl: presigned.publicBaseUrl,
+        folders: Array.from(folderSet).sort(),
+        files: uploaded,
+        uploadedAt,
+      };
+
+      setUploadStage('Saving photo library...');
+      const saveRes = await fetch(`${apiBase}/${encodeURIComponent(projectId)}`, {
+        method: 'PATCH',
+        headers: { 'content-type': 'application/json', Authorization: `Bearer ${idToken}` },
+        body: JSON.stringify({
+          status: 'photos_uploaded',
+          progress: 50,
+          photoLibrary,
+        }),
+      });
+      if (!saveRes.ok) {
+        const message = await readApiErrorMessage(saveRes, `Failed to save photo library: ${saveRes.status}`);
+        throw new Error(message);
+      }
+
+      setUploadProgress(100);
+      setUploadStage('Static photos uploaded');
+      setStatus('photos_uploaded');
+      setUploadedStaticPhotos(uploaded);
+      onSaved?.();
+      showSystemNotification('success', 'Static photos uploaded and linked to this project.');
+    } catch (e: any) {
+      showSystemNotification('error', e?.message || 'Static photo upload failed');
+    } finally {
+      setUploadLoading(false);
+      setTimeout(() => setUploadStage(''), 3000);
+    }
+  }, [
+    currentProjectId,
+    getStaticPhotoRelativePath,
+    onSaved,
+    saveProject,
+    selectedStaticFiles,
+    showSystemNotification,
+    validateUpload,
+  ]);
 
   const startUpload = useCallback(async () => {
+    if (uploadMode === 'static_photos') {
+      await startStaticPhotoUpload();
+      return;
+    }
     const validationError = validateUpload();
     if (validationError) {
       showSystemNotification('error', validationError);
@@ -1236,7 +1432,25 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       // Keep stage text visible for a few seconds after completion
       setTimeout(() => setUploadStage(''), 3000);
     }
-  }, [API_UPLOAD, CHUNK_SIZE, MAX_FILE_SIZE, propertyTitle, contactEmail, listingDescription, selectedFile, validateUpload]);
+  }, [
+    API_UPLOAD,
+    CHUNK_SIZE,
+    addressSearch,
+    batteryMinutes,
+    contactEmail,
+    formToTerrain,
+    listingDescription,
+    maxHeightFeet,
+    minHeightFeet,
+    numBatteries,
+    projectTitle,
+    propertyTitle,
+    selectedFile,
+    showSystemNotification,
+    startStaticPhotoUpload,
+    uploadMode,
+    validateUpload,
+  ]);
 
   if (!open) return null;
 
@@ -1544,14 +1758,97 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
             <div className="popup-section">
               <div className="category-outline">
                 <div className="popup-section">
-                  <div className="upload-zone" onClick={() => document.getElementById('fileInputHidden')?.click()} onDragOver={(e) => { e.preventDefault(); }} onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) onFileChosen(f); }}>
+                  <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                    <button
+                      type="button"
+                      onClick={() => setUploadMode('model_photos')}
+                      style={{
+                        padding: '10px 16px',
+                        borderRadius: 999,
+                        border: uploadMode === 'model_photos' ? '1px solid #60a5fa' : '1px solid rgba(255,255,255,0.2)',
+                        background: uploadMode === 'model_photos' ? 'rgba(96,165,250,0.18)' : 'transparent',
+                        color: '#fff',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      3D Model Photos
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setUploadMode('static_photos')}
+                      style={{
+                        padding: '10px 16px',
+                        borderRadius: 999,
+                        border: uploadMode === 'static_photos' ? '1px solid #60a5fa' : '1px solid rgba(255,255,255,0.2)',
+                        background: uploadMode === 'static_photos' ? 'rgba(96,165,250,0.18)' : 'transparent',
+                        color: '#fff',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Static Property Photos
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="category-outline">
+                <div className="popup-section">
+                  <div
+                    className="upload-zone"
+                    onClick={() => document.getElementById(uploadMode === 'static_photos' ? 'staticFilesInputHidden' : 'fileInputHidden')?.click()}
+                    onDragOver={(e) => { e.preventDefault(); }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      if (uploadMode === 'static_photos') {
+                        onStaticFilesChosen(e.dataTransfer.files);
+                        return;
+                      }
+                      const f = e.dataTransfer.files?.[0];
+                      if (f) onFileChosen(f);
+                    }}
+                  >
                     <div className="upload-icon"></div>
-                    {!selectedFile && <p>Upload .jpg photos as a .zip file</p>}
-                    {selectedFile && (
+                    {uploadMode === 'model_photos' && !selectedFile && <p>Upload .jpg photos as a .zip file</p>}
+                    {uploadMode === 'model_photos' && selectedFile && (
                       <p id="selectedFileDisplay">Selected file: <span id="selectedFileName">{selectedFile.name}</span> <span className="close-icon" onClick={(e) => { e.stopPropagation(); onFileChosen(null); }}>&times;</span></p>
                     )}
+                    {uploadMode === 'static_photos' && selectedStaticFiles.length === 0 && <p>Select image files or a folder</p>}
+                    {uploadMode === 'static_photos' && selectedStaticFiles.length > 0 && (
+                      <p id="selectedFileDisplay">
+                        Selected: <span id="selectedFileName">{selectedStaticFiles.length} photo{selectedStaticFiles.length === 1 ? '' : 's'}</span>
+                        <span className="close-icon" onClick={(e) => { e.stopPropagation(); onStaticFilesChosen(null); }}>&times;</span>
+                      </p>
+                    )}
                     <input id="fileInputHidden" type="file" accept=".zip" style={{ display: 'none' }} onChange={(e) => onFileChosen(e.target.files?.[0] || null)} />
+                    <input id="staticFilesInputHidden" type="file" accept="image/*" multiple style={{ display: 'none' }} onChange={(e) => onStaticFilesChosen(e.target.files)} />
+                    <input
+                      id="staticFolderInputHidden"
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      style={{ display: 'none' }}
+                      onChange={(e) => onStaticFilesChosen(e.target.files)}
+                      {...({ webkitdirectory: '', directory: '' } as any)}
+                    />
                   </div>
+                  {uploadMode === 'static_photos' && (
+                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>
+                      <button
+                        type="button"
+                        onClick={() => document.getElementById('staticFolderInputHidden')?.click()}
+                        style={{
+                          border: '1px solid rgba(255,255,255,0.22)',
+                          borderRadius: 999,
+                          background: 'rgba(255,255,255,0.06)',
+                          color: '#fff',
+                          padding: '8px 14px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Choose Folder
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -1573,7 +1870,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
               <div className="category-outline">
                 <div className="popup-section">
-                  <h4>Delivery Method</h4>
+                  <h4>{uploadMode === 'static_photos' ? 'Contact' : 'Delivery Method'}</h4>
                   <div className="input-row-popup">
                     <div className="popup-input-wrapper">
                       <span className="input-icon email"></span>
@@ -1607,7 +1904,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                   <div className="upload-button-container">
                     <button className={`upload-btn-with-icon${uploadLoading ? ' loading' : ''}`} onClick={startUpload} disabled={uploadLoading}>
                       <span className="upload-btn-icon"></span>
-                      {uploadLoading ? 'Uploading…' : mlLoading ? 'Starting ML…' : 'Upload'}
+                      {uploadLoading ? 'Uploading...' : mlLoading ? 'Starting ML...' : uploadMode === 'static_photos' ? 'Upload Photos' : 'Upload'}
                     </button>
                     <button className="cancel-btn-with-icon" disabled={uploadLoading} onClick={() => onClose()}>
                       <span className="cancel-btn-icon"></span>
@@ -1625,6 +1922,49 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                   </div>
                 </div>
               </div>
+
+              {uploadMode === 'static_photos' && uploadedStaticPhotos.length > 0 && (
+                <div className="category-outline">
+                  <div className="popup-section">
+                    <h4>Photo Links</h4>
+                    <div style={{ display: 'grid', gap: 8, maxHeight: 220, overflow: 'auto' }}>
+                      {uploadedStaticPhotos.map((photo) => (
+                        <div
+                          key={photo.objectKey}
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'minmax(0, 1fr) auto',
+                            gap: 8,
+                            alignItems: 'center',
+                            padding: '8px 10px',
+                            border: '1px solid rgba(255,255,255,0.12)',
+                            borderRadius: 8,
+                          }}
+                        >
+                          <div style={{ minWidth: 0 }}>
+                            <div style={{ color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{photo.relativePath}</div>
+                            <div style={{ color: 'rgba(255,255,255,0.58)', fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{photo.publicUrl}</div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => copyPhotoUrl(photo.publicUrl)}
+                            style={{
+                              border: '1px solid rgba(255,255,255,0.22)',
+                              borderRadius: 999,
+                              background: copiedPhotoUrl === photo.publicUrl ? 'rgba(74,222,128,0.18)' : 'rgba(255,255,255,0.06)',
+                              color: '#fff',
+                              padding: '7px 12px',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            {copiedPhotoUrl === photo.publicUrl ? 'Copied' : 'Copy URL'}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Error messages now shown as popups via toast state */}
             </div>

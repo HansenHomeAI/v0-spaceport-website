@@ -173,6 +173,7 @@ class AuthStack(Stack):
                 "R2_SECRET_ACCESS_KEY": os.environ.get(f"R2_SECRET_ACCESS_KEY_{suffix.upper()}", os.environ.get("R2_SECRET_ACCESS_KEY", "")),
                 "R2_BUCKET_NAME": os.environ.get(f"R2_BUCKET_NAME_{suffix.upper()}", os.environ.get("R2_BUCKET_NAME", "spaces-viewers")),
                 "R2_REGION": os.environ.get(f"R2_REGION_{suffix.upper()}", os.environ.get("R2_REGION", "auto")),
+                "R2_PUBLIC_BASE_URL": os.environ.get(f"R2_PUBLIC_BASE_URL_{suffix.upper()}", os.environ.get("R2_PUBLIC_BASE_URL", "")),
             },
         )
         # Allow the Lambda to read/write from the Projects table
@@ -270,6 +271,13 @@ class AuthStack(Stack):
         )
         proj_payment_session = proj_id.add_resource("payment-session")
         proj_payment_session.add_method(
+            "POST",
+            apigw.LambdaIntegration(projects_lambda),
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=projects_authorizer
+        )
+        proj_photo_upload_urls = proj_id.add_resource("photo-upload-urls")
+        proj_photo_upload_urls.add_method(
             "POST",
             apigw.LambdaIntegration(projects_lambda),
             authorization_type=apigw.AuthorizationType.COGNITO,

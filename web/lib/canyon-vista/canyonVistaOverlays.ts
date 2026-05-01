@@ -4,8 +4,12 @@
 import type { V3 } from "./types";
 
 export const CANYON_VISTA_REMOTE_BASE = "https://raw.githubusercontent.com/HansenHomeAI/Canyon-Vista/main";
+const ABSOLUTE_PHOTO_URL_PATTERN = /^(https:|http:|data:|blob:)/i;
 
 export function canyonAssetUrl(relativePath: string): string {
+  if (ABSOLUTE_PHOTO_URL_PATTERN.test(relativePath)) {
+    return relativePath;
+  }
   const p = relativePath.startsWith("/") ? relativePath.slice(1) : relativePath;
   return `${CANYON_VISTA_REMOTE_BASE}/${p}`;
 }
@@ -15,7 +19,7 @@ export type TapDotConfig = {
   scale: number;
   icon: "camera" | "info";
   caption: string;
-  /** Paths relative to Canyon-Vista repo root (e.g. assets/playground/...) */
+  /** Paths relative to Canyon-Vista repo root, or full public image URLs. */
   photos: string[];
 };
 
