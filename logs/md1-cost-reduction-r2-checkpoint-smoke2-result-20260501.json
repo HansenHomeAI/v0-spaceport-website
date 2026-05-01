@@ -1,0 +1,75 @@
+{
+  "recorded_at": "2026-05-01T22:23:26Z",
+  "purpose": "R2 tiny on-demand checkpoint smoke evidence before Managed Spot is allowed",
+  "job_name": "md1-r2ckpt2-tile11-1777662039-tile-11",
+  "job_status": "Completed",
+  "secondary_status": "Completed",
+  "training_image": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:0bf645c0a6311eefd82457599ec21e7df47090c2f7c342efebc4be8521c2e0cd",
+  "training_seconds": 1250,
+  "billable_seconds": 1250,
+  "estimated_training_usd_at_1_515_per_hour": 0.526,
+  "max_runtime_seconds": 3600,
+  "instance_type": "ml.g5.2xlarge",
+  "spot_enabled": false,
+  "checkpoint_config": {
+    "s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r2-checkpoint-smoke2-20260501/checkpoints/md1-r2ckpt2-tile11-1777662039-tile-11",
+    "local_path": "/opt/ml/checkpoints"
+  },
+  "model_artifact": {
+    "s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r2-checkpoint-smoke2-20260501/tiles/tile_11/md1-r2ckpt2-tile11-1777662039-tile-11/output/model.tar.gz",
+    "bytes": 5903459
+  },
+  "artifact_contents": [
+    "ns_export.log",
+    "background_manifest.json",
+    "splat.ply",
+    "floater_pruning_summary.json",
+    "training_selection.json",
+    "training_metadata.json",
+    "export_manifest.json",
+    "background_skybox.webp",
+    "ns_train.log"
+  ],
+  "tile_selection": {
+    "tile_id": "tile_11",
+    "selected_image_count": 96,
+    "max_selected_images": 96,
+    "view_bucket_counts": {
+      "near_detail": 0,
+      "boundary": 96,
+      "horizon": 2
+    },
+    "tile_manifest_path": "/opt/ml/input/data/tile-selection/3dgs_tile_manifest.json",
+    "view_bucket_manifest_path": "/opt/ml/input/data/tile-selection/3dgs_view_buckets.json",
+    "manifest_channel_gate": "passed"
+  },
+  "training_budget": {
+    "budget_class": "tiny",
+    "max_iterations": 3000,
+    "checkpoint_save_steps": 250,
+    "suppress_training_eval": true
+  },
+  "output_quality_shape": {
+    "evaluated_gaussians": 38938,
+    "removed_gaussians": 19,
+    "remaining_gaussians": 38919,
+    "splat_ply_size_mb": 9.206239700317383
+  },
+  "checkpoint_persistence_gate": {
+    "status": "failed",
+    "checkpoint_s3_object_count": 0,
+    "checkpoint_s3_total_bytes": 0,
+    "root_cause": "The old container wrote the full NerfStudio run tree under /opt/ml/checkpoints/nerfstudio_training, then cleanup_temp_files removed that directory before SageMaker's checkpoint sync could persist usable restart files.",
+    "followup_fix": "Move conversion scratch back to /tmp, keep training output under /opt/ml/checkpoints/nerfstudio_runs, stage a compact resume_checkpoint after success, upload it explicitly to TRAINING_CHECKPOINT_S3_URI, preserve the compact checkpoint during cleanup, and allow resume from either compact or raw SageMaker checkpoint tree layouts."
+  },
+  "restart_dry_run_after_fix": {
+    "path": "logs/md1-cost-reduction-r2-checkpoint-restart-dryrun-20260501.json",
+    "submitted_jobs": 0,
+    "estimated_usd": 0.3787,
+    "worst_case_usd": 1.515,
+    "max_estimated_usd": 2.0,
+    "tile_selection_channel_dir": "/opt/ml/input/data/tile-selection",
+    "checkpoint_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r2-checkpoint-restart-dryrun-20260501/checkpoints/md1-r2ckpt-restart-tile11-1777674142-tile-11"
+  },
+  "next_gate": "Build the patched container, then run only an R2b one-tile checkpoint persistence/restart proof with strict $2 cap before enabling Managed Spot or any full fanout run."
+}

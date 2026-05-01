@@ -91,6 +91,15 @@ from tile_pipeline import (
     subset_tile_manifest,
 )
 
+
+def parse_s3_uri(uri: str) -> tuple[str, str]:
+    if not uri.startswith("s3://"):
+        raise ValueError(f"Expected s3:// URI, got: {uri}")
+    bucket, _, key = uri[5:].partition("/")
+    if not bucket or not key:
+        raise ValueError(f"Invalid S3 URI: {uri}")
+    return bucket, key.rstrip("/")
+
 # Configure production logging
 logging.basicConfig(
     level=logging.INFO,
@@ -426,18 +435,25 @@ class NerfStudioTrainer:
         # SageMaker environment paths
         self.input_dir = Path(os.environ.get("SM_CHANNEL_TRAINING", "/opt/ml/input/data/training"))
         self.output_dir = Path(os.environ.get("SM_MODEL_DIR", "/opt/ml/model"))
-        checkpoint_dir = Path(str(os.environ.get("TRAINING_CHECKPOINT_DIR", "")).strip() or "/opt/ml/checkpoints")
-        checkpointing_enabled = str(os.environ.get("TRAINING_ENABLE_CHECKPOINTS", "")).lower() in {
+        self.checkpoint_dir = Path(str(os.environ.get("TRAINING_CHECKPOINT_DIR", "")).strip() or "/opt/ml/checkpoints")
+        self.checkpointing_enabled = str(os.environ.get("TRAINING_ENABLE_CHECKPOINTS", "")).lower() in {
             "1",
             "true",
             "yes",
             "on",
         }
-        self.temp_dir = checkpoint_dir / "nerfstudio_training" if checkpointing_enabled else Path("/tmp/nerfstudio_training")
+        self.checkpoint_s3_uri = str(os.environ.get("TRAINING_CHECKPOINT_S3_URI", "")).strip()
+        self.temp_dir = Path("/tmp/nerfstudio_training")
+        self.training_output_dir = (
+            self.checkpoint_dir / "nerfstudio_runs"
+            if self.checkpointing_enabled
+            else self.temp_dir
+        )
         
         # Create necessary directories
         self.output_dir.mkdir(exist_ok=True, parents=True)
         self.temp_dir.mkdir(exist_ok=True, parents=True)
+        self.training_output_dir.mkdir(exist_ok=True, parents=True)
         self.background_selection_result: Optional[BackgroundSelectionResult] = None
         self.floater_pruning_result: Optional[FloaterPruningResult] = None
         self.training_selection_result: Optional[Dict[str, Any]] = None
@@ -450,8 +466,11 @@ class NerfStudioTrainer:
         logger.info(f"📁 Input directory: {self.input_dir}")
         logger.info(f"📁 Output directory: {self.output_dir}")
         logger.info(f"📁 Temp directory: {self.temp_dir}")
-        if checkpointing_enabled:
-            logger.info(f"📁 SageMaker checkpoint directory: {checkpoint_dir}")
+        logger.info(f"📁 Training output directory: {self.training_output_dir}")
+        if self.checkpointing_enabled:
+            logger.info(f"📁 SageMaker checkpoint directory: {self.checkpoint_dir}")
+            if self.checkpoint_s3_uri:
+                logger.info(f"☁️ Explicit checkpoint S3 URI: {self.checkpoint_s3_uri}")
     
     def apply_step_functions_params(self):
         """Apply parameters passed from Step Functions via environment variables"""
@@ -1326,6 +1345,7 @@ class NerfStudioTrainer:
         original_input_dir = self.input_dir
         original_output_dir = self.output_dir
         original_temp_dir = self.temp_dir
+        original_training_output_dir = getattr(self, "training_output_dir", original_temp_dir)
         tiling_config = self.config.setdefault('tiling', {})
         original_training_mode = tiling_config.get('training_mode', 'monolithic')
         original_tile_id = tiling_config.get('tile_id', '')
@@ -1347,10 +1367,16 @@ class NerfStudioTrainer:
             self.input_dir = stage_input_dir
             self.output_dir = stage_output_dir
             self.temp_dir = stage_temp_dir
+            self.training_output_dir = (
+                self.checkpoint_dir / "nerfstudio_runs" / stage_name
+                if getattr(self, "checkpointing_enabled", False)
+                else stage_temp_dir
+            )
             if self.output_dir.exists():
                 shutil.rmtree(self.output_dir)
             self.output_dir.mkdir(parents=True, exist_ok=True)
             self.temp_dir.mkdir(parents=True, exist_ok=True)
+            self.training_output_dir.mkdir(parents=True, exist_ok=True)
             tiling_config['training_mode'] = training_mode
             tiling_config['tile_id'] = tile_id or ""
             self.background_selection_result = None
@@ -1393,6 +1419,7 @@ class NerfStudioTrainer:
                 self.input_dir = original_input_dir
                 self.output_dir = original_output_dir
                 self.temp_dir = original_temp_dir
+                self.training_output_dir = original_training_output_dir
                 self.background_selection_result = None
                 self.floater_pruning_result = None
                 self.training_selection_result = None
@@ -1781,11 +1808,152 @@ class NerfStudioTrainer:
             logger.info(f"   Selection stride: {proof_selection_stride}")
         logger.info(f"   Selection summary: {self.training_selection_result['view_bucket_counts']}")
         return True
+
+    def compact_checkpoint_dir(self) -> Path:
+        return self.checkpoint_dir / "resume_checkpoint"
+
+    def find_latest_training_config(self) -> Path | None:
+        search_roots: list[Path] = []
+        for root in (getattr(self, "training_output_dir", self.temp_dir), self.temp_dir):
+            if root not in search_roots:
+                search_roots.append(root)
+        config_files: list[Path] = []
+        for root in search_roots:
+            if root.exists():
+                config_files.extend(root.glob("**/config.yml"))
+        if not config_files:
+            return None
+        return max(config_files, key=lambda path: path.stat().st_mtime)
+
+    def sync_s3_prefix_to_dir(self, s3_uri: str, target_dir: Path) -> int:
+        import boto3
+
+        bucket, prefix = parse_s3_uri(s3_uri)
+        s3 = boto3.client("s3")
+        paginator = s3.get_paginator("list_objects_v2")
+        downloaded = 0
+        for page in paginator.paginate(Bucket=bucket, Prefix=f"{prefix}/"):
+            for item in page.get("Contents", []):
+                key = str(item.get("Key", ""))
+                if not key or key.endswith("/"):
+                    continue
+                relative_key = key[len(prefix):].lstrip("/")
+                target_path = target_dir / relative_key
+                target_path.parent.mkdir(parents=True, exist_ok=True)
+                s3.download_file(bucket, key, str(target_path))
+                downloaded += 1
+        return downloaded
+
+    def upload_dir_to_s3(self, source_dir: Path, s3_uri: str) -> int:
+        import boto3
+
+        bucket, prefix = parse_s3_uri(s3_uri)
+        s3 = boto3.client("s3")
+        uploaded = 0
+        for path in source_dir.rglob("*"):
+            if not path.is_file():
+                continue
+            relative_key = path.relative_to(source_dir).as_posix()
+            s3.upload_file(str(path), bucket, f"{prefix}/{relative_key}")
+            uploaded += 1
+        return uploaded
+
+    def restore_compact_checkpoint_from_s3(self) -> None:
+        if not self.checkpointing_enabled or not self.checkpoint_s3_uri:
+            return
+        target_dir = self.compact_checkpoint_dir()
+        if (target_dir / "checkpoint_manifest.json").exists():
+            logger.info(f"📦 Local compact checkpoint already present: {target_dir}")
+            return
+        try:
+            downloaded = self.sync_s3_prefix_to_dir(self.checkpoint_s3_uri, target_dir)
+        except Exception as exc:
+            logger.warning(f"⚠️ Could not download checkpoint prefix {self.checkpoint_s3_uri}: {exc}")
+            return
+        if downloaded:
+            logger.info(f"📦 Downloaded {downloaded} checkpoint files from {self.checkpoint_s3_uri}")
+
+    def resume_model_dir(self) -> Path | None:
+        compact_dir = self.compact_checkpoint_dir()
+        preferred_model_dir = compact_dir / "nerfstudio_models"
+        if preferred_model_dir.exists() and any(preferred_model_dir.glob("*.ckpt")):
+            return preferred_model_dir
+        candidate_model_dirs: list[Path] = []
+        if compact_dir.exists():
+            for model_dir in compact_dir.glob("**/nerfstudio_models"):
+                if model_dir == preferred_model_dir:
+                    continue
+                if any(model_dir.glob("*.ckpt")):
+                    candidate_model_dirs.append(model_dir)
+        if candidate_model_dirs:
+            return max(
+                candidate_model_dirs,
+                key=lambda path: max(ckpt.stat().st_mtime for ckpt in path.glob("*.ckpt")),
+            )
+        return None
+
+    def stage_latest_checkpoint_for_sync(self) -> bool:
+        if not self.checkpointing_enabled:
+            return True
+        config_file = self.find_latest_training_config()
+        if config_file is None:
+            logger.error("❌ Checkpointing enabled but no NerfStudio config.yml was found")
+            return False
+        model_dir = config_file.parent / "nerfstudio_models"
+        checkpoint_files = sorted(model_dir.glob("*.ckpt")) if model_dir.exists() else []
+        if not checkpoint_files:
+            logger.error(f"❌ Checkpointing enabled but no .ckpt files were found in {model_dir}")
+            return False
+
+        target_dir = self.compact_checkpoint_dir()
+        if target_dir.exists():
+            shutil.rmtree(target_dir)
+        target_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(config_file, target_dir / "config.yml")
+        shutil.copytree(model_dir, target_dir / "nerfstudio_models")
+        latest_checkpoint = max(checkpoint_files, key=lambda path: path.stat().st_mtime)
+        manifest = {
+            "source_config": str(config_file),
+            "config": "config.yml",
+            "model_dir": "nerfstudio_models",
+            "latest_checkpoint": f"nerfstudio_models/{latest_checkpoint.name}",
+            "checkpoint_count": len(checkpoint_files),
+            "checkpoint_files": [
+                {
+                    "path": f"nerfstudio_models/{path.name}",
+                    "bytes": path.stat().st_size,
+                    "modified_time": path.stat().st_mtime,
+                }
+                for path in checkpoint_files
+            ],
+            "created_at": time.time(),
+        }
+        with open(target_dir / "checkpoint_manifest.json", "w", encoding="utf-8") as f:
+            json.dump(manifest, f, indent=2)
+        logger.info(
+            "📦 Staged compact checkpoint for sync: %s (%s checkpoint file(s))",
+            target_dir,
+            len(checkpoint_files),
+        )
+        if self.checkpoint_s3_uri:
+            uploaded = self.upload_dir_to_s3(target_dir, self.checkpoint_s3_uri)
+            logger.info(f"☁️ Uploaded {uploaded} compact checkpoint files to {self.checkpoint_s3_uri}")
+        return True
     
     def run_nerfstudio_training(self) -> bool:
         """Execute NerfStudio training with splatfacto-w-light and background export support"""
         logger.info("🔥 Starting NerfStudio training (splatfacto-w-light)")
         logger.info("=" * 60)
+        if not hasattr(self, "checkpointing_enabled"):
+            self.checkpointing_enabled = False
+        if not hasattr(self, "checkpoint_dir"):
+            self.checkpoint_dir = Path("/opt/ml/checkpoints")
+        if not hasattr(self, "checkpoint_s3_uri"):
+            self.checkpoint_s3_uri = ""
+        if not hasattr(self, "training_output_dir"):
+            self.training_output_dir = self.temp_dir
+        self.training_output_dir.mkdir(parents=True, exist_ok=True)
+        self.restore_compact_checkpoint_from_s3()
         
         # Get configuration parameters
         model_config = self.config.get('model', {})
@@ -1881,7 +2049,7 @@ class NerfStudioTrainer:
             "ns-train",
             model_variant,
             "--output-dir",
-            str(self.temp_dir),
+            str(self.training_output_dir),
             "--vis",
             vis_mode,
             "--max_num_iterations",
@@ -1899,6 +2067,10 @@ class NerfStudioTrainer:
             base_cmd.extend(["--steps_per_eval_all_images", str(int(steps_per_eval_all_images))])
         if steps_per_save is not None:
             base_cmd.extend(["--steps_per_save", str(int(steps_per_save))])
+        resume_dir = self.resume_model_dir()
+        if resume_dir is not None:
+            base_cmd.extend(["--load-dir", str(resume_dir)])
+            logger.info(f"📦 Resuming NerfStudio from checkpoint: {resume_dir}")
         method_args: list[str] = []
         
         if requested_bilateral_processing and not bilateral_processing:
@@ -2022,6 +2194,9 @@ class NerfStudioTrainer:
             for line in stdout_lines[-20:]:
                 if line.strip():
                     logger.info(f"   {line}")
+
+            if not self.stage_latest_checkpoint_for_sync():
+                return False
             
             return True
             
@@ -2152,13 +2327,10 @@ class NerfStudioTrainer:
             config_file = source_config
         else:
             # Find the latest config file in training output
-            config_files = list(self.temp_dir.glob("**/config.yml"))
-            if not config_files:
+            config_file = self.find_latest_training_config()
+            if config_file is None:
                 logger.error("❌ No config.yml found in training output")
                 return False
-
-            # Use the most recent config file
-            config_file = max(config_files, key=lambda x: x.stat().st_mtime)
         logger.info(f"📄 Using config: {config_file}")
         
         model_variant = self.config.get('model', {}).get('variant', 'splatfacto-w-light')
@@ -2376,9 +2548,19 @@ class NerfStudioTrainer:
     def cleanup_temp_files(self):
         """Clean up temporary training files"""
         try:
+            cleanup_dirs = []
             if self.temp_dir.exists():
-                shutil.rmtree(self.temp_dir)
-                logger.info("🧹 Temporary files cleaned up")
+                cleanup_dirs.append(self.temp_dir)
+            training_output_dir = getattr(self, "training_output_dir", self.temp_dir)
+            if training_output_dir.exists() and training_output_dir not in cleanup_dirs:
+                cleanup_dirs.append(training_output_dir)
+            compact_dir = self.compact_checkpoint_dir() if getattr(self, "checkpointing_enabled", False) else None
+            for cleanup_dir in cleanup_dirs:
+                if compact_dir is not None and cleanup_dir == compact_dir:
+                    continue
+                shutil.rmtree(cleanup_dir)
+            if cleanup_dirs:
+                logger.info("🧹 Temporary training files cleaned up")
         except Exception as e:
             logger.warning(f"⚠️ Cleanup failed: {e}")
     

@@ -34,6 +34,9 @@ DEFAULT_TRAINING_MAX_RUNTIME_SECONDS = 14400
 DEFAULT_REVIEW_MAX_RUNTIME_SECONDS = 7200
 DEFAULT_CHECKPOINT_SAVE_STEPS = 1000
 SCAFFOLD_CHANNEL_DIR = "/opt/ml/input/data/scaffold"
+TILE_SELECTION_CHANNEL_NAME = "tile-selection"
+TILE_SELECTION_CHANNEL_DIR = f"/opt/ml/input/data/{TILE_SELECTION_CHANNEL_NAME}"
+TILE_SELECTION_TRAINING_MODES = {"global_scaffold", "leaf_tile", "tiled_pipeline"}
 UNSUPPORTED_BILATERAL_VARIANTS = {"splatfacto-w-light", "splatfacto-w"}
 PROOF_PROFILE_NONE = "none"
 PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY = "quality_gate_low_memory"
@@ -66,8 +69,19 @@ def run_command(command: Sequence[str], *, capture_output: bool = False) -> subp
 
 
 def aws_json(*args: str) -> dict:
-    result = run_command(["aws", *args, "--output", "json"], capture_output=True)
-    return json.loads(result.stdout)
+    command = ["aws", *args, "--output", "json"]
+    last_error: subprocess.CalledProcessError | None = None
+    for attempt in range(3):
+        try:
+            result = run_command(command, capture_output=True)
+            return json.loads(result.stdout)
+        except subprocess.CalledProcessError as exc:
+            last_error = exc
+            if attempt == 2:
+                break
+            time.sleep(5 * (attempt + 1))
+    assert last_error is not None
+    raise last_error
 
 
 def parse_s3_uri(uri: str) -> tuple[str, str]:
@@ -211,6 +225,19 @@ def parse_env(values: Sequence[str]) -> Dict[str, str]:
 
 def normalize_s3_prefix(uri: str) -> str:
     return uri.rstrip("/")
+
+
+def upload_tile_selection_manifests(tile_manifest: dict, view_buckets: dict, s3_uri: str) -> None:
+    """Publish the exact resolved tile-selection inputs that SageMaker should mount."""
+    output_prefix = normalize_s3_prefix(s3_uri)
+    with tempfile.TemporaryDirectory(prefix="3dgs-tile-selection-") as tmp:
+        tmpdir = Path(tmp)
+        manifest_path = tmpdir / "3dgs_tile_manifest.json"
+        view_buckets_path = tmpdir / "3dgs_view_buckets.json"
+        manifest_path.write_text(json.dumps(tile_manifest, indent=2, sort_keys=True), encoding="utf-8")
+        view_buckets_path.write_text(json.dumps(view_buckets, indent=2, sort_keys=True), encoding="utf-8")
+        run_command(["aws", "s3", "cp", str(manifest_path), f"{output_prefix}/3dgs_tile_manifest.json"])
+        run_command(["aws", "s3", "cp", str(view_buckets_path), f"{output_prefix}/3dgs_view_buckets.json"])
 
 
 def supports_bilateral_processing(model_variant: str) -> bool:
@@ -776,6 +803,21 @@ class BenchmarkStage:
         return payload
 
 
+def training_stage_requires_tile_selection(stage: BenchmarkStage) -> bool:
+    return stage.stage_type == "train" and stage.training_mode in TILE_SELECTION_TRAINING_MODES
+
+
+def attach_tile_selection_channel_to_stages(stages: Sequence[BenchmarkStage]) -> None:
+    """Use a small mounted manifest channel for tiled stages so planning and training match."""
+    for stage in stages:
+        if not training_stage_requires_tile_selection(stage):
+            continue
+        environment = dict(stage.environment or {})
+        environment["TILE_MANIFEST_PATH"] = f"{TILE_SELECTION_CHANNEL_DIR}/3dgs_tile_manifest.json"
+        environment["VIEW_BUCKET_MANIFEST_PATH"] = f"{TILE_SELECTION_CHANNEL_DIR}/3dgs_view_buckets.json"
+        stage.environment = environment
+
+
 def resolve_stage_scaffold_artifact_s3_uri(
     stage: BenchmarkStage,
     *,
@@ -1039,6 +1081,8 @@ def build_benchmark_stages(
             stage_env.setdefault("TILE_INPUT_HASH", tile_budget.input_hash)
             if tile_budget.max_selected_images > 0:
                 stage_env.setdefault("TRAINING_MAX_SELECTED_IMAGES", str(tile_budget.max_selected_images))
+        if checkpoint_uri:
+            stage_env.setdefault("TRAINING_CHECKPOINT_S3_URI", checkpoint_uri)
         if scaffold_artifact_s3_uri:
             stage_env.setdefault("GLOBAL_SCAFFOLD_SOURCE_DIR", SCAFFOLD_CHANNEL_DIR)
         cache_hit, cache_rejection_reasons = resolve_tile_cache_hit(
@@ -1140,6 +1184,7 @@ def create_training_job_payload(
     volume_size_gb: int,
     max_runtime_seconds: int,
     scaffold_artifact_s3_uri: str = "",
+    tile_selection_s3_uri: str = "",
     enable_spot: bool = False,
     enable_checkpoints: bool = False,
     checkpoint_s3_uri: str = "",
@@ -1160,6 +1205,21 @@ def create_training_job_payload(
             "RecordWrapperType": "None",
         }
     ]
+    if tile_selection_s3_uri:
+        input_channels.append(
+            {
+                "ChannelName": TILE_SELECTION_CHANNEL_NAME,
+                "DataSource": {
+                    "S3DataSource": {
+                        "S3DataType": "S3Prefix",
+                        "S3Uri": tile_selection_s3_uri,
+                        "S3DataDistributionType": "FullyReplicated",
+                    }
+                },
+                "CompressionType": "None",
+                "RecordWrapperType": "None",
+            }
+        )
     if scaffold_artifact_s3_uri:
         input_channels.append(
             {
@@ -1831,6 +1891,7 @@ def main() -> int:
     view_bucket_s3_uri = f"{colmap_s3_uri}/3dgs_view_buckets.json"
     chunk_planner_s3_uri = f"{colmap_s3_uri}/chunk_planner_manifest.json"
     sfm_metadata_s3_uri = f"{colmap_s3_uri}/sfm_metadata.json"
+    tile_selection_input_s3_uri = f"{normalize_s3_prefix(context.output_root_s3_uri)}/inputs/tile-selection"
 
     validate_manifest_override_args(
         tile_manifest_json=args.tile_manifest_json,
@@ -1915,6 +1976,7 @@ def main() -> int:
         reuse_tile_cache=args.reuse_tile_cache,
         tile_cache_manifest=tile_cache_manifest,
     )
+    attach_tile_selection_channel_to_stages(stages)
     cost_estimate = estimate_training_cost(
         stages,
         instance_type=args.instance_type,
@@ -1932,6 +1994,8 @@ def main() -> int:
         "view_bucket_s3_uri": view_bucket_s3_uri,
         "tile_manifest_json_override": args.tile_manifest_json,
         "view_bucket_json_override": args.view_bucket_json,
+        "tile_selection_input_s3_uri": tile_selection_input_s3_uri,
+        "tile_selection_channel_dir": TILE_SELECTION_CHANNEL_DIR,
         "chunk_planner_s3_uri": chunk_planner_s3_uri,
         "sfm_metadata_s3_uri": sfm_metadata_s3_uri,
         "manifest_resolution": manifest_resolution,
@@ -1985,6 +2049,9 @@ def main() -> int:
     if args.orchestration_mode == "fanout" and not args.wait:
         raise RuntimeError("Fanout submission requires --wait so scaffold and tile dependencies can be enforced safely")
 
+    if any(training_stage_requires_tile_selection(stage) for stage in stages):
+        upload_tile_selection_manifests(tile_manifest, view_buckets, tile_selection_input_s3_uri)
+
     sagemaker = aws_json  # alias for consistency with lambda/test patterns
     submitted_stage_to_job: Dict[str, str] = {}
     completed_stage_outputs: Dict[str, dict] = {}
@@ -2002,6 +2069,13 @@ def main() -> int:
         stage_environment = dict(stage.environment or {})
         if scaffold_artifact_s3_uri and stage.training_mode in {"leaf_tile", "tiled_pipeline"}:
             stage_environment.setdefault("GLOBAL_SCAFFOLD_SOURCE_DIR", SCAFFOLD_CHANNEL_DIR)
+        stage_checkpoint_s3_uri = stage.checkpoint_uri or (
+            f"{normalize_s3_prefix(args.checkpoint_s3_prefix)}/{stage.job_name or stage.stage_name}"
+            if checkpoints_requested and args.checkpoint_s3_prefix
+            else ""
+        )
+        if stage_checkpoint_s3_uri:
+            stage_environment.setdefault("TRAINING_CHECKPOINT_S3_URI", stage_checkpoint_s3_uri)
         payload = create_training_job_payload(
             branch_name=branch_name,
             job_name=stage.job_name or stage.stage_name,
@@ -2014,14 +2088,14 @@ def main() -> int:
             volume_size_gb=args.volume_size_gb,
             max_runtime_seconds=args.training_max_runtime_seconds,
             scaffold_artifact_s3_uri=scaffold_artifact_s3_uri,
-            enable_spot=args.enable_spot,
-            enable_checkpoints=args.enable_checkpoints,
-            checkpoint_s3_uri=stage.checkpoint_uri
-            or (
-                f"{normalize_s3_prefix(args.checkpoint_s3_prefix)}/{stage.job_name or stage.stage_name}"
-                if checkpoints_requested and args.checkpoint_s3_prefix
+            tile_selection_s3_uri=(
+                tile_selection_input_s3_uri
+                if training_stage_requires_tile_selection(stage)
                 else ""
             ),
+            enable_spot=args.enable_spot,
+            enable_checkpoints=args.enable_checkpoints,
+            checkpoint_s3_uri=stage_checkpoint_s3_uri,
             max_wait_seconds=args.spot_max_wait_seconds or (args.training_max_runtime_seconds + 3600),
             experiment_id=args.experiment_id,
         )

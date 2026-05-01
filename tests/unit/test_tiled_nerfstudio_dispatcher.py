@@ -147,8 +147,154 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
                 module.os.environ.clear()
                 module.os.environ.update(original_environ)
 
-            self.assertEqual(trainer.temp_dir, checkpoint_dir / "nerfstudio_training")
+            self.assertEqual(trainer.temp_dir, Path("/tmp/nerfstudio_training"))
+            self.assertEqual(trainer.training_output_dir, checkpoint_dir / "nerfstudio_runs")
+            self.assertEqual(trainer.checkpoint_dir, checkpoint_dir)
             self.assertTrue(trainer.temp_dir.exists())
+            self.assertTrue(trainer.training_output_dir.exists())
+
+    def test_trainer_stages_compact_checkpoint_for_sync(self):
+        module = load_module_with_stubs()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            checkpoint_dir = root / "checkpoints"
+            run_dir = checkpoint_dir / "nerfstudio_runs" / "data" / "splatfacto-w-light" / "run"
+            model_dir = run_dir / "nerfstudio_models"
+            model_dir.mkdir(parents=True)
+            (run_dir / "config.yml").write_text("method: splatfacto-w-light\n", encoding="utf-8")
+            (model_dir / "step-000002500.ckpt").write_text("checkpoint", encoding="utf-8")
+
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.checkpointing_enabled = True
+            trainer.checkpoint_dir = checkpoint_dir
+            trainer.checkpoint_s3_uri = ""
+            trainer.training_output_dir = checkpoint_dir / "nerfstudio_runs"
+            trainer.temp_dir = root / "tmp"
+
+            self.assertTrue(trainer.stage_latest_checkpoint_for_sync())
+
+            compact_dir = checkpoint_dir / "resume_checkpoint"
+            self.assertTrue((compact_dir / "config.yml").exists())
+            self.assertTrue((compact_dir / "nerfstudio_models" / "step-000002500.ckpt").exists())
+            manifest = json.loads((compact_dir / "checkpoint_manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(manifest["latest_checkpoint"], "nerfstudio_models/step-000002500.ckpt")
+
+    def test_cleanup_preserves_compact_checkpoint_only(self):
+        module = load_module_with_stubs()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            checkpoint_dir = root / "checkpoints"
+            compact_dir = checkpoint_dir / "resume_checkpoint"
+            temp_dir = root / "tmp"
+            training_output_dir = checkpoint_dir / "nerfstudio_runs"
+            compact_dir.mkdir(parents=True)
+            temp_dir.mkdir()
+            training_output_dir.mkdir(parents=True)
+            (compact_dir / "checkpoint_manifest.json").write_text("{}", encoding="utf-8")
+
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.checkpointing_enabled = True
+            trainer.checkpoint_dir = checkpoint_dir
+            trainer.temp_dir = temp_dir
+            trainer.training_output_dir = training_output_dir
+
+            trainer.cleanup_temp_files()
+
+            self.assertTrue(compact_dir.exists())
+            self.assertFalse(temp_dir.exists())
+            self.assertFalse(training_output_dir.exists())
+
+    def test_run_nerfstudio_training_resumes_from_compact_checkpoint(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            checkpoint_dir = root / "checkpoints"
+            resume_model_dir = checkpoint_dir / "resume_checkpoint" / "nerfstudio_models"
+            resume_model_dir.mkdir(parents=True)
+            (resume_model_dir / "step-000000250.ckpt").write_text("checkpoint", encoding="utf-8")
+
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.config = {
+                "model": {
+                    "variant": "splatfacto-w-light",
+                    "sh_degree": 3,
+                    "bilateral_processing": False,
+                    "rasterize_mode": "classic",
+                    "use_scale_regularization": True,
+                    "cull_alpha_thresh": 0.12,
+                    "cull_scale_thresh": 0.35,
+                    "enable_bg_model": True,
+                    "enable_alpha_loss": True,
+                    "enable_robust_mask": True,
+                    "bg_sh_degree": 8,
+                    "appearance_embed_dim": 64,
+                    "never_mask_upper": 0.4,
+                },
+                "training": {
+                    "max_iterations": 50,
+                    "log_interval": 10,
+                    "steps_per_save": 25,
+                },
+                "tiling": {
+                    "training_mode": "leaf_tile",
+                    "global_scaffold": {},
+                },
+            }
+            trainer.input_dir = root / "input"
+            trainer.output_dir = root / "output"
+            trainer.temp_dir = root / "tmp"
+            trainer.training_output_dir = checkpoint_dir / "nerfstudio_runs"
+            trainer.checkpointing_enabled = True
+            trainer.checkpoint_dir = checkpoint_dir
+            trainer.checkpoint_s3_uri = ""
+            trainer.training_selection_result = None
+            trainer.background_selection_result = None
+            trainer.floater_pruning_result = None
+            trainer.resolve_training_mode = lambda: "leaf_tile"
+            trainer.stage_latest_checkpoint_for_sync = lambda: True
+
+            calls: list[list[str]] = []
+
+            def fake_run(cmd, **kwargs):
+                calls.append(list(cmd))
+                return types.SimpleNamespace(returncode=0, stdout="done\n", stderr="")
+
+            original_run = module.subprocess.run
+            module.subprocess.run = fake_run
+            try:
+                success = trainer.run_nerfstudio_training()
+            finally:
+                module.subprocess.run = original_run
+
+            self.assertTrue(success)
+            self.assertEqual(len(calls), 1)
+            load_dir_index = calls[0].index("--load-dir")
+            self.assertEqual(calls[0][load_dir_index + 1], str(resume_model_dir))
+            output_dir_index = calls[0].index("--output-dir")
+            self.assertEqual(calls[0][output_dir_index + 1], str(trainer.training_output_dir))
+
+    def test_resume_model_dir_accepts_raw_sagemaker_checkpoint_tree(self):
+        module = load_module_with_stubs()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            checkpoint_dir = root / "checkpoints"
+            model_dir = (
+                checkpoint_dir
+                / "resume_checkpoint"
+                / "nerfstudio_runs"
+                / "data"
+                / "splatfacto-w-light"
+                / "interrupted-run"
+                / "nerfstudio_models"
+            )
+            model_dir.mkdir(parents=True)
+            (model_dir / "step-000000250.ckpt").write_text("checkpoint", encoding="utf-8")
+
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.checkpoint_dir = checkpoint_dir
+
+            self.assertEqual(trainer.resume_model_dir(), model_dir)
 
     def test_apply_training_proof_profile_defaults_sets_low_memory_defaults(self):
         module = load_module_with_stubs()

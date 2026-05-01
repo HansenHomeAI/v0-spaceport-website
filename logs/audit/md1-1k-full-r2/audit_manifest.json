@@ -589,30 +589,20 @@
       ]
     }
   ],
-  "current_branch_head": "5d209189934eeec5e2788acceca4e5f9d94769bf plus local validated SOGS LOD compressor/viewer/pipeline updates pending commit/push",
-  "current_exact_head_gate_status": "Exact-head 5d209189934eeec5e2788acceca4e5f9d94769bf has green CDK Deploy 25181111382 and green Cloudflare Pages 25181111351. Local follow-up changes pass py_compile, bash -n, tests.unit.test_sogs_supersplat_bundle, md1 production Playwright smoke, pipeline-viewer MD1 LOD smoke, npm run build, and npm run cf:build; next is commit/push and exact-head workflow monitoring.",
+  "current_branch_head": "58de3e418b24ebaa1dde13807e3939bb2da286e1 plus local tile-selection channel, R2 smoke evidence, and compact checkpoint persistence fixes pending commit/push",
+  "current_exact_head_gate_status": "exact-head 58de3e418b24ebaa1dde13807e3939bb2da286e1 has green CDK Deploy 25226270222; no Pages run appeared for that non-web push; next pushed head must watch CDK Deploy and Trigger ML Container Build before any R2b paid restart proof",
   "current_live_compute_status": {
-    "status": "completed",
+    "status": "idle",
+    "checked_at": "2026-05-01T22:55:00Z",
     "training_jobs_in_progress": 0,
     "processing_jobs_in_progress": 0,
-    "validated_lod_processing_job": "md1-v18-splat-lod-nosingle-1777575472",
-    "superseded_stopped_job": "md1-v18-splat-lod-1777573315",
-    "public_lod_url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json",
-    "public_manifest_url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/production_manifest.json",
-    "source_vertex_count": 8423868,
-    "source_sha256": "c45c819e6586efa76288a11ef99b7517d3fd41f4ac1d906c5547e1f33f732dea",
-    "lod_counts": {
-      "lod0": 8423868,
-      "lod1": 2527160,
-      "lod2": 842387,
-      "lod3": 252716
-    },
-    "chunk_files": 44,
-    "object_count": 357,
-    "byte_size": 165902596,
-    "range_probe": "HTTP 206, Accept-Ranges bytes, AES256, public CORS OK"
+    "last_r2_smoke_job": "md1-r2ckpt2-tile11-1777662039-tile-11",
+    "last_r2_smoke_status": "Completed",
+    "last_r2_smoke_billable_seconds": 1250,
+    "last_r2_smoke_estimated_usd": 0.526,
+    "checkpoint_persistence_gate": "failed_empty_s3_prefix"
   },
-  "current_rung": "R5_v18_validated_splattransform_lod_viewer_ready",
+  "current_rung": "R2_cost_reduction_checkpoint_persistence_fix_ready",
   "exact_head_gate_status": "Exact-head 5d209189934eeec5e2788acceca4e5f9d94769bf has green CDK Deploy 25181111382 and green Cloudflare Pages 25181111351. Local follow-up changes pass py_compile, bash -n, tests.unit.test_sogs_supersplat_bundle, md1 production Playwright smoke, pipeline-viewer MD1 LOD smoke, npm run build, and npm run cf:build; next is commit/push and exact-head workflow monitoring.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -727,7 +717,7 @@
     "verified_at": "2026-04-29T12:02:18Z"
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-sky-v18-promotion/review_comparison.json",
-  "latest_review_status": "V18 model-quality gates remain promoted. Production viewer gate uses the validated @playcanvas/splat-transform SOGS LOD compression path from agent-73164211-load-horizon-settle and image digest sha256:645fd74b9217fc8441f242d8b89aefb36ef9c88192bf006ade3cfeb355bd4de3. /md1-viewer and /pipeline-viewer both load the true public V18 lod-meta.json by default. Local smoke: /md1-viewer desktop firstFrame=88.4ms, chunkMetaRequests=3, lodRange=0-3; mobile firstFrame=51.0ms, chunkMetaRequests=15 after refinement, lodRange=2-3; /pipeline-viewer default MD1 LOD firstFrame=202.1ms, chunkMetaRequests=2. npm run build and npm run cf:build pass with pre-existing lint warnings; webpack cache warns ENOSPC but exits green.",
+  "latest_review_status": "V18 remains the promoted quality bar. R2 smoke2 proved the tiny tile_11 training shape and tile-selection manifest channel, but checkpoint persistence did not pass because the old container deleted the checkpoint scratch tree before sync. Local fixes now stage/upload compact checkpoints, preserve resume_checkpoint during cleanup, retry transient AWS JSON reads, and resume from compact or raw SageMaker checkpoint-tree layouts; restart dry-run remains no-spend with submitted_jobs=[] and under $2 cap. Full targeted verification passed: 88 unit tests, py_compile, JSON validation, and git diff --check.",
   "live_compute_status": {
     "checked_at": "2026-04-29T12:02:18Z",
     "in_progress_training_jobs": [],
@@ -5772,7 +5762,7 @@
     "conclusion": "V15 context padding produced identical p24 metrics to V12/V13 and remains blocked only on horizon_psnr_regression; no promotion run."
   },
   "r5_teacher_context_v12_ctx10_v15_submit_20260429071645Z": "Exact-head 0392ef97dfe5363579f2d88f90fd5e70fd03ed82 is gated green on CDK Deploy 25095508893 and manually-triggered Pages 25095528013. Submitted V15 no-training/no-promotion Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 to add 10 percent preserve-context padding to V12, including historical tile_01, with output s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-ctx10-v15-20260429071522/output/artifact/model.tar.gz. Latest status is InProgress with no ProcessingStartTime, no FailureReason/no ExitMessage, zero output objects, no training jobs InProgress, and only this processing job InProgress.",
-  "last_updated": "2026-04-29T12:02:18Z",
+  "last_updated": "2026-05-01T22:55:00Z",
   "r5_teacher_context_v12_ctx10_v15_smoke_blocked_20260429080934Z": "Exact-head d14f4a4b56aa9c3a215e1f4845450c77188a0687 is gated green on CDK Deploy 25095992000 and manually-triggered Pages 25095995605; alias/hash /health.txt passed, hash https://c896c947.v0-spaceport-website-preview2.pages.dev. V15 Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 completed, model.tar.gz is present at 1203320806 bytes, streaming preflight passed, and explicit p24 smoke md1-r1-r5-teacher-context-v12-ctx10-v15-smoke-p24-1777448068-qu completed with camera coverage OK but blocked only on horizon_psnr_regression. Metrics matched V12 exactly, so context padding did not close the PSNR miss. No SageMaker jobs are InProgress and no promotion was run.",
   "r5_teacher_context_v12_tile01overlap_v16": {
     "processing_job_name": "md1-r5-teacherctx-v12-t01ov-v16-1777450963",
@@ -6812,14 +6802,19 @@
       "paid_training_launched": false,
       "r1_tile11_dry_run": "production-shaped no-spend fanout dry-run used full MD1/V18 tile manifests, classified tile_11 as tiny, estimated $0.3787, and submitted_jobs=[]",
       "tile_cache_unit_tests": "test_reuse_tile_cache_turns_matching_tile_into_non_training_stage and stale-hash rejection added; targeted unit suite passed before full verification",
-      "unit_tests_latest": "python3 -m unittest tests.unit.test_tiled_3dgs_benchmark tests.unit.test_geometry_first_review tests.unit.test_3dgs_training_monitor tests.unit.test_tiled_nerfstudio_dispatcher -> 78 tests OK",
-      "py_compile_latest": "python3 -m py_compile scripts/3dgs/run_tiled_3dgs_benchmark.py scripts/3dgs/monitor_3dgs_training_cost.py infrastructure/containers/3dgs/geometry_review.py infrastructure/containers/3dgs/train_nerfstudio_production.py -> passed",
+      "unit_tests_latest": "python3 -m unittest tests.unit.test_tiled_3dgs_benchmark tests.unit.test_tiled_nerfstudio_dispatcher tests.unit.test_geometry_first_review tests.unit.test_3dgs_training_monitor -> 88 tests OK",
+      "py_compile_latest": "python3 -m py_compile scripts/3dgs/run_tiled_3dgs_benchmark.py scripts/3dgs/monitor_3dgs_training_cost.py infrastructure/containers/3dgs/train_nerfstudio_production.py infrastructure/containers/3dgs/geometry_review.py infrastructure/containers/3dgs/tile_pipeline.py -> passed",
       "json_and_diff_check_latest": "json.tool passed for prior stats, R1 dry-run, and audit_manifest; git diff --check passed",
       "cache_hash_guardrail_latest": "tile input hash now changes when tile geometry/ownership bounds change; unit coverage added",
       "manifest_override_guardrail_latest": "tile/view manifest overrides must be provided together to avoid silent chunk-planner fallback; unit coverage added",
       "cache_submit_guardrail_latest": "submit guardrails block all-cache runs that would still train scaffold and cached artifacts are probed with aws s3 ls before paid cache reuse",
       "checkpoint_without_spot_unit_tests": "python3 -m unittest tests.unit.test_tiled_3dgs_benchmark -> 47 tests OK after adding on-demand checkpoint planning and payload coverage",
-      "r2_checkpoint_dry_run": "no-spend R2 tile_11 dry-run planned on-demand checkpoints with submitted_jobs=[] and estimated $0.3787 / worst-case $1.515 under max_estimated_usd $2.00"
+      "r2_checkpoint_dry_run": "no-spend R2 tile_11 dry-run planned on-demand checkpoints with submitted_jobs=[] and estimated $0.3787 / worst-case $1.515 under max_estimated_usd $2.00",
+      "r2_smoke2_paid_result": "Completed in 1250 billable seconds with 96 selected images and 38919 retained gaussians; checkpoint S3 prefix was empty, so restart proof remains required.",
+      "r2_restart_dry_run_after_fix": "logs/md1-cost-reduction-r2-checkpoint-restart-dryrun-20260501.json -> submitted_jobs=[], estimated_usd=0.3787, worst_case_usd=1.515, max_estimated_usd=2.00, explicit TRAINING_CHECKPOINT_S3_URI present.",
+      "checkpoint_resume_unit_tests_targeted": "compact checkpoint staging, cleanup preservation, compact resume load-dir, and raw SageMaker checkpoint-tree fallback tests passed before full targeted verification.",
+      "json_validation_latest": "python3 -m json.tool passed for R2 smoke2 dry-run, R2 restart dry-run, R2 smoke2 result, and audit_manifest",
+      "git_diff_check_latest": "git diff --check -> passed"
     },
     "next_paid_gate": "R2 tiny one-tile on-demand checkpoint/restart smoke with strict $2 cap; Managed Spot remains blocked until this restart proof passes",
     "latest_update": {
@@ -6881,6 +6876,39 @@
       "spot_status": "blocked until paid one-tile checkpoint/restart proof passes",
       "paid_training_launched": false,
       "next_unblocked_step": "Submit the R2 tiny tile_11 checkpoint/restart smoke only when ready, with --enable-checkpoints, --enable-spot false, --max-estimated-usd 2.00, --wait, and the V18 comparison manifest; then inspect checkpoint objects and restart/resume behavior before any Spot run."
+    },
+    "r2_checkpoint_smoke2": {
+      "job_name": "md1-r2ckpt2-tile11-1777662039-tile-11",
+      "status": "Completed",
+      "model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r2-checkpoint-smoke2-20260501/tiles/tile_11/md1-r2ckpt2-tile11-1777662039-tile-11/output/model.tar.gz",
+      "billable_seconds": 1250,
+      "estimated_usd": 0.526,
+      "selected_image_count": 96,
+      "max_iterations": 3000,
+      "remaining_gaussians": 38919,
+      "manifest_channel_gate": "passed",
+      "checkpoint_persistence_gate": "failed_empty_s3_prefix",
+      "evidence_path": "logs/md1-cost-reduction-r2-checkpoint-smoke2-result-20260501.json"
+    },
+    "r2_checkpoint_persistence_fix": {
+      "implemented_at": "2026-05-01T22:55:00Z",
+      "fixes": [
+        "mount resolved tile/view manifests through tile-selection input channel",
+        "route conversion scratch to /tmp instead of /opt/ml/checkpoints",
+        "train under /opt/ml/checkpoints/nerfstudio_runs when checkpointing is enabled",
+        "stage compact resume_checkpoint with config.yml and nerfstudio_models/*.ckpt",
+        "upload compact checkpoint to TRAINING_CHECKPOINT_S3_URI after successful training",
+        "preserve compact resume_checkpoint during cleanup",
+        "resume from compact checkpoint or raw SageMaker checkpoint-tree layouts",
+        "retry transient AWS CLI JSON reads in the benchmark runner"
+      ],
+      "restart_dry_run_path": "logs/md1-cost-reduction-r2-checkpoint-restart-dryrun-20260501.json",
+      "restart_dry_run_submitted_jobs": 0,
+      "restart_dry_run_estimated_usd": 0.3787,
+      "restart_dry_run_worst_case_usd": 1.515,
+      "restart_dry_run_max_estimated_usd": 2.0,
+      "next_gate": "Build patched container, then run only an R2b tile_11 checkpoint persistence/restart proof with strict $2 cap before Spot/full fanout",
+      "verification_status": "passed_local_targeted_verification"
     }
   }
 }

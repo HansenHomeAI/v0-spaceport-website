@@ -939,6 +939,10 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
 
         self.assertEqual(stages[0].checkpoint_uri, "s3://bucket/checkpoints/bench-456-tile-11")
         self.assertFalse(stages[0].spot_enabled)
+        self.assertEqual(
+            stages[0].environment["TRAINING_CHECKPOINT_S3_URI"],
+            "s3://bucket/checkpoints/bench-456-tile-11",
+        )
 
     def test_create_training_job_payload_includes_branch_tag(self):
         payload = benchmark.create_training_job_payload(
@@ -977,6 +981,66 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         channels = {channel["ChannelName"]: channel for channel in payload["InputDataConfig"]}
         self.assertEqual(channels["training"]["DataSource"]["S3DataSource"]["S3Uri"], "s3://bucket/input")
         self.assertEqual(channels["scaffold"]["DataSource"]["S3DataSource"]["S3Uri"], "s3://bucket/scaffold-output")
+
+    def test_create_training_job_payload_can_mount_tile_selection_channel(self):
+        payload = benchmark.create_training_job_payload(
+            branch_name="agent-branch",
+            job_name="bench-123",
+            image_uri="123.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:latest",
+            role_arn="arn:aws:iam::123:role/test",
+            input_s3_uri="s3://bucket/input",
+            output_s3_uri="s3://bucket/output",
+            environment={"TRAINING_MODE": "leaf_tile"},
+            instance_type="ml.g5.2xlarge",
+            volume_size_gb=100,
+            max_runtime_seconds=18000,
+            tile_selection_s3_uri="s3://bucket/out/inputs/tile-selection",
+        )
+
+        channels = {channel["ChannelName"]: channel for channel in payload["InputDataConfig"]}
+        self.assertEqual(
+            channels["tile-selection"]["DataSource"]["S3DataSource"]["S3Uri"],
+            "s3://bucket/out/inputs/tile-selection",
+        )
+
+    def test_attach_tile_selection_channel_uses_absolute_paths_for_tiled_train_stages(self):
+        stages = [
+            benchmark.BenchmarkStage("M0_monolithic", "train", "monolithic", "s3://bucket/mono"),
+            benchmark.BenchmarkStage("T0_tile_11", "train", "leaf_tile", "s3://bucket/tile"),
+            benchmark.BenchmarkStage("MERGE", "merge", "strict_core", "s3://bucket/merge"),
+        ]
+
+        benchmark.attach_tile_selection_channel_to_stages(stages)
+
+        self.assertNotIn("TILE_MANIFEST_PATH", stages[0].environment or {})
+        self.assertEqual(
+            stages[1].environment["TILE_MANIFEST_PATH"],
+            "/opt/ml/input/data/tile-selection/3dgs_tile_manifest.json",
+        )
+        self.assertEqual(
+            stages[1].environment["VIEW_BUCKET_MANIFEST_PATH"],
+            "/opt/ml/input/data/tile-selection/3dgs_view_buckets.json",
+        )
+        self.assertIsNone(stages[2].environment)
+
+    def test_upload_tile_selection_manifests_copies_resolved_inputs(self):
+        calls = []
+
+        def fake_run(command, *, capture_output=False):
+            calls.append(command)
+            return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+
+        with mock.patch.object(benchmark, "run_command", side_effect=fake_run):
+            benchmark.upload_tile_selection_manifests(
+                {"tiles": [{"tile_id": "tile_11"}]},
+                {"boundary_camera_ids": ["DJI_0001.JPG"]},
+                "s3://bucket/out/inputs/tile-selection/",
+            )
+
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(calls[0][:3], ["aws", "s3", "cp"])
+        self.assertEqual(calls[0][-1], "s3://bucket/out/inputs/tile-selection/3dgs_tile_manifest.json")
+        self.assertEqual(calls[1][-1], "s3://bucket/out/inputs/tile-selection/3dgs_view_buckets.json")
 
     def test_create_quality_review_processing_payload_includes_model_and_colmap_inputs(self):
         payload = benchmark.create_quality_review_processing_payload(
