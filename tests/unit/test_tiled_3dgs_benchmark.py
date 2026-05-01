@@ -28,6 +28,15 @@ SPEC.loader.exec_module(benchmark)
 
 
 class Tiled3DGSBenchmarkTests(unittest.TestCase):
+    def test_load_json_path_or_s3_reads_local_override(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            payload_path = Path(tmpdir) / "manifest.json"
+            payload_path.write_text('{"tiles": [{"tile_id": "tile_00"}]}', encoding="utf-8")
+
+            payload = benchmark.load_json_path_or_s3(str(payload_path))
+
+        self.assertEqual(payload["tiles"][0]["tile_id"], "tile_00")
+
     def test_resolve_proof_profile_defaults_to_quality_gate_low_memory_for_single_job_review(self):
         resolved = benchmark.resolve_proof_profile(
             None,
@@ -371,6 +380,63 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(stages[3].stage_type, "merge")
         self.assertEqual(stages[1].job_name, "bench-456-tile-00")
 
+    def test_fanout_leaf_tiles_can_mount_external_scaffold(self):
+        manifest = {"tiles": [{"tile_id": "tile_00"}]}
+
+        stages = benchmark.build_benchmark_stages(
+            manifest=manifest,
+            branch_name="agent-branch",
+            output_root_s3_uri="s3://bucket/out",
+            job_prefix="bench",
+            include_monolithic=False,
+            include_scaffold=False,
+            include_merge=True,
+            orchestration_mode="fanout",
+            tile_ids=["tile_00"],
+            monolithic_max_iterations=8000,
+            scaffold_max_iterations=2000,
+            tile_max_iterations=12000,
+            training_max_runtime_seconds=21600,
+            extra_env={},
+            timestamp=456,
+            downscale_factor=1,
+            include_review=False,
+            proof_profile=benchmark.PROOF_PROFILE_NONE,
+            scaffold_artifact_s3_uri="s3://bucket/reusable-scaffold/model.tar.gz",
+        )
+
+        self.assertEqual([stage.stage_name for stage in stages], ["T0_tile_00", "MERGE_strict_core"])
+        tile_stage = stages[0]
+        self.assertEqual(tile_stage.depends_on, [])
+        self.assertEqual(tile_stage.environment["GLOBAL_SCAFFOLD_SOURCE_DIR"], benchmark.SCAFFOLD_CHANNEL_DIR)
+
+    def test_resolve_stage_scaffold_artifact_supports_fanout_leaf_dependencies(self):
+        leaf_stage = benchmark.BenchmarkStage(
+            stage_name="T0_tile_00",
+            stage_type="train",
+            training_mode="leaf_tile",
+            output_s3_uri="s3://bucket/out/tiles/tile_00",
+            depends_on=["S0_scaffold"],
+        )
+
+        self.assertEqual(
+            benchmark.resolve_stage_scaffold_artifact_s3_uri(
+                leaf_stage,
+                explicit_scaffold_artifact_s3_uri="s3://bucket/external-scaffold/model.tar.gz",
+                completed_stage_outputs={},
+            ),
+            "s3://bucket/external-scaffold/model.tar.gz",
+        )
+        self.assertEqual(
+            benchmark.resolve_stage_scaffold_artifact_s3_uri(
+                leaf_stage,
+                completed_stage_outputs={
+                    "S0_scaffold": {"model_artifacts_s3_uri": "s3://bucket/generated-scaffold/model.tar.gz"}
+                },
+            ),
+            "s3://bucket/generated-scaffold/model.tar.gz",
+        )
+
     def test_build_adaptive_tile_budget_plan_downshifts_low_retained_tile(self):
         tile = {
             "tile_id": "tile_11",
@@ -389,6 +455,140 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(budget.max_iterations, 3000)
         self.assertEqual(budget.max_selected_images, 96)
         self.assertIn("low_prior_retained_gaussians", budget.reasons)
+
+    def test_apply_prior_tile_stats_enables_low_value_tile_classification(self):
+        manifest = {
+            "tiles": [
+                {
+                    "tile_id": "tile_11",
+                    "base_camera_ids": [f"frame_{index:03d}.jpg" for index in range(188)],
+                }
+            ]
+        }
+        prior_stats = benchmark.normalize_prior_tile_stats(
+            {"tiles": {"tile_11": {"retained_gaussians": 68, "duration_hours": 3.99}}}
+        )
+
+        resolved_manifest = benchmark.apply_prior_tile_stats(manifest, prior_stats)
+        budget = benchmark.build_tile_budget_plan(
+            resolved_manifest["tiles"][0],
+            mode="adaptive",
+            tile_max_iterations=12000,
+            max_images_per_tile=188,
+        )
+
+        self.assertEqual(resolved_manifest["tiles"][0]["prior_retained_gaussians"], 68)
+        self.assertEqual(resolved_manifest["tiles"][0]["prior_duration_hours"], 3.99)
+        self.assertEqual(budget.budget_class, "tiny")
+        self.assertEqual(budget.max_iterations, 3000)
+
+    def test_reuse_tile_cache_turns_matching_tile_into_non_training_stage(self):
+        tile_entry = {
+            "tile_id": "tile_11",
+            "base_camera_ids": [f"frame_{index:03d}.jpg" for index in range(188)],
+            "prior_retained_gaussians": 68,
+        }
+        budget = benchmark.build_tile_budget_plan(
+            tile_entry,
+            mode="adaptive",
+            tile_max_iterations=12000,
+            max_images_per_tile=96,
+            input_colmap_s3_uri="s3://bucket/colmap",
+            image_uri="123.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:test",
+            scaffold_artifact_s3_uri="s3://bucket/scaffold/model.tar.gz",
+        )
+
+        stages = benchmark.build_benchmark_stages(
+            manifest={"tiles": [tile_entry]},
+            branch_name="agent-branch",
+            output_root_s3_uri="s3://bucket/out",
+            job_prefix="bench",
+            include_monolithic=False,
+            include_scaffold=False,
+            include_merge=True,
+            orchestration_mode="fanout",
+            tile_ids=["tile_11"],
+            monolithic_max_iterations=8000,
+            scaffold_max_iterations=2000,
+            tile_max_iterations=12000,
+            training_max_runtime_seconds=3600,
+            extra_env={},
+            timestamp=456,
+            downscale_factor=1,
+            include_review=False,
+            proof_profile=benchmark.PROOF_PROFILE_NONE,
+            tile_budget_mode="adaptive",
+            max_images_per_tile=96,
+            input_colmap_s3_uri="s3://bucket/colmap",
+            image_uri="123.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:test",
+            scaffold_artifact_s3_uri="s3://bucket/scaffold/model.tar.gz",
+            reuse_tile_cache=True,
+            tile_cache_manifest={
+                "tile_11": {
+                    "input_hash": budget.input_hash,
+                    "artifact_s3_uri": "s3://bucket/cache/tile_11/model.tar.gz",
+                    "quality_gate_status": "passed",
+                }
+            },
+        )
+
+        self.assertEqual(stages[0].stage_type, "cached_tile")
+        self.assertEqual(stages[0].cache_status, "hit")
+        self.assertEqual(stages[0].source_artifact_uri, "s3://bucket/cache/tile_11/model.tar.gz")
+        self.assertEqual(stages[1].depends_on, ["T0_tile_11"])
+        cost = benchmark.estimate_training_cost(
+            stages,
+            instance_type="ml.g5.2xlarge",
+            max_runtime_seconds=3600,
+            baseline_iterations=12000,
+        )
+        self.assertEqual(cost["train_stage_count"], 0)
+        self.assertEqual(cost["estimated_usd"], 0.0)
+
+    def test_reuse_tile_cache_rejects_stale_hash_and_keeps_training_stage(self):
+        tile_entry = {
+            "tile_id": "tile_11",
+            "base_camera_ids": [f"frame_{index:03d}.jpg" for index in range(188)],
+            "prior_retained_gaussians": 68,
+        }
+
+        stages = benchmark.build_benchmark_stages(
+            manifest={"tiles": [tile_entry]},
+            branch_name="agent-branch",
+            output_root_s3_uri="s3://bucket/out",
+            job_prefix="bench",
+            include_monolithic=False,
+            include_scaffold=False,
+            include_merge=False,
+            orchestration_mode="fanout",
+            tile_ids=["tile_11"],
+            monolithic_max_iterations=8000,
+            scaffold_max_iterations=2000,
+            tile_max_iterations=12000,
+            training_max_runtime_seconds=3600,
+            extra_env={},
+            timestamp=456,
+            downscale_factor=1,
+            include_review=False,
+            proof_profile=benchmark.PROOF_PROFILE_NONE,
+            tile_budget_mode="adaptive",
+            max_images_per_tile=96,
+            input_colmap_s3_uri="s3://bucket/colmap",
+            image_uri="123.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:test",
+            scaffold_artifact_s3_uri="s3://bucket/scaffold/model.tar.gz",
+            reuse_tile_cache=True,
+            tile_cache_manifest={
+                "tile_11": {
+                    "input_hash": "stale",
+                    "artifact_s3_uri": "s3://bucket/cache/tile_11/model.tar.gz",
+                    "quality_gate_status": "passed",
+                }
+            },
+        )
+
+        self.assertEqual(stages[0].stage_type, "train")
+        self.assertEqual(stages[0].cache_status, "miss")
+        self.assertIn("input_hash_mismatch", stages[0].cache_rejection_reasons)
 
     def test_build_adaptive_tile_budget_plan_keeps_horizon_tile_hard(self):
         tile = {

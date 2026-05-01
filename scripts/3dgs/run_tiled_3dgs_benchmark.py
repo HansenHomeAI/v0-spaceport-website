@@ -33,6 +33,7 @@ DEFAULT_VOLUME_SIZE_GB = 100
 DEFAULT_TRAINING_MAX_RUNTIME_SECONDS = 14400
 DEFAULT_REVIEW_MAX_RUNTIME_SECONDS = 7200
 DEFAULT_CHECKPOINT_SAVE_STEPS = 1000
+SCAFFOLD_CHANNEL_DIR = "/opt/ml/input/data/scaffold"
 UNSUPPORTED_BILATERAL_VARIANTS = {"splatfacto-w-light", "splatfacto-w"}
 PROOF_PROFILE_NONE = "none"
 PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY = "quality_gate_low_memory"
@@ -81,6 +82,15 @@ def parse_s3_uri(uri: str) -> tuple[str, str]:
 def load_s3_json(s3_uri: str) -> dict:
     result = run_command(["aws", "s3", "cp", s3_uri, "-"], capture_output=True)
     return json.loads(result.stdout)
+
+
+def load_json_path_or_s3(uri_or_path: str) -> dict:
+    value = uri_or_path.strip()
+    if not value:
+        return {}
+    if value.startswith("s3://"):
+        return load_s3_json(value)
+    return json.loads(Path(value).read_text(encoding="utf-8"))
 
 
 def s3_json_or_none(s3_uri: str) -> dict | None:
@@ -273,6 +283,123 @@ def tile_prior_retained_gaussians(tile_entry: dict) -> int | None:
         except (TypeError, ValueError):
             continue
     return None
+
+
+def normalize_prior_tile_stats(payload: dict) -> dict[str, dict]:
+    raw_tiles = payload.get("tiles", payload)
+    if isinstance(raw_tiles, list):
+        iterable = raw_tiles
+    elif isinstance(raw_tiles, dict):
+        iterable = [
+            {"tile_id": tile_id, **tile_payload}
+            for tile_id, tile_payload in raw_tiles.items()
+            if isinstance(tile_payload, dict)
+        ]
+    else:
+        iterable = []
+
+    stats: dict[str, dict] = {}
+    for raw_tile in iterable:
+        if not isinstance(raw_tile, dict):
+            continue
+        tile_id = str(raw_tile.get("tile_id", "")).strip()
+        if not tile_id:
+            continue
+        tile_stats: dict[str, object] = {}
+        for source_key, target_key in (
+            ("retained_gaussians", "prior_retained_gaussians"),
+            ("prior_retained_gaussians", "prior_retained_gaussians"),
+            ("selected_image_count", "prior_selected_image_count"),
+            ("duration_hours", "prior_duration_hours"),
+            ("wall_time_hours", "prior_duration_hours"),
+            ("billable_time_seconds", "prior_billable_time_seconds"),
+        ):
+            value = raw_tile.get(source_key)
+            if value not in (None, ""):
+                tile_stats[target_key] = value
+        if tile_stats:
+            stats[tile_id] = tile_stats
+    return stats
+
+
+def apply_prior_tile_stats(tile_manifest: dict, prior_stats: dict[str, dict]) -> dict:
+    if not prior_stats:
+        return tile_manifest
+    resolved_manifest = dict(tile_manifest)
+    resolved_tiles: list[dict] = []
+    for tile in tile_manifest.get("tiles", []):
+        tile_entry = dict(tile)
+        stats = prior_stats.get(str(tile_entry.get("tile_id")))
+        if stats:
+            for key, value in stats.items():
+                tile_entry.setdefault(key, value)
+        resolved_tiles.append(tile_entry)
+    resolved_manifest["tiles"] = resolved_tiles
+    return resolved_manifest
+
+
+def normalize_tile_cache_manifest(payload: dict) -> dict[str, dict]:
+    raw_entries = payload.get("tiles") or payload.get("cache_entries") or payload.get("tile_cache") or payload
+    if isinstance(raw_entries, list):
+        iterable = raw_entries
+    elif isinstance(raw_entries, dict):
+        iterable = [
+            {"tile_id": tile_id, **tile_payload}
+            for tile_id, tile_payload in raw_entries.items()
+            if isinstance(tile_payload, dict)
+        ]
+    else:
+        iterable = []
+
+    cache: dict[str, dict] = {}
+    for raw_entry in iterable:
+        if not isinstance(raw_entry, dict):
+            continue
+        tile_id = str(raw_entry.get("tile_id", "")).strip()
+        if not tile_id:
+            continue
+        cache[tile_id] = dict(raw_entry)
+    return cache
+
+
+def tile_cache_artifact_uri(cache_entry: dict) -> str:
+    return str(
+        cache_entry.get("artifact_s3_uri")
+        or cache_entry.get("model_artifacts_s3_uri")
+        or cache_entry.get("source_artifact_uri")
+        or cache_entry.get("cache_artifact_s3_uri")
+        or ""
+    ).strip()
+
+
+def tile_cache_status(cache_entry: dict) -> str:
+    return str(
+        cache_entry.get("quality_gate_status")
+        or cache_entry.get("quality_status")
+        or cache_entry.get("preflight_status")
+        or cache_entry.get("promotion_readiness")
+        or cache_entry.get("status")
+        or ""
+    ).strip().lower()
+
+
+def resolve_tile_cache_hit(tile_budget: "TileBudgetPlan", cache_entry: dict | None) -> tuple[dict | None, list[str]]:
+    if not cache_entry:
+        return None, ["no_cache_entry"]
+    reasons: list[str] = []
+    artifact_uri = tile_cache_artifact_uri(cache_entry)
+    if not artifact_uri:
+        reasons.append("missing_artifact_s3_uri")
+    cached_hash = str(cache_entry.get("input_hash", "")).strip()
+    if cached_hash != tile_budget.input_hash:
+        reasons.append("input_hash_mismatch")
+    status = tile_cache_status(cache_entry)
+    pass_statuses = {"passed", "pass", "ok", "promoted", "accepted", "quality_passed", "preflight_passed"}
+    if status not in pass_statuses:
+        reasons.append("quality_status_not_passing")
+    if reasons:
+        return None, reasons
+    return {**cache_entry, "artifact_s3_uri": artifact_uri, "quality_gate_status": status}, []
 
 
 @dataclass(frozen=True)
@@ -603,12 +730,38 @@ class BenchmarkStage:
     checkpoint_uri: str | None = None
     spot_enabled: bool = False
     quality_gate_status: str | None = None
+    cache_status: str | None = None
+    cache_rejection_reasons: list[str] | None = None
 
     def to_dict(self) -> dict:
         payload = asdict(self)
         payload["depends_on"] = self.depends_on or []
         payload["environment"] = self.environment or {}
+        payload["cache_rejection_reasons"] = self.cache_rejection_reasons or []
         return payload
+
+
+def resolve_stage_scaffold_artifact_s3_uri(
+    stage: BenchmarkStage,
+    *,
+    explicit_scaffold_artifact_s3_uri: str = "",
+    completed_stage_outputs: Dict[str, dict] | None = None,
+) -> str:
+    """Resolve the scaffold artifact that must be mounted for a training stage."""
+    if stage.training_mode == "tiled_pipeline":
+        return explicit_scaffold_artifact_s3_uri.strip()
+    if stage.training_mode != "leaf_tile":
+        return ""
+    explicit_uri = explicit_scaffold_artifact_s3_uri.strip()
+    if explicit_uri:
+        return explicit_uri
+
+    completed = completed_stage_outputs or {}
+    for dependency in stage.depends_on or []:
+        scaffold_uri = str(completed.get(dependency, {}).get("model_artifacts_s3_uri", "") or "").strip()
+        if scaffold_uri:
+            return scaffold_uri
+    return ""
 
 
 @dataclass
@@ -727,6 +880,8 @@ def build_benchmark_stages(
     instance_type: str | None = None,
     enable_spot: bool = False,
     checkpoint_s3_prefix: str = "",
+    reuse_tile_cache: bool = False,
+    tile_cache_manifest: dict[str, dict] | None = None,
 ) -> list[BenchmarkStage]:
     output_root = normalize_s3_prefix(output_root_s3_uri)
     tile_manifest_name = "3dgs_tile_manifest.json"
@@ -848,6 +1003,46 @@ def build_benchmark_stages(
             stage_env.setdefault("TILE_INPUT_HASH", tile_budget.input_hash)
             if tile_budget.max_selected_images > 0:
                 stage_env.setdefault("TRAINING_MAX_SELECTED_IMAGES", str(tile_budget.max_selected_images))
+        if scaffold_artifact_s3_uri:
+            stage_env.setdefault("GLOBAL_SCAFFOLD_SOURCE_DIR", SCAFFOLD_CHANNEL_DIR)
+        cache_hit, cache_rejection_reasons = resolve_tile_cache_hit(
+            tile_budget,
+            (tile_cache_manifest or {}).get(tile_id) if reuse_tile_cache else None,
+        )
+        if reuse_tile_cache and cache_hit is not None:
+            stages.append(
+                BenchmarkStage(
+                    stage_name=f"T0_{tile_id}",
+                    stage_type="cached_tile",
+                    training_mode="leaf_tile",
+                    job_name=None,
+                    tile_id=tile_id,
+                    output_s3_uri=f"{output_root}/tiles/{tile_id}",
+                    depends_on=[],
+                    environment=build_training_environment(
+                        training_mode="leaf_tile",
+                        tile_manifest_name=tile_manifest_name,
+                        view_bucket_manifest_name=view_bucket_manifest_name,
+                        tile_id=tile_id,
+                        max_iterations=0,
+                        extra_env=stage_env,
+                        training_timeout_seconds=training_max_runtime_seconds,
+                        downscale_factor=downscale_factor,
+                    ),
+                    budget_class=tile_budget.budget_class if tile_budget_mode == "adaptive" else None,
+                    selected_image_count=tile_budget.selected_image_count if tile_budget_mode == "adaptive" else None,
+                    max_iterations=0,
+                    max_selected_images=tile_budget.max_selected_images if tile_budget_mode == "adaptive" else None,
+                    input_hash=tile_budget.input_hash if tile_budget_mode == "adaptive" else None,
+                    source_artifact_uri=str(cache_hit.get("artifact_s3_uri")),
+                    checkpoint_uri=None,
+                    spot_enabled=False,
+                    quality_gate_status=str(cache_hit.get("quality_gate_status") or "passed"),
+                    cache_status="hit",
+                    cache_rejection_reasons=[],
+                )
+            )
+            continue
         stages.append(
             BenchmarkStage(
                 stage_name=f"T0_{tile_id}",
@@ -876,6 +1071,8 @@ def build_benchmark_stages(
                 checkpoint_uri=tile_budget.checkpoint_uri,
                 spot_enabled=tile_budget.spot_enabled,
                 quality_gate_status=tile_budget.quality_gate_status if tile_budget_mode == "adaptive" else None,
+                cache_status="miss" if reuse_tile_cache else None,
+                cache_rejection_reasons=cache_rejection_reasons if reuse_tile_cache else None,
             )
         )
 
@@ -1386,7 +1583,27 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--reuse-tile-cache",
         action="store_true",
-        help="Record tile input hashes/source artifact lineage for reuse-aware runs.",
+        help="Reuse validated per-tile artifacts from --tile-cache-manifest-json when input hashes match.",
+    )
+    parser.add_argument(
+        "--tile-cache-manifest-json",
+        default="",
+        help="Optional local path or s3:// JSON with validated per-tile cache records for --reuse-tile-cache.",
+    )
+    parser.add_argument(
+        "--prior-tile-stats-json",
+        default="",
+        help="Optional local path or s3:// JSON with prior retained gaussians/durations for adaptive tile budgets.",
+    )
+    parser.add_argument(
+        "--tile-manifest-json",
+        default="",
+        help="Optional local path or s3:// 3dgs_tile_manifest.json override for no-spend production-shaped planning.",
+    )
+    parser.add_argument(
+        "--view-bucket-json",
+        default="",
+        help="Optional local path or s3:// 3dgs_view_buckets.json override for no-spend production-shaped planning.",
     )
     parser.add_argument("--enable-spot", action="store_true", help="Use SageMaker Managed Spot Training.")
     parser.add_argument(
@@ -1420,7 +1637,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--scaffold-artifact-s3-uri",
         default="",
-        help="Optional S3 prefix containing a prior scaffold model.tar.gz or splat.ply for single-job tiled reuse.",
+        help="Optional S3 prefix containing a prior scaffold model.tar.gz or splat.ply for tiled or fanout leaf reuse.",
     )
     parser.add_argument("--wait", action="store_true", help="Wait for submitted jobs and collect summaries.")
     parser.add_argument("--poll-seconds", type=int, default=60)
@@ -1552,8 +1769,8 @@ def main() -> int:
         orchestration_mode=args.orchestration_mode,
         include_review=include_review,
     )
-    if args.scaffold_artifact_s3_uri and args.orchestration_mode != "single_job":
-        raise RuntimeError("--scaffold-artifact-s3-uri is only supported for single_job orchestration")
+    if args.scaffold_artifact_s3_uri and args.orchestration_mode == "fanout" and not args.skip_scaffold:
+        raise RuntimeError("--scaffold-artifact-s3-uri with fanout requires --skip-scaffold to avoid retraining scaffold")
     context = resolve_execution_context(
         branch_name=branch_name,
         timestamp=timestamp,
@@ -1566,8 +1783,16 @@ def main() -> int:
     chunk_planner_s3_uri = f"{colmap_s3_uri}/chunk_planner_manifest.json"
     sfm_metadata_s3_uri = f"{colmap_s3_uri}/sfm_metadata.json"
 
-    tile_manifest_payload = s3_json_or_none(tile_manifest_s3_uri)
-    view_bucket_payload = s3_json_or_none(view_bucket_s3_uri)
+    tile_manifest_payload = (
+        load_json_path_or_s3(args.tile_manifest_json)
+        if args.tile_manifest_json
+        else s3_json_or_none(tile_manifest_s3_uri)
+    )
+    view_bucket_payload = (
+        load_json_path_or_s3(args.view_bucket_json)
+        if args.view_bucket_json
+        else s3_json_or_none(view_bucket_s3_uri)
+    )
     chunk_planner_payload = s3_json_or_none(chunk_planner_s3_uri)
     sfm_metadata_payload = s3_json_or_none(sfm_metadata_s3_uri)
     sparse_support_dir = None
@@ -1583,6 +1808,9 @@ def main() -> int:
         sfm_metadata=sfm_metadata_payload,
         colmap_sparse_dir=sparse_support_dir,
     )
+    prior_tile_stats = normalize_prior_tile_stats(load_json_path_or_s3(args.prior_tile_stats_json))
+    tile_manifest = apply_prior_tile_stats(tile_manifest, prior_tile_stats)
+    tile_cache_manifest = normalize_tile_cache_manifest(load_json_path_or_s3(args.tile_cache_manifest_json))
 
     selected_tiles = select_tile_ids(
         tile_manifest,
@@ -1628,6 +1856,8 @@ def main() -> int:
         instance_type=args.instance_type,
         enable_spot=args.enable_spot,
         checkpoint_s3_prefix=args.checkpoint_s3_prefix,
+        reuse_tile_cache=args.reuse_tile_cache,
+        tile_cache_manifest=tile_cache_manifest,
     )
     cost_estimate = estimate_training_cost(
         stages,
@@ -1644,9 +1874,13 @@ def main() -> int:
         "input_colmap_s3_uri": colmap_s3_uri,
         "tile_manifest_s3_uri": tile_manifest_s3_uri,
         "view_bucket_s3_uri": view_bucket_s3_uri,
+        "tile_manifest_json_override": args.tile_manifest_json,
+        "view_bucket_json_override": args.view_bucket_json,
         "chunk_planner_s3_uri": chunk_planner_s3_uri,
         "sfm_metadata_s3_uri": sfm_metadata_s3_uri,
         "manifest_resolution": manifest_resolution,
+        "prior_tile_stats_json": args.prior_tile_stats_json,
+        "prior_tile_stats_tile_count": len(prior_tile_stats),
         "selected_tile_ids": selected_tiles,
         "downscale_factor": args.downscale_factor,
         "proof_profile": resolved_proof_profile,
@@ -1659,6 +1893,8 @@ def main() -> int:
         "max_images_per_tile": args.max_images_per_tile,
         "max_tile_concurrency": args.max_tile_concurrency,
         "reuse_tile_cache": bool(args.reuse_tile_cache),
+        "tile_cache_manifest_json": args.tile_cache_manifest_json,
+        "tile_cache_entry_count": len(tile_cache_manifest),
         "enable_spot": bool(args.enable_spot),
         "checkpoint_s3_prefix": args.checkpoint_s3_prefix,
         "checkpoint_save_steps": args.checkpoint_save_steps,
@@ -1701,6 +1937,14 @@ def main() -> int:
     extracted_stage_dirs: Dict[str, Path] = {}
 
     def submit_training_stage(stage: BenchmarkStage) -> None:
+        scaffold_artifact_s3_uri = resolve_stage_scaffold_artifact_s3_uri(
+            stage,
+            explicit_scaffold_artifact_s3_uri=args.scaffold_artifact_s3_uri,
+            completed_stage_outputs=completed_stage_outputs,
+        )
+        stage_environment = dict(stage.environment or {})
+        if scaffold_artifact_s3_uri and stage.training_mode in {"leaf_tile", "tiled_pipeline"}:
+            stage_environment.setdefault("GLOBAL_SCAFFOLD_SOURCE_DIR", SCAFFOLD_CHANNEL_DIR)
         payload = create_training_job_payload(
             branch_name=branch_name,
             job_name=stage.job_name or stage.stage_name,
@@ -1708,13 +1952,11 @@ def main() -> int:
             role_arn=context.role_arn,
             input_s3_uri=colmap_s3_uri,
             output_s3_uri=stage.output_s3_uri,
-            environment=stage.environment or {},
+            environment=stage_environment,
             instance_type=args.instance_type,
             volume_size_gb=args.volume_size_gb,
             max_runtime_seconds=args.training_max_runtime_seconds,
-            scaffold_artifact_s3_uri=(
-                args.scaffold_artifact_s3_uri if stage.training_mode == "tiled_pipeline" else ""
-            ),
+            scaffold_artifact_s3_uri=scaffold_artifact_s3_uri,
             enable_spot=args.enable_spot,
             checkpoint_s3_uri=stage.checkpoint_uri
             or (
@@ -1760,6 +2002,38 @@ def main() -> int:
         completed = summarize_training_metadata(stage.stage_name, extracted_dir or Path("/nonexistent"), describe_payload)
         summary["completed_jobs"].append(completed)
         completed_stage_outputs[stage.stage_name] = completed
+
+    def collect_cached_tile_stage(stage: BenchmarkStage) -> None:
+        model_artifacts_s3_uri = str(stage.source_artifact_uri or "").strip()
+        if not model_artifacts_s3_uri:
+            raise RuntimeError(f"Cached stage {stage.stage_name} is missing source_artifact_uri")
+        extracted_dir = None
+        if merge_root is not None:
+            stage_dir = merge_root / stage.stage_name
+            extracted_dir = download_and_extract_model_artifact(
+                s3_uri=model_artifacts_s3_uri,
+                target_dir=stage_dir,
+                members=artifact_members_for_stage(stage),
+            )
+        if stage.tile_id and extracted_dir is not None:
+            extracted_stage_dirs[stage.tile_id] = extracted_dir
+        completed = summarize_training_metadata(
+            stage.stage_name,
+            extracted_dir or Path("/nonexistent"),
+            {
+                "BillableTimeInSeconds": 0,
+                "TrainingTimeInSeconds": 0,
+                "ModelArtifacts": {"S3ModelArtifacts": model_artifacts_s3_uri},
+            },
+        )
+        completed["cache_hit"] = True
+        completed["tile_id"] = stage.tile_id
+        summary["completed_jobs"].append(completed)
+        completed_stage_outputs[stage.stage_name] = completed
+
+    for stage in stages:
+        if stage.stage_type == "cached_tile":
+            collect_cached_tile_stage(stage)
 
     train_stages = [stage for stage in stages if stage.stage_type == "train"]
     if args.orchestration_mode == "fanout" and args.wait:
