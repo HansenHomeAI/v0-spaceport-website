@@ -1,0 +1,144 @@
+{
+  "branch": "agent-90742618-md1-geometry-consistency",
+  "stack_name": "SpaceportMLPipelineStagingStack",
+  "stack_resolution": "shared_staging_fallback",
+  "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent90742618md1geometryconsistency",
+  "role_arn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+  "colmap_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap",
+  "output_root_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-canary-review-20260503",
+  "review_camera_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-canary-review-20260503/review-input",
+  "baseline_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review",
+  "execution_mode": "processing",
+  "render_settings": {
+    "render_scale": 0.25,
+    "max_gaussians_per_view": 500000,
+    "cull_margin": 0.5,
+    "min_gaussians_on_oom": 75000,
+    "tile_ids": "tile_00,tile_02,tile_11,tile_13"
+  },
+  "variants": [
+    "r4_canary"
+  ],
+  "staged_inputs": {
+    "r4_canary": {
+      "local_model_tarball": null,
+      "model_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-canary-review-20260503/inputs/r4_canary/model.tar.gz",
+      "merge_report": "",
+      "source": "direct_candidate_artifact"
+    }
+  },
+  "jobs": {
+    "r4_canary": {
+      "job_name": "md1-r1-r4-canary-1777827594-quality",
+      "execution_mode": "processing",
+      "model_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-canary-review-20260503/inputs/r4_canary/model.tar.gz",
+      "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-canary-review-20260503/outputs/r4_canary",
+      "baseline_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review",
+      "payload": {
+        "ProcessingJobName": "md1-r1-r4-canary-1777827594-quality",
+        "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+        "AppSpecification": {
+          "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent90742618md1geometryconsistency",
+          "ContainerEntrypoint": [
+            "python3",
+            "/opt/ml/code/run_tiled_quality_review.py"
+          ]
+        },
+        "Environment": {
+          "QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET": "4",
+          "QUALITY_REVIEW_CAMERA_SET": "smoke",
+          "QUALITY_REVIEW_RENDER_SCALE": "0.25",
+          "QUALITY_REVIEW_MAX_GAUSSIANS_PER_VIEW": "500000",
+          "QUALITY_REVIEW_CULL_MARGIN": "0.5",
+          "QUALITY_REVIEW_MIN_GAUSSIANS_ON_OOM": "75000",
+          "PYTHONUNBUFFERED": "1",
+          "QUALITY_REVIEW_TILE_IDS": "tile_00,tile_02,tile_11,tile_13",
+          "FROZEN_REVIEW_CAMERA_MANIFEST": "/opt/ml/processing/input/review/review_camera_manifest.json",
+          "BASELINE_REVIEW_MANIFEST": "/opt/ml/processing/input/baseline-review/quality_review_manifest.json"
+        },
+        "ProcessingInputs": [
+          {
+            "InputName": "model",
+            "S3Input": {
+              "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-canary-review-20260503/inputs/r4_canary/model.tar.gz",
+              "LocalPath": "/opt/ml/processing/input/model",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File"
+            }
+          },
+          {
+            "InputName": "colmap",
+            "S3Input": {
+              "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap",
+              "LocalPath": "/opt/ml/processing/input/colmap",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File"
+            }
+          },
+          {
+            "InputName": "review-manifest",
+            "S3Input": {
+              "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-canary-review-20260503/review-input",
+              "LocalPath": "/opt/ml/processing/input/review",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File"
+            }
+          },
+          {
+            "InputName": "baseline-review",
+            "S3Input": {
+              "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review",
+              "LocalPath": "/opt/ml/processing/input/baseline-review",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File"
+            }
+          }
+        ],
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "OutputName": "quality-review",
+              "S3Output": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-canary-review-20260503/outputs/r4_canary",
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob"
+              }
+            }
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceType": "ml.g5.2xlarge",
+            "InstanceCount": 1,
+            "VolumeSizeInGB": 100
+          }
+        },
+        "StoppingCondition": {
+          "MaxRuntimeInSeconds": 3600
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "3DGS"
+          },
+          {
+            "Key": "Benchmark",
+            "Value": "true"
+          },
+          {
+            "Key": "Branch",
+            "Value": "agent-90742618-md1-geometry-consistency"
+          },
+          {
+            "Key": "Stage",
+            "Value": "quality-review"
+          }
+        ]
+      }
+    }
+  }
+}

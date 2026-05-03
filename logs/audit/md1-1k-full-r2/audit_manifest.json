@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "e06b17ef75afb4b6220c3abc4a3a772e4961c60d",
-  "current_exact_head_gate_status": "exact-head a7c4c9368bec6f21371757df94f30af0c6eb0067 has green CDK Deploy 25276755095; no Cloudflare Pages run appeared for this non-web cost-control push.",
-  "current_live_compute_status": "2026-05-03T14:36:00Z: no SageMaker training jobs are InProgress after md1-r3od-tile13smoke-1777816055-tile-13 completed. One unrelated Meadow COLMAP processing job r5l80c135adj-1777816705 is InProgress, reading s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip and writing s3://spaceport-ml-processing-staging/manual-validations/r5l80c135adj-1777816705/colmap.",
-  "current_rung": "R2_cost_reduction_checkpoint_resume_split_ready",
+  "current_branch_head": "b122d6f40b034b3f63d1fca6771b9b74d3095652 plus local R4 canary review block/status evidence pending commit/push",
+  "current_exact_head_gate_status": "exact-head b122d6f40b034b3f63d1fca6771b9b74d3095652 has green CDK Deploy 25284322933. No Cloudflare Pages run appeared for this non-web/status-only push.",
+  "current_live_compute_status": "2026-05-03T17:20Z: no SageMaker training jobs are InProgress. One unrelated Meadow COLMAP processing job r5l80c468adj-1777826606 is InProgress on ml.g4dn.xlarge, reading the Meadow archive and writing manual-validations/r5l80c468adj-1777826606/colmap.",
+  "current_rung": "R4_cost_reduction_canary_review_blocked",
   "exact_head_gate_status": "Exact-head 5d209189934eeec5e2788acceca4e5f9d94769bf has green CDK Deploy 25181111382 and green Cloudflare Pages 25181111351. Local follow-up changes pass py_compile, bash -n, tests.unit.test_sogs_supersplat_bundle, md1 production Playwright smoke, pipeline-viewer MD1 LOD smoke, npm run build, and npm run cf:build; next is commit/push and exact-head workflow monitoring.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -699,7 +699,7 @@
     "note": "No Cloudflare Pages run appeared for this non-web/status-only push."
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-sky-v18-promotion/review_comparison.json",
-  "latest_review_status": "V18 remains the promoted quality bar. R2 checkpoint persistence now passes for tiny tile_11: md1-r2ckpt3-tile11-1777678211-tile-11 completed, wrote model.tar.gz, and uploaded compact root plus resume_checkpoint manifests pointing at step-000002999.ckpt. Local launcher/container changes now separate TRAINING_CHECKPOINT_RESUME_S3_URI from TRAINING_CHECKPOINT_S3_URI, so the next restart proof can read the prior compact checkpoint and write fresh checkpoints to a new prefix. No-spend restart dry-run logs/md1-cost-reduction-r2-checkpoint-restart-proof-dryrun-20260503.json submitted zero jobs, estimated $0.3787 / worst-case $1.515 under the $2 cap, and uses the prior resume checkpoint URI explicitly.",
+  "latest_review_status": "R4 canary review is blocked against V18 smoke baseline: near_detail -1.799 dB/-0.081 SSIM, boundary -0.928 dB/-0.075 SSIM/+0.020 LPIPS, horizon -2.554 dB/-0.0667 SSIM/+0.0395 LPIPS plus horizon sky-score regression; candidate render sanity was OK.",
   "live_compute_status": {
     "checked_at": "2026-05-03T06:56:43Z",
     "in_progress_training_jobs": [],
@@ -716,7 +716,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Commit/push tile_13 smoke evidence and R4 reuse-cache dry-run, monitor exact-head workflow, then run only a bounded R4 3-4 tile canary or no-spend quality/merge planning dry-run before any full 14-tile candidate.",
+  "next_unblocked_step": "Adjust adaptive budgets or tile cache policy for high-value/horizon tiles (at minimum tile_00 and tile_13) and run another bounded canary; do not launch full 14-tile training.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -3303,7 +3303,7 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-03T14:36:00Z",
+  "updated": "2026-05-03T17:20:45Z",
   "version": "1.0.0",
   "r5_14tile_2k_preflight": {
     "summary_path": "logs/audit/md1-1k-full-r2/r5_14tile_2k_preflight_summary_20260428215230.json",
@@ -5738,7 +5738,7 @@
     "conclusion": "V15 context padding produced identical p24 metrics to V12/V13 and remains blocked only on horizon_psnr_regression; no promotion run."
   },
   "r5_teacher_context_v12_ctx10_v15_submit_20260429071645Z": "Exact-head 0392ef97dfe5363579f2d88f90fd5e70fd03ed82 is gated green on CDK Deploy 25095508893 and manually-triggered Pages 25095528013. Submitted V15 no-training/no-promotion Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 to add 10 percent preserve-context padding to V12, including historical tile_01, with output s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-ctx10-v15-20260429071522/output/artifact/model.tar.gz. Latest status is InProgress with no ProcessingStartTime, no FailureReason/no ExitMessage, zero output objects, no training jobs InProgress, and only this processing job InProgress.",
-  "last_updated": "2026-05-03T14:36:00Z",
+  "last_updated": "2026-05-03T17:20:45Z",
   "r5_teacher_context_v12_ctx10_v15_smoke_blocked_20260429080934Z": "Exact-head d14f4a4b56aa9c3a215e1f4845450c77188a0687 is gated green on CDK Deploy 25095992000 and manually-triggered Pages 25095995605; alias/hash /health.txt passed, hash https://c896c947.v0-spaceport-website-preview2.pages.dev. V15 Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 completed, model.tar.gz is present at 1203320806 bytes, streaming preflight passed, and explicit p24 smoke md1-r1-r5-teacher-context-v12-ctx10-v15-smoke-p24-1777448068-qu completed with camera coverage OK but blocked only on horizon_psnr_regression. Metrics matched V12 exactly, so context padding did not close the PSNR miss. No SageMaker jobs are InProgress and no promotion was run.",
   "r5_teacher_context_v12_tile01overlap_v16": {
     "processing_job_name": "md1-r5-teacherctx-v12-t01ov-v16-1777450963",
@@ -7276,8 +7276,8 @@
       "next_gate": "Commit/push, wait exact-head CDK and ML container build, then rerun only the bounded tile_02 export smoke on the new digest before any larger fanout."
     }
   },
-  "latest_training_cost_reduction_status": "R3 bounded representative tile_13 smoke passed under $2: 2510 billable seconds/about $1.056, V18 parity defaults, 128 selected images, 8000 iterations, real splat.ply with 482675 vertices, and persisted checkpoints. A no-spend 14-tile adaptive reuse dry-run with tile_02/tile_13 cache hits projects $11.49 estimated / $18.18 worst-case on-demand training spend before merge/review/compression, which reaches the $18-$25 training target on paper. Production remains blocked until a bounded R4 3-4 tile canary plus V18 non-regression review passes.",
-  "latest_live_compute_status": "2026-05-03T14:36:00Z: no SageMaker training jobs are InProgress after md1-r3od-tile13smoke-1777816055-tile-13 completed. One unrelated Meadow COLMAP processing job r5l80c135adj-1777816705 is InProgress, reading s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip and writing s3://spaceport-ml-processing-staging/manual-validations/r5l80c135adj-1777816705/colmap.",
+  "latest_training_cost_reduction_status": "R4 canary package/review completed cheaply but failed the V18 quality gate: training-mode review cost about $0.303, render sanity passed, but same-camera V18 smoke comparison blocked near_detail/boundary/horizon non-regression and support_weighted_overlap still retained only 2907/482675 tile_13 gaussians. Do not run the full 14-tile candidate from these adaptive budgets.",
+  "latest_live_compute_status": "2026-05-03T17:20Z: no SageMaker training jobs are InProgress. One unrelated Meadow COLMAP processing job r5l80c468adj-1777826606 is InProgress on ml.g4dn.xlarge, reading the Meadow archive and writing manual-validations/r5l80c468adj-1777826606/colmap.",
   "md1_r3_tile02_exportfix_smoke_pass_20260503125756Z": {
     "job_name": "md1-r3od-tile02expfix-1777810456-tile-02",
     "status": "Completed",
@@ -7549,5 +7549,96 @@
       ]
     },
     "decision": "R4 canary leaf training and local merge passed under budget; next gate is canary V18 non-regression review before any full 14-tile candidate"
+  },
+  "md1_r4_canary_review_blocked_20260503172045Z": {
+    "summary_json": "logs/md1-cost-reduction-r4-canary-review-summary-20260503.json",
+    "review_dryrun_json": "logs/md1-cost-reduction-r4-canary-review-dryrun-20260503.json",
+    "processing_block_json": "logs/md1-cost-reduction-r4-canary-review-processing-blocked-20260503.json",
+    "training_dryrun_json": "logs/md1-cost-reduction-r4-canary-review-training-dryrun-20260503.json",
+    "training_submit_json": "logs/md1-cost-reduction-r4-canary-review-training-submit-20260503.json",
+    "candidate_review_manifest": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4_canary/quality_review_manifest.json",
+    "candidate_review_comparison": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4_canary/review_comparison.json",
+    "same_camera_v18_smoke_comparison_json": "logs/md1-cost-reduction-r4-canary-v18-smoke-comparison-20260503.json",
+    "support_weighted_overlap_merge_json": "logs/md1-cost-reduction-r4-canary-local-merge-swo-manual-20260503.json",
+    "canary_package": {
+      "s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-canary-review-20260503/inputs/r4_canary/model.tar.gz",
+      "sha256": "03ba2d963d7681f4d93ad0f814b34461062392b3bd7a1e5ea2af6e12f10e415c",
+      "content_length": 208270319,
+      "background_source_tile_id": "tile_13"
+    },
+    "processing_attempt": {
+      "status": "blocked_before_job_creation",
+      "reason": "ml.g5.2xlarge processing quota is 0",
+      "spend_started": false
+    },
+    "training_review_job": {
+      "job_name": "md1-r1-r4-canary-1777827713-quality",
+      "status": "Completed",
+      "billable_time_seconds": 721,
+      "estimated_usd_at_1_515_per_hour": 0.3034,
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-canary-review-20260503-training/outputs/r4_canary/md1-r1-r4-canary-1777827713-quality/output/model.tar.gz"
+    },
+    "candidate_review": {
+      "promotion_readiness_status": "ready_for_comparison",
+      "render_sanity_status": "ok",
+      "checked_view_count": 12,
+      "blank_view_count": 0,
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "selected_tile_ids": [
+        "tile_00",
+        "tile_02",
+        "tile_11",
+        "tile_13"
+      ]
+    },
+    "same_camera_v18_smoke_delta": {
+      "near_detail": {
+        "psnr": -1.7988838540494694,
+        "ssim": -0.08104826509952545,
+        "lpips": -0.05685809254646301
+      },
+      "boundary": {
+        "psnr": -0.9276091886589732,
+        "ssim": -0.07536864280700684,
+        "lpips": 0.02024894952774048
+      },
+      "horizon": {
+        "psnr": -2.553683359302095,
+        "ssim": -0.06670564413070679,
+        "lpips": 0.0394916832447052
+      }
+    },
+    "same_camera_v18_non_regression_status": "blocked",
+    "same_camera_v18_block_reasons": [
+      "near_detail_v18_median_psnr_regression",
+      "near_detail_v18_median_ssim_regression",
+      "boundary_v18_median_psnr_regression",
+      "boundary_v18_median_ssim_regression",
+      "boundary_v18_median_lpips_regression",
+      "horizon_v18_median_psnr_regression",
+      "horizon_v18_median_ssim_regression",
+      "horizon_v18_median_lpips_regression",
+      "horizon_v18_sky_score_regression"
+    ],
+    "merge_diagnostics": {
+      "strict_core_retained_gaussians": 802393,
+      "strict_core_source_gaussians": 1538804,
+      "strict_core_tile13_retained": 2907,
+      "strict_core_tile13_source": 482675,
+      "support_weighted_retained_gaussians": 886642,
+      "support_weighted_tile13_retained": 2907,
+      "support_weighted_did_not_fix_tile13": true
+    },
+    "gates": {
+      "head": "b122d6f40b034b3f63d1fca6771b9b74d3095652",
+      "cdk_deploy_run": 25284322933,
+      "training_jobs_in_progress": [],
+      "processing_jobs_in_progress": [
+        "r5l80c468adj-1777826606"
+      ]
+    },
+    "decision": "blocked_do_not_full_train",
+    "next_unblocked_step": "Adjust adaptive budgets or tile cache policy for high-value/horizon tiles (at minimum tile_00 and tile_13) and run another bounded canary; do not launch full 14-tile training."
   }
 }

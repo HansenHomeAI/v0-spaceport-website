@@ -1,0 +1,101 @@
+{
+  "merge_summary": {
+    "merge_mode": "support_weighted_overlap",
+    "merged_ply": "/tmp/md1-r4-canary-local-merge-swo-20260503/merged/merged_splat.ply",
+    "tile_count": 4,
+    "source_gaussians": 1538804,
+    "retained_gaussians": 886642,
+    "dropped_gaussians": 652162,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "fallback_reasons": [],
+    "tiles": [
+      {
+        "tile_id": "tile_00",
+        "source_ply": "/tmp/md1-r4-canary-local-merge-swo-20260503/merged/tile_outputs/tile_00/splat.ply",
+        "source_gaussians": 523578,
+        "retained_gaussians": 437122,
+        "dropped_gaussians": 86456,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 437122,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_02",
+        "source_ply": "/tmp/md1-r4-canary-local-merge-swo-20260503/merged/tile_outputs/tile_02/splat.ply",
+        "source_gaussians": 472672,
+        "retained_gaussians": 386734,
+        "dropped_gaussians": 85938,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 302485,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 84249,
+          "retained_overlap_count": 0,
+          "retained_context_count": 84249,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_11",
+        "source_ply": "/tmp/md1-r4-canary-local-merge-swo-20260503/merged/tile_outputs/tile_11/splat.ply",
+        "source_gaussians": 59879,
+        "retained_gaussians": 59879,
+        "dropped_gaussians": 0,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 59879,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": false
+        }
+      },
+      {
+        "tile_id": "tile_13",
+        "source_ply": "/tmp/md1-r4-canary-local-merge-swo-20260503/merged/tile_outputs/tile_13/splat.ply",
+        "source_gaussians": 482675,
+        "retained_gaussians": 2907,
+        "dropped_gaussians": 479768,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 2907,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": false
+        }
+      }
+    ]
+  },
+  "source_stage_dirs": {
+    "tile_00": "/tmp/md1-r4-canary-local-merge-20260503/T0_tile_00",
+    "tile_02": "/tmp/md1-r4-canary-local-merge-20260503/T0_tile_02",
+    "tile_11": "/tmp/md1-r4-canary-local-merge-20260503/T0_tile_11",
+    "tile_13": "/tmp/md1-r4-canary-local-merge-20260503/T0_tile_13"
+  }
+}

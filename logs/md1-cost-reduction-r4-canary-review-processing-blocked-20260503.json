@@ -1,0 +1,8 @@
+{
+  "timestamp": "2026-05-03T17:01:17.836451Z",
+  "attempt": "r4_canary_review_processing_submit",
+  "status": "blocked_before_job_creation",
+  "block_reason": "ResourceLimitExceeded: account-level service limit ml.g5.2xlarge for processing job usage is 0 Instances",
+  "spend_started": false,
+  "fallback": "use execution-mode training for the same bounded review payload"
+}
