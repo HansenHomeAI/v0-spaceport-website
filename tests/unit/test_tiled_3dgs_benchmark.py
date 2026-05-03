@@ -776,6 +776,67 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(stages[0].cache_status, "miss")
         self.assertIn("quality_status_not_passing", stages[0].cache_rejection_reasons)
 
+    def test_reuse_tile_cache_rejects_ownership_blocked_artifact(self):
+        tile_entry = {
+            "tile_id": "tile_13",
+            "base_camera_ids": [f"frame_{index:03d}.jpg" for index in range(188)],
+            "prior_min_budget_class": "hard",
+        }
+        training_env = {}
+        benchmark.apply_md1_production_tile_defaults(training_env)
+        budget = benchmark.build_tile_budget_plan(
+            tile_entry,
+            mode="adaptive",
+            tile_max_iterations=12000,
+            max_images_per_tile=188,
+            input_colmap_s3_uri="s3://bucket/colmap",
+            image_uri="123.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:test",
+            scaffold_artifact_s3_uri="s3://bucket/scaffold/model.tar.gz",
+            training_env_fingerprint=benchmark.tile_input_hash_env_fingerprint(training_env),
+        )
+
+        stages = benchmark.build_benchmark_stages(
+            manifest={"tiles": [tile_entry]},
+            branch_name="agent-branch",
+            output_root_s3_uri="s3://bucket/out",
+            job_prefix="bench",
+            include_monolithic=False,
+            include_scaffold=False,
+            include_merge=False,
+            orchestration_mode="fanout",
+            tile_ids=["tile_13"],
+            monolithic_max_iterations=8000,
+            scaffold_max_iterations=2000,
+            tile_max_iterations=12000,
+            training_max_runtime_seconds=18000,
+            extra_env={},
+            timestamp=456,
+            downscale_factor=1,
+            include_review=False,
+            proof_profile=benchmark.PROOF_PROFILE_NONE,
+            tile_budget_mode="adaptive",
+            max_images_per_tile=188,
+            input_colmap_s3_uri="s3://bucket/colmap",
+            image_uri="123.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:test",
+            scaffold_artifact_s3_uri="s3://bucket/scaffold/model.tar.gz",
+            reuse_tile_cache=True,
+            tile_cache_manifest={
+                "tile_13": {
+                    "input_hash": budget.input_hash,
+                    "artifact_s3_uri": "s3://bucket/cache/tile_13/model.tar.gz",
+                    "quality_gate_status": "passed",
+                    "ownership_gate_status": "merge_ownership_blocked",
+                    "source_tile_core_ratio": 0.025578,
+                    "v18_reference_merge_retention_ratio": 0.732865,
+                }
+            },
+        )
+
+        self.assertEqual(stages[0].stage_type, "train")
+        self.assertEqual(stages[0].cache_status, "miss")
+        self.assertIn("ownership_status_blocked", stages[0].cache_rejection_reasons)
+        self.assertIn("ownership_distribution_below_minimum", stages[0].cache_rejection_reasons)
+
     def test_manifest_overrides_must_be_provided_as_a_pair(self):
         with self.assertRaises(RuntimeError) as raised:
             benchmark.validate_manifest_override_args(

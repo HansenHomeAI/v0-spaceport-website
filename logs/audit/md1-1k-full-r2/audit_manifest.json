@@ -589,21 +589,20 @@
       ]
     }
   ],
-  "current_branch_head": "447d89fb5ff9176ee9cba77ff81eb2797a1d109c",
+  "current_branch_head": "577d0d647a0d1782f214afe107d006254172f825",
   "current_exact_head_gate_status": {
-    "head": "447d89fb5ff9176ee9cba77ff81eb2797a1d109c",
-    "cdk_deploy_run_id": 25290876190,
+    "head": "577d0d647a0d1782f214afe107d006254172f825",
+    "cdk_deploy_run_id": 25291236843,
     "cdk_deploy_conclusion": "success",
     "cloudflare_pages_run_id": null,
-    "cloudflare_pages_note": "No Pages run appeared for this non-web/cost-control push."
+    "cloudflare_pages_note": "No Pages run appeared for this non-web/cost-control push.",
+    "checked_at": "2026-05-03T21:29:26Z"
   },
   "current_live_compute_status": {
-    "checked_at": "2026-05-03T21:21:31Z",
-    "sagemaker_training_inprogress": [],
-    "sagemaker_processing_inprogress": [
-      "r5l80c1098adj-1777834845"
-    ],
-    "processing_note": "Unrelated Meadow COLMAP processing job on ml.g4dn.xlarge; not launched by the MD1 3DGS cost-reduction loop."
+    "checked_at": "2026-05-03T22:10:26Z",
+    "sagemaker_training_jobs_in_progress": [],
+    "sagemaker_processing_jobs_in_progress": [],
+    "note": "No SageMaker training or processing jobs are InProgress during the ownership-guard no-spend step."
   },
   "current_rung": "R4_cost_reduction_fanout_observed_projection_ready",
   "exact_head_gate_status": "Exact-head 5d209189934eeec5e2788acceca4e5f9d94769bf has green CDK Deploy 25181111382 and green Cloudflare Pages 25181111351. Local follow-up changes pass py_compile, bash -n, tests.unit.test_sogs_supersplat_bundle, md1 production Playwright smoke, pipeline-viewer MD1 LOD smoke, npm run build, and npm run cf:build; next is commit/push and exact-head workflow monitoring.",
@@ -706,13 +705,14 @@
     "view_bucket_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiled_pipeline/inputs/scaffold/3dgs_view_buckets.json"
   },
   "latest_exact_head_gate": {
-    "head": "e06b17ef75afb4b6220c3abc4a3a772e4961c60d",
-    "cdk_deploy_run_id": 25279912636,
-    "status": "green",
-    "note": "No Cloudflare Pages run appeared for this non-web/status-only push."
+    "head": "577d0d647a0d1782f214afe107d006254172f825",
+    "cdk_deploy_run_id": 25291236843,
+    "cdk_deploy_conclusion": "success",
+    "cloudflare_pages_run_id": null,
+    "checked_at": "2026-05-03T21:29:26Z"
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-sky-v18-promotion/review_comparison.json",
-  "latest_review_status": "V18 remains the promoted quality bar. The cost projection is now in target range, but support_weighted_overlap still retains only 9891/386695 tile_13 splats in the 4-tile diagnosis; no full run is authorized before merge-policy/ownership diagnosis.",
+  "latest_review_status": "V18 remains the promoted quality bar. The cost projection is in target range, but independent tile_13 fanout is ownership-blocked: only 9891/386695 source splats land in tile_13 core, so tile_13 cache reuse is forbidden before an ownership/initialization fix.",
   "live_compute_status": "No SageMaker training jobs are InProgress. Exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. Tile_13 hard proof is complete/preflighted/cached; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
@@ -3309,7 +3309,7 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-03T21:21:31Z",
+  "updated": "2026-05-03T22:10:26Z",
   "version": "1.0.0",
   "r5_14tile_2k_preflight": {
     "summary_path": "logs/audit/md1-1k-full-r2/r5_14tile_2k_preflight_summary_20260428215230.json",
@@ -8071,5 +8071,27 @@
       "tile_02"
     ],
     "next_unblocked_step": "No-spend tile_13 ownership/initialization fix or merge-policy variant before any more paid training."
+  },
+  "r4_tile13_ownership_distribution_20260503": {
+    "diagnosis_path": "logs/md1-cost-reduction-r4-tile13-ownership-distribution-20260503.json",
+    "source_tile13_splats": 386695,
+    "source_tile_core_count": 9891,
+    "source_tile_core_ratio": 0.025578,
+    "v18_reference_retention_ratio": 0.732865,
+    "dominant_neighbor_core": "tile_10",
+    "dominant_neighbor_core_ratio": 0.672566,
+    "decision": "merge_ownership_blocked",
+    "cache_manifest_path": "logs/md1-cost-reduction-r4-tile13-hard-leaf-cache-20260503.json",
+    "ownership_guard_dryrun_path": "logs/md1-cost-reduction-r4-ownership-guard-14tile-dryrun-20260503.json",
+    "ownership_guard_dryrun_submitted_jobs": [],
+    "ownership_guard_dryrun_cache_hits": [
+      "tile_02"
+    ],
+    "ownership_guard_dryrun_tile13_rejection_reasons": [
+      "quality_status_not_passing",
+      "ownership_distribution_below_minimum",
+      "ownership_status_blocked"
+    ],
+    "ownership_guard_dryrun_estimated_usd": 14.7712
   }
 }

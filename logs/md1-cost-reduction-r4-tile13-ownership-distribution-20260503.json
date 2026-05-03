@@ -1,0 +1,397 @@
+{
+  "current_support_weighted_overlap_retention": {
+    "context_preserve_enabled": false,
+    "core_candidate_count": 9891,
+    "dropped_gaussians": 376804,
+    "retained_gaussians": 9891,
+    "retention_ratio": 0.025578298141946496,
+    "source_gaussians": 386695
+  },
+  "decision": {
+    "cache_ready": false,
+    "interpretation": [
+      "Only 9891/386695 (0.025578) independent hard tile_13 splats land inside tile_13 core bounds, matching the support_weighted_overlap retention collapse and proving the cache artifact is not a usable tile_13 replacement.",
+      "The same source splats mostly fall into broad neighbor/global cores instead: tile_00 0.870, tile_10 0.673, and tile_08 0.447. That is cross-tile ownership drift under independent fanout, not a missing artifact or another need for longer tile_13 training.",
+      "The degenerate tile_11 catchall bounds contain all splats and must be excluded from ownership-readiness decisions.",
+      "0.870 of splats are inside at least one non-degenerate core, so this is not a total world-frame transform failure; the production issue is tile ownership/initialization parity."
+    ],
+    "more_full_cover_tile13_training_is_not_next": true,
+    "quality_gate_status": "merge_ownership_blocked",
+    "recommended_next_no_spend_action": "Use ownership_distribution.source_tile_core_ratio as a tile-cache eligibility gate, excluding degenerate catchall cores; then validate either serial initialization parity or neighbor-aware merge/ownership before spending on another tile_13 run.",
+    "recommended_next_paid_action": "None until the ownership gate or merge policy is validated without spend."
+  },
+  "diagnosis": "md1_r4_tile13_independent_hard_proof_ownership_distribution",
+  "generated_at": "2026-05-03T22:07:26Z",
+  "manifest_path": "logs/audit/md1-1k-full-r2/r5_teacher_context_v12_sky_v18_preflight_20260429111738/3dgs_tile_manifest.json",
+  "merge_report_path": "/tmp/md1-r4-tile13-hard-local-merge-swo-20260503/merged/merge_report.json",
+  "ownership_distribution": {
+    "dominant_non_degenerate_neighbor_core": {
+      "source_tile13_splats_inside_core": 260078,
+      "source_tile13_splats_inside_core_ratio": 0.6725662343707574,
+      "tile_id": "tile_10"
+    },
+    "inside_any_non_degenerate_tile_core": 336291,
+    "inside_any_non_degenerate_tile_core_ratio": 0.8696543787739691,
+    "inside_any_tile_core_including_degenerate": 386695,
+    "inside_any_tile_core_including_degenerate_ratio": 1.0,
+    "outside_all_non_degenerate_tile_cores": 50404,
+    "outside_all_non_degenerate_tile_cores_ratio": 0.13034562122603086,
+    "outside_all_tile_cores_including_degenerate": 0,
+    "per_tile_core_counts": [
+      {
+        "core_bounds": {
+          "max_x": 288710.771,
+          "max_y": 268261.64,
+          "max_z": 7737.663,
+          "min_x": -69553.553,
+          "min_y": -33896.754,
+          "min_z": -152388.191
+        },
+        "core_volume": 1.7334035662066768e+16,
+        "core_widths": {
+          "x": 358264.324,
+          "y": 302158.39400000003,
+          "z": 160125.854
+        },
+        "degenerate_global_catchall_bounds": true,
+        "index": 11,
+        "source_tile13_splats_inside_core": 386695,
+        "source_tile13_splats_inside_core_ratio": 1.0,
+        "tile_id": "tile_11"
+      },
+      {
+        "core_bounds": {
+          "max_x": 105.932,
+          "max_y": 165.997,
+          "max_z": 44.026,
+          "min_x": -240.845,
+          "min_y": -126.736,
+          "min_z": -404.276
+        },
+        "core_volume": 45508512.99797338,
+        "core_widths": {
+          "x": 346.777,
+          "y": 292.733,
+          "z": 448.302
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 0,
+        "source_tile13_splats_inside_core": 336291,
+        "source_tile13_splats_inside_core_ratio": 0.8696543787739691,
+        "tile_id": "tile_00"
+      },
+      {
+        "core_bounds": {
+          "max_x": 37.342,
+          "max_y": 16.76,
+          "max_z": 12.855,
+          "min_x": -87.724,
+          "min_y": -70.959,
+          "min_z": -147.417
+        },
+        "core_volume": 1758290.3333714881,
+        "core_widths": {
+          "x": 125.066,
+          "y": 87.71900000000001,
+          "z": 160.272
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 10,
+        "source_tile13_splats_inside_core": 260078,
+        "source_tile13_splats_inside_core_ratio": 0.6725662343707574,
+        "tile_id": "tile_10"
+      },
+      {
+        "core_bounds": {
+          "max_x": 32.94,
+          "max_y": 17.005,
+          "max_z": 14.157,
+          "min_x": -18.043,
+          "min_y": -34.155,
+          "min_z": -21.237
+        },
+        "core_volume": 92317.82617031998,
+        "core_widths": {
+          "x": 50.983,
+          "y": 51.16,
+          "z": 35.394
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 8,
+        "source_tile13_splats_inside_core": 172859,
+        "source_tile13_splats_inside_core_ratio": 0.4470163824202537,
+        "tile_id": "tile_08"
+      },
+      {
+        "core_bounds": {
+          "max_x": 37.342,
+          "max_y": 10.649,
+          "max_z": 11.012,
+          "min_x": -1.143,
+          "min_y": -25.887,
+          "min_z": -17.675
+        },
+        "core_volume": 40336.44530852,
+        "core_widths": {
+          "x": 38.485,
+          "y": 36.536,
+          "z": 28.687
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 4,
+        "source_tile13_splats_inside_core": 115795,
+        "source_tile13_splats_inside_core_ratio": 0.29944788528426797,
+        "tile_id": "tile_04"
+      },
+      {
+        "core_bounds": {
+          "max_x": 37.328,
+          "max_y": 10.077,
+          "max_z": 11.094,
+          "min_x": 0.154,
+          "min_y": -31.237,
+          "min_z": -19.258
+        },
+        "core_volume": 46614.803015872,
+        "core_widths": {
+          "x": 37.174,
+          "y": 41.314,
+          "z": 30.351999999999997
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 6,
+        "source_tile13_splats_inside_core": 110468,
+        "source_tile13_splats_inside_core_ratio": 0.285672170573708,
+        "tile_id": "tile_06"
+      },
+      {
+        "core_bounds": {
+          "max_x": 28.579,
+          "max_y": 19.66,
+          "max_z": 13.176,
+          "min_x": -6.366,
+          "min_y": -17.231,
+          "min_z": -13.65
+        },
+        "core_volume": 34582.898721870006,
+        "core_widths": {
+          "x": 34.945,
+          "y": 36.891000000000005,
+          "z": 26.826
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 2,
+        "source_tile13_splats_inside_core": 107611,
+        "source_tile13_splats_inside_core_ratio": 0.27828391885077386,
+        "tile_id": "tile_02"
+      },
+      {
+        "core_bounds": {
+          "max_x": 28.735,
+          "max_y": 11.71,
+          "max_z": 11.422,
+          "min_x": -3.355,
+          "min_y": -22.329,
+          "min_z": -14.907
+        },
+        "core_volume": 28759.46974679,
+        "core_widths": {
+          "x": 32.089999999999996,
+          "y": 34.039,
+          "z": 26.329
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 5,
+        "source_tile13_splats_inside_core": 106284,
+        "source_tile13_splats_inside_core_ratio": 0.2748522737558024,
+        "tile_id": "tile_05"
+      },
+      {
+        "core_bounds": {
+          "max_x": 17.817,
+          "max_y": 16.335,
+          "max_z": 13.452,
+          "min_x": -15.545,
+          "min_y": -18.056,
+          "min_z": -14.547
+        },
+        "core_volume": 32124.72382345801,
+        "core_widths": {
+          "x": 33.362,
+          "y": 34.391000000000005,
+          "z": 27.999000000000002
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 7,
+        "source_tile13_splats_inside_core": 102154,
+        "source_tile13_splats_inside_core_ratio": 0.2641720218777072,
+        "tile_id": "tile_07"
+      },
+      {
+        "core_bounds": {
+          "max_x": 20.013,
+          "max_y": 20.823,
+          "max_z": 14.106,
+          "min_x": -14.128,
+          "min_y": -13.917,
+          "min_z": -12.295
+        },
+        "core_volume": 31313.12623434001,
+        "core_widths": {
+          "x": 34.141000000000005,
+          "y": 34.74,
+          "z": 26.401
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 3,
+        "source_tile13_splats_inside_core": 94564,
+        "source_tile13_splats_inside_core_ratio": 0.24454414978212805,
+        "tile_id": "tile_03"
+      },
+      {
+        "core_bounds": {
+          "max_x": 37.097,
+          "max_y": 13.077,
+          "max_z": 12.195,
+          "min_x": 3.194,
+          "min_y": -20.503,
+          "min_z": -14.651
+        },
+        "core_volume": 30563.170718039997,
+        "core_widths": {
+          "x": 33.903,
+          "y": 33.58,
+          "z": 26.846
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 1,
+        "source_tile13_splats_inside_core": 92387,
+        "source_tile13_splats_inside_core_ratio": 0.23891438989384398,
+        "tile_id": "tile_01"
+      },
+      {
+        "core_bounds": {
+          "max_x": 11.152,
+          "max_y": 5.332,
+          "max_z": 9.511,
+          "min_x": -21.289,
+          "min_y": -25.843,
+          "min_z": -17.674
+        },
+        "core_volume": 27493.500137375002,
+        "core_widths": {
+          "x": 32.441,
+          "y": 31.175,
+          "z": 27.185
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 12,
+        "source_tile13_splats_inside_core": 38935,
+        "source_tile13_splats_inside_core_ratio": 0.1006865876207347,
+        "tile_id": "tile_12"
+      },
+      {
+        "core_bounds": {
+          "max_x": 13.805,
+          "max_y": -2.33,
+          "max_z": 6.237,
+          "min_x": -18.912,
+          "min_y": -34.093,
+          "min_z": -21.082
+        },
+        "core_volume": 28389.63354964901,
+        "core_widths": {
+          "x": 32.717,
+          "y": 31.763000000000005,
+          "z": 27.319000000000003
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 13,
+        "source_tile13_splats_inside_core": 9891,
+        "source_tile13_splats_inside_core_ratio": 0.025578298141946496,
+        "tile_id": "tile_13"
+      },
+      {
+        "core_bounds": {
+          "max_x": 31.362,
+          "max_y": -0.765,
+          "max_z": 8.039,
+          "min_x": -0.763,
+          "min_y": -33.471,
+          "min_z": -20.619
+        },
+        "core_volume": 30110.394604499998,
+        "core_widths": {
+          "x": 32.125,
+          "y": 32.705999999999996,
+          "z": 28.658
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 9,
+        "source_tile13_splats_inside_core": 8641,
+        "source_tile13_splats_inside_core_ratio": 0.022345776387075085,
+        "tile_id": "tile_09"
+      }
+    ],
+    "source_tile_core_count": 9891,
+    "source_tile_core_ratio": 0.025578298141946496
+  },
+  "source_ply": "/tmp/md1-r4-tile13-hard-local-merge-swo-20260503/tile_outputs/tile_13/splat.ply",
+  "source_ply_sha256": "831859dea012124828797c25c5098c879704774d8d308117a7766527d85bf6ea",
+  "source_ply_size_bytes": 40216912,
+  "source_tile13_position_distribution": {
+    "max": {
+      "x": 2080.468505859375,
+      "y": 1685.407958984375,
+      "z": 313.7471923828125
+    },
+    "min": {
+      "x": -2280.989013671875,
+      "y": -1358.797607421875,
+      "z": -1973.73193359375
+    },
+    "p01": {
+      "x": -206.7343859863281,
+      "y": -451.6763983154297,
+      "z": -285.9494659423828
+    },
+    "p05": {
+      "x": -101.78549194335938,
+      "y": -69.6861343383789,
+      "z": -139.13412933349608
+    },
+    "p25": {
+      "x": -14.039395332336426,
+      "y": -10.40985918045044,
+      "z": -30.51676654815674
+    },
+    "p50": {
+      "x": 8.019499778747559,
+      "y": 5.659698963165283,
+      "z": -15.961511611938477
+    },
+    "p75": {
+      "x": 30.305598258972168,
+      "y": 9.99117136001587,
+      "z": -6.646580457687378
+    },
+    "p95": {
+      "x": 166.5609100341797,
+      "y": 39.310816192626945,
+      "z": 1.4387095808982846
+    },
+    "p99": {
+      "x": 332.2874591064453,
+      "y": 144.4381628417968,
+      "z": 22.226775093078608
+    }
+  },
+  "source_tile13_splats": 386695,
+  "source_tile_id": "tile_13",
+  "v18_tile13_reference": {
+    "quality_manifest": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-sky-v18-smoke-p24/quality_review_manifest.json",
+    "retained_gaussians": 227729,
+    "retention_ratio": 0.7328649859367056,
+    "source_gaussians": 310738
+  }
+}

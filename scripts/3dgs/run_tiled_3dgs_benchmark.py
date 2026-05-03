@@ -651,6 +651,57 @@ def tile_cache_status(cache_entry: dict) -> str:
     ).strip().lower()
 
 
+def tile_cache_ownership_rejection_reasons(cache_entry: dict) -> list[str]:
+    reasons: list[str] = []
+    blocked_statuses = {
+        "blocked",
+        "fail",
+        "failed",
+        "merge_ownership_blocked",
+        "ownership_blocked",
+        "preflight_blocked",
+        "quality_blocked",
+    }
+    pass_statuses = {"passed", "pass", "ok", "promoted", "accepted", "quality_passed", "ownership_passed"}
+
+    status = str(
+        cache_entry.get("ownership_gate_status")
+        or cache_entry.get("merge_ownership_status")
+        or ""
+    ).strip().lower()
+    if status in blocked_statuses:
+        reasons.append("ownership_status_blocked")
+    elif status and status not in pass_statuses:
+        reasons.append("ownership_status_not_passing")
+
+    if cache_entry.get("merge_ownership_blocked") is True:
+        reasons.append("merge_ownership_blocked")
+
+    ratio = cache_entry.get("source_tile_core_ratio")
+    if ratio is None:
+        ownership_distribution = cache_entry.get("ownership_distribution")
+        if isinstance(ownership_distribution, dict):
+            for key in ("source_tile_core_ratio", "source_tile_core_retention_ratio", "tile_core_ratio"):
+                if ownership_distribution.get(key) is not None:
+                    ratio = ownership_distribution.get(key)
+                    break
+    min_ratio = None
+    for key in ("min_source_tile_core_ratio", "v18_reference_merge_retention_ratio", "reference_merge_retention_ratio"):
+        if cache_entry.get(key) is not None:
+            min_ratio = cache_entry.get(key)
+            break
+    try:
+        ratio_value = None if ratio is None else float(ratio)
+        min_ratio_value = None if min_ratio is None else float(min_ratio)
+    except (TypeError, ValueError):
+        reasons.append("ownership_distribution_unparseable")
+    else:
+        if ratio_value is not None and min_ratio_value is not None and ratio_value < min_ratio_value:
+            reasons.append("ownership_distribution_below_minimum")
+
+    return sorted(set(reasons))
+
+
 def resolve_tile_cache_hit(tile_budget: "TileBudgetPlan", cache_entry: dict | None) -> tuple[dict | None, list[str]]:
     if not cache_entry:
         return None, ["no_cache_entry"]
@@ -665,6 +716,7 @@ def resolve_tile_cache_hit(tile_budget: "TileBudgetPlan", cache_entry: dict | No
     pass_statuses = {"passed", "pass", "ok", "promoted", "accepted", "quality_passed"}
     if status not in pass_statuses:
         reasons.append("quality_status_not_passing")
+    reasons.extend(tile_cache_ownership_rejection_reasons(cache_entry))
     if reasons:
         return None, reasons
     return {**cache_entry, "artifact_s3_uri": artifact_uri, "quality_gate_status": status}, []
