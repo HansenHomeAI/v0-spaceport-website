@@ -17,8 +17,8 @@
     "R4 exact 2157 proof passed its registration, density, runtime, sparse/0, reducer, and pipeline-viewer gates, but final promotion still requires R5 huge-acreage proof.",
     "R5 Meadow huge-acreage job r5meadow739-1777643311 failed chunked_merge_threshold at 999/1456 with missing sparse/0, so it is not promotable.",
     "R5 targeted 160/240 weak-region leaves failed terminal: c1 227/240 metadata-only; c4 102/240 metadata-only; c6 88/240 metadata-only; no sparse/0 outputs.",
-    "R5 planner80 leaves have failed terminal so far: c10 52/140, c1 136/140, c4 101/140, c9 85/140, c6 64/140, c3 119/140, original c8 zero-pair failure, and old-runtime c5 88/140; all terminal outputs are metadata-only with missing sparse/0.",
-    "Whitespace filename sanitization fix is pushed and built at 142df9148276c34ad570cf2a7d206933e84bb903; fixed-image c8 rerun r5l80c8fix-1777808608 and fixed-image c5 rerun r5l80c5fix-1777810935 are active, with final R5 sparse/0 and viewer proof still pending."
+    "R5 planner80 pre-fix leaves failed terminal on multiple chunks, including original c8 zero-pair whitespace-name failure and old-runtime c5 88/140 with missing sparse/0.",
+    "Whitespace filename sanitization fix is pushed and built at 142df9148276c34ad570cf2a7d206933e84bb903; fixed-image c8 rerun r5l80c8fix-1777808608 passed with sparse/0, while fixed-image c5 rerun r5l80c5fix-1777810935 is still active. Final R5 full sparse/0 and viewer proof remain pending."
   ],
   "branch": "agent-73948216-sfm-production-spine",
   "candidate": {
@@ -62,10 +62,10 @@
     "sparse0_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/sparse/0/",
     "total": 2157
   },
-  "current_branch_head": "ace836323ea441c8c7f06ef0dd025396abb55e4a",
-  "dataset": "md1 representative subsets, R3 ladder_1000 proof, R4 exact 2157 proof, failed R5 Meadow full attempt, smaller-chunk R5 planner artifacts, failed primary R5 targeted leaves, fixed-image active c8 rerun, and fixed-image active c5 rerun",
+  "current_branch_head": "46e8ed1108d33c8ba2a480d0ca2148f684ebfd7e",
+  "dataset": "md1 representative subsets, R3 ladder_1000 proof, R4 exact 2157 proof, failed R5 Meadow full attempt, smaller-chunk R5 planner artifacts, failed primary R5 targeted leaves, fixed-image c8 pass, and fixed-image c5 active rerun",
   "decision": "needs_more_proof",
-  "head": "ace836323ea441c8c7f06ef0dd025396abb55e4a",
+  "head": "46e8ed1108d33c8ba2a480d0ca2148f684ebfd7e",
   "mode": "distributed_chunked_v1",
   "proof_job_head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
   "r1_summary": {
@@ -772,18 +772,16 @@
   },
   "r5_recovery_plan": {
     "active_leaf_jobs": [
-      "r5l80c8fix-1777808608",
       "r5l80c5fix-1777810935"
     ],
     "active_leaf_status": {
-      "r5l80c5fix-1777810935": "InProgress/no FailureReason; ProcessingStartTime 2026-05-03T12:22:57.325Z; no CloudWatch stream yet; fixed-image chunk 5 rerun under head 142df9148276c34ad570cf2a7d206933e84bb903 after old c5 failed 88/140.",
-      "r5l80c8fix-1777808608": "InProgress/no FailureReason; ProcessingStartTime 2026-05-03T11:44:08.358Z; CloudWatch stream r5l80c8fix-1777808608/algo-1-1777808647; feature_extractor reached 880/1456 by 2026-05-03T12:21:22Z; S3 output empty before EndOfJob upload; fixed-image chunk 8 rerun under head 142df9148276c34ad570cf2a7d206933e84bb903."
+      "r5l80c5fix-1777810935": "InProgress; ProcessingStartTime 2026-05-03T12:22:57.325Z; no FailureReason; CloudWatch stream r5l80c5fix-1777810935/algo-1-1777810976; feature_extractor reached 904/1456 by 2026-05-03T13:00:45.226Z; S3 output still empty before EndOfJob upload; fixed-image rerun after old c5 failed 88/140 with missing sparse0."
     },
     "active_planner_job": "r5plan80h739-1777791228",
     "active_planner_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r5plan80h739-1777791228/colmap",
     "active_planner_status": "InProgress; ProcessingStartTime 2026-05-03T06:54:28.816Z; no FailureReason; no S3 output yet; no CloudWatch stream visible yet",
     "chunk_manifest": "logs/sfm-production-spine/r5plan160739-1777674958-chunk_planner_manifest.json",
-    "current_branch_head": "ace836323ea441c8c7f06ef0dd025396abb55e4a",
+    "current_branch_head": "46e8ed1108d33c8ba2a480d0ca2148f684ebfd7e",
     "failed_leaf_status": {
       "r5l80c1-1777791574": "Failed terminal; 136/140, ratio 0.9714, core 0.9714, no fallback, metadata-only output, no sparse/0.",
       "r5l80c10-1777791574": "Failed terminal; 52/140, ratio 0.3688, no sparse/0, metadata-only output.",
@@ -802,8 +800,35 @@
       "r5l80c5fix-1777810935"
     ],
     "fixed_runtime_head": "142df9148276c34ad570cf2a7d206933e84bb903",
-    "ledger_push": "commit ace836323ea441c8c7f06ef0dd025396abb55e4a pushed after fixed-image c8 launch; fixed runtime job uses SFM_GIT_HEAD 142df9148276c34ad570cf2a7d206933e84bb903",
-    "next_gate": "monitor fixed c8 and fixed c5 terminal status, collect leaf metadata/sparse0 if produced, then continue bounded R5 recovery toward final sparse/0 and viewer proof.",
+    "latest_fixed_leaf_output": {
+      "r5l80c8fix-1777808608": {
+        "core_registered_ratio": 1.0,
+        "fallbacks_used": [],
+        "input_uri": "s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip",
+        "leaf_metadata": "logs/sfm-production-spine/r5l80c8fix-1777808608-leaf_metadata.json",
+        "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r5l80c8fix-1777808608/colmap",
+        "planner_report": "logs/sfm-production-spine/r5l80c8fix-1777808608-planner_static_report.json",
+        "points": 103114,
+        "points_per_registered_image": 736.53,
+        "processing_end_time": "2026-05-03T12:56:45.768Z",
+        "processing_start_time": "2026-05-03T11:44:08.358Z",
+        "promotion_blockers": [],
+        "reducer_metadata": "logs/sfm-production-spine/r5l80c8fix-1777808608-reducer_metadata.json",
+        "registered": 140,
+        "registered_ratio": 1.0,
+        "renamed_image_count": 457,
+        "sagemaker_status": "Completed",
+        "sparse0_uri": "s3://spaceport-ml-processing-staging/manual-validations/r5l80c8fix-1777808608/colmap/sparse/0/",
+        "standard_sparse0_exists": true,
+        "total": 140,
+        "verified_pair_count": 1635
+      }
+    },
+    "ledger_push": "commit 46e8ed1108d33c8ba2a480d0ca2148f684ebfd7e pushed after old c5 terminal artifact capture and fixed c5 launch",
+    "next_gate": "monitor fixed c5 terminal status, collect leaf metadata/sparse0 if produced, then continue bounded R5 recovery toward final sparse/0 and viewer proof; do not delete sfm-reality-check.",
+    "passed_leaf_status": {
+      "r5l80c8fix-1777808608": "Completed at 2026-05-03T12:56:45.768Z; fixed-image chunk 8 passed leaf gates with 140/140 registered, ratio 1.0000, core 1.0000, 103114 points, 736.53 pts/registered image, 1635 verified pairs, standard_sparse0_exists=true, promotion_blockers=[], renamed_image_count=457."
+    },
     "planner80_artifacts_usable": true,
     "planner80_chunk_manifest": "logs/sfm-production-spine/r5plan80h739-1777791228-chunk_planner_manifest.json",
     "planner80_job": "r5plan80h739-1777791228",
@@ -820,7 +845,7 @@
       "r5l160c6-1777677041": "Failed terminal; 88/240, ratio 0.3651, no sparse/0"
     },
     "targeted_leaf_summary": "logs/sfm-production-spine/r5_targeted_leaf_summary.json",
-    "updated": "2026-05-03T12:24:00Z",
+    "updated": "2026-05-03T13:03:14Z",
     "weak_chunk_overlap_report": "logs/sfm-production-spine/r5_plan160_weak_chunk_overlap.json"
   },
   "r5_summary": {
