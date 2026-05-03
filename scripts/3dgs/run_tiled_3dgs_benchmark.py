@@ -119,6 +119,135 @@ def s3_json_or_none(s3_uri: str) -> dict | None:
     return json.loads(result.stdout)
 
 
+def checkpoint_step_from_path(path: str) -> int | None:
+    match = re.search(r"(?:^|/)step-(\d+)\.ckpt$", str(path))
+    if not match:
+        return None
+    return int(match.group(1))
+
+
+def checkpoint_step_from_manifest(manifest: dict) -> int | None:
+    latest_step = checkpoint_step_from_path(str(manifest.get("latest_checkpoint") or ""))
+    if latest_step is not None:
+        return latest_step
+    candidate_steps = [
+        step
+        for step in (
+            checkpoint_step_from_path(str(entry.get("path") or ""))
+            for entry in manifest.get("checkpoint_files", [])
+            if isinstance(entry, dict)
+        )
+        if step is not None
+    ]
+    return max(candidate_steps) if candidate_steps else None
+
+
+def checkpoint_resume_manifest_s3_uri(checkpoint_resume_s3_uri: str) -> str:
+    return f"{normalize_s3_prefix(checkpoint_resume_s3_uri)}/checkpoint_manifest.json"
+
+
+def resolve_checkpoint_resume_step(checkpoint_resume_s3_uri: str) -> tuple[int | None, str]:
+    if not checkpoint_resume_s3_uri:
+        return None, ""
+    manifest_s3_uri = checkpoint_resume_manifest_s3_uri(checkpoint_resume_s3_uri)
+    manifest = s3_json_or_none(manifest_s3_uri)
+    if manifest is None:
+        return None, manifest_s3_uri
+    return checkpoint_step_from_manifest(manifest), manifest_s3_uri
+
+
+def _int_env_value(env: Dict[str, str], key: str) -> int | None:
+    try:
+        return int(str(env.get(key) or "").strip())
+    except ValueError:
+        return None
+
+
+def derive_checkpoint_resume_input_hash(
+    *,
+    base_input_hash: str,
+    checkpoint_resume_s3_uri: str,
+    checkpoint_resume_step: int,
+    max_iterations: int,
+    extra_iterations: int,
+) -> str:
+    payload = {
+        "base_input_hash": base_input_hash,
+        "checkpoint_resume_s3_uri": checkpoint_resume_s3_uri,
+        "checkpoint_resume_step": checkpoint_resume_step,
+        "checkpoint_resume_extra_iterations": extra_iterations,
+        "max_iterations": max_iterations,
+    }
+    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
+
+
+def extend_checkpoint_resume_stage_iterations(
+    stages: Sequence["BenchmarkStage"],
+    *,
+    checkpoint_resume_step: int | None,
+    extra_iterations: int,
+) -> list[dict]:
+    if checkpoint_resume_step is None:
+        return []
+    if extra_iterations < 0:
+        raise RuntimeError("--checkpoint-resume-extra-iterations must be >= 0")
+
+    changes: list[dict] = []
+    target_iterations = checkpoint_resume_step + extra_iterations + 1
+    for stage in stages:
+        if stage.stage_type != "train":
+            continue
+        env = dict(stage.environment or {})
+        if not env.get("TRAINING_CHECKPOINT_RESUME_S3_URI"):
+            continue
+        current_iterations = _int_env_value(env, "MAX_ITERATIONS")
+        if current_iterations is None:
+            raise RuntimeError(f"{stage.stage_name} has non-integer MAX_ITERATIONS for checkpoint resume")
+        if current_iterations <= checkpoint_resume_step + 1 and extra_iterations <= 0:
+            raise RuntimeError(
+                f"{stage.stage_name} resumes from checkpoint step {checkpoint_resume_step} "
+                f"but MAX_ITERATIONS={current_iterations}; pass --checkpoint-resume-extra-iterations "
+                "so the restart proof runs real additional training steps."
+            )
+        if current_iterations >= target_iterations:
+            continue
+
+        env["MAX_ITERATIONS"] = str(target_iterations)
+        suppressed_step = str(target_iterations + 1)
+        for key in ("TRAINING_STEPS_PER_EVAL_IMAGE", "TRAINING_STEPS_PER_EVAL_ALL_IMAGES"):
+            current_eval_step = _int_env_value(env, key)
+            if current_eval_step is not None and current_eval_step <= target_iterations:
+                env[key] = suppressed_step
+        previous_input_hash = str(env.get("TILE_INPUT_HASH") or stage.input_hash or "")
+        input_hash = ""
+        if previous_input_hash:
+            input_hash = derive_checkpoint_resume_input_hash(
+                base_input_hash=previous_input_hash,
+                checkpoint_resume_s3_uri=str(env.get("TRAINING_CHECKPOINT_RESUME_S3_URI") or ""),
+                checkpoint_resume_step=checkpoint_resume_step,
+                max_iterations=target_iterations,
+                extra_iterations=extra_iterations,
+            )
+            env["TILE_INPUT_HASH"] = input_hash
+            stage.input_hash = input_hash
+        stage.environment = env
+        if stage.max_iterations is not None and stage.max_iterations < target_iterations:
+            stage.max_iterations = target_iterations
+        change = {
+            "stage_name": stage.stage_name,
+            "tile_id": stage.tile_id,
+            "resume_step": checkpoint_resume_step,
+            "previous_max_iterations": current_iterations,
+            "max_iterations": target_iterations,
+            "extra_iterations": extra_iterations,
+        }
+        if input_hash:
+            change["previous_input_hash"] = previous_input_hash
+            change["input_hash"] = input_hash
+        changes.append(change)
+    return changes
+
+
 def download_sparse_support_dir(colmap_s3_uri: str, *, scratch_dir: Path) -> Path | None:
     sparse_dir = scratch_dir / "sparse" / "0"
     sparse_dir.mkdir(parents=True, exist_ok=True)
@@ -1734,6 +1863,15 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--checkpoint-resume-extra-iterations",
+        type=int,
+        default=0,
+        help=(
+            "When --checkpoint-resume-s3-uri has a compact checkpoint manifest, extend resumed train stages "
+            "to checkpoint_step + this value + 1 so restart proofs run real additional iterations."
+        ),
+    )
+    parser.add_argument(
         "--checkpoint-save-steps",
         type=int,
         default=DEFAULT_CHECKPOINT_SAVE_STEPS,
@@ -1994,6 +2132,17 @@ def main() -> int:
         reuse_tile_cache=args.reuse_tile_cache,
         tile_cache_manifest=tile_cache_manifest,
     )
+    checkpoint_resume_step, checkpoint_resume_manifest_uri = resolve_checkpoint_resume_step(args.checkpoint_resume_s3_uri)
+    if args.checkpoint_resume_extra_iterations > 0 and checkpoint_resume_step is None:
+        raise RuntimeError(
+            "Could not resolve checkpoint step from "
+            f"{checkpoint_resume_manifest_uri}; cannot apply --checkpoint-resume-extra-iterations"
+        )
+    checkpoint_resume_iteration_extensions = extend_checkpoint_resume_stage_iterations(
+        stages,
+        checkpoint_resume_step=checkpoint_resume_step,
+        extra_iterations=args.checkpoint_resume_extra_iterations,
+    )
     attach_tile_selection_channel_to_stages(stages)
     cost_estimate = estimate_training_cost(
         stages,
@@ -2037,6 +2186,10 @@ def main() -> int:
         "enable_checkpoints": bool(args.enable_checkpoints),
         "checkpoint_s3_prefix": args.checkpoint_s3_prefix,
         "checkpoint_resume_s3_uri": args.checkpoint_resume_s3_uri,
+        "checkpoint_resume_manifest_s3_uri": checkpoint_resume_manifest_uri,
+        "checkpoint_resume_start_step": checkpoint_resume_step,
+        "checkpoint_resume_extra_iterations": args.checkpoint_resume_extra_iterations,
+        "checkpoint_resume_iteration_extensions": checkpoint_resume_iteration_extensions,
         "checkpoint_save_steps": args.checkpoint_save_steps,
         "max_estimated_usd": args.max_estimated_usd,
         "review_camera_manifest_s3_uri": args.review_camera_manifest_s3_uri,

@@ -77,6 +77,30 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         finally:
             benchmark.subprocess.run = original_run
 
+    def test_checkpoint_step_from_manifest_uses_latest_checkpoint(self):
+        step = benchmark.checkpoint_step_from_manifest(
+            {
+                "latest_checkpoint": "nerfstudio_models/step-000002999.ckpt",
+                "checkpoint_files": [
+                    {"path": "nerfstudio_models/step-000001000.ckpt"},
+                ],
+            }
+        )
+
+        self.assertEqual(step, 2999)
+
+    def test_checkpoint_step_from_manifest_falls_back_to_max_checkpoint_file(self):
+        step = benchmark.checkpoint_step_from_manifest(
+            {
+                "checkpoint_files": [
+                    {"path": "nerfstudio_models/step-000001000.ckpt"},
+                    {"path": "nerfstudio_models/step-000002500.ckpt"},
+                ],
+            }
+        )
+
+        self.assertEqual(step, 2500)
+
     def test_download_sparse_support_dir_requires_complete_sparse_pair(self):
         with tempfile.TemporaryDirectory() as tmp:
             calls = []
@@ -963,6 +987,81 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             stages[0].environment["TRAINING_CHECKPOINT_S3_URI"],
             "s3://bucket/checkpoints/bench-456-tile-11",
         )
+
+    def test_extend_checkpoint_resume_stage_iterations_adds_real_restart_steps(self):
+        stage = benchmark.BenchmarkStage(
+            stage_name="T0_tile_11",
+            stage_type="train",
+            training_mode="leaf_tile",
+            output_s3_uri="s3://bucket/out/tile_11",
+            tile_id="tile_11",
+            environment={
+                "MAX_ITERATIONS": "3000",
+                "TRAINING_CHECKPOINT_RESUME_S3_URI": "s3://bucket/prior/resume_checkpoint",
+                "TRAINING_STEPS_PER_EVAL_IMAGE": "3001",
+                "TRAINING_STEPS_PER_EVAL_ALL_IMAGES": "12001",
+                "TRAINING_STEPS_PER_SAVE": "250",
+                "TILE_INPUT_HASH": "basehash",
+            },
+            max_iterations=3000,
+        )
+        expected_hash = benchmark.derive_checkpoint_resume_input_hash(
+            base_input_hash="basehash",
+            checkpoint_resume_s3_uri="s3://bucket/prior/resume_checkpoint",
+            checkpoint_resume_step=2999,
+            max_iterations=3250,
+            extra_iterations=250,
+        )
+
+        changes = benchmark.extend_checkpoint_resume_stage_iterations(
+            [stage],
+            checkpoint_resume_step=2999,
+            extra_iterations=250,
+        )
+
+        self.assertEqual(stage.environment["MAX_ITERATIONS"], "3250")
+        self.assertEqual(stage.max_iterations, 3250)
+        self.assertEqual(stage.environment["TRAINING_STEPS_PER_EVAL_IMAGE"], "3251")
+        self.assertEqual(stage.environment["TRAINING_STEPS_PER_EVAL_ALL_IMAGES"], "12001")
+        self.assertEqual(stage.environment["TRAINING_STEPS_PER_SAVE"], "250")
+        self.assertEqual(stage.environment["TILE_INPUT_HASH"], expected_hash)
+        self.assertEqual(stage.input_hash, expected_hash)
+        self.assertEqual(
+            changes,
+            [
+                {
+                    "stage_name": "T0_tile_11",
+                    "tile_id": "tile_11",
+                    "resume_step": 2999,
+                    "previous_max_iterations": 3000,
+                    "max_iterations": 3250,
+                    "extra_iterations": 250,
+                    "previous_input_hash": "basehash",
+                    "input_hash": expected_hash,
+                }
+            ],
+        )
+
+    def test_extend_checkpoint_resume_stage_iterations_blocks_noop_restart(self):
+        stage = benchmark.BenchmarkStage(
+            stage_name="T0_tile_11",
+            stage_type="train",
+            training_mode="leaf_tile",
+            output_s3_uri="s3://bucket/out/tile_11",
+            environment={
+                "MAX_ITERATIONS": "3000",
+                "TRAINING_CHECKPOINT_RESUME_S3_URI": "s3://bucket/prior/resume_checkpoint",
+            },
+        )
+
+        with self.assertRaises(RuntimeError) as raised:
+            benchmark.extend_checkpoint_resume_stage_iterations(
+                [stage],
+                checkpoint_resume_step=2999,
+                extra_iterations=0,
+            )
+
+        self.assertIn("--checkpoint-resume-extra-iterations", str(raised.exception))
 
     def test_create_training_job_payload_includes_branch_tag(self):
         payload = benchmark.create_training_job_payload(

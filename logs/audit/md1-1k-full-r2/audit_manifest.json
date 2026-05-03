@@ -6963,8 +6963,63 @@
     },
     "latest_raw_checkpoint_update": "2026-05-01T23:13:33Z raw SageMaker checkpoint-tree resume fallback added before paid R2b; exact-head 9e1b9998 prior checkpoint fix gates green on CDK/ML container build, but new fallback still needs commit/push and exact-head gates.",
     "latest_checkpoint_resume_update": "2026-05-03T06:56:43Z checkpoint persistence proof passed and explicit checkpoint resume/source split plus no-spend restart dry-run are ready for commit/push; next exact-head image must be built before paid restart proof.",
-    "latest_live_compute_status": "2026-05-03T06:56:43Z: no SageMaker training jobs InProgress; unrelated processing job r5plan80h739-1777791228 is InProgress on Meadow archive COLMAP output."
+    "latest_live_compute_status": "2026-05-03T07:36:40Z: no SageMaker training jobs InProgress; unrelated Meadow COLMAP processing jobs r5l80c1-1777791574, r5l80c4-1777791574, and r5l80c10-1777791574 are InProgress.",
+    "r2_checkpoint_restart_attempt_1": {
+      "checked_at": "2026-05-03T07:36:40Z",
+      "job_name": "md1-r2ckpt4-restart-1777792528-tile-11",
+      "status": "Failed",
+      "instance_type": "ml.g5.2xlarge",
+      "billable_seconds": 702,
+      "estimated_usd": 0.295,
+      "image_digest": "sha256:11a38bf8d501e4739e84fedbf3b49ceb3a94b87b74d2191caccf1cd9c4181634",
+      "model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r2-checkpoint-restart-proof-20260503/tiles/tile_11/md1-r2ckpt4-restart-1777792528-tile-11/output/model.tar.gz",
+      "model_artifact_bytes": 4501,
+      "checkpoint_s3_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r2-checkpoint-restart-proof-20260503/checkpoints/md1-r2ckpt4-restart-1777792528-tile-11/",
+      "checkpoint_object_count": 7,
+      "checkpoint_total_bytes": 75450183,
+      "resume_gate_status": "partial_pass_restore_loaded_step_000002999",
+      "failure_reason": "NerfStudio writer KeyError 'step' after loading step-000002999.ckpt with MAX_ITERATIONS=3000; no real post-resume training step executed before stats flush.",
+      "next_gate": "Add launcher guard to extend checkpoint restart proofs beyond the loaded checkpoint step, then rerun only the $2-capped tile_11 proof."
+    },
+    "r2_checkpoint_restart_v2_planner_guard": {
+      "implemented_at": "2026-05-03T07:39:42Z",
+      "base_head_before_commit": "e16d256c6b7166599f8613cb1e7594f143fe57ee",
+      "code_paths": [
+        "scripts/3dgs/run_tiled_3dgs_benchmark.py",
+        "tests/unit/test_tiled_3dgs_benchmark.py"
+      ],
+      "purpose": "Prevent no-op checkpoint restart proofs by parsing checkpoint_manifest.json and extending resumed train stages beyond the loaded step.",
+      "restart_v2_dry_run_path": "logs/md1-cost-reduction-r2-checkpoint-restart-proof-v2-dryrun-20260503.json",
+      "restart_v2_dry_run_submitted_jobs": 0,
+      "restart_v2_dry_run_estimated_usd": 0.4103,
+      "restart_v2_dry_run_worst_case_usd": 1.515,
+      "restart_v2_dry_run_max_estimated_usd": 2.0,
+      "checkpoint_resume_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r2-checkpoint-persist-proof-20260501/checkpoints/md1-r2ckpt3-tile11-1777678211-tile-11/resume_checkpoint",
+      "checkpoint_resume_start_step": 2999,
+      "checkpoint_resume_extra_iterations": 250,
+      "checkpoint_resume_iteration_extensions": [
+        {
+          "stage_name": "T0_tile_11",
+          "tile_id": "tile_11",
+          "resume_step": 2999,
+          "previous_max_iterations": 3000,
+          "max_iterations": 3250,
+          "extra_iterations": 250,
+          "previous_input_hash": "9cca81ad8de50871300c7f82c00c433aa55ded8519aeaf73a11d5dc6a74795e7",
+          "input_hash": "2e65926872bc63bc077eb80f96efb955bbd1f43ca8e3ed77164e42cf27e90f35"
+        }
+      ],
+      "planned_max_iterations": 3250,
+      "planned_max_selected_images": 96,
+      "planned_checkpoint_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r2-checkpoint-restart-proof-v2-20260503/checkpoints/md1-r2ckpt5-restart-tile11-1777793970-tile-11",
+      "planned_job_name": "md1-r2ckpt5-restart-tile11-1777793970-tile-11",
+      "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:11a38bf8d501e4739e84fedbf3b49ceb3a94b87b74d2191caccf1cd9c4181634",
+      "spot_status": "still blocked until restart proof completes successfully",
+      "next_gate": "Commit/push, monitor exact-head CDK and ML container build, then launch only this bounded tile_11 restart proof on the new digest.",
+      "planned_input_hash": "2e65926872bc63bc077eb80f96efb955bbd1f43ca8e3ed77164e42cf27e90f35"
+    },
+    "latest_checkpoint_restart_update": "2026-05-03T07:39:42Z restart attempt restored step-000002999 but failed because MAX_ITERATIONS=3000 was a no-op edge; planner now extends resumed stages to 3250 and derives a new checkpoint-resume input hash for the v2 dry-run under the $2 cap."
   },
-  "latest_training_cost_reduction_status": "Exact-head 727fe2270258b9f350886d5d69a5629aefd7b2c8 is gated green on CDK Deploy 25237262838 and Trigger ML Container Build 25237262835. R2 checkpoint persistence proof md1-r2ckpt3-tile11-1777678211-tile-11 passed with compact resume checkpoint upload. Local explicit checkpoint resume/source split and no-spend restart dry-run are ready for commit/push; paid restart proof remains blocked until the new image digest is built and exact-head workflows pass.",
-  "latest_live_compute_status": "2026-05-03T06:56:43Z: no SageMaker training jobs InProgress; unrelated processing job r5plan80h739-1777791228 is InProgress on Meadow archive COLMAP output."
+  "latest_training_cost_reduction_status": "Exact-head e16d256c6b7166599f8613cb1e7594f143fe57ee is gated green on CDK Deploy 25272574735 and Trigger ML Container Build 25272574734. First paid restart attempt restored the compact checkpoint but failed on a no-op max-iteration edge; local planner guard and v2 no-spend dry-run now extend tile_11 from checkpoint step 2999 to max_iterations 3250, derive checkpoint-resume input hash 2e65926872bc63bc077eb80f96efb955bbd1f43ca8e3ed77164e42cf27e90f35, and estimate $0.4103 / worst-case $1.515 under max_estimated_usd $2.00. Paid v2 restart proof remains blocked until this guard is committed, pushed, and rebuilt into a new image.",
+  "latest_live_compute_status": "2026-05-03T07:36:40Z: no SageMaker training jobs InProgress; unrelated Meadow COLMAP processing jobs r5l80c1-1777791574, r5l80c4-1777791574, and r5l80c10-1777791574 are InProgress."
 }
