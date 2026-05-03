@@ -6801,7 +6801,7 @@
       "paid_training_launched": false,
       "r1_tile11_dry_run": "production-shaped no-spend fanout dry-run used full MD1/V18 tile manifests, classified tile_11 as tiny, estimated $0.3787, and submitted_jobs=[]",
       "tile_cache_unit_tests": "test_reuse_tile_cache_turns_matching_tile_into_non_training_stage and stale-hash rejection added; targeted unit suite passed before full verification",
-      "unit_tests_latest": "python3 -m unittest tests.unit.test_tiled_3dgs_benchmark tests.unit.test_tiled_nerfstudio_dispatcher tests.unit.test_geometry_first_review tests.unit.test_3dgs_training_monitor -> 88 tests OK",
+      "unit_tests_latest": "python3 -m unittest tests.unit.test_tiled_3dgs_benchmark tests.unit.test_tiled_nerfstudio_dispatcher tests.unit.test_geometry_first_review tests.unit.test_3dgs_training_monitor -> 94 tests OK",
       "py_compile_latest": "python3 -m py_compile scripts/3dgs/run_tiled_3dgs_benchmark.py scripts/3dgs/monitor_3dgs_training_cost.py infrastructure/containers/3dgs/train_nerfstudio_production.py infrastructure/containers/3dgs/geometry_review.py infrastructure/containers/3dgs/tile_pipeline.py -> passed",
       "json_and_diff_check_latest": "json.tool passed for prior stats, R1 dry-run, and audit_manifest; git diff --check passed",
       "cache_hash_guardrail_latest": "tile input hash now changes when tile geometry/ownership bounds change; unit coverage added",
@@ -6812,10 +6812,10 @@
       "r2_smoke2_paid_result": "Completed in 1250 billable seconds with 96 selected images and 38919 retained gaussians; checkpoint S3 prefix was empty, so restart proof remains required.",
       "r2_restart_dry_run_after_fix": "logs/md1-cost-reduction-r2-checkpoint-restart-dryrun-20260501.json -> submitted_jobs=[], estimated_usd=0.3787, worst_case_usd=1.515, max_estimated_usd=2.00, explicit TRAINING_CHECKPOINT_S3_URI present.",
       "checkpoint_resume_unit_tests_targeted": "compact checkpoint staging, cleanup preservation, compact resume load-dir, and raw SageMaker checkpoint-tree fallback tests passed before full targeted verification.",
-      "json_validation_latest": "python3 -m json.tool passed for R2 smoke2 dry-run, R2 restart dry-run, R2 smoke2 result, and audit_manifest",
+      "json_validation_latest": "python3 -m json.tool passed for R2 restart v2 result, R3 Spot representative dry-run, and audit_manifest",
       "git_diff_check_latest": "git diff --check -> passed"
     },
-    "next_paid_gate": "R2 tiny one-tile on-demand checkpoint/restart smoke with strict $2 cap; Managed Spot remains blocked until this restart proof passes",
+    "next_paid_gate": "R3 no-spend/low-spend representative tile planning; Managed Spot is unblocked only for bounded smoke after the R2 restart proof passed, not for a full 14-tile run",
     "latest_update": {
       "updated_at": "2026-05-01T17:37:19Z",
       "base_head_before_commit": "f0ecc982df6baaea1ff61327ea57217dd21e98ef",
@@ -7014,12 +7014,83 @@
       "planned_checkpoint_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r2-checkpoint-restart-proof-v2-20260503/checkpoints/md1-r2ckpt5-restart-tile11-1777793970-tile-11",
       "planned_job_name": "md1-r2ckpt5-restart-tile11-1777793970-tile-11",
       "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:11a38bf8d501e4739e84fedbf3b49ceb3a94b87b74d2191caccf1cd9c4181634",
-      "spot_status": "still blocked until restart proof completes successfully",
-      "next_gate": "Commit/push, monitor exact-head CDK and ML container build, then launch only this bounded tile_11 restart proof on the new digest.",
+      "spot_status": "unblocked for bounded smoke/dry-run only after the restart proof completed successfully; full 14-tile Spot fanout remains blocked until R3/R4 quality and cost gates pass",
+      "next_gate": "Generate no-spend Spot/fanout R3 plans and run only representative tile smokes under strict dollar caps before any larger fanout.",
       "planned_input_hash": "2e65926872bc63bc077eb80f96efb955bbd1f43ca8e3ed77164e42cf27e90f35"
     },
-    "latest_checkpoint_restart_update": "2026-05-03T07:39:42Z restart attempt restored step-000002999 but failed because MAX_ITERATIONS=3000 was a no-op edge; planner now extends resumed stages to 3250 and derives a new checkpoint-resume input hash for the v2 dry-run under the $2 cap."
+    "r2_checkpoint_restart_v2_paid_proof": {
+      "checked_at": "2026-05-03T08:04:41Z",
+      "job_name": "md1-r2ckpt5-restart-tile11-1777794499-tile-11",
+      "status": "Completed",
+      "instance_type": "ml.g5.2xlarge",
+      "billable_seconds": 792,
+      "estimated_usd": 0.333,
+      "image_digest": "sha256:11a38bf8d501e4739e84fedbf3b49ceb3a94b87b74d2191caccf1cd9c4181634",
+      "model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r2-checkpoint-restart-proof-v2-20260503/tiles/tile_11/md1-r2ckpt5-restart-tile11-1777794499-tile-11/output/model.tar.gz",
+      "model_artifact_bytes": 14695440,
+      "checkpoint_s3_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r2-checkpoint-restart-proof-v2-20260503/checkpoints/md1-r2ckpt5-restart-tile11-1777794499-tile-11/",
+      "checkpoint_object_count": 8,
+      "checkpoint_total_bytes": 90908058,
+      "latest_checkpoint": "nerfstudio_models/step-000003249.ckpt",
+      "checkpoint_file_bytes": 45442647,
+      "resume_source_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r2-checkpoint-persist-proof-20260501/checkpoints/md1-r2ckpt3-tile11-1777678211-tile-11/resume_checkpoint",
+      "resume_start_step": 2999,
+      "max_iterations": 3250,
+      "extra_iterations": 250,
+      "max_selected_images": 96,
+      "tile_input_hash": "2e65926872bc63bc077eb80f96efb955bbd1f43ca8e3ed77164e42cf27e90f35",
+      "log_evidence": [
+        "Downloaded 3 checkpoint files from the prior resume_checkpoint prefix",
+        "Resuming NerfStudio from checkpoint: /opt/ml/checkpoints/resume_checkpoint/nerfstudio_models",
+        "ns-train launched with --max_num_iterations 3250 and --load-dir /opt/ml/checkpoints/resume_checkpoint/nerfstudio_models",
+        "Uploaded 5 compact checkpoint files to the fresh checkpoint S3 prefix"
+      ],
+      "gate_status": "passed_restart_from_checkpoint",
+      "spot_status": "unblocked for bounded smoke only; full fanout still waits for R3/R4 quality and cost gates",
+      "next_gate": "Generate no-spend Spot/fanout R3 plans and only then run representative tiny/standard/hard tile smokes under strict dollar caps."
+    },
+    "r3_spot_representative_dry_run": {
+      "checked_at": "2026-05-03T08:04:41Z",
+      "path": "logs/md1-cost-reduction-r3-spot-representative-dryrun-20260503.json",
+      "submitted_jobs": 0,
+      "enable_spot": true,
+      "spot_restart_proof_gate": "passed_r2_checkpoint_restart_v2",
+      "max_tile_concurrency": 2,
+      "selected_tile_ids": [
+        "tile_11",
+        "tile_02",
+        "tile_13"
+      ],
+      "stage_estimates": [
+        {
+          "tile_id": "tile_11",
+          "budget_class": "tiny",
+          "max_iterations": 3000,
+          "max_selected_images": 96,
+          "estimated_usd_on_demand_equivalent": 0.3787
+        },
+        {
+          "tile_id": "tile_02",
+          "budget_class": "standard",
+          "max_iterations": 8000,
+          "max_selected_images": 128,
+          "estimated_usd_on_demand_equivalent": 1.01
+        },
+        {
+          "tile_id": "tile_13",
+          "budget_class": "standard",
+          "max_iterations": 8000,
+          "max_selected_images": 128,
+          "estimated_usd_on_demand_equivalent": 1.01
+        }
+      ],
+      "estimated_usd_on_demand_equivalent": 2.3987,
+      "worst_case_usd_on_demand_equivalent": 4.545,
+      "max_estimated_usd": 5.0,
+      "next_gate": "After commit/gates, run only a bounded representative paid smoke if needed; no full 14-tile training before R3/R4 quality review."
+    },
+    "latest_checkpoint_restart_update": "2026-05-03T08:04:41Z R2 v2 paid tile_11 restart proof passed: restored compact checkpoint step-000002999, extended to MAX_ITERATIONS=3250, exported 14,695,440-byte model.tar.gz, uploaded fresh step-000003249 compact resume checkpoint, and finished in 792 billable seconds (~$0.333)."
   },
-  "latest_training_cost_reduction_status": "Exact-head e16d256c6b7166599f8613cb1e7594f143fe57ee is gated green on CDK Deploy 25272574735 and Trigger ML Container Build 25272574734. First paid restart attempt restored the compact checkpoint but failed on a no-op max-iteration edge; local planner guard and v2 no-spend dry-run now extend tile_11 from checkpoint step 2999 to max_iterations 3250, derive checkpoint-resume input hash 2e65926872bc63bc077eb80f96efb955bbd1f43ca8e3ed77164e42cf27e90f35, and estimate $0.4103 / worst-case $1.515 under max_estimated_usd $2.00. Paid v2 restart proof remains blocked until this guard is committed, pushed, and rebuilt into a new image.",
-  "latest_live_compute_status": "2026-05-03T07:36:40Z: no SageMaker training jobs InProgress; unrelated Meadow COLMAP processing jobs r5l80c1-1777791574, r5l80c4-1777791574, and r5l80c10-1777791574 are InProgress."
+  "latest_training_cost_reduction_status": "R2 checkpoint restart gate passed on 2026-05-03T08:04:41Z with md1-r2ckpt5-restart-tile11-1777794499-tile-11: 792 billable seconds (~$0.333), model.tar.gz 14,695,440 bytes, fresh compact checkpoint step-000003249, and no SageMaker training jobs left InProgress. A no-spend R3 Spot/fanout representative dry-run now plans tile_11/tile_02/tile_13 at max_tile_concurrency=2 with submitted_jobs=[] and on-demand-equivalent estimate $2.3987 / worst-case $4.545. Full 14-tile training remains blocked until R3/R4 representative quality/cost gates pass.",
+  "latest_live_compute_status": "2026-05-03T08:04:41Z: no SageMaker training jobs InProgress; unrelated Meadow COLMAP processing jobs r5l80c1-1777791574, r5l80c4-1777791574, and r5l80c10-1777791574 are InProgress."
 }
