@@ -1,0 +1,3006 @@
+{
+    "events": [
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476405  1774 pairing.cc:82] Image DJI_0388 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476426  1774 pairing.cc:82] Image DJI_0358 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476444  1774 pairing.cc:82] Image DJI_0357 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476462  1774 pairing.cc:82] Image DJI_0359 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476481  1774 pairing.cc:82] Image DJI_0368 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476501  1774 pairing.cc:82] Image DJI_0387 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476519  1774 pairing.cc:82] Image DJI_0389 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476537  1774 pairing.cc:82] Image DJI_0388 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476555  1774 pairing.cc:82] Image DJI_0390 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476583  1774 pairing.cc:82] Image DJI_0368 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476612  1774 pairing.cc:78] Image DJI_0358 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476636  1774 pairing.cc:78] Image DJI_0361 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476660  1774 pairing.cc:78] Image DJI_0367 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476681  1774 pairing.cc:78] Image DJI_0359 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476702  1774 pairing.cc:78] Image DJI_0360 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476729  1774 pairing.cc:78] Image DJI_0361 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476751  1774 pairing.cc:78] Image DJI_0360 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476770  1774 pairing.cc:78] Image DJI_0367 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476795  1774 pairing.cc:78] Image DJI_0358 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476815  1774 pairing.cc:78] Image DJI_0359 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476842  1774 pairing.cc:78] Image DJI_0360 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476863  1774 pairing.cc:78] Image DJI_0367 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476886  1774 pairing.cc:78] Image DJI_0357 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476904  1774 pairing.cc:78] Image DJI_0359 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476928  1774 pairing.cc:78] Image DJI_0360 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476950  1774 pairing.cc:78] Image DJI_0357 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476974  1774 pairing.cc:78] Image DJI_0390 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.476995  1774 pairing.cc:78] Image DJI_0390 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477016  1774 pairing.cc:78] Image DJI_0357 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477035  1774 pairing.cc:78] Image DJI_0367 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447237,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477057  1774 pairing.cc:78] Image DJI_0359 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477077  1774 pairing.cc:78] Image DJI_0389 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477113  1774 pairing.cc:78] Image DJI_0389 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477134  1774 pairing.cc:78] Image DJI_0388 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477154  1774 pairing.cc:78] Image DJI_0368 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477181  1774 pairing.cc:78] Image DJI_0387 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477202  1774 pairing.cc:78] Image DJI_0370 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477223  1774 pairing.cc:78] Image DJI_0369 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477243  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477265  1774 pairing.cc:78] Image DJI_0388 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477291  1774 pairing.cc:78] Image DJI_0387 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477313  1774 pairing.cc:78] Image DJI_0357 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477334  1774 pairing.cc:78] Image DJI_0389 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477355  1774 pairing.cc:78] Image DJI_0388 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477376  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477399  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477420  1774 pairing.cc:78] Image DJI_0390 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477440  1774 pairing.cc:78] Image DJI_0369 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477459  1774 pairing.cc:78] Image DJI_0357 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477478  1774 pairing.cc:78] Image DJI_0387 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477499  1774 pairing.cc:78] Image DJI_0358 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477520  1774 pairing.cc:78] Image DJI_0369 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477540  1774 pairing.cc:78] Image DJI_0390 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477557  1774 pairing.cc:78] Image DJI_0387 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477573  1774 pairing.cc:82] Image DJI_0667 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477586  1774 pairing.cc:82] Image DJI_0668 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477599  1774 pairing.cc:78] Image DJI_0352 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477613  1774 pairing.cc:82] Image DJI_0659 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477626  1774 pairing.cc:82] Image DJI_0666 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477644  1774 pairing.cc:82] Image DJI_0667 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477656  1774 pairing.cc:82] Image DJI_0668 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477669  1774 pairing.cc:82] Image DJI_0666 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447238,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477684  1774 pairing.cc:82] Image DJI_0659 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447239,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477698  1774 pairing.cc:78] Image DJI_0352 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447239,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477710  1774 pairing.cc:82] Image DJI_0667 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447239,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477725  1774 pairing.cc:82] Image DJI_0668 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447239,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477743  1774 pairing.cc:82] Image DJI_0666 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447239,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477768  1774 pairing.cc:82] Image DJI_0666 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447239,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477783  1774 pairing.cc:78] Image DJI_0352 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447239,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477797  1774 pairing.cc:82] Image DJI_0667 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447239,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477808  1774 pairing.cc:82] Image DJI_0668 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447239,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477825  1774 pairing.cc:82] Image DJI_0666 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447239,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477837  1774 pairing.cc:78] Image DJI_0352 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447398,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477849  1774 pairing.cc:82] Image DJI_0667 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447398,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.477862  1774 pairing.cc:82] Image DJI_0668 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447398,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478055  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447398,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478133  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447398,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478176  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447398,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478206  1774 pairing.cc:78] Image DJI_0387 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447398,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478226  1774 pairing.cc:78] Image DJI_0390 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447398,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478245  1774 pairing.cc:78] Image DJI_0388 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447398,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478264  1774 pairing.cc:78] Image DJI_0389 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447398,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478284  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478305  1774 pairing.cc:78] Image DJI_0387 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478336  1774 pairing.cc:78] Image DJI_0388 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478369  1774 pairing.cc:78] Image DJI_0390 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478389  1774 pairing.cc:78] Image DJI_0389 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478410  1774 pairing.cc:78] Image DJI_0370 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478438  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478461  1774 pairing.cc:78] Image DJI_0387 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478479  1774 pairing.cc:78] Image DJI_0388 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478497  1774 pairing.cc:78] Image DJI_0389 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478516  1774 pairing.cc:78] Image DJI_0390 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478539  1774 pairing.cc:78] Image DJI_0387 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478569  1774 pairing.cc:78] Image DJI_0389 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478591  1774 pairing.cc:78] Image DJI_0388 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478610  1774 pairing.cc:78] Image DJI_0390 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478628  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478653  1774 pairing.cc:78] Image DJI_0389 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478672  1774 pairing.cc:78] Image DJI_0388 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478713  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478747  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478785  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478820  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478856  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478883  1774 pairing.cc:78] Image DJI_0388 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447399,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478947  1774 pairing.cc:78] Image DJI_0667 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447400,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.478991  1774 pairing.cc:78] Image DJI_0362 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447400,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.479017  1774 pairing.cc:78] Image DJI_0668 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447400,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.479046  1774 pairing.cc:78] Image DJI_0365 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447400,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.479066  1774 pairing.cc:78] Image DJI_0364 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447400,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.479089  1774 pairing.cc:78] Image DJI_0363 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447400,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.479149  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447400,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.479192  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447400,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.479224  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447400,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.479295  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447400,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.479408  1774 pairing.cc:82] Image DJI_0352 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447400,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.479439  1774 pairing.cc:82] Image DJI_0668 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447400,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.479467  1774 pairing.cc:82] Image DJI_0666 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447400,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.479489  1774 pairing.cc:82] Image DJI_0352 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447400,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.479508  1774 pairing.cc:82] Image DJI_0668 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447400,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.479530  1774 pairing.cc:82] Image DJI_0666 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447400,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.479557  1774 pairing.cc:82] Image DJI_0352 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808447400,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.479614  1774 pairing.cc:82] Image DJI_0352 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448493,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.479669  1774 pairing.cc:82] Image DJI_0666 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448493,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.479714  1774 pairing.cc:82] Image DJI_0361 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448493,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.480546  1774 pairing.cc:82] Image DJI_0362 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448493,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.480592  1774 pairing.cc:82] Image DJI_0367 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448493,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.480615  1774 pairing.cc:82] Image DJI_0359 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448493,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.480635  1774 pairing.cc:82] Image DJI_0667 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448493,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.480685  1774 pairing.cc:82] Image DJI_0360 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448493,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.480733  1774 pairing.cc:82] Image DJI_0358 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448493,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.480773  1774 pairing.cc:82] Image DJI_0368 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448493,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.480805  1774 pairing.cc:82] Image DJI_0388 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448494,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.480826  1774 pairing.cc:82] Image DJI_0389 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448494,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.480845  1774 pairing.cc:82] Image DJI_0391 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448494,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.480865  1774 pairing.cc:82] Image DJI_0390 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448494,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.480898  1774 pairing.cc:82] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448494,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.480944  1774 pairing.cc:82] Image DJI_0387 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448494,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.480975  1774 pairing.cc:82] Image DJI_0388 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448494,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481007  1774 pairing.cc:82] Image DJI_0391 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448494,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481027  1774 pairing.cc:82] Image DJI_0389 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448494,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481051  1774 pairing.cc:82] Image DJI_0387 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448494,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481070  1774 pairing.cc:82] Image DJI_0388 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448494,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481093  1774 pairing.cc:82] Image DJI_0391 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448494,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481112  1774 pairing.cc:82] Image DJI_0389 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448494,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481133  1774 pairing.cc:82] Image DJI_0370 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448494,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481153  1774 pairing.cc:82] Image DJI_0369 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448494,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481170  1774 pairing.cc:82] Image DJI_0357 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448494,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481189  1774 pairing.cc:82] Image DJI_0358 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448494,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481207  1774 pairing.cc:82] Image DJI_0359 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448494,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481231  1774 pairing.cc:82] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448494,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481256  1774 pairing.cc:82] Image DJI_0360 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448494,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481276  1774 pairing.cc:82] Image DJI_0387 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448495,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481295  1774 pairing.cc:82] Image DJI_0388 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448495,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481315  1774 pairing.cc:82] Image DJI_0368 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448495,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481341  1774 pairing.cc:82] Image DJI_0358 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448495,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481366  1774 pairing.cc:82] Image DJI_0359 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448495,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481386  1774 pairing.cc:82] Image DJI_0357 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448495,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481405  1774 pairing.cc:82] Image DJI_0361 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448495,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481426  1774 pairing.cc:82] Image DJI_0360 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448495,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481459  1774 pairing.cc:82] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448495,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481526  1774 pairing.cc:82] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448495,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481551  1774 pairing.cc:82] Image DJI_0358 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448495,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481570  1774 pairing.cc:82] Image DJI_0359 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448495,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481590  1774 pairing.cc:82] Image DJI_0357 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448495,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481609  1774 pairing.cc:82] Image DJI_0360 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448495,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481637  1774 pairing.cc:82] Image DJI_0367 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448495,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481691  1774 pairing.cc:82] Image DJI_0361 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448495,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481719  1774 pairing.cc:82] Image DJI_0362 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448495,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481773  1774 pairing.cc:82] Image DJI_0352 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448495,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481827  1774 pairing.cc:82] Image DJI_0352 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448495,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481871  1774 pairing.cc:82] Image DJI_0668 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448495,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481910  1774 pairing.cc:82] Image DJI_0666 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448495,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481962  1774 pairing.cc:82] Image DJI_0352 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.481994  1774 pairing.cc:82] Image DJI_0668 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.482019  1774 pairing.cc:82] Image DJI_0666 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.482075  1774 pairing.cc:82] Image DJI_0352 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.482106  1774 pairing.cc:82] Image DJI_0668 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.482128  1774 pairing.cc:82] Image DJI_0666 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.482152  1774 pairing.cc:82] Image DJI_0352 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.482173  1774 pairing.cc:82] Image DJI_0659 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.482226  1774 pairing.cc:82] Image DJI_0666 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.482268  1774 pairing.cc:82] Image DJI_0668 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.482300  1774 pairing.cc:82] Image DJI_0352 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.482332  1774 pairing.cc:82] Image DJI_0659 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.482378  1774 pairing.cc:82] Image DJI_0666 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.482411  1774 pairing.cc:82] Image DJI_0667 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.482507  1774 pairing.cc:82] Image DJI_0352 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.482566  1774 pairing.cc:82] Image DJI_0659 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.482990  1774 pairing.cc:82] Image DJI_0666 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483042  1774 pairing.cc:82] Image DJI_0352 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483086  1774 pairing.cc:82] Image DJI_0659 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483269  1774 pairing.cc:82] Image DJI_0666 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483304  1774 pairing.cc:82] Image DJI_0667 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483343  1774 pairing.cc:82] Image DJI_0352 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483368  1774 pairing.cc:82] Image DJI_0659 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483387  1774 pairing.cc:82] Image DJI_0667 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483410  1774 pairing.cc:82] Image DJI_0352 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483436  1774 pairing.cc:82] Image DJI_0659 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483456  1774 pairing.cc:82] Image DJI_0667 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483506  1774 pairing.cc:82] Image DJI_0659 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483536  1774 pairing.cc:82] Image DJI_0352 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483561  1774 pairing.cc:82] Image DJI_0659 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483582  1774 pairing.cc:82] Image DJI_0352 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483605  1774 pairing.cc:82] Image DJI_0352 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448496,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483625  1774 pairing.cc:82] Image DJI_0659 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483646  1774 pairing.cc:82] Image DJI_0352 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483700  1774 pairing.cc:82] Image DJI_0659 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483757  1774 pairing.cc:82] Image DJI_0336 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483800  1774 pairing.cc:82] Image DJI_0340 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483851  1774 pairing.cc:82] Image DJI_0659 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483901  1774 pairing.cc:82] Image DJI_0336 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483943  1774 pairing.cc:82] Image DJI_0340 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.483981  1774 pairing.cc:82] Image DJI_0336 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484009  1774 pairing.cc:82] Image DJI_0336 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484067  1774 pairing.cc:82] Image DJI_0336 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484126  1774 pairing.cc:82] Image DJI_0336 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484171  1774 pairing.cc:82] Image DJI_0659 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484221  1774 pairing.cc:82] Image DJI_0336 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484263  1774 pairing.cc:82] Image DJI_0340 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484301  1774 pairing.cc:82] Image DJI_0659 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484352  1774 pairing.cc:82] Image DJI_0336 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484393  1774 pairing.cc:82] Image DJI_0340 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484432  1774 pairing.cc:82] Image DJI_0659 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484472  1774 pairing.cc:82] Image DJI_0336 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484513  1774 pairing.cc:82] Image DJI_0340 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484561  1774 pairing.cc:78] Image DJI_0340 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484601  1774 pairing.cc:78] Image DJI_0340 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484647  1774 pairing.cc:82] Image DJI_0340 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484694  1774 pairing.cc:82] Image DJI_0340 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484738  1774 pairing.cc:82] Image DJI_0340 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484777  1774 pairing.cc:82] Image DJI_0340 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448497,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484814  1774 pairing.cc:82] Image DJI_0340 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484843  1774 pairing.cc:78] Image DJI_0352 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484863  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484884  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484902  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484921  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484941  1774 pairing.cc:78] Image DJI_0357 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484961  1774 pairing.cc:78] Image DJI_0357 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.484980  1774 pairing.cc:78] Image DJI_0357 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485037  1774 pairing.cc:78] Image DJI_0357 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485069  1774 pairing.cc:78] Image DJI_0357 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485090  1774 pairing.cc:78] Image DJI_0357 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485126  1774 pairing.cc:78] Image DJI_0357 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485146  1774 pairing.cc:78] Image DJI_0357 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485165  1774 pairing.cc:82] Image DJI_0357 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485185  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485204  1774 pairing.cc:78] Image DJI_0357 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485224  1774 pairing.cc:78] Image DJI_0357 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485242  1774 pairing.cc:78] Image DJI_0358 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485266  1774 pairing.cc:78] Image DJI_0358 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485291  1774 pairing.cc:78] Image DJI_0358 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485316  1774 pairing.cc:78] Image DJI_0358 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485364  1774 pairing.cc:78] Image DJI_0358 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485395  1774 pairing.cc:78] Image DJI_0358 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485416  1774 pairing.cc:82] Image DJI_0358 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485436  1774 pairing.cc:78] Image DJI_0358 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485455  1774 pairing.cc:78] Image DJI_0353 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485473  1774 pairing.cc:82] Image DJI_0358 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485492  1774 pairing.cc:82] Image DJI_0358 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485512  1774 pairing.cc:78] Image DJI_0358 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485531  1774 pairing.cc:78] Image DJI_0359 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485550  1774 pairing.cc:78] Image DJI_0359 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448498,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485569  1774 pairing.cc:78] Image DJI_0359 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485589  1774 pairing.cc:78] Image DJI_0359 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485607  1774 pairing.cc:78] Image DJI_0359 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485625  1774 pairing.cc:78] Image DJI_0359 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485644  1774 pairing.cc:78] Image DJI_0359 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485663  1774 pairing.cc:82] Image DJI_0359 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485682  1774 pairing.cc:82] Image DJI_0359 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485702  1774 pairing.cc:78] Image DJI_0359 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485720  1774 pairing.cc:78] Image DJI_0359 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485739  1774 pairing.cc:82] Image DJI_0359 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485759  1774 pairing.cc:78] Image DJI_0360 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485777  1774 pairing.cc:78] Image DJI_0360 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485796  1774 pairing.cc:78] Image DJI_0360 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485816  1774 pairing.cc:78] Image DJI_0360 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485834  1774 pairing.cc:78] Image DJI_0360 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485852  1774 pairing.cc:78] Image DJI_0360 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485872  1774 pairing.cc:78] Image DJI_0360 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485891  1774 pairing.cc:82] Image DJI_0360 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485910  1774 pairing.cc:78] Image DJI_0360 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485929  1774 pairing.cc:78] Image DJI_0360 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485947  1774 pairing.cc:82] Image DJI_0360 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.485993  1774 pairing.cc:82] Image DJI_0360 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486029  1774 pairing.cc:78] Image DJI_0361 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486064  1774 pairing.cc:78] Image DJI_0361 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486089  1774 pairing.cc:78] Image DJI_0361 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486109  1774 pairing.cc:78] Image DJI_0361 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486128  1774 pairing.cc:78] Image DJI_0361 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486152  1774 pairing.cc:78] Image DJI_0361 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486194  1774 pairing.cc:78] Image DJI_0361 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486222  1774 pairing.cc:78] Image DJI_0361 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486250  1774 pairing.cc:78] Image DJI_0361 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486268  1774 pairing.cc:82] Image DJI_0361 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448499,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486286  1774 pairing.cc:82] Image DJI_0361 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486312  1774 pairing.cc:78] Image DJI_0361 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486330  1774 pairing.cc:82] Image DJI_0361 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486349  1774 pairing.cc:78] Image DJI_0362 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486367  1774 pairing.cc:78] Image DJI_0362 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486385  1774 pairing.cc:78] Image DJI_0362 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486404  1774 pairing.cc:78] Image DJI_0362 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486423  1774 pairing.cc:78] Image DJI_0362 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486441  1774 pairing.cc:78] Image DJI_0357 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486465  1774 pairing.cc:78] Image DJI_0362 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486485  1774 pairing.cc:82] Image DJI_0362 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486505  1774 pairing.cc:82] Image DJI_0362 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486522  1774 pairing.cc:78] Image DJI_0362 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486541  1774 pairing.cc:78] Image DJI_0362 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486560  1774 pairing.cc:78] Image DJI_0362 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486580  1774 pairing.cc:78] Image DJI_0363 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486629  1774 pairing.cc:78] Image DJI_0363 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486655  1774 pairing.cc:78] Image DJI_0363 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486676  1774 pairing.cc:78] Image DJI_0357 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486699  1774 pairing.cc:78] Image DJI_0358 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486723  1774 pairing.cc:78] Image DJI_0363 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486748  1774 pairing.cc:78] Image DJI_0363 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486766  1774 pairing.cc:78] Image DJI_0363 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486816  1774 pairing.cc:82] Image DJI_0363 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486855  1774 pairing.cc:82] Image DJI_0363 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486891  1774 pairing.cc:82] Image DJI_0363 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486917  1774 pairing.cc:82] Image DJI_0363 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486937  1774 pairing.cc:82] Image DJI_0363 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486961  1774 pairing.cc:82] Image DJI_0363 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.486992  1774 pairing.cc:78] Image DJI_0364 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487013  1774 pairing.cc:78] Image DJI_0364 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448500,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487040  1774 pairing.cc:78] Image DJI_0359 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487061  1774 pairing.cc:78] Image DJI_0358 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487129  1774 pairing.cc:82] Image DJI_0364 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487159  1774 pairing.cc:82] Image DJI_0364 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487179  1774 pairing.cc:82] Image DJI_0364 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487198  1774 pairing.cc:82] Image DJI_0364 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487218  1774 pairing.cc:82] Image DJI_0364 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487237  1774 pairing.cc:82] Image DJI_0364 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487258  1774 pairing.cc:82] Image DJI_0364 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487277  1774 pairing.cc:82] Image DJI_0364 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487298  1774 pairing.cc:82] Image DJI_0364 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487331  1774 pairing.cc:78] Image DJI_0364 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487360  1774 pairing.cc:78] Image DJI_0365 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487380  1774 pairing.cc:78] Image DJI_0360 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487399  1774 pairing.cc:82] Image DJI_0365 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487416  1774 pairing.cc:82] Image DJI_0365 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487437  1774 pairing.cc:82] Image DJI_0365 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487453  1774 pairing.cc:82] Image DJI_0365 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487470  1774 pairing.cc:82] Image DJI_0365 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487504  1774 pairing.cc:82] Image DJI_0365 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487526  1774 pairing.cc:78] Image DJI_0365 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487547  1774 pairing.cc:82] Image DJI_0365 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487576  1774 pairing.cc:82] Image DJI_0365 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487596  1774 pairing.cc:82] Image DJI_0365 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487617  1774 pairing.cc:78] Image DJI_0362 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487634  1774 pairing.cc:78] Image DJI_0361 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487676  1774 pairing.cc:78] Image DJI_0366 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487702  1774 pairing.cc:82] Image DJI_0366 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487721  1774 pairing.cc:82] Image DJI_0366 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487739  1774 pairing.cc:82] Image DJI_0366 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487797  1774 pairing.cc:82] Image DJI_0366 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487828  1774 pairing.cc:82] Image DJI_0366 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487860  1774 pairing.cc:82] Image DJI_0366 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448501,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487890  1774 pairing.cc:82] Image DJI_0366 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487921  1774 pairing.cc:78] Image DJI_0366 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487959  1774 pairing.cc:82] Image DJI_0366 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.487989  1774 pairing.cc:82] Image DJI_0366 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488020  1774 pairing.cc:78] Image DJI_0367 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488045  1774 pairing.cc:82] Image DJI_0367 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488090  1774 pairing.cc:78] Image DJI_0367 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488134  1774 pairing.cc:78] Image DJI_0367 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488165  1774 pairing.cc:82] Image DJI_0367 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488189  1774 pairing.cc:82] Image DJI_0367 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488207  1774 pairing.cc:82] Image DJI_0367 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488225  1774 pairing.cc:78] Image DJI_0367 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488260  1774 pairing.cc:82] Image DJI_0367 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488291  1774 pairing.cc:82] Image DJI_0367 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488329  1774 pairing.cc:78] Image DJI_0367 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488363  1774 pairing.cc:78] Image DJI_0367 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488386  1774 pairing.cc:78] Image DJI_0367 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488405  1774 pairing.cc:78] Image DJI_0368 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488423  1774 pairing.cc:82] Image DJI_0368 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488459  1774 pairing.cc:82] Image DJI_0368 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488489  1774 pairing.cc:78] Image DJI_0368 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488519  1774 pairing.cc:78] Image DJI_0368 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488543  1774 pairing.cc:78] Image DJI_0368 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488560  1774 pairing.cc:78] Image DJI_0368 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448502,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488582  1774 pairing.cc:78] Image DJI_0369 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448503,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488600  1774 pairing.cc:78] Image DJI_0369 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448503,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488621  1774 pairing.cc:78] Image DJI_0369 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448503,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488639  1774 pairing.cc:82] Image DJI_0369 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448503,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488657  1774 pairing.cc:78] Image DJI_0369 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448503,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488694  1774 pairing.cc:82] Image DJI_0369 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448503,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488719  1774 pairing.cc:78] Image DJI_0370 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448503,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488744  1774 pairing.cc:78] Image DJI_0370 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448503,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488788  1774 pairing.cc:78] Image DJI_0370 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448503,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488807  1774 pairing.cc:82] Image DJI_0370 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448503,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488826  1774 pairing.cc:78] Image DJI_0370 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448503,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488847  1774 pairing.cc:82] Image DJI_0370 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448503,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488864  1774 pairing.cc:78] Image DJI_0370 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448503,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488886  1774 pairing.cc:82] Image DJI_0370 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448503,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488909  1774 pairing.cc:78] Image DJI_0387 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448503,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488933  1774 pairing.cc:78] Image DJI_0387 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448504,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488952  1774 pairing.cc:78] Image DJI_0387 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448504,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.488970  1774 pairing.cc:78] Image DJI_0388 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448504,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489012  1774 pairing.cc:78] Image DJI_0388 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448504,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489050  1774 pairing.cc:78] Image DJI_0388 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448504,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489086  1774 pairing.cc:78] Image DJI_0389 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448504,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489117  1774 pairing.cc:78] Image DJI_0389 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448504,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489147  1774 pairing.cc:78] Image DJI_0389 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448504,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489177  1774 pairing.cc:78] Image DJI_0389 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448511,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489202  1774 pairing.cc:78] Image DJI_0387 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448511,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489220  1774 pairing.cc:78] Image DJI_0390 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448511,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489238  1774 pairing.cc:82] Image DJI_0390 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448511,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489259  1774 pairing.cc:82] Image DJI_0390 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448512,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489281  1774 pairing.cc:78] Image DJI_0390 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448512,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489316  1774 pairing.cc:82] Image DJI_0390 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448512,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489339  1774 pairing.cc:78] Image DJI_0388 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448512,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489357  1774 pairing.cc:78] Image DJI_0391 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448512,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489379  1774 pairing.cc:78] Image DJI_0391 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448512,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489398  1774 pairing.cc:78] Image DJI_0391 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448512,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489415  1774 pairing.cc:82] Image DJI_0391 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448512,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489434  1774 pairing.cc:78] Image DJI_0391 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448512,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489454  1774 pairing.cc:82] Image DJI_0391 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448512,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489472  1774 pairing.cc:82] Image DJI_0391 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448512,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489491  1774 pairing.cc:82] Image DJI_0391 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448512,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489512  1774 pairing.cc:82] Image DJI_0659 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448512,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489530  1774 pairing.cc:78] Image DJI_0666 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448512,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489548  1774 pairing.cc:78] Image DJI_0659 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448512,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489583  1774 pairing.cc:82] Image DJI_0666 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448512,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489614  1774 pairing.cc:82] Image DJI_0666 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448512,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489637  1774 pairing.cc:78] Image DJI_0666 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448512,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489655  1774 pairing.cc:78] Image DJI_0667 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448512,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489673  1774 pairing.cc:82] Image DJI_0667 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448512,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489701  1774 pairing.cc:82] Image DJI_0667 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448512,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489718  1774 pairing.cc:82] Image DJI_0668 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448512,
+            "message": "COLMAP[chunk_05_matches_importer] E20260503 11:40:46.489740  1774 pairing.cc:82] Image DJI_0668 does not exist.",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808448512,
+            "message": "COLMAP[chunk_05_matches_importer] I20260503 11:40:46.489853  1774 pairing.cc:843] Processing block [1/1]",
+            "ingestionTime": 1777808452672
+        },
+        {
+            "timestamp": 1777808474679,
+            "message": "COLMAP[chunk_05_matches_importer] I20260503 11:41:14.328212  1774 feature_matching.cc:217] in 27.838s",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808474679,
+            "message": "COLMAP[chunk_05_matches_importer] I20260503 11:41:14.328266  1774 timer.cc:90] Elapsed time: 0.465 [minutes]",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808474679,
+            "message": "2026-05-03 11:41:14,395 - INFO - chunk_05_matches_importer added 1063 verified image pairs",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808474679,
+            "message": "2026-05-03 11:41:14,395 - INFO - [chunk_05_mapper_initial] colmap mapper --database_path /tmp/colmap_sfm_6bru8ggj/chunk_05/database.db --image_path /tmp/colmap_sfm_6bru8ggj/images --output_path /tmp/colmap_sfm_6bru8ggj/chunk_05/sparse_initial --Mapper.num_threads -1 --Mapper.ba_refine_principal_point 0",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808474679,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:14.546324  1796 incremental_pipeline.cc:265] Loading database",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808474679,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:14.546671  1796 database_cache.cc:72] Loading rigs...",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808474679,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:14.546746  1796 database_cache.cc:82]  1 in 0.000s",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808474679,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:14.546768  1796 database_cache.cc:90] Loading cameras...",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808474679,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:14.546841  1796 database_cache.cc:108]  1 in 0.000s",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808474679,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:14.546860  1796 database_cache.cc:116] Loading frames...",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808474679,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:14.548749  1796 database_cache.cc:126]  1456 in 0.002s",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808474679,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:14.548777  1796 database_cache.cc:134] Loading matches...",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808474679,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:14.559576  1796 database_cache.cc:139]  750 in 0.011s",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808474679,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:14.559607  1796 database_cache.cc:147] Loading images...",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808474679,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:14.606436  1796 database_cache.cc:241]  140 in 0.047s (connected 113, loaded 113)",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808474680,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:14.606498  1796 database_cache.cc:255] Loading pose priors...",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808474680,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:14.607375  1796 database_cache.cc:263]  1456 in 0.001s",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808474680,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:14.607409  1796 database_cache.cc:271] Building correspondence graph...",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808475680,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:14.786945  1796 database_cache.cc:300]  in 0.180s (ignored 0)",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808475680,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:14.787066  1796 timer.cc:90] Elapsed time: 0.004 [minutes]",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808475680,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:14.801064  1796 incremental_pipeline.cc:377] Finding good initial image pair",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808475680,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:15.512957  1796 incremental_pipeline.cc:401] Registering initial image pair #112 and #109",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808475680,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:15.527932  1796 incremental_pipeline.cc:419] Global bundle adjustment",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808476680,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:15.800383  1796 incremental_pipeline.cc:524] Registering image #111 (num_reg_frames=2)",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808476680,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:15.800436  1796 incremental_pipeline.cc:527] => Image sees 731 / 9414 points",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808476680,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:16.571236  1796 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808477681,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:16.887177  1796 incremental_pipeline.cc:524] Registering image #110 (num_reg_frames=3)",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808477681,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:16.887234  1796 incremental_pipeline.cc:527] => Image sees 3866 / 8899 points",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808478681,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:18.178340  1796 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808478681,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:18.618798  1796 incremental_pipeline.cc:524] Registering image #106 (num_reg_frames=4)",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808478681,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:18.618855  1796 incremental_pipeline.cc:527] => Image sees 4349 / 7869 points",
+            "ingestionTime": 1777808480067
+        },
+        {
+            "timestamp": 1777808480695,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:20.563640  1796 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1777808486137
+        },
+        {
+            "timestamp": 1777808481695,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:21.058140  1796 incremental_pipeline.cc:524] Registering image #105 (num_reg_frames=5)",
+            "ingestionTime": 1777808486137
+        },
+        {
+            "timestamp": 1777808481695,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:21.058199  1796 incremental_pipeline.cc:527] => Image sees 3883 / 6999 points",
+            "ingestionTime": 1777808486137
+        },
+        {
+            "timestamp": 1777808483696,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:23.189019  1796 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1777808486137
+        },
+        {
+            "timestamp": 1777808483696,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:23.660877  1796 incremental_pipeline.cc:524] Registering image #113 (num_reg_frames=6)",
+            "ingestionTime": 1777808486137
+        },
+        {
+            "timestamp": 1777808483696,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:23.660935  1796 incremental_pipeline.cc:527] => Image sees 2877 / 5259 points",
+            "ingestionTime": 1777808486137
+        },
+        {
+            "timestamp": 1777808485697,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:24.904474  1796 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1777808491189
+        },
+        {
+            "timestamp": 1777808485697,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:25.537792  1796 incremental_pipeline.cc:524] Registering image #120 (num_reg_frames=7)",
+            "ingestionTime": 1777808491189
+        },
+        {
+            "timestamp": 1777808485697,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:25.537854  1796 incremental_pipeline.cc:527] => Image sees 3144 / 6521 points",
+            "ingestionTime": 1777808491189
+        },
+        {
+            "timestamp": 1777808486697,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:26.628391  1796 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1777808491189
+        },
+        {
+            "timestamp": 1777808488701,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:27.824987  1796 incremental_pipeline.cc:524] Registering image #121 (num_reg_frames=8)",
+            "ingestionTime": 1777808491189
+        },
+        {
+            "timestamp": 1777808488702,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:27.825047  1796 incremental_pipeline.cc:527] => Image sees 3697 / 6615 points",
+            "ingestionTime": 1777808491189
+        },
+        {
+            "timestamp": 1777808489702,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:28.991933  1796 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1777808491189
+        },
+        {
+            "timestamp": 1777808489702,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:29.675899  1796 incremental_pipeline.cc:524] Registering image #122 (num_reg_frames=9)",
+            "ingestionTime": 1777808491189
+        },
+        {
+            "timestamp": 1777808489702,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:29.675958  1796 incremental_pipeline.cc:527] => Image sees 3515 / 6118 points",
+            "ingestionTime": 1777808491189
+        },
+        {
+            "timestamp": 1777808491702,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:30.856724  1796 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1777808497253
+        },
+        {
+            "timestamp": 1777808491702,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:31.608510  1796 incremental_pipeline.cc:524] Registering image #123 (num_reg_frames=10)",
+            "ingestionTime": 1777808497253
+        },
+        {
+            "timestamp": 1777808491702,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:31.608568  1796 incremental_pipeline.cc:527] => Image sees 3198 / 6375 points",
+            "ingestionTime": 1777808497253
+        },
+        {
+            "timestamp": 1777808492703,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:32.652961  1796 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1777808497253
+        },
+        {
+            "timestamp": 1777808493703,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:33.394942  1796 incremental_pipeline.cc:524] Registering image #104 (num_reg_frames=11)",
+            "ingestionTime": 1777808497253
+        },
+        {
+            "timestamp": 1777808493703,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:33.395004  1796 incremental_pipeline.cc:527] => Image sees 2785 / 5910 points",
+            "ingestionTime": 1777808497253
+        },
+        {
+            "timestamp": 1777808494704,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:34.677291  1796 incremental_pipeline.cc:524] Registering image #89 (num_reg_frames=12)",
+            "ingestionTime": 1777808497253
+        },
+        {
+            "timestamp": 1777808494704,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:34.677349  1796 incremental_pipeline.cc:527] => Image sees 2775 / 6211 points",
+            "ingestionTime": 1777808497253
+        },
+        {
+            "timestamp": 1777808496704,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:35.850699  1796 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1777808502276
+        },
+        {
+            "timestamp": 1777808497704,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:36.770964  1796 incremental_pipeline.cc:524] Registering image #103 (num_reg_frames=13)",
+            "ingestionTime": 1777808502276
+        },
+        {
+            "timestamp": 1777808497705,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:36.771026  1796 incremental_pipeline.cc:527] => Image sees 2833 / 6394 points",
+            "ingestionTime": 1777808502276
+        },
+        {
+            "timestamp": 1777808498707,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:37.986734  1796 incremental_pipeline.cc:524] Registering image #102 (num_reg_frames=14)",
+            "ingestionTime": 1777808502276
+        },
+        {
+            "timestamp": 1777808498707,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:37.986791  1796 incremental_pipeline.cc:527] => Image sees 3618 / 6106 points",
+            "ingestionTime": 1777808502276
+        },
+        {
+            "timestamp": 1777808499707,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:39.127107  1796 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1777808502276
+        },
+        {
+            "timestamp": 1777808500713,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:40.168251  1796 incremental_pipeline.cc:524] Registering image #90 (num_reg_frames=15)",
+            "ingestionTime": 1777808502276
+        },
+        {
+            "timestamp": 1777808500714,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:40.168309  1796 incremental_pipeline.cc:527] => Image sees 2917 / 5851 points",
+            "ingestionTime": 1777808502276
+        },
+        {
+            "timestamp": 1777808501714,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:41.357385  1796 incremental_pipeline.cc:524] Registering image #129 (num_reg_frames=16)",
+            "ingestionTime": 1777808507304
+        },
+        {
+            "timestamp": 1777808501714,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:41.357445  1796 incremental_pipeline.cc:527] => Image sees 3072 / 6071 points",
+            "ingestionTime": 1777808507304
+        },
+        {
+            "timestamp": 1777808502715,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:42.418905  1796 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1777808507304
+        },
+        {
+            "timestamp": 1777808503715,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:43.689757  1796 incremental_pipeline.cc:524] Registering image #124 (num_reg_frames=17)",
+            "ingestionTime": 1777808507304
+        },
+        {
+            "timestamp": 1777808503715,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:43.689816  1796 incremental_pipeline.cc:527] => Image sees 3255 / 7108 points",
+            "ingestionTime": 1777808507304
+        },
+        {
+            "timestamp": 1777808505719,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:44.925278  1796 incremental_pipeline.cc:524] Registering image #125 (num_reg_frames=18)",
+            "ingestionTime": 1777808507304
+        },
+        {
+            "timestamp": 1777808505720,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:44.925357  1796 incremental_pipeline.cc:527] => Image sees 3677 / 7966 points",
+            "ingestionTime": 1777808507304
+        },
+        {
+            "timestamp": 1777808506721,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:46.070333  1796 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1777808512341
+        },
+        {
+            "timestamp": 1777808507721,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:47.548214  1796 incremental_pipeline.cc:524] Registering image #126 (num_reg_frames=19)",
+            "ingestionTime": 1777808512341
+        },
+        {
+            "timestamp": 1777808507721,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:47.548274  1796 incremental_pipeline.cc:527] => Image sees 4646 / 7960 points",
+            "ingestionTime": 1777808512341
+        },
+        {
+            "timestamp": 1777808509726,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:48.908730  1796 incremental_pipeline.cc:524] Registering image #127 (num_reg_frames=20)",
+            "ingestionTime": 1777808512341
+        },
+        {
+            "timestamp": 1777808509726,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:48.908794  1796 incremental_pipeline.cc:527] => Image sees 4714 / 7169 points",
+            "ingestionTime": 1777808512341
+        },
+        {
+            "timestamp": 1777808510727,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:50.236730  1796 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1777808512341
+        },
+        {
+            "timestamp": 1777808512728,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:51.871361  1796 incremental_pipeline.cc:524] Registering image #128 (num_reg_frames=21)",
+            "ingestionTime": 1777808518365
+        },
+        {
+            "timestamp": 1777808512728,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:51.871417  1796 incremental_pipeline.cc:527] => Image sees 4817 / 6450 points",
+            "ingestionTime": 1777808518365
+        },
+        {
+            "timestamp": 1777808513733,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:53.385056  1796 incremental_pipeline.cc:524] Registering image #130 (num_reg_frames=22)",
+            "ingestionTime": 1777808518365
+        },
+        {
+            "timestamp": 1777808513733,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:53.385114  1796 incremental_pipeline.cc:527] => Image sees 4180 / 5313 points",
+            "ingestionTime": 1777808518365
+        },
+        {
+            "timestamp": 1777808515733,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:54.739120  1796 incremental_pipeline.cc:524] Registering image #91 (num_reg_frames=23)",
+            "ingestionTime": 1777808518365
+        },
+        {
+            "timestamp": 1777808515733,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:54.739173  1796 incremental_pipeline.cc:527] => Image sees 2077 / 5078 points",
+            "ingestionTime": 1777808518365
+        },
+        {
+            "timestamp": 1777808515733,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:55.638621  1796 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1777808518365
+        },
+        {
+            "timestamp": 1777808518740,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:58.502180  1796 incremental_pipeline.cc:524] Registering image #92 (num_reg_frames=24)",
+            "ingestionTime": 1777808524434
+        },
+        {
+            "timestamp": 1777808518740,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:58.502244  1796 incremental_pipeline.cc:527] => Image sees 2042 / 4813 points",
+            "ingestionTime": 1777808524434
+        },
+        {
+            "timestamp": 1777808519741,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:59.449939  1796 incremental_pipeline.cc:524] Registering image #88 (num_reg_frames=25)",
+            "ingestionTime": 1777808524434
+        },
+        {
+            "timestamp": 1777808519741,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:41:59.449997  1796 incremental_pipeline.cc:527] => Image sees 2231 / 6867 points",
+            "ingestionTime": 1777808524434
+        },
+        {
+            "timestamp": 1777808520743,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:00.395552  1796 incremental_pipeline.cc:524] Registering image #87 (num_reg_frames=26)",
+            "ingestionTime": 1777808524434
+        },
+        {
+            "timestamp": 1777808520744,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:00.395608  1796 incremental_pipeline.cc:527] => Image sees 2421 / 6691 points",
+            "ingestionTime": 1777808524434
+        },
+        {
+            "timestamp": 1777808521744,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:01.290270  1796 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1777808524434
+        },
+        {
+            "timestamp": 1777808525749,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:05.174582  1796 incremental_pipeline.cc:524] Registering image #1260 (num_reg_frames=27)",
+            "ingestionTime": 1777808531507
+        },
+        {
+            "timestamp": 1777808525749,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:05.174641  1796 incremental_pipeline.cc:527] => Image sees 1575 / 3759 points",
+            "ingestionTime": 1777808531507
+        },
+        {
+            "timestamp": 1777808526749,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:06.037184  1796 incremental_pipeline.cc:524] Registering image #790 (num_reg_frames=28)",
+            "ingestionTime": 1777808531507
+        },
+        {
+            "timestamp": 1777808526749,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:06.037245  1796 incremental_pipeline.cc:527] => Image sees 1129 / 2553 points",
+            "ingestionTime": 1777808531507
+        },
+        {
+            "timestamp": 1777808527750,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:06.965180  1796 incremental_pipeline.cc:524] Registering image #792 (num_reg_frames=29)",
+            "ingestionTime": 1777808531507
+        },
+        {
+            "timestamp": 1777808527750,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:06.965237  1796 incremental_pipeline.cc:527] => Image sees 1143 / 3107 points",
+            "ingestionTime": 1777808531507
+        },
+        {
+            "timestamp": 1777808527750,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:07.715132  1796 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1777808531507
+        },
+        {
+            "timestamp": 1777808530751,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:10.359086  1796 incremental_pipeline.cc:524] Registering image #794 (num_reg_frames=30)",
+            "ingestionTime": 1777808536555
+        },
+        {
+            "timestamp": 1777808530751,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:10.359138  1796 incremental_pipeline.cc:527] => Image sees 1166 / 2723 points",
+            "ingestionTime": 1777808536555
+        },
+        {
+            "timestamp": 1777808531752,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:11.108474  1796 incremental_pipeline.cc:524] Registering image #1280 (num_reg_frames=31)",
+            "ingestionTime": 1777808536555
+        },
+        {
+            "timestamp": 1777808531752,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:11.108527  1796 incremental_pipeline.cc:527] => Image sees 957 / 3269 points",
+            "ingestionTime": 1777808536555
+        },
+        {
+            "timestamp": 1777808532752,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:11.972743  1796 incremental_pipeline.cc:524] Registering image #796 (num_reg_frames=32)",
+            "ingestionTime": 1777808536555
+        },
+        {
+            "timestamp": 1777808532752,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:11.972802  1796 incremental_pipeline.cc:527] => Image sees 817 / 2771 points",
+            "ingestionTime": 1777808536555
+        },
+        {
+            "timestamp": 1777808532752,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:12.583974  1796 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1777808536555
+        },
+        {
+            "timestamp": 1777808535761,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:15.123248  1796 incremental_pipeline.cc:524] Registering image #1261 (num_reg_frames=33)",
+            "ingestionTime": 1777808541577
+        },
+        {
+            "timestamp": 1777808535761,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:15.123360  1796 incremental_pipeline.cc:527] => Image sees 784 / 3883 points",
+            "ingestionTime": 1777808541577
+        },
+        {
+            "timestamp": 1777808536761,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:15.962934  1796 incremental_pipeline.cc:524] Registering image #798 (num_reg_frames=34)",
+            "ingestionTime": 1777808541577
+        },
+        {
+            "timestamp": 1777808536761,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:15.962992  1796 incremental_pipeline.cc:527] => Image sees 695 / 1966 points",
+            "ingestionTime": 1777808541577
+        },
+        {
+            "timestamp": 1777808536761,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:16.720805  1796 incremental_pipeline.cc:524] Registering image #83 (num_reg_frames=35)",
+            "ingestionTime": 1777808541577
+        },
+        {
+            "timestamp": 1777808536761,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:16.720866  1796 incremental_pipeline.cc:527] => Image sees 893 / 4457 points",
+            "ingestionTime": 1777808541577
+        },
+        {
+            "timestamp": 1777808537761,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:17.484953  1796 incremental_pipeline.cc:524] Registering image #79 (num_reg_frames=36)",
+            "ingestionTime": 1777808541577
+        },
+        {
+            "timestamp": 1777808537761,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:17.485010  1796 incremental_pipeline.cc:527] => Image sees 1063 / 6199 points",
+            "ingestionTime": 1777808541577
+        },
+        {
+            "timestamp": 1777808538767,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:18.076824  1796 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1777808541577
+        },
+        {
+            "timestamp": 1777808543773,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:22.916589  1796 incremental_pipeline.cc:524] Registering image #80 (num_reg_frames=37)",
+            "ingestionTime": 1777808549632
+        },
+        {
+            "timestamp": 1777808543773,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:22.916649  1796 incremental_pipeline.cc:527] => Image sees 1955 / 7622 points",
+            "ingestionTime": 1777808549632
+        },
+        {
+            "timestamp": 1777808544773,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:23.824790  1796 incremental_pipeline.cc:524] Registering image #81 (num_reg_frames=38)",
+            "ingestionTime": 1777808549632
+        },
+        {
+            "timestamp": 1777808544773,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:23.824844  1796 incremental_pipeline.cc:527] => Image sees 3364 / 7515 points",
+            "ingestionTime": 1777808549632
+        },
+        {
+            "timestamp": 1777808545774,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:24.962417  1796 incremental_pipeline.cc:524] Registering image #82 (num_reg_frames=39)",
+            "ingestionTime": 1777808549632
+        },
+        {
+            "timestamp": 1777808545774,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:24.962478  1796 incremental_pipeline.cc:527] => Image sees 3338 / 7043 points",
+            "ingestionTime": 1777808549632
+        },
+        {
+            "timestamp": 1777808546774,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:26.048996  1796 incremental_pipeline.cc:524] Registering image #84 (num_reg_frames=40)",
+            "ingestionTime": 1777808549632
+        },
+        {
+            "timestamp": 1777808546774,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:26.049052  1796 incremental_pipeline.cc:527] => Image sees 3351 / 5872 points",
+            "ingestionTime": 1777808549632
+        },
+        {
+            "timestamp": 1777808547774,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:27.212044  1796 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1777808549632
+        },
+        {
+            "timestamp": 1777808550781,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:29.828715  1796 incremental_pipeline.cc:524] Registering image #1259 (num_reg_frames=41)",
+            "ingestionTime": 1777808556715
+        },
+        {
+            "timestamp": 1777808550781,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:29.828778  1796 incremental_pipeline.cc:527] => Image sees 2320 / 6658 points",
+            "ingestionTime": 1777808556715
+        },
+        {
+            "timestamp": 1777808551784,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:30.979939  1796 incremental_pipeline.cc:524] Registering image #1258 (num_reg_frames=42)",
+            "ingestionTime": 1777808556715
+        },
+        {
+            "timestamp": 1777808551784,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:30.979996  1796 incremental_pipeline.cc:527] => Image sees 2357 / 6660 points",
+            "ingestionTime": 1777808556715
+        },
+        {
+            "timestamp": 1777808552788,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:32.149868  1796 incremental_pipeline.cc:524] Registering image #1279 (num_reg_frames=43)",
+            "ingestionTime": 1777808556715
+        },
+        {
+            "timestamp": 1777808552788,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:32.149925  1796 incremental_pipeline.cc:527] => Image sees 1912 / 4849 points",
+            "ingestionTime": 1777808556715
+        },
+        {
+            "timestamp": 1777808553789,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:33.121304  1796 incremental_pipeline.cc:524] Registering image #1278 (num_reg_frames=44)",
+            "ingestionTime": 1777808556715
+        },
+        {
+            "timestamp": 1777808553789,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:33.121363  1796 incremental_pipeline.cc:527] => Image sees 1974 / 5635 points",
+            "ingestionTime": 1777808556715
+        },
+        {
+            "timestamp": 1777808554789,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:34.041762  1796 incremental_pipeline.cc:524] Registering image #1277 (num_reg_frames=45)",
+            "ingestionTime": 1777808556715
+        },
+        {
+            "timestamp": 1777808554789,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:34.041826  1796 incremental_pipeline.cc:527] => Image sees 2767 / 5816 points",
+            "ingestionTime": 1777808556715
+        },
+        {
+            "timestamp": 1777808555790,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:34.945483  1796 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1777808561746
+        },
+        {
+            "timestamp": 1777808561843,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:40.920535  1796 incremental_pipeline.cc:524] Registering image #870 (num_reg_frames=46)",
+            "ingestionTime": 1777808567831
+        },
+        {
+            "timestamp": 1777808561844,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:40.920593  1796 incremental_pipeline.cc:527] => Image sees 1982 / 5564 points",
+            "ingestionTime": 1777808567831
+        },
+        {
+            "timestamp": 1777808562844,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:41.844715  1796 incremental_pipeline.cc:524] Registering image #1289 (num_reg_frames=47)",
+            "ingestionTime": 1777808567831
+        },
+        {
+            "timestamp": 1777808562844,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:41.844774  1796 incremental_pipeline.cc:527] => Image sees 2184 / 4482 points",
+            "ingestionTime": 1777808567831
+        },
+        {
+            "timestamp": 1777808562844,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:42.759423  1796 incremental_pipeline.cc:524] Registering image #868 (num_reg_frames=48)",
+            "ingestionTime": 1777808567831
+        },
+        {
+            "timestamp": 1777808562844,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:42.759478  1796 incremental_pipeline.cc:527] => Image sees 2508 / 7216 points",
+            "ingestionTime": 1777808567831
+        },
+        {
+            "timestamp": 1777808563844,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:43.782611  1796 incremental_pipeline.cc:524] Registering image #866 (num_reg_frames=49)",
+            "ingestionTime": 1777808567831
+        },
+        {
+            "timestamp": 1777808563844,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:43.782672  1796 incremental_pipeline.cc:527] => Image sees 2281 / 4842 points",
+            "ingestionTime": 1777808567831
+        },
+        {
+            "timestamp": 1777808564845,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:44.713469  1796 incremental_pipeline.cc:524] Registering image #1257 (num_reg_frames=50)",
+            "ingestionTime": 1777808567831
+        },
+        {
+            "timestamp": 1777808564845,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:44.713523  1796 incremental_pipeline.cc:527] => Image sees 2165 / 5296 points",
+            "ingestionTime": 1777808567831
+        },
+        {
+            "timestamp": 1777808565845,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:45.658602  1796 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1777808567831
+        },
+        {
+            "timestamp": 1777808571928,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:51.786757  1796 incremental_pipeline.cc:524] Registering image #850 (num_reg_frames=51)",
+            "ingestionTime": 1777808576972
+        },
+        {
+            "timestamp": 1777808571928,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:51.786816  1796 incremental_pipeline.cc:527] => Image sees 2647 / 6899 points",
+            "ingestionTime": 1777808576972
+        },
+        {
+            "timestamp": 1777808572929,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:52.810606  1796 incremental_pipeline.cc:524] Registering image #874 (num_reg_frames=52)",
+            "ingestionTime": 1777808576972
+        },
+        {
+            "timestamp": 1777808572929,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:52.810662  1796 incremental_pipeline.cc:527] => Image sees 2676 / 6076 points",
+            "ingestionTime": 1777808576972
+        },
+        {
+            "timestamp": 1777808573929,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:53.866603  1796 incremental_pipeline.cc:524] Registering image #852 (num_reg_frames=53)",
+            "ingestionTime": 1777808576972
+        },
+        {
+            "timestamp": 1777808573929,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:53.866662  1796 incremental_pipeline.cc:527] => Image sees 3231 / 6802 points",
+            "ingestionTime": 1777808576972
+        },
+        {
+            "timestamp": 1777808575931,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:54.986114  1796 incremental_pipeline.cc:524] Registering image #854 (num_reg_frames=54)",
+            "ingestionTime": 1777808576972
+        },
+        {
+            "timestamp": 1777808575931,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:54.986171  1796 incremental_pipeline.cc:527] => Image sees 3327 / 5531 points",
+            "ingestionTime": 1777808576972
+        },
+        {
+            "timestamp": 1777808576931,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:56.109160  1796 incremental_pipeline.cc:524] Registering image #872 (num_reg_frames=55)",
+            "ingestionTime": 1777808582005
+        },
+        {
+            "timestamp": 1777808576931,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:56.109217  1796 incremental_pipeline.cc:527] => Image sees 2968 / 4741 points",
+            "ingestionTime": 1777808582005
+        },
+        {
+            "timestamp": 1777808577932,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:42:57.077845  1796 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1777808582005
+        },
+        {
+            "timestamp": 1777808586946,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:43:06.169358  1796 incremental_pipeline.cc:524] Registering image #1262 (num_reg_frames=56)",
+            "ingestionTime": 1777808592068
+        },
+        {
+            "timestamp": 1777808586946,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:43:06.169415  1796 incremental_pipeline.cc:527] => Image sees 2181 / 5813 points",
+            "ingestionTime": 1777808592068
+        },
+        {
+            "timestamp": 1777808587946,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:43:07.069576  1796 incremental_pipeline.cc:524] Registering image #1256 (num_reg_frames=57)",
+            "ingestionTime": 1777808592068
+        },
+        {
+            "timestamp": 1777808587946,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:43:07.069633  1796 incremental_pipeline.cc:527] => Image sees 1982 / 6792 points",
+            "ingestionTime": 1777808592068
+        },
+        {
+            "timestamp": 1777808588948,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:43:08.035105  1796 incremental_pipeline.cc:524] Registering image #1255 (num_reg_frames=58)",
+            "ingestionTime": 1777808592068
+        },
+        {
+            "timestamp": 1777808588948,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:43:08.035164  1796 incremental_pipeline.cc:527] => Image sees 3193 / 7064 points",
+            "ingestionTime": 1777808592068
+        },
+        {
+            "timestamp": 1777808589948,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:43:09.113462  1796 incremental_pipeline.cc:524] Registering image #864 (num_reg_frames=59)",
+            "ingestionTime": 1777808592068
+        },
+        {
+            "timestamp": 1777808589948,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:43:09.113520  1796 incremental_pipeline.cc:527] => Image sees 2568 / 4485 points",
+            "ingestionTime": 1777808592068
+        },
+        {
+            "timestamp": 1777808590949,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:43:10.123579  1796 incremental_pipeline.cc:524] Registering image #1263 (num_reg_frames=60)",
+            "ingestionTime": 1777808592068
+        },
+        {
+            "timestamp": 1777808590949,
+            "message": "COLMAP[chunk_05_mapper_initial] I20260503 11:43:10.123631  1796 incremental_pipeline.cc:527] => Image sees 2233 / 4180 points",
+            "ingestionTime": 1777808592068
+        }
+    ],
+    "nextForwardToken": "f/39646456398512404394629785807535631080543979560035876873/s",
+    "nextBackwardToken": "b/39646453193627710423396872722635006479422307691411210263/s"
+}
