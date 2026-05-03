@@ -7258,8 +7258,41 @@
       },
       "v18_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review",
       "next_gate": "Commit/push/gate the V18-default guard, then retry only this $2-capped tile_02 on-demand smoke; no larger fanout until R3 quality evidence exists."
+    },
+    "r3_ondemand_tile02_v18defaults_export_failure": {
+      "checked_at": "2026-05-03T11:58:29Z",
+      "training_job_name": "md1-r3od-tile02v18-1777806909-tile-02",
+      "status": "Failed",
+      "failure_reason": "AlgorithmError: , exit code: 1",
+      "billable_time_seconds": 2511,
+      "estimated_usd": 1.0567,
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r3-ondemand-tile02-v18defaults-smoke-20260503/tiles/tile_02/md1-r3od-tile02v18-1777806909-tile-02/output/model.tar.gz",
+      "artifact_contents": [
+        "ns_export.log",
+        "training_selection.json",
+        "ns_train.log"
+      ],
+      "checkpoint_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r3-ondemand-tile02-v18defaults-smoke-20260503/checkpoints/md1-r3od-tile02v18-1777806909-tile-02/",
+      "checkpoint_latest": "nerfstudio_models/step-000007999.ckpt",
+      "checkpoint_bytes": 256449687,
+      "result": "training_completed_but_export_failed_before_splat_ply",
+      "root_cause": "auto-selected export camera index exceeded Splatfacto-W appearance_embeds.num_embeddings after capped image selection/train split, causing CUDA indexSelectSmallIndex assert while computing foreground shs_0",
+      "evidence_path": "logs/md1-cost-reduction-r3-ondemand-tile02-v18defaults-export-failure-20260503.json"
+    },
+    "r3_export_appearance_camera_clamp_guard": {
+      "checked_at": "2026-05-03T11:58:29Z",
+      "code_paths": [
+        "infrastructure/containers/3dgs/export_splatfacto_w_assets.py",
+        "tests/unit/test_export_splatfacto_w_assets.py"
+      ],
+      "behavior": "foreground and background Splatfacto-W export now clamp requested camera_idx to the trained appearance embedding table and record requested/clamped indices in export metadata",
+      "verification": [
+        "python3 -m unittest tests.unit.test_export_splatfacto_w_assets tests.unit.test_tiled_3dgs_benchmark tests.unit.test_tiled_nerfstudio_dispatcher tests.unit.test_3dgs_training_monitor -> 93 tests OK",
+        "python3 -m py_compile infrastructure/containers/3dgs/export_splatfacto_w_assets.py scripts/3dgs/run_tiled_3dgs_benchmark.py scripts/3dgs/monitor_3dgs_training_cost.py infrastructure/containers/3dgs/train_nerfstudio_production.py -> exit 0"
+      ],
+      "next_gate": "Commit/push, wait exact-head CDK and ML container build, then rerun only the bounded tile_02 export smoke on the new digest before any larger fanout."
     }
   },
-  "latest_training_cost_reduction_status": "R2 checkpoint restart gate passed and the first real Spot smoke was stopped before spend on EC2 insufficient capacity. A first on-demand R3 tile_02 smoke was stopped after 1119 billable seconds (~$0.471) because CloudWatch proved it used non-V18 defaults (SH3/BG_SH8/default split/max-gauss 10.0). The adaptive fanout planner now injects V18/R5 tile defaults and includes those hyperparameters in tile input hashes. Corrected dry-run logs/md1-cost-reduction-r3-ondemand-tile02-v18defaults-dryrun-20260503.json submitted zero jobs, planned tile_02 at 8000 iterations / 128 images with SH1/BG_SH1/stop_split_at 3500/max_gauss_ratio 3.0/scaffold cap 300000, and estimates $1.01 on-demand / $1.515 worst-case under max_estimated_usd $2.00. Full 14-tile training remains blocked until R3/R4 representative quality/cost gates pass.",
-  "latest_live_compute_status": "2026-05-03T11:07:25Z: no SageMaker training jobs InProgress; unrelated Meadow COLMAP processing job r5l80c5-1777804817 is InProgress."
+  "latest_training_cost_reduction_status": "R2 checkpoint restart passed; Spot capacity was bounded and stopped before spend; R3 tile_02 on-demand now has two low-spend lessons. First wrong-defaults run was stopped at 1119 billable seconds (~$0.471). Corrected V18-default run trained 8000 iterations with 128 images and checkpointed step-000007999, but export failed after 2511 billable seconds (~$1.057) because auto-selected camera_idx exceeded the capped run appearance embedding table, producing a CUDA indexSelectSmallIndex assert and only a log-only model.tar.gz. Exporter clamp guard is implemented and locally verified; next action is commit/push/gate, rebuild the 3DGS image, then rerun only the bounded tile_02 smoke on the new digest. Full 14-tile training remains blocked until R3/R4 representative quality/cost gates pass.",
+  "latest_live_compute_status": "2026-05-03T11:58:29Z: no SageMaker training jobs are InProgress. The failed bounded R3 tile_02 export-smoke md1-r3od-tile02v18-1777806909-tile-02 is terminal Failed with 2511 billable seconds. One unrelated Meadow COLMAP processing job r5l80c8fix-1777808608 is InProgress."
 }

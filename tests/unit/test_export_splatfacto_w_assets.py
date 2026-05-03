@@ -198,6 +198,80 @@ class ExportSplatfactoWAssetsTests(unittest.TestCase):
         np.testing.assert_allclose(transformed_matrix, expected_matrix, atol=1e-6)
         self.assertTrue(metadata["rotation_transform_applied"])
 
+    def test_appearance_camera_index_clamps_to_embedding_table(self):
+        module = load_module_with_stubs()
+        model = types.SimpleNamespace(appearance_embeds=types.SimpleNamespace(num_embeddings=4))
+
+        safe_idx, metadata = module.resolve_appearance_camera_idx(model, 9)
+
+        self.assertEqual(safe_idx, 3)
+        self.assertEqual(metadata["requested_camera_idx"], 9)
+        self.assertEqual(metadata["appearance_camera_idx"], 3)
+        self.assertEqual(metadata["appearance_num_embeddings"], 4)
+        self.assertTrue(metadata["appearance_camera_clamped"])
+
+    def test_foreground_export_uses_clamped_appearance_camera_index(self):
+        module = load_module_with_stubs()
+
+        class FakeTensor:
+            def __init__(self, array):
+                self.array = np.asarray(array, dtype=np.float32)
+
+            def detach(self):
+                return self
+
+            def cpu(self):
+                return self
+
+            def numpy(self):
+                return self.array
+
+            def contiguous(self):
+                return self
+
+            def transpose(self, axis_a, axis_b):
+                return FakeTensor(np.swapaxes(self.array, axis_a, axis_b))
+
+            def reshape(self, shape):
+                return FakeTensor(self.array.reshape(shape))
+
+        class FakeModel:
+            def __init__(self):
+                self.appearance_embeds = types.SimpleNamespace(num_embeddings=2)
+                self.camera_indices = []
+                self.means = FakeTensor([[1.0, 2.0, 3.0]])
+                self.opacities = FakeTensor([[0.5]])
+                self.scales = FakeTensor([[0.0, 0.1, 0.2]])
+                self.quats = FakeTensor([[1.0, 0.0, 0.0, 0.0]])
+
+            def set_camera_idx(self, camera_idx):
+                self.camera_indices.append(camera_idx)
+
+            @property
+            def shs_0(self):
+                self.assert_safe_camera()
+                return FakeTensor([[0.1, 0.2, 0.3]])
+
+            @property
+            def shs_rest(self):
+                self.assert_safe_camera()
+                return FakeTensor(np.zeros((1, 0, 3), dtype=np.float32))
+
+            def assert_safe_camera(self):
+                if self.camera_indices[-1] >= self.appearance_embeds.num_embeddings:
+                    raise AssertionError("appearance camera index was not clamped")
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            _, metadata = module.build_foreground_ply(
+                FakeModel(),
+                Path(temp_dir),
+                9,
+            )
+
+        self.assertEqual(metadata["appearance"]["requested_camera_idx"], 9)
+        self.assertEqual(metadata["appearance"]["appearance_camera_idx"], 1)
+        self.assertTrue(metadata["appearance"]["appearance_camera_clamped"])
+
 
 if __name__ == "__main__":
     unittest.main()

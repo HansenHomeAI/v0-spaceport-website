@@ -1,0 +1,30 @@
+{
+  "checks": [
+    {
+      "status": "blocked",
+      "training_job_name": "md1-r3od-tile02v18-1777806909-tile-02",
+      "training_status": "InProgress",
+      "secondary_status": "Uploading",
+      "elapsed_seconds": 2152,
+      "latest_log_age_seconds": null,
+      "gpu_average_percent": null,
+      "s3_output_object_count": 0,
+      "startup_wait_seconds": 2211,
+      "training_started": true,
+      "secondary_status_message": "Uploading generated training model",
+      "spend": {
+        "instance_type": "ml.g5.2xlarge",
+        "hourly_rate_usd": 1.515,
+        "billable_seconds": 2152,
+        "billable_hours": 0.5978,
+        "estimated_usd": 0.9056
+      },
+      "block_reasons": [
+        "cloudwatch_logs_missing_after_warmup"
+      ],
+      "warnings": [],
+      "checked_at_epoch": 1777809125,
+      "poll_index": 0
+    }
+  ]
+}

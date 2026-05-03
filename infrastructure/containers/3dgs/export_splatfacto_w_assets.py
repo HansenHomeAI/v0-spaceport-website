@@ -41,6 +41,45 @@ def write_ply(filename: Path, count: int, tensors: OrderedDict[str, np.ndarray])
                     ply_file.write(value.tobytes())
 
 
+def appearance_embedding_count(model) -> Optional[int]:
+    appearance_embeds = getattr(model, "appearance_embeds", None)
+    if appearance_embeds is None:
+        return None
+
+    count = getattr(appearance_embeds, "num_embeddings", None)
+    if count is None:
+        weight = getattr(appearance_embeds, "weight", None)
+        shape = getattr(weight, "shape", None)
+        if shape:
+            count = shape[0]
+
+    try:
+        count = int(count)
+    except (TypeError, ValueError):
+        return None
+    return count if count > 0 else None
+
+
+def resolve_appearance_camera_idx(model, camera_idx: int) -> tuple[int, dict[str, Any]]:
+    requested_idx = int(camera_idx)
+    count = appearance_embedding_count(model)
+    if count is None:
+        return requested_idx, {
+            "requested_camera_idx": requested_idx,
+            "appearance_camera_idx": requested_idx,
+            "appearance_num_embeddings": None,
+            "appearance_camera_clamped": False,
+        }
+
+    safe_idx = min(max(requested_idx, 0), count - 1)
+    return safe_idx, {
+        "requested_camera_idx": requested_idx,
+        "appearance_camera_idx": safe_idx,
+        "appearance_num_embeddings": count,
+        "appearance_camera_clamped": safe_idx != requested_idx,
+    }
+
+
 def tensor_to_numpy(value) -> Optional[np.ndarray]:
     if value is None:
         return None
@@ -319,7 +358,8 @@ def quaternions_to_output_space(quats: np.ndarray, transform_metadata: Mapping[s
 
 
 def build_foreground_ply(model, output_dir: Path, camera_idx: int, *, pipeline=None, coordinate_frame: str = "model") -> tuple[Path, dict]:
-    model.set_camera_idx(camera_idx)
+    appearance_camera_idx, appearance_metadata = resolve_appearance_camera_idx(model, camera_idx)
+    model.set_camera_idx(appearance_camera_idx)
 
     positions = model.means.detach().cpu().numpy()
     transform_metadata = {"coordinate_frame": "model", "applied": False}
@@ -342,6 +382,7 @@ def build_foreground_ply(model, output_dir: Path, camera_idx: int, *, pipeline=N
             }
         else:
             positions, transform_metadata = positions_to_planner_space(positions, pipeline)
+    transform_metadata["appearance"] = appearance_metadata
     count = positions.shape[0]
     tensors: OrderedDict[str, np.ndarray] = OrderedDict()
 
@@ -412,12 +453,17 @@ def build_equirect_directions(width: int, height: int, device: torch.device) -> 
 def resolve_appearance_embedding(model, appearance_mode: str, camera_idx: int) -> tuple[torch.Tensor, dict]:
     if appearance_mode == "average":
         embedding = model.appearance_embeds.weight.mean(dim=0)
-        return embedding, {"appearance_mode": "average"}
+        return embedding, {
+            "appearance_mode": "average",
+            "appearance_num_embeddings": appearance_embedding_count(model),
+        }
 
-    embedding = model.appearance_embeds(torch.tensor(camera_idx, device=model.device))
+    appearance_camera_idx, metadata = resolve_appearance_camera_idx(model, camera_idx)
+    embedding = model.appearance_embeds(torch.tensor(appearance_camera_idx, device=model.device))
     return embedding, {
         "appearance_mode": "camera",
         "camera_idx": int(camera_idx),
+        **metadata,
     }
 
 
