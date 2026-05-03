@@ -179,6 +179,33 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             manifest = json.loads((compact_dir / "checkpoint_manifest.json").read_text(encoding="utf-8"))
             self.assertEqual(manifest["latest_checkpoint"], "nerfstudio_models/step-000002500.ckpt")
 
+    def test_restore_checkpoint_prefers_explicit_resume_uri(self):
+        module = load_module_with_stubs()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            checkpoint_dir = root / "checkpoints"
+
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.checkpointing_enabled = True
+            trainer.checkpoint_dir = checkpoint_dir
+            trainer.checkpoint_s3_uri = "s3://bucket/new-run-checkpoints"
+            trainer.checkpoint_resume_s3_uri = "s3://bucket/prior-run-checkpoints"
+
+            calls: list[tuple[str, Path]] = []
+
+            def fake_sync(s3_uri, target_dir):
+                calls.append((s3_uri, target_dir))
+                target_dir.mkdir(parents=True)
+                (target_dir / "checkpoint_manifest.json").write_text("{}", encoding="utf-8")
+                return 1
+
+            trainer.sync_s3_prefix_to_dir = fake_sync
+
+            trainer.restore_compact_checkpoint_from_s3()
+
+            self.assertEqual(calls, [("s3://bucket/prior-run-checkpoints", checkpoint_dir / "resume_checkpoint")])
+            self.assertTrue((checkpoint_dir / "resume_checkpoint" / "checkpoint_manifest.json").exists())
+
     def test_cleanup_preserves_compact_checkpoint_only(self):
         module = load_module_with_stubs()
         with tempfile.TemporaryDirectory() as tmp:

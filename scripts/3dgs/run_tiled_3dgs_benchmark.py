@@ -695,6 +695,11 @@ def validate_submit_guardrails(args: argparse.Namespace, summary: dict) -> None:
     )
     if checkpoints_requested and not str(getattr(args, "checkpoint_s3_prefix", "") or "").strip():
         errors.append("--checkpoint-s3-prefix is required when checkpoints or Spot are enabled")
+    checkpoint_resume_s3_uri = str(getattr(args, "checkpoint_resume_s3_uri", "") or "").strip()
+    if checkpoint_resume_s3_uri and not checkpoints_requested:
+        errors.append("--checkpoint-resume-s3-uri requires --enable-checkpoints or --enable-spot")
+    if checkpoint_resume_s3_uri and not checkpoint_resume_s3_uri.startswith("s3://"):
+        errors.append("--checkpoint-resume-s3-uri must be an s3:// prefix")
     if getattr(args, "enable_spot", False):
         if not getattr(args, "spot_restart_proof_passed", False):
             errors.append("--spot-restart-proof-passed is required before submitting spot training")
@@ -1721,6 +1726,14 @@ def parse_args() -> argparse.Namespace:
         help="S3 prefix for SageMaker training checkpoints when checkpoints or Spot are enabled.",
     )
     parser.add_argument(
+        "--checkpoint-resume-s3-uri",
+        default="",
+        help=(
+            "Optional prior checkpoint prefix to download before training. "
+            "Use with a separate --checkpoint-s3-prefix for restart proofs."
+        ),
+    )
+    parser.add_argument(
         "--checkpoint-save-steps",
         type=int,
         default=DEFAULT_CHECKPOINT_SAVE_STEPS,
@@ -1942,6 +1955,11 @@ def main() -> int:
         training_env_overrides.setdefault("TRAINING_ENABLE_CHECKPOINTS", "true")
         if "TRAINING_STEPS_PER_SAVE" not in explicit_env:
             training_env_overrides["TRAINING_STEPS_PER_SAVE"] = str(args.checkpoint_save_steps)
+    if args.checkpoint_resume_s3_uri:
+        training_env_overrides.setdefault(
+            "TRAINING_CHECKPOINT_RESUME_S3_URI",
+            args.checkpoint_resume_s3_uri,
+        )
     if args.scaffold_artifact_s3_uri:
         training_env_overrides.setdefault("GLOBAL_SCAFFOLD_SOURCE_DIR", "/opt/ml/input/data/scaffold")
 
@@ -2018,6 +2036,7 @@ def main() -> int:
         "enable_spot": bool(args.enable_spot),
         "enable_checkpoints": bool(args.enable_checkpoints),
         "checkpoint_s3_prefix": args.checkpoint_s3_prefix,
+        "checkpoint_resume_s3_uri": args.checkpoint_resume_s3_uri,
         "checkpoint_save_steps": args.checkpoint_save_steps,
         "max_estimated_usd": args.max_estimated_usd,
         "review_camera_manifest_s3_uri": args.review_camera_manifest_s3_uri,

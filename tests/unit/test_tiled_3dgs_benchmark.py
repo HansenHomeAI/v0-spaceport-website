@@ -859,6 +859,26 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
 
         self.assertIn("--checkpoint-s3-prefix", str(raised.exception))
 
+    def test_validate_submit_guardrails_requires_checkpointing_for_resume_uri(self):
+        args = types.SimpleNamespace(
+            submit=True,
+            max_estimated_usd=1.0,
+            experiment_id="r2-checkpoint-restart",
+            v18_review_manifest_s3_uri="s3://bucket/v18-review",
+            baseline_review_manifest_s3_uri="",
+            enable_spot=False,
+            enable_checkpoints=False,
+            checkpoint_s3_prefix="",
+            checkpoint_resume_s3_uri="s3://bucket/prior-checkpoint",
+            spot_restart_proof_passed=False,
+            reuse_tile_cache=False,
+        )
+
+        with self.assertRaises(RuntimeError) as raised:
+            benchmark.validate_submit_guardrails(args, {"cost_estimate": {"estimated_usd": 0.25}})
+
+        self.assertIn("--checkpoint-resume-s3-uri requires", str(raised.exception))
+
     def test_assert_s3_object_exists_probes_cache_artifact_uri(self):
         with mock.patch.object(benchmark, "run_command") as run_command:
             benchmark.assert_s3_object_exists("s3://bucket/cache/tile_00/model.tar.gz")

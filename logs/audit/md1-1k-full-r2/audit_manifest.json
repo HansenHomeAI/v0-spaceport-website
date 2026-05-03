@@ -589,20 +589,25 @@
       ]
     }
   ],
-  "current_branch_head": "58de3e418b24ebaa1dde13807e3939bb2da286e1 plus local tile-selection channel, R2 smoke evidence, and compact checkpoint persistence fixes pending commit/push",
-  "current_exact_head_gate_status": "exact-head 58de3e418b24ebaa1dde13807e3939bb2da286e1 has green CDK Deploy 25226270222; no Pages run appeared for that non-web push; next pushed head must watch CDK Deploy and Trigger ML Container Build before any R2b paid restart proof",
+  "current_branch_head": "727fe2270258b9f350886d5d69a5629aefd7b2c8 plus local explicit checkpoint-resume-source split pending commit/push",
+  "current_exact_head_gate_status": "exact-head 727fe2270258b9f350886d5d69a5629aefd7b2c8 has green CDK Deploy 25237262838 and green Trigger ML Container Build 25237262835; the built 3DGS image digest sha256:68a4c41de8121807456aced44c139d6ec6667c8a792f694f3fa9e444db162fa3 is superseded by the local checkpoint-resume-source split, so the next pushed head must watch CDK Deploy and Trigger ML Container Build before any paid restart proof",
   "current_live_compute_status": {
     "status": "idle",
-    "checked_at": "2026-05-01T22:55:00Z",
+    "checked_at": "2026-05-03T06:56:43Z",
     "training_jobs_in_progress": 0,
-    "processing_jobs_in_progress": 0,
-    "last_r2_smoke_job": "md1-r2ckpt2-tile11-1777662039-tile-11",
-    "last_r2_smoke_status": "Completed",
-    "last_r2_smoke_billable_seconds": 1250,
-    "last_r2_smoke_estimated_usd": 0.526,
-    "checkpoint_persistence_gate": "failed_empty_s3_prefix"
+    "processing_jobs_in_progress": 1,
+    "processing_jobs": [
+      "r5plan80h739-1777791228"
+    ],
+    "processing_note": "Unrelated COLMAP processing reading s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip and writing s3://spaceport-ml-processing-staging/manual-validations/r5plan80h739-1777791228/colmap; not launched by MD1 3DGS cost-reduction loop.",
+    "last_r2_checkpoint_persistence_job": "md1-r2ckpt3-tile11-1777678211-tile-11",
+    "last_r2_checkpoint_persistence_status": "Completed",
+    "last_r2_checkpoint_persistence_billable_seconds": 1229,
+    "last_r2_checkpoint_persistence_estimated_usd": 0.517,
+    "checkpoint_persistence_gate": "passed",
+    "checkpoint_restart_gate": "pending_new_image"
   },
-  "current_rung": "R2_cost_reduction_restart_raw_checkpoint_fallback_ready",
+  "current_rung": "R2_cost_reduction_checkpoint_resume_split_ready",
   "exact_head_gate_status": "Exact-head 5d209189934eeec5e2788acceca4e5f9d94769bf has green CDK Deploy 25181111382 and green Cloudflare Pages 25181111351. Local follow-up changes pass py_compile, bash -n, tests.unit.test_sogs_supersplat_bundle, md1 production Playwright smoke, pipeline-viewer MD1 LOD smoke, npm run build, and npm run cf:build; next is commit/push and exact-head workflow monitoring.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -717,16 +722,14 @@
     "verified_at": "2026-04-29T12:02:18Z"
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-sky-v18-promotion/review_comparison.json",
-  "latest_review_status": "V18 remains the promoted quality bar. R2 smoke2 proved the tiny tile_11 training shape and tile-selection manifest channel, but checkpoint persistence did not pass because the old container deleted the checkpoint scratch tree before sync. Local fixes now stage/upload compact checkpoints, preserve resume_checkpoint during cleanup, retry transient AWS JSON reads, resume from compact checkpoints, and resume from raw SageMaker-restored checkpoint trees under /opt/ml/checkpoints. Restart dry-run remains no-spend with submitted_jobs=[] and under $2 cap. Fresh targeted verification passed: 88 unit tests and py_compile.",
+  "latest_review_status": "V18 remains the promoted quality bar. R2 checkpoint persistence now passes for tiny tile_11: md1-r2ckpt3-tile11-1777678211-tile-11 completed, wrote model.tar.gz, and uploaded compact root plus resume_checkpoint manifests pointing at step-000002999.ckpt. Local launcher/container changes now separate TRAINING_CHECKPOINT_RESUME_S3_URI from TRAINING_CHECKPOINT_S3_URI, so the next restart proof can read the prior compact checkpoint and write fresh checkpoints to a new prefix. No-spend restart dry-run logs/md1-cost-reduction-r2-checkpoint-restart-proof-dryrun-20260503.json submitted zero jobs, estimated $0.3787 / worst-case $1.515 under the $2 cap, and uses the prior resume checkpoint URI explicitly.",
   "live_compute_status": {
-    "checked_at": "2026-05-01T23:14:40Z",
+    "checked_at": "2026-05-03T06:56:43Z",
     "in_progress_training_jobs": [],
     "in_progress_processing_jobs": [
-      "r5l160c1-1777677041",
-      "r5l160c4-1777677041",
-      "r5l160c6-1777677041"
+      "r5plan80h739-1777791228"
     ],
-    "processing_note": "Unrelated COLMAP processing jobs reading s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip and writing manual-validations/r5l160c*/colmap; not launched by MD1 3DGS cost-reduction loop."
+    "processing_note": "Unrelated COLMAP processing job reading s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip and writing s3://spaceport-ml-processing-staging/manual-validations/r5plan80h739-1777791228/colmap; not launched by MD1 3DGS cost-reduction loop."
   },
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
@@ -6920,9 +6923,48 @@
       ],
       "next_gate": "Commit/push, monitor exact-head CDK and Trigger ML Container Build, then launch only the $2-capped R2b tile_11 checkpoint persistence/restart proof."
     },
+    "r2_checkpoint_persistence_proof": {
+      "checked_at": "2026-05-03T06:56:43Z",
+      "job_name": "md1-r2ckpt3-tile11-1777678211-tile-11",
+      "status": "Completed",
+      "instance_type": "ml.g5.2xlarge",
+      "billable_seconds": 1229,
+      "estimated_usd": 0.517,
+      "image_digest": "sha256:68a4c41de8121807456aced44c139d6ec6667c8a792f694f3fa9e444db162fa3",
+      "model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r2-checkpoint-persist-proof-20260501/tiles/tile_11/md1-r2ckpt3-tile11-1777678211-tile-11/output/model.tar.gz",
+      "model_artifact_bytes": 7698935,
+      "checkpoint_s3_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r2-checkpoint-persist-proof-20260501/checkpoints/md1-r2ckpt3-tile11-1777678211-tile-11/",
+      "checkpoint_object_count": 15,
+      "checkpoint_total_bytes": 75440588,
+      "latest_checkpoint": "nerfstudio_models/step-000002999.ckpt",
+      "checkpoint_file_bytes": 37709015,
+      "gate_status": "passed_checkpoint_persistence",
+      "next_gate": "Run restart-from-checkpoint proof after the explicit checkpoint resume/source split is built into a new image."
+    },
+    "r2_checkpoint_resume_split": {
+      "implemented_at": "2026-05-03T06:56:43Z",
+      "base_head": "727fe2270258b9f350886d5d69a5629aefd7b2c8",
+      "code_paths": [
+        "infrastructure/containers/3dgs/train_nerfstudio_production.py",
+        "scripts/3dgs/run_tiled_3dgs_benchmark.py",
+        "tests/unit/test_tiled_3dgs_benchmark.py",
+        "tests/unit/test_tiled_nerfstudio_dispatcher.py"
+      ],
+      "purpose": "Read a previous compact checkpoint from TRAINING_CHECKPOINT_RESUME_S3_URI while writing fresh checkpoints to TRAINING_CHECKPOINT_S3_URI.",
+      "restart_dry_run_path": "logs/md1-cost-reduction-r2-checkpoint-restart-proof-dryrun-20260503.json",
+      "restart_dry_run_submitted_jobs": 0,
+      "restart_dry_run_estimated_usd": 0.3787,
+      "restart_dry_run_worst_case_usd": 1.515,
+      "restart_dry_run_max_estimated_usd": 2.0,
+      "checkpoint_resume_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r2-checkpoint-persist-proof-20260501/checkpoints/md1-r2ckpt3-tile11-1777678211-tile-11/resume_checkpoint",
+      "checkpoint_s3_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r2-checkpoint-restart-proof-20260503/checkpoints",
+      "spot_status": "still blocked until restart proof passes on the newly built image",
+      "next_gate": "Commit/push, monitor exact-head CDK and Trigger ML Container Build, update the dry-run image digest, then submit only the $2-capped tile_11 restart proof."
+    },
     "latest_raw_checkpoint_update": "2026-05-01T23:13:33Z raw SageMaker checkpoint-tree resume fallback added before paid R2b; exact-head 9e1b9998 prior checkpoint fix gates green on CDK/ML container build, but new fallback still needs commit/push and exact-head gates.",
-    "latest_live_compute_status": "2026-05-01T23:14:40Z: no SageMaker training jobs InProgress; unrelated processing jobs r5l160c1/4/6-1777677041 are InProgress on Meadow archive COLMAP outputs."
+    "latest_checkpoint_resume_update": "2026-05-03T06:56:43Z checkpoint persistence proof passed and explicit checkpoint resume/source split plus no-spend restart dry-run are ready for commit/push; next exact-head image must be built before paid restart proof.",
+    "latest_live_compute_status": "2026-05-03T06:56:43Z: no SageMaker training jobs InProgress; unrelated processing job r5plan80h739-1777791228 is InProgress on Meadow archive COLMAP output."
   },
-  "latest_training_cost_reduction_status": "Exact-head 9e1b9998053125a548a45d3408092189058e7d84 is gated green on CDK Deploy 25236823662 and Trigger ML Container Build 25236823661. Before launching paid R2b, raw SageMaker checkpoint-tree resume fallback was added so Spot-restored /opt/ml/checkpoints/nerfstudio_runs checkpoints are usable, not only compact resume_checkpoint copies. Fresh targeted verification passed: 88 unit tests and py_compile.",
-  "latest_live_compute_status": "2026-05-01T23:14:40Z: no SageMaker training jobs InProgress; unrelated processing jobs r5l160c1/4/6-1777677041 are InProgress on Meadow archive COLMAP outputs."
+  "latest_training_cost_reduction_status": "Exact-head 727fe2270258b9f350886d5d69a5629aefd7b2c8 is gated green on CDK Deploy 25237262838 and Trigger ML Container Build 25237262835. R2 checkpoint persistence proof md1-r2ckpt3-tile11-1777678211-tile-11 passed with compact resume checkpoint upload. Local explicit checkpoint resume/source split and no-spend restart dry-run are ready for commit/push; paid restart proof remains blocked until the new image digest is built and exact-head workflows pass.",
+  "latest_live_compute_status": "2026-05-03T06:56:43Z: no SageMaker training jobs InProgress; unrelated processing job r5plan80h739-1777791228 is InProgress on Meadow archive COLMAP output."
 }

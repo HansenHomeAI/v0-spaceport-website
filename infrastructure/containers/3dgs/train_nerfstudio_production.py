@@ -443,6 +443,9 @@ class NerfStudioTrainer:
             "on",
         }
         self.checkpoint_s3_uri = str(os.environ.get("TRAINING_CHECKPOINT_S3_URI", "")).strip()
+        self.checkpoint_resume_s3_uri = str(
+            os.environ.get("TRAINING_CHECKPOINT_RESUME_S3_URI", "")
+        ).strip()
         self.temp_dir = Path("/tmp/nerfstudio_training")
         self.training_output_dir = (
             self.checkpoint_dir / "nerfstudio_runs"
@@ -471,6 +474,8 @@ class NerfStudioTrainer:
             logger.info(f"📁 SageMaker checkpoint directory: {self.checkpoint_dir}")
             if self.checkpoint_s3_uri:
                 logger.info(f"☁️ Explicit checkpoint S3 URI: {self.checkpoint_s3_uri}")
+            if self.checkpoint_resume_s3_uri:
+                logger.info(f"☁️ Explicit checkpoint resume S3 URI: {self.checkpoint_resume_s3_uri}")
     
     def apply_step_functions_params(self):
         """Apply parameters passed from Step Functions via environment variables"""
@@ -1859,19 +1864,20 @@ class NerfStudioTrainer:
         return uploaded
 
     def restore_compact_checkpoint_from_s3(self) -> None:
-        if not self.checkpointing_enabled or not self.checkpoint_s3_uri:
+        resume_s3_uri = self.checkpoint_resume_s3_uri or self.checkpoint_s3_uri
+        if not self.checkpointing_enabled or not resume_s3_uri:
             return
         target_dir = self.compact_checkpoint_dir()
         if (target_dir / "checkpoint_manifest.json").exists():
             logger.info(f"📦 Local compact checkpoint already present: {target_dir}")
             return
         try:
-            downloaded = self.sync_s3_prefix_to_dir(self.checkpoint_s3_uri, target_dir)
+            downloaded = self.sync_s3_prefix_to_dir(resume_s3_uri, target_dir)
         except Exception as exc:
-            logger.warning(f"⚠️ Could not download checkpoint prefix {self.checkpoint_s3_uri}: {exc}")
+            logger.warning(f"⚠️ Could not download checkpoint prefix {resume_s3_uri}: {exc}")
             return
         if downloaded:
-            logger.info(f"📦 Downloaded {downloaded} checkpoint files from {self.checkpoint_s3_uri}")
+            logger.info(f"📦 Downloaded {downloaded} checkpoint files from {resume_s3_uri}")
 
     def resume_model_dir(self) -> Path | None:
         compact_dir = self.compact_checkpoint_dir()
@@ -1961,6 +1967,8 @@ class NerfStudioTrainer:
             self.checkpoint_dir = Path("/opt/ml/checkpoints")
         if not hasattr(self, "checkpoint_s3_uri"):
             self.checkpoint_s3_uri = ""
+        if not hasattr(self, "checkpoint_resume_s3_uri"):
+            self.checkpoint_resume_s3_uri = ""
         if not hasattr(self, "training_output_dir"):
             self.training_output_dir = self.temp_dir
         self.training_output_dir.mkdir(parents=True, exist_ok=True)
