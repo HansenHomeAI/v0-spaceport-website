@@ -589,16 +589,15 @@
       ]
     }
   ],
-  "current_branch_head": "a061b1c6c8c232f33000534612752d19e3bc3352 plus local bounded Spot wait submit guard pending commit/push",
-  "current_exact_head_gate_status": "exact-head a061b1c6c8c232f33000534612752d19e3bc3352 has green CDK Deploy 25275070923; no Cloudflare Pages run appeared for this non-web cost-control push. The next pushed head must watch CDK Deploy before any short-window Spot retry or bounded on-demand R3 smoke.",
+  "current_branch_head": "91ef3bfcc966ce2585042c10ab2707acfa982a3e plus local R3 on-demand tile_02 dry-run evidence pending commit/push",
+  "current_exact_head_gate_status": "exact-head 91ef3bfcc966ce2585042c10ab2707acfa982a3e has green CDK Deploy 25275952064; no Cloudflare Pages run appeared for this non-web cost-control push.",
   "current_live_compute_status": {
     "status": "idle",
-    "checked_at": "2026-05-03T09:48:39Z",
+    "checked_at": "2026-05-03T10:30:00Z",
     "training_jobs_in_progress": 0,
-    "processing_jobs_in_progress": 2,
+    "processing_jobs_in_progress": 1,
     "processing_jobs": [
-      "r5l80c3-1777797800",
-      "r5l80c6-1777797800"
+      "r5l80c8-1777802100"
     ],
     "processing_note": "Unrelated Meadow COLMAP processing jobs; not launched by the MD1 3DGS cost-reduction loop.",
     "last_r2_checkpoint_persistence_job": "md1-r2ckpt3-tile11-1777678211-tile-11",
@@ -5762,7 +5761,7 @@
     "conclusion": "V15 context padding produced identical p24 metrics to V12/V13 and remains blocked only on horizon_psnr_regression; no promotion run."
   },
   "r5_teacher_context_v12_ctx10_v15_submit_20260429071645Z": "Exact-head 0392ef97dfe5363579f2d88f90fd5e70fd03ed82 is gated green on CDK Deploy 25095508893 and manually-triggered Pages 25095528013. Submitted V15 no-training/no-promotion Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 to add 10 percent preserve-context padding to V12, including historical tile_01, with output s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-ctx10-v15-20260429071522/output/artifact/model.tar.gz. Latest status is InProgress with no ProcessingStartTime, no FailureReason/no ExitMessage, zero output objects, no training jobs InProgress, and only this processing job InProgress.",
-  "last_updated": "2026-05-03T09:48:39Z",
+  "last_updated": "2026-05-03T10:30:00Z",
   "r5_teacher_context_v12_ctx10_v15_smoke_blocked_20260429080934Z": "Exact-head d14f4a4b56aa9c3a215e1f4845450c77188a0687 is gated green on CDK Deploy 25095992000 and manually-triggered Pages 25095995605; alias/hash /health.txt passed, hash https://c896c947.v0-spaceport-website-preview2.pages.dev. V15 Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 completed, model.tar.gz is present at 1203320806 bytes, streaming preflight passed, and explicit p24 smoke md1-r1-r5-teacher-context-v12-ctx10-v15-smoke-p24-1777448068-qu completed with camera coverage OK but blocked only on horizon_psnr_regression. Metrics matched V12 exactly, so context padding did not close the PSNR miss. No SageMaker jobs are InProgress and no promotion was run.",
   "r5_teacher_context_v12_tile01overlap_v16": {
     "processing_job_name": "md1-r5-teacherctx-v12-t01ov-v16-1777450963",
@@ -6964,7 +6963,7 @@
     },
     "latest_raw_checkpoint_update": "2026-05-01T23:13:33Z raw SageMaker checkpoint-tree resume fallback added before paid R2b; exact-head 9e1b9998 prior checkpoint fix gates green on CDK/ML container build, but new fallback still needs commit/push and exact-head gates.",
     "latest_checkpoint_resume_update": "2026-05-03T06:56:43Z checkpoint persistence proof passed and explicit checkpoint resume/source split plus no-spend restart dry-run are ready for commit/push; next exact-head image must be built before paid restart proof.",
-    "latest_live_compute_status": "2026-05-03T09:48:39Z: no SageMaker training jobs InProgress; unrelated Meadow COLMAP processing jobs r5l80c3-1777797800 and r5l80c6-1777797800 are InProgress.",
+    "latest_live_compute_status": "2026-05-03T10:30:00Z: no SageMaker training jobs InProgress; unrelated Meadow COLMAP processing job r5l80c8-1777802100 is InProgress.",
     "r2_checkpoint_restart_attempt_1": {
       "checked_at": "2026-05-03T07:36:40Z",
       "job_name": "md1-r2ckpt4-restart-1777792528-tile-11",
@@ -7156,8 +7155,44 @@
       ],
       "next_gate": "Commit/push, monitor exact-head CDK workflow, then choose either a short-window Spot retry with monitor stop enabled or a bounded on-demand R3 representative smoke before larger fanout."
     },
+    "spot_wait_submit_guard_gate": {
+      "checked_at": "2026-05-03T09:57:12Z",
+      "head": "91ef3bfcc966ce2585042c10ab2707acfa982a3e",
+      "cdk_deploy_run_id": 25275952064,
+      "cdk_status": "success",
+      "pages_status": "not_run_for_non_web_cost_control_push",
+      "training_jobs_in_progress": 0,
+      "unrelated_processing_jobs_in_progress": [
+        "r5l80c3-1777797800",
+        "r5l80c8-1777802100"
+      ],
+      "next_gate": "Choose either a short-window Spot retry with monitor stop enabled or a bounded on-demand R3 representative smoke before any larger fanout."
+    },
+    "r3_ondemand_tile02_dry_run": {
+      "checked_at": "2026-05-03T10:30:00Z",
+      "path": "logs/md1-cost-reduction-r3-ondemand-tile02-dryrun-20260503.json",
+      "submitted_jobs": 0,
+      "enable_spot": false,
+      "enable_checkpoints": true,
+      "selected_tile_ids": [
+        "tile_02"
+      ],
+      "budget_class": "standard",
+      "max_iterations": 8000,
+      "max_selected_images": 128,
+      "checkpoint_save_steps": 500,
+      "training_max_runtime_seconds": 3600,
+      "checkpoint_s3_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r3-ondemand-tile02-dryrun-20260503/checkpoints",
+      "planned_job_name": "md1-r3od-tile02-1777804184-tile-02",
+      "tile_input_hash": "d807c81e0a9f48c94d3f9aeafd01bfc4591a86e96a60632654df349f9c6f3825",
+      "estimated_usd": 1.01,
+      "worst_case_usd": 1.515,
+      "max_estimated_usd": 2.0,
+      "v18_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review",
+      "next_gate": "Commit/push and monitor exact-head CDK, then submit only this $2-capped on-demand tile_02 smoke or retry Spot with short-window/monitor-stop guard; no larger fanout until R3 quality evidence exists."
+    },
     "latest_checkpoint_restart_update": "2026-05-03T08:04:41Z R2 v2 paid tile_11 restart proof passed: restored compact checkpoint step-000002999, extended to MAX_ITERATIONS=3250, exported 14,695,440-byte model.tar.gz, uploaded fresh step-000003249 compact resume checkpoint, and finished in 792 billable seconds (~$0.333)."
   },
-  "latest_training_cost_reduction_status": "R2 checkpoint restart gate passed on 2026-05-03T08:04:41Z. The first real Spot smoke accepted the payload but hit EC2 insufficient capacity and was stopped before TrainingStartTime or spend. The monitor now blocks startup/capacity waits, and the launcher now blocks submitted Spot jobs unless --spot-max-wait-seconds is explicit and bounded to at most 1800 seconds past MaxRuntime. No-spend short-window R3 dry-run logs/md1-cost-reduction-r3-spot-short-window-dryrun-20260503.json submitted zero jobs, planned tile_11 tiny at 3000 iterations / 96 images with MaxRuntime=3600 and MaxWait=4500, and estimated $0.3787 on-demand equivalent / $1.515 worst-case under max_estimated_usd $1.00. Full 14-tile training remains blocked until R3/R4 representative quality/cost gates pass.",
-  "latest_live_compute_status": "2026-05-03T09:48:39Z: no SageMaker training jobs InProgress; unrelated Meadow COLMAP processing jobs r5l80c3-1777797800 and r5l80c6-1777797800 are InProgress."
+  "latest_training_cost_reduction_status": "R2 checkpoint restart gate passed on 2026-05-03T08:04:41Z. The first real Spot smoke accepted the payload but hit EC2 insufficient capacity and was stopped before TrainingStartTime or spend. The monitor now blocks startup/capacity waits, and the launcher now blocks submitted Spot jobs unless --spot-max-wait-seconds is explicit and bounded. No-spend on-demand R3 fallback dry-run logs/md1-cost-reduction-r3-ondemand-tile02-dryrun-20260503.json submitted zero jobs, planned tile_02 standard at 8000 iterations / 128 images with checkpoints and V18 review manifest wiring, and estimated $1.01 on-demand / $1.515 worst-case under max_estimated_usd $2.00. Full 14-tile training remains blocked until R3/R4 representative quality/cost gates pass.",
+  "latest_live_compute_status": "2026-05-03T10:30:00Z: no SageMaker training jobs InProgress; unrelated Meadow COLMAP processing job r5l80c8-1777802100 is InProgress."
 }
