@@ -7089,8 +7089,26 @@
       "max_estimated_usd": 5.0,
       "next_gate": "After commit/gates, run only a bounded representative paid smoke if needed; no full 14-tile training before R3/R4 quality review."
     },
+    "r3_spot_tile11_smoke_attempt_1": {
+      "checked_at": "2026-05-03T08:24:32Z",
+      "evidence_path": "logs/md1-cost-reduction-r3-spot-tile11-smoke-stopped-20260503.json",
+      "job_name": "md1-r3spot-tile11-1777796044-tile-11",
+      "status": "Stopped",
+      "instance_type": "ml.g5.2xlarge",
+      "enable_managed_spot_training": true,
+      "checkpoint_config_present": true,
+      "training_started": false,
+      "billable_seconds": 0,
+      "estimated_usd": 0.0,
+      "capacity_status_message": "Insufficient capacity error from EC2 while launching instances, retrying!",
+      "model_artifact_bytes": 0,
+      "checkpoint_object_count": 0,
+      "output_object_count": 0,
+      "verdict": "spot_payload_valid_but_capacity_unavailable",
+      "next_gate": "Use short Spot wait windows or bounded on-demand representative R3 smoke; do not leave long Spot waits open and do not launch full 14-tile training."
+    },
     "latest_checkpoint_restart_update": "2026-05-03T08:04:41Z R2 v2 paid tile_11 restart proof passed: restored compact checkpoint step-000002999, extended to MAX_ITERATIONS=3250, exported 14,695,440-byte model.tar.gz, uploaded fresh step-000003249 compact resume checkpoint, and finished in 792 billable seconds (~$0.333)."
   },
-  "latest_training_cost_reduction_status": "R2 checkpoint restart gate passed on 2026-05-03T08:04:41Z with md1-r2ckpt5-restart-tile11-1777794499-tile-11: 792 billable seconds (~$0.333), model.tar.gz 14,695,440 bytes, fresh compact checkpoint step-000003249, and no SageMaker training jobs left InProgress. A no-spend R3 Spot/fanout representative dry-run now plans tile_11/tile_02/tile_13 at max_tile_concurrency=2 with submitted_jobs=[] and on-demand-equivalent estimate $2.3987 / worst-case $4.545. Full 14-tile training remains blocked until R3/R4 representative quality/cost gates pass.",
-  "latest_live_compute_status": "2026-05-03T08:04:41Z: no SageMaker training jobs InProgress; unrelated Meadow COLMAP processing jobs r5l80c1-1777791574, r5l80c4-1777791574, and r5l80c10-1777791574 are InProgress."
+  "latest_training_cost_reduction_status": "R2 checkpoint restart gate passed on 2026-05-03T08:04:41Z with md1-r2ckpt5-restart-tile11-1777794499-tile-11: 792 billable seconds (~$0.333), model.tar.gz 14,695,440 bytes, fresh compact checkpoint step-000003249, and no SageMaker training jobs left InProgress. A no-spend R3 Spot/fanout representative dry-run planned tile_11/tile_02/tile_13 at max_tile_concurrency=2 with submitted_jobs=[] and on-demand-equivalent estimate $2.3987 / worst-case $4.545. The first real Spot smoke accepted the payload but hit EC2 insufficient capacity and was stopped before TrainingStartTime or spend; full 14-tile training remains blocked until R3/R4 representative quality/cost gates pass.",
+  "latest_live_compute_status": "2026-05-03T08:24:32Z: no SageMaker training jobs InProgress after stopping the Spot capacity-stalled tile_11 smoke; unrelated Meadow COLMAP processing jobs r5l80c1-1777791574, r5l80c4-1777791574, and r5l80c10-1777791574 are InProgress."
 }
