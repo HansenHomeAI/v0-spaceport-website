@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from datetime import datetime, timezone
 import json
 import subprocess
 import time
@@ -27,6 +28,47 @@ def run_aws_json(*args: str) -> dict[str, Any]:
         capture_output=True,
     )
     return json.loads(result.stdout)
+
+
+def run_aws(*args: str) -> None:
+    subprocess.run(["aws", *args], check=True, text=True, capture_output=True)
+
+
+def parse_aws_datetime(value: Any) -> datetime | None:
+    if value is None:
+        return None
+    if isinstance(value, datetime):
+        parsed = value
+    else:
+        text = str(value).strip()
+        if not text:
+            return None
+        if text.endswith("Z"):
+            text = f"{text[:-1]}+00:00"
+        try:
+            parsed = datetime.fromisoformat(text)
+        except ValueError:
+            return None
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+
+def seconds_since(value: Any, *, now_epoch_seconds: float | None = None) -> int | None:
+    parsed = parse_aws_datetime(value)
+    if parsed is None:
+        return None
+    now = datetime.fromtimestamp(time.time() if now_epoch_seconds is None else now_epoch_seconds, tz=timezone.utc)
+    return max(0, int((now - parsed).total_seconds()))
+
+
+def latest_secondary_status_message(training_job: Mapping[str, Any]) -> str:
+    transitions = training_job.get("SecondaryStatusTransitions") or []
+    for transition in reversed(list(transitions)):
+        message = str((transition or {}).get("StatusMessage") or "").strip()
+        if message:
+            return message
+    return str(training_job.get("SecondaryStatusMessage") or "").strip()
 
 
 def estimate_training_spend(
@@ -58,12 +100,20 @@ def evaluate_training_health(
     max_log_staleness_seconds: int = 1200,
     low_gpu_threshold_percent: float = 5.0,
     low_gpu_warmup_seconds: int = 900,
+    max_starting_seconds: int = 1800,
+    now_epoch_seconds: float | None = None,
 ) -> dict[str, Any]:
     spend = estimate_training_spend(training_job)
     training_status = str(training_job.get("TrainingJobStatus") or "")
     secondary_status = str(training_job.get("SecondaryStatus") or "")
     elapsed_seconds = int(training_job.get("TrainingTimeInSeconds", 0) or 0)
     model_artifact = ((training_job.get("ModelArtifacts") or {}).get("S3ModelArtifacts") or "").strip()
+    startup_wait_seconds = seconds_since(
+        training_job.get("CreationTime"),
+        now_epoch_seconds=now_epoch_seconds,
+    )
+    training_started = parse_aws_datetime(training_job.get("TrainingStartTime")) is not None
+    secondary_status_message = latest_secondary_status_message(training_job)
     block_reasons: list[str] = []
     warnings: list[str] = []
 
@@ -91,6 +141,17 @@ def evaluate_training_health(
         block_reasons.append("completed_without_model_artifact")
     if training_status == "InProgress" and s3_output_object_count == 0 and elapsed_seconds > 6 * 3600:
         warnings.append("long_running_without_s3_outputs")
+    if (
+        training_status == "InProgress"
+        and secondary_status in {"Starting", "Downloading"}
+        and not training_started
+        and max_starting_seconds > 0
+        and startup_wait_seconds is not None
+        and startup_wait_seconds > max_starting_seconds
+    ):
+        block_reasons.append("startup_wait_over_limit")
+        if "insufficient capacity" in secondary_status_message.lower():
+            block_reasons.append("spot_capacity_wait_over_limit")
 
     return {
         "status": "blocked" if block_reasons else "ok",
@@ -101,6 +162,9 @@ def evaluate_training_health(
         "latest_log_age_seconds": latest_log_age_seconds,
         "gpu_average_percent": gpu_average_percent,
         "s3_output_object_count": s3_output_object_count,
+        "startup_wait_seconds": startup_wait_seconds,
+        "training_started": training_started,
+        "secondary_status_message": secondary_status_message,
         "spend": spend,
         "block_reasons": list(dict.fromkeys(block_reasons)),
         "warnings": list(dict.fromkeys(warnings)),
@@ -115,6 +179,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--gpu-average-percent", type=float, default=-1.0)
     parser.add_argument("--s3-output-object-count", type=int, default=0)
     parser.add_argument("--max-log-staleness-seconds", type=int, default=1200)
+    parser.add_argument(
+        "--max-starting-seconds",
+        type=int,
+        default=1800,
+        help="Block InProgress jobs that have not reached TrainingStartTime after this many seconds.",
+    )
+    parser.add_argument(
+        "--stop-training-job-on-block",
+        action="store_true",
+        help="Request SageMaker StopTrainingJob when a still-InProgress job is blocked.",
+    )
     parser.add_argument(
         "--poll-seconds",
         type=int,
@@ -147,9 +222,13 @@ def main() -> int:
             s3_output_object_count=args.s3_output_object_count,
             max_estimated_usd=args.max_estimated_usd,
             max_log_staleness_seconds=args.max_log_staleness_seconds,
+            max_starting_seconds=args.max_starting_seconds,
         )
         health["checked_at_epoch"] = int(time.time())
         health["poll_index"] = poll_index
+        if args.stop_training_job_on_block and health["status"] == "blocked" and health["training_status"] == "InProgress":
+            run_aws("sagemaker", "stop-training-job", "--training-job-name", args.training_job_name)
+            health["stop_training_job_requested"] = True
         checks.append(health)
         payload = json.dumps(health, indent=2)
         print(payload)

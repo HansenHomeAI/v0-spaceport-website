@@ -65,6 +65,36 @@ class TrainingCostMonitorTests(unittest.TestCase):
         self.assertEqual(health["status"], "blocked")
         self.assertIn("completed_without_model_artifact", health["block_reasons"])
 
+    def test_evaluate_training_health_blocks_spot_capacity_wait_before_training_start(self):
+        health = monitor.evaluate_training_health(
+            training_job={
+                "TrainingJobName": "md1-spot-capacity-test",
+                "TrainingJobStatus": "InProgress",
+                "SecondaryStatus": "Starting",
+                "CreationTime": "2026-05-03T08:00:00+00:00",
+                "TrainingTimeInSeconds": 0,
+                "ResourceConfig": {"InstanceType": "ml.g5.2xlarge"},
+                "SecondaryStatusTransitions": [
+                    {
+                        "Status": "Starting",
+                        "StatusMessage": "Insufficient capacity error from EC2 while launching instances, retrying!",
+                    }
+                ],
+            },
+            latest_log_age_seconds=None,
+            gpu_average_percent=None,
+            s3_output_object_count=0,
+            max_estimated_usd=10.0,
+            max_starting_seconds=600,
+            now_epoch_seconds=1777796400,
+        )
+
+        self.assertEqual(health["status"], "blocked")
+        self.assertFalse(health["training_started"])
+        self.assertEqual(health["startup_wait_seconds"], 1200)
+        self.assertIn("startup_wait_over_limit", health["block_reasons"])
+        self.assertIn("spot_capacity_wait_over_limit", health["block_reasons"])
+
 
 if __name__ == "__main__":
     unittest.main()
