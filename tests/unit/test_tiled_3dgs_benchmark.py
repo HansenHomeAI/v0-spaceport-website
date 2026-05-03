@@ -434,6 +434,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         tile_stage = stages[0]
         self.assertEqual(tile_stage.depends_on, [])
         self.assertEqual(tile_stage.environment["GLOBAL_SCAFFOLD_SOURCE_DIR"], benchmark.SCAFFOLD_CHANNEL_DIR)
+        self.assertEqual(tile_stage.environment["GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT"], "true")
 
     def test_resolve_stage_scaffold_artifact_supports_fanout_leaf_dependencies(self):
         leaf_stage = benchmark.BenchmarkStage(

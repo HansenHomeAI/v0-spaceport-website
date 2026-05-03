@@ -1298,6 +1298,74 @@ class NerfStudioTrainer:
         logger.info("🌐 Reusing external scaffold PLY from %s", resolved_dir / "splat.ply")
         return resolved_dir, summary
 
+    def prepare_leaf_tile_scaffold_initialization(self) -> dict[str, Any] | None:
+        if self.resolve_training_mode() != "leaf_tile":
+            return None
+
+        scaffold_config = self.config.get("tiling", {}).get("global_scaffold", {})
+        if not str(scaffold_config.get("source_dir", "") or "").strip():
+            return None
+
+        tile_id = str(self.config.get("tiling", {}).get("tile_id", "") or "").strip()
+        if not tile_id:
+            raise RuntimeError("leaf_tile scaffold initialization requires TILE_ID")
+
+        tile_manifest, _view_buckets = self.load_tile_selection_inputs()
+        if tile_manifest is None:
+            raise RuntimeError("leaf_tile scaffold initialization requires a tile manifest")
+
+        scaffold_output_dir, scaffold_summary = self.resolve_external_scaffold_output_dir(
+            self.temp_dir / "leaf_tile_scaffold"
+        )
+        if scaffold_output_dir is None:
+            return None
+
+        scaffold_ply = scaffold_output_dir / "splat.ply"
+        tile_entry = resolve_tile_entry(tile_manifest, tile_id)
+        scaffold_init_path = self.input_dir / "scaffold_init.ply"
+        max_init_points = int(scaffold_config.get("max_init_points", 0) or 0)
+        scaffold_metadata = write_point_cloud_ply_from_gaussians(
+            scaffold_ply,
+            scaffold_init_path,
+            bounds=tile_entry.get("overlap_bounds") or tile_entry.get("core_bounds"),
+            padding_ratio=0.1,
+            max_points=max_init_points or None,
+        )
+        if scaffold_summary is not None:
+            scaffold_metadata["external_scaffold"] = scaffold_summary
+
+        require_filtered = str(
+            os.environ.get("GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT", "")
+        ).lower() in {"1", "true", "yes", "on"}
+        if require_filtered and (
+            scaffold_metadata.get("fallback_used")
+            or not scaffold_metadata.get("scaffold_filter_bounds")
+            or int(scaffold_metadata.get("inherited_gaussian_count") or 0) <= 0
+        ):
+            raise RuntimeError(
+                "leaf_tile scaffold initialization was not filtered to tile bounds; "
+                "refusing production fanout train"
+            )
+
+        transforms_path = self.input_dir / "transforms.json"
+        with open(transforms_path, "r", encoding="utf-8") as f:
+            transforms_payload = json.load(f)
+        transforms_payload["ply_file_path"] = scaffold_init_path.name
+        transforms_payload.setdefault("spaceport_metadata", {})[
+            "scaffold_initialization"
+        ] = scaffold_metadata
+        with open(transforms_path, "w", encoding="utf-8") as f:
+            json.dump(transforms_payload, f, indent=2)
+        with open(self.input_dir / "scaffold_init_metadata.json", "w", encoding="utf-8") as f:
+            json.dump(scaffold_metadata, f, indent=2)
+
+        logger.info(
+            "🌐 Prepared direct leaf scaffold point-cloud init for %s with %s inherited points",
+            tile_id,
+            scaffold_metadata.get("inherited_gaussian_count"),
+        )
+        return scaffold_metadata
+
     def emit_probe_review_bundle(self) -> Optional[Dict[str, Any]]:
         if self.training_selection_result is None:
             return None
@@ -2597,6 +2665,8 @@ class NerfStudioTrainer:
             if not self.validate_input_data():
                 logger.error("❌ Input data validation failed")
                 return False
+
+            self.prepare_leaf_tile_scaffold_initialization()
 
             # Step 1.5: Apply manifest-driven image selection after transforms.json conversion
             if not self.apply_training_selection():

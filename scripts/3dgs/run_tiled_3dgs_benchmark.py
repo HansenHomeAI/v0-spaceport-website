@@ -36,6 +36,7 @@ DEFAULT_CHECKPOINT_SAVE_STEPS = 1000
 MAX_SPOT_EXTRA_WAIT_SECONDS = 1800
 MD1_PRODUCTION_TILE_ENV_DEFAULTS = {
     "GLOBAL_SCAFFOLD_INIT_MAX_POINTS": "300000",
+    "GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT": "true",
     "TRAINING_STOP_SPLIT_AT": "3500",
     "TRAINING_MAX_GAUSS_RATIO": "3.0",
     "SH_DEGREE": "1",
@@ -48,6 +49,7 @@ TILE_INPUT_HASH_ENV_KEYS = (
     "ENABLE_ALPHA_LOSS",
     "ENABLE_ROBUST_MASK",
     "GLOBAL_SCAFFOLD_INIT_MAX_POINTS",
+    "GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT",
     "TRAINING_STOP_SPLIT_AT",
     "TRAINING_MAX_GAUSS_RATIO",
     "SH_DEGREE",
@@ -1561,6 +1563,7 @@ def build_benchmark_stages(
             stage_env.setdefault("TRAINING_CHECKPOINT_S3_URI", checkpoint_uri)
         if scaffold_artifact_s3_uri:
             stage_env.setdefault("GLOBAL_SCAFFOLD_SOURCE_DIR", SCAFFOLD_CHANNEL_DIR)
+            stage_env.setdefault("GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT", "true")
         cache_hit, cache_rejection_reasons = resolve_tile_cache_hit(
             tile_budget,
             (tile_cache_manifest or {}).get(tile_id) if reuse_tile_cache else None,
@@ -2592,6 +2595,7 @@ def main() -> int:
         stage_environment = dict(stage.environment or {})
         if scaffold_artifact_s3_uri and stage.training_mode in {"leaf_tile", "tiled_pipeline"}:
             stage_environment.setdefault("GLOBAL_SCAFFOLD_SOURCE_DIR", SCAFFOLD_CHANNEL_DIR)
+            stage_environment.setdefault("GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT", "true")
         stage_checkpoint_s3_uri = stage.checkpoint_uri or (
             f"{normalize_s3_prefix(args.checkpoint_s3_prefix)}/{stage.job_name or stage.stage_name}"
             if checkpoints_requested and args.checkpoint_s3_prefix

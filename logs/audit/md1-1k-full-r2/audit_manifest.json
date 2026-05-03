@@ -589,14 +589,15 @@
       ]
     }
   ],
-  "current_branch_head": "577d0d647a0d1782f214afe107d006254172f825",
+  "current_branch_head": "04799a7366cd215cd9456233ee6164c56dd04214",
   "current_exact_head_gate_status": {
-    "head": "577d0d647a0d1782f214afe107d006254172f825",
-    "cdk_deploy_run_id": 25291236843,
+    "head": "04799a7366cd215cd9456233ee6164c56dd04214",
+    "cdk_deploy_run_id": 25292322284,
     "cdk_deploy_conclusion": "success",
     "cloudflare_pages_run_id": null,
     "cloudflare_pages_note": "No Pages run appeared for this non-web/cost-control push.",
-    "checked_at": "2026-05-03T21:29:26Z"
+    "checked_at": "2026-05-03T22:19:00Z",
+    "commit_status_note": "Local gate/status update; commit with next meaningful monitoring or implementation change."
   },
   "current_live_compute_status": {
     "checked_at": "2026-05-03T22:10:26Z",
@@ -705,11 +706,11 @@
     "view_bucket_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiled_pipeline/inputs/scaffold/3dgs_view_buckets.json"
   },
   "latest_exact_head_gate": {
-    "head": "577d0d647a0d1782f214afe107d006254172f825",
-    "cdk_deploy_run_id": 25291236843,
+    "head": "04799a7366cd215cd9456233ee6164c56dd04214",
+    "cdk_deploy_run_id": 25292322284,
     "cdk_deploy_conclusion": "success",
     "cloudflare_pages_run_id": null,
-    "checked_at": "2026-05-03T21:29:26Z"
+    "checked_at": "2026-05-03T22:19:00Z"
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-sky-v18-promotion/review_comparison.json",
   "latest_review_status": "V18 remains the promoted quality bar. The cost projection is in target range, but independent tile_13 fanout is ownership-blocked: only 9891/386695 source splats land in tile_13 core, so tile_13 cache reuse is forbidden before an ownership/initialization fix.",
@@ -3309,7 +3310,7 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-03T22:10:26Z",
+  "updated": "2026-05-03T22:19:00Z",
   "version": "1.0.0",
   "r5_14tile_2k_preflight": {
     "summary_path": "logs/audit/md1-1k-full-r2/r5_14tile_2k_preflight_summary_20260428215230.json",
@@ -8093,5 +8094,25 @@
       "ownership_status_blocked"
     ],
     "ownership_guard_dryrun_estimated_usd": 14.7712
+  },
+  "md1_r4_direct_leaf_scaffold_init_guard_20260503": {
+    "dryrun_path": "logs/md1-cost-reduction-r4-leaf-scaffold-init-guard-tile13-dryrun-20260503.json",
+    "code_paths": [
+      "infrastructure/containers/3dgs/train_nerfstudio_production.py",
+      "scripts/3dgs/run_tiled_3dgs_benchmark.py"
+    ],
+    "root_cause": "direct fanout leaf_tile jobs mounted external scaffold but did not prepare scaffold_init.ply before training_selection",
+    "prior_tile13_scaffold_initialization": null,
+    "strict_filtered_init_env": true,
+    "new_tile13_input_hash": "7a2a5e8d1ca7dd723a58fbc8f0a4cecd0fb4cdea889c8299c045913434829276",
+    "submitted_jobs": [],
+    "cache_rejection_reasons": [
+      "input_hash_mismatch",
+      "quality_status_not_passing",
+      "ownership_distribution_below_minimum",
+      "ownership_status_blocked"
+    ],
+    "estimated_usd": 7.575,
+    "next_unblocked_step": "Commit/push and rebuild container before any bounded paid tile_13 leaf-init proof."
   }
 }
