@@ -1,16 +1,31 @@
 {
-  "active_jobs": [],
+  "active_jobs": [
+    {
+      "cloudwatch_stream": "r5l80c135r2-1777848427/algo-1-1777848464",
+      "container_digest": "sha256:b704cfcd5dece2078049357861a092c6abd6b0e5375c45355f882efea11dd938",
+      "fixed_head": "f525ffae2462220c44a7a0cb7ea8ecc6ea290fdf",
+      "image_tag": "agent73948216sfmproductionspine",
+      "input_s3_uri": "s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip",
+      "job_name": "r5l80c135r2-1777848427",
+      "latest_cloudwatch_tail": "logs/sfm-production-spine/r5l80c135r2-1777848427-cloudwatch-tail-2322.json",
+      "latest_progress": "feature_extractor 825/1456; S3 empty before EndOfJob upload.",
+      "only_chunk_indexes": "1,3,5",
+      "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/r5l80c135r2-1777848427/colmap",
+      "parent_merge_mode": "legacy_rerun",
+      "status": "InProgress; ProcessingStartTime=2026-05-03T22:47:45Z; no FailureReason; feature_extractor 825/1456; S3 empty before EndOfJob upload.",
+      "submit_artifact": "logs/sfm-production-spine/r5_l80_c135_r2_submit.json"
+    }
+  ],
   "blockers": [
     "R5 full Meadow attempt r5meadow739-1777643311 failed chunked_merge_threshold with 999/1456 registered and no sparse/0.",
-    "R5 targeted 160/240 weak-region leaves failed terminal; whitespace filename sanitization was required before smaller fixed-image proofs were reliable.",
-    "Bounded adjacent recoveries now have clean c468 and c1098 proof; c135 needs a new-runtime rerun to prove adjacent recovery is recorded as retried rather than a stale failed_leaf blocker.",
+    "Bounded adjacent recoveries c468 and c1098 completed cleanly, but c135r2 is still running to prove recovered leaves are marked retried and do not leave stale failed_leaf blockers.",
     "Final R5 full huge-acreage sparse/0, pipeline-viewer proof, and promotion report remain pending."
   ],
   "branch": "agent-73948216-sfm-production-spine",
-  "current_goal": "Carry R5 huge-acreage proof forward with fixed whitespace-safe COLMAP image names, clean adjacent-retry metadata, and bounded merge evidence before the next full proof.",
+  "current_goal": "Prove the weak c135 bounded adjacent recovery under the new retried-leaf metadata runtime before the next R5 full/bounded merge proof.",
   "current_rung": "R5",
-  "head": "f8e39941e106f9aceb824f81204bf1a7be3c0d19",
-  "last_command": "Verified r5l80c1098adj-1777834845 Completed/no FailureReason, sparse/0 present; py_compile and python3 -m unittest tests.unit.test_colmap_gps_priors passed after adjacent-retry metadata hardening.",
+  "head": "f525ffae2462220c44a7a0cb7ea8ecc6ea290fdf",
+  "last_command": "r5l80c135r2-1777848427 remains InProgress with no FailureReason; CloudWatch stream r5l80c135r2-1777848427/algo-1-1777848464; feature_extractor reached 825/1456 images by 2026-05-03T23:23:00Z; S3 output remains empty before EndOfJob upload; active SageMaker InProgress query returns only this job.",
   "last_metrics": {
     "active_job_check": "r2leaf739c0-1777517712 and r2leaf739c1-1777517712 Completed; no local r2leaf/run_sfm_benchmark monitor processes remain",
     "active_processing_jobs_check": "[] for sfm/R3/R4/R5 InProgress processing jobs at 2026-05-03T22:26Z",
@@ -38,6 +53,7 @@
     "planner_fixture_expected_output_kind": "single_merged_model",
     "post_c5_failure_ledger_push": "commit 1b0f41220b1981b09c9a4660c4f788cf7f6ef827 pushed; CDK Deploy 25281253042 success with resolve_context, deploy_shared_auth, deploy_application all success",
     "post_c8_proof_cdk_run": "CDK Deploy 25279954614 for head 7a7c2f62828f06d02c1228b93aa17ae356ae6db0 completed success; deploy_shared_auth and deploy_application both success.",
+    "post_hardening_push": "commit f525ffae2462220c44a7a0cb7ea8ecc6ea290fdf pushed; CDK Deploy 25292684236 success; Trigger ML Container Build 25292684244 success; ECR digest sha256:b704cfcd5dece2078049357861a092c6abd6b0e5375c45355f882efea11dd938",
     "post_ledger_local_validation": "run_sfm_benchmark.py --help passed; python3 -m unittest tests.unit.test_colmap_gps_priors: 101 tests OK; frontier/comparison/r2 summary JSON valid",
     "post_push_cdk_run": "CDK Deploy 25216840383 for 6f7ddcf88e387dfc3b0b70e01d5a95f5c65ae05b completed success at 2026-05-01T14:04:11Z; deploy_shared_auth and deploy_application both success",
     "post_r5_adjacent_proof_cdk_run": "CDK Deploy 25284891594 success for head 043a2fed2083c53e3bb0e9db968b597c28c49c99; resolve_context, deploy_shared_auth, deploy_application all success",
@@ -231,23 +247,30 @@
     "r5_whitespace_fix_tests": "python3 -m py_compile infrastructure/containers/sfm/run_colmap_sfm.py scripts/sfm/run_sfm_benchmark.py passed; python3 -m unittest tests.unit.test_colmap_gps_priors ran 103 tests OK.",
     "r5l80c1098adj-1777834845_metrics": "r5l80c1098adj-1777834845 Completed; chunks 8,9,10; registered 420/420 execution images; raw_points=289428; filtered_points=242747; points_per_registered_image=689.11; runtime=10353.48s; reducer leaf_count=5 passed=5 failed=0 standard_sparse0_exists=true blockers=[]",
     "r5l80c1098adj-1777834845_sparse0": "5 objects totaling 212590286 bytes under sparse/0",
-    "r5l80c1098adj-1777834845_status": "Completed with no FailureReason"
+    "r5l80c1098adj-1777834845_status": "Completed with no FailureReason",
+    "r5l80c135r2-1777848427_2322": "InProgress; feature_extractor 825/1456; no FailureReason; S3 empty; active jobs query only this job.",
+    "r5l80c135r2-1777848427_launch": "InProgress submit check; input s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip; output s3://spaceport-ml-processing-staging/manual-validations/r5l80c135r2-1777848427/colmap; only_chunk_indexes=1,3,5; head f525ffae2462220c44a7a0cb7ea8ecc6ea290fdf; image_digest sha256:b704cfcd5dece2078049357861a092c6abd6b0e5375c45355f882efea11dd938",
+    "r5l80c135r2-1777848427_startup": "InProgress with CloudWatch stream; feature_extractor started after extracting 1456 images and sanitizing 457 whitespace filenames."
   },
   "latest_artifacts": [
-    "logs/sfm-production-spine/r5l80c1098adj-1777834845-sagemaker-describe-terminal.json",
-    "logs/sfm-production-spine/active-processing-jobs-20260503T2226Z.json",
-    "logs/sfm-production-spine/r5l80c1098adj-1777834845-cloudwatch-tail-terminal.json",
-    "logs/sfm-production-spine/r5l80c1098adj-1777834845-sfm_metadata.json",
-    "logs/sfm-production-spine/r5l80c1098adj-1777834845-leaf_metadata.json",
-    "logs/sfm-production-spine/r5l80c1098adj-1777834845-reducer_metadata.json",
-    "logs/sfm-production-spine/r5l80c1098adj-1777834845-planner_static_report.json",
-    "logs/sfm-production-spine/r5l80c1098adj-1777834845-chunk_planner_manifest.json",
-    "logs/sfm-production-spine/r5l80c1098adj-1777834845-sparse0-ls.txt",
-    "logs/sfm-production-spine/r5_l80_c1098_adjacent_submit.json",
-    "s3://spaceport-ml-processing-staging/manual-validations/r5l80c1098adj-1777834845/colmap",
-    "s3://spaceport-ml-processing-staging/manual-validations/r5l80c1098adj-1777834845/colmap/sparse/0/"
+    "logs/sfm-production-spine/github-runs-f525ffae-monitor.json",
+    "logs/sfm-production-spine/ecr-agent73948216-f525ffae.json",
+    "logs/sfm-production-spine/r5_l80_c135_r2_submit.json",
+    "logs/sfm-production-spine/r5_l80_c135_r2_submit_raw.txt",
+    "logs/sfm-production-spine/r5l80c135r2-1777848427-sagemaker-describe-submit.json",
+    "logs/sfm-production-spine/r5l80c135r2-1777848427-sagemaker-describe-startup.json",
+    "logs/sfm-production-spine/r5l80c135r2-1777848427-sagemaker-describe-2322.json",
+    "logs/sfm-production-spine/r5l80c135r2-1777848427-log-streams-submit.json",
+    "logs/sfm-production-spine/r5l80c135r2-1777848427-log-streams-startup.json",
+    "logs/sfm-production-spine/r5l80c135r2-1777848427-log-streams-2251.json",
+    "logs/sfm-production-spine/r5l80c135r2-1777848427-cloudwatch-tail-2251.json",
+    "logs/sfm-production-spine/r5l80c135r2-1777848427-cloudwatch-tail-2322.json",
+    "logs/sfm-production-spine/r5l80c135r2-1777848427-s3-submit.txt",
+    "logs/sfm-production-spine/r5l80c135r2-1777848427-s3-2322.txt",
+    "logs/sfm-production-spine/active-processing-jobs-20260503T2322Z.json",
+    "s3://spaceport-ml-processing-staging/manual-validations/r5l80c135r2-1777848427/colmap"
   ],
-  "next_unblocked_step": "Commit/push adjacent-retry metadata hardening and terminal c1098 proof, monitor GitHub/container workflows, then rerun chunks 1,3,5 under the new runtime.",
+  "next_unblocked_step": "Monitor r5l80c135r2-1777848427 feature extraction completion, chunk gates, reducer metadata, terminal sparse/0, and retried-leaf consolidation gate.",
   "promotion_status": "blocked",
-  "updated": "2026-05-03T22:29:50Z"
+  "updated": "2026-05-03T23:24:27Z"
 }

@@ -1,0 +1,14 @@
+{
+  "branch": "agent-73948216-sfm-production-spine",
+  "branch_head": "f525ffae2462220c44a7a0cb7ea8ecc6ea290fdf",
+  "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine",
+  "input_s3_uri": "s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip",
+  "instance_type": "ml.g4dn.xlarge",
+  "job_name": "r5l80c135r2-1777848427",
+  "mode": "chunked",
+  "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/r5l80c135r2-1777848427/colmap",
+  "processing_job_arn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/r5l80c135r2-1777848427",
+  "role_arn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+  "selected_tag": "agent73948216sfmproductionspine",
+  "stack_name": "SpaceportMLPreview1FCC870EE1Stack"
+}

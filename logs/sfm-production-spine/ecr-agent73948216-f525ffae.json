@@ -1,0 +1,9 @@
+{
+    "imageDigest": "sha256:b704cfcd5dece2078049357861a092c6abd6b0e5375c45355f882efea11dd938",
+    "imageTags": [
+        "latest",
+        "agent73948216sfmproductionspine"
+    ],
+    "imagePushedAt": "2026-05-03T16:45:24.707000-06:00",
+    "imageSizeInBytes": 3170782406
+}

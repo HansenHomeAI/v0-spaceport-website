@@ -1,0 +1,14 @@
+{
+    "logStreams": [
+        {
+            "logStreamName": "r5l80c135r2-1777848427/algo-1-1777848464",
+            "creationTime": 1777848628148,
+            "firstEventTimestamp": 1777848621945,
+            "lastEventTimestamp": 1777848621946,
+            "lastIngestionTime": 1777848628162,
+            "uploadSequenceToken": "49039859670874612288204514446898528543353473359443266109",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:r5l80c135r2-1777848427/algo-1-1777848464",
+            "storedBytes": 0
+        }
+    ]
+}

@@ -21,7 +21,20 @@
   ],
   "branch": "agent-73948216-sfm-production-spine",
   "candidate": {
-    "active_jobs": [],
+    "active_jobs": [
+      {
+        "branch_head": "f525ffae2462220c44a7a0cb7ea8ecc6ea290fdf",
+        "container_digest": "sha256:b704cfcd5dece2078049357861a092c6abd6b0e5375c45355f882efea11dd938",
+        "failure_reason": null,
+        "input_uri": "s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip",
+        "job": "r5l80c135r2-1777848427",
+        "latest_progress": "feature_extractor 825/1456; S3 empty before EndOfJob upload.",
+        "latest_tail": "logs/sfm-production-spine/r5l80c135r2-1777848427-cloudwatch-tail-2322.json",
+        "only_chunk_indexes": "1,3,5",
+        "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r5l80c135r2-1777848427/colmap",
+        "status": "InProgress"
+      }
+    ],
     "fallbacks_used": [
       "bounded_chunk_recovery",
       "seam_only_leaf_seed"
@@ -54,21 +67,26 @@
       "r5l80c5fix-1777810935",
       "r5l80c135adj-1777816705",
       "r5l80c468adj-1777826606",
-      "r5l80c1098adj-1777834845"
+      "r5l80c1098adj-1777834845",
+      "r5l80c135r2-1777848427"
     ],
     "latest_artifacts": [
-      "logs/sfm-production-spine/r5l80c1098adj-1777834845-sagemaker-describe-terminal.json",
-      "logs/sfm-production-spine/active-processing-jobs-20260503T2226Z.json",
-      "logs/sfm-production-spine/r5l80c1098adj-1777834845-cloudwatch-tail-terminal.json",
-      "logs/sfm-production-spine/r5l80c1098adj-1777834845-sfm_metadata.json",
-      "logs/sfm-production-spine/r5l80c1098adj-1777834845-leaf_metadata.json",
-      "logs/sfm-production-spine/r5l80c1098adj-1777834845-reducer_metadata.json",
-      "logs/sfm-production-spine/r5l80c1098adj-1777834845-planner_static_report.json",
-      "logs/sfm-production-spine/r5l80c1098adj-1777834845-chunk_planner_manifest.json",
-      "logs/sfm-production-spine/r5l80c1098adj-1777834845-sparse0-ls.txt",
-      "logs/sfm-production-spine/r5_l80_c1098_adjacent_submit.json",
-      "s3://spaceport-ml-processing-staging/manual-validations/r5l80c1098adj-1777834845/colmap",
-      "s3://spaceport-ml-processing-staging/manual-validations/r5l80c1098adj-1777834845/colmap/sparse/0/"
+      "logs/sfm-production-spine/github-runs-f525ffae-monitor.json",
+      "logs/sfm-production-spine/ecr-agent73948216-f525ffae.json",
+      "logs/sfm-production-spine/r5_l80_c135_r2_submit.json",
+      "logs/sfm-production-spine/r5_l80_c135_r2_submit_raw.txt",
+      "logs/sfm-production-spine/r5l80c135r2-1777848427-sagemaker-describe-submit.json",
+      "logs/sfm-production-spine/r5l80c135r2-1777848427-sagemaker-describe-startup.json",
+      "logs/sfm-production-spine/r5l80c135r2-1777848427-sagemaker-describe-2322.json",
+      "logs/sfm-production-spine/r5l80c135r2-1777848427-log-streams-submit.json",
+      "logs/sfm-production-spine/r5l80c135r2-1777848427-log-streams-startup.json",
+      "logs/sfm-production-spine/r5l80c135r2-1777848427-log-streams-2251.json",
+      "logs/sfm-production-spine/r5l80c135r2-1777848427-cloudwatch-tail-2251.json",
+      "logs/sfm-production-spine/r5l80c135r2-1777848427-cloudwatch-tail-2322.json",
+      "logs/sfm-production-spine/r5l80c135r2-1777848427-s3-submit.txt",
+      "logs/sfm-production-spine/r5l80c135r2-1777848427-s3-2322.txt",
+      "logs/sfm-production-spine/active-processing-jobs-20260503T2322Z.json",
+      "s3://spaceport-ml-processing-staging/manual-validations/r5l80c135r2-1777848427/colmap"
     ],
     "merged_component_count": 1,
     "pipeline_viewer_url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fr4exact739s1-1777612249%2Fcolmap",
@@ -79,10 +97,10 @@
     "sparse0_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/sparse/0/",
     "total": 2157
   },
-  "current_branch_head": "f8e39941e106f9aceb824f81204bf1a7be3c0d19",
+  "current_branch_head": "f525ffae2462220c44a7a0cb7ea8ecc6ea290fdf",
   "dataset": "md1 representative subsets, R3 ladder_1000 proof, R4 exact 2157 proof, failed R5 Meadow full attempt, smaller-chunk R5 planner artifacts, fixed-image/adjacent R5 bounded proofs including clean c468 and c1098, and pending c135 retried-metadata rerun before final R5 proof",
   "decision": "needs_more_proof",
-  "head": "f8e39941e106f9aceb824f81204bf1a7be3c0d19",
+  "head": "f525ffae2462220c44a7a0cb7ea8ecc6ea290fdf",
   "mode": "distributed_chunked_v1",
   "proof_job_head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
   "r1_summary": {
@@ -931,7 +949,9 @@
     "weak_chunk_overlap_report": "logs/sfm-production-spine/r5_plan160_weak_chunk_overlap.json"
   },
   "r5_summary": {
-    "active_leaf_status": {},
+    "active_leaf_status": {
+      "r5l80c135r2-1777848427": "InProgress; feature_extractor 825/1456; no FailureReason; S3 empty before EndOfJob upload; chunks 1,3,5 legacy_rerun"
+    },
     "baseline_prior_job": "meadowfullpriorfixv2-1775780246",
     "baseline_prior_points": 940147,
     "baseline_prior_registered": 1452,
@@ -963,6 +983,7 @@
     "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r5meadow739-1777643311/colmap",
     "pipeline_viewer_proof": null,
     "planner_report": "logs/sfm-production-spine/r5meadow739-1777643311-planner_static_report.json",
+    "post_hardening_push": "GitHub CDK Deploy 25292684236 success and Trigger ML Container Build 25292684244 success for f525ffae2462220c44a7a0cb7ea8ecc6ea290fdf; ECR digest sha256:b704cfcd5dece2078049357861a092c6abd6b0e5375c45355f882efea11dd938",
     "post_push_cdk_run": "25216840383 success for ledger commit 6f7ddcf88e387dfc3b0b70e01d5a95f5c65ae05b",
     "post_r5_c468_proof_push": "CDK Deploy 25287981268 success for f8e39941e106f9aceb824f81204bf1a7be3c0d19",
     "processing_end_time": "2026-05-01T19:34:18.747Z",
@@ -1042,6 +1063,19 @@
       "status": "Completed; bounded recovery evidence, not promotion due failed_leaf",
       "total_unique_chunk_images": 396
     },
+    "r5l80c135r2-1777848427": {
+      "cloudwatch_stream": "r5l80c135r2-1777848427/algo-1-1777848464",
+      "container_digest": "sha256:b704cfcd5dece2078049357861a092c6abd6b0e5375c45355f882efea11dd938",
+      "fixed_head": "f525ffae2462220c44a7a0cb7ea8ecc6ea290fdf",
+      "input_s3_uri": "s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip",
+      "latest_progress": "feature_extractor 825/1456",
+      "latest_tail": "logs/sfm-production-spine/r5l80c135r2-1777848427-cloudwatch-tail-2322.json",
+      "only_chunk_indexes": "1,3,5",
+      "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/r5l80c135r2-1777848427/colmap",
+      "purpose": "new-runtime bounded expanded-local-context retry for old weak source chunk 1/c135; proves adjacent recovery metadata consolidation",
+      "status": "InProgress",
+      "submit_artifact": "logs/sfm-production-spine/r5_l80_c135_r2_submit.json"
+    },
     "r5l80c468adj-1777826606": {
       "chunk04_latest_registered_frames": 80,
       "chunk04_points": 113134,
@@ -1107,7 +1141,7 @@
     "status": "failed_chunked_merge_threshold",
     "terminal_metrics_available": false,
     "total": 1456,
-    "updated": "2026-05-03T22:29:50Z"
+    "updated": "2026-05-03T23:24:27Z"
   },
-  "updated": "2026-05-03T22:29:50Z"
+  "updated": "2026-05-03T23:24:27Z"
 }

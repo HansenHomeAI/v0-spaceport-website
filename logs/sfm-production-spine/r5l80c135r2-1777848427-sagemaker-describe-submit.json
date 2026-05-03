@@ -1,0 +1,41 @@
+{
+    "ProcessingJobName": "r5l80c135r2-1777848427",
+    "ProcessingJobStatus": "InProgress",
+    "ProcessingStartTime": null,
+    "FailureReason": null,
+    "AppSpecification": {
+        "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine",
+        "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+        ]
+    },
+    "Environment": {
+        "AWS_DEFAULT_REGION": "us-west-2",
+        "COLMAP_CHUNK_BRIDGE_RECOVERY_MAX_IMAGES": "500",
+        "COLMAP_CHUNK_CROSS_EDGE_MIN_COUNT": "24",
+        "COLMAP_CHUNK_HARD_MAX_IMAGES": "140",
+        "COLMAP_CHUNK_MIN_IMAGES": "60",
+        "COLMAP_CHUNK_OVERLAP_IMAGES": "40",
+        "COLMAP_CHUNK_PLANNER": "footprint_graph_v1",
+        "COLMAP_CHUNK_TARGET_IMAGES": "80",
+        "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+        "COLMAP_GRAPH_XY_NEIGHBOR_LIMIT": "48",
+        "COLMAP_LEAF_HARD_CAP": "140",
+        "COLMAP_LEAF_TARGET_IMAGES": "80",
+        "COLMAP_MATCH_PROFILE": "P3",
+        "COLMAP_ONLY_CHUNK_INDEXES": "1,3,5",
+        "COLMAP_PAIR_CAP_LOCAL": "32",
+        "COLMAP_PAIR_CAP_REVISIT": "14",
+        "COLMAP_PAIR_CAP_SEAM": "16",
+        "COLMAP_PARENT_MERGE_MODE": "legacy_rerun",
+        "COLMAP_PARENT_SEAM_RETRY_PAIR_CAP": "36",
+        "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+        "PYTHONUNBUFFERED": "1",
+        "SFM_BENCHMARK_SUBSET_STRATEGY": "first_portion_by_exif_datetime_else_filename",
+        "SFM_BRANCH_NAME": "agent-73948216-sfm-production-spine",
+        "SFM_GIT_HEAD": "f525ffae2462220c44a7a0cb7ea8ecc6ea290fdf",
+        "SFM_INPUT_URI": "s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip",
+        "SFM_JOB_NAME": "r5l80c135r2-1777848427",
+        "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/r5l80c135r2-1777848427/colmap"
+    }
+}
