@@ -4899,7 +4899,45 @@ class ColmapPipeline:
                 "fallbacks_used": fallbacks_used,
             }
             records.append(record)
-        return records
+        return self.consolidate_retried_leaf_records(records)
+
+    def consolidate_retried_leaf_records(
+        self, records: Sequence[dict[str, object]]
+    ) -> List[dict[str, object]]:
+        consolidated: List[dict[str, object]] = []
+        failed_by_chunk: dict[int, dict[str, object]] = {}
+        for record in records:
+            chunk_index = int(record.get("chunk_index") or 0)
+            if record.get("status") == "failed":
+                failed_by_chunk[chunk_index] = record
+                consolidated.append(record)
+                continue
+            prior_failure = failed_by_chunk.pop(chunk_index, None)
+            if not prior_failure:
+                consolidated.append(record)
+                continue
+            recovered_record = dict(record)
+            recovered_record["status"] = "retried"
+            recovered_record["fallbacks_used"] = sorted(
+                set(prior_failure.get("fallbacks_used") or [])
+                .union(recovered_record.get("fallbacks_used") or [])
+                .union({"adjacent_chunk_merge_retry"})
+            )
+            if not recovered_record.get("failure_stage"):
+                recovered_record["failure_stage"] = prior_failure.get("failure_stage")
+            if not recovered_record.get("failure_reason"):
+                recovered_record["failure_reason"] = prior_failure.get("failure_reason")
+            for index in range(len(consolidated) - 1, -1, -1):
+                previous = consolidated[index]
+                if (
+                    int(previous.get("chunk_index") or 0) == chunk_index
+                    and previous.get("status") == "failed"
+                ):
+                    consolidated[index] = recovered_record
+                    break
+            else:
+                consolidated.append(recovered_record)
+        return consolidated
 
     def standard_sparse0_exists(self) -> bool:
         sparse0 = self.output_dir / "sparse" / "0"

@@ -1,0 +1,97 @@
+[
+  {
+    "chunk_index": 8,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 140,
+    "registered_count": 140,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 1635,
+    "points3d_count": 102964,
+    "points_per_registered_image": 735.46,
+    "timings_sec": {
+      "mapper_initial": 625.25
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  },
+  {
+    "chunk_index": 9,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 140,
+    "registered_count": 140,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 1825,
+    "points3d_count": 82518,
+    "points_per_registered_image": 589.41,
+    "timings_sec": {
+      "mapper_initial": 706.52
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  },
+  {
+    "chunk_index": 10,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 140,
+    "registered_count": 140,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 1825,
+    "points3d_count": 97137,
+    "points_per_registered_image": 693.84,
+    "timings_sec": {
+      "mapper_initial": 710.97
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  },
+  {
+    "chunk_index": 9,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 280,
+    "registered_count": 280,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 4060,
+    "points3d_count": 172798,
+    "points_per_registered_image": 617.14,
+    "timings_sec": {
+      "mapper_initial": 1754.6
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  },
+  {
+    "chunk_index": 8,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 280,
+    "registered_count": 280,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 4060,
+    "points3d_count": 193064,
+    "points_per_registered_image": 689.51,
+    "timings_sec": {
+      "mapper_initial": 1689.13
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  }
+]

@@ -1,39 +1,22 @@
 reason: building the mature-branch distributed SfM production spine from origin/agent-31459027-sfm-final-bridge-fallback without mutating the mature branch; sfm-reality-check heartbeat stays active until full verified end-goal proof or explicit owner stop.
-last_step: Verified R5 bounded adjacent retry r5l80c468adj-1777826606 reached SageMaker terminal Completed with no FailureReason at ProcessingEndTime=2026-05-03T18:50:57Z. Output has standard sparse/0 with 5 objects, metadata, and 1472 total prefix objects. Parsed metrics: 412 registered images, 318034 raw points, 276526 filtered points, 771.93 pts/registered image, 7388.43s runtime, 457 renamed images, reducer leaf_count=4 passed_leaf_count=4 failed_leaf_count=0 standard_sparse0_exists=true promotion_blockers=[]. Launched next bounded adjacent retry r5l80c1098adj-1777834845 for chunks 10,9,8; first check InProgress with no ProcessingStartTime, no FailureReason, no CloudWatch stream, S3 output empty.
-next_unblocked_step: monitor r5l80c1098adj-1777834845 through startup, feature extraction, chunk gates, reducer metadata, terminal status, and sparse/0; if it passes, use c135/c468/c1098 evidence to choose bounded merge proof or remaining weak-region candidate; do not delete sfm-reality-check.
+last_step: Verified r5l80c1098adj-1777834845 reached SageMaker terminal Completed with no FailureReason at ProcessingEndTime=2026-05-03T15:57:46.264000-06:00. r5l80c1098adj-1777834845 Completed; chunks 8,9,10; registered 420/420 execution images; raw_points=289428; filtered_points=242747; points_per_registered_image=689.11; runtime=10353.48s; reducer leaf_count=5 passed=5 failed=0 standard_sparse0_exists=true blockers=[]. Implemented adjacent-retry leaf metadata consolidation so a later expanded local-context recovery for the same chunk is reported as status=retried instead of leaving a stale failed_leaf blocker; py_compile passed and tests.unit.test_colmap_gps_priors ran 104 tests OK.
+next_unblocked_step: commit and push the adjacent-retry leaf metadata hardening plus terminal R5 bounded artifacts, monitor branch GitHub workflows/container build, then rerun chunks 1,3,5 under the new runtime to prove the c135 adjacent recovery records clean reducer metadata before attempting the next R5 full/bounded merge proof; do not delete sfm-reality-check.
 owner_action_needed: none
 active_jobs:
-  - r5l80c1098adj-1777834845 -> InProgress; no ProcessingStartTime yet; no FailureReason; no CloudWatch stream yet; S3 output empty at submit check; fixed head 142df9148276c34ad570cf2a7d206933e84bb903; image 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine; input s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip; output s3://spaceport-ml-processing-staging/manual-validations/r5l80c1098adj-1777834845/colmap; only_chunk_indexes=10,9,8; COLMAP_PARENT_MERGE_MODE=legacy_rerun.
+  - none; live SageMaker InProgress query for sfm/R3/R4/R5 jobs returned [] at logs/sfm-production-spine/active-processing-jobs-20260503T2226Z.json
 latest_artifacts:
-  - commit:043a2fed2083c53e3bb0e9db968b597c28c49c99
-  - github-actions:25284891594:success
-  - logs/sfm-production-spine/r5_l80_c468_adjacent_submit.json
-  - logs/sfm-production-spine/r5l80c468adj-1777826606-cloudwatch-tail-startup.json
-  - logs/sfm-production-spine/r5l80c468adj-1777826606-cloudwatch-tail-1652.json
-  - logs/sfm-production-spine/r5l80c468adj-1777826606-cloudwatch-tail-1657.json
-  - logs/sfm-production-spine/r5l80c468adj-1777826606-cloudwatch-tail-1730.json
-  - logs/sfm-production-spine/r5l80c468adj-1777826606-cloudwatch-tail-1742.json
-  - logs/sfm-production-spine/r5l80c468adj-1777826606-cloudwatch-tail-1749.json
-  - logs/sfm-production-spine/r5l80c468adj-1777826606-cloudwatch-tail-1801.json
-  - logs/sfm-production-spine/r5l80c468adj-1777826606-cloudwatch-tail-1812.json
-  - logs/sfm-production-spine/r5l80c468adj-1777826606-cloudwatch-tail-1822.json
-  - logs/sfm-production-spine/r5l80c468adj-1777826606-cloudwatch-tail-1837.json
-  - logs/sfm-production-spine/r5l80c468adj-1777826606-cloudwatch-tail-1840.json
-  - logs/sfm-production-spine/r5l80c468adj-1777826606-cloudwatch-tail-1845.json
-  - logs/sfm-production-spine/r5l80c468adj-1777826606-cloudwatch-tail-terminal.json
-  - logs/sfm-production-spine/r5l80c468adj-1777826606-sfm_metadata.json
-  - logs/sfm-production-spine/r5l80c468adj-1777826606-leaf_metadata.json
-  - logs/sfm-production-spine/r5l80c468adj-1777826606-reducer_metadata.json
-  - logs/sfm-production-spine/r5l80c468adj-1777826606-planner_static_report.json
-  - logs/sfm-production-spine/r5l80c468adj-1777826606-chunk_planner_manifest.json
-  - logs/sfm-production-spine/r5l80c468adj-1777826606-summary.json
-  - logs/sfm-production-spine/r5l80c468adj-1777826606-sparse0-ls.txt
-  - logs/sfm-production-spine/r5l80c468adj-1777826606-s3-summary-tail.txt
-  - s3://spaceport-ml-processing-staging/manual-validations/r5l80c468adj-1777826606/colmap
+  - logs/sfm-production-spine/r5l80c1098adj-1777834845-sagemaker-describe-terminal.json
+  - logs/sfm-production-spine/active-processing-jobs-20260503T2226Z.json
+  - logs/sfm-production-spine/r5l80c1098adj-1777834845-cloudwatch-tail-terminal.json
+  - logs/sfm-production-spine/r5l80c1098adj-1777834845-sfm_metadata.json
+  - logs/sfm-production-spine/r5l80c1098adj-1777834845-leaf_metadata.json
+  - logs/sfm-production-spine/r5l80c1098adj-1777834845-reducer_metadata.json
+  - logs/sfm-production-spine/r5l80c1098adj-1777834845-planner_static_report.json
+  - logs/sfm-production-spine/r5l80c1098adj-1777834845-chunk_planner_manifest.json
+  - logs/sfm-production-spine/r5l80c1098adj-1777834845-sparse0-ls.txt
   - logs/sfm-production-spine/r5_l80_c1098_adjacent_submit.json
-  - logs/sfm-production-spine/r5_l80_c1098_adjacent_submit_raw.txt
-  - logs/sfm-production-spine/r5l80c1098adj-1777834845-log-streams-submit.json
   - s3://spaceport-ml-processing-staging/manual-validations/r5l80c1098adj-1777834845/colmap
+  - s3://spaceport-ml-processing-staging/manual-validations/r5l80c1098adj-1777834845/colmap/sparse/0/
 branch: agent-73948216-sfm-production-spine
-head: 043a2fed2083c53e3bb0e9db968b597c28c49c99
-updated: 2026-05-03T19:01:24Z
+head: f8e39941e106f9aceb824f81204bf1a7be3c0d19
+updated: 2026-05-03T22:29:50Z

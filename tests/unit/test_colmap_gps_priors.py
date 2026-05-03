@@ -202,6 +202,57 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(records[0]["points_per_registered_image"], 100.0)
             self.assertEqual(records[0]["fallbacks_used"], ["bounded_chunk_recovery"])
 
+    def test_leaf_metadata_consolidates_adjacent_retried_failure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            sparse0 = pipeline.output_dir / "sparse" / "0"
+            sparse0.mkdir(parents=True)
+            for file_name in ("cameras.txt", "images.txt", "points3D.txt"):
+                (sparse0 / file_name).write_text("# ok\n", encoding="utf-8")
+            pipeline.planner_static_report = {"connected_component_count": 1}
+            pipeline.chunk_merge_proof = {"pre_merge_retention_ratio": 1.0}
+            pipeline.merged_component_count = 1
+            pipeline.chunk_run_metrics = [
+                {
+                    "chunk_index": 5,
+                    "image_count": 140,
+                    "registered_count": 115,
+                    "registered_ratio": 0.8214,
+                    "core_registered_ratio": 0.8214,
+                    "verified_pair_count": 1778,
+                    "points3d_count": 83126,
+                    "failure": True,
+                    "failure_stage": "chunk_05_recovery_failed",
+                    "failure_reason": "chunk 5 remained below threshold",
+                    "recovered_registered_ratio": 0.8214,
+                    "recovered_core_registered_ratio": 0.8214,
+                },
+                {
+                    "chunk_index": 5,
+                    "image_count": 280,
+                    "registered_count": 276,
+                    "registered_ratio": 0.9857,
+                    "core_registered_ratio": 0.981,
+                    "verified_pair_count": 3390,
+                    "points3d_count": 195751,
+                    "failure": False,
+                },
+            ]
+
+            records = pipeline.build_leaf_metadata_records()
+            metadata = pipeline.build_reducer_metadata()
+
+            self.assertEqual(len(records), 1)
+            self.assertEqual(records[0]["status"], "retried")
+            self.assertEqual(records[0]["registered_count"], 276)
+            self.assertEqual(records[0]["registered_ratio"], 0.9857)
+            self.assertIn("adjacent_chunk_merge_retry", records[0]["fallbacks_used"])
+            self.assertIn("bounded_chunk_recovery", records[0]["fallbacks_used"])
+            self.assertEqual(records[0]["failure_stage"], "chunk_05_recovery_failed")
+            self.assertEqual(metadata["failed_leaf_count"], 0)
+            self.assertEqual(metadata["promotion_blockers"], [])
+
     def test_reducer_metadata_schema_blocks_missing_sparse0_or_failed_leaf(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
             os.environ,
