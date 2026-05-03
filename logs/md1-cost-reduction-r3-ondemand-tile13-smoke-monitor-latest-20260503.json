@@ -1,0 +1,28 @@
+{
+  "checks": [
+    {
+      "status": "ok",
+      "training_job_name": "md1-r3od-tile13smoke-1777816055-tile-13",
+      "training_status": "InProgress",
+      "secondary_status": "Training",
+      "elapsed_seconds": 1311,
+      "latest_log_age_seconds": 671,
+      "gpu_average_percent": null,
+      "s3_output_object_count": 0,
+      "startup_wait_seconds": 1369,
+      "training_started": true,
+      "secondary_status_message": "Training image download completed. Training in progress.",
+      "spend": {
+        "instance_type": "ml.g5.2xlarge",
+        "hourly_rate_usd": 1.515,
+        "billable_seconds": 1311,
+        "billable_hours": 0.3642,
+        "estimated_usd": 0.5517
+      },
+      "block_reasons": [],
+      "warnings": [],
+      "checked_at_epoch": 1777817430,
+      "poll_index": 0
+    }
+  ]
+}

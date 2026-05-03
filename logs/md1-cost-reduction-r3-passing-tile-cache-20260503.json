@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-05-03T14:35:00Z",
+  "purpose": "R3 reuse-cache dry-run input for passed representative MD1 adaptive tiles",
+  "tiles": {
+    "tile_02": {
+      "tile_id": "tile_02",
+      "input_hash": "2b2595ae76c7ef466146cad4212848e665fd5656e66bb7d005cbfd630dfbfb65",
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r3-ondemand-tile02-exportfix-smoke-20260503/tiles/tile_02/md1-r3od-tile02expfix-1777810456-tile-02/output/model.tar.gz",
+      "quality_gate_status": "passed",
+      "budget_class": "standard",
+      "max_iterations": 8000,
+      "max_selected_images": 128,
+      "source_job_name": "md1-r3od-tile02expfix-1777810456-tile-02",
+      "billable_seconds": 2500,
+      "estimated_usd": 1.0521,
+      "ply_vertices": 472672
+    },
+    "tile_13": {
+      "tile_id": "tile_13",
+      "input_hash": "d45234728384d621927ee45b7c0ff59db5eb2b5b67669ba0170600755f5d6083",
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r3-ondemand-tile13-smoke-20260503/tiles/tile_13/md1-r3od-tile13smoke-1777816055-tile-13/output/model.tar.gz",
+      "quality_gate_status": "passed",
+      "budget_class": "standard",
+      "max_iterations": 8000,
+      "max_selected_images": 128,
+      "source_job_name": "md1-r3od-tile13smoke-1777816055-tile-13",
+      "billable_seconds": 2510,
+      "estimated_usd": 1.0563,
+      "ply_vertices": 482675
+    }
+  }
+}
