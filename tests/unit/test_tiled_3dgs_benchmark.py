@@ -507,6 +507,45 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(budget.budget_class, "tiny")
         self.assertEqual(budget.max_iterations, 3000)
 
+    def test_prior_tile_stats_can_force_horizon_repair_tile_to_hard_budget(self):
+        manifest = {
+            "tiles": [
+                {
+                    "tile_id": "tile_13",
+                    "base_camera_ids": [f"frame_{index:03d}.jpg" for index in range(188)],
+                }
+            ]
+        }
+        prior_stats = benchmark.normalize_prior_tile_stats(
+            {
+                "tiles": {
+                    "tile_13": {
+                        "retained_gaussians": 311000,
+                        "selected_image_count": 188,
+                        "min_budget_class": "hard",
+                        "force_max_iterations": 12000,
+                        "force_max_selected_images": 188,
+                    }
+                }
+            }
+        )
+
+        resolved_manifest = benchmark.apply_prior_tile_stats(manifest, prior_stats)
+        budget = benchmark.build_tile_budget_plan(
+            resolved_manifest["tiles"][0],
+            mode="adaptive",
+            tile_max_iterations=12000,
+            max_images_per_tile=128,
+        )
+
+        self.assertEqual(resolved_manifest["tiles"][0]["prior_min_budget_class"], "hard")
+        self.assertEqual(resolved_manifest["tiles"][0]["prior_max_iterations"], 12000)
+        self.assertEqual(resolved_manifest["tiles"][0]["prior_max_selected_images"], 188)
+        self.assertEqual(budget.budget_class, "hard")
+        self.assertEqual(budget.max_iterations, 12000)
+        self.assertEqual(budget.max_selected_images, 188)
+        self.assertIn("prior_min_budget_class_hard", budget.reasons)
+
     def test_tile_input_hash_changes_when_geometry_changes(self):
         base_tile = {
             "tile_id": "tile_00",

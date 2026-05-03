@@ -77,6 +77,12 @@ DEFAULT_V18_NON_REGRESSION_THRESHOLDS = {
     "single_camera_lpips_max_delta": 0.025,
     "horizon_sky_score_min_ratio": 0.98,
 }
+BUDGET_CLASS_RANK = {
+    "skip": 0,
+    "tiny": 1,
+    "standard": 2,
+    "hard": 3,
+}
 
 
 def run_command(command: Sequence[str], *, capture_output: bool = False) -> subprocess.CompletedProcess[str]:
@@ -180,6 +186,15 @@ def _int_env_value(env: Dict[str, str], key: str) -> int | None:
     try:
         return int(str(env.get(key) or "").strip())
     except ValueError:
+        return None
+
+
+def _int_or_none(value: object) -> int | None:
+    if value in (None, ""):
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError):
         return None
 
 
@@ -489,6 +504,12 @@ def normalize_prior_tile_stats(payload: dict) -> dict[str, dict]:
             ("duration_hours", "prior_duration_hours"),
             ("wall_time_hours", "prior_duration_hours"),
             ("billable_time_seconds", "prior_billable_time_seconds"),
+            ("force_budget_class", "prior_force_budget_class"),
+            ("forced_budget_class", "prior_force_budget_class"),
+            ("min_budget_class", "prior_min_budget_class"),
+            ("force_max_iterations", "prior_max_iterations"),
+            ("force_max_selected_images", "prior_max_selected_images"),
+            ("budget_override_reason", "prior_budget_override_reason"),
         ):
             value = raw_tile.get(source_key)
             if value not in (None, ""):
@@ -616,6 +637,11 @@ def build_tile_input_hash(
         "prior_selected_image_count",
         "prior_duration_hours",
         "prior_billable_time_seconds",
+        "prior_force_budget_class",
+        "prior_min_budget_class",
+        "prior_max_iterations",
+        "prior_max_selected_images",
+        "prior_budget_override_reason",
     }
     stable_tile_entry = {
         key: value
@@ -654,6 +680,37 @@ def budget_image_cap(*, default_cap: int, max_images_per_tile: int) -> int:
     if max_images_per_tile > 0:
         return min(default_cap, max_images_per_tile)
     return default_cap
+
+
+def normalized_budget_class(value: object) -> str | None:
+    budget_class = str(value or "").strip().lower()
+    return budget_class if budget_class in BUDGET_CLASS_RANK else None
+
+
+def adaptive_budget_defaults(
+    budget_class: str,
+    *,
+    tile_max_iterations: int,
+    max_images_per_tile: int,
+) -> tuple[int, int]:
+    if budget_class == "skip":
+        return 0, 0
+    if budget_class == "tiny":
+        return (
+            min(tile_max_iterations, 3000),
+            budget_image_cap(default_cap=96, max_images_per_tile=max_images_per_tile),
+        )
+    if budget_class == "standard":
+        return (
+            min(tile_max_iterations, 8000),
+            budget_image_cap(default_cap=128, max_images_per_tile=max_images_per_tile),
+        )
+    if budget_class == "hard":
+        return (
+            min(tile_max_iterations, 12000),
+            budget_image_cap(default_cap=188, max_images_per_tile=max_images_per_tile),
+        )
+    raise ValueError(f"Unsupported budget class: {budget_class}")
 
 
 def build_tile_budget_plan(
@@ -701,29 +758,76 @@ def build_tile_budget_plan(
         reasons.append("zero_selected_images")
     elif prior_retained is not None and prior_retained <= 100:
         budget_class = "tiny"
-        max_iterations = min(tile_max_iterations, 3000)
-        max_selected_images = budget_image_cap(default_cap=96, max_images_per_tile=max_images_per_tile)
+        max_iterations, max_selected_images = adaptive_budget_defaults(
+            budget_class,
+            tile_max_iterations=tile_max_iterations,
+            max_images_per_tile=max_images_per_tile,
+        )
         reasons.append("low_prior_retained_gaussians")
     elif selected_count <= 24:
         budget_class = "tiny"
-        max_iterations = min(tile_max_iterations, 3000)
-        max_selected_images = budget_image_cap(default_cap=96, max_images_per_tile=max_images_per_tile)
+        max_iterations, max_selected_images = adaptive_budget_defaults(
+            budget_class,
+            tile_max_iterations=tile_max_iterations,
+            max_images_per_tile=max_images_per_tile,
+        )
         reasons.append("low_selected_image_count")
     elif horizon_count >= 12:
         budget_class = "hard"
-        max_iterations = min(tile_max_iterations, 12000)
-        max_selected_images = budget_image_cap(default_cap=188, max_images_per_tile=max_images_per_tile)
+        max_iterations, max_selected_images = adaptive_budget_defaults(
+            budget_class,
+            tile_max_iterations=tile_max_iterations,
+            max_images_per_tile=max_images_per_tile,
+        )
         reasons.append("horizon_support")
     elif boundary_count >= 48 or near_detail_count >= 48:
         budget_class = "hard"
-        max_iterations = min(tile_max_iterations, 12000)
-        max_selected_images = budget_image_cap(default_cap=188, max_images_per_tile=max_images_per_tile)
+        max_iterations, max_selected_images = adaptive_budget_defaults(
+            budget_class,
+            tile_max_iterations=tile_max_iterations,
+            max_images_per_tile=max_images_per_tile,
+        )
         reasons.append("dense_detail_or_boundary_support")
     else:
         budget_class = "standard"
-        max_iterations = min(tile_max_iterations, 8000)
-        max_selected_images = budget_image_cap(default_cap=128, max_images_per_tile=max_images_per_tile)
+        max_iterations, max_selected_images = adaptive_budget_defaults(
+            budget_class,
+            tile_max_iterations=tile_max_iterations,
+            max_images_per_tile=max_images_per_tile,
+        )
         reasons.append("standard_visibility")
+
+    if mode == "adaptive" and budget_class not in {"skip"}:
+        force_budget_class = normalized_budget_class(tile_entry.get("prior_force_budget_class"))
+        min_budget_class = normalized_budget_class(tile_entry.get("prior_min_budget_class"))
+        if force_budget_class is not None:
+            budget_class = force_budget_class
+            max_iterations, max_selected_images = adaptive_budget_defaults(
+                budget_class,
+                tile_max_iterations=tile_max_iterations,
+                max_images_per_tile=max_images_per_tile,
+            )
+            reasons.append(f"prior_force_budget_class_{budget_class}")
+        elif (
+            min_budget_class is not None
+            and BUDGET_CLASS_RANK[min_budget_class] > BUDGET_CLASS_RANK.get(budget_class, -1)
+        ):
+            budget_class = min_budget_class
+            max_iterations, max_selected_images = adaptive_budget_defaults(
+                budget_class,
+                tile_max_iterations=tile_max_iterations,
+                max_images_per_tile=max_images_per_tile,
+            )
+            reasons.append(f"prior_min_budget_class_{budget_class}")
+
+        forced_iterations = _int_or_none(tile_entry.get("prior_max_iterations"))
+        if forced_iterations is not None and forced_iterations >= 0:
+            max_iterations = min(tile_max_iterations, forced_iterations)
+            reasons.append("prior_max_iterations")
+        forced_max_images = _int_or_none(tile_entry.get("prior_max_selected_images"))
+        if forced_max_images is not None and forced_max_images >= 0:
+            max_selected_images = forced_max_images
+            reasons.append("prior_max_selected_images")
 
     input_hash = build_tile_input_hash(
         tile_entry=tile_entry,

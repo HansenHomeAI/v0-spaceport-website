@@ -1,0 +1,42 @@
+{
+  "source": {
+    "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+    "training_job_name": "md1-r5-14tile-2k-1777240767-tiled",
+    "instance_type": "ml.g5.2xlarge",
+    "billable_time_seconds": 171467,
+    "total_training_hours": 47.63,
+    "notes": "R5 serial 14-tile V18 source run plus R4 canary feedback; high-value repair tiles force hard/full-cover budgets before any full 14-tile candidate."
+  },
+  "tiles": {
+    "tile_00": {
+      "duration_hours": 2.06,
+      "retained_gaussians": 264373,
+      "selected_image_count": 188,
+      "min_budget_class": "hard",
+      "force_max_iterations": 12000,
+      "force_max_selected_images": 188,
+      "budget_override_reason": "R4 canary V18 near_detail regression; retrain full-cover before another canary."
+    },
+    "tile_01": {"duration_hours": 2.27, "retained_gaussians": 421000, "selected_image_count": 188},
+    "tile_02": {"duration_hours": 2.47, "retained_gaussians": 494000, "selected_image_count": 188},
+    "tile_03": {"duration_hours": 2.65, "retained_gaussians": 451601, "selected_image_count": 188},
+    "tile_04": {"duration_hours": 2.82, "retained_gaussians": 364338, "selected_image_count": 188},
+    "tile_05": {"duration_hours": 3.04, "retained_gaussians": 395841, "selected_image_count": 188},
+    "tile_06": {"duration_hours": 3.25, "retained_gaussians": 278000, "selected_image_count": 188},
+    "tile_07": {"duration_hours": 3.49, "retained_gaussians": 476395, "selected_image_count": 188},
+    "tile_08": {"duration_hours": 3.66, "retained_gaussians": 476258, "selected_image_count": 188},
+    "tile_09": {"duration_hours": 3.84, "retained_gaussians": 207000, "selected_image_count": 188},
+    "tile_10": {"duration_hours": 3.98, "retained_gaussians": 387000, "selected_image_count": 188},
+    "tile_11": {"duration_hours": 3.99, "retained_gaussians": 68, "selected_image_count": 188},
+    "tile_12": {"duration_hours": 4.45, "retained_gaussians": 437000, "selected_image_count": 188},
+    "tile_13": {
+      "duration_hours": 4.73,
+      "retained_gaussians": 311000,
+      "selected_image_count": 188,
+      "min_budget_class": "hard",
+      "force_max_iterations": 12000,
+      "force_max_selected_images": 188,
+      "budget_override_reason": "R4 canary V18 horizon regression and only 2907/482675 tile_13 gaussians retained after canary merge; retrain full-cover before another canary."
+    }
+  }
+}
