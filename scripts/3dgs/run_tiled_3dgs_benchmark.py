@@ -33,6 +33,7 @@ DEFAULT_VOLUME_SIZE_GB = 100
 DEFAULT_TRAINING_MAX_RUNTIME_SECONDS = 14400
 DEFAULT_REVIEW_MAX_RUNTIME_SECONDS = 7200
 DEFAULT_CHECKPOINT_SAVE_STEPS = 1000
+MAX_SPOT_EXTRA_WAIT_SECONDS = 1800
 SCAFFOLD_CHANNEL_DIR = "/opt/ml/input/data/scaffold"
 TILE_SELECTION_CHANNEL_NAME = "tile-selection"
 TILE_SELECTION_CHANNEL_DIR = f"/opt/ml/input/data/{TILE_SELECTION_CHANNEL_NAME}"
@@ -832,6 +833,20 @@ def validate_submit_guardrails(args: argparse.Namespace, summary: dict) -> None:
     if getattr(args, "enable_spot", False):
         if not getattr(args, "spot_restart_proof_passed", False):
             errors.append("--spot-restart-proof-passed is required before submitting spot training")
+        spot_max_wait_seconds = int(getattr(args, "spot_max_wait_seconds", 0) or 0)
+        training_max_runtime_seconds = int(
+            getattr(args, "training_max_runtime_seconds", DEFAULT_TRAINING_MAX_RUNTIME_SECONDS)
+            or DEFAULT_TRAINING_MAX_RUNTIME_SECONDS
+        )
+        if spot_max_wait_seconds <= 0:
+            errors.append("--spot-max-wait-seconds is required for submitted Spot training")
+        elif spot_max_wait_seconds < training_max_runtime_seconds:
+            errors.append("--spot-max-wait-seconds must be >= --training-max-runtime-seconds")
+        elif spot_max_wait_seconds - training_max_runtime_seconds > MAX_SPOT_EXTRA_WAIT_SECONDS:
+            errors.append(
+                "--spot-max-wait-seconds may exceed --training-max-runtime-seconds by at most "
+                f"{MAX_SPOT_EXTRA_WAIT_SECONDS}s for bounded Spot capacity waits"
+            )
     if getattr(args, "reuse_tile_cache", False):
         stages = summary.get("stages") or []
         scaffold_train_planned = any(
@@ -1881,7 +1896,10 @@ def parse_args() -> argparse.Namespace:
         "--spot-max-wait-seconds",
         type=int,
         default=0,
-        help="Optional MaxWaitTimeInSeconds for managed spot jobs. Defaults to runtime plus one hour.",
+        help=(
+            "MaxWaitTimeInSeconds for Managed Spot jobs. Required with --submit --enable-spot; "
+            f"may exceed runtime by at most {MAX_SPOT_EXTRA_WAIT_SECONDS}s."
+        ),
     )
     parser.add_argument(
         "--spot-restart-proof-passed",
@@ -2183,7 +2201,9 @@ def main() -> int:
         "tile_cache_manifest_json": args.tile_cache_manifest_json,
         "tile_cache_entry_count": len(tile_cache_manifest),
         "enable_spot": bool(args.enable_spot),
-        "enable_checkpoints": bool(args.enable_checkpoints),
+        "spot_max_wait_seconds": args.spot_max_wait_seconds,
+        "max_spot_extra_wait_seconds": MAX_SPOT_EXTRA_WAIT_SECONDS,
+        "enable_checkpoints": bool(args.enable_checkpoints or args.enable_spot),
         "checkpoint_s3_prefix": args.checkpoint_s3_prefix,
         "checkpoint_resume_s3_uri": args.checkpoint_resume_s3_uri,
         "checkpoint_resume_manifest_s3_uri": checkpoint_resume_manifest_uri,

@@ -827,6 +827,8 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             enable_checkpoints=False,
             checkpoint_s3_prefix="s3://bucket/checkpoints",
             spot_restart_proof_passed=False,
+            spot_max_wait_seconds=0,
+            training_max_runtime_seconds=3600,
         )
 
         with self.assertRaises(RuntimeError) as raised:
@@ -835,6 +837,28 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         message = str(raised.exception)
         self.assertIn("estimated cost", message)
         self.assertIn("--spot-restart-proof-passed", message)
+        self.assertIn("--spot-max-wait-seconds", message)
+
+    def test_validate_submit_guardrails_blocks_unbounded_spot_wait(self):
+        args = types.SimpleNamespace(
+            submit=True,
+            max_estimated_usd=2.0,
+            experiment_id="r3-spot-smoke",
+            v18_review_manifest_s3_uri="s3://bucket/v18-review",
+            baseline_review_manifest_s3_uri="",
+            enable_spot=True,
+            enable_checkpoints=False,
+            checkpoint_s3_prefix="s3://bucket/checkpoints",
+            spot_restart_proof_passed=True,
+            spot_max_wait_seconds=7200,
+            training_max_runtime_seconds=3600,
+            reuse_tile_cache=False,
+        )
+
+        with self.assertRaises(RuntimeError) as raised:
+            benchmark.validate_submit_guardrails(args, {"cost_estimate": {"estimated_usd": 1.0}})
+
+        self.assertIn("bounded Spot capacity waits", str(raised.exception))
 
     def test_validate_submit_guardrails_blocks_all_cache_hit_scaffold_spend(self):
         args = types.SimpleNamespace(
