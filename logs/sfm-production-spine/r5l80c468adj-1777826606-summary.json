@@ -1,0 +1,138 @@
+{
+  "chunk_execution_image_count": 414,
+  "dataset_image_count": 1456,
+  "expected_component_count": 1,
+  "failed_leaf_count": 0,
+  "input_uri": "s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip",
+  "job": "r5l80c468adj-1777826606",
+  "leaf_count": 4,
+  "leaf_metadata": [
+    {
+      "chunk_index": 4,
+      "core_registered_ratio": 1.0,
+      "failure_reason": null,
+      "failure_stage": null,
+      "fallbacks_used": [],
+      "image_count": 140,
+      "mapper_mode": "incremental",
+      "peak_memory_mb": null,
+      "points3d_count": 113134,
+      "points_per_registered_image": 808.1,
+      "registered_count": 140,
+      "registered_ratio": 1.0,
+      "status": "passed",
+      "timings_sec": {
+        "mapper_initial": 613.83
+      },
+      "verified_pair_count": 1787
+    },
+    {
+      "chunk_index": 6,
+      "core_registered_ratio": 0.9857,
+      "failure_reason": null,
+      "failure_stage": null,
+      "fallbacks_used": [],
+      "image_count": 140,
+      "mapper_mode": "incremental",
+      "peak_memory_mb": null,
+      "points3d_count": 109232,
+      "points_per_registered_image": 791.54,
+      "registered_count": 138,
+      "registered_ratio": 0.9857,
+      "status": "passed",
+      "timings_sec": {
+        "mapper_initial": 568.74
+      },
+      "verified_pair_count": 1787
+    },
+    {
+      "chunk_index": 8,
+      "core_registered_ratio": 1.0,
+      "failure_reason": null,
+      "failure_stage": null,
+      "fallbacks_used": [],
+      "image_count": 140,
+      "mapper_mode": "incremental",
+      "peak_memory_mb": null,
+      "points3d_count": 103266,
+      "points_per_registered_image": 737.61,
+      "registered_count": 140,
+      "registered_ratio": 1.0,
+      "status": "passed",
+      "timings_sec": {
+        "mapper_initial": 595.99
+      },
+      "verified_pair_count": 1787
+    },
+    {
+      "chunk_index": 6,
+      "core_registered_ratio": 0.9927,
+      "failure_reason": null,
+      "failure_stage": null,
+      "fallbacks_used": [],
+      "image_count": 280,
+      "mapper_mode": "incremental",
+      "peak_memory_mb": null,
+      "points3d_count": 203712,
+      "points_per_registered_image": 732.78,
+      "registered_count": 278,
+      "registered_ratio": 0.9929,
+      "status": "passed",
+      "timings_sec": {
+        "mapper_initial": 1528.15
+      },
+      "verified_pair_count": 3875
+    }
+  ],
+  "merged_component_count": 1,
+  "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r5l80c468adj-1777826606/colmap",
+  "passed_leaf_count": 4,
+  "planner_report": {
+    "candidate_pair_counts": {
+      "footprint": 46545,
+      "retrieval": 0,
+      "sequence": 14505,
+      "spatial": 40728
+    },
+    "chunk_count": 11,
+    "chunk_sizes": [
+      140,
+      140,
+      140,
+      140,
+      140,
+      140,
+      140,
+      140,
+      140,
+      140,
+      140
+    ],
+    "connected_component_count": 1,
+    "dataset_image_count": 1456,
+    "estimated_leaf_jobs": 11,
+    "expected_output_kind": "single_merged_model",
+    "gps_coverage_ratio": 1.0,
+    "orientation_coverage_ratio": 1.0,
+    "orphan_image_count": 0,
+    "risky_bridges": [],
+    "selected_orientation_source": "exif",
+    "verified_pair_count": 3875
+  },
+  "points_filtered": 276526,
+  "points_per_registered_image": 771.93,
+  "points_raw": 318034,
+  "promotion_blockers": [],
+  "quality_check_passed": true,
+  "registered": 412,
+  "renamed_image_count": 457,
+  "runtime_sec": 7388.43,
+  "selected_chunk_indexes": [
+    4,
+    6,
+    8
+  ],
+  "standard_sparse0_exists": true,
+  "status": "runtime_success_sagemaker_pending_terminal",
+  "updated": "2026-05-03T18:51:18Z"
+}

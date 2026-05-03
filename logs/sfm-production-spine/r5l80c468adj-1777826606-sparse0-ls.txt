@@ -1,0 +1,8 @@
+2026-05-03 12:50:53        195 manual-validations/r5l80c468adj-1777826606/colmap/sparse/0/cameras.txt
+2026-05-03 12:50:53      67889 manual-validations/r5l80c468adj-1777826606/colmap/sparse/0/frames.txt
+2026-05-03 12:50:53  163859879 manual-validations/r5l80c468adj-1777826606/colmap/sparse/0/images.txt
+2026-05-03 12:50:53   48268323 manual-validations/r5l80c468adj-1777826606/colmap/sparse/0/points3D.txt
+2026-05-03 12:50:53        218 manual-validations/r5l80c468adj-1777826606/colmap/sparse/0/rigs.txt
+
+Total Objects: 5
+   Total Size: 212196504
