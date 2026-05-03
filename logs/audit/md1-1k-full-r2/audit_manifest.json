@@ -7493,5 +7493,61 @@
       ]
     },
     "decision": "no-spend canary plan is ready; submit only tile_00 and tile_11 under the $5 cap after this evidence is committed and exact-head gates remain green"
+  },
+  "md1_r4_canary_submit_pass_20260503161654Z": {
+    "submit_summary_json": "logs/md1-cost-reduction-r4-canary-submit-20260503.json",
+    "leaf_cache_json": "logs/md1-cost-reduction-r4-canary-leaf-cache-20260503.json",
+    "local_merge_summary_json": "logs/md1-cost-reduction-r4-canary-local-merge-20260503.json",
+    "submitted_jobs": [
+      "md1-r4canary-1777821883-tile-00",
+      "md1-r4canary-1777821883-tile-11"
+    ],
+    "cache_hits": [
+      "tile_02",
+      "tile_13"
+    ],
+    "actual_cost": {
+      "tile_00_billable_seconds": 2591,
+      "tile_11_billable_seconds": 1254,
+      "total_billable_seconds": 3845,
+      "estimated_usd_at_1_515_per_hour": 1.6181,
+      "max_estimated_usd": 5.0
+    },
+    "artifacts": {
+      "tile_00": {
+        "model_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-canary-20260503/tiles/tile_00/md1-r4canary-1777821883-tile-00/output/model.tar.gz",
+        "s3_size_bytes": 46588874,
+        "ply_vertices": 523578,
+        "pruned_gaussians": 52,
+        "max_iterations": 8000,
+        "max_selected_images": 128
+      },
+      "tile_11": {
+        "model_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-canary-20260503/tiles/tile_11/md1-r4canary-1777821883-tile-11/output/model.tar.gz",
+        "s3_size_bytes": 5358459,
+        "ply_vertices": 59879,
+        "pruned_gaussians": 142,
+        "max_iterations": 3000,
+        "max_selected_images": 96
+      }
+    },
+    "local_merge": {
+      "merge_mode": "strict_core",
+      "tile_count": 4,
+      "source_gaussians": 1538804,
+      "retained_gaussians": 802393,
+      "dropped_gaussians": 736411,
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0
+    },
+    "gates": {
+      "head": "abe78e3a39b7552ec4584d8417116778011f3822",
+      "cdk_deploy_run": 25282938741,
+      "training_jobs_in_progress": [],
+      "processing_jobs_in_progress": [
+        "r5l80c135adj-1777816705"
+      ]
+    },
+    "decision": "R4 canary leaf training and local merge passed under budget; next gate is canary V18 non-regression review before any full 14-tile candidate"
   }
 }
