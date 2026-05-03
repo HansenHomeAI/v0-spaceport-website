@@ -867,6 +867,34 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(estimate["train_stage_count"], 2)
         self.assertAlmostEqual(estimate["estimated_billable_hours"], 5.0, places=3)
 
+    def test_estimate_training_cost_uses_prior_duration_for_hard_full_cover_tiles(self):
+        stages = [
+            benchmark.BenchmarkStage(
+                stage_name="T0_tile_13",
+                stage_type="train",
+                training_mode="leaf_tile",
+                output_s3_uri="s3://bucket/out/tile_13",
+                tile_id="tile_13",
+                budget_class="hard",
+                environment={"MAX_ITERATIONS": "12000"},
+                prior_duration_hours=4.73,
+            )
+        ]
+
+        estimate = benchmark.estimate_training_cost(
+            stages,
+            instance_type="ml.g5.2xlarge",
+            max_runtime_seconds=3600,
+            baseline_iterations=12000,
+        )
+
+        self.assertAlmostEqual(estimate["estimated_billable_hours"], 4.73, places=3)
+        self.assertAlmostEqual(estimate["estimated_usd"], 7.166, places=3)
+        stage_estimate = estimate["stage_estimates"][0]
+        self.assertEqual(stage_estimate["cost_basis"], "historical_prior_duration")
+        self.assertEqual(stage_estimate["runtime_risk"], "prior_duration_exceeds_max_runtime")
+        self.assertAlmostEqual(stage_estimate["runtime_cap_shortfall_hours"], 3.73, places=3)
+
     def test_estimate_training_cost_accounts_for_serial_tiled_pipeline_tiles(self):
         stages = [
             benchmark.BenchmarkStage(
@@ -968,6 +996,42 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             benchmark.validate_submit_guardrails(args, {"cost_estimate": {"estimated_usd": 1.0}})
 
         self.assertIn("bounded Spot capacity waits", str(raised.exception))
+
+    def test_validate_submit_guardrails_blocks_runtime_risk_stage_estimates(self):
+        args = types.SimpleNamespace(
+            submit=True,
+            max_estimated_usd=20.0,
+            experiment_id="r4-hardbudget",
+            v18_review_manifest_s3_uri="s3://bucket/v18-review",
+            baseline_review_manifest_s3_uri="",
+            enable_spot=False,
+            enable_checkpoints=True,
+            checkpoint_s3_prefix="s3://bucket/checkpoints",
+            spot_restart_proof_passed=False,
+            reuse_tile_cache=False,
+        )
+
+        with self.assertRaises(RuntimeError) as raised:
+            benchmark.validate_submit_guardrails(
+                args,
+                {
+                    "cost_estimate": {
+                        "estimated_usd": 7.17,
+                        "stage_estimates": [
+                            {
+                                "stage_name": "T0_tile_13",
+                                "tile_id": "tile_13",
+                                "runtime_risk": "prior_duration_exceeds_max_runtime",
+                            }
+                        ],
+                    }
+                },
+            )
+
+        message = str(raised.exception)
+        self.assertIn("runtime risk", message)
+        self.assertIn("T0_tile_13", message)
+        self.assertIn("prior_duration_exceeds_max_runtime", message)
 
     def test_validate_submit_guardrails_blocks_all_cache_hit_scaffold_spend(self):
         args = types.SimpleNamespace(

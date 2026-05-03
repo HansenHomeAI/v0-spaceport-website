@@ -476,6 +476,20 @@ def tile_prior_retained_gaussians(tile_entry: dict) -> int | None:
     return None
 
 
+def tile_prior_duration_hours(tile_entry: dict) -> float | None:
+    for key in ("prior_duration_hours", "duration_hours", "wall_time_hours"):
+        value = tile_entry.get(key)
+        if value in (None, ""):
+            continue
+        try:
+            duration = float(value)
+        except (TypeError, ValueError):
+            continue
+        if duration > 0:
+            return duration
+    return None
+
+
 def normalize_prior_tile_stats(payload: dict) -> dict[str, dict]:
     raw_tiles = payload.get("tiles", payload)
     if isinstance(raw_tiles, list):
@@ -612,6 +626,7 @@ class TileBudgetPlan:
     spot_enabled: bool = False
     checkpoint_uri: str | None = None
     source_artifact_uri: str | None = None
+    prior_duration_hours: float | None = None
     quality_gate_status: str = "planned"
 
     def to_dict(self) -> dict:
@@ -730,6 +745,7 @@ def build_tile_budget_plan(
     tile_id = str(tile_entry.get("tile_id", "")).strip()
     selected_count = int(tile_entry.get("selected_image_count") or len(tile_selected_image_names(tile_entry)))
     prior_retained = tile_prior_retained_gaussians(tile_entry)
+    prior_duration_hours = tile_prior_duration_hours(tile_entry)
     horizon_count = tile_role_count(tile_entry, "horizon")
     boundary_count = tile_role_count(tile_entry, "boundary")
     near_detail_count = tile_role_count(tile_entry, "near_detail")
@@ -851,6 +867,7 @@ def build_tile_budget_plan(
         spot_enabled=spot_enabled,
         checkpoint_uri=checkpoint_uri,
         source_artifact_uri=source_artifact_uri,
+        prior_duration_hours=prior_duration_hours,
     )
 
 
@@ -886,6 +903,22 @@ def estimate_training_cost(
             except (TypeError, ValueError):
                 stage_multiplier = 1
         stage_hours = max_hours_per_stage * fraction * stage_multiplier
+        cost_basis = "iteration_fraction_of_runtime_cap"
+        runtime_risk = None
+        runtime_cap_shortfall_hours = 0.0
+        prior_duration_hours = stage.prior_duration_hours
+        if (
+            prior_duration_hours is not None
+            and prior_duration_hours > 0
+            and stage.budget_class == "hard"
+            and stage.training_mode == "leaf_tile"
+        ):
+            stage_hours = max(stage_hours, prior_duration_hours)
+            cost_basis = "historical_prior_duration"
+        runtime_cap_hours = max_hours_per_stage * stage_multiplier
+        if stage_hours > runtime_cap_hours:
+            runtime_risk = "prior_duration_exceeds_max_runtime"
+            runtime_cap_shortfall_hours = stage_hours - runtime_cap_hours
         estimated_hours += stage_hours
         worst_case_hours += max_hours_per_stage * stage_multiplier
         stage_estimates.append(
@@ -898,6 +931,10 @@ def estimate_training_cost(
                 "estimated_billable_hours": round(stage_hours, 4),
                 "estimated_usd": round(stage_hours * hourly_rate, 4),
                 "budget_class": stage.budget_class,
+                "prior_duration_hours": prior_duration_hours,
+                "cost_basis": cost_basis,
+                "runtime_risk": runtime_risk,
+                "runtime_cap_shortfall_hours": round(runtime_cap_shortfall_hours, 4),
             }
         )
     return {
@@ -960,6 +997,14 @@ def validate_submit_guardrails(args: argparse.Namespace, summary: dict) -> None:
     estimate = (summary.get("cost_estimate") or {}).get("estimated_usd")
     if estimate is not None and max_estimated_usd > 0 and float(estimate) > max_estimated_usd:
         errors.append(f"estimated cost ${float(estimate):.2f} exceeds --max-estimated-usd ${max_estimated_usd:.2f}")
+    for stage_estimate in (summary.get("cost_estimate") or {}).get("stage_estimates") or []:
+        runtime_risk = str(stage_estimate.get("runtime_risk") or "").strip()
+        if runtime_risk:
+            stage_name = str(stage_estimate.get("stage_name") or stage_estimate.get("tile_id") or "unknown")
+            errors.append(
+                f"{stage_name} has runtime risk {runtime_risk}; increase --training-max-runtime-seconds "
+                "or reduce the stage budget before submit"
+            )
     checkpoints_requested = bool(
         getattr(args, "enable_checkpoints", False) or getattr(args, "enable_spot", False)
     )
@@ -1080,6 +1125,7 @@ class BenchmarkStage:
     source_artifact_uri: str | None = None
     checkpoint_uri: str | None = None
     spot_enabled: bool = False
+    prior_duration_hours: float | None = None
     quality_gate_status: str | None = None
     cache_status: str | None = None
     cache_rejection_reasons: list[str] | None = None
@@ -1409,6 +1455,7 @@ def build_benchmark_stages(
                     source_artifact_uri=str(cache_hit.get("artifact_s3_uri")),
                     checkpoint_uri=None,
                     spot_enabled=False,
+                    prior_duration_hours=tile_budget.prior_duration_hours if tile_budget_mode == "adaptive" else None,
                     quality_gate_status=str(cache_hit.get("quality_gate_status") or "passed"),
                     cache_status="hit",
                     cache_rejection_reasons=[],
@@ -1442,6 +1489,7 @@ def build_benchmark_stages(
                 source_artifact_uri=tile_budget.source_artifact_uri,
                 checkpoint_uri=tile_budget.checkpoint_uri,
                 spot_enabled=tile_budget.spot_enabled,
+                prior_duration_hours=tile_budget.prior_duration_hours if tile_budget_mode == "adaptive" else None,
                 quality_gate_status=tile_budget.quality_gate_status if tile_budget_mode == "adaptive" else None,
                 cache_status="miss" if reuse_tile_cache else None,
                 cache_rejection_reasons=cache_rejection_reasons if reuse_tile_cache else None,

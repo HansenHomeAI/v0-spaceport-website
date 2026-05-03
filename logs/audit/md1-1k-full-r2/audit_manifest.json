@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "f393ac54a434b794fa141336c51095e0f077fb2f plus local exact-head gate/status update pending next meaningful commit",
-  "current_exact_head_gate_status": "exact-head f393ac54a434b794fa141336c51095e0f077fb2f has green CDK Deploy 25285833807. No Cloudflare Pages run appeared for this non-web/status-only push.",
-  "current_live_compute_status": "2026-05-03T17:34Z: no SageMaker training jobs are InProgress. One unrelated Meadow COLMAP processing job r5l80c468adj-1777826606 is InProgress on ml.g4dn.xlarge, reading the Meadow archive and writing manual-validations/r5l80c468adj-1777826606/colmap.",
-  "current_rung": "R4_cost_reduction_canary_hardbudget_dryrun_ready",
+  "current_branch_head": "8b4fcf164124659f59314c8a788f609a1fd7c480 plus local runtime-risk guardrail/dry-run update pending commit",
+  "current_exact_head_gate_status": "exact-head 8b4fcf164124659f59314c8a788f609a1fd7c480 has green CDK Deploy 25286950846. No Cloudflare Pages run appeared for this non-web/cost-control push.",
+  "current_live_compute_status": "No SageMaker training or processing jobs are InProgress as of 2026-05-03T19:01Z.",
+  "current_rung": "R4_cost_reduction_tile13_hard_realistic_dryrun_ready",
   "exact_head_gate_status": "Exact-head 5d209189934eeec5e2788acceca4e5f9d94769bf has green CDK Deploy 25181111382 and green Cloudflare Pages 25181111351. Local follow-up changes pass py_compile, bash -n, tests.unit.test_sogs_supersplat_bundle, md1 production Playwright smoke, pipeline-viewer MD1 LOD smoke, npm run build, and npm run cf:build; next is commit/push and exact-head workflow monitoring.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -7707,5 +7707,93 @@
       "diff_check": "git diff --check -> OK"
     },
     "decision": "Proceed only to a bounded R4 canary retry after commit/push/exact-head gate; do not launch full 14-tile training from the failed adaptive canary budget."
+  },
+  "gates_and_r4_hardbudget_dryrun_20260503T182239Z": "Exact-head 8b4fcf164124659f59314c8a788f609a1fd7c480 is gated green on CDK Deploy 25286950846; no Pages run appeared for this non-web/cost-control push. No SageMaker training jobs are InProgress, and unrelated Meadow processing r5l80c468adj-1777826606 remains InProgress.",
+  "md1_r4_hardbudget_runtime_risk_block_20260503T190133Z": {
+    "timestamp_utc": "2026-05-03T19:01:33Z",
+    "status": "blocked_before_spend",
+    "code_change": "cost estimator now uses historical prior duration for hard/full-cover leaf tiles and submit guardrails reject runtime_risk stage estimates",
+    "dryrun_summary_json": "logs/md1-cost-reduction-r4-canary-hardbudget-runtime-risk-dryrun-20260503.json",
+    "submitted_jobs": [],
+    "selected_tile_ids": [
+      "tile_00",
+      "tile_02",
+      "tile_11",
+      "tile_13"
+    ],
+    "cache_hits": [
+      "tile_02"
+    ],
+    "runtime_risk_stage_estimates": {
+      "tile_00": {
+        "budget_class": "hard",
+        "max_iterations": 12000,
+        "max_selected_images": 188,
+        "prior_duration_hours": 2.06,
+        "estimated_usd": 3.1209,
+        "runtime_risk": "prior_duration_exceeds_max_runtime",
+        "runtime_cap_shortfall_hours": 1.06
+      },
+      "tile_13": {
+        "budget_class": "hard",
+        "max_iterations": 12000,
+        "max_selected_images": 188,
+        "prior_duration_hours": 4.73,
+        "estimated_usd": 7.166,
+        "runtime_risk": "prior_duration_exceeds_max_runtime",
+        "runtime_cap_shortfall_hours": 3.73
+      }
+    },
+    "tiny_stage_estimates": {
+      "tile_11": {
+        "budget_class": "tiny",
+        "max_iterations": 3000,
+        "max_selected_images": 96,
+        "estimated_usd": 0.3787
+      }
+    },
+    "estimated_usd": 10.6656,
+    "worst_case_usd": 4.545,
+    "max_estimated_usd": 5.0,
+    "verification": {
+      "red_test": "test_validate_submit_guardrails_blocks_runtime_risk_stage_estimates failed before implementation with RuntimeError not raised",
+      "unit_tests": "python3 -m unittest tests.unit.test_tiled_3dgs_benchmark tests.unit.test_tiled_nerfstudio_dispatcher tests.unit.test_geometry_first_review tests.unit.test_3dgs_training_monitor -> 101 tests OK",
+      "py_compile": "python3 -m py_compile scripts/3dgs/run_tiled_3dgs_benchmark.py scripts/3dgs/monitor_3dgs_training_cost.py infrastructure/containers/3dgs/tile_pipeline.py infrastructure/containers/3dgs/export_splatfacto_w_assets.py -> OK"
+    },
+    "live_compute": {
+      "training_jobs_in_progress": [],
+      "processing_jobs_in_progress": []
+    },
+    "decision": "Do not launch the earlier $5 hardbudget canary retry; next proof must either use a realistic one-tile runtime/cost cap or reduce tile_13 budget with an explicit V18 quality comparison."
+  },
+  "md1_r4_tile13_hard_realistic_dryrun_20260503T190328Z": {
+    "timestamp_utc": "2026-05-03T19:03:28Z",
+    "status": "no_spend_dryrun_ready",
+    "dryrun_summary_json": "logs/md1-cost-reduction-r4-tile13-hard-realistic-dryrun-20260503.json",
+    "submitted_jobs": [],
+    "selected_tile_ids": [
+      "tile_13"
+    ],
+    "planned_train_tiles": {
+      "tile_13": {
+        "budget_class": "hard",
+        "max_iterations": 12000,
+        "max_selected_images": 188,
+        "training_max_runtime_seconds": 18000,
+        "checkpoint_save_steps": 500,
+        "input_hash": "c52bd6f71bb44caf537c31cf7cc414542e414994656be3d2f9c8c76850ae6905"
+      }
+    },
+    "cache_misses": {
+      "tile_13": [
+        "input_hash_mismatch"
+      ]
+    },
+    "prior_duration_hours": 4.73,
+    "runtime_risk": null,
+    "estimated_usd": 7.575,
+    "worst_case_usd": 7.575,
+    "max_estimated_usd": 8.0,
+    "decision": "After commit/push/exact-head gate and live AWS sanity, the next paid action should be this single tile_13 hard proof, not the four-tile canary and not a full 14-tile run."
   }
 }
