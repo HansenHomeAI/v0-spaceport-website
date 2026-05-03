@@ -895,6 +895,71 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(stage_estimate["runtime_risk"], "prior_duration_exceeds_max_runtime")
         self.assertAlmostEqual(stage_estimate["runtime_cap_shortfall_hours"], 3.73, places=3)
 
+    def test_estimate_training_cost_prefers_observed_fanout_leaf_duration(self):
+        stages = [
+            benchmark.BenchmarkStage(
+                stage_name="T0_tile_13",
+                stage_type="train",
+                training_mode="leaf_tile",
+                output_s3_uri="s3://bucket/out/tile_13",
+                tile_id="tile_13",
+                budget_class="hard",
+                environment={"MAX_ITERATIONS": "12000"},
+                prior_duration_hours=4.73,
+                prior_fanout_duration_hours=0.982,
+            )
+        ]
+
+        estimate = benchmark.estimate_training_cost(
+            stages,
+            instance_type="ml.g5.2xlarge",
+            max_runtime_seconds=18000,
+            baseline_iterations=12000,
+        )
+
+        self.assertAlmostEqual(estimate["estimated_billable_hours"], 0.982, places=3)
+        self.assertAlmostEqual(estimate["estimated_usd"], 1.488, places=3)
+        stage_estimate = estimate["stage_estimates"][0]
+        self.assertEqual(stage_estimate["cost_basis"], "observed_fanout_leaf_duration")
+        self.assertEqual(stage_estimate["runtime_risk"], None)
+        self.assertAlmostEqual(stage_estimate["prior_fanout_duration_hours"], 0.982, places=3)
+
+    def test_normalize_prior_tile_stats_keeps_observed_fanout_duration(self):
+        stats = benchmark.normalize_prior_tile_stats(
+            {
+                "tiles": [
+                    {
+                        "tile_id": "tile_13",
+                        "duration_hours": 4.73,
+                        "observed_fanout_duration_hours": 0.982,
+                        "observed_fanout_billable_time_seconds": 3535,
+                    }
+                ]
+            }
+        )
+
+        self.assertEqual(stats["tile_13"]["prior_duration_hours"], 4.73)
+        self.assertEqual(stats["tile_13"]["prior_fanout_duration_hours"], 0.982)
+        self.assertEqual(stats["tile_13"]["prior_fanout_billable_time_seconds"], 3535)
+
+    def test_adaptive_budget_can_use_budget_class_fanout_prior(self):
+        tile_entry = {
+            "tile_id": "tile_08",
+            "selected_image_count": 188,
+            "view_bucket_counts": {"near_detail": 52},
+            "prior_fanout_duration_hours_by_budget": {"standard": 0.72, "hard": 1.08},
+        }
+
+        budget = benchmark.build_tile_budget_plan(
+            tile_entry,
+            mode="adaptive",
+            tile_max_iterations=12000,
+            max_images_per_tile=128,
+        )
+
+        self.assertEqual(budget.budget_class, "hard")
+        self.assertAlmostEqual(budget.prior_fanout_duration_hours, 1.08, places=3)
+
     def test_estimate_training_cost_accounts_for_serial_tiled_pipeline_tiles(self):
         stages = [
             benchmark.BenchmarkStage(

@@ -490,6 +490,52 @@ def tile_prior_duration_hours(tile_entry: dict) -> float | None:
     return None
 
 
+def tile_prior_fanout_duration_hours(tile_entry: dict, budget_class: str | None = None) -> float | None:
+    required_budget_class = normalized_budget_class(tile_entry.get("prior_fanout_budget_class"))
+    if required_budget_class is not None and budget_class is not None and required_budget_class != budget_class:
+        return None
+    for key in (
+        "prior_fanout_duration_hours",
+        "fanout_duration_hours",
+        "observed_fanout_duration_hours",
+        "observed_leaf_duration_hours",
+    ):
+        value = tile_entry.get(key)
+        if value in (None, ""):
+            continue
+        try:
+            duration = float(value)
+        except (TypeError, ValueError):
+            continue
+        if duration > 0:
+            return duration
+    for key in (
+        "prior_fanout_billable_time_seconds",
+        "fanout_billable_time_seconds",
+        "observed_fanout_billable_time_seconds",
+        "observed_leaf_billable_time_seconds",
+    ):
+        value = tile_entry.get(key)
+        if value in (None, ""):
+            continue
+        try:
+            seconds = float(value)
+        except (TypeError, ValueError):
+            continue
+        if seconds > 0:
+            return seconds / 3600.0
+    by_budget = tile_entry.get("prior_fanout_duration_hours_by_budget") or {}
+    if budget_class and isinstance(by_budget, dict):
+        value = by_budget.get(budget_class)
+        try:
+            duration = float(value)
+        except (TypeError, ValueError):
+            duration = 0.0
+        if duration > 0:
+            return duration
+    return None
+
+
 def normalize_prior_tile_stats(payload: dict) -> dict[str, dict]:
     raw_tiles = payload.get("tiles", payload)
     if isinstance(raw_tiles, list):
@@ -518,6 +564,17 @@ def normalize_prior_tile_stats(payload: dict) -> dict[str, dict]:
             ("duration_hours", "prior_duration_hours"),
             ("wall_time_hours", "prior_duration_hours"),
             ("billable_time_seconds", "prior_billable_time_seconds"),
+            ("fanout_duration_hours", "prior_fanout_duration_hours"),
+            ("observed_fanout_duration_hours", "prior_fanout_duration_hours"),
+            ("observed_leaf_duration_hours", "prior_fanout_duration_hours"),
+            ("fanout_billable_time_seconds", "prior_fanout_billable_time_seconds"),
+            ("observed_fanout_billable_time_seconds", "prior_fanout_billable_time_seconds"),
+            ("observed_leaf_billable_time_seconds", "prior_fanout_billable_time_seconds"),
+            ("fanout_budget_class", "prior_fanout_budget_class"),
+            ("observed_fanout_budget_class", "prior_fanout_budget_class"),
+            ("fanout_duration_hours_by_budget", "prior_fanout_duration_hours_by_budget"),
+            ("observed_fanout_duration_hours_by_budget", "prior_fanout_duration_hours_by_budget"),
+            ("budget_class_fanout_duration_hours", "prior_fanout_duration_hours_by_budget"),
             ("force_budget_class", "prior_force_budget_class"),
             ("forced_budget_class", "prior_force_budget_class"),
             ("min_budget_class", "prior_min_budget_class"),
@@ -627,6 +684,7 @@ class TileBudgetPlan:
     checkpoint_uri: str | None = None
     source_artifact_uri: str | None = None
     prior_duration_hours: float | None = None
+    prior_fanout_duration_hours: float | None = None
     quality_gate_status: str = "planned"
 
     def to_dict(self) -> dict:
@@ -652,6 +710,21 @@ def build_tile_input_hash(
         "prior_selected_image_count",
         "prior_duration_hours",
         "prior_billable_time_seconds",
+        "prior_fanout_duration_hours",
+        "prior_fanout_billable_time_seconds",
+        "prior_fanout_budget_class",
+        "prior_fanout_duration_hours_by_budget",
+        "fanout_duration_hours",
+        "observed_fanout_duration_hours",
+        "observed_leaf_duration_hours",
+        "fanout_billable_time_seconds",
+        "observed_fanout_billable_time_seconds",
+        "observed_leaf_billable_time_seconds",
+        "fanout_budget_class",
+        "observed_fanout_budget_class",
+        "fanout_duration_hours_by_budget",
+        "observed_fanout_duration_hours_by_budget",
+        "budget_class_fanout_duration_hours",
         "prior_force_budget_class",
         "prior_min_budget_class",
         "prior_max_iterations",
@@ -845,6 +918,8 @@ def build_tile_budget_plan(
             max_selected_images = forced_max_images
             reasons.append("prior_max_selected_images")
 
+    prior_fanout_duration_hours = tile_prior_fanout_duration_hours(tile_entry, budget_class=budget_class)
+
     input_hash = build_tile_input_hash(
         tile_entry=tile_entry,
         budget_class=budget_class,
@@ -868,6 +943,7 @@ def build_tile_budget_plan(
         checkpoint_uri=checkpoint_uri,
         source_artifact_uri=source_artifact_uri,
         prior_duration_hours=prior_duration_hours,
+        prior_fanout_duration_hours=prior_fanout_duration_hours,
     )
 
 
@@ -907,7 +983,15 @@ def estimate_training_cost(
         runtime_risk = None
         runtime_cap_shortfall_hours = 0.0
         prior_duration_hours = stage.prior_duration_hours
+        prior_fanout_duration_hours = stage.prior_fanout_duration_hours
         if (
+            prior_fanout_duration_hours is not None
+            and prior_fanout_duration_hours > 0
+            and stage.training_mode == "leaf_tile"
+        ):
+            stage_hours = prior_fanout_duration_hours
+            cost_basis = "observed_fanout_leaf_duration"
+        elif (
             prior_duration_hours is not None
             and prior_duration_hours > 0
             and stage.budget_class == "hard"
@@ -932,6 +1016,7 @@ def estimate_training_cost(
                 "estimated_usd": round(stage_hours * hourly_rate, 4),
                 "budget_class": stage.budget_class,
                 "prior_duration_hours": prior_duration_hours,
+                "prior_fanout_duration_hours": prior_fanout_duration_hours,
                 "cost_basis": cost_basis,
                 "runtime_risk": runtime_risk,
                 "runtime_cap_shortfall_hours": round(runtime_cap_shortfall_hours, 4),
@@ -1126,6 +1211,7 @@ class BenchmarkStage:
     checkpoint_uri: str | None = None
     spot_enabled: bool = False
     prior_duration_hours: float | None = None
+    prior_fanout_duration_hours: float | None = None
     quality_gate_status: str | None = None
     cache_status: str | None = None
     cache_rejection_reasons: list[str] | None = None
@@ -1456,6 +1542,7 @@ def build_benchmark_stages(
                     checkpoint_uri=None,
                     spot_enabled=False,
                     prior_duration_hours=tile_budget.prior_duration_hours if tile_budget_mode == "adaptive" else None,
+                    prior_fanout_duration_hours=tile_budget.prior_fanout_duration_hours if tile_budget_mode == "adaptive" else None,
                     quality_gate_status=str(cache_hit.get("quality_gate_status") or "passed"),
                     cache_status="hit",
                     cache_rejection_reasons=[],
@@ -1490,6 +1577,7 @@ def build_benchmark_stages(
                 checkpoint_uri=tile_budget.checkpoint_uri,
                 spot_enabled=tile_budget.spot_enabled,
                 prior_duration_hours=tile_budget.prior_duration_hours if tile_budget_mode == "adaptive" else None,
+                prior_fanout_duration_hours=tile_budget.prior_fanout_duration_hours if tile_budget_mode == "adaptive" else None,
                 quality_gate_status=tile_budget.quality_gate_status if tile_budget_mode == "adaptive" else None,
                 cache_status="miss" if reuse_tile_cache else None,
                 cache_rejection_reasons=cache_rejection_reasons if reuse_tile_cache else None,
