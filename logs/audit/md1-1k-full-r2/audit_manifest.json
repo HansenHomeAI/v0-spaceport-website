@@ -589,17 +589,15 @@
       ]
     }
   ],
-  "current_branch_head": "a7c4c9368bec6f21371757df94f30af0c6eb0067 plus local V18-default adaptive tile guard pending commit/push",
+  "current_branch_head": "146bf36e77aa9c4daacb5436c2478001d3a49497",
   "current_exact_head_gate_status": "exact-head a7c4c9368bec6f21371757df94f30af0c6eb0067 has green CDK Deploy 25276755095; no Cloudflare Pages run appeared for this non-web cost-control push.",
   "current_live_compute_status": {
-    "status": "idle_for_md1",
-    "checked_at": "2026-05-03T11:07:25Z",
-    "training_jobs_in_progress": 0,
-    "processing_jobs_in_progress": 1,
-    "processing_jobs": [
-      "r5l80c5-1777804817"
+    "checked_at": "2026-05-03T12:57:56Z",
+    "training_jobs_in_progress": [],
+    "processing_jobs_in_progress": [
+      "r5l80c5fix-1777810935"
     ],
-    "processing_job_context": "unrelated Meadow COLMAP processing job; not launched by MD1 3DGS cost-reduction loop"
+    "note": "processing job is unrelated Meadow COLMAP work, not MD1 cost-reduction training"
   },
   "current_rung": "R2_cost_reduction_checkpoint_resume_split_ready",
   "exact_head_gate_status": "Exact-head 5d209189934eeec5e2788acceca4e5f9d94769bf has green CDK Deploy 25181111382 and green Cloudflare Pages 25181111351. Local follow-up changes pass py_compile, bash -n, tests.unit.test_sogs_supersplat_bundle, md1 production Playwright smoke, pipeline-viewer MD1 LOD smoke, npm run build, and npm run cf:build; next is commit/push and exact-head workflow monitoring.",
@@ -702,18 +700,12 @@
     "view_bucket_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiled_pipeline/inputs/scaffold/3dgs_view_buckets.json"
   },
   "latest_exact_head_gate": {
-    "head": "07c50ac09a7ac88ea218c5784f045154a102917e",
-    "cdk_run_id": 25107437774,
-    "cdk_conclusion": "success",
-    "pages_run_id": 25107446761,
-    "pages_conclusion": "success",
-    "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
-    "pages_hash_url": "https://20660d91.v0-spaceport-website-preview2.pages.dev",
-    "health_checks": {
-      "alias": "OK",
-      "hash": "OK"
-    },
-    "verified_at": "2026-04-29T12:02:18Z"
+    "head": "146bf36e77aa9c4daacb5436c2478001d3a49497",
+    "cdk_deploy_run_id": 25278634739,
+    "ml_container_build_run_id": 25278634747,
+    "cloudflare_pages_run_id": null,
+    "status": "green",
+    "note": "No Cloudflare Pages run appeared for this non-web/container-only push."
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-sky-v18-promotion/review_comparison.json",
   "latest_review_status": "V18 remains the promoted quality bar. R2 checkpoint persistence now passes for tiny tile_11: md1-r2ckpt3-tile11-1777678211-tile-11 completed, wrote model.tar.gz, and uploaded compact root plus resume_checkpoint manifests pointing at step-000002999.ckpt. Local launcher/container changes now separate TRAINING_CHECKPOINT_RESUME_S3_URI from TRAINING_CHECKPOINT_S3_URI, so the next restart proof can read the prior compact checkpoint and write fresh checkpoints to a new prefix. No-spend restart dry-run logs/md1-cost-reduction-r2-checkpoint-restart-proof-dryrun-20260503.json submitted zero jobs, estimated $0.3787 / worst-case $1.515 under the $2 cap, and uses the prior resume checkpoint URI explicitly.",
@@ -733,7 +725,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Commit/push the validated splat-transform LOD implementation, monitor exact-head CDK Deploy and Cloudflare Pages workflows, verify preview /health.txt plus /md1-viewer and /pipeline-viewer, then open a development PR after preview gates are green.",
+  "next_unblocked_step": "Commit/push the R3 tile_02 export-fix pass evidence, gate exact head, then run only the next representative low-spend R3 rung before any full 14-tile training.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -3320,7 +3312,7 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-04-29T12:02:18Z",
+  "updated": "2026-05-03T12:57:56Z",
   "version": "1.0.0",
   "r5_14tile_2k_preflight": {
     "summary_path": "logs/audit/md1-1k-full-r2/r5_14tile_2k_preflight_summary_20260428215230.json",
@@ -5755,7 +5747,7 @@
     "conclusion": "V15 context padding produced identical p24 metrics to V12/V13 and remains blocked only on horizon_psnr_regression; no promotion run."
   },
   "r5_teacher_context_v12_ctx10_v15_submit_20260429071645Z": "Exact-head 0392ef97dfe5363579f2d88f90fd5e70fd03ed82 is gated green on CDK Deploy 25095508893 and manually-triggered Pages 25095528013. Submitted V15 no-training/no-promotion Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 to add 10 percent preserve-context padding to V12, including historical tile_01, with output s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-ctx10-v15-20260429071522/output/artifact/model.tar.gz. Latest status is InProgress with no ProcessingStartTime, no FailureReason/no ExitMessage, zero output objects, no training jobs InProgress, and only this processing job InProgress.",
-  "last_updated": "2026-05-03T11:07:25Z",
+  "last_updated": "2026-05-03T12:57:56Z",
   "r5_teacher_context_v12_ctx10_v15_smoke_blocked_20260429080934Z": "Exact-head d14f4a4b56aa9c3a215e1f4845450c77188a0687 is gated green on CDK Deploy 25095992000 and manually-triggered Pages 25095995605; alias/hash /health.txt passed, hash https://c896c947.v0-spaceport-website-preview2.pages.dev. V15 Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 completed, model.tar.gz is present at 1203320806 bytes, streaming preflight passed, and explicit p24 smoke md1-r1-r5-teacher-context-v12-ctx10-v15-smoke-p24-1777448068-qu completed with camera coverage OK but blocked only on horizon_psnr_regression. Metrics matched V12 exactly, so context padding did not close the PSNR miss. No SageMaker jobs are InProgress and no promotion was run.",
   "r5_teacher_context_v12_tile01overlap_v16": {
     "processing_job_name": "md1-r5-teacherctx-v12-t01ov-v16-1777450963",
@@ -7294,5 +7286,52 @@
     }
   },
   "latest_training_cost_reduction_status": "R2 checkpoint restart passed; Spot capacity was bounded and stopped before spend; R3 tile_02 on-demand now has two low-spend lessons. First wrong-defaults run was stopped at 1119 billable seconds (~$0.471). Corrected V18-default run trained 8000 iterations with 128 images and checkpointed step-000007999, but export failed after 2511 billable seconds (~$1.057) because auto-selected camera_idx exceeded the capped run appearance embedding table, producing a CUDA indexSelectSmallIndex assert and only a log-only model.tar.gz. Exporter clamp guard is implemented and locally verified; next action is commit/push/gate, rebuild the 3DGS image, then rerun only the bounded tile_02 smoke on the new digest. Full 14-tile training remains blocked until R3/R4 representative quality/cost gates pass.",
-  "latest_live_compute_status": "2026-05-03T11:58:29Z: no SageMaker training jobs are InProgress. The failed bounded R3 tile_02 export-smoke md1-r3od-tile02v18-1777806909-tile-02 is terminal Failed with 2511 billable seconds. One unrelated Meadow COLMAP processing job r5l80c8fix-1777808608 is InProgress."
+  "latest_live_compute_status": "2026-05-03T11:58:29Z: no SageMaker training jobs are InProgress. The failed bounded R3 tile_02 export-smoke md1-r3od-tile02v18-1777806909-tile-02 is terminal Failed with 2511 billable seconds. One unrelated Meadow COLMAP processing job r5l80c8fix-1777808608 is InProgress.",
+  "md1_r3_tile02_exportfix_smoke_pass_20260503125756Z": {
+    "job_name": "md1-r3od-tile02expfix-1777810456-tile-02",
+    "status": "Completed",
+    "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:2c08af140f3ebc510ff57d162e8ebedf7082833ac58d05249b619bd5b553d6f8",
+    "billable_seconds": 2500,
+    "estimated_usd": 1.0521,
+    "instance_type": "ml.g5.2xlarge",
+    "max_estimated_usd": 2.0,
+    "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r3-ondemand-tile02-exportfix-smoke-20260503/tiles/tile_02/md1-r3od-tile02expfix-1777810456-tile-02/output/model.tar.gz",
+    "artifact_size_bytes": 42089683,
+    "artifact_files": [
+      "floater_pruning_summary.json",
+      "training_metadata.json",
+      "export_manifest.json",
+      "ns_export.log",
+      "background_manifest.json",
+      "training_selection.json",
+      "background_skybox.webp",
+      "splat.ply",
+      "ns_train.log"
+    ],
+    "ply_vertices": 472672,
+    "ply_size_mb": 46.88121795654297,
+    "remaining_gaussians": 472672,
+    "removed_gaussians": 42,
+    "selected_image_count": 128,
+    "max_iterations": 8000,
+    "tile_budget_class": "standard",
+    "v18_parity_defaults": {
+      "sh_degree": 1,
+      "bg_sh_degree": 1,
+      "stop_split_at": 3500,
+      "max_gauss_ratio": 3.0,
+      "global_scaffold_init_max_points": 300000
+    },
+    "appearance_camera_guard": {
+      "requested_camera_idx": 125,
+      "appearance_camera_idx": 115,
+      "appearance_num_embeddings": 116,
+      "appearance_camera_clamped": true
+    },
+    "checkpoint_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r3-ondemand-tile02-exportfix-smoke-20260503/checkpoints/md1-r3od-tile02expfix-1777810456-tile-02",
+    "checkpoint_latest": "nerfstudio_models/step-000007999.ckpt",
+    "monitor_json": "logs/md1-cost-reduction-r3-ondemand-tile02-exportfix-smoke-monitor-latest-20260503.json",
+    "submit_json": "logs/md1-cost-reduction-r3-ondemand-tile02-exportfix-smoke-submit-20260503.json",
+    "decision": "passes bounded export-fix smoke; not sufficient for full production candidate until representative tile quality gates pass"
+  }
 }

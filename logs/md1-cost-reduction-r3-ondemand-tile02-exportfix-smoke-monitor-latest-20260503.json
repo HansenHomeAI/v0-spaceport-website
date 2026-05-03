@@ -1,0 +1,28 @@
+{
+  "checks": [
+    {
+      "status": "ok",
+      "training_job_name": "md1-r3od-tile02expfix-1777810456-tile-02",
+      "training_status": "Completed",
+      "secondary_status": "Completed",
+      "elapsed_seconds": 2500,
+      "latest_log_age_seconds": null,
+      "gpu_average_percent": null,
+      "s3_output_object_count": 0,
+      "startup_wait_seconds": 2719,
+      "training_started": true,
+      "secondary_status_message": "Training job completed",
+      "spend": {
+        "instance_type": "ml.g5.2xlarge",
+        "hourly_rate_usd": 1.515,
+        "billable_seconds": 2500,
+        "billable_hours": 0.6944,
+        "estimated_usd": 1.0521
+      },
+      "block_reasons": [],
+      "warnings": [],
+      "checked_at_epoch": 1777813181,
+      "poll_index": 0
+    }
+  ]
+}
