@@ -51,6 +51,7 @@ MATCH_PROFILES = {
 }
 FEATURE_OPTION_FAMILIES = ("FeatureExtraction", "SiftExtraction")
 MATCHING_OPTION_FAMILIES = ("FeatureMatching", "SiftMatching")
+IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png"}
 
 
 @dataclass
@@ -854,6 +855,8 @@ class ColmapPipeline:
         self.capture_ordered_names: List[str] = []
         self.selected_input_image_names: Set[str] = set()
         self.selected_input_images_requested = False
+        self.image_name_aliases: Dict[str, str] = {}
+        self.original_image_name_by_alias: Dict[str, str] = {}
         self.matchers_run: List[str] = []
         self.matcher_pair_deltas: Dict[str, int] = {}
         self.verified_pairs_total = 0
@@ -1078,43 +1081,111 @@ class ColmapPipeline:
             if os.environ.get("COLMAP_KEEP_WORKDIR", "0") != "1":
                 shutil.rmtree(self.work_dir, ignore_errors=True)
 
+    def sanitize_colmap_image_name(self, file_name: str) -> str:
+        return "".join("_" if char.isspace() else char for char in Path(file_name).name)
+
+    def allocate_extracted_image_name(
+        self,
+        file_name: str,
+        *,
+        used_names: Set[str],
+        reserved_exact_names: Set[str],
+    ) -> str:
+        original_name = Path(file_name).name
+        sanitized_name = self.sanitize_colmap_image_name(original_name)
+        candidate_name = sanitized_name
+        stem = Path(sanitized_name).stem
+        suffix = Path(sanitized_name).suffix
+        counter = 1
+        while candidate_name in used_names or (
+            candidate_name != original_name and candidate_name in reserved_exact_names
+        ):
+            candidate_name = f"{stem}_{counter}{suffix}"
+            counter += 1
+        used_names.add(candidate_name)
+        if candidate_name != original_name:
+            self.image_name_aliases[original_name] = candidate_name
+            self.original_image_name_by_alias[candidate_name] = original_name
+        return candidate_name
+
+    def selected_input_key_for_image(self, file_name: str) -> str | None:
+        if not self.selected_input_image_names:
+            return file_name
+        if file_name in self.selected_input_image_names:
+            return file_name
+        sanitized_name = self.sanitize_colmap_image_name(file_name)
+        if sanitized_name in self.selected_input_image_names:
+            return sanitized_name
+        return None
+
     def extract_images(self) -> None:
         started = time.time()
         self.selected_input_image_names = self.load_requested_input_subset_names()
         self.selected_input_images_requested = bool(self.selected_input_image_names)
         zip_files = sorted(self.input_dir.glob("*.zip"))
         image_count = 0
+        used_output_names: Set[str] = set()
+        extracted_requested_names: Set[str] = set()
+        self.image_name_aliases = {}
+        self.original_image_name_by_alias = {}
         if zip_files:
             zip_path = zip_files[0]
             logger.info("Extracting archive %s", zip_path)
             with zipfile.ZipFile(zip_path, "r") as archive:
-                for member in archive.namelist():
-                    if not member.lower().endswith((".jpg", ".jpeg", ".png")):
-                        continue
+                image_members = [
+                    member
+                    for member in archive.namelist()
+                    if Path(member).suffix.lower() in IMAGE_EXTENSIONS
+                ]
+                reserved_exact_names = {
+                    Path(member).name
+                    for member in image_members
+                    if self.sanitize_colmap_image_name(Path(member).name) == Path(member).name
+                }
+                for member in image_members:
                     file_name = Path(member).name
-                    if self.selected_input_image_names and file_name not in self.selected_input_image_names:
+                    selected_key = self.selected_input_key_for_image(file_name)
+                    if self.selected_input_image_names and selected_key is None:
                         continue
-                    target_path = self.images_dir / file_name
+                    output_name = self.allocate_extracted_image_name(
+                        file_name,
+                        used_names=used_output_names,
+                        reserved_exact_names=reserved_exact_names,
+                    )
+                    target_path = self.images_dir / output_name
                     with archive.open(member) as source, open(target_path, "wb") as target:
                         shutil.copyfileobj(source, target)
+                    if selected_key is not None:
+                        extracted_requested_names.add(selected_key)
                     image_count += 1
         else:
-            for image_path in self.input_dir.rglob("*"):
-                if image_path.suffix.lower() not in {".jpg", ".jpeg", ".png"}:
+            image_paths = sorted(
+                path
+                for path in self.input_dir.rglob("*")
+                if path.is_file() and path.suffix.lower() in IMAGE_EXTENSIONS
+            )
+            reserved_exact_names = {
+                image_path.name
+                for image_path in image_paths
+                if self.sanitize_colmap_image_name(image_path.name) == image_path.name
+            }
+            for image_path in image_paths:
+                selected_key = self.selected_input_key_for_image(image_path.name)
+                if self.selected_input_image_names and selected_key is None:
                     continue
-                if self.selected_input_image_names and image_path.name not in self.selected_input_image_names:
-                    continue
-                shutil.copy2(image_path, self.images_dir / image_path.name)
+                output_name = self.allocate_extracted_image_name(
+                    image_path.name,
+                    used_names=used_output_names,
+                    reserved_exact_names=reserved_exact_names,
+                )
+                shutil.copy2(image_path, self.images_dir / output_name)
+                if selected_key is not None:
+                    extracted_requested_names.add(selected_key)
                 image_count += 1
         if image_count == 0:
             raise RuntimeError("No images were found in the SfM input")
         if self.selected_input_image_names and image_count != len(self.selected_input_image_names):
-            extracted_names = {
-                path.name
-                for path in self.images_dir.iterdir()
-                if path.is_file() and path.suffix.lower() in {".jpg", ".jpeg", ".png"}
-            }
-            missing_names = sorted(self.selected_input_image_names - extracted_names)
+            missing_names = sorted(self.selected_input_image_names - extracted_requested_names)
             raise RuntimeError(
                 "Requested subset images were missing from the SfM input: "
                 + ", ".join(missing_names[:10])
@@ -1123,6 +1194,11 @@ class ColmapPipeline:
         self.dataset_image_count = image_count
         self.timings["extract_images_seconds"] = round(time.time() - started, 2)
         logger.info("Extracted %s images", image_count)
+        if self.image_name_aliases:
+            logger.info(
+                "Sanitized %s image filenames containing COLMAP pair-list whitespace",
+                len(self.image_name_aliases),
+            )
 
     def load_requested_input_subset_names(self) -> Set[str]:
         if not self.input_subset_name:
@@ -4902,6 +4978,8 @@ class ColmapPipeline:
             "chunk_overlap_image_count": self.chunk_overlap_image_count,
             "chunk_group_count": self.chunk_group_count,
             "chunk_segment_count": self.chunk_segment_count,
+            "renamed_image_count": len(self.image_name_aliases),
+            "image_name_aliases": self.image_name_aliases,
             "image_roles": self.chunk_role_by_image,
             "probe_subsets": self.probe_subsets,
             "probe_subset_details": self.probe_subset_details,
@@ -7981,6 +8059,8 @@ class ColmapPipeline:
             "processing_time_seconds": round(time.time() - self.start_time, 2),
             "timings": self.timings,
             "dataset_image_count": self.dataset_image_count,
+            "renamed_image_count": len(self.image_name_aliases),
+            "image_name_aliases": self.image_name_aliases,
             "chunk_execution_image_count": self.chunk_execution_image_count or self.dataset_image_count,
             "cameras_registered": best_model.cameras_registered if best_model is not None else 0,
             "images_registered": best_model.images_registered if best_model is not None else 0,

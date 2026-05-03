@@ -45,6 +45,27 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertFalse(pipeline.enable_spatial_chunking)
             self.assertEqual(pipeline.chunk_planner, "legacy_spatial_heading")
 
+    def test_extract_images_sanitizes_whitespace_names_for_pair_lists(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            input_dir = root / "input"
+            input_dir.mkdir()
+            with zipfile.ZipFile(input_dir / "images.zip", "w") as archive:
+                archive.writestr("nested/DJI_0606 2.JPG", b"duplicate")
+                archive.writestr("nested/DJI_0606_2.JPG", b"reserved")
+
+            pipeline = run_colmap_sfm.ColmapPipeline(input_dir, root / "output")
+
+            pipeline.extract_images()
+
+            self.assertTrue((pipeline.images_dir / "DJI_0606_2_1.JPG").exists())
+            self.assertTrue((pipeline.images_dir / "DJI_0606_2.JPG").exists())
+            self.assertFalse((pipeline.images_dir / "DJI_0606 2.JPG").exists())
+            self.assertEqual(
+                pipeline.image_name_aliases,
+                {"DJI_0606 2.JPG": "DJI_0606_2_1.JPG"},
+            )
+
     def test_planner_static_report_uses_required_schema(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
