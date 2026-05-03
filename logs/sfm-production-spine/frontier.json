@@ -1,18 +1,17 @@
 {
   "active_jobs": [
     {
-      "chunk_target_hard_overlap": "80/140/40",
-      "cloudwatch_stream": "r5l80c135adj-1777816705/algo-1-1777816743",
+      "cloudwatch_stream": null,
       "container_digest": "sha256:7fcac24557f4bd4d034953974e61c536a73fb3d223e6ff17ceef4b0122e06480",
       "fixed_head": "142df9148276c34ad570cf2a7d206933e84bb903",
       "image_tag": "agent73948216sfmproductionspine",
       "input_s3_uri": "s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip",
-      "job_name": "r5l80c135adj-1777816705",
-      "only_chunk_indexes": "1,3,5",
-      "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/r5l80c135adj-1777816705/colmap",
+      "job_name": "r5l80c468adj-1777826606",
+      "only_chunk_indexes": "4,6,8",
+      "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/r5l80c468adj-1777826606/colmap",
       "parent_merge_mode": "legacy_rerun",
-      "processing_start_time": "2026-05-03T13:59:03Z",
-      "status": "InProgress; ProcessingStartTime=2026-05-03T13:59:03Z; no FailureReason; CloudWatch stream r5l80c135adj-1777816705/algo-1-1777816743; startup tail captured with archive extraction beginning at 2026-05-03T14:02:01Z; S3 output still empty before terminal upload; fixed runtime head 142df9148276c34ad570cf2a7d206933e84bb903; only_chunk_indexes=1,3,5; COLMAP_PARENT_MERGE_MODE=legacy_rerun."
+      "processing_start_time": null,
+      "status": "InProgress; submitted 2026-05-03T16:44:42Z; no ProcessingStartTime; no FailureReason; no CloudWatch stream yet; S3 output empty at submit check."
     }
   ],
   "blockers": [
@@ -21,13 +20,14 @@
     "R5 planner80 r5plan80h739-1777791228 produced usable planner artifacts (11 chunks of 140) but SageMaker marked failed because planner-only output intentionally lacks sparse/0.",
     "R5 planner80 leaves failed metadata-only before the filename fix: c10 52/140, c1 136/140, c4 101/140, c9 85/140, c6 64/140, c3 119/140, old-runtime c5 88/140, and original c8 zero-pair failure.",
     "Fixed-image c8 rerun r5l80c8fix-1777808608 passed and produced sparse/0, proving the whitespace filename sanitizer works for the zero-pair root cause.",
-    "Fixed-image c5 rerun r5l80c5fix-1777810935 improved to 115/140 but still failed missing sparse/0; expanded local adjacent retry r5l80c135adj-1777816705 is active, and final R5 sparse/0/viewer proof is still pending."
+    "Fixed-image c5 rerun r5l80c5fix-1777810935 improved to 115/140 but still failed missing sparse/0; expanded local adjacent retry r5l80c135adj-1777816705 is active, and final R5 sparse/0/viewer proof is still pending.",
+    "r5l80c135adj-1777816705 completed with sparse/0 and useful 392-image bounded output, but reducer promotion_blockers=[failed_leaf], so it is recovery evidence not final R5 promotion proof."
   ],
   "branch": "agent-73948216-sfm-production-spine",
   "current_goal": "Carry R5 huge-acreage proof forward with fixed whitespace-safe COLMAP image names and bounded adjacent leaf reruns.",
   "current_rung": "R5",
-  "head": "7a7c2f62828f06d02c1228b93aa17ae356ae6db0",
-  "last_command": "Verified r5l80c135adj-1777816705 started, captured CloudWatch startup tail, and confirmed S3 output is still empty before terminal upload.",
+  "head": "1b0f41220b1981b09c9a4660c4f788cf7f6ef827",
+  "last_command": "Recorded r5l80c135adj-1777816705 SageMaker Completed and launched r5l80c468adj-1777826606 for chunks 4,6,8.",
   "last_metrics": {
     "active_job_check": "r2leaf739c0-1777517712 and r2leaf739c1-1777517712 Completed; no local r2leaf/run_sfm_benchmark monitor processes remain",
     "branch_workflow_current": "CDK Deploy 25180377918 for 1c3dcbdb5f1ec5705e31ec12dadf0c3ce09bf39e completed success; superseded 25180116641 was cancelled after green jobs by newer push",
@@ -50,6 +50,7 @@
     "planner_fixture_connected_component_count": 1,
     "planner_fixture_dataset_image_count": 8,
     "planner_fixture_expected_output_kind": "single_merged_model",
+    "post_c5_failure_ledger_push": "commit 1b0f41220b1981b09c9a4660c4f788cf7f6ef827 pushed; CDK Deploy 25281253042 success with resolve_context, deploy_shared_auth, deploy_application all success",
     "post_c8_proof_cdk_run": "CDK Deploy 25279954614 for head 7a7c2f62828f06d02c1228b93aa17ae356ae6db0 completed success; deploy_shared_auth and deploy_application both success.",
     "post_ledger_local_validation": "run_sfm_benchmark.py --help passed; python3 -m unittest tests.unit.test_colmap_gps_priors: 101 tests OK; frontier/comparison/r2 summary JSON valid",
     "post_push_cdk_run": "CDK Deploy 25216840383 for 6f7ddcf88e387dfc3b0b70e01d5a95f5c65ae05b completed success at 2026-05-01T14:04:11Z; deploy_shared_auth and deploy_application both success",
@@ -168,7 +169,11 @@
     "r5_l160_c6_progress": "feature_extractor reached 728/1456 by 2026-05-01T23:42:48Z; output S3 empty before EndOfJob upload",
     "r5_l80_active_after_c10_failure": "r5l80c1 and r5l80c4 still InProgress with no FailureReason; r5l80c9 launched as bounded retry for old weak region 6.",
     "r5_l80_c10_terminal": "Failed terminal with AlgorithmError; metadata-only output; leaf 52/140 registered, ratio 0.3688, core 0.3714, 41348 points, 795.15 pts/image, bounded_chunk_recovery + seam_only_leaf_seed; no sparse/0.",
+    "r5_l80_c135_adjacent_progress": "feature extraction completed 1456/1456 in 56.248 minutes; chunk_01 matches_importer added 1701 verified pairs; chunk_01_mapper_initial active with 16 registered frames at 2026-05-03T15:01:26Z; SageMaker InProgress/no FailureReason; S3 output empty pre-terminal upload",
+    "r5_l80_c135_adjacent_result": "runtime success with sparse0: 392 images, 233186 filtered points, 683.62 pts/image, 7194.03s; reducer standard_sparse0_exists=true promotion_blockers=[failed_leaf]; SageMaker still InProgress/no FailureReason",
     "r5_l80_c135_adjacent_status": "InProgress; started 2026-05-03T13:59:03Z; CloudWatch stream exists; startup tail captured; S3 output empty pre-terminal upload",
+    "r5_l80_c135_adjacent_terminal": "SageMaker Completed at 2026-05-03T16:02:49Z; no FailureReason; sparse0 true; 392 images; 233186 filtered points; 683.62 pts/image; reducer blocker failed_leaf",
+    "r5_l80_c468_adjacent_launch": "Submitted r5l80c468adj-1777826606 for chunks 4,6,8; InProgress with no ProcessingStartTime/no FailureReason/no CloudWatch stream; S3 output empty at submit check",
     "r5_l80_c9_launch": "Submitted secondary chunk 9 leaf r5l80c9-1777795694 after chunk 10 failed; InProgress with no FailureReason and no ProcessingStartTime at submit check.",
     "r5_l80_primary_launch": "Submitted r5l80c1-1777791574 (--only-chunk-indexes 1), r5l80c4-1777791574 (--only-chunk-indexes 4), r5l80c10-1777791574 (--only-chunk-indexes 10); all InProgress with no FailureReason and no ProcessingStartTime at submit check.",
     "r5_l80_primary_live_status": "r5l80c1-1777791574 chunk_01_mapper_initial active; latest observed num_reg_frames=62 at 2026-05-03T08:04:45Z, followed by retriangulation/global BA at 2026-05-03T08:04:47Z with ProcessingStartTime 2026-05-03T07:00:15.210Z and no FailureReason; r5l80c4-1777791574 chunk_04_mapper_initial active; latest observed num_reg_frames=76 at 2026-05-03T08:04:39Z, followed by retriangulation/global BA at 2026-05-03T08:04:41Z with ProcessingStartTime 2026-05-03T07:00:12.894Z and no FailureReason; r5l80c10-1777791574 chunk_10_mapper_recovery active after initial pass; latest observed num_reg_frames=40 at 2026-05-03T08:04:46Z, followed by retriangulation/global BA at 2026-05-03T08:04:47Z with ProcessingStartTime 2026-05-03T07:00:12.637Z and no FailureReason",
@@ -180,6 +185,7 @@
     "r5_merger_03_progress": "chunk_model_merger_03 attempts 1 and 2 failed; attempt 3 succeeded at 2026-05-01T18:01:01Z and produced merged reconstruction/model_converter",
     "r5_merger_04_progress": "chunk_model_merger_04 succeeded on attempt 1 at 2026-05-01T18:40:09Z and produced merged reconstruction/model_converter",
     "r5_merger_05_progress": "No chunk_model_merger_05 events were present in CloudWatch as of 2026-05-01T18:56:13Z",
+    "r5_next_bounded_candidate": "chunks 4,6,8 with fixed runtime and legacy_rerun after r5l80c135adj SageMaker terminal status; selected from weak overlap for old weak source chunk 4",
     "r5_next_experiment": "Launched r5plan160739-1777674958 planner-only with target/hard/overlap 160/240/60, pair caps 28/12/14, parent seam retry cap 32, graph XY neighbors 80, bridge max 640; use resulting plan to target weak-region leaves before a full rerun",
     "r5_plan160_planner": "1456 images, gps 1.0, orientation 1.0 exif, 7 chunks [240,240,218,240,240,240,240], connected_component_count=1, estimated_leaf_jobs=7, expected single_merged_model",
     "r5_plan160_status": "InProgress/no FailureReason/no ProcessingStartTime at launch check; output S3 empty before job upload",
@@ -517,9 +523,29 @@
     "logs/sfm-production-spine/r5l80c5fix-1777810935-cloudwatch-tail-terminal.json",
     "logs/sfm-production-spine/r5_l80_c135_adjacent_submit.json",
     "s3://spaceport-ml-processing-staging/manual-validations/r5l80c135adj-1777816705/colmap",
-    "logs/sfm-production-spine/r5l80c135adj-1777816705-cloudwatch-tail-startup.json"
+    "logs/sfm-production-spine/r5l80c135adj-1777816705-cloudwatch-tail-startup.json",
+    "commit:1b0f41220b1981b09c9a4660c4f788cf7f6ef827",
+    "github-actions:25281253042:in_progress",
+    "logs/sfm-production-spine/r5l80c135adj-1777816705-cloudwatch-tail-1405.json",
+    "github-actions:25281253042:success",
+    "logs/sfm-production-spine/r5l80c135adj-1777816705-cloudwatch-tail-1418.json",
+    "logs/sfm-production-spine/r5l80c135adj-1777816705-cloudwatch-tail-1450.json",
+    "logs/sfm-production-spine/r5l80c135adj-1777816705-cloudwatch-tail-1500.json",
+    "s3://spaceport-ml-processing-staging/manual-validations/r5l80c135adj-1777816705/colmap/sparse/0/",
+    "logs/sfm-production-spine/r5l80c135adj-1777816705-sfm_metadata.json",
+    "logs/sfm-production-spine/r5l80c135adj-1777816705-leaf_metadata.json",
+    "logs/sfm-production-spine/r5l80c135adj-1777816705-reducer_metadata.json",
+    "logs/sfm-production-spine/r5l80c135adj-1777816705-planner_static_report.json",
+    "logs/sfm-production-spine/r5l80c135adj-1777816705-cloudwatch-tail-1533.json",
+    "logs/sfm-production-spine/r5l80c135adj-1777816705-cloudwatch-tail-1543.json",
+    "logs/sfm-production-spine/r5l80c135adj-1777816705-cloudwatch-tail-1551.json",
+    "logs/sfm-production-spine/r5l80c135adj-1777816705-cloudwatch-tail-1600.json",
+    "logs/sfm-production-spine/r5l80c135adj-1777816705-cloudwatch-tail-1604.json",
+    "logs/sfm-production-spine/r5l80c135adj-1777816705-cloudwatch-tail-1606.json",
+    "logs/sfm-production-spine/r5_l80_c468_adjacent_submit.json",
+    "s3://spaceport-ml-processing-staging/manual-validations/r5l80c468adj-1777826606/colmap"
   ],
-  "next_unblocked_step": "monitor r5l80c135adj-1777816705 through feature extraction, matching, mapping, terminal metadata, and sparse/0; if expanded local adjacent retry passes, use it to decide next bounded R5 merge proof; if it fails, use metadata to choose the next bounded experiment without deleting sfm-reality-check.",
+  "next_unblocked_step": "monitor r5l80c468adj-1777826606 through ProcessingStartTime, CloudWatch stream, terminal metadata, and sparse/0; if it passes, proceed to old weak source chunk 6 candidate chunks 10,9,8 or a bounded merge proof depending on reducer evidence; if it fails, use its metadata to choose the next bounded experiment without deleting sfm-reality-check.",
   "promotion_status": "blocked",
-  "updated": "2026-05-03T14:03:46Z"
+  "updated": "2026-05-03T16:44:42Z"
 }

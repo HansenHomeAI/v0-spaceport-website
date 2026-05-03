@@ -1,0 +1,81 @@
+[
+  {
+    "chunk_index": 1,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 140,
+    "registered_count": 140,
+    "registered_ratio": 1.0,
+    "core_registered_ratio": 1.0,
+    "verified_pair_count": 1701,
+    "points3d_count": 95150,
+    "points_per_registered_image": 679.64,
+    "timings_sec": {
+      "mapper_initial": 892.46
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  },
+  {
+    "chunk_index": 3,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 140,
+    "registered_count": 138,
+    "registered_ratio": 0.9857,
+    "core_registered_ratio": 0.9718,
+    "verified_pair_count": 1778,
+    "points3d_count": 110070,
+    "points_per_registered_image": 797.61,
+    "timings_sec": {
+      "mapper_initial": 492.03
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  },
+  {
+    "chunk_index": 5,
+    "status": "failed",
+    "mapper_mode": "incremental",
+    "image_count": 140,
+    "registered_count": 115,
+    "registered_ratio": 0.8156,
+    "core_registered_ratio": 0.8214,
+    "verified_pair_count": 1778,
+    "points3d_count": 83126,
+    "points_per_registered_image": 722.83,
+    "timings_sec": {
+      "mapper_initial": 266.42,
+      "mapper_recovery": 270.67
+    },
+    "peak_memory_mb": null,
+    "failure_stage": "chunk_05_recovery_failed",
+    "failure_reason": "chunk 5 remained below threshold after prior-aware retry: registered=115/141 core=115/140 missing_core=['DJI_0099.JPG', 'DJI_0100.JPG', 'DJI_0101.JPG', 'DJI_0514.JPG', 'DJI_0515.JPG', 'DJI_0516.JPG', 'DJI_0517.JPG', 'DJI_0518.JPG', 'DJI_0519.JPG', 'DJI_0520.JPG', 'DJI_0521.JPG', 'DJI_0522.JPG', 'DJI_0523.JPG', 'DJI_0524.JPG', 'DJI_0525.JPG', 'DJI_0526.JPG', 'DJI_0527.JPG', 'DJI_0528.JPG', 'DJI_0529.JPG', 'DJI_0814.JPG', 'DJI_0815.JPG', 'DJI_0816.JPG', 'DJI_0817.JPG', 'DJI_0818.JPG', 'DJI_0819.JPG']",
+    "fallbacks_used": [
+      "bounded_chunk_recovery"
+    ]
+  },
+  {
+    "chunk_index": 5,
+    "status": "passed",
+    "mapper_mode": "incremental",
+    "image_count": 280,
+    "registered_count": 276,
+    "registered_ratio": 0.9857,
+    "core_registered_ratio": 0.981,
+    "verified_pair_count": 3390,
+    "points3d_count": 195751,
+    "points_per_registered_image": 709.24,
+    "timings_sec": {
+      "mapper_initial": 1115.24
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": []
+  }
+]
