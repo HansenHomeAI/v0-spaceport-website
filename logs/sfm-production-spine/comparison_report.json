@@ -17,8 +17,8 @@
     "R4 exact 2157 proof passed its registration, density, runtime, sparse/0, reducer, and pipeline-viewer gates, but final promotion still requires R5 huge-acreage proof.",
     "R5 Meadow huge-acreage job r5meadow739-1777643311 failed chunked_merge_threshold at 999/1456 with missing sparse/0, so it is not promotable.",
     "R5 targeted 160/240 weak-region leaves failed terminal: c1 227/240 metadata-only; c4 102/240 metadata-only; c6 88/240 metadata-only; no sparse/0 outputs.",
-    "R5 planner80 leaves have failed terminal so far: c10 52/140, c1 136/140, c4 101/140, c9 85/140, c6 64/140, c3 119/140, c8 mapper initial zero-pair failure; all terminal outputs are metadata-only with missing sparse/0.",
-    "Whitespace filename sanitization fix is pushed and built at 142df9148276c34ad570cf2a7d206933e84bb903; fixed-image c8 rerun r5l80c8fix-1777808608 and old-runtime c5 r5l80c5-1777804817 are active, with final R5 sparse/0 and viewer proof still pending."
+    "R5 planner80 leaves have failed terminal so far: c10 52/140, c1 136/140, c4 101/140, c9 85/140, c6 64/140, c3 119/140, original c8 zero-pair failure, and old-runtime c5 88/140; all terminal outputs are metadata-only with missing sparse/0.",
+    "Whitespace filename sanitization fix is pushed and built at 142df9148276c34ad570cf2a7d206933e84bb903; fixed-image c8 rerun r5l80c8fix-1777808608 and fixed-image c5 rerun r5l80c5fix-1777810935 are active, with final R5 sparse/0 and viewer proof still pending."
   ],
   "branch": "agent-73948216-sfm-production-spine",
   "candidate": {
@@ -50,7 +50,8 @@
       "r5l80c6-1777797800",
       "r5l80c8-1777802100",
       "r5l80c5-1777804817",
-      "r5l80c8fix-1777808608"
+      "r5l80c8fix-1777808608",
+      "r5l80c5fix-1777810935"
     ],
     "merged_component_count": 1,
     "pipeline_viewer_url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fr4exact739s1-1777612249%2Fcolmap",
@@ -61,9 +62,10 @@
     "sparse0_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/sparse/0/",
     "total": 2157
   },
-  "dataset": "md1 representative subsets, R3 ladder_1000 proof, R4 exact 2157 proof, failed R5 Meadow full attempt, smaller-chunk R5 planner artifacts, failed primary R5 targeted leaves, old-runtime active c5 leaf, and fixed-image active c8 rerun",
+  "current_branch_head": "ace836323ea441c8c7f06ef0dd025396abb55e4a",
+  "dataset": "md1 representative subsets, R3 ladder_1000 proof, R4 exact 2157 proof, failed R5 Meadow full attempt, smaller-chunk R5 planner artifacts, failed primary R5 targeted leaves, fixed-image active c8 rerun, and fixed-image active c5 rerun",
   "decision": "needs_more_proof",
-  "head": "142df9148276c34ad570cf2a7d206933e84bb903",
+  "head": "ace836323ea441c8c7f06ef0dd025396abb55e4a",
   "mode": "distributed_chunked_v1",
   "proof_job_head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
   "r1_summary": {
@@ -770,22 +772,24 @@
   },
   "r5_recovery_plan": {
     "active_leaf_jobs": [
-      "r5l80c5-1777804817",
-      "r5l80c8fix-1777808608"
+      "r5l80c8fix-1777808608",
+      "r5l80c5fix-1777810935"
     ],
     "active_leaf_status": {
-      "r5l80c5-1777804817": "InProgress/no FailureReason on pre-fix runtime head 2f740363e98219db393200196e05dd49d7d9641a; ProcessingStartTime 2026-05-03T10:40:57.413Z; chunk_05_mapper_initial reached 60 registered frames at 2026-05-03T11:43:10Z; S3 output empty before EndOfJob upload.",
-      "r5l80c8fix-1777808608": "InProgress/no FailureReason at submit check; fixed-image chunk 8 rerun under head 142df9148276c34ad570cf2a7d206933e84bb903 after whitespace-name matches_importer fix; output s3://spaceport-ml-processing-staging/manual-validations/r5l80c8fix-1777808608/colmap."
+      "r5l80c5fix-1777810935": "InProgress/no FailureReason; ProcessingStartTime 2026-05-03T12:22:57.325Z; no CloudWatch stream yet; fixed-image chunk 5 rerun under head 142df9148276c34ad570cf2a7d206933e84bb903 after old c5 failed 88/140.",
+      "r5l80c8fix-1777808608": "InProgress/no FailureReason; ProcessingStartTime 2026-05-03T11:44:08.358Z; CloudWatch stream r5l80c8fix-1777808608/algo-1-1777808647; feature_extractor reached 880/1456 by 2026-05-03T12:21:22Z; S3 output empty before EndOfJob upload; fixed-image chunk 8 rerun under head 142df9148276c34ad570cf2a7d206933e84bb903."
     },
     "active_planner_job": "r5plan80h739-1777791228",
     "active_planner_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r5plan80h739-1777791228/colmap",
     "active_planner_status": "InProgress; ProcessingStartTime 2026-05-03T06:54:28.816Z; no FailureReason; no S3 output yet; no CloudWatch stream visible yet",
     "chunk_manifest": "logs/sfm-production-spine/r5plan160739-1777674958-chunk_planner_manifest.json",
+    "current_branch_head": "ace836323ea441c8c7f06ef0dd025396abb55e4a",
     "failed_leaf_status": {
       "r5l80c1-1777791574": "Failed terminal; 136/140, ratio 0.9714, core 0.9714, no fallback, metadata-only output, no sparse/0.",
       "r5l80c10-1777791574": "Failed terminal; 52/140, ratio 0.3688, no sparse/0, metadata-only output.",
       "r5l80c3-1777797800": "Failed terminal; 119/140, ratio 0.8440, core 0.7606, bounded_chunk_recovery + seam_only_leaf_seed, metadata-only output, no sparse/0.",
       "r5l80c4-1777791574": "Failed terminal; 101/140, ratio 0.7163, core 0.7214, bounded_chunk_recovery + seam_only_leaf_seed, metadata-only output, no sparse/0.",
+      "r5l80c5-1777804817": "Failed terminal on old runtime head 2f740363e98219db393200196e05dd49d7d9641a; leaf metadata 88/140, ratio 0.6241, core 0.6286, 70104 points, bounded_chunk_recovery + seam_only_leaf_seed, metadata-only output, no sparse/0.",
       "r5l80c6-1777797800": "Failed terminal; 64/140, ratio 0.4539, core 0.4571, bounded_chunk_recovery + seam_only_leaf_seed, metadata-only output, no sparse/0.",
       "r5l80c8-1777802100": "Failed terminal before leaf metadata; chunk_08_matches_importer added 0 verified image pairs because whitespace image names in match_list.txt were parsed as missing extensionless names; chunk_08_mapper_initial reported No images with matches; metadata-only output, no sparse/0.",
       "r5l80c9-1777795694": "Failed terminal; 85/140, ratio 0.6028, core 0.6000, bounded_chunk_recovery + seam_only_leaf_seed, metadata-only output, no sparse/0."
@@ -794,9 +798,12 @@
     "fix_status": "Pushed, tested, built, and deployed: py_compile passed; tests.unit.test_colmap_gps_priors ran 103 tests OK; Trigger ML Container Build 25277786989 success; CDK Deploy 25277786990 success; ECR spaceport/sfm:agent73948216sfmproductionspine digest sha256:7fcac24557f4bd4d034953974e61c536a73fb3d223e6ff17ceef4b0122e06480.",
     "fixed_head": "142df9148276c34ad570cf2a7d206933e84bb903",
     "fixed_leaf_jobs": [
-      "r5l80c8fix-1777808608"
+      "r5l80c8fix-1777808608",
+      "r5l80c5fix-1777810935"
     ],
-    "next_gate": "monitor c5 and fixed c8 terminal status, collect leaf metadata/sparse0 if produced, rerun c5 on the fixed image if old-runtime output fails or cannot satisfy R5 leaf proof, then continue bounded R5 recovery toward final sparse/0 and viewer proof.",
+    "fixed_runtime_head": "142df9148276c34ad570cf2a7d206933e84bb903",
+    "ledger_push": "commit ace836323ea441c8c7f06ef0dd025396abb55e4a pushed after fixed-image c8 launch; fixed runtime job uses SFM_GIT_HEAD 142df9148276c34ad570cf2a7d206933e84bb903",
+    "next_gate": "monitor fixed c8 and fixed c5 terminal status, collect leaf metadata/sparse0 if produced, then continue bounded R5 recovery toward final sparse/0 and viewer proof.",
     "planner80_artifacts_usable": true,
     "planner80_chunk_manifest": "logs/sfm-production-spine/r5plan80h739-1777791228-chunk_planner_manifest.json",
     "planner80_job": "r5plan80h739-1777791228",
@@ -813,7 +820,7 @@
       "r5l160c6-1777677041": "Failed terminal; 88/240, ratio 0.3651, no sparse/0"
     },
     "targeted_leaf_summary": "logs/sfm-production-spine/r5_targeted_leaf_summary.json",
-    "updated": "2026-05-03T11:43:54Z",
+    "updated": "2026-05-03T12:24:00Z",
     "weak_chunk_overlap_report": "logs/sfm-production-spine/r5_plan160_weak_chunk_overlap.json"
   },
   "r5_summary": {

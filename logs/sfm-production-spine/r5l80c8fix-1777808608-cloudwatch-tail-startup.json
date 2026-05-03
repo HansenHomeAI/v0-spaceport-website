@@ -1,0 +1,976 @@
+{
+    "events": [
+        {
+            "timestamp": 1777808790441,
+            "message": "============================================================",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790442,
+            "message": "🚀 SPACEPORT COLMAP GPU SfM PROCESSING",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790442,
+            "message": "============================================================",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790442,
+            "message": "📅 Started at: Sun May  3 11:46:26 UTC 2026",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790442,
+            "message": "🔧 Pipeline: COLMAP mapper with GPU SIFT + spatial/sequential/vocab matching",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790442,
+            "message": "📍 GPS Priors: image EXIF metadata",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790442,
+            "message": "🎯 Output: COLMAP TXT export for 3DGS",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790442,
+            "message": "============================================================",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790442,
+            "message": "🔍 Verifying environment...",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790442,
+            "message": "Python 3.12.3",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790442,
+            "message": "📦 COLMAP version: unavailable via 'colmap version'",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790442,
+            "message": "Sun May  3 11:46:27 2026       ",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790442,
+            "message": "+-----------------------------------------------------------------------------------------+",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790442,
+            "message": "| NVIDIA-SMI 570.211.01             Driver Version: 570.211.01     CUDA Version: 12.9     |",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790442,
+            "message": "|-----------------------------------------+------------------------+----------------------+",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790442,
+            "message": "| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790442,
+            "message": "| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790442,
+            "message": "|                                         |                        |               MIG M. |",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790442,
+            "message": "|=========================================+========================+======================|",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790442,
+            "message": "|   0  Tesla T4                       On  |   00000000:00:1E.0 Off |                    0 |",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790442,
+            "message": "| N/A   24C    P8              9W /   70W |       0MiB /  15360MiB |      0%      Default |",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790442,
+            "message": "|                                         |                        |                  N/A |",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790442,
+            "message": "+-----------------------------------------+------------------------+----------------------+\n                                                                                         ",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790442,
+            "message": "+-----------------------------------------------------------------------------------------+",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "| Processes:                                                                              |",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "|        ID   ID                                                               Usage      |",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "|=========================================================================================|",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "|  No running processes found                                                             |",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "+-----------------------------------------------------------------------------------------+",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "✅ Environment verification completed",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "MEMORY_PROBE [startup]:",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "MemTotal:       16081288 kB",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "MemFree:         1733752 kB",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "MemAvailable:   14951600 kB\n               total        used        free      shared  buff/cache   available",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "Mem:            15Gi       1.1Gi       1.7Gi       1.1Mi        12Gi        14Gi",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "Swap:             0B          0B          0B",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "📁 Input directory: /opt/ml/processing/input",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "📁 Output directory: /opt/ml/processing/output",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "🔍 Input directory contents:",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "total 5962308",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "drwxr-xr-x 2 root root       4096 May  3 11:44 .",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "drwxr-xr-x 4 root root       4096 Apr 20 15:03 ..",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "-rw-r--r-- 1 root root 6105390484 May  3 11:46 Archive.zip",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "📦 ZIP files found: 1",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "============================================================",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "🚀 LAUNCHING COLMAP GPU PROCESSOR",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "============================================================",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "MEMORY_PROBE [before_python]:",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "MemTotal:       16081288 kB",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790443,
+            "message": "MemFree:         1733680 kB",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790444,
+            "message": "MemAvailable:   14951528 kB\n               total        used        free      shared  buff/cache   available",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790444,
+            "message": "Mem:            15Gi       1.1Gi       1.7Gi       1.1Mi        12Gi        14Gi",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790444,
+            "message": "Swap:             0B          0B          0B",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790444,
+            "message": "MEMORY_PROBE [startup]:",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790444,
+            "message": "MemTotal:       16081288 kB",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790444,
+            "message": "MemFree:         1708868 kB",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790444,
+            "message": "MemAvailable:   14926868 kB",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808790444,
+            "message": "2026-05-03 11:46:27,454 - INFO - Extracting archive /opt/ml/processing/input/Archive.zip",
+            "ingestionTime": 1777808796635
+        },
+        {
+            "timestamp": 1777808810449,
+            "message": "2026-05-03 11:46:50,278 - INFO - Extracted 1456 images",
+            "ingestionTime": 1777808815880
+        },
+        {
+            "timestamp": 1777808810449,
+            "message": "2026-05-03 11:46:50,279 - INFO - Sanitized 457 image filenames containing COLMAP pair-list whitespace",
+            "ingestionTime": 1777808815880
+        },
+        {
+            "timestamp": 1777808823453,
+            "message": "2026-05-03 11:47:03,161 - INFO - Detected GPS EXIF priors on 1456 images; orientation priors present on 1456 images (heading_source=flight_yaw dispersion=179.73deg, pitch_source=flight_pitch dispersion=71.70deg)",
+            "ingestionTime": 1777808829182
+        },
+        {
+            "timestamp": 1777808833626,
+            "message": "2026-05-03 11:47:12,551 - INFO - Prepared image list with 1456 entries ordered by capture time then filename",
+            "ingestionTime": 1777808842573
+        },
+        {
+            "timestamp": 1777808833626,
+            "message": "2026-05-03 11:47:12,552 - INFO - [feature_extractor] colmap feature_extractor --database_path /tmp/colmap_sfm_bt4sxdo3/database.db --image_path /tmp/colmap_sfm_bt4sxdo3/images --ImageReader.single_camera 1 --ImageReader.camera_model SIMPLE_RADIAL --FeatureExtraction.use_gpu 1 --SiftExtraction.max_num_features 8192",
+            "ingestionTime": 1777808842573
+        },
+        {
+            "timestamp": 1777808833626,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:12.799584    85 feature_extraction.cc:502] === Feature extraction ===",
+            "ingestionTime": 1777808842573
+        },
+        {
+            "timestamp": 1777808833626,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:12.800560    90 sift.cc:754] Creating SIFT GPU feature extractor",
+            "ingestionTime": 1777808842573
+        },
+        {
+            "timestamp": 1777808843034,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.229537    91 feature_extraction.cc:280] Processed file [1/1456]",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843034,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.229595    91 feature_extraction.cc:283]   Name:            DJI_0001.JPG",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843034,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.229607    91 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843034,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.229619    91 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843034,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.229630    91 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843034,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.229645    91 feature_extraction.cc:302]   Features:        9739 (SIFT)",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843034,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.229703    91 feature_extraction.cc:316]   GPS:             LAT=45.708, LON=-110.861, ALT=1861.600",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843034,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.229722    91 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843034,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.396332    91 feature_extraction.cc:280] Processed file [2/1456]",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843034,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.396397    91 feature_extraction.cc:283]   Name:            DJI_0003.JPG",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843034,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.396409    91 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843034,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.396421    91 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843034,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.396435    91 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843034,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.396449    91 feature_extraction.cc:302]   Features:        9305 (SIFT)",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843034,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.725251    91 feature_extraction.cc:316]   GPS:             LAT=45.708, LON=-110.860, ALT=1860.600",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843034,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.725311    91 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843034,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.730894    91 feature_extraction.cc:280] Processed file [3/1456]",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843034,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.731233    91 feature_extraction.cc:283]   Name:            DJI_0002.JPG",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843034,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.731472    91 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843034,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.731686    91 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843034,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.731899    91 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843034,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.732113    91 feature_extraction.cc:302]   Features:        9520 (SIFT)",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843034,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.732357    91 feature_extraction.cc:316]   GPS:             LAT=45.708, LON=-110.861, ALT=1861.200",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843035,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.732573    91 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843035,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.972484    91 feature_extraction.cc:280] Processed file [4/1456]",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843035,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.972548    91 feature_extraction.cc:283]   Name:            DJI_0004.JPG",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843035,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.972560    91 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843035,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.972571    91 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843035,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.972582    91 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808843035,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:22.972597    91 feature_extraction.cc:302]   Features:        9369 (SIFT)",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808844046,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:23.141769    91 feature_extraction.cc:316]   GPS:             LAT=45.708, LON=-110.860, ALT=1860.400",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808844046,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:23.141835    91 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1777808852711
+        },
+        {
+            "timestamp": 1777808852198,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:31.245848    91 feature_extraction.cc:280] Processed file [5/1456]",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808852198,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:31.245915    91 feature_extraction.cc:283]   Name:            DJI_0005.JPG",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808852198,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:31.245927    91 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808852198,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:31.245939    91 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808852198,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:31.245949    91 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808852198,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:31.245965    91 feature_extraction.cc:302]   Features:        9191 (SIFT)",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808852198,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:31.437999    91 feature_extraction.cc:316]   GPS:             LAT=45.708, LON=-110.860, ALT=1859.800",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808852198,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:31.438073    91 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808852198,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:31.582603    91 feature_extraction.cc:280] Processed file [6/1456]",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808852198,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:31.582661    91 feature_extraction.cc:283]   Name:            DJI_0006.JPG",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808852198,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:31.582674    91 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808852198,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:31.582712    91 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808852198,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:31.582726    91 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808852198,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:31.582741    91 feature_extraction.cc:302]   Features:        9271 (SIFT)",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808852198,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:31.802598    91 feature_extraction.cc:316]   GPS:             LAT=45.708, LON=-110.859, ALT=1859.400",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808852198,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:31.802656    91 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808852198,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:31.812763    91 feature_extraction.cc:280] Processed file [7/1456]",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808852198,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:31.814905    91 feature_extraction.cc:283]   Name:            DJI_0007.JPG",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808852198,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:31.815057    91 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808852198,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:31.815089    91 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808852198,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:31.815119    91 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808852198,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:31.815147    91 feature_extraction.cc:302]   Features:        9240 (SIFT)",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808852199,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:32.133975    91 feature_extraction.cc:316]   GPS:             LAT=45.708, LON=-110.859, ALT=1858.500",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808852199,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:32.134059    91 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808853850,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:32.446058    91 feature_extraction.cc:280] Processed file [8/1456]",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808853850,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:32.446123    91 feature_extraction.cc:283]   Name:            DJI_0008.JPG",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808853850,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:32.446135    91 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808853850,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:32.446144    91 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808853850,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:32.446154    91 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808853850,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:32.446169    91 feature_extraction.cc:302]   Features:        9269 (SIFT)",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808853850,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:32.675305    91 feature_extraction.cc:316]   GPS:             LAT=45.708, LON=-110.859, ALT=1857.400",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808853850,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:32.675374    91 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1777808862440
+        },
+        {
+            "timestamp": 1777808860667,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:40.452318    91 feature_extraction.cc:280] Processed file [9/1456]",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808860667,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:40.452383    91 feature_extraction.cc:283]   Name:            DJI_0009.JPG",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808860667,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:40.452395    91 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808860667,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:40.452406    91 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808860667,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:40.452418    91 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808860667,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:40.452433    91 feature_extraction.cc:302]   Features:        9346 (SIFT)",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861961,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:40.666702    91 feature_extraction.cc:316]   GPS:             LAT=45.708, LON=-110.858, ALT=1857.100",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861961,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:40.666762    91 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861961,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:40.884176    91 feature_extraction.cc:280] Processed file [10/1456]",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861961,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:40.884239    91 feature_extraction.cc:283]   Name:            DJI_0010.JPG",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861961,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:40.884253    91 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861961,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:40.884263    91 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861961,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:40.884274    91 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861961,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:40.884289    91 feature_extraction.cc:302]   Features:        9334 (SIFT)",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861961,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:41.147928    91 feature_extraction.cc:316]   GPS:             LAT=45.708, LON=-110.858, ALT=1856.000",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861961,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:41.147989    91 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861961,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:41.150791    91 feature_extraction.cc:280] Processed file [11/1456]",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861961,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:41.150828    91 feature_extraction.cc:283]   Name:            DJI_0011.JPG",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861962,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:41.150838    91 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861962,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:41.150849    91 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861962,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:41.150861    91 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861962,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:41.150898    91 feature_extraction.cc:302]   Features:        9209 (SIFT)",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861962,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:41.480441    91 feature_extraction.cc:316]   GPS:             LAT=45.708, LON=-110.858, ALT=1854.400",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861962,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:41.480502    91 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861962,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:41.702592    91 feature_extraction.cc:280] Processed file [12/1456]",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861962,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:41.702647    91 feature_extraction.cc:283]   Name:            DJI_0012.JPG",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861962,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:41.702659    91 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861962,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:41.702670    91 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861962,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:41.702682    91 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861962,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:41.702697    91 feature_extraction.cc:302]   Features:        9198 (SIFT)",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861962,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:41.937193    91 feature_extraction.cc:316]   GPS:             LAT=45.709, LON=-110.858, ALT=1853.200",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808861962,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:41.937248    91 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1777808870687
+        },
+        {
+            "timestamp": 1777808870136,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:49.679487    91 feature_extraction.cc:280] Processed file [13/1456]",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808870136,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:49.679569    91 feature_extraction.cc:283]   Name:            DJI_0013.JPG",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808870136,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:49.679580    91 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808870136,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:49.679591    91 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808870136,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:49.679602    91 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808870136,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:49.679618    91 feature_extraction.cc:302]   Features:        8986 (SIFT)",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808870136,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:49.896760    91 feature_extraction.cc:316]   GPS:             LAT=45.709, LON=-110.857, ALT=1851.500",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808870136,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:49.896821    91 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808870136,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:49.919910    91 feature_extraction.cc:280] Processed file [14/1456]",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808870136,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:49.919963    91 feature_extraction.cc:283]   Name:            DJI_0014.JPG",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808870136,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:49.919975    91 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808870136,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:49.919986    91 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808870136,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:49.919997    91 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808870136,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:49.920012    91 feature_extraction.cc:302]   Features:        8926 (SIFT)",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808871290,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:50.237460    91 feature_extraction.cc:316]   GPS:             LAT=45.709, LON=-110.857, ALT=1849.700",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808871290,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:50.237519    91 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808871290,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:50.240294    91 feature_extraction.cc:280] Processed file [15/1456]",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808871290,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:50.240335    91 feature_extraction.cc:283]   Name:            DJI_0015.JPG",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808871290,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:50.240346    91 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808871290,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:50.240357    91 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808871290,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:50.240368    91 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808871290,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:50.240382    91 feature_extraction.cc:302]   Features:        8720 (SIFT)",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808871290,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:50.240423    91 feature_extraction.cc:316]   GPS:             LAT=45.709, LON=-110.857, ALT=1848.100",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808871290,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:50.240437    91 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808871290,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:50.950073    91 feature_extraction.cc:280] Processed file [16/1456]",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808871290,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:50.950135    91 feature_extraction.cc:283]   Name:            DJI_0016.JPG",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808871290,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:50.950147    91 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808871290,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:50.950158    91 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808871290,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:50.950170    91 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808871290,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:50.950186    91 feature_extraction.cc:302]   Features:        8926 (SIFT)",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808871290,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:51.235352    91 feature_extraction.cc:316]   GPS:             LAT=45.709, LON=-110.856, ALT=1846.100",
+            "ingestionTime": 1777808878983
+        },
+        {
+            "timestamp": 1777808871290,
+            "message": "COLMAP[feature_extractor] I20260503 11:47:51.235411    91 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1777808878983
+        }
+    ],
+    "nextForwardToken": "f/39646462650325614095903208275659606868106140080898965535/s",
+    "nextBackwardToken": "b/39646460847332665539900857806085469827644461211952742400/s"
+}

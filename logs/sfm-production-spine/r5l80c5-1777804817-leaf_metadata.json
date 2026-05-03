@@ -1,0 +1,25 @@
+[
+  {
+    "chunk_index": 5,
+    "status": "retried",
+    "mapper_mode": "incremental",
+    "image_count": 140,
+    "registered_count": 88,
+    "registered_ratio": 0.6241,
+    "core_registered_ratio": 0.6286,
+    "verified_pair_count": 1063,
+    "points3d_count": 70104,
+    "points_per_registered_image": 796.64,
+    "timings_sec": {
+      "mapper_initial": 217.47,
+      "mapper_recovery": 210.89
+    },
+    "peak_memory_mb": null,
+    "failure_stage": null,
+    "failure_reason": null,
+    "fallbacks_used": [
+      "bounded_chunk_recovery",
+      "seam_only_leaf_seed"
+    ]
+  }
+]

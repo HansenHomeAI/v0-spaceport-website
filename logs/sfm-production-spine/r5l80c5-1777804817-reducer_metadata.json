@@ -1,0 +1,18 @@
+{
+  "branch": "agent-73948216-sfm-production-spine",
+  "head": "2f740363e98219db393200196e05dd49d7d9641a",
+  "input_uri": "s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip",
+  "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r5l80c5-1777804817/colmap",
+  "planner_manifest": "chunk_planner_manifest.json",
+  "leaf_count": 1,
+  "passed_leaf_count": 1,
+  "failed_leaf_count": 0,
+  "merge_strategy": "overlap_first_balanced",
+  "merged_component_count": 1,
+  "expected_component_count": 1,
+  "ba_policy": "local_or_deferred_global",
+  "standard_sparse0_exists": false,
+  "promotion_blockers": [
+    "missing_sparse0"
+  ]
+}
