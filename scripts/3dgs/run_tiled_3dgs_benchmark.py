@@ -662,7 +662,7 @@ def resolve_tile_cache_hit(tile_budget: "TileBudgetPlan", cache_entry: dict | No
     if cached_hash != tile_budget.input_hash:
         reasons.append("input_hash_mismatch")
     status = tile_cache_status(cache_entry)
-    pass_statuses = {"passed", "pass", "ok", "promoted", "accepted", "quality_passed", "preflight_passed"}
+    pass_statuses = {"passed", "pass", "ok", "promoted", "accepted", "quality_passed"}
     if status not in pass_statuses:
         reasons.append("quality_status_not_passing")
     if reasons:

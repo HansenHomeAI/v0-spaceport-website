@@ -1,0 +1,132 @@
+{
+  "analysis": {
+    "likely_cause": "The independent fanout tile_13 proof is not geometrically equivalent to the serial V18 tile_13 leg; it likely changed the initialization/inherited-scaffold context enough that the tile learned far/context splats outside ownership bounds.",
+    "primary_finding": "The hard tile_13 proof uses the same tile ownership core and selected images as V18, but most exported splats are outside the tile_13 core, so support_weighted_overlap legitimately drops them.",
+    "why_this_matters": "Leaf artifact preflight only proves files and local export shape. It does not prove a tile will survive merge or match V18 frozen cameras."
+  },
+  "block_reasons": [
+    "tile13_merge_retention_ratio_below_floor",
+    "leaf_preflight_not_sufficient_for_cache_reuse"
+  ],
+  "current_artifact": {
+    "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile13-hard-proof-20260503/tiles/tile_13/md1-r4t13-hard-1777837467-tile-13/output/model.tar.gz",
+    "budget_class": "hard",
+    "context_candidate_count": 0,
+    "context_preserve_enabled": false,
+    "core_candidate_count": 9891,
+    "max_iterations": 12000,
+    "retained_gaussians_after_support_weighted_overlap": 9891,
+    "retention_ratio_after_support_weighted_overlap": 0.025578,
+    "selected_image_count": 188,
+    "source_gaussians": 386695,
+    "source_job_name": "md1-r4t13-hard-1777837467-tile-13"
+  },
+  "current_position_distribution": {
+    "inside_context_count": 0,
+    "inside_core_count": 9891,
+    "inside_core_ratio": 0.025578,
+    "inside_overlap_count": 9891,
+    "percentiles": {
+      "0": {
+        "x": -2280.989013671875,
+        "y": -1358.797607421875,
+        "z": -1973.73193359375
+      },
+      "1": {
+        "x": -206.7343859863281,
+        "y": -451.6763983154297,
+        "z": -285.9494659423828
+      },
+      "100": {
+        "x": 2080.468505859375,
+        "y": 1685.407958984375,
+        "z": 313.7471923828125
+      },
+      "25": {
+        "x": -14.039395332336426,
+        "y": -10.40985918045044,
+        "z": -30.51676654815674
+      },
+      "5": {
+        "x": -101.78549194335938,
+        "y": -69.6861343383789,
+        "z": -139.13412933349608
+      },
+      "50": {
+        "x": 8.019499778747559,
+        "y": 5.659698963165283,
+        "z": -15.961511611938477
+      },
+      "75": {
+        "x": 30.305598258972168,
+        "y": 9.99117136001587,
+        "z": -6.646580457687378
+      },
+      "95": {
+        "x": 166.5609100341797,
+        "y": 39.310816192626945,
+        "z": 1.4387095808982846
+      },
+      "99": {
+        "x": 332.2874591064453,
+        "y": 144.4381628417968,
+        "z": 22.226775093078608
+      }
+    },
+    "sample_count": 386695
+  },
+  "decision": "cache_reuse_blocked_merge_ownership",
+  "generated_at": "2026-05-03T21:19:06Z",
+  "lineage_comparison": {
+    "dataparser_scale_matches_v18": true,
+    "foreground_coordinate_frame_current": "planner",
+    "foreground_coordinate_frame_v18": "planner",
+    "hard_only_image_count": 0,
+    "selected_image_count_current": 188,
+    "selected_image_count_v18": 188,
+    "selected_image_sets_match_v18": true,
+    "v18_only_image_count": 0
+  },
+  "ownership_bounds": {
+    "current_context_bounds": null,
+    "current_core_bounds": {
+      "max_x": 13.805,
+      "max_y": -2.33,
+      "max_z": 6.237,
+      "min_x": -18.912,
+      "min_y": -34.093,
+      "min_z": -21.082
+    },
+    "current_overlap_bounds": {
+      "max_x": 13.805,
+      "max_y": -2.33,
+      "max_z": 6.237,
+      "min_x": -18.912,
+      "min_y": -34.093,
+      "min_z": -21.082
+    },
+    "current_preserve_context_gaussians": false,
+    "neighbor_tile_ids": [
+      "tile_10"
+    ],
+    "v18_core_bounds_match_current": true,
+    "v18_overlap_bounds_match_current": true
+  },
+  "purpose": "No-spend diagnosis after the tile_13 hard/full-cover proof exported but support_weighted_overlap retained too few tile_13 gaussians for the R4 canary merge.",
+  "recommended_next_steps": [
+    "Do not cache-reuse tile_13 hard proof as quality-passed until merge ownership and V18 non-regression pass.",
+    "Require cache status passed/quality_passed/promoted; reject preflight_passed as cache-ready.",
+    "Before any more paid tile_13 training, run no-spend merge-policy/ownership variants or a serial-initialization compatibility plan that preserves V18 tile ownership.",
+    "If retraining is needed, train only one tile under a realistic cap after the no-spend ownership fix identifies what should change."
+  ],
+  "tile_id": "tile_13",
+  "v18_reference_tile13": {
+    "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+    "context_candidate_count": 0,
+    "context_preserve_enabled": false,
+    "core_candidate_count": 227729,
+    "retained_gaussians_after_support_weighted_overlap": 227729,
+    "retention_ratio_after_support_weighted_overlap": 0.732865,
+    "source_gaussians": 310738
+  }
+}

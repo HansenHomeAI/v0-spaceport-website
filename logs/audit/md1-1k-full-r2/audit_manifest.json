@@ -589,9 +589,22 @@
       ]
     }
   ],
-  "current_branch_head": "921af091c12623e48ef5059d4d690ae22a41e5be plus local observed-fanout estimator/projection update pending commit",
-  "current_exact_head_gate_status": "exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. No Cloudflare Pages run appeared for this non-web/cost-control push.",
-  "current_live_compute_status": "No SageMaker training jobs are InProgress. Exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. Tile_13 hard proof is complete/preflighted/cached; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
+  "current_branch_head": "447d89fb5ff9176ee9cba77ff81eb2797a1d109c",
+  "current_exact_head_gate_status": {
+    "head": "447d89fb5ff9176ee9cba77ff81eb2797a1d109c",
+    "cdk_deploy_run_id": 25290876190,
+    "cdk_deploy_conclusion": "success",
+    "cloudflare_pages_run_id": null,
+    "cloudflare_pages_note": "No Pages run appeared for this non-web/cost-control push."
+  },
+  "current_live_compute_status": {
+    "checked_at": "2026-05-03T21:21:31Z",
+    "sagemaker_training_inprogress": [],
+    "sagemaker_processing_inprogress": [
+      "r5l80c1098adj-1777834845"
+    ],
+    "processing_note": "Unrelated Meadow COLMAP processing job on ml.g4dn.xlarge; not launched by the MD1 3DGS cost-reduction loop."
+  },
   "current_rung": "R4_cost_reduction_fanout_observed_projection_ready",
   "exact_head_gate_status": "Exact-head 5d209189934eeec5e2788acceca4e5f9d94769bf has green CDK Deploy 25181111382 and green Cloudflare Pages 25181111351. Local follow-up changes pass py_compile, bash -n, tests.unit.test_sogs_supersplat_bundle, md1 production Playwright smoke, pipeline-viewer MD1 LOD smoke, npm run build, and npm run cf:build; next is commit/push and exact-head workflow monitoring.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
@@ -709,7 +722,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Commit/push observed-fanout estimator/projection evidence, monitor exact-head workflows, then continue no-spend tile_13 merge ownership diagnosis before any more paid training.",
+  "next_unblocked_step": "No-spend tile_13 ownership/initialization fix or merge-policy variant before any more paid training; do not launch full 14-tile training until canary quality passes.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -3296,7 +3309,7 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-03T17:34:00Z",
+  "updated": "2026-05-03T21:21:31Z",
   "version": "1.0.0",
   "r5_14tile_2k_preflight": {
     "summary_path": "logs/audit/md1-1k-full-r2/r5_14tile_2k_preflight_summary_20260428215230.json",
@@ -8031,5 +8044,32 @@
       "python3 -m json.tool logs/md1-v18-tile-prior-stats-r4-fanout-observed-20260503.json",
       "python3 -m json.tool logs/md1-cost-reduction-r4-fanout-observed-prior-14tile-dryrun-20260503.json"
     ]
+  },
+  "md1_r4_observed_fanout_projection": {
+    "summary_path": "logs/md1-cost-reduction-r4-fanout-observed-prior-14tile-dryrun-20260503.json",
+    "head": "447d89fb5ff9176ee9cba77ff81eb2797a1d109c",
+    "estimated_billable_hours": 8.3,
+    "estimated_usd": 12.5745,
+    "cache_hits": [
+      "tile_02",
+      "tile_11",
+      "tile_13"
+    ],
+    "note": "Planning-only projection before tile_13 merge ownership diagnosis; tile_13 hard proof is no longer cache-eligible after diagnosis."
+  },
+  "md1_r4_tile13_merge_ownership_diagnosis": {
+    "diagnosis_path": "logs/md1-cost-reduction-r4-tile13-merge-ownership-diagnosis-20260503.json",
+    "cache_manifest_path": "logs/md1-cost-reduction-r4-tile13-hard-leaf-cache-20260503.json",
+    "cache_guarded_dryrun_path": "logs/md1-cost-reduction-r4-cache-guarded-fanout-observed-14tile-dryrun-20260503.json",
+    "current_retention_ratio": 0.025578,
+    "v18_reference_retention_ratio": 0.732865,
+    "decision": "cache_reuse_blocked_merge_ownership",
+    "code_guard": "tile cache pass statuses now reject preflight_passed; cache reuse requires passed/quality/promoted status.",
+    "cache_guarded_estimated_usd": 14.7712,
+    "cache_guarded_train_stage_count": 13,
+    "cache_guarded_cache_hits": [
+      "tile_02"
+    ],
+    "next_unblocked_step": "No-spend tile_13 ownership/initialization fix or merge-policy variant before any more paid training."
   }
 }

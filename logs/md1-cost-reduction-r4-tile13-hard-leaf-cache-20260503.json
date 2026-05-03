@@ -19,7 +19,7 @@
       "tile_id": "tile_13",
       "input_hash": "c52bd6f71bb44caf537c31cf7cc414542e414994656be3d2f9c8c76850ae6905",
       "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile13-hard-proof-20260503/tiles/tile_13/md1-r4t13-hard-1777837467-tile-13/output/model.tar.gz",
-      "quality_gate_status": "preflight_passed",
+      "quality_gate_status": "merge_ownership_blocked",
       "budget_class": "hard",
       "max_iterations": 12000,
       "max_selected_images": 188,
@@ -28,7 +28,10 @@
       "estimated_usd": 1.4876,
       "ply_vertices": 386695,
       "leaf_preflight_summary": "logs/audit/md1-1k-full-r2/r4_tile13_hard_proof_leaf_preflight_summary_20260503204500.json",
-      "note": "Single-tile leaf preflight passed; still requires merge/V18 non-regression before production acceptance."
+      "note": "Leaf preflight passed, but support_weighted_overlap retained only 9891/386695 tile_13 splats in the canary merge; not cache-eligible until merge ownership and V18 review pass.",
+      "merge_ownership_diagnosis": "logs/md1-cost-reduction-r4-tile13-merge-ownership-diagnosis-20260503.json",
+      "merge_retention_ratio": 0.025578,
+      "v18_reference_merge_retention_ratio": 0.732865
     },
     "tile_00": {
       "tile_id": "tile_00",
