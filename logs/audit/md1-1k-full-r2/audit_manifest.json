@@ -8114,5 +8114,19 @@
     ],
     "estimated_usd": 7.575,
     "next_unblocked_step": "Commit/push and rebuild container before any bounded paid tile_13 leaf-init proof."
+  },
+  "md1_r4_direct_leaf_scaffold_init_guard_gated_20260503": {
+    "head": "35a4710459ca739b4b3b1ac9a4f940c4200a41ba",
+    "cdk_deploy_run": 25293405527,
+    "ml_container_build_run": 25293405536,
+    "container_image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:7cb6d654e86f1baba75d7c00b0190c94baaa47fd13fb88418febe55b55677433",
+    "branch_ecr_tag": "agent90742618md1geometryconsistency",
+    "dryrun_path": "logs/md1-cost-reduction-r4-leaf-scaffold-init-guard-tile13-dryrun-20260503.json",
+    "training_jobs_in_progress": 0,
+    "unrelated_processing_jobs_in_progress": [
+      "r5l80c135r2-1777848427"
+    ],
+    "decision": "new image gated; bounded tile_13 leaf-init proof may run only with this digest and strict spend cap",
+    "next_unblocked_step": "Submit only the bounded tile_13 leaf-init proof with the gated image digest, then verify scaffold_initialization metadata and merge ownership before canary/full fanout."
   }
 }
