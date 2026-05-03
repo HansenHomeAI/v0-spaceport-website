@@ -1,0 +1,60 @@
+{
+  "generated_at": "2026-05-03T20:46:00Z",
+  "purpose": "R4 cache with hard/full-cover tile_13 proof replacing the earlier standard tile_13; use for no-spend merge/projection only until V18 non-regression passes.",
+  "tiles": {
+    "tile_02": {
+      "tile_id": "tile_02",
+      "input_hash": "2b2595ae76c7ef466146cad4212848e665fd5656e66bb7d005cbfd630dfbfb65",
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r3-ondemand-tile02-exportfix-smoke-20260503/tiles/tile_02/md1-r3od-tile02expfix-1777810456-tile-02/output/model.tar.gz",
+      "quality_gate_status": "passed",
+      "budget_class": "standard",
+      "max_iterations": 8000,
+      "max_selected_images": 128,
+      "source_job_name": "md1-r3od-tile02expfix-1777810456-tile-02",
+      "billable_seconds": 2500,
+      "estimated_usd": 1.0521,
+      "ply_vertices": 472672
+    },
+    "tile_13": {
+      "tile_id": "tile_13",
+      "input_hash": "c52bd6f71bb44caf537c31cf7cc414542e414994656be3d2f9c8c76850ae6905",
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile13-hard-proof-20260503/tiles/tile_13/md1-r4t13-hard-1777837467-tile-13/output/model.tar.gz",
+      "quality_gate_status": "preflight_passed",
+      "budget_class": "hard",
+      "max_iterations": 12000,
+      "max_selected_images": 188,
+      "source_job_name": "md1-r4t13-hard-1777837467-tile-13",
+      "billable_seconds": 3535,
+      "estimated_usd": 1.4876,
+      "ply_vertices": 386695,
+      "leaf_preflight_summary": "logs/audit/md1-1k-full-r2/r4_tile13_hard_proof_leaf_preflight_summary_20260503204500.json",
+      "note": "Single-tile leaf preflight passed; still requires merge/V18 non-regression before production acceptance."
+    },
+    "tile_00": {
+      "tile_id": "tile_00",
+      "input_hash": "b699ee8f0631a08bd1bab9bca6fc8ddce9c94ab011ca4a0936aa59ccd6c36b78",
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-canary-20260503/tiles/tile_00/md1-r4canary-1777821883-tile-00/output/model.tar.gz",
+      "quality_gate_status": "preflight_passed",
+      "budget_class": "standard",
+      "max_iterations": 8000,
+      "max_selected_images": 128,
+      "source_job_name": "md1-r4canary-1777821883-tile-00",
+      "billable_seconds": 2591,
+      "estimated_usd": 1.0904,
+      "ply_vertices": 523578
+    },
+    "tile_11": {
+      "tile_id": "tile_11",
+      "input_hash": "83c1f618c3b7bd8f1a8a28d0272c9a28651482b48b36aafb9f07a00c3334fc44",
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-canary-20260503/tiles/tile_11/md1-r4canary-1777821883-tile-11/output/model.tar.gz",
+      "quality_gate_status": "preflight_passed",
+      "budget_class": "tiny",
+      "max_iterations": 3000,
+      "max_selected_images": 96,
+      "source_job_name": "md1-r4canary-1777821883-tile-11",
+      "billable_seconds": 1254,
+      "estimated_usd": 0.5277,
+      "ply_vertices": 59879
+    }
+  }
+}

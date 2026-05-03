@@ -163,29 +163,170 @@
       "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile13-hard-proof-20260503/tiles/tile_13"
     }
   ],
-  "completed_jobs": [],
+  "completed_jobs": [
+    {
+      "stage_name": "T0_tile_13",
+      "job_name": "md1-r4t13-hard-1777837467-tile-13",
+      "status": "Completed",
+      "secondary_status": "Completed",
+      "training_start_time": "2026-05-03T19:46:16.467Z",
+      "training_end_time": "2026-05-03T20:45:11.744Z",
+      "training_time_seconds": 3535,
+      "billable_time_seconds": 3535,
+      "estimated_usd": 1.4876,
+      "model_artifacts": {
+        "S3ModelArtifacts": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile13-hard-proof-20260503/tiles/tile_13/md1-r4t13-hard-1777837467-tile-13/output/model.tar.gz"
+      },
+      "artifact_size_bytes": 34377795,
+      "artifact_sha256": "c8c65abefb440b455ef86bd6b19eeaeb9fcd88735d3a8d5fd9c4ba6caeefddea",
+      "leaf_preflight_summary": "logs/audit/md1-1k-full-r2/r4_tile13_hard_proof_leaf_preflight_summary_20260503204500.json",
+      "checkpoint_summary": {
+        "s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile13-hard-proof-20260503/checkpoints/md1-r4t13-hard-1777837467-tile-13",
+        "object_count": 10,
+        "total_size_bytes": 429202636,
+        "final_checkpoint_key": "nerfstudio_models/step-000011999.ckpt",
+        "final_checkpoint_size_bytes": 214590039,
+        "resume_checkpoint_key": "resume_checkpoint/nerfstudio_models/step-000011999.ckpt",
+        "resume_checkpoint_size_bytes": 214590039,
+        "resume_step": 11999
+      }
+    }
+  ],
   "latest_monitoring": {
-    "timestamp": "2026-05-03T20:01:05Z",
+    "timestamp": "2026-05-03T20:54:54Z",
     "job_name": "md1-r4t13-hard-1777837467-tile-13",
-    "status": "InProgress",
-    "secondary_status": "Training",
-    "training_time_seconds": 876,
+    "status": "Completed",
+    "secondary_status": "Completed",
+    "training_time_seconds": 3535,
+    "billable_time_seconds": 3535,
+    "estimated_usd": 1.4876,
     "failure_reason": null,
-    "model_artifacts": null,
-    "gpu_utilization": {
-      "timestamp": "2026-05-03T19:56:00Z",
-      "average": 22.6,
-      "maximum": 50.0
-    },
-    "gpu_memory_utilization": {
-      "timestamp": "2026-05-03T19:56:00Z",
-      "average": 11.61802152,
-      "maximum": 21.5216
-    },
+    "model_artifacts": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile13-hard-proof-20260503/tiles/tile_13/md1-r4t13-hard-1777837467-tile-13/output/model.tar.gz",
+    "artifact_size_bytes": 34377795,
+    "artifact_sha256": "c8c65abefb440b455ef86bd6b19eeaeb9fcd88735d3a8d5fd9c4ba6caeefddea",
+    "gpu_utilization_windows": [
+      {
+        "timestamp": "2026-05-03T19:56:00Z",
+        "average": 22.6,
+        "maximum": 50.0
+      },
+      {
+        "timestamp": "2026-05-03T20:01:00Z",
+        "average": 55.2,
+        "maximum": 92.0
+      },
+      {
+        "timestamp": "2026-05-03T20:06:00Z",
+        "average": 69.4,
+        "maximum": 81.0
+      },
+      {
+        "timestamp": "2026-05-03T20:11:00Z",
+        "average": 64.4,
+        "maximum": 89.0
+      },
+      {
+        "timestamp": "2026-05-03T20:16:00Z",
+        "average": 0.0,
+        "maximum": 0.0
+      }
+    ],
+    "gpu_memory_utilization_windows": [
+      {
+        "timestamp": "2026-05-03T19:56:00Z",
+        "average": 11.62,
+        "maximum": 21.52
+      },
+      {
+        "timestamp": "2026-05-03T20:01:00Z",
+        "average": 13.13,
+        "maximum": 13.17
+      },
+      {
+        "timestamp": "2026-05-03T20:06:00Z",
+        "average": 13.08,
+        "maximum": 13.1
+      },
+      {
+        "timestamp": "2026-05-03T20:11:00Z",
+        "average": 10.42,
+        "maximum": 13.03
+      },
+      {
+        "timestamp": "2026-05-03T20:16:00Z",
+        "average": 0.0,
+        "maximum": 0.0
+      }
+    ],
     "s3_checkpoint_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile13-hard-proof-20260503/checkpoints/md1-r4t13-hard-1777837467-tile-13",
-    "s3_checkpoint_objects_observed": 6,
-    "s3_checkpoint_total_size_mib": 180.7,
-    "latest_checkpoint": "nerfstudio_runs/converted_data/splatfacto-w-light/2026-05-03_195704/nerfstudio_models/step-000002000.ckpt",
-    "decision": "continue monitoring to export/model.tar.gz before any canary/full run"
+    "checkpoint_summary": {
+      "s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile13-hard-proof-20260503/checkpoints/md1-r4t13-hard-1777837467-tile-13",
+      "object_count": 10,
+      "total_size_bytes": 429202636,
+      "final_checkpoint_key": "nerfstudio_models/step-000011999.ckpt",
+      "final_checkpoint_size_bytes": 214590039,
+      "resume_checkpoint_key": "resume_checkpoint/nerfstudio_models/step-000011999.ckpt",
+      "resume_checkpoint_size_bytes": 214590039,
+      "resume_step": 11999
+    },
+    "decision": "leaf_preflight_passed_cache_candidate; do not launch more training before estimator and merge-policy diagnosis"
+  },
+  "leaf_preflight": {
+    "summary_path": "logs/audit/md1-1k-full-r2/r4_tile13_hard_proof_leaf_preflight_summary_20260503204500.json",
+    "decision": "leaf_preflight_passed_cache_candidate",
+    "block_reasons": [],
+    "splat_vertex_count": 386695,
+    "splat_ply_size_bytes": 40216912,
+    "artifact_sha256": "c8c65abefb440b455ef86bd6b19eeaeb9fcd88735d3a8d5fd9c4ba6caeefddea",
+    "required_leaf_paths_present": null
+  },
+  "tiled_preflight": {
+    "summary_path": "logs/audit/md1-1k-full-r2/r4_tile13_hard_proof_preflight_summary_20260503204100.json",
+    "output_dir": "logs/audit/md1-1k-full-r2/r4_tile13_hard_proof_preflight_20260503204100",
+    "decision": "preflight_blocked",
+    "artifact_complete": false,
+    "block_reasons": [
+      "artifact_required_paths_missing"
+    ],
+    "expected_block_reason": "single leaf artifact is not a full tiled package"
+  },
+  "merge_diagnosis": {
+    "summary_path": "logs/md1-cost-reduction-r4-tile13-hard-local-merge-swo-20260503.json",
+    "merge_mode": "support_weighted_overlap",
+    "source_gaussians": 1442824,
+    "retained_gaussians": 893626,
+    "dropped_gaussians": 549198,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "tile13_source_gaussians": 386695,
+    "tile13_retained_gaussians": 9891,
+    "interpretation": "tile_13 hard/full-cover improved retention over the earlier canary but still drops nearly all tile_13 splats, so next work is merge ownership/canary representativeness before more training spend"
+  },
+  "post_tile13_cache_dryrun": {
+    "summary_path": "logs/md1-cost-reduction-r4-post-tile13-hard-cache-14tile-dryrun-20260503.json",
+    "submitted_jobs": [],
+    "cache_hits": [
+      "tile_02",
+      "tile_11",
+      "tile_13"
+    ],
+    "train_tiles": [
+      "tile_00",
+      "tile_01",
+      "tile_03",
+      "tile_04",
+      "tile_05",
+      "tile_06",
+      "tile_07",
+      "tile_08",
+      "tile_09",
+      "tile_10",
+      "tile_12"
+    ],
+    "train_stage_count": 11,
+    "estimated_billable_hours": 38.3333,
+    "estimated_usd": 58.075,
+    "worst_case_usd": 83.325,
+    "estimator_note": "uses conservative serial/full-run priors for unknown tiles; observed fanout leaf proofs need a separate estimator lane before scaling"
   }
 }

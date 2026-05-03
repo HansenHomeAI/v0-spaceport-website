@@ -1,0 +1,94 @@
+{
+  "artifact_complete": false,
+  "artifact_head_object": {
+    "AcceptRanges": "bytes",
+    "ContentLength": 34377795,
+    "ContentType": "application/gzip",
+    "ETag": "\"0f5179d5a4d305fed1f29b5c602035a9-5\"",
+    "LastModified": "2026-05-03T20:16:45+00:00",
+    "Metadata": {},
+    "SSEKMSKeyId": "arn:aws:kms:us-west-2:975050048887:key/e498a88e-6b23-44e3-90bd-f35b25d6e420",
+    "ServerSideEncryption": "aws:kms",
+    "VersionId": "yUuL.JWcrZNpnHZvb3HlFvLQY_YHJsMj"
+  },
+  "artifact_inventory_filtered_path": "artifact_inventory_filtered.txt",
+  "artifact_required_paths": {
+    "missing": [
+      "merged/merge_report.json",
+      "merged/merged_splat.ply",
+      "tiled_pipeline/inputs/tile_13/3dgs_tile_manifest.json",
+      "tiled_pipeline/inputs/tile_13/3dgs_view_buckets.json",
+      "tiled_pipeline/inputs/tile_13/scaffold_init_metadata.json",
+      "tiled_pipeline_summary.json",
+      "tiles/tile_13/export_manifest.json",
+      "tiles/tile_13/splat.ply",
+      "tiles/tile_13/stage_summary.json",
+      "tiles/tile_13/training_metadata.json",
+      "tiles/tile_13/training_selection.json"
+    ],
+    "present": [
+      "training_metadata.json"
+    ]
+  },
+  "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile13-hard-proof-20260503/tiles/tile_13/md1-r4t13-hard-1777837467-tile-13/output/model.tar.gz",
+  "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile13-hard-proof-20260503/tiles/tile_13/md1-r4t13-hard-1777837467-tile-13/output/model.tar.gz",
+  "block_reasons": [
+    "artifact_required_paths_missing"
+  ],
+  "candidate_label": "tile13-hard-proof",
+  "checked_at": "2026-05-03T20:42:17.822005+00:00",
+  "decision": "preflight_blocked",
+  "job_name": "md1-r4t13-hard-1777837467-tile-13",
+  "merge": {
+    "background_asset": null,
+    "dropped_gaussians": null,
+    "fallback_reasons": [],
+    "fallback_tile_count": 0,
+    "merge_mode": null,
+    "retain_all_tile_count": 0,
+    "retained_gaussians": null,
+    "source_gaussians": null,
+    "tile_count": null
+  },
+  "next_unblocked_step": "fix artifact completeness or merge fallback before review/promotion",
+  "pipeline": {
+    "include_merge": null,
+    "include_scaffold": null,
+    "mode": null,
+    "selected_tile_ids": null,
+    "tile_manifest_resolution": null
+  },
+  "root_training_metadata": {
+    "downscale_factor": 1,
+    "enable_bg_model": true,
+    "max_iterations": 12000,
+    "model_variant": "splatfacto-w-light",
+    "sh_degree": 1,
+    "training_completed": true,
+    "training_mode": "leaf_tile"
+  },
+  "rung": "R4",
+  "tiles": {
+    "tile_13": {
+      "file_size_mb": 0.0,
+      "foreground_coordinate_frame": null,
+      "inherited_gaussian_count": null,
+      "max_iterations": null,
+      "merge_dropped_gaussians": null,
+      "merge_fallback_reason": null,
+      "merge_fallback_used": null,
+      "merge_retained_gaussians": null,
+      "model_variant": null,
+      "planner_transform_applied": null,
+      "remaining_gaussians": null,
+      "scaffold_inheritance_mode": null,
+      "scaffold_source_artifact": null,
+      "selected_image_count": null,
+      "sh_degree": null,
+      "stage_elapsed_seconds": null,
+      "training_completed": null,
+      "training_mode": null,
+      "view_bucket_counts": null
+    }
+  }
+}

@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "de59bdaf18df0948657cb77f56a827b008e096c2 plus local tile_13 hard proof submission/monitoring update pending commit",
-  "current_exact_head_gate_status": "exact-head de59bdaf18df0948657cb77f56a827b008e096c2 has green CDK Deploy 25288034187. No Cloudflare Pages run appeared for this non-web/cost-control push.",
-  "current_live_compute_status": "Bounded MD1 tile_13 hard proof md1-r4t13-hard-1777837467-tile-13 is InProgress/Training as of 2026-05-03T20:01Z at 876s, no FailureReason/no ModelArtifacts. GPU signal started by 19:56Z (avg/max 22.6/50.0; memory avg/max 11.62/21.52), and S3 checkpoint prefix has config/events plus step-000002000.ckpt. One unrelated Meadow COLMAP processing job r5l80c1098adj-1777834845 remains InProgress.",
-  "current_rung": "R4_cost_reduction_tile13_hard_proof_active",
+  "current_branch_head": "e6d850797117bc11ea0fbc8ed6abd1fffeb65c15 plus local tile_13 completion/preflight/merge diagnosis update pending commit",
+  "current_exact_head_gate_status": "exact-head e6d850797117bc11ea0fbc8ed6abd1fffeb65c15 has green CDK Deploy 25289405931. No Cloudflare Pages run appeared for this non-web/cost-control push.",
+  "current_live_compute_status": "md1-r4t13-hard-1777837467-tile-13 completed at 2026-05-03T20:45:11Z after 3535 billable seconds/about $1.4876; artifact s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile13-hard-proof-20260503/tiles/tile_13/md1-r4t13-hard-1777837467-tile-13/output/model.tar.gz passed leaf preflight with 386695 splats and sha256 c8c65abefb440b455ef86bd6b19eeaeb9fcd88735d3a8d5fd9c4ba6caeefddea. No SageMaker training jobs are InProgress; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
+  "current_rung": "R4_cost_reduction_tile13_hard_proof_completed_merge_diagnosis",
   "exact_head_gate_status": "Exact-head 5d209189934eeec5e2788acceca4e5f9d94769bf has green CDK Deploy 25181111382 and green Cloudflare Pages 25181111351. Local follow-up changes pass py_compile, bash -n, tests.unit.test_sogs_supersplat_bundle, md1 production Playwright smoke, pipeline-viewer MD1 LOD smoke, npm run build, and npm run cf:build; next is commit/push and exact-head workflow monitoring.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -699,8 +699,8 @@
     "note": "No Cloudflare Pages run appeared for this non-web/status-only push."
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-sky-v18-promotion/review_comparison.json",
-  "latest_review_status": "R4 canary review failed V18 non-regression; hardbudget retry dry-run is ready with submitted_jobs=[] and no full-run spend.",
-  "live_compute_status": "Bounded MD1 tile_13 hard proof md1-r4t13-hard-1777837467-tile-13 is InProgress/Training as of 2026-05-03T20:01Z at 876s, no FailureReason/no ModelArtifacts. GPU signal started by 19:56Z (avg/max 22.6/50.0; memory avg/max 11.62/21.52), and S3 checkpoint prefix has config/events plus step-000002000.ckpt. One unrelated Meadow COLMAP processing job r5l80c1098adj-1777834845 remains InProgress.",
+  "latest_review_status": "V18 remains the promoted quality bar. Tile_13 hard/full-cover proof passed leaf preflight as a cache candidate, but the 4-tile support_weighted_overlap merge still retains only 9891/386695 tile_13 splats, so no promotion/full run is authorized before merge-policy and estimator diagnosis.",
+  "live_compute_status": "md1-r4t13-hard-1777837467-tile-13 completed at 2026-05-03T20:45:11Z after 3535 billable seconds/about $1.4876; artifact s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile13-hard-proof-20260503/tiles/tile_13/md1-r4t13-hard-1777837467-tile-13/output/model.tar.gz passed leaf preflight with 386695 splats and sha256 c8c65abefb440b455ef86bd6b19eeaeb9fcd88735d3a8d5fd9c4ba6caeefddea. No SageMaker training jobs are InProgress; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
     "canonical_model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
@@ -709,7 +709,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Continue monitoring md1-r4t13-hard-1777837467-tile-13 to checkpoint cadence/export/model.tar.gz. If it completes, preflight the single-tile artifact, update the tile cache/merge canary plan, and compare against V18 before any larger run; if it fails or stalls, inspect logs/checkpoints and do not retry blindly.",
+  "next_unblocked_step": "Commit/push tile_13 completion/preflight/cache/merge evidence, monitor exact-head workflows, then patch the estimator to separate observed fanout leaf durations from serial priors and diagnose tile_13 ownership/merge retention before any more training.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -7269,8 +7269,8 @@
       "next_gate": "Commit/push, wait exact-head CDK and ML container build, then rerun only the bounded tile_02 export smoke on the new digest before any larger fanout."
     }
   },
-  "latest_training_cost_reduction_status": "R4 hard/full-cover tile_13 proof is active under the explicit $8 cap after the runtime-risk guard blocked the earlier unsafe $5 four-tile retry. This is a single-tile quality/cost proof only: no four-tile canary or full 14-tile run is authorized until this artifact exports and passes preflight/V18 comparison planning.",
-  "latest_live_compute_status": "2026-05-03T20:01Z: Bounded MD1 tile_13 hard proof md1-r4t13-hard-1777837467-tile-13 is InProgress/Training as of 2026-05-03T20:01Z at 876s, no FailureReason/no ModelArtifacts. GPU signal started by 19:56Z (avg/max 22.6/50.0; memory avg/max 11.62/21.52), and S3 checkpoint prefix has config/events plus step-000002000.ckpt. One unrelated Meadow COLMAP processing job r5l80c1098adj-1777834845 remains InProgress.",
+  "latest_training_cost_reduction_status": "R4 tile_13 hard/full-cover proof completed cheaply and is a cache candidate, but support_weighted_overlap still retains only 9891/386695 tile_13 splats in the 4-tile canary merge. Do not spend on more tile_13 training or full 14-tile fanout before no-spend estimator and merge-policy diagnosis.",
+  "latest_live_compute_status": "md1-r4t13-hard-1777837467-tile-13 completed at 2026-05-03T20:45:11Z after 3535 billable seconds/about $1.4876; artifact s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile13-hard-proof-20260503/tiles/tile_13/md1-r4t13-hard-1777837467-tile-13/output/model.tar.gz passed leaf preflight with 386695 splats and sha256 c8c65abefb440b455ef86bd6b19eeaeb9fcd88735d3a8d5fd9c4ba6caeefddea. No SageMaker training jobs are InProgress; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
   "md1_r3_tile02_exportfix_smoke_pass_20260503125756Z": {
     "job_name": "md1-r3od-tile02expfix-1777810456-tile-02",
     "status": "Completed",
@@ -7842,5 +7842,129 @@
     ],
     "s3_checkpoint_total_size_mib": 180.7,
     "decision": "Continue monitoring this single paid proof only; do not launch the four-tile canary or full 14-tile run until export/preflight and V18 non-regression planning are complete."
+  },
+  "md1_r4_tile13_hard_proof_active_20260503T200846Z": {
+    "head": "e6d850797117bc11ea0fbc8ed6abd1fffeb65c15",
+    "cdk_deploy_run": 25289405931,
+    "cloudflare_pages_run": null,
+    "job_name": "md1-r4t13-hard-1777837467-tile-13",
+    "status": "InProgress",
+    "secondary_status": "Training",
+    "training_time_seconds": 1333,
+    "failure_reason": null,
+    "model_artifacts": null,
+    "latest_metric_windows": [
+      {
+        "timestamp": "2026-05-03T19:58:00Z",
+        "gpu_average": 38.8,
+        "gpu_maximum": 50.0,
+        "gpu_memory_average": 16.49818,
+        "gpu_memory_maximum": 21.5216
+      },
+      {
+        "timestamp": "2026-05-03T20:03:00Z",
+        "gpu_average": 67.6,
+        "gpu_maximum": 92.0,
+        "gpu_memory_average": 13.10754,
+        "gpu_memory_maximum": 13.1232
+      }
+    ],
+    "checkpoint_prefix_listing_20260503T200846Z": {
+      "object_count": 3,
+      "total_size_mib": 6.5,
+      "objects": [
+        "nerfstudio_runs/converted_data/splatfacto-w-light/2026-05-03_195704/config.yml",
+        "nerfstudio_runs/converted_data/splatfacto-w-light/2026-05-03_195704/dataparser_transforms.json",
+        "nerfstudio_runs/converted_data/splatfacto-w-light/2026-05-03_195704/events.out.tfevents.1777838252.ip-10-0-170-0.us-west-2.compute.internal.5310.0"
+      ],
+      "note": "Earlier step-000002000.ckpt was observed at 20:01Z but not present in this latest listing; continue monitoring checkpoint durability."
+    },
+    "next_unblocked_step": "Continue monitoring checkpoint durability, training progress, export, and final model.tar.gz before any canary/full run."
+  },
+  "md1_r4_tile13_hard_proof_complete_20260503T204511Z": {
+    "job_name": "md1-r4t13-hard-1777837467-tile-13",
+    "status": "Completed",
+    "training_start_time": "2026-05-03T19:46:16.467Z",
+    "training_end_time": "2026-05-03T20:45:11.744Z",
+    "training_time_seconds": 3535,
+    "billable_time_seconds": 3535,
+    "hourly_rate_usd": 1.515,
+    "estimated_usd": 1.4876,
+    "instance_type": "ml.g5.2xlarge",
+    "managed_spot": false,
+    "max_runtime_seconds": 18000,
+    "model_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile13-hard-proof-20260503/tiles/tile_13/md1-r4t13-hard-1777837467-tile-13/output/model.tar.gz",
+    "model_artifact_size_bytes": 34377795,
+    "model_artifact_sha256": "c8c65abefb440b455ef86bd6b19eeaeb9fcd88735d3a8d5fd9c4ba6caeefddea",
+    "leaf_preflight_summary": "logs/audit/md1-1k-full-r2/r4_tile13_hard_proof_leaf_preflight_summary_20260503204500.json",
+    "leaf_preflight_decision": "leaf_preflight_passed_cache_candidate",
+    "leaf_preflight_block_reasons": [],
+    "splat_vertex_count": 386695,
+    "splat_ply_size_bytes": 40216912,
+    "tiled_preflight_summary": "logs/audit/md1-1k-full-r2/r4_tile13_hard_proof_preflight_summary_20260503204100.json",
+    "tiled_preflight_decision": "preflight_blocked",
+    "tiled_preflight_expected_block": "artifact_required_paths_missing because the proof artifact is a single leaf, not the complete tiled model",
+    "checkpoint_summary": {
+      "s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile13-hard-proof-20260503/checkpoints/md1-r4t13-hard-1777837467-tile-13",
+      "object_count": 10,
+      "total_size_bytes": 429202636,
+      "final_checkpoint_key": "nerfstudio_models/step-000011999.ckpt",
+      "final_checkpoint_size_bytes": 214590039,
+      "resume_checkpoint_key": "resume_checkpoint/nerfstudio_models/step-000011999.ckpt",
+      "resume_checkpoint_size_bytes": 214590039,
+      "resume_step": 11999
+    },
+    "training_configuration": {
+      "tile_id": "tile_13",
+      "budget_class": "hard",
+      "max_iterations": 12000,
+      "selected_image_count": 188,
+      "max_selected_images": 188,
+      "sh_degree": 1,
+      "bg_sh_degree": 1,
+      "enable_bg_model": true,
+      "enable_alpha_loss": true,
+      "enable_robust_mask": true,
+      "training_stop_split_at": 3500,
+      "training_max_gauss_ratio": 3.0,
+      "global_scaffold_init_max_points": 300000,
+      "tile_input_hash": "c52bd6f71bb44caf537c31cf7cc414542e414994656be3d2f9c8c76850ae6905"
+    },
+    "cache_manifest_path": "logs/md1-cost-reduction-r4-tile13-hard-leaf-cache-20260503.json"
+  },
+  "md1_r4_tile13_hard_merge_diagnosis_20260503T205454Z": {
+    "local_merge_summary": "logs/md1-cost-reduction-r4-tile13-hard-local-merge-swo-20260503.json",
+    "merge_mode": "support_weighted_overlap",
+    "tile_count": 4,
+    "source_gaussians": 1442824,
+    "retained_gaussians": 893626,
+    "dropped_gaussians": 549198,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "tile13_source_gaussians": 386695,
+    "tile13_retained_gaussians": 9891,
+    "tile13_retention_fraction": 0.025578,
+    "post_cache_14tile_dryrun": "logs/md1-cost-reduction-r4-post-tile13-hard-cache-14tile-dryrun-20260503.json",
+    "post_cache_cache_hits": [
+      "tile_02",
+      "tile_11",
+      "tile_13"
+    ],
+    "post_cache_train_tiles": [
+      "tile_00",
+      "tile_01",
+      "tile_03",
+      "tile_04",
+      "tile_05",
+      "tile_06",
+      "tile_07",
+      "tile_08",
+      "tile_09",
+      "tile_10",
+      "tile_12"
+    ],
+    "post_cache_estimated_usd": 58.075,
+    "post_cache_worst_case_usd": 83.325,
+    "diagnosis": "hard/full-cover tile_13 training alone is not enough; next no-spend work should inspect ownership bounds/support scoring and estimator priors before more paid training"
   }
 }

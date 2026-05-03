@@ -1,0 +1,144 @@
+{
+  "checked_at": "2026-05-03T20:43:26.117464+00:00",
+  "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile13-hard-proof-20260503/tiles/tile_13/md1-r4t13-hard-1777837467-tile-13/output/model.tar.gz",
+  "local_size_bytes": 34377795,
+  "sha256": "c8c65abefb440b455ef86bd6b19eeaeb9fcd88735d3a8d5fd9c4ba6caeefddea",
+  "job_name": "md1-r4t13-hard-1777837467-tile-13",
+  "tile_id": "tile_13",
+  "preflight_type": "leaf_tile_artifact",
+  "inventory": [
+    {
+      "name": "background_skybox.webp",
+      "size": 41914,
+      "type": "file"
+    },
+    {
+      "name": "training_metadata.json",
+      "size": 10959,
+      "type": "file"
+    },
+    {
+      "name": "splat.ply",
+      "size": 40216912,
+      "type": "file"
+    },
+    {
+      "name": "floater_pruning_summary.json",
+      "size": 459,
+      "type": "file"
+    },
+    {
+      "name": "ns_export.log",
+      "size": 461,
+      "type": "file"
+    },
+    {
+      "name": "export_manifest.json",
+      "size": 3166,
+      "type": "file"
+    },
+    {
+      "name": "background_manifest.json",
+      "size": 1116,
+      "type": "file"
+    },
+    {
+      "name": "training_selection.json",
+      "size": 5127,
+      "type": "file"
+    },
+    {
+      "name": "ns_train.log",
+      "size": 161924,
+      "type": "file"
+    }
+  ],
+  "required_paths": {
+    "present": [
+      "splat.ply",
+      "training_metadata.json",
+      "training_selection.json",
+      "export_manifest.json",
+      "background_manifest.json",
+      "background_skybox.webp",
+      "floater_pruning_summary.json"
+    ],
+    "missing": []
+  },
+  "training_metadata": {
+    "training_completed": true,
+    "training_mode": "leaf_tile",
+    "model_variant": "splatfacto-w-light",
+    "max_iterations": 12000,
+    "sh_degree": 1,
+    "downscale_factor": 1,
+    "enable_bg_model": true,
+    "enable_alpha_loss": true,
+    "enable_robust_mask": true
+  },
+  "training_selection": {
+    "tile_id": "tile_13",
+    "selected_image_count": 188,
+    "max_selected_images": 188,
+    "view_bucket_counts": {
+      "near_detail": 176,
+      "boundary": 12,
+      "horizon": 0
+    }
+  },
+  "export_manifest": {
+    "ply": "splat.ply"
+  },
+  "floater_pruning_summary": {},
+  "background_manifest_keys": [
+    "appearance_camera_clamped",
+    "appearance_camera_idx",
+    "appearance_mode",
+    "appearance_num_embeddings",
+    "asset",
+    "bg_sh_degree",
+    "camera_idx",
+    "floater_pruning",
+    "height",
+    "requested_camera_idx",
+    "selection",
+    "version",
+    "width"
+  ],
+  "splat_ply_size_bytes": 40216912,
+  "splat_ply_header": [
+    "ply",
+    "format binary_little_endian 1.0",
+    "element vertex 386695",
+    "property float x",
+    "property float y",
+    "property float z",
+    "property float nx",
+    "property float ny",
+    "property float nz",
+    "property float f_dc_0",
+    "property float f_dc_1",
+    "property float f_dc_2",
+    "property float f_rest_0",
+    "property float f_rest_1",
+    "property float f_rest_2",
+    "property float f_rest_3",
+    "property float f_rest_4",
+    "property float f_rest_5",
+    "property float f_rest_6",
+    "property float f_rest_7",
+    "property float f_rest_8",
+    "property float opacity",
+    "property float scale_0",
+    "property float scale_1",
+    "property float scale_2",
+    "property float rot_0",
+    "property float rot_1",
+    "property float rot_2",
+    "property float rot_3",
+    "end_header"
+  ],
+  "splat_vertex_count": 386695,
+  "block_reasons": [],
+  "decision": "leaf_preflight_passed_cache_candidate"
+}
