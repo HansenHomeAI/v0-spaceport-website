@@ -34,6 +34,25 @@ DEFAULT_TRAINING_MAX_RUNTIME_SECONDS = 14400
 DEFAULT_REVIEW_MAX_RUNTIME_SECONDS = 7200
 DEFAULT_CHECKPOINT_SAVE_STEPS = 1000
 MAX_SPOT_EXTRA_WAIT_SECONDS = 1800
+MD1_PRODUCTION_TILE_ENV_DEFAULTS = {
+    "GLOBAL_SCAFFOLD_INIT_MAX_POINTS": "300000",
+    "TRAINING_STOP_SPLIT_AT": "3500",
+    "TRAINING_MAX_GAUSS_RATIO": "3.0",
+    "SH_DEGREE": "1",
+    "BG_SH_DEGREE": "1",
+}
+TILE_INPUT_HASH_ENV_KEYS = (
+    "MODEL_VARIANT",
+    "BILATERAL_PROCESSING",
+    "ENABLE_BG_MODEL",
+    "ENABLE_ALPHA_LOSS",
+    "ENABLE_ROBUST_MASK",
+    "GLOBAL_SCAFFOLD_INIT_MAX_POINTS",
+    "TRAINING_STOP_SPLIT_AT",
+    "TRAINING_MAX_GAUSS_RATIO",
+    "SH_DEGREE",
+    "BG_SH_DEGREE",
+)
 SCAFFOLD_CHANNEL_DIR = "/opt/ml/input/data/scaffold"
 TILE_SELECTION_CHANNEL_NAME = "tile-selection"
 TILE_SELECTION_CHANNEL_DIR = f"/opt/ml/input/data/{TILE_SELECTION_CHANNEL_NAME}"
@@ -587,6 +606,7 @@ def build_tile_input_hash(
     input_colmap_s3_uri: str = "",
     image_uri: str = "",
     scaffold_artifact_s3_uri: str = "",
+    training_env_fingerprint: dict[str, str] | None = None,
 ) -> str:
     ignored_tile_entry_fields = {
         "source_artifact_uri",
@@ -612,8 +632,22 @@ def build_tile_input_hash(
         "input_colmap_s3_uri": normalize_s3_prefix(input_colmap_s3_uri) if input_colmap_s3_uri else "",
         "image_uri": image_uri,
         "scaffold_artifact_s3_uri": normalize_s3_prefix(scaffold_artifact_s3_uri) if scaffold_artifact_s3_uri else "",
+        "training_env_fingerprint": training_env_fingerprint or {},
     }
     return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+
+
+def apply_md1_production_tile_defaults(env: Dict[str, str]) -> None:
+    for key, value in MD1_PRODUCTION_TILE_ENV_DEFAULTS.items():
+        env.setdefault(key, value)
+
+
+def tile_input_hash_env_fingerprint(env: Dict[str, str]) -> dict[str, str]:
+    return {
+        key: str(env[key])
+        for key in TILE_INPUT_HASH_ENV_KEYS
+        if key in env and str(env[key]).strip()
+    }
 
 
 def budget_image_cap(*, default_cap: int, max_images_per_tile: int) -> int:
@@ -631,6 +665,7 @@ def build_tile_budget_plan(
     input_colmap_s3_uri: str = "",
     image_uri: str = "",
     scaffold_artifact_s3_uri: str = "",
+    training_env_fingerprint: dict[str, str] | None = None,
     instance_type: str | None = None,
     spot_enabled: bool = False,
     checkpoint_uri: str | None = None,
@@ -698,6 +733,7 @@ def build_tile_budget_plan(
         input_colmap_s3_uri=input_colmap_s3_uri,
         image_uri=image_uri,
         scaffold_artifact_s3_uri=scaffold_artifact_s3_uri,
+        training_env_fingerprint=training_env_fingerprint,
     )
     return TileBudgetPlan(
         tile_id=tile_id,
@@ -1205,6 +1241,9 @@ def build_benchmark_stages(
     selected_tiles = list(tile_ids)
     for tile_id in selected_tiles:
         tile_entry = tiles_by_id.get(str(tile_id), {"tile_id": tile_id})
+        stage_env = dict(extra_env)
+        if tile_budget_mode == "adaptive":
+            apply_md1_production_tile_defaults(stage_env)
         checkpoint_uri = (
             f"{normalize_s3_prefix(checkpoint_s3_prefix)}/{sanitize_sagemaker_job_name(f'{job_prefix}-{timestamp}-{tile_id}')}"
             if checkpoint_s3_prefix and (enable_spot or enable_checkpoints)
@@ -1218,11 +1257,11 @@ def build_benchmark_stages(
             input_colmap_s3_uri=input_colmap_s3_uri,
             image_uri=image_uri,
             scaffold_artifact_s3_uri=scaffold_artifact_s3_uri,
+            training_env_fingerprint=tile_input_hash_env_fingerprint(stage_env),
             instance_type=instance_type,
             spot_enabled=enable_spot,
             checkpoint_uri=checkpoint_uri,
         )
-        stage_env = dict(extra_env)
         stage_max_iterations = tile_max_iterations
         if tile_budget_mode == "adaptive" or max_images_per_tile > 0:
             stage_max_iterations = tile_budget.max_iterations

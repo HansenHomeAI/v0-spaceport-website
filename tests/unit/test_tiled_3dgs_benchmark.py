@@ -539,12 +539,44 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
 
         self.assertNotEqual(base_hash, moved_hash)
 
+    def test_tile_input_hash_changes_when_training_fingerprint_changes(self):
+        tile = {
+            "tile_id": "tile_00",
+            "base_camera_ids": ["DJI_0001.JPG", "DJI_0002.JPG"],
+            "ownership_bounds": {"min_x": 0, "max_x": 10, "min_y": 0, "max_y": 10},
+        }
+
+        md1_hash = benchmark.build_tile_input_hash(
+            tile_entry=tile,
+            budget_class="standard",
+            max_iterations=8000,
+            max_selected_images=96,
+            input_colmap_s3_uri="s3://bucket/colmap",
+            image_uri="image",
+            scaffold_artifact_s3_uri="s3://bucket/scaffold/model.tar.gz",
+            training_env_fingerprint={"SH_DEGREE": "1", "BG_SH_DEGREE": "1"},
+        )
+        sh3_hash = benchmark.build_tile_input_hash(
+            tile_entry=tile,
+            budget_class="standard",
+            max_iterations=8000,
+            max_selected_images=96,
+            input_colmap_s3_uri="s3://bucket/colmap",
+            image_uri="image",
+            scaffold_artifact_s3_uri="s3://bucket/scaffold/model.tar.gz",
+            training_env_fingerprint={"SH_DEGREE": "3", "BG_SH_DEGREE": "8"},
+        )
+
+        self.assertNotEqual(md1_hash, sh3_hash)
+
     def test_reuse_tile_cache_turns_matching_tile_into_non_training_stage(self):
         tile_entry = {
             "tile_id": "tile_11",
             "base_camera_ids": [f"frame_{index:03d}.jpg" for index in range(188)],
             "prior_retained_gaussians": 68,
         }
+        training_env = {}
+        benchmark.apply_md1_production_tile_defaults(training_env)
         budget = benchmark.build_tile_budget_plan(
             tile_entry,
             mode="adaptive",
@@ -553,6 +585,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             input_colmap_s3_uri="s3://bucket/colmap",
             image_uri="123.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:test",
             scaffold_artifact_s3_uri="s3://bucket/scaffold/model.tar.gz",
+            training_env_fingerprint=benchmark.tile_input_hash_env_fingerprint(training_env),
         )
 
         stages = benchmark.build_benchmark_stages(
@@ -724,10 +757,47 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(tile_11.environment["MAX_ITERATIONS"], "3000")
         self.assertEqual(tile_11.environment["TRAINING_MAX_SELECTED_IMAGES"], "96")
         self.assertEqual(tile_11.environment["TILE_BUDGET_CLASS"], "tiny")
+        self.assertEqual(tile_11.environment["GLOBAL_SCAFFOLD_INIT_MAX_POINTS"], "300000")
+        self.assertEqual(tile_11.environment["TRAINING_STOP_SPLIT_AT"], "3500")
+        self.assertEqual(tile_11.environment["TRAINING_MAX_GAUSS_RATIO"], "3.0")
+        self.assertEqual(tile_11.environment["SH_DEGREE"], "1")
+        self.assertEqual(tile_11.environment["BG_SH_DEGREE"], "1")
         self.assertEqual(tile_08.environment["MAX_ITERATIONS"], "12000")
         self.assertEqual(tile_08.environment["TRAINING_MAX_SELECTED_IMAGES"], "188")
         self.assertEqual(tile_08.environment["TILE_BUDGET_CLASS"], "hard")
         self.assertRegex(tile_08.environment["TILE_INPUT_HASH"], r"^[0-9a-f]{64}$")
+
+    def test_adaptive_leaf_budget_preserves_explicit_md1_hyperparameter_overrides(self):
+        stages = benchmark.build_benchmark_stages(
+            manifest={"tiles": [{"tile_id": "tile_02", "base_camera_ids": [f"frame_{index:03d}.jpg" for index in range(128)]}]},
+            branch_name="agent-branch",
+            output_root_s3_uri="s3://bucket/out",
+            job_prefix="bench",
+            include_monolithic=False,
+            include_scaffold=False,
+            include_merge=False,
+            orchestration_mode="fanout",
+            tile_ids=["tile_02"],
+            monolithic_max_iterations=8000,
+            scaffold_max_iterations=2000,
+            tile_max_iterations=12000,
+            training_max_runtime_seconds=21600,
+            extra_env={"SH_DEGREE": "2", "TRAINING_MAX_GAUSS_RATIO": "4.0"},
+            timestamp=456,
+            downscale_factor=1,
+            include_review=False,
+            proof_profile=benchmark.PROOF_PROFILE_NONE,
+            tile_budget_mode="adaptive",
+            max_images_per_tile=128,
+            input_colmap_s3_uri="s3://bucket/colmap",
+            image_uri="123.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:test",
+        )
+
+        tile_stage = stages[0]
+        self.assertEqual(tile_stage.environment["SH_DEGREE"], "2")
+        self.assertEqual(tile_stage.environment["BG_SH_DEGREE"], "1")
+        self.assertEqual(tile_stage.environment["TRAINING_MAX_GAUSS_RATIO"], "4.0")
+        self.assertEqual(tile_stage.environment["TRAINING_STOP_SPLIT_AT"], "3500")
 
     def test_estimate_training_cost_uses_stage_iteration_budgets(self):
         stages = [

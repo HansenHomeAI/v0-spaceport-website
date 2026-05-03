@@ -589,23 +589,17 @@
       ]
     }
   ],
-  "current_branch_head": "91ef3bfcc966ce2585042c10ab2707acfa982a3e plus local R3 on-demand tile_02 dry-run evidence pending commit/push",
-  "current_exact_head_gate_status": "exact-head 91ef3bfcc966ce2585042c10ab2707acfa982a3e has green CDK Deploy 25275952064; no Cloudflare Pages run appeared for this non-web cost-control push.",
+  "current_branch_head": "a7c4c9368bec6f21371757df94f30af0c6eb0067 plus local V18-default adaptive tile guard pending commit/push",
+  "current_exact_head_gate_status": "exact-head a7c4c9368bec6f21371757df94f30af0c6eb0067 has green CDK Deploy 25276755095; no Cloudflare Pages run appeared for this non-web cost-control push.",
   "current_live_compute_status": {
-    "status": "idle",
-    "checked_at": "2026-05-03T10:30:00Z",
+    "status": "idle_for_md1",
+    "checked_at": "2026-05-03T11:07:25Z",
     "training_jobs_in_progress": 0,
     "processing_jobs_in_progress": 1,
     "processing_jobs": [
-      "r5l80c8-1777802100"
+      "r5l80c5-1777804817"
     ],
-    "processing_note": "Unrelated Meadow COLMAP processing jobs; not launched by the MD1 3DGS cost-reduction loop.",
-    "last_r2_checkpoint_persistence_job": "md1-r2ckpt3-tile11-1777678211-tile-11",
-    "last_r2_checkpoint_persistence_status": "Completed",
-    "last_r2_checkpoint_persistence_billable_seconds": 1229,
-    "last_r2_checkpoint_persistence_estimated_usd": 0.517,
-    "checkpoint_persistence_gate": "passed",
-    "checkpoint_restart_gate": "pending_new_image"
+    "processing_job_context": "unrelated Meadow COLMAP processing job; not launched by MD1 3DGS cost-reduction loop"
   },
   "current_rung": "R2_cost_reduction_checkpoint_resume_split_ready",
   "exact_head_gate_status": "Exact-head 5d209189934eeec5e2788acceca4e5f9d94769bf has green CDK Deploy 25181111382 and green Cloudflare Pages 25181111351. Local follow-up changes pass py_compile, bash -n, tests.unit.test_sogs_supersplat_bundle, md1 production Playwright smoke, pipeline-viewer MD1 LOD smoke, npm run build, and npm run cf:build; next is commit/push and exact-head workflow monitoring.",
@@ -5761,7 +5755,7 @@
     "conclusion": "V15 context padding produced identical p24 metrics to V12/V13 and remains blocked only on horizon_psnr_regression; no promotion run."
   },
   "r5_teacher_context_v12_ctx10_v15_submit_20260429071645Z": "Exact-head 0392ef97dfe5363579f2d88f90fd5e70fd03ed82 is gated green on CDK Deploy 25095508893 and manually-triggered Pages 25095528013. Submitted V15 no-training/no-promotion Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 to add 10 percent preserve-context padding to V12, including historical tile_01, with output s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-ctx10-v15-20260429071522/output/artifact/model.tar.gz. Latest status is InProgress with no ProcessingStartTime, no FailureReason/no ExitMessage, zero output objects, no training jobs InProgress, and only this processing job InProgress.",
-  "last_updated": "2026-05-03T10:30:00Z",
+  "last_updated": "2026-05-03T11:07:25Z",
   "r5_teacher_context_v12_ctx10_v15_smoke_blocked_20260429080934Z": "Exact-head d14f4a4b56aa9c3a215e1f4845450c77188a0687 is gated green on CDK Deploy 25095992000 and manually-triggered Pages 25095995605; alias/hash /health.txt passed, hash https://c896c947.v0-spaceport-website-preview2.pages.dev. V15 Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 completed, model.tar.gz is present at 1203320806 bytes, streaming preflight passed, and explicit p24 smoke md1-r1-r5-teacher-context-v12-ctx10-v15-smoke-p24-1777448068-qu completed with camera coverage OK but blocked only on horizon_psnr_regression. Metrics matched V12 exactly, so context padding did not close the PSNR miss. No SageMaker jobs are InProgress and no promotion was run.",
   "r5_teacher_context_v12_tile01overlap_v16": {
     "processing_job_name": "md1-r5-teacherctx-v12-t01ov-v16-1777450963",
@@ -7191,8 +7185,81 @@
       "v18_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review",
       "next_gate": "Commit/push and monitor exact-head CDK, then submit only this $2-capped on-demand tile_02 smoke or retry Spot with short-window/monitor-stop guard; no larger fanout until R3 quality evidence exists."
     },
-    "latest_checkpoint_restart_update": "2026-05-03T08:04:41Z R2 v2 paid tile_11 restart proof passed: restored compact checkpoint step-000002999, extended to MAX_ITERATIONS=3250, exported 14,695,440-byte model.tar.gz, uploaded fresh step-000003249 compact resume checkpoint, and finished in 792 billable seconds (~$0.333)."
+    "latest_checkpoint_restart_update": "2026-05-03T08:04:41Z R2 v2 paid tile_11 restart proof passed: restored compact checkpoint step-000002999, extended to MAX_ITERATIONS=3250, exported 14,695,440-byte model.tar.gz, uploaded fresh step-000003249 compact resume checkpoint, and finished in 792 billable seconds (~$0.333).",
+    "r3_ondemand_tile02_wrong_defaults_stopped": {
+      "checked_at": "2026-05-03T11:07:25Z",
+      "training_job_name": "md1-r3od-tile02-1777804837-tile-02",
+      "status": "Stopped",
+      "reason": "stopped_by_agent_after_cloudwatch_proved_non_v18_defaults",
+      "billable_time_seconds": 1119,
+      "estimated_usd": 0.4709,
+      "model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r3-ondemand-tile02-smoke-20260503/tiles/tile_02/md1-r3od-tile02-1777804837-tile-02/output/model.tar.gz",
+      "model_artifact_status": "non_promotable_stopped_artifact",
+      "observed_cloudwatch_defaults": {
+        "sh_degree": 3,
+        "bg_sh_degree": 8,
+        "stop_split_at": "<default>",
+        "training_max_gauss_ratio": 10.0
+      },
+      "expected_v18_defaults": {
+        "SH_DEGREE": "1",
+        "BG_SH_DEGREE": "1",
+        "TRAINING_STOP_SPLIT_AT": "3500",
+        "TRAINING_MAX_GAUSS_RATIO": "3.0",
+        "GLOBAL_SCAFFOLD_INIT_MAX_POINTS": "300000"
+      }
+    },
+    "r3_v18_adaptive_tile_defaults_guard": {
+      "checked_at": "2026-05-03T11:07:25Z",
+      "code_paths": [
+        "scripts/3dgs/run_tiled_3dgs_benchmark.py",
+        "tests/unit/test_tiled_3dgs_benchmark.py"
+      ],
+      "behavior": "adaptive fanout leaf stages now default to the V18/R5 memory-safe tile hyperparameters unless explicit --env overrides are supplied",
+      "defaults": {
+        "GLOBAL_SCAFFOLD_INIT_MAX_POINTS": "300000",
+        "TRAINING_STOP_SPLIT_AT": "3500",
+        "TRAINING_MAX_GAUSS_RATIO": "3.0",
+        "SH_DEGREE": "1",
+        "BG_SH_DEGREE": "1"
+      },
+      "cache_guard": "tile input hashes now include the production hyperparameter fingerprint so cache/reuse cannot mix SH/BG/split/max-gauss variants",
+      "verification": [
+        "python3 -m unittest tests.unit.test_tiled_3dgs_benchmark tests.unit.test_tiled_nerfstudio_dispatcher tests.unit.test_geometry_first_review tests.unit.test_3dgs_training_monitor -> 98 tests OK",
+        "python3 -m py_compile scripts/3dgs/run_tiled_3dgs_benchmark.py scripts/3dgs/monitor_3dgs_training_cost.py infrastructure/containers/3dgs/train_nerfstudio_production.py infrastructure/containers/3dgs/geometry_review.py infrastructure/containers/3dgs/tile_pipeline.py -> exit 0"
+      ]
+    },
+    "r3_ondemand_tile02_v18defaults_dry_run": {
+      "checked_at": "2026-05-03T11:07:25Z",
+      "path": "logs/md1-cost-reduction-r3-ondemand-tile02-v18defaults-dryrun-20260503.json",
+      "submitted_jobs": 0,
+      "enable_spot": false,
+      "enable_checkpoints": true,
+      "selected_tile_ids": [
+        "tile_02"
+      ],
+      "budget_class": "standard",
+      "max_iterations": 8000,
+      "max_selected_images": 128,
+      "checkpoint_save_steps": 500,
+      "training_max_runtime_seconds": 3600,
+      "checkpoint_s3_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r3-ondemand-tile02-v18defaults-dryrun-20260503/checkpoints",
+      "planned_job_name": "md1-r3od-tile02v18-1777806407-tile-02",
+      "tile_input_hash": "dd9ef87f48cabd11c9096a729c851fba4b12aa75fcad44f7987d92049eddccbb",
+      "estimated_usd": 1.01,
+      "worst_case_usd": 1.515,
+      "max_estimated_usd": 2.0,
+      "v18_defaults": {
+        "GLOBAL_SCAFFOLD_INIT_MAX_POINTS": "300000",
+        "TRAINING_STOP_SPLIT_AT": "3500",
+        "TRAINING_MAX_GAUSS_RATIO": "3.0",
+        "SH_DEGREE": "1",
+        "BG_SH_DEGREE": "1"
+      },
+      "v18_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review",
+      "next_gate": "Commit/push/gate the V18-default guard, then retry only this $2-capped tile_02 on-demand smoke; no larger fanout until R3 quality evidence exists."
+    }
   },
-  "latest_training_cost_reduction_status": "R2 checkpoint restart gate passed on 2026-05-03T08:04:41Z. The first real Spot smoke accepted the payload but hit EC2 insufficient capacity and was stopped before TrainingStartTime or spend. The monitor now blocks startup/capacity waits, and the launcher now blocks submitted Spot jobs unless --spot-max-wait-seconds is explicit and bounded. No-spend on-demand R3 fallback dry-run logs/md1-cost-reduction-r3-ondemand-tile02-dryrun-20260503.json submitted zero jobs, planned tile_02 standard at 8000 iterations / 128 images with checkpoints and V18 review manifest wiring, and estimated $1.01 on-demand / $1.515 worst-case under max_estimated_usd $2.00. Full 14-tile training remains blocked until R3/R4 representative quality/cost gates pass.",
-  "latest_live_compute_status": "2026-05-03T10:30:00Z: no SageMaker training jobs InProgress; unrelated Meadow COLMAP processing job r5l80c8-1777802100 is InProgress."
+  "latest_training_cost_reduction_status": "R2 checkpoint restart gate passed and the first real Spot smoke was stopped before spend on EC2 insufficient capacity. A first on-demand R3 tile_02 smoke was stopped after 1119 billable seconds (~$0.471) because CloudWatch proved it used non-V18 defaults (SH3/BG_SH8/default split/max-gauss 10.0). The adaptive fanout planner now injects V18/R5 tile defaults and includes those hyperparameters in tile input hashes. Corrected dry-run logs/md1-cost-reduction-r3-ondemand-tile02-v18defaults-dryrun-20260503.json submitted zero jobs, planned tile_02 at 8000 iterations / 128 images with SH1/BG_SH1/stop_split_at 3500/max_gauss_ratio 3.0/scaffold cap 300000, and estimates $1.01 on-demand / $1.515 worst-case under max_estimated_usd $2.00. Full 14-tile training remains blocked until R3/R4 representative quality/cost gates pass.",
+  "latest_live_compute_status": "2026-05-03T11:07:25Z: no SageMaker training jobs InProgress; unrelated Meadow COLMAP processing job r5l80c5-1777804817 is InProgress."
 }
