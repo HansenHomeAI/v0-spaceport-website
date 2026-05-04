@@ -8215,5 +8215,40 @@
     "strict_filtered_scaffold_init": true,
     "decision": "dryrun_passed_submit_only_after_exact_head_gate_and_live_aws_idle",
     "next_unblocked_step": "Commit/push/gate this dry-run, then submit only the bounded canary rebuild with tile_13 cached before rerunning V18 non-regression review."
+  },
+  "md1_r4_filtered_init_canary_rebuild_active_20260504": {
+    "head": "2b93823e61acb48c02b4a550326e197b9f3bf5fa",
+    "cdk_deploy_run": 25296836081,
+    "cdk_deploy_conclusion": "success",
+    "submitted_jobs": [
+      "md1-r4leafreb-1777858863-tile-00",
+      "md1-r4leafreb-1777858863-tile-02"
+    ],
+    "pending_train_tiles": [
+      "tile_11"
+    ],
+    "cached_tiles": [
+      "tile_13"
+    ],
+    "output_root_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504",
+    "checkpoint_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/checkpoints",
+    "status_at_20260504T015621Z": {
+      "tile_00": {
+        "status": "InProgress",
+        "secondary_status": "Training",
+        "failure_reason": null,
+        "model_artifacts": null,
+        "latest_checkpoint_observed": "step-000002000.ckpt"
+      },
+      "tile_02": {
+        "status": "InProgress",
+        "secondary_status": "Training",
+        "failure_reason": null,
+        "model_artifacts": null,
+        "latest_checkpoint_observed": "step-000002000.ckpt"
+      }
+    },
+    "decision": "active_bounded_paid_canary_under_5_usd_estimate_no_full_14tile_training",
+    "next_unblocked_step": "Monitor tile_00 and tile_02 to export, then tile_11; merge with cached tile_13 and run same-camera/V18 non-regression review before any full candidate."
   }
 }
