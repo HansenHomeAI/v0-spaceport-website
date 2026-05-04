@@ -8468,5 +8468,61 @@
       "summary": "Adding only tile_04 is the cheapest useful next diagnostic because tile_04 appears in all 12 V18 smoke camera support sets and turns the camera set from no selected support on many cameras into partial support everywhere. It is not an acceptance canary because tile_05, tile_10, tile_01, and tile_06 are still required for full selected-tile support.",
       "next_unblocked_step": "Commit and gate this no-spend evidence. If exact-head stays green, choose the $2-capped tile_04 paid diagnostic or the $12-capped 9-tile acceptance-path canary before any full 14-tile run."
     }
+  },
+  "md1_r4_tile04_bridge_diagnostic_submit_20260504": {
+    "checked_at": "2026-05-04T23:39:00Z",
+    "exact_head": "e1e9537e4da59b3c9308ac3681ec6648a6b27b2f",
+    "exact_head_gate": {
+      "workflow": "CDK Deploy",
+      "run_id": 25348137690,
+      "conclusion": "success"
+    },
+    "submission_summary": "logs/md1-cost-reduction-r4-tile04-bridge-diagnostic-submit-20260504.json",
+    "selected_tiles": [
+      "tile_00",
+      "tile_02",
+      "tile_11",
+      "tile_13",
+      "tile_04"
+    ],
+    "cache_hits": [
+      "tile_00",
+      "tile_02",
+      "tile_11",
+      "tile_13"
+    ],
+    "submitted_jobs": [
+      {
+        "stage_name": "T0_tile_04",
+        "job_name": "md1-r4t04diag-1777937799-1777937904-tile-04",
+        "status_at_submission_check": "InProgress/Pending",
+        "instance_type": "ml.g5.2xlarge",
+        "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile04-bridge-diagnostic-20260504/tiles/tile_04",
+        "checkpoint_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile04-bridge-diagnostic-20260504/checkpoints/md1-r4t04diag-1777937799-1777937904-tile-04",
+        "max_runtime_seconds": 7200,
+        "max_iterations": 8000,
+        "max_selected_images": 128,
+        "budget_class": "standard",
+        "estimated_usd": 1.0908,
+        "max_estimated_usd": 2.0,
+        "input_hash": "bd1bf187605252feee205ad119e992bc3ffe6719d65de16333ce658cd29602eb"
+      }
+    ],
+    "live_aws_state": {
+      "training_jobs_in_progress": [
+        "md1-r4t04diag-1777937799-1777937904-tile-04"
+      ],
+      "processing_jobs_in_progress": [
+        {
+          "job_name": "r5full80s1-1777934749",
+          "classification": "unrelated_meadow_colmap"
+        }
+      ]
+    },
+    "decision": {
+      "status": "paid_diagnostic_active_not_acceptance_canary",
+      "summary": "This is the lowest-cost paid diagnostic after the no-spend coverage screen: it trains only tile_04 while reusing four validated cached leaves. It is intentionally non-promotable because the selected set still has zero full-support V18 smoke cameras.",
+      "next_unblocked_step": "Monitor tile_04 to model.tar.gz, preflight the leaf, then run only no-spend/low-spend merge diagnostics before any 9-tile acceptance canary or full run."
+    }
   }
 }
