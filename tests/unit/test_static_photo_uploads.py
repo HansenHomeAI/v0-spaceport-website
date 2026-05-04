@@ -94,7 +94,7 @@ def _load_module(fake_table, fake_r2):
     os.environ["R2_ACCESS_KEY_ID"] = "key"
     os.environ["R2_SECRET_ACCESS_KEY"] = "secret"
     os.environ["R2_BUCKET_NAME"] = "spaces-viewers"
-    os.environ["R2_PUBLIC_BASE_URL"] = "https://media.spcprt.com"
+    os.environ["R2_PUBLIC_BASE_URL"] = "https://spcprt.com/spaces/media"
 
     spec = importlib.util.spec_from_file_location("projects_lambda", MODULE_PATH)
     module = importlib.util.module_from_spec(spec)
@@ -160,14 +160,14 @@ class StaticPhotoUploadTests(unittest.TestCase):
         body = json.loads(response["body"])
         self.assertEqual(response["statusCode"], 200)
         self.assertEqual(body["bucket"], "spaces-viewers")
-        self.assertEqual(body["publicBaseUrl"], "https://media.spcprt.com")
+        self.assertEqual(body["publicBaseUrl"], "https://spcprt.com/spaces/media")
         self.assertEqual(
             body["files"][0]["objectKey"],
             "users/user-123/projects/project-abc/photos/Interior/Kitchen%20Hero.JPG",
         )
         self.assertEqual(
             body["files"][0]["publicUrl"],
-            "https://media.spcprt.com/users/user-123/projects/project-abc/photos/Interior/Kitchen%20Hero.JPG",
+            "https://spcprt.com/spaces/media/users/user-123/projects/project-abc/photos/Interior/Kitchen%20Hero.JPG",
         )
         self.assertEqual(fake_r2.calls[0][0], "put_object")
         self.assertEqual(fake_r2.calls[0][1]["ContentType"], "image/jpeg")
@@ -194,7 +194,7 @@ class StaticPhotoUploadTests(unittest.TestCase):
                         "photoLibrary": {
                             "mode": "static_photos",
                             "bucket": "spaces-viewers",
-                            "publicBaseUrl": "https://media.spcprt.com",
+                            "publicBaseUrl": "https://spcprt.com/spaces/media",
                             "folders": ["Interior"],
                             "files": [
                                 {
@@ -203,7 +203,7 @@ class StaticPhotoUploadTests(unittest.TestCase):
                                     "contentType": "image/jpeg",
                                     "sizeBytes": 2048,
                                     "objectKey": "users/user-123/projects/project-abc/photos/Interior/Kitchen%20Hero.JPG",
-                                    "publicUrl": "https://media.spcprt.com/users/user-123/projects/project-abc/photos/Interior/Kitchen%20Hero.JPG",
+                                    "publicUrl": "https://spcprt.com/spaces/media/users/user-123/projects/project-abc/photos/Interior/Kitchen%20Hero.JPG",
                                     "uploadedAt": 1770000000000,
                                 }
                             ],

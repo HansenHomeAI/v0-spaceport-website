@@ -329,11 +329,13 @@ jobs:
         R2_SECRET_ACCESS_KEY_STAGING: ${{ secrets.R2_SECRET_ACCESS_KEY_STAGING }}
         R2_BUCKET_NAME_STAGING: ${{ secrets.R2_BUCKET_NAME_STAGING }}
         R2_REGION_STAGING: ${{ secrets.R2_REGION_STAGING }}
+        R2_PUBLIC_BASE_URL_STAGING: ${{ secrets.R2_PUBLIC_BASE_URL_STAGING }}
         R2_ENDPOINT_PROD: ${{ secrets.R2_ENDPOINT_PROD }}
         R2_ACCESS_KEY_ID_PROD: ${{ secrets.R2_ACCESS_KEY_ID_PROD }}
         R2_SECRET_ACCESS_KEY_PROD: ${{ secrets.R2_SECRET_ACCESS_KEY_PROD }}
         R2_BUCKET_NAME_PROD: ${{ secrets.R2_BUCKET_NAME_PROD }}
         R2_REGION_PROD: ${{ secrets.R2_REGION_PROD }}
+        R2_PUBLIC_BASE_URL_PROD: ${{ secrets.R2_PUBLIC_BASE_URL_PROD }}
         SPACES_THUMBNAIL_URL: ${{ secrets.SPACES_THUMBNAIL_URL }}
         SPACES_THUMBNAIL_TOKEN: ${{ secrets.SPACES_THUMBNAIL_TOKEN }}
         # Referral system configuration - using CDK defaults (Option A)
