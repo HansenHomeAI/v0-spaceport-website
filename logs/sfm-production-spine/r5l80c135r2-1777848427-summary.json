@@ -1,0 +1,67 @@
+{
+  "adjacent_chunk_merge_triggered": true,
+  "boundary_recovery_triggered": true,
+  "dataset_images": 1456,
+  "execution_images": 396,
+  "filtered_points": 232910,
+  "gate_passed": true,
+  "job": "r5l80c135r2-1777848427",
+  "leaf_statuses": [
+    {
+      "chunk_index": 1,
+      "core_registered_ratio": 1.0,
+      "fallbacks_used": [],
+      "registered_count": 140,
+      "registered_ratio": 1.0,
+      "status": "passed"
+    },
+    {
+      "chunk_index": 3,
+      "core_registered_ratio": 0.9718,
+      "fallbacks_used": [],
+      "registered_count": 138,
+      "registered_ratio": 0.9857,
+      "status": "passed"
+    },
+    {
+      "chunk_index": 5,
+      "core_registered_ratio": 0.981,
+      "fallbacks_used": [
+        "adjacent_chunk_merge_retry",
+        "bounded_chunk_recovery"
+      ],
+      "registered_count": 276,
+      "registered_ratio": 0.9857,
+      "status": "retried"
+    }
+  ],
+  "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r5l80c135r2-1777848427/colmap",
+  "points_per_registered_image": 682.88,
+  "raw_points": 267689,
+  "reducer": {
+    "ba_policy": "local_or_deferred_global",
+    "branch": "agent-73948216-sfm-production-spine",
+    "expected_component_count": 1,
+    "failed_leaf_count": 0,
+    "head": "f525ffae2462220c44a7a0cb7ea8ecc6ea290fdf",
+    "input_uri": "s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip",
+    "leaf_count": 3,
+    "merge_strategy": "overlap_first_balanced",
+    "merged_component_count": 1,
+    "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r5l80c135r2-1777848427/colmap",
+    "passed_leaf_count": 3,
+    "planner_manifest": "chunk_planner_manifest.json",
+    "promotion_blockers": [],
+    "standard_sparse0_exists": true
+  },
+  "registered": 392,
+  "runtime_sec": 7113.72,
+  "selected_chunk_indexes": [
+    1,
+    3,
+    5
+  ],
+  "sparse0_exists": true,
+  "sparse0_object_count": 5,
+  "status": "Completed"
+}

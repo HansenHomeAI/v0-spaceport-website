@@ -1,0 +1,25 @@
+{
+    "Count": 5,
+    "Objects": [
+        {
+            "Key": "manual-validations/r5l80c135r2-1777848427/colmap/sparse/0/cameras.txt",
+            "Size": 195
+        },
+        {
+            "Key": "manual-validations/r5l80c135r2-1777848427/colmap/sparse/0/frames.txt",
+            "Size": 64301
+        },
+        {
+            "Key": "manual-validations/r5l80c135r2-1777848427/colmap/sparse/0/images.txt",
+            "Size": 151203370
+        },
+        {
+            "Key": "manual-validations/r5l80c135r2-1777848427/colmap/sparse/0/points3D.txt",
+            "Size": 39317675
+        },
+        {
+            "Key": "manual-validations/r5l80c135r2-1777848427/colmap/sparse/0/rigs.txt",
+            "Size": 218
+        }
+    ]
+}
