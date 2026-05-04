@@ -1,0 +1,462 @@
+{
+  "block_reasons": [
+    "review_cameras_missing_full_tile_support",
+    "review_cameras_missing_any_selected_tile_support"
+  ],
+  "camera_set": "auto",
+  "checked_at": "2026-05-04T17:56:47.728896+00:00",
+  "full_support_selected_tile_ids": [
+    "tile_00",
+    "tile_02",
+    "tile_11",
+    "tile_13",
+    "tile_01",
+    "tile_04",
+    "tile_05",
+    "tile_06",
+    "tile_10"
+  ],
+  "full_support_tile_additions": [
+    "tile_01",
+    "tile_04",
+    "tile_05",
+    "tile_06",
+    "tile_10"
+  ],
+  "matched_any_support_camera_subset": {
+    "boundary_camera_ids": [
+      "DJI_0067.JPG",
+      "DJI_0068.JPG",
+      "DJI_0069.JPG",
+      "DJI_0070.JPG"
+    ],
+    "horizon_camera_ids": [
+      "DJI_0073.JPG"
+    ],
+    "near_detail_camera_ids": []
+  },
+  "matched_full_support_camera_subset": {
+    "boundary_camera_ids": [],
+    "horizon_camera_ids": [],
+    "near_detail_camera_ids": []
+  },
+  "max_images_per_bucket": null,
+  "minimum_any_support_selected_tile_ids": [
+    "tile_00",
+    "tile_02",
+    "tile_11",
+    "tile_13",
+    "tile_04"
+  ],
+  "minimum_any_support_tile_additions": [
+    "tile_04"
+  ],
+  "missing_support_tile_frequency": {
+    "tile_01": 3,
+    "tile_04": 12,
+    "tile_05": 4,
+    "tile_06": 1,
+    "tile_10": 4
+  },
+  "per_bucket_counts": {
+    "boundary": {
+      "any_support_selected_count": 4,
+      "full_support_selected_count": 0,
+      "missing_manifest_support_count": 0,
+      "no_selected_support_count": 0,
+      "review_camera_count": 4
+    },
+    "horizon": {
+      "any_support_selected_count": 1,
+      "full_support_selected_count": 0,
+      "missing_manifest_support_count": 0,
+      "no_selected_support_count": 3,
+      "review_camera_count": 4
+    },
+    "near_detail": {
+      "any_support_selected_count": 0,
+      "full_support_selected_count": 0,
+      "missing_manifest_support_count": 0,
+      "no_selected_support_count": 4,
+      "review_camera_count": 4
+    }
+  },
+  "per_camera": [
+    {
+      "bucket": "near_detail",
+      "bucket_key": "near_detail_camera_ids",
+      "image_name": "DJI_0258.JPG",
+      "missing_support_tile_ids": [
+        "tile_04",
+        "tile_05"
+      ],
+      "selected_support_tile_ids": [],
+      "status": "no_selected_support",
+      "support_roles_by_tile": {
+        "tile_04": [
+          "base",
+          "image"
+        ],
+        "tile_05": [
+          "base",
+          "image"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_04",
+        "tile_05"
+      ]
+    },
+    {
+      "bucket": "near_detail",
+      "bucket_key": "near_detail_camera_ids",
+      "image_name": "DJI_0261.JPG",
+      "missing_support_tile_ids": [
+        "tile_04",
+        "tile_05"
+      ],
+      "selected_support_tile_ids": [],
+      "status": "no_selected_support",
+      "support_roles_by_tile": {
+        "tile_04": [
+          "base",
+          "image"
+        ],
+        "tile_05": [
+          "base",
+          "image"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_04",
+        "tile_05"
+      ]
+    },
+    {
+      "bucket": "near_detail",
+      "bucket_key": "near_detail_camera_ids",
+      "image_name": "DJI_0262.JPG",
+      "missing_support_tile_ids": [
+        "tile_04",
+        "tile_05"
+      ],
+      "selected_support_tile_ids": [],
+      "status": "no_selected_support",
+      "support_roles_by_tile": {
+        "tile_04": [
+          "base",
+          "image"
+        ],
+        "tile_05": [
+          "base",
+          "image"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_04",
+        "tile_05"
+      ]
+    },
+    {
+      "bucket": "near_detail",
+      "bucket_key": "near_detail_camera_ids",
+      "image_name": "DJI_0263.JPG",
+      "missing_support_tile_ids": [
+        "tile_04",
+        "tile_05"
+      ],
+      "selected_support_tile_ids": [],
+      "status": "no_selected_support",
+      "support_roles_by_tile": {
+        "tile_04": [
+          "base",
+          "image"
+        ],
+        "tile_05": [
+          "base",
+          "image"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_04",
+        "tile_05"
+      ]
+    },
+    {
+      "bucket": "boundary",
+      "bucket_key": "boundary_camera_ids",
+      "image_name": "DJI_0067.JPG",
+      "missing_support_tile_ids": [
+        "tile_04",
+        "tile_10"
+      ],
+      "selected_support_tile_ids": [
+        "tile_13"
+      ],
+      "status": "partial_support_selected",
+      "support_roles_by_tile": {
+        "tile_04": [
+          "base",
+          "image"
+        ],
+        "tile_10": [
+          "base",
+          "image"
+        ],
+        "tile_13": [
+          "context"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_04",
+        "tile_10",
+        "tile_13"
+      ]
+    },
+    {
+      "bucket": "boundary",
+      "bucket_key": "boundary_camera_ids",
+      "image_name": "DJI_0068.JPG",
+      "missing_support_tile_ids": [
+        "tile_04",
+        "tile_10"
+      ],
+      "selected_support_tile_ids": [
+        "tile_13"
+      ],
+      "status": "partial_support_selected",
+      "support_roles_by_tile": {
+        "tile_04": [
+          "base",
+          "image"
+        ],
+        "tile_10": [
+          "base",
+          "image"
+        ],
+        "tile_13": [
+          "context"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_04",
+        "tile_10",
+        "tile_13"
+      ]
+    },
+    {
+      "bucket": "boundary",
+      "bucket_key": "boundary_camera_ids",
+      "image_name": "DJI_0069.JPG",
+      "missing_support_tile_ids": [
+        "tile_04",
+        "tile_10"
+      ],
+      "selected_support_tile_ids": [
+        "tile_13"
+      ],
+      "status": "partial_support_selected",
+      "support_roles_by_tile": {
+        "tile_04": [
+          "base",
+          "image"
+        ],
+        "tile_10": [
+          "base",
+          "image"
+        ],
+        "tile_13": [
+          "context"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_04",
+        "tile_10",
+        "tile_13"
+      ]
+    },
+    {
+      "bucket": "boundary",
+      "bucket_key": "boundary_camera_ids",
+      "image_name": "DJI_0070.JPG",
+      "missing_support_tile_ids": [
+        "tile_04",
+        "tile_10"
+      ],
+      "selected_support_tile_ids": [
+        "tile_13"
+      ],
+      "status": "partial_support_selected",
+      "support_roles_by_tile": {
+        "tile_04": [
+          "base",
+          "image"
+        ],
+        "tile_10": [
+          "base",
+          "image"
+        ],
+        "tile_13": [
+          "context"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_04",
+        "tile_10",
+        "tile_13"
+      ]
+    },
+    {
+      "bucket": "horizon",
+      "bucket_key": "horizon_camera_ids",
+      "image_name": "DJI_0066.JPG",
+      "missing_support_tile_ids": [
+        "tile_04",
+        "tile_06"
+      ],
+      "selected_support_tile_ids": [],
+      "status": "no_selected_support",
+      "support_roles_by_tile": {
+        "tile_04": [
+          "base",
+          "image"
+        ],
+        "tile_06": [
+          "context"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_04",
+        "tile_06"
+      ]
+    },
+    {
+      "bucket": "horizon",
+      "bucket_key": "horizon_camera_ids",
+      "image_name": "DJI_0073.JPG",
+      "missing_support_tile_ids": [
+        "tile_01",
+        "tile_04"
+      ],
+      "selected_support_tile_ids": [
+        "tile_00",
+        "tile_02"
+      ],
+      "status": "partial_support_selected",
+      "support_roles_by_tile": {
+        "tile_00": [
+          "context"
+        ],
+        "tile_01": [
+          "base",
+          "image"
+        ],
+        "tile_02": [
+          "context"
+        ],
+        "tile_04": [
+          "base",
+          "image"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_00",
+        "tile_01",
+        "tile_02",
+        "tile_04"
+      ]
+    },
+    {
+      "bucket": "horizon",
+      "bucket_key": "horizon_camera_ids",
+      "image_name": "DJI_0146.JPG",
+      "missing_support_tile_ids": [
+        "tile_01",
+        "tile_04"
+      ],
+      "selected_support_tile_ids": [],
+      "status": "no_selected_support",
+      "support_roles_by_tile": {
+        "tile_01": [
+          "base",
+          "image"
+        ],
+        "tile_04": [
+          "base",
+          "image"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_01",
+        "tile_04"
+      ]
+    },
+    {
+      "bucket": "horizon",
+      "bucket_key": "horizon_camera_ids",
+      "image_name": "DJI_0147.JPG",
+      "missing_support_tile_ids": [
+        "tile_01",
+        "tile_04"
+      ],
+      "selected_support_tile_ids": [],
+      "status": "no_selected_support",
+      "support_roles_by_tile": {
+        "tile_01": [
+          "base",
+          "image"
+        ],
+        "tile_04": [
+          "base",
+          "image"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_01",
+        "tile_04"
+      ]
+    }
+  ],
+  "recommendation": {
+    "minimum_any_support_is_diagnostic_only": true,
+    "next_no_spend_step": "dry_run_expanded_full_support_canary",
+    "run_current_subset_review": false
+  },
+  "review_image_names_by_bucket": {
+    "boundary_camera_ids": [
+      "DJI_0067.JPG",
+      "DJI_0068.JPG",
+      "DJI_0069.JPG",
+      "DJI_0070.JPG"
+    ],
+    "horizon_camera_ids": [
+      "DJI_0066.JPG",
+      "DJI_0073.JPG",
+      "DJI_0146.JPG",
+      "DJI_0147.JPG"
+    ],
+    "near_detail_camera_ids": [
+      "DJI_0258.JPG",
+      "DJI_0261.JPG",
+      "DJI_0262.JPG",
+      "DJI_0263.JPG"
+    ]
+  },
+  "selected_tile_ids": [
+    "tile_00",
+    "tile_02",
+    "tile_11",
+    "tile_13"
+  ],
+  "status": "blocked",
+  "support_tile_frequency": {
+    "tile_00": 1,
+    "tile_01": 3,
+    "tile_02": 1,
+    "tile_04": 12,
+    "tile_05": 4,
+    "tile_06": 1,
+    "tile_10": 4,
+    "tile_13": 4
+  }
+}

@@ -8315,5 +8315,86 @@
       "next_unblocked_step": "Generate a canary-specific V18 comparison camera set covered by selected tiles, or expand the next bounded canary to include missing high-frequency tiles tile_01,tile_04,tile_05,tile_06,tile_10 before spending on another quality review."
     },
     "next_unblocked_step": "Generate a canary-specific V18 comparison camera set covered by selected tiles, or expand the next bounded canary to include missing high-frequency tiles tile_01,tile_04,tile_05,tile_06,tile_10 before spending on another quality review."
+  },
+  "md1_r4_camera_coverage_repair_dryrun_20260504": {
+    "checked_at": "2026-05-04T18:03:00Z",
+    "exact_head_before_commit": "43b1c24ee2c02b6cedd2119cdf1bc5c39bf12f7b",
+    "exact_head_gate_before_commit": {
+      "workflow": "CDK Deploy",
+      "run_id": 25299598203,
+      "conclusion": "success"
+    },
+    "live_aws_state": {
+      "training_jobs_in_progress": [],
+      "processing_jobs_in_progress": []
+    },
+    "source_review_manifest": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-sky-v18-smoke-p24/quality_review_manifest.json",
+    "tile_manifest": "logs/audit/md1-1k-full-r2/r5_teacher_context_v12_sky_v18_preflight_20260429111738/3dgs_tile_manifest.json",
+    "current_canary_selected_tiles": [
+      "tile_00",
+      "tile_02",
+      "tile_11",
+      "tile_13"
+    ],
+    "current_canary_coverage_report": "logs/md1-cost-reduction-r4-canary-camera-tile-coverage-20260504.json",
+    "current_canary_coverage_status": "blocked",
+    "current_canary_full_support_camera_counts": {
+      "near_detail": 0,
+      "boundary": 0,
+      "horizon": 0
+    },
+    "missing_support_tile_frequency": {
+      "tile_04": 12,
+      "tile_05": 4,
+      "tile_10": 4,
+      "tile_01": 3,
+      "tile_06": 1
+    },
+    "expanded_canary_selected_tiles": [
+      "tile_00",
+      "tile_02",
+      "tile_11",
+      "tile_13",
+      "tile_01",
+      "tile_04",
+      "tile_05",
+      "tile_06",
+      "tile_10"
+    ],
+    "expanded_canary_coverage_report": "logs/md1-cost-reduction-r4-expanded-camera-coverage-canary-camera-tile-coverage-20260504.json",
+    "expanded_canary_coverage_status": "ok",
+    "expanded_canary_full_support_camera_counts": {
+      "near_detail": 4,
+      "boundary": 4,
+      "horizon": 4
+    },
+    "expanded_canary_dryrun": "logs/md1-cost-reduction-r4-expanded-camera-coverage-canary-dryrun-20260504.json",
+    "expanded_canary_cache_hits": [
+      "tile_00",
+      "tile_02",
+      "tile_11",
+      "tile_13"
+    ],
+    "expanded_canary_train_tiles": [
+      "tile_01",
+      "tile_04",
+      "tile_05",
+      "tile_06",
+      "tile_10"
+    ],
+    "expanded_canary_train_tile_budget": {
+      "budget_class": "standard",
+      "max_iterations": 8000,
+      "max_selected_images": 128
+    },
+    "expanded_canary_estimated_usd": 5.454,
+    "expanded_canary_worst_case_usd": 37.875,
+    "expanded_canary_max_estimated_usd": 12.0,
+    "submitted_jobs": [],
+    "decision": {
+      "status": "no_spend_plan_ready_not_submitted",
+      "summary": "The previous 4-tile canary is invalid for acceptance because it cannot render the V18 smoke camera set with full selected-tile support. The expanded 9-tile canary repairs camera coverage while reusing four validated leaf artifacts and planning only five additional standard-budget leaves.",
+      "next_unblocked_step": "Commit and gate this no-spend evidence. If exact-head stays green and live compute remains idle, choose either the bounded 9-tile canary under an explicit spend cap or a cheaper staged diagnostic subset before any full 14-tile run."
+    }
   }
 }

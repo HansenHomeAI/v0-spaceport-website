@@ -1,0 +1,103 @@
+{
+  "generated_at": "2026-05-04T17:57:29.163090+00:00",
+  "purpose": "Cache only structurally passed filtered-init canary rebuild leaves for bounded expanded-canary dry-runs; not production accepted because current 4-tile review camera coverage is invalid.",
+  "source_review_analysis": "logs/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-review-analysis-20260504.json",
+  "tiles": {
+    "tile_00": {
+      "acceptance_gate_status": "blocked_invalid_canary_camera_coverage",
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_00/md1-r4leafreb-1777858863-tile-00/output/model.tar.gz",
+      "billable_seconds": 3389,
+      "budget_class": "hard",
+      "canary_cache_scope": "r4_leafinit_rebuild_structural_pass_only_review_blocked_camera_coverage",
+      "estimated_usd": 1.4262,
+      "input_hash": "06db1944e7b8360a867bdab8377c400cc07bc1946f35c36d78cda7b5d51f10a0",
+      "max_iterations": 12000,
+      "max_selected_images": 188,
+      "ply_vertices": 248348,
+      "preflight_decision": "leaf_preflight_passed_cache_candidate",
+      "quality_gate_status": "passed",
+      "scaffold_initialization": {
+        "fallback_used": false,
+        "inherited_gaussian_count": 300000,
+        "source_filtered_gaussian_count": 1554116,
+        "source_gaussian_count": 1554116
+      },
+      "selected_image_count": 188,
+      "source_job_name": "md1-r4leafreb-1777858863-tile-00",
+      "tile_id": "tile_00"
+    },
+    "tile_02": {
+      "acceptance_gate_status": "blocked_invalid_canary_camera_coverage",
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_02/md1-r4leafreb-1777858863-tile-02/output/model.tar.gz",
+      "billable_seconds": 2424,
+      "budget_class": "standard",
+      "canary_cache_scope": "r4_leafinit_rebuild_structural_pass_only_review_blocked_camera_coverage",
+      "estimated_usd": 1.0201,
+      "input_hash": "80d150712d496ba709114a1d67ddaa1546b2693ad01b9e6faba683dbd47eb7af",
+      "max_iterations": 8000,
+      "max_selected_images": 128,
+      "ply_vertices": 480285,
+      "preflight_decision": "leaf_preflight_passed_cache_candidate",
+      "quality_gate_status": "passed",
+      "scaffold_initialization": {
+        "fallback_used": false,
+        "inherited_gaussian_count": 300000,
+        "source_filtered_gaussian_count": 1357517,
+        "source_gaussian_count": 1554116
+      },
+      "selected_image_count": 128,
+      "source_job_name": "md1-r4leafreb-1777858863-tile-02",
+      "tile_id": "tile_02"
+    },
+    "tile_11": {
+      "acceptance_gate_status": "blocked_invalid_canary_camera_coverage",
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_11/md1-r4leafreb-1777858863-tile-11/output/model.tar.gz",
+      "billable_seconds": 1194,
+      "budget_class": "tiny",
+      "canary_cache_scope": "r4_leafinit_rebuild_structural_pass_only_review_blocked_camera_coverage",
+      "estimated_usd": 0.5025,
+      "input_hash": "2b03c6f546b7ecce3573f7b24e42fa275f669705c98ad6059b6a18b48c384cdf",
+      "max_iterations": 3000,
+      "max_selected_images": 96,
+      "ply_vertices": 119,
+      "preflight_decision": "leaf_preflight_passed_cache_candidate",
+      "quality_gate_status": "passed",
+      "scaffold_initialization": {
+        "fallback_used": false,
+        "inherited_gaussian_count": 300000,
+        "source_filtered_gaussian_count": 1554116,
+        "source_gaussian_count": 1554116
+      },
+      "selected_image_count": 96,
+      "source_job_name": "md1-r4leafreb-1777858863-tile-11",
+      "tile_id": "tile_11"
+    },
+    "tile_13": {
+      "acceptance_gate_status": "blocked_invalid_canary_camera_coverage",
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-proof-20260503/tiles/tile_13/md1-r4leafinit-1777850709-tile-13/output/model.tar.gz",
+      "budget_class": "hard",
+      "canary_cache_scope": "r4_leafinit_rebuild_structural_pass_only_review_blocked_camera_coverage",
+      "estimated_usd": null,
+      "input_hash": "7b8ff602c3543c66fa77a5e97fa6368b4a2934c87e1bef0ed3a21280c8d45b16",
+      "max_iterations": 12000,
+      "max_selected_images": 188,
+      "min_source_tile_core_ratio": 0.659578487343035,
+      "ownership_distribution_diagnosis": "logs/md1-cost-reduction-r4-leaf-scaffold-init-proof-ownership-distribution-20260503.json",
+      "ownership_gate_status": "ownership_passed",
+      "ply_vertices": 227609,
+      "previous_bad_hard_tile13_ratio": 0.025578298141946496,
+      "quality_gate_status": "passed",
+      "scaffold_initialization": {
+        "fallback_used": false,
+        "inherited_gaussian_count": 300000,
+        "source_filtered_gaussian_count": 1011155,
+        "source_gaussian_count": 1554116
+      },
+      "source_job_name": "md1-r4leafinit-1777850709-tile-13",
+      "source_tile_core_count": 159633,
+      "source_tile_core_ratio": 0.7013474862593307,
+      "tile_id": "tile_13",
+      "v18_reference_merge_retention_ratio": 0.7328649859367056
+    }
+  }
+}
