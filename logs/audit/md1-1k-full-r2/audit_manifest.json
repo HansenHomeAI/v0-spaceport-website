@@ -8181,5 +8181,39 @@
       "near_detail_ssim_regression"
     ],
     "next_unblocked_step": "Rebuild only filtered-init canary tiles tile_00, tile_02, and tile_11 with tile_13 cached, then rerun V18 non-regression review before any full 14-tile candidate."
+  },
+  "gates_md1_r4_leafinit_canary_review_20260504": {
+    "head": "d16ffe9d4a83a7ae95631facae8e3c7cc45122eb",
+    "cdk_deploy_run": 25295715997,
+    "cdk_deploy_conclusion": "success",
+    "pages_run": null,
+    "note": "Exact-head gate/status update is intentionally local until the next meaningful monitoring or implementation commit.",
+    "next_unblocked_step": "Rebuild only filtered-init canary tiles tile_00, tile_02, and tile_11 with tile_13 cached, then rerun V18 non-regression review before any full 14-tile candidate."
+  },
+  "md1_r4_filtered_init_canary_rebuild_dryrun_20260504": {
+    "dryrun_path": "logs/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-dryrun-20260504.json",
+    "prior_stats_path": "logs/md1-v18-tile-prior-stats-r4-leafinit-canary-rebuild-20260504.json",
+    "tile_manifest_json": "logs/audit/md1-1k-full-r2/r5_teacher_context_v12_sky_v18_preflight_20260429111738/3dgs_tile_manifest.json",
+    "view_bucket_json": "logs/audit/md1-1k-full-r2/r5_teacher_context_v12_sky_v18_preflight_20260429111738/3dgs_view_buckets.fixed.json",
+    "submitted_jobs": [],
+    "cached_tiles": [
+      "tile_13"
+    ],
+    "planned_train_tiles": [
+      "tile_00",
+      "tile_02",
+      "tile_11"
+    ],
+    "planned_budget_classes": {
+      "tile_00": "hard",
+      "tile_02": "standard",
+      "tile_11": "tiny",
+      "tile_13": "cached"
+    },
+    "estimated_usd": 3.2875,
+    "max_estimated_usd": 5.0,
+    "strict_filtered_scaffold_init": true,
+    "decision": "dryrun_passed_submit_only_after_exact_head_gate_and_live_aws_idle",
+    "next_unblocked_step": "Commit/push/gate this dry-run, then submit only the bounded canary rebuild with tile_13 cached before rerunning V18 non-regression review."
   }
 }
