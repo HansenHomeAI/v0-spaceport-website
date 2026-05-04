@@ -148,7 +148,7 @@ def _build_static_photo_key(user_sub: str, project_id: str, relative_path: str) 
 
 def _public_url_for_key(object_key: str) -> str:
     if not R2_PUBLIC_BASE_URL:
-        raise RuntimeError('R2_PUBLIC_BASE_URL is not configured for static photo uploads. Set the deploy secret for this environment.')
+        raise RuntimeError('R2_PUBLIC_BASE_URL is not configured for static photo uploads. Set R2_PUBLIC_BASE_URL_STAGING or R2_PUBLIC_BASE_URL_PROD.')
     return f"{R2_PUBLIC_BASE_URL}/{object_key}"
 
 
@@ -188,7 +188,7 @@ def _create_static_photo_upload_urls(user_sub: str, project_id: str, files: Any)
     if not client:
         raise RuntimeError('R2 is not configured for static photo uploads.')
     if not R2_PUBLIC_BASE_URL:
-        raise RuntimeError('R2_PUBLIC_BASE_URL is not configured for static photo uploads. Set the deploy secret for this environment.')
+        raise RuntimeError('R2_PUBLIC_BASE_URL is not configured for static photo uploads. Set R2_PUBLIC_BASE_URL_STAGING or R2_PUBLIC_BASE_URL_PROD.')
 
     validated_files = _validate_static_photo_request(files)
     results = []
