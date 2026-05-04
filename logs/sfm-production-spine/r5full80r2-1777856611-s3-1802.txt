@@ -1,0 +1,8 @@
+2026-05-04 00:05:09     416945 manual-validations/r5full80r2-1777856611/colmap/chunk_planner_manifest.json
+2026-05-04 00:05:09       6823 manual-validations/r5full80r2-1777856611/colmap/leaf_metadata.json
+2026-05-04 00:05:09        598 manual-validations/r5full80r2-1777856611/colmap/planner_static_report.json
+2026-05-04 00:05:09        756 manual-validations/r5full80r2-1777856611/colmap/reducer_metadata.json
+2026-05-04 00:05:09      50088 manual-validations/r5full80r2-1777856611/colmap/sfm_metadata.json
+
+Total Objects: 5
+   Total Size: 475210

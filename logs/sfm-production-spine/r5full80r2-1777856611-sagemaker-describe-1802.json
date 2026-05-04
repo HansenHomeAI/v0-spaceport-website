@@ -1,0 +1,82 @@
+{
+    "ProcessingInputs": [
+        {
+            "InputName": "sfm-input",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip",
+                "LocalPath": "/opt/ml/processing/input",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated",
+                "S3CompressionType": "None"
+            }
+        }
+    ],
+    "ProcessingOutputConfig": {
+        "Outputs": [
+            {
+                "OutputName": "colmap-output",
+                "S3Output": {
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/r5full80r2-1777856611/colmap",
+                    "LocalPath": "/opt/ml/processing/output",
+                    "S3UploadMode": "EndOfJob"
+                },
+                "AppManaged": false
+            }
+        ]
+    },
+    "ProcessingJobName": "r5full80r2-1777856611",
+    "ProcessingResources": {
+        "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 120
+        }
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 86400
+    },
+    "AppSpecification": {
+        "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine",
+        "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+        ]
+    },
+    "Environment": {
+        "AWS_DEFAULT_REGION": "us-west-2",
+        "COLMAP_CHUNK_BRIDGE_RECOVERY_MAX_IMAGES": "500",
+        "COLMAP_CHUNK_CROSS_EDGE_MIN_COUNT": "24",
+        "COLMAP_CHUNK_HARD_MAX_IMAGES": "140",
+        "COLMAP_CHUNK_MIN_IMAGES": "60",
+        "COLMAP_CHUNK_OVERLAP_IMAGES": "40",
+        "COLMAP_CHUNK_PLANNER": "footprint_graph_v1",
+        "COLMAP_CHUNK_TARGET_IMAGES": "80",
+        "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+        "COLMAP_GRAPH_XY_NEIGHBOR_LIMIT": "48",
+        "COLMAP_LEAF_HARD_CAP": "140",
+        "COLMAP_LEAF_TARGET_IMAGES": "80",
+        "COLMAP_MATCH_PROFILE": "P3",
+        "COLMAP_PAIR_CAP_LOCAL": "32",
+        "COLMAP_PAIR_CAP_REVISIT": "14",
+        "COLMAP_PAIR_CAP_SEAM": "16",
+        "COLMAP_PARENT_MERGE_MODE": "legacy_rerun",
+        "COLMAP_PARENT_SEAM_RETRY_PAIR_CAP": "36",
+        "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+        "PYTHONUNBUFFERED": "1",
+        "SFM_BENCHMARK_SUBSET_STRATEGY": "first_portion_by_exif_datetime_else_filename",
+        "SFM_BRANCH_NAME": "agent-73948216-sfm-production-spine",
+        "SFM_GIT_HEAD": "adbc7dafe7ef3555185d8de3265818a7b73832b2",
+        "SFM_INPUT_URI": "s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip",
+        "SFM_JOB_NAME": "r5full80r2-1777856611",
+        "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/r5full80r2-1777856611/colmap"
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/r5full80r2-1777856611",
+    "ProcessingJobStatus": "Failed",
+    "FailureReason": "AlgorithmError: , exit code: 1",
+    "ProcessingEndTime": "2026-05-04T00:05:11.460000-06:00",
+    "ProcessingStartTime": "2026-05-03T19:04:16.898000-06:00",
+    "LastModifiedTime": "2026-05-04T00:33:46.974000-06:00",
+    "CreationTime": "2026-05-03T19:03:31.700000-06:00"
+}

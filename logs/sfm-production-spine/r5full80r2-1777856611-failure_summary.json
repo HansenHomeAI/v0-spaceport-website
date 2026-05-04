@@ -1,0 +1,109 @@
+{
+  "job": "r5full80r2-1777856611",
+  "status": "Failed",
+  "failure_reason": "AlgorithmError: exit code 1",
+  "input_uri": "s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip",
+  "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r5full80r2-1777856611/colmap",
+  "planner": {
+    "dataset_image_count": 1456,
+    "chunk_count": 11,
+    "chunk_sizes": [
+      140,
+      140,
+      140,
+      140,
+      140,
+      140,
+      140,
+      140,
+      140,
+      140,
+      140
+    ],
+    "verified_pair_count": 4102,
+    "connected_component_count": 1,
+    "expected_output_kind": "single_merged_model"
+  },
+  "leaf_count": 13,
+  "passed_leaf_count": 12,
+  "failed_leaf_count": 1,
+  "failed_leaves": [
+    {
+      "chunk_index": 5,
+      "status": "failed",
+      "mapper_mode": "incremental",
+      "image_count": 140,
+      "registered_count": 115,
+      "registered_ratio": 0.8156,
+      "core_registered_ratio": 0.8214,
+      "verified_pair_count": 1862,
+      "points3d_count": 82979,
+      "points_per_registered_image": 721.56,
+      "timings_sec": {
+        "mapper_initial": 275.17,
+        "mapper_recovery": 284.08
+      },
+      "peak_memory_mb": null,
+      "failure_stage": "chunk_05_recovery_failed",
+      "failure_reason": "chunk 5 remained below threshold after prior-aware retry: registered=115/141 core=115/140 missing_core=['DJI_0099.JPG', 'DJI_0100.JPG', 'DJI_0101.JPG', 'DJI_0514.JPG', 'DJI_0515.JPG', 'DJI_0516.JPG', 'DJI_0517.JPG', 'DJI_0518.JPG', 'DJI_0519.JPG', 'DJI_0520.JPG', 'DJI_0521.JPG', 'DJI_0522.JPG', 'DJI_0523.JPG', 'DJI_0524.JPG', 'DJI_0525.JPG', 'DJI_0526.JPG', 'DJI_0527.JPG', 'DJI_0528.JPG', 'DJI_0529.JPG', 'DJI_0814.JPG', 'DJI_0815.JPG', 'DJI_0816.JPG', 'DJI_0817.JPG', 'DJI_0818.JPG', 'DJI_0819.JPG']",
+      "fallbacks_used": [
+        "bounded_chunk_recovery"
+      ]
+    }
+  ],
+  "merged_component_count": 2,
+  "expected_component_count": 1,
+  "standard_sparse0_exists": false,
+  "promotion_blockers": [
+    "failed_leaf",
+    "missing_sparse0",
+    "unexpected_component_split",
+    "merge_retention_below_gate"
+  ],
+  "merge_failure": "Failed to merge chunk models: no overlapping registered images produced a usable merge among pending stages ['chunk_model_merger_08_output_attempt_01', 'chunk_model_merger_10_output_attempt_01']",
+  "pending_components": [
+    {
+      "component_index": 0,
+      "pending_model_indexes": [
+        0
+      ],
+      "stages": [
+        "chunk_model_merger_08_output_attempt_01"
+      ],
+      "source_chunk_indexes": [
+        2,
+        3,
+        7
+      ],
+      "source_image_count": 411,
+      "registered_image_count": 411
+    },
+    {
+      "component_index": 1,
+      "pending_model_indexes": [
+        1
+      ],
+      "stages": [
+        "chunk_model_merger_10_output_attempt_01"
+      ],
+      "source_chunk_indexes": [
+        0,
+        1,
+        4,
+        5,
+        6,
+        8,
+        9,
+        10
+      ],
+      "source_image_count": 1045,
+      "registered_image_count": 1018
+    }
+  ],
+  "pending_stages": [
+    "chunk_model_merger_08_output_attempt_01",
+    "chunk_model_merger_10_output_attempt_01"
+  ],
+  "root_cause_hypothesis": "Full 80/140 legacy-rerun run failed closed after leaf 5 stayed below gate and final balanced merge split into two registered-overlap components; next bounded test uses seam_only_v1 on chunks 2,3,4,7,8 to exercise pending-component bridge recovery before any full rerun.",
+  "updated": "2026-05-04T18:09:38Z"
+}
