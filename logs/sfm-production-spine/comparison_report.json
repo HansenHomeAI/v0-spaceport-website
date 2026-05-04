@@ -27,8 +27,9 @@
         "failure_reason": null,
         "input_uri": "s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip",
         "job": "r5full80s1-1777934749",
-        "latest_progress": "submit accepted; no ProcessingStartTime/no CloudWatch stream yet at first describe; S3 empty before EndOfJob upload.",
-        "ledger_head": "216853f7357c0224a0b6a3051c02d8de442f0975",
+        "job_env_branch_head": "216853f7357c0224a0b6a3051c02d8de442f0975",
+        "latest_progress": "InProgress; ProcessingStartTime=2026-05-04T22:46:29Z; no FailureReason; CloudWatch stream r5full80s1-1777934749/algo-1-1777934789 active; 1456 images extracted; 457 whitespace filenames sanitized; GPS/orientation priors 1456/1456; feature_extractor reached 20/1456 at 2026-05-04T22:51:06Z; S3 output empty before EndOfJob upload.",
+        "ledger_head": "d1cf36140330b8c31cf28e07e7901526180c2f5c",
         "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r5full80s1-1777934749/colmap",
         "parent_merge_mode": "seam_only_v1",
         "runtime_head": "f525ffae2462220c44a7a0cb7ea8ecc6ea290fdf",
@@ -95,7 +96,12 @@
       "logs/sfm-production-spine/r5bridge739s1-1777918142-summary.json",
       "logs/sfm-production-spine/r5_full80_s1_submit.json",
       "logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-submit.json",
-      "s3://spaceport-ml-processing-staging/manual-validations/r5full80s1-1777934749/colmap"
+      "s3://spaceport-ml-processing-staging/manual-validations/r5full80s1-1777934749/colmap",
+      "logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-2251.json",
+      "logs/sfm-production-spine/r5full80s1-1777934749-log-streams-2251.json",
+      "logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail-2251.json",
+      "logs/sfm-production-spine/r5full80s1-1777934749-s3-2251.txt",
+      "logs/sfm-production-spine/active-processing-jobs-20260504T2251Z.json"
     ],
     "merged_component_count": 1,
     "pipeline_viewer_url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fr4exact739s1-1777612249%2Fcolmap",
@@ -136,10 +142,10 @@
     "sparse0_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/sparse/0/",
     "total": 2157
   },
-  "current_branch_head": "216853f7357c0224a0b6a3051c02d8de442f0975",
+  "current_branch_head": "d1cf36140330b8c31cf28e07e7901526180c2f5c",
   "dataset": "md1 representative subsets, R3 ladder_1000 proof, R4 exact 2157 proof, failed R5 Meadow full attempts, smaller-chunk R5 planner artifacts, fixed-image/adjacent R5 bounded proofs, bounded seam-only bridge proof, and active full 80/140 seam-only R5 proof.",
   "decision": "needs_more_proof",
-  "head": "216853f7357c0224a0b6a3051c02d8de442f0975",
+  "head": "d1cf36140330b8c31cf28e07e7901526180c2f5c",
   "mode": "distributed_chunked_v1",
   "proof_job_head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
   "r1_summary": {

@@ -1,19 +1,22 @@
 {
   "active_jobs": [
     {
-      "branch_head": "216853f7357c0224a0b6a3051c02d8de442f0975",
+      "branch_head": "d1cf36140330b8c31cf28e07e7901526180c2f5c",
       "chunk_hard_max_images": 140,
       "chunk_overlap_images": 40,
       "chunk_target_images": 80,
       "input_s3_uri": "s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip",
+      "job_env_branch_head": "216853f7357c0224a0b6a3051c02d8de442f0975",
       "job_name": "r5full80s1-1777934749",
-      "latest_describe": "logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-2249.json",
-      "latest_log_streams": "logs/sfm-production-spine/r5full80s1-1777934749-log-streams-2249.json",
+      "latest_cloudwatch_tail": "logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail-2251.json",
+      "latest_describe": "logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-2251.json",
+      "latest_log_streams": "logs/sfm-production-spine/r5full80s1-1777934749-log-streams-2251.json",
+      "latest_s3_listing": "logs/sfm-production-spine/r5full80s1-1777934749-s3-2251.txt",
       "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/r5full80s1-1777934749/colmap",
       "parent_merge_mode": "seam_only_v1",
       "runtime_digest": "sha256:b704cfcd5dece2078049357861a092c6abd6b0e5375c45355f882efea11dd938",
       "runtime_image_tag": "agent73948216sfmproductionspine",
-      "status": "InProgress; no ProcessingStartTime yet at 2026-05-04T22:49Z; no FailureReason; no CloudWatch stream yet; S3 output empty before EndOfJob upload.",
+      "status": "InProgress; ProcessingStartTime=2026-05-04T22:46:29Z; no FailureReason; CloudWatch stream r5full80s1-1777934749/algo-1-1777934789 active; 1456 images extracted; 457 whitespace filenames sanitized; GPS/orientation priors 1456/1456; feature_extractor reached 20/1456 at 2026-05-04T22:51:06Z; S3 output empty before EndOfJob upload.",
       "submit_artifact": "logs/sfm-production-spine/r5_full80_s1_submit.json"
     }
   ],
@@ -24,11 +27,12 @@
   "branch": "agent-73948216-sfm-production-spine",
   "current_goal": "Run full R5 Meadow huge-acreage proof with seam_only_v1 after the bounded seam-only bridge proof passed.",
   "current_rung": "R5",
-  "head": "216853f7357c0224a0b6a3051c02d8de442f0975",
-  "last_command": "r5full80s1-1777934749 startup recheck: InProgress, no ProcessingStartTime yet, no FailureReason, no CloudWatch stream yet, S3 empty.",
+  "head": "d1cf36140330b8c31cf28e07e7901526180c2f5c",
+  "last_command": "r5full80s1-1777934749 monitor: InProgress, ProcessingStartTime=2026-05-04T22:46:29Z, CloudWatch stream active, feature_extractor reached 20/1456, no FailureReason, S3 empty before EndOfJob upload; ledger commit d1cf361 pushed.",
   "last_metrics": {
     "active_job_check": "r2leaf739c0-1777517712 and r2leaf739c1-1777517712 Completed; no local r2leaf/run_sfm_benchmark monitor processes remain",
     "active_processing_jobs_check": "Only r5full80r2-1777856611 is InProgress among sfm/R5 processing jobs as of 2026-05-04T01:51Z.",
+    "active_processing_jobs_check_2251": "Only r5full80s1-1777934749 is InProgress among R5 processing jobs as of 2026-05-04T22:51Z.",
     "adjacent_retry_metadata_hardening": "build_leaf_metadata_records now consolidates a failed chunk followed by a same-index expanded-context recovery into status=retried with adjacent_chunk_merge_retry fallback; reducer failed_leaf_count stays 0 for recovered leaves.",
     "branch_workflow_current": "CDK Deploy 25180377918 for 1c3dcbdb5f1ec5705e31ec12dadf0c3ce09bf39e completed success; superseded 25180116641 was cancelled after green jobs by newer push",
     "cdk_run": "25136403853 success",
@@ -42,6 +46,7 @@
     "heartbeat_automation_status": "sfm-reality-check ACTIVE every 30 minutes; do not delete until full R3/R4/R5 promotion proof or explicit owner stop; sfm-reality-check-2 remains paused duplicate",
     "heartbeat_correction": "sfm-reality-check remains ACTIVE and must not be deleted until full verified end-goal proof or explicit owner stop; duplicate sfm-reality-check-2 remains paused, not deleted",
     "heartbeat_correction_live": "sfm-reality-check automation is ACTIVE every 30 minutes and must remain active until complete verified end-goal proof or explicit owner stop; duplicate sfm-reality-check-2 remains paused, not deleted",
+    "ledger_push_after_bridge_and_full_s1_launch": "commit d1cf36140330b8c31cf28e07e7901526180c2f5c pushed to origin/agent-73948216-sfm-production-spine",
     "ledger_push_after_c135r2": "commit 216853f7357c0224a0b6a3051c02d8de442f0975 pushed to origin/agent-73948216-sfm-production-spine; CDK Deploy 25296168896 in progress",
     "ledger_push_after_r4_r5": "commit 6f7ddcf88e387dfc3b0b70e01d5a95f5c65ae05b pushed to origin/agent-73948216-sfm-production-spine",
     "local_validation_after_hardening": "python3 -m py_compile infrastructure/containers/sfm/run_colmap_sfm.py scripts/sfm/run_sfm_benchmark.py passed; python3 -m unittest tests.unit.test_colmap_gps_priors ran 104 tests OK",
@@ -174,6 +179,7 @@
     "r5_full80_r2_startup": "InProgress; ProcessingStartTime=2026-05-04T01:04:16Z; CloudWatch stream r5full80r2-1777856611/algo-1-1777856656 active; extracted 1456 images; sanitized 457 whitespace filenames; GPS/orientation priors 1456/1456; feature_extractor reached at least 4/1456 by 2026-05-04T01:08:16Z; no FailureReason; S3 empty",
     "r5_full80_r2_terminal_failure": "Failed at 2026-05-04T06:05:11Z; AlgorithmError exit code 1; metadata-only S3 output; no sparse/0.",
     "r5_full80_s1_launch": "Launched r5full80s1-1777934749 full dataset with seam_only_v1, 80/140/40 chunks, P3 pair caps 32/14/16, graph neighbor limit 48, bridge max 500, image tag agent73948216sfmproductionspine; output=s3://spaceport-ml-processing-staging/manual-validations/r5full80s1-1777934749/colmap; first status InProgress/no start/no FailureReason/no CloudWatch stream; S3 empty.",
+    "r5_full80_s1_startup_2251": "InProgress; ProcessingStartTime=2026-05-04T22:46:29Z; no FailureReason; CloudWatch stream r5full80s1-1777934749/algo-1-1777934789 active; 1456 images extracted; 457 whitespace filenames sanitized; GPS/orientation priors 1456/1456; feature_extractor reached 20/1456 at 2026-05-04T22:51:06Z; S3 output empty before EndOfJob upload.",
     "r5_full80_s1_startup_recheck": "InProgress; no ProcessingStartTime/no FailureReason/no CloudWatch stream as of 2026-05-04T22:49Z; S3 empty; active processing job query returned r5full80s1-1777934749.",
     "r5_full_attempt_failure": "Failed closed at chunked_merge_threshold: Chunked merge registered 999/1456 images; S3 output has metadata only and no sparse/0",
     "r5_full_attempt_leaf_summary": "chunk0 320/320; chunk1 retried 264/320 with seam_only_leaf_seed; chunk2 314/320; chunk3 retried 105/320 with seam_only_leaf_seed; chunk4 retried 126/320 with seam_only_leaf_seed",
@@ -354,9 +360,14 @@
     "logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-2249.json",
     "logs/sfm-production-spine/r5full80s1-1777934749-log-streams-2249.json",
     "logs/sfm-production-spine/r5full80s1-1777934749-s3-2249.txt",
-    "logs/sfm-production-spine/active-processing-jobs-20260504T2246.txt"
+    "logs/sfm-production-spine/active-processing-jobs-20260504T2246.txt",
+    "logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-2251.json",
+    "logs/sfm-production-spine/r5full80s1-1777934749-log-streams-2251.json",
+    "logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail-2251.json",
+    "logs/sfm-production-spine/r5full80s1-1777934749-s3-2251.txt",
+    "logs/sfm-production-spine/active-processing-jobs-20260504T2251Z.json"
   ],
   "next_unblocked_step": "Monitor r5full80s1-1777934749 startup, CloudWatch stream, feature extraction, 11 leaves, seam-only merge/reducer metadata, sparse/0, terminal status, and pipeline-viewer proof. If it fails, parse metadata and launch the next bounded experiment without deleting sfm-reality-check.",
   "promotion_status": "blocked",
-  "updated": "2026-05-04T22:48:21Z"
+  "updated": "2026-05-04T22:51:06Z"
 }
