@@ -8396,5 +8396,77 @@
       "summary": "The previous 4-tile canary is invalid for acceptance because it cannot render the V18 smoke camera set with full selected-tile support. The expanded 9-tile canary repairs camera coverage while reusing four validated leaf artifacts and planning only five additional standard-budget leaves.",
       "next_unblocked_step": "Commit and gate this no-spend evidence. If exact-head stays green and live compute remains idle, choose either the bounded 9-tile canary under an explicit spend cap or a cheaper staged diagnostic subset before any full 14-tile run."
     }
+  },
+  "md1_r4_tile04_bridge_diagnostic_dryrun_20260504": {
+    "checked_at": "2026-05-04T22:56:00Z",
+    "exact_head_before_commit": "d473c6bc9120777d30456a413f64dd0197216ba0",
+    "exact_head_gate_before_commit": {
+      "workflow": "CDK Deploy",
+      "run_id": 25334982895,
+      "conclusion": "success"
+    },
+    "live_aws_state": {
+      "training_jobs_in_progress": [],
+      "processing_jobs_in_progress": [
+        {
+          "job_name": "r5full80s1-1777934749",
+          "classification": "unrelated_meadow_colmap",
+          "instance_type": "ml.g4dn.xlarge",
+          "input_s3_uri": "s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip",
+          "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/r5full80s1-1777934749/colmap"
+        }
+      ]
+    },
+    "source_review_manifest": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-sky-v18-smoke-p24/quality_review_manifest.json",
+    "tile_manifest": "logs/audit/md1-1k-full-r2/r5_teacher_context_v12_sky_v18_preflight_20260429111738/3dgs_tile_manifest.json",
+    "diagnostic_selected_tiles": [
+      "tile_00",
+      "tile_02",
+      "tile_11",
+      "tile_13",
+      "tile_04"
+    ],
+    "diagnostic_coverage_report": "logs/md1-cost-reduction-r4-tile04-bridge-diagnostic-camera-tile-coverage-20260504.json",
+    "diagnostic_coverage_status": "blocked",
+    "diagnostic_any_support_camera_counts": {
+      "near_detail": 4,
+      "boundary": 4,
+      "horizon": 4
+    },
+    "diagnostic_full_support_camera_counts": {
+      "near_detail": 0,
+      "boundary": 0,
+      "horizon": 0
+    },
+    "remaining_missing_support_tile_frequency": {
+      "tile_05": 4,
+      "tile_10": 4,
+      "tile_01": 3,
+      "tile_06": 1
+    },
+    "diagnostic_dryrun": "logs/md1-cost-reduction-r4-tile04-bridge-diagnostic-dryrun-20260504.json",
+    "diagnostic_cache_hits": [
+      "tile_00",
+      "tile_02",
+      "tile_11",
+      "tile_13"
+    ],
+    "diagnostic_train_tiles": [
+      "tile_04"
+    ],
+    "diagnostic_train_tile_budget": {
+      "budget_class": "standard",
+      "max_iterations": 8000,
+      "max_selected_images": 128
+    },
+    "diagnostic_estimated_usd": 1.0908,
+    "diagnostic_worst_case_usd": 7.575,
+    "diagnostic_max_estimated_usd": 2.0,
+    "submitted_jobs": [],
+    "decision": {
+      "status": "diagnostic_only_no_spend_plan_ready_not_submitted",
+      "summary": "Adding only tile_04 is the cheapest useful next diagnostic because tile_04 appears in all 12 V18 smoke camera support sets and turns the camera set from no selected support on many cameras into partial support everywhere. It is not an acceptance canary because tile_05, tile_10, tile_01, and tile_06 are still required for full selected-tile support.",
+      "next_unblocked_step": "Commit and gate this no-spend evidence. If exact-head stays green, choose the $2-capped tile_04 paid diagnostic or the $12-capped 9-tile acceptance-path canary before any full 14-tile run."
+    }
   }
 }
