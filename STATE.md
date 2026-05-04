@@ -1,5 +1,5 @@
-reason: static photo upload feature deployment wiring
-last_step: deploy-scope rule is patched; adding a projects Lambda change so the corrected rule redeploys the shared projects stack
-next_unblocked_step: commit, push, monitor shared projects stack deployment, and verify runtime endpoint behavior
+reason: static photo upload switcher visual polish
+last_step: replaced the blue outlined upload-mode buttons with the requested filled pill switcher and verified desktop/mobile fit
+next_unblocked_step: commit, push, monitor Pages/CDK workflows, and verify preview UI
 owner_action_needed: none
-updated: 2026-05-04T17:54:00Z
+updated: 2026-05-04T18:08:00Z

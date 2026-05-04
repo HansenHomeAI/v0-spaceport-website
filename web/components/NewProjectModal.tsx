@@ -1758,32 +1758,20 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
             <div className="popup-section">
               <div className="category-outline">
                 <div className="popup-section">
-                  <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                  <div className="upload-mode-switcher" role="group" aria-label="Property upload type">
                     <button
                       type="button"
+                      className={`upload-mode-option${uploadMode === 'model_photos' ? ' active' : ''}`}
                       onClick={() => setUploadMode('model_photos')}
-                      style={{
-                        padding: '10px 16px',
-                        borderRadius: 999,
-                        border: uploadMode === 'model_photos' ? '1px solid #60a5fa' : '1px solid rgba(255,255,255,0.2)',
-                        background: uploadMode === 'model_photos' ? 'rgba(96,165,250,0.18)' : 'transparent',
-                        color: '#fff',
-                        cursor: 'pointer',
-                      }}
+                      aria-pressed={uploadMode === 'model_photos'}
                     >
                       3D Model Photos
                     </button>
                     <button
                       type="button"
+                      className={`upload-mode-option${uploadMode === 'static_photos' ? ' active' : ''}`}
                       onClick={() => setUploadMode('static_photos')}
-                      style={{
-                        padding: '10px 16px',
-                        borderRadius: 999,
-                        border: uploadMode === 'static_photos' ? '1px solid #60a5fa' : '1px solid rgba(255,255,255,0.2)',
-                        background: uploadMode === 'static_photos' ? 'rgba(96,165,250,0.18)' : 'transparent',
-                        color: '#fff',
-                        cursor: 'pointer',
-                      }}
+                      aria-pressed={uploadMode === 'static_photos'}
                     >
                       Static Property Photos
                     </button>
