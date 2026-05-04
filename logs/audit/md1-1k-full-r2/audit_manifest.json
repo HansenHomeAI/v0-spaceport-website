@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "none for V18 after p24 smoke plus 12-image promotion review; production viewer now uses validated splat-transform LOD, not sampled inspection PLY",
+  "blocked_promotion_reason": "R4 cost-reduction canary is not production-ready: structural/package gates passed, but review is blocked by invalid selected-tile camera coverage and V18 non-regression deltas. Do not promote or launch a full 14-tile candidate from this canary.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,23 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "04799a7366cd215cd9456233ee6164c56dd04214",
-  "current_exact_head_gate_status": {
-    "head": "04799a7366cd215cd9456233ee6164c56dd04214",
-    "cdk_deploy_run_id": 25292322284,
-    "cdk_deploy_conclusion": "success",
-    "cloudflare_pages_run_id": null,
-    "cloudflare_pages_note": "No Pages run appeared for this non-web/cost-control push.",
-    "checked_at": "2026-05-03T22:19:00Z",
-    "commit_status_note": "Local gate/status update; commit with next meaningful monitoring or implementation change."
-  },
-  "current_live_compute_status": {
-    "checked_at": "2026-05-03T22:10:26Z",
-    "sagemaker_training_jobs_in_progress": [],
-    "sagemaker_processing_jobs_in_progress": [],
-    "note": "No SageMaker training or processing jobs are InProgress during the ownership-guard no-spend step."
-  },
-  "current_rung": "R4_cost_reduction_fanout_observed_projection_ready",
+  "current_branch_head": "df83baf4a33b18580d14d7f25b386c2af2ef10ef plus local completed-review status update pending next meaningful commit",
+  "current_exact_head_gate_status": "exact-head df83baf4a33b18580d14d7f25b386c2af2ef10ef has green CDK Deploy 25297358358. Prior code head 35a4710459ca739b4b3b1ac9a4f940c4200a41ba has green Trigger ML Container Build 25293405536 with 3DGS digest sha256:7cb6d654e86f1baba75d7c00b0190c94baaa47fd13fb88418febe55b55677433. No Cloudflare Pages run appeared for these non-web/status/container pushes.",
+  "current_live_compute_status": "No MD1 SageMaker training jobs are InProgress after the R4 filtered-init canary rebuild/review. One unrelated processing job remains InProgress: r5full80r2-1777856611. Validated V18 production LOD bundle remains https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json.",
+  "current_rung": "R4_cost_reduction_filtered_init_canary_rebuild_review_blocked_invalid_camera_coverage",
   "exact_head_gate_status": "Exact-head 5d209189934eeec5e2788acceca4e5f9d94769bf has green CDK Deploy 25181111382 and green Cloudflare Pages 25181111351. Local follow-up changes pass py_compile, bash -n, tests.unit.test_sogs_supersplat_bundle, md1 production Playwright smoke, pipeline-viewer MD1 LOD smoke, npm run build, and npm run cf:build; next is commit/push and exact-head workflow monitoring.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -712,8 +699,8 @@
     "cloudflare_pages_run_id": null,
     "checked_at": "2026-05-03T22:19:00Z"
   },
-  "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-sky-v18-promotion/review_comparison.json",
-  "latest_review_status": "V18 remains the promoted quality bar. The cost projection is in target range, but independent tile_13 fanout is ownership-blocked: only 9891/386695 source splats land in tile_13 core, so tile_13 cache reuse is forbidden before an ownership/initialization fix.",
+  "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4_leafinit_canary_rebuild/review_comparison.json",
+  "latest_review_status": "R4 filtered-init canary rebuild completed under budget: tile_00/tile_02/tile_11 trained with strict filtered scaffold init and tile_13 was cached; leaf preflight passed for tile_00=248348 splats, tile_02=480285, tile_11=119, plus cached tile_13=227609. Tiled package preflight passed with support_weighted_overlap retained/source/dropped 887506/956361/68855, fallback=0, retain_all=0. Training review md1-r1-r4-leafinit-canary-rebuild-1777864304-quality completed in 712s/about $0.300 with render_sanity=ok, but V18 non-regression is blocked and the canary review is classified invalid for acceptance because the frozen smoke cameras mostly require tiles outside tile_00,tile_02,tile_11,tile_13; missing-tile frequency is tile_04=12, tile_05=4, tile_10=4, tile_01=3, tile_06=1. Total rung cost estimate including review is about $3.248.",
   "live_compute_status": "No SageMaker training jobs are InProgress. Exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. Tile_13 hard proof is complete/preflighted/cached; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
@@ -723,7 +710,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "No-spend tile_13 ownership/initialization fix or merge-policy variant before any more paid training; do not launch full 14-tile training until canary quality passes.",
+  "next_unblocked_step": "No full 14-tile training. Cheapest next step is no-spend canary-camera coverage repair: generate a V18 comparison camera set actually covered by selected canary tiles, or expand the next bounded canary to include missing high-frequency tiles tile_01,tile_04,tile_05,tile_06,tile_10 before spending on another review.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -3303,14 +3290,14 @@
       }
     }
   },
-  "root_cause_classification": "photometric_low_frequency_dominant",
+  "root_cause_classification": "production_training_cost_serial_tiles_unbounded_image_count_missing_cache_reuse_and_canary_review_camera_coverage_mismatch",
   "rung": "R5_v16_photometric_foreground_diagnosis",
   "support_statistics": {
     "candidate_pair_count": 5,
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-03T22:19:00Z",
+  "updated": "2026-05-04T03:29:26.300345+00:00",
   "version": "1.0.0",
   "r5_14tile_2k_preflight": {
     "summary_path": "logs/audit/md1-1k-full-r2/r5_14tile_2k_preflight_summary_20260428215230.json",
@@ -5745,7 +5732,7 @@
     "conclusion": "V15 context padding produced identical p24 metrics to V12/V13 and remains blocked only on horizon_psnr_regression; no promotion run."
   },
   "r5_teacher_context_v12_ctx10_v15_submit_20260429071645Z": "Exact-head 0392ef97dfe5363579f2d88f90fd5e70fd03ed82 is gated green on CDK Deploy 25095508893 and manually-triggered Pages 25095528013. Submitted V15 no-training/no-promotion Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 to add 10 percent preserve-context padding to V12, including historical tile_01, with output s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-ctx10-v15-20260429071522/output/artifact/model.tar.gz. Latest status is InProgress with no ProcessingStartTime, no FailureReason/no ExitMessage, zero output objects, no training jobs InProgress, and only this processing job InProgress.",
-  "last_updated": "2026-05-03T17:34:00Z",
+  "last_updated": "2026-05-04T03:29:26.300345+00:00",
   "r5_teacher_context_v12_ctx10_v15_smoke_blocked_20260429080934Z": "Exact-head d14f4a4b56aa9c3a215e1f4845450c77188a0687 is gated green on CDK Deploy 25095992000 and manually-triggered Pages 25095995605; alias/hash /health.txt passed, hash https://c896c947.v0-spaceport-website-preview2.pages.dev. V15 Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 completed, model.tar.gz is present at 1203320806 bytes, streaming preflight passed, and explicit p24 smoke md1-r1-r5-teacher-context-v12-ctx10-v15-smoke-p24-1777448068-qu completed with camera coverage OK but blocked only on horizon_psnr_regression. Metrics matched V12 exactly, so context padding did not close the PSNR miss. No SageMaker jobs are InProgress and no promotion was run.",
   "r5_teacher_context_v12_tile01overlap_v16": {
     "processing_job_name": "md1-r5-teacherctx-v12-t01ov-v16-1777450963",
@@ -8250,5 +8237,83 @@
     },
     "decision": "active_bounded_paid_canary_under_5_usd_estimate_no_full_14tile_training",
     "next_unblocked_step": "Monitor tile_00 and tile_02 to export, then tile_11; merge with cached tile_13 and run same-camera/V18 non-regression review before any full candidate."
+  },
+  "md1_r4_filtered_init_canary_rebuild_review_blocked_20260504": {
+    "checked_at": "2026-05-04T03:29:26.300345+00:00",
+    "exact_head_before_status_commit": "df83baf4a33b18580d14d7f25b386c2af2ef10ef",
+    "exact_head_gate": {
+      "workflow": "CDK Deploy",
+      "run_id": 25297358358,
+      "conclusion": "success"
+    },
+    "training_jobs": {
+      "tile_00": "md1-r4leafreb-1777858863-tile-00",
+      "tile_02": "md1-r4leafreb-1777858863-tile-02",
+      "tile_11": "md1-r4leafreb-1777858863-tile-11",
+      "tile_13": "cache_hit: md1-r4leafinit-1777850709-tile-13"
+    },
+    "training_billable_seconds": 7007,
+    "training_estimated_usd": 2.9488,
+    "review_job_name": "md1-r1-r4-leafinit-canary-rebuild-1777864304-quality",
+    "review_billable_seconds": 712,
+    "review_estimated_usd": 0.2996,
+    "total_rung_estimated_usd": 3.2484,
+    "leaf_preflight_summaries": {
+      "tile_00": "leaf_preflight_passed_cache_candidate",
+      "tile_02": "leaf_preflight_passed_cache_candidate",
+      "tile_11": "leaf_preflight_passed_cache_candidate"
+    },
+    "tiled_preflight_summary": "logs/audit/md1-1k-full-r2/r4_leafinit_canary_rebuild_tiled_preflight_summary_20260504.json",
+    "tiled_preflight_decision": "preflight_passed_run_frozen_smoke_review",
+    "packaged_model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-review-20260504/inputs/r4_leafinit_canary_rebuild/model.tar.gz",
+    "packaged_model_artifact_size_bytes": 418816546,
+    "packaged_model_artifact_sha256": "5f42a4b7ffb6e33b5e642d868c92c0d0df0d3c388a27fec15427eba2f94d4dd1",
+    "merge": {
+      "merge_mode": "support_weighted_overlap",
+      "source_gaussians": 956361,
+      "retained_gaussians": 887506,
+      "dropped_gaussians": 68855,
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0
+    },
+    "quality_review_manifest": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4_leafinit_canary_rebuild/quality_review_manifest.json",
+    "review_comparison": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4_leafinit_canary_rebuild/review_comparison.json",
+    "review_analysis": "logs/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-review-analysis-20260504.json",
+    "review_render_sanity": {
+      "status": "ok",
+      "checked_view_count": 12,
+      "blank_view_count": 0,
+      "blank_views": []
+    },
+    "camera_coverage_status": "blocked",
+    "v18_non_regression_status": "blocked",
+    "missing_tile_frequency_for_review_cameras": {
+      "tile_01": 3,
+      "tile_04": 12,
+      "tile_05": 4,
+      "tile_06": 1,
+      "tile_10": 4
+    },
+    "decision": {
+      "status": "blocked_invalid_canary_camera_coverage",
+      "block_reasons": [
+        "boundary_camera_set_mismatch",
+        "boundary_v18_median_psnr_regression",
+        "boundary_v18_single_camera_lpips_regression",
+        "boundary_v18_single_camera_psnr_regression",
+        "horizon_camera_set_mismatch",
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_single_camera_lpips_regression",
+        "horizon_v18_single_camera_psnr_regression",
+        "near_detail_camera_set_mismatch",
+        "near_detail_v18_median_psnr_regression",
+        "near_detail_v18_median_ssim_regression",
+        "near_detail_v18_single_camera_lpips_regression",
+        "near_detail_v18_single_camera_psnr_regression"
+      ],
+      "summary": "Leaf artifacts and 4-tile package are structurally healthy, but this review is not an acceptance-quality canary because the frozen smoke cameras mostly require tiles outside tile_00,tile_02,tile_11,tile_13.",
+      "next_unblocked_step": "Generate a canary-specific V18 comparison camera set covered by selected tiles, or expand the next bounded canary to include missing high-frequency tiles tile_01,tile_04,tile_05,tile_06,tile_10 before spending on another quality review."
+    },
+    "next_unblocked_step": "Generate a canary-specific V18 comparison camera set covered by selected tiles, or expand the next bounded canary to include missing high-frequency tiles tile_01,tile_04,tile_05,tile_06,tile_10 before spending on another quality review."
   }
 }

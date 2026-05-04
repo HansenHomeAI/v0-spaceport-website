@@ -1,0 +1,129 @@
+{
+  "checked_at": "2026-05-04T03:10:42.443976+00:00",
+  "work_dir": "/tmp/md1-r4-leafinit-canary-rebuild-merge-20260504",
+  "selected_tile_ids": [
+    "tile_00",
+    "tile_02",
+    "tile_11",
+    "tile_13"
+  ],
+  "source_artifacts": {
+    "tile_00": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_00/md1-r4leafreb-1777858863-tile-00/output/model.tar.gz",
+    "tile_02": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_02/md1-r4leafreb-1777858863-tile-02/output/model.tar.gz",
+    "tile_11": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_11/md1-r4leafreb-1777858863-tile-11/output/model.tar.gz",
+    "tile_13": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-proof-20260503/tiles/tile_13/md1-r4leafinit-1777850709-tile-13/output/model.tar.gz"
+  },
+  "leaf_preflight_summaries": {
+    "tile_00": "logs/audit/md1-1k-full-r2/r4_leafinit_canary_rebuild_tile00_leaf_preflight_summary_20260504.json",
+    "tile_02": "logs/audit/md1-1k-full-r2/r4_leafinit_canary_rebuild_tile02_leaf_preflight_summary_20260504.json",
+    "tile_11": "logs/audit/md1-1k-full-r2/r4_leafinit_canary_rebuild_tile11_leaf_preflight_summary_20260504.json",
+    "tile_13": "logs/audit/md1-1k-full-r2/r4_tile13_leafinit_proof_leaf_preflight_summary_20260504001500.json"
+  },
+  "merge_summary": {
+    "merge_mode": "support_weighted_overlap",
+    "merged_ply": "/tmp/md1-r4-leafinit-canary-rebuild-merge-20260504/merged/merged_splat.ply",
+    "tile_count": 4,
+    "source_gaussians": 956361,
+    "retained_gaussians": 887506,
+    "dropped_gaussians": 68855,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "fallback_reasons": [],
+    "tiles": [
+      {
+        "tile_id": "tile_00",
+        "source_ply": "/tmp/md1-r4-leafinit-canary-rebuild-merge-20260504/merged/tile_outputs/tile_00/splat.ply",
+        "source_gaussians": 248348,
+        "retained_gaussians": 248318,
+        "dropped_gaussians": 30,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 248317,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 1,
+          "retained_overlap_count": 0,
+          "retained_context_count": 1,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_02",
+        "source_ply": "/tmp/md1-r4-leafinit-canary-rebuild-merge-20260504/merged/tile_outputs/tile_02/splat.ply",
+        "source_gaussians": 480285,
+        "retained_gaussians": 479436,
+        "dropped_gaussians": 849,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 446854,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 32582,
+          "retained_overlap_count": 0,
+          "retained_context_count": 32582,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_11",
+        "source_ply": "/tmp/md1-r4-leafinit-canary-rebuild-merge-20260504/merged/tile_outputs/tile_11/splat.ply",
+        "source_gaussians": 119,
+        "retained_gaussians": 119,
+        "dropped_gaussians": 0,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 119,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": false
+        }
+      },
+      {
+        "tile_id": "tile_13",
+        "source_ply": "/tmp/md1-r4-leafinit-canary-rebuild-merge-20260504/merged/tile_outputs/tile_13/splat.ply",
+        "source_gaussians": 227609,
+        "retained_gaussians": 159633,
+        "dropped_gaussians": 67976,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 159633,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": false
+        }
+      }
+    ],
+    "background_asset": {
+      "asset": "background_skybox.webp",
+      "source_tile_id": "tile_02",
+      "source_asset": "/tmp/md1-r4-leafinit-canary-rebuild-merge-20260504/merged/tile_outputs/tile_02/background_skybox.webp",
+      "selection_score": 0.6211847354749487,
+      "retained_gaussians": 479436
+    }
+  },
+  "packaged_model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-review-20260504/inputs/r4_leafinit_canary_rebuild/model.tar.gz",
+  "packaged_model_artifact_size_bytes": 418816546,
+  "packaged_model_artifact_sha256": "5f42a4b7ffb6e33b5e642d868c92c0d0df0d3c388a27fec15427eba2f94d4dd1",
+  "decision": "canary_rebuild_packaged_run_review",
+  "next_unblocked_step": "run training-mode frozen-camera review and same-camera V18 comparison before any full 14-tile candidate",
+  "packaged_includes_scaffold_init_metadata": true,
+  "packaged_includes_stage_summary": true
+}
