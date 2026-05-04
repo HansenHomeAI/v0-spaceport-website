@@ -1,0 +1,116 @@
+{
+  "decision": {
+    "next_unblocked_step": "Package/upload this 4-tile canary or run training-mode review using this merged output before any full 14-tile candidate.",
+    "remaining_blocker": "canary still needs V18 frozen-camera non-regression review; tile_00 remains the earlier known near_detail risk unless retrained hard/full-cover.",
+    "tile13_merge_ownership_status": "improved_passes_floor"
+  },
+  "generated_at": "2026-05-04T00:25:35.463157Z",
+  "local_merge_root": "/tmp/md1-r4-leafinit-canary-merge",
+  "merge_report": {
+    "dropped_gaussians": 240370,
+    "fallback_reasons": [],
+    "fallback_tile_count": 0,
+    "merge_mode": "support_weighted_overlap",
+    "merged_ply": "/tmp/md1-r4-leafinit-canary-merge/merged/merged_splat.ply",
+    "retain_all_tile_count": 0,
+    "retained_gaussians": 1043368,
+    "source_gaussians": 1283738,
+    "tile_count": 4,
+    "tiles": [
+      {
+        "dropped_gaussians": 86456,
+        "fallback_reason": null,
+        "fallback_used": false,
+        "ownership_bounds_available": true,
+        "retained_gaussians": 437122,
+        "retention_strategy": "support_weighted_overlap",
+        "source_gaussians": 523578,
+        "source_ply": "/tmp/md1-r4-leafinit-canary-merge/tile_outputs/tile_00/splat.ply",
+        "support_weighted_overlap": {
+          "context_candidate_count": 0,
+          "context_preserve_enabled": true,
+          "core_candidate_count": 437122,
+          "overlap_candidate_count": 0,
+          "retained_context_count": 0,
+          "retained_overlap_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty"
+        },
+        "tile_id": "tile_00"
+      },
+      {
+        "dropped_gaussians": 85938,
+        "fallback_reason": null,
+        "fallback_used": false,
+        "ownership_bounds_available": true,
+        "retained_gaussians": 386734,
+        "retention_strategy": "support_weighted_overlap",
+        "source_gaussians": 472672,
+        "source_ply": "/tmp/md1-r4-leafinit-canary-merge/tile_outputs/tile_02/splat.ply",
+        "support_weighted_overlap": {
+          "context_candidate_count": 84249,
+          "context_preserve_enabled": true,
+          "core_candidate_count": 302485,
+          "overlap_candidate_count": 0,
+          "retained_context_count": 84249,
+          "retained_overlap_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty"
+        },
+        "tile_id": "tile_02"
+      },
+      {
+        "dropped_gaussians": 0,
+        "fallback_reason": null,
+        "fallback_used": false,
+        "ownership_bounds_available": true,
+        "retained_gaussians": 59879,
+        "retention_strategy": "support_weighted_overlap",
+        "source_gaussians": 59879,
+        "source_ply": "/tmp/md1-r4-leafinit-canary-merge/tile_outputs/tile_11/splat.ply",
+        "support_weighted_overlap": {
+          "context_candidate_count": 0,
+          "context_preserve_enabled": false,
+          "core_candidate_count": 59879,
+          "overlap_candidate_count": 0,
+          "retained_context_count": 0,
+          "retained_overlap_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty"
+        },
+        "tile_id": "tile_11"
+      },
+      {
+        "dropped_gaussians": 67976,
+        "fallback_reason": null,
+        "fallback_used": false,
+        "ownership_bounds_available": true,
+        "retained_gaussians": 159633,
+        "retention_strategy": "support_weighted_overlap",
+        "source_gaussians": 227609,
+        "source_ply": "/tmp/md1-r4-leafinit-canary-merge/tile_outputs/tile_13/splat.ply",
+        "support_weighted_overlap": {
+          "context_candidate_count": 0,
+          "context_preserve_enabled": false,
+          "core_candidate_count": 159633,
+          "overlap_candidate_count": 0,
+          "retained_context_count": 0,
+          "retained_overlap_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty"
+        },
+        "tile_id": "tile_13"
+      }
+    ]
+  },
+  "merged_splat": {
+    "path": "/tmp/md1-r4-leafinit-canary-merge/merged/merged_splat.ply",
+    "sha256": "d214cb61de0c103b67ce87d81f26b293b1e9b4b21b40b6bc7762df140514aa61",
+    "size_bytes": 108510905
+  },
+  "purpose": "No-spend local support_weighted_overlap canary merge after direct leaf scaffold initialization proof for tile_13.",
+  "tile13_fix_result": {
+    "leafinit_ratio": 0.7013474862593307,
+    "leafinit_retained": 159633,
+    "previous_bad_ratio": 0.025578298141946496,
+    "previous_bad_retained": 9891,
+    "v18_reference_ratio": 0.7328649859367056,
+    "v18_reference_retained": 227729
+  }
+}

@@ -1,0 +1,455 @@
+{
+  "current_support_weighted_overlap_retention": {
+    "context_preserve_enabled": false,
+    "core_candidate_count": 159633,
+    "dropped_gaussians": 67976,
+    "retained_gaussians": 159633,
+    "retention_ratio": 0.7013474862593307,
+    "source_gaussians": 227609
+  },
+  "decision": {
+    "quality_gate_status": "ownership_ready_for_canary_merge",
+    "recommended_next_no_spend_action": "Use this leaf-init artifact in a no-spend local canary merge and V18 smoke planning review before any further paid tile training.",
+    "reference_ratio_floor": 0.659578487343035
+  },
+  "diagnosis": "md1_r4_tile13_leaf_scaffold_init_proof_ownership_distribution",
+  "generated_at": "2026-05-04T00:17:40.031317Z",
+  "manifest_path": "logs/audit/md1-1k-full-r2/r5_teacher_context_v12_sky_v18_preflight_20260429111738/3dgs_tile_manifest.json",
+  "ownership_distribution": {
+    "dominant_non_degenerate_neighbor_core": {
+      "core_bounds": {
+        "max_x": 105.932,
+        "max_y": 165.997,
+        "max_z": 44.026,
+        "min_x": -240.845,
+        "min_y": -126.736,
+        "min_z": -404.276
+      },
+      "core_volume": 45508512.99797338,
+      "core_widths": {
+        "x": 346.777,
+        "y": 292.733,
+        "z": 448.302
+      },
+      "degenerate_global_catchall_bounds": false,
+      "index": 0,
+      "source_tile13_splats_inside_core": 227609,
+      "source_tile13_splats_inside_core_ratio": 1.0,
+      "tile_id": "tile_00"
+    },
+    "inside_any_non_degenerate_tile_core": 227609,
+    "inside_any_non_degenerate_tile_core_ratio": 1.0,
+    "inside_any_tile_core_including_degenerate": 227609,
+    "inside_any_tile_core_including_degenerate_ratio": 1.0,
+    "outside_all_non_degenerate_tile_cores": 0,
+    "outside_all_non_degenerate_tile_cores_ratio": 0.0,
+    "outside_all_tile_cores_including_degenerate": 0,
+    "outside_all_tile_cores_including_degenerate_ratio": 0.0,
+    "per_tile_core_counts": [
+      {
+        "core_bounds": {
+          "max_x": 105.932,
+          "max_y": 165.997,
+          "max_z": 44.026,
+          "min_x": -240.845,
+          "min_y": -126.736,
+          "min_z": -404.276
+        },
+        "core_volume": 45508512.99797338,
+        "core_widths": {
+          "x": 346.777,
+          "y": 292.733,
+          "z": 448.302
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 0,
+        "source_tile13_splats_inside_core": 227609,
+        "source_tile13_splats_inside_core_ratio": 1.0,
+        "tile_id": "tile_00"
+      },
+      {
+        "core_bounds": {
+          "max_x": 288710.771,
+          "max_y": 268261.64,
+          "max_z": 7737.663,
+          "min_x": -69553.553,
+          "min_y": -33896.754,
+          "min_z": -152388.191
+        },
+        "core_volume": 1.7334035662066768e+16,
+        "core_widths": {
+          "x": 358264.324,
+          "y": 302158.39400000003,
+          "z": 160125.854
+        },
+        "degenerate_global_catchall_bounds": true,
+        "index": 11,
+        "source_tile13_splats_inside_core": 227609,
+        "source_tile13_splats_inside_core_ratio": 1.0,
+        "tile_id": "tile_11"
+      },
+      {
+        "core_bounds": {
+          "max_x": 37.342,
+          "max_y": 16.76,
+          "max_z": 12.855,
+          "min_x": -87.724,
+          "min_y": -70.959,
+          "min_z": -147.417
+        },
+        "core_volume": 1758290.3333714881,
+        "core_widths": {
+          "x": 125.066,
+          "y": 87.71900000000001,
+          "z": 160.272
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 10,
+        "source_tile13_splats_inside_core": 225892,
+        "source_tile13_splats_inside_core_ratio": 0.9924563615674248,
+        "tile_id": "tile_10"
+      },
+      {
+        "core_bounds": {
+          "max_x": 32.94,
+          "max_y": 17.005,
+          "max_z": 14.157,
+          "min_x": -18.043,
+          "min_y": -34.155,
+          "min_z": -21.237
+        },
+        "core_volume": 92317.82617031998,
+        "core_widths": {
+          "x": 50.983,
+          "y": 51.16,
+          "z": 35.394
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 8,
+        "source_tile13_splats_inside_core": 203109,
+        "source_tile13_splats_inside_core_ratio": 0.8923592652311639,
+        "tile_id": "tile_08"
+      },
+      {
+        "core_bounds": {
+          "max_x": 11.152,
+          "max_y": 5.332,
+          "max_z": 9.511,
+          "min_x": -21.289,
+          "min_y": -25.843,
+          "min_z": -17.674
+        },
+        "core_volume": 27493.500137375002,
+        "core_widths": {
+          "x": 32.441,
+          "y": 31.175,
+          "z": 27.185
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 12,
+        "source_tile13_splats_inside_core": 182419,
+        "source_tile13_splats_inside_core_ratio": 0.8014577630937265,
+        "tile_id": "tile_12"
+      },
+      {
+        "core_bounds": {
+          "max_x": 17.817,
+          "max_y": 16.335,
+          "max_z": 13.452,
+          "min_x": -15.545,
+          "min_y": -18.056,
+          "min_z": -14.547
+        },
+        "core_volume": 32124.72382345801,
+        "core_widths": {
+          "x": 33.362,
+          "y": 34.391000000000005,
+          "z": 27.999000000000002
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 7,
+        "source_tile13_splats_inside_core": 169928,
+        "source_tile13_splats_inside_core_ratio": 0.7465785623591334,
+        "tile_id": "tile_07"
+      },
+      {
+        "core_bounds": {
+          "max_x": 13.805,
+          "max_y": -2.33,
+          "max_z": 6.237,
+          "min_x": -18.912,
+          "min_y": -34.093,
+          "min_z": -21.082
+        },
+        "core_volume": 28389.63354964901,
+        "core_widths": {
+          "x": 32.717,
+          "y": 31.763000000000005,
+          "z": 27.319000000000003
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 13,
+        "source_tile13_splats_inside_core": 159633,
+        "source_tile13_splats_inside_core_ratio": 0.7013474862593307,
+        "tile_id": "tile_13"
+      },
+      {
+        "core_bounds": {
+          "max_x": 20.013,
+          "max_y": 20.823,
+          "max_z": 14.106,
+          "min_x": -14.128,
+          "min_y": -13.917,
+          "min_z": -12.295
+        },
+        "core_volume": 31313.12623434001,
+        "core_widths": {
+          "x": 34.141000000000005,
+          "y": 34.74,
+          "z": 26.401
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 3,
+        "source_tile13_splats_inside_core": 132364,
+        "source_tile13_splats_inside_core_ratio": 0.581541151711927,
+        "tile_id": "tile_03"
+      },
+      {
+        "core_bounds": {
+          "max_x": 28.579,
+          "max_y": 19.66,
+          "max_z": 13.176,
+          "min_x": -6.366,
+          "min_y": -17.231,
+          "min_z": -13.65
+        },
+        "core_volume": 34582.898721870006,
+        "core_widths": {
+          "x": 34.945,
+          "y": 36.891000000000005,
+          "z": 26.826
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 2,
+        "source_tile13_splats_inside_core": 124167,
+        "source_tile13_splats_inside_core_ratio": 0.5455276373078394,
+        "tile_id": "tile_02"
+      },
+      {
+        "core_bounds": {
+          "max_x": 28.735,
+          "max_y": 11.71,
+          "max_z": 11.422,
+          "min_x": -3.355,
+          "min_y": -22.329,
+          "min_z": -14.907
+        },
+        "core_volume": 28759.46974679,
+        "core_widths": {
+          "x": 32.089999999999996,
+          "y": 34.039,
+          "z": 26.329
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 5,
+        "source_tile13_splats_inside_core": 108587,
+        "source_tile13_splats_inside_core_ratio": 0.47707691699361626,
+        "tile_id": "tile_05"
+      },
+      {
+        "core_bounds": {
+          "max_x": 37.342,
+          "max_y": 10.649,
+          "max_z": 11.012,
+          "min_x": -1.143,
+          "min_y": -25.887,
+          "min_z": -17.675
+        },
+        "core_volume": 40336.44530852,
+        "core_widths": {
+          "x": 38.485,
+          "y": 36.536,
+          "z": 28.687
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 4,
+        "source_tile13_splats_inside_core": 93080,
+        "source_tile13_splats_inside_core_ratio": 0.4089469221340105,
+        "tile_id": "tile_04"
+      },
+      {
+        "core_bounds": {
+          "max_x": 37.328,
+          "max_y": 10.077,
+          "max_z": 11.094,
+          "min_x": 0.154,
+          "min_y": -31.237,
+          "min_z": -19.258
+        },
+        "core_volume": 46614.803015872,
+        "core_widths": {
+          "x": 37.174,
+          "y": 41.314,
+          "z": 30.351999999999997
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 6,
+        "source_tile13_splats_inside_core": 78007,
+        "source_tile13_splats_inside_core_ratio": 0.3427237060045956,
+        "tile_id": "tile_06"
+      },
+      {
+        "core_bounds": {
+          "max_x": 31.362,
+          "max_y": -0.765,
+          "max_z": 8.039,
+          "min_x": -0.763,
+          "min_y": -33.471,
+          "min_z": -20.619
+        },
+        "core_volume": 30110.394604499998,
+        "core_widths": {
+          "x": 32.125,
+          "y": 32.705999999999996,
+          "z": 28.658
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 9,
+        "source_tile13_splats_inside_core": 66978,
+        "source_tile13_splats_inside_core_ratio": 0.2942678013611061,
+        "tile_id": "tile_09"
+      },
+      {
+        "core_bounds": {
+          "max_x": 37.097,
+          "max_y": 13.077,
+          "max_z": 12.195,
+          "min_x": 3.194,
+          "min_y": -20.503,
+          "min_z": -14.651
+        },
+        "core_volume": 30563.170718039997,
+        "core_widths": {
+          "x": 33.903,
+          "y": 33.58,
+          "z": 26.846
+        },
+        "degenerate_global_catchall_bounds": false,
+        "index": 1,
+        "source_tile13_splats_inside_core": 44189,
+        "source_tile13_splats_inside_core_ratio": 0.19414434402857533,
+        "tile_id": "tile_01"
+      }
+    ],
+    "source_tile_core_count": 159633,
+    "source_tile_core_ratio": 0.7013474862593307
+  },
+  "previous_bad_hard_tile13_reference": {
+    "retained_gaussians": 9891,
+    "retention_ratio": 0.025578298141946496,
+    "source_artifact": "/tmp/md1-r4-tile13-hard-local-merge-swo-20260503/tile_outputs/tile_13/splat.ply",
+    "source_gaussians": 386695
+  },
+  "scaffold_initialization": {
+    "external_scaffold": {
+      "output_dir": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00",
+      "source_artifact": "/opt/ml/input/data/scaffold/model.tar.gz",
+      "source_dir": "/opt/ml/input/data/scaffold",
+      "source_kind": "directory_tar_artifact",
+      "splat_ply": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+      "stage_name": "scaffold",
+      "status": "reused_external_scaffold",
+      "training_mode": "global_scaffold"
+    },
+    "fallback_used": false,
+    "filtered_point_cloud": "/tmp/nerfstudio_training/converted_data/scaffold_init.ply",
+    "inherited_attributes": [
+      "positions",
+      "rgb_from_gaussian_dc"
+    ],
+    "inherited_gaussian_cap": 300000,
+    "inherited_gaussian_count": 300000,
+    "reinitialized_attributes": [
+      "scale",
+      "opacity",
+      "rotation",
+      "sh_rest",
+      "appearance_embeddings"
+    ],
+    "scaffold_filter_bounds": {
+      "max_x": 17.0767,
+      "max_y": 0.8463000000000007,
+      "max_z": 8.968900000000001,
+      "min_x": -22.183699999999998,
+      "min_y": -37.2693,
+      "min_z": -23.8139
+    },
+    "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+    "scaffold_init_downsample_strategy": "spatial_key_even_sample",
+    "scaffold_source_artifact": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+    "source_filtered_gaussian_count": 1011155,
+    "source_gaussian_count": 1554116
+  },
+  "source_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-proof-20260503/tiles/tile_13/md1-r4leafinit-1777850709-tile-13/output/model.tar.gz",
+  "source_job_name": "md1-r4leafinit-1777850709-tile-13",
+  "source_ply": "/tmp/md1-r4leafinit-proof/splat.ply",
+  "source_ply_sha256": "847dd2a96264d3f9fdf19be0419ff6dcf372edc25aaa578383c450932e0700e5",
+  "source_ply_size_bytes": 23671968,
+  "source_tile13_position_distribution": {
+    "percentiles": {
+      "0": {
+        "x": -57.80589294433594,
+        "y": -98.62916564941406,
+        "z": -58.44810104370117
+      },
+      "1": {
+        "x": -20.429686737060546,
+        "y": -63.55589248657227,
+        "z": -38.61759124755859
+      },
+      "100": {
+        "x": 101.17900848388672,
+        "y": 28.406911849975586,
+        "z": 13.788013458251953
+      },
+      "25": {
+        "x": -9.45363712310791,
+        "y": -15.26609992980957,
+        "z": -11.409324645996094
+      },
+      "5": {
+        "x": -15.43405590057373,
+        "y": -29.59885559082031,
+        "z": -26.709409713745117
+      },
+      "50": {
+        "x": -1.2981419563293457,
+        "y": -12.093079566955566,
+        "z": -8.70724868774414
+      },
+      "75": {
+        "x": 6.8116841316223145,
+        "y": -6.456329345703125,
+        "z": -6.065988063812256
+      },
+      "95": {
+        "x": 22.18996696472165,
+        "y": 0.3792954325675945,
+        "z": -0.5198810219764716
+      },
+      "99": {
+        "x": 33.799762115478494,
+        "y": 2.5096455764770407,
+        "z": 1.2693897771835299
+      }
+    }
+  },
+  "source_tile13_splats": 227609,
+  "source_tile_id": "tile_13",
+  "v18_tile13_reference": {
+    "quality_manifest": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-sky-v18-smoke-p24/quality_review_manifest.json",
+    "retained_gaussians": 227729,
+    "retention_ratio": 0.7328649859367056,
+    "source_gaussians": 310738
+  }
+}

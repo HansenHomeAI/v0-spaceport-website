@@ -1,0 +1,150 @@
+{
+  "generated_at": "2026-05-04T00:21:37.727138Z",
+  "purpose": "No-spend R4 leaf-init canary merge planning: standard tile_00/tile_02, tiny tile_11, hard tile_13.",
+  "tiles": {
+    "tile_00": {
+      "duration_hours": 2.06,
+      "fanout_duration_hours_by_budget": {
+        "hard": 1.1,
+        "standard": 0.72,
+        "tiny": 0.35
+      },
+      "retained_gaussians": 264373,
+      "selected_image_count": 188
+    },
+    "tile_01": {
+      "duration_hours": 2.27,
+      "fanout_duration_hours_by_budget": {
+        "hard": 1.1,
+        "standard": 0.72,
+        "tiny": 0.35
+      },
+      "retained_gaussians": 421000,
+      "selected_image_count": 188
+    },
+    "tile_02": {
+      "duration_hours": 2.47,
+      "fanout_duration_hours_by_budget": {
+        "hard": 1.1,
+        "standard": 0.72,
+        "tiny": 0.35
+      },
+      "retained_gaussians": 494000,
+      "selected_image_count": 188
+    },
+    "tile_03": {
+      "duration_hours": 2.65,
+      "fanout_duration_hours_by_budget": {
+        "hard": 1.1,
+        "standard": 0.72,
+        "tiny": 0.35
+      },
+      "retained_gaussians": 451601,
+      "selected_image_count": 188
+    },
+    "tile_04": {
+      "duration_hours": 2.82,
+      "fanout_duration_hours_by_budget": {
+        "hard": 1.1,
+        "standard": 0.72,
+        "tiny": 0.35
+      },
+      "retained_gaussians": 364338,
+      "selected_image_count": 188
+    },
+    "tile_05": {
+      "duration_hours": 3.04,
+      "fanout_duration_hours_by_budget": {
+        "hard": 1.1,
+        "standard": 0.72,
+        "tiny": 0.35
+      },
+      "retained_gaussians": 395841,
+      "selected_image_count": 188
+    },
+    "tile_06": {
+      "duration_hours": 3.25,
+      "fanout_duration_hours_by_budget": {
+        "hard": 1.1,
+        "standard": 0.72,
+        "tiny": 0.35
+      },
+      "retained_gaussians": 278000,
+      "selected_image_count": 188
+    },
+    "tile_07": {
+      "duration_hours": 3.49,
+      "fanout_duration_hours_by_budget": {
+        "hard": 1.1,
+        "standard": 0.72,
+        "tiny": 0.35
+      },
+      "retained_gaussians": 476395,
+      "selected_image_count": 188
+    },
+    "tile_08": {
+      "duration_hours": 3.66,
+      "fanout_duration_hours_by_budget": {
+        "hard": 1.1,
+        "standard": 0.72,
+        "tiny": 0.35
+      },
+      "retained_gaussians": 476258,
+      "selected_image_count": 188
+    },
+    "tile_09": {
+      "duration_hours": 3.84,
+      "fanout_duration_hours_by_budget": {
+        "hard": 1.1,
+        "standard": 0.72,
+        "tiny": 0.35
+      },
+      "retained_gaussians": 207000,
+      "selected_image_count": 188
+    },
+    "tile_10": {
+      "duration_hours": 3.98,
+      "fanout_duration_hours_by_budget": {
+        "hard": 1.1,
+        "standard": 0.72,
+        "tiny": 0.35
+      },
+      "retained_gaussians": 387000,
+      "selected_image_count": 188
+    },
+    "tile_11": {
+      "duration_hours": 3.99,
+      "fanout_duration_hours_by_budget": {
+        "hard": 1.1,
+        "standard": 0.72,
+        "tiny": 0.35
+      },
+      "retained_gaussians": 68,
+      "selected_image_count": 188
+    },
+    "tile_12": {
+      "duration_hours": 4.45,
+      "fanout_duration_hours_by_budget": {
+        "hard": 1.1,
+        "standard": 0.72,
+        "tiny": 0.35
+      },
+      "retained_gaussians": 437000,
+      "selected_image_count": 188
+    },
+    "tile_13": {
+      "budget_override_reason": "R4 leaf scaffold init proof: keep tile_13 hard/full-cover for no-spend canary merge ownership diagnosis.",
+      "duration_hours": 4.73,
+      "fanout_duration_hours_by_budget": {
+        "hard": 1.1,
+        "standard": 0.72,
+        "tiny": 0.35
+      },
+      "force_max_iterations": 12000,
+      "force_max_selected_images": 188,
+      "min_budget_class": "hard",
+      "retained_gaussians": 311000,
+      "selected_image_count": 188
+    }
+  }
+}

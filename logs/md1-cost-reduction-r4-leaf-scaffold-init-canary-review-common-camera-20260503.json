@@ -1,0 +1,143 @@
+{
+  "baseline_manifest": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-sky-v18-smoke-p24/quality_review_manifest.json",
+  "candidate_manifest": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4_leafinit_canary/quality_review_manifest.json",
+  "candidate_selected_tile_ids": [
+    "tile_00",
+    "tile_02",
+    "tile_11",
+    "tile_13"
+  ],
+  "common_camera_count_total": 12,
+  "decision": {
+    "block_reasons": [
+      "boundary_ssim_regression",
+      "horizon_psnr_regression",
+      "horizon_ssim_regression",
+      "horizon_sky_score_regression",
+      "near_detail_psnr_regression",
+      "near_detail_ssim_regression"
+    ],
+    "next_unblocked_step": "Run only a filtered-init canary rebuild for the remaining non-filtered-init canary leaves (tile_00, tile_02, tile_11) with tile_13 cached, then rerun V18 comparison before any full 14-tile candidate.",
+    "note": "Tile_13 direct leaf scaffold init fixed merge ownership, but the 4-tile canary still does not match V18 on same smoke cameras.",
+    "status": "blocked"
+  },
+  "per_bucket": {
+    "boundary": {
+      "block_reasons": [
+        "boundary_ssim_regression"
+      ],
+      "common_camera_count": 4,
+      "common_cameras": [
+        "DJI_0067.JPG",
+        "DJI_0068.JPG",
+        "DJI_0069.JPG",
+        "DJI_0070.JPG"
+      ],
+      "metrics": {
+        "lpips": {
+          "baseline_median": 0.7800296545028687,
+          "candidate_median": 0.7842278778553009,
+          "delta": 0.004198223352432251
+        },
+        "psnr": {
+          "baseline_median": 14.315955739441744,
+          "candidate_median": 14.258329226664884,
+          "delta": -0.05762651277686004
+        },
+        "ssim": {
+          "baseline_median": 0.4327641427516937,
+          "candidate_median": 0.3703926056623459,
+          "delta": -0.06237153708934784
+        }
+      },
+      "sky_score": null
+    },
+    "horizon": {
+      "block_reasons": [
+        "horizon_psnr_regression",
+        "horizon_ssim_regression",
+        "horizon_sky_score_regression"
+      ],
+      "common_camera_count": 4,
+      "common_cameras": [
+        "DJI_0066.JPG",
+        "DJI_0073.JPG",
+        "DJI_0146.JPG",
+        "DJI_0147.JPG"
+      ],
+      "metrics": {
+        "lpips": {
+          "baseline_median": 0.8303832709789276,
+          "candidate_median": 0.8584531247615814,
+          "delta": 0.02806985378265381
+        },
+        "psnr": {
+          "baseline_median": 15.518785862438865,
+          "candidate_median": 13.114786522250794,
+          "delta": -2.4039993401880704
+        },
+        "ssim": {
+          "baseline_median": 0.3774964064359665,
+          "candidate_median": 0.31244803965091705,
+          "delta": -0.06504836678504944
+        }
+      },
+      "sky_score": {
+        "baseline_median": 0.5480999072329533,
+        "candidate_median": 0.35362006647727895,
+        "ratio": 0.6451744687615563
+      }
+    },
+    "near_detail": {
+      "block_reasons": [
+        "near_detail_psnr_regression",
+        "near_detail_ssim_regression"
+      ],
+      "common_camera_count": 4,
+      "common_cameras": [
+        "DJI_0258.JPG",
+        "DJI_0261.JPG",
+        "DJI_0262.JPG",
+        "DJI_0263.JPG"
+      ],
+      "metrics": {
+        "lpips": {
+          "baseline_median": 0.9159154295921326,
+          "candidate_median": 0.8574469983577728,
+          "delta": -0.05846843123435974
+        },
+        "psnr": {
+          "baseline_median": 11.342806679576887,
+          "candidate_median": 9.739362714392527,
+          "delta": -1.6034439651843595
+        },
+        "ssim": {
+          "baseline_median": 0.38599395751953125,
+          "candidate_median": 0.3085712790489197,
+          "delta": -0.07742267847061157
+        }
+      },
+      "sky_score": null
+    }
+  },
+  "purpose": "no-spend same-camera comparison between R4 leaf-init canary and V18 smoke-p24 baseline",
+  "thresholds": {
+    "boundary": {
+      "lpips_max_delta": 0.035,
+      "psnr_min_delta": -1.0,
+      "ssim_min_delta": -0.015
+    },
+    "horizon": {
+      "lpips_max_delta": 0.03,
+      "psnr_min_delta": -0.75,
+      "sky_score_min_ratio": 0.9,
+      "ssim_min_delta": -0.012
+    },
+    "near_detail": {
+      "lpips_max_delta": 0.035,
+      "psnr_min_delta": -1.0,
+      "ssim_min_delta": -0.015
+    }
+  },
+  "version": 1
+}
