@@ -1,0 +1,67 @@
+{
+  "checked_at": "2026-05-05T04:22:10Z",
+  "head": "9c12fcbfa9cf8b16514fed2fdbc3d9ceea4ac717",
+  "exact_head_gate": "CDK Deploy 25356211592 success",
+  "experiment_id": "md1-r4-expanded-hard-repair-after-v18-block-20260505",
+  "output_root_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-hard-repair-canary-20260505",
+  "job_prefix": "md1-r4exp9hard-1777951236",
+  "completed_wave_1_jobs": [
+    {
+      "training_job_name": "md1-r4exp9hard-1777951236-tile-01",
+      "tile_id": "tile_01",
+      "training_job_status": "Completed",
+      "secondary_status": "Completed",
+      "billable_time_seconds": 3313,
+      "training_time_seconds": 3313,
+      "cost_usd_estimate": 1.3946,
+      "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-hard-repair-canary-20260505/tiles/tile_01/md1-r4exp9hard-1777951236-tile-01/output/model.tar.gz",
+      "checkpoint_resume_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-hard-repair-canary-20260505/checkpoints/md1-r4exp9hard-1777951236-tile-01/resume_checkpoint/nerfstudio_models/step-000011999.ckpt"
+    },
+    {
+      "training_job_name": "md1-r4exp9hard-1777951236-tile-04",
+      "tile_id": "tile_04",
+      "training_job_status": "Completed",
+      "secondary_status": "Completed",
+      "billable_time_seconds": 3390,
+      "training_time_seconds": 3390,
+      "cost_usd_estimate": 1.4266,
+      "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-hard-repair-canary-20260505/tiles/tile_04/md1-r4exp9hard-1777951236-tile-04/output/model.tar.gz",
+      "checkpoint_resume_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-hard-repair-canary-20260505/checkpoints/md1-r4exp9hard-1777951236-tile-04/resume_checkpoint/nerfstudio_models/step-000011999.ckpt"
+    }
+  ],
+  "wave_1_cost_usd_estimate": 2.8213,
+  "active_training_jobs": [
+    {
+      "training_job_name": "md1-r4exp9hard-1777951236-tile-05",
+      "tile_id": "tile_05",
+      "training_job_status": "InProgress",
+      "secondary_status": "Pending"
+    },
+    {
+      "training_job_name": "md1-r4exp9hard-1777951236-tile-06",
+      "tile_id": "tile_06",
+      "training_job_status": "InProgress",
+      "secondary_status": "Pending"
+    }
+  ],
+  "remaining_train_tiles_after_current_wave": [
+    "tile_10"
+  ],
+  "cache_hit_tiles": [
+    "tile_00",
+    "tile_02",
+    "tile_11",
+    "tile_13"
+  ],
+  "planned_train_tiles": [
+    "tile_01",
+    "tile_04",
+    "tile_05",
+    "tile_06",
+    "tile_10"
+  ],
+  "budget": "max_estimated_usd=12, dry-run estimated_usd=8.3325, no full 14-tile run",
+  "checkpoint_s3_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-hard-repair-canary-20260505/checkpoints",
+  "decision": "bounded_hard_repair_wave1_complete_wave2_active_not_full_run",
+  "next_unblocked_step": "Monitor tile_05/tile_06 through export, then tile_10, local merge, streaming preflight, and V18 same-camera review before any full 14-tile run."
+}
