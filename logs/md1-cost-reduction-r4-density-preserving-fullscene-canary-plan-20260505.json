@@ -1,0 +1,245 @@
+{
+  "canary_submit_allowed": true,
+  "candidate_label": "r4-context-density-bgsidecar",
+  "decision": {
+    "next_unblocked_step": "Run only no-spend merge/preflight/review for this full-scene rollback canary, or target bounded paid retraining at candidate_density_fail_or_missing_tile_ids; do not submit a full 14-tile run.",
+    "production_quality_status": "not_a_new_cheaper_candidate_until_v18_rollback_tile_count_is_zero"
+  },
+  "density_thresholds": {
+    "min_context_density_ratio": 0.95,
+    "min_retained_ratio": 0.95
+  },
+  "generated_at": "2026-05-05T18:25:19Z",
+  "no_full_14tile_training": true,
+  "status": "full_scene_canary_ready_with_v18_rollback",
+  "summary": {
+    "candidate_density_fail_or_missing_tile_ids": [
+      "tile_00",
+      "tile_02",
+      "tile_03",
+      "tile_07",
+      "tile_08",
+      "tile_09",
+      "tile_12",
+      "tile_13"
+    ],
+    "candidate_tile_count": 9,
+    "reference_tile_count": 14,
+    "retrain_required_tile_ids": [],
+    "selected_source_counts": {
+      "candidate": 6,
+      "context_density_rollback": 8
+    },
+    "v18_rollback_tile_ids": [
+      "tile_00",
+      "tile_02",
+      "tile_03",
+      "tile_07",
+      "tile_08",
+      "tile_09",
+      "tile_12",
+      "tile_13"
+    ]
+  },
+  "tile_plan": [
+    {
+      "candidate_retained_gaussians": 248318,
+      "candidate_retained_ratio": 0.1597808657783589,
+      "candidate_status": "density_fail",
+      "context_density_ratio": 1.0,
+      "reasons": [
+        "candidate_retained_ratio_below_threshold"
+      ],
+      "reference_retained_gaussians": 1554116,
+      "retrain_required_if_no_v18_rollback": true,
+      "selected_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "selected_source": "context_density_rollback",
+      "selected_stage_type": "context_density_tile",
+      "tile_id": "tile_00"
+    },
+    {
+      "candidate_retained_gaussians": 420538,
+      "candidate_retained_ratio": 1.0,
+      "candidate_status": "density_pass",
+      "context_density_ratio": null,
+      "reasons": [],
+      "reference_retained_gaussians": 420538,
+      "retrain_required_if_no_v18_rollback": false,
+      "selected_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "selected_source": "candidate",
+      "selected_stage_type": "context_density_tile",
+      "tile_id": "tile_01"
+    },
+    {
+      "candidate_retained_gaussians": 479436,
+      "candidate_retained_ratio": 0.47062773137950126,
+      "candidate_status": "density_fail",
+      "context_density_ratio": 1.0,
+      "reasons": [
+        "candidate_retained_ratio_below_threshold"
+      ],
+      "reference_retained_gaussians": 1018716,
+      "retrain_required_if_no_v18_rollback": true,
+      "selected_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "selected_source": "context_density_rollback",
+      "selected_stage_type": "context_density_tile",
+      "tile_id": "tile_02"
+    },
+    {
+      "candidate_retained_gaussians": null,
+      "candidate_retained_ratio": null,
+      "candidate_status": "missing",
+      "context_density_ratio": 1.0,
+      "reasons": [
+        "candidate_tile_missing"
+      ],
+      "reference_retained_gaussians": 404551,
+      "retrain_required_if_no_v18_rollback": true,
+      "selected_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "selected_source": "context_density_rollback",
+      "selected_stage_type": "context_density_tile",
+      "tile_id": "tile_03"
+    },
+    {
+      "candidate_retained_gaussians": 956277,
+      "candidate_retained_ratio": 1.0,
+      "candidate_status": "density_pass",
+      "context_density_ratio": null,
+      "reasons": [],
+      "reference_retained_gaussians": 956277,
+      "retrain_required_if_no_v18_rollback": false,
+      "selected_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "selected_source": "candidate",
+      "selected_stage_type": "context_density_tile",
+      "tile_id": "tile_04"
+    },
+    {
+      "candidate_retained_gaussians": 896654,
+      "candidate_retained_ratio": 1.0,
+      "candidate_status": "density_pass",
+      "context_density_ratio": null,
+      "reasons": [],
+      "reference_retained_gaussians": 896654,
+      "retrain_required_if_no_v18_rollback": false,
+      "selected_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "selected_source": "candidate",
+      "selected_stage_type": "context_density_tile",
+      "tile_id": "tile_05"
+    },
+    {
+      "candidate_retained_gaussians": 1188805,
+      "candidate_retained_ratio": 1.0,
+      "candidate_status": "density_pass",
+      "context_density_ratio": null,
+      "reasons": [],
+      "reference_retained_gaussians": 1188805,
+      "retrain_required_if_no_v18_rollback": false,
+      "selected_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "selected_source": "candidate",
+      "selected_stage_type": "context_density_tile",
+      "tile_id": "tile_06"
+    },
+    {
+      "candidate_retained_gaussians": null,
+      "candidate_retained_ratio": null,
+      "candidate_status": "missing",
+      "context_density_ratio": 1.0,
+      "reasons": [
+        "candidate_tile_missing"
+      ],
+      "reference_retained_gaussians": 436385,
+      "retrain_required_if_no_v18_rollback": true,
+      "selected_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "selected_source": "context_density_rollback",
+      "selected_stage_type": "context_density_tile",
+      "tile_id": "tile_07"
+    },
+    {
+      "candidate_retained_gaussians": null,
+      "candidate_retained_ratio": null,
+      "candidate_status": "missing",
+      "context_density_ratio": 1.0,
+      "reasons": [
+        "candidate_tile_missing"
+      ],
+      "reference_retained_gaussians": 434060,
+      "retrain_required_if_no_v18_rollback": true,
+      "selected_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "selected_source": "context_density_rollback",
+      "selected_stage_type": "context_density_tile",
+      "tile_id": "tile_08"
+    },
+    {
+      "candidate_retained_gaussians": null,
+      "candidate_retained_ratio": null,
+      "candidate_status": "missing",
+      "context_density_ratio": 1.0,
+      "reasons": [
+        "candidate_tile_missing"
+      ],
+      "reference_retained_gaussians": 111383,
+      "retrain_required_if_no_v18_rollback": true,
+      "selected_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "selected_source": "context_density_rollback",
+      "selected_stage_type": "context_density_tile",
+      "tile_id": "tile_09"
+    },
+    {
+      "candidate_retained_gaussians": 371161,
+      "candidate_retained_ratio": 0.9794380833507058,
+      "candidate_status": "density_pass",
+      "context_density_ratio": null,
+      "reasons": [],
+      "reference_retained_gaussians": 378953,
+      "retrain_required_if_no_v18_rollback": false,
+      "selected_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-camera-coverage-canary-after-tile04-cache-20260505/tiles/tile_10/md1-r4exp9-1777943800-1777943463-tile-10/output/model.tar.gz",
+      "selected_source": "candidate",
+      "selected_stage_type": "cached_tile",
+      "tile_id": "tile_10"
+    },
+    {
+      "candidate_retained_gaussians": 119,
+      "candidate_retained_ratio": 1.75,
+      "candidate_status": "density_pass",
+      "context_density_ratio": null,
+      "reasons": [],
+      "reference_retained_gaussians": 68,
+      "retrain_required_if_no_v18_rollback": false,
+      "selected_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_11/md1-r4leafreb-1777858863-tile-11/output/model.tar.gz",
+      "selected_source": "candidate",
+      "selected_stage_type": "cached_tile",
+      "tile_id": "tile_11"
+    },
+    {
+      "candidate_retained_gaussians": null,
+      "candidate_retained_ratio": null,
+      "candidate_status": "missing",
+      "context_density_ratio": 1.0,
+      "reasons": [
+        "candidate_tile_missing"
+      ],
+      "reference_retained_gaussians": 395633,
+      "retrain_required_if_no_v18_rollback": true,
+      "selected_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "selected_source": "context_density_rollback",
+      "selected_stage_type": "context_density_tile",
+      "tile_id": "tile_12"
+    },
+    {
+      "candidate_retained_gaussians": 159633,
+      "candidate_retained_ratio": 0.700977916734364,
+      "candidate_status": "density_fail",
+      "context_density_ratio": 1.0,
+      "reasons": [
+        "candidate_retained_ratio_below_threshold"
+      ],
+      "reference_retained_gaussians": 227729,
+      "retrain_required_if_no_v18_rollback": true,
+      "selected_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "selected_source": "context_density_rollback",
+      "selected_stage_type": "context_density_tile",
+      "tile_id": "tile_13"
+    }
+  ],
+  "training_jobs_to_submit": 0
+}

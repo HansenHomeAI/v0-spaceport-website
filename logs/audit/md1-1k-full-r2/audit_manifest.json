@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "3a22acfd5b420ca2876a1eb3e2a0398790ac995f",
-  "current_exact_head_gate_status": "exact-head 3a22acfd5b420ca2876a1eb3e2a0398790ac995f is pushed and green on CDK Deploy 25378598163 plus Trigger ML Container Build 25378598148; ECR spaceport/3dgs:agent90742618md1geometryconsistency resolves to sha256:b0129db24d16251e6ee2af896e65c5eceefbd10d8eb52441b2800556f88347eb; no Cloudflare Pages run appeared for this non-web/container push.",
+  "current_branch_head": "de40cb7d30ed46195d7fcf9fc78acf221acd25a1",
+  "current_exact_head_gate_status": "exact-head de40cb7d30ed46195d7fcf9fc78acf221acd25a1 is pushed and green on CDK Deploy 25392553773. No Trigger ML Container Build or Cloudflare Pages run appeared for this log/state-only push; latest branch 3DGS image remains sha256:b0129db24d16251e6ee2af896e65c5eceefbd10d8eb52441b2800556f88347eb from head 3a22acfd5b420ca2876a1eb3e2a0398790ac995f.",
   "current_live_compute_status": "No MD1 SageMaker training jobs are InProgress. No MD1 SageMaker processing jobs are InProgress. One unrelated processing job r5full80s2-1777973662 remains InProgress.",
-  "current_rung": "R4_cost_reduction_context_density_v18_upper_bound_diagnostics_recorded",
+  "current_rung": "R4_cost_reduction_density_preserving_fullscene_canary_plan",
   "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -766,7 +766,7 @@
     ],
     "view_bucket_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiled_pipeline/inputs/scaffold/3dgs_view_buckets.json"
   },
-  "last_commit": "3a22acfd5b420ca2876a1eb3e2a0398790ac995f",
+  "last_commit": "de40cb7d30ed46195d7fcf9fc78acf221acd25a1",
   "last_exact_head_gates": {
     "cdk_deploy_conclusion": "success",
     "cdk_deploy_run_id": 25364537073,
@@ -777,17 +777,16 @@
     "local_status_update_pending_commit": true,
     "unrelated_processing_job_in_progress": "r5full80s1-1777934749"
   },
-  "last_updated": "2026-05-05T17:37:44Z",
+  "last_updated": "2026-05-05T18:25:19Z",
   "latest_exact_head_gate": {
-    "head": "3a22acfd5b420ca2876a1eb3e2a0398790ac995f",
+    "head": "de40cb7d30ed46195d7fcf9fc78acf221acd25a1",
     "branch": "agent-90742618-md1-geometry-consistency",
-    "cdk_deploy_run_id": 25378598163,
+    "cdk_deploy_run_id": 25392553773,
     "cdk_deploy_conclusion": "success",
-    "ml_container_build_run_id": 25378598148,
-    "ml_container_build_conclusion": "success",
+    "ml_container_build": "not_triggered_for_log_state_only_push",
+    "cloudflare_pages": "not_triggered_for_log_state_only_push",
     "ecr_digest": "sha256:b0129db24d16251e6ee2af896e65c5eceefbd10d8eb52441b2800556f88347eb",
-    "cloudflare_pages": "not_triggered_for_non_web_container_push",
-    "checked_at": "2026-05-05T17:37:44Z"
+    "checked_at": "2026-05-05T17:49:00Z"
   },
   "latest_live_compute_status": "No MD1 SageMaker training jobs are InProgress. No MD1 SageMaker processing jobs are InProgress. One unrelated processing job r5full80s2-1777973662 remains InProgress.",
   "latest_pages_gate": {
@@ -10614,5 +10613,81 @@
     "purpose": "No-training context-density diagnostics to isolate whether MD1 cost-reduction quality misses are remote-packager artifacts, selected-tile omissions, or reduced leaf density.",
     "total_diagnostic_spend_estimate_usd": 1.6787,
     "v18_source_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz"
+  },
+  "md1_r4_context_density_upper_bound_gate_20260505": {
+    "generated_at": "2026-05-05T17:49:00Z",
+    "head": "de40cb7d30ed46195d7fcf9fc78acf221acd25a1",
+    "commit": "de40cb7d30ed46195d7fcf9fc78acf221acd25a1",
+    "cdk_deploy_run_id": 25392553773,
+    "cdk_deploy_conclusion": "success",
+    "ml_container_build": "not_triggered_for_log_state_only_push",
+    "cloudflare_pages": "not_triggered_for_log_state_only_push",
+    "verification": {
+      "json_validation": "passed",
+      "git_diff_cached_check": "passed_before_commit",
+      "exact_head_workflow_watch": "passed_cdk_deploy_25392553773"
+    },
+    "decision": {
+      "status": "evidence_pushed_gated_continue_no_spend_planning",
+      "no_full_14tile_training": true,
+      "next_unblocked_step": "Formalize a density-preserving full-scene canary/reuse plan before any full 14-tile training."
+    }
+  },
+  "md1_r4_density_preserving_fullscene_canary_plan_20260505": {
+    "generated_at": "2026-05-05T18:25:19Z",
+    "head": "de40cb7d30ed46195d7fcf9fc78acf221acd25a1",
+    "plan_path": "logs/md1-cost-reduction-r4-density-preserving-fullscene-canary-plan-20260505.json",
+    "candidate_label": "r4-context-density-bgsidecar",
+    "status": "full_scene_canary_ready_with_v18_rollback",
+    "source_inputs": {
+      "reference_merge_report_json": "logs/md1-v18-merge-report-20260505.json",
+      "candidate_remote_merge_summary_json": "logs/audit/md1-1k-full-r2/r4_context_density_remote_merge_g4dn_bgsidecar_preflight_202605051343/remote_merge_summary.json",
+      "context_density_manifest_json": "logs/md1-cost-reduction-r4-context-density-all14-v18-manifest-20260505.json"
+    },
+    "summary": {
+      "reference_tile_count": 14,
+      "candidate_tile_count": 9,
+      "selected_source_counts": {
+        "candidate": 6,
+        "context_density_rollback": 8
+      },
+      "candidate_density_fail_or_missing_tile_ids": [
+        "tile_00",
+        "tile_02",
+        "tile_03",
+        "tile_07",
+        "tile_08",
+        "tile_09",
+        "tile_12",
+        "tile_13"
+      ],
+      "v18_rollback_tile_ids": [
+        "tile_00",
+        "tile_02",
+        "tile_03",
+        "tile_07",
+        "tile_08",
+        "tile_09",
+        "tile_12",
+        "tile_13"
+      ],
+      "retrain_required_tile_ids": [],
+      "training_jobs_to_submit": 0
+    },
+    "verification": {
+      "python_unittest_density_preserving_canary": "passed_2_tests",
+      "python_unittest_tiled_3dgs_benchmark": "passed_70_tests",
+      "python_unittest_tiled_merge_processing_planner": "passed_5_tests",
+      "python_py_compile": "passed",
+      "json_tool_plan": "passed",
+      "git_diff_check": "passed",
+      "pytest": "not_available_in_local_python"
+    },
+    "decision": {
+      "canary_submit_allowed": true,
+      "production_quality_status": "not_a_new_cheaper_candidate_until_v18_rollback_tile_count_is_zero",
+      "no_full_14tile_training": true,
+      "next_unblocked_step": "Commit/push this planner evidence, then run only no-training full-scene rollback merge/preflight or bounded retraining at density-fail/missing tiles before any full 14-tile run."
+    }
   }
 }
