@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "The current cheap 9-tile/reduced-density candidates are not production-ready. The full-scene rollback canary is a production-safety diagnostic, not a new cheaper production candidate until the V18 rollback tile count is zero or intentionally accepted as rollback. The remaining blocker is full-scene dense tile coverage and retained-density preservation.",
+  "blocked_promotion_reason": "The current cheap 9-tile/reduced-density candidates are not production-ready. The full-scene rollback canary is a production-safety diagnostic, not a new cheaper production candidate until the V18 rollback tile count is zero or intentionally accepted as rollback. The remaining blocker is tile_10 quality repair and full-scene dense tile coverage without V18 rollback.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "6155c9a679250545591d3ebe8929c6083a728964 with local remote-merge/preflight completion evidence pending commit/push",
-  "current_exact_head_gate_status": "exact-head 6155c9a679250545591d3ebe8929c6083a728964 is pushed and green on CDK Deploy 25397062792. No Trigger ML Container Build or Cloudflare Pages run appeared for this non-web/planner push; latest branch 3DGS image remains sha256:b0129db24d16251e6ee2af896e65c5eceefbd10d8eb52441b2800556f88347eb from head 3a22acfd5b420ca2876a1eb3e2a0398790ac995f.",
+  "current_branch_head": "0d211ed7ef912aa5f12d656f61da83a547200ad8 with local review-block/quality-guard implementation evidence pending commit/push",
+  "current_exact_head_gate_status": "exact-head 0d211ed7ef912aa5f12d656f61da83a547200ad8 is pushed and green on CDK Deploy 25399105082. No Trigger ML Container Build or Cloudflare Pages run appeared for this log/preflight push; latest branch 3DGS image remains sha256:b0129db24d16251e6ee2af896e65c5eceefbd10d8eb52441b2800556f88347eb from head 3a22acfd5b420ca2876a1eb3e2a0398790ac995f.",
   "current_live_compute_status": "No SageMaker training jobs are InProgress. No SageMaker processing jobs are InProgress.",
-  "current_rung": "R4_cost_reduction_density_preserving_fullscene_canary_remote_merge_preflight_passed",
+  "current_rung": "R4_cost_reduction_density_preserving_fullscene_canary_review_blocked_quality_guarded",
   "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -777,20 +777,20 @@
     "local_status_update_pending_commit": true,
     "unrelated_processing_job_in_progress": "r5full80s1-1777934749"
   },
-  "last_updated": "2026-05-05T19:56:04Z",
+  "last_updated": "2026-05-05T20:25:32Z",
   "latest_exact_head_gate": {
-    "checked_at": "2026-05-05T19:56:04Z",
-    "head": "6155c9a679250545591d3ebe8929c6083a728964",
-    "cdk_deploy_run_id": 25397062792,
+    "checked_at": "2026-05-05T20:25:32Z",
+    "head": "0d211ed7ef912aa5f12d656f61da83a547200ad8",
+    "cdk_deploy_run_id": 25399105082,
     "cdk_deploy_conclusion": "success",
-    "ml_container_build": "not_triggered_for_non_web_planner_push",
-    "cloudflare_pages": "not_triggered_for_non_web_planner_push"
+    "ml_container_build": "not_triggered_for_log_preflight_push",
+    "cloudflare_pages": "not_triggered_for_log_preflight_push"
   },
   "latest_live_compute_status": {
-    "checked_at": "2026-05-05T19:56:04Z",
+    "checked_at": "2026-05-05T20:25:32Z",
     "training_jobs_in_progress": [],
     "processing_jobs_in_progress": [],
-    "note": "No MD1 or other SageMaker training/processing jobs were InProgress after md1-r4denscanary-merge-1778008140 completed."
+    "note": "No SageMaker jobs were InProgress after md1-r1-r4-denscanary-fullscene-1778011434-quality completed."
   },
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
@@ -801,7 +801,7 @@
     "pages_run_id": 25107446761
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-context-density-all14-v18/review_comparison.json",
-  "latest_review_status": "Density-preserving full-scene rollback canary no-training g4dn merge md1-r4denscanary-merge-1778008140 completed in 1,444s/about $0.295 and streaming preflight passed with retained/source/dropped 8,416,127/8,786,976/370,849, fallback=0, retain_all=0, and background_skybox.webp selected from tile_03. This is a rollback-safety diagnostic, not a new cheaper production candidate until same-camera V18 review passes and the rollback frontier is eliminated or explicitly accepted.",
+  "latest_review_status": "Density-preserving full-scene rollback canary review md1-r1-r4-denscanary-fullscene-1778011434-quality completed in 797s/about $0.335 with coverage OK but blocked: boundary_no_required_improvement, horizon_ssim_regression, horizon_lpips_regression; V18 non-regression also blocked on boundary median SSIM and horizon median/single-camera DJI_0073 regressions. The artifact differs from V18 only by cached tile_10 (-7,792 retained gaussians) and near-empty cached tile_11 (+51), matching the artifact-level -7,741 retained delta, so tile_10 is the primary repair target. Added a quality guard so cached tiles require explicit V18/fullscene review proof; density ratio alone no longer accepts tile_10/tile_11.",
   "latest_training_cost_reduction_status": "No new full training spend. Three no-training remote merge/review diagnostics cost about $1.672 total and prove the new remote merge path can reproduce promoted V18 when all 14 dense tile members are present; 9-tile/reduced-density candidates remain blocked.",
   "live_compute_status": "No SageMaker training jobs are InProgress. Exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. Tile_13 hard proof is complete/preflighted/cached; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
@@ -3391,7 +3391,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Do not run full 14-tile training. Commit/push/gate the completed full-scene rollback merge and preflight evidence, then submit only the bounded same-camera V18 smoke review for the preflight-passing artifact before any retraining or promotion decision.",
+  "next_unblocked_step": "Do not run full 14-tile training. Commit/push/gate the review-block evidence and cached-tile quality guard, then take only a bounded tile_10 repair path or optional no-training tile_10 rollback isolation before any production promotion.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -10821,6 +10821,111 @@
       "production_quality_status": "not_a_new_cheaper_candidate_until_v18_review_passes_and_rollback_frontier_is_resolved",
       "no_full_14tile_training": true,
       "next_unblocked_step": "Commit/push/gate preflight evidence, then submit only bounded same-camera V18 smoke review before any retraining or promotion."
+    }
+  },
+  "md1_r4_density_preserving_fullscene_canary_review_blocked_20260505": {
+    "generated_at": "2026-05-05T20:25:32Z",
+    "head": "0d211ed7ef912aa5f12d656f61da83a547200ad8",
+    "gated_parent_head": {
+      "head": "0d211ed7ef912aa5f12d656f61da83a547200ad8",
+      "cdk_deploy_run_id": 25399105082,
+      "cdk_deploy_conclusion": "success"
+    },
+    "candidate_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-density-preserving-fullscene-canary-remote-merge-g4dn-202605051909/output/artifact/model.tar.gz",
+    "review_summary_json": "logs/md1-cost-reduction-r4-density-preserving-fullscene-canary-review-20260505.json",
+    "review_analysis_json": "logs/md1-cost-reduction-r4-density-preserving-fullscene-canary-review-analysis-20260505.json",
+    "review_output_dir": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-denscanary-fullscene",
+    "review_job": {
+      "name": "md1-r1-r4-denscanary-fullscene-1778011434-quality",
+      "status": "Completed",
+      "billable_seconds": 797,
+      "estimated_cost_usd_at_1_515_per_hour": 0.335,
+      "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-density-preserving-fullscene-canary-review-20260505/outputs/r4-denscanary-fullscene/md1-r1-r4-denscanary-fullscene-1778011434-quality/output/model.tar.gz"
+    },
+    "gates": {
+      "camera_coverage": "ok",
+      "promotion_decision": "blocked",
+      "promotion_block_reasons": [
+        "boundary_no_required_improvement",
+        "horizon_ssim_regression",
+        "horizon_lpips_regression"
+      ],
+      "v18_non_regression_status": "blocked",
+      "v18_non_regression_block_reasons": [
+        "boundary_v18_median_ssim_regression",
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_median_ssim_regression",
+        "horizon_v18_median_lpips_regression",
+        "horizon_v18_single_camera_psnr_regression",
+        "horizon_v18_single_camera_lpips_regression"
+      ]
+    },
+    "attribution": {
+      "likely_primary_blocker_tile_id": "tile_10",
+      "secondary_blocker_tile_id": "tile_11",
+      "tile_10_retained_delta_vs_v18": -7792,
+      "tile_11_retained_delta_vs_v18": 51,
+      "artifact_retained_delta_vs_v18": -7741,
+      "single_camera_block": "horizon DJI_0073.JPG",
+      "conclusion": "Density ratio alone was insufficient; cached tile_10 needs explicit V18/fullscene quality proof or repair."
+    },
+    "decision": {
+      "production_ready": false,
+      "no_full_14tile_training": true,
+      "next_unblocked_step": "Use cached-tile quality guard, then only bounded tile_10 repair or optional no-training tile_10 rollback isolation before promotion."
+    }
+  },
+  "md1_r4_density_preserving_quality_guard_20260505": {
+    "generated_at": "2026-05-05T20:25:32Z",
+    "head": "0d211ed7ef912aa5f12d656f61da83a547200ad8",
+    "implementation": {
+      "script": "scripts/3dgs/plan_md1_density_preserving_canary.py",
+      "tests": "tests/unit/test_md1_density_preserving_canary.py",
+      "behavior": "cached_tile candidates now require explicit v18_non_regression_status/fullscene_quality_status/candidate_review_status passing; context_density_tile remains trusted by context status."
+    },
+    "qualityguard_plan_json": "logs/md1-cost-reduction-r4-density-preserving-fullscene-canary-qualityguard-plan-20260505.json",
+    "qualityguard_summary_json": "logs/md1-cost-reduction-r4-density-preserving-fullscene-canary-qualityguard-summary-20260505.json",
+    "qualityguard_summary": {
+      "selected_source_counts": {
+        "candidate": 4,
+        "context_density_rollback": 10
+      },
+      "v18_rollback_tile_ids": [
+        "tile_00",
+        "tile_02",
+        "tile_03",
+        "tile_07",
+        "tile_08",
+        "tile_09",
+        "tile_10",
+        "tile_11",
+        "tile_12",
+        "tile_13"
+      ],
+      "candidate_density_fail_or_missing_tile_ids": [
+        "tile_00",
+        "tile_02",
+        "tile_03",
+        "tile_07",
+        "tile_08",
+        "tile_09",
+        "tile_10",
+        "tile_11",
+        "tile_12",
+        "tile_13"
+      ],
+      "retrain_required_tile_ids": []
+    },
+    "verification": {
+      "python_unittest_density_preserving_canary": "passed_4_tests",
+      "python_py_compile": "passed",
+      "json_validation": "passed",
+      "no_full_14tile_training_launched": true
+    },
+    "decision": {
+      "status": "guard_ready_pending_commit_push_gate",
+      "no_full_14tile_training": true,
+      "next_unblocked_step": "Commit/push/gate quality guard and review evidence, then target tile_10 repair."
     }
   }
 }

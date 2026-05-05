@@ -119,6 +119,7 @@ class TileDecision:
     reference_retained_gaussians: int
     candidate_retained_gaussians: int | None
     candidate_retained_ratio: float | None
+    candidate_quality_status: str | None
     candidate_status: str
     selected_source: str
     selected_stage_type: str
@@ -161,9 +162,31 @@ def build_plan(
             reasons.append("candidate_tile_missing")
 
         plan_entry = candidate_plan_tiles.get(tile_id, {})
+        candidate_stage_type = str(plan_entry.get("stage_type") or "candidate_tile")
+        if candidate_stage_type == "context_density_tile":
+            candidate_quality_status = str(
+                plan_entry.get("quality_gate_status")
+                or plan_entry.get("quality_status")
+                or plan_entry.get("promotion_status")
+                or "context_density_trusted"
+            ).strip()
+            candidate_quality_ok = True
+        else:
+            candidate_quality_status = str(
+                plan_entry.get("v18_non_regression_status")
+                or plan_entry.get("fullscene_quality_status")
+                or plan_entry.get("candidate_review_status")
+                or ""
+            ).strip()
+            candidate_quality_ok = status_is_passing(candidate_quality_status)
+        candidate_quality_status = candidate_quality_status or None
+        if candidate_status == "density_pass" and not candidate_quality_ok:
+            candidate_status = "quality_unproven"
+            reasons.append("candidate_quality_status_not_passing")
+
         if candidate_status == "density_pass":
             selected_source = "candidate"
-            selected_stage_type = str(plan_entry.get("stage_type") or "candidate_tile")
+            selected_stage_type = candidate_stage_type
             selected_artifact_uri = plan_entry.get("artifact_uri")
             context_ratio = None
             retrain_required = False
@@ -203,6 +226,7 @@ def build_plan(
                 reference_retained_gaussians=reference_retained,
                 candidate_retained_gaussians=candidate_retained,
                 candidate_retained_ratio=candidate_ratio,
+                candidate_quality_status=candidate_quality_status,
                 candidate_status=candidate_status,
                 selected_source=selected_source,
                 selected_stage_type=selected_stage_type,
@@ -220,7 +244,7 @@ def build_plan(
     missing_dense_fallback = [d.tile_id for d in decisions if d.selected_source == "retrain_required"]
     fallback_tiles = [d.tile_id for d in decisions if d.selected_source == "context_density_rollback"]
     candidate_density_fail_tiles = [
-        d.tile_id for d in decisions if d.candidate_status in {"missing", "density_fail"}
+        d.tile_id for d in decisions if d.candidate_status in {"missing", "density_fail", "quality_unproven"}
     ]
 
     if missing_dense_fallback:
@@ -301,6 +325,7 @@ def build_benchmark_summary_from_plan(
                 "quality_gate_status": "passed",
                 "candidate_label": plan.get("candidate_label"),
                 "candidate_status": tile.get("candidate_status"),
+                "candidate_quality_status": tile.get("candidate_quality_status"),
                 "selected_source": tile.get("selected_source"),
                 "candidate_retained_ratio": tile.get("candidate_retained_ratio"),
                 "context_density_ratio": tile.get("context_density_ratio"),

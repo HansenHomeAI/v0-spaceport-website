@@ -30,7 +30,12 @@ class MD1DensityPreservingCanaryTests(unittest.TestCase):
             },
             "merge_plan": {
                 "tiles": [
-                    {"tile_id": "tile_00", "stage_type": "cached_tile", "artifact_uri": "s3://bucket/t00.tar.gz"},
+                    {
+                        "tile_id": "tile_00",
+                        "stage_type": "cached_tile",
+                        "artifact_uri": "s3://bucket/t00.tar.gz",
+                        "v18_non_regression_status": "passed",
+                    },
                     {"tile_id": "tile_01", "stage_type": "cached_tile", "artifact_uri": "s3://bucket/t01.tar.gz"},
                 ]
             },
@@ -81,6 +86,43 @@ class MD1DensityPreservingCanaryTests(unittest.TestCase):
         self.assertFalse(plan["canary_submit_allowed"])
         self.assertEqual(plan["summary"]["retrain_required_tile_ids"], ["tile_00"])
 
+    def test_cached_tile_without_quality_proof_falls_back_even_when_dense(self):
+        reference = {"tiles": [{"tile_id": "tile_10", "retained_gaussians": 1000}]}
+        candidate = {
+            "merge_report": {"tiles": [{"tile_id": "tile_10", "retained_gaussians": 990}]},
+            "merge_plan": {
+                "tiles": [
+                    {"tile_id": "tile_10", "stage_type": "cached_tile", "artifact_uri": "s3://bucket/tile10.tar.gz"}
+                ]
+            },
+        }
+        context_manifest = {
+            "context_density_tiles": [
+                {
+                    "tile_id": "tile_10",
+                    "context_density_status": "passed",
+                    "retained_gaussians": 1000,
+                    "reference_retained_gaussians": 1000,
+                    "artifact_s3_uri": "s3://bucket/v18.tar.gz",
+                }
+            ]
+        }
+
+        plan = planner.build_plan(
+            reference_merge_report=reference,
+            candidate_summary=candidate,
+            context_density_manifest=context_manifest,
+            candidate_label="cheap",
+            min_retained_ratio=0.95,
+            min_context_density_ratio=0.95,
+        )
+
+        tile = plan["tile_plan"][0]
+        self.assertEqual(tile["candidate_status"], "quality_unproven")
+        self.assertEqual(tile["selected_source"], "context_density_rollback")
+        self.assertIn("candidate_quality_status_not_passing", tile["reasons"])
+        self.assertEqual(plan["summary"]["v18_rollback_tile_ids"], ["tile_10"])
+
     def test_build_benchmark_summary_from_plan_emits_mergeable_stages(self):
         plan = {
             "generated_at": "2026-05-05T18:25:19Z",
@@ -95,6 +137,7 @@ class MD1DensityPreservingCanaryTests(unittest.TestCase):
                     "selected_source": "candidate",
                     "selected_artifact_uri": "s3://bucket/tile00/model.tar.gz",
                     "candidate_status": "density_pass",
+                    "candidate_quality_status": "passed",
                     "candidate_retained_ratio": 1.0,
                     "context_density_ratio": None,
                     "reference_retained_gaussians": 10,
@@ -106,6 +149,7 @@ class MD1DensityPreservingCanaryTests(unittest.TestCase):
                     "selected_source": "context_density_rollback",
                     "selected_artifact_uri": "s3://bucket/v18/model.tar.gz",
                     "candidate_status": "density_fail",
+                    "candidate_quality_status": None,
                     "candidate_retained_ratio": 0.2,
                     "context_density_ratio": 1.0,
                     "reference_retained_gaussians": 20,

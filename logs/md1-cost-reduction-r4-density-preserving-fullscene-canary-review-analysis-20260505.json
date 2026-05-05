@@ -1,0 +1,231 @@
+{
+  "generated_at": "2026-05-05T20:23:30Z",
+  "candidate_label": "r4-denscanary-fullscene",
+  "review_job": "md1-r1-r4-denscanary-fullscene-1778011434-quality",
+  "review_job_status": "Completed",
+  "review_billable_seconds": 797,
+  "estimated_review_cost_usd_at_1_515_per_hour": 0.335,
+  "merge_preflight": {
+    "retained_gaussians": 8416127,
+    "source_gaussians": 8786976,
+    "dropped_gaussians": 370849,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "artifact_complete": true
+  },
+  "promotion_decision": "blocked",
+  "promotion_block_reasons": [
+    "boundary_no_required_improvement",
+    "horizon_ssim_regression",
+    "horizon_lpips_regression"
+  ],
+  "v18_non_regression_decision": "blocked",
+  "v18_non_regression_block_reasons": [
+    "boundary_v18_median_ssim_regression",
+    "horizon_v18_median_psnr_regression",
+    "horizon_v18_median_ssim_regression",
+    "horizon_v18_median_lpips_regression",
+    "horizon_v18_single_camera_psnr_regression",
+    "horizon_v18_single_camera_lpips_regression"
+  ],
+  "bucket_deltas_vs_v18": {
+    "near_detail": {
+      "v18": {
+        "psnr": 11.342806679576887,
+        "ssim": 0.38599395751953125,
+        "lpips": 0.9159154295921326
+      },
+      "candidate": {
+        "psnr": 11.320133527429979,
+        "ssim": 0.38603675365448,
+        "lpips": 0.9050948917865753
+      },
+      "delta": {
+        "psnr": -0.022673152146907682,
+        "ssim": 0.00004279613494873047,
+        "lpips": -0.010820537805557251
+      },
+      "block_reasons": []
+    },
+    "boundary": {
+      "v18": {
+        "psnr": 14.315955739441744,
+        "ssim": 0.4327641427516937,
+        "lpips": 0.7800296545028687
+      },
+      "candidate": {
+        "psnr": 14.377269272120284,
+        "ssim": 0.4251103103160858,
+        "lpips": 0.7791972458362579
+      },
+      "delta": {
+        "psnr": 0.06131353267853967,
+        "ssim": -0.00765383243560791,
+        "lpips": -0.0008324086666107178
+      },
+      "block_reasons": [
+        "boundary_v18_median_ssim_regression"
+      ]
+    },
+    "horizon": {
+      "v18": {
+        "psnr": 15.518785862438865,
+        "ssim": 0.3774964064359665,
+        "lpips": 0.8303832709789276
+      },
+      "candidate": {
+        "psnr": 15.175314600703803,
+        "ssim": 0.3633328527212143,
+        "lpips": 0.8806975781917572
+      },
+      "delta": {
+        "psnr": -0.34347126173506126,
+        "ssim": -0.014163553714752197,
+        "lpips": 0.05031430721282959
+      },
+      "block_reasons": [
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_median_ssim_regression",
+        "horizon_v18_median_lpips_regression"
+      ]
+    }
+  },
+  "per_camera_blocks": [
+    {
+      "bucket": "horizon",
+      "image_name": "DJI_0073.JPG",
+      "delta": {
+        "psnr": -1.9397687440181475,
+        "ssim": -0.023829609155654907,
+        "lpips": 0.09733158349990845
+      },
+      "block_reasons": [
+        "horizon_v18_single_camera_psnr_regression",
+        "horizon_v18_single_camera_lpips_regression"
+      ]
+    }
+  ],
+  "camera_coverage": {
+    "status": "ok",
+    "block_reasons": [],
+    "per_bucket": {
+      "near_detail": {
+        "baseline_count": 4,
+        "candidate_count": 4,
+        "baseline_cameras": [
+          "DJI_0258.JPG",
+          "DJI_0261.JPG",
+          "DJI_0262.JPG",
+          "DJI_0263.JPG"
+        ],
+        "candidate_cameras": [
+          "DJI_0258.JPG",
+          "DJI_0261.JPG",
+          "DJI_0262.JPG",
+          "DJI_0263.JPG"
+        ],
+        "block_reasons": []
+      },
+      "boundary": {
+        "baseline_count": 4,
+        "candidate_count": 4,
+        "baseline_cameras": [
+          "DJI_0067.JPG",
+          "DJI_0068.JPG",
+          "DJI_0069.JPG",
+          "DJI_0070.JPG"
+        ],
+        "candidate_cameras": [
+          "DJI_0067.JPG",
+          "DJI_0068.JPG",
+          "DJI_0069.JPG",
+          "DJI_0070.JPG"
+        ],
+        "block_reasons": []
+      },
+      "horizon": {
+        "baseline_count": 4,
+        "candidate_count": 4,
+        "baseline_cameras": [
+          "DJI_0066.JPG",
+          "DJI_0073.JPG",
+          "DJI_0146.JPG",
+          "DJI_0147.JPG"
+        ],
+        "candidate_cameras": [
+          "DJI_0066.JPG",
+          "DJI_0073.JPG",
+          "DJI_0146.JPG",
+          "DJI_0147.JPG"
+        ],
+        "block_reasons": []
+      }
+    }
+  },
+  "differing_candidate_tiles_vs_v18": [
+    {
+      "tile_id": "tile_10",
+      "stage_type": "cached_tile",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-camera-coverage-canary-after-tile04-cache-20260505/tiles/tile_10/md1-r4exp9-1777943800-1777943463-tile-10/output/model.tar.gz",
+      "candidate_retained_gaussians": 371161,
+      "reference_retained_gaussians": 378953,
+      "retained_delta_vs_v18": -7792,
+      "candidate_retained_ratio": 0.9794380833507058,
+      "candidate_status": "density_pass"
+    },
+    {
+      "tile_id": "tile_11",
+      "stage_type": "cached_tile",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_11/md1-r4leafreb-1777858863-tile-11/output/model.tar.gz",
+      "candidate_retained_gaussians": 119,
+      "reference_retained_gaussians": 68,
+      "retained_delta_vs_v18": 51,
+      "candidate_retained_ratio": 1.75,
+      "candidate_status": "density_pass"
+    }
+  ],
+  "attribution": {
+    "finding": "The failed full-scene canary is V18-equivalent except cached tile_10 and near-empty cached tile_11. The retained-gaussian delta is almost entirely tile_10 (-7,792) with tile_11 offsetting +51, matching the artifact-level -7,741 retained delta vs V18. The horizon single-camera block on DJI_0073 therefore makes tile_10 the first repair target; density ratio alone was not a sufficient cache-acceptance gate.",
+    "likely_primary_blocker_tile_id": "tile_10",
+    "secondary_blocker_tile_id": "tile_11",
+    "confidence": "high_from_lineage_and_retained_delta; visual proof still requires tile_10 rollback or tile_10 repair review"
+  },
+  "quality_guard_plan": {
+    "plan_json": "logs/md1-cost-reduction-r4-density-preserving-fullscene-canary-qualityguard-plan-20260505.json",
+    "summary_json": "logs/md1-cost-reduction-r4-density-preserving-fullscene-canary-qualityguard-summary-20260505.json",
+    "selected_source_counts": {
+      "candidate": 4,
+      "context_density_rollback": 10
+    },
+    "v18_rollback_tile_ids": [
+      "tile_00",
+      "tile_02",
+      "tile_03",
+      "tile_07",
+      "tile_08",
+      "tile_09",
+      "tile_10",
+      "tile_11",
+      "tile_12",
+      "tile_13"
+    ],
+    "candidate_density_fail_or_missing_tile_ids": [
+      "tile_00",
+      "tile_02",
+      "tile_03",
+      "tile_07",
+      "tile_08",
+      "tile_09",
+      "tile_10",
+      "tile_11",
+      "tile_12",
+      "tile_13"
+    ],
+    "retrain_required_tile_ids": []
+  },
+  "decision": {
+    "production_ready": false,
+    "no_full_14tile_training": true,
+    "next_unblocked_step": "Do not run full 14-tile training. Use the new quality guard to reject cached tile_10/tile_11 without explicit V18 non-regression proof, then run only a bounded tile_10 repair or optional no-training tile_10 rollback isolation before any production promotion."
+  }
+}
