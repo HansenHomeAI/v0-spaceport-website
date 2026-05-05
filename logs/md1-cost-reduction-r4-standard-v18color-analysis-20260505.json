@@ -1,0 +1,359 @@
+{
+  "generated_at": "2026-05-05T07:52:28Z",
+  "branch": "agent-90742618-md1-geometry-consistency",
+  "head_at_review": "acc1340b68ad631ac390d39e2dbb7c6ba2d2184e",
+  "gate_status_at_review": {
+    "cdk_deploy_run_id": 25363268754,
+    "cdk_deploy_conclusion": "success",
+    "cloudflare_pages": "not_triggered_for_non_web_status_push"
+  },
+  "candidate": {
+    "label": "r4-expanded-standard-v18color",
+    "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-standard-v18color-review-20260505/inputs/r4_expanded_standard_v18color/model.tar.gz",
+    "artifact_sha256": "2b712192fa6a2c1df5c5ae87b941616e41a11785c9366e624e3b4be24c7a85e1",
+    "artifact_size_bytes": 461415894,
+    "artifact_s3_etag": "0328d6ade6c5861630667820edfd4662-56",
+    "source_merge": {
+      "tile_count": 9,
+      "source_gaussians": 2673502,
+      "retained_gaussians": 2534999,
+      "dropped_gaussians": 138503,
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0
+    },
+    "color_policy": {
+      "policy": "rgb-offset",
+      "rgb_offset": [
+        0.008,
+        0.12,
+        0.0
+      ],
+      "tiles": [
+        "tile_00",
+        "tile_01",
+        "tile_02",
+        "tile_04",
+        "tile_05",
+        "tile_06"
+      ],
+      "lineage": "same sky-preserving offset used by promoted V18"
+    },
+    "preflight": {
+      "artifact_complete": true,
+      "block_reasons": [],
+      "decision": "preflight_passed_run_frozen_smoke_review",
+      "summary_path": "logs/audit/md1-1k-full-r2/r4_expanded_standard_v18color_preflight_summary_20260505.json"
+    }
+  },
+  "review_job": {
+    "name": "md1-r1-r4-expanded-standard-v18color-1777966369-quality",
+    "status": "Completed",
+    "billable_seconds": 718,
+    "estimated_cost_usd_at_1_515_per_hour": 0.3022,
+    "output_model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-standard-v18color-review-20260505/outputs/r4-expanded-standard-v18color/md1-r1-r4-expanded-standard-v18color-1777966369-quality/output/model.tar.gz",
+    "review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-expanded-standard-v18color/review_comparison.json"
+  },
+  "same_camera_v18_comparison": {
+    "camera_coverage_status": "ok",
+    "promotion_status": "blocked",
+    "promotion_block_reasons": [
+      "boundary_ssim_regression",
+      "boundary_lpips_regression",
+      "boundary_no_required_improvement",
+      "horizon_psnr_regression",
+      "horizon_ssim_regression",
+      "horizon_lpips_regression"
+    ],
+    "v18_non_regression_status": "blocked",
+    "v18_non_regression_block_reasons": [
+      "boundary_v18_median_ssim_regression",
+      "boundary_v18_median_lpips_regression",
+      "horizon_v18_median_psnr_regression",
+      "horizon_v18_median_ssim_regression",
+      "horizon_v18_median_lpips_regression",
+      "near_detail_v18_single_camera_lpips_regression",
+      "boundary_v18_single_camera_lpips_regression",
+      "horizon_v18_single_camera_lpips_regression",
+      "horizon_v18_single_camera_psnr_regression"
+    ],
+    "per_bucket": {
+      "near_detail": {
+        "candidate": {
+          "psnr": 11.967611648029491,
+          "ssim": 0.38167107105255127,
+          "lpips": 0.9163762331008911
+        },
+        "v18_baseline": {
+          "psnr": 11.342806679576887,
+          "ssim": 0.38599395751953125,
+          "lpips": 0.9159154295921326
+        },
+        "delta_vs_v18": {
+          "psnr": 0.6248049684526045,
+          "ssim": -0.0043228864669799805,
+          "lpips": 0.0004608035087585449
+        },
+        "block_reasons": []
+      },
+      "boundary": {
+        "candidate": {
+          "psnr": 14.785025745015972,
+          "ssim": 0.3929892033338547,
+          "lpips": 0.829335480928421
+        },
+        "v18_baseline": {
+          "psnr": 14.315955739441744,
+          "ssim": 0.4327641427516937,
+          "lpips": 0.7800296545028687
+        },
+        "delta_vs_v18": {
+          "psnr": 0.4690700055742276,
+          "ssim": -0.03977493941783905,
+          "lpips": 0.04930582642555237
+        },
+        "block_reasons": [
+          "boundary_ssim_regression",
+          "boundary_lpips_regression",
+          "boundary_no_required_improvement"
+        ]
+      },
+      "horizon": {
+        "candidate": {
+          "psnr": 14.547442295154081,
+          "ssim": 0.35266394913196564,
+          "lpips": 0.8887888193130493
+        },
+        "v18_baseline": {
+          "psnr": 15.518785862438865,
+          "ssim": 0.3774964064359665,
+          "lpips": 0.8303832709789276
+        },
+        "delta_vs_v18": {
+          "psnr": -0.9713435672847837,
+          "ssim": -0.024832457304000854,
+          "lpips": 0.058405548334121704
+        },
+        "block_reasons": [
+          "horizon_psnr_regression",
+          "horizon_ssim_regression",
+          "horizon_lpips_regression"
+        ]
+      }
+    }
+  },
+  "comparison_against_recent_no_training_candidates": {
+    "standard_9tile_delta_vs_v18": {
+      "near_detail": {
+        "psnr": -0.02859320411509536,
+        "ssim": -0.013513505458831787,
+        "lpips": 0.01592618227005005
+      },
+      "boundary": {
+        "psnr": 0.06886225723658512,
+        "ssim": -0.042982667684555054,
+        "lpips": 0.0662652850151062
+      },
+      "horizon": {
+        "psnr": -1.9438024034034207,
+        "ssim": -0.03160783648490906,
+        "lpips": 0.07142838835716248
+      }
+    },
+    "standard_v18color_delta_vs_v18": {
+      "near_detail": {
+        "psnr": 0.6248049684526045,
+        "ssim": -0.0043228864669799805,
+        "lpips": 0.0004608035087585449
+      },
+      "boundary": {
+        "psnr": 0.4690700055742276,
+        "ssim": -0.03977493941783905,
+        "lpips": 0.04930582642555237
+      },
+      "horizon": {
+        "psnr": -0.9713435672847837,
+        "ssim": -0.024832457304000854,
+        "lpips": 0.058405548334121704
+      }
+    },
+    "hard01_mix_delta_vs_v18": {
+      "near_detail": {
+        "psnr": -0.18568301299857204,
+        "ssim": -0.01769918203353882,
+        "lpips": 0.01899617910385132
+      },
+      "boundary": {
+        "psnr": 0.032399411030116454,
+        "ssim": -0.04470190405845642,
+        "lpips": 0.065239816904068
+      },
+      "horizon": {
+        "psnr": -2.133916921331714,
+        "ssim": -0.033111006021499634,
+        "lpips": 0.07635471224784851
+      }
+    },
+    "interpretation": "V18 color policy recovers PSNR, especially horizon, but does not recover SSIM/LPIPS and still misses horizon PSNR. Hard tile_01 alone worsens horizon versus the standard 9-tile candidate."
+  },
+  "density_context_attribution": {
+    "v18_total_retained_gaussians": 8423868,
+    "candidate_total_retained_gaussians": 2534999,
+    "candidate_to_v18_total_retained_ratio": 0.300930522653014,
+    "focus_tiles": [
+      {
+        "tile_id": "tile_01",
+        "candidate_source_gaussians": 367256,
+        "candidate_retained_gaussians": 366957,
+        "candidate_selected_image_count": 188,
+        "candidate_scaffold_init": {
+          "scaffold_inheritance_mode": "global_scaffold_ply_filtered",
+          "filter_bounds_source": "overlap_bounds_with_10pct_padding",
+          "status": "pending_training_export"
+        },
+        "candidate_context_padding_ratio": 0.0,
+        "candidate_present": true,
+        "v18_source_gaussians": 420538,
+        "v18_retained_gaussians": 420538,
+        "v18_selected_image_count": 188,
+        "v18_scaffold_init": {
+          "scaffold_inheritance_mode": "global_scaffold_ply_filtered",
+          "filter_bounds_source": "overlap_bounds_with_10pct_padding",
+          "status": "pending_training_export"
+        },
+        "v18_context_padding_ratio": 0.0,
+        "v18_present": true,
+        "candidate_to_v18_retained_ratio": 0.8725893973909611,
+        "retained_gap_vs_v18": 53581
+      },
+      {
+        "tile_id": "tile_04",
+        "candidate_source_gaussians": 343154,
+        "candidate_retained_gaussians": 337142,
+        "candidate_selected_image_count": 188,
+        "candidate_scaffold_init": {
+          "scaffold_inheritance_mode": "global_scaffold_ply_filtered",
+          "filter_bounds_source": "overlap_bounds_with_10pct_padding",
+          "status": "pending_training_export"
+        },
+        "candidate_context_padding_ratio": 0.0,
+        "candidate_present": true,
+        "v18_source_gaussians": 964477,
+        "v18_retained_gaussians": 956277,
+        "v18_selected_image_count": 188,
+        "v18_scaffold_init": {
+          "scaffold_inheritance_mode": "global_scaffold_ply_filtered",
+          "filter_bounds_source": "overlap_bounds_with_10pct_padding",
+          "status": "pending_training_export"
+        },
+        "v18_context_padding_ratio": 0.0,
+        "v18_present": true,
+        "candidate_to_v18_retained_ratio": 0.35255684283947014,
+        "retained_gap_vs_v18": 619135
+      },
+      {
+        "tile_id": "tile_05",
+        "candidate_source_gaussians": 354369,
+        "candidate_retained_gaussians": 314238,
+        "candidate_selected_image_count": 188,
+        "candidate_scaffold_init": {
+          "scaffold_inheritance_mode": "global_scaffold_ply_filtered",
+          "filter_bounds_source": "overlap_bounds_with_10pct_padding",
+          "status": "pending_training_export"
+        },
+        "candidate_context_padding_ratio": 0.0,
+        "candidate_present": true,
+        "v18_source_gaussians": 896654,
+        "v18_retained_gaussians": 896654,
+        "v18_selected_image_count": 188,
+        "v18_scaffold_init": {
+          "scaffold_inheritance_mode": "global_scaffold_ply_filtered",
+          "filter_bounds_source": "overlap_bounds_with_10pct_padding",
+          "status": "pending_training_export"
+        },
+        "v18_context_padding_ratio": 0.0,
+        "v18_present": true,
+        "candidate_to_v18_retained_ratio": 0.35045625179835255,
+        "retained_gap_vs_v18": 582416
+      },
+      {
+        "tile_id": "tile_06",
+        "candidate_source_gaussians": 267879,
+        "candidate_retained_gaussians": 257995,
+        "candidate_selected_image_count": 188,
+        "candidate_scaffold_init": {
+          "scaffold_inheritance_mode": "global_scaffold_ply_filtered",
+          "filter_bounds_source": "overlap_bounds_with_10pct_padding",
+          "status": "pending_training_export"
+        },
+        "candidate_context_padding_ratio": 0.0,
+        "candidate_present": true,
+        "v18_source_gaussians": 1188805,
+        "v18_retained_gaussians": 1188805,
+        "v18_selected_image_count": 188,
+        "v18_scaffold_init": {
+          "scaffold_inheritance_mode": "global_scaffold_ply_filtered",
+          "filter_bounds_source": "overlap_bounds_with_10pct_padding",
+          "status": "pending_training_export"
+        },
+        "v18_context_padding_ratio": 0.0,
+        "v18_present": true,
+        "candidate_to_v18_retained_ratio": 0.2170204533123599,
+        "retained_gap_vs_v18": 930810
+      },
+      {
+        "tile_id": "tile_10",
+        "candidate_source_gaussians": 384483,
+        "candidate_retained_gaussians": 371161,
+        "candidate_selected_image_count": 188,
+        "candidate_scaffold_init": {
+          "scaffold_inheritance_mode": "global_scaffold_ply_filtered",
+          "filter_bounds_source": "overlap_bounds_with_10pct_padding",
+          "status": "pending_training_export"
+        },
+        "candidate_context_padding_ratio": null,
+        "candidate_present": true,
+        "v18_source_gaussians": 387192,
+        "v18_retained_gaussians": 378953,
+        "v18_selected_image_count": 188,
+        "v18_scaffold_init": {
+          "scaffold_inheritance_mode": "global_scaffold_ply_filtered",
+          "filter_bounds_source": "overlap_bounds_with_10pct_padding",
+          "status": "pending_training_export"
+        },
+        "v18_context_padding_ratio": null,
+        "v18_present": true,
+        "candidate_to_v18_retained_ratio": 0.9794380833507058,
+        "retained_gap_vs_v18": 7792
+      }
+    ],
+    "large_density_gaps": [
+      {
+        "tile_id": "tile_04",
+        "candidate_retained_gaussians": 337142,
+        "v18_retained_gaussians": 956277,
+        "candidate_to_v18_retained_ratio": 0.35255684283947014,
+        "retained_gap_vs_v18": 619135
+      },
+      {
+        "tile_id": "tile_05",
+        "candidate_retained_gaussians": 314238,
+        "v18_retained_gaussians": 896654,
+        "candidate_to_v18_retained_ratio": 0.35045625179835255,
+        "retained_gap_vs_v18": 582416
+      },
+      {
+        "tile_id": "tile_06",
+        "candidate_retained_gaussians": 257995,
+        "v18_retained_gaussians": 1188805,
+        "candidate_to_v18_retained_ratio": 0.2170204533123599,
+        "retained_gap_vs_v18": 930810
+      }
+    ],
+    "interpretation": "The remaining quality gap is not a color-only issue. The cheap 9-tile artifact has about 30% of V18 retained splats overall; the strongest gaps are tile_04/tile_05/tile_06, which are materially under-dense versus V18 and dominate boundary/horizon perceptual regressions."
+  },
+  "decision": {
+    "status": "blocked_for_production_quality",
+    "no_full_14tile_training": true,
+    "next_unblocked_step": "Stay no-spend: attribute tile_04/tile_05/tile_06 density gap against V18 teacher/context settings and planner budgets, then plan only a bounded repair if it can target the perceptual/structure gap without re-running the full 14-tile pipeline."
+  }
+}

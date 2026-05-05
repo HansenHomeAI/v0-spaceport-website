@@ -1,0 +1,40 @@
+{
+  "scaffold_source_artifact": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+  "filtered_point_cloud": "/tmp/nerfstudio_training/converted_data/scaffold_init.ply",
+  "scaffold_filter_bounds": {
+    "min_x": -105379.9854,
+    "max_x": 324537.2034,
+    "min_y": -64112.593400000005,
+    "max_y": 298477.4794,
+    "min_z": -168400.7764,
+    "max_z": 23750.2484
+  },
+  "source_gaussian_count": 1554116,
+  "source_filtered_gaussian_count": 1554116,
+  "inherited_gaussian_count": 300000,
+  "inherited_gaussian_cap": 300000,
+  "inherited_attributes": [
+    "positions",
+    "rgb_from_gaussian_dc"
+  ],
+  "reinitialized_attributes": [
+    "scale",
+    "opacity",
+    "rotation",
+    "sh_rest",
+    "appearance_embeddings"
+  ],
+  "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+  "scaffold_init_downsample_strategy": "spatial_key_even_sample",
+  "fallback_used": false,
+  "external_scaffold": {
+    "stage_name": "scaffold",
+    "training_mode": "global_scaffold",
+    "status": "reused_external_scaffold",
+    "source_dir": "/opt/ml/input/data/scaffold",
+    "source_kind": "directory_tar_artifact",
+    "source_artifact": "/opt/ml/input/data/scaffold/model.tar.gz",
+    "output_dir": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00",
+    "splat_ply": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply"
+  }
+}
