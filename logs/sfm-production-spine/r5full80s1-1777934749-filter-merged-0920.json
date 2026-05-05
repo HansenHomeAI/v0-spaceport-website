@@ -1,0 +1,27 @@
+{
+    "events": [
+        {
+            "logStreamName": "r5full80s1-1777934749/algo-1-1777934789",
+            "timestamp": 1777971209200,
+            "message": "2026-05-05 08:53:28,603 - INFO - [chunk_model_seam_13_retry_matches_importer] colmap matches_importer --database_path /tmp/colmap_sfm_se0xt_sa/merged_chunk_model_13_seam_retry/database.db --match_list_path /tmp/colmap_sfm_se0xt_sa/merged_chunk_model_13_seam_retry/match_list.txt --match_type pairs --FeatureMatching.use_gpu 1 --FeatureMatching.guided_matching 1",
+            "ingestionTime": 1777971217280,
+            "eventId": "39650082906692586092335199073312880144025105285692588032"
+        },
+        {
+            "logStreamName": "r5full80s1-1777934749/algo-1-1777934789",
+            "timestamp": 1777972048498,
+            "message": "2026-05-05 09:07:28,066 - INFO - [chunk_model_seam_13_retry_image_registrator_01] colmap image_registrator --database_path /tmp/colmap_sfm_se0xt_sa/merged_chunk_model_13_seam_retry/database.db --input_path /tmp/colmap_sfm_se0xt_sa/merged_chunk_model_13_attempt_01 --output_path /tmp/colmap_sfm_se0xt_sa/chunk_model_seam_13_retry_image_registrator_01 --Mapper.num_threads -1 --Mapper.ba_refine_principal_point 0",
+            "ingestionTime": 1777972054349,
+            "eventId": "39650101623663429728690141529912723533382411371414355971"
+        },
+        {
+            "logStreamName": "r5full80s1-1777934749/algo-1-1777934789",
+            "timestamp": 1777972125519,
+            "message": "2026-05-05 09:08:44,622 - INFO - [chunk_model_seam_13_retry_point_triangulator_01] colmap point_triangulator --database_path /tmp/colmap_sfm_se0xt_sa/merged_chunk_model_13_seam_retry/database.db --image_path /tmp/colmap_sfm_se0xt_sa/images --input_path /tmp/colmap_sfm_se0xt_sa/chunk_model_seam_13_retry_image_registrator_01 --output_path /tmp/colmap_sfm_se0xt_sa/chunk_model_seam_13_retry_point_triangulator_01 --clear_points 0 --Mapper.num_threads -1 --Mapper.ba_refine_principal_point 0",
+            "ingestionTime": 1777972131495,
+            "eventId": "39650103341289125664717266607398843729631883207905902592"
+        }
+    ],
+    "searchedLogStreams": [],
+    "nextToken": "Bxkq6kVGFtq2y_MoigeqscPOdhXVbhiVtLoAmXb5jCpw4mpSKcYnwtkJzyegwLuB-tu3GlSBLmTZwavUYPNU8VJrkkCYTGNr3esTv5G_d4Ia0p59xXaLUMYp4sCkzNs_9bqkmqOkAxuOhccVjWpC68O-yQlCX1QLkgI3a_WyKqkQDAfXpDTsor81Esfyqn8yPKIjY379vTsB2zCMeN9sCwaLxKufIjeYWhDWoszFEDFrUFJip_Uhf3pseH9LqvguRrscXElv3AhpDOub14k69uwv027alaRPrCtd8EYTeh0"
+}

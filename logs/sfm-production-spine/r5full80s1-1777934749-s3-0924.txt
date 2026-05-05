@@ -1,0 +1,5 @@
+2026-05-05 03:24:07     417116 manual-validations/r5full80s1-1777934749/colmap/chunk_planner_manifest.json
+2026-05-05 03:24:07       5370 manual-validations/r5full80s1-1777934749/colmap/leaf_metadata.json
+2026-05-05 03:24:07        599 manual-validations/r5full80s1-1777934749/colmap/planner_static_report.json
+2026-05-05 03:24:07        703 manual-validations/r5full80s1-1777934749/colmap/reducer_metadata.json
+2026-05-05 03:24:07      82894 manual-validations/r5full80s1-1777934749/colmap/sfm_metadata.json
