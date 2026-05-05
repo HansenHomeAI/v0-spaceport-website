@@ -1,0 +1,5 @@
+2026-05-05 12:07:25        196 manual-validations/r5full80s2-1777973662/colmap/sparse/0/cameras.txt
+2026-05-05 12:07:25     237427 manual-validations/r5full80s2-1777973662/colmap/sparse/0/frames.txt
+2026-05-05 12:07:25  576078730 manual-validations/r5full80s2-1777973662/colmap/sparse/0/images.txt
+2026-05-05 12:07:25  157886707 manual-validations/r5full80s2-1777973662/colmap/sparse/0/points3D.txt
+2026-05-05 12:07:25        218 manual-validations/r5full80s2-1777973662/colmap/sparse/0/rigs.txt

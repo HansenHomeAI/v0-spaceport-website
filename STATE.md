@@ -1,135 +1,24 @@
 reason: building the mature-branch distributed SfM production spine from origin/agent-31459027-sfm-final-bridge-fallback without mutating the mature branch; sfm-reality-check heartbeat stays active until full verified end-goal proof or explicit owner stop.
-last_step: r5full80s1-1777934749 hit a final R5 merge failure at 2026-05-05T09:23:51Z: no overlapping registered images produced a usable merge between pending stages ['chunk_07_mapper_initial', 'chunk_model_seam_13_retry_point_triangulator_01']. Metadata-only S3 output exists with planner/leaf/reducer/sfm metadata but no sparse/0. Planner recorded 1456 images, 11 chunks, 33598 verified pairs, connected_component_count=1, expected single_merged_model. Leaf metadata recorded 11/11 leaves passed, including chunk_05 status=retried at 114/140 with fallbacks ['bounded_chunk_recovery', 'seam_only_leaf_seed']. Reducer recorded leaf_count=11, passed_leaf_count=11, failed_leaf_count=0, merged_component_count=1, expected_component_count=1, standard_sparse0_exists=false, promotion_blockers=['missing_sparse0', 'merge_retention_below_gate']. sfm_metadata recorded failure_stage=pipeline, quality_check_passed=false, processing_time_seconds=38059.31, images_registered=0, points_3d=0. The runtime had exhausted the default two merge-bridge recovery attempts before trying the stronger [2,3]-[7] bridge candidate (cross_edge_count=1758, boundary_strength=564); prior attempts selected [5]-[6] and [2,3]-[5]. After fatal traceback and metadata upload, SageMaker status lagged in InProgress/Stopping with no new log events, so a stop request was issued at 2026-05-05T09:31Z to avoid idle spend. Launched next full R5 attempt r5full80s2-1777973662 with the same seam_only_v1/P3/80-140-40 settings plus COLMAP_CHUNK_BRIDGE_RECOVERY_MAX_ATTEMPTS=4; output=s3://spaceport-ml-processing-staging/manual-validations/r5full80s2-1777973662/colmap; startup status InProgress with no ProcessingStartTime/log stream yet and S3 empty.
-next_unblocked_step: monitor r5full80s2-1777973662 startup/log stream, verify it uses COLMAP_CHUNK_BRIDGE_RECOVERY_MAX_ATTEMPTS=4, then track feature extraction, leaf gates, extra bridge attempts, reducer metadata, sparse/0, terminal status, and pipeline-viewer proof. If it still blocks, parse reducer/merge recovery records and launch the next bounded experiment. Do not delete sfm-reality-check.
+last_step: R5 full huge-acreage proof completed and was rechecked. SageMaker job r5full80s2-1777973662 is terminal Completed with no FailureReason; current active-processing-job query returned none; reducer passed 11/11 leaves with merged_component_count=1 expected_component_count=1 and promotion_blockers=[]; standard sparse/0 exists with cameras.txt, frames.txt, images.txt, points3D.txt, and rigs.txt; metadata reports 1452/1456 registered images, 1253309 raw points, 864755 filtered points, 863.16 raw pts/registered image, 595.56 filtered pts/registered image, runtime 30531.75s; pipeline-viewer API/viewer loaded HTTP 200 with 1452 cameras, 1253309 exact points, 18000 sampled points, 11 chunks, one nonblank canvas, and no page errors. Seam14 retry timed out and raw merge was retained, but this is recorded in metadata and final report; full global BA was deferred above threshold and recorded.
+next_unblocked_step: commit and push the R5 proof ledger/report, monitor the branch workflows kicked off by that push, and then keep sfm-reality-check active until the pushed proof is confirmed and owner expectations are satisfied. Do not delete sfm-reality-check.
 owner_action_needed: none
-active_jobs:
-  - r5full80s2-1777973662 -> InProgress; submitted after r5full80s1-1777934749 failed final merge retention; no ProcessingStartTime/log stream yet at submit check; COLMAP_CHUNK_BRIDGE_RECOVERY_MAX_ATTEMPTS=4; parent_merge_mode=seam_only_v1; match_profile=P3; chunk target/hard/overlap=80/140/40; branch_head=950426c0d6f90306d4611f082de48f29d113c1f9; image_tag=agent73948216sfmproductionspine; input=s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip; output=s3://spaceport-ml-processing-staging/manual-validations/r5full80s2-1777973662/colmap; S3 empty before start.
+active_jobs: []
 latest_artifacts:
-  - logs/sfm-production-spine/r5bridge739s1-1777918142-summary.json
-  - s3://spaceport-ml-processing-staging/manual-validations/r5bridge739s1/colmap
-  - logs/sfm-production-spine/r5_full80_s1_submit.json
-  - logs/sfm-production-spine/r5_full80_s1_submit_raw.txt
-  - logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-0235.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-log-streams-0235.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail-0235.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail2-0235.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-s3-0235.txt
-  - logs/sfm-production-spine/active-processing-jobs-20260505T0235Z.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-0240.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-log-streams-0240.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail-0240.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-s3-0240.txt
-  - logs/sfm-production-spine/active-processing-jobs-20260505T0240Z.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-0313.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-log-streams-0313.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail-0313.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-s3-0313.txt
-  - logs/sfm-production-spine/active-processing-jobs-20260505T0313Z.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-0345.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-log-streams-0345.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail-0345.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail2-0346.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-s3-0345.txt
-  - logs/sfm-production-spine/active-processing-jobs-20260505T0345Z.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-0419.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-log-streams-0419.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail-0419.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-s3-0419.txt
-  - logs/sfm-production-spine/active-processing-jobs-20260505T0419Z.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-0453.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-log-streams-0453.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail-0453.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-s3-0453.txt
-  - logs/sfm-production-spine/active-processing-jobs-20260505T0453Z.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-0526.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-log-streams-0526.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail-0526.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail2-0526.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail3-0526.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-s3-0526.txt
-  - logs/sfm-production-spine/active-processing-jobs-20260505T0526Z.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-0600.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-log-streams-0600.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail-0600.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-s3-0600.txt
-  - logs/sfm-production-spine/active-processing-jobs-20260505T0600Z.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-0634.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-log-streams-0634.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail-0634.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-s3-0634.txt
-  - logs/sfm-production-spine/active-processing-jobs-20260505T0634Z.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-0706.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-log-streams-0706.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail-0706.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail2-0706.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-s3-0706.txt
-  - logs/sfm-production-spine/active-processing-jobs-20260505T0706Z.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-0739.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-log-streams-0739.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail-0739.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail2-0739.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-s3-0739.txt
-  - logs/sfm-production-spine/active-processing-jobs-20260505T0739Z.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-0813.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-log-streams-0813.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail-0813.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-since-0813.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-filter-seam12-0813.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-filter-seam12retry-0813.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-filter-seam12retry-registrator-0813.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-filter-verified-pairs-0813.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-filter-model-merger13-0813.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-filter-create-db-0813.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-s3-0813.txt
-  - logs/sfm-production-spine/active-processing-jobs-20260505T0813Z.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-0847.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-log-streams-0847.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail-0847.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-since-0847.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-filter-verified-pairs-0847.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-filter-model-merger13-0847.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-filter-seam13-0847.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-filter-merged-0847.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-s3-0847.txt
-  - logs/sfm-production-spine/active-processing-jobs-20260505T0847Z.json
-  - s3://spaceport-ml-processing-staging/manual-validations/r5full80s1-1777934749/colmap
-  - logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-0920.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-log-streams-0920.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail-0920.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-since-0920.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-filter-verified-pairs-0920.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-filter-model-merger14-0920.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-filter-seam13retry-0920.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-filter-merged-0920.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-s3-0920.txt
-  - logs/sfm-production-spine/active-processing-jobs-20260505T0920Z.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-0924.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-log-streams-0924.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail-0924.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-cloudwatch-tail-0927.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-s3-0924.txt
-  - logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-0925.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-0927.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-0930.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-stop-request-0931.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-poststop-0931.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-sagemaker-describe-poststop-0932.json
-  - logs/sfm-production-spine/active-processing-jobs-20260505T0933Z.json
-  - logs/sfm-production-spine/stopping-processing-jobs-20260505T0933Z.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-chunk_planner_manifest.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-planner_static_report.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-leaf_metadata.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-reducer_metadata.json
-  - logs/sfm-production-spine/r5full80s1-1777934749-sfm_metadata.json
-  - logs/sfm-production-spine/r5_full80_s2_submit_raw.txt
-  - logs/sfm-production-spine/r5_full80_s2_submit.json
-  - logs/sfm-production-spine/r5full80s2-1777973662-sagemaker-describe-submit.json
-  - logs/sfm-production-spine/r5full80s2-1777973662-log-streams-submit.json
-  - logs/sfm-production-spine/r5full80s2-1777973662-s3-submit.txt
-  - logs/sfm-production-spine/active-processing-jobs-20260505T0935Z.json
-  - s3://spaceport-ml-processing-staging/manual-validations/r5full80s2-1777973662/colmap
-  - logs/sfm-production-spine/r5full80s2-1777973662-sagemaker-describe-0936.json
-  - logs/sfm-production-spine/r5full80s2-1777973662-log-streams-0936.json
+  - logs/sfm-production-spine/r5full80s2-1777973662-sagemaker-describe-1839.json
+  - logs/sfm-production-spine/r5full80s2-1777973662-cloudwatch-tail-1839.json
+  - logs/sfm-production-spine/r5full80s2-1777973662-s3-1839.txt
+  - logs/sfm-production-spine/r5full80s2-1777973662-sfm_metadata.json
+  - logs/sfm-production-spine/r5full80s2-1777973662-reducer_metadata.json
+  - logs/sfm-production-spine/r5full80s2-1777973662-leaf_metadata.json
+  - logs/sfm-production-spine/r5full80s2-1777973662-planner_static_report.json
+  - logs/sfm-production-spine/r5full80s2-1777973662-sparse0-list.txt
+  - logs/sfm-production-spine/pipeline-viewer-r5full80s2-proof.json
+  - logs/sfm-production-spine/pipeline-viewer-preview-r5full80s2-desktop.png
+  - logs/sfm-production-spine/pipeline-viewer-preview-r5full80s2-canvas.png
+  - logs/sfm-production-spine/active-processing-jobs-20260505T1849Z.json
+  - logs/sfm-production-spine/r5full80s2-1777973662-sagemaker-describe-1849.json
+  - logs/sfm-production-spine/r5full80s2-1777973662-sparse0-list-1849.txt
+  - s3://spaceport-ml-processing-staging/manual-validations/r5full80s2-1777973662/colmap/sparse/0/
 branch: agent-73948216-sfm-production-spine
-head: 950426c0d6f90306d4611f082de48f29d113c1f9
-updated: 2026-05-05T09:36:05Z
+head: a6360e1f555709d4482d200282cd7f81b0a6c3f3
+updated: 2026-05-05T18:51:17Z

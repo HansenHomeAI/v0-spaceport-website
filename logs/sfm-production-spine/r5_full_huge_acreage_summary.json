@@ -1,0 +1,429 @@
+{
+  "artifacts": [
+    "logs/sfm-production-spine/r5full80s2-1777973662-sagemaker-describe-1839.json",
+    "logs/sfm-production-spine/r5full80s2-1777973662-cloudwatch-tail-1839.json",
+    "logs/sfm-production-spine/r5full80s2-1777973662-s3-1839.txt",
+    "logs/sfm-production-spine/r5full80s2-1777973662-sfm_metadata.json",
+    "logs/sfm-production-spine/r5full80s2-1777973662-reducer_metadata.json",
+    "logs/sfm-production-spine/r5full80s2-1777973662-leaf_metadata.json",
+    "logs/sfm-production-spine/r5full80s2-1777973662-planner_static_report.json",
+    "logs/sfm-production-spine/r5full80s2-1777973662-sparse0-list.txt",
+    "logs/sfm-production-spine/pipeline-viewer-r5full80s2-proof.json",
+    "logs/sfm-production-spine/pipeline-viewer-preview-r5full80s2-desktop.png",
+    "logs/sfm-production-spine/pipeline-viewer-preview-r5full80s2-canvas.png",
+    "s3://spaceport-ml-processing-staging/manual-validations/r5full80s2-1777973662/colmap/sparse/0/",
+    "logs/sfm-production-spine/active-processing-jobs-20260505T1849Z.json",
+    "logs/sfm-production-spine/r5full80s2-1777973662-sagemaker-describe-1849.json",
+    "logs/sfm-production-spine/r5full80s2-1777973662-sparse0-list-1849.txt"
+  ],
+  "branch": "agent-73948216-sfm-production-spine",
+  "decision": "promote",
+  "gate_status": {
+    "pipeline_viewer_gate": "passed",
+    "points_per_registered_image_gate": "passed",
+    "promotion_gate": "passed_with_reported_seam_retry_timeout_and_deferred_global_ba",
+    "reducer_gate": "passed",
+    "registration_gate": "passed",
+    "sagemaker_terminal_status_gate": "passed",
+    "standard_sparse0_gate": "passed"
+  },
+  "head": "a6360e1f555709d4482d200282cd7f81b0a6c3f3",
+  "job": {
+    "input_uri": "s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip",
+    "instance_type": "ml.g4dn.xlarge",
+    "name": "r5full80s2-1777973662",
+    "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r5full80s2-1777973662/colmap",
+    "processing_end_time": "2026-05-05T18:07:34Z",
+    "processing_start_time": "2026-05-05T09:35:02Z",
+    "sagemaker_status": "Completed",
+    "volume_size_gb": 120
+  },
+  "job_head": "950426c0d6f90306d4611f082de48f29d113c1f9",
+  "leaf_summary": {
+    "leaf_count": 11,
+    "leafes_with_fallbacks": [
+      {
+        "chunk_index": 5,
+        "core_registered_ratio": 0.8143,
+        "fallbacks_used": [
+          "bounded_chunk_recovery",
+          "seam_only_leaf_seed"
+        ],
+        "image_count": 140,
+        "registered_count": 114,
+        "registered_ratio": 0.8085
+      }
+    ],
+    "passed_leaf_count": 10,
+    "retried_or_partial_leaf_count": 1
+  },
+  "ledger_head_at_validation": "a6360e1f555709d4482d200282cd7f81b0a6c3f3",
+  "merge_notes": {
+    "hierarchy_mode": "balanced_tree_v1",
+    "merge_component_recovery_records": [
+      {
+        "auxiliary_connector_usable": false,
+        "component_scope_image_count": 1456,
+        "connects_target_components": true,
+        "inserted_connector_images_registered": 1452,
+        "inserted_connector_stage": "chunk_model_component_bridge_14_02_05_seed_01_point_triangulator_02",
+        "merge_sequence": 14,
+        "pending_component_count": 2,
+        "pending_components": [
+          {
+            "component_index": 0,
+            "pending_model_indexes": [
+              0
+            ],
+            "registered_image_count": 280,
+            "source_chunk_indexes": [
+              2,
+              3
+            ],
+            "source_image_count": 280,
+            "stages": [
+              "chunk_model_merger_02_output_attempt_01"
+            ]
+          },
+          {
+            "component_index": 1,
+            "pending_model_indexes": [
+              1
+            ],
+            "registered_image_count": 1172,
+            "source_chunk_indexes": [
+              0,
+              1,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10
+            ],
+            "source_image_count": 1176,
+            "stages": [
+              "chunk_model_seam_13_retry_point_triangulator_01"
+            ]
+          }
+        ],
+        "ranked_candidates": [
+          {
+            "boundary_strength": 36,
+            "combined_image_count": 420,
+            "cross_edge_count": 168,
+            "first_chunk_index": 2,
+            "first_component_index": 0,
+            "first_index": 0,
+            "first_source_chunk_indexes": [
+              2,
+              3
+            ],
+            "gap_count": 1,
+            "pair_key": [
+              [
+                2,
+                3
+              ],
+              [
+                5
+              ]
+            ],
+            "planned_shared_images": 0,
+            "second_chunk_index": 5,
+            "second_component_index": 1,
+            "second_index": 4,
+            "second_source_chunk_indexes": [
+              5
+            ],
+            "zero_signal_fallback": false
+          },
+          {
+            "boundary_strength": 757,
+            "combined_image_count": 420,
+            "cross_edge_count": 9,
+            "first_chunk_index": 2,
+            "first_component_index": 0,
+            "first_index": 0,
+            "first_source_chunk_indexes": [
+              2,
+              3
+            ],
+            "gap_count": 2,
+            "pair_key": [
+              [
+                2,
+                3
+              ],
+              [
+                6
+              ]
+            ],
+            "planned_shared_images": 0,
+            "second_chunk_index": 6,
+            "second_component_index": 1,
+            "second_index": 5,
+            "second_source_chunk_indexes": [
+              6
+            ],
+            "zero_signal_fallback": false
+          },
+          {
+            "boundary_strength": 564,
+            "combined_image_count": 420,
+            "cross_edge_count": 1758,
+            "first_chunk_index": 2,
+            "first_component_index": 0,
+            "first_index": 0,
+            "first_source_chunk_indexes": [
+              2,
+              3
+            ],
+            "gap_count": 3,
+            "pair_key": [
+              [
+                2,
+                3
+              ],
+              [
+                7
+              ]
+            ],
+            "planned_shared_images": 0,
+            "second_chunk_index": 7,
+            "second_component_index": 1,
+            "second_index": 6,
+            "second_source_chunk_indexes": [
+              7
+            ],
+            "zero_signal_fallback": false
+          },
+          {
+            "boundary_strength": 0,
+            "combined_image_count": 420,
+            "cross_edge_count": 1589,
+            "first_chunk_index": 2,
+            "first_component_index": 0,
+            "first_index": 0,
+            "first_source_chunk_indexes": [
+              2,
+              3
+            ],
+            "gap_count": 4,
+            "pair_key": [
+              [
+                2,
+                3
+              ],
+              [
+                8
+              ]
+            ],
+            "planned_shared_images": 0,
+            "second_chunk_index": 8,
+            "second_component_index": 1,
+            "second_index": 7,
+            "second_source_chunk_indexes": [
+              8
+            ],
+            "zero_signal_fallback": false
+          },
+          {
+            "boundary_strength": 0,
+            "combined_image_count": 420,
+            "cross_edge_count": 0,
+            "first_chunk_index": 2,
+            "first_component_index": 0,
+            "first_index": 0,
+            "first_source_chunk_indexes": [
+              2,
+              3
+            ],
+            "gap_count": 0,
+            "pair_key": [
+              [
+                1
+              ],
+              [
+                2,
+                3
+              ]
+            ],
+            "planned_shared_images": 0,
+            "second_chunk_index": 1,
+            "second_component_index": 1,
+            "second_index": 2,
+            "second_source_chunk_indexes": [
+              1
+            ],
+            "zero_signal_fallback": true
+          }
+        ],
+        "required_image_count": 1452,
+        "scope_image_count": 420,
+        "scope_selection": "bounded_source_chunk_pair",
+        "seed_attempts": [
+          {
+            "auxiliary_connector_usable": false,
+            "candidate_stage": "chunk_model_component_bridge_14_02_05_seed_01_point_triangulator_02",
+            "connects_target_components": true,
+            "images_registered": 1452,
+            "seed_stage": "chunk_model_seam_13_retry_point_triangulator_01",
+            "status": "usable"
+          }
+        ],
+        "selected_candidate": {
+          "boundary_strength": 36,
+          "combined_image_count": 420,
+          "cross_edge_count": 168,
+          "first_chunk_index": 2,
+          "first_component_index": 0,
+          "first_index": 0,
+          "first_source_chunk_indexes": [
+            2,
+            3
+          ],
+          "gap_count": 1,
+          "pair_key": [
+            [
+              2,
+              3
+            ],
+            [
+              5
+            ]
+          ],
+          "planned_shared_images": 0,
+          "second_chunk_index": 5,
+          "second_component_index": 1,
+          "second_index": 4,
+          "second_source_chunk_indexes": [
+            5
+          ],
+          "zero_signal_fallback": false
+        },
+        "stage_prefix": "chunk_model_component_bridge_14_02_05",
+        "status": "connector_inserted"
+      }
+    ],
+    "parent_merge_mode": "seam_only_v1",
+    "reported_warning": "chunk_model_seam_14_retry_matches_importer timed out and raw model_merger result was retained/reported",
+    "top_level_ba_mode": "deferred_global_above_threshold",
+    "top_level_ba_ran": false,
+    "top_level_ba_reason": "above_threshold:900",
+    "top_level_ba_threshold": 900
+  },
+  "metrics": {
+    "dataset_image_count": 1456,
+    "filtered_points_3d": 864755,
+    "filtered_points_per_registered_image": 595.56,
+    "processing_time_seconds": 30531.75,
+    "quality_check_passed": true,
+    "raw_points_3d": 1253309,
+    "raw_points_per_registered_image": 863.16,
+    "registered": 1452,
+    "registration_ratio": 0.997253,
+    "renamed_image_count": 457
+  },
+  "mode": "distributed_chunked_v1",
+  "planner": "footprint_graph_v1",
+  "planner_report": {
+    "candidate_pair_counts": {
+      "footprint": 57493,
+      "retrieval": 0,
+      "sequence": 14505,
+      "spatial": 40729
+    },
+    "chunk_count": 11,
+    "chunk_sizes": [
+      140,
+      140,
+      140,
+      140,
+      140,
+      140,
+      140,
+      140,
+      140,
+      140,
+      140
+    ],
+    "connected_component_count": 1,
+    "dataset_image_count": 1456,
+    "estimated_leaf_jobs": 11,
+    "expected_output_kind": "single_merged_model",
+    "gps_coverage_ratio": 1.0,
+    "orientation_coverage_ratio": 1.0,
+    "orphan_image_count": 0,
+    "risky_bridges": [],
+    "selected_orientation_source": "exif",
+    "verified_pair_count": 32294
+  },
+  "reducer": {
+    "ba_policy": "local_or_deferred_global",
+    "branch": "agent-73948216-sfm-production-spine",
+    "expected_component_count": 1,
+    "failed_leaf_count": 0,
+    "head": "950426c0d6f90306d4611f082de48f29d113c1f9",
+    "input_uri": "s3://spaceport-uploads/1774730286-meadow-ln-montana-archive/Archive.zip",
+    "leaf_count": 11,
+    "merge_strategy": "overlap_first_balanced",
+    "merged_component_count": 1,
+    "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r5full80s2-1777973662/colmap",
+    "passed_leaf_count": 11,
+    "planner_manifest": "chunk_planner_manifest.json",
+    "promotion_blockers": [],
+    "standard_sparse0_exists": true
+  },
+  "rung": "R5",
+  "sparse0": {
+    "exists": true,
+    "files": [
+      "cameras.txt",
+      "frames.txt",
+      "images.txt",
+      "points3D.txt",
+      "rigs.txt"
+    ],
+    "total_bytes": 734203278,
+    "uri": "s3://spaceport-ml-processing-staging/manual-validations/r5full80s2-1777973662/colmap/sparse/0/"
+  },
+  "updated": "2026-05-05T18:51:17Z",
+  "viewer_proof": {
+    "api_chunk_count": 11,
+    "api_exact_point_count": 1253309,
+    "api_registered_image_count": 1452,
+    "api_sampled_point_count": 18000,
+    "api_status": 200,
+    "canvas_count": 1,
+    "console_messages": [
+      {
+        "text": "[.WebGL-0x124001de300]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+        "type": "warning"
+      },
+      {
+        "text": "[.WebGL-0x124001de300]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+        "type": "warning"
+      },
+      {
+        "text": "[.WebGL-0x124001de300]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+        "type": "warning"
+      },
+      {
+        "text": "[.WebGL-0x124001de300]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+        "type": "warning"
+      }
+    ],
+    "dom_summary": "18,000 / 1,253,309 points, 1,452 cameras, 11 chunks",
+    "gate": "passed",
+    "page_errors": [],
+    "screenshot_mean": 0.0354539,
+    "screenshot_stddev": 0.0520831,
+    "screenshots": {
+      "canvas": "logs/sfm-production-spine/pipeline-viewer-preview-r5full80s2-canvas.png",
+      "desktop": "logs/sfm-production-spine/pipeline-viewer-preview-r5full80s2-desktop.png"
+    },
+    "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fr5full80s2-1777973662%2Fcolmap"
+  }
+}

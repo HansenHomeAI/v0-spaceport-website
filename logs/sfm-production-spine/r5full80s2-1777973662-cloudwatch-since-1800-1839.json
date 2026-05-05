@@ -1,0 +1,626 @@
+{
+    "events": [
+        {
+            "timestamp": 1778004008838,
+            "message": "COLMAP[chunk_model_seam_14_retry_matches_importer] I20260505 18:00:08.444156 28105 feature_matching.cc:217] in 39.607s",
+            "ingestionTime": 1778004014191
+        },
+        {
+            "timestamp": 1778004008838,
+            "message": "COLMAP[chunk_model_seam_14_retry_matches_importer] I20260505 18:00:08.444228 28105 pairing.cc:843] Processing block [21/31]",
+            "ingestionTime": 1778004014191
+        },
+        {
+            "timestamp": 1778004037351,
+            "message": "COLMAP[chunk_model_seam_14_retry_matches_importer] I20260505 18:00:36.718154 28105 feature_matching.cc:217] in 28.274s",
+            "ingestionTime": 1778004043953
+        },
+        {
+            "timestamp": 1778004037351,
+            "message": "COLMAP[chunk_model_seam_14_retry_matches_importer] I20260505 18:00:36.718216 28105 pairing.cc:843] Processing block [22/31]",
+            "ingestionTime": 1778004043953
+        },
+        {
+            "timestamp": 1778004064583,
+            "message": "COLMAP[chunk_model_seam_14_retry_matches_importer] I20260505 18:01:03.837065 28105 feature_matching.cc:217] in 27.119s",
+            "ingestionTime": 1778004071094
+        },
+        {
+            "timestamp": 1778004064583,
+            "message": "COLMAP[chunk_model_seam_14_retry_matches_importer] I20260505 18:01:03.837136 28105 pairing.cc:843] Processing block [23/31]",
+            "ingestionTime": 1778004071094
+        },
+        {
+            "timestamp": 1778004093978,
+            "message": "COLMAP[chunk_model_seam_14_retry_matches_importer] I20260505 18:01:33.085938 28105 feature_matching.cc:217] in 29.249s",
+            "ingestionTime": 1778004100869
+        },
+        {
+            "timestamp": 1778004093978,
+            "message": "COLMAP[chunk_model_seam_14_retry_matches_importer] I20260505 18:01:33.085994 28105 pairing.cc:843] Processing block [24/31]",
+            "ingestionTime": 1778004100869
+        },
+        {
+            "timestamp": 1778004121820,
+            "message": "COLMAP[chunk_model_seam_14_retry_matches_importer] I20260505 18:02:01.205097 28105 feature_matching.cc:217] in 28.119s",
+            "ingestionTime": 1778004129754
+        },
+        {
+            "timestamp": 1778004121820,
+            "message": "COLMAP[chunk_model_seam_14_retry_matches_importer] I20260505 18:02:01.205178 28105 pairing.cc:843] Processing block [25/31]",
+            "ingestionTime": 1778004129754
+        },
+        {
+            "timestamp": 1778004149861,
+            "message": "COLMAP[chunk_model_seam_14_retry_matches_importer] I20260505 18:02:29.765604 28105 feature_matching.cc:217] in 28.560s",
+            "ingestionTime": 1778004156613
+        },
+        {
+            "timestamp": 1778004149861,
+            "message": "COLMAP[chunk_model_seam_14_retry_matches_importer] I20260505 18:02:29.765661 28105 pairing.cc:843] Processing block [26/31]",
+            "ingestionTime": 1778004156613
+        },
+        {
+            "timestamp": 1778004180167,
+            "message": "COLMAP[chunk_model_seam_14_retry_matches_importer] I20260505 18:03:00.037581 28105 feature_matching.cc:217] in 30.272s",
+            "ingestionTime": 1778004188617
+        },
+        {
+            "timestamp": 1778004180167,
+            "message": "COLMAP[chunk_model_seam_14_retry_matches_importer] I20260505 18:03:00.037652 28105 pairing.cc:843] Processing block [27/31]",
+            "ingestionTime": 1778004188617
+        },
+        {
+            "timestamp": 1778004212033,
+            "message": "COLMAP[chunk_model_seam_14_retry_matches_importer] I20260505 18:03:31.098312 28105 feature_matching.cc:217] in 31.061s",
+            "ingestionTime": 1778004218932
+        },
+        {
+            "timestamp": 1778004212033,
+            "message": "COLMAP[chunk_model_seam_14_retry_matches_importer] I20260505 18:03:31.098402 28105 pairing.cc:843] Processing block [28/31]",
+            "ingestionTime": 1778004218932
+        },
+        {
+            "timestamp": 1778004238539,
+            "message": "COLMAP[chunk_model_seam_14_retry_matches_importer] I20260505 18:03:58.461875 28105 feature_matching.cc:217] in 27.364s",
+            "ingestionTime": 1778004247793
+        },
+        {
+            "timestamp": 1778004238539,
+            "message": "COLMAP[chunk_model_seam_14_retry_matches_importer] I20260505 18:03:58.461934 28105 pairing.cc:843] Processing block [29/31]",
+            "ingestionTime": 1778004247793
+        },
+        {
+            "timestamp": 1778004268189,
+            "message": "COLMAP[chunk_model_seam_14_retry_matches_importer] I20260505 18:04:27.623332 28105 feature_matching.cc:217] in 29.161s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004268189,
+            "message": "COLMAP[chunk_model_seam_14_retry_matches_importer] I20260505 18:04:27.623406 28105 pairing.cc:843] Processing block [30/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271196,
+            "message": "2026-05-05 18:04:30,889 - WARNING - Parent seam refinement failed for merge 14; keeping raw model_merger result: chunk_model_seam_14_retry_matches_importer timed out after 900s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:51:58.218986 28105 feature_matching.cc:217] in 33.104s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:51:58.219056 28105 pairing.cc:843] Processing block [6/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:52:41.535956 28105 feature_matching.cc:217] in 43.317s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:52:41.536027 28105 pairing.cc:843] Processing block [7/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:53:11.052238 28105 feature_matching.cc:217] in 29.516s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:53:11.052299 28105 pairing.cc:843] Processing block [8/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:53:49.910738 28105 feature_matching.cc:217] in 38.858s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:53:49.910809 28105 pairing.cc:843] Processing block [9/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:54:26.142946 28105 feature_matching.cc:217] in 36.232s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:54:26.143008 28105 pairing.cc:843] Processing block [10/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:54:56.948880 28105 feature_matching.cc:217] in 30.806s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:54:56.948951 28105 pairing.cc:843] Processing block [11/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:55:24.695160 28105 feature_matching.cc:217] in 27.746s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:55:24.695215 28105 pairing.cc:843] Processing block [12/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:55:56.390511 28105 feature_matching.cc:217] in 31.695s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:55:56.390580 28105 pairing.cc:843] Processing block [13/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:56:31.242285 28105 feature_matching.cc:217] in 34.852s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:56:31.242355 28105 pairing.cc:843] Processing block [14/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:57:02.819512 28105 feature_matching.cc:217] in 31.577s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:57:02.819577 28105 pairing.cc:843] Processing block [15/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:57:33.960527 28105 feature_matching.cc:217] in 31.141s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:57:33.960588 28105 pairing.cc:843] Processing block [16/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:58:01.533756 28105 feature_matching.cc:217] in 27.573s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:58:01.533812 28105 pairing.cc:843] Processing block [17/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:58:30.465591 28105 feature_matching.cc:217] in 28.932s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:58:30.465660 28105 pairing.cc:843] Processing block [18/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:58:57.782951 28105 feature_matching.cc:217] in 27.317s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:58:57.783010 28105 pairing.cc:843] Processing block [19/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:59:28.836882 28105 feature_matching.cc:217] in 31.054s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 17:59:28.836959 28105 pairing.cc:843] Processing block [20/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 18:00:08.444156 28105 feature_matching.cc:217] in 39.607s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 18:00:08.444228 28105 pairing.cc:843] Processing block [21/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 18:00:36.718154 28105 feature_matching.cc:217] in 28.274s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 18:00:36.718216 28105 pairing.cc:843] Processing block [22/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 18:01:03.837065 28105 feature_matching.cc:217] in 27.119s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 18:01:03.837136 28105 pairing.cc:843] Processing block [23/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 18:01:33.085938 28105 feature_matching.cc:217] in 29.249s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 18:01:33.085994 28105 pairing.cc:843] Processing block [24/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 18:02:01.205097 28105 feature_matching.cc:217] in 28.119s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 18:02:01.205178 28105 pairing.cc:843] Processing block [25/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 18:02:29.765604 28105 feature_matching.cc:217] in 28.560s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 18:02:29.765661 28105 pairing.cc:843] Processing block [26/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 18:03:00.037581 28105 feature_matching.cc:217] in 30.272s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 18:03:00.037652 28105 pairing.cc:843] Processing block [27/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 18:03:31.098312 28105 feature_matching.cc:217] in 31.061s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 18:03:31.098402 28105 pairing.cc:843] Processing block [28/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 18:03:58.461875 28105 feature_matching.cc:217] in 27.364s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 18:03:58.461934 28105 pairing.cc:843] Processing block [29/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 18:04:27.623332 28105 feature_matching.cc:217] in 29.161s",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004271197,
+            "message": "I20260505 18:04:27.623406 28105 pairing.cc:843] Processing block [30/31]",
+            "ingestionTime": 1778004273567
+        },
+        {
+            "timestamp": 1778004274198,
+            "message": "2026-05-05 18:04:33,725 - INFO - [chunk_model_merger_15] colmap model_merger --input_path1 /tmp/colmap_sfm_tb01micb/merged_chunk_model_02_attempt_01 --input_path2 /tmp/colmap_sfm_tb01micb/merged_chunk_model_14_attempt_01 --output_path /tmp/colmap_sfm_tb01micb/merged_chunk_model_15_attempt_01 --max_reproj_error 64",
+            "ingestionTime": 1778004279610
+        },
+        {
+            "timestamp": 1778004275199,
+            "message": "COLMAP[chunk_model_merger_15] I20260505 18:04:34.458719 28542 model.cc:776] --- Reconstruction 1 ---",
+            "ingestionTime": 1778004279610
+        },
+        {
+            "timestamp": 1778004275199,
+            "message": "COLMAP[chunk_model_merger_15] I20260505 18:04:34.459057 28542 model.cc:777] Images: 280",
+            "ingestionTime": 1778004279610
+        },
+        {
+            "timestamp": 1778004275199,
+            "message": "COLMAP[chunk_model_merger_15] I20260505 18:04:34.459074 28542 model.cc:778] Points: 206845",
+            "ingestionTime": 1778004279610
+        },
+        {
+            "timestamp": 1778004278200,
+            "message": "COLMAP[chunk_model_merger_15] I20260505 18:04:37.453574 28542 model.cc:782] --- Reconstruction 2 ---",
+            "ingestionTime": 1778004279610
+        },
+        {
+            "timestamp": 1778004278200,
+            "message": "COLMAP[chunk_model_merger_15] I20260505 18:04:37.453627 28542 model.cc:783] Images: 1452",
+            "ingestionTime": 1778004279610
+        },
+        {
+            "timestamp": 1778004278200,
+            "message": "COLMAP[chunk_model_merger_15] I20260505 18:04:37.453644 28542 model.cc:784] Points: 1168292",
+            "ingestionTime": 1778004279610
+        },
+        {
+            "timestamp": 1778004278200,
+            "message": "COLMAP[chunk_model_merger_15] I20260505 18:04:37.453652 28542 model.cc:786] --- Merging reconstructions ---",
+            "ingestionTime": 1778004279610
+        },
+        {
+            "timestamp": 1778004283201,
+            "message": "COLMAP[chunk_model_merger_15] I20260505 18:04:42.916253 28542 model.cc:789] => Merge succeeded",
+            "ingestionTime": 1778004288657
+        },
+        {
+            "timestamp": 1778004283201,
+            "message": "COLMAP[chunk_model_merger_15] I20260505 18:04:42.916316 28542 model.cc:790] --- Merged reconstruction ---",
+            "ingestionTime": 1778004288657
+        },
+        {
+            "timestamp": 1778004283201,
+            "message": "COLMAP[chunk_model_merger_15] I20260505 18:04:42.916324 28542 model.cc:791] Images: 1452",
+            "ingestionTime": 1778004288657
+        },
+        {
+            "timestamp": 1778004283201,
+            "message": "COLMAP[chunk_model_merger_15] I20260505 18:04:42.916335 28542 model.cc:792] Points: 1253309",
+            "ingestionTime": 1778004288657
+        },
+        {
+            "timestamp": 1778004286202,
+            "message": "2026-05-05 18:04:45,508 - INFO - [chunk_model_merger_15_output_attempt_01_model_converter_merged_chunk_model_15_attempt_01] colmap model_converter --input_path /tmp/colmap_sfm_tb01micb/merged_chunk_model_15_attempt_01 --output_path /tmp/colmap_sfm_tb01micb/text_models/chunk_model_merger_15_output_attempt_01/merged_chunk_model_15_attempt_01 --output_type TXT",
+            "ingestionTime": 1778004288657
+        },
+        {
+            "timestamp": 1778004323211,
+            "message": "2026-05-05 18:05:23,158 - INFO - Skipping parent seam refinement for merge 15; raw model_merger retained all 1452 source images",
+            "ingestionTime": 1778004328708
+        },
+        {
+            "timestamp": 1778004398230,
+            "message": "MEMORY_PROBE [after_python]:",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004398230,
+            "message": "MemTotal:       16081288 kB",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004398230,
+            "message": "MemFree:         7756016 kB",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004398230,
+            "message": "MemAvailable:   14994188 kB\n               total        used        free      shared  buff/cache   available",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004398230,
+            "message": "Mem:            15Gi       1.0Gi       7.4Gi       1.1Mi       7.2Gi        14Gi",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004398230,
+            "message": "Swap:             0B          0B          0B",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004398230,
+            "message": "============================================================",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004398230,
+            "message": "🔍 VALIDATING OUTPUT",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004398230,
+            "message": "============================================================",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004398230,
+            "message": "✅ /opt/ml/processing/output/sparse/0/cameras.txt (196 bytes)",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004398230,
+            "message": "✅ /opt/ml/processing/output/sparse/0/images.txt (576078730 bytes)",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004398230,
+            "message": "✅ /opt/ml/processing/output/sparse/0/points3D.txt (157886707 bytes)",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004398230,
+            "message": "✅ /opt/ml/processing/output/images (1456 files)",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004398230,
+            "message": "✅ /opt/ml/processing/output/database.db (2141179904 bytes)",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004398230,
+            "message": "✅ /opt/ml/processing/output/sfm_metadata.json (77365 bytes)",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "✅ COLMAP format validation passed",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "============================================================",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "📊 PROCESSING STATISTICS",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "============================================================",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "📷 Cameras registered: 1",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "🖼️ Images registered: 1452",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "🖼️ Images copied for 3DGS: 1456",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "🎯 3D points: 864755",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "⏱️ Processing time: 30531.75 seconds",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "🛰️ GPS priors detected: 1456",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "🔗 Matchers: chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_bridge_matches_importer, chunk_bridge_matches_importer, chunk_bridge_matches_importer, chunk_bridge_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "🧭 Match profile: P3",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "➡️ Sequential matcher enabled: False",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "↩️ Fallback reason: not_needed",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "🎯 Vocab tree candidates: 40",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "📌 SIFT max features: 8192",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "============================================================",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "🎉 SPACEPORT COLMAP GPU SfM COMPLETED SUCCESSFULLY!",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "============================================================",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "✅ GPU-accelerated COLMAP SfM completed",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "📁 Output files ready for 3D Gaussian Splatting training",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "🔗 COLMAP TXT handoff maintained",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "📅 Completed at: Tue May  5 18:06:38 UTC 2026",
+            "ingestionTime": 1778004403980
+        },
+        {
+            "timestamp": 1778004399231,
+            "message": "============================================================",
+            "ingestionTime": 1778004403980
+        }
+    ],
+    "nextForwardToken": "f/39650823069117048424871756081448346159664689447900807206/s",
+    "nextBackwardToken": "b/39650814363062228134906195516668619738136502416375283712/s"
+}
