@@ -9,7 +9,7 @@
     "min_context_density_ratio": 0.95,
     "min_retained_ratio": 0.95
   },
-  "generated_at": "2026-05-05T18:25:19Z",
+  "generated_at": "2026-05-05T19:11:36Z",
   "no_full_14tile_training": true,
   "status": "full_scene_canary_ready_with_v18_rollback",
   "summary": {

@@ -267,6 +267,71 @@ def build_plan(
     }
 
 
+def cache_status_for_decision(decision: dict[str, Any]) -> str:
+    if decision.get("selected_stage_type") == "context_density_tile":
+        return "context_density_hit"
+    if decision.get("selected_source") == "candidate":
+        return "hit"
+    return str(decision.get("selected_source") or "")
+
+
+def build_benchmark_summary_from_plan(
+    *,
+    plan: dict[str, Any],
+    base_summary: dict[str, Any] | None = None,
+    experiment_id: str = "",
+) -> dict[str, Any]:
+    base_summary = dict(base_summary or {})
+    selected_tile_ids = [str(tile["tile_id"]) for tile in plan.get("tile_plan", []) if tile.get("tile_id")]
+    stages = []
+    for tile in plan.get("tile_plan", []):
+        tile_id = str(tile.get("tile_id") or "").strip()
+        artifact_uri = str(tile.get("selected_artifact_uri") or "").strip()
+        stage_type = str(tile.get("selected_stage_type") or "").strip()
+        if not tile_id or not artifact_uri or stage_type == "train":
+            continue
+        stages.append(
+            {
+                "stage_name": f"T0_{tile_id}",
+                "stage_type": stage_type,
+                "tile_id": tile_id,
+                "source_artifact_uri": artifact_uri,
+                "model_artifact_s3_uri": artifact_uri,
+                "cache_status": cache_status_for_decision(tile),
+                "quality_gate_status": "passed",
+                "candidate_label": plan.get("candidate_label"),
+                "candidate_status": tile.get("candidate_status"),
+                "selected_source": tile.get("selected_source"),
+                "candidate_retained_ratio": tile.get("candidate_retained_ratio"),
+                "context_density_ratio": tile.get("context_density_ratio"),
+                "reference_retained_gaussians": tile.get("reference_retained_gaussians"),
+                "candidate_retained_gaussians": tile.get("candidate_retained_gaussians"),
+            }
+        )
+
+    summary = {
+        **base_summary,
+        "experiment_id": experiment_id or f"{plan.get('candidate_label', 'candidate')}-fullscene-rollback-canary",
+        "selected_tile_ids": selected_tile_ids,
+        "stages": stages,
+        "submitted_jobs": [],
+        "completed_jobs": [],
+        "training_jobs_to_submit": 0,
+        "cost_estimate": {"estimated_usd": 0.0, "training_stage_count": 0},
+        "density_preserving_canary": {
+            "generated_at": plan.get("generated_at"),
+            "status": plan.get("status"),
+            "candidate_label": plan.get("candidate_label"),
+            "summary": plan.get("summary"),
+            "decision": plan.get("decision"),
+            "no_full_14tile_training": True,
+        },
+    }
+    summary["source_density_preserving_canary_json"] = base_summary.get("source_density_preserving_canary_json")
+    summary["merge_mode"] = summary.get("merge_mode") or "support_weighted_overlap"
+    return summary
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--reference-merge-report-json", required=True)
@@ -276,6 +341,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--min-retained-ratio", type=float, default=0.95)
     parser.add_argument("--min-context-density-ratio", type=float, default=0.95)
     parser.add_argument("--output-json", required=True)
+    parser.add_argument("--base-summary-json", default="")
+    parser.add_argument("--summary-output-json", default="")
+    parser.add_argument("--experiment-id", default="")
     return parser.parse_args()
 
 
@@ -292,7 +360,28 @@ def main() -> int:
     output_path = Path(args.output_json)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(plan, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(json.dumps({"output_json": str(output_path), "status": plan["status"], "summary": plan["summary"]}))
+    summary_path = None
+    if args.summary_output_json:
+        base_summary = load_json(args.base_summary_json) if args.base_summary_json else {}
+        base_summary["source_density_preserving_canary_json"] = str(output_path)
+        summary = build_benchmark_summary_from_plan(
+            plan=plan,
+            base_summary=base_summary,
+            experiment_id=args.experiment_id,
+        )
+        summary_path = Path(args.summary_output_json)
+        summary_path.parent.mkdir(parents=True, exist_ok=True)
+        summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    print(
+        json.dumps(
+            {
+                "output_json": str(output_path),
+                "summary_output_json": str(summary_path) if summary_path else None,
+                "status": plan["status"],
+                "summary": plan["summary"],
+            }
+        )
+    )
     return 0
 
 

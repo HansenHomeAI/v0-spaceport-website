@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "de40cb7d30ed46195d7fcf9fc78acf221acd25a1",
-  "current_exact_head_gate_status": "exact-head de40cb7d30ed46195d7fcf9fc78acf221acd25a1 is pushed and green on CDK Deploy 25392553773. No Trigger ML Container Build or Cloudflare Pages run appeared for this log/state-only push; latest branch 3DGS image remains sha256:b0129db24d16251e6ee2af896e65c5eceefbd10d8eb52441b2800556f88347eb from head 3a22acfd5b420ca2876a1eb3e2a0398790ac995f.",
-  "current_live_compute_status": "No MD1 SageMaker training jobs are InProgress. No MD1 SageMaker processing jobs are InProgress. One unrelated processing job r5full80s2-1777973662 remains InProgress.",
-  "current_rung": "R4_cost_reduction_density_preserving_fullscene_canary_plan",
+  "current_branch_head": "3d0d0839c4f313363ee23cbfec9b3e47ebb6a33b",
+  "current_exact_head_gate_status": "exact-head 3d0d0839c4f313363ee23cbfec9b3e47ebb6a33b is pushed and green on CDK Deploy 25394830910. No Trigger ML Container Build or Cloudflare Pages run appeared for this non-web/planner push; latest branch 3DGS image remains sha256:b0129db24d16251e6ee2af896e65c5eceefbd10d8eb52441b2800556f88347eb from head 3a22acfd5b420ca2876a1eb3e2a0398790ac995f.",
+  "current_live_compute_status": "No SageMaker training jobs are InProgress. No SageMaker processing jobs are InProgress.",
+  "current_rung": "R4_cost_reduction_density_preserving_fullscene_canary_remote_merge_dryrun",
   "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -766,7 +766,7 @@
     ],
     "view_bucket_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiled_pipeline/inputs/scaffold/3dgs_view_buckets.json"
   },
-  "last_commit": "de40cb7d30ed46195d7fcf9fc78acf221acd25a1",
+  "last_commit": "3d0d0839c4f313363ee23cbfec9b3e47ebb6a33b",
   "last_exact_head_gates": {
     "cdk_deploy_conclusion": "success",
     "cdk_deploy_run_id": 25364537073,
@@ -777,18 +777,18 @@
     "local_status_update_pending_commit": true,
     "unrelated_processing_job_in_progress": "r5full80s1-1777934749"
   },
-  "last_updated": "2026-05-05T18:25:19Z",
+  "last_updated": "2026-05-05T19:13:15Z",
   "latest_exact_head_gate": {
-    "head": "de40cb7d30ed46195d7fcf9fc78acf221acd25a1",
+    "head": "3d0d0839c4f313363ee23cbfec9b3e47ebb6a33b",
     "branch": "agent-90742618-md1-geometry-consistency",
-    "cdk_deploy_run_id": 25392553773,
+    "cdk_deploy_run_id": 25394830910,
     "cdk_deploy_conclusion": "success",
-    "ml_container_build": "not_triggered_for_log_state_only_push",
-    "cloudflare_pages": "not_triggered_for_log_state_only_push",
+    "ml_container_build": "not_triggered_for_non_web_planner_push",
+    "cloudflare_pages": "not_triggered_for_non_web_planner_push",
     "ecr_digest": "sha256:b0129db24d16251e6ee2af896e65c5eceefbd10d8eb52441b2800556f88347eb",
-    "checked_at": "2026-05-05T17:49:00Z"
+    "checked_at": "2026-05-05T18:35:15Z"
   },
-  "latest_live_compute_status": "No MD1 SageMaker training jobs are InProgress. No MD1 SageMaker processing jobs are InProgress. One unrelated processing job r5full80s2-1777973662 remains InProgress.",
+  "latest_live_compute_status": "No SageMaker training jobs are InProgress. No SageMaker processing jobs are InProgress.",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
     "head": "07c50ac09a7ac88ea218c5784f045154a102917e",
@@ -10688,6 +10688,72 @@
       "production_quality_status": "not_a_new_cheaper_candidate_until_v18_rollback_tile_count_is_zero",
       "no_full_14tile_training": true,
       "next_unblocked_step": "Commit/push this planner evidence, then run only no-training full-scene rollback merge/preflight or bounded retraining at density-fail/missing tiles before any full 14-tile run."
+    }
+  },
+  "md1_r4_density_preserving_fullscene_canary_gate_20260505": {
+    "generated_at": "2026-05-05T18:35:15Z",
+    "head": "3d0d0839c4f313363ee23cbfec9b3e47ebb6a33b",
+    "commit": "3d0d0839c4f313363ee23cbfec9b3e47ebb6a33b",
+    "cdk_deploy_run_id": 25394830910,
+    "cdk_deploy_conclusion": "success",
+    "ml_container_build": "not_triggered_for_non_web_planner_push",
+    "cloudflare_pages": "not_triggered_for_non_web_planner_push",
+    "verification": {
+      "exact_head_workflow_watch": "passed_cdk_deploy_25394830910",
+      "commit_pushed": "passed",
+      "no_full_14tile_training_launched": true
+    },
+    "decision": {
+      "status": "planner_pushed_gated_continue_no_training_or_bounded_frontier_only",
+      "no_full_14tile_training": true,
+      "next_unblocked_step": "Run only the cheapest no-training full-scene rollback merge/preflight path or bounded retraining at the 8 density-fail/missing tiles before any full 14-tile run."
+    }
+  },
+  "md1_r4_density_preserving_fullscene_remote_merge_dryrun_20260505": {
+    "generated_at": "2026-05-05T19:13:15Z",
+    "head": "3d0d0839c4f313363ee23cbfec9b3e47ebb6a33b",
+    "plan_json": "logs/md1-cost-reduction-r4-density-preserving-fullscene-canary-plan-20260505.json",
+    "summary_json": "logs/md1-cost-reduction-r4-density-preserving-fullscene-canary-summary-20260505.json",
+    "remote_merge_plan_json": "logs/md1-cost-reduction-r4-density-preserving-fullscene-canary-remote-merge-g4dn-plan-20260505.json",
+    "remote_merge_payload_json": "logs/md1-cost-reduction-r4-density-preserving-fullscene-canary-remote-merge-g4dn-payload-dryrun-20260505.json",
+    "merge_plan_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-density-preserving-fullscene-canary-remote-merge-g4dn-202605051909/inputs/merge-plan/merge_plan.json",
+    "planned_processing_job_name": "md1-r4denscanary-merge-1778008140",
+    "planned_output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-density-preserving-fullscene-canary-remote-merge-g4dn-202605051909/output/artifact",
+    "planned_instance_type": "ml.g4dn.xlarge",
+    "planned_max_runtime_seconds": 3600,
+    "planned_max_processing_cost_usd_at_0_736_per_hour": 0.736,
+    "summary": {
+      "selected_tile_count": 14,
+      "artifact_input_count": 3,
+      "training_jobs_to_submit": 0,
+      "selected_source_counts": {
+        "candidate": 6,
+        "context_density_rollback": 8
+      },
+      "candidate_density_fail_or_missing_tile_ids": [
+        "tile_00",
+        "tile_02",
+        "tile_03",
+        "tile_07",
+        "tile_08",
+        "tile_09",
+        "tile_12",
+        "tile_13"
+      ]
+    },
+    "verification": {
+      "python_unittest_density_canary_merge_planner_disk": "passed_11_tests",
+      "python_py_compile": "passed",
+      "json_validation": "passed",
+      "s3_tile_selection_prefix_probe": "passed",
+      "s3_artifact_uri_probes": "passed_3_artifacts",
+      "merge_plan_s3_upload": "passed",
+      "git_diff_check": "passed"
+    },
+    "decision": {
+      "status": "dryrun_ready_for_bounded_no_training_merge",
+      "no_full_14tile_training": true,
+      "next_unblocked_step": "Commit/push/gate dry-run evidence, then submit only md1-r4denscanary-merge-1778008140 before streaming preflight."
     }
   }
 }
