@@ -1,0 +1,11 @@
+{
+  "tile_id": "tile_04",
+  "stage": "hybrid_artifact_build",
+  "training_completed": true,
+  "remaining_gaussians": null,
+  "hybrid_tile_policy": {
+    "mode": "historical",
+    "source_splat": "/opt/ml/processing/work/historical/tiles/tile_04/splat.ply",
+    "storage": "hardlink_or_copy"
+  }
+}
