@@ -1,0 +1,60 @@
+{
+  "checked_at": "2026-05-05T03:26:00Z",
+  "head": "e029c99a2a288b8dec9d0bef3e7f47d9eff2a935",
+  "exact_head_gate": "CDK Deploy 25355839969 success",
+  "experiment_id": "md1-r4-expanded-hard-repair-after-v18-block-20260505",
+  "output_root_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-hard-repair-canary-20260505",
+  "job_prefix": "md1-r4exp9hard-1777951236",
+  "submitted_jobs": [
+    {
+      "training_job_name": "md1-r4exp9hard-1777951236-tile-01",
+      "training_job_status": "InProgress",
+      "secondary_status": "Downloading",
+      "training_start_time": "2026-05-04T21:22:19.895000-06:00",
+      "training_time_seconds": 178,
+      "billable_time_seconds": null,
+      "failure_reason": null,
+      "model_artifacts_s3_uri": null,
+      "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-hard-repair-canary-20260505/tiles/tile_01",
+      "tile_id": "tile_01"
+    },
+    {
+      "training_job_name": "md1-r4exp9hard-1777951236-tile-04",
+      "training_job_status": "InProgress",
+      "secondary_status": "Downloading",
+      "training_start_time": "2026-05-04T21:22:22.753000-06:00",
+      "training_time_seconds": 176,
+      "billable_time_seconds": null,
+      "failure_reason": null,
+      "model_artifacts_s3_uri": null,
+      "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-hard-repair-canary-20260505/tiles/tile_04",
+      "tile_id": "tile_04"
+    }
+  ],
+  "active_training_jobs": [
+    "md1-r4exp9hard-1777951236-tile-01",
+    "md1-r4exp9hard-1777951236-tile-04"
+  ],
+  "remaining_train_tiles_after_current_wave": [
+    "tile_05",
+    "tile_06",
+    "tile_10"
+  ],
+  "cache_hit_tiles": [
+    "tile_00",
+    "tile_02",
+    "tile_11",
+    "tile_13"
+  ],
+  "planned_train_tiles": [
+    "tile_01",
+    "tile_04",
+    "tile_05",
+    "tile_06",
+    "tile_10"
+  ],
+  "budget": "max_estimated_usd=12, dry-run estimated_usd=8.3325, no full 14-tile run",
+  "checkpoint_s3_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-hard-repair-canary-20260505/checkpoints",
+  "decision": "bounded_hard_repair_active_not_full_run",
+  "next_unblocked_step": "Monitor tile_01/tile_04 through export, then tile_05/tile_06/tile_10, local merge, streaming preflight, and V18 same-camera review before any full 14-tile run."
+}
