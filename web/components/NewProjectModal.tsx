@@ -1787,7 +1787,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                 <div className="popup-section">
                   <div
                     className="upload-zone"
-                    onClick={() => document.getElementById(uploadMode === 'static_photos' ? 'staticFilesInputHidden' : 'fileInputHidden')?.click()}
+                    onClick={() => document.getElementById(uploadMode === 'static_photos' ? 'staticFolderInputHidden' : 'fileInputHidden')?.click()}
                     onDragOver={(e) => { e.preventDefault(); }}
                     onDrop={(e) => {
                       e.preventDefault();
@@ -1812,7 +1812,6 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       </p>
                     )}
                     <input id="fileInputHidden" type="file" accept=".zip" style={{ display: 'none' }} onChange={(e) => onFileChosen(e.target.files?.[0] || null)} />
-                    <input id="staticFilesInputHidden" type="file" accept="image/*" multiple style={{ display: 'none' }} onChange={(e) => onStaticFilesChosen(e.target.files)} />
                     <input
                       id="staticFolderInputHidden"
                       type="file"
@@ -1823,24 +1822,6 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       {...({ webkitdirectory: '', directory: '' } as any)}
                     />
                   </div>
-                  {uploadMode === 'static_photos' && (
-                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>
-                      <button
-                        type="button"
-                        onClick={() => document.getElementById('staticFolderInputHidden')?.click()}
-                        style={{
-                          border: '1px solid rgba(255,255,255,0.22)',
-                          borderRadius: 999,
-                          background: 'rgba(255,255,255,0.06)',
-                          color: '#fff',
-                          padding: '8px 14px',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        Choose Folder
-                      </button>
-                    </div>
-                  )}
                 </div>
               </div>
 

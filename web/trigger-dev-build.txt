@@ -70,3 +70,5 @@
 2026-05-05 static photo upload mode switcher minimalist polish
 
 2026-05-05 static photo upload mode switcher tighter pill
+
+2026-05-05 remove static photo choose folder button
