@@ -67,3 +67,4 @@
 2026-05-01T15:15:00Z trigger static property photo upload preview
 
 2026-05-04 static photo upload mode switcher polish
+2026-05-05 static photo upload mode switcher minimalist polish

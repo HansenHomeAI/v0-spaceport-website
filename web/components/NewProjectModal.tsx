@@ -1758,14 +1758,18 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
             <div className="popup-section">
               <div className="category-outline">
                 <div className="popup-section">
-                  <div className="upload-mode-switcher" role="group" aria-label="Property upload type">
+                  <div
+                    className={`upload-mode-switcher upload-mode-switcher--${uploadMode === 'model_photos' ? 'model' : 'static'}`}
+                    role="group"
+                    aria-label="Property upload type"
+                  >
                     <button
                       type="button"
                       className={`upload-mode-option${uploadMode === 'model_photos' ? ' active' : ''}`}
                       onClick={() => setUploadMode('model_photos')}
                       aria-pressed={uploadMode === 'model_photos'}
                     >
-                      3D Model Photos
+                      <span className="upload-mode-label">3D Model Photos</span>
                     </button>
                     <button
                       type="button"
@@ -1773,7 +1777,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       onClick={() => setUploadMode('static_photos')}
                       aria-pressed={uploadMode === 'static_photos'}
                     >
-                      Static Property Photos
+                      <span className="upload-mode-label">Static Property Photos</span>
                     </button>
                   </div>
                 </div>
