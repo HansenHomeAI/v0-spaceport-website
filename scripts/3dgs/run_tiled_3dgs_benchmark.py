@@ -85,6 +85,7 @@ BUDGET_CLASS_RANK = {
     "standard": 2,
     "hard": 3,
 }
+PASSING_GATE_STATUSES = {"passed", "pass", "ok", "promoted", "accepted", "quality_passed"}
 
 
 def run_command(command: Sequence[str], *, capture_output: bool = False) -> subprocess.CompletedProcess[str]:
@@ -632,6 +633,36 @@ def normalize_tile_cache_manifest(payload: dict) -> dict[str, dict]:
     return cache
 
 
+def normalize_context_density_manifest(payload: dict) -> dict[str, dict]:
+    raw_entries = (
+        payload.get("context_density_tiles")
+        or payload.get("context_density_entries")
+        or payload.get("dense_context_tiles")
+        or payload.get("tiles")
+        or payload
+    )
+    if isinstance(raw_entries, list):
+        iterable = raw_entries
+    elif isinstance(raw_entries, dict):
+        iterable = [
+            {"tile_id": tile_id, **tile_payload}
+            for tile_id, tile_payload in raw_entries.items()
+            if isinstance(tile_payload, dict)
+        ]
+    else:
+        iterable = []
+
+    manifest: dict[str, dict] = {}
+    for raw_entry in iterable:
+        if not isinstance(raw_entry, dict):
+            continue
+        tile_id = str(raw_entry.get("tile_id", "")).strip()
+        if not tile_id:
+            continue
+        manifest[tile_id] = dict(raw_entry)
+    return manifest
+
+
 def tile_cache_artifact_uri(cache_entry: dict) -> str:
     return str(
         cache_entry.get("artifact_s3_uri")
@@ -715,13 +746,95 @@ def resolve_tile_cache_hit(tile_budget: "TileBudgetPlan", cache_entry: dict | No
     if cached_hash != tile_budget.input_hash:
         reasons.append("input_hash_mismatch")
     status = tile_cache_status(cache_entry)
-    pass_statuses = {"passed", "pass", "ok", "promoted", "accepted", "quality_passed"}
-    if status not in pass_statuses:
+    if status not in PASSING_GATE_STATUSES:
         reasons.append("quality_status_not_passing")
     reasons.extend(tile_cache_ownership_rejection_reasons(cache_entry))
     if reasons:
         return None, reasons
     return {**cache_entry, "artifact_s3_uri": artifact_uri, "quality_gate_status": status}, []
+
+
+def first_present_value(payload: dict, keys: Sequence[str]) -> object | None:
+    for key in keys:
+        value = payload.get(key)
+        if value not in (None, ""):
+            return value
+    return None
+
+
+def context_density_status(context_entry: dict) -> str:
+    return str(
+        context_entry.get("context_density_status")
+        or context_entry.get("quality_gate_status")
+        or context_entry.get("quality_status")
+        or context_entry.get("promotion_readiness")
+        or context_entry.get("status")
+        or ""
+    ).strip().lower()
+
+
+def context_density_has_lineage(context_entry: dict) -> bool:
+    if context_entry.get("context_preserve_enabled") is True:
+        return True
+    if context_entry.get("preserve_context_gaussians") is True:
+        return True
+    if context_entry.get("teacher_context_preserved") is True:
+        return True
+    lineage = context_entry.get("context_density_lineage") or context_entry.get("lineage")
+    return bool(lineage)
+
+
+def resolve_context_density_reuse(
+    tile_budget: "TileBudgetPlan",
+    context_entry: dict | None,
+) -> tuple[dict | None, list[str]]:
+    del tile_budget
+    if not context_entry:
+        return None, ["no_context_density_entry"]
+    reasons: list[str] = []
+    artifact_uri = tile_cache_artifact_uri(context_entry)
+    if not artifact_uri:
+        reasons.append("missing_context_density_artifact_s3_uri")
+
+    status = context_density_status(context_entry)
+    if status not in PASSING_GATE_STATUSES:
+        reasons.append("context_density_status_not_passing")
+
+    if not context_density_has_lineage(context_entry):
+        reasons.append("missing_context_density_lineage")
+
+    retained = first_present_value(
+        context_entry,
+        ("retained_gaussians", "context_retained_gaussians", "dense_retained_gaussians"),
+    )
+    reference = first_present_value(
+        context_entry,
+        ("reference_retained_gaussians", "v18_retained_gaussians", "target_retained_gaussians"),
+    )
+    min_ratio = first_present_value(
+        context_entry,
+        ("min_retained_ratio_vs_reference", "min_context_density_ratio", "min_density_ratio"),
+    )
+    try:
+        retained_value = None if retained is None else float(retained)
+        reference_value = None if reference is None else float(reference)
+        min_ratio_value = 0.95 if min_ratio is None else float(min_ratio)
+    except (TypeError, ValueError):
+        reasons.append("context_density_ratio_unparseable")
+    else:
+        if retained_value is None or reference_value is None or reference_value <= 0:
+            reasons.append("missing_context_density_reference")
+        elif retained_value / reference_value < min_ratio_value:
+            reasons.append("context_density_ratio_below_minimum")
+
+    if reasons:
+        return None, reasons
+    return {
+        **context_entry,
+        "artifact_s3_uri": artifact_uri,
+        "quality_gate_status": status,
+        "context_density_ratio": retained_value / reference_value,
+    }, []
 
 
 @dataclass(frozen=True)
@@ -1435,6 +1548,8 @@ def build_benchmark_stages(
     checkpoint_s3_prefix: str = "",
     reuse_tile_cache: bool = False,
     tile_cache_manifest: dict[str, dict] | None = None,
+    enable_context_density_reuse: bool = False,
+    context_density_manifest: dict[str, dict] | None = None,
 ) -> list[BenchmarkStage]:
     output_root = normalize_s3_prefix(output_root_s3_uri)
     tile_manifest_name = "3dgs_tile_manifest.json"
@@ -1564,7 +1679,54 @@ def build_benchmark_stages(
         if scaffold_artifact_s3_uri:
             stage_env.setdefault("GLOBAL_SCAFFOLD_SOURCE_DIR", SCAFFOLD_CHANNEL_DIR)
             stage_env.setdefault("GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT", "true")
-        cache_hit, cache_rejection_reasons = resolve_tile_cache_hit(
+        cache_rejection_reasons: list[str] = []
+        context_density_hit, context_density_rejection_reasons = resolve_context_density_reuse(
+            tile_budget,
+            (context_density_manifest or {}).get(tile_id) if enable_context_density_reuse else None,
+        )
+        if enable_context_density_reuse and context_density_hit is not None:
+            context_stage_env = dict(stage_env)
+            context_stage_env.setdefault("CONTEXT_DENSITY_REUSE", "true")
+            context_stage_env.setdefault("CONTEXT_DENSITY_SOURCE_ARTIFACT_URI", str(context_density_hit.get("artifact_s3_uri")))
+            stages.append(
+                BenchmarkStage(
+                    stage_name=f"T0_{tile_id}",
+                    stage_type="context_density_tile",
+                    training_mode="leaf_tile",
+                    job_name=None,
+                    tile_id=tile_id,
+                    output_s3_uri=f"{output_root}/tiles/{tile_id}",
+                    depends_on=[],
+                    environment=build_training_environment(
+                        training_mode="leaf_tile",
+                        tile_manifest_name=tile_manifest_name,
+                        view_bucket_manifest_name=view_bucket_manifest_name,
+                        tile_id=tile_id,
+                        max_iterations=0,
+                        extra_env=context_stage_env,
+                        training_timeout_seconds=training_max_runtime_seconds,
+                        downscale_factor=downscale_factor,
+                    ),
+                    budget_class=tile_budget.budget_class if tile_budget_mode == "adaptive" else None,
+                    selected_image_count=tile_budget.selected_image_count if tile_budget_mode == "adaptive" else None,
+                    max_iterations=0,
+                    max_selected_images=tile_budget.max_selected_images if tile_budget_mode == "adaptive" else None,
+                    input_hash=tile_budget.input_hash if tile_budget_mode == "adaptive" else None,
+                    source_artifact_uri=str(context_density_hit.get("artifact_s3_uri")),
+                    checkpoint_uri=None,
+                    spot_enabled=False,
+                    prior_duration_hours=tile_budget.prior_duration_hours if tile_budget_mode == "adaptive" else None,
+                    prior_fanout_duration_hours=tile_budget.prior_fanout_duration_hours if tile_budget_mode == "adaptive" else None,
+                    quality_gate_status=str(context_density_hit.get("quality_gate_status") or "passed"),
+                    cache_status="context_density_hit",
+                    cache_rejection_reasons=[],
+                )
+            )
+            continue
+        if enable_context_density_reuse:
+            cache_rejection_reasons.extend(context_density_rejection_reasons)
+
+        cache_hit, tile_cache_rejection_reasons = resolve_tile_cache_hit(
             tile_budget,
             (tile_cache_manifest or {}).get(tile_id) if reuse_tile_cache else None,
         )
@@ -1604,6 +1766,8 @@ def build_benchmark_stages(
                 )
             )
             continue
+        if reuse_tile_cache:
+            cache_rejection_reasons.extend(tile_cache_rejection_reasons)
         stages.append(
             BenchmarkStage(
                 stage_name=f"T0_{tile_id}",
@@ -1634,8 +1798,8 @@ def build_benchmark_stages(
                 prior_duration_hours=tile_budget.prior_duration_hours if tile_budget_mode == "adaptive" else None,
                 prior_fanout_duration_hours=tile_budget.prior_fanout_duration_hours if tile_budget_mode == "adaptive" else None,
                 quality_gate_status=tile_budget.quality_gate_status if tile_budget_mode == "adaptive" else None,
-                cache_status="miss" if reuse_tile_cache else None,
-                cache_rejection_reasons=cache_rejection_reasons if reuse_tile_cache else None,
+                cache_status="miss" if (reuse_tile_cache or enable_context_density_reuse) else None,
+                cache_rejection_reasons=cache_rejection_reasons if (reuse_tile_cache or enable_context_density_reuse) else None,
             )
         )
 
@@ -2024,16 +2188,19 @@ def download_and_extract_model_artifact(
     target_dir.mkdir(parents=True, exist_ok=True)
     tar_path = target_dir / "model.tar.gz"
     run_command(["aws", "s3", "cp", s3_uri, str(tar_path)])
-    with tarfile.open(tar_path, "r:gz") as archive:
-        if members:
-            for member_name in members:
-                try:
-                    member = archive.getmember(member_name)
-                except KeyError:
-                    continue
-                archive.extract(member, target_dir)
-        else:
-            archive.extractall(target_dir)
+    try:
+        with tarfile.open(tar_path, "r:gz") as archive:
+            if members:
+                for member_name in members:
+                    try:
+                        member = archive.getmember(member_name)
+                    except KeyError:
+                        continue
+                    archive.extract(member, target_dir)
+            else:
+                archive.extractall(target_dir)
+    finally:
+        tar_path.unlink(missing_ok=True)
     return target_dir
 
 
@@ -2073,7 +2240,26 @@ def artifact_members_for_stage(stage: BenchmarkStage) -> list[str]:
     ]
     if stage.tile_id:
         members.append("splat.ply")
+    if stage.stage_type == "context_density_tile" and stage.tile_id:
+        members.extend(
+            [
+                f"tiles/{stage.tile_id}/splat.ply",
+                f"tiles/{stage.tile_id}/training_metadata.json",
+                f"tiles/{stage.tile_id}/training_selection.json",
+            ]
+        )
     return members
+
+
+def materialize_context_density_tile(stage: BenchmarkStage, extracted_dir: Path) -> None:
+    if stage.stage_type != "context_density_tile" or not stage.tile_id:
+        return
+    tile_dir = extracted_dir / "tiles" / stage.tile_id
+    for filename in ("splat.ply", "training_metadata.json", "training_selection.json"):
+        target = extracted_dir / filename
+        source = tile_dir / filename
+        if not target.exists() and source.exists():
+            shutil.copy2(source, target)
 
 
 def run_merge_stage(
@@ -2176,6 +2362,16 @@ def parse_args() -> argparse.Namespace:
         "--tile-cache-manifest-json",
         default="",
         help="Optional local path or s3:// JSON with validated per-tile cache records for --reuse-tile-cache.",
+    )
+    parser.add_argument(
+        "--enable-context-density-reuse",
+        action="store_true",
+        help="Reuse dense teacher/context tile artifacts from --context-density-manifest-json before training.",
+    )
+    parser.add_argument(
+        "--context-density-manifest-json",
+        default="",
+        help="Optional local path or s3:// JSON with dense teacher/context tile reuse records.",
     )
     parser.add_argument(
         "--prior-tile-stats-json",
@@ -2429,6 +2625,9 @@ def main() -> int:
     prior_tile_stats = normalize_prior_tile_stats(load_json_path_or_s3(args.prior_tile_stats_json))
     tile_manifest = apply_prior_tile_stats(tile_manifest, prior_tile_stats)
     tile_cache_manifest = normalize_tile_cache_manifest(load_json_path_or_s3(args.tile_cache_manifest_json))
+    context_density_manifest = normalize_context_density_manifest(
+        load_json_path_or_s3(args.context_density_manifest_json)
+    )
 
     selected_tiles = select_tile_ids(
         tile_manifest,
@@ -2483,6 +2682,8 @@ def main() -> int:
         checkpoint_s3_prefix=args.checkpoint_s3_prefix,
         reuse_tile_cache=args.reuse_tile_cache,
         tile_cache_manifest=tile_cache_manifest,
+        enable_context_density_reuse=args.enable_context_density_reuse,
+        context_density_manifest=context_density_manifest,
     )
     checkpoint_resume_step, checkpoint_resume_manifest_uri = resolve_checkpoint_resume_step(args.checkpoint_resume_s3_uri)
     if args.checkpoint_resume_extra_iterations > 0 and checkpoint_resume_step is None:
@@ -2534,6 +2735,9 @@ def main() -> int:
         "reuse_tile_cache": bool(args.reuse_tile_cache),
         "tile_cache_manifest_json": args.tile_cache_manifest_json,
         "tile_cache_entry_count": len(tile_cache_manifest),
+        "enable_context_density_reuse": bool(args.enable_context_density_reuse),
+        "context_density_manifest_json": args.context_density_manifest_json,
+        "context_density_entry_count": len(context_density_manifest),
         "enable_spot": bool(args.enable_spot),
         "spot_max_wait_seconds": args.spot_max_wait_seconds,
         "max_spot_extra_wait_seconds": MAX_SPOT_EXTRA_WAIT_SECONDS,
@@ -2656,6 +2860,7 @@ def main() -> int:
                 target_dir=stage_dir,
                 members=artifact_members_for_stage(stage),
             )
+            materialize_context_density_tile(stage, extracted_dir)
         if stage.tile_id and extracted_dir is not None:
             extracted_stage_dirs[stage.tile_id] = extracted_dir
         completed = summarize_training_metadata(stage.stage_name, extracted_dir or Path("/nonexistent"), describe_payload)
@@ -2675,6 +2880,7 @@ def main() -> int:
                 target_dir=stage_dir,
                 members=artifact_members_for_stage(stage),
             )
+            materialize_context_density_tile(stage, extracted_dir)
         if stage.tile_id and extracted_dir is not None:
             extracted_stage_dirs[stage.tile_id] = extracted_dir
         completed = summarize_training_metadata(
@@ -2687,12 +2893,13 @@ def main() -> int:
             },
         )
         completed["cache_hit"] = True
+        completed["cache_status"] = stage.cache_status
         completed["tile_id"] = stage.tile_id
         summary["completed_jobs"].append(completed)
         completed_stage_outputs[stage.stage_name] = completed
 
     for stage in stages:
-        if stage.stage_type == "cached_tile":
+        if stage.stage_type in {"cached_tile", "context_density_tile"}:
             collect_cached_tile_stage(stage)
 
     train_stages = [stage for stage in stages if stage.stage_type == "train"]

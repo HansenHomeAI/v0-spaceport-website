@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import sys
 import tempfile
 import types
@@ -837,6 +838,139 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(stages[0].cache_status, "miss")
         self.assertIn("ownership_status_blocked", stages[0].cache_rejection_reasons)
         self.assertIn("ownership_distribution_below_minimum", stages[0].cache_rejection_reasons)
+
+    def test_context_density_reuse_turns_dense_teacher_tile_into_non_training_stage(self):
+        tile_entry = {
+            "tile_id": "tile_04",
+            "base_camera_ids": [f"frame_{index:03d}.jpg" for index in range(188)],
+            "prior_min_budget_class": "hard",
+        }
+
+        stages = benchmark.build_benchmark_stages(
+            manifest={"tiles": [tile_entry]},
+            branch_name="agent-branch",
+            output_root_s3_uri="s3://bucket/out",
+            job_prefix="bench",
+            include_monolithic=False,
+            include_scaffold=False,
+            include_merge=True,
+            orchestration_mode="fanout",
+            tile_ids=["tile_04"],
+            monolithic_max_iterations=8000,
+            scaffold_max_iterations=2000,
+            tile_max_iterations=12000,
+            training_max_runtime_seconds=18000,
+            extra_env={},
+            timestamp=456,
+            downscale_factor=1,
+            include_review=False,
+            proof_profile=benchmark.PROOF_PROFILE_NONE,
+            tile_budget_mode="adaptive",
+            max_images_per_tile=188,
+            input_colmap_s3_uri="s3://bucket/colmap",
+            image_uri="123.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:test",
+            scaffold_artifact_s3_uri="s3://bucket/scaffold/model.tar.gz",
+            enable_context_density_reuse=True,
+            context_density_manifest={
+                "tile_04": {
+                    "artifact_s3_uri": "s3://bucket/v18/context/model.tar.gz",
+                    "context_density_status": "passed",
+                    "retained_gaussians": 956277,
+                    "reference_retained_gaussians": 956277,
+                    "min_retained_ratio_vs_reference": 0.95,
+                    "context_preserve_enabled": True,
+                }
+            },
+        )
+
+        self.assertEqual(stages[0].stage_type, "context_density_tile")
+        self.assertEqual(stages[0].cache_status, "context_density_hit")
+        self.assertEqual(stages[0].source_artifact_uri, "s3://bucket/v18/context/model.tar.gz")
+        self.assertEqual(stages[1].depends_on, ["T0_tile_04"])
+        cost = benchmark.estimate_training_cost(
+            stages,
+            instance_type="ml.g5.2xlarge",
+            max_runtime_seconds=18000,
+            baseline_iterations=12000,
+        )
+        self.assertEqual(cost["train_stage_count"], 0)
+        self.assertEqual(cost["estimated_usd"], 0.0)
+
+    def test_context_density_reuse_rejects_low_density_ratio(self):
+        tile_entry = {
+            "tile_id": "tile_06",
+            "base_camera_ids": [f"frame_{index:03d}.jpg" for index in range(188)],
+            "prior_min_budget_class": "hard",
+        }
+
+        stages = benchmark.build_benchmark_stages(
+            manifest={"tiles": [tile_entry]},
+            branch_name="agent-branch",
+            output_root_s3_uri="s3://bucket/out",
+            job_prefix="bench",
+            include_monolithic=False,
+            include_scaffold=False,
+            include_merge=False,
+            orchestration_mode="fanout",
+            tile_ids=["tile_06"],
+            monolithic_max_iterations=8000,
+            scaffold_max_iterations=2000,
+            tile_max_iterations=12000,
+            training_max_runtime_seconds=18000,
+            extra_env={},
+            timestamp=456,
+            downscale_factor=1,
+            include_review=False,
+            proof_profile=benchmark.PROOF_PROFILE_NONE,
+            tile_budget_mode="adaptive",
+            max_images_per_tile=188,
+            input_colmap_s3_uri="s3://bucket/colmap",
+            image_uri="123.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:test",
+            scaffold_artifact_s3_uri="s3://bucket/scaffold/model.tar.gz",
+            enable_context_density_reuse=True,
+            context_density_manifest={
+                "tile_06": {
+                    "artifact_s3_uri": "s3://bucket/v18/context/model.tar.gz",
+                    "context_density_status": "passed",
+                    "retained_gaussians": 278178,
+                    "reference_retained_gaussians": 1188805,
+                    "min_retained_ratio_vs_reference": 0.95,
+                    "context_preserve_enabled": True,
+                }
+            },
+        )
+
+        self.assertEqual(stages[0].stage_type, "train")
+        self.assertEqual(stages[0].cache_status, "miss")
+        self.assertIn("context_density_ratio_below_minimum", stages[0].cache_rejection_reasons)
+
+    def test_context_density_stage_can_materialize_tile_from_full_tiled_artifact(self):
+        stage = benchmark.BenchmarkStage(
+            stage_name="T0_tile_04",
+            stage_type="context_density_tile",
+            training_mode="leaf_tile",
+            output_s3_uri="s3://bucket/out/tiles/tile_04",
+            tile_id="tile_04",
+        )
+
+        members = benchmark.artifact_members_for_stage(stage)
+        self.assertIn("splat.ply", members)
+        self.assertIn("tiles/tile_04/splat.ply", members)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            tile_dir = root / "tiles" / "tile_04"
+            tile_dir.mkdir(parents=True)
+            (tile_dir / "splat.ply").write_text("ply\n", encoding="utf-8")
+            (tile_dir / "training_metadata.json").write_text('{"training_mode":"leaf_tile"}', encoding="utf-8")
+
+            benchmark.materialize_context_density_tile(stage, root)
+
+            self.assertEqual((root / "splat.ply").read_text(encoding="utf-8"), "ply\n")
+            self.assertEqual(
+                json.loads((root / "training_metadata.json").read_text(encoding="utf-8"))["training_mode"],
+                "leaf_tile",
+            )
 
     def test_manifest_overrides_must_be_provided_as_a_pair(self):
         with self.assertRaises(RuntimeError) as raised:

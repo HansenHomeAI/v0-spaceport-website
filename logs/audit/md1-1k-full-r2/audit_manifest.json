@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "V18 non-regression remains blocked because the cheap candidates are under-dense in teacher/context tiles. More plain hard retraining is not justified until dense teacher/context preservation is explicit in the planner/merge policy.",
+  "blocked_promotion_reason": "Standard-v18color is still blocked versus V18; context-density reuse now plans zero training jobs for a 9-tile no-training candidate, but promotion remains blocked until local merge/preflight and same-camera review pass.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,11 +589,11 @@
       ]
     }
   ],
-  "current_branch_head": "0abfc2c8c0ea5015358859374f3669d81e7b174b with local exact-head gate/status update pending next meaningful commit",
-  "current_exact_head_gate_status": "exact-head 0abfc2c8c0ea5015358859374f3669d81e7b174b has green CDK Deploy 25364537073. No Cloudflare Pages run appeared for this non-web/status push.",
-  "current_live_compute_status": "No MD1 SageMaker training jobs are InProgress after the standard-v18color review. The only observed InProgress processing job is unrelated Meadow r5full80s1-1777934749 on ml.g4dn.xlarge.",
-  "current_rung": "R4_cost_reduction_density_context_attribution_complete",
-  "exact_head_gate_status": "exact-head 0abfc2c8c0ea5015358859374f3669d81e7b174b has green CDK Deploy 25364537073. No Cloudflare Pages run appeared for this non-web/status push.",
+  "current_branch_head": "396f0c203bae1b253d3e1729c0f4013a79c7ac46 with local context-density planner implementation pending commit",
+  "current_exact_head_gate_status": "exact-head 396f0c203bae1b253d3e1729c0f4013a79c7ac46 has green CDK Deploy 25366653864. No Cloudflare Pages run appeared for this non-web/status push.",
+  "current_live_compute_status": "No MD1 SageMaker training jobs are InProgress. Unrelated Meadow processing r5full80s2-1777973662 is InProgress.",
+  "current_rung": "R4_cost_reduction_context_density_planner_diagnostic_complete",
+  "exact_head_gate_status": "exact-head 396f0c203bae1b253d3e1729c0f4013a79c7ac46 has green CDK Deploy 25366653864. No Cloudflare Pages run appeared for this non-web/status push.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
     "buckets": {
@@ -777,16 +777,15 @@
     "local_status_update_pending_commit": true,
     "unrelated_processing_job_in_progress": "r5full80s1-1777934749"
   },
-  "last_updated": "2026-05-05T08:40:34Z",
+  "last_updated": "2026-05-05T09:46:30Z",
   "latest_exact_head_gate": {
+    "head": "396f0c203bae1b253d3e1729c0f4013a79c7ac46",
+    "cdk_deploy_run_id": 25366653864,
     "cdk_deploy_conclusion": "success",
-    "cdk_deploy_run_id": 25364537073,
-    "checked_at": "2026-05-05T08:00:32Z",
-    "cloudflare_pages": "not_triggered_for_non_web_status_push",
-    "head": "0abfc2c8c0ea5015358859374f3669d81e7b174b",
-    "local_status_update_pending_commit": true
+    "cloudflare_pages": "none_observed_for_non_web_status_push",
+    "recorded_at": "2026-05-05T08:51:10Z"
   },
-  "latest_live_compute_status": "No MD1 training jobs are InProgress; unrelated Meadow processing r5full80s1-1777934749 remains InProgress.",
+  "latest_live_compute_status": "No MD1 SageMaker training jobs are InProgress. Unrelated Meadow processing r5full80s2-1777973662 is InProgress.",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
     "head": "07c50ac09a7ac88ea218c5784f045154a102917e",
@@ -797,7 +796,7 @@
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-expanded-standard-v18color/review_comparison.json",
   "latest_review_status": "No-training standard 9-tile plus V18 sky-preserving rgb-offset [0.008,0.12,0.0] was structurally valid and reviewed on the V18 smoke-p24 camera set. Review md1-r1-r4-expanded-standard-v18color-1777966369-quality completed in 718 billable seconds/about $0.302, camera coverage/render sanity OK, but V18 non-regression is blocked: near_detail +0.6248 dB/-0.0043 SSIM/+0.0005 LPIPS, boundary +0.4691 dB/-0.0398 SSIM/+0.0493 LPIPS, horizon -0.9713 dB/-0.0248 SSIM/+0.0584 LPIPS.",
-  "latest_training_cost_reduction_status": "No-spend density/context attribution complete: cheap 9-tile standard-v18color retained 2.535M vs V18 8.424M; tile_04/tile_05/tile_06 retained only 35.3%/35.0%/21.7% of V18; hard/full-cover retraining did not restore density.",
+  "latest_training_cost_reduction_status": "no_spend_context_density_planner_diagnostic_complete",
   "live_compute_status": "No SageMaker training jobs are InProgress. Exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. Tile_13 hard proof is complete/preflighted/cached; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
@@ -3386,7 +3385,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Implement no-spend context-density planner/merge diagnostic and local/no-training candidate if source artifacts are available; no full 14-tile training or more plain tile_04/tile_05/tile_06 hard retraining before that.",
+  "next_unblocked_step": "Run the no-training context-density local merge/preflight using cached leaves plus V18 teacher/context density source tiles; only run same-camera review if preflight passes.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -9673,6 +9672,62 @@
       "status": "blocked_for_production_quality",
       "no_full_14tile_training": true,
       "next_unblocked_step": "Stay no-spend: attribute tile_04/tile_05/tile_06 density gap against V18 teacher/context settings and planner budgets, then plan only a bounded repair if it can target the perceptual/structure gap without re-running the full 14-tile pipeline."
+    }
+  },
+  "md1_r4_context_density_planner_diagnostic_20260505": {
+    "status": "no_spend_context_density_planner_diagnostic_complete",
+    "generated_at": "2026-05-05T09:46:30Z",
+    "head_at_start": "396f0c203bae1b253d3e1729c0f4013a79c7ac46",
+    "implementation": {
+      "planner_stage_type": "context_density_tile",
+      "context_density_manifest": "logs/md1-cost-reduction-r4-context-density-manifest-20260505.json",
+      "dryrun_summary": "logs/md1-cost-reduction-r4-context-density-diagnostic-dryrun-20260505.json",
+      "full_tiled_artifact_tile_materialization": true,
+      "downloaded_model_tar_deleted_after_member_extraction": true
+    },
+    "dryrun": {
+      "submitted_jobs": [],
+      "selected_tile_ids": [
+        "tile_00",
+        "tile_02",
+        "tile_11",
+        "tile_13",
+        "tile_01",
+        "tile_04",
+        "tile_05",
+        "tile_06",
+        "tile_10"
+      ],
+      "context_density_tiles": [
+        "tile_01",
+        "tile_04",
+        "tile_05",
+        "tile_06"
+      ],
+      "cached_tiles": [
+        "tile_00",
+        "tile_02",
+        "tile_11",
+        "tile_13",
+        "tile_10"
+      ],
+      "planned_train_tiles": [],
+      "cost_estimate": {
+        "train_stage_count": 0,
+        "estimated_billable_hours": 0.0,
+        "estimated_usd": 0.0,
+        "worst_case_usd": 0.0
+      },
+      "source_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz"
+    },
+    "live_compute_status": {
+      "md1_training_jobs_in_progress": 0,
+      "unrelated_processing_job_in_progress": "r5full80s2-1777973662"
+    },
+    "decision": {
+      "status": "ready_for_no_training_local_context_density_merge_preflight",
+      "no_full_14tile_training": true,
+      "next_unblocked_step": "Run the no-training context-density local merge/preflight using cached leaves plus V18 teacher/context density source tiles; only run same-camera review if preflight passes."
     }
   }
 }
