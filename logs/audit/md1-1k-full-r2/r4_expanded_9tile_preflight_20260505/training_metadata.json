@@ -1,0 +1,31 @@
+{
+  "training_methodology": "md1_cost_reduction_fanout_canary_repackaged",
+  "training_mode": "tiled_pipeline",
+  "model_variant": "md1-r4-expanded-9tile-cost-reduction-canary",
+  "training_completed": true,
+  "timestamp": "2026-05-05T02:47:08.848753+00:00",
+  "selected_tile_ids": [
+    "tile_00",
+    "tile_02",
+    "tile_11",
+    "tile_13",
+    "tile_01",
+    "tile_04",
+    "tile_05",
+    "tile_06",
+    "tile_10"
+  ],
+  "merge_mode": "support_weighted_overlap",
+  "source_artifacts": {
+    "tile_00": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_00/md1-r4leafreb-1777858863-tile-00/output/model.tar.gz",
+    "tile_02": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_02/md1-r4leafreb-1777858863-tile-02/output/model.tar.gz",
+    "tile_11": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_11/md1-r4leafreb-1777858863-tile-11/output/model.tar.gz",
+    "tile_13": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-proof-20260503/tiles/tile_13/md1-r4leafinit-1777850709-tile-13/output/model.tar.gz",
+    "tile_01": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-camera-coverage-canary-after-tile04-cache-20260505/tiles/tile_01/md1-r4exp9-1777943800-1777943463-tile-01/output/model.tar.gz",
+    "tile_04": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile04-bridge-diagnostic-20260504/tiles/tile_04/md1-r4t04diag-1777937799-1777937904-tile-04/output/model.tar.gz",
+    "tile_05": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-camera-coverage-canary-after-tile04-cache-20260505/tiles/tile_05/md1-r4exp9-1777943800-1777943463-tile-05/output/model.tar.gz",
+    "tile_06": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-camera-coverage-canary-after-tile04-cache-20260505/tiles/tile_06/md1-r4exp9-1777943800-1777943463-tile-06/output/model.tar.gz",
+    "tile_10": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-camera-coverage-canary-after-tile04-cache-20260505/tiles/tile_10/md1-r4exp9-1777943800-1777943463-tile-10/output/model.tar.gz"
+  },
+  "source_branch_head": "32513c7298ac3765d6aedf33a84209b7668492eb"
+}

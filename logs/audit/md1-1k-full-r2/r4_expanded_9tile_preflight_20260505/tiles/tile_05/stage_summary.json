@@ -1,0 +1,15 @@
+{
+  "stage_name": "T0_tile_05",
+  "tile_id": "tile_05",
+  "training_mode": "leaf_tile",
+  "training_completed": true,
+  "cache_hit": false,
+  "source_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-camera-coverage-canary-after-tile04-cache-20260505/tiles/tile_05/md1-r4exp9-1777943800-1777943463-tile-05/output/model.tar.gz",
+  "billable_time_seconds": 2406,
+  "training_time_seconds": 2406,
+  "budget_class": "standard",
+  "max_iterations": 8000,
+  "selected_image_count": 128,
+  "remaining_gaussians": 354369,
+  "splat_file_size_bytes": 36855008
+}

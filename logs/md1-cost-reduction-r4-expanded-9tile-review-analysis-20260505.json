@@ -1,0 +1,667 @@
+{
+  "camera_coverage": {
+    "block_reasons": [],
+    "per_bucket": {
+      "boundary": {
+        "baseline_cameras": [
+          "DJI_0067.JPG",
+          "DJI_0068.JPG",
+          "DJI_0069.JPG",
+          "DJI_0070.JPG"
+        ],
+        "baseline_count": 4,
+        "block_reasons": [],
+        "candidate_cameras": [
+          "DJI_0067.JPG",
+          "DJI_0068.JPG",
+          "DJI_0069.JPG",
+          "DJI_0070.JPG"
+        ],
+        "candidate_count": 4
+      },
+      "horizon": {
+        "baseline_cameras": [
+          "DJI_0066.JPG",
+          "DJI_0073.JPG",
+          "DJI_0146.JPG",
+          "DJI_0147.JPG"
+        ],
+        "baseline_count": 4,
+        "block_reasons": [],
+        "candidate_cameras": [
+          "DJI_0066.JPG",
+          "DJI_0073.JPG",
+          "DJI_0146.JPG",
+          "DJI_0147.JPG"
+        ],
+        "candidate_count": 4
+      },
+      "near_detail": {
+        "baseline_cameras": [
+          "DJI_0258.JPG",
+          "DJI_0261.JPG",
+          "DJI_0262.JPG",
+          "DJI_0263.JPG"
+        ],
+        "baseline_count": 4,
+        "block_reasons": [],
+        "candidate_cameras": [
+          "DJI_0258.JPG",
+          "DJI_0261.JPG",
+          "DJI_0262.JPG",
+          "DJI_0263.JPG"
+        ],
+        "candidate_count": 4
+      }
+    },
+    "status": "ok"
+  },
+  "candidate": "r4-expanded-9tile-canary-smoke-p24",
+  "candidate_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-9tile-canary-review-20260505/inputs/r4_expanded_9tile/model.tar.gz",
+  "checked_at": "2026-05-05T03:05:37.746737+00:00",
+  "decision": "blocked_quality_repair_planning_only_no_full_14tile_run",
+  "diagnosis": "The 9-tile canary is structurally valid and covers the same 12 smoke cameras as V18, but quality is still below V18. The biggest loss is horizon (-1.944 dB PSNR, -0.0316 SSIM, +0.0714 LPIPS). Boundary PSNR is slightly better but SSIM/LPIPS regress, and near_detail has small median SSIM/LPIPS regressions plus two single-camera failures. This points to standard 8k/128-image leaves being too aggressive for acceptance, not a missing-camera or merge-fallback issue.",
+  "merge": {
+    "background_asset": {
+      "asset": "background_skybox.webp",
+      "retained_gaussians": 337142,
+      "selection_score": 0.6362313764733385,
+      "source_asset": "/tmp/md1-r4-expanded-9tile-merge-20260505/tile_outputs/tile_04/background_skybox.webp",
+      "source_tile_id": "tile_04"
+    },
+    "dropped_gaussians": 138503,
+    "fallback_reasons": [],
+    "fallback_tile_count": 0,
+    "merge_mode": "support_weighted_overlap",
+    "merged_ply": "/tmp/md1-r4-expanded-9tile-merge-20260505/merged/merged_splat.ply",
+    "retain_all_tile_count": 0,
+    "retained_gaussians": 2534999,
+    "source_gaussians": 2673502,
+    "tile_count": 9,
+    "tiles": [
+      {
+        "dropped_gaussians": 30,
+        "fallback_reason": null,
+        "fallback_used": false,
+        "ownership_bounds_available": true,
+        "retained_gaussians": 248318,
+        "retention_strategy": "support_weighted_overlap",
+        "source_gaussians": 248348,
+        "source_ply": "/tmp/md1-r4-expanded-9tile-merge-20260505/tile_outputs/tile_00/splat.ply",
+        "support_weighted_overlap": {
+          "context_candidate_count": 1,
+          "context_preserve_enabled": true,
+          "core_candidate_count": 248317,
+          "overlap_candidate_count": 0,
+          "retained_context_count": 1,
+          "retained_overlap_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty"
+        },
+        "tile_id": "tile_00"
+      },
+      {
+        "dropped_gaussians": 299,
+        "fallback_reason": null,
+        "fallback_used": false,
+        "ownership_bounds_available": true,
+        "retained_gaussians": 366957,
+        "retention_strategy": "support_weighted_overlap",
+        "source_gaussians": 367256,
+        "source_ply": "/tmp/md1-r4-expanded-9tile-merge-20260505/tile_outputs/tile_01/splat.ply",
+        "support_weighted_overlap": {
+          "context_candidate_count": 94143,
+          "context_preserve_enabled": true,
+          "core_candidate_count": 272814,
+          "overlap_candidate_count": 0,
+          "retained_context_count": 94143,
+          "retained_overlap_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty"
+        },
+        "tile_id": "tile_01"
+      },
+      {
+        "dropped_gaussians": 849,
+        "fallback_reason": null,
+        "fallback_used": false,
+        "ownership_bounds_available": true,
+        "retained_gaussians": 479436,
+        "retention_strategy": "support_weighted_overlap",
+        "source_gaussians": 480285,
+        "source_ply": "/tmp/md1-r4-expanded-9tile-merge-20260505/tile_outputs/tile_02/splat.ply",
+        "support_weighted_overlap": {
+          "context_candidate_count": 32582,
+          "context_preserve_enabled": true,
+          "core_candidate_count": 446854,
+          "overlap_candidate_count": 0,
+          "retained_context_count": 32582,
+          "retained_overlap_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty"
+        },
+        "tile_id": "tile_02"
+      },
+      {
+        "dropped_gaussians": 6012,
+        "fallback_reason": null,
+        "fallback_used": false,
+        "ownership_bounds_available": true,
+        "retained_gaussians": 337142,
+        "retention_strategy": "support_weighted_overlap",
+        "source_gaussians": 343154,
+        "source_ply": "/tmp/md1-r4-expanded-9tile-merge-20260505/tile_outputs/tile_04/splat.ply",
+        "support_weighted_overlap": {
+          "context_candidate_count": 44923,
+          "context_preserve_enabled": true,
+          "core_candidate_count": 285209,
+          "overlap_candidate_count": 13022,
+          "retained_context_count": 44923,
+          "retained_overlap_count": 7010,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty"
+        },
+        "tile_id": "tile_04"
+      },
+      {
+        "dropped_gaussians": 40131,
+        "fallback_reason": null,
+        "fallback_used": false,
+        "ownership_bounds_available": true,
+        "retained_gaussians": 314238,
+        "retention_strategy": "support_weighted_overlap",
+        "source_gaussians": 354369,
+        "source_ply": "/tmp/md1-r4-expanded-9tile-merge-20260505/tile_outputs/tile_05/splat.ply",
+        "support_weighted_overlap": {
+          "context_candidate_count": 19703,
+          "context_preserve_enabled": true,
+          "core_candidate_count": 294535,
+          "overlap_candidate_count": 0,
+          "retained_context_count": 19703,
+          "retained_overlap_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty"
+        },
+        "tile_id": "tile_05"
+      },
+      {
+        "dropped_gaussians": 9884,
+        "fallback_reason": null,
+        "fallback_used": false,
+        "ownership_bounds_available": true,
+        "retained_gaussians": 257995,
+        "retention_strategy": "support_weighted_overlap",
+        "source_gaussians": 267879,
+        "source_ply": "/tmp/md1-r4-expanded-9tile-merge-20260505/tile_outputs/tile_06/splat.ply",
+        "support_weighted_overlap": {
+          "context_candidate_count": 44437,
+          "context_preserve_enabled": true,
+          "core_candidate_count": 213558,
+          "overlap_candidate_count": 0,
+          "retained_context_count": 44437,
+          "retained_overlap_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty"
+        },
+        "tile_id": "tile_06"
+      },
+      {
+        "dropped_gaussians": 13322,
+        "fallback_reason": null,
+        "fallback_used": false,
+        "ownership_bounds_available": true,
+        "retained_gaussians": 371161,
+        "retention_strategy": "support_weighted_overlap",
+        "source_gaussians": 384483,
+        "source_ply": "/tmp/md1-r4-expanded-9tile-merge-20260505/tile_outputs/tile_10/splat.ply",
+        "support_weighted_overlap": {
+          "context_candidate_count": 0,
+          "context_preserve_enabled": false,
+          "core_candidate_count": 371161,
+          "overlap_candidate_count": 0,
+          "retained_context_count": 0,
+          "retained_overlap_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty"
+        },
+        "tile_id": "tile_10"
+      },
+      {
+        "dropped_gaussians": 0,
+        "fallback_reason": null,
+        "fallback_used": false,
+        "ownership_bounds_available": true,
+        "retained_gaussians": 119,
+        "retention_strategy": "support_weighted_overlap",
+        "source_gaussians": 119,
+        "source_ply": "/tmp/md1-r4-expanded-9tile-merge-20260505/tile_outputs/tile_11/splat.ply",
+        "support_weighted_overlap": {
+          "context_candidate_count": 0,
+          "context_preserve_enabled": false,
+          "core_candidate_count": 119,
+          "overlap_candidate_count": 0,
+          "retained_context_count": 0,
+          "retained_overlap_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty"
+        },
+        "tile_id": "tile_11"
+      },
+      {
+        "dropped_gaussians": 67976,
+        "fallback_reason": null,
+        "fallback_used": false,
+        "ownership_bounds_available": true,
+        "retained_gaussians": 159633,
+        "retention_strategy": "support_weighted_overlap",
+        "source_gaussians": 227609,
+        "source_ply": "/tmp/md1-r4-expanded-9tile-merge-20260505/tile_outputs/tile_13/splat.ply",
+        "support_weighted_overlap": {
+          "context_candidate_count": 0,
+          "context_preserve_enabled": false,
+          "core_candidate_count": 159633,
+          "overlap_candidate_count": 0,
+          "retained_context_count": 0,
+          "retained_overlap_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty"
+        },
+        "tile_id": "tile_13"
+      }
+    ]
+  },
+  "next_budget_repair": {
+    "force_hard_tiles": [
+      "tile_01",
+      "tile_04",
+      "tile_05",
+      "tile_06",
+      "tile_10"
+    ],
+    "prior_stats_json": "logs/md1-v18-tile-prior-stats-r4-expanded-hard-repair-20260505.json",
+    "rationale": "Force full-cover only on blocker leaves trained at standard budget in this canary; avoid retraining structurally passed hard/tiny/standard leaves unless hashes invalidate.",
+    "reuse_expected_tiles": [
+      "tile_00",
+      "tile_02",
+      "tile_11",
+      "tile_13"
+    ]
+  },
+  "next_unblocked_step": "Run a no-spend hard-repair dry-run using the new prior stats and expanded 9-tile cache, then only launch a bounded repair if projected cost remains under cap and live AWS is idle.",
+  "promotion_decision": {
+    "block_reasons": [
+      "boundary_ssim_regression",
+      "boundary_lpips_regression",
+      "boundary_no_required_improvement",
+      "horizon_psnr_regression",
+      "horizon_ssim_regression",
+      "horizon_lpips_regression"
+    ],
+    "camera_coverage": {
+      "block_reasons": [],
+      "per_bucket": {
+        "boundary": {
+          "baseline_cameras": [
+            "DJI_0067.JPG",
+            "DJI_0068.JPG",
+            "DJI_0069.JPG",
+            "DJI_0070.JPG"
+          ],
+          "baseline_count": 4,
+          "block_reasons": [],
+          "candidate_cameras": [
+            "DJI_0067.JPG",
+            "DJI_0068.JPG",
+            "DJI_0069.JPG",
+            "DJI_0070.JPG"
+          ],
+          "candidate_count": 4
+        },
+        "horizon": {
+          "baseline_cameras": [
+            "DJI_0066.JPG",
+            "DJI_0073.JPG",
+            "DJI_0146.JPG",
+            "DJI_0147.JPG"
+          ],
+          "baseline_count": 4,
+          "block_reasons": [],
+          "candidate_cameras": [
+            "DJI_0066.JPG",
+            "DJI_0073.JPG",
+            "DJI_0146.JPG",
+            "DJI_0147.JPG"
+          ],
+          "candidate_count": 4
+        },
+        "near_detail": {
+          "baseline_cameras": [
+            "DJI_0258.JPG",
+            "DJI_0261.JPG",
+            "DJI_0262.JPG",
+            "DJI_0263.JPG"
+          ],
+          "baseline_count": 4,
+          "block_reasons": [],
+          "candidate_cameras": [
+            "DJI_0258.JPG",
+            "DJI_0261.JPG",
+            "DJI_0262.JPG",
+            "DJI_0263.JPG"
+          ],
+          "candidate_count": 4
+        }
+      },
+      "status": "ok"
+    },
+    "fallback_tile_count": 0,
+    "merge_mode": "support_weighted_overlap",
+    "per_bucket": {
+      "boundary": {
+        "baseline": {
+          "lpips": 0.7800296545028687,
+          "psnr": 14.315955739441744,
+          "ssim": 0.4327641427516937
+        },
+        "block_reasons": [
+          "boundary_ssim_regression",
+          "boundary_lpips_regression",
+          "boundary_no_required_improvement"
+        ],
+        "candidate": {
+          "lpips": 0.8462949395179749,
+          "psnr": 14.38481799667833,
+          "ssim": 0.38978147506713867
+        },
+        "delta": {
+          "lpips": 0.0662652850151062,
+          "psnr": 0.06886225723658512,
+          "ssim": -0.042982667684555054
+        }
+      },
+      "horizon": {
+        "baseline": {
+          "lpips": 0.8303832709789276,
+          "psnr": 15.518785862438865,
+          "ssim": 0.3774964064359665
+        },
+        "block_reasons": [
+          "horizon_psnr_regression",
+          "horizon_ssim_regression",
+          "horizon_lpips_regression"
+        ],
+        "candidate": {
+          "lpips": 0.9018116593360901,
+          "psnr": 13.574983459035444,
+          "ssim": 0.34588856995105743
+        },
+        "delta": {
+          "lpips": 0.07142838835716248,
+          "psnr": -1.9438024034034207,
+          "ssim": -0.03160783648490906
+        }
+      },
+      "near_detail": {
+        "baseline": {
+          "lpips": 0.9159154295921326,
+          "psnr": 11.342806679576887,
+          "ssim": 0.38599395751953125
+        },
+        "block_reasons": [],
+        "candidate": {
+          "lpips": 0.9318416118621826,
+          "psnr": 11.314213475461791,
+          "ssim": 0.37248045206069946
+        },
+        "delta": {
+          "lpips": 0.01592618227005005,
+          "psnr": -0.02859320411509536,
+          "ssim": -0.013513505458831787
+        }
+      }
+    },
+    "retain_all_tile_count": 0,
+    "status": "blocked",
+    "thresholds": {
+      "boundary": {
+        "lpips_max_delta": 0.035,
+        "psnr_min_delta": -1.0,
+        "required_improvement": {
+          "lpips": -0.025,
+          "psnr": 0.5,
+          "ssim": 0.01
+        },
+        "ssim_min_delta": -0.015
+      },
+      "horizon": {
+        "lpips_max_delta": 0.03,
+        "psnr_min_delta": -0.75,
+        "sky_score_min_ratio": 0.9,
+        "ssim_min_delta": -0.012
+      },
+      "near_detail": {
+        "lpips_max_delta": 0.035,
+        "psnr_min_delta": -1.0,
+        "ssim_min_delta": -0.015
+      }
+    },
+    "warnings": []
+  },
+  "render_sanity": {
+    "blank_view_count": 0,
+    "blank_views": [],
+    "checked_view_count": 12,
+    "status": "ok"
+  },
+  "review_billable_seconds": 712,
+  "review_estimated_usd": 0.2996,
+  "review_job_name": "md1-r1-r4-expanded-9tile-canary-smoke-p24-1777949385-quality",
+  "v18_non_regression_decision": {
+    "block_reasons": [
+      "near_detail_v18_median_ssim_regression",
+      "near_detail_v18_median_lpips_regression",
+      "boundary_v18_median_ssim_regression",
+      "boundary_v18_median_lpips_regression",
+      "horizon_v18_median_psnr_regression",
+      "horizon_v18_median_ssim_regression",
+      "horizon_v18_median_lpips_regression",
+      "near_detail_v18_single_camera_psnr_regression",
+      "near_detail_v18_single_camera_lpips_regression",
+      "boundary_v18_single_camera_lpips_regression",
+      "horizon_v18_single_camera_lpips_regression",
+      "horizon_v18_single_camera_psnr_regression"
+    ],
+    "per_bucket": {
+      "boundary": {
+        "block_reasons": [
+          "boundary_v18_median_ssim_regression",
+          "boundary_v18_median_lpips_regression"
+        ],
+        "candidate": {
+          "lpips": 0.8462949395179749,
+          "psnr": 14.38481799667833,
+          "ssim": 0.38978147506713867
+        },
+        "delta": {
+          "lpips": 0.0662652850151062,
+          "psnr": 0.06886225723658512,
+          "ssim": -0.042982667684555054
+        },
+        "v18": {
+          "lpips": 0.7800296545028687,
+          "psnr": 14.315955739441744,
+          "ssim": 0.4327641427516937
+        }
+      },
+      "horizon": {
+        "block_reasons": [
+          "horizon_v18_median_psnr_regression",
+          "horizon_v18_median_ssim_regression",
+          "horizon_v18_median_lpips_regression"
+        ],
+        "candidate": {
+          "lpips": 0.9018116593360901,
+          "psnr": 13.574983459035444,
+          "ssim": 0.34588856995105743
+        },
+        "delta": {
+          "lpips": 0.07142838835716248,
+          "psnr": -1.9438024034034207,
+          "ssim": -0.03160783648490906
+        },
+        "v18": {
+          "lpips": 0.8303832709789276,
+          "psnr": 15.518785862438865,
+          "ssim": 0.3774964064359665
+        }
+      },
+      "near_detail": {
+        "block_reasons": [
+          "near_detail_v18_median_ssim_regression",
+          "near_detail_v18_median_lpips_regression"
+        ],
+        "candidate": {
+          "lpips": 0.9318416118621826,
+          "psnr": 11.314213475461791,
+          "ssim": 0.37248045206069946
+        },
+        "delta": {
+          "lpips": 0.01592618227005005,
+          "psnr": -0.02859320411509536,
+          "ssim": -0.013513505458831787
+        },
+        "v18": {
+          "lpips": 0.9159154295921326,
+          "psnr": 11.342806679576887,
+          "ssim": 0.38599395751953125
+        }
+      }
+    },
+    "per_camera_blocks": [
+      {
+        "block_reasons": [
+          "near_detail_v18_single_camera_psnr_regression"
+        ],
+        "bucket": "near_detail",
+        "delta": {
+          "lpips": -0.006993651390075684,
+          "psnr": -0.9136097585913525,
+          "ssim": -0.03404846787452698
+        },
+        "image_name": "DJI_0258.JPG"
+      },
+      {
+        "block_reasons": [
+          "near_detail_v18_single_camera_lpips_regression"
+        ],
+        "bucket": "near_detail",
+        "delta": {
+          "lpips": 0.10073858499526978,
+          "psnr": 0.04098997481177591,
+          "ssim": -0.0206509530544281
+        },
+        "image_name": "DJI_0262.JPG"
+      },
+      {
+        "block_reasons": [
+          "boundary_v18_single_camera_lpips_regression"
+        ],
+        "bucket": "boundary",
+        "delta": {
+          "lpips": 0.048136115074157715,
+          "psnr": 0.5063151741032552,
+          "ssim": -0.018538594245910645
+        },
+        "image_name": "DJI_0067.JPG"
+      },
+      {
+        "block_reasons": [
+          "boundary_v18_single_camera_lpips_regression"
+        ],
+        "bucket": "boundary",
+        "delta": {
+          "lpips": 0.06267595291137695,
+          "psnr": 0.19397216731983136,
+          "ssim": -0.04014790058135986
+        },
+        "image_name": "DJI_0068.JPG"
+      },
+      {
+        "block_reasons": [
+          "boundary_v18_single_camera_lpips_regression"
+        ],
+        "bucket": "boundary",
+        "delta": {
+          "lpips": 0.06985461711883545,
+          "psnr": -0.05624765284666289,
+          "ssim": -0.046364009380340576
+        },
+        "image_name": "DJI_0069.JPG"
+      },
+      {
+        "block_reasons": [
+          "boundary_v18_single_camera_lpips_regression"
+        ],
+        "bucket": "boundary",
+        "delta": {
+          "lpips": 0.07224375009536743,
+          "psnr": -0.24458576075655714,
+          "ssim": -0.036501407623291016
+        },
+        "image_name": "DJI_0070.JPG"
+      },
+      {
+        "block_reasons": [
+          "horizon_v18_single_camera_lpips_regression"
+        ],
+        "bucket": "horizon",
+        "delta": {
+          "lpips": 0.04220467805862427,
+          "psnr": 0.31802363773830145,
+          "ssim": -0.004167795181274414
+        },
+        "image_name": "DJI_0066.JPG"
+      },
+      {
+        "block_reasons": [
+          "horizon_v18_single_camera_psnr_regression",
+          "horizon_v18_single_camera_lpips_regression"
+        ],
+        "bucket": "horizon",
+        "delta": {
+          "lpips": 0.11332505941390991,
+          "psnr": -1.7913508655235262,
+          "ssim": -0.0315554141998291
+        },
+        "image_name": "DJI_0073.JPG"
+      },
+      {
+        "block_reasons": [
+          "horizon_v18_single_camera_psnr_regression",
+          "horizon_v18_single_camera_lpips_regression"
+        ],
+        "bucket": "horizon",
+        "delta": {
+          "lpips": 0.03200650215148926,
+          "psnr": -2.719238169415611,
+          "ssim": -0.03033950924873352
+        },
+        "image_name": "DJI_0146.JPG"
+      },
+      {
+        "block_reasons": [
+          "horizon_v18_single_camera_psnr_regression",
+          "horizon_v18_single_camera_lpips_regression"
+        ],
+        "bucket": "horizon",
+        "delta": {
+          "lpips": 0.040835022926330566,
+          "psnr": -2.997084578525758,
+          "ssim": -0.031660258769989014
+        },
+        "image_name": "DJI_0147.JPG"
+      }
+    ],
+    "status": "blocked",
+    "thresholds": {
+      "horizon_sky_score_min_ratio": 0.98,
+      "median_lpips_max_delta": 0.01,
+      "median_psnr_min_delta": -0.25,
+      "median_ssim_min_delta": -0.005,
+      "single_camera_lpips_max_delta": 0.025,
+      "single_camera_psnr_min_delta": -0.75
+    },
+    "warnings": []
+  }
+}

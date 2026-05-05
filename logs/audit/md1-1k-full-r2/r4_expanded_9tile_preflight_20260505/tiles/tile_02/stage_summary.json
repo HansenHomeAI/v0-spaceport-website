@@ -1,0 +1,15 @@
+{
+  "stage_name": "T0_tile_02",
+  "tile_id": "tile_02",
+  "training_mode": "leaf_tile",
+  "training_completed": true,
+  "cache_hit": true,
+  "source_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_02/md1-r4leafreb-1777858863-tile-02/output/model.tar.gz",
+  "billable_time_seconds": 0,
+  "training_time_seconds": 0,
+  "budget_class": "standard",
+  "max_iterations": 8000,
+  "selected_image_count": 128,
+  "remaining_gaussians": 480285,
+  "splat_file_size_bytes": 49950272
+}

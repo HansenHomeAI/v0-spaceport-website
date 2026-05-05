@@ -1,0 +1,242 @@
+{
+  "mode": "fanout_repackaged_local_merge",
+  "include_scaffold": false,
+  "include_merge": true,
+  "selected_tile_ids": [
+    "tile_00",
+    "tile_02",
+    "tile_11",
+    "tile_13",
+    "tile_01",
+    "tile_04",
+    "tile_05",
+    "tile_06",
+    "tile_10"
+  ],
+  "tile_manifest_resolution": {
+    "source_mode": "native_3dgs_manifests",
+    "chunk_planner_available": true,
+    "native_tile_manifest_available": true,
+    "native_view_buckets_available": true,
+    "ownership_bounds_available": true,
+    "tile_count": 14,
+    "scaffold_count": 240
+  },
+  "cost_estimate": {
+    "instance_type": "ml.g5.2xlarge",
+    "hourly_rate_usd": 1.515,
+    "train_stage_count": 4,
+    "estimated_billable_hours": 2.88,
+    "estimated_usd": 4.3632,
+    "worst_case_billable_hours": 20.0,
+    "worst_case_usd": 30.3,
+    "baseline_iterations": 12000,
+    "stage_estimates": [
+      {
+        "stage_name": "T0_tile_01",
+        "training_mode": "leaf_tile",
+        "tile_id": "tile_01",
+        "max_iterations": 8000,
+        "stage_multiplier": 1,
+        "estimated_billable_hours": 0.72,
+        "estimated_usd": 1.0908,
+        "budget_class": "standard",
+        "prior_duration_hours": 2.27,
+        "prior_fanout_duration_hours": 0.72,
+        "cost_basis": "observed_fanout_leaf_duration",
+        "runtime_risk": null,
+        "runtime_cap_shortfall_hours": 0.0
+      },
+      {
+        "stage_name": "T0_tile_05",
+        "training_mode": "leaf_tile",
+        "tile_id": "tile_05",
+        "max_iterations": 8000,
+        "stage_multiplier": 1,
+        "estimated_billable_hours": 0.72,
+        "estimated_usd": 1.0908,
+        "budget_class": "standard",
+        "prior_duration_hours": 3.04,
+        "prior_fanout_duration_hours": 0.72,
+        "cost_basis": "observed_fanout_leaf_duration",
+        "runtime_risk": null,
+        "runtime_cap_shortfall_hours": 0.0
+      },
+      {
+        "stage_name": "T0_tile_06",
+        "training_mode": "leaf_tile",
+        "tile_id": "tile_06",
+        "max_iterations": 8000,
+        "stage_multiplier": 1,
+        "estimated_billable_hours": 0.72,
+        "estimated_usd": 1.0908,
+        "budget_class": "standard",
+        "prior_duration_hours": 3.25,
+        "prior_fanout_duration_hours": 0.72,
+        "cost_basis": "observed_fanout_leaf_duration",
+        "runtime_risk": null,
+        "runtime_cap_shortfall_hours": 0.0
+      },
+      {
+        "stage_name": "T0_tile_10",
+        "training_mode": "leaf_tile",
+        "tile_id": "tile_10",
+        "max_iterations": 8000,
+        "stage_multiplier": 1,
+        "estimated_billable_hours": 0.72,
+        "estimated_usd": 1.0908,
+        "budget_class": "standard",
+        "prior_duration_hours": 3.98,
+        "prior_fanout_duration_hours": 0.72,
+        "cost_basis": "observed_fanout_leaf_duration",
+        "runtime_risk": null,
+        "runtime_cap_shortfall_hours": 0.0
+      }
+    ],
+    "pricing_source": "static_us-west-2-rates-verified-2026-04-30"
+  },
+  "submitted_jobs": [
+    {
+      "stage_name": "T0_tile_01",
+      "job_name": "md1-r4exp9-1777943800-1777943463-tile-01",
+      "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-camera-coverage-canary-after-tile04-cache-20260505/tiles/tile_01"
+    },
+    {
+      "stage_name": "T0_tile_05",
+      "job_name": "md1-r4exp9-1777943800-1777943463-tile-05",
+      "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-camera-coverage-canary-after-tile04-cache-20260505/tiles/tile_05"
+    },
+    {
+      "stage_name": "T0_tile_06",
+      "job_name": "md1-r4exp9-1777943800-1777943463-tile-06",
+      "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-camera-coverage-canary-after-tile04-cache-20260505/tiles/tile_06"
+    },
+    {
+      "stage_name": "T0_tile_10",
+      "job_name": "md1-r4exp9-1777943800-1777943463-tile-10",
+      "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-camera-coverage-canary-after-tile04-cache-20260505/tiles/tile_10"
+    }
+  ],
+  "completed_jobs": [
+    {
+      "stage_name": "T0_tile_00",
+      "training_mode": null,
+      "billable_time_seconds": 0,
+      "training_time_seconds": 0,
+      "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_00/md1-r4leafreb-1777858863-tile-00/output/model.tar.gz",
+      "output_file": null,
+      "file_size_mb": null,
+      "background_skybox": null,
+      "training_selection": null,
+      "tiled_pipeline_summary": null,
+      "cache_hit": true,
+      "tile_id": "tile_00"
+    },
+    {
+      "stage_name": "T0_tile_02",
+      "training_mode": null,
+      "billable_time_seconds": 0,
+      "training_time_seconds": 0,
+      "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_02/md1-r4leafreb-1777858863-tile-02/output/model.tar.gz",
+      "output_file": null,
+      "file_size_mb": null,
+      "background_skybox": null,
+      "training_selection": null,
+      "tiled_pipeline_summary": null,
+      "cache_hit": true,
+      "tile_id": "tile_02"
+    },
+    {
+      "stage_name": "T0_tile_11",
+      "training_mode": null,
+      "billable_time_seconds": 0,
+      "training_time_seconds": 0,
+      "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_11/md1-r4leafreb-1777858863-tile-11/output/model.tar.gz",
+      "output_file": null,
+      "file_size_mb": null,
+      "background_skybox": null,
+      "training_selection": null,
+      "tiled_pipeline_summary": null,
+      "cache_hit": true,
+      "tile_id": "tile_11"
+    },
+    {
+      "stage_name": "T0_tile_13",
+      "training_mode": null,
+      "billable_time_seconds": 0,
+      "training_time_seconds": 0,
+      "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-proof-20260503/tiles/tile_13/md1-r4leafinit-1777850709-tile-13/output/model.tar.gz",
+      "output_file": null,
+      "file_size_mb": null,
+      "background_skybox": null,
+      "training_selection": null,
+      "tiled_pipeline_summary": null,
+      "cache_hit": true,
+      "tile_id": "tile_13"
+    },
+    {
+      "stage_name": "T0_tile_04",
+      "training_mode": null,
+      "billable_time_seconds": 0,
+      "training_time_seconds": 0,
+      "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile04-bridge-diagnostic-20260504/tiles/tile_04/md1-r4t04diag-1777937799-1777937904-tile-04/output/model.tar.gz",
+      "output_file": null,
+      "file_size_mb": null,
+      "background_skybox": null,
+      "training_selection": null,
+      "tiled_pipeline_summary": null,
+      "cache_hit": true,
+      "tile_id": "tile_04"
+    },
+    {
+      "stage_name": "T0_tile_01",
+      "training_mode": null,
+      "billable_time_seconds": 2396,
+      "training_time_seconds": 2396,
+      "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-camera-coverage-canary-after-tile04-cache-20260505/tiles/tile_01/md1-r4exp9-1777943800-1777943463-tile-01/output/model.tar.gz",
+      "output_file": null,
+      "file_size_mb": null,
+      "background_skybox": null,
+      "training_selection": null,
+      "tiled_pipeline_summary": null
+    },
+    {
+      "stage_name": "T0_tile_05",
+      "training_mode": null,
+      "billable_time_seconds": 2406,
+      "training_time_seconds": 2406,
+      "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-camera-coverage-canary-after-tile04-cache-20260505/tiles/tile_05/md1-r4exp9-1777943800-1777943463-tile-05/output/model.tar.gz",
+      "output_file": null,
+      "file_size_mb": null,
+      "background_skybox": null,
+      "training_selection": null,
+      "tiled_pipeline_summary": null
+    },
+    {
+      "stage_name": "T0_tile_06",
+      "training_mode": null,
+      "billable_time_seconds": 2365,
+      "training_time_seconds": 2365,
+      "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-camera-coverage-canary-after-tile04-cache-20260505/tiles/tile_06/md1-r4exp9-1777943800-1777943463-tile-06/output/model.tar.gz",
+      "output_file": null,
+      "file_size_mb": null,
+      "background_skybox": null,
+      "training_selection": null,
+      "tiled_pipeline_summary": null
+    },
+    {
+      "stage_name": "T0_tile_10",
+      "training_mode": null,
+      "billable_time_seconds": 2408,
+      "training_time_seconds": 2408,
+      "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-camera-coverage-canary-after-tile04-cache-20260505/tiles/tile_10/md1-r4exp9-1777943800-1777943463-tile-10/output/model.tar.gz",
+      "output_file": null,
+      "file_size_mb": null,
+      "background_skybox": null,
+      "training_selection": null,
+      "tiled_pipeline_summary": null
+    }
+  ],
+  "source_dryrun_summary": "logs/md1-cost-reduction-r4-expanded-canary-after-tile04-cache-dryrun-20260505.json",
+  "source_submit_summary": "logs/md1-cost-reduction-r4-expanded-canary-after-tile04-cache-submit-20260505.json"
+}
