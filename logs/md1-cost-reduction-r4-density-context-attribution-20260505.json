@@ -1,0 +1,985 @@
+{
+  "action": "no_spend_density_context_attribution",
+  "artifact_totals": {
+    "hard_repair": {
+      "dropped_gaussians": 121209,
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "retained_gaussians": 2287468,
+      "source_gaussians": 2408677
+    },
+    "standard_v18color": {
+      "dropped_gaussians": 138503,
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "retained_gaussians": 2534999,
+      "source_gaussians": 2673502
+    },
+    "v18_promoted": {
+      "dropped_gaussians": 365766,
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "retained_gaussians": 8423868,
+      "source_gaussians": 8789634
+    }
+  },
+  "branch": "agent-90742618-md1-geometry-consistency",
+  "decision": {
+    "do_not_do_next": [
+      "do not run the full 14-tile candidate",
+      "do not spend more on tile_04/tile_05/tile_06 plain hard retraining without a context-density mechanism"
+    ],
+    "next_unblocked_step": "Implement a no-spend context-density planner/merge diagnostic that treats dense teacher/context preservation as an explicit reusable pipeline stage, then build a local/no-training candidate if source artifacts are available. Only after that should any bounded paid run target the smallest missing context source.",
+    "production_quality_status": "blocked_until_context_density_policy_is_reproduced",
+    "status": "no_spend_attribution_complete"
+  },
+  "findings": [
+    "The latest accepted cheap candidate is structurally valid but under-dense: 2.535M retained splats versus V18 8.424M, about 30.1% of V18.",
+    "The dominant density gaps are tile_04, tile_05, and tile_06. Standard-v18color retains only 35.3%, 35.0%, and 21.7% of V18 for those tiles.",
+    "Hard/full-cover retraining did not restore density. It retained fewer splats than standard-v18color for tile_04/tile_05/tile_06 despite 12000 iterations and 188 selected images.",
+    "R5 serial training logs show the original leaf exports for tile_04/tile_05/tile_06 ended around 364k/396k/278k remaining gaussians. V18 retained 956k/897k/1.189M for those same tiles, so V18 density did not come from leaf training alone.",
+    "V18 inherited the teacher/context hybrid lineage: V12 replaced tile_00/tile_02/tile_04/tile_05/tile_06 and preserved context for tile_00/tile_01/tile_02/tile_04/tile_05/tile_06; V18 then applied the sky-preserving color policy to the same dense context lineage."
+  ],
+  "generated_at": "2026-05-05T08:40:34Z",
+  "head": "0abfc2c8c0ea5015358859374f3669d81e7b174b",
+  "hybrid_lineage": {
+    "standard_v18color_preserve_context_tiles": [],
+    "standard_v18color_replacement_tiles": [
+      "tile_00",
+      "tile_01",
+      "tile_02",
+      "tile_04",
+      "tile_05",
+      "tile_06"
+    ],
+    "v12_preserve_context_tiles": [
+      "tile_00",
+      "tile_01",
+      "tile_02",
+      "tile_04",
+      "tile_05",
+      "tile_06"
+    ],
+    "v12_purpose": "Start from V8 best tile_00/tile_02/tile_04/tile_05/tile_06 teacher repair, keep opacity unchanged, and preserve historical R5 tile_01 context bounds because p24 horizon smoke cameras are owned by tile_01/tile_04 and V8 dropped 98327 tile_01 gaussians.",
+    "v12_replacement_tiles": [
+      "tile_00",
+      "tile_02",
+      "tile_04",
+      "tile_05",
+      "tile_06"
+    ],
+    "v18_color_policy": {
+      "mode": "rgb-offset",
+      "rgb_offset": [
+        0.008,
+        0.12,
+        0.0
+      ]
+    },
+    "v18_preserve_context_tiles": [],
+    "v18_replacement_tiles": [
+      "tile_00",
+      "tile_01",
+      "tile_02",
+      "tile_04",
+      "tile_05",
+      "tile_06"
+    ]
+  },
+  "inputs": {
+    "hard_repair_preflight_dir": "logs/audit/md1-1k-full-r2/r4_expanded_hard_repair_preflight_20260505",
+    "r5_cloudwatch_log_group": "/aws/sagemaker/TrainingJobs",
+    "r5_cloudwatch_log_stream": "md1-r5-14tile-2k-1777240767-tiled/algo-1-1777240871",
+    "standard_v18color_preflight_dir": "logs/audit/md1-1k-full-r2/r4_expanded_standard_v18color_preflight_20260505",
+    "v12_teacher_context_preflight_dir": "logs/audit/md1-1k-full-r2/r5_teacher_context_0002040506_tile01ctx_v12_preflight_20260429053642",
+    "v18_promoted_preflight_dir": "logs/audit/md1-1k-full-r2/r5_teacher_context_v12_sky_v18_preflight_20260429111738"
+  },
+  "live_gate_context": {
+    "cloudflare_pages_for_exact_head": "none_observed_for_non_web_status_push",
+    "exact_head_cdk_deploy_conclusion": "success",
+    "exact_head_cdk_deploy_run": 25364537073,
+    "md1_training_jobs_in_progress": 0,
+    "unrelated_processing_job_in_progress": "r5full80s1-1777934749"
+  },
+  "r5_serial_cloudwatch_focus_tile_evidence": {
+    "tile_04": {
+      "event_count": 13,
+      "floater_pruning": {
+        "evaluated_gaussians": 364353,
+        "remaining_gaussians": 364338,
+        "removed_gaussians": 15
+      },
+      "max_selected_images": 0,
+      "prepared_scaffold_line": "2026-04-27 07:46:50,159 - INFO - \ud83c\udf10 Prepared scaffold point-cloud init for tile_04 with 300000 inherited points",
+      "scaffold_initialization": {
+        "fallback_used": false,
+        "inherited_gaussian_cap": 300000,
+        "inherited_gaussian_count": 300000,
+        "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+        "scaffold_init_downsample_strategy": "spatial_key_even_sample",
+        "source_filtered_gaussian_count": 1282226,
+        "source_gaussian_count": 1554116
+      },
+      "selected_image_count": 188,
+      "train_command_line": "2026-04-27 07:46:51,414 - INFO -    ns-train splatfacto-w-light --data /opt/ml/model/tiled_pipeline/inputs/tile_04 --output-dir /opt/ml/model/tiled_pipeline/tmp/tile_04 --vis tensorboard --max_num_iterations 12000 --pipeline.model.sh_degree 1 --logging.steps_per_log 100 --viewer.quit_on_train_completion True --steps_per_eval_image 12001 --steps_per_eval_all_images 12001 --steps_per_save 12001 --pipeline.model.rasterize_mode classic --pipeline.model.use_scale_regularization True --pipeline.model.cull_alpha_thresh 0.12 --pipeline.model.cull_scale_thresh 0.35 --pipeline.model.enable_bg_model True --pipeline.model.enable_alpha_loss True --pipeline.model.enable_robust_mask True --pipeline.model.bg_sh_degree 1 --pipeline.model.appearance_embed_dim 64 --pipeline.model.never_mask_upper 0.4 --pipeline.model.stop_split_at 3500 --pipeline.model.max-gauss-ratio 3.0",
+      "view_bucket_counts": {
+        "boundary": 176,
+        "horizon": 52,
+        "near_detail": 0
+      }
+    },
+    "tile_05": {
+      "event_count": 13,
+      "floater_pruning": {
+        "evaluated_gaussians": 395923,
+        "remaining_gaussians": 395841,
+        "removed_gaussians": 82
+      },
+      "max_selected_images": 0,
+      "prepared_scaffold_line": "2026-04-27 10:38:45,290 - INFO - \ud83c\udf10 Prepared scaffold point-cloud init for tile_05 with 300000 inherited points",
+      "scaffold_initialization": {
+        "fallback_used": false,
+        "inherited_gaussian_cap": 300000,
+        "inherited_gaussian_count": 300000,
+        "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+        "scaffold_init_downsample_strategy": "spatial_key_even_sample",
+        "source_filtered_gaussian_count": 1266951,
+        "source_gaussian_count": 1554116
+      },
+      "selected_image_count": 188,
+      "train_command_line": "2026-04-27 10:38:47,556 - INFO -    ns-train splatfacto-w-light --data /opt/ml/model/tiled_pipeline/inputs/tile_05 --output-dir /opt/ml/model/tiled_pipeline/tmp/tile_05 --vis tensorboard --max_num_iterations 12000 --pipeline.model.sh_degree 1 --logging.steps_per_log 100 --viewer.quit_on_train_completion True --steps_per_eval_image 12001 --steps_per_eval_all_images 12001 --steps_per_save 12001 --pipeline.model.rasterize_mode classic --pipeline.model.use_scale_regularization True --pipeline.model.cull_alpha_thresh 0.12 --pipeline.model.cull_scale_thresh 0.35 --pipeline.model.enable_bg_model True --pipeline.model.enable_alpha_loss True --pipeline.model.enable_robust_mask True --pipeline.model.bg_sh_degree 1 --pipeline.model.appearance_embed_dim 64 --pipeline.model.never_mask_upper 0.4 --pipeline.model.stop_split_at 3500 --pipeline.model.max-gauss-ratio 3.0",
+      "view_bucket_counts": {
+        "boundary": 28,
+        "horizon": 2,
+        "near_detail": 0
+      }
+    },
+    "tile_06": {
+      "event_count": 13,
+      "floater_pruning": {
+        "evaluated_gaussians": 278219,
+        "remaining_gaussians": 278178,
+        "removed_gaussians": 41
+      },
+      "max_selected_images": 0,
+      "prepared_scaffold_line": "2026-04-27 13:44:59,025 - INFO - \ud83c\udf10 Prepared scaffold point-cloud init for tile_06 with 300000 inherited points",
+      "scaffold_initialization": {
+        "fallback_used": false,
+        "inherited_gaussian_cap": 300000,
+        "inherited_gaussian_count": 300000,
+        "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+        "scaffold_init_downsample_strategy": "spatial_key_even_sample",
+        "source_filtered_gaussian_count": 1103450,
+        "source_gaussian_count": 1554116
+      },
+      "selected_image_count": 188,
+      "train_command_line": "2026-04-27 13:45:01,151 - INFO -    ns-train splatfacto-w-light --data /opt/ml/model/tiled_pipeline/inputs/tile_06 --output-dir /opt/ml/model/tiled_pipeline/tmp/tile_06 --vis tensorboard --max_num_iterations 12000 --pipeline.model.sh_degree 1 --logging.steps_per_log 100 --viewer.quit_on_train_completion True --steps_per_eval_image 12001 --steps_per_eval_all_images 12001 --steps_per_save 12001 --pipeline.model.rasterize_mode classic --pipeline.model.use_scale_regularization True --pipeline.model.cull_alpha_thresh 0.12 --pipeline.model.cull_scale_thresh 0.35 --pipeline.model.enable_bg_model True --pipeline.model.enable_alpha_loss True --pipeline.model.enable_robust_mask True --pipeline.model.bg_sh_degree 1 --pipeline.model.appearance_embed_dim 64 --pipeline.model.never_mask_upper 0.4 --pipeline.model.stop_split_at 3500 --pipeline.model.max-gauss-ratio 3.0",
+      "view_bucket_counts": {
+        "boundary": 52,
+        "horizon": 176,
+        "near_detail": 0
+      }
+    }
+  },
+  "tile_density_context_comparison": {
+    "tile_01": {
+      "hard_repair": {
+        "billable_seconds": null,
+        "budget_class": null,
+        "context_candidate_count": 74477,
+        "context_preserve_enabled": true,
+        "core_candidate_count": 222209,
+        "dropped_gaussians": 363,
+        "max_iterations": 12000,
+        "max_selected_images": 188,
+        "overlap_candidate_count": 0,
+        "retained_context_count": 74477,
+        "retained_gaussians": 296686,
+        "retained_overlap_count": 0,
+        "scaffold_initialization": {
+          "external_scaffold": {
+            "output_dir": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00",
+            "source_artifact": "/opt/ml/input/data/scaffold/model.tar.gz",
+            "source_dir": "/opt/ml/input/data/scaffold",
+            "source_kind": "directory_tar_artifact",
+            "splat_ply": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+            "stage_name": "scaffold",
+            "status": "reused_external_scaffold",
+            "training_mode": "global_scaffold"
+          },
+          "fallback_used": false,
+          "filtered_point_cloud": "/tmp/nerfstudio_training/converted_data/scaffold_init.ply",
+          "inherited_attributes": [
+            "positions",
+            "rgb_from_gaussian_dc"
+          ],
+          "inherited_gaussian_cap": 300000,
+          "inherited_gaussian_count": 300000,
+          "reinitialized_attributes": [
+            "scale",
+            "opacity",
+            "rotation",
+            "sh_rest",
+            "appearance_embeddings"
+          ],
+          "scaffold_filter_bounds": {
+            "max_x": 40.487300000000005,
+            "max_y": 16.435,
+            "max_z": 14.8796,
+            "min_x": -0.19629999999999992,
+            "min_y": -23.861,
+            "min_z": -17.3356
+          },
+          "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+          "scaffold_init_downsample_strategy": "spatial_key_even_sample",
+          "scaffold_source_artifact": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+          "source_filtered_gaussian_count": 799652,
+          "source_gaussian_count": 1554116
+        },
+        "selected_image_count": 188,
+        "source_gaussians": 297049,
+        "view_bucket_counts": {
+          "boundary": 52,
+          "horizon": 2,
+          "near_detail": 0
+        }
+      },
+      "hard_retained_gap_vs_v18": 123852,
+      "hard_to_v18_retained_ratio": 0.7054915370311363,
+      "standard_retained_gap_vs_v18": 53581,
+      "standard_to_v18_retained_ratio": 0.8725893973909611,
+      "standard_v18color": {
+        "billable_seconds": null,
+        "budget_class": "standard",
+        "context_candidate_count": 94143,
+        "context_preserve_enabled": true,
+        "core_candidate_count": 272814,
+        "dropped_gaussians": 299,
+        "max_iterations": 8000,
+        "max_selected_images": 128,
+        "overlap_candidate_count": 0,
+        "retained_context_count": 94143,
+        "retained_gaussians": 366957,
+        "retained_overlap_count": 0,
+        "scaffold_initialization": {
+          "external_scaffold": {
+            "output_dir": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00",
+            "source_artifact": "/opt/ml/input/data/scaffold/model.tar.gz",
+            "source_dir": "/opt/ml/input/data/scaffold",
+            "source_kind": "directory_tar_artifact",
+            "splat_ply": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+            "stage_name": "scaffold",
+            "status": "reused_external_scaffold",
+            "training_mode": "global_scaffold"
+          },
+          "fallback_used": false,
+          "filtered_point_cloud": "/tmp/nerfstudio_training/converted_data/scaffold_init.ply",
+          "inherited_attributes": [
+            "positions",
+            "rgb_from_gaussian_dc"
+          ],
+          "inherited_gaussian_cap": 300000,
+          "inherited_gaussian_count": 300000,
+          "reinitialized_attributes": [
+            "scale",
+            "opacity",
+            "rotation",
+            "sh_rest",
+            "appearance_embeddings"
+          ],
+          "scaffold_filter_bounds": {
+            "max_x": 40.487300000000005,
+            "max_y": 16.435,
+            "max_z": 14.8796,
+            "min_x": -0.19629999999999992,
+            "min_y": -23.861,
+            "min_z": -17.3356
+          },
+          "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+          "scaffold_init_downsample_strategy": "spatial_key_even_sample",
+          "scaffold_source_artifact": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+          "source_filtered_gaussian_count": 799652,
+          "source_gaussian_count": 1554116
+        },
+        "selected_image_count": 128,
+        "source_gaussians": 367256,
+        "view_bucket_counts": {
+          "boundary": 35,
+          "horizon": 2,
+          "near_detail": 0
+        }
+      },
+      "v18_promoted": {
+        "billable_seconds": null,
+        "budget_class": null,
+        "context_candidate_count": 98327,
+        "context_preserve_enabled": true,
+        "core_candidate_count": 322211,
+        "dropped_gaussians": 0,
+        "max_iterations": null,
+        "max_selected_images": 0,
+        "overlap_candidate_count": 0,
+        "retained_context_count": 98327,
+        "retained_gaussians": 420538,
+        "retained_overlap_count": 0,
+        "scaffold_initialization": {
+          "fallback_used": false,
+          "filtered_point_cloud": "/opt/ml/model/tiled_pipeline/inputs/tile_01/scaffold_init.ply",
+          "inherited_attributes": [
+            "positions",
+            "rgb_from_gaussian_dc"
+          ],
+          "inherited_gaussian_cap": 300000,
+          "inherited_gaussian_count": 300000,
+          "reinitialized_attributes": [
+            "scale",
+            "opacity",
+            "rotation",
+            "sh_rest",
+            "appearance_embeddings"
+          ],
+          "scaffold_filter_bounds": {
+            "max_x": 40.487300000000005,
+            "max_y": 16.435,
+            "max_z": 14.8796,
+            "min_x": -0.19629999999999992,
+            "min_y": -23.861,
+            "min_z": -17.3356
+          },
+          "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+          "scaffold_init_downsample_strategy": "spatial_key_even_sample",
+          "scaffold_source_artifact": "/opt/ml/model/tiled_pipeline/external_scaffold/tiles/tile_00/splat.ply",
+          "source_filtered_gaussian_count": 799652,
+          "source_gaussian_count": 1554116
+        },
+        "selected_image_count": 188,
+        "source_gaussians": 420538,
+        "view_bucket_counts": {
+          "boundary": 52,
+          "horizon": 2,
+          "near_detail": 0
+        }
+      }
+    },
+    "tile_04": {
+      "hard_repair": {
+        "billable_seconds": null,
+        "budget_class": null,
+        "context_candidate_count": 55771,
+        "context_preserve_enabled": true,
+        "core_candidate_count": 231555,
+        "dropped_gaussians": 6550,
+        "max_iterations": 12000,
+        "max_selected_images": 188,
+        "overlap_candidate_count": 11902,
+        "retained_context_count": 55771,
+        "retained_gaussians": 292678,
+        "retained_overlap_count": 5352,
+        "scaffold_initialization": {
+          "external_scaffold": {
+            "output_dir": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00",
+            "source_artifact": "/opt/ml/input/data/scaffold/model.tar.gz",
+            "source_dir": "/opt/ml/input/data/scaffold",
+            "source_kind": "directory_tar_artifact",
+            "splat_ply": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+            "stage_name": "scaffold",
+            "status": "reused_external_scaffold",
+            "training_mode": "global_scaffold"
+          },
+          "fallback_used": false,
+          "filtered_point_cloud": "/tmp/nerfstudio_training/converted_data/scaffold_init.ply",
+          "inherited_attributes": [
+            "positions",
+            "rgb_from_gaussian_dc"
+          ],
+          "inherited_gaussian_cap": 300000,
+          "inherited_gaussian_count": 300000,
+          "reinitialized_attributes": [
+            "scale",
+            "opacity",
+            "rotation",
+            "sh_rest",
+            "appearance_embeddings"
+          ],
+          "scaffold_filter_bounds": {
+            "max_x": 41.3978,
+            "max_y": 14.3026,
+            "max_z": 13.880700000000001,
+            "min_x": -7.271800000000001,
+            "min_y": -29.5406,
+            "min_z": -20.5437
+          },
+          "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+          "scaffold_init_downsample_strategy": "spatial_key_even_sample",
+          "scaffold_source_artifact": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+          "source_filtered_gaussian_count": 1282226,
+          "source_gaussian_count": 1554116
+        },
+        "selected_image_count": 188,
+        "source_gaussians": 299228,
+        "view_bucket_counts": {
+          "boundary": 176,
+          "horizon": 52,
+          "near_detail": 0
+        }
+      },
+      "hard_retained_gap_vs_v18": 663599,
+      "hard_to_v18_retained_ratio": 0.30605985504200145,
+      "r5_serial_leaf_remaining_to_v18_retained_ratio": 0.380996301280905,
+      "standard_retained_gap_vs_v18": 619135,
+      "standard_to_v18_retained_ratio": 0.35255684283947014,
+      "standard_v18color": {
+        "billable_seconds": null,
+        "budget_class": "standard",
+        "context_candidate_count": 44923,
+        "context_preserve_enabled": true,
+        "core_candidate_count": 285209,
+        "dropped_gaussians": 6012,
+        "max_iterations": 8000,
+        "max_selected_images": 128,
+        "overlap_candidate_count": 13022,
+        "retained_context_count": 44923,
+        "retained_gaussians": 337142,
+        "retained_overlap_count": 7010,
+        "scaffold_initialization": {
+          "external_scaffold": {
+            "output_dir": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00",
+            "source_artifact": "/opt/ml/input/data/scaffold/model.tar.gz",
+            "source_dir": "/opt/ml/input/data/scaffold",
+            "source_kind": "directory_tar_artifact",
+            "splat_ply": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+            "stage_name": "scaffold",
+            "status": "reused_external_scaffold",
+            "training_mode": "global_scaffold"
+          },
+          "fallback_used": false,
+          "filtered_point_cloud": "/tmp/nerfstudio_training/converted_data/scaffold_init.ply",
+          "inherited_attributes": [
+            "positions",
+            "rgb_from_gaussian_dc"
+          ],
+          "inherited_gaussian_cap": 300000,
+          "inherited_gaussian_count": 300000,
+          "reinitialized_attributes": [
+            "scale",
+            "opacity",
+            "rotation",
+            "sh_rest",
+            "appearance_embeddings"
+          ],
+          "scaffold_filter_bounds": {
+            "max_x": 41.3978,
+            "max_y": 14.3026,
+            "max_z": 13.880700000000001,
+            "min_x": -7.271800000000001,
+            "min_y": -29.5406,
+            "min_z": -20.5437
+          },
+          "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+          "scaffold_init_downsample_strategy": "spatial_key_even_sample",
+          "scaffold_source_artifact": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+          "source_filtered_gaussian_count": 1282226,
+          "source_gaussian_count": 1554116
+        },
+        "selected_image_count": 128,
+        "source_gaussians": 343154,
+        "view_bucket_counts": {
+          "boundary": 120,
+          "horizon": 37,
+          "near_detail": 0
+        }
+      },
+      "v18_promoted": {
+        "billable_seconds": null,
+        "budget_class": null,
+        "context_candidate_count": 116913,
+        "context_preserve_enabled": true,
+        "core_candidate_count": 766579,
+        "dropped_gaussians": 8200,
+        "max_iterations": null,
+        "max_selected_images": null,
+        "overlap_candidate_count": 80985,
+        "retained_context_count": 116913,
+        "retained_gaussians": 956277,
+        "retained_overlap_count": 72785,
+        "scaffold_initialization": null,
+        "selected_image_count": null,
+        "source_gaussians": 964477,
+        "view_bucket_counts": null
+      }
+    },
+    "tile_05": {
+      "hard_repair": {
+        "billable_seconds": null,
+        "budget_class": null,
+        "context_candidate_count": 15971,
+        "context_preserve_enabled": true,
+        "core_candidate_count": 259227,
+        "dropped_gaussians": 32820,
+        "max_iterations": 12000,
+        "max_selected_images": 188,
+        "overlap_candidate_count": 0,
+        "retained_context_count": 15971,
+        "retained_gaussians": 275198,
+        "retained_overlap_count": 0,
+        "scaffold_initialization": {
+          "external_scaffold": {
+            "output_dir": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00",
+            "source_artifact": "/opt/ml/input/data/scaffold/model.tar.gz",
+            "source_dir": "/opt/ml/input/data/scaffold",
+            "source_kind": "directory_tar_artifact",
+            "splat_ply": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+            "stage_name": "scaffold",
+            "status": "reused_external_scaffold",
+            "training_mode": "global_scaffold"
+          },
+          "fallback_used": false,
+          "filtered_point_cloud": "/tmp/nerfstudio_training/converted_data/scaffold_init.ply",
+          "inherited_attributes": [
+            "positions",
+            "rgb_from_gaussian_dc"
+          ],
+          "inherited_gaussian_cap": 300000,
+          "inherited_gaussian_count": 300000,
+          "reinitialized_attributes": [
+            "scale",
+            "opacity",
+            "rotation",
+            "sh_rest",
+            "appearance_embeddings"
+          ],
+          "scaffold_filter_bounds": {
+            "max_x": 31.944,
+            "max_y": 15.113900000000001,
+            "max_z": 14.0549,
+            "min_x": -6.564,
+            "min_y": -25.7329,
+            "min_z": -17.5399
+          },
+          "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+          "scaffold_init_downsample_strategy": "spatial_key_even_sample",
+          "scaffold_source_artifact": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+          "source_filtered_gaussian_count": 1266951,
+          "source_gaussian_count": 1554116
+        },
+        "selected_image_count": 188,
+        "source_gaussians": 308018,
+        "view_bucket_counts": {
+          "boundary": 28,
+          "horizon": 2,
+          "near_detail": 0
+        }
+      },
+      "hard_retained_gap_vs_v18": 621456,
+      "hard_to_v18_retained_ratio": 0.3069166032828717,
+      "r5_serial_leaf_remaining_to_v18_retained_ratio": 0.44146460061517595,
+      "standard_retained_gap_vs_v18": 582416,
+      "standard_to_v18_retained_ratio": 0.35045625179835255,
+      "standard_v18color": {
+        "billable_seconds": null,
+        "budget_class": "standard",
+        "context_candidate_count": 19703,
+        "context_preserve_enabled": true,
+        "core_candidate_count": 294535,
+        "dropped_gaussians": 40131,
+        "max_iterations": 8000,
+        "max_selected_images": 128,
+        "overlap_candidate_count": 0,
+        "retained_context_count": 19703,
+        "retained_gaussians": 314238,
+        "retained_overlap_count": 0,
+        "scaffold_initialization": {
+          "external_scaffold": {
+            "output_dir": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00",
+            "source_artifact": "/opt/ml/input/data/scaffold/model.tar.gz",
+            "source_dir": "/opt/ml/input/data/scaffold",
+            "source_kind": "directory_tar_artifact",
+            "splat_ply": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+            "stage_name": "scaffold",
+            "status": "reused_external_scaffold",
+            "training_mode": "global_scaffold"
+          },
+          "fallback_used": false,
+          "filtered_point_cloud": "/tmp/nerfstudio_training/converted_data/scaffold_init.ply",
+          "inherited_attributes": [
+            "positions",
+            "rgb_from_gaussian_dc"
+          ],
+          "inherited_gaussian_cap": 300000,
+          "inherited_gaussian_count": 300000,
+          "reinitialized_attributes": [
+            "scale",
+            "opacity",
+            "rotation",
+            "sh_rest",
+            "appearance_embeddings"
+          ],
+          "scaffold_filter_bounds": {
+            "max_x": 31.944,
+            "max_y": 15.113900000000001,
+            "max_z": 14.0549,
+            "min_x": -6.564,
+            "min_y": -25.7329,
+            "min_z": -17.5399
+          },
+          "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+          "scaffold_init_downsample_strategy": "spatial_key_even_sample",
+          "scaffold_source_artifact": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+          "source_filtered_gaussian_count": 1266951,
+          "source_gaussian_count": 1554116
+        },
+        "selected_image_count": 128,
+        "source_gaussians": 354369,
+        "view_bucket_counts": {
+          "boundary": 19,
+          "horizon": 2,
+          "near_detail": 0
+        }
+      },
+      "v18_promoted": {
+        "billable_seconds": null,
+        "budget_class": null,
+        "context_candidate_count": 116553,
+        "context_preserve_enabled": true,
+        "core_candidate_count": 780101,
+        "dropped_gaussians": 0,
+        "max_iterations": null,
+        "max_selected_images": null,
+        "overlap_candidate_count": 0,
+        "retained_context_count": 116553,
+        "retained_gaussians": 896654,
+        "retained_overlap_count": 0,
+        "scaffold_initialization": null,
+        "selected_image_count": null,
+        "source_gaussians": 896654,
+        "view_bucket_counts": null
+      }
+    },
+    "tile_06": {
+      "hard_repair": {
+        "billable_seconds": null,
+        "budget_class": null,
+        "context_candidate_count": 29286,
+        "context_preserve_enabled": true,
+        "core_candidate_count": 184847,
+        "dropped_gaussians": 2563,
+        "max_iterations": 12000,
+        "max_selected_images": 188,
+        "overlap_candidate_count": 0,
+        "retained_context_count": 29286,
+        "retained_gaussians": 214133,
+        "retained_overlap_count": 0,
+        "scaffold_initialization": {
+          "external_scaffold": {
+            "output_dir": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00",
+            "source_artifact": "/opt/ml/input/data/scaffold/model.tar.gz",
+            "source_dir": "/opt/ml/input/data/scaffold",
+            "source_kind": "directory_tar_artifact",
+            "splat_ply": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+            "stage_name": "scaffold",
+            "status": "reused_external_scaffold",
+            "training_mode": "global_scaffold"
+          },
+          "fallback_used": false,
+          "filtered_point_cloud": "/tmp/nerfstudio_training/converted_data/scaffold_init.ply",
+          "inherited_attributes": [
+            "positions",
+            "rgb_from_gaussian_dc"
+          ],
+          "inherited_gaussian_cap": 300000,
+          "inherited_gaussian_count": 300000,
+          "reinitialized_attributes": [
+            "scale",
+            "opacity",
+            "rotation",
+            "sh_rest",
+            "appearance_embeddings"
+          ],
+          "scaffold_filter_bounds": {
+            "max_x": 41.0454,
+            "max_y": 14.208400000000001,
+            "max_z": 14.129199999999999,
+            "min_x": -3.5634,
+            "min_y": -35.3684,
+            "min_z": -22.2932
+          },
+          "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+          "scaffold_init_downsample_strategy": "spatial_key_even_sample",
+          "scaffold_source_artifact": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+          "source_filtered_gaussian_count": 1103450,
+          "source_gaussian_count": 1554116
+        },
+        "selected_image_count": 188,
+        "source_gaussians": 216696,
+        "view_bucket_counts": {
+          "boundary": 52,
+          "horizon": 176,
+          "near_detail": 0
+        }
+      },
+      "hard_retained_gap_vs_v18": 974672,
+      "hard_to_v18_retained_ratio": 0.18012457888383712,
+      "r5_serial_leaf_remaining_to_v18_retained_ratio": 0.23399800640138627,
+      "standard_retained_gap_vs_v18": 930810,
+      "standard_to_v18_retained_ratio": 0.2170204533123599,
+      "standard_v18color": {
+        "billable_seconds": null,
+        "budget_class": "standard",
+        "context_candidate_count": 44437,
+        "context_preserve_enabled": true,
+        "core_candidate_count": 213558,
+        "dropped_gaussians": 9884,
+        "max_iterations": 8000,
+        "max_selected_images": 128,
+        "overlap_candidate_count": 0,
+        "retained_context_count": 44437,
+        "retained_gaussians": 257995,
+        "retained_overlap_count": 0,
+        "scaffold_initialization": {
+          "external_scaffold": {
+            "output_dir": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00",
+            "source_artifact": "/opt/ml/input/data/scaffold/model.tar.gz",
+            "source_dir": "/opt/ml/input/data/scaffold",
+            "source_kind": "directory_tar_artifact",
+            "splat_ply": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+            "stage_name": "scaffold",
+            "status": "reused_external_scaffold",
+            "training_mode": "global_scaffold"
+          },
+          "fallback_used": false,
+          "filtered_point_cloud": "/tmp/nerfstudio_training/converted_data/scaffold_init.ply",
+          "inherited_attributes": [
+            "positions",
+            "rgb_from_gaussian_dc"
+          ],
+          "inherited_gaussian_cap": 300000,
+          "inherited_gaussian_count": 300000,
+          "reinitialized_attributes": [
+            "scale",
+            "opacity",
+            "rotation",
+            "sh_rest",
+            "appearance_embeddings"
+          ],
+          "scaffold_filter_bounds": {
+            "max_x": 41.0454,
+            "max_y": 14.208400000000001,
+            "max_z": 14.129199999999999,
+            "min_x": -3.5634,
+            "min_y": -35.3684,
+            "min_z": -22.2932
+          },
+          "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+          "scaffold_init_downsample_strategy": "spatial_key_even_sample",
+          "scaffold_source_artifact": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+          "source_filtered_gaussian_count": 1103450,
+          "source_gaussian_count": 1554116
+        },
+        "selected_image_count": 128,
+        "source_gaussians": 267879,
+        "view_bucket_counts": {
+          "boundary": 36,
+          "horizon": 120,
+          "near_detail": 0
+        }
+      },
+      "v18_promoted": {
+        "billable_seconds": null,
+        "budget_class": null,
+        "context_candidate_count": 617248,
+        "context_preserve_enabled": true,
+        "core_candidate_count": 571557,
+        "dropped_gaussians": 0,
+        "max_iterations": null,
+        "max_selected_images": null,
+        "overlap_candidate_count": 0,
+        "retained_context_count": 617248,
+        "retained_gaussians": 1188805,
+        "retained_overlap_count": 0,
+        "scaffold_initialization": null,
+        "selected_image_count": null,
+        "source_gaussians": 1188805,
+        "view_bucket_counts": null
+      }
+    },
+    "tile_10": {
+      "hard_repair": {
+        "billable_seconds": null,
+        "budget_class": null,
+        "context_candidate_count": 0,
+        "context_preserve_enabled": false,
+        "core_candidate_count": 321267,
+        "dropped_gaussians": 10058,
+        "max_iterations": 12000,
+        "max_selected_images": 188,
+        "overlap_candidate_count": 0,
+        "retained_context_count": 0,
+        "retained_gaussians": 321267,
+        "retained_overlap_count": 0,
+        "scaffold_initialization": {
+          "external_scaffold": {
+            "output_dir": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00",
+            "source_artifact": "/opt/ml/input/data/scaffold/model.tar.gz",
+            "source_dir": "/opt/ml/input/data/scaffold",
+            "source_kind": "directory_tar_artifact",
+            "splat_ply": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+            "stage_name": "scaffold",
+            "status": "reused_external_scaffold",
+            "training_mode": "global_scaffold"
+          },
+          "fallback_used": false,
+          "filtered_point_cloud": "/tmp/nerfstudio_training/converted_data/scaffold_init.ply",
+          "inherited_attributes": [
+            "positions",
+            "rgb_from_gaussian_dc"
+          ],
+          "inherited_gaussian_cap": 300000,
+          "inherited_gaussian_count": 300000,
+          "reinitialized_attributes": [
+            "scale",
+            "opacity",
+            "rotation",
+            "sh_rest",
+            "appearance_embeddings"
+          ],
+          "scaffold_filter_bounds": {
+            "max_x": 49.8486,
+            "max_y": 25.5319,
+            "max_z": 28.8822,
+            "min_x": -100.23060000000001,
+            "min_y": -79.7309,
+            "min_z": -163.4442
+          },
+          "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+          "scaffold_init_downsample_strategy": "spatial_key_even_sample",
+          "scaffold_source_artifact": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+          "source_filtered_gaussian_count": 1553618,
+          "source_gaussian_count": 1554116
+        },
+        "selected_image_count": 188,
+        "source_gaussians": 331325,
+        "view_bucket_counts": {
+          "boundary": 31,
+          "horizon": 16,
+          "near_detail": 52
+        }
+      },
+      "hard_retained_gap_vs_v18": 57686,
+      "hard_to_v18_retained_ratio": 0.8477753177834718,
+      "standard_retained_gap_vs_v18": 7792,
+      "standard_to_v18_retained_ratio": 0.9794380833507058,
+      "standard_v18color": {
+        "billable_seconds": null,
+        "budget_class": "standard",
+        "context_candidate_count": 0,
+        "context_preserve_enabled": false,
+        "core_candidate_count": 371161,
+        "dropped_gaussians": 13322,
+        "max_iterations": 8000,
+        "max_selected_images": 128,
+        "overlap_candidate_count": 0,
+        "retained_context_count": 0,
+        "retained_gaussians": 371161,
+        "retained_overlap_count": 0,
+        "scaffold_initialization": {
+          "external_scaffold": {
+            "output_dir": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00",
+            "source_artifact": "/opt/ml/input/data/scaffold/model.tar.gz",
+            "source_dir": "/opt/ml/input/data/scaffold",
+            "source_kind": "directory_tar_artifact",
+            "splat_ply": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+            "stage_name": "scaffold",
+            "status": "reused_external_scaffold",
+            "training_mode": "global_scaffold"
+          },
+          "fallback_used": false,
+          "filtered_point_cloud": "/tmp/nerfstudio_training/converted_data/scaffold_init.ply",
+          "inherited_attributes": [
+            "positions",
+            "rgb_from_gaussian_dc"
+          ],
+          "inherited_gaussian_cap": 300000,
+          "inherited_gaussian_count": 300000,
+          "reinitialized_attributes": [
+            "scale",
+            "opacity",
+            "rotation",
+            "sh_rest",
+            "appearance_embeddings"
+          ],
+          "scaffold_filter_bounds": {
+            "max_x": 49.8486,
+            "max_y": 25.5319,
+            "max_z": 28.8822,
+            "min_x": -100.23060000000001,
+            "min_y": -79.7309,
+            "min_z": -163.4442
+          },
+          "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+          "scaffold_init_downsample_strategy": "spatial_key_even_sample",
+          "scaffold_source_artifact": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+          "source_filtered_gaussian_count": 1553618,
+          "source_gaussian_count": 1554116
+        },
+        "selected_image_count": 128,
+        "source_gaussians": 384483,
+        "view_bucket_counts": {
+          "boundary": 22,
+          "horizon": 12,
+          "near_detail": 35
+        }
+      },
+      "v18_promoted": {
+        "billable_seconds": null,
+        "budget_class": null,
+        "context_candidate_count": 0,
+        "context_preserve_enabled": false,
+        "core_candidate_count": 378953,
+        "dropped_gaussians": 8239,
+        "max_iterations": null,
+        "max_selected_images": 0,
+        "overlap_candidate_count": 0,
+        "retained_context_count": 0,
+        "retained_gaussians": 378953,
+        "retained_overlap_count": 0,
+        "scaffold_initialization": {
+          "fallback_used": false,
+          "filtered_point_cloud": "/opt/ml/model/tiled_pipeline/inputs/tile_10/scaffold_init.ply",
+          "inherited_attributes": [
+            "positions",
+            "rgb_from_gaussian_dc"
+          ],
+          "inherited_gaussian_cap": 300000,
+          "inherited_gaussian_count": 300000,
+          "reinitialized_attributes": [
+            "scale",
+            "opacity",
+            "rotation",
+            "sh_rest",
+            "appearance_embeddings"
+          ],
+          "scaffold_filter_bounds": {
+            "max_x": 49.8486,
+            "max_y": 25.5319,
+            "max_z": 28.8822,
+            "min_x": -100.23060000000001,
+            "min_y": -79.7309,
+            "min_z": -163.4442
+          },
+          "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+          "scaffold_init_downsample_strategy": "spatial_key_even_sample",
+          "scaffold_source_artifact": "/opt/ml/model/tiled_pipeline/external_scaffold/tiles/tile_00/splat.ply",
+          "source_filtered_gaussian_count": 1553618,
+          "source_gaussian_count": 1554116
+        },
+        "selected_image_count": 188,
+        "source_gaussians": 387192,
+        "view_bucket_counts": {
+          "boundary": 31,
+          "horizon": 16,
+          "near_detail": 52
+        }
+      }
+    }
+  }
+}
