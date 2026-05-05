@@ -68,3 +68,5 @@
 
 2026-05-04 static photo upload mode switcher polish
 2026-05-05 static photo upload mode switcher minimalist polish
+
+2026-05-05 static photo upload mode switcher tighter pill
