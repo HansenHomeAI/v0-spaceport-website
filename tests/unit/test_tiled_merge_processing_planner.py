@@ -1,6 +1,7 @@
 import importlib.util
 import json
 import sys
+import tarfile
 import tempfile
 import unittest
 from pathlib import Path
@@ -115,6 +116,39 @@ class TiledMergeProcessingPlannerTests(unittest.TestCase):
 
             self.assertEqual(manifest["tiles"], [{"tile_id": "tile_04"}])
             self.assertEqual(scaffold["scaffold_inheritance_mode"], "remote_no_training_reuse")
+
+    def test_packager_extracts_background_sidecars_for_merge_selection(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "source"
+            source.mkdir()
+            (source / "splat.ply").write_text("ply\n", encoding="utf-8")
+            (source / "background_skybox.webp").write_bytes(b"webp")
+            (source / "background_manifest.json").write_text(
+                json.dumps({"background_selection": {"score": 0.8}}),
+                encoding="utf-8",
+            )
+            tarball = root / "model.tar.gz"
+            with tarfile.open(tarball, "w:gz") as archive:
+                archive.add(source / "splat.ply", arcname="tiles/tile_04/splat.ply")
+                archive.add(source / "background_skybox.webp", arcname="tiles/tile_04/background_skybox.webp")
+                archive.add(source / "background_manifest.json", arcname="tiles/tile_04/background_manifest.json")
+
+            output_tile_dir = root / "out" / "tile_04"
+            record = packager.extract_tile_from_artifact(
+                {
+                    "tile_id": "tile_04",
+                    "artifact_uri": "s3://bucket/model.tar.gz",
+                    "artifact_input_name": "artifact-00",
+                    "candidate_members": ["tiles/tile_04/splat.ply"],
+                },
+                root,
+                output_tile_dir,
+            )
+
+            self.assertEqual(record["selected_member"], "tiles/tile_04/splat.ply")
+            self.assertTrue((output_tile_dir / "background_skybox.webp").exists())
+            self.assertTrue((output_tile_dir / "background_manifest.json").exists())
 
 
 if __name__ == "__main__":

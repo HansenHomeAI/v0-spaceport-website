@@ -1,0 +1,8 @@
+{
+  "tile_id": "tile_13",
+  "stage_type": "cached_tile",
+  "source_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-proof-20260503/tiles/tile_13/md1-r4leafinit-1777850709-tile-13/output/model.tar.gz",
+  "source_member": "splat.ply",
+  "splat_size_bytes": 23671968,
+  "stage_elapsed_seconds": 0
+}

@@ -9952,5 +9952,97 @@
       "no_full_14tile_training": true,
       "next_unblocked_step": "Commit/push the sidecar completeness fix, wait for exact-head CDK plus automatic ML container build, then submit a fresh bounded ml.g4dn.xlarge no-training remote merge job."
     }
+  },
+  "md1_r4_context_density_review_background_sidecar_fix_20260505": {
+    "status": "background_sidecar_extraction_fix_ready",
+    "generated_at": "2026-05-05T13:07:30Z",
+    "head_at_start": "e8ba62e714ae6167fc3cd0ca379d1a86e2a86f46",
+    "gates_before_merge": {
+      "cdk_run_id": 25376166239,
+      "ml_container_build_run_id": 25376166231,
+      "codebuild_id": "spaceport-ml-containers:b725abf9-8979-4029-91dd-33430a15aa6a",
+      "ecr_image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent90742618md1geometryconsistency",
+      "ecr_digest": "sha256:5c06b9075aa73f8e5f78cca4d4024115f1faa68f29dc094550922aa47ac7f449"
+    },
+    "completed_remote_merge": {
+      "job_name": "md1-r4ctxdensity-mergeg4c-1777984606",
+      "instance_type": "ml.g4dn.xlarge",
+      "status": "completed",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-context-density-remote-merge-g4dn-sidecar-20260505123646/output/artifact/model.tar.gz",
+      "artifact_size_bytes": 1657330973,
+      "merged_ply_size_bytes": 490978497,
+      "retained_gaussians": 4720941,
+      "source_gaussians": 4811318,
+      "dropped_gaussians": 90377,
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "elapsed_seconds": 696,
+      "estimated_cost_usd_at_0_736_per_hour": 0.1423
+    },
+    "streaming_preflight": {
+      "summary_json": "logs/md1-cost-reduction-r4-context-density-remote-merge-g4dn-sidecar-preflight-20260505.json",
+      "decision": "preflight_passed_run_frozen_smoke_review",
+      "block_reasons": []
+    },
+    "same_camera_review": {
+      "summary_json": "logs/md1-cost-reduction-r4-context-density-sidecar-review-20260505.json",
+      "analysis_json": "logs/md1-cost-reduction-r4-context-density-sidecar-review-analysis-20260505.json",
+      "job_name": "md1-r1-r4-context-density-sidecar-1777985629-quality",
+      "status": "completed_blocked_quality",
+      "billable_seconds": 732,
+      "estimated_cost_usd_at_1_515_per_hour": 0.308,
+      "per_bucket_delta_vs_v18": {
+        "near_detail": {
+          "psnr": 0.17936621624887472,
+          "ssim": -0.007687956094741821,
+          "lpips": 0.030243247747421265
+        },
+        "boundary": {
+          "psnr": 0.37786289966152076,
+          "ssim": -0.029684945940971375,
+          "lpips": 0.029546469449996948
+        },
+        "horizon": {
+          "psnr": -0.7147627167258026,
+          "ssim": -0.02522219717502594,
+          "lpips": 0.049326092004776
+        }
+      },
+      "block_reasons": [
+        "near_detail_v18_median_ssim_regression",
+        "near_detail_v18_median_lpips_regression",
+        "boundary_v18_median_ssim_regression",
+        "boundary_v18_median_lpips_regression",
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_median_ssim_regression",
+        "horizon_v18_median_lpips_regression",
+        "near_detail_v18_single_camera_lpips_regression",
+        "boundary_v18_single_camera_lpips_regression",
+        "horizon_v18_single_camera_psnr_regression",
+        "horizon_v18_single_camera_lpips_regression"
+      ]
+    },
+    "fix": {
+      "container_entrypoint": "infrastructure/containers/3dgs/run_tiled_merge_packaging.py",
+      "change": "Remote packager now extracts background_skybox.webp, background_manifest.json, and floater_pruning_summary.json tile sidecars so merge_tile_outputs can select a merged background asset.",
+      "test_added": "tests.unit.test_tiled_merge_processing_planner.TiledMergeProcessingPlannerTests.test_packager_extracts_background_sidecars_for_merge_selection"
+    },
+    "verification": {
+      "focused_unit_tests": "passed_5_tests",
+      "py_compile": "passed",
+      "full_targeted_suite": "passed_119_tests",
+      "json_validation": "passed",
+      "git_diff_check": "passed"
+    },
+    "live_compute_status": {
+      "md1_training_jobs_in_progress": 0,
+      "md1_processing_jobs_in_progress": 0,
+      "unrelated_processing_job_in_progress": "r5full80s2-1777973662"
+    },
+    "decision": {
+      "status": "commit_push_rebuild_then_resubmit_background_preserving_g4dn",
+      "no_full_14tile_training": true,
+      "next_unblocked_step": "Run full targeted verification, commit/push the background sidecar fix and review evidence, wait for exact-head CDK plus automatic ML container build, then submit a fresh bounded ml.g4dn.xlarge no-training remote merge job before preflight/review."
+    }
   }
 }

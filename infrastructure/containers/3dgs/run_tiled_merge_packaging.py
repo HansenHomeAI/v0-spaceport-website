@@ -14,6 +14,17 @@ from typing import Any
 from tile_pipeline import load_json, merge_tile_outputs
 
 
+TILE_SIDECAR_CANDIDATES = {
+    "training_metadata.json": ("training_metadata.json",),
+    "training_selection.json": ("training_selection.json",),
+    "export_manifest.json": ("export_manifest.json",),
+    "stage_summary.json": ("stage_summary.json",),
+    "background_skybox.webp": ("background_skybox.webp",),
+    "background_manifest.json": ("background_manifest.json",),
+    "floater_pruning_summary.json": ("floater_pruning_summary.json",),
+}
+
+
 def safe_extract_member(archive: tarfile.TarFile, member_name: str, target_path: Path) -> bool:
     try:
         member = archive.getmember(member_name)
@@ -58,34 +69,13 @@ def extract_tile_from_artifact(tile_plan: dict[str, Any], artifact_root: Path, o
                 f"Artifact {tarball} did not contain any candidate splat member for {tile_plan.get('tile_id')}: "
                 f"{member_candidates}"
             )
-        metadata_candidates = [
-            f"tiles/{tile_plan.get('tile_id')}/training_metadata.json",
-            "training_metadata.json",
-        ]
-        selection_candidates = [
-            f"tiles/{tile_plan.get('tile_id')}/training_selection.json",
-            "training_selection.json",
-        ]
-        export_candidates = [
-            f"tiles/{tile_plan.get('tile_id')}/export_manifest.json",
-            "export_manifest.json",
-        ]
-        stage_summary_candidates = [
-            f"tiles/{tile_plan.get('tile_id')}/stage_summary.json",
-            "stage_summary.json",
-        ]
-        for member_name in metadata_candidates:
-            if safe_extract_member(archive, member_name, output_tile_dir / "training_metadata.json"):
-                break
-        for member_name in selection_candidates:
-            if safe_extract_member(archive, member_name, output_tile_dir / "training_selection.json"):
-                break
-        for member_name in export_candidates:
-            if safe_extract_member(archive, member_name, output_tile_dir / "export_manifest.json"):
-                break
-        for member_name in stage_summary_candidates:
-            if safe_extract_member(archive, member_name, output_tile_dir / "stage_summary.json"):
-                break
+        tile_id = str(tile_plan.get("tile_id"))
+        for output_name, fallback_names in TILE_SIDECAR_CANDIDATES.items():
+            for member_name in (f"tiles/{tile_id}/{output_name}", *fallback_names):
+                if safe_extract_member(archive, member_name, output_tile_dir / output_name):
+                    break
+            else:
+                continue
 
     if not (output_tile_dir / "training_metadata.json").exists():
         (output_tile_dir / "training_metadata.json").write_text(
