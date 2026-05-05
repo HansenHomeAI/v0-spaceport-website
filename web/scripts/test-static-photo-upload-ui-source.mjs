@@ -27,6 +27,12 @@ assert.doesNotMatch(
 
 assert.doesNotMatch(
   modalSource,
+  /Upload Photos/,
+  "static photo submit button should use the same Upload label as model photo mode",
+);
+
+assert.doesNotMatch(
+  modalSource,
   /staticFilesInputHidden/,
   "static photo mode should not keep a second visible file/folder chooser path",
 );

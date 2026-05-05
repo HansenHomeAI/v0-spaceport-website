@@ -1877,7 +1877,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                   <div className="upload-button-container">
                     <button className={`upload-btn-with-icon${uploadLoading ? ' loading' : ''}`} onClick={startUpload} disabled={uploadLoading}>
                       <span className="upload-btn-icon"></span>
-                      {uploadLoading ? 'Uploading...' : mlLoading ? 'Starting ML...' : uploadMode === 'static_photos' ? 'Upload Photos' : 'Upload'}
+                      {uploadLoading ? 'Uploading...' : mlLoading ? 'Starting ML...' : 'Upload'}
                     </button>
                     <button className="cancel-btn-with-icon" disabled={uploadLoading} onClick={() => onClose()}>
                       <span className="cancel-btn-icon"></span>
