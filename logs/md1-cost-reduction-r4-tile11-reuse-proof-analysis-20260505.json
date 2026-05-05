@@ -1,0 +1,92 @@
+{
+  "generated_at": "2026-05-05T22:57:17Z",
+  "head": "dec13c752eddcb463489098f17b85bc839a15c27",
+  "proof_type": "no_spend_tile_cache_acceptance_frontier_update",
+  "input_proof_review": {
+    "generated_at": "2026-05-05T22:57:17Z",
+    "source_summary_json": "logs/audit/md1-1k-full-r2/r4_context_density_remote_merge_g4dn_bgsidecar_preflight_202605051343/remote_merge_summary.json",
+    "proof_review_analysis_json": "logs/md1-cost-reduction-r4-tile10-rollback-isolation-review-analysis-20260505.json",
+    "proof_review_comparison_json": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-tile10-rollback-isolation-smoke-p24/review_comparison.json",
+    "review_job_name": "md1-r1-r4-t10rollback-1778018314-quality",
+    "review_billable_seconds": 776,
+    "v18_non_regression_status": "promoted",
+    "v18_non_regression_block_reasons": [],
+    "tile_11_retained_gaussians": 119,
+    "v18_tile_11_retained_gaussians": 68,
+    "retained_ratio_vs_v18": 1.75,
+    "conclusion": "cached tile_11 is accepted for reuse when paired with tile_10 context-density rollback; it is not the full-scene V18 regression source."
+  },
+  "outputs": {
+    "candidate_summary_json": "logs/md1-cost-reduction-r4-tile11-reuse-proof-candidate-summary-20260505.json",
+    "plan_json": "logs/md1-cost-reduction-r4-tile11-reuse-proof-plan-20260505.json",
+    "summary_json": "logs/md1-cost-reduction-r4-tile11-reuse-proof-summary-20260505.json"
+  },
+  "frontier_delta": {
+    "previous_qualityguard_candidate_count": 4,
+    "new_candidate_count": 5,
+    "previous_qualityguard_context_density_rollback_count": 10,
+    "new_context_density_rollback_count": 9,
+    "accepted_cached_tile_ids": [
+      "tile_11"
+    ],
+    "still_blocked_cached_tile_ids": [
+      "tile_10"
+    ],
+    "v18_rollback_tile_ids": [
+      "tile_00",
+      "tile_02",
+      "tile_03",
+      "tile_07",
+      "tile_08",
+      "tile_09",
+      "tile_10",
+      "tile_12",
+      "tile_13"
+    ]
+  },
+  "tile_decisions": [
+    {
+      "candidate_quality_status": "blocked_fullscene_review_primary_suspect",
+      "candidate_retained_gaussians": 371161,
+      "candidate_retained_ratio": 0.9794380833507058,
+      "candidate_status": "quality_unproven",
+      "context_density_ratio": 1.0,
+      "reasons": [
+        "candidate_quality_status_not_passing"
+      ],
+      "reference_retained_gaussians": 378953,
+      "retrain_required_if_no_v18_rollback": true,
+      "selected_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "selected_source": "context_density_rollback",
+      "selected_stage_type": "context_density_tile",
+      "tile_id": "tile_10"
+    },
+    {
+      "candidate_quality_status": "promoted",
+      "candidate_retained_gaussians": 119,
+      "candidate_retained_ratio": 1.75,
+      "candidate_status": "density_pass",
+      "context_density_ratio": null,
+      "reasons": [],
+      "reference_retained_gaussians": 68,
+      "retrain_required_if_no_v18_rollback": false,
+      "selected_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_11/md1-r4leafreb-1777858863-tile-11/output/model.tar.gz",
+      "selected_source": "candidate",
+      "selected_stage_type": "cached_tile",
+      "tile_id": "tile_11"
+    }
+  ],
+  "verification": {
+    "unit_tests": "python3 -m unittest tests.unit.test_md1_density_preserving_canary -v -> 4 tests OK",
+    "json_validation": "passed for candidate summary, plan, and benchmark summary",
+    "submitted_jobs": [],
+    "training_jobs_to_submit": 0,
+    "estimated_usd": 0.0,
+    "no_full_14tile_training_launched": true
+  },
+  "decision": {
+    "production_ready": false,
+    "status": "tile11_reuse_proof_formalized_tile10_remains_blocked",
+    "next_unblocked_step": "Keep tile_10 on V18/context-density rollback or run only a bounded tile_10 repair proof; do not run full 14-tile training."
+  }
+}

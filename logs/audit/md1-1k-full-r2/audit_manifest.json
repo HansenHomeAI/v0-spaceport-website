@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "No cheaper production candidate is promoted yet: the rollback-isolation artifact is V18-equivalent but relies on V18/context-density rollback for tile_10 and most tiles, and the promotion gate still requires a true boundary improvement rather than parity. Production path remains bounded tile repair/reuse proof plus LOD/viewer packaging, not a full 14-tile retrain.",
+  "blocked_promotion_reason": "No cheaper production candidate is promoted yet: tile_11 cache reuse is accepted, but tile_10 still requires V18/context-density rollback or bounded repair proof, and the route still needs production LOD/viewer packaging gates.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "ab810db2c5c591dc14441cd031b2b0d3f0385c21 with local tile10 rollback-isolation preflight/review evidence pending next meaningful commit",
-  "current_exact_head_gate_status": "exact-head ab810db2c5c591dc14441cd031b2b0d3f0385c21 is pushed and green on CDK Deploy 25402992556. No Trigger ML Container Build or Cloudflare Pages run appeared for this log/merge-submission push; latest branch 3DGS image remains sha256:b0129db24d16251e6ee2af896e65c5eceefbd10d8eb52441b2800556f88347eb from head 3a22acfd5b420ca2876a1eb3e2a0398790ac995f.",
-  "current_live_compute_status": "No SageMaker training jobs are InProgress and no SageMaker processing jobs are InProgress after review md1-r1-r4-t10rollback-1778018314-quality completed.",
-  "current_rung": "R4_cost_reduction_tile10_rollback_isolation_v18_nonregression_passed",
+  "current_branch_head": "dec13c752eddcb463489098f17b85bc839a15c27 with local tile11 reuse-proof/status update pending next meaningful commit",
+  "current_exact_head_gate_status": "exact-head dec13c752eddcb463489098f17b85bc839a15c27 is pushed and green on CDK Deploy 25405546505. No Trigger ML Container Build or Cloudflare Pages run appeared for this log/proof push; latest branch 3DGS image remains sha256:b0129db24d16251e6ee2af896e65c5eceefbd10d8eb52441b2800556f88347eb from head 3a22acfd5b420ca2876a1eb3e2a0398790ac995f.",
+  "current_live_compute_status": "No SageMaker training jobs are InProgress and no SageMaker processing jobs are InProgress.",
+  "current_rung": "R4_cost_reduction_tile11_reuse_proof_formalized_tile10_blocked",
   "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -777,7 +777,7 @@
     "local_status_update_pending_commit": true,
     "unrelated_processing_job_in_progress": "r5full80s1-1777934749"
   },
-  "last_updated": "2026-05-05T22:18:00Z",
+  "last_updated": "2026-05-05T22:57:17Z",
   "latest_exact_head_gate": {
     "checked_at": "2026-05-05T21:18:05Z",
     "head": "478b306f9110697ef6bd3f733ed0dacc4c1c5869",
@@ -803,8 +803,8 @@
     "pages_run_id": 25107446761
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-tile10-rollback-isolation-smoke-p24/review_comparison.json",
-  "latest_review_status": "Tile_10 rollback-isolation review md1-r1-r4-t10rollback-1778018314-quality completed in 776s/about $0.327. Camera coverage OK, render sanity OK, promotion decision blocked only on boundary_no_required_improvement, and V18 non-regression promoted with no block reasons. This proves tile_10 caused the previous full-scene canary V18 regression; cached tiny tile_11 is accepted for this diagnostic when isolated as the only control.",
-  "latest_training_cost_reduction_status": "Tile10 rollback-isolation review is the strongest cost-reduction diagnostic so far: it avoided full retraining, spent only bounded merge/review compute, and narrowed the remaining quality blocker to tile_10 repair/rollback while validating tile_11 tiny reuse.",
+  "latest_review_status": "No new paid review in this loop. The previous tile10 rollback-isolation review md1-r1-r4-t10rollback-1778018314-quality remains the acceptance proof: coverage/render sanity OK, V18 non-regression promoted, and promotion blocked only on boundary_no_required_improvement. The no-spend tile11 reuse-proof plan now marks tile_11 cache as promoted/accepted while keeping tile_10 on context-density rollback.",
+  "latest_training_cost_reduction_status": "No-spend tile11 reuse proof reduced the active problematic cached frontier to tile_10 only: selected_source_counts candidate=5/context_density_rollback=9, training_jobs_to_submit=0, estimated_usd=0.0.",
   "live_compute_status": "No SageMaker training jobs are InProgress. Exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. Tile_13 hard proof is complete/preflighted/cached; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
@@ -3393,7 +3393,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Do not run full 14-tile training. Commit/push/gate tile10 rollback-isolation preflight/review proof, then formalize tile_11 reuse proof and keep tile_10 on V18/context-density rollback until a bounded tile_10 repair passes the same V18 p24 review.",
+  "next_unblocked_step": "Do not run full 14-tile training. Either keep tile_10 on V18/context-density rollback for the production candidate or run only a bounded tile_10 repair proof with V18 p24 review; proceed toward production LOD/viewer packaging only after artifact lineage is locked.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -9321,7 +9321,7 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-05T22:18:00Z",
+  "updated": "2026-05-05T22:57:17Z",
   "version": "1.0.0",
   "md1_r4_standard_v18color_review_20260505": {
     "generated_at": "2026-05-05T07:52:28Z",
@@ -11181,6 +11181,98 @@
       "diagnostic_status": "v18_non_regression_promoted_but_promotion_improvement_gate_blocked_boundary_no_required_improvement",
       "no_full_14tile_training": true,
       "next_unblocked_step": "Formalize tile_11 reuse proof and keep tile_10 on context-density rollback until a bounded tile_10 repair can pass V18 same-camera review; do not launch full 14-tile training."
+    }
+  },
+  "md1_r4_tile11_reuse_proof_20260505": {
+    "generated_at": "2026-05-05T22:57:17Z",
+    "head": "dec13c752eddcb463489098f17b85bc839a15c27",
+    "proof_type": "no_spend_tile_cache_acceptance_frontier_update",
+    "input_proof_review": {
+      "generated_at": "2026-05-05T22:57:17Z",
+      "source_summary_json": "logs/audit/md1-1k-full-r2/r4_context_density_remote_merge_g4dn_bgsidecar_preflight_202605051343/remote_merge_summary.json",
+      "proof_review_analysis_json": "logs/md1-cost-reduction-r4-tile10-rollback-isolation-review-analysis-20260505.json",
+      "proof_review_comparison_json": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-tile10-rollback-isolation-smoke-p24/review_comparison.json",
+      "review_job_name": "md1-r1-r4-t10rollback-1778018314-quality",
+      "review_billable_seconds": 776,
+      "v18_non_regression_status": "promoted",
+      "v18_non_regression_block_reasons": [],
+      "tile_11_retained_gaussians": 119,
+      "v18_tile_11_retained_gaussians": 68,
+      "retained_ratio_vs_v18": 1.75,
+      "conclusion": "cached tile_11 is accepted for reuse when paired with tile_10 context-density rollback; it is not the full-scene V18 regression source."
+    },
+    "outputs": {
+      "candidate_summary_json": "logs/md1-cost-reduction-r4-tile11-reuse-proof-candidate-summary-20260505.json",
+      "plan_json": "logs/md1-cost-reduction-r4-tile11-reuse-proof-plan-20260505.json",
+      "summary_json": "logs/md1-cost-reduction-r4-tile11-reuse-proof-summary-20260505.json"
+    },
+    "frontier_delta": {
+      "previous_qualityguard_candidate_count": 4,
+      "new_candidate_count": 5,
+      "previous_qualityguard_context_density_rollback_count": 10,
+      "new_context_density_rollback_count": 9,
+      "accepted_cached_tile_ids": [
+        "tile_11"
+      ],
+      "still_blocked_cached_tile_ids": [
+        "tile_10"
+      ],
+      "v18_rollback_tile_ids": [
+        "tile_00",
+        "tile_02",
+        "tile_03",
+        "tile_07",
+        "tile_08",
+        "tile_09",
+        "tile_10",
+        "tile_12",
+        "tile_13"
+      ]
+    },
+    "tile_decisions": [
+      {
+        "candidate_quality_status": "blocked_fullscene_review_primary_suspect",
+        "candidate_retained_gaussians": 371161,
+        "candidate_retained_ratio": 0.9794380833507058,
+        "candidate_status": "quality_unproven",
+        "context_density_ratio": 1.0,
+        "reasons": [
+          "candidate_quality_status_not_passing"
+        ],
+        "reference_retained_gaussians": 378953,
+        "retrain_required_if_no_v18_rollback": true,
+        "selected_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+        "selected_source": "context_density_rollback",
+        "selected_stage_type": "context_density_tile",
+        "tile_id": "tile_10"
+      },
+      {
+        "candidate_quality_status": "promoted",
+        "candidate_retained_gaussians": 119,
+        "candidate_retained_ratio": 1.75,
+        "candidate_status": "density_pass",
+        "context_density_ratio": null,
+        "reasons": [],
+        "reference_retained_gaussians": 68,
+        "retrain_required_if_no_v18_rollback": false,
+        "selected_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_11/md1-r4leafreb-1777858863-tile-11/output/model.tar.gz",
+        "selected_source": "candidate",
+        "selected_stage_type": "cached_tile",
+        "tile_id": "tile_11"
+      }
+    ],
+    "verification": {
+      "unit_tests": "python3 -m unittest tests.unit.test_md1_density_preserving_canary -v -> 4 tests OK",
+      "json_validation": "passed for candidate summary, plan, and benchmark summary",
+      "submitted_jobs": [],
+      "training_jobs_to_submit": 0,
+      "estimated_usd": 0.0,
+      "no_full_14tile_training_launched": true
+    },
+    "decision": {
+      "production_ready": false,
+      "status": "tile11_reuse_proof_formalized_tile10_remains_blocked",
+      "next_unblocked_step": "Keep tile_10 on V18/context-density rollback or run only a bounded tile_10 repair proof; do not run full 14-tile training."
     }
   }
 }
