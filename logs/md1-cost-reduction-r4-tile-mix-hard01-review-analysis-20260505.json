@@ -1,0 +1,103 @@
+{
+  "billable_seconds": 720,
+  "bucket_deltas_vs_v18": {
+    "boundary": {
+      "best_by_lpips_delta": "hard01_mix",
+      "best_by_psnr_delta": "hard01_mix",
+      "best_by_ssim_delta": "hard",
+      "hard01_mix_delta": {
+        "lpips": 0.065239816904068,
+        "psnr": 0.032399411030116454,
+        "ssim": -0.04470190405845642
+      },
+      "hard_delta": {
+        "lpips": 0.08847260475158691,
+        "psnr": -0.5242441176389434,
+        "ssim": -0.03444664180278778
+      },
+      "standard_delta": {
+        "lpips": 0.0662652850151062,
+        "psnr": 0.06886225723658512,
+        "ssim": -0.042982667684555054
+      }
+    },
+    "horizon": {
+      "best_by_lpips_delta": "hard",
+      "best_by_psnr_delta": "hard",
+      "best_by_ssim_delta": "standard",
+      "hard01_mix_delta": {
+        "lpips": 0.07635471224784851,
+        "psnr": -2.133916921331714,
+        "ssim": -0.033111006021499634
+      },
+      "hard_delta": {
+        "lpips": 0.05349200963973999,
+        "psnr": -1.4998963969845818,
+        "ssim": -0.036514148116111755
+      },
+      "standard_delta": {
+        "lpips": 0.07142838835716248,
+        "psnr": -1.9438024034034207,
+        "ssim": -0.03160783648490906
+      }
+    },
+    "near_detail": {
+      "best_by_lpips_delta": "hard",
+      "best_by_psnr_delta": "standard",
+      "best_by_ssim_delta": "standard",
+      "hard01_mix_delta": {
+        "lpips": 0.01899617910385132,
+        "psnr": -0.18568301299857204,
+        "ssim": -0.01769918203353882
+      },
+      "hard_delta": {
+        "lpips": 0.01397278904914856,
+        "psnr": -0.14275028067021012,
+        "ssim": -0.020221620798110962
+      },
+      "standard_delta": {
+        "lpips": 0.01592618227005005,
+        "psnr": -0.02859320411509536,
+        "ssim": -0.013513505458831787
+      }
+    }
+  },
+  "camera_coverage_status": "ok",
+  "candidate_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile-mix-hard01-review-20260505/inputs/r4_expanded_mix_hard01_standardrest/model.tar.gz",
+  "checked_at": "2026-05-05T07:17:23Z",
+  "decision": "hard01_tile_mix_rejected_no_full_training",
+  "estimated_review_cost_usd": 0.303,
+  "main_findings": [
+    "The hard01-only mix is worse than both standard and hard on horizon median PSNR, so hard tile_01 alone is not the horizon lever.",
+    "Standard remains the best existing cheap candidate for near_detail and boundary, but fails V18 SSIM/LPIPS.",
+    "Hard full-cover improved some horizon cameras but worsened near_detail and boundary; the issue is not simply too few iterations on one tile.",
+    "The next useful step is no-spend teacher/context attribution or tile_04 context/merge diagnosis before any more paid training."
+  ],
+  "next_unblocked_step": "Do no-spend teacher/context attribution: compare V18/teacher tile_04,tile_01 context and merge ownership against standard/hard/mix, then decide whether a tiny bounded review is justified. Full 14-tile training remains blocked.",
+  "quality_block_reasons": [
+    "near_detail_v18_median_ssim_regression",
+    "near_detail_v18_median_lpips_regression",
+    "boundary_v18_median_ssim_regression",
+    "boundary_v18_median_lpips_regression",
+    "horizon_v18_median_psnr_regression",
+    "horizon_v18_median_ssim_regression",
+    "horizon_v18_median_lpips_regression",
+    "near_detail_v18_single_camera_psnr_regression",
+    "near_detail_v18_single_camera_lpips_regression",
+    "boundary_v18_single_camera_lpips_regression",
+    "horizon_v18_single_camera_lpips_regression",
+    "horizon_v18_single_camera_psnr_regression"
+  ],
+  "quality_status": "blocked",
+  "render_sanity_status": "ok",
+  "review_job_name": "md1-r1-r4-expanded-mix-hard01-standardrest-1777964534-quality",
+  "review_output_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile-mix-hard01-review-20260505/outputs/r4-expanded-mix-hard01-standardrest/md1-r1-r4-expanded-mix-hard01-standardrest-1777964534-quality/output/model.tar.gz",
+  "source_diagnosis": {
+    "hard_full_cover_not_globally_better": true,
+    "horizon_hard_improvement_is_concentrated_in_cameras_with_tile_01_support": true,
+    "rationale": "Standard 9-tile is better on 7/12 smoke cameras, including all four boundary cameras and three of four near_detail cameras. Hard repair is only better on horizon DJI_0073/DJI_0146/DJI_0147, all of which include tile_01 support; replacing only tile_01 isolates that signal without retraining or disturbing standard tile_04/tile_05/tile_10.",
+    "standard_wins_near_and_boundary": true,
+    "tile_04_and_tile_05_should_stay_standard_for_now": true,
+    "tile_10_should_stay_standard_for_boundary_for_now": true
+  }
+}

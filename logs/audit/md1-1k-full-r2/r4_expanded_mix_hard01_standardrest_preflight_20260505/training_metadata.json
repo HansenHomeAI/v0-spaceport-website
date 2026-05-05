@@ -1,0 +1,100 @@
+{
+  "created_at": "2026-05-05T06:59:12Z",
+  "label": "r4-expanded-mix-hard01-standardrest",
+  "purpose": "no-spend-tile-mix-diagnosis-hard-tile01-only",
+  "training_completed": true,
+  "training_mode": "md1_hybrid_diagnostic",
+  "model_variant": "md1_hybrid_diagnostic",
+  "historical_source_root": "/private/tmp/md1-r4-expanded-9tile-merge-20260505/model",
+  "replacement_source_root": "/private/tmp/md1-r4-expanded-hard-repair-package-20260505",
+  "replacement_tiles": [
+    "tile_01"
+  ],
+  "preserve_context_tiles": [],
+  "force_overlap_tiles": [],
+  "replacement_mode": "replace",
+  "merge_mode": "support_weighted_overlap",
+  "opacity_policy": {
+    "mode": "none",
+    "factor": 1.0,
+    "scale_start_quantile": 0.9,
+    "scale_full_quantile": 0.99,
+    "scale_weight_power": 1.0
+  },
+  "color_policy": {
+    "mode": "none",
+    "rgb_offset": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "tile_policy": {
+    "tile_00": {
+      "mode": "historical",
+      "source_splat": "/private/tmp/md1-r4-expanded-9tile-merge-20260505/model/tiles/tile_00/splat.ply",
+      "storage": "hardlink_or_copy"
+    },
+    "tile_01": {
+      "mode": "replacement",
+      "source_splat": "/private/tmp/md1-r4-expanded-hard-repair-package-20260505/tiles/tile_01/splat.ply",
+      "historical_source_splat": "/private/tmp/md1-r4-expanded-9tile-merge-20260505/model/tiles/tile_01/splat.ply",
+      "source_property_count": 26,
+      "expanded_to_dtype_property_count": 26,
+      "written_gaussian_count": 297049,
+      "opacity_policy": {
+        "mode": "none",
+        "adjusted": false
+      },
+      "color_policy": {
+        "mode": "none",
+        "adjusted": false
+      }
+    },
+    "tile_02": {
+      "mode": "historical",
+      "source_splat": "/private/tmp/md1-r4-expanded-9tile-merge-20260505/model/tiles/tile_02/splat.ply",
+      "storage": "hardlink_or_copy"
+    },
+    "tile_04": {
+      "mode": "historical",
+      "source_splat": "/private/tmp/md1-r4-expanded-9tile-merge-20260505/model/tiles/tile_04/splat.ply",
+      "storage": "hardlink_or_copy"
+    },
+    "tile_05": {
+      "mode": "historical",
+      "source_splat": "/private/tmp/md1-r4-expanded-9tile-merge-20260505/model/tiles/tile_05/splat.ply",
+      "storage": "hardlink_or_copy"
+    },
+    "tile_06": {
+      "mode": "historical",
+      "source_splat": "/private/tmp/md1-r4-expanded-9tile-merge-20260505/model/tiles/tile_06/splat.ply",
+      "storage": "hardlink_or_copy"
+    },
+    "tile_10": {
+      "mode": "historical",
+      "source_splat": "/private/tmp/md1-r4-expanded-9tile-merge-20260505/model/tiles/tile_10/splat.ply",
+      "storage": "hardlink_or_copy"
+    },
+    "tile_11": {
+      "mode": "historical",
+      "source_splat": "/private/tmp/md1-r4-expanded-9tile-merge-20260505/model/tiles/tile_11/splat.ply",
+      "storage": "hardlink_or_copy"
+    },
+    "tile_13": {
+      "mode": "historical",
+      "source_splat": "/private/tmp/md1-r4-expanded-9tile-merge-20260505/model/tiles/tile_13/splat.ply",
+      "storage": "hardlink_or_copy"
+    }
+  },
+  "merge_report": {
+    "merge_mode": "support_weighted_overlap",
+    "tile_count": 9,
+    "source_gaussians": 2603295,
+    "retained_gaussians": 2464728,
+    "dropped_gaussians": 138567,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "fallback_reasons": []
+  }
+}

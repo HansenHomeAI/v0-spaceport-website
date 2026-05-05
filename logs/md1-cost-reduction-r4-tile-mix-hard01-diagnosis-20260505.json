@@ -1,0 +1,560 @@
+{
+  "block_full_14tile_training": true,
+  "bucket_summary": {
+    "boundary": {
+      "camera_count": 4,
+      "hard_median_visible": 238136.0,
+      "hard_wins_by_psnr": 0,
+      "standard_median_visible": 273808.5,
+      "standard_wins_by_psnr": 4,
+      "v18_median_visible": 144922.5
+    },
+    "horizon": {
+      "camera_count": 4,
+      "hard_median_visible": 188101.0,
+      "hard_wins_by_psnr": 3,
+      "standard_median_visible": 230808.5,
+      "standard_wins_by_psnr": 1,
+      "v18_median_visible": 117322.0
+    },
+    "near_detail": {
+      "camera_count": 4,
+      "hard_median_visible": 416410.5,
+      "hard_wins_by_psnr": 1,
+      "standard_median_visible": 484861.0,
+      "standard_wins_by_psnr": 3,
+      "v18_median_visible": 397798.5
+    }
+  },
+  "candidate": {
+    "historical_source_root": "/private/tmp/md1-r4-expanded-9tile-merge-20260505/model",
+    "label": "r4-expanded-mix-hard01-standardrest",
+    "local_artifact": "/tmp/md1-r4-expanded-mix-hard01-standardrest-20260505/model.tar.gz",
+    "local_artifact_bytes": 449157525,
+    "merge_report": {
+      "dropped_gaussians": 138567,
+      "fallback_reasons": [],
+      "fallback_tile_count": 0,
+      "merge_mode": "support_weighted_overlap",
+      "retain_all_tile_count": 0,
+      "retained_gaussians": 2464728,
+      "source_gaussians": 2603295,
+      "tile_count": 9
+    },
+    "preflight": {
+      "artifact_complete": true,
+      "block_reasons": [],
+      "decision": "preflight_passed_run_frozen_smoke_review",
+      "missing_required_paths": []
+    },
+    "replacement_source_root": "/private/tmp/md1-r4-expanded-hard-repair-package-20260505",
+    "replacement_tiles": [
+      "tile_01"
+    ],
+    "type": "no_training_tile_mix_hybrid"
+  },
+  "checked_at": "2026-05-05T07:01:10Z",
+  "decision": "no_spend_tile_mix_candidate_ready_for_bounded_review",
+  "diagnosis": {
+    "hard_full_cover_not_globally_better": true,
+    "horizon_hard_improvement_is_concentrated_in_cameras_with_tile_01_support": true,
+    "rationale": "Standard 9-tile is better on 7/12 smoke cameras, including all four boundary cameras and three of four near_detail cameras. Hard repair is only better on horizon DJI_0073/DJI_0146/DJI_0147, all of which include tile_01 support; replacing only tile_01 isolates that signal without retraining or disturbing standard tile_04/tile_05/tile_10.",
+    "standard_wins_near_and_boundary": true,
+    "tile_04_and_tile_05_should_stay_standard_for_now": true,
+    "tile_10_should_stay_standard_for_boundary_for_now": true
+  },
+  "inputs": {
+    "coverage_json": "/tmp/md1-hard-coverage.json",
+    "hard_manifest": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-expanded-hard-repair/quality_review_manifest.json",
+    "standard_manifest": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-expanded-9tile-canary-smoke-p24/quality_review_manifest.json",
+    "v18_manifest": "logs/audit/md1-1k-full-r2/r1_review_outputs/r5-teacher-context-v12-sky-v18-smoke-p24/quality_review_manifest.json"
+  },
+  "next_unblocked_step": "Upload the no-training tile-mix artifact and run one bounded V18 same-camera smoke-p24 review; do not launch any full 14-tile training.",
+  "per_camera": [
+    {
+      "best_existing_candidate_by_psnr": "hard",
+      "bucket": "near_detail",
+      "hard": {
+        "lpips": 0.8999652862548828,
+        "psnr": 10.190995436809686,
+        "ssim": 0.33477136492729187,
+        "visible": 654976
+      },
+      "image": "DJI_0258.JPG",
+      "standard": {
+        "lpips": 0.9250073432922363,
+        "psnr": 10.16677845281248,
+        "ssim": 0.3334106206893921,
+        "visible": 734983
+      },
+      "support_roles_by_tile": {
+        "tile_04": [
+          "base",
+          "image"
+        ],
+        "tile_05": [
+          "base",
+          "image"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_04",
+        "tile_05"
+      ],
+      "tile_mix_hypothesis": "preserve standard tile set; hard full-cover was worse or unnecessary here",
+      "v18": {
+        "lpips": 0.932000994682312,
+        "psnr": 11.080388211403832,
+        "ssim": 0.36745908856391907,
+        "visible": 468124
+      }
+    },
+    {
+      "best_existing_candidate_by_psnr": "standard",
+      "bucket": "near_detail",
+      "hard": {
+        "lpips": 0.9351142048835754,
+        "psnr": 10.754469618204812,
+        "ssim": 0.3530680239200592,
+        "visible": 423373
+      },
+      "image": "DJI_0261.JPG",
+      "standard": {
+        "lpips": 0.9553108811378479,
+        "psnr": 10.982211828361866,
+        "ssim": 0.36403393745422363,
+        "visible": 496003
+      },
+      "support_roles_by_tile": {
+        "tile_04": [
+          "base",
+          "image"
+        ],
+        "tile_05": [
+          "base",
+          "image"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_04",
+        "tile_05"
+      ],
+      "tile_mix_hypothesis": "preserve standard tile set; hard full-cover was worse or unnecessary here",
+      "v18": {
+        "lpips": 0.9596462845802307,
+        "psnr": 10.695735620671364,
+        "ssim": 0.37923845648765564,
+        "visible": 290679
+      }
+    },
+    {
+      "best_existing_candidate_by_psnr": "standard",
+      "bucket": "near_detail",
+      "hard": {
+        "lpips": 0.9393562078475952,
+        "psnr": 11.645643179608541,
+        "ssim": 0.3900306224822998,
+        "visible": 394780
+      },
+      "image": "DJI_0262.JPG",
+      "standard": {
+        "lpips": 0.9386758804321289,
+        "psnr": 11.646215122561717,
+        "ssim": 0.39697563648223877,
+        "visible": 447762
+      },
+      "support_roles_by_tile": {
+        "tile_04": [
+          "base",
+          "image"
+        ],
+        "tile_05": [
+          "base",
+          "image"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_04",
+        "tile_05"
+      ],
+      "tile_mix_hypothesis": "preserve standard tile set; hard full-cover was worse or unnecessary here",
+      "v18": {
+        "lpips": 0.8379372954368591,
+        "psnr": 11.605225147749941,
+        "ssim": 0.41762658953666687,
+        "visible": 344565
+      }
+    },
+    {
+      "best_existing_candidate_by_psnr": "standard",
+      "bucket": "near_detail",
+      "hard": {
+        "lpips": 0.9246622323989868,
+        "psnr": 12.007458928077249,
+        "ssim": 0.37847664952278137,
+        "visible": 409448
+      },
+      "image": "DJI_0263.JPG",
+      "standard": {
+        "lpips": 0.9189565181732178,
+        "psnr": 12.128727940356141,
+        "ssim": 0.3809269666671753,
+        "visible": 473719
+      },
+      "support_roles_by_tile": {
+        "tile_04": [
+          "base",
+          "image"
+        ],
+        "tile_05": [
+          "base",
+          "image"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_04",
+        "tile_05"
+      ],
+      "tile_mix_hypothesis": "preserve standard tile set; hard full-cover was worse or unnecessary here",
+      "v18": {
+        "lpips": 0.8998298645019531,
+        "psnr": 11.740072952593971,
+        "ssim": 0.39274945855140686,
+        "visible": 451032
+      }
+    },
+    {
+      "best_existing_candidate_by_psnr": "standard",
+      "bucket": "boundary",
+      "hard": {
+        "lpips": 0.8669437170028687,
+        "psnr": 14.141268060957795,
+        "ssim": 0.41094157099723816,
+        "visible": 326936
+      },
+      "image": "DJI_0067.JPG",
+      "standard": {
+        "lpips": 0.8367054462432861,
+        "psnr": 14.737800726287455,
+        "ssim": 0.4157123565673828,
+        "visible": 363438
+      },
+      "support_roles_by_tile": {
+        "tile_04": [
+          "base",
+          "image"
+        ],
+        "tile_10": [
+          "base",
+          "image"
+        ],
+        "tile_13": [
+          "context"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_04",
+        "tile_10",
+        "tile_13"
+      ],
+      "tile_mix_hypothesis": "preserve standard tile set; hard full-cover was worse or unnecessary here",
+      "v18": {
+        "lpips": 0.7885693311691284,
+        "psnr": 14.2314855521842,
+        "ssim": 0.43425095081329346,
+        "visible": 214996
+      }
+    },
+    {
+      "best_existing_candidate_by_psnr": "standard",
+      "bucket": "boundary",
+      "hard": {
+        "lpips": 0.8655052781105042,
+        "psnr": 13.897208626088947,
+        "ssim": 0.39922356605529785,
+        "visible": 252732
+      },
+      "image": "DJI_0068.JPG",
+      "standard": {
+        "lpips": 0.8435884118080139,
+        "psnr": 14.46114638057603,
+        "ssim": 0.3918735086917877,
+        "visible": 288373
+      },
+      "support_roles_by_tile": {
+        "tile_04": [
+          "base",
+          "image"
+        ],
+        "tile_10": [
+          "base",
+          "image"
+        ],
+        "tile_13": [
+          "context"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_04",
+        "tile_10",
+        "tile_13"
+      ],
+      "tile_mix_hypothesis": "preserve standard tile set; hard full-cover was worse or unnecessary here",
+      "v18": {
+        "lpips": 0.780912458896637,
+        "psnr": 14.2671742132562,
+        "ssim": 0.4320214092731476,
+        "visible": 156669
+      }
+    },
+    {
+      "best_existing_candidate_by_psnr": "standard",
+      "bucket": "boundary",
+      "hard": {
+        "lpips": 0.8700608015060425,
+        "psnr": 13.686214617516656,
+        "ssim": 0.39741143584251404,
+        "visible": 223540
+      },
+      "image": "DJI_0069.JPG",
+      "standard": {
+        "lpips": 0.8490014672279358,
+        "psnr": 14.308489612780628,
+        "ssim": 0.3871428668498993,
+        "visible": 259244
+      },
+      "support_roles_by_tile": {
+        "tile_04": [
+          "base",
+          "image"
+        ],
+        "tile_10": [
+          "base",
+          "image"
+        ],
+        "tile_13": [
+          "context"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_04",
+        "tile_10",
+        "tile_13"
+      ],
+      "tile_mix_hypothesis": "preserve standard tile set; hard full-cover was worse or unnecessary here",
+      "v18": {
+        "lpips": 0.7791468501091003,
+        "psnr": 14.36473726562729,
+        "ssim": 0.43350687623023987,
+        "visible": 133176
+      }
+    },
+    {
+      "best_existing_candidate_by_psnr": "standard",
+      "bucket": "boundary",
+      "hard": {
+        "lpips": 0.8725910186767578,
+        "psnr": 13.505237033667946,
+        "ssim": 0.395435094833374,
+        "visible": 205645
+      },
+      "image": "DJI_0070.JPG",
+      "standard": {
+        "lpips": 0.8509789109230042,
+        "psnr": 14.160634593702511,
+        "ssim": 0.3876894414424896,
+        "visible": 239764
+      },
+      "support_roles_by_tile": {
+        "tile_04": [
+          "base",
+          "image"
+        ],
+        "tile_10": [
+          "base",
+          "image"
+        ],
+        "tile_13": [
+          "context"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_04",
+        "tile_10",
+        "tile_13"
+      ],
+      "tile_mix_hypothesis": "preserve standard tile set; hard full-cover was worse or unnecessary here",
+      "v18": {
+        "lpips": 0.7787351608276367,
+        "psnr": 14.405220354459068,
+        "ssim": 0.42419084906578064,
+        "visible": 119450
+      }
+    },
+    {
+      "best_existing_candidate_by_psnr": "standard",
+      "bucket": "horizon",
+      "hard": {
+        "lpips": 0.8587255477905273,
+        "psnr": 14.389132662782199,
+        "ssim": 0.41817161440849304,
+        "visible": 481763
+      },
+      "image": "DJI_0066.JPG",
+      "standard": {
+        "lpips": 0.8351828455924988,
+        "psnr": 14.700885582053997,
+        "ssim": 0.4181402623653412,
+        "visible": 521955
+      },
+      "support_roles_by_tile": {
+        "tile_04": [
+          "base",
+          "image"
+        ],
+        "tile_06": [
+          "context"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_04",
+        "tile_06"
+      ],
+      "tile_mix_hypothesis": "preserve standard tile set; hard full-cover was worse or unnecessary here",
+      "v18": {
+        "lpips": 0.7929781675338745,
+        "psnr": 14.382861944315696,
+        "ssim": 0.4223080575466156,
+        "visible": 371110
+      }
+    },
+    {
+      "best_existing_candidate_by_psnr": "hard",
+      "bucket": "horizon",
+      "hard": {
+        "lpips": 0.8564728498458862,
+        "psnr": 12.904129741737467,
+        "ssim": 0.3905063569545746,
+        "visible": 104040
+      },
+      "image": "DJI_0073.JPG",
+      "standard": {
+        "lpips": 0.9173111915588379,
+        "psnr": 12.8428416391481,
+        "ssim": 0.3855264186859131,
+        "visible": 131232
+      },
+      "support_roles_by_tile": {
+        "tile_00": [
+          "context"
+        ],
+        "tile_01": [
+          "base",
+          "image"
+        ],
+        "tile_02": [
+          "context"
+        ],
+        "tile_04": [
+          "base",
+          "image"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_00",
+        "tile_01",
+        "tile_02",
+        "tile_04"
+      ],
+      "tile_mix_hypothesis": "use hard tile_01 as the only replacement while preserving standard tile_04/tile_05/tile_10 for near/boundary",
+      "v18": {
+        "lpips": 0.803986132144928,
+        "psnr": 14.634192504671626,
+        "ssim": 0.4170818328857422,
+        "visible": 52352
+      }
+    },
+    {
+      "best_existing_candidate_by_psnr": "hard",
+      "bucket": "horizon",
+      "hard": {
+        "lpips": 0.9103091955184937,
+        "psnr": 14.08496581412088,
+        "ssim": 0.27600499987602234,
+        "visible": 186300
+      },
+      "image": "DJI_0146.JPG",
+      "standard": {
+        "lpips": 0.9060078859329224,
+        "psnr": 13.68414105079049,
+        "ssim": 0.2924799621105194,
+        "visible": 229336
+      },
+      "support_roles_by_tile": {
+        "tile_01": [
+          "base",
+          "image"
+        ],
+        "tile_04": [
+          "base",
+          "image"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_01",
+        "tile_04"
+      ],
+      "tile_mix_hypothesis": "use hard tile_01 as the only replacement while preserving standard tile_04/tile_05/tile_10 for near/boundary",
+      "v18": {
+        "lpips": 0.8740013837814331,
+        "psnr": 16.4033792202061,
+        "ssim": 0.32281947135925293,
+        "visible": 113865
+      }
+    },
+    {
+      "best_existing_candidate_by_psnr": "hard",
+      "bucket": "horizon",
+      "hard": {
+        "lpips": 0.9090250134468079,
+        "psnr": 13.952813116787684,
+        "ssim": 0.2914581596851349,
+        "visible": 189902
+      },
+      "image": "DJI_0147.JPG",
+      "standard": {
+        "lpips": 0.8976154327392578,
+        "psnr": 13.465825867280397,
+        "ssim": 0.3062507212162018,
+        "visible": 232281
+      },
+      "support_roles_by_tile": {
+        "tile_01": [
+          "base",
+          "image"
+        ],
+        "tile_04": [
+          "base",
+          "image"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_01",
+        "tile_04"
+      ],
+      "tile_mix_hypothesis": "use hard tile_01 as the only replacement while preserving standard tile_04/tile_05/tile_10 for near/boundary",
+      "v18": {
+        "lpips": 0.8567804098129272,
+        "psnr": 16.462910445806155,
+        "ssim": 0.3379109799861908,
+        "visible": 120779
+      }
+    }
+  ],
+  "review_plan": {
+    "acceptance_logic": "Run the same V18 smoke-p24 review. Pass only if bucket medians clear V18 non-regression; if not, use the per-camera result to decide whether tile_01 is useful or hard tile_04/context is the real horizon lever.",
+    "estimated_review_cost_usd": 0.31,
+    "review_is_not_model_training": true,
+    "run_review": true
+  }
+}

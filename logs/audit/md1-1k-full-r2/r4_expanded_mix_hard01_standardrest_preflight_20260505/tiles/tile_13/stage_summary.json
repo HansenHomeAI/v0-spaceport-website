@@ -1,0 +1,15 @@
+{
+  "stage_name": "T0_tile_13",
+  "tile_id": "tile_13",
+  "training_mode": "leaf_tile",
+  "training_completed": true,
+  "cache_hit": true,
+  "source_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-proof-20260503/tiles/tile_13/md1-r4leafinit-1777850709-tile-13/output/model.tar.gz",
+  "billable_time_seconds": 0,
+  "training_time_seconds": 0,
+  "budget_class": "hard",
+  "max_iterations": 12000,
+  "selected_image_count": 188,
+  "remaining_gaussians": 227609,
+  "splat_file_size_bytes": 23671968
+}
