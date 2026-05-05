@@ -1,0 +1,9 @@
+{
+  "tile_id": "tile_13",
+  "scaffold_inheritance_mode": "remote_no_training_reuse",
+  "scaffold_source_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+  "source_member_candidates": [
+    "tiles/tile_13/splat.ply",
+    "splat.ply"
+  ]
+}

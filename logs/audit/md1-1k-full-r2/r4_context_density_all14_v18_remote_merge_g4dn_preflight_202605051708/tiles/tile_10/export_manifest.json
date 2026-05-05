@@ -1,0 +1,129 @@
+{
+  "ply": "splat.ply",
+  "skybox": "background_skybox.webp",
+  "camera_idx": 125,
+  "background_appearance_mode": "camera",
+  "background_skipped": false,
+  "foreground_coordinate_frame": "planner",
+  "foreground_transform": {
+    "coordinate_frame": "planner",
+    "dataparser_transform_source": "train_dataparser_outputs",
+    "dataparser_scale": 0.009491776598547354,
+    "applied": true,
+    "position_transform_applied": true,
+    "scale_transform_applied": true,
+    "rotation_transform_applied": true,
+    "dataparser_transform": [
+      [
+        0.9999778866767883,
+        -0.006548064295202494,
+        -0.0011716779554262757,
+        -6.4265031814575195
+      ],
+      [
+        -0.0011716779554262757,
+        -0.3467634916305542,
+        0.9379518628120422,
+        18.145854949951172
+      ],
+      [
+        -0.006548064295202494,
+        -0.9379297494888306,
+        -0.3467634916305542,
+        2.610563278198242
+      ]
+    ],
+    "model_to_output_linear": [
+      [
+        105.35202261421449,
+        -0.12344138117869498,
+        -0.6898670755575459
+      ],
+      [
+        -0.12344138117869502,
+        98.81731464158587,
+        -36.533043946250054
+      ],
+      [
+        0.689867075557546,
+        36.533043946250054,
+        98.81498239740192
+      ]
+    ],
+    "planner_transform_applied": true,
+    "planner_transform_source": "/opt/ml/model/tiled_pipeline/inputs/tile_10/transforms.json",
+    "planner_scale": 1.0,
+    "planner_offset": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "planner_transform": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        -0.0,
+        -1.0,
+        -0.0,
+        -0.0
+      ]
+    ],
+    "planner_scale_transform_applied": true,
+    "model_to_output_rotation": [
+      [
+        0.9999778747680106,
+        -0.001171677984295331,
+        -0.006548064229543855
+      ],
+      [
+        -0.001171677984295214,
+        0.9379518687291688,
+        -0.3467634916166363
+      ],
+      [
+        0.006548064229543877,
+        0.34676349161663605,
+        0.9379297434971794
+      ]
+    ]
+  },
+  "background_selection": {
+    "requested_mode": "auto_camera",
+    "resolved_mode": "camera",
+    "camera_idx": 125,
+    "image_path": "/tmp/nerfstudio_training/converted_data/images/frame_00964.JPG",
+    "score": 0.6353789878019934,
+    "stride": 5,
+    "max_frames": 32,
+    "sampled_candidates": 32
+  },
+  "floater_pruning": {
+    "enabled": true,
+    "evaluated_gaussians": 387205,
+    "candidate_gaussians": 125612,
+    "removed_gaussians": 13,
+    "remaining_gaussians": 387192,
+    "sampled_views": 24,
+    "min_views": 6,
+    "top_region_ratio": 0.35,
+    "top_view_fraction": 0.9,
+    "min_sky_views": 2,
+    "sky_min_luminance": 0.3,
+    "sky_min_saturation": 0.08,
+    "sky_blue_dominance_margin": 0.02,
+    "max_opacity": 0.75,
+    "max_color_distance": 0.18,
+    "min_edge_support": 1,
+    "patch_size": 9
+  }
+}

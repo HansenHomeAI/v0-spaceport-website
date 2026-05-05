@@ -1,0 +1,435 @@
+{
+  "created_at": "2026-05-05T13:36:11Z",
+  "training_completed": true,
+  "training_mode": "remote_no_training_tiled_merge",
+  "merge_mode": "support_weighted_overlap",
+  "merge_plan": {
+    "artifact_inputs": [
+      {
+        "artifact_input_name": "artifact-00",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_00/md1-r4leafreb-1777858863-tile-00/output/model.tar.gz"
+      },
+      {
+        "artifact_input_name": "artifact-01",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_02/md1-r4leafreb-1777858863-tile-02/output/model.tar.gz"
+      },
+      {
+        "artifact_input_name": "artifact-02",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_11/md1-r4leafreb-1777858863-tile-11/output/model.tar.gz"
+      },
+      {
+        "artifact_input_name": "artifact-03",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-proof-20260503/tiles/tile_13/md1-r4leafinit-1777850709-tile-13/output/model.tar.gz"
+      },
+      {
+        "artifact_input_name": "artifact-04",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz"
+      },
+      {
+        "artifact_input_name": "artifact-05",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-camera-coverage-canary-after-tile04-cache-20260505/tiles/tile_10/md1-r4exp9-1777943800-1777943463-tile-10/output/model.tar.gz"
+      }
+    ],
+    "selected_tile_ids": [
+      "tile_00",
+      "tile_02",
+      "tile_11",
+      "tile_13",
+      "tile_01",
+      "tile_04",
+      "tile_05",
+      "tile_06",
+      "tile_10"
+    ],
+    "source_summary_json": "logs/md1-cost-reduction-r4-context-density-diagnostic-dryrun-20260505.json",
+    "tiles": [
+      {
+        "artifact_input_name": "artifact-00",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_00/md1-r4leafreb-1777858863-tile-00/output/model.tar.gz",
+        "cache_status": "hit",
+        "candidate_members": [
+          "splat.ply"
+        ],
+        "quality_gate_status": "passed",
+        "stage_name": "T0_tile_00",
+        "stage_type": "cached_tile",
+        "tile_id": "tile_00"
+      },
+      {
+        "artifact_input_name": "artifact-01",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_02/md1-r4leafreb-1777858863-tile-02/output/model.tar.gz",
+        "cache_status": "hit",
+        "candidate_members": [
+          "splat.ply"
+        ],
+        "quality_gate_status": "passed",
+        "stage_name": "T0_tile_02",
+        "stage_type": "cached_tile",
+        "tile_id": "tile_02"
+      },
+      {
+        "artifact_input_name": "artifact-02",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_11/md1-r4leafreb-1777858863-tile-11/output/model.tar.gz",
+        "cache_status": "hit",
+        "candidate_members": [
+          "splat.ply"
+        ],
+        "quality_gate_status": "passed",
+        "stage_name": "T0_tile_11",
+        "stage_type": "cached_tile",
+        "tile_id": "tile_11"
+      },
+      {
+        "artifact_input_name": "artifact-03",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-proof-20260503/tiles/tile_13/md1-r4leafinit-1777850709-tile-13/output/model.tar.gz",
+        "cache_status": "hit",
+        "candidate_members": [
+          "splat.ply"
+        ],
+        "quality_gate_status": "passed",
+        "stage_name": "T0_tile_13",
+        "stage_type": "cached_tile",
+        "tile_id": "tile_13"
+      },
+      {
+        "artifact_input_name": "artifact-04",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+        "cache_status": "context_density_hit",
+        "candidate_members": [
+          "tiles/tile_01/splat.ply",
+          "splat.ply"
+        ],
+        "quality_gate_status": "passed",
+        "stage_name": "T0_tile_01",
+        "stage_type": "context_density_tile",
+        "tile_id": "tile_01"
+      },
+      {
+        "artifact_input_name": "artifact-04",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+        "cache_status": "context_density_hit",
+        "candidate_members": [
+          "tiles/tile_04/splat.ply",
+          "splat.ply"
+        ],
+        "quality_gate_status": "passed",
+        "stage_name": "T0_tile_04",
+        "stage_type": "context_density_tile",
+        "tile_id": "tile_04"
+      },
+      {
+        "artifact_input_name": "artifact-04",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+        "cache_status": "context_density_hit",
+        "candidate_members": [
+          "tiles/tile_05/splat.ply",
+          "splat.ply"
+        ],
+        "quality_gate_status": "passed",
+        "stage_name": "T0_tile_05",
+        "stage_type": "context_density_tile",
+        "tile_id": "tile_05"
+      },
+      {
+        "artifact_input_name": "artifact-04",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+        "cache_status": "context_density_hit",
+        "candidate_members": [
+          "tiles/tile_06/splat.ply",
+          "splat.ply"
+        ],
+        "quality_gate_status": "passed",
+        "stage_name": "T0_tile_06",
+        "stage_type": "context_density_tile",
+        "tile_id": "tile_06"
+      },
+      {
+        "artifact_input_name": "artifact-05",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-camera-coverage-canary-after-tile04-cache-20260505/tiles/tile_10/md1-r4exp9-1777943800-1777943463-tile-10/output/model.tar.gz",
+        "cache_status": "hit",
+        "candidate_members": [
+          "splat.ply"
+        ],
+        "quality_gate_status": "passed",
+        "stage_name": "T0_tile_10",
+        "stage_type": "cached_tile",
+        "tile_id": "tile_10"
+      }
+    ]
+  },
+  "extracted_tiles": [
+    {
+      "tile_id": "tile_00",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_00/md1-r4leafreb-1777858863-tile-00/output/model.tar.gz",
+      "artifact_input_name": "artifact-00",
+      "selected_member": "splat.ply",
+      "selected_size_bytes": 25828824,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_00"
+    },
+    {
+      "tile_id": "tile_02",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_02/md1-r4leafreb-1777858863-tile-02/output/model.tar.gz",
+      "artifact_input_name": "artifact-01",
+      "selected_member": "splat.ply",
+      "selected_size_bytes": 49950272,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_02"
+    },
+    {
+      "tile_id": "tile_11",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_11/md1-r4leafreb-1777858863-tile-11/output/model.tar.gz",
+      "artifact_input_name": "artifact-02",
+      "selected_member": "splat.ply",
+      "selected_size_bytes": 13005,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_11"
+    },
+    {
+      "tile_id": "tile_13",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-proof-20260503/tiles/tile_13/md1-r4leafinit-1777850709-tile-13/output/model.tar.gz",
+      "artifact_input_name": "artifact-03",
+      "selected_member": "splat.ply",
+      "selected_size_bytes": 23671968,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_13"
+    },
+    {
+      "tile_id": "tile_01",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "artifact_input_name": "artifact-04",
+      "selected_member": "tiles/tile_01/splat.ply",
+      "selected_size_bytes": 43736584,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_01"
+    },
+    {
+      "tile_id": "tile_04",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "artifact_input_name": "artifact-04",
+      "selected_member": "tiles/tile_04/splat.ply",
+      "selected_size_bytes": 100306240,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_04"
+    },
+    {
+      "tile_id": "tile_05",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "artifact_input_name": "artifact-04",
+      "selected_member": "tiles/tile_05/splat.ply",
+      "selected_size_bytes": 93252648,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_05"
+    },
+    {
+      "tile_id": "tile_06",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "artifact_input_name": "artifact-04",
+      "selected_member": "tiles/tile_06/splat.ply",
+      "selected_size_bytes": 123636353,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_06"
+    },
+    {
+      "tile_id": "tile_10",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-camera-coverage-canary-after-tile04-cache-20260505/tiles/tile_10/md1-r4exp9-1777943800-1777943463-tile-10/output/model.tar.gz",
+      "artifact_input_name": "artifact-05",
+      "selected_member": "splat.ply",
+      "selected_size_bytes": 39986864,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_10"
+    }
+  ],
+  "merge_report": {
+    "merge_mode": "support_weighted_overlap",
+    "merged_ply": "/opt/ml/processing/output/artifact/merged/merged_splat.ply",
+    "tile_count": 9,
+    "source_gaussians": 4811318,
+    "retained_gaussians": 4720941,
+    "dropped_gaussians": 90377,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "fallback_reasons": [],
+    "tiles": [
+      {
+        "tile_id": "tile_00",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_00/splat.ply",
+        "source_gaussians": 248348,
+        "retained_gaussians": 248318,
+        "dropped_gaussians": 30,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 248317,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 1,
+          "retained_overlap_count": 0,
+          "retained_context_count": 1,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_01",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_01/splat.ply",
+        "source_gaussians": 420538,
+        "retained_gaussians": 420538,
+        "dropped_gaussians": 0,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 322211,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 98327,
+          "retained_overlap_count": 0,
+          "retained_context_count": 98327,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_02",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_02/splat.ply",
+        "source_gaussians": 480285,
+        "retained_gaussians": 479436,
+        "dropped_gaussians": 849,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 446854,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 32582,
+          "retained_overlap_count": 0,
+          "retained_context_count": 32582,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_04",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_04/splat.ply",
+        "source_gaussians": 964477,
+        "retained_gaussians": 956277,
+        "dropped_gaussians": 8200,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 766579,
+          "overlap_candidate_count": 80985,
+          "context_candidate_count": 116913,
+          "retained_overlap_count": 72785,
+          "retained_context_count": 116913,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_05",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_05/splat.ply",
+        "source_gaussians": 896654,
+        "retained_gaussians": 896654,
+        "dropped_gaussians": 0,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 780101,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 116553,
+          "retained_overlap_count": 0,
+          "retained_context_count": 116553,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_06",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_06/splat.ply",
+        "source_gaussians": 1188805,
+        "retained_gaussians": 1188805,
+        "dropped_gaussians": 0,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 571557,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 617248,
+          "retained_overlap_count": 0,
+          "retained_context_count": 617248,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_10",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_10/splat.ply",
+        "source_gaussians": 384483,
+        "retained_gaussians": 371161,
+        "dropped_gaussians": 13322,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 371161,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": false
+        }
+      },
+      {
+        "tile_id": "tile_11",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_11/splat.ply",
+        "source_gaussians": 119,
+        "retained_gaussians": 119,
+        "dropped_gaussians": 0,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 119,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": false
+        }
+      },
+      {
+        "tile_id": "tile_13",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_13/splat.ply",
+        "source_gaussians": 227609,
+        "retained_gaussians": 159633,
+        "dropped_gaussians": 67976,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 159633,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": false
+        }
+      }
+    ],
+    "background_asset": {
+      "asset": "background_skybox.webp",
+      "source_tile_id": "tile_06",
+      "source_asset": "/opt/ml/processing/output/artifact/tiles/tile_06/background_skybox.webp",
+      "selection_score": 0.6283583895586156,
+      "retained_gaussians": 1188805
+    }
+  },
+  "model_artifact": "model.tar.gz"
+}

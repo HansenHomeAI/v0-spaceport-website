@@ -1,0 +1,8 @@
+{
+  "tile_id": "tile_10",
+  "scaffold_inheritance_mode": "remote_no_training_reuse",
+  "scaffold_source_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-camera-coverage-canary-after-tile04-cache-20260505/tiles/tile_10/md1-r4exp9-1777943800-1777943463-tile-10/output/model.tar.gz",
+  "source_member_candidates": [
+    "splat.ply"
+  ]
+}

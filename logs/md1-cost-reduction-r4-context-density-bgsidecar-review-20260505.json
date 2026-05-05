@@ -1,0 +1,107 @@
+{
+  "baseline_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-9tile-canary-review-20260505/baselines/v18-smoke-p24",
+  "branch": "agent-90742618-md1-geometry-consistency",
+  "candidate": {
+    "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-context-density-remote-merge-g4dn-bgsidecar-20260505132757/output/artifact/model.tar.gz",
+    "artifact_size_bytes": 1658433794,
+    "label": "bgsidecar",
+    "merge_job": {
+      "end": "2026-05-05T07:41:20.938000-06:00",
+      "estimated_cost_usd_at_0_736_per_hour": 0.1558,
+      "instance_type": "ml.g4dn.xlarge",
+      "name": "md1-r4ctxdensity-mergebg-1777987677",
+      "seconds": 762,
+      "start": "2026-05-05T07:28:38.642000-06:00"
+    },
+    "preflight": {
+      "artifact_complete": true,
+      "block_reasons": [],
+      "decision": "preflight_passed_run_frozen_smoke_review",
+      "merge": {
+        "background_asset": {
+          "asset": "background_skybox.webp",
+          "retained_gaussians": 1188805,
+          "selection_score": 0.6283583895586156,
+          "source_asset": "/opt/ml/processing/output/artifact/tiles/tile_06/background_skybox.webp",
+          "source_tile_id": "tile_06"
+        },
+        "dropped_gaussians": 90377,
+        "fallback_reasons": [],
+        "fallback_tile_count": 0,
+        "merge_mode": "support_weighted_overlap",
+        "retain_all_tile_count": 0,
+        "retained_gaussians": 4720941,
+        "source_gaussians": 4811318,
+        "tile_count": 9
+      }
+    },
+    "review": {
+      "per_bucket_delta_vs_v18": {
+        "boundary": {
+          "lpips": 0.02844524383544922,
+          "psnr": 0.38210157433521985,
+          "ssim": -0.029260843992233276
+        },
+        "horizon": {
+          "lpips": 0.04908624291419983,
+          "psnr": -0.6923923725858252,
+          "ssim": -0.02429966628551483
+        },
+        "near_detail": {
+          "lpips": 0.03052648901939392,
+          "psnr": 0.17882530072513525,
+          "ssim": -0.0076792240142822266
+        }
+      },
+      "promotion_block_reasons": [
+        "boundary_ssim_regression",
+        "boundary_no_required_improvement",
+        "horizon_ssim_regression",
+        "horizon_lpips_regression"
+      ],
+      "promotion_status": "blocked",
+      "render_sanity": {
+        "blank_view_count": 0,
+        "blank_views": [],
+        "checked_view_count": 12,
+        "status": "ok"
+      },
+      "v18_non_regression_block_reasons": [
+        "near_detail_v18_median_ssim_regression",
+        "near_detail_v18_median_lpips_regression",
+        "boundary_v18_median_ssim_regression",
+        "boundary_v18_median_lpips_regression",
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_median_ssim_regression",
+        "horizon_v18_median_lpips_regression",
+        "near_detail_v18_single_camera_lpips_regression",
+        "boundary_v18_single_camera_lpips_regression",
+        "horizon_v18_single_camera_psnr_regression",
+        "horizon_v18_single_camera_lpips_regression"
+      ],
+      "v18_non_regression_status": "blocked"
+    },
+    "review_job": {
+      "end": "2026-05-05T07:59:01.092000-06:00",
+      "estimated_cost_usd_at_1_515_per_hour": 0.3169,
+      "instance_type": "ml.g5.2xlarge",
+      "model_artifacts": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-context-density-bgsidecar-review-20260505/outputs/r4-context-density-bgsidecar/md1-r1-r4-context-density-bgsidecar-1777988720-quality/output/model.tar.gz",
+      "name": "md1-r1-r4-context-density-bgsidecar-1777988720-quality",
+      "seconds": 753,
+      "start": "2026-05-05T07:46:28.754000-06:00"
+    }
+  },
+  "decision": {
+    "next_unblocked_step": "Use V18 tile-member upper-bound diagnostics to separate remote packager parity from reduced-leaf density loss before any additional training spend.",
+    "no_full_14tile_training": true,
+    "status": "completed_blocked_quality"
+  },
+  "ecr_digest_at_submit": "sha256:b0129db24d16251e6ee2af896e65c5eceefbd10d8eb52441b2800556f88347eb",
+  "head_at_review": "3a22acfd5b420ca2876a1eb3e2a0398790ac995f",
+  "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent90742618md1geometryconsistency",
+  "local_result_paths": {
+    "quality_review_manifest": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-context-density-bgsidecar/quality_review_manifest.json",
+    "review_comparison": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-context-density-bgsidecar/review_comparison.json"
+  },
+  "output_root_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-context-density-bgsidecar-review-20260505"
+}

@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "Standard-v18color is still blocked versus V18; context-density reuse now plans zero training jobs for a 9-tile no-training candidate, but promotion remains blocked until local merge/preflight and same-camera review pass.",
+  "blocked_promotion_reason": "Background-preserving 9-tile context-density artifact is structurally valid but V18 quality-blocked. All9 V18 tile-member upper-bound still blocks near_detail SSIM/horizon sky score; all14 V18 tile-member upper-bound exactly matches V18, so production readiness requires full-scene density-preserving coverage, not a smoke-only selected-tile substitution.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "70f23dd05719d5911cd9edee7d87c2208c7c144c with local remote-merge sidecar completeness fix pending commit/push",
-  "current_exact_head_gate_status": "exact-head 70f23dd05719d5911cd9edee7d87c2208c7c144c has green CDK Deploy 25374669257 and green Trigger ML Container Build 25374669240. ECR spaceport/3dgs:agent90742618md1geometryconsistency now resolves to sha256:e4dbbc1c87a144cd577e591d33a0c694caa5ee85cc2c693fc9996489354a3a13.",
-  "current_live_compute_status": "No MD1 SageMaker training or processing jobs are InProgress. Unrelated Meadow processing r5full80s2-1777973662 is InProgress.",
-  "current_rung": "R4_cost_reduction_remote_merge_packager_sidecar_fix_ready",
+  "current_branch_head": "3a22acfd5b420ca2876a1eb3e2a0398790ac995f",
+  "current_exact_head_gate_status": "exact-head 3a22acfd5b420ca2876a1eb3e2a0398790ac995f is pushed and green on CDK Deploy 25378598163 plus Trigger ML Container Build 25378598148; ECR spaceport/3dgs:agent90742618md1geometryconsistency resolves to sha256:b0129db24d16251e6ee2af896e65c5eceefbd10d8eb52441b2800556f88347eb; no Cloudflare Pages run appeared for this non-web/container push.",
+  "current_live_compute_status": "No MD1 SageMaker training jobs are InProgress. No MD1 SageMaker processing jobs are InProgress. One unrelated processing job r5full80s2-1777973662 remains InProgress.",
+  "current_rung": "R4_cost_reduction_context_density_v18_upper_bound_diagnostics_recorded",
   "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -766,7 +766,7 @@
     ],
     "view_bucket_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiled_pipeline/inputs/scaffold/3dgs_view_buckets.json"
   },
-  "last_commit": "0abfc2c8c0ea5015358859374f3669d81e7b174b",
+  "last_commit": "3a22acfd5b420ca2876a1eb3e2a0398790ac995f",
   "last_exact_head_gates": {
     "cdk_deploy_conclusion": "success",
     "cdk_deploy_run_id": 25364537073,
@@ -777,15 +777,19 @@
     "local_status_update_pending_commit": true,
     "unrelated_processing_job_in_progress": "r5full80s1-1777934749"
   },
-  "last_updated": "2026-05-05T09:55:05Z",
+  "last_updated": "2026-05-05T17:37:44Z",
   "latest_exact_head_gate": {
-    "head": "838a3519564eff74ecbf0224d5bdde364fe71ab4",
-    "cdk_deploy_run_id": 25369423200,
+    "head": "3a22acfd5b420ca2876a1eb3e2a0398790ac995f",
+    "branch": "agent-90742618-md1-geometry-consistency",
+    "cdk_deploy_run_id": 25378598163,
     "cdk_deploy_conclusion": "success",
-    "cloudflare_pages": "none_observed_for_non_web_status_push",
-    "recorded_at": "2026-05-05T09:55:05Z"
+    "ml_container_build_run_id": 25378598148,
+    "ml_container_build_conclusion": "success",
+    "ecr_digest": "sha256:b0129db24d16251e6ee2af896e65c5eceefbd10d8eb52441b2800556f88347eb",
+    "cloudflare_pages": "not_triggered_for_non_web_container_push",
+    "checked_at": "2026-05-05T17:37:44Z"
   },
-  "latest_live_compute_status": "No MD1 SageMaker training jobs are InProgress. Unrelated Meadow processing r5full80s2-1777973662 is InProgress.",
+  "latest_live_compute_status": "No MD1 SageMaker training jobs are InProgress. No MD1 SageMaker processing jobs are InProgress. One unrelated processing job r5full80s2-1777973662 remains InProgress.",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
     "head": "07c50ac09a7ac88ea218c5784f045154a102917e",
@@ -794,9 +798,9 @@
     "pages_hash_url": "https://20660d91.v0-spaceport-website-preview2.pages.dev",
     "pages_run_id": 25107446761
   },
-  "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-expanded-standard-v18color/review_comparison.json",
-  "latest_review_status": "No-training standard 9-tile plus V18 sky-preserving rgb-offset [0.008,0.12,0.0] was structurally valid and reviewed on the V18 smoke-p24 camera set. Review md1-r1-r4-expanded-standard-v18color-1777966369-quality completed in 718 billable seconds/about $0.302, camera coverage/render sanity OK, but V18 non-regression is blocked: near_detail +0.6248 dB/-0.0043 SSIM/+0.0005 LPIPS, boundary +0.4691 dB/-0.0398 SSIM/+0.0493 LPIPS, horizon -0.9713 dB/-0.0248 SSIM/+0.0584 LPIPS.",
-  "latest_training_cost_reduction_status": "remote_merge_packager_sidecar_completeness_fix_ready",
+  "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-context-density-all14-v18/review_comparison.json",
+  "latest_review_status": "all14 V18 no-training remote merge/review passed V18 non-regression exactly: retained/source/dropped 8423868/8789634/365766, fallback=0, retain_all=0, PSNR/SSIM/LPIPS deltas all 0.0, v18_non_regression_status=promoted; promotion_decision still reports boundary_no_required_improvement because this parity diagnostic is not meant to beat V18.",
+  "latest_training_cost_reduction_status": "No new full training spend. Three no-training remote merge/review diagnostics cost about $1.672 total and prove the new remote merge path can reproduce promoted V18 when all 14 dense tile members are present; 9-tile/reduced-density candidates remain blocked.",
   "live_compute_status": "No SageMaker training jobs are InProgress. Exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. Tile_13 hard proof is complete/preflighted/cached; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
@@ -10044,5 +10048,571 @@
       "no_full_14tile_training": true,
       "next_unblocked_step": "Run full targeted verification, commit/push the background sidecar fix and review evidence, wait for exact-head CDK plus automatic ML container build, then submit a fresh bounded ml.g4dn.xlarge no-training remote merge job before preflight/review."
     }
+  },
+  "md1_r4_context_density_bgsidecar_review_20260505": {
+    "baseline_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-9tile-canary-review-20260505/baselines/v18-smoke-p24",
+    "branch": "agent-90742618-md1-geometry-consistency",
+    "candidate": {
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-context-density-remote-merge-g4dn-bgsidecar-20260505132757/output/artifact/model.tar.gz",
+      "artifact_size_bytes": 1658433794,
+      "label": "bgsidecar",
+      "merge_job": {
+        "end": "2026-05-05T07:41:20.938000-06:00",
+        "estimated_cost_usd_at_0_736_per_hour": 0.1558,
+        "instance_type": "ml.g4dn.xlarge",
+        "name": "md1-r4ctxdensity-mergebg-1777987677",
+        "seconds": 762,
+        "start": "2026-05-05T07:28:38.642000-06:00"
+      },
+      "preflight": {
+        "artifact_complete": true,
+        "block_reasons": [],
+        "decision": "preflight_passed_run_frozen_smoke_review",
+        "merge": {
+          "background_asset": {
+            "asset": "background_skybox.webp",
+            "retained_gaussians": 1188805,
+            "selection_score": 0.6283583895586156,
+            "source_asset": "/opt/ml/processing/output/artifact/tiles/tile_06/background_skybox.webp",
+            "source_tile_id": "tile_06"
+          },
+          "dropped_gaussians": 90377,
+          "fallback_reasons": [],
+          "fallback_tile_count": 0,
+          "merge_mode": "support_weighted_overlap",
+          "retain_all_tile_count": 0,
+          "retained_gaussians": 4720941,
+          "source_gaussians": 4811318,
+          "tile_count": 9
+        }
+      },
+      "review": {
+        "per_bucket_delta_vs_v18": {
+          "boundary": {
+            "lpips": 0.02844524383544922,
+            "psnr": 0.38210157433521985,
+            "ssim": -0.029260843992233276
+          },
+          "horizon": {
+            "lpips": 0.04908624291419983,
+            "psnr": -0.6923923725858252,
+            "ssim": -0.02429966628551483
+          },
+          "near_detail": {
+            "lpips": 0.03052648901939392,
+            "psnr": 0.17882530072513525,
+            "ssim": -0.0076792240142822266
+          }
+        },
+        "promotion_block_reasons": [
+          "boundary_ssim_regression",
+          "boundary_no_required_improvement",
+          "horizon_ssim_regression",
+          "horizon_lpips_regression"
+        ],
+        "promotion_status": "blocked",
+        "render_sanity": {
+          "blank_view_count": 0,
+          "blank_views": [],
+          "checked_view_count": 12,
+          "status": "ok"
+        },
+        "v18_non_regression_block_reasons": [
+          "near_detail_v18_median_ssim_regression",
+          "near_detail_v18_median_lpips_regression",
+          "boundary_v18_median_ssim_regression",
+          "boundary_v18_median_lpips_regression",
+          "horizon_v18_median_psnr_regression",
+          "horizon_v18_median_ssim_regression",
+          "horizon_v18_median_lpips_regression",
+          "near_detail_v18_single_camera_lpips_regression",
+          "boundary_v18_single_camera_lpips_regression",
+          "horizon_v18_single_camera_psnr_regression",
+          "horizon_v18_single_camera_lpips_regression"
+        ],
+        "v18_non_regression_status": "blocked"
+      },
+      "review_job": {
+        "end": "2026-05-05T07:59:01.092000-06:00",
+        "estimated_cost_usd_at_1_515_per_hour": 0.3169,
+        "instance_type": "ml.g5.2xlarge",
+        "model_artifacts": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-context-density-bgsidecar-review-20260505/outputs/r4-context-density-bgsidecar/md1-r1-r4-context-density-bgsidecar-1777988720-quality/output/model.tar.gz",
+        "name": "md1-r1-r4-context-density-bgsidecar-1777988720-quality",
+        "seconds": 753,
+        "start": "2026-05-05T07:46:28.754000-06:00"
+      }
+    },
+    "decision": {
+      "next_unblocked_step": "Use V18 tile-member upper-bound diagnostics to separate remote packager parity from reduced-leaf density loss before any additional training spend.",
+      "no_full_14tile_training": true,
+      "status": "completed_blocked_quality"
+    },
+    "ecr_digest_at_submit": "sha256:b0129db24d16251e6ee2af896e65c5eceefbd10d8eb52441b2800556f88347eb",
+    "head_at_review": "3a22acfd5b420ca2876a1eb3e2a0398790ac995f",
+    "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent90742618md1geometryconsistency",
+    "local_result_paths": {
+      "quality_review_manifest": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-context-density-bgsidecar/quality_review_manifest.json",
+      "review_comparison": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-context-density-bgsidecar/review_comparison.json"
+    },
+    "output_root_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-context-density-bgsidecar-review-20260505"
+  },
+  "md1_r4_context_density_v18_upper_bound_all9_20260505": {
+    "generated_at": "2026-05-05T17:37:44Z",
+    "status": "completed_blocked_quality",
+    "manifest_json": "logs/md1-cost-reduction-r4-context-density-all9-v18-manifest-20260505.json",
+    "dryrun_summary_json": "logs/md1-cost-reduction-r4-context-density-all9-v18-diagnostic-dryrun-20260505.json",
+    "remote_merge_payload_json": "logs/md1-cost-reduction-r4-context-density-all9-v18-remote-merge-g4dn-20260505154500-payload.json",
+    "remote_merge_plan_json": "logs/md1-cost-reduction-r4-context-density-all9-v18-remote-merge-g4dn-20260505154500-plan.json",
+    "review_summary_json": "logs/md1-cost-reduction-r4-context-density-all9-v18-review-20260505.json",
+    "local_result_paths": {
+      "quality_review_manifest": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-context-density-all9-v18/quality_review_manifest.json",
+      "review_comparison": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-context-density-all9-v18/review_comparison.json"
+    },
+    "diagnostic": {
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-context-density-all9-v18-remote-merge-g4dn-20260505154500/output/artifact/model.tar.gz",
+      "artifact_size_bytes": 2162335004,
+      "label": "all9",
+      "merge_job": {
+        "end": "2026-05-05T10:04:57.629000-06:00",
+        "estimated_cost_usd_at_0_736_per_hour": 0.2275,
+        "instance_type": "ml.g4dn.xlarge",
+        "name": "md1-r4ctxall9v18-merge-1777995900",
+        "seconds": 1113,
+        "start": "2026-05-05T09:46:24.540000-06:00"
+      },
+      "preflight": {
+        "artifact_complete": true,
+        "block_reasons": [],
+        "decision": "preflight_passed_run_frozen_smoke_review",
+        "merge": {
+          "background_asset": {
+            "asset": "background_skybox.webp",
+            "retained_gaussians": 378953,
+            "selection_score": 0.6353789878019934,
+            "source_asset": "/opt/ml/processing/output/artifact/tiles/tile_10/background_skybox.webp",
+            "source_tile_id": "tile_10"
+          },
+          "dropped_gaussians": 99448,
+          "fallback_reasons": [],
+          "fallback_tile_count": 0,
+          "merge_mode": "support_weighted_overlap",
+          "retain_all_tile_count": 0,
+          "retained_gaussians": 6641856,
+          "source_gaussians": 6741304,
+          "tile_count": 9
+        }
+      },
+      "review": {
+        "per_bucket_delta_vs_v18": {
+          "boundary": {
+            "lpips": -0.07792794704437256,
+            "psnr": 1.2869978253115342,
+            "ssim": 0.025210469961166382
+          },
+          "horizon": {
+            "lpips": -0.035842835903167725,
+            "psnr": 1.046236655885405,
+            "ssim": 0.004472494125366211
+          },
+          "near_detail": {
+            "lpips": -0.014104098081588745,
+            "psnr": 0.06482287848845125,
+            "ssim": -0.016883298754692078
+          }
+        },
+        "promotion_block_reasons": [
+          "near_detail_ssim_regression",
+          "horizon_sky_score_regression"
+        ],
+        "promotion_status": "blocked",
+        "render_sanity": {
+          "blank_view_count": 0,
+          "blank_views": [],
+          "checked_view_count": 12,
+          "status": "ok"
+        },
+        "v18_non_regression_block_reasons": [
+          "near_detail_v18_median_ssim_regression",
+          "horizon_v18_sky_score_regression",
+          "near_detail_v18_single_camera_lpips_regression"
+        ],
+        "v18_non_regression_status": "blocked"
+      },
+      "review_job": {
+        "end": "2026-05-05T10:26:21.878000-06:00",
+        "estimated_cost_usd_at_1_515_per_hour": 0.3333,
+        "instance_type": "ml.g5.2xlarge",
+        "model_artifacts": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-context-density-all9-v18-review-20260505/outputs/r4-context-density-all9-v18/md1-r1-r4-context-density-all9-v18-1777997510-quality/output/model.tar.gz",
+        "name": "md1-r1-r4-context-density-all9-v18-1777997510-quality",
+        "seconds": 792,
+        "start": "2026-05-05T10:13:09.483000-06:00"
+      }
+    },
+    "interpretation": "All selected smoke-camera tiles from V18 are not enough for production parity; missing V18 tiles still affect near_detail SSIM and horizon sky score."
+  },
+  "md1_r4_context_density_v18_upper_bound_all14_20260505": {
+    "generated_at": "2026-05-05T17:37:44Z",
+    "status": "completed_v18_parity",
+    "manifest_json": "logs/md1-cost-reduction-r4-context-density-all14-v18-manifest-20260505.json",
+    "dryrun_summary_json": "logs/md1-cost-reduction-r4-context-density-all14-v18-diagnostic-dryrun-20260505.json",
+    "remote_merge_payload_json": "logs/md1-cost-reduction-r4-context-density-all14-v18-remote-merge-g4dn-20260505163959-payload.json",
+    "remote_merge_plan_json": "logs/md1-cost-reduction-r4-context-density-all14-v18-remote-merge-g4dn-20260505163959-plan.json",
+    "review_summary_json": "logs/md1-cost-reduction-r4-context-density-all14-v18-review-20260505.json",
+    "local_result_paths": {
+      "quality_review_manifest": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-context-density-all14-v18/quality_review_manifest.json",
+      "review_comparison": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-context-density-all14-v18/review_comparison.json"
+    },
+    "diagnostic": {
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-context-density-all14-v18-remote-merge-g4dn-20260505163959/output/artifact/model.tar.gz",
+      "artifact_size_bytes": 3023382730,
+      "label": "all14",
+      "merge_job": {
+        "end": "2026-05-05T11:06:26.635000-06:00",
+        "estimated_cost_usd_at_0_736_per_hour": 0.3161,
+        "instance_type": "ml.g4dn.xlarge",
+        "name": "md1-r4ctxall14v18-merge-1777999199",
+        "seconds": 1546,
+        "start": "2026-05-05T10:40:40.895000-06:00"
+      },
+      "preflight": {
+        "artifact_complete": true,
+        "block_reasons": [],
+        "decision": "preflight_passed_run_frozen_smoke_review",
+        "merge": {
+          "background_asset": {
+            "asset": "background_skybox.webp",
+            "retained_gaussians": 378953,
+            "selection_score": 0.6353789878019934,
+            "source_asset": "/opt/ml/processing/output/artifact/tiles/tile_10/background_skybox.webp",
+            "source_tile_id": "tile_10"
+          },
+          "dropped_gaussians": 365766,
+          "fallback_reasons": [],
+          "fallback_tile_count": 0,
+          "merge_mode": "support_weighted_overlap",
+          "retain_all_tile_count": 0,
+          "retained_gaussians": 8423868,
+          "source_gaussians": 8789634,
+          "tile_count": 14
+        }
+      },
+      "review": {
+        "per_bucket_delta_vs_v18": {
+          "boundary": {
+            "lpips": 0.0,
+            "psnr": 0.0,
+            "ssim": 0.0
+          },
+          "horizon": {
+            "lpips": 0.0,
+            "psnr": 0.0,
+            "ssim": 0.0
+          },
+          "near_detail": {
+            "lpips": 0.0,
+            "psnr": 0.0,
+            "ssim": 0.0
+          }
+        },
+        "promotion_block_reasons": [
+          "boundary_no_required_improvement"
+        ],
+        "promotion_status": "blocked",
+        "render_sanity": {
+          "blank_view_count": 0,
+          "blank_views": [],
+          "checked_view_count": 12,
+          "status": "ok"
+        },
+        "v18_non_regression_block_reasons": [],
+        "v18_non_regression_status": "promoted"
+      },
+      "review_job": {
+        "end": "2026-05-05T11:33:59.527000-06:00",
+        "estimated_cost_usd_at_1_515_per_hour": 0.3291,
+        "instance_type": "ml.g5.2xlarge",
+        "model_artifacts": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-context-density-all14-v18-review-20260505/outputs/r4-context-density-all14-v18/md1-r1-r4-context-density-all14-v18-1778001285-quality/output/model.tar.gz",
+        "name": "md1-r1-r4-context-density-all14-v18-1778001285-quality",
+        "seconds": 782,
+        "start": "2026-05-05T11:20:57.145000-06:00"
+      }
+    },
+    "interpretation": "Remote merge/review path can reproduce the promoted V18 model exactly when all dense tile members are provided; quality misses are due to tile density/coverage, not remote packaging parity."
+  },
+  "md1_r4_context_density_upper_bound_analysis_20260505": {
+    "branch": "agent-90742618-md1-geometry-consistency",
+    "decision": {
+      "do_not_promote_9tile_candidates": true,
+      "next_unblocked_step": "Keep spend at dry-run/targeted-proof levels: formalize a density-preserving full-scene canary plan that uses V18 as rollback, requires per-tile retained-density lineage, and only retrains missing or stale dense tiles after no-spend cache checks.",
+      "no_full_14tile_training": true,
+      "status": "upper_bound_proves_remote_merge_parity_and_full_tile_density_requirement"
+    },
+    "diagnostics": {
+      "all14": {
+        "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-context-density-all14-v18-remote-merge-g4dn-20260505163959/output/artifact/model.tar.gz",
+        "artifact_size_bytes": 3023382730,
+        "label": "all14",
+        "merge_job": {
+          "end": "2026-05-05T11:06:26.635000-06:00",
+          "estimated_cost_usd_at_0_736_per_hour": 0.3161,
+          "instance_type": "ml.g4dn.xlarge",
+          "name": "md1-r4ctxall14v18-merge-1777999199",
+          "seconds": 1546,
+          "start": "2026-05-05T10:40:40.895000-06:00"
+        },
+        "preflight": {
+          "artifact_complete": true,
+          "block_reasons": [],
+          "decision": "preflight_passed_run_frozen_smoke_review",
+          "merge": {
+            "background_asset": {
+              "asset": "background_skybox.webp",
+              "retained_gaussians": 378953,
+              "selection_score": 0.6353789878019934,
+              "source_asset": "/opt/ml/processing/output/artifact/tiles/tile_10/background_skybox.webp",
+              "source_tile_id": "tile_10"
+            },
+            "dropped_gaussians": 365766,
+            "fallback_reasons": [],
+            "fallback_tile_count": 0,
+            "merge_mode": "support_weighted_overlap",
+            "retain_all_tile_count": 0,
+            "retained_gaussians": 8423868,
+            "source_gaussians": 8789634,
+            "tile_count": 14
+          }
+        },
+        "review": {
+          "per_bucket_delta_vs_v18": {
+            "boundary": {
+              "lpips": 0.0,
+              "psnr": 0.0,
+              "ssim": 0.0
+            },
+            "horizon": {
+              "lpips": 0.0,
+              "psnr": 0.0,
+              "ssim": 0.0
+            },
+            "near_detail": {
+              "lpips": 0.0,
+              "psnr": 0.0,
+              "ssim": 0.0
+            }
+          },
+          "promotion_block_reasons": [
+            "boundary_no_required_improvement"
+          ],
+          "promotion_status": "blocked",
+          "render_sanity": {
+            "blank_view_count": 0,
+            "blank_views": [],
+            "checked_view_count": 12,
+            "status": "ok"
+          },
+          "v18_non_regression_block_reasons": [],
+          "v18_non_regression_status": "promoted"
+        },
+        "review_job": {
+          "end": "2026-05-05T11:33:59.527000-06:00",
+          "estimated_cost_usd_at_1_515_per_hour": 0.3291,
+          "instance_type": "ml.g5.2xlarge",
+          "model_artifacts": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-context-density-all14-v18-review-20260505/outputs/r4-context-density-all14-v18/md1-r1-r4-context-density-all14-v18-1778001285-quality/output/model.tar.gz",
+          "name": "md1-r1-r4-context-density-all14-v18-1778001285-quality",
+          "seconds": 782,
+          "start": "2026-05-05T11:20:57.145000-06:00"
+        }
+      },
+      "all9": {
+        "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-context-density-all9-v18-remote-merge-g4dn-20260505154500/output/artifact/model.tar.gz",
+        "artifact_size_bytes": 2162335004,
+        "label": "all9",
+        "merge_job": {
+          "end": "2026-05-05T10:04:57.629000-06:00",
+          "estimated_cost_usd_at_0_736_per_hour": 0.2275,
+          "instance_type": "ml.g4dn.xlarge",
+          "name": "md1-r4ctxall9v18-merge-1777995900",
+          "seconds": 1113,
+          "start": "2026-05-05T09:46:24.540000-06:00"
+        },
+        "preflight": {
+          "artifact_complete": true,
+          "block_reasons": [],
+          "decision": "preflight_passed_run_frozen_smoke_review",
+          "merge": {
+            "background_asset": {
+              "asset": "background_skybox.webp",
+              "retained_gaussians": 378953,
+              "selection_score": 0.6353789878019934,
+              "source_asset": "/opt/ml/processing/output/artifact/tiles/tile_10/background_skybox.webp",
+              "source_tile_id": "tile_10"
+            },
+            "dropped_gaussians": 99448,
+            "fallback_reasons": [],
+            "fallback_tile_count": 0,
+            "merge_mode": "support_weighted_overlap",
+            "retain_all_tile_count": 0,
+            "retained_gaussians": 6641856,
+            "source_gaussians": 6741304,
+            "tile_count": 9
+          }
+        },
+        "review": {
+          "per_bucket_delta_vs_v18": {
+            "boundary": {
+              "lpips": -0.07792794704437256,
+              "psnr": 1.2869978253115342,
+              "ssim": 0.025210469961166382
+            },
+            "horizon": {
+              "lpips": -0.035842835903167725,
+              "psnr": 1.046236655885405,
+              "ssim": 0.004472494125366211
+            },
+            "near_detail": {
+              "lpips": -0.014104098081588745,
+              "psnr": 0.06482287848845125,
+              "ssim": -0.016883298754692078
+            }
+          },
+          "promotion_block_reasons": [
+            "near_detail_ssim_regression",
+            "horizon_sky_score_regression"
+          ],
+          "promotion_status": "blocked",
+          "render_sanity": {
+            "blank_view_count": 0,
+            "blank_views": [],
+            "checked_view_count": 12,
+            "status": "ok"
+          },
+          "v18_non_regression_block_reasons": [
+            "near_detail_v18_median_ssim_regression",
+            "horizon_v18_sky_score_regression",
+            "near_detail_v18_single_camera_lpips_regression"
+          ],
+          "v18_non_regression_status": "blocked"
+        },
+        "review_job": {
+          "end": "2026-05-05T10:26:21.878000-06:00",
+          "estimated_cost_usd_at_1_515_per_hour": 0.3333,
+          "instance_type": "ml.g5.2xlarge",
+          "model_artifacts": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-context-density-all9-v18-review-20260505/outputs/r4-context-density-all9-v18/md1-r1-r4-context-density-all9-v18-1777997510-quality/output/model.tar.gz",
+          "name": "md1-r1-r4-context-density-all9-v18-1777997510-quality",
+          "seconds": 792,
+          "start": "2026-05-05T10:13:09.483000-06:00"
+        }
+      },
+      "bgsidecar": {
+        "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-context-density-remote-merge-g4dn-bgsidecar-20260505132757/output/artifact/model.tar.gz",
+        "artifact_size_bytes": 1658433794,
+        "label": "bgsidecar",
+        "merge_job": {
+          "end": "2026-05-05T07:41:20.938000-06:00",
+          "estimated_cost_usd_at_0_736_per_hour": 0.1558,
+          "instance_type": "ml.g4dn.xlarge",
+          "name": "md1-r4ctxdensity-mergebg-1777987677",
+          "seconds": 762,
+          "start": "2026-05-05T07:28:38.642000-06:00"
+        },
+        "preflight": {
+          "artifact_complete": true,
+          "block_reasons": [],
+          "decision": "preflight_passed_run_frozen_smoke_review",
+          "merge": {
+            "background_asset": {
+              "asset": "background_skybox.webp",
+              "retained_gaussians": 1188805,
+              "selection_score": 0.6283583895586156,
+              "source_asset": "/opt/ml/processing/output/artifact/tiles/tile_06/background_skybox.webp",
+              "source_tile_id": "tile_06"
+            },
+            "dropped_gaussians": 90377,
+            "fallback_reasons": [],
+            "fallback_tile_count": 0,
+            "merge_mode": "support_weighted_overlap",
+            "retain_all_tile_count": 0,
+            "retained_gaussians": 4720941,
+            "source_gaussians": 4811318,
+            "tile_count": 9
+          }
+        },
+        "review": {
+          "per_bucket_delta_vs_v18": {
+            "boundary": {
+              "lpips": 0.02844524383544922,
+              "psnr": 0.38210157433521985,
+              "ssim": -0.029260843992233276
+            },
+            "horizon": {
+              "lpips": 0.04908624291419983,
+              "psnr": -0.6923923725858252,
+              "ssim": -0.02429966628551483
+            },
+            "near_detail": {
+              "lpips": 0.03052648901939392,
+              "psnr": 0.17882530072513525,
+              "ssim": -0.0076792240142822266
+            }
+          },
+          "promotion_block_reasons": [
+            "boundary_ssim_regression",
+            "boundary_no_required_improvement",
+            "horizon_ssim_regression",
+            "horizon_lpips_regression"
+          ],
+          "promotion_status": "blocked",
+          "render_sanity": {
+            "blank_view_count": 0,
+            "blank_views": [],
+            "checked_view_count": 12,
+            "status": "ok"
+          },
+          "v18_non_regression_block_reasons": [
+            "near_detail_v18_median_ssim_regression",
+            "near_detail_v18_median_lpips_regression",
+            "boundary_v18_median_ssim_regression",
+            "boundary_v18_median_lpips_regression",
+            "horizon_v18_median_psnr_regression",
+            "horizon_v18_median_ssim_regression",
+            "horizon_v18_median_lpips_regression",
+            "near_detail_v18_single_camera_lpips_regression",
+            "boundary_v18_single_camera_lpips_regression",
+            "horizon_v18_single_camera_psnr_regression",
+            "horizon_v18_single_camera_lpips_regression"
+          ],
+          "v18_non_regression_status": "blocked"
+        },
+        "review_job": {
+          "end": "2026-05-05T07:59:01.092000-06:00",
+          "estimated_cost_usd_at_1_515_per_hour": 0.3169,
+          "instance_type": "ml.g5.2xlarge",
+          "model_artifacts": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-context-density-bgsidecar-review-20260505/outputs/r4-context-density-bgsidecar/md1-r1-r4-context-density-bgsidecar-1777988720-quality/output/model.tar.gz",
+          "name": "md1-r1-r4-context-density-bgsidecar-1777988720-quality",
+          "seconds": 753,
+          "start": "2026-05-05T07:46:28.754000-06:00"
+        }
+      }
+    },
+    "exact_head_gates": {
+      "cdk_conclusion": "success",
+      "cdk_deploy_run_id": 25378598163,
+      "cloudflare_pages": "not_triggered_for_non_web_container_status_push",
+      "ecr_digest": "sha256:b0129db24d16251e6ee2af896e65c5eceefbd10d8eb52441b2800556f88347eb",
+      "ml_container_build_conclusion": "success",
+      "ml_container_build_run_id": 25378598148
+    },
+    "findings": [
+      "The background-preserving remote packager is structurally correct: streaming preflight passes, fallback_tile_count=0, retain_all_tile_count=0, and a merged background_skybox.webp is selected.",
+      "The 9-tile mixed-cache/context-density candidate remains quality-blocked even after background preservation; it has 4.721M retained gaussians versus V18 8.424M and misses SSIM/LPIPS/horizon gates.",
+      "Replacing the 9 selected smoke-camera tiles with their promoted V18 tile members recovers most metrics but still blocks near_detail SSIM and horizon sky score, proving selected-tile coverage is insufficient for production parity.",
+      "Repackaging all 14 promoted V18 tile members through the new remote merge path exactly reproduces V18 on the same-camera review: all PSNR/SSIM/LPIPS deltas are 0.0 and v18_non_regression_status=promoted.",
+      "The remaining production cost-reduction lever is not another smoke-only 9-tile acceptance run; it is density-preserving all-scene tile reuse/training plus full-tile or full-coverage non-regression before promotion."
+    ],
+    "generated_at": "2026-05-05T17:37:44Z",
+    "head_at_analysis": "3a22acfd5b420ca2876a1eb3e2a0398790ac995f",
+    "purpose": "No-training context-density diagnostics to isolate whether MD1 cost-reduction quality misses are remote-packager artifacts, selected-tile omissions, or reduced leaf density.",
+    "total_diagnostic_spend_estimate_usd": 1.6787,
+    "v18_source_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz"
   }
 }

@@ -1,0 +1,11 @@
+{
+  "tile_id": "tile_06",
+  "training_mode": "hybrid_historical",
+  "selected_image_count": null,
+  "view_bucket_counts": null,
+  "hybrid_tile_policy": {
+    "mode": "historical",
+    "source_splat": "/opt/ml/processing/work/historical/tiles/tile_06/splat.ply",
+    "storage": "hardlink_or_copy"
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "ply": "splat.ply",
+  "skybox": "background_skybox.webp",
+  "camera_idx": 145,
+  "background_appearance_mode": "camera",
+  "background_skipped": false,
+  "foreground_coordinate_frame": "planner",
+  "foreground_transform": {
+    "coordinate_frame": "planner",
+    "dataparser_transform_source": "train_dataparser_outputs",
+    "dataparser_scale": 0.002545501380962465,
+    "applied": true,
+    "position_transform_applied": true,
+    "scale_transform_applied": true,
+    "rotation_transform_applied": true,
+    "dataparser_transform": [
+      [
+        0.9996667504310608,
+        0.025097783654928207,
+        0.006041407119482756,
+        11.329773902893066
+      ],
+      [
+        0.006041407119482756,
+        -0.4549858272075653,
+        0.8904781937599182,
+        30.847164154052734
+      ],
+      [
+        0.025097783654928207,
+        -0.890144944190979,
+        -0.4549858272075653,
+        30.722835540771484
+      ]
+    ],
+    "model_to_output_linear": [
+      [
+        392.71899385074005,
+        2.3733665025807356,
+        9.859661935596574
+      ],
+      [
+        2.3733665025807342,
+        349.82427741474754,
+        -178.7411398965226
+      ],
+      [
+        -9.859661935596574,
+        178.74113989652264,
+        349.69335671470634
+      ]
+    ],
+    "planner_transform_applied": true,
+    "planner_transform_source": "/tmp/nerfstudio_training/converted_data/transforms.json",
+    "planner_scale": 1.0,
+    "planner_offset": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "planner_transform": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        -0.0,
+        -1.0,
+        -0.0,
+        -0.0
+      ]
+    ],
+    "appearance": {
+      "requested_camera_idx": 145,
+      "appearance_camera_idx": 145,
+      "appearance_num_embeddings": 170,
+      "appearance_camera_clamped": false
+    },
+    "planner_scale_transform_applied": true,
+    "model_to_output_rotation": [
+      [
+        0.9996667458041542,
+        0.0060414074146659565,
+        0.025097783363906168
+      ],
+      [
+        0.006041407414666049,
+        0.8904781875066772,
+        -0.4549858228244843
+      ],
+      [
+        -0.02509778336390616,
+        0.4549858228244844,
+        0.890144933310832
+      ]
+    ]
+  },
+  "background_selection": {
+    "requested_mode": "auto_camera",
+    "resolved_mode": "camera",
+    "camera_idx": 145,
+    "image_path": "/tmp/nerfstudio_training/converted_data/images/frame_00075.JPG",
+    "score": 0.6211847354749487,
+    "stride": 5,
+    "max_frames": 32,
+    "sampled_candidates": 32
+  },
+  "floater_pruning": {
+    "enabled": true,
+    "evaluated_gaussians": 248349,
+    "candidate_gaussians": 108932,
+    "removed_gaussians": 1,
+    "remaining_gaussians": 248348,
+    "sampled_views": 24,
+    "min_views": 6,
+    "top_region_ratio": 0.35,
+    "top_view_fraction": 0.9,
+    "min_sky_views": 2,
+    "sky_min_luminance": 0.3,
+    "sky_min_saturation": 0.08,
+    "sky_blue_dominance_margin": 0.02,
+    "max_opacity": 0.75,
+    "max_color_distance": 0.18,
+    "min_edge_support": 1,
+    "patch_size": 9
+  }
+}
