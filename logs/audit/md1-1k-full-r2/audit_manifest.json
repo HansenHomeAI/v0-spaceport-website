@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "Tile_04 diagnostic alone is non-promotable; expanded 9-tile is still dry-run only until the remaining four leaves train, merge, preflight, and pass V18 same-camera non-regression.",
+  "blocked_promotion_reason": "Expanded 9-tile canary active but incomplete; full 14-tile training remains blocked. No promotion until active/queued leaves complete and V18 non-regression passes.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "85e61e21250daa8abe1acda13e0b56582170d38a plus local tile04 completion/preflight/cache/expanded-canary evidence pending commit",
-  "current_exact_head_gate_status": "exact-head 85e61e21250daa8abe1acda13e0b56582170d38a has green CDK Deploy 25349593452; prior code head 35a4710459ca739b4b3b1ac9a4f940c4200a41ba has green Trigger ML Container Build 25293405536 with 3DGS digest sha256:7cb6d654e86f1baba75d7c00b0190c94baaa47fd13fb88418febe55b55677433.",
-  "current_live_compute_status": "No MD1 SageMaker training jobs are InProgress. Tile_04 bridge diagnostic completed in 2410 billable seconds/about $1.014 and wrote the expected model.tar.gz; unrelated Meadow processing r5full80s1-1777934749 remains InProgress.",
-  "current_rung": "R4_cost_reduction_tile04_bridge_diagnostic_complete_expanded_9tile_canary_ready",
+  "current_branch_head": "49892319ac955df92c3199c8463391909285c7c3 plus local expanded-canary submission evidence pending commit",
+  "current_exact_head_gate_status": "exact-head 49892319ac955df92c3199c8463391909285c7c3 has green CDK Deploy 25352320589.",
+  "current_live_compute_status": "Bounded expanded 9-tile canary active, not full 14-tile. Current MD1 training jobs are md1-r4exp9-1777943800-1777943463-tile-01 and md1-r4exp9-1777943800-1777943463-tile-05 InProgress/Pending; tile_06/tile_10 are queued. Unrelated Meadow processing r5full80s1-1777934749 remains InProgress.",
+  "current_rung": "R4_cost_reduction_expanded_9tile_acceptance_path_canary_active",
   "exact_head_gate_status": "Exact-head 5d209189934eeec5e2788acceca4e5f9d94769bf has green CDK Deploy 25181111382 and green Cloudflare Pages 25181111351. Local follow-up changes pass py_compile, bash -n, tests.unit.test_sogs_supersplat_bundle, md1 production Playwright smoke, pipeline-viewer MD1 LOD smoke, npm run build, and npm run cf:build; next is commit/push and exact-head workflow monitoring.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -700,7 +700,7 @@
     "checked_at": "2026-05-03T22:19:00Z"
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4_leafinit_canary_rebuild/review_comparison.json",
-  "latest_review_status": "Tile_04 bridge diagnostic passed leaf preflight, local support_weighted_overlap merge, and cache reuse for expanded canary planning. The rerun expanded 9-tile dry-run now reuses tile_00,tile_02,tile_04,tile_11,tile_13 and plans only tile_01,tile_05,tile_06,tile_10 for estimated_usd $4.3632 under the $12 cap.",
+  "latest_review_status": "Expanded 9-tile acceptance-path canary submitted after tile_04 passed preflight/merge/cache. It reuses tile_00,tile_02,tile_04,tile_11,tile_13 and trains only tile_01,tile_05,tile_06,tile_10; dry-run estimate $4.3632 under $12. Awaiting leaf completion, merge/preflight, and V18 same-camera non-regression.",
   "live_compute_status": "No SageMaker training jobs are InProgress. Exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. Tile_13 hard proof is complete/preflighted/cached; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
@@ -710,7 +710,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "No full 14-tile training. Commit/gate tile04 completion evidence, then submit only the $12-capped expanded 9-tile canary if exact-head stays green and MD1 training remains idle.",
+  "next_unblocked_step": "Monitor tile_01/tile_05 to completion, then tile_06/tile_10, leaf preflight, merge/preflight, and V18 non-regression. Do not launch full 14-tile training.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -3297,7 +3297,7 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-05T01:02:00Z",
+  "updated": "2026-05-05T01:12:00Z",
   "version": "1.0.0",
   "r5_14tile_2k_preflight": {
     "summary_path": "logs/audit/md1-1k-full-r2/r5_14tile_2k_preflight_summary_20260428215230.json",
@@ -5732,7 +5732,7 @@
     "conclusion": "V15 context padding produced identical p24 metrics to V12/V13 and remains blocked only on horizon_psnr_regression; no promotion run."
   },
   "r5_teacher_context_v12_ctx10_v15_submit_20260429071645Z": "Exact-head 0392ef97dfe5363579f2d88f90fd5e70fd03ed82 is gated green on CDK Deploy 25095508893 and manually-triggered Pages 25095528013. Submitted V15 no-training/no-promotion Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 to add 10 percent preserve-context padding to V12, including historical tile_01, with output s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-ctx10-v15-20260429071522/output/artifact/model.tar.gz. Latest status is InProgress with no ProcessingStartTime, no FailureReason/no ExitMessage, zero output objects, no training jobs InProgress, and only this processing job InProgress.",
-  "last_updated": "2026-05-05T01:02:00Z",
+  "last_updated": "2026-05-05T01:12:00Z",
   "r5_teacher_context_v12_ctx10_v15_smoke_blocked_20260429080934Z": "Exact-head d14f4a4b56aa9c3a215e1f4845450c77188a0687 is gated green on CDK Deploy 25095992000 and manually-triggered Pages 25095995605; alias/hash /health.txt passed, hash https://c896c947.v0-spaceport-website-preview2.pages.dev. V15 Processing job md1-r5-teacherctx-v12-ctx10-v15-1777446922 completed, model.tar.gz is present at 1203320806 bytes, streaming preflight passed, and explicit p24 smoke md1-r1-r5-teacher-context-v12-ctx10-v15-smoke-p24-1777448068-qu completed with camera coverage OK but blocked only on horizon_psnr_regression. Metrics matched V12 exactly, so context padding did not close the PSNR miss. No SageMaker jobs are InProgress and no promotion was run.",
   "r5_teacher_context_v12_tile01overlap_v16": {
     "processing_job_name": "md1-r5-teacherctx-v12-t01ov-v16-1777450963",
@@ -7270,8 +7270,8 @@
       "next_gate": "Commit/push, wait exact-head CDK and ML container build, then rerun only the bounded tile_02 export smoke on the new digest before any larger fanout."
     }
   },
-  "latest_training_cost_reduction_status": "Tile_04 bridge diagnostic passed leaf preflight, local support_weighted_overlap merge, and cache reuse for expanded canary planning. The rerun expanded 9-tile dry-run now reuses tile_00,tile_02,tile_04,tile_11,tile_13 and plans only tile_01,tile_05,tile_06,tile_10 for estimated_usd $4.3632 under the $12 cap.",
-  "latest_live_compute_status": "No MD1 SageMaker training jobs are InProgress. Tile_04 bridge diagnostic completed in 2410 billable seconds/about $1.014 and wrote the expected model.tar.gz; unrelated Meadow processing r5full80s1-1777934749 remains InProgress.",
+  "latest_training_cost_reduction_status": "Expanded 9-tile acceptance-path canary submitted after tile_04 passed preflight/merge/cache. It reuses tile_00,tile_02,tile_04,tile_11,tile_13 and trains only tile_01,tile_05,tile_06,tile_10; dry-run estimate $4.3632 under $12. Awaiting leaf completion, merge/preflight, and V18 same-camera non-regression.",
+  "latest_live_compute_status": "Bounded expanded 9-tile canary active, not full 14-tile. Current MD1 training jobs are md1-r4exp9-1777943800-1777943463-tile-01 and md1-r4exp9-1777943800-1777943463-tile-05 InProgress/Pending; tile_06/tile_10 are queued. Unrelated Meadow processing r5full80s1-1777934749 remains InProgress.",
   "md1_r3_tile02_exportfix_smoke_pass_20260503125756Z": {
     "job_name": "md1-r3od-tile02expfix-1777810456-tile-02",
     "status": "Completed",
@@ -8621,5 +8621,154 @@
       "summary": "Tile_04 was the cheapest missing-support diagnostic and passed leaf preflight plus local merge ownership. The expanded 9-tile acceptance-path canary can now reuse five cached leaves and train only tile_01,tile_05,tile_06,tile_10 for a no-spend projected $4.3632 accepted-run estimate; no full 14-tile run is authorized.",
       "next_unblocked_step": "Commit and gate this evidence. If exact-head remains green and no MD1 training is active, submit only the $12-capped expanded 9-tile canary before any full run."
     }
+  },
+  "md1_r4_expanded_9tile_canary_submit_20260505": {
+    "checked_at": "2026-05-05T01:12:00Z",
+    "exact_head": "49892319ac955df92c3199c8463391909285c7c3",
+    "exact_head_gate": {
+      "workflow": "CDK Deploy",
+      "run_id": 25352320589,
+      "conclusion": "success"
+    },
+    "decision": "expanded_9tile_acceptance_path_canary_active_not_full_run",
+    "selected_tile_ids": [
+      "tile_00",
+      "tile_02",
+      "tile_11",
+      "tile_13",
+      "tile_01",
+      "tile_04",
+      "tile_05",
+      "tile_06",
+      "tile_10"
+    ],
+    "cache_hit_tiles": [
+      "tile_00",
+      "tile_02",
+      "tile_11",
+      "tile_13",
+      "tile_04"
+    ],
+    "planned_train_tiles": [
+      "tile_01",
+      "tile_05",
+      "tile_06",
+      "tile_10"
+    ],
+    "cost_estimate": {
+      "instance_type": "ml.g5.2xlarge",
+      "hourly_rate_usd": 1.515,
+      "train_stage_count": 4,
+      "estimated_billable_hours": 2.88,
+      "estimated_usd": 4.3632,
+      "worst_case_billable_hours": 20.0,
+      "worst_case_usd": 30.3,
+      "baseline_iterations": 12000,
+      "stage_estimates": [
+        {
+          "stage_name": "T0_tile_01",
+          "training_mode": "leaf_tile",
+          "tile_id": "tile_01",
+          "max_iterations": 8000,
+          "stage_multiplier": 1,
+          "estimated_billable_hours": 0.72,
+          "estimated_usd": 1.0908,
+          "budget_class": "standard",
+          "prior_duration_hours": 2.27,
+          "prior_fanout_duration_hours": 0.72,
+          "cost_basis": "observed_fanout_leaf_duration",
+          "runtime_risk": null,
+          "runtime_cap_shortfall_hours": 0.0
+        },
+        {
+          "stage_name": "T0_tile_05",
+          "training_mode": "leaf_tile",
+          "tile_id": "tile_05",
+          "max_iterations": 8000,
+          "stage_multiplier": 1,
+          "estimated_billable_hours": 0.72,
+          "estimated_usd": 1.0908,
+          "budget_class": "standard",
+          "prior_duration_hours": 3.04,
+          "prior_fanout_duration_hours": 0.72,
+          "cost_basis": "observed_fanout_leaf_duration",
+          "runtime_risk": null,
+          "runtime_cap_shortfall_hours": 0.0
+        },
+        {
+          "stage_name": "T0_tile_06",
+          "training_mode": "leaf_tile",
+          "tile_id": "tile_06",
+          "max_iterations": 8000,
+          "stage_multiplier": 1,
+          "estimated_billable_hours": 0.72,
+          "estimated_usd": 1.0908,
+          "budget_class": "standard",
+          "prior_duration_hours": 3.25,
+          "prior_fanout_duration_hours": 0.72,
+          "cost_basis": "observed_fanout_leaf_duration",
+          "runtime_risk": null,
+          "runtime_cap_shortfall_hours": 0.0
+        },
+        {
+          "stage_name": "T0_tile_10",
+          "training_mode": "leaf_tile",
+          "tile_id": "tile_10",
+          "max_iterations": 8000,
+          "stage_multiplier": 1,
+          "estimated_billable_hours": 0.72,
+          "estimated_usd": 1.0908,
+          "budget_class": "standard",
+          "prior_duration_hours": 3.98,
+          "prior_fanout_duration_hours": 0.72,
+          "cost_basis": "observed_fanout_leaf_duration",
+          "runtime_risk": null,
+          "runtime_cap_shortfall_hours": 0.0
+        }
+      ],
+      "pricing_source": "static_us-west-2-rates-verified-2026-04-30"
+    },
+    "max_estimated_usd": 12.0,
+    "submit_command_summary": {
+      "job_prefix": "md1-r4exp9-1777943800",
+      "max_tile_concurrency": 2,
+      "poll_seconds": 180,
+      "summary_json_output": "logs/md1-cost-reduction-r4-expanded-canary-after-tile04-cache-submit-20260505.json"
+    },
+    "active_training_jobs": [
+      {
+        "tile_id": "tile_01",
+        "job_name": "md1-r4exp9-1777943800-1777943463-tile-01",
+        "status": "InProgress/Pending",
+        "instance_type": "ml.g5.2xlarge",
+        "max_runtime_seconds": 18000,
+        "checkpoint_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-camera-coverage-canary-after-tile04-cache-20260505/checkpoints/md1-r4exp9-1777943800-1777943463-tile-01"
+      },
+      {
+        "tile_id": "tile_05",
+        "job_name": "md1-r4exp9-1777943800-1777943463-tile-05",
+        "status": "InProgress/Pending",
+        "instance_type": "ml.g5.2xlarge",
+        "max_runtime_seconds": 18000,
+        "checkpoint_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-camera-coverage-canary-after-tile04-cache-20260505/checkpoints/md1-r4exp9-1777943800-1777943463-tile-05"
+      }
+    ],
+    "remaining_train_tiles_after_current_wave": [
+      "tile_06",
+      "tile_10"
+    ],
+    "live_aws_state": {
+      "training_jobs_in_progress": [
+        "md1-r4exp9-1777943800-1777943463-tile-01",
+        "md1-r4exp9-1777943800-1777943463-tile-05"
+      ],
+      "processing_jobs_in_progress": [
+        {
+          "job_name": "r5full80s1-1777934749",
+          "classification": "unrelated_meadow_colmap"
+        }
+      ]
+    },
+    "next_unblocked_step": "Monitor tile_01/tile_05 to completion, then tile_06/tile_10, run leaf preflight and local/package merge before V18 non-regression. Do not launch full 14-tile training."
   }
 }
