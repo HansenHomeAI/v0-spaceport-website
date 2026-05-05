@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import sys
 import tempfile
 import unittest
@@ -93,6 +94,27 @@ class TiledMergeProcessingPlannerTests(unittest.TestCase):
 
             self.assertTrue(output_root.exists())
             self.assertEqual(list(output_root.iterdir()), [])
+
+    def test_packager_writes_required_tile_input_sidecars(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output_root = Path(tmp) / "artifact"
+            packager.write_required_tile_inputs(
+                output_root=output_root,
+                tile_plan={
+                    "tile_id": "tile_04",
+                    "artifact_uri": "s3://bucket/v18/model.tar.gz",
+                    "candidate_members": ["tiles/tile_04/splat.ply", "splat.ply"],
+                },
+                tile_manifest={"tiles": [{"tile_id": "tile_04"}, {"tile_id": "tile_05"}]},
+                view_buckets={"tile_04": {"boundary": ["DJI_0001.JPG"]}},
+            )
+
+            input_dir = output_root / "tiled_pipeline" / "inputs" / "tile_04"
+            manifest = json.loads((input_dir / "3dgs_tile_manifest.json").read_text(encoding="utf-8"))
+            scaffold = json.loads((input_dir / "scaffold_init_metadata.json").read_text(encoding="utf-8"))
+
+            self.assertEqual(manifest["tiles"], [{"tile_id": "tile_04"}])
+            self.assertEqual(scaffold["scaffold_inheritance_mode"], "remote_no_training_reuse")
 
 
 if __name__ == "__main__":

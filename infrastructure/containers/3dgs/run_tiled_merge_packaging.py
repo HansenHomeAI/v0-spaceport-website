@@ -66,11 +66,25 @@ def extract_tile_from_artifact(tile_plan: dict[str, Any], artifact_root: Path, o
             f"tiles/{tile_plan.get('tile_id')}/training_selection.json",
             "training_selection.json",
         ]
+        export_candidates = [
+            f"tiles/{tile_plan.get('tile_id')}/export_manifest.json",
+            "export_manifest.json",
+        ]
+        stage_summary_candidates = [
+            f"tiles/{tile_plan.get('tile_id')}/stage_summary.json",
+            "stage_summary.json",
+        ]
         for member_name in metadata_candidates:
             if safe_extract_member(archive, member_name, output_tile_dir / "training_metadata.json"):
                 break
         for member_name in selection_candidates:
             if safe_extract_member(archive, member_name, output_tile_dir / "training_selection.json"):
+                break
+        for member_name in export_candidates:
+            if safe_extract_member(archive, member_name, output_tile_dir / "export_manifest.json"):
+                break
+        for member_name in stage_summary_candidates:
+            if safe_extract_member(archive, member_name, output_tile_dir / "stage_summary.json"):
                 break
 
     if not (output_tile_dir / "training_metadata.json").exists():
@@ -86,6 +100,49 @@ def extract_tile_from_artifact(tile_plan: dict[str, Any], artifact_root: Path, o
             ),
             encoding="utf-8",
         )
+    if not (output_tile_dir / "training_selection.json").exists():
+        (output_tile_dir / "training_selection.json").write_text(
+            json.dumps(
+                {
+                    "training_mode": str(tile_plan.get("stage_type") or "cached_tile"),
+                    "tile_id": tile_plan.get("tile_id"),
+                    "source_artifact_uri": tile_plan.get("artifact_uri"),
+                    "source_member": selected_member,
+                },
+                indent=2,
+            ),
+            encoding="utf-8",
+        )
+    if not (output_tile_dir / "export_manifest.json").exists():
+        (output_tile_dir / "export_manifest.json").write_text(
+            json.dumps(
+                {
+                    "tile_id": tile_plan.get("tile_id"),
+                    "splat_ply": "splat.ply",
+                    "source_artifact_uri": tile_plan.get("artifact_uri"),
+                    "source_member": selected_member,
+                    "foreground_coordinate_frame": "planner",
+                    "planner_transform_applied": True,
+                },
+                indent=2,
+            ),
+            encoding="utf-8",
+        )
+    if not (output_tile_dir / "stage_summary.json").exists():
+        (output_tile_dir / "stage_summary.json").write_text(
+            json.dumps(
+                {
+                    "tile_id": tile_plan.get("tile_id"),
+                    "stage_type": tile_plan.get("stage_type"),
+                    "source_artifact_uri": tile_plan.get("artifact_uri"),
+                    "source_member": selected_member,
+                    "splat_size_bytes": selected_size,
+                    "stage_elapsed_seconds": 0,
+                },
+                indent=2,
+            ),
+            encoding="utf-8",
+        )
 
     return {
         "tile_id": tile_plan.get("tile_id"),
@@ -95,6 +152,41 @@ def extract_tile_from_artifact(tile_plan: dict[str, Any], artifact_root: Path, o
         "selected_size_bytes": selected_size,
         "tile_output_dir": str(output_tile_dir),
     }
+
+
+def tile_only_manifest(tile_manifest: dict[str, Any], tile_id: str) -> dict[str, Any]:
+    return {
+        **tile_manifest,
+        "tiles": [tile for tile in tile_manifest.get("tiles", []) if str(tile.get("tile_id")) == tile_id],
+    }
+
+
+def write_required_tile_inputs(
+    *, output_root: Path, tile_plan: dict[str, Any], tile_manifest: dict[str, Any], view_buckets: dict[str, Any]
+) -> None:
+    tile_id = str(tile_plan["tile_id"])
+    tile_input_dir = output_root / "tiled_pipeline" / "inputs" / tile_id
+    tile_input_dir.mkdir(parents=True, exist_ok=True)
+    (tile_input_dir / "3dgs_tile_manifest.json").write_text(
+        json.dumps(tile_only_manifest(tile_manifest, tile_id), indent=2),
+        encoding="utf-8",
+    )
+    (tile_input_dir / "3dgs_view_buckets.json").write_text(
+        json.dumps(view_buckets, indent=2),
+        encoding="utf-8",
+    )
+    (tile_input_dir / "scaffold_init_metadata.json").write_text(
+        json.dumps(
+            {
+                "tile_id": tile_id,
+                "scaffold_inheritance_mode": "remote_no_training_reuse",
+                "scaffold_source_artifact": tile_plan.get("artifact_uri"),
+                "source_member_candidates": tile_plan.get("candidate_members", []),
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
 
 
 def build_tarball(source_dir: Path, tarball_path: Path) -> None:
@@ -153,6 +245,12 @@ def main() -> int:
         record = extract_tile_from_artifact(tile_plan, artifact_root, output_tile_dir)
         extraction_records.append(record)
         extracted_tiles[tile_id] = output_tile_dir
+        write_required_tile_inputs(
+            output_root=output_root,
+            tile_plan=tile_plan,
+            tile_manifest=tile_manifest,
+            view_buckets=view_buckets,
+        )
 
     (output_root / "3dgs_tile_manifest.json").write_text(json.dumps(selected_manifest, indent=2), encoding="utf-8")
     if view_buckets:

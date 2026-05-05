@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "a5425d8cca7fa4b6a1eeae1a619128c1927b11c2 with local remote-merge output-mount fix pending commit/push",
-  "current_exact_head_gate_status": "exact-head a5425d8cca7fa4b6a1eeae1a619128c1927b11c2 has green CDK Deploy 25373500545 and green Trigger ML Container Build 25373500573. ECR spaceport/3dgs:agent90742618md1geometryconsistency now resolves to sha256:1b0ba7a1885a5bcf229f6a588349f52e0806ef6721f380cb0462438cc99a9153.",
+  "current_branch_head": "70f23dd05719d5911cd9edee7d87c2208c7c144c with local remote-merge sidecar completeness fix pending commit/push",
+  "current_exact_head_gate_status": "exact-head 70f23dd05719d5911cd9edee7d87c2208c7c144c has green CDK Deploy 25374669257 and green Trigger ML Container Build 25374669240. ECR spaceport/3dgs:agent90742618md1geometryconsistency now resolves to sha256:e4dbbc1c87a144cd577e591d33a0c694caa5ee85cc2c693fc9996489354a3a13.",
   "current_live_compute_status": "No MD1 SageMaker training or processing jobs are InProgress. Unrelated Meadow processing r5full80s2-1777973662 is InProgress.",
-  "current_rung": "R4_cost_reduction_remote_merge_packager_mount_fix_ready",
+  "current_rung": "R4_cost_reduction_remote_merge_packager_sidecar_fix_ready",
   "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -796,7 +796,7 @@
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-expanded-standard-v18color/review_comparison.json",
   "latest_review_status": "No-training standard 9-tile plus V18 sky-preserving rgb-offset [0.008,0.12,0.0] was structurally valid and reviewed on the V18 smoke-p24 camera set. Review md1-r1-r4-expanded-standard-v18color-1777966369-quality completed in 718 billable seconds/about $0.302, camera coverage/render sanity OK, but V18 non-regression is blocked: near_detail +0.6248 dB/-0.0043 SSIM/+0.0005 LPIPS, boundary +0.4691 dB/-0.0398 SSIM/+0.0493 LPIPS, horizon -0.9713 dB/-0.0248 SSIM/+0.0584 LPIPS.",
-  "latest_training_cost_reduction_status": "remote_merge_packager_output_mount_fix_ready",
+  "latest_training_cost_reduction_status": "remote_merge_packager_sidecar_completeness_fix_ready",
   "live_compute_status": "No SageMaker training jobs are InProgress. Exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. Tile_13 hard proof is complete/preflighted/cached; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
@@ -9897,6 +9897,60 @@
       "status": "commit_push_rebuild_then_resubmit_g4dn",
       "no_full_14tile_training": true,
       "next_unblocked_step": "Commit/push the output-mount fix, wait for exact-head CDK plus automatic ML container build, then submit a fresh bounded ml.g4dn.xlarge no-training remote merge job."
+    }
+  },
+  "md1_r4_context_density_remote_merge_sidecar_fix_20260505": {
+    "status": "remote_merge_packager_sidecar_completeness_fix_ready",
+    "generated_at": "2026-05-05T12:21:36Z",
+    "head_at_start": "70f23dd05719d5911cd9edee7d87c2208c7c144c",
+    "gates_before_retry": {
+      "cdk_run_id": 25374669257,
+      "ml_container_build_run_id": 25374669240,
+      "codebuild_id": "spaceport-ml-containers:d247bd1e-598d-40b1-b29d-0cefef762129",
+      "ecr_image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent90742618md1geometryconsistency",
+      "ecr_digest": "sha256:e4dbbc1c87a144cd577e591d33a0c694caa5ee85cc2c693fc9996489354a3a13"
+    },
+    "completed_remote_merge": {
+      "job_name": "md1-r4ctxdensity-mergeg4b-1777982617",
+      "instance_type": "ml.g4dn.xlarge",
+      "status": "completed",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-context-density-remote-merge-g4dn-retry-20260505/output/artifact/model.tar.gz",
+      "artifact_size_bytes": 1656869623,
+      "merged_ply_size_bytes": 490978497,
+      "retained_gaussians": 4720941,
+      "source_gaussians": 4811318,
+      "dropped_gaussians": 90377,
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0
+    },
+    "streaming_preflight": {
+      "summary_json": "logs/md1-cost-reduction-r4-context-density-remote-merge-g4dn-retry-preflight-20260505.json",
+      "decision": "preflight_blocked",
+      "block_reasons": [
+        "artifact_required_paths_missing"
+      ],
+      "missing_required_path_count": 45
+    },
+    "fix": {
+      "container_entrypoint": "infrastructure/containers/3dgs/run_tiled_merge_packaging.py",
+      "change": "Remote packager now preserves or synthesizes per-tile export_manifest.json, stage_summary.json, and tiled_pipeline/inputs sidecars required by the streaming artifact gate.",
+      "test_added": "tests.unit.test_tiled_merge_processing_planner.TiledMergeProcessingPlannerTests.test_packager_writes_required_tile_input_sidecars"
+    },
+    "verification": {
+      "targeted_unit_tests": "passed_118_tests",
+      "py_compile": "passed",
+      "json_validation": "passed",
+      "git_diff_check": "passed"
+    },
+    "live_compute_status": {
+      "md1_training_jobs_in_progress": 0,
+      "md1_processing_jobs_in_progress": 0,
+      "unrelated_processing_job_in_progress": "r5full80s2-1777973662"
+    },
+    "decision": {
+      "status": "commit_push_rebuild_then_resubmit_g4dn",
+      "no_full_14tile_training": true,
+      "next_unblocked_step": "Commit/push the sidecar completeness fix, wait for exact-head CDK plus automatic ML container build, then submit a fresh bounded ml.g4dn.xlarge no-training remote merge job."
     }
   }
 }
