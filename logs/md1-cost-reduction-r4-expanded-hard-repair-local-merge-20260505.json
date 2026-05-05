@@ -1,0 +1,237 @@
+{
+  "checked_at": "2026-05-05T06:31:02.265303+00:00",
+  "decision": "expanded_hard_repair_packaged_run_tiled_preflight_then_v18_same_camera_review",
+  "work_dir": "/tmp/md1-r4-expanded-hard-repair-merge-20260505",
+  "package_dir": "/tmp/md1-r4-expanded-hard-repair-package-20260505",
+  "selected_tile_ids": [
+    "tile_00",
+    "tile_02",
+    "tile_11",
+    "tile_13",
+    "tile_01",
+    "tile_04",
+    "tile_05",
+    "tile_06",
+    "tile_10"
+  ],
+  "source_artifacts": {
+    "tile_00": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_00/md1-r4leafreb-1777858863-tile-00/output/model.tar.gz",
+    "tile_01": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-hard-repair-canary-20260505/tiles/tile_01/md1-r4exp9hard-1777951236-tile-01/output/model.tar.gz",
+    "tile_02": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_02/md1-r4leafreb-1777858863-tile-02/output/model.tar.gz",
+    "tile_04": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-hard-repair-canary-20260505/tiles/tile_04/md1-r4exp9hard-1777951236-tile-04/output/model.tar.gz",
+    "tile_05": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-hard-repair-canary-20260505/tiles/tile_05/md1-r4exp9hard-1777951236-tile-05/output/model.tar.gz",
+    "tile_06": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-hard-repair-canary-20260505/tiles/tile_06/md1-r4exp9hard-1777951236-tile-06/output/model.tar.gz",
+    "tile_10": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-hard-repair-canary-20260505/tiles/tile_10/md1-r4exp9hard-1777951236-tile-10/output/model.tar.gz",
+    "tile_11": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_11/md1-r4leafreb-1777858863-tile-11/output/model.tar.gz",
+    "tile_13": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-proof-20260503/tiles/tile_13/md1-r4leafinit-1777850709-tile-13/output/model.tar.gz"
+  },
+  "submitted_hard_repair_training_billable_seconds": 16863,
+  "submitted_hard_repair_training_estimated_usd": 7.0965,
+  "merge_summary": {
+    "merge_mode": "support_weighted_overlap",
+    "merged_ply": "/tmp/md1-r4-expanded-hard-repair-merge-20260505/merged/merged_splat.ply",
+    "tile_count": 9,
+    "source_gaussians": 2408677,
+    "retained_gaussians": 2287468,
+    "dropped_gaussians": 121209,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "fallback_reasons": [],
+    "tiles": [
+      {
+        "tile_id": "tile_00",
+        "source_ply": "/tmp/md1-r4-expanded-hard-repair-merge-20260505/merged/tile_outputs/tile_00/splat.ply",
+        "source_gaussians": 248348,
+        "retained_gaussians": 248318,
+        "dropped_gaussians": 30,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 248317,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 1,
+          "retained_overlap_count": 0,
+          "retained_context_count": 1,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_01",
+        "source_ply": "/tmp/md1-r4-expanded-hard-repair-merge-20260505/merged/tile_outputs/tile_01/splat.ply",
+        "source_gaussians": 297049,
+        "retained_gaussians": 296686,
+        "dropped_gaussians": 363,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 222209,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 74477,
+          "retained_overlap_count": 0,
+          "retained_context_count": 74477,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_02",
+        "source_ply": "/tmp/md1-r4-expanded-hard-repair-merge-20260505/merged/tile_outputs/tile_02/splat.ply",
+        "source_gaussians": 480285,
+        "retained_gaussians": 479436,
+        "dropped_gaussians": 849,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 446854,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 32582,
+          "retained_overlap_count": 0,
+          "retained_context_count": 32582,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_04",
+        "source_ply": "/tmp/md1-r4-expanded-hard-repair-merge-20260505/merged/tile_outputs/tile_04/splat.ply",
+        "source_gaussians": 299228,
+        "retained_gaussians": 292678,
+        "dropped_gaussians": 6550,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 231555,
+          "overlap_candidate_count": 11902,
+          "context_candidate_count": 55771,
+          "retained_overlap_count": 5352,
+          "retained_context_count": 55771,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_05",
+        "source_ply": "/tmp/md1-r4-expanded-hard-repair-merge-20260505/merged/tile_outputs/tile_05/splat.ply",
+        "source_gaussians": 308018,
+        "retained_gaussians": 275198,
+        "dropped_gaussians": 32820,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 259227,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 15971,
+          "retained_overlap_count": 0,
+          "retained_context_count": 15971,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_06",
+        "source_ply": "/tmp/md1-r4-expanded-hard-repair-merge-20260505/merged/tile_outputs/tile_06/splat.ply",
+        "source_gaussians": 216696,
+        "retained_gaussians": 214133,
+        "dropped_gaussians": 2563,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 184847,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 29286,
+          "retained_overlap_count": 0,
+          "retained_context_count": 29286,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_10",
+        "source_ply": "/tmp/md1-r4-expanded-hard-repair-merge-20260505/merged/tile_outputs/tile_10/splat.ply",
+        "source_gaussians": 331325,
+        "retained_gaussians": 321267,
+        "dropped_gaussians": 10058,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 321267,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": false
+        }
+      },
+      {
+        "tile_id": "tile_11",
+        "source_ply": "/tmp/md1-r4-expanded-hard-repair-merge-20260505/merged/tile_outputs/tile_11/splat.ply",
+        "source_gaussians": 119,
+        "retained_gaussians": 119,
+        "dropped_gaussians": 0,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 119,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": false
+        }
+      },
+      {
+        "tile_id": "tile_13",
+        "source_ply": "/tmp/md1-r4-expanded-hard-repair-merge-20260505/merged/tile_outputs/tile_13/splat.ply",
+        "source_gaussians": 227609,
+        "retained_gaussians": 159633,
+        "dropped_gaussians": 67976,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 159633,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": false
+        }
+      }
+    ],
+    "background_asset": {
+      "asset": "background_skybox.webp",
+      "source_tile_id": "tile_04",
+      "source_asset": "/tmp/md1-r4-expanded-hard-repair-merge-20260505/T0_tile_04/background_skybox.webp",
+      "selection_score": 0.6362313764733385,
+      "retained_gaussians": 292678
+    }
+  },
+  "packaged_includes_scaffold_init_metadata": true,
+  "packaged_includes_stage_summary": true,
+  "packaged_model_artifact_local_path": "/tmp/md1-r4-expanded-hard-repair-package-20260505/model.tar.gz",
+  "packaged_model_artifact_sha256": "5a3e0a1901a3a5310ac36b76deb36babb761b30565b3bf187b96a594d5b8a0f2",
+  "packaged_model_artifact_size_bytes": 416396523,
+  "next_unblocked_step": "upload package to S3, run streaming preflight, then V18 same-camera non-regression review before any full 14-tile run",
+  "packaged_model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-hard-repair-canary-review-20260505/inputs/r4_expanded_hard_repair/model.tar.gz"
+}

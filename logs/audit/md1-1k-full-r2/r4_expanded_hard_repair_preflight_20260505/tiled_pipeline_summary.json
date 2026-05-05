@@ -1,0 +1,53 @@
+{
+  "pipeline": "md1_cost_reduction_canary",
+  "mode": "fanout_local_merge",
+  "label": "r4_expanded_hard_repair",
+  "selected_tile_ids": [
+    "tile_00",
+    "tile_02",
+    "tile_11",
+    "tile_13",
+    "tile_01",
+    "tile_04",
+    "tile_05",
+    "tile_06",
+    "tile_10"
+  ],
+  "include_scaffold": false,
+  "include_merge": true,
+  "tile_manifest_resolution": "v18_manifest_selected_9tile",
+  "source_artifacts": {
+    "tile_00": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_00/md1-r4leafreb-1777858863-tile-00/output/model.tar.gz",
+    "tile_01": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-hard-repair-canary-20260505/tiles/tile_01/md1-r4exp9hard-1777951236-tile-01/output/model.tar.gz",
+    "tile_02": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_02/md1-r4leafreb-1777858863-tile-02/output/model.tar.gz",
+    "tile_04": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-hard-repair-canary-20260505/tiles/tile_04/md1-r4exp9hard-1777951236-tile-04/output/model.tar.gz",
+    "tile_05": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-hard-repair-canary-20260505/tiles/tile_05/md1-r4exp9hard-1777951236-tile-05/output/model.tar.gz",
+    "tile_06": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-hard-repair-canary-20260505/tiles/tile_06/md1-r4exp9hard-1777951236-tile-06/output/model.tar.gz",
+    "tile_10": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-hard-repair-canary-20260505/tiles/tile_10/md1-r4exp9hard-1777951236-tile-10/output/model.tar.gz",
+    "tile_11": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_11/md1-r4leafreb-1777858863-tile-11/output/model.tar.gz",
+    "tile_13": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-proof-20260503/tiles/tile_13/md1-r4leafinit-1777850709-tile-13/output/model.tar.gz"
+  },
+  "cost": {
+    "instance_type": "ml.g5.2xlarge",
+    "list_price_usd_per_hour": 1.515,
+    "new_training_billable_seconds": {
+      "tile_01": 3313,
+      "tile_04": 3390,
+      "tile_05": 3465,
+      "tile_06": 3225,
+      "tile_10": 3470
+    },
+    "new_training_estimated_usd": 7.0965
+  },
+  "merge": {
+    "merge_mode": "support_weighted_overlap",
+    "tile_count": 9,
+    "source_gaussians": 2408677,
+    "retained_gaussians": 2287468,
+    "dropped_gaussians": 121209,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "fallback_reasons": []
+  },
+  "model_artifact": "model.tar.gz"
+}

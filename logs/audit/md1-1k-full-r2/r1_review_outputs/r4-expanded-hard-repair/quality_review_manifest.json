@@ -1,0 +1,1182 @@
+{
+  "version": "1.0.0",
+  "model_artifact": "/opt/ml/input/data/model/model.tar.gz",
+  "selected_tile_ids": [
+    "tile_00",
+    "tile_02",
+    "tile_11",
+    "tile_13",
+    "tile_01",
+    "tile_04",
+    "tile_05",
+    "tile_06",
+    "tile_10"
+  ],
+  "manifest_resolution": {
+    "source_mode": "chunk_planner_synthesized_v1",
+    "chunk_planner_available": true,
+    "native_tile_manifest_available": false,
+    "native_view_buckets_available": false,
+    "ownership_bounds_available": true,
+    "tile_count": 14,
+    "scaffold_count": 240
+  },
+  "merge_report": {
+    "merge_mode": "support_weighted_overlap",
+    "merged_ply": "/tmp/md1-r4-expanded-hard-repair-merge-20260505/merged/merged_splat.ply",
+    "tile_count": 9,
+    "source_gaussians": 2408677,
+    "retained_gaussians": 2287468,
+    "dropped_gaussians": 121209,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "fallback_reasons": [],
+    "tiles": [
+      {
+        "tile_id": "tile_00",
+        "source_ply": "/tmp/md1-r4-expanded-hard-repair-merge-20260505/merged/tile_outputs/tile_00/splat.ply",
+        "source_gaussians": 248348,
+        "retained_gaussians": 248318,
+        "dropped_gaussians": 30,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 248317,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 1,
+          "retained_overlap_count": 0,
+          "retained_context_count": 1,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_01",
+        "source_ply": "/tmp/md1-r4-expanded-hard-repair-merge-20260505/merged/tile_outputs/tile_01/splat.ply",
+        "source_gaussians": 297049,
+        "retained_gaussians": 296686,
+        "dropped_gaussians": 363,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 222209,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 74477,
+          "retained_overlap_count": 0,
+          "retained_context_count": 74477,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_02",
+        "source_ply": "/tmp/md1-r4-expanded-hard-repair-merge-20260505/merged/tile_outputs/tile_02/splat.ply",
+        "source_gaussians": 480285,
+        "retained_gaussians": 479436,
+        "dropped_gaussians": 849,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 446854,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 32582,
+          "retained_overlap_count": 0,
+          "retained_context_count": 32582,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_04",
+        "source_ply": "/tmp/md1-r4-expanded-hard-repair-merge-20260505/merged/tile_outputs/tile_04/splat.ply",
+        "source_gaussians": 299228,
+        "retained_gaussians": 292678,
+        "dropped_gaussians": 6550,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 231555,
+          "overlap_candidate_count": 11902,
+          "context_candidate_count": 55771,
+          "retained_overlap_count": 5352,
+          "retained_context_count": 55771,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_05",
+        "source_ply": "/tmp/md1-r4-expanded-hard-repair-merge-20260505/merged/tile_outputs/tile_05/splat.ply",
+        "source_gaussians": 308018,
+        "retained_gaussians": 275198,
+        "dropped_gaussians": 32820,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 259227,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 15971,
+          "retained_overlap_count": 0,
+          "retained_context_count": 15971,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_06",
+        "source_ply": "/tmp/md1-r4-expanded-hard-repair-merge-20260505/merged/tile_outputs/tile_06/splat.ply",
+        "source_gaussians": 216696,
+        "retained_gaussians": 214133,
+        "dropped_gaussians": 2563,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 184847,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 29286,
+          "retained_overlap_count": 0,
+          "retained_context_count": 29286,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_10",
+        "source_ply": "/tmp/md1-r4-expanded-hard-repair-merge-20260505/merged/tile_outputs/tile_10/splat.ply",
+        "source_gaussians": 331325,
+        "retained_gaussians": 321267,
+        "dropped_gaussians": 10058,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 321267,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": false
+        }
+      },
+      {
+        "tile_id": "tile_11",
+        "source_ply": "/tmp/md1-r4-expanded-hard-repair-merge-20260505/merged/tile_outputs/tile_11/splat.ply",
+        "source_gaussians": 119,
+        "retained_gaussians": 119,
+        "dropped_gaussians": 0,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 119,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": false
+        }
+      },
+      {
+        "tile_id": "tile_13",
+        "source_ply": "/tmp/md1-r4-expanded-hard-repair-merge-20260505/merged/tile_outputs/tile_13/splat.ply",
+        "source_gaussians": 227609,
+        "retained_gaussians": 159633,
+        "dropped_gaussians": 67976,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 159633,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": false
+        }
+      }
+    ],
+    "background_asset": {
+      "asset": "background_skybox.webp",
+      "source_tile_id": "tile_04",
+      "source_asset": "/tmp/md1-r4-expanded-hard-repair-merge-20260505/T0_tile_04/background_skybox.webp",
+      "selection_score": 0.6362313764733385,
+      "retained_gaussians": 292678
+    }
+  },
+  "render_settings": {
+    "render_scale": 0.25,
+    "max_gaussians_per_view": 500000,
+    "cull_margin": 0.5,
+    "min_gaussians_on_oom": 75000
+  },
+  "review_image_names_by_bucket": {
+    "near_detail_camera_ids": [
+      "DJI_0258.JPG",
+      "DJI_0261.JPG",
+      "DJI_0262.JPG",
+      "DJI_0263.JPG"
+    ],
+    "boundary_camera_ids": [
+      "DJI_0067.JPG",
+      "DJI_0068.JPG",
+      "DJI_0069.JPG",
+      "DJI_0070.JPG"
+    ],
+    "horizon_camera_ids": [
+      "DJI_0066.JPG",
+      "DJI_0073.JPG",
+      "DJI_0146.JPG",
+      "DJI_0147.JPG"
+    ]
+  },
+  "expected_bucket_counts": {
+    "near_detail": 4,
+    "boundary": 4,
+    "horizon": 4
+  },
+  "requested_bucket_counts": {
+    "near_detail": 4,
+    "boundary": 4,
+    "horizon": 4
+  },
+  "actual_bucket_counts": {
+    "near_detail": 4,
+    "boundary": 4,
+    "horizon": 4
+  },
+  "review_camera_manifest": "/opt/ml/model/quality_review/review_camera_manifest.json",
+  "views": [
+    {
+      "bucket": "near_detail",
+      "image_name": "DJI_0258.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/near_detail/DJI_0258.JPG",
+      "merged_render": "/opt/ml/model/quality_review/merged/near_detail/DJI_0258.png",
+      "merged_no_background_render": "/opt/ml/model/quality_review/merged_no_background/near_detail/DJI_0258.png",
+      "metrics": {
+        "psnr": 10.190995436809686,
+        "ssim": 0.33477136492729187,
+        "lpips": 0.8999652862548828
+      },
+      "metrics_no_background": {
+        "psnr": 10.190204302403703,
+        "ssim": 0.3343873918056488,
+        "lpips": 0.8998037576675415
+      },
+      "sky_metrics": {
+        "luminance": 0.37692320346832275,
+        "saturation": 0.4991171360015869,
+        "blue_dominance": 0.7420295857988166,
+        "edge_density": 0.000378698224852071,
+        "score": 0.5838942773474745
+      },
+      "sky_metrics_no_background": {
+        "luminance": 0.3766201138496399,
+        "saturation": 0.4991125166416168,
+        "blue_dominance": 0.7418639053254438,
+        "edge_density": 0.000378698224852071,
+        "score": 0.5837574864347306
+      },
+      "merged_render_stats": {
+        "source_gaussians": 2287468,
+        "visible_gaussians": 654976,
+        "rendered_gaussians": 500000,
+        "limited": true,
+        "projection_sign": 1,
+        "selection_reason": "projected_support_topk",
+        "render_scale": 0.25,
+        "width": 1000,
+        "height": 562
+      },
+      "merged_alpha_stats": {
+        "mean": 0.9995562434196472,
+        "max": 0.9998999834060669,
+        "coverage_gt_001": 1.0,
+        "coverage_gt_005": 1.0
+      },
+      "merged_foreground_stats": {
+        "mean_luminance": 0.3399296998977661,
+        "max_luminance": 0.6750444173812866,
+        "mean_rgb": 0.5415116548538208,
+        "max_rgb": 1.0
+      },
+      "merged_final_stats": {
+        "mean_luminance": 0.34012502431869507,
+        "max_luminance": 0.6751186847686768,
+        "mean_rgb": 0.541709840297699,
+        "max_rgb": 1.0
+      }
+    },
+    {
+      "bucket": "near_detail",
+      "image_name": "DJI_0261.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/near_detail/DJI_0261.JPG",
+      "merged_render": "/opt/ml/model/quality_review/merged/near_detail/DJI_0261.png",
+      "merged_no_background_render": "/opt/ml/model/quality_review/merged_no_background/near_detail/DJI_0261.png",
+      "metrics": {
+        "psnr": 10.754469618204812,
+        "ssim": 0.3530680239200592,
+        "lpips": 0.9351142048835754
+      },
+      "metrics_no_background": {
+        "psnr": 10.754369143468804,
+        "ssim": 0.3530295789241791,
+        "lpips": 0.9350453019142151
+      },
+      "sky_metrics": {
+        "luminance": 0.4069744348526001,
+        "saturation": 0.5090194344520569,
+        "blue_dominance": 0.9999408284023669,
+        "edge_density": 0.0,
+        "score": 0.709525061809805
+      },
+      "sky_metrics_no_background": {
+        "luminance": 0.40686705708503723,
+        "saturation": 0.5090206861495972,
+        "blue_dominance": 0.9999408284023669,
+        "edge_density": 0.0,
+        "score": 0.7095040243504316
+      },
+      "merged_render_stats": {
+        "source_gaussians": 2287468,
+        "visible_gaussians": 423373,
+        "rendered_gaussians": 423373,
+        "limited": true,
+        "projection_sign": 1,
+        "selection_reason": "projected_visibility",
+        "render_scale": 0.25,
+        "width": 1000,
+        "height": 562
+      },
+      "merged_alpha_stats": {
+        "mean": 0.9997878074645996,
+        "max": 0.9998999834060669,
+        "coverage_gt_001": 1.0,
+        "coverage_gt_005": 1.0
+      },
+      "merged_foreground_stats": {
+        "mean_luminance": 0.3557591140270233,
+        "max_luminance": 0.6029877066612244,
+        "mean_rgb": 0.5443026423454285,
+        "max_rgb": 0.9488352537155151
+      },
+      "merged_final_stats": {
+        "mean_luminance": 0.35585740208625793,
+        "max_luminance": 0.603037416934967,
+        "mean_rgb": 0.5444005131721497,
+        "max_rgb": 0.9488805532455444
+      }
+    },
+    {
+      "bucket": "near_detail",
+      "image_name": "DJI_0262.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/near_detail/DJI_0262.JPG",
+      "merged_render": "/opt/ml/model/quality_review/merged/near_detail/DJI_0262.png",
+      "merged_no_background_render": "/opt/ml/model/quality_review/merged_no_background/near_detail/DJI_0262.png",
+      "metrics": {
+        "psnr": 11.645643179608541,
+        "ssim": 0.3900306224822998,
+        "lpips": 0.9393562078475952
+      },
+      "metrics_no_background": {
+        "psnr": 11.645637035175845,
+        "ssim": 0.39000439643859863,
+        "lpips": 0.9392744302749634
+      },
+      "sky_metrics": {
+        "luminance": 0.5092424750328064,
+        "saturation": 0.40222296118736267,
+        "blue_dominance": 1.0,
+        "edge_density": 0.0,
+        "score": 0.6926265314221383
+      },
+      "sky_metrics_no_background": {
+        "luminance": 0.5091447234153748,
+        "saturation": 0.4022218883037567,
+        "blue_dominance": 1.0,
+        "edge_density": 0.0,
+        "score": 0.6926066055893898
+      },
+      "merged_render_stats": {
+        "source_gaussians": 2287468,
+        "visible_gaussians": 394780,
+        "rendered_gaussians": 394780,
+        "limited": true,
+        "projection_sign": 1,
+        "selection_reason": "projected_visibility",
+        "render_scale": 0.25,
+        "width": 1000,
+        "height": 562
+      },
+      "merged_alpha_stats": {
+        "mean": 0.9998018145561218,
+        "max": 0.9998999834060669,
+        "coverage_gt_001": 1.0,
+        "coverage_gt_005": 1.0
+      },
+      "merged_foreground_stats": {
+        "mean_luminance": 0.40676596760749817,
+        "max_luminance": 0.8412773013114929,
+        "mean_rgb": 0.5678069591522217,
+        "max_rgb": 1.0
+      },
+      "merged_final_stats": {
+        "mean_luminance": 0.406862735748291,
+        "max_luminance": 0.8413252234458923,
+        "mean_rgb": 0.5679017305374146,
+        "max_rgb": 1.0
+      }
+    },
+    {
+      "bucket": "near_detail",
+      "image_name": "DJI_0263.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/near_detail/DJI_0263.JPG",
+      "merged_render": "/opt/ml/model/quality_review/merged/near_detail/DJI_0263.png",
+      "merged_no_background_render": "/opt/ml/model/quality_review/merged_no_background/near_detail/DJI_0263.png",
+      "metrics": {
+        "psnr": 12.007458928077249,
+        "ssim": 0.37847664952278137,
+        "lpips": 0.9246622323989868
+      },
+      "metrics_no_background": {
+        "psnr": 12.008081592531203,
+        "ssim": 0.37845656275749207,
+        "lpips": 0.9242420196533203
+      },
+      "sky_metrics": {
+        "luminance": 0.5962062478065491,
+        "saturation": 0.30824753642082214,
+        "blue_dominance": 0.9966390532544379,
+        "edge_density": 0.0,
+        "score": 0.6756154612730947
+      },
+      "sky_metrics_no_background": {
+        "luminance": 0.5961096286773682,
+        "saturation": 0.30825504660606384,
+        "blue_dominance": 0.9966331360946745,
+        "edge_density": 0.0,
+        "score": 0.6755961032901995
+      },
+      "merged_render_stats": {
+        "source_gaussians": 2287468,
+        "visible_gaussians": 409448,
+        "rendered_gaussians": 409448,
+        "limited": true,
+        "projection_sign": 1,
+        "selection_reason": "projected_visibility",
+        "render_scale": 0.25,
+        "width": 1000,
+        "height": 562
+      },
+      "merged_alpha_stats": {
+        "mean": 0.9998023509979248,
+        "max": 0.9998999834060669,
+        "coverage_gt_001": 1.0,
+        "coverage_gt_005": 1.0
+      },
+      "merged_foreground_stats": {
+        "mean_luminance": 0.47613784670829773,
+        "max_luminance": 0.9324570894241333,
+        "mean_rgb": 0.6072251200675964,
+        "max_rgb": 1.0
+      },
+      "merged_final_stats": {
+        "mean_luminance": 0.4762363135814667,
+        "max_luminance": 0.9325109124183655,
+        "mean_rgb": 0.6073206663131714,
+        "max_rgb": 1.0
+      }
+    },
+    {
+      "bucket": "boundary",
+      "image_name": "DJI_0067.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/boundary/DJI_0067.JPG",
+      "merged_render": "/opt/ml/model/quality_review/merged/boundary/DJI_0067.png",
+      "merged_no_background_render": "/opt/ml/model/quality_review/merged_no_background/boundary/DJI_0067.png",
+      "metrics": {
+        "psnr": 14.141268060957795,
+        "ssim": 0.41094157099723816,
+        "lpips": 0.8669437170028687
+      },
+      "metrics_no_background": {
+        "psnr": 14.141807573247199,
+        "ssim": 0.41089722514152527,
+        "lpips": 0.8655741810798645
+      },
+      "sky_metrics": {
+        "luminance": 0.6187295913696289,
+        "saturation": 0.2570866048336029,
+        "blue_dominance": 0.6851124260355029,
+        "edge_density": 0.0,
+        "score": 0.5220268216816631
+      },
+      "sky_metrics_no_background": {
+        "luminance": 0.6186478137969971,
+        "saturation": 0.25705814361572266,
+        "blue_dominance": 0.6850532544378698,
+        "edge_density": 0.0,
+        "score": 0.5219738775219438
+      },
+      "merged_render_stats": {
+        "source_gaussians": 2287468,
+        "visible_gaussians": 326936,
+        "rendered_gaussians": 326936,
+        "limited": true,
+        "projection_sign": 1,
+        "selection_reason": "projected_visibility",
+        "render_scale": 0.25,
+        "width": 1000,
+        "height": 562
+      },
+      "merged_alpha_stats": {
+        "mean": 0.9997659921646118,
+        "max": 0.9998999834060669,
+        "coverage_gt_001": 1.0,
+        "coverage_gt_005": 1.0
+      },
+      "merged_foreground_stats": {
+        "mean_luminance": 0.5108258724212646,
+        "max_luminance": 0.9458622336387634,
+        "mean_rgb": 0.5769975185394287,
+        "max_rgb": 1.0
+      },
+      "merged_final_stats": {
+        "mean_luminance": 0.5109170079231262,
+        "max_luminance": 0.9458999037742615,
+        "mean_rgb": 0.5770907402038574,
+        "max_rgb": 1.0
+      },
+      "boundary_context_tile_ids": [
+        "tile_04",
+        "tile_10"
+      ],
+      "boundary_tile_renders": [
+        "/opt/ml/model/quality_review/tiles/tile_04/boundary/DJI_0067.png",
+        "/opt/ml/model/quality_review/tiles/tile_10/boundary/DJI_0067.png"
+      ],
+      "boundary_tile_render_stats": {
+        "tile_04": {
+          "source_gaussians": 299228,
+          "visible_gaussians": 41957,
+          "rendered_gaussians": 41957,
+          "limited": true,
+          "projection_sign": 1,
+          "selection_reason": "projected_visibility",
+          "render_scale": 0.25,
+          "width": 1000,
+          "height": 562
+        },
+        "tile_10": {
+          "source_gaussians": 331325,
+          "visible_gaussians": 19215,
+          "rendered_gaussians": 19215,
+          "limited": true,
+          "projection_sign": 1,
+          "selection_reason": "projected_visibility",
+          "render_scale": 0.25,
+          "width": 1000,
+          "height": 562
+        }
+      },
+      "boundary_composite": "/opt/ml/model/quality_review/boundary_composites/DJI_0067.png"
+    },
+    {
+      "bucket": "boundary",
+      "image_name": "DJI_0068.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/boundary/DJI_0068.JPG",
+      "merged_render": "/opt/ml/model/quality_review/merged/boundary/DJI_0068.png",
+      "merged_no_background_render": "/opt/ml/model/quality_review/merged_no_background/boundary/DJI_0068.png",
+      "metrics": {
+        "psnr": 13.897208626088947,
+        "ssim": 0.39922356605529785,
+        "lpips": 0.8655052781105042
+      },
+      "metrics_no_background": {
+        "psnr": 13.893663107511705,
+        "ssim": 0.39853206276893616,
+        "lpips": 0.8656535148620605
+      },
+      "sky_metrics": {
+        "luminance": 0.5198089480400085,
+        "saturation": 0.29268425703048706,
+        "blue_dominance": 0.8135266272189349,
+        "edge_density": 0.00010650887573964498,
+        "score": 0.572461634598258
+      },
+      "sky_metrics_no_background": {
+        "luminance": 0.5194031000137329,
+        "saturation": 0.2925834059715271,
+        "blue_dominance": 0.8133668639053254,
+        "edge_density": 0.00010650887573964498,
+        "score": 0.5722732736312427
+      },
+      "merged_render_stats": {
+        "source_gaussians": 2287468,
+        "visible_gaussians": 252732,
+        "rendered_gaussians": 252732,
+        "limited": true,
+        "projection_sign": 1,
+        "selection_reason": "projected_visibility",
+        "render_scale": 0.25,
+        "width": 1000,
+        "height": 562
+      },
+      "merged_alpha_stats": {
+        "mean": 0.9990136623382568,
+        "max": 0.9998999834060669,
+        "coverage_gt_001": 1.0,
+        "coverage_gt_005": 1.0
+      },
+      "merged_foreground_stats": {
+        "mean_luminance": 0.4570534825325012,
+        "max_luminance": 0.9103904962539673,
+        "mean_rgb": 0.5436742901802063,
+        "max_rgb": 1.0
+      },
+      "merged_final_stats": {
+        "mean_luminance": 0.4574684202671051,
+        "max_luminance": 0.9104478359222412,
+        "mean_rgb": 0.5441010594367981,
+        "max_rgb": 1.0
+      },
+      "boundary_context_tile_ids": [
+        "tile_04",
+        "tile_10"
+      ],
+      "boundary_tile_renders": [
+        "/opt/ml/model/quality_review/tiles/tile_04/boundary/DJI_0068.png",
+        "/opt/ml/model/quality_review/tiles/tile_10/boundary/DJI_0068.png"
+      ],
+      "boundary_tile_render_stats": {
+        "tile_04": {
+          "source_gaussians": 299228,
+          "visible_gaussians": 39038,
+          "rendered_gaussians": 39038,
+          "limited": true,
+          "projection_sign": 1,
+          "selection_reason": "projected_visibility",
+          "render_scale": 0.25,
+          "width": 1000,
+          "height": 562
+        },
+        "tile_10": {
+          "source_gaussians": 331325,
+          "visible_gaussians": 16825,
+          "rendered_gaussians": 16825,
+          "limited": true,
+          "projection_sign": 1,
+          "selection_reason": "projected_visibility",
+          "render_scale": 0.25,
+          "width": 1000,
+          "height": 562
+        }
+      },
+      "boundary_composite": "/opt/ml/model/quality_review/boundary_composites/DJI_0068.png"
+    },
+    {
+      "bucket": "boundary",
+      "image_name": "DJI_0069.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/boundary/DJI_0069.JPG",
+      "merged_render": "/opt/ml/model/quality_review/merged/boundary/DJI_0069.png",
+      "merged_no_background_render": "/opt/ml/model/quality_review/merged_no_background/boundary/DJI_0069.png",
+      "metrics": {
+        "psnr": 13.686214617516656,
+        "ssim": 0.39741143584251404,
+        "lpips": 0.8700608015060425
+      },
+      "metrics_no_background": {
+        "psnr": 13.681110344950135,
+        "ssim": 0.3967125117778778,
+        "lpips": 0.8699706792831421
+      },
+      "sky_metrics": {
+        "luminance": 0.4725831151008606,
+        "saturation": 0.3056519329547882,
+        "blue_dominance": 0.9053846153846153,
+        "edge_density": 0.000514792899408284,
+        "score": 0.6087891782525728
+      },
+      "sky_metrics_no_background": {
+        "luminance": 0.47213125228881836,
+        "saturation": 0.30555060505867004,
+        "blue_dominance": 0.9052485207100591,
+        "edge_density": 0.0005088757396449704,
+        "score": 0.6086035776129136
+      },
+      "merged_render_stats": {
+        "source_gaussians": 2287468,
+        "visible_gaussians": 223540,
+        "rendered_gaussians": 223540,
+        "limited": true,
+        "projection_sign": 1,
+        "selection_reason": "projected_visibility",
+        "render_scale": 0.25,
+        "width": 1000,
+        "height": 562
+      },
+      "merged_alpha_stats": {
+        "mean": 0.9990617036819458,
+        "max": 0.9998999834060669,
+        "coverage_gt_001": 1.0,
+        "coverage_gt_005": 1.0
+      },
+      "merged_foreground_stats": {
+        "mean_luminance": 0.43853673338890076,
+        "max_luminance": 0.8912121057510376,
+        "mean_rgb": 0.5325036644935608,
+        "max_rgb": 1.0
+      },
+      "merged_final_stats": {
+        "mean_luminance": 0.43893182277679443,
+        "max_luminance": 0.8912610411643982,
+        "mean_rgb": 0.5329102277755737,
+        "max_rgb": 1.0
+      },
+      "boundary_context_tile_ids": [
+        "tile_04",
+        "tile_10"
+      ],
+      "boundary_tile_renders": [
+        "/opt/ml/model/quality_review/tiles/tile_04/boundary/DJI_0069.png",
+        "/opt/ml/model/quality_review/tiles/tile_10/boundary/DJI_0069.png"
+      ],
+      "boundary_tile_render_stats": {
+        "tile_04": {
+          "source_gaussians": 299228,
+          "visible_gaussians": 38079,
+          "rendered_gaussians": 38079,
+          "limited": true,
+          "projection_sign": 1,
+          "selection_reason": "projected_visibility",
+          "render_scale": 0.25,
+          "width": 1000,
+          "height": 562
+        },
+        "tile_10": {
+          "source_gaussians": 331325,
+          "visible_gaussians": 16522,
+          "rendered_gaussians": 16522,
+          "limited": true,
+          "projection_sign": 1,
+          "selection_reason": "projected_visibility",
+          "render_scale": 0.25,
+          "width": 1000,
+          "height": 562
+        }
+      },
+      "boundary_composite": "/opt/ml/model/quality_review/boundary_composites/DJI_0069.png"
+    },
+    {
+      "bucket": "boundary",
+      "image_name": "DJI_0070.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/boundary/DJI_0070.JPG",
+      "merged_render": "/opt/ml/model/quality_review/merged/boundary/DJI_0070.png",
+      "merged_no_background_render": "/opt/ml/model/quality_review/merged_no_background/boundary/DJI_0070.png",
+      "metrics": {
+        "psnr": 13.505237033667946,
+        "ssim": 0.395435094833374,
+        "lpips": 0.8725910186767578
+      },
+      "metrics_no_background": {
+        "psnr": 13.49989002931629,
+        "ssim": 0.3947530686855316,
+        "lpips": 0.8724004030227661
+      },
+      "sky_metrics": {
+        "luminance": 0.44007545709609985,
+        "saturation": 0.3217596709728241,
+        "blue_dominance": 0.9885917159763313,
+        "edge_density": 0.0006745562130177514,
+        "score": 0.645328609395803
+      },
+      "sky_metrics_no_background": {
+        "luminance": 0.43958866596221924,
+        "saturation": 0.3216490149497986,
+        "blue_dominance": 0.9885384615384616,
+        "edge_density": 0.0007159763313609467,
+        "score": 0.6451582020343408
+      },
+      "merged_render_stats": {
+        "source_gaussians": 2287468,
+        "visible_gaussians": 205645,
+        "rendered_gaussians": 205645,
+        "limited": true,
+        "projection_sign": 1,
+        "selection_reason": "projected_visibility",
+        "render_scale": 0.25,
+        "width": 1000,
+        "height": 562
+      },
+      "merged_alpha_stats": {
+        "mean": 0.9991078972816467,
+        "max": 0.9998999834060669,
+        "coverage_gt_001": 1.0,
+        "coverage_gt_005": 1.0
+      },
+      "merged_foreground_stats": {
+        "mean_luminance": 0.4252682626247406,
+        "max_luminance": 0.8893367648124695,
+        "mean_rgb": 0.5249634385108948,
+        "max_rgb": 1.0
+      },
+      "merged_final_stats": {
+        "mean_luminance": 0.42564427852630615,
+        "max_luminance": 0.8894001245498657,
+        "mean_rgb": 0.5253499150276184,
+        "max_rgb": 1.0
+      },
+      "boundary_context_tile_ids": [
+        "tile_04",
+        "tile_10"
+      ],
+      "boundary_tile_renders": [
+        "/opt/ml/model/quality_review/tiles/tile_04/boundary/DJI_0070.png",
+        "/opt/ml/model/quality_review/tiles/tile_10/boundary/DJI_0070.png"
+      ],
+      "boundary_tile_render_stats": {
+        "tile_04": {
+          "source_gaussians": 299228,
+          "visible_gaussians": 37313,
+          "rendered_gaussians": 37313,
+          "limited": true,
+          "projection_sign": 1,
+          "selection_reason": "projected_visibility",
+          "render_scale": 0.25,
+          "width": 1000,
+          "height": 562
+        },
+        "tile_10": {
+          "source_gaussians": 331325,
+          "visible_gaussians": 16395,
+          "rendered_gaussians": 16395,
+          "limited": true,
+          "projection_sign": 1,
+          "selection_reason": "projected_visibility",
+          "render_scale": 0.25,
+          "width": 1000,
+          "height": 562
+        }
+      },
+      "boundary_composite": "/opt/ml/model/quality_review/boundary_composites/DJI_0070.png"
+    },
+    {
+      "bucket": "horizon",
+      "image_name": "DJI_0066.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/horizon/DJI_0066.JPG",
+      "merged_render": "/opt/ml/model/quality_review/merged/horizon/DJI_0066.png",
+      "merged_no_background_render": "/opt/ml/model/quality_review/merged_no_background/horizon/DJI_0066.png",
+      "metrics": {
+        "psnr": 14.389132662782199,
+        "ssim": 0.41817161440849304,
+        "lpips": 0.8587255477905273
+      },
+      "metrics_no_background": {
+        "psnr": 14.390295148203618,
+        "ssim": 0.4181641638278961,
+        "lpips": 0.8579351305961609
+      },
+      "sky_metrics": {
+        "luminance": 0.7143077850341797,
+        "saturation": 0.23652006685733795,
+        "blue_dominance": 0.5702130177514793,
+        "edge_density": 0.0006331360946745562,
+        "score": 0.4820811543714013
+      },
+      "sky_metrics_no_background": {
+        "luminance": 0.7142330408096313,
+        "saturation": 0.23649868369102478,
+        "blue_dominance": 0.5702130177514793,
+        "edge_density": 0.0006331360946745562,
+        "score": 0.48205872141828204
+      },
+      "merged_render_stats": {
+        "source_gaussians": 2287468,
+        "visible_gaussians": 481763,
+        "rendered_gaussians": 481763,
+        "limited": true,
+        "projection_sign": 1,
+        "selection_reason": "projected_visibility",
+        "render_scale": 0.25,
+        "width": 1000,
+        "height": 562
+      },
+      "merged_alpha_stats": {
+        "mean": 0.9997870326042175,
+        "max": 0.9998999834060669,
+        "coverage_gt_001": 1.0,
+        "coverage_gt_005": 1.0
+      },
+      "merged_foreground_stats": {
+        "mean_luminance": 0.573858916759491,
+        "max_luminance": 0.9531475305557251,
+        "mean_rgb": 0.6142335534095764,
+        "max_rgb": 1.0
+      },
+      "merged_final_stats": {
+        "mean_luminance": 0.573939323425293,
+        "max_luminance": 0.9531574845314026,
+        "mean_rgb": 0.6143158078193665,
+        "max_rgb": 1.0
+      }
+    },
+    {
+      "bucket": "horizon",
+      "image_name": "DJI_0073.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/horizon/DJI_0073.JPG",
+      "merged_render": "/opt/ml/model/quality_review/merged/horizon/DJI_0073.png",
+      "merged_no_background_render": "/opt/ml/model/quality_review/merged_no_background/horizon/DJI_0073.png",
+      "metrics": {
+        "psnr": 12.904129741737467,
+        "ssim": 0.3905063569545746,
+        "lpips": 0.8564728498458862
+      },
+      "metrics_no_background": {
+        "psnr": 12.876852121098441,
+        "ssim": 0.3884373605251312,
+        "lpips": 0.8561778664588928
+      },
+      "sky_metrics": {
+        "luminance": 0.3475951552391052,
+        "saturation": 0.5038817524909973,
+        "blue_dominance": 0.9322544378698225,
+        "edge_density": 0.004142011834319527,
+        "score": 0.6643566385025104
+      },
+      "sky_metrics_no_background": {
+        "luminance": 0.3453529477119446,
+        "saturation": 0.5035893321037292,
+        "blue_dominance": 0.9317278106508876,
+        "edge_density": 0.0042781065088757396,
+        "score": 0.6635348439443746
+      },
+      "merged_render_stats": {
+        "source_gaussians": 2287468,
+        "visible_gaussians": 104040,
+        "rendered_gaussians": 104040,
+        "limited": true,
+        "projection_sign": 1,
+        "selection_reason": "projected_visibility",
+        "render_scale": 0.25,
+        "width": 1000,
+        "height": 562
+      },
+      "merged_alpha_stats": {
+        "mean": 0.9965324997901917,
+        "max": 0.9998999834060669,
+        "coverage_gt_001": 1.0,
+        "coverage_gt_005": 1.0
+      },
+      "merged_foreground_stats": {
+        "mean_luminance": 0.371597558259964,
+        "max_luminance": 0.9147626161575317,
+        "mean_rgb": 0.5113645792007446,
+        "max_rgb": 1.0
+      },
+      "merged_final_stats": {
+        "mean_luminance": 0.3731935918331146,
+        "max_luminance": 0.9149377346038818,
+        "mean_rgb": 0.5129847526550293,
+        "max_rgb": 1.0
+      }
+    },
+    {
+      "bucket": "horizon",
+      "image_name": "DJI_0146.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/horizon/DJI_0146.JPG",
+      "merged_render": "/opt/ml/model/quality_review/merged/horizon/DJI_0146.png",
+      "merged_no_background_render": "/opt/ml/model/quality_review/merged_no_background/horizon/DJI_0146.png",
+      "metrics": {
+        "psnr": 14.08496581412088,
+        "ssim": 0.27600499987602234,
+        "lpips": 0.9103091955184937
+      },
+      "metrics_no_background": {
+        "psnr": 14.085196237916843,
+        "ssim": 0.2759747803211212,
+        "lpips": 0.910104513168335
+      },
+      "sky_metrics": {
+        "luminance": 0.4088086485862732,
+        "saturation": 0.33660537004470825,
+        "blue_dominance": 0.8866923076923077,
+        "edge_density": 0.006579881656804734,
+        "score": 0.5969401772802398
+      },
+      "sky_metrics_no_background": {
+        "luminance": 0.40868574380874634,
+        "saturation": 0.33661195635795593,
+        "blue_dominance": 0.8867514792899408,
+        "edge_density": 0.006710059171597633,
+        "score": 0.5969119843746078
+      },
+      "merged_render_stats": {
+        "source_gaussians": 2287468,
+        "visible_gaussians": 186300,
+        "rendered_gaussians": 186300,
+        "limited": true,
+        "projection_sign": 1,
+        "selection_reason": "projected_visibility",
+        "render_scale": 0.25,
+        "width": 1000,
+        "height": 562
+      },
+      "merged_alpha_stats": {
+        "mean": 0.9997482299804688,
+        "max": 0.9998999834060669,
+        "coverage_gt_001": 1.0,
+        "coverage_gt_005": 1.0
+      },
+      "merged_foreground_stats": {
+        "mean_luminance": 0.4042397737503052,
+        "max_luminance": 0.8643600940704346,
+        "mean_rgb": 0.5116682648658752,
+        "max_rgb": 1.0
+      },
+      "merged_final_stats": {
+        "mean_luminance": 0.4043562412261963,
+        "max_luminance": 0.8644036054611206,
+        "mean_rgb": 0.5117812752723694,
+        "max_rgb": 1.0
+      }
+    },
+    {
+      "bucket": "horizon",
+      "image_name": "DJI_0147.JPG",
+      "reference_image": "/opt/ml/model/quality_review/reference/horizon/DJI_0147.JPG",
+      "merged_render": "/opt/ml/model/quality_review/merged/horizon/DJI_0147.png",
+      "merged_no_background_render": "/opt/ml/model/quality_review/merged_no_background/horizon/DJI_0147.png",
+      "metrics": {
+        "psnr": 13.952813116787684,
+        "ssim": 0.2914581596851349,
+        "lpips": 0.9090250134468079
+      },
+      "metrics_no_background": {
+        "psnr": 13.951960559081451,
+        "ssim": 0.291413277387619,
+        "lpips": 0.9087606072425842
+      },
+      "sky_metrics": {
+        "luminance": 0.41178253293037415,
+        "saturation": 0.3309064507484436,
+        "blue_dominance": 0.8593846153846154,
+        "edge_density": 0.007041420118343195,
+        "score": 0.5831364862415213
+      },
+      "sky_metrics_no_background": {
+        "luminance": 0.4116608202457428,
+        "saturation": 0.3309093117713928,
+        "blue_dominance": 0.859396449704142,
+        "edge_density": 0.007112426035502959,
+        "score": 0.5831007190271241
+      },
+      "merged_render_stats": {
+        "source_gaussians": 2287468,
+        "visible_gaussians": 189902,
+        "rendered_gaussians": 189902,
+        "limited": true,
+        "projection_sign": 1,
+        "selection_reason": "projected_visibility",
+        "render_scale": 0.25,
+        "width": 1000,
+        "height": 562
+      },
+      "merged_alpha_stats": {
+        "mean": 0.9997532367706299,
+        "max": 0.9998999834060669,
+        "coverage_gt_001": 1.0,
+        "coverage_gt_005": 1.0
+      },
+      "merged_foreground_stats": {
+        "mean_luminance": 0.40997084975242615,
+        "max_luminance": 0.8683232665061951,
+        "mean_rgb": 0.5164086818695068,
+        "max_rgb": 1.0
+      },
+      "merged_final_stats": {
+        "mean_luminance": 0.41008561849594116,
+        "max_luminance": 0.8683839440345764,
+        "mean_rgb": 0.5165196657180786,
+        "max_rgb": 1.0
+      }
+    }
+  ],
+  "bucket_medians": {
+    "near_detail": {
+      "psnr": 11.200056398906677,
+      "ssim": 0.3657723367214203,
+      "lpips": 0.9298882186412811
+    },
+    "boundary": {
+      "psnr": 13.7917116218028,
+      "ssim": 0.39831750094890594,
+      "lpips": 0.8685022592544556
+    },
+    "horizon": {
+      "psnr": 14.018889465454283,
+      "ssim": 0.34098225831985474,
+      "lpips": 0.8838752806186676
+    }
+  },
+  "sky_bucket_medians": {
+    "near_detail": {
+      "score": 0.6841209963476165,
+      "luminance": 0.45810845494270325,
+      "saturation": 0.4506700485944748,
+      "blue_dominance": 0.9982899408284024,
+      "edge_density": 0.0
+    },
+    "boundary": {
+      "score": 0.5906254064254155,
+      "luminance": 0.49619603157043457,
+      "saturation": 0.29916809499263763,
+      "blue_dominance": 0.8594556213017751,
+      "edge_density": 0.0003106508875739645
+    },
+    "horizon": {
+      "score": 0.5900383317608806,
+      "luminance": 0.41029559075832367,
+      "saturation": 0.3337559103965759,
+      "blue_dominance": 0.8730384615384615,
+      "edge_density": 0.00536094674556213
+    }
+  },
+  "render_sanity": {
+    "status": "ok",
+    "checked_view_count": 12,
+    "blank_view_count": 0,
+    "blank_views": []
+  },
+  "promotion_readiness": {
+    "status": "ready_for_comparison",
+    "review_buckets_complete": true,
+    "retain_all_tile_count": 0,
+    "fallback_tile_count": 0,
+    "render_sanity": {
+      "status": "ok",
+      "checked_view_count": 12,
+      "blank_view_count": 0,
+      "blank_views": []
+    },
+    "manual_visual_review_required": true,
+    "notes": [
+      "merged review included promoted background skybox"
+    ]
+  }
+}
