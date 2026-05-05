@@ -2,6 +2,8 @@
 set -euo pipefail
 
 INPUT="${MD1_SOURCE_PLY:-/opt/ml/processing/input/merged_splat.ply}"
+SKYBOX_INPUT="${MD1_SOURCE_SKYBOX:-/opt/ml/processing/input/background_skybox.webp}"
+SOURCE_LABEL="${MD1_SOURCE_LINEAGE_LABEL:-md1-v18-promoted-raw-ply}"
 WORK="${MD1_WORK_DIR:-/opt/ml/processing/work}"
 OUT="${MD1_OUTPUT_BUNDLE_DIR:-/opt/ml/processing/output/supersplat_bundle}"
 DEVICE="${SOGS_DEVICE:-cpu}"
@@ -32,28 +34,43 @@ COMMAND+=("$OUT/lod-meta.json")
 
 python3 - <<'PY'
 import json
+import os
+import shutil
 from pathlib import Path
 
 root = Path("/opt/ml/processing/output")
 bundle = root / "supersplat_bundle"
-files = [path for path in bundle.rglob("*") if path.is_file()]
+skybox_input = Path(os.environ.get("MD1_SOURCE_SKYBOX", "/opt/ml/processing/input/background_skybox.webp"))
+source_label = os.environ.get("MD1_SOURCE_LINEAGE_LABEL", "md1-v18-promoted-raw-ply")
+source_ply = os.environ.get("MD1_SOURCE_PLY", "/opt/ml/processing/input/merged_splat.ply")
+
+skybox = None
+if skybox_input.exists():
+    skybox_dir = bundle / "skybox"
+    skybox_dir.mkdir(parents=True, exist_ok=True)
+    skybox_path = skybox_dir / "background_skybox.webp"
+    shutil.copyfile(skybox_input, skybox_path)
+    skybox = {"type": "equirect", "path": "skybox/background_skybox.webp"}
 
 (bundle / "spaceport_bundle.json").write_text(json.dumps({
     "version": 1,
-    "skybox": None,
+    "skybox": skybox,
     "entrypoints": {"default": "lod-meta.json", "lod": "lod-meta.json"},
     "streaming": {"enabled": True}
 }, indent=2), encoding="utf-8")
 
 (bundle / "settings.json").write_text(json.dumps({
     "camera": {"position": [0, 0, 3], "target": [0, 0, 0]},
-    "background": {"type": "skybox"}
+    "background": {"type": "skybox" if skybox else "color"}
 }, indent=2), encoding="utf-8")
 
+files = [path for path in bundle.rglob("*") if path.is_file()]
 summary = {
     "compressor": "@playcanvas/splat-transform",
     "mode": "lod-only",
-    "source": "md1-v18-promoted-raw-ply",
+    "source": source_label,
+    "sourcePly": source_ply,
+    "skybox": skybox,
     "bundleDir": "supersplat_bundle",
     "lodMeta": "supersplat_bundle/lod-meta.json",
     "fileCount": len(files),

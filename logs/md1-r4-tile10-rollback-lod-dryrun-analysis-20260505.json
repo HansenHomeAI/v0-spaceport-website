@@ -1,0 +1,142 @@
+{
+  "generated_at": "2026-05-05T23:38:19Z",
+  "rung": "R4_production_lod_dryrun_tile10_rollback_candidate",
+  "purpose": "No-spend LOD packaging dry-run for the V18-non-regression-promoted tile10 rollback candidate using the validated splat-transform LOD path.",
+  "spend_guard": {
+    "training_jobs_submitted": 0,
+    "processing_jobs_submitted": 0,
+    "full_14tile_training_launched": false,
+    "dry_run_only": true
+  },
+  "source_candidate": {
+    "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-rollback-isolation-remote-merge-g4dn-202605052105/output/artifact/model.tar.gz",
+    "merged_input_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-rollback-isolation-remote-merge-g4dn-202605052105/output/artifact/merged/",
+    "model_tar_gz_bytes": 3023398558,
+    "merged_splat": {
+      "s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-rollback-isolation-remote-merge-g4dn-202605052105/output/artifact/merged/merged_splat.ply",
+      "content_length": 876088209,
+      "etag": "\"5bc7dd09e11c132e9b07f40d96e19d50-168\"",
+      "last_modified": "2026-05-05T21:44:52+00:00"
+    },
+    "skybox": {
+      "s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-rollback-isolation-remote-merge-g4dn-202605052105/output/artifact/merged/background_skybox.webp",
+      "content_length": 31228,
+      "etag": "\"09fc4ab23a4dc54cdca3a264da035a0f\"",
+      "last_modified": "2026-05-05T21:44:52+00:00"
+    },
+    "preflight": {
+      "retained_gaussians": 8423919,
+      "source_gaussians": 8789685,
+      "dropped_gaussians": 365766,
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "artifact_complete": true,
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-rollback-isolation-remote-merge-g4dn-202605052105/output/artifact/model.tar.gz",
+      "model_tar_gz_bytes": 3023398558,
+      "background_asset": {
+        "asset": "background_skybox.webp",
+        "retained_gaussians": 378953,
+        "selection_score": 0.6353789878019934,
+        "source_asset": "/opt/ml/processing/output/artifact/tiles/tile_10/background_skybox.webp",
+        "source_tile_id": "tile_10"
+      }
+    },
+    "quality_review": {
+      "job_name": "md1-r1-r4-t10rollback-1778018314-quality",
+      "status": "Completed",
+      "billable_seconds": 776,
+      "estimated_cost_usd_at_1_515_per_hour": 0.327,
+      "promotion_decision": "blocked",
+      "promotion_block_reasons": [
+        "boundary_no_required_improvement"
+      ],
+      "v18_non_regression_decision": "promoted",
+      "v18_non_regression_block_reasons": [],
+      "render_sanity": {
+        "status": "ok",
+        "checked_view_count": 12,
+        "blank_view_count": 0,
+        "blank_views": []
+      },
+      "camera_coverage": "ok"
+    },
+    "lineage": {
+      "selected_source_counts": {
+        "candidate": 5,
+        "context_density_rollback": 9
+      },
+      "v18_rollback_tile_ids": [
+        "tile_00",
+        "tile_02",
+        "tile_03",
+        "tile_07",
+        "tile_08",
+        "tile_09",
+        "tile_10",
+        "tile_12",
+        "tile_13"
+      ],
+      "tile_10": {
+        "selected_source": "context_density_rollback",
+        "candidate_quality_status": "blocked_fullscene_review_primary_suspect",
+        "selected_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz"
+      },
+      "tile_11": {
+        "selected_source": "candidate",
+        "candidate_quality_status": "promoted",
+        "selected_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_11/md1-r4leafreb-1777858863-tile-11/output/model.tar.gz"
+      }
+    }
+  },
+  "lod_payload": {
+    "local_payload_path": "logs/md1-r4-tile10-rollback-lod-payload-dryrun-20260505.json",
+    "processing_job_name": "md1-r4-t10rollback-lod-dryrun-20260505",
+    "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:645fd74b9217fc8441f242d8b89aefb36ef9c88192bf006ade3cfeb355bd4de3",
+    "container_entrypoint": [
+      "/bin/bash",
+      "/opt/ml/processing/script/md1_splat_transform_direct_lod.sh"
+    ],
+    "input_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-rollback-isolation-remote-merge-g4dn-202605052105/output/artifact/merged/",
+    "output_prefix": "s3://spaceport-ml-processing-staging/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/",
+    "environment": {
+      "MD1_SOURCE_LINEAGE_LABEL": "md1-r4-tile10-rollback-v18-nonregression-tile11-accepted",
+      "MD1_SOURCE_PLY": "/opt/ml/processing/input/merged_splat.ply",
+      "MD1_SOURCE_SKYBOX": "/opt/ml/processing/input/background_skybox.webp",
+      "SOGS_DEVICE": "cpu",
+      "SOGS_LOD_DECIMATION": "30%,10%,3%",
+      "SOGS_LOD_CHUNK_COUNT": "256",
+      "SOGS_LOD_CHUNK_EXTENT": "32"
+    },
+    "direct_script_s3_prefix": "s3://spaceport-ml-processing-staging/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/entrypoint/",
+    "tags": [
+      {
+        "Key": "project",
+        "Value": "md1-production-viewer"
+      },
+      {
+        "Key": "source",
+        "Value": "validated-splat-transform-lod-compressor-direct-lod"
+      },
+      {
+        "Key": "source-lineage",
+        "Value": "md1-r4-tile10-rollback-v18-nonregression-tile11-accepted"
+      },
+      {
+        "Key": "branch",
+        "Value": "agent-90742618-md1-geometry-consistency"
+      }
+    ]
+  },
+  "decision": {
+    "lod_packaging_payload_ready": true,
+    "source_label_not_hardcoded_to_v18": true,
+    "skybox_preserved_by_direct_lod_script": true,
+    "submit_next_step": "After exact-head code gate, submit only this bounded LOD processing job, then run browser/viewer smoke on the produced lod-meta.json. Do not launch full 14-tile training.",
+    "production_ready": false,
+    "production_blockers": [
+      "LOD processing job has not been run for this candidate payload yet.",
+      "Browser desktop/mobile viewer smoke has not passed on this candidate lod-meta.json yet.",
+      "A cheaper no-rollback tile10 repair remains optional but unproven; current candidate uses V18/context-density rollback for tile10 and eight other tiles."
+    ]
+  }
+}

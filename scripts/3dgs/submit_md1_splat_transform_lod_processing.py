@@ -22,6 +22,10 @@ DEFAULT_ROLE_ARN = "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-stag
 DEFAULT_INPUT_PREFIX = "s3://spaceport-ml-processing/compressed/md1-r5-v18-raw-1777498999/"
 DEFAULT_OUTPUT_BASE = "s3://spaceport-ml-processing/compressed"
 DEFAULT_DIRECT_SCRIPT_PATH = Path(__file__).with_name("md1_splat_transform_direct_lod.sh")
+DEFAULT_PROJECT_TAG = "md1-production-viewer"
+DEFAULT_SOURCE_LINEAGE_LABEL = "md1-v18-promoted-raw-ply"
+DEFAULT_SOURCE_PLY = "/opt/ml/processing/input/merged_splat.ply"
+DEFAULT_SOURCE_SKYBOX = "/opt/ml/processing/input/background_skybox.webp"
 
 
 def build_payload(args: argparse.Namespace) -> dict:
@@ -92,18 +96,22 @@ def build_payload(args: argparse.Namespace) -> dict:
         },
         "StoppingCondition": {"MaxRuntimeInSeconds": args.max_runtime_seconds},
         "Environment": {
+            "MD1_SOURCE_LINEAGE_LABEL": args.source_label,
+            "MD1_SOURCE_PLY": args.source_ply,
+            "MD1_SOURCE_SKYBOX": args.source_skybox,
             "SOGS_DEVICE": args.device,
             "SOGS_LOD_DECIMATION": args.lod_decimation,
             "SOGS_LOD_CHUNK_COUNT": str(args.lod_chunk_count),
             "SOGS_LOD_CHUNK_EXTENT": str(args.lod_chunk_extent),
         },
         "Tags": [
-            {"Key": "project", "Value": "md1-v18-production-viewer"},
+            {"Key": "project", "Value": args.project_tag},
             {
                 "Key": "source",
                 "Value": "validated-splat-transform-lod-compressor"
                 + ("-direct-lod" if args.direct_lod_only else ""),
             },
+            {"Key": "source-lineage", "Value": args.source_label[:256]},
             {"Key": "branch", "Value": args.branch},
         ],
     }
@@ -127,6 +135,10 @@ def main() -> int:
     parser.add_argument("--lod-decimation", default="30%,10%,3%")
     parser.add_argument("--lod-chunk-count", type=int, default=256)
     parser.add_argument("--lod-chunk-extent", type=int, default=32)
+    parser.add_argument("--source-label", default=DEFAULT_SOURCE_LINEAGE_LABEL)
+    parser.add_argument("--source-ply", default=DEFAULT_SOURCE_PLY)
+    parser.add_argument("--source-skybox", default=DEFAULT_SOURCE_SKYBOX)
+    parser.add_argument("--project-tag", default=DEFAULT_PROJECT_TAG)
     parser.add_argument("--branch", default="agent-90742618-md1-geometry-consistency")
     parser.add_argument("--payload-out", default="")
     parser.add_argument("--direct-lod-only", action="store_true")
