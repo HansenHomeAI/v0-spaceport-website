@@ -2262,6 +2262,20 @@ def materialize_context_density_tile(stage: BenchmarkStage, extracted_dir: Path)
             shutil.copy2(source, target)
 
 
+def materialize_merge_tile_dir(source_dir: Path, stage_link: Path) -> str:
+    if stage_link.exists() or stage_link.is_symlink():
+        if stage_link.is_symlink() or stage_link.is_file():
+            stage_link.unlink()
+        else:
+            shutil.rmtree(stage_link)
+    try:
+        stage_link.symlink_to(source_dir.resolve(), target_is_directory=True)
+        return "symlink"
+    except OSError:
+        shutil.copytree(source_dir, stage_link)
+        return "copy"
+
+
 def run_merge_stage(
     *,
     tile_manifest: dict[str, object],
@@ -2286,16 +2300,14 @@ def run_merge_stage(
     ]
     tile_root = output_dir / "tile_outputs"
     tile_root.mkdir(parents=True, exist_ok=True)
+    materialization_modes: dict[str, str] = {}
     for tile_id, extracted_dir in tile_stage_dirs.items():
         stage_link = tile_root / tile_id
-        if stage_link.exists():
-            if stage_link.is_symlink() or stage_link.is_file():
-                stage_link.unlink()
-            else:
-                shutil.rmtree(stage_link)
-        shutil.copytree(extracted_dir, stage_link)
+        materialization_modes[tile_id] = materialize_merge_tile_dir(extracted_dir, stage_link)
     result = run_command(command, capture_output=True)
-    return json.loads(result.stdout)
+    payload = json.loads(result.stdout)
+    payload["tile_materialization_modes"] = materialization_modes
+    return payload
 
 
 def parse_args() -> argparse.Namespace:

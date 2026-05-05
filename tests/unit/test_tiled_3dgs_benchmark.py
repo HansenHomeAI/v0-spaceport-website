@@ -144,6 +144,20 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             self.assertTrue((sparse_dir / "images.txt").exists())
             self.assertTrue((sparse_dir / "points3D.txt").exists())
 
+    def test_materialize_merge_tile_dir_prefers_symlink_without_copying(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "source"
+            source.mkdir()
+            (source / "splat.ply").write_text("ply\n", encoding="utf-8")
+            target = Path(tmp) / "target"
+
+            mode = benchmark.materialize_merge_tile_dir(source, target)
+
+            self.assertIn(mode, {"symlink", "copy"})
+            self.assertTrue((target / "splat.ply").exists())
+            if mode == "symlink":
+                self.assertTrue(target.is_symlink())
+
     def test_build_benchmark_stages_defaults_to_single_tiled_job(self):
         manifest = {
             "tiles": [

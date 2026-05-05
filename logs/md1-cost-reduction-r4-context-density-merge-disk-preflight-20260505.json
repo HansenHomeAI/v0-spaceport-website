@@ -1,0 +1,161 @@
+{
+  "artifact_member_sizes": {
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-camera-coverage-canary-after-tile04-cache-20260505/tiles/tile_10/md1-r4exp9-1777943800-1777943463-tile-10/output/model.tar.gz": {
+      "splat.ply": 39986864
+    },
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_00/md1-r4leafreb-1777858863-tile-00/output/model.tar.gz": {
+      "splat.ply": 25828824
+    },
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_02/md1-r4leafreb-1777858863-tile-02/output/model.tar.gz": {
+      "splat.ply": 49950272
+    },
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_11/md1-r4leafreb-1777858863-tile-11/output/model.tar.gz": {
+      "splat.ply": 13005
+    },
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-proof-20260503/tiles/tile_13/md1-r4leafinit-1777850709-tile-13/output/model.tar.gz": {
+      "splat.ply": 23671968
+    },
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz": {
+      "tiles/tile_01/splat.ply": 43736584,
+      "tiles/tile_04/splat.ply": 100306240,
+      "tiles/tile_05/splat.ply": 93252648,
+      "tiles/tile_06/splat.ply": 123636353
+    }
+  },
+  "available_bytes": 3699920896,
+  "available_gib": 3.4458,
+  "block_reasons": [
+    "insufficient_local_disk"
+  ],
+  "estimated_merge_output_bytes": 625478447,
+  "estimated_required_bytes": 1662732117,
+  "estimated_required_gib": 1.5485,
+  "extracted_stage_bytes": 500382758,
+  "input_ply_bytes": 500382758,
+  "input_ply_gib": 0.466,
+  "local_merge_output_dir": "logs/md1-cost-reduction-r4-context-density-local-merge-20260505",
+  "merge_output_multiplier": 1.25,
+  "merge_tile_copy_bytes": 0,
+  "metadata_overhead_bytes": 536870912,
+  "required_with_safety_bytes": 3810215765,
+  "required_with_safety_gib": 3.5485,
+  "safe_to_local_merge": false,
+  "safety_margin_bytes": 2147483648,
+  "source_summary_json": "logs/md1-cost-reduction-r4-context-density-diagnostic-dryrun-20260505.json",
+  "stage_member_count": 9,
+  "stage_members": [
+    {
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_00/md1-r4leafreb-1777858863-tile-00/output/model.tar.gz",
+      "candidate_members": [
+        "splat.ply"
+      ],
+      "selected_member": "splat.ply",
+      "selected_size_bytes": 25828824,
+      "selected_size_gib": 0.0241,
+      "stage_name": "T0_tile_00",
+      "stage_type": "cached_tile",
+      "tile_id": "tile_00"
+    },
+    {
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_02/md1-r4leafreb-1777858863-tile-02/output/model.tar.gz",
+      "candidate_members": [
+        "splat.ply"
+      ],
+      "selected_member": "splat.ply",
+      "selected_size_bytes": 49950272,
+      "selected_size_gib": 0.0465,
+      "stage_name": "T0_tile_02",
+      "stage_type": "cached_tile",
+      "tile_id": "tile_02"
+    },
+    {
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_11/md1-r4leafreb-1777858863-tile-11/output/model.tar.gz",
+      "candidate_members": [
+        "splat.ply"
+      ],
+      "selected_member": "splat.ply",
+      "selected_size_bytes": 13005,
+      "selected_size_gib": 0.0,
+      "stage_name": "T0_tile_11",
+      "stage_type": "cached_tile",
+      "tile_id": "tile_11"
+    },
+    {
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-proof-20260503/tiles/tile_13/md1-r4leafinit-1777850709-tile-13/output/model.tar.gz",
+      "candidate_members": [
+        "splat.ply"
+      ],
+      "selected_member": "splat.ply",
+      "selected_size_bytes": 23671968,
+      "selected_size_gib": 0.022,
+      "stage_name": "T0_tile_13",
+      "stage_type": "cached_tile",
+      "tile_id": "tile_13"
+    },
+    {
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "candidate_members": [
+        "tiles/tile_01/splat.ply",
+        "splat.ply"
+      ],
+      "selected_member": "tiles/tile_01/splat.ply",
+      "selected_size_bytes": 43736584,
+      "selected_size_gib": 0.0407,
+      "stage_name": "T0_tile_01",
+      "stage_type": "context_density_tile",
+      "tile_id": "tile_01"
+    },
+    {
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "candidate_members": [
+        "tiles/tile_04/splat.ply",
+        "splat.ply"
+      ],
+      "selected_member": "tiles/tile_04/splat.ply",
+      "selected_size_bytes": 100306240,
+      "selected_size_gib": 0.0934,
+      "stage_name": "T0_tile_04",
+      "stage_type": "context_density_tile",
+      "tile_id": "tile_04"
+    },
+    {
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "candidate_members": [
+        "tiles/tile_05/splat.ply",
+        "splat.ply"
+      ],
+      "selected_member": "tiles/tile_05/splat.ply",
+      "selected_size_bytes": 93252648,
+      "selected_size_gib": 0.0868,
+      "stage_name": "T0_tile_05",
+      "stage_type": "context_density_tile",
+      "tile_id": "tile_05"
+    },
+    {
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "candidate_members": [
+        "tiles/tile_06/splat.ply",
+        "splat.ply"
+      ],
+      "selected_member": "tiles/tile_06/splat.ply",
+      "selected_size_bytes": 123636353,
+      "selected_size_gib": 0.1151,
+      "stage_name": "T0_tile_06",
+      "stage_type": "context_density_tile",
+      "tile_id": "tile_06"
+    },
+    {
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-camera-coverage-canary-after-tile04-cache-20260505/tiles/tile_10/md1-r4exp9-1777943800-1777943463-tile-10/output/model.tar.gz",
+      "candidate_members": [
+        "splat.ply"
+      ],
+      "selected_member": "splat.ply",
+      "selected_size_bytes": 39986864,
+      "selected_size_gib": 0.0372,
+      "stage_name": "T0_tile_10",
+      "stage_type": "cached_tile",
+      "tile_id": "tile_10"
+    }
+  ],
+  "tile_materialization_mode": "symlink"
+}

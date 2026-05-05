@@ -589,11 +589,11 @@
       ]
     }
   ],
-  "current_branch_head": "396f0c203bae1b253d3e1729c0f4013a79c7ac46 with local context-density planner implementation pending commit",
-  "current_exact_head_gate_status": "exact-head 396f0c203bae1b253d3e1729c0f4013a79c7ac46 has green CDK Deploy 25366653864. No Cloudflare Pages run appeared for this non-web/status push.",
+  "current_branch_head": "838a3519564eff74ecbf0224d5bdde364fe71ab4 with local exact-head gate/status update pending next meaningful commit",
+  "current_exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
   "current_live_compute_status": "No MD1 SageMaker training jobs are InProgress. Unrelated Meadow processing r5full80s2-1777973662 is InProgress.",
-  "current_rung": "R4_cost_reduction_context_density_planner_diagnostic_complete",
-  "exact_head_gate_status": "exact-head 396f0c203bae1b253d3e1729c0f4013a79c7ac46 has green CDK Deploy 25366653864. No Cloudflare Pages run appeared for this non-web/status push.",
+  "current_rung": "R4_cost_reduction_context_density_merge_disk_preflight_complete",
+  "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
     "buckets": {
@@ -777,13 +777,13 @@
     "local_status_update_pending_commit": true,
     "unrelated_processing_job_in_progress": "r5full80s1-1777934749"
   },
-  "last_updated": "2026-05-05T09:46:30Z",
+  "last_updated": "2026-05-05T09:55:05Z",
   "latest_exact_head_gate": {
-    "head": "396f0c203bae1b253d3e1729c0f4013a79c7ac46",
-    "cdk_deploy_run_id": 25366653864,
+    "head": "838a3519564eff74ecbf0224d5bdde364fe71ab4",
+    "cdk_deploy_run_id": 25369423200,
     "cdk_deploy_conclusion": "success",
     "cloudflare_pages": "none_observed_for_non_web_status_push",
-    "recorded_at": "2026-05-05T08:51:10Z"
+    "recorded_at": "2026-05-05T09:55:05Z"
   },
   "latest_live_compute_status": "No MD1 SageMaker training jobs are InProgress. Unrelated Meadow processing r5full80s2-1777973662 is InProgress.",
   "latest_pages_gate": {
@@ -3385,7 +3385,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Run the no-training context-density local merge/preflight using cached leaves plus V18 teacher/context density source tiles; only run same-camera review if preflight passes.",
+  "next_unblocked_step": "Do not run full 14-tile training or more plain hard retraining. Free or relocate at least 3.55 GiB scratch for symlink local merge, or implement/run bounded remote/streaming no-training merge/preflight; only run same-camera review if merged artifact preflight passes.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -9728,6 +9728,56 @@
       "status": "ready_for_no_training_local_context_density_merge_preflight",
       "no_full_14tile_training": true,
       "next_unblocked_step": "Run the no-training context-density local merge/preflight using cached leaves plus V18 teacher/context density source tiles; only run same-camera review if preflight passes."
+    }
+  },
+  "md1_r4_context_density_merge_disk_preflight_20260505": {
+    "status": "local_merge_disk_preflight_blocked_by_safety_margin",
+    "generated_at": "2026-05-05T10:26:02Z",
+    "head_at_start": "838a3519564eff74ecbf0224d5bdde364fe71ab4",
+    "implementation": {
+      "disk_preflight_script": "scripts/3dgs/preflight_tiled_merge_disk.py",
+      "disk_preflight_report": "logs/md1-cost-reduction-r4-context-density-merge-disk-preflight-20260505.json",
+      "merge_tile_materialization": "symlink_with_copy_fallback",
+      "source_dryrun_summary": "logs/md1-cost-reduction-r4-context-density-diagnostic-dryrun-20260505.json"
+    },
+    "artifact_member_preflight": {
+      "required_splat_members_found": true,
+      "stage_member_count": 9,
+      "input_ply_bytes": 500382758,
+      "input_ply_gib": 0.466,
+      "context_density_tiles": [
+        "tile_01",
+        "tile_04",
+        "tile_05",
+        "tile_06"
+      ],
+      "cached_tiles": [
+        "tile_00",
+        "tile_02",
+        "tile_10",
+        "tile_11",
+        "tile_13"
+      ]
+    },
+    "disk_preflight": {
+      "tile_materialization_mode": "symlink",
+      "available_gib": 3.4458,
+      "estimated_required_gib": 1.5485,
+      "required_with_safety_gib": 3.5485,
+      "safety_margin_gib": 2.0,
+      "safe_to_local_merge": false,
+      "block_reasons": [
+        "insufficient_local_disk"
+      ]
+    },
+    "live_compute_status": {
+      "md1_training_jobs_in_progress": 0,
+      "unrelated_processing_job_in_progress": "r5full80s2-1777973662"
+    },
+    "decision": {
+      "status": "do_not_run_local_merge_on_current_disk",
+      "no_full_14tile_training": true,
+      "next_unblocked_step": "Free or relocate scratch so available space exceeds 3.55 GiB, or implement a bounded remote/streaming no-training merge/preflight path. Only run same-camera review after a merged artifact passes preflight."
     }
   }
 }
