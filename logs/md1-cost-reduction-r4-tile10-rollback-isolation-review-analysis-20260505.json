@@ -1,0 +1,190 @@
+{
+  "generated_at": "2026-05-05T22:18:00Z",
+  "candidate_label": "r4-tile10-rollback-isolation-smoke-p24",
+  "review_job": "md1-r1-r4-t10rollback-1778018314-quality",
+  "review_job_status": "Completed",
+  "review_billable_seconds": 776,
+  "estimated_review_cost_usd_at_1_515_per_hour": 0.327,
+  "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-rollback-isolation-review-20260505/outputs/r4-tile10-rollback-isolation-smoke-p24/md1-r1-r4-t10rollback-1778018314-quality/output/model.tar.gz",
+  "merge_preflight": {
+    "retained_gaussians": 8423919,
+    "source_gaussians": 8789685,
+    "dropped_gaussians": 365766,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "artifact_complete": true,
+    "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-rollback-isolation-remote-merge-g4dn-202605052105/output/artifact/model.tar.gz",
+    "model_tar_gz_bytes": 3023398558,
+    "background_asset": {
+      "asset": "background_skybox.webp",
+      "retained_gaussians": 378953,
+      "selection_score": 0.6353789878019934,
+      "source_asset": "/opt/ml/processing/output/artifact/tiles/tile_10/background_skybox.webp",
+      "source_tile_id": "tile_10"
+    }
+  },
+  "promotion_decision": "blocked",
+  "promotion_block_reasons": [
+    "boundary_no_required_improvement"
+  ],
+  "v18_non_regression_decision": "promoted",
+  "v18_non_regression_block_reasons": [],
+  "camera_coverage": {
+    "status": "ok",
+    "block_reasons": [],
+    "per_bucket": {
+      "near_detail": {
+        "baseline_count": 4,
+        "candidate_count": 4,
+        "baseline_cameras": [
+          "DJI_0258.JPG",
+          "DJI_0261.JPG",
+          "DJI_0262.JPG",
+          "DJI_0263.JPG"
+        ],
+        "candidate_cameras": [
+          "DJI_0258.JPG",
+          "DJI_0261.JPG",
+          "DJI_0262.JPG",
+          "DJI_0263.JPG"
+        ],
+        "block_reasons": []
+      },
+      "boundary": {
+        "baseline_count": 4,
+        "candidate_count": 4,
+        "baseline_cameras": [
+          "DJI_0067.JPG",
+          "DJI_0068.JPG",
+          "DJI_0069.JPG",
+          "DJI_0070.JPG"
+        ],
+        "candidate_cameras": [
+          "DJI_0067.JPG",
+          "DJI_0068.JPG",
+          "DJI_0069.JPG",
+          "DJI_0070.JPG"
+        ],
+        "block_reasons": []
+      },
+      "horizon": {
+        "baseline_count": 4,
+        "candidate_count": 4,
+        "baseline_cameras": [
+          "DJI_0066.JPG",
+          "DJI_0073.JPG",
+          "DJI_0146.JPG",
+          "DJI_0147.JPG"
+        ],
+        "candidate_cameras": [
+          "DJI_0066.JPG",
+          "DJI_0073.JPG",
+          "DJI_0146.JPG",
+          "DJI_0147.JPG"
+        ],
+        "block_reasons": []
+      }
+    }
+  },
+  "bucket_deltas_vs_v18": {
+    "near_detail": {
+      "v18": {
+        "psnr": 11.342806679576887,
+        "ssim": 0.38599395751953125,
+        "lpips": 0.9159154295921326
+      },
+      "candidate": {
+        "psnr": 11.342807690342037,
+        "ssim": 0.38599395751953125,
+        "lpips": 0.915915846824646
+      },
+      "delta": {
+        "psnr": 1.0107651498003634e-06,
+        "ssim": 0.0,
+        "lpips": 4.172325134277344e-07
+      },
+      "block_reasons": []
+    },
+    "boundary": {
+      "v18": {
+        "psnr": 14.315955739441744,
+        "ssim": 0.4327641427516937,
+        "lpips": 0.7800296545028687
+      },
+      "candidate": {
+        "psnr": 14.315964829907376,
+        "ssim": 0.4327673614025116,
+        "lpips": 0.7800382077693939
+      },
+      "delta": {
+        "psnr": 9.09046563180027e-06,
+        "ssim": 3.2186508178710938e-06,
+        "lpips": 8.553266525268555e-06
+      },
+      "block_reasons": []
+    },
+    "horizon": {
+      "v18": {
+        "psnr": 15.518785862438865,
+        "ssim": 0.3774964064359665,
+        "lpips": 0.8303832709789276
+      },
+      "candidate": {
+        "psnr": 15.519359828819239,
+        "ssim": 0.37757353484630585,
+        "lpips": 0.8302005231380463
+      },
+      "delta": {
+        "psnr": 0.0005739663803741024,
+        "ssim": 7.712841033935547e-05,
+        "lpips": -0.00018274784088134766
+      },
+      "block_reasons": []
+    }
+  },
+  "per_camera_blocks": [],
+  "fallback_breakdown": {
+    "baseline": {
+      "merge_mode": "support_weighted_overlap",
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "source_gaussians": 8789634,
+      "retained_gaussians": 8423868,
+      "fallback_reasons": []
+    },
+    "candidate": {
+      "merge_mode": "support_weighted_overlap",
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "source_gaussians": 8789685,
+      "retained_gaussians": 8423919,
+      "fallback_reasons": []
+    }
+  },
+  "render_sanity": {
+    "status": "ok",
+    "checked_view_count": 12,
+    "blank_view_count": 0,
+    "blank_views": []
+  },
+  "lineage_delta_vs_v18": {
+    "candidate_retained_gaussians": 8423919,
+    "v18_retained_gaussians": 8423868,
+    "retained_delta_vs_v18": 51,
+    "candidate_source_gaussians": 8789685,
+    "v18_source_gaussians": 8789634,
+    "source_delta_vs_v18": 51
+  },
+  "attribution": {
+    "finding": "Replacing only tile_10 with the V18/context-density tile while leaving cached tile_11 as the control restores V18 non-regression on all frozen p24 cameras. The prior full-scene canary regression was therefore tile_10-specific; tile_11 tiny/cache reuse has explicit same-camera proof and can be treated as accepted for this diagnostic path.",
+    "tile_10_status": "must_use_v18_context_density_or_targeted_repair_until_cheap_tile10_passes_v18_review",
+    "tile_11_status": "cached_tiny_tile_passed_v18_non_regression_when_isolated_as_only_control",
+    "confidence": "high_from_same_camera_v18_review_and_lineage_delta"
+  },
+  "decision": {
+    "production_ready": false,
+    "diagnostic_status": "v18_non_regression_promoted_but_promotion_improvement_gate_blocked_boundary_no_required_improvement",
+    "no_full_14tile_training": true,
+    "next_unblocked_step": "Formalize tile_11 reuse proof and keep tile_10 on context-density rollback until a bounded tile_10 repair can pass V18 same-camera review; do not launch full 14-tile training."
+  }
+}

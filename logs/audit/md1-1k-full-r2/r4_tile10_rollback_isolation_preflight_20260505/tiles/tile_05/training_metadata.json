@@ -1,0 +1,11 @@
+{
+  "tile_id": "tile_05",
+  "training_completed": true,
+  "training_mode": "hybrid_historical",
+  "model_variant": "md1_hybrid_diagnostic",
+  "hybrid_tile_policy": {
+    "mode": "historical",
+    "source_splat": "/opt/ml/processing/work/historical/tiles/tile_05/splat.ply",
+    "storage": "hardlink_or_copy"
+  }
+}

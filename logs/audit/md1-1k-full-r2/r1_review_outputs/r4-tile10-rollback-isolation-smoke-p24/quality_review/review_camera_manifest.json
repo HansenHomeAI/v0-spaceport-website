@@ -1,0 +1,124 @@
+{
+  "selected_tile_ids": [
+    "tile_00",
+    "tile_01",
+    "tile_02",
+    "tile_03",
+    "tile_04",
+    "tile_05",
+    "tile_06",
+    "tile_07",
+    "tile_08",
+    "tile_09",
+    "tile_10",
+    "tile_11",
+    "tile_12",
+    "tile_13"
+  ],
+  "review_image_names_by_bucket": {
+    "near_detail_camera_ids": [
+      "DJI_0258.JPG",
+      "DJI_0261.JPG",
+      "DJI_0262.JPG",
+      "DJI_0263.JPG"
+    ],
+    "boundary_camera_ids": [
+      "DJI_0067.JPG",
+      "DJI_0068.JPG",
+      "DJI_0069.JPG",
+      "DJI_0070.JPG"
+    ],
+    "horizon_camera_ids": [
+      "DJI_0066.JPG",
+      "DJI_0073.JPG",
+      "DJI_0146.JPG",
+      "DJI_0147.JPG"
+    ]
+  },
+  "views": [
+    {
+      "bucket": "near_detail",
+      "image_name": "DJI_0258.JPG",
+      "frame_file_path": "images/frame_01199.JPG",
+      "boundary_context_tile_ids": []
+    },
+    {
+      "bucket": "near_detail",
+      "image_name": "DJI_0261.JPG",
+      "frame_file_path": "images/frame_01232.JPG",
+      "boundary_context_tile_ids": []
+    },
+    {
+      "bucket": "near_detail",
+      "image_name": "DJI_0262.JPG",
+      "frame_file_path": "images/frame_01243.JPG",
+      "boundary_context_tile_ids": []
+    },
+    {
+      "bucket": "near_detail",
+      "image_name": "DJI_0263.JPG",
+      "frame_file_path": "images/frame_01254.JPG",
+      "boundary_context_tile_ids": []
+    },
+    {
+      "bucket": "boundary",
+      "image_name": "DJI_0067.JPG",
+      "frame_file_path": "images/frame_00067.JPG",
+      "boundary_context_tile_ids": [
+        "tile_04",
+        "tile_10"
+      ]
+    },
+    {
+      "bucket": "boundary",
+      "image_name": "DJI_0068.JPG",
+      "frame_file_path": "images/frame_00068.JPG",
+      "boundary_context_tile_ids": [
+        "tile_04",
+        "tile_10"
+      ]
+    },
+    {
+      "bucket": "boundary",
+      "image_name": "DJI_0069.JPG",
+      "frame_file_path": "images/frame_00069.JPG",
+      "boundary_context_tile_ids": [
+        "tile_04",
+        "tile_10"
+      ]
+    },
+    {
+      "bucket": "boundary",
+      "image_name": "DJI_0070.JPG",
+      "frame_file_path": "images/frame_00070.JPG",
+      "boundary_context_tile_ids": [
+        "tile_04",
+        "tile_10"
+      ]
+    },
+    {
+      "bucket": "horizon",
+      "image_name": "DJI_0066.JPG",
+      "frame_file_path": "images/frame_00066.JPG",
+      "boundary_context_tile_ids": []
+    },
+    {
+      "bucket": "horizon",
+      "image_name": "DJI_0073.JPG",
+      "frame_file_path": "images/frame_00073.JPG",
+      "boundary_context_tile_ids": []
+    },
+    {
+      "bucket": "horizon",
+      "image_name": "DJI_0146.JPG",
+      "frame_file_path": "images/frame_00491.JPG",
+      "boundary_context_tile_ids": []
+    },
+    {
+      "bucket": "horizon",
+      "image_name": "DJI_0147.JPG",
+      "frame_file_path": "images/frame_00492.JPG",
+      "boundary_context_tile_ids": []
+    }
+  ]
+}
