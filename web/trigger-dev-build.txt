@@ -72,3 +72,5 @@
 2026-05-05 static photo upload mode switcher tighter pill
 
 2026-05-05 remove static photo choose folder button
+
+2026-05-05 rename static photo toggle label

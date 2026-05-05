@@ -1777,7 +1777,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       onClick={() => setUploadMode('static_photos')}
                       aria-pressed={uploadMode === 'static_photos'}
                     >
-                      <span className="upload-mode-label">Static Property Photos</span>
+                      <span className="upload-mode-label">Static Photos</span>
                     </button>
                   </div>
                 </div>
