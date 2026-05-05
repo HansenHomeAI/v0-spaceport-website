@@ -1,16 +1,25 @@
 import importlib.util
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MODULE_PATH = REPO_ROOT / "scripts" / "3dgs" / "plan_tiled_merge_processing.py"
+CONTAINER_DIR = REPO_ROOT / "infrastructure" / "containers" / "3dgs"
+PACKAGER_PATH = CONTAINER_DIR / "run_tiled_merge_packaging.py"
 SPEC = importlib.util.spec_from_file_location("plan_tiled_merge_processing_test_module", MODULE_PATH)
 planner = importlib.util.module_from_spec(SPEC)
 assert SPEC and SPEC.loader
 sys.modules[SPEC.name] = planner
 SPEC.loader.exec_module(planner)
+sys.path.insert(0, str(CONTAINER_DIR))
+PACKAGER_SPEC = importlib.util.spec_from_file_location("run_tiled_merge_packaging_test_module", PACKAGER_PATH)
+packager = importlib.util.module_from_spec(PACKAGER_SPEC)
+assert PACKAGER_SPEC and PACKAGER_SPEC.loader
+sys.modules[PACKAGER_SPEC.name] = packager
+PACKAGER_SPEC.loader.exec_module(packager)
 
 
 class TiledMergeProcessingPlannerTests(unittest.TestCase):
@@ -72,6 +81,18 @@ class TiledMergeProcessingPlannerTests(unittest.TestCase):
             ["merge-plan", "tile-selection", "artifact-00"],
         )
         self.assertEqual(payload["Environment"]["MERGE_MODE"], "support_weighted_overlap")
+
+    def test_packager_resets_output_mount_contents_without_removing_mount(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output_root = Path(tmp) / "artifact"
+            (output_root / "nested").mkdir(parents=True)
+            (output_root / "nested" / "old.txt").write_text("old", encoding="utf-8")
+            (output_root / "old-root.txt").write_text("old", encoding="utf-8")
+
+            packager.reset_directory_contents(output_root)
+
+            self.assertTrue(output_root.exists())
+            self.assertEqual(list(output_root.iterdir()), [])
 
 
 if __name__ == "__main__":

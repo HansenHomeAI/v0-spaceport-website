@@ -107,6 +107,15 @@ def build_tarball(source_dir: Path, tarball_path: Path) -> None:
             archive.add(path, arcname=path.relative_to(source_dir))
 
 
+def reset_directory_contents(path: Path) -> None:
+    path.mkdir(parents=True, exist_ok=True)
+    for child in path.iterdir():
+        if child.is_dir() and not child.is_symlink():
+            shutil.rmtree(child)
+        else:
+            child.unlink()
+
+
 def main() -> int:
     merge_plan_path = Path(os.environ.get("MERGE_PLAN_PATH", "/opt/ml/processing/input/merge-plan/merge_plan.json"))
     tile_manifest_path = Path(
@@ -121,10 +130,8 @@ def main() -> int:
 
     if work_root.exists():
         shutil.rmtree(work_root)
-    if output_root.exists():
-        shutil.rmtree(output_root)
     work_root.mkdir(parents=True, exist_ok=True)
-    output_root.mkdir(parents=True, exist_ok=True)
+    reset_directory_contents(output_root)
 
     merge_plan = load_json(merge_plan_path)
     tile_manifest = load_json(tile_manifest_path)
