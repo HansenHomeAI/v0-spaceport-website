@@ -1,0 +1,121 @@
+{
+  "checked_at": "2026-05-05T00:25:30Z",
+  "purpose": "Manual no-spend local support_weighted_overlap merge for the tile_04 bridge diagnostic after the benchmark merge attempt hit missing local plyfile dependency.",
+  "cache_manifest_used": "/tmp/md1-tile04-bridge-diagnostic-cache-20260505.json",
+  "local_merge_root": "/tmp/md1-tile04-bridge-diagnostic-merge-20260505",
+  "dependency_note": "Initial benchmark local merge failed because system Python lacked plyfile; reran merge_gaussian_tiles.py with /tmp/md1-merge-venv after installing plyfile there only.",
+  "merge_report": {
+    "merge_mode": "support_weighted_overlap",
+    "merged_ply": "/tmp/md1-tile04-bridge-diagnostic-merge-20260505/merged/merged_splat.ply",
+    "tile_count": 5,
+    "source_gaussians": 1299515,
+    "retained_gaussians": 1230660,
+    "dropped_gaussians": 68855,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "fallback_reasons": [],
+    "tiles": [
+      {
+        "tile_id": "tile_00",
+        "source_ply": "/tmp/md1-tile04-bridge-diagnostic-merge-20260505/merged/tile_outputs/tile_00/splat.ply",
+        "source_gaussians": 248348,
+        "retained_gaussians": 248318,
+        "dropped_gaussians": 30,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 248317,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 1,
+          "retained_overlap_count": 0,
+          "retained_context_count": 1,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_02",
+        "source_ply": "/tmp/md1-tile04-bridge-diagnostic-merge-20260505/merged/tile_outputs/tile_02/splat.ply",
+        "source_gaussians": 480285,
+        "retained_gaussians": 479436,
+        "dropped_gaussians": 849,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 446854,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 32582,
+          "retained_overlap_count": 0,
+          "retained_context_count": 32582,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_04",
+        "source_ply": "/tmp/md1-tile04-bridge-diagnostic-merge-20260505/merged/tile_outputs/tile_04/splat.ply",
+        "source_gaussians": 343154,
+        "retained_gaussians": 343154,
+        "dropped_gaussians": 0,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 285209,
+          "overlap_candidate_count": 13022,
+          "context_candidate_count": 44923,
+          "retained_overlap_count": 13022,
+          "retained_context_count": 44923,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_11",
+        "source_ply": "/tmp/md1-tile04-bridge-diagnostic-merge-20260505/merged/tile_outputs/tile_11/splat.ply",
+        "source_gaussians": 119,
+        "retained_gaussians": 119,
+        "dropped_gaussians": 0,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 119,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": false
+        }
+      },
+      {
+        "tile_id": "tile_13",
+        "source_ply": "/tmp/md1-tile04-bridge-diagnostic-merge-20260505/merged/tile_outputs/tile_13/splat.ply",
+        "source_gaussians": 227609,
+        "retained_gaussians": 159633,
+        "dropped_gaussians": 67976,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 159633,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": false
+        }
+      }
+    ]
+  },
+  "decision": "tile04_structural_merge_passed_diagnostic_only_not_acceptance_canary"
+}
