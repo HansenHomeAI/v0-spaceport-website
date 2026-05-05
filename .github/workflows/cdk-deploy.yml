@@ -95,6 +95,7 @@ jobs:
       run: |
         set -euo pipefail
         python3 ../../scripts/resolve_preview_context.py --branch "${GITHUB_REF_NAME}" --format shell > /tmp/deploy-context.env
+        python3 ../../scripts/resolve_auth_deploy_mode.py --branch "${GITHUB_REF_NAME}" --repo-root ../.. --format shell >> /tmp/deploy-context.env
         cat /tmp/deploy-context.env
         while IFS='=' read -r key value; do
           echo "${key}=${value}" >> "$GITHUB_ENV"
@@ -282,6 +283,12 @@ jobs:
         fi
 
         if [ "${DEPLOYMENT_CLASS}" = "branch-preview" ]; then
+          if [ "${DEPLOY_AUTH_STACK_EFFECTIVE:-false}" = "true" ]; then
+            STACK_DEPLOY_REQUIRED="true"
+            AUTH_STACK_CHANGED="true"
+            echo "Preview auth opt-in marker is present - forcing shared auth stack deploy"
+          fi
+
           CURRENT_EXPLORE_API_URL=$(aws cloudformation describe-stacks \
             --stack-name "${AUTH_STACK_NAME}" \
             --query "Stacks[0].Outputs[?OutputKey=='ExplorePublicApiUrl'].OutputValue" \
