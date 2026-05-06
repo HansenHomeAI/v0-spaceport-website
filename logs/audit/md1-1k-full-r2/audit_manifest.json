@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "Local LOD bundle validation and desktop/mobile viewer smoke passed, but the proxy/viewer fixes are not pushed and gated on exact-head Cloudflare Pages preview yet.",
+  "blocked_promotion_reason": "LOD bundle, local viewer, exact-head CDK/Pages, and hash preview viewer gates passed, but candidate still relies on V18/context-density rollback for tile10 and eight other tiles; cheaper no-rollback tile10 repair is optional/unproven.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "1e46ea56c11efafb7d1e40cfc75868a4120538bb with local LOD completion/viewer-fix evidence pending commit",
-  "current_exact_head_gate_status": "exact-head 1e46ea56c11efafb7d1e40cfc75868a4120538bb is pushed and green on CDK Deploy 25411133101. Local staging S3 proxy allowlist and proxy-first MD1 viewer fixes are pending commit/push; exact-head CDK/Pages preview gates must run after push.",
+  "current_branch_head": "c12586cc02935b5a8128c87351748e0a4d967da1 pushed and green; local preview smoke evidence pending commit",
+  "current_exact_head_gate_status": "exact-head c12586cc02935b5a8128c87351748e0a4d967da1 is pushed and green on CDK Deploy 25414410907 and Cloudflare Pages 25414410905. Pages hash https://e60e3909.v0-spaceport-website-preview2.pages.dev and alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev both passed /health.txt.",
   "current_live_compute_status": "No SageMaker training jobs are InProgress and no SageMaker processing jobs are InProgress. Bounded LOD Processing job md1-r4-t10rollback-lod-dryrun-20260505 completed at 2026-05-06T02:34:48Z after about 7,443.6s on ml.m5.4xlarge and wrote the staging SOGS LOD bundle.",
-  "current_rung": "R4_production_lod_viewer_smoke_passed_tile10_rollback_candidate_pending_preview_gate",
+  "current_rung": "R4_production_lod_preview_smoke_passed_tile10_rollback_candidate",
   "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -777,15 +777,28 @@
     "local_status_update_pending_commit": true,
     "unrelated_processing_job_in_progress": "r5full80s1-1777934749"
   },
-  "last_updated": "2026-05-06T03:07:07Z",
+  "last_updated": "2026-05-06T03:21:15Z",
   "latest_exact_head_gate": {
-    "checked_at": "2026-05-06T02:00:02Z",
-    "head": "1e46ea56c11efafb7d1e40cfc75868a4120538bb",
-    "cdk_deploy_run_id": 25411133101,
+    "checked_at": "2026-05-06T03:21:15Z",
+    "head": "c12586cc02935b5a8128c87351748e0a4d967da1",
+    "cdk_deploy_run_id": 25414410907,
     "cdk_deploy_conclusion": "success",
-    "ml_container_build": "not_triggered_for_status_log_push",
-    "cloudflare_pages": "not_triggered_for_status_log_push",
-    "next_gate_required_after_push": true
+    "cloudflare_pages_run_id": 25414410905,
+    "cloudflare_pages_conclusion": "success",
+    "pages_hash_url": "https://e60e3909.v0-spaceport-website-preview2.pages.dev",
+    "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
+    "health_txt": {
+      "https://e60e3909.v0-spaceport-website-preview2.pages.dev": {
+        "ok": true,
+        "status": 200,
+        "text": "OK"
+      },
+      "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev": {
+        "ok": true,
+        "status": 200,
+        "text": "OK"
+      }
+    }
   },
   "latest_live_compute_status": {
     "checked_at": "2026-05-06T03:07:07Z",
@@ -11322,13 +11335,15 @@
       "lod_processing_completed": true,
       "bundle_validation_passed": true,
       "local_desktop_mobile_viewer_smoke_passed": true,
-      "submit_next_step": "Commit/push the proxy/viewer fix and validation evidence, then run exact-head CDK/Cloudflare Pages preview gates and preview viewer smoke. Do not launch full 14-tile training.",
+      "submit_next_step": "Do not launch full 14-tile training. Next step is user-facing promotion decision for this rollback-based LOD candidate or bounded tile_10 repair proof if a cheaper no-rollback candidate is required.",
       "production_ready": false,
       "production_blockers": [
-        "Proxy/viewer code changes and validation evidence are local until committed/pushed.",
-        "Exact-head Cloudflare Pages preview has not yet run against the staging-proxy viewer fix.",
-        "A cheaper no-rollback tile10 repair remains optional but unproven; current candidate uses V18/context-density rollback for tile10 and eight other tiles."
-      ]
+        "Candidate still uses V18/context-density rollback for tile10 and eight other tiles, so it is production-viewer ready but not a fully cheaper retrained output.",
+        "A cheaper no-rollback tile10 repair remains optional but unproven."
+      ],
+      "exact_head_cdk_pages_green": true,
+      "preview_desktop_mobile_viewer_smoke_passed": true,
+      "production_ready_candidate_for_user_review": true
     },
     "submit_evidence_path": "logs/md1-r4-tile10-rollback-lod-submit-20260506.json",
     "processing_job_arn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-r4-t10rollback-lod-dryrun-20260505",
@@ -11419,6 +11434,77 @@
       "page_errors": [],
       "local_viewer_url": "http://127.0.0.1:3031/md1-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.amazonaws.com%2Fcompressed%2Fmd1-r4-tile10-rollback-lod-dryrun-20260505%2Fsupersplat_bundle%2Flod-meta.json",
       "fix_required": "Added staging S3 hosts to SOGS proxy/client allowlists and made MD1 iframe use normalized proxy URL before bundle summary resolution so SSE-KMS staging assets do not attempt unsigned browser GETs."
+    },
+    "preview_viewer_smoke": {
+      "path": "logs/md1-r4-tile10-rollback-lod-preview-smoke-20260506.json",
+      "checked_at": "2026-05-06T03:21:15.242Z",
+      "pass": true,
+      "health": {
+        "https://e60e3909.v0-spaceport-website-preview2.pages.dev": {
+          "ok": true,
+          "status": 200,
+          "text": "OK"
+        },
+        "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev": {
+          "ok": true,
+          "status": 200,
+          "text": "OK"
+        }
+      },
+      "desktop_hash": {
+        "bundleKind": "lod-streaming",
+        "transport": "proxy",
+        "rootFile": "lod-meta.json",
+        "sourceUrl": "https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+        "viewerUrl": "/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+        "lodLevels": "4",
+        "chunkFiles": "44",
+        "loadedNodes": "2",
+        "chunkMetaRequests": "2",
+        "chunkMetaAtFirstFrame": "0",
+        "firstFrameMs": "1056.3999999761581",
+        "splatBudget": "3000000",
+        "lodMin": "0",
+        "lodMax": "3",
+        "boundsMin": "-1246.236,-1202.796,-745.6156",
+        "boundsMax": "1461.514,1222.845,1582.216"
+      },
+      "mobile_hash": {
+        "bundleKind": "lod-streaming",
+        "transport": "proxy",
+        "rootFile": "lod-meta.json",
+        "sourceUrl": "https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+        "viewerUrl": "/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+        "lodLevels": "4",
+        "chunkFiles": "44",
+        "loadedNodes": "2",
+        "chunkMetaRequests": "2",
+        "chunkMetaAtFirstFrame": "0",
+        "firstFrameMs": "669.6000000238419",
+        "splatBudget": "1000000",
+        "lodMin": "2",
+        "lodMax": "3",
+        "boundsMin": "-1246.236,-1202.796,-745.6156",
+        "boundsMax": "1461.514,1222.845,1582.216"
+      },
+      "screenshots": [
+        "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/md1-r4-tile10-rollback-lod-preview-desktop-hash-20260506.png",
+        "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/md1-r4-tile10-rollback-lod-preview-mobile-hash-20260506.png"
+      ],
+      "console_errors": [],
+      "page_errors": [],
+      "hash_viewer_url": "https://e60e3909.v0-spaceport-website-preview2.pages.dev/md1-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.amazonaws.com%2Fcompressed%2Fmd1-r4-tile10-rollback-lod-dryrun-20260505%2Fsupersplat_bundle%2Flod-meta.json"
+    },
+    "deployment_gate": {
+      "checked_at": "2026-05-06T03:21:15Z",
+      "head": "c12586cc02935b5a8128c87351748e0a4d967da1",
+      "cdk_deploy_run_id": 25414410907,
+      "cdk_deploy_conclusion": "success",
+      "cloudflare_pages_run_id": 25414410905,
+      "cloudflare_pages_conclusion": "success",
+      "pages_hash_url": "https://e60e3909.v0-spaceport-website-preview2.pages.dev",
+      "pages_alias_url": "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev",
+      "health_txt_ok": true
     }
   }
 }
