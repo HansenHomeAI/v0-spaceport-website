@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "0d7d32e7372fa2ed5a41c543213ddd577c49865c with local LOD dry-run/status update pending next meaningful commit",
-  "current_exact_head_gate_status": "exact-head 0d7d32e7372fa2ed5a41c543213ddd577c49865c is pushed and green on CDK Deploy 25407051442. No Trigger ML Container Build or Cloudflare Pages run appeared for this log/proof push; latest branch 3DGS image remains sha256:b0129db24d16251e6ee2af896e65c5eceefbd10d8eb52441b2800556f88347eb from head 3a22acfd5b420ca2876a1eb3e2a0398790ac995f.",
-  "current_live_compute_status": "No SageMaker training jobs are InProgress and no SageMaker processing jobs are InProgress.",
-  "current_rung": "R4_production_lod_payload_dryrun_tile10_rollback_candidate",
+  "current_branch_head": "68522a876b4ef8d85a9c197e10e29ae694b1c77c with local LOD processing submission/status update pending next meaningful commit",
+  "current_exact_head_gate_status": "exact-head 68522a876b4ef8d85a9c197e10e29ae694b1c77c is pushed and green on CDK Deploy 25408778360. No Trigger ML Container Build or Cloudflare Pages run appeared for this script/log/proof push; latest branch 3DGS image remains sha256:b0129db24d16251e6ee2af896e65c5eceefbd10d8eb52441b2800556f88347eb from head 3a22acfd5b420ca2876a1eb3e2a0398790ac995f.",
+  "current_live_compute_status": "No SageMaker training jobs are InProgress. One bounded SageMaker Processing job is InProgress: md1-r4-t10rollback-lod-dryrun-20260505, submitted 2026-05-06T00:29:52Z on ml.m5.4xlarge for LOD packaging only.",
+  "current_rung": "R4_production_lod_processing_in_progress_tile10_rollback_candidate",
   "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -803,7 +803,7 @@
     "pages_run_id": 25107446761
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-tile10-rollback-isolation-smoke-p24/review_comparison.json",
-  "latest_review_status": "No new paid review in this loop. Tile10 rollback-isolation review md1-r1-r4-t10rollback-1778018314-quality remains V18 non-regression promoted; generated no-spend splat-transform LOD payload for the accepted rollback candidate source PLY/skybox.",
+  "latest_review_status": "No new paid quality review in this loop. Tile10 rollback-isolation review md1-r1-r4-t10rollback-1778018314-quality remains V18 non-regression promoted. Submitted bounded LOD processing job md1-r4-t10rollback-lod-dryrun-20260505 for the accepted rollback candidate source PLY/skybox.",
   "latest_training_cost_reduction_status": "No-spend tile11 reuse proof reduced the active problematic cached frontier to tile_10 only: selected_source_counts candidate=5/context_density_rollback=9, training_jobs_to_submit=0, estimated_usd=0.0.",
   "live_compute_status": "No SageMaker training jobs are InProgress. Exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. Tile_13 hard proof is complete/preflighted/cached; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
@@ -3393,7 +3393,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Do not run full 14-tile training. Commit/push/gate the LOD dry-run payload and lineage/skybox fix; after exact-head gate, submit only the bounded LOD processing job and then run desktop/mobile viewer smoke on produced lod-meta.json.",
+  "next_unblocked_step": "Monitor md1-r4-t10rollback-lod-dryrun-20260505 to completion, validate lod-meta.json and bundle sidecars, then run desktop/mobile viewer smoke before promotion. Do not run full 14-tile training.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -11280,7 +11280,7 @@
     "analysis_path": "logs/md1-r4-tile10-rollback-lod-dryrun-analysis-20260505.json",
     "payload_path": "logs/md1-r4-tile10-rollback-lod-payload-dryrun-20260505.json",
     "processing_job_name": "md1-r4-t10rollback-lod-dryrun-20260505",
-    "submitted": false,
+    "submitted": true,
     "input_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-rollback-isolation-remote-merge-g4dn-202605052105/output/artifact/merged/",
     "output_prefix": "s3://spaceport-ml-processing-staging/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/",
     "source_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-rollback-isolation-remote-merge-g4dn-202605052105/output/artifact/model.tar.gz",
@@ -11327,6 +11327,17 @@
         "Browser desktop/mobile viewer smoke has not passed on this candidate lod-meta.json yet.",
         "A cheaper no-rollback tile10 repair remains optional but unproven; current candidate uses V18/context-density rollback for tile10 and eight other tiles."
       ]
-    }
+    },
+    "submit_evidence_path": "logs/md1-r4-tile10-rollback-lod-submit-20260506.json",
+    "processing_job_arn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-r4-t10rollback-lod-dryrun-20260505",
+    "initial_status": {
+      "ProcessingJobStatus": "InProgress",
+      "CreationTime": "2026-05-06T00:29:52.455000Z",
+      "ProcessingStartTime": null,
+      "FailureReason": null,
+      "ExitMessage": null
+    },
+    "entrypoint_script_s3_uri": "s3://spaceport-ml-processing-staging/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/entrypoint/md1_splat_transform_direct_lod.sh",
+    "output_lod_meta_s3_uri": "s3://spaceport-ml-processing-staging/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json"
   }
 }
