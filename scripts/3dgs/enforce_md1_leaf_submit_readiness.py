@@ -138,6 +138,7 @@ def evaluate_gate(
     training_jobs_in_progress: list[Any],
     processing_jobs_in_progress: list[Any],
     max_estimated_usd: float,
+    v18_review_manifest_s3_uri: str = "",
 ) -> dict[str, Any]:
     block_reasons: list[str] = []
     selected_tiles = ordered_unique(list_strings(strategy.get("selected_tile_ids")))
@@ -153,6 +154,12 @@ def evaluate_gate(
         block_reasons.append("processing_jobs_in_progress")
     if strategy.get("submitted_jobs") not in ([], None):
         block_reasons.append("strategy_not_dry_run")
+    strategy_v18_review_manifest = str(strategy.get("v18_review_manifest_s3_uri") or "").strip()
+    expected_v18_review_manifest = (v18_review_manifest_s3_uri or strategy_v18_review_manifest).strip()
+    if not expected_v18_review_manifest:
+        block_reasons.append("v18_review_manifest_missing")
+    elif strategy_v18_review_manifest != expected_v18_review_manifest:
+        block_reasons.append("strategy_v18_review_manifest_mismatch")
     if len(selected_tiles) >= 14:
         block_reasons.append("full_14tile_scope_not_allowed")
     if set(selected_tiles) != set(required_tile_ids):
@@ -189,6 +196,8 @@ def evaluate_gate(
         "exact_head": exact_head,
         "git_head": git_head,
         "workflow_conclusion": workflow_conclusion,
+        "v18_review_manifest_s3_uri": strategy_v18_review_manifest,
+        "expected_v18_review_manifest_s3_uri": expected_v18_review_manifest or None,
         "training_jobs_in_progress": training_jobs_in_progress,
         "processing_jobs_in_progress": processing_jobs_in_progress,
         "required_tile_ids": required_tile_ids,
@@ -223,6 +232,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--exact-head", required=True)
     parser.add_argument("--git-head", required=True)
     parser.add_argument("--workflow-conclusion", required=True)
+    parser.add_argument("--v18-review-manifest-s3-uri", default="")
     parser.add_argument("--training-jobs-json", default="[]")
     parser.add_argument("--processing-jobs-json", default="[]")
     parser.add_argument("--max-estimated-usd", type=float, required=True)
@@ -242,6 +252,7 @@ def main() -> int:
         exact_head=args.exact_head,
         git_head=args.git_head,
         workflow_conclusion=args.workflow_conclusion,
+        v18_review_manifest_s3_uri=args.v18_review_manifest_s3_uri,
         training_jobs_in_progress=parse_json_list(args.training_jobs_json),
         processing_jobs_in_progress=parse_json_list(args.processing_jobs_json),
         max_estimated_usd=args.max_estimated_usd,

@@ -15,6 +15,7 @@ def strategy() -> dict:
     return {
         "selected_tile_ids": ["tile_04", "tile_10"],
         "submitted_jobs": [],
+        "v18_review_manifest_s3_uri": "s3://bucket/v18-review",
         "cost_estimate": {"estimated_usd": 3.333},
         "post_leaf_preflight_gates": [
             {"tile_id": "tile_04"},
@@ -56,6 +57,7 @@ def allowed_summary(**overrides) -> dict:
         "exact_head": "abc123",
         "git_head": "abc123",
         "workflow_conclusion": "success",
+        "v18_review_manifest_s3_uri": "s3://bucket/v18-review",
         "training_jobs_in_progress": [],
         "processing_jobs_in_progress": [],
         "max_estimated_usd": 4.0,
@@ -96,6 +98,20 @@ class EnforceMd1LeafSubmitReadinessTests(unittest.TestCase):
 
         self.assertEqual(summary["decision"], "leaf_submit_blocked")
         self.assertIn("full_14tile_scope_not_allowed", summary["block_reasons"])
+
+    def test_blocks_missing_v18_review_manifest(self):
+        candidate = strategy()
+        candidate["v18_review_manifest_s3_uri"] = ""
+        summary = allowed_summary(strategy=candidate, v18_review_manifest_s3_uri="")
+
+        self.assertEqual(summary["decision"], "leaf_submit_blocked")
+        self.assertIn("v18_review_manifest_missing", summary["block_reasons"])
+
+    def test_blocks_mismatched_v18_review_manifest(self):
+        summary = allowed_summary(v18_review_manifest_s3_uri="s3://bucket/other-v18-review")
+
+        self.assertEqual(summary["decision"], "leaf_submit_blocked")
+        self.assertIn("strategy_v18_review_manifest_mismatch", summary["block_reasons"])
 
 
 if __name__ == "__main__":
