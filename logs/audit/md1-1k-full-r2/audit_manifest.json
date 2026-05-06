@@ -589,8 +589,8 @@
       ]
     }
   ],
-  "current_branch_head": "4cef79b9d2ea23439019889036dd708d6e6fed60 pushed; exact-head CDK Deploy 25429486729 green; local proof-gate packet ready to commit",
-  "current_exact_head_gate_status": "exact-head 4cef79b9d2ea23439019889036dd708d6e6fed60 is pushed and green on CDK Deploy 25429486729. Latest web-bearing head remains c12586cc02935b5a8128c87351748e0a4d967da1 with green CDK Deploy 25414410907 and Cloudflare Pages 25414410905; hash https://e60e3909.v0-spaceport-website-preview2.pages.dev and alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev passed /health.txt.",
+  "current_branch_head": "16fc3962352f3510250d4d7ec582416858c2e9cd pushed; exact-head CDK Deploy 25431110769 green; local executable leaf gate ready to commit",
+  "current_exact_head_gate_status": "exact-head 16fc3962352f3510250d4d7ec582416858c2e9cd is pushed and green on CDK Deploy 25431110769. Latest web-bearing head remains c12586cc02935b5a8128c87351748e0a4d967da1 with green CDK Deploy 25414410907 and Cloudflare Pages 25414410905; hash https://e60e3909.v0-spaceport-website-preview2.pages.dev and alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev passed /health.txt.",
   "current_live_compute_status": "No SageMaker training jobs are InProgress and no SageMaker processing jobs are InProgress. Support-overlap no-training merge and review completed; no new paid jobs were launched for the constrained tile10 plan.",
   "current_rung": "R4_tile10_constrained_density_repair_dryrun_ready",
   "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
@@ -3391,7 +3391,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Do not run full 14-tile training or another paid tile trial. Keep rollback LOD candidate as the viewer-ready production candidate, or if tile10 repair continues, submit only the bounded constrained tile10 proof; reject before merge/review if guarded leaf preflight exceeds 580,788 splats, sidecars/scaffold lineage fail, or V18 lineage checks fail.",
+  "next_unblocked_step": "Do not run full 14-tile training or another paid tile trial. Keep rollback LOD candidate as the viewer-ready production candidate, or if tile10 repair continues, submit only the bounded constrained tile10 proof and run scripts/3dgs/enforce_leaf_preflight_gate.py before any merge/review spend.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -11861,5 +11861,25 @@
       "any V18 lineage/source artifact mismatch"
     ],
     "decision": "planning_only_no_spend; prevents accidental merge/review spend after a future bounded tile10 proof"
+  },
+  "md1_r4_executable_leaf_preflight_gate_20260506": {
+    "checked_at": "2026-05-06T11:32:14Z",
+    "script": "scripts/3dgs/enforce_leaf_preflight_gate.py",
+    "test": "tests/unit/test_enforce_leaf_preflight_gate.py",
+    "enforced_failed_leaf_json": "logs/md1-cost-reduction-r4-tile10-density-relaxed-leaf-enforced-gate-20260506.json",
+    "source_failed_preflight_json": "logs/md1-cost-reduction-r4-tile10-density-relaxed-leaf-guarded-preflight-20260506.json",
+    "proof_gate_json": "logs/md1-cost-reduction-r4-tile10-constrained-density-proof-gates-20260506.json",
+    "verification": [
+      "python3 -m unittest tests.unit.test_enforce_leaf_preflight_gate tests.unit.test_preflight_leaf_model_artifact",
+      "python3 -m py_compile scripts/3dgs/enforce_leaf_preflight_gate.py scripts/3dgs/preflight_leaf_model_artifact.py",
+      "python3 scripts/3dgs/enforce_leaf_preflight_gate.py ... exited 2 on failed density-relaxed tile10 leaf as expected"
+    ],
+    "enforced_failed_leaf_decision": "merge_review_blocked",
+    "enforced_failed_leaf_block_reasons": [
+      "leaf_preflight_decision_not_pass",
+      "splat_vertex_count_above_reference_ratio",
+      "splat_vertex_count_above_hard_max"
+    ],
+    "purpose": "mechanically prevent merge/review spend after future bounded tile leaf proofs unless guarded leaf preflight passes"
   }
 }
