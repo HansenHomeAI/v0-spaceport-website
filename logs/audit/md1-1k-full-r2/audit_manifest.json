@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "a3487fd6adb919d4222410cc919c9b9f82d70121 pushed; exact-head CDK Deploy 25434710107 green; post-leaf benchmark gate dry-run committed",
-  "current_exact_head_gate_status": "exact-head a3487fd6adb919d4222410cc919c9b9f82d70121 is pushed and green on CDK Deploy 25434710107. Latest web-bearing head remains c12586cc02935b5a8128c87351748e0a4d967da1 with green CDK Deploy 25414410907 and Cloudflare Pages 25414410905; hash https://e60e3909.v0-spaceport-website-preview2.pages.dev and alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev passed /health.txt.",
+  "current_branch_head": "6f1139ce1f791da3cbfe8b67fa6e9b205df3dee8 pushed; exact-head CDK Deploy 25434953614 green; post-leaf benchmark gate dry-run committed plus status packet",
+  "current_exact_head_gate_status": "exact-head 6f1139ce1f791da3cbfe8b67fa6e9b205df3dee8 is pushed and green on CDK Deploy 25434953614. Latest web-bearing head remains c12586cc02935b5a8128c87351748e0a4d967da1 with green CDK Deploy 25414410907 and Cloudflare Pages 25414410905; hash https://e60e3909.v0-spaceport-website-preview2.pages.dev and alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev passed /health.txt. This exact-head gate/status update is local pending the next meaningful commit.",
   "current_live_compute_status": "No SageMaker training jobs are InProgress and no SageMaker processing jobs are InProgress. Support-overlap no-training merge and review completed; no new paid jobs were launched for the constrained tile10 plan.",
-  "current_rung": "R4_tile10_post_leaf_gate_dryrun_ready",
+  "current_rung": "R4_tile10_post_leaf_submit_guard_ready",
   "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -775,7 +775,7 @@
     "cloudflare_pages": "not_triggered_for_non_web_proof_commit",
     "local_status_update_pending_commit": true
   },
-  "last_updated": "2026-05-06T12:21:19Z",
+  "last_updated": "2026-05-06T13:00:14Z",
   "latest_exact_head_gate": {
     "checked_at": "2026-05-06T04:13:53Z",
     "head": "c499b3fdc611d0c1b734121a47e828738cc0dba7",
@@ -802,7 +802,7 @@
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-tile10-rollback-isolation-smoke-p24/review_comparison.json",
   "latest_review_status": "support_weighted_overlap tile10 density-relaxed review completed in 788 billable seconds/about $0.332 with coverage/render sanity OK but blocked promotion and V18 non-regression: near_detail PSNR, boundary SSIM, horizon PSNR/SSIM/sky score, horizon DJI_0073 PSNR.",
-  "latest_training_cost_reduction_status": "No-spend post-leaf benchmark gate dry-run now emits exact preflight/enforce commands and hard max 580,788 splats for bounded tile_10 proof before any merge/review spend; submitted_jobs=0.",
+  "latest_training_cost_reduction_status": "No-spend post-leaf benchmark gates are now emitted in dry-runs and submitted fanout leaf-tile jobs are blocked from carrying merge/review stages; paid leaf proofs must stop for preflight enforcement before more spend.",
   "live_compute_status": "No SageMaker training jobs are InProgress. Exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. Tile_13 hard proof is complete/preflighted/cached; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
@@ -11920,5 +11920,30 @@
     "training_jobs_in_progress": [],
     "processing_jobs_in_progress": [],
     "note": "post-leaf benchmark gate dry-run is pushed and exact-head gated; no paid jobs were launched"
+  },
+  "gates_and_md1_r4_post_leaf_status_head_20260506": {
+    "checked_at": "2026-05-06T12:26:18Z",
+    "head": "6f1139ce1f791da3cbfe8b67fa6e9b205df3dee8",
+    "cdk_deploy_run_id": 25434953614,
+    "cdk_deploy_conclusion": "success",
+    "cloudflare_pages": "not_triggered_for_non_web_status_commit",
+    "training_jobs_in_progress": [],
+    "processing_jobs_in_progress": [],
+    "local_status_update_pending_commit": true,
+    "note": "status head is pushed and green; this entry remains local until next meaningful commit to avoid a status-only commit loop"
+  },
+  "md1_r4_fanout_submit_merge_review_guard_20260506": {
+    "checked_at": "2026-05-06T13:00:14Z",
+    "script": "scripts/3dgs/run_tiled_3dgs_benchmark.py",
+    "test": "tests/unit/test_tiled_3dgs_benchmark.py",
+    "guard": "submitted fanout leaf-tile runs must use --skip-merge and --skip-review",
+    "reason": "force post_leaf_preflight_gates before any merge/review spend after paid leaf proofs",
+    "verification": [
+      "python3 -m unittest tests.unit.test_tiled_3dgs_benchmark",
+      "python3 -m py_compile scripts/3dgs/run_tiled_3dgs_benchmark.py"
+    ],
+    "no_paid_compute": true,
+    "training_jobs_in_progress": [],
+    "processing_jobs_in_progress": []
   }
 }

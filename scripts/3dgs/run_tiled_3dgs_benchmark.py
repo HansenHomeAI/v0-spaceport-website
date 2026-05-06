@@ -1315,6 +1315,19 @@ def validate_submit_guardrails(args: argparse.Namespace, summary: dict) -> None:
         )
         if scaffold_train_planned and not leaf_train_planned:
             errors.append("all selected leaf tiles are cache hits, but scaffold training is still planned; pass --skip-scaffold")
+    if str(getattr(args, "orchestration_mode", "") or "") == "fanout":
+        stages = summary.get("stages") or []
+        leaf_train_planned = any(
+            stage.get("stage_type") == "train" and stage.get("training_mode") == "leaf_tile"
+            for stage in stages
+        )
+        if leaf_train_planned and (
+            not bool(getattr(args, "skip_merge", False)) or not bool(getattr(args, "skip_review", False))
+        ):
+            errors.append(
+                "submitted fanout leaf-tile runs must use --skip-merge and --skip-review; "
+                "run post_leaf_preflight_gates before merge/review spend"
+            )
     if errors:
         raise RuntimeError("; ".join(errors))
 
