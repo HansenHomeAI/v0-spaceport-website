@@ -589,8 +589,8 @@
       ]
     }
   ],
-  "current_branch_head": "46e21310520c1a29f8aa1eec59fe71f3ae9ab8dd is pushed with the MD1 boundary responsible-tile planner; local pending changes add the paired tile_04/tile_10 boundary dry-run strategy and benchmark-dryrun quality gate support.",
-  "current_exact_head_gate_status": "exact-head 46e21310520c1a29f8aa1eec59fe71f3ae9ab8dd is pushed and green on CDK Deploy 25456841255. No Cloudflare Pages run appeared for this non-web boundary responsible-tile planner commit. The latest web-bearing head remains c12586cc02935b5a8128c87351748e0a4d967da1 with green CDK Deploy 25414410907 and Cloudflare Pages 25414410905. Pages resolved hash https://e60e3909.v0-spaceport-website-preview2.pages.dev and alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev; both /health.txt probes returned OK.",
+  "current_branch_head": "992a20b7321cfb42b5622e78c06f5540d257b9cf is pushed with the paired tile_04/tile_10 boundary dry-run strategy and benchmark-dryrun quality gate support. Local pending changes add the merge/review decision gate plus exact-head gate/status evidence.",
+  "current_exact_head_gate_status": "exact-head 992a20b7321cfb42b5622e78c06f5540d257b9cf is pushed and green on CDK Deploy 25458982176. No Cloudflare Pages run appeared for this non-web boundary paired dry-run commit. The latest web-bearing head remains c12586cc02935b5a8128c87351748e0a4d967da1 with green CDK Deploy 25414410907 and Cloudflare Pages 25414410905. Pages resolved hash https://e60e3909.v0-spaceport-website-preview2.pages.dev and alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev; both /health.txt probes returned OK. This exact-head gate/status line is local pending the next meaningful commit to avoid an infinite status-commit loop.",
   "current_live_compute_status": "No SageMaker training jobs are InProgress and no SageMaker processing jobs are InProgress. Support-overlap no-training merge and review completed; no new paid jobs were launched for the constrained tile10 plan.",
   "current_rung": "R4_lod_production_readiness_gate_ready",
   "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
@@ -775,7 +775,7 @@
     "cloudflare_pages": "not_triggered_for_non_web_proof_commit",
     "local_status_update_pending_commit": true
   },
-  "last_updated": "2026-05-06T20:20:24Z",
+  "last_updated": "2026-05-06T20:28:04Z",
   "latest_exact_head_gate": {
     "checked_at": "2026-05-06T04:13:53Z",
     "head": "c499b3fdc611d0c1b734121a47e828738cc0dba7",
@@ -3391,7 +3391,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Do not run full 14-tile training. The rollback LOD bundle is viewer-ready for inspection only and remains quality-blocked for promotion. The next possible paid action is bounded to the paired tile_04/tile_10 boundary proof at estimated $3.333/max_estimated_usd $4.00, but it must run only as leaf fanout with --skip-merge/--skip-review and then pass the emitted per-leaf preflight/enforce gates before any merge/review spend. If staying no-spend, add a merge/review decision gate requiring both tile_04 and tile_10 leaf gates plus tile_13 context support before remote merge.",
+  "next_unblocked_step": "Do not run full 14-tile training. The rollback LOD bundle is viewer-ready for inspection only and remains quality-blocked for promotion. The next possible paid action is bounded to the paired tile_04/tile_10 boundary proof at estimated $3.333/max_estimated_usd $4.00, but it must run only as leaf fanout with --skip-merge/--skip-review. Merge/review remains mechanically blocked until both emitted tile_04 and tile_10 leaf preflight/enforce summaries pass scripts/3dgs/enforce_md1_merge_review_gate.py with tile_13 context support.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -12285,5 +12285,45 @@
     ],
     "quality_strategy_gate_decision": "paid_retry_allowed",
     "next_unblocked_step": "If paid proof is run, submit only paired leaf fanout with --skip-merge/--skip-review, then run both emitted leaf preflight/enforce gates before any merge/review spend."
+  },
+  "gates_and_md1_r4_boundary_paired_strategy_20260506": {
+    "checked_at": "2026-05-06T20:25:47Z",
+    "head": "992a20b7321cfb42b5622e78c06f5540d257b9cf",
+    "cdk_deploy_run_id": 25458982176,
+    "cdk_deploy_conclusion": "success",
+    "cloudflare_pages": "not_triggered_for_non_web_boundary_paired_dryrun_commit",
+    "training_jobs_in_progress": [],
+    "processing_jobs_in_progress": [],
+    "local_status_update_pending_commit": true,
+    "note": "Paired tile_04/tile_10 boundary dry-run strategy and quality gate are pushed and green; next paid action, if taken, is bounded leaf fanout only, with merge/review blocked until both emitted leaf gates pass."
+  },
+  "latest_boundary_merge_review_gate_status": "logs/md1-cost-reduction-r4-boundary-paired-merge-review-gate-blocked-20260506.json blocks merge/review spend until tile_04 and tile_10 leaf gate summaries are present and passing; it confirms the paired strategy targets boundary_no_required_improvement and includes tile_13 context support.",
+  "md1_r4_boundary_paired_merge_review_gate_20260506": {
+    "checked_at": "2026-05-06T20:28:04Z",
+    "head": "992a20b7321cfb42b5622e78c06f5540d257b9cf",
+    "script": "scripts/3dgs/enforce_md1_merge_review_gate.py",
+    "test": "tests/unit/test_enforce_md1_merge_review_gate.py",
+    "strategy_json": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json",
+    "merge_review_gate_json": "logs/md1-cost-reduction-r4-boundary-paired-merge-review-gate-blocked-20260506.json",
+    "decision": "merge_review_blocked",
+    "block_reasons": [
+      "leaf_gate_summary_missing:tile_04",
+      "leaf_gate_summary_missing:tile_10"
+    ],
+    "required_tile_ids": [
+      "tile_04",
+      "tile_10"
+    ],
+    "required_context_tile_ids": [
+      "tile_13"
+    ],
+    "required_targeted_blockers": [
+      "boundary_no_required_improvement"
+    ],
+    "submitted_jobs": [],
+    "full_14tile_training_launched": false,
+    "training_jobs_in_progress": [],
+    "processing_jobs_in_progress": [],
+    "next_unblocked_step": "Commit/push this merge/review gate, then only paired tile_04/tile_10 leaf fanout can proceed; merge/review stays blocked until both leaf gate summaries pass."
   }
 }
