@@ -589,8 +589,8 @@
       ]
     }
   ],
-  "current_branch_head": "8073d4eae7ddb89f7f2bf471c1487fa2a7c26f9e is pushed with the MD1 quality-strategy paid-retry guard; local pending changes add the boundary quality-strategy planner.",
-  "current_exact_head_gate_status": "exact-head 8073d4eae7ddb89f7f2bf471c1487fa2a7c26f9e is pushed and green on CDK Deploy 25452910710. No Cloudflare Pages run appeared for this non-web quality-strategy guard commit. The boundary quality-strategy planner is local pending this commit.",
+  "current_branch_head": "d716fc40daf9a665b87e701b007556fb51dcaee5 is pushed with the MD1 boundary quality-strategy planner; local pending changes add the MD1 boundary responsible-tile planner.",
+  "current_exact_head_gate_status": "exact-head d716fc40daf9a665b87e701b007556fb51dcaee5 is pushed and green on CDK Deploy 25454786179. No Cloudflare Pages run appeared for this non-web boundary-strategy planner commit. The latest web-bearing head remains c12586cc02935b5a8128c87351748e0a4d967da1 with green CDK Deploy 25414410907 and Cloudflare Pages 25414410905. Pages resolved hash https://e60e3909.v0-spaceport-website-preview2.pages.dev and alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev; both /health.txt probes returned OK.",
   "current_live_compute_status": "No SageMaker training jobs are InProgress and no SageMaker processing jobs are InProgress. Support-overlap no-training merge and review completed; no new paid jobs were launched for the constrained tile10 plan.",
   "current_rung": "R4_lod_production_readiness_gate_ready",
   "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
@@ -775,7 +775,7 @@
     "cloudflare_pages": "not_triggered_for_non_web_proof_commit",
     "local_status_update_pending_commit": true
   },
-  "last_updated": "2026-05-06T18:52:30Z",
+  "last_updated": "2026-05-06T19:34:44Z",
   "latest_exact_head_gate": {
     "checked_at": "2026-05-06T04:13:53Z",
     "head": "c499b3fdc611d0c1b734121a47e828738cc0dba7",
@@ -12202,5 +12202,44 @@
     "training_jobs_in_progress": [],
     "processing_jobs_in_progress": [],
     "next_unblocked_step": "Create a no-spend boundary-focused responsible-tile plan before any paid retry; do not submit constrained tile_10 and do not submit full 14-tile training."
+  },
+  "gates_and_md1_r4_boundary_quality_strategy_20260506": {
+    "checked_at": "2026-05-06T18:57:34Z",
+    "head": "d716fc40daf9a665b87e701b007556fb51dcaee5",
+    "cdk_deploy_run_id": 25454786179,
+    "cdk_deploy_conclusion": "success",
+    "cloudflare_pages": "not_triggered_for_non_web_boundary_quality_strategy_commit",
+    "training_jobs_in_progress": [],
+    "processing_jobs_in_progress": [],
+    "local_status_update_pending_commit": true,
+    "note": "Boundary quality-strategy planner is pushed and green; current constrained tile_10 proof remains hold_paid_retry because it does not target boundary_no_required_improvement."
+  },
+  "latest_boundary_responsible_tile_plan_status": "logs/md1-cost-reduction-r4-boundary-responsible-tiles-plan-20260506.json maps boundary frozen cameras DJI_0067.JPG-DJI_0070.JPG to primary responsible tiles tile_04 and tile_10, with tile_13 as context support. The constrained tile_10 proof remains hold_paid_retry because it omits tile_04 and does not target boundary_no_required_improvement.",
+  "md1_r4_boundary_responsible_tile_plan_20260506": {
+    "checked_at": "2026-05-06T19:34:44Z",
+    "head": "d716fc40daf9a665b87e701b007556fb51dcaee5",
+    "report_json": "logs/md1-cost-reduction-r4-boundary-responsible-tiles-plan-20260506.json",
+    "boundary_frozen_cameras": [
+      "DJI_0067.JPG",
+      "DJI_0068.JPG",
+      "DJI_0069.JPG",
+      "DJI_0070.JPG"
+    ],
+    "primary_responsible_tile_ids": [
+      "tile_04",
+      "tile_10"
+    ],
+    "context_support_tile_ids": [
+      "tile_13"
+    ],
+    "current_candidate_strategy": "hold_paid_retry",
+    "candidate_block_reasons": [
+      "candidate_strategy_does_not_target_boundary_blocker",
+      "candidate_strategy_omits_primary_boundary_tiles"
+    ],
+    "training_jobs_submitted": [],
+    "processing_jobs_submitted": [],
+    "full_14tile_training_launched": false,
+    "next_unblocked_step": "Create only a no-spend paired tile_04/tile_10 boundary dry-run strategy before any paid retry; keep full 14-tile submit blocked until R0/R1/R2/R3 evidence gates pass."
   }
 }
