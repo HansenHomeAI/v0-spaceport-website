@@ -1,0 +1,153 @@
+{
+  "generated_at": "2026-05-06T07:58:41Z",
+  "rung": "R4_tile10_density_relaxed_review_blocked",
+  "purpose": "No-spend attribution after the bounded tile_10 density-relaxed repair passed artifact gates but failed V18 same-camera non-regression.",
+  "current_viewer_ready_candidate": {
+    "label": "rollback_lod_candidate",
+    "lod_manifest_url": "https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+    "status": "keep_as_current_viewer_ready_fallback",
+    "evidence": [
+      "logs/md1-r4-tile10-rollback-lod-viewer-smoke-20260506.json",
+      "logs/md1-r4-tile10-rollback-lod-preview-smoke-20260506.json"
+    ]
+  },
+  "candidate_comparison": {
+    "v18_baseline": {
+      "merge_mode": "support_weighted_overlap",
+      "source_gaussians": 8789634,
+      "retained_gaussians": 8423868,
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0
+    },
+    "density_preserving_canary": {
+      "source_analysis": "logs/md1-cost-reduction-r4-density-preserving-fullscene-canary-review-analysis-20260505.json",
+      "source_preflight": "logs/md1-cost-reduction-r4-density-preserving-fullscene-canary-remote-merge-g4dn-preflight-20260505.json",
+      "merge_mode": "support_weighted_overlap",
+      "source_gaussians": 8786976,
+      "retained_gaussians": 8416127,
+      "retained_delta_vs_v18": -7741,
+      "background_source_tile_id": "tile_03",
+      "v18_non_regression_decision": "blocked",
+      "main_block_reasons": [
+        "boundary_v18_median_ssim_regression",
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_median_ssim_regression",
+        "horizon_v18_median_lpips_regression"
+      ]
+    },
+    "rollback_isolation": {
+      "source_analysis": "logs/md1-cost-reduction-r4-tile10-rollback-isolation-review-analysis-20260505.json",
+      "source_preflight": "logs/md1-cost-reduction-r4-tile10-rollback-isolation-remote-merge-g4dn-preflight-20260505.json",
+      "merge_mode": "support_weighted_overlap",
+      "source_gaussians": 8789685,
+      "retained_gaussians": 8423919,
+      "retained_delta_vs_v18": 51,
+      "background_source_tile_id": "tile_10",
+      "v18_non_regression_decision": "promoted",
+      "interpretation": "Replacing tile_10 with V18/context-density while leaving the accepted tile_11 cache in place restores V18 non-regression."
+    },
+    "density_relaxed_repair": {
+      "source_analysis": "logs/md1-cost-reduction-r4-tile10-density-relaxed-fullscene-review-analysis-20260506.json",
+      "source_preflight": "logs/md1-cost-reduction-r4-tile10-density-relaxed-fullscene-remote-merge-g4dn-preflight-20260506.json",
+      "fullscene_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-density-relaxed-fullscene-remote-merge-g4dn-202605060558/output/artifact/model.tar.gz",
+      "merge_mode": "strict_core",
+      "source_gaussians": 10136020,
+      "retained_gaussians": 8630695,
+      "retained_delta_vs_v18": 206827,
+      "background_source_tile_id": "tile_10",
+      "incremental_attempt_cost_usd": 2.154,
+      "v18_non_regression_decision": "blocked",
+      "v18_block_reasons": [
+        "near_detail_v18_median_psnr_regression",
+        "boundary_v18_median_ssim_regression",
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_median_ssim_regression",
+        "horizon_v18_sky_score_regression",
+        "horizon_v18_single_camera_psnr_regression"
+      ],
+      "bucket_deltas_vs_v18": {
+        "near_detail": {
+          "psnr": -0.2845042356582699,
+          "ssim": -0.002220258116722107,
+          "lpips": -0.015855997800827026
+        },
+        "boundary": {
+          "psnr": -0.022246914019621755,
+          "ssim": -0.018543317914009094,
+          "lpips": -0.0010729432106018066
+        },
+        "horizon": {
+          "psnr": -0.2827022747278072,
+          "ssim": -0.02197374403476715,
+          "lpips": 0.005910009145736694
+        }
+      },
+      "single_camera_block": {
+        "bucket": "horizon",
+        "image_name": "DJI_0073.JPG",
+        "psnr_delta": -1.9221855373364267,
+        "ssim_delta": -0.027563542127609253,
+        "lpips_delta": 0.01438760757446289
+      }
+    }
+  },
+  "attribution": {
+    "ruled_out": [
+      {
+        "hypothesis": "The tile_10 issue is only insufficient retained density.",
+        "status": "ruled_out_as_sufficient",
+        "reason": "The density-relaxed candidate retained 206,827 more gaussians than V18 but still regressed near_detail, boundary, and horizon same-camera metrics."
+      },
+      {
+        "hypothesis": "The accepted tile_11 cache is the primary blocker.",
+        "status": "unlikely",
+        "reason": "Rollback isolation kept the accepted tile_11 cache and promoted against V18 non-regression."
+      }
+    ],
+    "remaining_likely_confounds": [
+      {
+        "hypothesis": "Merge-mode mismatch changed the full-scene distribution.",
+        "evidence": "V18/rollback isolation used support_weighted_overlap; density-relaxed full-scene merge used strict_core.",
+        "next_test": "Rebuild the same density-relaxed tile_10 full-scene artifact with support_weighted_overlap before changing training again."
+      },
+      {
+        "hypothesis": "The repaired tile_10 changes sky/horizon/background ownership.",
+        "evidence": "The rejected candidate selected tile_10 background and failed horizon sky score plus DJI_0073.JPG single-camera PSNR.",
+        "next_test": "If support_weighted_overlap still fails, isolate background/skybox selection with V18/rollback background before retraining."
+      },
+      {
+        "hypothesis": "Tile_10 needs context/camera-selection repair, not just density relaxation.",
+        "evidence": "The repaired leaf passed preflight with 1,733,527 splats and 188 images but still degraded same-camera V18 review after merge.",
+        "next_test": "Only after no-training isolation fails, run a bounded tile_10 proof with explicit horizon/boundary context and frozen-camera target DJI_0073.JPG."
+      }
+    ]
+  },
+  "no_spend_outputs_created": {
+    "support_weighted_overlap_merge_plan_dryrun": "logs/md1-cost-reduction-r4-tile10-density-relaxed-support-overlap-remote-merge-g4dn-plan-dryrun-20260506.json",
+    "support_weighted_overlap_merge_payload_dryrun": "logs/md1-cost-reduction-r4-tile10-density-relaxed-support-overlap-remote-merge-g4dn-payload-dryrun-20260506.json",
+    "processing_jobs_submitted": 0,
+    "training_jobs_submitted": 0
+  },
+  "ranked_next_steps": [
+    {
+      "rank": 1,
+      "step": "No-training support_weighted_overlap remarge of the rejected density-relaxed tile_10 candidate.",
+      "estimated_incremental_cost_usd": 0.63,
+      "cost_basis": "About $0.30 g4dn merge plus about $0.33 same-camera review if submitted.",
+      "why_first": "It isolates the strict_core versus support_weighted_overlap confound without spending on new training."
+    },
+    {
+      "rank": 2,
+      "step": "No-training background/skybox isolation if support_weighted_overlap still fails.",
+      "estimated_incremental_cost_usd": 0.63,
+      "why_second": "The current block is horizon-heavy, and background ownership changed with the repaired tile."
+    },
+    {
+      "rank": 3,
+      "step": "Bounded tile_10 context/camera-selection repair only after no-training isolation fails.",
+      "estimated_incremental_cost_usd_cap": 2.5,
+      "why_third": "Another paid leaf train should target the identified same-camera horizon/boundary failure rather than retrying density-only changes."
+    }
+  ],
+  "stop_rule": "Do not launch another paid tile trial or any full 14-tile run until the support_weighted_overlap no-training isolation is reviewed or explicitly skipped."
+}

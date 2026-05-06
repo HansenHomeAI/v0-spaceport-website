@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "3e0d23135f4bbe32693d11e30f09426cc7cf70b4 pushed with bounded tile10 repair merge evidence; exact-head CDK Deploy 25419136894 is green.",
-  "current_exact_head_gate_status": "exact-head 3e0d23135f4bbe32693d11e30f09426cc7cf70b4 is pushed and green on CDK Deploy 25419136894; latest web-bearing head c12586cc02935b5a8128c87351748e0a4d967da1 remains green on CDK 25414410907 and Pages 25414410905.",
+  "current_branch_head": "4fd5ca4da35639184c1c435d0631324b6a59f7ee pushed with tile10 density-relaxed rejection evidence; exact-head CDK Deploy 25420737432 is green.",
+  "current_exact_head_gate_status": "exact-head 4fd5ca4da35639184c1c435d0631324b6a59f7ee is pushed and green on CDK Deploy 25420737432; no Cloudflare Pages run appeared for this non-web/proof commit.",
   "current_live_compute_status": "No SageMaker training/processing jobs are InProgress. Tile10 density-relaxed training, no-training full-scene merge, streaming preflight, and V18 same-camera review all completed; review blocked the no-rollback candidate.",
-  "current_rung": "R4_tile10_density_relaxed_review_blocked",
+  "current_rung": "R4_tile10_density_relaxed_failure_attributed",
   "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -768,16 +768,14 @@
   },
   "last_commit": "3d0d0839c4f313363ee23cbfec9b3e47ebb6a33b",
   "last_exact_head_gates": {
+    "checked_at": "2026-05-06T06:53:08Z",
+    "head": "4fd5ca4da35639184c1c435d0631324b6a59f7ee",
+    "cdk_deploy_run_id": 25420737432,
     "cdk_deploy_conclusion": "success",
-    "cdk_deploy_run_id": 25364537073,
-    "checked_at": "2026-05-05T08:00:32Z",
-    "cloudflare_pages": "not_triggered_for_non_web_status_push",
-    "head": "0abfc2c8c0ea5015358859374f3669d81e7b174b",
-    "live_md1_training_jobs_in_progress": 0,
-    "local_status_update_pending_commit": true,
-    "unrelated_processing_job_in_progress": "r5full80s1-1777934749"
+    "cloudflare_pages": "not_triggered_for_non_web_proof_commit",
+    "local_status_update_pending_commit": true
   },
-  "last_updated": "2026-05-06T06:46:37Z",
+  "last_updated": "2026-05-06T07:58:41Z",
   "latest_exact_head_gate": {
     "checked_at": "2026-05-06T04:13:53Z",
     "head": "c499b3fdc611d0c1b734121a47e828738cc0dba7",
@@ -11701,5 +11699,31 @@
       "full_14_tile_training_launched": false,
       "no_promotion": true
     }
+  },
+  "md1_r4_tile10_density_relaxed_review_rejection_gate_20260506": {
+    "checked_at": "2026-05-06T06:53:08Z",
+    "head": "4fd5ca4da35639184c1c435d0631324b6a59f7ee",
+    "cdk_deploy_run_id": 25420737432,
+    "cdk_deploy_conclusion": "success",
+    "cloudflare_pages": "not_triggered_for_non_web_proof_commit",
+    "no_sagemaker_training_in_progress": true,
+    "no_sagemaker_processing_in_progress": true,
+    "next_unblocked_step": "No-spend attribution/design for tile_10 or rollback-based promotion decision; do not launch another paid run without a redesigned bounded proof."
+  },
+  "md1_r4_tile10_density_relaxed_failure_attribution_20260506": {
+    "checked_at": "2026-05-06T07:58:41Z",
+    "head": "4fd5ca4da35639184c1c435d0631324b6a59f7ee",
+    "attribution_json": "logs/md1-cost-reduction-r4-tile10-density-relaxed-failure-attribution-20260506.json",
+    "support_weighted_overlap_merge_plan_dryrun": "logs/md1-cost-reduction-r4-tile10-density-relaxed-support-overlap-remote-merge-g4dn-plan-dryrun-20260506.json",
+    "support_weighted_overlap_merge_payload_dryrun": "logs/md1-cost-reduction-r4-tile10-density-relaxed-support-overlap-remote-merge-g4dn-payload-dryrun-20260506.json",
+    "processing_jobs_submitted": 0,
+    "training_jobs_submitted": 0,
+    "finding": "density-only tile_10 repair is not sufficient; strict_core versus support_weighted_overlap merge mode is now the cheapest remaining confound to isolate before any further paid tile trial.",
+    "guardrails": {
+      "full_14_tile_training_launched": false,
+      "no_paid_tile_retrial_until_merge_mode_isolation_reviewed_or_explicitly_skipped": true,
+      "rollback_lod_candidate_remains_viewer_ready_fallback": true
+    },
+    "next_unblocked_step": "Submit only the no-training support_weighted_overlap remarge/review isolation if continuing beyond rollback-based promotion; otherwise keep production viewer on the validated rollback LOD bundle."
   }
 }
