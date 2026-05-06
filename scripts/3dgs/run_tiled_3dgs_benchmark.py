@@ -86,6 +86,7 @@ BUDGET_CLASS_RANK = {
     "hard": 3,
 }
 PASSING_GATE_STATUSES = {"passed", "pass", "ok", "promoted", "accepted", "quality_passed"}
+PASSING_RUNG_STATUSES = PASSING_GATE_STATUSES
 
 
 def run_command(command: Sequence[str], *, capture_output: bool = False) -> subprocess.CompletedProcess[str]:
@@ -134,6 +135,15 @@ def load_json_path_or_s3(uri_or_path: str) -> dict:
     if value.startswith("s3://"):
         return load_s3_json(value)
     return json.loads(Path(value).read_text(encoding="utf-8"))
+
+
+def load_production_rung_gate(path_or_s3: str) -> dict:
+    if not path_or_s3:
+        return {}
+    gate = load_json_path_or_s3(path_or_s3)
+    if not isinstance(gate, dict):
+        raise RuntimeError("--production-rung-gate-json must resolve to a JSON object")
+    return gate
 
 
 def s3_json_or_none(s3_uri: str) -> dict | None:
@@ -1252,6 +1262,18 @@ def fanout_execution_batches(
     return batches
 
 
+def selected_tile_count_for_submit(summary: dict) -> int:
+    selected_tile_ids = summary.get("selected_tile_ids") or []
+    if isinstance(selected_tile_ids, list) and selected_tile_ids:
+        return len(selected_tile_ids)
+    stage_tile_ids = {
+        str(stage.get("tile_id"))
+        for stage in summary.get("stages") or []
+        if isinstance(stage, dict) and stage.get("tile_id")
+    }
+    return len(stage_tile_ids)
+
+
 def validate_submit_guardrails(args: argparse.Namespace, summary: dict) -> None:
     if not getattr(args, "submit", False):
         return
@@ -1286,6 +1308,35 @@ def validate_submit_guardrails(args: argparse.Namespace, summary: dict) -> None:
         errors.append("--checkpoint-resume-s3-uri requires --enable-checkpoints or --enable-spot")
     if checkpoint_resume_s3_uri and not checkpoint_resume_s3_uri.startswith("s3://"):
         errors.append("--checkpoint-resume-s3-uri must be an s3:// prefix")
+    selected_tile_count = selected_tile_count_for_submit(summary)
+    if selected_tile_count >= 14:
+        rung_gate_json = str(getattr(args, "production_rung_gate_json", "") or "").strip()
+        rung_gate = summary.get("production_rung_gate") or {}
+        if not rung_gate_json:
+            errors.append(
+                "full 14-tile submits require --production-rung-gate-json documenting "
+                "R0/R1/R2/R3 acceptance before spend"
+            )
+        else:
+            required_rungs = ("r0_status", "r1_status", "r2_status", "r3_status")
+            missing_or_blocked = [
+                rung
+                for rung in required_rungs
+                if str(rung_gate.get(rung) or "").strip().lower() not in PASSING_RUNG_STATUSES
+            ]
+            if missing_or_blocked:
+                errors.append(
+                    "--production-rung-gate-json does not pass required rungs: "
+                    + ", ".join(missing_or_blocked)
+                )
+            if rung_gate.get("allow_full_14tile_submit") is not True:
+                errors.append("--production-rung-gate-json must set allow_full_14tile_submit=true")
+            gate_max_usd = float(rung_gate.get("max_estimated_usd") or 0.0)
+            if gate_max_usd > 0 and max_estimated_usd > gate_max_usd:
+                errors.append(
+                    f"--max-estimated-usd ${max_estimated_usd:.2f} exceeds "
+                    f"production rung gate cap ${gate_max_usd:.2f}"
+                )
     if getattr(args, "enable_spot", False):
         if not getattr(args, "spot_restart_proof_passed", False):
             errors.append("--spot-restart-proof-passed is required before submitting spot training")
@@ -2472,6 +2523,11 @@ def parse_args() -> argparse.Namespace:
         help="Required with --submit. Blocks paid runs whose estimated training cost exceeds this cap.",
     )
     parser.add_argument(
+        "--production-rung-gate-json",
+        default="",
+        help="Local or s3:// JSON proving R0/R1/R2/R3 gates passed before full 14-tile submits.",
+    )
+    parser.add_argument(
         "--experiment-id",
         default="",
         help="Required with --submit. Stable ID written to summaries and SageMaker tags.",
@@ -2735,6 +2791,7 @@ def main() -> int:
     )
     if args.scaffold_artifact_s3_uri and args.orchestration_mode == "fanout" and not args.skip_scaffold:
         raise RuntimeError("--scaffold-artifact-s3-uri with fanout requires --skip-scaffold to avoid retraining scaffold")
+    production_rung_gate = load_production_rung_gate(args.production_rung_gate_json)
     context = resolve_execution_context(
         branch_name=branch_name,
         timestamp=timestamp,
@@ -2927,6 +2984,8 @@ def main() -> int:
         "checkpoint_resume_iteration_extensions": checkpoint_resume_iteration_extensions,
         "checkpoint_save_steps": args.checkpoint_save_steps,
         "max_estimated_usd": args.max_estimated_usd,
+        "production_rung_gate_json": args.production_rung_gate_json,
+        "production_rung_gate": production_rung_gate,
         "review_camera_manifest_s3_uri": args.review_camera_manifest_s3_uri,
         "baseline_review_manifest_s3_uri": args.baseline_review_manifest_s3_uri,
         "v18_review_manifest_s3_uri": args.v18_review_manifest_s3_uri,
