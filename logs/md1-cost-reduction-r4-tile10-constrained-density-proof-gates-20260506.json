@@ -1,0 +1,83 @@
+{
+  "checked_at": "2026-05-06T10:54:20Z",
+  "proof_gate_type": "md1_r4_tile10_constrained_density_paid_retry_gates",
+  "source_dryrun_json": "logs/md1-cost-reduction-r4-tile10-constrained-density-repair-dryrun-20260506.json",
+  "source_guard_plan_json": "logs/md1-cost-reduction-r4-tile10-constrained-density-guard-plan-20260506.json",
+  "submitted_jobs": [],
+  "no_full_14tile_training": true,
+  "dryrun_head_sha": "4cef79b9d2ea23439019889036dd708d6e6fed60",
+  "planned_job_name": "md1-r4t10constr-1778062510-tile-10",
+  "planned_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-constrained-density-repair-20260506/tiles/tile_10/md1-r4t10constr-1778062510-tile-10/output/model.tar.gz",
+  "planned_checkpoint_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-constrained-density-repair-20260506/checkpoints/md1-r4t10constr-1778062510-tile-10",
+  "planned_cost_estimate": {
+    "instance_type": "ml.g5.2xlarge",
+    "hourly_rate_usd": 1.515,
+    "train_stage_count": 1,
+    "estimated_billable_hours": 1.1,
+    "estimated_usd": 1.6665,
+    "worst_case_billable_hours": 2.0,
+    "worst_case_usd": 3.03,
+    "baseline_iterations": 12000,
+    "stage_estimates": [
+      {
+        "stage_name": "T0_tile_10",
+        "training_mode": "leaf_tile",
+        "tile_id": "tile_10",
+        "max_iterations": 12000,
+        "stage_multiplier": 1,
+        "estimated_billable_hours": 1.1,
+        "estimated_usd": 1.6665,
+        "budget_class": "hard",
+        "prior_duration_hours": 3.98,
+        "prior_fanout_duration_hours": 1.1,
+        "cost_basis": "observed_fanout_leaf_duration",
+        "runtime_risk": null,
+        "runtime_cap_shortfall_hours": 0.0
+      }
+    ],
+    "pricing_source": "static_us-west-2-rates-verified-2026-04-30"
+  },
+  "required_pre_submit_gates": [
+    "git head must still be exact and CDK green",
+    "aws training/processing in-progress lists must be empty for MD1",
+    "max_estimated_usd must remain <= 2.50",
+    "full 14-tile training remains forbidden"
+  ],
+  "required_leaf_preflight_gate": {
+    "command": [
+      "python3",
+      "scripts/3dgs/preflight_leaf_model_artifact.py",
+      "--artifact-uri",
+      "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-constrained-density-repair-20260506/tiles/tile_10/md1-r4t10constr-1778062510-tile-10/output/model.tar.gz",
+      "--tile-id",
+      "tile_10",
+      "--job-name",
+      "md1-r4t10constr-1778062510-tile-10",
+      "--output-dir",
+      "logs/md1-cost-reduction-r4-tile10-constrained-density-leaf-preflight-20260506",
+      "--summary-json-output",
+      "logs/md1-cost-reduction-r4-tile10-constrained-density-leaf-preflight-20260506.json",
+      "--reference-splat-count",
+      "387192",
+      "--max-reference-splat-ratio",
+      "1.5"
+    ],
+    "pass_decision": "leaf_preflight_passed_cache_candidate",
+    "reject_decision": "leaf_preflight_blocked",
+    "hard_max_splat_count": 580788,
+    "merge_review_allowed_only_if": "decision == leaf_preflight_passed_cache_candidate and splat_reference_guard.status == ok"
+  },
+  "post_leaf_allowed_steps": [
+    "only if leaf gate passes: no-training full-scene merge using V18/context-density rollback for all tiles except constrained tile_10 and accepted tile_11",
+    "streaming tiled preflight must pass fallback=0 and retain_all=0",
+    "same-camera V18 p24 review must pass all V18 non-regression thresholds before any promotion"
+  ],
+  "immediate_reject_conditions": [
+    "splat_vertex_count > 580788",
+    "missing required leaf sidecar",
+    "training_metadata.training_completed is not true",
+    "selected_image_count is not 188",
+    "scaffold_initialization is missing or not filtered",
+    "any V18 lineage/source artifact mismatch"
+  ]
+}
