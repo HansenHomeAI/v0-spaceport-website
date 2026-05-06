@@ -1,0 +1,134 @@
+{
+  "checked_at": "2026-05-06T16:52:27.424113Z",
+  "status": "viewer_ready_quality_blocked",
+  "viewer_ready": true,
+  "promotion_ready": false,
+  "bundle_gate": {
+    "status": "passed",
+    "failures": [],
+    "lod_levels": 4,
+    "chunk_files": 44,
+    "total_objects": 356,
+    "total_size_bytes": 166616347,
+    "source": "md1-r4-tile10-rollback-v18-nonregression-tile11-accepted",
+    "lod_meta_uri": "s3://spaceport-ml-processing-staging/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+    "output_prefix": "s3://spaceport-ml-processing-staging/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/"
+  },
+  "local_viewer_gate": {
+    "status": "passed",
+    "failures": [],
+    "checked_at": "2026-05-06T03:07:07.901Z",
+    "scenario_count": 2,
+    "scenarios": [
+      {
+        "name": "desktop",
+        "status": "passed",
+        "failures": [],
+        "url": "http://127.0.0.1:3031/md1-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.amazonaws.com%2Fcompressed%2Fmd1-r4-tile10-rollback-lod-dryrun-20260505%2Fsupersplat_bundle%2Flod-meta.json",
+        "manifest": "https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+        "transport": "proxy",
+        "bundle_kind": "lod-streaming",
+        "root_file": "lod-meta.json",
+        "chunk_meta_requests": 3,
+        "chunk_files": 44,
+        "first_frame_ms": 44.599999994039536,
+        "lod_min": 0.0,
+        "lod_max": 3.0,
+        "interaction_ok": true,
+        "canvas_ok": true,
+        "console_message_count": 0,
+        "page_error_count": 0
+      },
+      {
+        "name": "mobile",
+        "status": "passed",
+        "failures": [],
+        "url": "http://127.0.0.1:3031/md1-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.amazonaws.com%2Fcompressed%2Fmd1-r4-tile10-rollback-lod-dryrun-20260505%2Fsupersplat_bundle%2Flod-meta.json",
+        "manifest": "https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+        "transport": "proxy",
+        "bundle_kind": "lod-streaming",
+        "root_file": "lod-meta.json",
+        "chunk_meta_requests": 3,
+        "chunk_files": 44,
+        "first_frame_ms": 807.2999999821186,
+        "lod_min": 2.0,
+        "lod_max": 3.0,
+        "interaction_ok": true,
+        "canvas_ok": true,
+        "console_message_count": 0,
+        "page_error_count": 0
+      }
+    ],
+    "health": {}
+  },
+  "preview_viewer_gate": {
+    "status": "passed",
+    "failures": [],
+    "checked_at": "2026-05-06T03:21:15.242Z",
+    "scenario_count": 2,
+    "scenarios": [
+      {
+        "name": "desktop-hash",
+        "status": "passed",
+        "failures": [],
+        "url": "https://e60e3909.v0-spaceport-website-preview2.pages.dev/md1-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.amazonaws.com%2Fcompressed%2Fmd1-r4-tile10-rollback-lod-dryrun-20260505%2Fsupersplat_bundle%2Flod-meta.json",
+        "manifest": "https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+        "transport": "proxy",
+        "bundle_kind": "lod-streaming",
+        "root_file": "lod-meta.json",
+        "chunk_meta_requests": 2,
+        "chunk_files": 44,
+        "first_frame_ms": 1056.3999999761581,
+        "lod_min": 0.0,
+        "lod_max": 3.0,
+        "interaction_ok": true,
+        "canvas_ok": true,
+        "console_message_count": 0,
+        "page_error_count": 0
+      },
+      {
+        "name": "mobile-hash",
+        "status": "passed",
+        "failures": [],
+        "url": "https://e60e3909.v0-spaceport-website-preview2.pages.dev/md1-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.amazonaws.com%2Fcompressed%2Fmd1-r4-tile10-rollback-lod-dryrun-20260505%2Fsupersplat_bundle%2Flod-meta.json",
+        "manifest": "https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+        "transport": "proxy",
+        "bundle_kind": "lod-streaming",
+        "root_file": "lod-meta.json",
+        "chunk_meta_requests": 2,
+        "chunk_files": 44,
+        "first_frame_ms": 669.6000000238419,
+        "lod_min": 2.0,
+        "lod_max": 3.0,
+        "interaction_ok": true,
+        "canvas_ok": true,
+        "console_message_count": 0,
+        "page_error_count": 0
+      }
+    ],
+    "health": {
+      "https://e60e3909.v0-spaceport-website-preview2.pages.dev": {
+        "ok": true,
+        "status": 200,
+        "text": "OK"
+      },
+      "https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev": {
+        "ok": true,
+        "status": 200,
+        "text": "OK"
+      }
+    }
+  },
+  "quality_gate": {
+    "status": "blocked",
+    "promotion_decision_status": "blocked",
+    "block_reasons": [
+      "boundary_no_required_improvement"
+    ],
+    "camera_coverage_status": "ok",
+    "render_sanity_status": null,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0
+  },
+  "next_required_action": "quality promotion remains blocked; keep this LOD bundle as an inspection/viewer candidate only"
+}

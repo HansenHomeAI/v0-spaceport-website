@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "9a9642677686f7f41c79053720dc63e518892dbc is pushed with the full 14-tile production-rung submit guard and mandatory positive budget cap; local pending changes require rung evidence references.",
-  "current_exact_head_gate_status": "exact-head 9a9642677686f7f41c79053720dc63e518892dbc is pushed and green on CDK Deploy 25443308575; full-run rung evidence guard is local pending this commit.",
+  "current_branch_head": "d41f41a254264caa8e62ab77e82c56ad1011d730 is pushed with the full 14-tile production-rung evidence guard; local pending changes add an MD1 LOD production readiness gate and report.",
+  "current_exact_head_gate_status": "exact-head d41f41a254264caa8e62ab77e82c56ad1011d730 is pushed and green on CDK Deploy 25445375429; LOD readiness gate is local pending this commit.",
   "current_live_compute_status": "No SageMaker training jobs are InProgress and no SageMaker processing jobs are InProgress. Support-overlap no-training merge and review completed; no new paid jobs were launched for the constrained tile10 plan.",
-  "current_rung": "R4_full_14tile_rung_submit_guard_ready",
+  "current_rung": "R4_lod_production_readiness_gate_ready",
   "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -775,7 +775,7 @@
     "cloudflare_pages": "not_triggered_for_non_web_proof_commit",
     "local_status_update_pending_commit": true
   },
-  "last_updated": "2026-05-06T15:38:13Z",
+  "last_updated": "2026-05-06T16:52:27Z",
   "latest_exact_head_gate": {
     "checked_at": "2026-05-06T04:13:53Z",
     "head": "c499b3fdc611d0c1b734121a47e828738cc0dba7",
@@ -802,7 +802,7 @@
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-tile10-rollback-isolation-smoke-p24/review_comparison.json",
   "latest_review_status": "support_weighted_overlap tile10 density-relaxed review completed in 788 billable seconds/about $0.332 with coverage/render sanity OK but blocked promotion and V18 non-regression: near_detail PSNR, boundary SSIM, horizon PSNR/SSIM/sky score, horizon DJI_0073 PSNR.",
-  "latest_training_cost_reduction_status": "No-spend post-leaf benchmark gates are now emitted in dry-runs and submitted fanout leaf-tile jobs are blocked from carrying merge/review stages; paid leaf proofs must stop for preflight enforcement before more spend.",
+  "latest_training_cost_reduction_status": "Full 14-tile spend is mechanically blocked behind R0/R1/R2/R3 statuses, evidence references, and budget cap; paid leaf proofs must stop at post-leaf preflight gates before merge/review.",
   "live_compute_status": "No SageMaker training jobs are InProgress. Exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. Tile_13 hard proof is complete/preflighted/cached; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
@@ -12057,5 +12057,42 @@
       "diff_check": "git diff --check -> OK"
     },
     "next_unblocked_step": "Keep rollback LOD candidate or run only bounded tile_10 proof through post_leaf_preflight_gates; full 14-tile submit remains blocked until production rung gate includes passing rungs, evidence references, allow flag, and an explicit positive budget cap."
+  },
+  "gates_and_md1_r4_full14_evidence_guard_20260506": {
+    "checked_at": "2026-05-06T15:43:16Z",
+    "head": "d41f41a254264caa8e62ab77e82c56ad1011d730",
+    "cdk_deploy_run_id": 25445375429,
+    "cdk_deploy_conclusion": "success",
+    "cloudflare_pages": "not_triggered_for_non_web_guard_commit",
+    "training_jobs_in_progress": [],
+    "processing_jobs_in_progress": [],
+    "local_status_update_pending_commit": true,
+    "note": "full 14-tile production-rung evidence guard is pushed and green; this entry remains local until next meaningful commit to avoid a status-only commit loop"
+  },
+  "latest_lod_production_readiness_status": "logs/md1-r4-tile10-rollback-lod-production-readiness-20260506.json reports viewer_ready_quality_blocked: bundle/local-viewer/preview-viewer gates passed, but frozen quality review remains blocked by boundary_no_required_improvement.",
+  "md1_r4_lod_production_readiness_gate_20260506": {
+    "checked_at": "2026-05-06T16:52:27Z",
+    "head_before_commit": "d41f41a254264caa8e62ab77e82c56ad1011d730",
+    "readiness_report": "logs/md1-r4-tile10-rollback-lod-production-readiness-20260506.json",
+    "bundle_validation": "logs/md1-r4-tile10-rollback-lod-bundle-validation-20260506.json",
+    "local_viewer_smoke": "logs/md1-r4-tile10-rollback-lod-viewer-smoke-20260506.json",
+    "preview_viewer_smoke": "logs/md1-r4-tile10-rollback-lod-preview-smoke-20260506.json",
+    "quality_review_comparison": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-tile10-rollback-isolation-smoke-p24/review_comparison.json",
+    "status": "viewer_ready_quality_blocked",
+    "viewer_ready": true,
+    "promotion_ready": false,
+    "viewer_gates": {
+      "bundle": "passed",
+      "local_viewer": "passed",
+      "preview_viewer": "passed",
+      "lod_levels": 4,
+      "chunk_files": 44,
+      "desktop_preview_first_frame_ms": 1056.3999999761581,
+      "mobile_preview_first_frame_ms": 669.6000000238419
+    },
+    "quality_block_reasons": [
+      "boundary_no_required_improvement"
+    ],
+    "next_unblocked_step": "Keep rollback LOD as inspection/viewer candidate only; production promotion remains blocked unless a future candidate passes frozen quality review. Do not run full 14-tile training until R0/R1/R2/R3 gate evidence unlocks it."
   }
 }
