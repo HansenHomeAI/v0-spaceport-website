@@ -1,0 +1,207 @@
+{
+  "checked_at": "2026-05-06T09:32:30Z",
+  "quality_verdict": "blocked_support_overlap_did_not_fix_tile10_density_repair",
+  "fullscene_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-density-relaxed-support-overlap-merge-g4dn-20260506083720/output/artifact/model.tar.gz",
+  "fullscene_artifact_bytes": 3611733620,
+  "preflight_decision": "preflight_passed_run_frozen_smoke_review",
+  "preflight_block_reasons": [],
+  "merge_job": "md1-r4t10density-swo-1778056640",
+  "merge_status": "Completed",
+  "merge_billable_seconds_estimate": 1449,
+  "estimated_merge_cost_usd_at_0_736_per_hour": 0.2962,
+  "review_job": "md1-r1-r4-tile10-density-relaxed-support-overlap-smoke-p24-1778",
+  "review_status": "Completed",
+  "review_billable_seconds": 788,
+  "estimated_review_cost_usd_at_1_515_per_hour": 0.3316,
+  "incremental_support_overlap_isolation_cost_usd": 0.6278,
+  "tile10_repair_training_billable_seconds": 3615,
+  "estimated_tile10_training_cost_usd_at_1_515_per_hour": 1.5213,
+  "merge_summary": {
+    "merge_mode": "support_weighted_overlap",
+    "retained_gaussians": 9736484,
+    "source_gaussians": 10136020,
+    "dropped_gaussians": 399536,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "background_source_tile_id": "tile_10",
+    "tile10": {
+      "source_gaussians": 1733527,
+      "retained_gaussians": 1691518,
+      "dropped_gaussians": 42009
+    }
+  },
+  "render_sanity": {
+    "status": "ok",
+    "checked_view_count": 12,
+    "blank_view_count": 0,
+    "blank_views": []
+  },
+  "camera_coverage": {
+    "status": "ok",
+    "block_reasons": [],
+    "per_bucket": {
+      "near_detail": {
+        "baseline_count": 4,
+        "candidate_count": 4,
+        "baseline_cameras": [
+          "DJI_0258.JPG",
+          "DJI_0261.JPG",
+          "DJI_0262.JPG",
+          "DJI_0263.JPG"
+        ],
+        "candidate_cameras": [
+          "DJI_0258.JPG",
+          "DJI_0261.JPG",
+          "DJI_0262.JPG",
+          "DJI_0263.JPG"
+        ],
+        "block_reasons": []
+      },
+      "boundary": {
+        "baseline_count": 4,
+        "candidate_count": 4,
+        "baseline_cameras": [
+          "DJI_0067.JPG",
+          "DJI_0068.JPG",
+          "DJI_0069.JPG",
+          "DJI_0070.JPG"
+        ],
+        "candidate_cameras": [
+          "DJI_0067.JPG",
+          "DJI_0068.JPG",
+          "DJI_0069.JPG",
+          "DJI_0070.JPG"
+        ],
+        "block_reasons": []
+      },
+      "horizon": {
+        "baseline_count": 4,
+        "candidate_count": 4,
+        "baseline_cameras": [
+          "DJI_0066.JPG",
+          "DJI_0073.JPG",
+          "DJI_0146.JPG",
+          "DJI_0147.JPG"
+        ],
+        "candidate_cameras": [
+          "DJI_0066.JPG",
+          "DJI_0073.JPG",
+          "DJI_0146.JPG",
+          "DJI_0147.JPG"
+        ],
+        "block_reasons": []
+      }
+    }
+  },
+  "promotion_decision": "blocked",
+  "promotion_block_reasons": [
+    "boundary_ssim_regression",
+    "boundary_no_required_improvement",
+    "horizon_ssim_regression"
+  ],
+  "v18_non_regression_decision": "blocked",
+  "v18_non_regression_block_reasons": [
+    "near_detail_v18_median_psnr_regression",
+    "boundary_v18_median_ssim_regression",
+    "horizon_v18_median_psnr_regression",
+    "horizon_v18_median_ssim_regression",
+    "horizon_v18_sky_score_regression",
+    "horizon_v18_single_camera_psnr_regression"
+  ],
+  "bucket_deltas_vs_v18": {
+    "near_detail": {
+      "v18": {
+        "psnr": 11.342806679576887,
+        "ssim": 0.38599395751953125,
+        "lpips": 0.9159154295921326
+      },
+      "candidate": {
+        "psnr": 11.053260386523869,
+        "ssim": 0.3837302476167679,
+        "lpips": 0.8991535902023315
+      },
+      "delta": {
+        "psnr": -0.28954629305301793,
+        "ssim": -0.0022637099027633667,
+        "lpips": -0.016761839389801025
+      },
+      "block_reasons": [
+        "near_detail_v18_median_psnr_regression"
+      ]
+    },
+    "boundary": {
+      "v18": {
+        "psnr": 14.315955739441744,
+        "ssim": 0.4327641427516937,
+        "lpips": 0.7800296545028687
+      },
+      "candidate": {
+        "psnr": 14.250240873988531,
+        "ssim": 0.41481052339076996,
+        "lpips": 0.7820113301277161
+      },
+      "delta": {
+        "psnr": -0.06571486545321292,
+        "ssim": -0.017953619360923767,
+        "lpips": 0.001981675624847412
+      },
+      "block_reasons": [
+        "boundary_v18_median_ssim_regression"
+      ]
+    },
+    "horizon": {
+      "v18": {
+        "psnr": 15.518785862438865,
+        "ssim": 0.3774964064359665,
+        "lpips": 0.8303832709789276
+      },
+      "candidate": {
+        "psnr": 15.219048149071044,
+        "ssim": 0.3557150959968567,
+        "lpips": 0.8350235521793365
+      },
+      "delta": {
+        "psnr": -0.2997377133678203,
+        "ssim": -0.021781310439109802,
+        "lpips": 0.0046402812004089355
+      },
+      "block_reasons": [
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_median_ssim_regression",
+        "horizon_v18_sky_score_regression"
+      ]
+    }
+  },
+  "per_camera_blocks": [
+    {
+      "bucket": "horizon",
+      "image_name": "DJI_0073.JPG",
+      "delta": {
+        "psnr": -2.0751644700164267,
+        "ssim": -0.028736919164657593,
+        "lpips": 0.011211872100830078
+      },
+      "block_reasons": [
+        "horizon_v18_single_camera_psnr_regression"
+      ]
+    }
+  ],
+  "leaf_density_guard": {
+    "enabled": true,
+    "status": "blocked",
+    "reference_splat_count": 387192,
+    "max_reference_splat_ratio": 1.5,
+    "splat_vertex_count": 1733527,
+    "observed_reference_ratio": 4.477176697865659,
+    "block_reason": "splat_vertex_count_above_reference_ratio"
+  },
+  "attribution": {
+    "strict_core_merge_mode_ruled_out": false,
+    "support_weighted_overlap_merge_mode_ruled_out": true,
+    "density_repair_over_retained_tile10_vs_v18": true,
+    "tile10_repaired_retained_gaussians": 1691518,
+    "tile10_v18_reference_retained_gaussians": 387192,
+    "tile10_retained_reference_ratio": 4.477176697865659
+  },
+  "next_unblocked_step": "Do not launch full 14-tile training or another paid tile trial yet. Keep rollback-based LOD as viewer-ready fallback; require the new leaf density reference guard before any future tile10 repair merge/review, then design a constrained tile10 retrain or accept context-density rollback for production."
+}

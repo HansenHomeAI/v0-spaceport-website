@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "Cheaper no-rollback tile10 density-relaxed repair failed V18 non-regression; rollback-based LOD remains current viewer-ready fallback.",
+  "blocked_promotion_reason": "Tile10 density-relaxed repair is blocked under both strict_core and support_weighted_overlap merges. Support-overlap rules out merge-mode mismatch as the fix; guarded leaf preflight shows over-density at 1,733,527 splats vs 387,192 V18/reference splats (4.477x), so future tile10 repairs must pass density reference guard before merge/review spend.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "d6e72418950f78d02b3e82ea7af728505c74a606 pushed with no-spend tile10 failure attribution and support_weighted_overlap remarge dry-run payload; exact-head CDK Deploy 25423482807 is green.",
-  "current_exact_head_gate_status": "exact-head d6e72418950f78d02b3e82ea7af728505c74a606 is pushed and green on CDK Deploy 25423482807; no Cloudflare Pages run appeared for this non-web/proof commit.",
-  "current_live_compute_status": "No SageMaker training jobs are InProgress. Bounded no-training support_weighted_overlap Processing job md1-r4t10density-swo-1778056640 is InProgress on ml.g4dn.xlarge with a 3600s cap and expected artifact s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-density-relaxed-support-overlap-merge-g4dn-20260506083720/output/artifact/model.tar.gz.",
-  "current_rung": "R4_tile10_density_relaxed_support_overlap_merge_active",
+  "current_branch_head": "eb0ba0a22b5edc63e15b753a36d4c28d0d52ad5c pushed; exact-head CDK Deploy 25425092990 green; local uncommitted support-overlap review rejection and leaf density guard evidence ready to commit",
+  "current_exact_head_gate_status": "exact-head eb0ba0a22b5edc63e15b753a36d4c28d0d52ad5c is pushed and green on CDK Deploy 25425092990. Latest web-bearing head remains c12586cc02935b5a8128c87351748e0a4d967da1 with green CDK Deploy 25414410907 and Cloudflare Pages 25414410905; hash https://e60e3909.v0-spaceport-website-preview2.pages.dev and alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev passed /health.txt.",
+  "current_live_compute_status": "No SageMaker training jobs are InProgress and no SageMaker processing jobs are InProgress. Support-overlap no-training merge md1-r4t10density-swo-1778056640 completed; review md1-r1-r4-tile10-density-relaxed-support-overlap-smoke-p24-1778 completed and blocked V18 non-regression.",
+  "current_rung": "R4_tile10_density_relaxed_support_overlap_review_blocked_with_leaf_density_guard",
   "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -775,7 +775,7 @@
     "cloudflare_pages": "not_triggered_for_non_web_proof_commit",
     "local_status_update_pending_commit": true
   },
-  "last_updated": "2026-05-06T08:37:41Z",
+  "last_updated": "2026-05-06T09:33:10Z",
   "latest_exact_head_gate": {
     "checked_at": "2026-05-06T04:13:53Z",
     "head": "c499b3fdc611d0c1b734121a47e828738cc0dba7",
@@ -801,7 +801,7 @@
     "pages_run_id": 25107446761
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-tile10-rollback-isolation-smoke-p24/review_comparison.json",
-  "latest_review_status": "md1-r1-r4-tile10-density-relaxed-fullscene-smoke-p24-1778049026 completed in 782 billable seconds/about $0.33 with camera coverage/render sanity OK, but promotion and V18 non-regression blocked.",
+  "latest_review_status": "support_weighted_overlap tile10 density-relaxed review completed in 788 billable seconds/about $0.332 with coverage/render sanity OK but blocked promotion and V18 non-regression: near_detail PSNR, boundary SSIM, horizon PSNR/SSIM/sky score, horizon DJI_0073 PSNR.",
   "latest_training_cost_reduction_status": "No-spend tile11 reuse proof reduced the active problematic cached frontier to tile_10 only: selected_source_counts candidate=5/context_density_rollback=9, training_jobs_to_submit=0, estimated_usd=0.0.",
   "live_compute_status": "No SageMaker training jobs are InProgress. Exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. Tile_13 hard proof is complete/preflighted/cached; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
@@ -3391,7 +3391,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Do not launch full 14-tile training. Keep production viewer on rollback-based LOD candidate; continue only no-spend attribution or redesigned bounded tile10 proof before any paid retrial.",
+  "next_unblocked_step": "Do not run full 14-tile training or another paid tile trial. Commit/push the support-overlap rejection evidence and leaf density guard, gate exact head, then keep rollback LOD candidate or design only a no-spend constrained tile10 plan before paid retrial.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -9319,7 +9319,7 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-05T22:57:17Z",
+  "updated": "2026-05-06T09:33:10Z",
   "version": "1.0.0",
   "md1_r4_standard_v18color_review_20260505": {
     "generated_at": "2026-05-05T07:52:28Z",
@@ -11743,5 +11743,52 @@
     "training_jobs_submitted": 0,
     "full_14_tile_training_launched": false,
     "next_unblocked_step": "Monitor md1-r4t10density-swo-1778056640 to terminal status, then run streaming tiled preflight and same-camera V18 review if model.tar.gz appears."
+  },
+  "md1_r4_tile10_density_relaxed_support_overlap_review_blocked_20260506": {
+    "checked_at": "2026-05-06T09:33:10Z",
+    "merge_job": "md1-r4t10density-swo-1778056640",
+    "merge_mode": "support_weighted_overlap",
+    "merge_status": "Completed",
+    "merge_billable_seconds_estimate": 1449,
+    "review_job": "md1-r1-r4-tile10-density-relaxed-support-overlap-smoke-p24-1778",
+    "review_status": "Completed",
+    "review_billable_seconds": 788,
+    "preflight_json": "logs/md1-cost-reduction-r4-tile10-density-relaxed-support-overlap-remote-merge-g4dn-preflight-20260506.json",
+    "review_summary_json": "logs/md1-cost-reduction-r4-tile10-density-relaxed-support-overlap-review-20260506.json",
+    "review_analysis_json": "logs/md1-cost-reduction-r4-tile10-density-relaxed-support-overlap-review-analysis-20260506.json",
+    "quality_review_manifest": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-tile10-density-relaxed-support-overlap-smoke-p24/quality_review_manifest.json",
+    "review_comparison": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-tile10-density-relaxed-support-overlap-smoke-p24/review_comparison.json",
+    "verdict": "blocked_support_overlap_did_not_fix_tile10_density_repair",
+    "promotion_block_reasons": [
+      "boundary_ssim_regression",
+      "boundary_no_required_improvement",
+      "horizon_ssim_regression"
+    ],
+    "v18_non_regression_block_reasons": [
+      "near_detail_v18_median_psnr_regression",
+      "boundary_v18_median_ssim_regression",
+      "horizon_v18_median_psnr_regression",
+      "horizon_v18_median_ssim_regression",
+      "horizon_v18_sky_score_regression",
+      "horizon_v18_single_camera_psnr_regression"
+    ],
+    "retained_source_dropped": {
+      "retained": 9736484,
+      "source": 10136020,
+      "dropped": 399536
+    },
+    "no_full_14tile_training": true
+  },
+  "md1_r4_tile10_leaf_density_reference_guard_20260506": {
+    "checked_at": "2026-05-06T09:32:18Z",
+    "script": "scripts/3dgs/preflight_leaf_model_artifact.py",
+    "test": "tests/unit/test_preflight_leaf_model_artifact.py",
+    "guarded_preflight_json": "logs/md1-cost-reduction-r4-tile10-density-relaxed-leaf-guarded-preflight-20260506.json",
+    "reference_splat_count": 387192,
+    "max_reference_splat_ratio": 1.5,
+    "observed_splat_count": 1733527,
+    "observed_reference_ratio": 4.477176697865659,
+    "block_reason": "splat_vertex_count_above_reference_ratio",
+    "purpose": "block over-dense leaf repairs before merge/review spend"
   }
 }

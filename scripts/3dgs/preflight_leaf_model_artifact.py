@@ -114,6 +114,46 @@ def load_json_if_present(output_dir: Path, member_name: str) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def build_splat_reference_guard(
+    *,
+    splat_vertex_count: int | None,
+    reference_splat_count: int,
+    max_reference_splat_ratio: float,
+) -> dict:
+    if reference_splat_count <= 0 or max_reference_splat_ratio <= 0:
+        return {
+            "enabled": False,
+            "status": "not_configured",
+            "reference_splat_count": reference_splat_count,
+            "max_reference_splat_ratio": max_reference_splat_ratio,
+            "splat_vertex_count": splat_vertex_count,
+            "observed_reference_ratio": None,
+            "block_reason": None,
+        }
+    if splat_vertex_count is None:
+        return {
+            "enabled": True,
+            "status": "blocked",
+            "reference_splat_count": reference_splat_count,
+            "max_reference_splat_ratio": max_reference_splat_ratio,
+            "splat_vertex_count": None,
+            "observed_reference_ratio": None,
+            "block_reason": "splat_vertex_count_missing_for_reference_guard",
+        }
+
+    observed_ratio = float(splat_vertex_count) / float(reference_splat_count)
+    blocked = observed_ratio > max_reference_splat_ratio
+    return {
+        "enabled": True,
+        "status": "blocked" if blocked else "ok",
+        "reference_splat_count": reference_splat_count,
+        "max_reference_splat_ratio": max_reference_splat_ratio,
+        "splat_vertex_count": splat_vertex_count,
+        "observed_reference_ratio": observed_ratio,
+        "block_reason": "splat_vertex_count_above_reference_ratio" if blocked else None,
+    }
+
+
 def stream_inventory(artifact_uri: str, output_dir: Path) -> dict:
     output_dir.mkdir(parents=True, exist_ok=True)
     inventory: list[dict[str, object]] = []
@@ -157,7 +197,15 @@ def stream_inventory(artifact_uri: str, output_dir: Path) -> dict:
     }
 
 
-def build_summary(*, artifact_uri: str, output_dir: Path, tile_id: str, job_name: str) -> dict:
+def build_summary(
+    *,
+    artifact_uri: str,
+    output_dir: Path,
+    tile_id: str,
+    job_name: str,
+    reference_splat_count: int = 0,
+    max_reference_splat_ratio: float = 0.0,
+) -> dict:
     head = artifact_head(artifact_uri)
     sha256 = stream_sha256(artifact_uri)
     inventory = stream_inventory(artifact_uri, output_dir)
@@ -176,6 +224,13 @@ def build_summary(*, artifact_uri: str, output_dir: Path, tile_id: str, job_name
         block_reasons.append("splat_vertex_count_missing")
     elif int(inventory["splat_vertex_count"]) <= 0:
         block_reasons.append("splat_vertex_count_zero")
+    reference_guard = build_splat_reference_guard(
+        splat_vertex_count=inventory.get("splat_vertex_count"),
+        reference_splat_count=reference_splat_count,
+        max_reference_splat_ratio=max_reference_splat_ratio,
+    )
+    if reference_guard.get("block_reason"):
+        block_reasons.append(str(reference_guard["block_reason"]))
 
     return {
         "checked_at": datetime.now(timezone.utc).isoformat(),
@@ -213,6 +268,7 @@ def build_summary(*, artifact_uri: str, output_dir: Path, tile_id: str, job_name
         },
         "floater_pruning_summary": floater,
         "background_manifest_keys": sorted(background_manifest.keys()),
+        "splat_reference_guard": reference_guard,
         "splat_ply_size_bytes": inventory["splat_ply_size_bytes"],
         "splat_ply_header": inventory["splat_ply_header"],
         "splat_vertex_count": inventory["splat_vertex_count"],
@@ -227,6 +283,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--tile-id", required=True)
     parser.add_argument("--job-name", default="")
+    parser.add_argument(
+        "--reference-splat-count",
+        type=int,
+        default=0,
+        help="Optional passing/reference retained splat count for this tile.",
+    )
+    parser.add_argument(
+        "--max-reference-splat-ratio",
+        type=float,
+        default=0.0,
+        help="Optional max allowed splat_vertex_count/reference_splat_count ratio.",
+    )
     parser.add_argument("--summary-json-output", required=True)
     return parser.parse_args()
 
@@ -239,6 +307,8 @@ def main() -> int:
         output_dir=output_dir,
         tile_id=args.tile_id,
         job_name=args.job_name,
+        reference_splat_count=args.reference_splat_count,
+        max_reference_splat_ratio=args.max_reference_splat_ratio,
     )
     summary_path = Path(args.summary_json_output)
     summary_path.parent.mkdir(parents=True, exist_ok=True)
