@@ -96,6 +96,8 @@ class MD1LODProductionReadinessTests(unittest.TestCase):
         self.assertTrue(report["viewer_ready"])
         self.assertFalse(report["promotion_ready"])
         self.assertEqual(report["quality_gate"]["block_reasons"], ["boundary_no_required_improvement"])
+        self.assertEqual(readiness.exit_code_for(report, require_promotion_ready=False), 0)
+        self.assertEqual(readiness.exit_code_for(report, require_promotion_ready=True), 3)
 
     def test_promotion_ready_requires_bundle_viewer_and_quality(self):
         report = readiness.evaluate_readiness(
@@ -112,6 +114,7 @@ class MD1LODProductionReadinessTests(unittest.TestCase):
         self.assertEqual(report["status"], "production_promotion_ready")
         self.assertTrue(report["viewer_ready"])
         self.assertTrue(report["promotion_ready"])
+        self.assertEqual(readiness.exit_code_for(report, require_promotion_ready=True), 0)
 
     def test_slow_first_frame_blocks_viewer_readiness(self):
         report = readiness.evaluate_readiness(
@@ -128,6 +131,8 @@ class MD1LODProductionReadinessTests(unittest.TestCase):
         self.assertEqual(report["status"], "blocked")
         self.assertFalse(report["viewer_ready"])
         self.assertFalse(report["promotion_ready"])
+        self.assertEqual(readiness.exit_code_for(report, require_promotion_ready=False), 2)
+        self.assertEqual(readiness.exit_code_for(report, require_promotion_ready=True), 3)
         self.assertIn(
             "desktop:scenario_first_frame_over_budget",
             report["local_viewer_gate"]["failures"],

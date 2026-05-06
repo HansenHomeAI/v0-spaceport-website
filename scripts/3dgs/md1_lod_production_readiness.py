@@ -288,6 +288,12 @@ def evaluate_readiness(
     }
 
 
+def exit_code_for(report: dict[str, Any], *, require_promotion_ready: bool) -> int:
+    if require_promotion_ready:
+        return 0 if report.get("promotion_ready") is True else 3
+    return 0 if report.get("viewer_ready") is True else 2
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--bundle-validation-json", required=True)
@@ -299,6 +305,11 @@ def main() -> int:
     parser.add_argument("--min-chunk-files", type=int, default=1)
     parser.add_argument("--max-first-frame-ms", type=int, default=DEFAULT_MAX_FIRST_FRAME_MS)
     parser.add_argument("--output-json", required=True)
+    parser.add_argument(
+        "--require-promotion-ready",
+        action="store_true",
+        help="Exit nonzero unless both viewer and frozen quality gates are promotion-ready.",
+    )
     args = parser.parse_args()
 
     report = evaluate_readiness(
@@ -316,7 +327,7 @@ def main() -> int:
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(report, indent=2))
-    return 0 if report["viewer_ready"] else 2
+    return exit_code_for(report, require_promotion_ready=args.require_promotion_ready)
 
 
 if __name__ == "__main__":
