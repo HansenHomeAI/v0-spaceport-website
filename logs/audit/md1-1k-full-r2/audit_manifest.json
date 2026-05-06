@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "16fc3962352f3510250d4d7ec582416858c2e9cd pushed; exact-head CDK Deploy 25431110769 green; local executable leaf gate ready to commit",
-  "current_exact_head_gate_status": "exact-head 16fc3962352f3510250d4d7ec582416858c2e9cd is pushed and green on CDK Deploy 25431110769. Latest web-bearing head remains c12586cc02935b5a8128c87351748e0a4d967da1 with green CDK Deploy 25414410907 and Cloudflare Pages 25414410905; hash https://e60e3909.v0-spaceport-website-preview2.pages.dev and alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev passed /health.txt.",
+  "current_branch_head": "0befb17d15dacb23fa8b4dbe69564f0b4fa70995 pushed; exact-head CDK Deploy 25432748368 green; local post-leaf benchmark gate dry-run ready to commit",
+  "current_exact_head_gate_status": "exact-head 0befb17d15dacb23fa8b4dbe69564f0b4fa70995 is pushed and green on CDK Deploy 25432748368. Latest web-bearing head remains c12586cc02935b5a8128c87351748e0a4d967da1 with green CDK Deploy 25414410907 and Cloudflare Pages 25414410905; hash https://e60e3909.v0-spaceport-website-preview2.pages.dev and alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev passed /health.txt.",
   "current_live_compute_status": "No SageMaker training jobs are InProgress and no SageMaker processing jobs are InProgress. Support-overlap no-training merge and review completed; no new paid jobs were launched for the constrained tile10 plan.",
-  "current_rung": "R4_tile10_constrained_density_repair_dryrun_ready",
+  "current_rung": "R4_tile10_post_leaf_gate_dryrun_ready",
   "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -775,7 +775,7 @@
     "cloudflare_pages": "not_triggered_for_non_web_proof_commit",
     "local_status_update_pending_commit": true
   },
-  "last_updated": "2026-05-06T09:33:10Z",
+  "last_updated": "2026-05-06T12:14:30Z",
   "latest_exact_head_gate": {
     "checked_at": "2026-05-06T04:13:53Z",
     "head": "c499b3fdc611d0c1b734121a47e828738cc0dba7",
@@ -787,10 +787,10 @@
     "local_status_update_pending_commit": true
   },
   "latest_live_compute_status": {
-    "checked_at": "2026-05-06T03:07:07Z",
+    "checked_at": "2026-05-06T12:14:30Z",
     "training_jobs_in_progress": [],
     "processing_jobs_in_progress": [],
-    "note": "LOD packaging job md1-r4-t10rollback-lod-dryrun-20260505 completed successfully; no full training launched."
+    "note": "No SageMaker training or processing jobs are InProgress; post-leaf benchmark gate dry-run was no-spend."
   },
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
@@ -802,7 +802,7 @@
   },
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-tile10-rollback-isolation-smoke-p24/review_comparison.json",
   "latest_review_status": "support_weighted_overlap tile10 density-relaxed review completed in 788 billable seconds/about $0.332 with coverage/render sanity OK but blocked promotion and V18 non-regression: near_detail PSNR, boundary SSIM, horizon PSNR/SSIM/sky score, horizon DJI_0073 PSNR.",
-  "latest_training_cost_reduction_status": "No-spend tile11 reuse proof reduced the active problematic cached frontier to tile_10 only: selected_source_counts candidate=5/context_density_rollback=9, training_jobs_to_submit=0, estimated_usd=0.0.",
+  "latest_training_cost_reduction_status": "No-spend post-leaf benchmark gate dry-run now emits exact preflight/enforce commands and hard max 580,788 splats for bounded tile_10 proof before any merge/review spend; submitted_jobs=0.",
   "live_compute_status": "No SageMaker training jobs are InProgress. Exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. Tile_13 hard proof is complete/preflighted/cached; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
@@ -11881,5 +11881,34 @@
       "splat_vertex_count_above_hard_max"
     ],
     "purpose": "mechanically prevent merge/review spend after future bounded tile leaf proofs unless guarded leaf preflight passes"
+  },
+  "md1_r4_post_leaf_benchmark_gate_dryrun_20260506": {
+    "checked_at": "2026-05-06T12:14:30Z",
+    "script": "scripts/3dgs/run_tiled_3dgs_benchmark.py",
+    "enforce_script": "scripts/3dgs/enforce_leaf_preflight_gate.py",
+    "dryrun_json": "logs/md1-cost-reduction-r4-tile10-constrained-density-postleafgate-dryrun-20260506.json",
+    "failed_leaf_gate_json": "logs/md1-cost-reduction-r4-tile10-density-relaxed-postleafgate-enforced-20260506.json",
+    "source_failed_preflight_json": "logs/md1-cost-reduction-r4-tile10-density-relaxed-leaf-guarded-preflight-20260506.json",
+    "submitted_jobs": [],
+    "no_full_14tile_training": true,
+    "planned_tile_id": "tile_10",
+    "reference_splat_count": 387192,
+    "max_reference_splat_ratio": 1.5,
+    "hard_max_splat_count": 580788,
+    "estimated_usd": 1.6665,
+    "worst_case_usd": 3.03,
+    "post_leaf_gate_count": 1,
+    "verification": [
+      "python3 -m unittest tests.unit.test_tiled_3dgs_benchmark tests.unit.test_enforce_leaf_preflight_gate tests.unit.test_preflight_leaf_model_artifact",
+      "python3 -m py_compile scripts/3dgs/run_tiled_3dgs_benchmark.py scripts/3dgs/enforce_leaf_preflight_gate.py scripts/3dgs/preflight_leaf_model_artifact.py",
+      "python3 scripts/3dgs/enforce_leaf_preflight_gate.py ... --gate-json logs/md1-cost-reduction-r4-tile10-constrained-density-postleafgate-dryrun-20260506.json exited 2 on failed density-relaxed tile10 leaf as expected"
+    ],
+    "failed_leaf_decision": "merge_review_blocked",
+    "failed_leaf_block_reasons": [
+      "leaf_preflight_decision_not_pass",
+      "splat_vertex_count_above_reference_ratio",
+      "splat_vertex_count_above_hard_max"
+    ],
+    "purpose": "make the post-leaf preflight gate part of benchmark dry-run output so future bounded tile proofs cannot silently proceed to merge/review spend"
   }
 }

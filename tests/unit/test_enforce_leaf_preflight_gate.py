@@ -87,6 +87,28 @@ class EnforceLeafPreflightGateTests(unittest.TestCase):
         self.assertEqual(summary["decision"], "merge_review_blocked")
         self.assertIn("filtered_scaffold_initialization_missing", summary["block_reasons"])
 
+    def test_selects_tile_gate_from_benchmark_summary(self):
+        summary = gate.evaluate_gate(
+            preflight=passing_preflight(),
+            gate={
+                "post_leaf_preflight_gates": [
+                    {
+                        "tile_id": "tile_10",
+                        "required_leaf_preflight_gate": {
+                            "hard_max_splat_count": 580788,
+                            "pass_decision": "leaf_preflight_passed_cache_candidate",
+                        },
+                    }
+                ]
+            },
+            expected_tile_id="tile_10",
+            expected_selected_image_count=188,
+            require_filtered_scaffold=True,
+        )
+
+        self.assertEqual(summary["decision"], "merge_review_allowed")
+        self.assertEqual(summary["hard_max_splat_count"], 580788)
+
 
 if __name__ == "__main__":
     unittest.main()

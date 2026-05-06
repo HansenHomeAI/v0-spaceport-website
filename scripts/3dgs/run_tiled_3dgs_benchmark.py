@@ -390,6 +390,25 @@ def parse_env(values: Sequence[str]) -> Dict[str, str]:
     return env
 
 
+def parse_tile_int_map(values: Sequence[str], *, label: str) -> Dict[str, int]:
+    mapping: Dict[str, int] = {}
+    for value in values:
+        if "=" not in value:
+            raise ValueError(f"{label} must look like tile_id=count: {value}")
+        tile_id, raw_count = value.split("=", 1)
+        tile_id = tile_id.strip()
+        if not tile_id:
+            raise ValueError(f"{label} has an empty tile_id: {value}")
+        try:
+            count = int(raw_count)
+        except ValueError as exc:
+            raise ValueError(f"{label} count must be an integer: {value}") from exc
+        if count <= 0:
+            raise ValueError(f"{label} count must be positive: {value}")
+        mapping[tile_id] = count
+    return mapping
+
+
 def normalize_s3_prefix(uri: str) -> str:
     return uri.rstrip("/")
 
@@ -1404,6 +1423,106 @@ def attach_tile_selection_channel_to_stages(stages: Sequence[BenchmarkStage]) ->
         environment["TILE_MANIFEST_PATH"] = f"{TILE_SELECTION_CHANNEL_DIR}/3dgs_tile_manifest.json"
         environment["VIEW_BUCKET_MANIFEST_PATH"] = f"{TILE_SELECTION_CHANNEL_DIR}/3dgs_view_buckets.json"
         stage.environment = environment
+
+
+def safe_log_stem(value: str) -> str:
+    sanitized = re.sub(r"[^A-Za-z0-9_.-]+", "-", value).strip("-")
+    sanitized = re.sub(r"-{2,}", "-", sanitized)
+    return sanitized or "3dgs-leaf-gate"
+
+
+def leaf_artifact_uri_for_stage(stage: BenchmarkStage) -> str:
+    if not stage.job_name:
+        return ""
+    return f"{normalize_s3_prefix(stage.output_s3_uri)}/{stage.job_name}/output/model.tar.gz"
+
+
+def build_post_leaf_preflight_gates(
+    stages: Sequence[BenchmarkStage],
+    *,
+    reference_splat_counts: Dict[str, int],
+    max_reference_splat_ratio: float,
+    experiment_id: str,
+    gate_json_path: str,
+) -> list[dict]:
+    if not reference_splat_counts:
+        return []
+    if max_reference_splat_ratio <= 0:
+        raise RuntimeError("--leaf-max-reference-splat-ratio must be > 0 with --leaf-reference-splat-count")
+
+    gates: list[dict] = []
+    for stage in stages:
+        if stage.stage_type != "train" or stage.training_mode != "leaf_tile" or not stage.tile_id:
+            continue
+        reference_count = reference_splat_counts.get(stage.tile_id)
+        if reference_count is None:
+            continue
+        artifact_uri = leaf_artifact_uri_for_stage(stage)
+        if not artifact_uri:
+            continue
+        hard_max = int(reference_count * max_reference_splat_ratio)
+        log_stem = safe_log_stem(f"{experiment_id or stage.job_name or '3dgs'}-{stage.tile_id}")
+        preflight_json = f"logs/{log_stem}-leaf-preflight.json"
+        gate_output_json = f"logs/{log_stem}-leaf-gate.json"
+        preflight_command = [
+            "python3",
+            "scripts/3dgs/preflight_leaf_model_artifact.py",
+            "--artifact-uri",
+            artifact_uri,
+            "--tile-id",
+            stage.tile_id,
+            "--job-name",
+            stage.job_name or "",
+            "--output-dir",
+            f"logs/{log_stem}-leaf-preflight",
+            "--summary-json-output",
+            preflight_json,
+            "--reference-splat-count",
+            str(reference_count),
+            "--max-reference-splat-ratio",
+            str(max_reference_splat_ratio),
+        ]
+        enforce_command = [
+            "python3",
+            "scripts/3dgs/enforce_leaf_preflight_gate.py",
+            "--preflight-json",
+            preflight_json,
+            "--gate-json",
+            gate_json_path or "<benchmark-summary-json>",
+            "--expected-tile-id",
+            stage.tile_id,
+            "--expected-selected-image-count",
+            str(stage.selected_image_count or 0),
+            "--require-filtered-scaffold",
+            "--summary-json-output",
+            gate_output_json,
+        ]
+        gates.append(
+            {
+                "tile_id": stage.tile_id,
+                "stage_name": stage.stage_name,
+                "job_name": stage.job_name,
+                "artifact_uri": artifact_uri,
+                "reference_splat_count": reference_count,
+                "max_reference_splat_ratio": max_reference_splat_ratio,
+                "hard_max_splat_count": hard_max,
+                "expected_selected_image_count": stage.selected_image_count,
+                "required_leaf_preflight_gate": {
+                    "pass_decision": "leaf_preflight_passed_cache_candidate",
+                    "reference_splat_count": reference_count,
+                    "max_reference_splat_ratio": max_reference_splat_ratio,
+                    "hard_max_splat_count": hard_max,
+                    "require_filtered_scaffold": True,
+                    "expected_selected_image_count": stage.selected_image_count,
+                },
+                "preflight_summary_json": preflight_json,
+                "gate_summary_json": gate_output_json,
+                "preflight_command": preflight_command,
+                "enforce_gate_command": enforce_command,
+                "merge_review_allowed_only_if": "enforce_gate_command exits 0",
+            }
+        )
+    return gates
 
 
 def resolve_stage_scaffold_artifact_s3_uri(
@@ -2452,6 +2571,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-tiles", type=int, default=4, help="Cap leaf-tile jobs for cheap ladder runs.")
     parser.add_argument("--tile-id", action="append", default=[], help="Repeatable tile_id filter.")
     parser.add_argument("--env", action="append", default=[], help="Repeatable KEY=VALUE environment overrides.")
+    parser.add_argument(
+        "--leaf-reference-splat-count",
+        action="append",
+        default=[],
+        help="Repeatable tile_id=count guard used to emit post-leaf preflight/enforcement commands.",
+    )
+    parser.add_argument(
+        "--leaf-max-reference-splat-ratio",
+        type=float,
+        default=0.0,
+        help="Maximum allowed leaf splat ratio versus --leaf-reference-splat-count before merge/review spend.",
+    )
     parser.add_argument("--image-tag", default="", help="Override the ECR image tag. Defaults to current branch tag.")
     parser.add_argument("--image-uri", default="", help="Fully qualified training image URI override.")
     parser.add_argument(
@@ -2647,6 +2778,10 @@ def main() -> int:
         max_tiles=args.max_tiles,
     )
     explicit_env = parse_env(args.env)
+    leaf_reference_splat_counts = parse_tile_int_map(
+        args.leaf_reference_splat_count,
+        label="--leaf-reference-splat-count",
+    )
     training_env_overrides = {"MERGE_MODE": args.merge_mode, **explicit_env}
     if args.suppress_training_eval:
         apply_training_eval_suppression(training_env_overrides, max_iterations=args.tile_max_iterations)
@@ -2709,6 +2844,19 @@ def main() -> int:
         extra_iterations=args.checkpoint_resume_extra_iterations,
     )
     attach_tile_selection_channel_to_stages(stages)
+    post_leaf_preflight_gates = build_post_leaf_preflight_gates(
+        stages,
+        reference_splat_counts=leaf_reference_splat_counts,
+        max_reference_splat_ratio=args.leaf_max_reference_splat_ratio,
+        experiment_id=args.experiment_id,
+        gate_json_path=args.summary_json_output,
+    )
+    gated_tile_ids = {str(gate.get("tile_id")) for gate in post_leaf_preflight_gates}
+    unused_leaf_reference_splat_counts = {
+        tile_id: count
+        for tile_id, count in leaf_reference_splat_counts.items()
+        if tile_id not in gated_tile_ids
+    }
     cost_estimate = estimate_training_cost(
         stages,
         instance_type=args.instance_type,
@@ -2737,6 +2885,10 @@ def main() -> int:
         "downscale_factor": args.downscale_factor,
         "proof_profile": resolved_proof_profile,
         "training_max_runtime_seconds": args.training_max_runtime_seconds,
+        "leaf_reference_splat_counts": leaf_reference_splat_counts,
+        "leaf_max_reference_splat_ratio": args.leaf_max_reference_splat_ratio,
+        "unused_leaf_reference_splat_counts": unused_leaf_reference_splat_counts,
+        "post_leaf_preflight_gates": post_leaf_preflight_gates,
         "compatibility_gate": bool(args.compatibility_gate),
         "suppress_training_eval": bool(args.suppress_training_eval),
         "merge_mode": args.merge_mode,
@@ -2779,6 +2931,12 @@ def main() -> int:
         "submitted_jobs": [],
         "completed_jobs": [],
     }
+
+    if args.submit and post_leaf_preflight_gates and (not args.skip_merge or not args.skip_review):
+        raise RuntimeError(
+            "--leaf-reference-splat-count requires --skip-merge and --skip-review on submitted runs; "
+            "run the emitted post_leaf_preflight_gates before any merge/review spend"
+        )
 
     if args.dry_run or not args.submit:
         print(json.dumps(summary, indent=2))

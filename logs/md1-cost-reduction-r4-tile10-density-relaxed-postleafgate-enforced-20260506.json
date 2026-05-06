@@ -1,0 +1,31 @@
+{
+  "checked_at": "2026-05-06T12:14:30.329610+00:00",
+  "preflight_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-density-relaxed-repair-20260506/tiles/tile_10/md1-r4t10density-1778043088-tile-10/output/model.tar.gz",
+  "preflight_job_name": "md1-r4t10density-1778043088-tile-10",
+  "tile_id": "tile_10",
+  "expected_tile_id": "tile_10",
+  "decision": "merge_review_blocked",
+  "block_reasons": [
+    "leaf_preflight_decision_not_pass",
+    "splat_vertex_count_above_reference_ratio",
+    "splat_vertex_count_above_hard_max"
+  ],
+  "warnings": [],
+  "leaf_preflight_decision": "leaf_preflight_blocked",
+  "expected_leaf_preflight_decision": "leaf_preflight_passed_cache_candidate",
+  "splat_vertex_count": 1733527,
+  "hard_max_splat_count": 580788,
+  "splat_reference_guard": {
+    "enabled": true,
+    "status": "blocked",
+    "reference_splat_count": 387192,
+    "max_reference_splat_ratio": 1.5,
+    "splat_vertex_count": 1733527,
+    "observed_reference_ratio": 4.477176697865659,
+    "block_reason": "splat_vertex_count_above_reference_ratio"
+  },
+  "selected_image_count": 188,
+  "expected_selected_image_count": 188,
+  "filtered_scaffold_required": true,
+  "filtered_scaffold_ok": true
+}

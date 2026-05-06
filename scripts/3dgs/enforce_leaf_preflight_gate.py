@@ -41,6 +41,19 @@ def expected_pass_decision(gate: dict[str, Any]) -> str:
     return "leaf_preflight_passed_cache_candidate"
 
 
+def resolve_tile_gate(gate: dict[str, Any], tile_id: str) -> dict[str, Any]:
+    gates = gate.get("post_leaf_preflight_gates")
+    if not isinstance(gates, list) or not gates:
+        return gate
+    if tile_id:
+        for candidate in gates:
+            if isinstance(candidate, dict) and str(candidate.get("tile_id") or "") == tile_id:
+                return candidate
+    if len(gates) == 1 and isinstance(gates[0], dict):
+        return gates[0]
+    return gate
+
+
 def evaluate_gate(
     *,
     preflight: dict[str, Any],
@@ -52,6 +65,7 @@ def evaluate_gate(
     block_reasons: list[str] = []
     warnings: list[str] = []
 
+    gate = resolve_tile_gate(gate, expected_tile_id)
     expected_decision = expected_pass_decision(gate)
     actual_decision = str(preflight.get("decision") or "")
     if actual_decision != expected_decision:

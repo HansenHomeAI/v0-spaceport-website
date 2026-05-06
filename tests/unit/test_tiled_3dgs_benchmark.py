@@ -39,6 +39,42 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
 
         self.assertEqual(payload["tiles"][0]["tile_id"], "tile_00")
 
+    def test_parse_tile_int_map_requires_positive_counts(self):
+        parsed = benchmark.parse_tile_int_map(["tile_10=387192"], label="leaf refs")
+
+        self.assertEqual(parsed, {"tile_10": 387192})
+        with self.assertRaises(ValueError):
+            benchmark.parse_tile_int_map(["tile_10=0"], label="leaf refs")
+        with self.assertRaises(ValueError):
+            benchmark.parse_tile_int_map(["tile_10"], label="leaf refs")
+
+    def test_build_post_leaf_preflight_gates_emits_commands(self):
+        stage = benchmark.BenchmarkStage(
+            stage_name="T0_tile_10",
+            stage_type="train",
+            training_mode="leaf_tile",
+            output_s3_uri="s3://bucket/run/tiles/tile_10",
+            job_name="tile10-proof",
+            tile_id="tile_10",
+            selected_image_count=188,
+        )
+
+        gates = benchmark.build_post_leaf_preflight_gates(
+            [stage],
+            reference_splat_counts={"tile_10": 387192},
+            max_reference_splat_ratio=1.5,
+            experiment_id="exp",
+            gate_json_path="logs/summary.json",
+        )
+
+        self.assertEqual(len(gates), 1)
+        gate = gates[0]
+        self.assertEqual(gate["artifact_uri"], "s3://bucket/run/tiles/tile_10/tile10-proof/output/model.tar.gz")
+        self.assertEqual(gate["hard_max_splat_count"], 580788)
+        self.assertIn("--reference-splat-count", gate["preflight_command"])
+        self.assertIn("--gate-json", gate["enforce_gate_command"])
+        self.assertIn("logs/summary.json", gate["enforce_gate_command"])
+
     def test_resolve_proof_profile_defaults_to_quality_gate_low_memory_for_single_job_review(self):
         resolved = benchmark.resolve_proof_profile(
             None,
