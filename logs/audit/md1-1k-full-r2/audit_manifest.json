@@ -589,8 +589,8 @@
       ]
     }
   ],
-  "current_branch_head": "4b7857d5dca8703a34466527da63a0b57230e93c pushed; preview smoke evidence committed. This evidence-only head is green on CDK Deploy 25414728334, and no new Cloudflare Pages run appeared for the evidence-only commit.",
-  "current_exact_head_gate_status": "exact-head 4b7857d5dca8703a34466527da63a0b57230e93c is pushed and green on CDK Deploy 25414728334. Latest web-bearing head remains c12586cc02935b5a8128c87351748e0a4d967da1 with green CDK Deploy 25414410907 and Cloudflare Pages 25414410905; hash and alias /health.txt passed.",
+  "current_branch_head": "c499b3fdc611d0c1b734121a47e828738cc0dba7 pushed with tile10 repair dry-run evidence; exact-head CDK Deploy 25415951158 is green. No new Cloudflare Pages run appeared for this non-web/proof commit.",
+  "current_exact_head_gate_status": "exact-head c499b3fdc611d0c1b734121a47e828738cc0dba7 is pushed and green on CDK Deploy 25415951158. Latest web-bearing head remains c12586cc02935b5a8128c87351748e0a4d967da1 with green CDK Deploy 25414410907 and Cloudflare Pages 25414410905; hash and alias /health.txt passed.",
   "current_live_compute_status": "No SageMaker training jobs are InProgress and no SageMaker processing jobs are InProgress. Bounded LOD Processing job md1-r4-t10rollback-lod-dryrun-20260505 completed at 2026-05-06T02:34:48Z after about 7,443.6s on ml.m5.4xlarge and wrote the staging SOGS LOD bundle.",
   "current_rung": "R4_tile10_density_relaxed_repair_dryrun_ready",
   "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
@@ -777,13 +777,13 @@
     "local_status_update_pending_commit": true,
     "unrelated_processing_job_in_progress": "r5full80s1-1777934749"
   },
-  "last_updated": "2026-05-06T04:07:03Z",
+  "last_updated": "2026-05-06T04:13:53Z",
   "latest_exact_head_gate": {
-    "checked_at": "2026-05-06T03:28:34Z",
-    "head": "4b7857d5dca8703a34466527da63a0b57230e93c",
-    "cdk_deploy_run_id": 25414728334,
+    "checked_at": "2026-05-06T04:13:53Z",
+    "head": "c499b3fdc611d0c1b734121a47e828738cc0dba7",
+    "cdk_deploy_run_id": 25415951158,
     "cdk_deploy_conclusion": "success",
-    "cloudflare_pages": "not_triggered_for_evidence_only_commit",
+    "cloudflare_pages": "not_triggered_for_non_web_proof_commit",
     "live_md1_training_jobs_in_progress": 0,
     "live_md1_processing_jobs_in_progress": 0,
     "local_status_update_pending_commit": true
@@ -11535,6 +11535,74 @@
       "cull_scale_thresh": "0.50"
     },
     "why_this_is_next": "Prior standard and hard tile_10 candidates failed V18 full-scene quality while tile_10 rollback restored V18 non-regression. This proof isolates the cheapest plausible no-rollback tile_10 repair before any full-run spend.",
-    "next_unblocked_step": "Commit/push/gate this dry-run; if continuing, submit only this bounded one-tile proof, not a full 14-tile run."
+    "next_unblocked_step": "Commit/push/gate this dry-run; if continuing, submit only this bounded one-tile proof, not a full 14-tile run.",
+    "exact_head_gate": {
+      "checked_at": "2026-05-06T04:13:53Z",
+      "head": "c499b3fdc611d0c1b734121a47e828738cc0dba7",
+      "cdk_deploy_run_id": 25415951158,
+      "cdk_deploy_conclusion": "success",
+      "cloudflare_pages": "not_triggered_for_non_web_proof_commit",
+      "live_md1_training_jobs_in_progress": 0,
+      "live_md1_processing_jobs_in_progress": 0,
+      "local_status_update_pending_commit": true
+    }
+  },
+  "md1_r4_tile10_density_relaxed_repair_submit_20260506": {
+    "checked_at": "2026-05-06T04:52:07Z",
+    "head": "c499b3fdc611d0c1b734121a47e828738cc0dba7",
+    "source_dryrun_json": "logs/md1-cost-reduction-r4-tile10-density-relaxed-repair-dryrun-20260506.json",
+    "submit_summary_json": "logs/md1-cost-reduction-r4-tile10-density-relaxed-repair-submit-20260506.json",
+    "failed_pre_submit_attempts": [
+      {
+        "stage": "guardrail",
+        "reason": "--v18-review-manifest-s3-uri is required so every paid run has a V18 comparison plan",
+        "sagemaker_job_submitted": false
+      },
+      {
+        "stage": "local_input_resolution",
+        "reason": "Incomplete sparse support download because local disk was nearly full; copied points3D.txt but missing images.txt.",
+        "local_disk_avail_before_cache_cleanup": "194MiB",
+        "sagemaker_job_submitted": false
+      }
+    ],
+    "local_disk_recovery": {
+      "removed_generated_cache": "web/.next",
+      "disk_avail_after_cleanup": "839MiB",
+      "large_sparse_download_avoided_with_local_manifests": true
+    },
+    "submitted_jobs": [
+      {
+        "training_job_name": "md1-r4t10density-1778043088-tile-10",
+        "training_job_arn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-r4t10density-1778043088-tile-10",
+        "tile_id": "tile_10",
+        "status": "InProgress",
+        "secondary_status": "Downloading",
+        "training_time_seconds_at_check": 34,
+        "instance_type": "ml.g5.2xlarge",
+        "max_runtime_seconds": 7200,
+        "max_estimated_usd": 2.5,
+        "checkpoint_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-density-relaxed-repair-20260506/checkpoints/md1-r4t10density-1778043088-tile-10",
+        "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-density-relaxed-repair-20260506/tiles/tile_10",
+        "failure_reason": null,
+        "model_artifacts": null
+      }
+    ],
+    "tile10_settings": {
+      "budget_class": "hard",
+      "selected_image_count": 188,
+      "max_iterations": 12000,
+      "training_max_gauss_ratio": "10.0",
+      "training_stop_split_at": "8500",
+      "cull_alpha_thresh": "0.08",
+      "cull_scale_thresh": "0.50",
+      "global_scaffold_require_filtered_init": "true"
+    },
+    "guardrails": {
+      "full_14_tile_training_launched": false,
+      "v18_review_manifest_required_and_supplied": true,
+      "local_tile_view_manifests_used": true,
+      "checkpointing_enabled": true
+    },
+    "next_unblocked_step": "Monitor md1-r4t10density-1778043088-tile-10 to terminal status. If it completes, run tile_10 leaf preflight, then merge with accepted/rollback tiles and run V18 same-camera review before any LOD rebuild/promotion."
   }
 }
