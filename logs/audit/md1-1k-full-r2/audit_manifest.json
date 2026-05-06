@@ -589,8 +589,8 @@
       ]
     }
   ],
-  "current_branch_head": "103153cf6f2064d2c65b5af5af87e365243ec074 is pushed with the MD1 LOD promotion-required readiness exit guard; local pending changes add the MD1 quality-strategy paid-retry guard.",
-  "current_exact_head_gate_status": "exact-head 103153cf6f2064d2c65b5af5af87e365243ec074 is pushed and green on CDK Deploy 25450995340. No Cloudflare Pages run appeared for this non-web promotion-readiness guard commit. The quality-strategy paid-retry guard is local pending this commit.",
+  "current_branch_head": "8073d4eae7ddb89f7f2bf471c1487fa2a7c26f9e is pushed with the MD1 quality-strategy paid-retry guard; local pending changes add the boundary quality-strategy planner.",
+  "current_exact_head_gate_status": "exact-head 8073d4eae7ddb89f7f2bf471c1487fa2a7c26f9e is pushed and green on CDK Deploy 25452910710. No Cloudflare Pages run appeared for this non-web quality-strategy guard commit. The boundary quality-strategy planner is local pending this commit.",
   "current_live_compute_status": "No SageMaker training jobs are InProgress and no SageMaker processing jobs are InProgress. Support-overlap no-training merge and review completed; no new paid jobs were launched for the constrained tile10 plan.",
   "current_rung": "R4_lod_production_readiness_gate_ready",
   "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
@@ -775,7 +775,7 @@
     "cloudflare_pages": "not_triggered_for_non_web_proof_commit",
     "local_status_update_pending_commit": true
   },
-  "last_updated": "2026-05-06T18:13:21Z",
+  "last_updated": "2026-05-06T18:52:30Z",
   "latest_exact_head_gate": {
     "checked_at": "2026-05-06T04:13:53Z",
     "head": "c499b3fdc611d0c1b734121a47e828738cc0dba7",
@@ -12157,5 +12157,50 @@
     "processing_jobs_in_progress": [],
     "guard_behavior": "Paid retries must target every current frozen-quality blocker, remain dry-run/no-submit, confirm no full 14-tile training, and stay under the supplied cost cap before spend.",
     "next_unblocked_step": "Write a no-spend quality strategy that targets boundary_no_required_improvement before any constrained tile_10 paid retry, or keep rollback LOD as inspection-only. Full 14-tile submit remains blocked by production rung gate."
+  },
+  "gates_and_md1_r4_quality_strategy_paid_retry_guard_20260506": {
+    "checked_at": "2026-05-06T18:18:38Z",
+    "head": "8073d4eae7ddb89f7f2bf471c1487fa2a7c26f9e",
+    "cdk_deploy_run_id": 25452910710,
+    "cdk_deploy_conclusion": "success",
+    "cloudflare_pages": "not_triggered_for_non_web_quality_strategy_guard_commit",
+    "training_jobs_in_progress": [],
+    "processing_jobs_in_progress": [],
+    "local_status_update_pending_commit": true,
+    "note": "Quality-strategy paid-retry guard is pushed and green; current constrained tile_10 paid proof remains blocked until it targets boundary_no_required_improvement."
+  },
+  "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
+  "md1_r4_boundary_quality_strategy_20260506": {
+    "checked_at": "2026-05-06T18:52:30Z",
+    "head_before_commit": "8073d4eae7ddb89f7f2bf471c1487fa2a7c26f9e",
+    "script": "scripts/3dgs/plan_md1_quality_strategy.py",
+    "test": "tests/unit/test_plan_md1_quality_strategy.py",
+    "review_comparison": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-tile10-rollback-isolation-smoke-p24/review_comparison.json",
+    "candidate_strategy_json": "logs/md1-cost-reduction-r4-tile10-constrained-density-proof-gates-20260506.json",
+    "strategy_report": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json",
+    "current_quality_blockers": [
+      "boundary_no_required_improvement"
+    ],
+    "candidate_targeted_quality_blockers": [],
+    "recommendation": "hold_paid_retry",
+    "paid_retry_recommended": false,
+    "boundary_actual_delta": {
+      "psnr": 9.09046563180027e-06,
+      "ssim": 3.2186508178710938e-06,
+      "lpips": 8.553266525268555e-06
+    },
+    "boundary_required_improvement": {
+      "psnr": 0.5,
+      "ssim": 0.01,
+      "lpips": -0.025
+    },
+    "boundary_remaining_gap": {
+      "psnr": 0.4999909095343682,
+      "ssim": 0.009996781349182129,
+      "lpips": 0.02500855326652527
+    },
+    "training_jobs_in_progress": [],
+    "processing_jobs_in_progress": [],
+    "next_unblocked_step": "Create a no-spend boundary-focused responsible-tile plan before any paid retry; do not submit constrained tile_10 and do not submit full 14-tile training."
   }
 }

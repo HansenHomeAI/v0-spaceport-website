@@ -1,0 +1,55 @@
+{
+  "checked_at": "2026-05-06T18:52:30.216496+00:00",
+  "promotion_decision_status": "blocked",
+  "current_quality_blockers": [
+    "boundary_no_required_improvement"
+  ],
+  "candidate_strategy_present": true,
+  "candidate_targeted_quality_blockers": [],
+  "missing_targeted_blockers": [
+    "boundary_no_required_improvement"
+  ],
+  "candidate_planned_cost_usd": 1.6665,
+  "max_estimated_usd": 2.5,
+  "candidate_no_full_14tile_training": true,
+  "candidate_submitted_jobs": [],
+  "boundary_improvement_gap": {
+    "actual_delta": {
+      "psnr": 9.09046563180027e-06,
+      "ssim": 3.2186508178710938e-06,
+      "lpips": 8.553266525268555e-06
+    },
+    "required_improvement": {
+      "psnr": 0.5,
+      "ssim": 0.01,
+      "lpips": -0.025
+    },
+    "remaining_gap": {
+      "psnr": 0.4999909095343682,
+      "ssim": 0.009996781349182129,
+      "lpips": 0.02500855326652527
+    },
+    "passes_any_improvement_axis": false
+  },
+  "recommendation": "hold_paid_retry",
+  "recommended_actions": [
+    {
+      "blocker": "boundary_no_required_improvement",
+      "action": "produce_boundary_focused_no_spend_plan_before_paid_retry",
+      "evidence_needed": [
+        "targeted_quality_blockers includes boundary_no_required_improvement",
+        "boundary frozen cameras and responsible tiles are listed",
+        "planned change can plausibly improve boundary PSNR/SSIM/LPIPS, not only tile density",
+        "max_estimated_usd remains capped before submit"
+      ]
+    },
+    {
+      "blocker": "candidate_strategy_missing_current_blockers",
+      "action": "do_not_submit_current_candidate_strategy",
+      "missing_targeted_blockers": [
+        "boundary_no_required_improvement"
+      ]
+    }
+  ],
+  "paid_retry_recommended": false
+}
