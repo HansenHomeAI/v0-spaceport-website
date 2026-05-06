@@ -1,0 +1,44 @@
+{
+  "checked_at": "2026-05-06T21:06:58.493330+00:00",
+  "decision": "leaf_submit_allowed",
+  "block_reasons": [],
+  "exact_head": "981d046c35c46038b426876400586728e9b949f5",
+  "git_head": "981d046c35c46038b426876400586728e9b949f5",
+  "workflow_conclusion": "success",
+  "training_jobs_in_progress": [],
+  "processing_jobs_in_progress": [],
+  "required_tile_ids": [
+    "tile_04",
+    "tile_10"
+  ],
+  "selected_tile_ids": [
+    "tile_04",
+    "tile_10"
+  ],
+  "stage_tile_ids": [
+    "tile_04",
+    "tile_10"
+  ],
+  "required_context_tile_ids": [
+    "tile_13"
+  ],
+  "context_support_tile_ids": [
+    "tile_13"
+  ],
+  "required_targeted_blockers": [
+    "boundary_no_required_improvement"
+  ],
+  "targeted_quality_blockers": [
+    "boundary_no_required_improvement"
+  ],
+  "post_leaf_preflight_gate_tile_ids": [
+    "tile_04",
+    "tile_10"
+  ],
+  "quality_strategy_decision": "paid_retry_allowed",
+  "merge_review_gate_decision": "merge_review_blocked",
+  "estimated_usd": 3.333,
+  "max_estimated_usd": 4.0,
+  "submitted_jobs": [],
+  "next_required_action": "submit leaf-only fanout with --skip-merge/--skip-review and run emitted post_leaf_preflight_gates"
+}
