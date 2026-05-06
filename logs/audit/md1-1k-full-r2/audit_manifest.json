@@ -589,8 +589,8 @@
       ]
     }
   ],
-  "current_branch_head": "4400729d8f326561664071b425d5f6fb7f577d9f is pushed with the paid fanout leaf submit guard; local pending changes add the full 14-tile production-rung submit guard.",
-  "current_exact_head_gate_status": "exact-head 4400729d8f326561664071b425d5f6fb7f577d9f is pushed and green on CDK Deploy 25436835942; full 14-tile production-rung submit guard is local pending this commit.",
+  "current_branch_head": "1dab437820cd500aca2dfbc02033c660ce8f14ee is pushed with the full 14-tile production-rung submit guard; local pending changes tighten the rung-gate budget requirement.",
+  "current_exact_head_gate_status": "exact-head 1dab437820cd500aca2dfbc02033c660ce8f14ee is pushed and green on CDK Deploy 25439114423; rung-gate budget tightening is local pending this commit.",
   "current_live_compute_status": "No SageMaker training jobs are InProgress and no SageMaker processing jobs are InProgress. Support-overlap no-training merge and review completed; no new paid jobs were launched for the constrained tile10 plan.",
   "current_rung": "R4_full_14tile_rung_submit_guard_ready",
   "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
@@ -775,7 +775,7 @@
     "cloudflare_pages": "not_triggered_for_non_web_proof_commit",
     "local_status_update_pending_commit": true
   },
-  "last_updated": "2026-05-06T13:42:09Z",
+  "last_updated": "2026-05-06T14:58:32Z",
   "latest_exact_head_gate": {
     "checked_at": "2026-05-06T04:13:53Z",
     "head": "c499b3fdc611d0c1b734121a47e828738cc0dba7",
@@ -11991,5 +11991,34 @@
       "py_compile": "python3 -m py_compile scripts/3dgs/run_tiled_3dgs_benchmark.py scripts/3dgs/enforce_leaf_preflight_gate.py scripts/3dgs/preflight_leaf_model_artifact.py -> OK",
       "unit_tests": "python3 -m unittest tests.unit.test_tiled_3dgs_benchmark tests.unit.test_enforce_leaf_preflight_gate tests.unit.test_preflight_leaf_model_artifact -> 84 tests OK"
     }
+  },
+  "gates_and_md1_r4_full14_rung_submit_guard_20260506": {
+    "checked_at": "2026-05-06T13:48:25Z",
+    "head": "1dab437820cd500aca2dfbc02033c660ce8f14ee",
+    "cdk_deploy_run_id": 25439114423,
+    "cdk_deploy_conclusion": "success",
+    "cloudflare_pages": "not_triggered_for_non_web_guard_commit",
+    "training_jobs_in_progress": [],
+    "processing_jobs_in_progress": [],
+    "local_status_update_pending_commit": true,
+    "note": "full 14-tile production-rung submit guard is pushed and green; this entry remains local until next meaningful commit to avoid a status-only commit loop"
+  },
+  "md1_r4_full14_rung_budget_tightening_20260506": {
+    "checked_at": "2026-05-06T14:58:32Z",
+    "branch_head_before_commit": "1dab437820cd500aca2dfbc02033c660ce8f14ee",
+    "script": "scripts/3dgs/run_tiled_3dgs_benchmark.py",
+    "tests": "tests/unit/test_tiled_3dgs_benchmark.py",
+    "guard": "full 14-tile --production-rung-gate-json must include numeric max_estimated_usd > 0",
+    "reason": "close the no-budget gate loophole before any R6/full-run spend can be submitted",
+    "no_paid_compute": true,
+    "training_jobs_in_progress": [],
+    "processing_jobs_in_progress": [],
+    "verification": {
+      "unit_tests": "python3 -m unittest tests.unit.test_tiled_3dgs_benchmark tests.unit.test_enforce_leaf_preflight_gate tests.unit.test_preflight_leaf_model_artifact -> 85 tests OK",
+      "py_compile": "python3 -m py_compile scripts/3dgs/run_tiled_3dgs_benchmark.py scripts/3dgs/enforce_leaf_preflight_gate.py scripts/3dgs/preflight_leaf_model_artifact.py -> OK",
+      "audit_json": "python3 -m json.tool logs/audit/md1-1k-full-r2/audit_manifest.json -> OK",
+      "diff_check": "git diff --check -> OK"
+    },
+    "next_unblocked_step": "Keep rollback LOD candidate or run only bounded tile_10 proof through post_leaf_preflight_gates; full 14-tile submit remains blocked until production rung gate includes passing rungs, allow flag, and an explicit positive budget cap."
   }
 }

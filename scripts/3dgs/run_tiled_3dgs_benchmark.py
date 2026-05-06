@@ -1331,8 +1331,14 @@ def validate_submit_guardrails(args: argparse.Namespace, summary: dict) -> None:
                 )
             if rung_gate.get("allow_full_14tile_submit") is not True:
                 errors.append("--production-rung-gate-json must set allow_full_14tile_submit=true")
-            gate_max_usd = float(rung_gate.get("max_estimated_usd") or 0.0)
-            if gate_max_usd > 0 and max_estimated_usd > gate_max_usd:
+            try:
+                gate_max_usd = float(rung_gate.get("max_estimated_usd") or 0.0)
+            except (TypeError, ValueError):
+                gate_max_usd = 0.0
+                errors.append("--production-rung-gate-json max_estimated_usd must be numeric")
+            if gate_max_usd <= 0:
+                errors.append("--production-rung-gate-json must set max_estimated_usd > 0")
+            elif max_estimated_usd > gate_max_usd:
                 errors.append(
                     f"--max-estimated-usd ${max_estimated_usd:.2f} exceeds "
                     f"production rung gate cap ${gate_max_usd:.2f}"
