@@ -24,6 +24,19 @@ def list_strings(value: Any) -> list[str]:
     return [str(item) for item in value if str(item)]
 
 
+def split_label_list(value: Any) -> list[str]:
+    if isinstance(value, list):
+        return list_strings(value)
+    if not isinstance(value, str):
+        return []
+    result: list[str] = []
+    for item in value.replace(";", ",").split(","):
+        cleaned = item.strip()
+        if cleaned:
+            result.append(cleaned)
+    return result
+
+
 def quality_blockers(readiness_report: dict[str, Any]) -> list[str]:
     gate = readiness_report.get("quality_gate") if isinstance(readiness_report.get("quality_gate"), dict) else {}
     blockers = list_strings(gate.get("block_reasons"))
@@ -55,7 +68,17 @@ def targeted_blockers(strategy: dict[str, Any]) -> list[str]:
                 + list_strings(nested.get("targeted_quality_block_reasons"))
             )
         )
-    return []
+    stage_targets: list[str] = []
+    stages = strategy.get("stages")
+    if isinstance(stages, list):
+        for stage in stages:
+            if not isinstance(stage, dict):
+                continue
+            env = stage.get("environment")
+            if isinstance(env, dict):
+                stage_targets.extend(split_label_list(env.get("TARGETED_QUALITY_BLOCKERS")))
+                stage_targets.extend(split_label_list(env.get("TARGETED_QUALITY_BLOCK_REASONS")))
+    return sorted(set(stage_targets))
 
 
 def estimated_usd(strategy: dict[str, Any]) -> float | None:
@@ -71,6 +94,19 @@ def estimated_usd(strategy: dict[str, Any]) -> float | None:
             except (TypeError, ValueError):
                 return None
     return None
+
+
+def no_full_14tile_training_confirmed(strategy: dict[str, Any]) -> bool:
+    if strategy.get("no_full_14tile_training") is True:
+        return True
+    if strategy.get("full_14tile_training_launched") is False:
+        return True
+    selected_tile_ids = strategy.get("selected_tile_ids")
+    if isinstance(selected_tile_ids, list):
+        normalized = [str(tile_id) for tile_id in selected_tile_ids if str(tile_id)]
+        if 0 < len(set(normalized)) < 14:
+            return True
+    return False
 
 
 def evaluate_gate(
@@ -93,7 +129,8 @@ def evaluate_gate(
     elif missing_targets:
         block_reasons.append("quality_strategy_does_not_target_current_blockers")
 
-    if require_no_full_14tile and strategy.get("no_full_14tile_training") is not True:
+    no_full_14tile = no_full_14tile_training_confirmed(strategy)
+    if require_no_full_14tile and not no_full_14tile:
         block_reasons.append("no_full_14tile_training_not_confirmed")
 
     submitted_jobs = strategy.get("submitted_jobs")
@@ -133,7 +170,7 @@ def evaluate_gate(
         "estimated_usd": cost,
         "require_no_full_14tile": require_no_full_14tile,
         "require_dry_run": require_dry_run,
-        "no_full_14tile_training": strategy.get("no_full_14tile_training"),
+        "no_full_14tile_training": no_full_14tile,
         "submitted_jobs": submitted_jobs,
         "next_required_action": (
             "paid retry may proceed through its own leaf/preflight gates"

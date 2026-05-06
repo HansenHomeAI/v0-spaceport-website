@@ -112,6 +112,56 @@ class EnforceMd1QualityStrategyGateTests(unittest.TestCase):
         self.assertEqual(summary["decision"], "paid_retry_allowed")
         self.assertEqual(summary["block_reasons"], [])
 
+    def test_allows_benchmark_dryrun_with_stage_env_target_and_partial_tile_scope(self):
+        summary = gate.evaluate_gate(
+            readiness_report=readiness("boundary_no_required_improvement"),
+            strategy={
+                "selected_tile_ids": ["tile_04", "tile_10"],
+                "submitted_jobs": [],
+                "cost_estimate": {"estimated_usd": 3.333},
+                "stages": [
+                    {
+                        "tile_id": "tile_04",
+                        "environment": {
+                            "TARGETED_QUALITY_BLOCKERS": "boundary_no_required_improvement",
+                        },
+                    },
+                    {
+                        "tile_id": "tile_10",
+                        "environment": {
+                            "TARGETED_QUALITY_BLOCKERS": "boundary_no_required_improvement",
+                        },
+                    },
+                ],
+            },
+            max_estimated_usd=4.0,
+        )
+
+        self.assertEqual(summary["decision"], "paid_retry_allowed")
+        self.assertEqual(summary["targeted_quality_blockers"], ["boundary_no_required_improvement"])
+        self.assertTrue(summary["no_full_14tile_training"])
+
+    def test_blocks_benchmark_dryrun_when_selected_tile_scope_is_full_14_without_explicit_guard(self):
+        summary = gate.evaluate_gate(
+            readiness_report=readiness("boundary_no_required_improvement"),
+            strategy={
+                "selected_tile_ids": [f"tile_{index:02d}" for index in range(14)],
+                "submitted_jobs": [],
+                "cost_estimate": {"estimated_usd": 3.333},
+                "stages": [
+                    {
+                        "environment": {
+                            "TARGETED_QUALITY_BLOCKERS": "boundary_no_required_improvement",
+                        },
+                    }
+                ],
+            },
+            max_estimated_usd=4.0,
+        )
+
+        self.assertEqual(summary["decision"], "paid_retry_blocked")
+        self.assertIn("no_full_14tile_training_not_confirmed", summary["block_reasons"])
+
 
 if __name__ == "__main__":
     unittest.main()
