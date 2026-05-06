@@ -1,0 +1,142 @@
+{
+  "checked_at": "2026-05-06T06:45:30Z",
+  "review_job": "md1-r1-r4-tile10-density-relaxed-fullscene-smoke-p24-1778049026",
+  "review_status": "Completed",
+  "review_billable_seconds": 782,
+  "estimated_review_cost_usd_at_1_515_per_hour": 0.329,
+  "merge_job": "md1-r4t10density-merge-1778047082",
+  "merge_status": "Completed",
+  "merge_billable_seconds": 1488,
+  "estimated_merge_cost_usd_at_0_736_per_hour": 0.304,
+  "tile10_repair_training_billable_seconds": 3615,
+  "estimated_tile10_training_cost_usd_at_1_515_per_hour": 1.521,
+  "total_incremental_density_repair_attempt_cost_usd": 2.154,
+  "fullscene_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-density-relaxed-fullscene-remote-merge-g4dn-202605060558/output/artifact/model.tar.gz",
+  "fullscene_artifact_bytes": 3461750162,
+  "preflight_decision": "preflight_passed_run_frozen_smoke_review",
+  "preflight_block_reasons": [],
+  "camera_coverage": "ok",
+  "render_sanity": {
+    "status": "ok",
+    "checked_view_count": 12,
+    "blank_view_count": 0,
+    "blank_views": []
+  },
+  "promotion_decision": "blocked",
+  "promotion_block_reasons": [
+    "boundary_ssim_regression",
+    "boundary_no_required_improvement",
+    "horizon_ssim_regression"
+  ],
+  "v18_non_regression_decision": "blocked",
+  "v18_non_regression_block_reasons": [
+    "near_detail_v18_median_psnr_regression",
+    "boundary_v18_median_ssim_regression",
+    "horizon_v18_median_psnr_regression",
+    "horizon_v18_median_ssim_regression",
+    "horizon_v18_sky_score_regression",
+    "horizon_v18_single_camera_psnr_regression"
+  ],
+  "bucket_deltas_vs_v18": {
+    "near_detail": {
+      "v18": {
+        "psnr": 11.342806679576887,
+        "ssim": 0.38599395751953125,
+        "lpips": 0.9159154295921326
+      },
+      "candidate": {
+        "psnr": 11.058302443918617,
+        "ssim": 0.38377369940280914,
+        "lpips": 0.9000594317913055
+      },
+      "delta": {
+        "psnr": -0.2845042356582699,
+        "ssim": -0.002220258116722107,
+        "lpips": -0.015855997800827026
+      },
+      "block_reasons": [
+        "near_detail_v18_median_psnr_regression"
+      ]
+    },
+    "boundary": {
+      "v18": {
+        "psnr": 14.315955739441744,
+        "ssim": 0.4327641427516937,
+        "lpips": 0.7800296545028687
+      },
+      "candidate": {
+        "psnr": 14.293708825422122,
+        "ssim": 0.41422082483768463,
+        "lpips": 0.7789567112922668
+      },
+      "delta": {
+        "psnr": -0.022246914019621755,
+        "ssim": -0.018543317914009094,
+        "lpips": -0.0010729432106018066
+      },
+      "block_reasons": [
+        "boundary_v18_median_ssim_regression"
+      ]
+    },
+    "horizon": {
+      "v18": {
+        "psnr": 15.518785862438865,
+        "ssim": 0.3774964064359665,
+        "lpips": 0.8303832709789276
+      },
+      "candidate": {
+        "psnr": 15.236083587711057,
+        "ssim": 0.35552266240119934,
+        "lpips": 0.8362932801246643
+      },
+      "delta": {
+        "psnr": -0.2827022747278072,
+        "ssim": -0.02197374403476715,
+        "lpips": 0.005910009145736694
+      },
+      "block_reasons": [
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_median_ssim_regression",
+        "horizon_v18_sky_score_regression"
+      ]
+    }
+  },
+  "per_camera_blocks": [
+    {
+      "bucket": "horizon",
+      "image_name": "DJI_0073.JPG",
+      "delta": {
+        "psnr": -1.9221855373364267,
+        "ssim": -0.027563542127609253,
+        "lpips": 0.01438760757446289
+      },
+      "block_reasons": [
+        "horizon_v18_single_camera_psnr_regression"
+      ]
+    }
+  ],
+  "fallback_breakdown": {
+    "baseline": {
+      "merge_mode": "support_weighted_overlap",
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "source_gaussians": 8789634,
+      "retained_gaussians": 8423868,
+      "fallback_reasons": []
+    },
+    "candidate": {
+      "merge_mode": "strict_core",
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "source_gaussians": 10136020,
+      "retained_gaussians": 8630695,
+      "fallback_reasons": []
+    }
+  },
+  "quality_verdict": {
+    "tile_10_density_relaxed_repair": "rejected_for_v18_non_regression",
+    "rollback_lod_candidate": "remains_current_viewer_ready_fallback",
+    "reason": "full-scene preflight and render sanity passed, but same-camera V18 non-regression blocked on near_detail PSNR, boundary SSIM, horizon PSNR/SSIM/sky score, and one horizon single-camera PSNR regression"
+  },
+  "next_unblocked_step": "Do not launch full 14-tile training. Keep production viewer on rollback-based LOD candidate; do no-spend failure attribution or a new bounded tile_10 repair design before any further paid tile trial."
+}
