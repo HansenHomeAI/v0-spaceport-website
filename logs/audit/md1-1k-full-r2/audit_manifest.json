@@ -589,8 +589,8 @@
       ]
     }
   ],
-  "current_branch_head": "b93e84f394cb0eac6b7637508681c75f793f09b9 is pushed with the MD1 LOD production readiness gate; local pending changes add a promotion-required nonzero exit mode.",
-  "current_exact_head_gate_status": "exact-head b93e84f394cb0eac6b7637508681c75f793f09b9 is pushed and green on CDK Deploy 25449118419; promotion-required readiness exit guard is local pending this commit.",
+  "current_branch_head": "103153cf6f2064d2c65b5af5af87e365243ec074 is pushed with the MD1 LOD promotion-required readiness exit guard; local pending changes add the MD1 quality-strategy paid-retry guard.",
+  "current_exact_head_gate_status": "exact-head 103153cf6f2064d2c65b5af5af87e365243ec074 is pushed and green on CDK Deploy 25450995340. No Cloudflare Pages run appeared for this non-web promotion-readiness guard commit. The quality-strategy paid-retry guard is local pending this commit.",
   "current_live_compute_status": "No SageMaker training jobs are InProgress and no SageMaker processing jobs are InProgress. Support-overlap no-training merge and review completed; no new paid jobs were launched for the constrained tile10 plan.",
   "current_rung": "R4_lod_production_readiness_gate_ready",
   "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
@@ -775,7 +775,7 @@
     "cloudflare_pages": "not_triggered_for_non_web_proof_commit",
     "local_status_update_pending_commit": true
   },
-  "last_updated": "2026-05-06T17:32:23Z",
+  "last_updated": "2026-05-06T18:13:21Z",
   "latest_exact_head_gate": {
     "checked_at": "2026-05-06T04:13:53Z",
     "head": "c499b3fdc611d0c1b734121a47e828738cc0dba7",
@@ -12121,5 +12121,41 @@
     "processing_jobs_in_progress": [],
     "guard_behavior": "--require-promotion-ready exits nonzero unless both viewer and frozen quality gates pass",
     "next_unblocked_step": "Keep rollback LOD as inspection/viewer candidate only; do not promote unless a future candidate passes frozen quality review. Do not run full 14-tile training until R0/R1/R2/R3 gate evidence unlocks it."
+  },
+  "gates_and_md1_r4_lod_promotion_required_exit_guard_20260506": {
+    "checked_at": "2026-05-06T17:37:43Z",
+    "head": "103153cf6f2064d2c65b5af5af87e365243ec074",
+    "cdk_deploy_run_id": 25450995340,
+    "cdk_deploy_conclusion": "success",
+    "cloudflare_pages": "not_triggered_for_non_web_promotion_readiness_guard_commit",
+    "training_jobs_in_progress": [],
+    "processing_jobs_in_progress": [],
+    "local_status_update_pending_commit": true,
+    "note": "Promotion-required LOD readiness exit guard is pushed and green; current rollback LOD still exits 3 under --require-promotion-ready because quality promotion is blocked."
+  },
+  "latest_quality_strategy_gate_status": "logs/md1-cost-reduction-r4-quality-strategy-gate-tile10-constrained-20260506.json blocks the constrained tile_10 paid retry because the current frozen-quality blocker boundary_no_required_improvement is not targeted.",
+  "md1_r4_quality_strategy_paid_retry_gate_20260506": {
+    "checked_at": "2026-05-06T18:13:21Z",
+    "head_before_commit": "103153cf6f2064d2c65b5af5af87e365243ec074",
+    "script": "scripts/3dgs/enforce_md1_quality_strategy_gate.py",
+    "test": "tests/unit/test_enforce_md1_quality_strategy_gate.py",
+    "readiness_report": "logs/md1-r4-tile10-rollback-lod-production-readiness-promotion-required-20260506.json",
+    "strategy_json": "logs/md1-cost-reduction-r4-tile10-constrained-density-proof-gates-20260506.json",
+    "quality_strategy_gate_report": "logs/md1-cost-reduction-r4-quality-strategy-gate-tile10-constrained-20260506.json",
+    "command_exit_status": 2,
+    "decision": "paid_retry_blocked",
+    "current_quality_blockers": [
+      "boundary_no_required_improvement"
+    ],
+    "targeted_quality_blockers": [],
+    "block_reasons": [
+      "quality_strategy_missing_targeted_blockers"
+    ],
+    "max_estimated_usd": 2.5,
+    "estimated_usd": 1.6665,
+    "training_jobs_in_progress": [],
+    "processing_jobs_in_progress": [],
+    "guard_behavior": "Paid retries must target every current frozen-quality blocker, remain dry-run/no-submit, confirm no full 14-tile training, and stay under the supplied cost cap before spend.",
+    "next_unblocked_step": "Write a no-spend quality strategy that targets boundary_no_required_improvement before any constrained tile_10 paid retry, or keep rollback LOD as inspection-only. Full 14-tile submit remains blocked by production rung gate."
   }
 }

@@ -1,0 +1,23 @@
+{
+  "checked_at": "2026-05-06T18:13:21.943950+00:00",
+  "decision": "paid_retry_blocked",
+  "promotion_ready": false,
+  "current_quality_blockers": [
+    "boundary_no_required_improvement"
+  ],
+  "targeted_quality_blockers": [],
+  "missing_targeted_blockers": [
+    "boundary_no_required_improvement"
+  ],
+  "block_reasons": [
+    "quality_strategy_missing_targeted_blockers"
+  ],
+  "warnings": [],
+  "max_estimated_usd": 2.5,
+  "estimated_usd": 1.6665,
+  "require_no_full_14tile": true,
+  "require_dry_run": true,
+  "no_full_14tile_training": true,
+  "submitted_jobs": [],
+  "next_required_action": "add an explicit no-spend quality strategy that targets every current frozen-quality blocker before paid retry"
+}
