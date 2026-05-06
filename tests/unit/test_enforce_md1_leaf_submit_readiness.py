@@ -61,9 +61,19 @@ def allowed_summary(**overrides) -> dict:
         "training_jobs_in_progress": [],
         "processing_jobs_in_progress": [],
         "max_estimated_usd": 4.0,
+        "prior_leaf_gates": [],
     }
     params.update(overrides)
     return gate.evaluate_gate(**params)
+
+
+def allowed_leaf(tile_id: str) -> dict:
+    return {
+        "tile_id": tile_id,
+        "expected_tile_id": tile_id,
+        "decision": "merge_review_allowed",
+        "block_reasons": [],
+    }
 
 
 class EnforceMd1LeafSubmitReadinessTests(unittest.TestCase):
@@ -112,6 +122,41 @@ class EnforceMd1LeafSubmitReadinessTests(unittest.TestCase):
 
         self.assertEqual(summary["decision"], "leaf_submit_blocked")
         self.assertIn("strategy_v18_review_manifest_mismatch", summary["block_reasons"])
+
+    def test_allows_subset_retry_when_prior_leaf_gate_passed(self):
+        candidate = strategy()
+        candidate["selected_tile_ids"] = ["tile_10"]
+        candidate["post_leaf_preflight_gates"] = [{"tile_id": "tile_10"}]
+        candidate["stages"] = [candidate["stages"][1]]
+        summary = allowed_summary(
+            strategy=candidate,
+            merge_review_gate={
+                "decision": "merge_review_blocked",
+                "block_reasons": ["leaf_gate_summary_missing:tile_10"],
+            },
+            prior_leaf_gates=[allowed_leaf("tile_04")],
+            max_estimated_usd=4.0,
+        )
+
+        self.assertEqual(summary["decision"], "leaf_submit_allowed")
+        self.assertEqual(summary["block_reasons"], [])
+        self.assertEqual(summary["passing_prior_leaf_tile_ids"], ["tile_04"])
+
+    def test_blocks_subset_retry_without_prior_leaf_gate(self):
+        candidate = strategy()
+        candidate["selected_tile_ids"] = ["tile_10"]
+        candidate["post_leaf_preflight_gates"] = [{"tile_id": "tile_10"}]
+        candidate["stages"] = [candidate["stages"][1]]
+        summary = allowed_summary(
+            strategy=candidate,
+            merge_review_gate={
+                "decision": "merge_review_blocked",
+                "block_reasons": ["leaf_gate_summary_missing:tile_10"],
+            },
+        )
+
+        self.assertEqual(summary["decision"], "leaf_submit_blocked")
+        self.assertIn("required_tile_not_selected_or_prior_passing:tile_04", summary["block_reasons"])
 
 
 if __name__ == "__main__":

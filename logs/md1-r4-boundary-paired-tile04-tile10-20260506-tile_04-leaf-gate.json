@@ -1,0 +1,27 @@
+{
+  "checked_at": "2026-05-06T22:44:52.097575+00:00",
+  "preflight_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4boundarypair-1778102774/3dgs/tiles/tile_04/md1-r4boundarypair-1778102774-tile-04/output/model.tar.gz",
+  "preflight_job_name": "md1-r4boundarypair-1778102774-tile-04",
+  "tile_id": "tile_04",
+  "expected_tile_id": "tile_04",
+  "decision": "merge_review_allowed",
+  "block_reasons": [],
+  "warnings": [],
+  "leaf_preflight_decision": "leaf_preflight_passed_cache_candidate",
+  "expected_leaf_preflight_decision": "leaf_preflight_passed_cache_candidate",
+  "splat_vertex_count": 559981,
+  "hard_max_splat_count": 1434415,
+  "splat_reference_guard": {
+    "enabled": true,
+    "status": "ok",
+    "reference_splat_count": 956277,
+    "max_reference_splat_ratio": 1.5,
+    "splat_vertex_count": 559981,
+    "observed_reference_ratio": 0.5855845116007182,
+    "block_reason": null
+  },
+  "selected_image_count": 188,
+  "expected_selected_image_count": 188,
+  "filtered_scaffold_required": true,
+  "filtered_scaffold_ok": true
+}

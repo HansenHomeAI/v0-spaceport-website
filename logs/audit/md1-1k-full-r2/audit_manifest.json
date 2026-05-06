@@ -589,9 +589,9 @@
       ]
     }
   ],
-  "current_branch_head": "2205a918dec2c8e74f393f4ce2e1129ec8a88b47 is pushed with the MD1 boundary leaf-submit readiness gate. Local pending changes tighten that gate so a paired leaf proof must carry the exact V18 review manifest URI before any paid submit.",
-  "current_exact_head_gate_status": "exact-head 2205a918dec2c8e74f393f4ce2e1129ec8a88b47 is pushed and green on CDK Deploy 25461235747. No Cloudflare Pages run appeared for this non-web boundary leaf-submit readiness commit. The latest web-bearing head remains c12586cc02935b5a8128c87351748e0a4d967da1 with green CDK Deploy 25414410907 and Cloudflare Pages 25414410905. Pages resolved hash https://e60e3909.v0-spaceport-website-preview2.pages.dev and alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev; both /health.txt probes returned OK.",
-  "current_live_compute_status": "No SageMaker training jobs are InProgress and no SageMaker processing jobs are InProgress. A paired tile_04/tile_10 submit attempt failed before SageMaker job creation because --v18-review-manifest-s3-uri was missing; no paid jobs were launched by that failed attempt.",
+  "current_branch_head": "e6f3e7a6c8e2c8d824a9df486a42b6ecc94b0c1a is pushed with the MD1 V18-manifest leaf-submit readiness gate. Local pending changes record the completed paired tile_04/tile_10 leaf proof, the tile_10 density block, and a no-spend tile_10-only retry path that reuses the passing tile_04 leaf gate.",
+  "current_exact_head_gate_status": "exact-head e6f3e7a6c8e2c8d824a9df486a42b6ecc94b0c1a is pushed and green on CDK Deploy 25461785250. No Cloudflare Pages run appeared for this non-web boundary leaf-submit readiness commit. The latest web-bearing head remains c12586cc02935b5a8128c87351748e0a4d967da1 with green CDK Deploy 25414410907 and Cloudflare Pages 25414410905. Pages resolved hash https://e60e3909.v0-spaceport-website-preview2.pages.dev and alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev; both /health.txt probes returned OK.",
+  "current_live_compute_status": "No SageMaker training jobs are InProgress and no SageMaker processing jobs are InProgress. The bounded paired leaf proof completed tile_04 and tile_10 in 7,460 total billable seconds/about $3.14 under the $4 cap; tile_04 passed leaf gate, tile_10 failed density guard, and merge/review remains blocked.",
   "current_rung": "R4_lod_production_readiness_gate_ready",
   "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
@@ -12400,5 +12400,96 @@
       "git diff --check"
     ],
     "next_unblocked_step": "Commit/push/gate this V18 manifest readiness guard, rerun readiness on the new exact head, then submit only the paired tile_04/tile_10 leaf-only proof if AWS remains idle."
+  },
+  "md1_r4_boundary_paired_leaf_proof_result_20260506": {
+    "checked_at": "2026-05-06T22:47:45Z",
+    "head": "e6f3e7a6c8e2c8d824a9df486a42b6ecc94b0c1a",
+    "cdk_deploy_run_id": 25461785250,
+    "cdk_deploy_conclusion": "success",
+    "submitted_jobs": [
+      {
+        "tile_id": "tile_04",
+        "job_name": "md1-r4boundarypair-1778102774-tile-04",
+        "status": "Completed",
+        "billable_seconds": 3638,
+        "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4boundarypair-1778102774/3dgs/tiles/tile_04/md1-r4boundarypair-1778102774-tile-04/output/model.tar.gz",
+        "preflight_json": "logs/md1-r4-boundary-paired-tile04-tile10-20260506-tile_04-leaf-preflight.json",
+        "leaf_gate_json": "logs/md1-r4-boundary-paired-tile04-tile10-20260506-tile_04-leaf-gate.json",
+        "leaf_gate_decision": "merge_review_allowed",
+        "splat_vertex_count": 559981,
+        "reference_splat_count": 956277,
+        "observed_reference_ratio": 0.5855845116
+      },
+      {
+        "tile_id": "tile_10",
+        "job_name": "md1-r4boundarypair-1778102774-tile-10",
+        "status": "Completed",
+        "billable_seconds": 3822,
+        "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4boundarypair-1778102774/3dgs/tiles/tile_10/md1-r4boundarypair-1778102774-tile-10/output/model.tar.gz",
+        "preflight_json": "logs/md1-r4-boundary-paired-tile04-tile10-20260506-tile_10-leaf-preflight.json",
+        "leaf_gate_json": "logs/md1-r4-boundary-paired-tile04-tile10-20260506-tile_10-leaf-gate.json",
+        "leaf_gate_decision": "merge_review_blocked",
+        "splat_vertex_count": 789304,
+        "reference_splat_count": 378953,
+        "observed_reference_ratio": 2.082854602,
+        "hard_max_splat_count": 568429,
+        "block_reasons": [
+          "leaf_preflight_decision_not_pass",
+          "splat_vertex_count_above_reference_ratio",
+          "splat_vertex_count_above_hard_max"
+        ]
+      }
+    ],
+    "total_billable_seconds": 7460,
+    "estimated_actual_usd_at_1_515_per_hour": 3.1394166667,
+    "max_estimated_usd": 4.0,
+    "checkpoint_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-paired-tile04-tile10-20260506/checkpoints",
+    "checkpoint_object_count": 16,
+    "checkpoint_total_bytes": 1466279066,
+    "merge_review_gate_after_leaf_json": "logs/md1-cost-reduction-r4-boundary-paired-merge-review-gate-after-leaf-20260506.json",
+    "merge_review_gate_after_leaf_decision": "merge_review_blocked",
+    "merge_review_gate_after_leaf_block_reasons": [
+      "leaf_gate_not_allowed:tile_10"
+    ],
+    "training_jobs_in_progress": [],
+    "processing_jobs_in_progress": [],
+    "full_14tile_training_launched": false,
+    "merge_review_launched": false
+  },
+  "md1_r4_boundary_tile10_density_v2_plan_20260506": {
+    "checked_at": "2026-05-06T22:47:45Z",
+    "purpose": "Retry only the failing tile_10 density guard while reusing the passing tile_04 leaf gate to avoid another tile_04 spend.",
+    "tile04_cache_json": "logs/md1-cost-reduction-r4-boundary-paired-tile04-cache-20260506.json",
+    "strategy_json": "logs/md1-cost-reduction-r4-boundary-tile10-density-v2-dryrun-20260506.json",
+    "quality_gate_json": "logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-tile10-density-v2-20260506.json",
+    "merge_review_gate_json": "logs/md1-cost-reduction-r4-boundary-tile10-density-v2-merge-review-gate-blocked-20260506.json",
+    "selected_tile_ids": [
+      "tile_10"
+    ],
+    "prior_passing_leaf_tile_ids": [
+      "tile_04"
+    ],
+    "required_tile_ids": [
+      "tile_04",
+      "tile_10"
+    ],
+    "targeted_quality_blockers": [
+      "boundary_no_required_improvement"
+    ],
+    "density_controls": {
+      "TRAINING_MAX_GAUSS_RATIO": "1.55",
+      "TRAINING_STOP_SPLIT_AT": "4500",
+      "CULL_ALPHA_THRESH": "0.18",
+      "CULL_SCALE_THRESH": "0.30"
+    },
+    "estimated_usd": 1.6665,
+    "max_estimated_usd": 2.0,
+    "quality_strategy_decision": "paid_retry_allowed",
+    "merge_review_gate_decision": "merge_review_blocked",
+    "merge_review_gate_block_reasons": [
+      "leaf_gate_summary_missing:tile_10"
+    ],
+    "full_14tile_training_launched": false,
+    "next_unblocked_step": "Commit/push/gate subset retry support, rerun leaf-submit readiness on the new exact head with prior tile_04 leaf gate, then submit only tile_10 density-v2 if AWS remains idle."
   }
 }

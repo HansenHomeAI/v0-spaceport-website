@@ -113,13 +113,30 @@ def stage_tile_ids(strategy: dict[str, Any]) -> list[str]:
     return ordered_unique(result)
 
 
+def leaf_gate_by_tile(leaf_gates: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    result: dict[str, dict[str, Any]] = {}
+    for leaf_gate in leaf_gates:
+        tile_id = str(leaf_gate.get("tile_id") or leaf_gate.get("expected_tile_id") or "")
+        if tile_id:
+            result[tile_id] = leaf_gate
+    return result
+
+
+def passing_leaf_tile_ids(leaf_gates: list[dict[str, Any]]) -> list[str]:
+    return sorted(
+        tile_id
+        for tile_id, leaf_gate in leaf_gate_by_tile(leaf_gates).items()
+        if leaf_gate.get("decision") == "merge_review_allowed"
+    )
+
+
 def merge_review_blocks_only_missing_leaf_summaries(
     merge_review_gate: dict[str, Any],
-    required_tile_ids: list[str],
+    missing_tile_ids: list[str],
 ) -> bool:
     if merge_review_gate.get("decision") != "merge_review_blocked":
         return False
-    expected = {f"leaf_gate_summary_missing:{tile_id}" for tile_id in required_tile_ids}
+    expected = {f"leaf_gate_summary_missing:{tile_id}" for tile_id in missing_tile_ids}
     actual = set(list_strings(merge_review_gate.get("block_reasons")))
     return actual == expected
 
@@ -139,9 +156,15 @@ def evaluate_gate(
     processing_jobs_in_progress: list[Any],
     max_estimated_usd: float,
     v18_review_manifest_s3_uri: str = "",
+    prior_leaf_gates: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     block_reasons: list[str] = []
     selected_tiles = ordered_unique(list_strings(strategy.get("selected_tile_ids")))
+    stage_tiles = stage_tile_ids(strategy)
+    prior_leaf_gates = prior_leaf_gates or []
+    passing_prior_tiles = passing_leaf_tile_ids(prior_leaf_gates)
+    covered_required_tiles = ordered_unique(selected_tiles + passing_prior_tiles)
+    missing_leaf_summary_tiles = [tile_id for tile_id in required_tile_ids if tile_id not in passing_prior_tiles]
     cost = cost_estimate(strategy)
 
     if git_head != exact_head:
@@ -162,10 +185,13 @@ def evaluate_gate(
         block_reasons.append("strategy_v18_review_manifest_mismatch")
     if len(selected_tiles) >= 14:
         block_reasons.append("full_14tile_scope_not_allowed")
-    if set(selected_tiles) != set(required_tile_ids):
-        block_reasons.append("selected_tiles_do_not_match_required_leaf_scope")
-    if set(stage_tile_ids(strategy)) != set(required_tile_ids):
-        block_reasons.append("stage_tiles_do_not_match_required_leaf_scope")
+    if not selected_tiles:
+        block_reasons.append("selected_tiles_missing")
+    for tile_id in required_tile_ids:
+        if tile_id not in covered_required_tiles:
+            block_reasons.append(f"required_tile_not_selected_or_prior_passing:{tile_id}")
+    if set(stage_tiles) != set(selected_tiles):
+        block_reasons.append("stage_tiles_do_not_match_selected_leaf_scope")
     if cost is None:
         block_reasons.append("estimated_usd_missing")
     elif cost > max_estimated_usd:
@@ -173,13 +199,13 @@ def evaluate_gate(
 
     if quality_gate.get("decision") != "paid_retry_allowed":
         block_reasons.append("quality_strategy_gate_not_allowed")
-    if not merge_review_blocks_only_missing_leaf_summaries(merge_review_gate, required_tile_ids):
+    if not merge_review_blocks_only_missing_leaf_summaries(merge_review_gate, missing_leaf_summary_tiles):
         block_reasons.append("merge_review_gate_not_blocked_only_on_leaf_summaries")
 
     emitted_leaf_gates = post_leaf_gate_tile_ids(strategy)
     target_labels = targeted_blockers(strategy)
     context_tiles = context_tile_ids(strategy)
-    for tile_id in required_tile_ids:
+    for tile_id in selected_tiles:
         if tile_id not in emitted_leaf_gates:
             block_reasons.append(f"post_leaf_gate_missing:{tile_id}")
     for tile_id in required_context_tile_ids:
@@ -202,7 +228,11 @@ def evaluate_gate(
         "processing_jobs_in_progress": processing_jobs_in_progress,
         "required_tile_ids": required_tile_ids,
         "selected_tile_ids": selected_tiles,
-        "stage_tile_ids": stage_tile_ids(strategy),
+        "stage_tile_ids": stage_tiles,
+        "prior_leaf_gate_tile_ids": sorted(leaf_gate_by_tile(prior_leaf_gates)),
+        "passing_prior_leaf_tile_ids": passing_prior_tiles,
+        "covered_required_tile_ids": covered_required_tiles,
+        "merge_review_missing_leaf_summary_tile_ids": missing_leaf_summary_tiles,
         "required_context_tile_ids": required_context_tile_ids,
         "context_support_tile_ids": context_tiles,
         "required_targeted_blockers": required_targeted_blockers,
@@ -233,6 +263,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--git-head", required=True)
     parser.add_argument("--workflow-conclusion", required=True)
     parser.add_argument("--v18-review-manifest-s3-uri", default="")
+    parser.add_argument("--prior-leaf-gate-json", action="append", default=[])
     parser.add_argument("--training-jobs-json", default="[]")
     parser.add_argument("--processing-jobs-json", default="[]")
     parser.add_argument("--max-estimated-usd", type=float, required=True)
@@ -253,6 +284,7 @@ def main() -> int:
         git_head=args.git_head,
         workflow_conclusion=args.workflow_conclusion,
         v18_review_manifest_s3_uri=args.v18_review_manifest_s3_uri,
+        prior_leaf_gates=[load_json(path) for path in args.prior_leaf_gate_json],
         training_jobs_in_progress=parse_json_list(args.training_jobs_json),
         processing_jobs_in_progress=parse_json_list(args.processing_jobs_json),
         max_estimated_usd=args.max_estimated_usd,

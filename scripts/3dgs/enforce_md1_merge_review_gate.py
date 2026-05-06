@@ -104,6 +104,9 @@ def evaluate_gate(
     targeted_blockers = targeted_quality_blockers(strategy)
     context_tiles = context_tile_ids(strategy)
     leaf_by_tile = leaf_gate_by_tile(leaf_gates)
+    passing_leaf_tiles = sorted(
+        tile_id for tile_id, leaf_gate in leaf_by_tile.items() if leaf_gate.get("decision") == "merge_review_allowed"
+    )
 
     submitted_jobs = strategy.get("submitted_jobs")
     if submitted_jobs not in ([], None):
@@ -114,11 +117,12 @@ def evaluate_gate(
             block_reasons.append(f"targeted_blocker_missing:{blocker}")
 
     for tile_id in required_tile_ids:
-        if tile_id not in selected_tiles:
-            block_reasons.append(f"required_tile_not_selected:{tile_id}")
-        if tile_id not in emitted_leaf_gate_tiles:
-            block_reasons.append(f"post_leaf_gate_missing:{tile_id}")
         leaf_gate = leaf_by_tile.get(tile_id)
+        has_passing_prior_leaf = bool(leaf_gate and leaf_gate.get("decision") == "merge_review_allowed")
+        if tile_id not in selected_tiles and not has_passing_prior_leaf:
+            block_reasons.append(f"required_tile_not_selected:{tile_id}")
+        if tile_id in selected_tiles and tile_id not in emitted_leaf_gate_tiles:
+            block_reasons.append(f"post_leaf_gate_missing:{tile_id}")
         if not leaf_gate:
             block_reasons.append(f"leaf_gate_summary_missing:{tile_id}")
             continue
@@ -145,6 +149,7 @@ def evaluate_gate(
         "targeted_quality_blockers": targeted_blockers,
         "post_leaf_preflight_gate_tile_ids": emitted_leaf_gate_tiles,
         "leaf_gate_summary_tile_ids": sorted(leaf_by_tile),
+        "passing_prior_or_current_leaf_tile_ids": passing_leaf_tiles,
         "submitted_jobs": submitted_jobs,
         "next_required_action": (
             "merge/review may proceed"

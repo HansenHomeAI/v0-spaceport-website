@@ -1,0 +1,24 @@
+{
+  "generated_at": "2026-05-06T22:46:00Z",
+  "purpose": "Cache the passing tile_04 leaf from the paired boundary proof so the next no-spend plan can retry only tile_10 while preserving the tile_04/tile_10 boundary strategy scope.",
+  "tiles": {
+    "tile_04": {
+      "tile_id": "tile_04",
+      "input_hash": "915577e7fb9b26156e7534fda289bbf3b97c4bacee660e8710f41ba2f56b4c43",
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4boundarypair-1778102774/3dgs/tiles/tile_04/md1-r4boundarypair-1778102774-tile-04/output/model.tar.gz",
+      "quality_gate_status": "passed",
+      "preflight_decision": "leaf_preflight_passed_cache_candidate",
+      "leaf_gate_decision": "merge_review_allowed",
+      "source_job_name": "md1-r4boundarypair-1778102774-tile-04",
+      "billable_seconds": 3638,
+      "estimated_usd": 1.5309916667,
+      "budget_class": "hard",
+      "max_iterations": 12000,
+      "max_selected_images": 188,
+      "ply_vertices": 559981,
+      "reference_splat_count": 956277,
+      "observed_reference_ratio": 0.5855845116,
+      "summary_json": "logs/md1-r4-boundary-paired-tile04-tile10-20260506-tile_04-leaf-gate.json"
+    }
+  }
+}

@@ -1,9 +1,9 @@
 {
-  "checked_at": "2026-05-06T21:15:51.747701+00:00",
+  "checked_at": "2026-05-06T21:25:02.645439+00:00",
   "decision": "leaf_submit_allowed",
   "block_reasons": [],
-  "exact_head": "2205a918dec2c8e74f393f4ce2e1129ec8a88b47",
-  "git_head": "2205a918dec2c8e74f393f4ce2e1129ec8a88b47",
+  "exact_head": "e6f3e7a6c8e2c8d824a9df486a42b6ecc94b0c1a",
+  "git_head": "e6f3e7a6c8e2c8d824a9df486a42b6ecc94b0c1a",
   "workflow_conclusion": "success",
   "v18_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review",
   "expected_v18_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review",

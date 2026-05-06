@@ -1,0 +1,37 @@
+{
+  "checked_at": "2026-05-06T22:45:00.164005+00:00",
+  "decision": "merge_review_blocked",
+  "block_reasons": [
+    "leaf_gate_not_allowed:tile_10"
+  ],
+  "required_tile_ids": [
+    "tile_04",
+    "tile_10"
+  ],
+  "selected_tile_ids": [
+    "tile_04",
+    "tile_10"
+  ],
+  "required_context_tile_ids": [
+    "tile_13"
+  ],
+  "context_support_tile_ids": [
+    "tile_13"
+  ],
+  "required_targeted_blockers": [
+    "boundary_no_required_improvement"
+  ],
+  "targeted_quality_blockers": [
+    "boundary_no_required_improvement"
+  ],
+  "post_leaf_preflight_gate_tile_ids": [
+    "tile_04",
+    "tile_10"
+  ],
+  "leaf_gate_summary_tile_ids": [
+    "tile_04",
+    "tile_10"
+  ],
+  "submitted_jobs": [],
+  "next_required_action": "run each required leaf proof, run its emitted preflight/enforce gate, and provide passing leaf gate summaries before merge/review spend"
+}

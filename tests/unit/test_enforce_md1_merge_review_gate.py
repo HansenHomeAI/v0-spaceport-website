@@ -93,6 +93,38 @@ class EnforceMd1MergeReviewGateTests(unittest.TestCase):
         self.assertEqual(summary["decision"], "merge_review_blocked")
         self.assertIn("strategy_has_submitted_jobs", summary["block_reasons"])
 
+    def test_allows_required_tile_to_be_covered_by_prior_passing_leaf_gate(self):
+        candidate = strategy()
+        candidate["selected_tile_ids"] = ["tile_10"]
+        candidate["post_leaf_preflight_gates"] = [{"tile_id": "tile_10"}]
+        summary = gate.evaluate_gate(
+            strategy=candidate,
+            required_tile_ids=["tile_04", "tile_10"],
+            required_context_tile_ids=["tile_13"],
+            required_targeted_blockers=["boundary_no_required_improvement"],
+            leaf_gates=[allowed_leaf("tile_04"), allowed_leaf("tile_10")],
+        )
+
+        self.assertEqual(summary["decision"], "merge_review_allowed")
+        self.assertEqual(summary["block_reasons"], [])
+        self.assertIn("tile_04", summary["passing_prior_or_current_leaf_tile_ids"])
+
+    def test_blocks_unselected_required_tile_without_prior_passing_leaf_gate(self):
+        candidate = strategy()
+        candidate["selected_tile_ids"] = ["tile_10"]
+        candidate["post_leaf_preflight_gates"] = [{"tile_id": "tile_10"}]
+        summary = gate.evaluate_gate(
+            strategy=candidate,
+            required_tile_ids=["tile_04", "tile_10"],
+            required_context_tile_ids=["tile_13"],
+            required_targeted_blockers=["boundary_no_required_improvement"],
+            leaf_gates=[allowed_leaf("tile_10")],
+        )
+
+        self.assertEqual(summary["decision"], "merge_review_blocked")
+        self.assertIn("required_tile_not_selected:tile_04", summary["block_reasons"])
+        self.assertIn("leaf_gate_summary_missing:tile_04", summary["block_reasons"])
+
 
 if __name__ == "__main__":
     unittest.main()

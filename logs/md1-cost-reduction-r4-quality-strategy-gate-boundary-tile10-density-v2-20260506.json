@@ -1,0 +1,21 @@
+{
+  "checked_at": "2026-05-06T22:47:20.747991+00:00",
+  "decision": "paid_retry_allowed",
+  "promotion_ready": false,
+  "current_quality_blockers": [
+    "boundary_no_required_improvement"
+  ],
+  "targeted_quality_blockers": [
+    "boundary_no_required_improvement"
+  ],
+  "missing_targeted_blockers": [],
+  "block_reasons": [],
+  "warnings": [],
+  "max_estimated_usd": 2.0,
+  "estimated_usd": 1.6665,
+  "require_no_full_14tile": true,
+  "require_dry_run": true,
+  "no_full_14tile_training": true,
+  "submitted_jobs": [],
+  "next_required_action": "paid retry may proceed through its own leaf/preflight gates"
+}
