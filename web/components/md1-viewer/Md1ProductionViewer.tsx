@@ -17,6 +17,7 @@ import {
   withMd1ViewerOverrides,
 } from "../../lib/md1ProductionViewer";
 import {
+  normalizeBundleUrl,
   resolveSogsViewerBundle,
   type ResolvedSogsViewerBundle,
 } from "../../lib/sogsViewerBundle";
@@ -125,7 +126,11 @@ export default function Md1ProductionViewer() {
   const [telemetry, setTelemetry] = useState<ViewerTelemetry>(EMPTY_TELEMETRY);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
 
-  const resolvedContentUrl = resolvedBundle?.contentUrl ?? activeManifestUrl;
+  const fallbackContentUrl = useMemo(
+    () => normalizeBundleUrl(activeManifestUrl) ?? activeManifestUrl,
+    [activeManifestUrl],
+  );
+  const resolvedContentUrl = resolvedBundle?.contentUrl ?? fallbackContentUrl;
   const activeContentUrl = resolvedContentUrl;
 
   const viewerSrc = useMemo(() => {

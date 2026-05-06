@@ -1,0 +1,98 @@
+{
+  "checkedAt": "2026-05-06T03:07:07.901Z",
+  "pass": true,
+  "results": [
+    {
+      "name": "desktop",
+      "url": "http://127.0.0.1:3031/md1-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.amazonaws.com%2Fcompressed%2Fmd1-r4-tile10-rollback-lod-dryrun-20260505%2Fsupersplat_bundle%2Flod-meta.json",
+      "manifest": "https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "elapsedMs": 4632,
+      "chunkTimedOut": false,
+      "metrics": {
+        "bundleKind": "lod-streaming",
+        "transport": "proxy",
+        "rootFile": "lod-meta.json",
+        "sourceUrl": "https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+        "viewerUrl": "/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+        "lodLevels": "4",
+        "chunkFiles": "44",
+        "loadedNodes": "3",
+        "chunkMetaRequests": "3",
+        "chunkMetaAtFirstFrame": "0",
+        "firstFrameMs": "44.599999994039536",
+        "splatBudget": "3000000",
+        "lodMin": "0",
+        "lodMax": "3",
+        "boundsMin": "-1246.236,-1202.796,-745.6156",
+        "boundsMax": "1461.514,1222.845,1582.216"
+      },
+      "titleText": "MD1 V18\n\nCustom LOD\n\nReady",
+      "gridText": "Chunks\n3/44\nFirst frame\n0.0s\nLOD range\n0-3\nFull source\n8,423,868\nManifest\nlod-meta.json\nEngine\nSOGS LOD",
+      "interaction": {
+        "attempted": true,
+        "ok": true
+      },
+      "canvasProbe": {
+        "ok": true,
+        "width": 1440,
+        "height": 1000,
+        "nonBlankProbe": true,
+        "reason": ""
+      },
+      "screenshotPath": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/md1-r4-tile10-rollback-lod-viewer-desktop-20260506.png",
+      "consoleMessages": [],
+      "pageErrors": [],
+      "pass": true
+    },
+    {
+      "name": "mobile",
+      "url": "http://127.0.0.1:3031/md1-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.amazonaws.com%2Fcompressed%2Fmd1-r4-tile10-rollback-lod-dryrun-20260505%2Fsupersplat_bundle%2Flod-meta.json",
+      "manifest": "https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "elapsedMs": 5307,
+      "chunkTimedOut": false,
+      "metrics": {
+        "bundleKind": "lod-streaming",
+        "transport": "proxy",
+        "rootFile": "lod-meta.json",
+        "sourceUrl": "https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+        "viewerUrl": "/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+        "lodLevels": "4",
+        "chunkFiles": "44",
+        "loadedNodes": "3",
+        "chunkMetaRequests": "3",
+        "chunkMetaAtFirstFrame": "0",
+        "firstFrameMs": "807.2999999821186",
+        "splatBudget": "1000000",
+        "lodMin": "2",
+        "lodMax": "3",
+        "boundsMin": "-1246.236,-1202.796,-745.6156",
+        "boundsMax": "1461.514,1222.845,1582.216"
+      },
+      "titleText": "MD1 V18\n\nCustom LOD\n\nReady",
+      "gridText": "Chunks\n3/44\nFirst frame\n0.8s\nLOD range\n2-3\nFull source\n8,423,868\nManifest\nlod-meta.json\nEngine\nSOGS LOD",
+      "interaction": {
+        "attempted": true,
+        "ok": true
+      },
+      "canvasProbe": {
+        "ok": true,
+        "width": 390,
+        "height": 844,
+        "nonBlankProbe": true,
+        "reason": ""
+      },
+      "screenshotPath": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/md1-r4-tile10-rollback-lod-viewer-mobile-20260506.png",
+      "consoleMessages": [],
+      "pageErrors": [],
+      "pass": true
+    }
+  ]
+}

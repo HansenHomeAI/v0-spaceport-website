@@ -1,0 +1,120 @@
+{
+  "recorded_at": "2026-05-06T02:44:10.529Z",
+  "job_name": "md1-r4-t10rollback-lod-dryrun-20260505",
+  "output_prefix": "s3://spaceport-ml-processing-staging/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/",
+  "lod_meta_uri": "s3://spaceport-ml-processing-staging/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+  "required_heads": {
+    "supersplat_bundle/lod-meta.json": {
+      "content_length": 253948,
+      "etag": "\"e6058bdddac663ceab2323a7b97b6d6a\"",
+      "last_modified": "2026-05-06T02:34:43+00:00",
+      "content_type": "application/octet-stream"
+    },
+    "supersplat_bundle/spaceport_bundle.json": {
+      "content_length": 230,
+      "etag": "\"4ef83e5e44d42a983ea5901232140376\"",
+      "last_modified": "2026-05-06T02:34:43+00:00",
+      "content_type": "application/octet-stream"
+    },
+    "supersplat_bundle/settings.json": {
+      "content_length": 164,
+      "etag": "\"3d58b5448cf1d881c1ea15729178ea1a\"",
+      "last_modified": "2026-05-06T02:34:43+00:00",
+      "content_type": "application/octet-stream"
+    },
+    "supersplat_bundle/skybox/background_skybox.webp": {
+      "content_length": 31228,
+      "etag": "\"a188cf8e539e1882234d33cbb8ebc214\"",
+      "last_modified": "2026-05-06T02:34:43+00:00",
+      "content_type": "application/octet-stream"
+    },
+    "sogs_compression_summary.json": {
+      "content_length": 426,
+      "etag": "\"ce47f9b9f53dbfe0100242ceebe4b223\"",
+      "last_modified": "2026-05-06T02:34:39+00:00",
+      "content_type": "application/octet-stream"
+    }
+  },
+  "lod_meta": {
+    "keys": [
+      "lodLevels",
+      "environment",
+      "filenames",
+      "tree"
+    ],
+    "lod_levels": 4,
+    "filename_count": 44,
+    "tree_type": "object",
+    "first_filenames": [
+      "2_0/meta.json",
+      "0_0/meta.json",
+      "1_0/meta.json",
+      "3_0/meta.json",
+      "0_1/meta.json"
+    ],
+    "last_filenames": [
+      "0_26/meta.json",
+      "2_3/meta.json",
+      "0_27/meta.json",
+      "1_9/meta.json",
+      "0_28/meta.json"
+    ],
+    "missing_referenced_meta": []
+  },
+  "bundle": {
+    "version": 1,
+    "skybox": {
+      "type": "equirect",
+      "path": "skybox/background_skybox.webp"
+    },
+    "entrypoints": {
+      "default": "lod-meta.json",
+      "lod": "lod-meta.json"
+    },
+    "streaming": {
+      "enabled": true
+    }
+  },
+  "settings": {
+    "camera": {
+      "position": [
+        0,
+        0,
+        3
+      ],
+      "target": [
+        0,
+        0,
+        0
+      ]
+    },
+    "background": {
+      "type": "skybox"
+    }
+  },
+  "summary": {
+    "compressor": "@playcanvas/splat-transform",
+    "mode": "lod-only",
+    "source": "md1-r4-tile10-rollback-v18-nonregression-tile11-accepted",
+    "sourcePly": "/opt/ml/processing/input/merged_splat.ply",
+    "skybox": {
+      "type": "equirect",
+      "path": "skybox/background_skybox.webp"
+    },
+    "bundleDir": "supersplat_bundle",
+    "lodMeta": "supersplat_bundle/lod-meta.json",
+    "fileCount": 356,
+    "bundleSizeBytes": 166616347
+  },
+  "s3_bundle_listing": {
+    "total_objects": 356,
+    "total_size_bytes": 166616347
+  },
+  "gates": {
+    "required_objects_present": true,
+    "lod_meta_parse_ok": true,
+    "sidecar_lineage_ok": true,
+    "skybox_wired": true,
+    "referenced_meta_present": true
+  }
+}

@@ -1,6 +1,8 @@
 const PROXY_HOSTS = new Set([
   "spaceport-ml-processing.s3.amazonaws.com",
   "spaceport-ml-processing.s3.us-west-2.amazonaws.com",
+  "spaceport-ml-processing-staging.s3.amazonaws.com",
+  "spaceport-ml-processing-staging.s3.us-west-2.amazonaws.com",
 ]);
 
 const CONFIGURED_DEFAULT_SOGS_BUNDLE_URL =
@@ -175,7 +177,7 @@ function buildManifestCandidates(inputUrl: URL): ManifestCandidate[] {
 }
 
 function transportOptions(url: URL): SogsBundleTransport[] {
-  return shouldProxyBundleUrl(url) ? ["direct", "proxy"] : ["direct"];
+  return shouldProxyBundleUrl(url) ? ["proxy", "direct"] : ["direct"];
 }
 
 function readSkyboxPath(config: unknown): string | null {

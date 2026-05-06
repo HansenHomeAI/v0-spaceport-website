@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "No cheaper production candidate is promoted yet: the accepted rollback candidate is being LOD-packaged, but lod-meta.json and browser viewer gates have not passed.",
+  "blocked_promotion_reason": "Local LOD bundle validation and desktop/mobile viewer smoke passed, but the proxy/viewer fixes are not pushed and gated on exact-head Cloudflare Pages preview yet.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "6ec8c2880d339c163c75d6d35236da1b6691451e with LOD compression monitor update pending next meaningful commit",
-  "current_exact_head_gate_status": "exact-head 6ec8c2880d339c163c75d6d35236da1b6691451e is pushed and green on CDK Deploy 25409976812. No Trigger ML Container Build or Cloudflare Pages run appeared for this submit/log/proof push; latest branch 3DGS image remains sha256:b0129db24d16251e6ee2af896e65c5eceefbd10d8eb52441b2800556f88347eb from head 3a22acfd5b420ca2876a1eb3e2a0398790ac995f.",
-  "current_live_compute_status": "No SageMaker training jobs are InProgress. One bounded SageMaker Processing job is InProgress: md1-r4-t10rollback-lod-dryrun-20260505 on ml.m5.4xlarge for LOD packaging only. Latest CloudWatch log proof at 2026-05-06T01:08Z shows lod1/lod2/lod3 PLYs written and final chunked SuperSplat lod-meta writing started.",
-  "current_rung": "R4_production_lod_processing_in_progress_tile10_rollback_candidate",
+  "current_branch_head": "1e46ea56c11efafb7d1e40cfc75868a4120538bb with local LOD completion/viewer-fix evidence pending commit",
+  "current_exact_head_gate_status": "exact-head 1e46ea56c11efafb7d1e40cfc75868a4120538bb is pushed and green on CDK Deploy 25411133101. Local staging S3 proxy allowlist and proxy-first MD1 viewer fixes are pending commit/push; exact-head CDK/Pages preview gates must run after push.",
+  "current_live_compute_status": "No SageMaker training jobs are InProgress and no SageMaker processing jobs are InProgress. Bounded LOD Processing job md1-r4-t10rollback-lod-dryrun-20260505 completed at 2026-05-06T02:34:48Z after about 7,443.6s on ml.m5.4xlarge and wrote the staging SOGS LOD bundle.",
+  "current_rung": "R4_production_lod_viewer_smoke_passed_tile10_rollback_candidate_pending_preview_gate",
   "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -777,22 +777,21 @@
     "local_status_update_pending_commit": true,
     "unrelated_processing_job_in_progress": "r5full80s1-1777934749"
   },
-  "last_updated": "2026-05-06T01:08:46Z",
+  "last_updated": "2026-05-06T03:07:07Z",
   "latest_exact_head_gate": {
-    "checked_at": "2026-05-06T01:08:46Z",
-    "head": "6ec8c2880d339c163c75d6d35236da1b6691451e",
-    "cdk_deploy_run_id": 25409976812,
+    "checked_at": "2026-05-06T02:00:02Z",
+    "head": "1e46ea56c11efafb7d1e40cfc75868a4120538bb",
+    "cdk_deploy_run_id": 25411133101,
     "cdk_deploy_conclusion": "success",
-    "ml_container_build": "not_triggered_for_submit_log_push",
-    "cloudflare_pages": "not_triggered_for_submit_log_push"
+    "ml_container_build": "not_triggered_for_status_log_push",
+    "cloudflare_pages": "not_triggered_for_status_log_push",
+    "next_gate_required_after_push": true
   },
   "latest_live_compute_status": {
-    "checked_at": "2026-05-06T01:08:46Z",
+    "checked_at": "2026-05-06T03:07:07Z",
     "training_jobs_in_progress": [],
-    "processing_jobs_in_progress": [
-      "md1-r4-t10rollback-lod-dryrun-20260505"
-    ],
-    "note": "Bounded LOD packaging job is InProgress; CloudWatch logs show lod1/lod2/lod3 PLYs written at about 2,527,176 / 842,392 / 252,718 splats and final lod-meta writing started from 12,046,205 total multi-LOD splats. No full training launched."
+    "processing_jobs_in_progress": [],
+    "note": "LOD packaging job md1-r4-t10rollback-lod-dryrun-20260505 completed successfully; no full training launched."
   },
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
@@ -840,7 +839,7 @@
     "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:2c08af140f3ebc510ff57d162e8ebedf7082833ac58d05249b619bd5b553d6f8",
     "instance_type": "ml.g5.2xlarge",
     "job_name": "md1-r3od-tile02expfix-1777810456-tile-02",
-    "max_estimated_usd": 2.0,
+    "max_estimated_usd": 2,
     "max_iterations": 8000,
     "monitor_json": "logs/md1-cost-reduction-r3-ondemand-tile02-exportfix-smoke-monitor-latest-20260503.json",
     "ply_size_mb": 46.88121795654297,
@@ -854,7 +853,7 @@
     "v18_parity_defaults": {
       "bg_sh_degree": 1,
       "global_scaffold_init_max_points": 300000,
-      "max_gauss_ratio": 3.0,
+      "max_gauss_ratio": 3,
       "sh_degree": 1,
       "stop_split_at": 3500
     }
@@ -864,7 +863,7 @@
     "cost_estimate": {
       "estimated_usd": 1.01,
       "instance_type": "ml.g5.2xlarge",
-      "max_estimated_usd": 2.0,
+      "max_estimated_usd": 2,
       "worst_case_usd": 1.515
     },
     "decision": "planned next representative R3 smoke; no paid job submitted in this dry-run",
@@ -881,7 +880,7 @@
     "v18_parity_defaults": {
       "bg_sh_degree": 1,
       "global_scaffold_init_max_points": 300000,
-      "max_gauss_ratio": 3.0,
+      "max_gauss_ratio": 3,
       "sh_degree": 1,
       "stop_split_at": 3500
     }
@@ -916,24 +915,24 @@
     "gpu_utilization_5m_windows": [
       {
         "average": 7.8,
-        "maximum": 35.0,
+        "maximum": 35,
         "timestamp": "2026-05-03T13:56:00Z"
       },
       {
         "average": 39.8,
-        "maximum": 65.0,
+        "maximum": 65,
         "timestamp": "2026-05-03T14:01:00Z"
       },
       {
         "average": 61.2,
-        "maximum": 87.0,
+        "maximum": 87,
         "timestamp": "2026-05-03T14:06:00Z"
       }
     ],
     "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:2c08af140f3ebc510ff57d162e8ebedf7082833ac58d05249b619bd5b553d6f8",
     "instance_type": "ml.g5.2xlarge",
     "job_name": "md1-r3od-tile13smoke-1777816055-tile-13",
-    "max_estimated_usd": 2.0,
+    "max_estimated_usd": 2,
     "max_iterations": 8000,
     "monitor_json": "logs/md1-cost-reduction-r3-ondemand-tile13-smoke-monitor-latest-20260503.json",
     "ply_size_mb": 47.87333679199219,
@@ -947,7 +946,7 @@
     "v18_parity_defaults": {
       "bg_sh_degree": 1,
       "global_scaffold_init_max_points": 300000,
-      "max_gauss_ratio": 3.0,
+      "max_gauss_ratio": 3,
       "sh_degree": 1,
       "stop_split_at": 3500
     },
@@ -998,7 +997,7 @@
       "horizon": 4,
       "near_detail": 4
     },
-    "expanded_canary_max_estimated_usd": 12.0,
+    "expanded_canary_max_estimated_usd": 12,
     "expanded_canary_selected_tiles": [
       "tile_00",
       "tile_02",
@@ -1048,8 +1047,8 @@
       "estimated_usd": 1.3887,
       "hourly_rate_usd": 1.515,
       "instance_type": "ml.g5.2xlarge",
-      "max_estimated_usd": 5.0,
-      "worst_case_billable_hours": 2.0,
+      "max_estimated_usd": 5,
+      "worst_case_billable_hours": 2,
       "worst_case_usd": 3.03
     },
     "decision": "no-spend canary plan is ready; submit only tile_00 and tile_11 under the $5 cap after this evidence is committed and exact-head gates remain green",
@@ -1103,7 +1102,7 @@
     "decision": "Proceed only to a bounded R4 canary retry after commit/push/exact-head gate; do not launch full 14-tile training from the failed adaptive canary budget.",
     "dryrun_summary_json": "logs/md1-cost-reduction-r4-canary-hardbudget-dryrun-20260503.json",
     "estimated_usd": 3.4087,
-    "max_estimated_usd": 5.0,
+    "max_estimated_usd": 5,
     "planned_train_tiles": {
       "tile_00": {
         "budget_class": "hard",
@@ -1234,7 +1233,7 @@
   "md1_r4_canary_submit_pass_20260503161654Z": {
     "actual_cost": {
       "estimated_usd_at_1_515_per_hour": 1.6181,
-      "max_estimated_usd": 5.0,
+      "max_estimated_usd": 5,
       "tile_00_billable_seconds": 2591,
       "tile_11_billable_seconds": 1254,
       "total_billable_seconds": 3845
@@ -1387,7 +1386,7 @@
           "max_iterations": 8000,
           "prior_duration_hours": 2.27,
           "prior_fanout_duration_hours": 0.72,
-          "runtime_cap_shortfall_hours": 0.0,
+          "runtime_cap_shortfall_hours": 0,
           "runtime_risk": null,
           "stage_multiplier": 1,
           "stage_name": "T0_tile_01",
@@ -1402,7 +1401,7 @@
           "max_iterations": 8000,
           "prior_duration_hours": 3.04,
           "prior_fanout_duration_hours": 0.72,
-          "runtime_cap_shortfall_hours": 0.0,
+          "runtime_cap_shortfall_hours": 0,
           "runtime_risk": null,
           "stage_multiplier": 1,
           "stage_name": "T0_tile_05",
@@ -1417,7 +1416,7 @@
           "max_iterations": 8000,
           "prior_duration_hours": 3.25,
           "prior_fanout_duration_hours": 0.72,
-          "runtime_cap_shortfall_hours": 0.0,
+          "runtime_cap_shortfall_hours": 0,
           "runtime_risk": null,
           "stage_multiplier": 1,
           "stage_name": "T0_tile_06",
@@ -1432,7 +1431,7 @@
           "max_iterations": 8000,
           "prior_duration_hours": 3.98,
           "prior_fanout_duration_hours": 0.72,
-          "runtime_cap_shortfall_hours": 0.0,
+          "runtime_cap_shortfall_hours": 0,
           "runtime_risk": null,
           "stage_multiplier": 1,
           "stage_name": "T0_tile_10",
@@ -1441,7 +1440,7 @@
         }
       ],
       "train_stage_count": 4,
-      "worst_case_billable_hours": 20.0,
+      "worst_case_billable_hours": 20,
       "worst_case_usd": 30.3
     },
     "decision": "expanded_9tile_acceptance_path_canary_active_not_full_run",
@@ -1463,7 +1462,7 @@
         "md1-r4exp9-1777943800-1777943463-tile-05"
       ]
     },
-    "max_estimated_usd": 12.0,
+    "max_estimated_usd": 12,
     "next_unblocked_step": "Monitor tile_01/tile_05 to completion, then tile_06/tile_10, run leaf preflight and local/package merge before V18 non-regression. Do not launch full 14-tile training.",
     "planned_train_tiles": [
       "tile_01",
@@ -1683,7 +1682,7 @@
           "max_iterations": 12000,
           "prior_duration_hours": 2.27,
           "prior_fanout_duration_hours": 1.1,
-          "runtime_cap_shortfall_hours": 0.0,
+          "runtime_cap_shortfall_hours": 0,
           "runtime_risk": null,
           "stage_multiplier": 1,
           "stage_name": "T0_tile_01",
@@ -1698,7 +1697,7 @@
           "max_iterations": 12000,
           "prior_duration_hours": 2.82,
           "prior_fanout_duration_hours": 1.1,
-          "runtime_cap_shortfall_hours": 0.0,
+          "runtime_cap_shortfall_hours": 0,
           "runtime_risk": null,
           "stage_multiplier": 1,
           "stage_name": "T0_tile_04",
@@ -1713,7 +1712,7 @@
           "max_iterations": 12000,
           "prior_duration_hours": 3.04,
           "prior_fanout_duration_hours": 1.1,
-          "runtime_cap_shortfall_hours": 0.0,
+          "runtime_cap_shortfall_hours": 0,
           "runtime_risk": null,
           "stage_multiplier": 1,
           "stage_name": "T0_tile_05",
@@ -1728,7 +1727,7 @@
           "max_iterations": 12000,
           "prior_duration_hours": 3.25,
           "prior_fanout_duration_hours": 1.1,
-          "runtime_cap_shortfall_hours": 0.0,
+          "runtime_cap_shortfall_hours": 0,
           "runtime_risk": null,
           "stage_multiplier": 1,
           "stage_name": "T0_tile_06",
@@ -1743,7 +1742,7 @@
           "max_iterations": 12000,
           "prior_duration_hours": 3.98,
           "prior_fanout_duration_hours": 1.1,
-          "runtime_cap_shortfall_hours": 0.0,
+          "runtime_cap_shortfall_hours": 0,
           "runtime_risk": null,
           "stage_multiplier": 1,
           "stage_name": "T0_tile_10",
@@ -1752,13 +1751,13 @@
         }
       ],
       "train_stage_count": 5,
-      "worst_case_billable_hours": 25.0,
+      "worst_case_billable_hours": 25,
       "worst_case_usd": 37.875
     },
     "decision": "no_spend_hard_repair_ready_but_not_submitted; launch only if exact-head is gated and live MD1 training remains idle",
     "dryrun_path": "logs/md1-cost-reduction-r4-expanded-hard-repair-dryrun-20260505.json",
     "head": "32513c7298ac3765d6aedf33a84209b7668492eb",
-    "max_estimated_usd": 12.0,
+    "max_estimated_usd": 12,
     "planned_train_tile_budget": [
       {
         "budget_class": "hard",
@@ -1991,7 +1990,7 @@
     "decision": "dryrun_passed_submit_only_after_exact_head_gate_and_live_aws_idle",
     "dryrun_path": "logs/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-dryrun-20260504.json",
     "estimated_usd": 3.2875,
-    "max_estimated_usd": 5.0,
+    "max_estimated_usd": 5,
     "next_unblocked_step": "Commit/push/gate this dry-run, then submit only the bounded canary rebuild with tile_13 cached before rerunning V18 non-regression review.",
     "planned_budget_classes": {
       "tile_00": "hard",
@@ -2100,7 +2099,7 @@
       "processing_jobs_in_progress": [],
       "training_jobs_in_progress": []
     },
-    "max_estimated_usd": 5.0,
+    "max_estimated_usd": 5,
     "runtime_risk_stage_estimates": {
       "tile_00": {
         "budget_class": "hard",
@@ -2275,8 +2274,8 @@
       "estimated_usd": 11.4887,
       "hourly_rate_usd": 1.515,
       "instance_type": "ml.g5.2xlarge",
-      "max_estimated_usd": 25.0,
-      "worst_case_billable_hours": 12.0,
+      "max_estimated_usd": 25,
+      "worst_case_billable_hours": 12,
       "worst_case_usd": 18.18
     },
     "decision": "no-spend projection now reaches the target training spend range on paper; full run remains blocked until R4 3-4 tile canary and V18 non-regression pass",
@@ -2325,7 +2324,7 @@
         "tile_04"
       ],
       "estimated_usd": 4.3632,
-      "max_estimated_usd": 12.0,
+      "max_estimated_usd": 12,
       "planned_train_tiles": [
         "tile_01",
         "tile_05",
@@ -2414,7 +2413,7 @@
       "horizon": 0,
       "near_detail": 0
     },
-    "diagnostic_max_estimated_usd": 2.0,
+    "diagnostic_max_estimated_usd": 2,
     "diagnostic_selected_tiles": [
       "tile_00",
       "tile_02",
@@ -2505,7 +2504,7 @@
         "input_hash": "bd1bf187605252feee205ad119e992bc3ffe6719d65de16333ce658cd29602eb",
         "instance_type": "ml.g5.2xlarge",
         "job_name": "md1-r4t04diag-1777937799-1777937904-tile-04",
-        "max_estimated_usd": 2.0,
+        "max_estimated_usd": 2,
         "max_iterations": 8000,
         "max_runtime_seconds": 7200,
         "max_selected_images": 128,
@@ -2567,12 +2566,12 @@
     "job_name": "md1-r4t13-hard-1777837467-tile-13",
     "latest_metric_window": {
       "gpu_average": 22.6,
-      "gpu_maximum": 50.0,
+      "gpu_maximum": 50,
       "gpu_memory_average": 11.61802152,
       "gpu_memory_maximum": 21.5216,
       "timestamp": "2026-05-03T19:56:00Z"
     },
-    "max_estimated_usd": 8.0,
+    "max_estimated_usd": 8,
     "max_iterations": 12000,
     "model_artifacts": null,
     "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile13-hard-proof-20260503/tiles/tile_13",
@@ -2587,7 +2586,7 @@
     "v18_parity_defaults": {
       "bg_sh_degree": 1,
       "global_scaffold_init_max_points": 300000,
-      "max_gauss_ratio": 3.0,
+      "max_gauss_ratio": 3,
       "sh_degree": 1,
       "stop_split_at": 3500
     }
@@ -2611,14 +2610,14 @@
     "latest_metric_windows": [
       {
         "gpu_average": 38.8,
-        "gpu_maximum": 50.0,
+        "gpu_maximum": 50,
         "gpu_memory_average": 16.49818,
         "gpu_memory_maximum": 21.5216,
         "timestamp": "2026-05-03T19:58:00Z"
       },
       {
         "gpu_average": 67.6,
-        "gpu_maximum": 92.0,
+        "gpu_maximum": 92,
         "gpu_memory_average": 13.10754,
         "gpu_memory_maximum": 13.1232,
         "timestamp": "2026-05-03T20:03:00Z"
@@ -2674,7 +2673,7 @@
       "sh_degree": 1,
       "tile_id": "tile_13",
       "tile_input_hash": "c52bd6f71bb44caf537c31cf7cc414542e414994656be3d2f9c8c76850ae6905",
-      "training_max_gauss_ratio": 3.0,
+      "training_max_gauss_ratio": 3,
       "training_stop_split_at": 3500
     },
     "training_end_time": "2026-05-03T20:45:11.744Z",
@@ -2690,7 +2689,7 @@
     "decision": "After commit/push/exact-head gate and live AWS sanity, the next paid action should be this single tile_13 hard proof, not the four-tile canary and not a full 14-tile run.",
     "dryrun_summary_json": "logs/md1-cost-reduction-r4-tile13-hard-realistic-dryrun-20260503.json",
     "estimated_usd": 7.575,
-    "max_estimated_usd": 8.0,
+    "max_estimated_usd": 8,
     "planned_train_tiles": {
       "tile_13": {
         "budget_class": "hard",
@@ -2853,7 +2852,7 @@
         "enable_spot": false,
         "estimated_usd": 0.3787,
         "input_colmap_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap",
-        "max_estimated_usd": 2.0,
+        "max_estimated_usd": 2,
         "max_iterations": 3000,
         "max_selected_images": 96,
         "path": "logs/md1-cost-reduction-r2-checkpoint-dryrun-20260501.json",
@@ -2918,7 +2917,7 @@
       "implemented_at": "2026-05-01T22:55:00Z",
       "next_gate": "Build patched container, then run only an R2b tile_11 checkpoint persistence/restart proof with strict $2 cap before Spot/full fanout",
       "restart_dry_run_estimated_usd": 0.3787,
-      "restart_dry_run_max_estimated_usd": 2.0,
+      "restart_dry_run_max_estimated_usd": 2,
       "restart_dry_run_path": "logs/md1-cost-reduction-r2-checkpoint-restart-dryrun-20260501.json",
       "restart_dry_run_submitted_jobs": 0,
       "restart_dry_run_worst_case_usd": 1.515,
@@ -3021,7 +3020,7 @@
       "planned_max_selected_images": 96,
       "purpose": "Prevent no-op checkpoint restart proofs by parsing checkpoint_manifest.json and extending resumed train stages beyond the loaded step.",
       "restart_v2_dry_run_estimated_usd": 0.4103,
-      "restart_v2_dry_run_max_estimated_usd": 2.0,
+      "restart_v2_dry_run_max_estimated_usd": 2,
       "restart_v2_dry_run_path": "logs/md1-cost-reduction-r2-checkpoint-restart-proof-v2-dryrun-20260503.json",
       "restart_v2_dry_run_submitted_jobs": 0,
       "restart_v2_dry_run_worst_case_usd": 1.515,
@@ -3041,7 +3040,7 @@
       "next_gate": "Commit/push, monitor exact-head CDK and Trigger ML Container Build, update the dry-run image digest, then submit only the $2-capped tile_11 restart proof.",
       "purpose": "Read a previous compact checkpoint from TRAINING_CHECKPOINT_RESUME_S3_URI while writing fresh checkpoints to TRAINING_CHECKPOINT_S3_URI.",
       "restart_dry_run_estimated_usd": 0.3787,
-      "restart_dry_run_max_estimated_usd": 2.0,
+      "restart_dry_run_max_estimated_usd": 2,
       "restart_dry_run_path": "logs/md1-cost-reduction-r2-checkpoint-restart-proof-dryrun-20260503.json",
       "restart_dry_run_submitted_jobs": 0,
       "restart_dry_run_worst_case_usd": 1.515,
@@ -3095,7 +3094,7 @@
       "enable_checkpoints": true,
       "enable_spot": false,
       "estimated_usd": 1.01,
-      "max_estimated_usd": 2.0,
+      "max_estimated_usd": 2,
       "max_iterations": 8000,
       "max_selected_images": 128,
       "next_gate": "Commit/push and monitor exact-head CDK, then submit only this $2-capped on-demand tile_02 smoke or retry Spot with short-window/monitor-stop guard; no larger fanout until R3 quality evidence exists.",
@@ -3118,7 +3117,7 @@
       "enable_checkpoints": true,
       "enable_spot": false,
       "estimated_usd": 1.01,
-      "max_estimated_usd": 2.0,
+      "max_estimated_usd": 2,
       "max_iterations": 8000,
       "max_selected_images": 128,
       "next_gate": "Commit/push/gate the V18-default guard, then retry only this $2-capped tile_02 on-demand smoke; no larger fanout until R3 quality evidence exists.",
@@ -3177,7 +3176,7 @@
         "bg_sh_degree": 8,
         "sh_degree": 3,
         "stop_split_at": "<default>",
-        "training_max_gauss_ratio": 10.0
+        "training_max_gauss_ratio": 10
       },
       "reason": "stopped_by_agent_after_cloudwatch_proved_non_v18_defaults",
       "status": "Stopped",
@@ -3187,7 +3186,7 @@
       "checked_at": "2026-05-03T08:04:41Z",
       "enable_spot": true,
       "estimated_usd_on_demand_equivalent": 2.3987,
-      "max_estimated_usd": 5.0,
+      "max_estimated_usd": 5,
       "max_tile_concurrency": 2,
       "next_gate": "After commit/gates, run only a bounded representative paid smoke if needed; no full 14-tile training before R3/R4 quality review.",
       "path": "logs/md1-cost-reduction-r3-spot-representative-dryrun-20260503.json",
@@ -3230,7 +3229,7 @@
       "checkpoint_config_present": true,
       "checkpoint_object_count": 0,
       "enable_managed_spot_training": true,
-      "estimated_usd": 0.0,
+      "estimated_usd": 0,
       "evidence_path": "logs/md1-cost-reduction-r3-spot-tile11-smoke-stopped-20260503.json",
       "instance_type": "ml.g5.2xlarge",
       "job_name": "md1-r3spot-tile11-1777796044-tile-11",
@@ -3287,7 +3286,7 @@
       "enable_checkpoints": true,
       "estimated_usd_on_demand_equivalent": 0.3787,
       "guardrail": "Submitted Managed Spot jobs require explicit --spot-max-wait-seconds, require MaxWait >= MaxRuntime, and block Spot wait windows more than 1800 seconds past MaxRuntime.",
-      "max_estimated_usd": 1.0,
+      "max_estimated_usd": 1,
       "max_spot_extra_wait_seconds": 1800,
       "next_gate": "Commit/push, monitor exact-head CDK workflow, then choose either a short-window Spot retry with monitor stop enabled or a bounded on-demand R3 representative smoke before larger fanout.",
       "planned_budget_class": "tiny",
@@ -3353,7 +3352,7 @@
       },
       "md1_viewer_mobile": {
         "chunk_meta_requests": 15,
-        "first_frame_ms": 51.0,
+        "first_frame_ms": 51,
         "lod_range": "2-3"
       },
       "pipeline_viewer_default": {
@@ -9351,7 +9350,7 @@
         "rgb_offset": [
           0.008,
           0.12,
-          0.0
+          0
         ],
         "tiles": [
           "tile_00",
@@ -9535,7 +9534,7 @@
             "filter_bounds_source": "overlap_bounds_with_10pct_padding",
             "status": "pending_training_export"
           },
-          "candidate_context_padding_ratio": 0.0,
+          "candidate_context_padding_ratio": 0,
           "candidate_present": true,
           "v18_source_gaussians": 420538,
           "v18_retained_gaussians": 420538,
@@ -9545,7 +9544,7 @@
             "filter_bounds_source": "overlap_bounds_with_10pct_padding",
             "status": "pending_training_export"
           },
-          "v18_context_padding_ratio": 0.0,
+          "v18_context_padding_ratio": 0,
           "v18_present": true,
           "candidate_to_v18_retained_ratio": 0.8725893973909611,
           "retained_gap_vs_v18": 53581
@@ -9560,7 +9559,7 @@
             "filter_bounds_source": "overlap_bounds_with_10pct_padding",
             "status": "pending_training_export"
           },
-          "candidate_context_padding_ratio": 0.0,
+          "candidate_context_padding_ratio": 0,
           "candidate_present": true,
           "v18_source_gaussians": 964477,
           "v18_retained_gaussians": 956277,
@@ -9570,7 +9569,7 @@
             "filter_bounds_source": "overlap_bounds_with_10pct_padding",
             "status": "pending_training_export"
           },
-          "v18_context_padding_ratio": 0.0,
+          "v18_context_padding_ratio": 0,
           "v18_present": true,
           "candidate_to_v18_retained_ratio": 0.35255684283947014,
           "retained_gap_vs_v18": 619135
@@ -9585,7 +9584,7 @@
             "filter_bounds_source": "overlap_bounds_with_10pct_padding",
             "status": "pending_training_export"
           },
-          "candidate_context_padding_ratio": 0.0,
+          "candidate_context_padding_ratio": 0,
           "candidate_present": true,
           "v18_source_gaussians": 896654,
           "v18_retained_gaussians": 896654,
@@ -9595,7 +9594,7 @@
             "filter_bounds_source": "overlap_bounds_with_10pct_padding",
             "status": "pending_training_export"
           },
-          "v18_context_padding_ratio": 0.0,
+          "v18_context_padding_ratio": 0,
           "v18_present": true,
           "candidate_to_v18_retained_ratio": 0.35045625179835255,
           "retained_gap_vs_v18": 582416
@@ -9610,7 +9609,7 @@
             "filter_bounds_source": "overlap_bounds_with_10pct_padding",
             "status": "pending_training_export"
           },
-          "candidate_context_padding_ratio": 0.0,
+          "candidate_context_padding_ratio": 0,
           "candidate_present": true,
           "v18_source_gaussians": 1188805,
           "v18_retained_gaussians": 1188805,
@@ -9620,7 +9619,7 @@
             "filter_bounds_source": "overlap_bounds_with_10pct_padding",
             "status": "pending_training_export"
           },
-          "v18_context_padding_ratio": 0.0,
+          "v18_context_padding_ratio": 0,
           "v18_present": true,
           "candidate_to_v18_retained_ratio": 0.2170204533123599,
           "retained_gap_vs_v18": 930810
@@ -9722,9 +9721,9 @@
       "planned_train_tiles": [],
       "cost_estimate": {
         "train_stage_count": 0,
-        "estimated_billable_hours": 0.0,
-        "estimated_usd": 0.0,
-        "worst_case_usd": 0.0
+        "estimated_billable_hours": 0,
+        "estimated_usd": 0,
+        "worst_case_usd": 0
       },
       "source_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz"
     },
@@ -9772,7 +9771,7 @@
       "available_gib": 3.4458,
       "estimated_required_gib": 1.5485,
       "required_with_safety_gib": 3.5485,
-      "safety_margin_gib": 2.0,
+      "safety_margin_gib": 2,
       "safe_to_local_merge": false,
       "block_reasons": [
         "insufficient_local_disk"
@@ -10303,19 +10302,19 @@
       "review": {
         "per_bucket_delta_vs_v18": {
           "boundary": {
-            "lpips": 0.0,
-            "psnr": 0.0,
-            "ssim": 0.0
+            "lpips": 0,
+            "psnr": 0,
+            "ssim": 0
           },
           "horizon": {
-            "lpips": 0.0,
-            "psnr": 0.0,
-            "ssim": 0.0
+            "lpips": 0,
+            "psnr": 0,
+            "ssim": 0
           },
           "near_detail": {
-            "lpips": 0.0,
-            "psnr": 0.0,
-            "ssim": 0.0
+            "lpips": 0,
+            "psnr": 0,
+            "ssim": 0
           }
         },
         "promotion_block_reasons": [
@@ -10389,19 +10388,19 @@
         "review": {
           "per_bucket_delta_vs_v18": {
             "boundary": {
-              "lpips": 0.0,
-              "psnr": 0.0,
-              "ssim": 0.0
+              "lpips": 0,
+              "psnr": 0,
+              "ssim": 0
             },
             "horizon": {
-              "lpips": 0.0,
-              "psnr": 0.0,
-              "ssim": 0.0
+              "lpips": 0,
+              "psnr": 0,
+              "ssim": 0
             },
             "near_detail": {
-              "lpips": 0.0,
-              "psnr": 0.0,
-              "ssim": 0.0
+              "lpips": 0,
+              "psnr": 0,
+              "ssim": 0
             }
           },
           "promotion_block_reasons": [
@@ -11235,7 +11234,7 @@
         "candidate_retained_gaussians": 371161,
         "candidate_retained_ratio": 0.9794380833507058,
         "candidate_status": "quality_unproven",
-        "context_density_ratio": 1.0,
+        "context_density_ratio": 1,
         "reasons": [
           "candidate_quality_status_not_passing"
         ],
@@ -11266,7 +11265,7 @@
       "json_validation": "passed for candidate summary, plan, and benchmark summary",
       "submitted_jobs": [],
       "training_jobs_to_submit": 0,
-      "estimated_usd": 0.0,
+      "estimated_usd": 0,
       "no_full_14tile_training_launched": true
     },
     "decision": {
@@ -11320,11 +11319,14 @@
       "lod_packaging_payload_ready": true,
       "source_label_not_hardcoded_to_v18": true,
       "skybox_preserved_by_direct_lod_script": true,
-      "submit_next_step": "After exact-head code gate, submit only this bounded LOD processing job, then run browser/viewer smoke on the produced lod-meta.json. Do not launch full 14-tile training.",
+      "lod_processing_completed": true,
+      "bundle_validation_passed": true,
+      "local_desktop_mobile_viewer_smoke_passed": true,
+      "submit_next_step": "Commit/push the proxy/viewer fix and validation evidence, then run exact-head CDK/Cloudflare Pages preview gates and preview viewer smoke. Do not launch full 14-tile training.",
       "production_ready": false,
       "production_blockers": [
-        "LOD Processing job is still InProgress and has not uploaded lod-meta.json to S3 yet.",
-        "Browser desktop/mobile viewer smoke has not passed on this candidate lod-meta.json yet.",
+        "Proxy/viewer code changes and validation evidence are local until committed/pushed.",
+        "Exact-head Cloudflare Pages preview has not yet run against the staging-proxy viewer fix.",
         "A cheaper no-rollback tile10 repair remains optional but unproven; current candidate uses V18/context-density rollback for tile10 and eight other tiles."
       ]
     },
@@ -11339,26 +11341,84 @@
     },
     "entrypoint_script_s3_uri": "s3://spaceport-ml-processing-staging/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/entrypoint/md1_splat_transform_direct_lod.sh",
     "latest_monitor_status": {
-      "recorded_at": "2026-05-06T01:08:46Z",
-      "exact_head_sha": "6ec8c2880d339c163c75d6d35236da1b6691451e",
-      "exact_head_cdk_deploy_run_id": 25409976812,
+      "recorded_at": "2026-05-06T03:07:07Z",
+      "exact_head_sha": "1e46ea56c11efafb7d1e40cfc75868a4120538bb",
+      "exact_head_cdk_deploy_run_id": 25411133101,
       "exact_head_cdk_deploy_conclusion": "success",
-      "processing_job_status": "InProgress",
+      "processing_job_status": "Completed",
+      "processing_creation_time": "2026-05-06T00:29:52.455000Z",
       "processing_start_time": "2026-05-06T00:30:44.855000Z",
+      "processing_end_time": "2026-05-06T02:34:48.437000Z",
+      "runtime_seconds": 7443.582,
       "failure_reason": null,
       "exit_message": null,
-      "cloudwatch_progress": {
-        "lod1_splats": 2527176,
-        "lod1_done_seconds": 558.379243834,
-        "lod2_splats": 842392,
-        "lod2_done_seconds": 683.171847401,
-        "lod3_splats": 252718,
-        "lod3_done_seconds": 735.03967203,
-        "final_total_multi_lod_splats": 12046205,
-        "final_stage": "writing /opt/ml/processing/output/supersplat_bundle/lod-meta.json with chunked SuperSplat assets"
-      },
-      "next_unblocked_step": "Continue monitoring the bounded Processing job to Completed; then head-object lod-meta.json, spaceport_bundle.json, settings.json, skybox/background_skybox.webp, and sogs_compression_summary.json before desktop/mobile viewer smoke."
+      "output_lod_meta_s3_uri": "s3://spaceport-ml-processing-staging/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+      "output_lod_meta_https_url": "https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+      "next_unblocked_step": "Commit/push staging proxy and proxy-first MD1 viewer fix plus validation evidence; then run exact-head CDK/Pages and preview viewer smoke before promotion."
     },
-    "output_lod_meta_s3_uri": "s3://spaceport-ml-processing-staging/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json"
+    "output_lod_meta_s3_uri": "s3://spaceport-ml-processing-staging/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+    "bundle_validation": {
+      "path": "logs/md1-r4-tile10-rollback-lod-bundle-validation-20260506.json",
+      "pass": true,
+      "output_prefix": "s3://spaceport-ml-processing-staging/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/",
+      "lod_levels": 4,
+      "filename_count": 44,
+      "gates": {
+        "required_objects_present": true,
+        "lod_meta_parse_ok": true,
+        "sidecar_lineage_ok": true,
+        "skybox_wired": true,
+        "referenced_meta_present": true
+      }
+    },
+    "viewer_smoke": {
+      "path": "logs/md1-r4-tile10-rollback-lod-viewer-smoke-20260506.json",
+      "checked_at": "2026-05-06T03:07:07.901Z",
+      "pass": true,
+      "desktop": {
+        "bundleKind": "lod-streaming",
+        "transport": "proxy",
+        "rootFile": "lod-meta.json",
+        "sourceUrl": "https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+        "viewerUrl": "/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+        "lodLevels": "4",
+        "chunkFiles": "44",
+        "loadedNodes": "3",
+        "chunkMetaRequests": "3",
+        "chunkMetaAtFirstFrame": "0",
+        "firstFrameMs": "44.599999994039536",
+        "splatBudget": "3000000",
+        "lodMin": "0",
+        "lodMax": "3",
+        "boundsMin": "-1246.236,-1202.796,-745.6156",
+        "boundsMax": "1461.514,1222.845,1582.216"
+      },
+      "mobile": {
+        "bundleKind": "lod-streaming",
+        "transport": "proxy",
+        "rootFile": "lod-meta.json",
+        "sourceUrl": "https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+        "viewerUrl": "/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-r4-tile10-rollback-lod-dryrun-20260505/supersplat_bundle/lod-meta.json",
+        "lodLevels": "4",
+        "chunkFiles": "44",
+        "loadedNodes": "3",
+        "chunkMetaRequests": "3",
+        "chunkMetaAtFirstFrame": "0",
+        "firstFrameMs": "807.2999999821186",
+        "splatBudget": "1000000",
+        "lodMin": "2",
+        "lodMax": "3",
+        "boundsMin": "-1246.236,-1202.796,-745.6156",
+        "boundsMax": "1461.514,1222.845,1582.216"
+      },
+      "screenshots": [
+        "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/md1-r4-tile10-rollback-lod-viewer-desktop-20260506.png",
+        "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/md1-r4-tile10-rollback-lod-viewer-mobile-20260506.png"
+      ],
+      "console_errors": [],
+      "page_errors": [],
+      "local_viewer_url": "http://127.0.0.1:3031/md1-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.amazonaws.com%2Fcompressed%2Fmd1-r4-tile10-rollback-lod-dryrun-20260505%2Fsupersplat_bundle%2Flod-meta.json",
+      "fix_required": "Added staging S3 hosts to SOGS proxy/client allowlists and made MD1 iframe use normalized proxy URL before bundle summary resolution so SSE-KMS staging assets do not attempt unsigned browser GETs."
+    }
   }
 }

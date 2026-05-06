@@ -7,6 +7,8 @@ export const runtime = "edge";
 const ALLOWED_HOSTS = new Set([
   "spaceport-ml-processing.s3.amazonaws.com",
   "spaceport-ml-processing.s3.us-west-2.amazonaws.com",
+  "spaceport-ml-processing-staging.s3.amazonaws.com",
+  "spaceport-ml-processing-staging.s3.us-west-2.amazonaws.com",
 ]);
 
 const S3_REGION = process.env.AWS_REGION ?? "us-west-2";
