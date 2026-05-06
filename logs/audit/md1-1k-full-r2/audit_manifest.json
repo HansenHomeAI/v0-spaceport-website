@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "eb0ba0a22b5edc63e15b753a36d4c28d0d52ad5c pushed; exact-head CDK Deploy 25425092990 green; local uncommitted support-overlap review rejection and leaf density guard evidence ready to commit",
-  "current_exact_head_gate_status": "exact-head eb0ba0a22b5edc63e15b753a36d4c28d0d52ad5c is pushed and green on CDK Deploy 25425092990. Latest web-bearing head remains c12586cc02935b5a8128c87351748e0a4d967da1 with green CDK Deploy 25414410907 and Cloudflare Pages 25414410905; hash https://e60e3909.v0-spaceport-website-preview2.pages.dev and alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev passed /health.txt.",
-  "current_live_compute_status": "No SageMaker training jobs are InProgress and no SageMaker processing jobs are InProgress. Support-overlap no-training merge md1-r4t10density-swo-1778056640 completed; review md1-r1-r4-tile10-density-relaxed-support-overlap-smoke-p24-1778 completed and blocked V18 non-regression.",
-  "current_rung": "R4_tile10_density_relaxed_support_overlap_review_blocked_with_leaf_density_guard",
+  "current_branch_head": "fba60f7b9bf0d7b8071f3887aeb8299da8d1e6d6 pushed; exact-head CDK Deploy 25427600188 green; local no-spend constrained tile10 density-repair plan ready to commit",
+  "current_exact_head_gate_status": "exact-head fba60f7b9bf0d7b8071f3887aeb8299da8d1e6d6 is pushed and green on CDK Deploy 25427600188. Latest web-bearing head remains c12586cc02935b5a8128c87351748e0a4d967da1 with green CDK Deploy 25414410907 and Cloudflare Pages 25414410905; hash https://e60e3909.v0-spaceport-website-preview2.pages.dev and alias https://agent-90742618-md1-geometry.v0-spaceport-website-preview2.pages.dev passed /health.txt.",
+  "current_live_compute_status": "No SageMaker training jobs are InProgress and no SageMaker processing jobs are InProgress. Support-overlap no-training merge and review completed; no new paid jobs were launched for the constrained tile10 plan.",
+  "current_rung": "R4_tile10_constrained_density_repair_dryrun_ready",
   "exact_head_gate_status": "exact-head 838a3519564eff74ecbf0224d5bdde364fe71ab4 has green CDK Deploy 25369423200. No Cloudflare Pages run appeared for this non-web/status push.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -3391,7 +3391,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Do not run full 14-tile training or another paid tile trial. Commit/push the support-overlap rejection evidence and leaf density guard, gate exact head, then keep rollback LOD candidate or design only a no-spend constrained tile10 plan before paid retrial.",
+  "next_unblocked_step": "Do not run full 14-tile training or another paid tile trial. Keep rollback LOD candidate as the viewer-ready production candidate, or submit only the bounded constrained tile10 proof if tile10 repair continues; reject before merge/review if guarded leaf preflight exceeds 580,788 splats or fails V18 lineage checks.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -11790,5 +11790,38 @@
     "observed_reference_ratio": 4.477176697865659,
     "block_reason": "splat_vertex_count_above_reference_ratio",
     "purpose": "block over-dense leaf repairs before merge/review spend"
+  },
+  "md1_r4_tile10_constrained_density_repair_dryrun_20260506": {
+    "checked_at": "2026-05-06T10:16:44Z",
+    "dryrun_json": "logs/md1-cost-reduction-r4-tile10-constrained-density-repair-dryrun-20260506.json",
+    "guard_plan_json": "logs/md1-cost-reduction-r4-tile10-constrained-density-guard-plan-20260506.json",
+    "submitted_jobs": [],
+    "selected_tile_ids": [
+      "tile_10"
+    ],
+    "no_full_14tile_training": true,
+    "instance_type": "ml.g5.2xlarge",
+    "estimated_usd": 1.6665,
+    "worst_case_usd": 3.03,
+    "max_estimated_usd": 2.5,
+    "max_iterations": 12000,
+    "selected_image_count": 188,
+    "checkpointing_enabled": true,
+    "env": {
+      "TRAINING_MAX_GAUSS_RATIO": "1.8",
+      "TRAINING_STOP_SPLIT_AT": "5500",
+      "CULL_ALPHA_THRESH": "0.12",
+      "CULL_SCALE_THRESH": "0.35",
+      "GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT": "true"
+    },
+    "leaf_density_reference_guard": {
+      "reference_splat_count": 387192,
+      "max_reference_splat_ratio": 1.5,
+      "target_max_splats": 580788,
+      "observed_failed_splat_count": 1733527,
+      "observed_failed_reference_ratio": 4.477176697865659,
+      "required_before_merge_or_review": true
+    },
+    "decision": "planning_only_no_spend; rollback LOD remains current viewer-ready candidate; constrained tile10 proof is bounded but not submitted"
   }
 }
