@@ -1,0 +1,215 @@
+{
+  "checked_at": "2026-05-06T05:57:14.494855+00:00",
+  "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-density-relaxed-repair-20260506/tiles/tile_10/md1-r4t10density-1778043088-tile-10/output/model.tar.gz",
+  "artifact_head_object": {
+    "AcceptRanges": "bytes",
+    "LastModified": "2026-05-06T05:35:57+00:00",
+    "ContentLength": 153399054,
+    "ETag": "\"2af75f4bdc00f29cec2b87f532259fa1-19\"",
+    "VersionId": "jiKH_XNrfBfWOw1LzDLJyuP712RkU45b",
+    "ContentType": "application/gzip",
+    "ServerSideEncryption": "aws:kms",
+    "Metadata": {},
+    "SSEKMSKeyId": "arn:aws:kms:us-west-2:975050048887:key/e498a88e-6b23-44e3-90bd-f35b25d6e420"
+  },
+  "local_size_bytes": 153399054,
+  "sha256": "216717682eb0d0e1bcaf39f8c55568b9c7d39ad6828e2ae6d4cd9fc74d74cd1c",
+  "job_name": "md1-r4t10density-1778043088-tile-10",
+  "tile_id": "tile_10",
+  "preflight_type": "leaf_tile_artifact",
+  "inventory": [
+    {
+      "name": "splat.ply",
+      "size": 180287441,
+      "type": "file"
+    },
+    {
+      "name": "ns_export.log",
+      "size": 461,
+      "type": "file"
+    },
+    {
+      "name": "training_selection.json",
+      "size": 6670,
+      "type": "file"
+    },
+    {
+      "name": "training_metadata.json",
+      "size": 12586,
+      "type": "file"
+    },
+    {
+      "name": "floater_pruning_summary.json",
+      "size": 461,
+      "type": "file"
+    },
+    {
+      "name": "background_manifest.json",
+      "size": 1118,
+      "type": "file"
+    },
+    {
+      "name": "ns_train.log",
+      "size": 241002,
+      "type": "file"
+    },
+    {
+      "name": "export_manifest.json",
+      "size": 3158,
+      "type": "file"
+    },
+    {
+      "name": "background_skybox.webp",
+      "size": 31588,
+      "type": "file"
+    }
+  ],
+  "required_paths": {
+    "present": [
+      "background_manifest.json",
+      "background_skybox.webp",
+      "export_manifest.json",
+      "floater_pruning_summary.json",
+      "splat.ply",
+      "training_metadata.json",
+      "training_selection.json"
+    ],
+    "missing": []
+  },
+  "training_metadata": {
+    "training_completed": true,
+    "training_mode": "leaf_tile",
+    "model_variant": "splatfacto-w-light",
+    "max_iterations": 12000,
+    "sh_degree": 1,
+    "downscale_factor": 1,
+    "enable_bg_model": true,
+    "enable_alpha_loss": true,
+    "enable_robust_mask": true
+  },
+  "training_selection": {
+    "tile_id": "tile_10",
+    "selected_image_count": 188,
+    "max_selected_images": 188,
+    "view_bucket_counts": {
+      "near_detail": 52,
+      "boundary": 31,
+      "horizon": 16
+    },
+    "scaffold_initialization": {
+      "scaffold_source_artifact": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+      "filtered_point_cloud": "/tmp/nerfstudio_training/converted_data/scaffold_init.ply",
+      "scaffold_filter_bounds": {
+        "min_x": -100.23060000000001,
+        "max_x": 49.8486,
+        "min_y": -79.7309,
+        "max_y": 25.5319,
+        "min_z": -163.4442,
+        "max_z": 28.8822
+      },
+      "source_gaussian_count": 1554116,
+      "source_filtered_gaussian_count": 1553618,
+      "inherited_gaussian_count": 300000,
+      "inherited_gaussian_cap": 300000,
+      "inherited_attributes": [
+        "positions",
+        "rgb_from_gaussian_dc"
+      ],
+      "reinitialized_attributes": [
+        "scale",
+        "opacity",
+        "rotation",
+        "sh_rest",
+        "appearance_embeddings"
+      ],
+      "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+      "scaffold_init_downsample_strategy": "spatial_key_even_sample",
+      "fallback_used": false,
+      "external_scaffold": {
+        "stage_name": "scaffold",
+        "training_mode": "global_scaffold",
+        "status": "reused_external_scaffold",
+        "source_dir": "/opt/ml/input/data/scaffold",
+        "source_kind": "directory_tar_artifact",
+        "source_artifact": "/opt/ml/input/data/scaffold/model.tar.gz",
+        "output_dir": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00",
+        "splat_ply": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply"
+      }
+    }
+  },
+  "export_manifest": {
+    "ply": "splat.ply",
+    "planner_transform_applied": null,
+    "foreground_coordinate_frame": "planner"
+  },
+  "floater_pruning_summary": {
+    "enabled": true,
+    "evaluated_gaussians": 1733618,
+    "candidate_gaussians": 1121805,
+    "removed_gaussians": 91,
+    "remaining_gaussians": 1733527,
+    "sampled_views": 24,
+    "min_views": 6,
+    "top_region_ratio": 0.35,
+    "top_view_fraction": 0.9,
+    "min_sky_views": 2,
+    "sky_min_luminance": 0.3,
+    "sky_min_saturation": 0.08,
+    "sky_blue_dominance_margin": 0.02,
+    "max_opacity": 0.75,
+    "max_color_distance": 0.18,
+    "min_edge_support": 1,
+    "patch_size": 9
+  },
+  "background_manifest_keys": [
+    "appearance_camera_clamped",
+    "appearance_camera_idx",
+    "appearance_mode",
+    "appearance_num_embeddings",
+    "asset",
+    "bg_sh_degree",
+    "camera_idx",
+    "floater_pruning",
+    "height",
+    "requested_camera_idx",
+    "selection",
+    "version",
+    "width"
+  ],
+  "splat_ply_size_bytes": 180287441,
+  "splat_ply_header": [
+    "ply",
+    "format binary_little_endian 1.0",
+    "element vertex 1733527",
+    "property float x",
+    "property float y",
+    "property float z",
+    "property float nx",
+    "property float ny",
+    "property float nz",
+    "property float f_dc_0",
+    "property float f_dc_1",
+    "property float f_dc_2",
+    "property float f_rest_0",
+    "property float f_rest_1",
+    "property float f_rest_2",
+    "property float f_rest_3",
+    "property float f_rest_4",
+    "property float f_rest_5",
+    "property float f_rest_6",
+    "property float f_rest_7",
+    "property float f_rest_8",
+    "property float opacity",
+    "property float scale_0",
+    "property float scale_1",
+    "property float scale_2",
+    "property float rot_0",
+    "property float rot_1",
+    "property float rot_2",
+    "property float rot_3",
+    "end_header"
+  ],
+  "splat_vertex_count": 1733527,
+  "block_reasons": [],
+  "decision": "leaf_preflight_passed_cache_candidate"
+}
