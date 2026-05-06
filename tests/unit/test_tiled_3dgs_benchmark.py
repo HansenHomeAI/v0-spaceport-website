@@ -1639,6 +1639,47 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
 
         self.assertIn("max_estimated_usd > 0", str(raised.exception))
 
+    def test_validate_submit_guardrails_blocks_full_14tile_when_rung_gate_has_no_evidence(self):
+        args = types.SimpleNamespace(
+            submit=True,
+            max_estimated_usd=20.0,
+            experiment_id="r6-full",
+            v18_review_manifest_s3_uri="s3://bucket/v18-review",
+            baseline_review_manifest_s3_uri="",
+            enable_spot=False,
+            enable_checkpoints=True,
+            checkpoint_s3_prefix="s3://bucket/checkpoints",
+            checkpoint_resume_s3_uri="",
+            spot_restart_proof_passed=False,
+            reuse_tile_cache=False,
+            orchestration_mode="fanout",
+            skip_merge=True,
+            skip_review=True,
+            production_rung_gate_json="logs/rung-gate.json",
+        )
+
+        with self.assertRaises(RuntimeError) as raised:
+            benchmark.validate_submit_guardrails(
+                args,
+                {
+                    "cost_estimate": {"estimated_usd": 18.0},
+                    "selected_tile_ids": [f"tile_{tile_index:02d}" for tile_index in range(14)],
+                    "production_rung_gate": {
+                        "r0_status": "passed",
+                        "r1_status": "accepted",
+                        "r2_status": "quality_passed",
+                        "r3_status": "ok",
+                        "allow_full_14tile_submit": True,
+                        "max_estimated_usd": 25.0,
+                    },
+                },
+            )
+
+        message = str(raised.exception)
+        self.assertIn("missing evidence", message)
+        self.assertIn("r0", message)
+        self.assertIn("r3", message)
+
     def test_validate_submit_guardrails_allows_full_14tile_with_passing_rung_gate(self):
         args = types.SimpleNamespace(
             submit=True,
@@ -1670,6 +1711,12 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
                     "r3_status": "ok",
                     "allow_full_14tile_submit": True,
                     "max_estimated_usd": 25.0,
+                    "rung_evidence": {
+                        "r0": {"summary_json": "logs/r0-no-spend.json"},
+                        "r1": {"dry_run_summary": "logs/r1-dry-run.json"},
+                        "r2": {"test_log": "logs/r2-checkpoint-proof.log"},
+                        "r3": {"review_manifest_s3_uri": "s3://bucket/r3-review/quality_review_manifest.json"},
+                    },
                 },
             },
         )

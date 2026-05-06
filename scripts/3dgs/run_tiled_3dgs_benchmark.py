@@ -87,6 +87,16 @@ BUDGET_CLASS_RANK = {
 }
 PASSING_GATE_STATUSES = {"passed", "pass", "ok", "promoted", "accepted", "quality_passed"}
 PASSING_RUNG_STATUSES = PASSING_GATE_STATUSES
+REQUIRED_PRODUCTION_RUNG_STATUS_FIELDS = ("r0_status", "r1_status", "r2_status", "r3_status")
+REQUIRED_PRODUCTION_RUNG_EVIDENCE_KEYS = ("r0", "r1", "r2", "r3")
+PRODUCTION_RUNG_EVIDENCE_REFERENCE_KEYS = (
+    "artifact_s3_uri",
+    "dry_run_summary",
+    "manifest_json",
+    "review_manifest_s3_uri",
+    "summary_json",
+    "test_log",
+)
 
 
 def run_command(command: Sequence[str], *, capture_output: bool = False) -> subprocess.CompletedProcess[str]:
@@ -1274,6 +1284,24 @@ def selected_tile_count_for_submit(summary: dict) -> int:
     return len(stage_tile_ids)
 
 
+def production_rung_evidence_for(rung_gate: dict, rung_name: str) -> dict:
+    evidence_by_rung = rung_gate.get("rung_evidence")
+    evidence = evidence_by_rung.get(rung_name) if isinstance(evidence_by_rung, dict) else None
+    if evidence is None:
+        evidence = rung_gate.get(f"{rung_name}_evidence")
+    return evidence if isinstance(evidence, dict) else {}
+
+
+def production_rung_evidence_has_reference(evidence: dict) -> bool:
+    for key in PRODUCTION_RUNG_EVIDENCE_REFERENCE_KEYS:
+        value = evidence.get(key)
+        if isinstance(value, str) and value.strip():
+            return True
+        if isinstance(value, list) and any(str(item).strip() for item in value):
+            return True
+    return False
+
+
 def validate_submit_guardrails(args: argparse.Namespace, summary: dict) -> None:
     if not getattr(args, "submit", False):
         return
@@ -1318,16 +1346,25 @@ def validate_submit_guardrails(args: argparse.Namespace, summary: dict) -> None:
                 "R0/R1/R2/R3 acceptance before spend"
             )
         else:
-            required_rungs = ("r0_status", "r1_status", "r2_status", "r3_status")
             missing_or_blocked = [
                 rung
-                for rung in required_rungs
+                for rung in REQUIRED_PRODUCTION_RUNG_STATUS_FIELDS
                 if str(rung_gate.get(rung) or "").strip().lower() not in PASSING_RUNG_STATUSES
             ]
             if missing_or_blocked:
                 errors.append(
                     "--production-rung-gate-json does not pass required rungs: "
                     + ", ".join(missing_or_blocked)
+                )
+            missing_evidence = [
+                rung
+                for rung in REQUIRED_PRODUCTION_RUNG_EVIDENCE_KEYS
+                if not production_rung_evidence_has_reference(production_rung_evidence_for(rung_gate, rung))
+            ]
+            if missing_evidence:
+                errors.append(
+                    "--production-rung-gate-json missing evidence for required rungs: "
+                    + ", ".join(missing_evidence)
                 )
             if rung_gate.get("allow_full_14tile_submit") is not True:
                 errors.append("--production-rung-gate-json must set allow_full_14tile_submit=true")
