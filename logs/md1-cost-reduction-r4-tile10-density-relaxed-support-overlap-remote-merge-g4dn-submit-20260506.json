@@ -1,0 +1,21 @@
+{
+  "checked_at": "2026-05-06T08:37:57Z",
+  "head": "d6e72418950f78d02b3e82ea7af728505c74a606",
+  "processing_job_name": "md1-r4t10density-swo-1778056640",
+  "processing_job_arn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-r4t10density-swo-1778056640",
+  "processing_status": "InProgress",
+  "processing_start_time": null,
+  "failure_reason": null,
+  "exit_message": null,
+  "instance_type": "ml.g4dn.xlarge",
+  "max_runtime_seconds": 3600,
+  "merge_mode": "support_weighted_overlap",
+  "payload_json": "logs/md1-cost-reduction-r4-tile10-density-relaxed-support-overlap-remote-merge-g4dn-payload-submit-20260506.json",
+  "merge_plan_json": "logs/md1-cost-reduction-r4-tile10-density-relaxed-support-overlap-remote-merge-g4dn-plan-dryrun-20260506.json",
+  "merge_plan_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-density-relaxed-support-overlap-merge-g4dn-20260506083720/inputs/merge-plan/merge_plan.json",
+  "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-density-relaxed-support-overlap-merge-g4dn-20260506083720/output/artifact",
+  "expected_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile10-density-relaxed-support-overlap-merge-g4dn-20260506083720/output/artifact/model.tar.gz",
+  "training_jobs_submitted": 0,
+  "full_14_tile_training_launched": false,
+  "next_unblocked_step": "Monitor processing job to model.tar.gz, then run streaming tiled preflight and same-camera V18 review before any further paid tile trial."
+}
