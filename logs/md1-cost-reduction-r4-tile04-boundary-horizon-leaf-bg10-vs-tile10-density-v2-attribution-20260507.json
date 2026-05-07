@@ -1,0 +1,96 @@
+{
+  "baseline_candidate": "tile04_boundary_horizon_leaf_plus_tile10_rollback_bg10",
+  "block_reasons": {
+    "baseline": [
+      "boundary_no_required_improvement"
+    ],
+    "density_v2": [
+      "boundary_no_required_improvement"
+    ]
+  },
+  "bucket_deltas_vs_v18": {
+    "baseline": {
+      "boundary": {
+        "lpips": -0.002215772867202759,
+        "psnr": 0.13065759577069258,
+        "ssim": 0.00525432825088501
+      },
+      "horizon": {
+        "lpips": 0.010840654373168945,
+        "psnr": -0.299692841819045,
+        "ssim": -0.010585620999336243
+      },
+      "near_detail": {
+        "lpips": -0.045768529176712036,
+        "psnr": 0.5776066932227408,
+        "ssim": 0.0029085129499435425
+      }
+    },
+    "density_v2": {
+      "boundary": {
+        "lpips": -0.0003056526184082031,
+        "psnr": 0.11537937981358581,
+        "ssim": 0.004023641347885132
+      },
+      "horizon": {
+        "lpips": 0.010201066732406616,
+        "psnr": -0.26549906527780465,
+        "ssim": -0.010892495512962341
+      },
+      "near_detail": {
+        "lpips": -0.04604899883270264,
+        "psnr": 0.5709904733354225,
+        "ssim": 0.0022834837436676025
+      }
+    }
+  },
+  "checked_at": "2026-05-07T09:46:30Z",
+  "decision": {
+    "full_14tile_training_allowed": false,
+    "launch_more_paid_compute_now": false,
+    "lod_packaging_allowed": false,
+    "next_step": "no-spend boundary strategy change focused on tile_04/tile_10 overlap scoring or frozen-camera image/camera weighting, not another density-only tile_10 retry"
+  },
+  "density_v2_candidate": "tile04_boundary_horizon_leaf_plus_tile10_density_v2_bg10",
+  "density_v2_minus_baseline_bucket_delta": {
+    "boundary": {
+      "lpips": 0.0019101202487945557,
+      "psnr": -0.015278215957106767,
+      "ssim": -0.001230686902999878
+    },
+    "horizon": {
+      "lpips": -0.0006395876407623291,
+      "psnr": 0.03419377654124034,
+      "ssim": -0.00030687451362609863
+    },
+    "near_detail": {
+      "lpips": -0.0002804696559906006,
+      "psnr": -0.006616219887318309,
+      "ssim": -0.0006250292062759399
+    }
+  },
+  "interpretation": [
+    "Replacing tile_10 rollback with the passed tile_10 density-v2 leaf increased total retained gaussians and tile_10 retained gaussians.",
+    "The boundary metrics got slightly worse across PSNR, SSIM, and LPIPS, so tile_10 density is not the current low-hanging boundary fix.",
+    "Horizon remains inside the regression gate for both candidates but neither candidate passes the required boundary improvement gate."
+  ],
+  "merge_delta": {
+    "dropped_gaussians": 21425,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "retained_gaussians": 60522,
+    "source_gaussians": 81947
+  },
+  "promotion_status": {
+    "baseline": "blocked",
+    "density_v2": "blocked"
+  },
+  "status": "tile10_density_v2_not_the_boundary_fix",
+  "tile10_delta": {
+    "baseline_retained_gaussians": 378953,
+    "density_v2_retained_gaussians": 439475,
+    "dropped_gaussians": 21425,
+    "retained_gaussians": 60522,
+    "source_gaussians": 81947
+  }
+}

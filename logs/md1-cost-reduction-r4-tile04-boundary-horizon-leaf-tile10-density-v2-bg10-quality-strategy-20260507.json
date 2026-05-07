@@ -1,0 +1,67 @@
+{
+  "checked_at": "2026-05-07T09:45:58.012798+00:00",
+  "promotion_decision_status": "blocked",
+  "current_quality_blockers": [
+    "boundary_no_required_improvement"
+  ],
+  "candidate_strategy_present": true,
+  "candidate_targeted_quality_blockers": [
+    "boundary_no_required_improvement",
+    "horizon_ssim_regression"
+  ],
+  "missing_targeted_blockers": [],
+  "candidate_planned_cost_usd": 0.0,
+  "max_estimated_usd": null,
+  "candidate_no_full_14tile_training": true,
+  "candidate_submitted_jobs": [],
+  "boundary_improvement_gap": {
+    "actual_delta": {
+      "psnr": 0.11537937981358581,
+      "ssim": 0.004023641347885132,
+      "lpips": -0.0003056526184082031
+    },
+    "required_improvement": {
+      "psnr": 0.5,
+      "ssim": 0.01,
+      "lpips": -0.025
+    },
+    "remaining_gap": {
+      "psnr": 0.3846206201864142,
+      "ssim": 0.005976358652114868,
+      "lpips": 0.024694347381591798
+    },
+    "passes_any_improvement_axis": false
+  },
+  "horizon_regression_gap": {
+    "actual_delta": {
+      "psnr": -0.26549906527780465,
+      "ssim": -0.010892495512962341,
+      "lpips": 0.010201066732406616
+    },
+    "allowed_regression": {
+      "psnr_min_delta": -0.75,
+      "ssim_min_delta": -0.012,
+      "lpips_max_delta": 0.03
+    },
+    "remaining_gap_to_pass": {
+      "psnr": 0.0,
+      "ssim": 0.0,
+      "lpips": 0.0
+    },
+    "passes_regression_gate": true
+  },
+  "recommendation": "candidate_strategy_targets_current_blockers",
+  "recommended_actions": [
+    {
+      "blocker": "boundary_no_required_improvement",
+      "action": "produce_boundary_focused_no_spend_plan_before_paid_retry",
+      "evidence_needed": [
+        "targeted_quality_blockers includes boundary_no_required_improvement",
+        "boundary frozen cameras and responsible tiles are listed",
+        "planned change can plausibly improve boundary PSNR/SSIM/LPIPS, not only tile density",
+        "max_estimated_usd remains capped before submit"
+      ]
+    }
+  ],
+  "paid_retry_recommended": true
+}
