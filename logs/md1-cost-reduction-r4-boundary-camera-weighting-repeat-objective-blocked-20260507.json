@@ -1,0 +1,193 @@
+{
+  "boundary_frozen_cameras": [
+    "DJI_0067.JPG",
+    "DJI_0068.JPG",
+    "DJI_0069.JPG",
+    "DJI_0070.JPG"
+  ],
+  "boundary_improvement_gap": {
+    "actual_delta": {
+      "lpips": -0.005315691232681274,
+      "psnr": 0.010892982651201422,
+      "ssim": -0.0019781887531280518
+    },
+    "passes_any_improvement_axis": false,
+    "remaining_gap": {
+      "lpips": 0.019684308767318727,
+      "psnr": 0.4891070173487986,
+      "ssim": 0.011978188753128052
+    },
+    "required_improvement": {
+      "lpips": -0.025,
+      "psnr": 0.5,
+      "ssim": 0.01
+    }
+  },
+  "candidate_objective_gate": {
+    "block_reasons": [
+      "objective_does_not_target_current_blockers",
+      "objective_missing_horizon_psnr_axis",
+      "objective_repeats_failed_frame_repeat_without_loss_weighting"
+    ],
+    "boundary_camera_ids": [
+      "DJI_0067.JPG",
+      "DJI_0068.JPG",
+      "DJI_0069.JPG",
+      "DJI_0070.JPG"
+    ],
+    "context_support_tile_ids": [
+      "tile_00",
+      "tile_01",
+      "tile_02",
+      "tile_06",
+      "tile_10",
+      "tile_13"
+    ],
+    "covered_tile_ids": [
+      "tile_00",
+      "tile_01",
+      "tile_02",
+      "tile_04",
+      "tile_06",
+      "tile_10",
+      "tile_13"
+    ],
+    "decision": "paid_retry_blocked",
+    "estimated_usd": 0.8096,
+    "expected_metric_axes": [
+      "boundary.lpips",
+      "boundary.psnr",
+      "boundary.required_improvement",
+      "boundary.ssim",
+      "horizon.ssim"
+    ],
+    "horizon_camera_ids": [
+      "DJI_0066.JPG",
+      "DJI_0073.JPG",
+      "DJI_0146.JPG",
+      "DJI_0147.JPG"
+    ],
+    "max_estimated_usd": 2.25,
+    "missing_boundary_frozen_cameras": [],
+    "missing_horizon_frozen_cameras": [],
+    "missing_horizon_metric_axes": [
+      "horizon.psnr"
+    ],
+    "missing_primary_boundary_tile_ids": [],
+    "missing_primary_horizon_tile_ids": [],
+    "missing_targeted_quality_blockers": [
+      "horizon_psnr_regression"
+    ],
+    "no_full_14tile_training": true,
+    "objective_changes": [
+      "boundary_camera_weighting",
+      "boundary_frame_repeat_weighting",
+      "frozen_camera_weighting"
+    ],
+    "present": true,
+    "selected_tile_ids": [
+      "tile_04"
+    ],
+    "submitted_jobs": [],
+    "targeted_quality_blockers": [
+      "boundary_no_required_improvement"
+    ],
+    "warnings": []
+  },
+  "checked_at": "2026-05-07T17:26:08.066351+00:00",
+  "context_support_tile_ids": [
+    "tile_13",
+    "tile_00",
+    "tile_02",
+    "tile_06"
+  ],
+  "current_quality_blockers": [
+    "boundary_no_required_improvement",
+    "horizon_psnr_regression"
+  ],
+  "failed_hypotheses": [
+    {
+      "evidence": "Repeating frozen boundary cameras changed the tile_04 leaf but did not improve the frozen boundary gate and introduced horizon PSNR regression.",
+      "hypothesis": "boundary_frame_repeat_weighting",
+      "metric_delta_vs_reference_bg10": {
+        "boundary": {
+          "lpips": -0.0030999183654785156,
+          "psnr": -0.11976461311949116,
+          "ssim": -0.0072325170040130615
+        },
+        "horizon": {
+          "lpips": -0.01228448748588562,
+          "psnr": -0.48712291169582045,
+          "ssim": 0.006917029619216919
+        },
+        "near_detail": {
+          "lpips": 0.02909409999847412,
+          "psnr": -0.5754462069514705,
+          "ssim": -0.002803400158882141
+        }
+      },
+      "status": "failed"
+    }
+  ],
+  "horizon_frozen_cameras": [
+    "DJI_0066.JPG",
+    "DJI_0073.JPG",
+    "DJI_0146.JPG",
+    "DJI_0147.JPG"
+  ],
+  "horizon_regression_gap": {
+    "actual_delta": {
+      "lpips": -0.0014438331127166748,
+      "psnr": -0.7868157535148654,
+      "ssim": -0.0036685913801193237
+    },
+    "allowed_regression": {
+      "lpips_max_delta": 0.03,
+      "psnr_min_delta": -0.75,
+      "sky_score_min_ratio": 0.9,
+      "ssim_min_delta": -0.012
+    },
+    "passes_regression_gate": false,
+    "remaining_gap_to_pass": {
+      "lpips": 0,
+      "psnr": 0.036815753514865435,
+      "ssim": 0
+    }
+  },
+  "next_no_spend_actions": [
+    "write a concrete candidate objective JSON that names the frozen cameras, primary tiles, metric axis, cost cap, and no-full14 guard",
+    "run this planner against that candidate objective and require candidate_objective_gate.decision=paid_retry_allowed",
+    "only then run leaf-only submit readiness; merge/review spend remains blocked until leaf gates pass"
+  ],
+  "paid_retry_allowed": false,
+  "paid_retry_recommended": false,
+  "primary_boundary_tile_ids": [
+    "tile_04",
+    "tile_10"
+  ],
+  "primary_horizon_tile_ids": [
+    "tile_01",
+    "tile_04"
+  ],
+  "protected_v18_non_regression_status": {},
+  "recommendation": "no_paid_retry_until_objective_redesign",
+  "required_next_hypothesis": {
+    "expected_metric_axes": [
+      "boundary.required_improvement",
+      "boundary.psnr",
+      "boundary.ssim",
+      "boundary.lpips"
+    ],
+    "must_change": [
+      "camera/objective weighting during leaf training or selection",
+      "explicit boundary frozen-camera emphasis for DJI_0067.JPG-DJI_0070.JPG",
+      "tile_04/tile_10 boundary context coverage before merge/review"
+    ],
+    "must_not_repeat": [
+      "tile_10 density-only repair",
+      "merge-only protected overlap retention",
+      "frame-repeat-only camera weighting without loss/objective redesign",
+      "full 14-tile training before staged R0/R1/R2/R3 gates"
+    ]
+  }
+}

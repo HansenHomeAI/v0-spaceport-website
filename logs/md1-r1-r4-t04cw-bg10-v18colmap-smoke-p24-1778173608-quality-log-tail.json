@@ -1,0 +1,306 @@
+{
+    "events": [
+        {
+            "timestamp": 1778174393416,
+            "message": "2026-05-07 17:19:52,680 - INFO -    STDOUT: [17:18:45] 🎉 Done copying images with prefix 'frame_'.                                        process_data_utils.py:348",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393416,
+            "message": "2026-05-07 17:19:52,680 - INFO -    STDOUT: [17:19:51] 🎉 🎉 🎉 All DONE 🎉 🎉 🎉                                                images_to_nerfstudio_dataset.py:135",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393416,
+            "message": "2026-05-07 17:19:52,680 - INFO -    STDOUT:            Starting with 2157 images                                                 images_to_nerfstudio_dataset.py:138",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393416,
+            "message": "2026-05-07 17:19:52,680 - INFO -    STDOUT:            Colmap matched 2157 images                                                images_to_nerfstudio_dataset.py:138",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393416,
+            "message": "2026-05-07 17:19:52,680 - INFO -    STDOUT:            COLMAP found poses for all images, CONGRATS!                              images_to_nerfstudio_dataset.py:138",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393416,
+            "message": "2026-05-07 17:19:52,680 - INFO - 📊 ns-process-data STDERR:",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393416,
+            "message": "2026-05-07 17:19:52,680 - INFO -    STDERR: (empty)",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393416,
+            "message": "2026-05-07 17:19:52,680 - INFO - 📁 Updated input directory for validation: /tmp/tiled_quality_review/trainer_work/converted_data",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393416,
+            "message": "2026-05-07 17:19:52,680 - INFO - 🔍 COMPREHENSIVE transforms.json validation...",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393416,
+            "message": "2026-05-07 17:19:52,707 - INFO - 📄 transforms.json file size: 1907101 bytes",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393416,
+            "message": "2026-05-07 17:19:52,707 - INFO - 📊 TOP-LEVEL STRUCTURE:",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393416,
+            "message": "2026-05-07 17:19:52,707 - INFO -    ✅ frames: present",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393416,
+            "message": "2026-05-07 17:19:52,707 - INFO -    ⚠️  camera_angle_x: not present (optional)",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393416,
+            "message": "2026-05-07 17:19:52,707 - INFO -    ✅ fl_x: 3031.4066465843143",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393416,
+            "message": "2026-05-07 17:19:52,707 - INFO -    ✅ fl_y: 3031.4066465843143",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393416,
+            "message": "2026-05-07 17:19:52,708 - INFO -    ✅ cx: 2000.0",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393416,
+            "message": "2026-05-07 17:19:52,708 - INFO -    ✅ cy: 1125.0",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,708 - INFO -    ✅ w: 4000",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,708 - INFO -    ✅ h: 2250",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,708 - INFO -    ✅ k1: 0.0007698614763795466",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,708 - INFO -    ✅ k2: 0.0",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,708 - INFO -    ✅ p1: 0.0",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,708 - INFO -    ✅ p2: 0.0",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,708 - INFO - 📊 FRAMES ANALYSIS:",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,708 - INFO -    Total frames: 2157",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,708 - INFO -    ✅ 2157 frames available",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,708 - INFO -    📋 FRAME 0:",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,708 - INFO -       file_path: images/frame_02157.JPG",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,709 - INFO -       ✅ Image file exists: frame_02157.JPG",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,709 - INFO -       ✅ transform_matrix: 4x4 matrix present",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,709 - INFO -       ✅ transform_matrix has non-zero values",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,709 - INFO -    📋 FRAME 1:",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,709 - INFO -       file_path: images/frame_02156.JPG",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,709 - INFO -       ✅ Image file exists: frame_02156.JPG",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,709 - INFO -       ✅ transform_matrix: 4x4 matrix present",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,709 - INFO -       ✅ transform_matrix has non-zero values",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,709 - INFO -    📋 FRAME 2:",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,709 - INFO -       file_path: images/frame_02155.JPG",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,709 - INFO -       ✅ Image file exists: frame_02155.JPG",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,709 - INFO -       ✅ transform_matrix: 4x4 matrix present",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,709 - INFO -       ✅ transform_matrix has non-zero values",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,709 - INFO -    📋 FRAME 3:",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,710 - INFO -       file_path: images/frame_02154.JPG",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,710 - INFO -       ✅ Image file exists: frame_02154.JPG",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,710 - INFO -       ✅ transform_matrix: 4x4 matrix present",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393417,
+            "message": "2026-05-07 17:19:52,710 - INFO -       ✅ transform_matrix has non-zero values",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393418,
+            "message": "2026-05-07 17:19:52,710 - INFO -    📋 FRAME 4:",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393418,
+            "message": "2026-05-07 17:19:52,710 - INFO -       file_path: images/frame_02153.JPG",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393418,
+            "message": "2026-05-07 17:19:52,710 - INFO -       ✅ Image file exists: frame_02153.JPG",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393418,
+            "message": "2026-05-07 17:19:52,710 - INFO -       ✅ transform_matrix: 4x4 matrix present",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393418,
+            "message": "2026-05-07 17:19:52,710 - INFO -       ✅ transform_matrix has non-zero values",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393418,
+            "message": "2026-05-07 17:19:52,710 - INFO - 📊 VALIDATION SUMMARY:",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393418,
+            "message": "2026-05-07 17:19:52,710 - INFO -    Total frames: 2157",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393418,
+            "message": "2026-05-07 17:19:52,710 - INFO -    Valid frames: 5",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393418,
+            "message": "2026-05-07 17:19:52,710 - INFO -    Success rate: 0.2%",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174393418,
+            "message": "2026-05-07 17:19:52,710 - INFO - ✅ transforms.json validation passed",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174395419,
+            "message": "2026-05-07 17:19:54,674 - INFO - 🗺️ Saved converted image name map with 2157 entries",
+            "ingestionTime": 1778174399112
+        },
+        {
+            "timestamp": 1778174403428,
+            "message": "2026-05-07 17:20:03,076 - INFO - ☁️ Saved sparse point cloud PLY: /tmp/tiled_quality_review/trainer_work/converted_data/sparse_pc.ply",
+            "ingestionTime": 1778174409173
+        },
+        {
+            "timestamp": 1778174403428,
+            "message": "2026-05-07 17:20:03,076 - INFO - ✅ COLMAP data converted successfully",
+            "ingestionTime": 1778174409173
+        },
+        {
+            "timestamp": 1778174403428,
+            "message": "2026-05-07 17:20:03,076 - INFO - 📁 Final input directory: /tmp/tiled_quality_review/trainer_work/converted_data",
+            "ingestionTime": 1778174409173
+        }
+    ],
+    "nextForwardToken": "f/39654614289397026229039048002247729657609389801844047874/s",
+    "nextBackwardToken": "b/39654614066121965301350449097028611971280036893398073347/s"
+}

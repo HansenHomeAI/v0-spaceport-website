@@ -1,0 +1,118 @@
+{
+  "purpose": "No-spend attribution for the boundary frame-repeat camera-weighting leaf after frozen V18 review.",
+  "checked_at": "2026-05-07T17:25:29Z",
+  "status": "paid_compute_stopped",
+  "current_candidate": {
+    "label": "r4-t04cw-bg10-v18colmap-smoke-p24",
+    "review_comparison_json": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-t04cw-bg10-v18colmap-smoke-p24/review_comparison.json",
+    "preflight_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260507.json",
+    "promotion_block_reasons": [
+      "boundary_no_required_improvement",
+      "horizon_psnr_regression"
+    ],
+    "v18_block_reasons": [
+      "horizon_v18_median_psnr_regression",
+      "horizon_v18_single_camera_psnr_regression"
+    ],
+    "bucket_delta_vs_v18": {
+      "near_detail": {
+        "psnr": 0.002160486271270301,
+        "ssim": 0.00010511279106140137,
+        "lpips": -0.016674429178237915
+      },
+      "boundary": {
+        "psnr": 0.010892982651201422,
+        "ssim": -0.0019781887531280518,
+        "lpips": -0.005315691232681274
+      },
+      "horizon": {
+        "psnr": -0.7868157535148654,
+        "ssim": -0.0036685913801193237,
+        "lpips": -0.0014438331127166748
+      }
+    },
+    "merge": {
+      "merge_mode": "support_weighted_overlap",
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "source_gaussians": 8787057,
+      "retained_gaussians": 8413836,
+      "fallback_reasons": []
+    }
+  },
+  "reference_candidate": {
+    "label": "r4-t04bh-leaf-bg10-v18colmap-smoke-p24",
+    "review_comparison_json": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-t04bh-leaf-bg10-v18colmap-smoke-p24/review_comparison.json",
+    "preflight_json": "logs/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260507.json",
+    "promotion_block_reasons": [
+      "boundary_no_required_improvement"
+    ],
+    "v18_block_reasons": [
+      "horizon_v18_median_psnr_regression",
+      "horizon_v18_median_ssim_regression",
+      "horizon_v18_median_lpips_regression",
+      "near_detail_v18_single_camera_lpips_regression"
+    ],
+    "bucket_delta_vs_v18": {
+      "near_detail": {
+        "psnr": 0.5776066932227408,
+        "ssim": 0.0029085129499435425,
+        "lpips": -0.045768529176712036
+      },
+      "boundary": {
+        "psnr": 0.13065759577069258,
+        "ssim": 0.00525432825088501,
+        "lpips": -0.002215772867202759
+      },
+      "horizon": {
+        "psnr": -0.299692841819045,
+        "ssim": -0.010585620999336243,
+        "lpips": 0.010840654373168945
+      }
+    },
+    "merge": {
+      "merge_mode": "support_weighted_overlap",
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "source_gaussians": 8906648,
+      "retained_gaussians": 8530978,
+      "fallback_reasons": []
+    }
+  },
+  "camera_weighting_minus_reference_bucket_delta": {
+    "boundary": {
+      "psnr": -0.11976461311949116,
+      "ssim": -0.0072325170040130615,
+      "lpips": -0.0030999183654785156
+    },
+    "horizon": {
+      "psnr": -0.48712291169582045,
+      "ssim": 0.006917029619216919,
+      "lpips": -0.01228448748588562
+    },
+    "near_detail": {
+      "psnr": -0.5754462069514705,
+      "ssim": -0.002803400158882141,
+      "lpips": 0.02909409999847412
+    }
+  },
+  "camera_weighting_minus_reference_merge_delta": {
+    "source_gaussians": -119591,
+    "retained_gaussians": -117142,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0
+  },
+  "tile04_leaf_splat_delta_vs_reference": {
+    "current_file_size_mb": 95.39883422851562,
+    "reference_file_size_mb": 107.26012516021729,
+    "source_artifact_current": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-camera-weighting-20260507/tiles/tile_04/md1-r4t04cw2-20260507-1778163890-tile-04/output/model.tar.gz",
+    "source_artifact_reference": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile04-boundary-horizon-20260507/tiles/tile_04/md1-r4t04bh-20260507-1778134942-tile-04/output/model.tar.gz"
+  },
+  "conclusion": {
+    "failed_hypothesis": "boundary_frame_repeat_weighting",
+    "why": "Frame-repeat weighting reduced total retained/source density versus the prior tile_04 boundary+horizon leaf, failed the boundary required-improvement gate, and introduced horizon PSNR regression.",
+    "next_action": "No more paid compute for frame-repeat-only camera weighting. Require a new no-spend objective that explicitly targets boundary required improvement and horizon PSNR, likely loss/objective weighting rather than sample repetition alone."
+  },
+  "full_14tile_training_launched": false,
+  "lod_packaging_launched": false
+}

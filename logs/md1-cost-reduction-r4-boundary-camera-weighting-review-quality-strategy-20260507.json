@@ -1,0 +1,50 @@
+{
+  "checked_at": "2026-05-07T17:25:47Z",
+  "candidate_label": "r4-t04cw-bg10-v18colmap-smoke-p24",
+  "current_quality_blockers": [
+    "boundary_no_required_improvement",
+    "horizon_psnr_regression"
+  ],
+  "boundary_improvement_gap": {
+    "actual_delta": {
+      "psnr": 0.010892982651201422,
+      "ssim": -0.0019781887531280518,
+      "lpips": -0.005315691232681274
+    },
+    "required_improvement": {
+      "psnr": 0.5,
+      "ssim": 0.01,
+      "lpips": -0.025
+    },
+    "remaining_gap": {
+      "psnr": 0.4891070173487986,
+      "ssim": 0.011978188753128052,
+      "lpips": 0.019684308767318727
+    },
+    "passes_any_improvement_axis": false
+  },
+  "horizon_regression_gap": {
+    "actual_delta": {
+      "psnr": -0.7868157535148654,
+      "ssim": -0.0036685913801193237,
+      "lpips": -0.0014438331127166748
+    },
+    "allowed_regression": {
+      "psnr_min_delta": -0.75,
+      "ssim_min_delta": -0.012,
+      "lpips_max_delta": 0.03,
+      "sky_score_min_ratio": 0.9
+    },
+    "remaining_gap_to_pass": {
+      "psnr": 0.036815753514865435,
+      "ssim": 0,
+      "lpips": 0
+    },
+    "passes_regression_gate": false
+  },
+  "v18_non_regression_blockers": [
+    "horizon_v18_median_psnr_regression",
+    "horizon_v18_single_camera_psnr_regression"
+  ],
+  "no_more_paid_compute_without_new_objective": true
+}

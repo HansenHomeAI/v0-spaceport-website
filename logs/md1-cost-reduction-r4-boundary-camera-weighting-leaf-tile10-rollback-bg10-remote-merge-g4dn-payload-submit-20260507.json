@@ -1,0 +1,110 @@
+{
+  "AppSpecification": {
+    "ContainerEntrypoint": [
+      "python3",
+      "/opt/ml/code/run_tiled_merge_packaging.py"
+    ],
+    "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent90742618md1geometryconsistency"
+  },
+  "Environment": {
+    "BACKGROUND_SOURCE_TILE_ID": "tile_10",
+    "MERGE_MODE": "support_weighted_overlap",
+    "MERGE_PLAN_PATH": "/opt/ml/processing/input/merge-plan/merge_plan.json",
+    "OUTPUT_DIR": "/opt/ml/processing/output/artifact",
+    "TILE_MANIFEST_PATH": "/opt/ml/processing/input/tile-selection/3dgs_tile_manifest.json",
+    "VIEW_BUCKET_MANIFEST_PATH": "/opt/ml/processing/input/tile-selection/3dgs_view_buckets.json"
+  },
+  "ProcessingInputs": [
+    {
+      "InputName": "merge-plan",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/merge-plan",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-camera-weighting-leaf-tile10-rollback-bg10-merge-g4dn-20260507/inputs/merge-plan/merge_plan.json"
+      }
+    },
+    {
+      "InputName": "tile-selection",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/tile-selection",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-camera-weighting-20260507/inputs/tile-selection"
+      }
+    },
+    {
+      "InputName": "artifact-00",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/artifacts/artifact-00",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz"
+      }
+    },
+    {
+      "InputName": "artifact-01",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/artifacts/artifact-01",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-camera-weighting-20260507/tiles/tile_04/md1-r4t04cw2-20260507-1778163890-tile-04/output/model.tar.gz"
+      }
+    },
+    {
+      "InputName": "artifact-02",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/artifacts/artifact-02",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_11/md1-r4leafreb-1777858863-tile-11/output/model.tar.gz"
+      }
+    }
+  ],
+  "ProcessingJobName": "md1-r4t04cw-bg10-20260507",
+  "ProcessingOutputConfig": {
+    "Outputs": [
+      {
+        "OutputName": "artifact",
+        "S3Output": {
+          "LocalPath": "/opt/ml/processing/output/artifact",
+          "S3UploadMode": "EndOfJob",
+          "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-camera-weighting-leaf-tile10-rollback-bg10-merge-g4dn-20260507/output/artifact"
+        }
+      }
+    ]
+  },
+  "ProcessingResources": {
+    "ClusterConfig": {
+      "InstanceCount": 1,
+      "InstanceType": "ml.g4dn.xlarge",
+      "VolumeSizeInGB": 120
+    }
+  },
+  "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+  "StoppingCondition": {
+    "MaxRuntimeInSeconds": 3600
+  },
+  "Tags": [
+    {
+      "Key": "Project",
+      "Value": "Spaceport"
+    },
+    {
+      "Key": "Component",
+      "Value": "3DGS"
+    },
+    {
+      "Key": "Benchmark",
+      "Value": "true"
+    },
+    {
+      "Key": "Branch",
+      "Value": "agent-90742618-md1-geometry-consistency"
+    },
+    {
+      "Key": "Stage",
+      "Value": "remote-tiled-merge"
+    }
+  ]
+}

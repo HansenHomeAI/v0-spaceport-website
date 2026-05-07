@@ -1,0 +1,4 @@
+2026-05-07 11:21:07   24931180 manual-validations/md1-cost-reduction-r4-boundary-camera-weighting-leaf-bg10-review-v18colmap-20260507/outputs/r4-t04cw-bg10-v18colmap-smoke-p24/md1-r1-r4-t04cw-bg10-v18colmap-smoke-p24-1778173608-quality/output/model.tar.gz
+
+Total Objects: 1
+   Total Size: 24931180

@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "Boundary-camera weighting leaf is valid for merge/review, but no merged frozen-quality result exists yet; previous candidates remain blocked by boundary_no_required_improvement. Do not promote/package LOD.",
+  "blocked_promotion_reason": "Boundary camera repeat weighting failed promotion: boundary_no_required_improvement and horizon_psnr_regression; V18 non-regression also blocks on horizon PSNR. Stop paid compute until a new no-spend loss/objective hypothesis passes gates.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -920,7 +920,7 @@
     "local_status_update_pending_commit": true,
     "ml_container_build": "not_triggered_for_non_container_status_commit"
   },
-  "last_updated": "2026-05-07T15:39:26Z",
+  "last_updated": "2026-05-07T17:25:00Z",
   "latest_boundary_merge_review_gate_status": "logs/md1-cost-reduction-r4-boundary-paired-merge-review-gate-blocked-20260506.json blocks merge/review spend until tile_04 and tile_10 leaf gate summaries are present and passing; it confirms the paired strategy targets boundary_no_required_improvement and includes tile_13 context support.",
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
@@ -952,9 +952,38 @@
     "pages_run_id": 25107446761
   },
   "latest_quality_strategy_gate_status": "tile04_boundary_horizon_leaf_dryrun_quality_gate_allowed; boundary_only_previous_dryrun_blocked_missing_horizon",
-  "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-t04bh-bg10-bop-v18colmap-smoke-p24/review_comparison.json",
-  "latest_review_status": "protected-overlap review completed in 787 billable seconds/about $0.331; promotion blocked only on boundary_no_required_improvement; V18 non-regression blocked on horizon median and near_detail single-camera LPIPS; metrics identical to rollback bg10 despite +18104 retained overlap splats.",
-  "latest_sagemaker_evidence_spend_total_usd": 11.915,
+  "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-t04cw-bg10-v18colmap-smoke-p24/review_comparison.json",
+  "latest_review_status": {
+    "status": "blocked",
+    "candidate_label": "r4-t04cw-bg10-v18colmap-smoke-p24",
+    "promotion_block_reasons": [
+      "boundary_no_required_improvement",
+      "horizon_psnr_regression"
+    ],
+    "v18_non_regression_block_reasons": [
+      "horizon_v18_median_psnr_regression",
+      "horizon_v18_single_camera_psnr_regression"
+    ],
+    "bucket_deltas": {
+      "near_detail": {
+        "psnr": 0.002160486271270301,
+        "ssim": 0.00010511279106140137,
+        "lpips": -0.016674429178237915
+      },
+      "boundary": {
+        "psnr": 0.010892982651201422,
+        "ssim": -0.0019781887531280518,
+        "lpips": -0.005315691232681274
+      },
+      "horizon": {
+        "psnr": -0.7868157535148654,
+        "ssim": -0.0036685913801193237,
+        "lpips": -0.0014438331127166748
+      }
+    },
+    "no_full14_or_lod_launched": true
+  },
+  "latest_sagemaker_evidence_spend_total_usd": 12.545,
   "latest_tile04_leaf_reuse_merge_dryrun_status": "protected tile_04/tile_10 overlap-retention merge and review completed; no metric gain versus rollback bg10, so no paid retry is recommended without redesigned boundary objective/camera weighting.",
   "latest_training_cost_reduction_status": "Evidence spend now about $10.855; no full 14-tile training or LOD packaging launched in protected-overlap step. Current accepted rollback-based LOD remains the only viewer-validated candidate; cheaper high-quality production path remains blocked on boundary_no_required_improvement.",
   "live_compute_status": "No SageMaker training jobs are InProgress. Exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. Tile_13 hard proof is complete/preflighted/cached; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
@@ -7587,7 +7616,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Wait for external md1-fanout SFM Processing jobs to finish, re-check AWS idle, upload boundary-camera-weighting bg10 merge_plan.json, submit at most one bounded no-training g4dn merge, then streaming preflight before any frozen V18 review; no full14 training/LOD/promotion",
+  "next_unblocked_step": "No more paid compute for frame-repeat-only camera weighting. Create a new no-spend objective that targets boundary_no_required_improvement plus horizon_psnr_regression, includes tile_04/tile_10/tile_01 context, names frozen cameras, uses loss/objective weighting rather than sample repetition alone, and passes the objective gate before any leaf-only proof.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -13515,7 +13544,7 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-07T12:37:59Z",
+  "updated": "2026-05-07T17:25:00Z",
   "version": "1.0.0",
   "md1_r4_boundary_overlap_protected_merge_review_20260507": {
     "checked_at": "2026-05-07T11:48:06Z",
@@ -14034,5 +14063,98 @@
       "md1-fanout-20260507T1429Z-c01-1778167770",
       "md1-fanout-20260507T1429Z-c02-1778167770"
     ]
+  },
+  "md1_r4_boundary_camera_weighting_merge_review_20260507": {
+    "checked_at": "2026-05-07T17:25:00Z",
+    "status": "review_blocked_stop_paid_compute",
+    "full_14tile_training_launched": false,
+    "lod_packaging_launched": false,
+    "new_training_launched": false,
+    "processing_merge": {
+      "job_name": "md1-r4t04cw-bg10-20260507",
+      "instance_type": "ml.g4dn.xlarge",
+      "duration_seconds": 1464,
+      "estimated_cost_usd_at_0_736_per_hour": 0.299,
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-camera-weighting-leaf-tile10-rollback-bg10-merge-g4dn-20260507/output/artifact/model.tar.gz",
+      "preflight_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260507.json",
+      "preflight_dir": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260507",
+      "preflight_decision": "preflight_passed_run_frozen_smoke_review",
+      "merge_mode": "support_weighted_overlap",
+      "background_source_tile_id": "tile_10",
+      "retained_gaussians": 8413836,
+      "source_gaussians": 8787057,
+      "dropped_gaussians": 373221,
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0
+    },
+    "frozen_v18_p24_review": {
+      "job_name": "md1-r1-r4-t04cw-bg10-v18colmap-smoke-p24-1778173608-quality",
+      "instance_type": "ml.g5.2xlarge",
+      "duration_seconds": 787,
+      "estimated_cost_usd_at_1_515_per_hour": 0.331,
+      "colmap_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap",
+      "model_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-camera-weighting-leaf-tile10-rollback-bg10-merge-g4dn-20260507/output/artifact/model.tar.gz",
+      "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-camera-weighting-leaf-bg10-review-v18colmap-20260507/outputs/r4-t04cw-bg10-v18colmap-smoke-p24",
+      "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-camera-weighting-leaf-bg10-review-v18colmap-20260507/outputs/r4-t04cw-bg10-v18colmap-smoke-p24/md1-r1-r4-t04cw-bg10-v18colmap-smoke-p24-1778173608-quality/output/model.tar.gz",
+      "summary_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-bg10-v18colmap-review-20260507.json",
+      "quality_review_manifest_json": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-t04cw-bg10-v18colmap-smoke-p24/quality_review_manifest.json",
+      "review_comparison_json": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-t04cw-bg10-v18colmap-smoke-p24/review_comparison.json",
+      "promotion_status": "blocked",
+      "promotion_block_reasons": [
+        "boundary_no_required_improvement",
+        "horizon_psnr_regression"
+      ],
+      "v18_non_regression_status": "blocked",
+      "v18_non_regression_block_reasons": [
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_single_camera_psnr_regression"
+      ],
+      "bucket_deltas": {
+        "near_detail": {
+          "psnr": 0.002160486271270301,
+          "ssim": 0.00010511279106140137,
+          "lpips": -0.016674429178237915
+        },
+        "boundary": {
+          "psnr": 0.010892982651201422,
+          "ssim": -0.0019781887531280518,
+          "lpips": -0.005315691232681274
+        },
+        "horizon": {
+          "psnr": -0.7868157535148654,
+          "ssim": -0.0036685913801193237,
+          "lpips": -0.0014438331127166748
+        }
+      }
+    },
+    "attribution_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-review-attribution-20260507.json",
+    "post_review_objective_gate_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-post-review-objective-gate-20260507.json",
+    "repeat_objective_blocked_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-repeat-objective-blocked-20260507.json",
+    "failed_hypothesis": "boundary_frame_repeat_weighting",
+    "camera_weighting_minus_reference_bucket_delta": {
+      "boundary": {
+        "psnr": -0.11976461311949116,
+        "ssim": -0.0072325170040130615,
+        "lpips": -0.0030999183654785156
+      },
+      "horizon": {
+        "psnr": -0.48712291169582045,
+        "ssim": 0.006917029619216919,
+        "lpips": -0.01228448748588562
+      },
+      "near_detail": {
+        "psnr": -0.5754462069514705,
+        "ssim": -0.002803400158882141,
+        "lpips": 0.02909409999847412
+      }
+    },
+    "camera_weighting_minus_reference_merge_delta": {
+      "source_gaussians": -119591,
+      "retained_gaussians": -117142,
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0
+    },
+    "current_total_evidence_spend_usd": 12.545,
+    "next_required_action": "No-spend objective redesign; do not submit another paid retry until the gate allows it."
   }
 }

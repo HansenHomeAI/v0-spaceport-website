@@ -1,0 +1,145 @@
+{
+    "TrainingJobName": "md1-r1-r4-t04cw-bg10-v18colmap-smoke-p24-1778173608-quality",
+    "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-r1-r4-t04cw-bg10-v18colmap-smoke-p24-1778173608-quality",
+    "ModelArtifacts": {
+        "S3ModelArtifacts": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-camera-weighting-leaf-bg10-review-v18colmap-20260507/outputs/r4-t04cw-bg10-v18colmap-smoke-p24/md1-r1-r4-t04cw-bg10-v18colmap-smoke-p24-1778173608-quality/output/model.tar.gz"
+    },
+    "TrainingJobStatus": "Completed",
+    "SecondaryStatus": "Completed",
+    "AlgorithmSpecification": {
+        "TrainingImage": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent90742618md1geometryconsistency",
+        "TrainingInputMode": "File",
+        "EnableSageMakerMetricsTimeSeries": false,
+        "ContainerEntrypoint": [
+            "python3",
+            "/opt/ml/code/run_tiled_quality_review.py"
+        ]
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "InputDataConfig": [
+        {
+            "ChannelName": "model",
+            "DataSource": {
+                "S3DataSource": {
+                    "S3DataType": "S3Prefix",
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-camera-weighting-leaf-tile10-rollback-bg10-merge-g4dn-20260507/output/artifact/model.tar.gz",
+                    "S3DataDistributionType": "FullyReplicated"
+                }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None"
+        },
+        {
+            "ChannelName": "colmap",
+            "DataSource": {
+                "S3DataSource": {
+                    "S3DataType": "S3Prefix",
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap",
+                    "S3DataDistributionType": "FullyReplicated"
+                }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None"
+        },
+        {
+            "ChannelName": "review-manifest",
+            "DataSource": {
+                "S3DataSource": {
+                    "S3DataType": "S3Prefix",
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-camera-weighting-leaf-bg10-review-v18colmap-20260507/review-input",
+                    "S3DataDistributionType": "FullyReplicated"
+                }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None"
+        },
+        {
+            "ChannelName": "baseline-review",
+            "DataSource": {
+                "S3DataSource": {
+                    "S3DataType": "S3Prefix",
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-9tile-canary-review-20260505/baselines/v18-smoke-p24",
+                    "S3DataDistributionType": "FullyReplicated"
+                }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None"
+        }
+    ],
+    "OutputDataConfig": {
+        "KmsKeyId": "",
+        "S3OutputPath": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-camera-weighting-leaf-bg10-review-v18colmap-20260507/outputs/r4-t04cw-bg10-v18colmap-smoke-p24",
+        "CompressionType": "GZIP"
+    },
+    "ResourceConfig": {
+        "InstanceType": "ml.g5.2xlarge",
+        "InstanceCount": 1,
+        "VolumeSizeInGB": 100
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 1200
+    },
+    "CreationTime": "2026-05-07T11:06:49.919000-06:00",
+    "TrainingStartTime": "2026-05-07T11:08:03.195000-06:00",
+    "TrainingEndTime": "2026-05-07T11:21:10.147000-06:00",
+    "LastModifiedTime": "2026-05-07T11:21:10.662000-06:00",
+    "SecondaryStatusTransitions": [
+        {
+            "Status": "Starting",
+            "StartTime": "2026-05-07T11:06:49.919000-06:00",
+            "EndTime": "2026-05-07T11:07:01.150000-06:00",
+            "StatusMessage": "Starting the training job"
+        },
+        {
+            "Status": "Pending",
+            "StartTime": "2026-05-07T11:07:01.150000-06:00",
+            "EndTime": "2026-05-07T11:08:03.195000-06:00",
+            "StatusMessage": "Preparing the instances for training"
+        },
+        {
+            "Status": "Downloading",
+            "StartTime": "2026-05-07T11:08:03.195000-06:00",
+            "EndTime": "2026-05-07T11:12:40.802000-06:00",
+            "StatusMessage": "Downloading the training image"
+        },
+        {
+            "Status": "Training",
+            "StartTime": "2026-05-07T11:12:40.802000-06:00",
+            "EndTime": "2026-05-07T11:20:57.642000-06:00",
+            "StatusMessage": "Training image download completed. Training in progress."
+        },
+        {
+            "Status": "Uploading",
+            "StartTime": "2026-05-07T11:20:57.642000-06:00",
+            "EndTime": "2026-05-07T11:21:10.147000-06:00",
+            "StatusMessage": "Uploading generated training model"
+        },
+        {
+            "Status": "Completed",
+            "StartTime": "2026-05-07T11:21:10.147000-06:00",
+            "EndTime": "2026-05-07T11:21:10.147000-06:00",
+            "StatusMessage": "Training job completed"
+        }
+    ],
+    "EnableNetworkIsolation": false,
+    "EnableInterContainerTrafficEncryption": false,
+    "EnableManagedSpotTraining": false,
+    "TrainingTimeInSeconds": 787,
+    "BillableTimeInSeconds": 787,
+    "ProfilingStatus": "Disabled",
+    "Environment": {
+        "BASELINE_REVIEW_MANIFEST": "/opt/ml/input/data/baseline-review/quality_review_manifest.json",
+        "COLMAP_INPUT_DIR": "/opt/ml/input/data/colmap",
+        "FROZEN_REVIEW_CAMERA_MANIFEST": "/opt/ml/input/data/review-manifest/review_camera_manifest.json",
+        "MODEL_INPUT_DIR": "/opt/ml/input/data/model",
+        "OUTPUT_DIR": "/opt/ml/model",
+        "PYTHONUNBUFFERED": "1",
+        "QUALITY_REVIEW_CAMERA_SET": "smoke",
+        "QUALITY_REVIEW_CULL_MARGIN": "0.5",
+        "QUALITY_REVIEW_MAX_GAUSSIANS_PER_VIEW": "500000",
+        "QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET": "4",
+        "QUALITY_REVIEW_MIN_GAUSSIANS_ON_OOM": "75000",
+        "QUALITY_REVIEW_RENDER_SCALE": "0.25",
+        "QUALITY_REVIEW_TILE_IDS": "tile_00,tile_01,tile_02,tile_03,tile_04,tile_05,tile_06,tile_07,tile_08,tile_09,tile_10,tile_11,tile_12,tile_13"
+    }
+}

@@ -1,0 +1,372 @@
+{
+  "training_methodology": "Spaceport splatfacto-w-light skybox export",
+  "framework": "NerfStudio",
+  "model_variant": "splatfacto-w-light",
+  "training_mode": "leaf_tile",
+  "bilateral_guided_processing": false,
+  "bilateral_guided_processing_requested": false,
+  "sh_degree": 1,
+  "enable_bg_model": true,
+  "enable_alpha_loss": true,
+  "enable_robust_mask": true,
+  "max_iterations": 3000,
+  "downscale_factor": 1,
+  "commercial_license": "Apache 2.0",
+  "sogs_compatible": true,
+  "playcanvas_ready": true,
+  "training_completed": true,
+  "timestamp": 1777863265.4478755,
+  "version": "1.0.0",
+  "output_file": "splat.ply",
+  "file_size_mb": 0.012402534484863281,
+  "background_skybox": "background_skybox.webp",
+  "background_skybox_size_mb": 0.04318428039550781,
+  "background_selection": {
+    "requested_mode": "auto_camera",
+    "resolved_mode": "camera",
+    "camera_idx": 5,
+    "image_path": "/tmp/nerfstudio_training/converted_data/images/frame_01539.JPG",
+    "score": 0.5889722740133957,
+    "stride": 5,
+    "max_frames": 32,
+    "sampled_candidates": 20
+  },
+  "floater_pruning": {
+    "enabled": true,
+    "evaluated_gaussians": 119,
+    "candidate_gaussians": 117,
+    "removed_gaussians": 0,
+    "remaining_gaussians": 119,
+    "sampled_views": 24,
+    "min_views": 6,
+    "top_region_ratio": 0.35,
+    "top_view_fraction": 0.9,
+    "min_sky_views": 2,
+    "sky_min_luminance": 0.3,
+    "sky_min_saturation": 0.08,
+    "sky_blue_dominance_margin": 0.02,
+    "max_opacity": 0.75,
+    "max_color_distance": 0.18,
+    "min_edge_support": 1,
+    "patch_size": 9
+  },
+  "export_manifest": {
+    "ply": "splat.ply",
+    "skybox": "background_skybox.webp",
+    "camera_idx": 5,
+    "background_appearance_mode": "camera",
+    "background_skipped": false,
+    "foreground_coordinate_frame": "planner",
+    "foreground_transform": {
+      "coordinate_frame": "planner",
+      "dataparser_transform_source": "train_dataparser_outputs",
+      "dataparser_scale": 3.5155377981835217e-06,
+      "applied": true,
+      "position_transform_applied": true,
+      "scale_transform_applied": true,
+      "rotation_transform_applied": true,
+      "dataparser_transform": [
+        [
+          0.9999405741691589,
+          -0.010783616453409195,
+          -0.0016056618187576532,
+          -2932.4853515625
+        ],
+        [
+          -0.0016056618187576532,
+          -0.29132869839668274,
+          0.9566216468811035,
+          -2336.16845703125
+        ],
+        [
+          -0.010783616453409195,
+          -0.9565622210502625,
+          -0.29132869839668274,
+          3734.643310546875
+        ]
+      ],
+      "model_to_output_linear": [
+        [
+          284434.59156695777,
+          -456.7328340871929,
+          -3067.415892976547
+        ],
+        [
+          -456.7328340871929,
+          272112.4723979518,
+          -82868.8875904591
+        ],
+        [
+          3067.4158929765476,
+          82868.8875904591,
+          272095.56396490947
+        ]
+      ],
+      "planner_transform_applied": true,
+      "planner_transform_source": "/tmp/nerfstudio_training/converted_data/transforms.json",
+      "planner_scale": 1.0,
+      "planner_offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "planner_transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          -0.0,
+          -1.0,
+          -0.0,
+          -0.0
+        ]
+      ],
+      "appearance": {
+        "requested_camera_idx": 5,
+        "appearance_camera_idx": 5,
+        "appearance_num_embeddings": 87,
+        "appearance_camera_clamped": false
+      },
+      "planner_scale_transform_applied": true,
+      "model_to_output_rotation": [
+        [
+          0.9999405659668456,
+          -0.0016056616803310922,
+          -0.010783616483958376
+        ],
+        [
+          -0.0016056616803315042,
+          0.9566216644766365,
+          -0.29132870250718146
+        ],
+        [
+          0.010783616483958312,
+          0.2913287025071811,
+          0.956562230443482
+        ]
+      ]
+    },
+    "background_selection": {
+      "requested_mode": "auto_camera",
+      "resolved_mode": "camera",
+      "camera_idx": 5,
+      "image_path": "/tmp/nerfstudio_training/converted_data/images/frame_01539.JPG",
+      "score": 0.5889722740133957,
+      "stride": 5,
+      "max_frames": 32,
+      "sampled_candidates": 20
+    },
+    "floater_pruning": {
+      "enabled": true,
+      "evaluated_gaussians": 119,
+      "candidate_gaussians": 117,
+      "removed_gaussians": 0,
+      "remaining_gaussians": 119,
+      "sampled_views": 24,
+      "min_views": 6,
+      "top_region_ratio": 0.35,
+      "top_view_fraction": 0.9,
+      "min_sky_views": 2,
+      "sky_min_luminance": 0.3,
+      "sky_min_saturation": 0.08,
+      "sky_blue_dominance_margin": 0.02,
+      "max_opacity": 0.75,
+      "max_color_distance": 0.18,
+      "min_edge_support": 1,
+      "patch_size": 9
+    }
+  },
+  "training_selection": {
+    "training_mode": "leaf_tile",
+    "tile_id": "tile_11",
+    "selected_image_names": [
+      "DJI_0053.JPG",
+      "DJI_03062.JPG",
+      "DJI_0054.JPG",
+      "DJI_02032.JPG",
+      "DJI_02034.JPG",
+      "DJI_02036.JPG",
+      "DJI_02038.JPG",
+      "DJI_02085.JPG",
+      "DJI_02087.JPG",
+      "DJI_02089.JPG",
+      "DJI_02091.JPG",
+      "DJI_02093.JPG",
+      "DJI_02095.JPG",
+      "DJI_02097.JPG",
+      "DJI_02099.JPG",
+      "DJI_02101.JPG",
+      "DJI_02443.JPG",
+      "DJI_02445.JPG",
+      "DJI_02447.JPG",
+      "DJI_02449.JPG",
+      "DJI_02451.JPG",
+      "DJI_02453.JPG",
+      "DJI_02455.JPG",
+      "DJI_02457.JPG",
+      "DJI_02459.JPG",
+      "DJI_02499.JPG",
+      "DJI_02501.JPG",
+      "DJI_02503.JPG",
+      "DJI_02505.JPG",
+      "DJI_02507.JPG",
+      "DJI_02509.JPG",
+      "DJI_02549.JPG",
+      "DJI_02551.JPG",
+      "DJI_02553.JPG",
+      "DJI_02555.JPG",
+      "DJI_02557.JPG",
+      "DJI_02559.JPG",
+      "DJI_02561.JPG",
+      "DJI_02563.JPG",
+      "DJI_02565.JPG",
+      "DJI_02567.JPG",
+      "DJI_02569.JPG",
+      "DJI_02571.JPG",
+      "DJI_02573.JPG",
+      "DJI_02575.JPG",
+      "DJI_02577.JPG",
+      "DJI_02579.JPG",
+      "DJI_02581.JPG",
+      "DJI_02583.JPG",
+      "DJI_02585.JPG",
+      "DJI_02602.JPG",
+      "DJI_02604.JPG",
+      "DJI_02606.JPG",
+      "DJI_02608.JPG",
+      "DJI_02610.JPG",
+      "DJI_02612.JPG",
+      "DJI_02614.JPG",
+      "DJI_02616.JPG",
+      "DJI_02618.JPG",
+      "DJI_02620.JPG",
+      "DJI_02622.JPG",
+      "DJI_02624.JPG",
+      "DJI_02626.JPG",
+      "DJI_02628.JPG",
+      "DJI_02630.JPG",
+      "DJI_02632.JPG",
+      "DJI_02979.JPG",
+      "DJI_03014.JPG",
+      "DJI_03016.JPG",
+      "DJI_03018.JPG",
+      "DJI_03020.JPG",
+      "DJI_03022.JPG",
+      "DJI_03024.JPG",
+      "DJI_03026.JPG",
+      "DJI_03028.JPG",
+      "DJI_03030.JPG",
+      "DJI_03032.JPG",
+      "DJI_03034.JPG",
+      "DJI_03036.JPG",
+      "DJI_03038.JPG",
+      "DJI_03040.JPG",
+      "DJI_03042.JPG",
+      "DJI_03044.JPG",
+      "DJI_03046.JPG",
+      "DJI_03048.JPG",
+      "DJI_03051.JPG",
+      "DJI_03053.JPG",
+      "DJI_03055.JPG",
+      "DJI_03057.JPG",
+      "DJI_03059.JPG",
+      "DJI_03061.JPG",
+      "DJI_0056.JPG",
+      "DJI_0058.JPG",
+      "DJI_0060.JPG",
+      "DJI_0062.JPG",
+      "DJI_0064.JPG"
+    ],
+    "selected_image_count": 96,
+    "max_selected_images": 96,
+    "selection_stride": 1,
+    "view_bucket_counts": {
+      "near_detail": 0,
+      "boundary": 96,
+      "horizon": 2
+    },
+    "review_image_names_by_bucket": {
+      "near_detail_camera_ids": [],
+      "boundary_camera_ids": [
+        "DJI_0053.JPG",
+        "DJI_0054.JPG",
+        "DJI_0056.JPG",
+        "DJI_0058.JPG"
+      ],
+      "horizon_camera_ids": [
+        "DJI_0053.JPG",
+        "DJI_0054.JPG"
+      ]
+    },
+    "tile_manifest_path": "/opt/ml/input/data/tile-selection/3dgs_tile_manifest.json",
+    "view_bucket_manifest_path": "/opt/ml/input/data/tile-selection/3dgs_view_buckets.json",
+    "image_name_map_path": "/tmp/nerfstudio_training/converted_data/colmap_image_name_map.json",
+    "scaffold_initialization": {
+      "scaffold_source_artifact": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+      "filtered_point_cloud": "/tmp/nerfstudio_training/converted_data/scaffold_init.ply",
+      "scaffold_filter_bounds": {
+        "min_x": -105379.9854,
+        "max_x": 324537.2034,
+        "min_y": -64112.593400000005,
+        "max_y": 298477.4794,
+        "min_z": -168400.7764,
+        "max_z": 23750.2484
+      },
+      "source_gaussian_count": 1554116,
+      "source_filtered_gaussian_count": 1554116,
+      "inherited_gaussian_count": 300000,
+      "inherited_gaussian_cap": 300000,
+      "inherited_attributes": [
+        "positions",
+        "rgb_from_gaussian_dc"
+      ],
+      "reinitialized_attributes": [
+        "scale",
+        "opacity",
+        "rotation",
+        "sh_rest",
+        "appearance_embeddings"
+      ],
+      "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+      "scaffold_init_downsample_strategy": "spatial_key_even_sample",
+      "fallback_used": false,
+      "external_scaffold": {
+        "stage_name": "scaffold",
+        "training_mode": "global_scaffold",
+        "status": "reused_external_scaffold",
+        "source_dir": "/opt/ml/input/data/scaffold",
+        "source_kind": "directory_tar_artifact",
+        "source_artifact": "/opt/ml/input/data/scaffold/model.tar.gz",
+        "output_dir": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00",
+        "splat_ply": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply"
+      }
+    },
+    "tile_manifest_resolution": {
+      "source_mode": "native_3dgs_manifests",
+      "chunk_planner_available": false,
+      "native_tile_manifest_available": true,
+      "native_view_buckets_available": true,
+      "ownership_bounds_available": true,
+      "tile_count": 14,
+      "scaffold_count": 240
+    }
+  },
+  "tile_manifest_resolution": {
+    "source_mode": "native_3dgs_manifests",
+    "chunk_planner_available": false,
+    "native_tile_manifest_available": true,
+    "native_view_buckets_available": true,
+    "ownership_bounds_available": true,
+    "tile_count": 14,
+    "scaffold_count": 240
+  }
+}

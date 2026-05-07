@@ -126,6 +126,33 @@ class PlanMd1BoundaryObjectiveStrategyTests(unittest.TestCase):
         self.assertIn("objective_repeats_failed_density_or_merge_only_hypothesis", reasons)
         self.assertFalse(report["paid_retry_allowed"])
 
+    def test_records_and_blocks_frame_repeat_without_loss_weighting(self):
+        attr = attribution()
+        attr["camera_weighting_minus_reference_bucket_delta"] = {
+            "boundary": {"psnr": -0.12, "ssim": -0.007, "lpips": -0.003},
+            "horizon": {"psnr": -0.49, "ssim": 0.006, "lpips": -0.012},
+        }
+        candidate = valid_candidate()
+        candidate["objective_changes"] = [
+            "boundary_camera_weighting",
+            "boundary_frame_repeat_weighting",
+            "frozen_camera_weighting",
+        ]
+
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=attr,
+            candidate_objective=candidate,
+            max_estimated_usd=2.0,
+        )
+
+        hypotheses = {item["hypothesis"] for item in report["failed_hypotheses"]}
+        self.assertIn("boundary_frame_repeat_weighting", hypotheses)
+        reasons = report["candidate_objective_gate"]["block_reasons"]
+        self.assertIn("objective_repeats_failed_frame_repeat_without_loss_weighting", reasons)
+        self.assertFalse(report["paid_retry_allowed"])
+
     def test_blocks_candidate_above_budget(self):
         candidate = valid_candidate()
         candidate["planned_cost_estimate"] = {"estimated_usd": 3.0}
@@ -139,6 +166,25 @@ class PlanMd1BoundaryObjectiveStrategyTests(unittest.TestCase):
         )
 
         self.assertIn("objective_estimated_cost_above_cap", report["candidate_objective_gate"]["block_reasons"])
+        self.assertFalse(report["paid_retry_allowed"])
+
+    def test_horizon_psnr_blocker_requires_horizon_psnr_axis(self):
+        qs = quality_strategy()
+        qs["current_quality_blockers"] = ["boundary_no_required_improvement", "horizon_psnr_regression"]
+        rt = responsible_tiles()
+        rt["current_quality_blockers"] = ["boundary_no_required_improvement", "horizon_psnr_regression"]
+        candidate = valid_candidate()
+        candidate["expected_metric_axes"] = ["boundary.required_improvement", "boundary.psnr", "boundary.ssim"]
+
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=qs,
+            responsible_tiles=rt,
+            attribution=attribution(),
+            candidate_objective=candidate,
+            max_estimated_usd=2.0,
+        )
+
+        self.assertIn("objective_missing_horizon_psnr_axis", report["candidate_objective_gate"]["block_reasons"])
         self.assertFalse(report["paid_retry_allowed"])
 
 

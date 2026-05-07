@@ -33,6 +33,20 @@ FAILED_DENSITY_OR_MERGE_TERMS = (
     "merge_only",
     "retention_only",
 )
+FAILED_FRAME_REPEAT_TERMS = (
+    "boundary_frame_repeat",
+    "camera_repeat",
+    "repeat_weighting",
+    "repeat_factor",
+)
+LOSS_WEIGHTING_TERMS = (
+    "loss_weight",
+    "loss_weighting",
+    "boundary_loss",
+    "photometric_loss",
+    "ssim_loss",
+    "lpips_loss",
+)
 
 
 def now_iso() -> str:
@@ -263,6 +277,20 @@ def extract_failed_hypotheses(attribution: Mapping[str, Any]) -> list[dict[str, 
                 "bucket_delta_vs_rollback_bg10": protected_bucket_delta if isinstance(protected_bucket_delta, Mapping) else {},
             }
         )
+    camera_weighting_delta = (
+        attribution.get("camera_weighting_minus_reference_bucket_delta")
+        or attribution.get("camera_weighting_minus_baseline_bucket_delta")
+        or attribution.get("camera_repeat_minus_reference_bucket_delta")
+    )
+    if isinstance(camera_weighting_delta, Mapping):
+        failed.append(
+            {
+                "hypothesis": "boundary_frame_repeat_weighting",
+                "status": "failed",
+                "evidence": "Repeating frozen boundary cameras changed the tile_04 leaf but did not improve the frozen boundary gate and introduced horizon PSNR regression.",
+                "metric_delta_vs_reference_bg10": camera_weighting_delta,
+            }
+        )
     return failed
 
 
@@ -278,6 +306,36 @@ def repeats_failed_density_or_merge_only(changes: Sequence[str]) -> bool:
     return any(term in normalized for term in FAILED_DENSITY_OR_MERGE_TERMS) and not has_approved_objective(changes)
 
 
+def repeats_failed_frame_repeat_without_loss(changes: Sequence[str]) -> bool:
+    if not changes:
+        return False
+    normalized = " ".join(changes).lower()
+    has_frame_repeat = any(term in normalized for term in FAILED_FRAME_REPEAT_TERMS)
+    has_loss_weighting = any(term in normalized for term in LOSS_WEIGHTING_TERMS)
+    return has_frame_repeat and not has_loss_weighting
+
+
+def has_horizon_blocker(blockers: Sequence[str]) -> bool:
+    return any(str(reason).startswith("horizon_") for reason in blockers)
+
+
+def required_horizon_axes(blockers: Sequence[str]) -> list[str]:
+    required: list[str] = []
+    for reason in blockers:
+        normalized = str(reason).lower()
+        if not normalized.startswith("horizon_"):
+            continue
+        if "psnr" in normalized:
+            required.append("horizon.psnr")
+        if "ssim" in normalized:
+            required.append("horizon.ssim")
+        if "lpips" in normalized:
+            required.append("horizon.lpips")
+        if "sky" in normalized:
+            required.append("horizon.sky_score")
+    return ordered_unique(required)
+
+
 def evaluate_candidate_objective(
     *,
     candidate_objective: Mapping[str, Any] | None,
@@ -287,6 +345,7 @@ def evaluate_candidate_objective(
 ) -> dict[str, Any]:
     block_reasons: list[str] = []
     warnings: list[str] = []
+    horizon_blocked = has_horizon_blocker(current_blockers)
 
     if not candidate_objective:
         return {
@@ -323,7 +382,7 @@ def evaluate_candidate_objective(
 
     horizon_primary_tiles = list_strings(responsible_tiles.get("horizon_primary_responsible_tile_ids"))
     missing_horizon_tiles = [tile_id for tile_id in horizon_primary_tiles if tile_id not in covered]
-    if HORIZON_SSIM_BLOCKER in current_blockers and missing_horizon_tiles:
+    if horizon_blocked and missing_horizon_tiles:
         block_reasons.append("objective_omits_primary_horizon_tiles")
     elif missing_horizon_tiles:
         warnings.append("objective_does_not_cover_all_horizon_context_tiles")
@@ -341,7 +400,7 @@ def evaluate_candidate_objective(
     missing_horizon_cameras = [
         camera_id for camera_id in expected_horizon_cameras if camera_id not in candidate_horizon_cameras
     ]
-    if HORIZON_SSIM_BLOCKER in current_blockers and missing_horizon_cameras:
+    if horizon_blocked and missing_horizon_cameras:
         block_reasons.append("objective_missing_horizon_frozen_cameras")
     elif missing_horizon_cameras:
         warnings.append("objective_does_not_name_all_horizon_frozen_cameras")
@@ -349,14 +408,18 @@ def evaluate_candidate_objective(
     axes = expected_metric_axes(candidate_objective)
     if BOUNDARY_BLOCKER in current_blockers and "boundary.required_improvement" not in axes:
         block_reasons.append("objective_missing_boundary_required_improvement_axis")
-    if HORIZON_SSIM_BLOCKER in current_blockers and "horizon.ssim" not in axes:
-        block_reasons.append("objective_missing_horizon_ssim_axis")
+    missing_horizon_axes = [axis for axis in required_horizon_axes(current_blockers) if axis not in axes]
+    for axis in missing_horizon_axes:
+        suffix = axis.rsplit(".", 1)[-1]
+        block_reasons.append(f"objective_missing_horizon_{suffix}_axis")
 
     changes = objective_changes(candidate_objective)
     if not has_approved_objective(changes):
         block_reasons.append("objective_lacks_camera_or_loss_weighting_change")
     if repeats_failed_density_or_merge_only(changes):
         block_reasons.append("objective_repeats_failed_density_or_merge_only_hypothesis")
+    if repeats_failed_frame_repeat_without_loss(changes):
+        block_reasons.append("objective_repeats_failed_frame_repeat_without_loss_weighting")
 
     submitted_jobs = candidate_objective.get("submitted_jobs")
     if submitted_jobs not in ([], None):
@@ -391,6 +454,7 @@ def evaluate_candidate_objective(
         "horizon_camera_ids": candidate_horizon_cameras,
         "missing_horizon_frozen_cameras": missing_horizon_cameras,
         "expected_metric_axes": axes,
+        "missing_horizon_metric_axes": missing_horizon_axes,
         "objective_changes": changes,
         "estimated_usd": cost,
         "max_estimated_usd": max_estimated_usd or None,
@@ -453,6 +517,7 @@ def plan_boundary_objective_strategy(
             "must_not_repeat": [
                 "tile_10 density-only repair",
                 "merge-only protected overlap retention",
+                "frame-repeat-only camera weighting without loss/objective redesign",
                 "full 14-tile training before staged R0/R1/R2/R3 gates",
             ],
             "expected_metric_axes": ["boundary.required_improvement", "boundary.psnr", "boundary.ssim", "boundary.lpips"],
