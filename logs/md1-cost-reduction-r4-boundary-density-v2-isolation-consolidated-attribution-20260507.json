@@ -1,0 +1,216 @@
+{
+  "checked_at": "2026-05-07T03:43:00Z",
+  "cross_variant_findings": [
+    "tile04_candidate + tile10_rollback: boundary V18 non-regression clears, but boundary promotion still misses by +0.386 dB PSNR / +0.014 SSIM / +0.031 LPIPS and horizon V18 still fails; background source remains tile_04.",
+    "tile04_rollback + tile10_candidate: horizon V18 clears and background source switches to tile_10, but boundary SSIM regresses (-0.0166) and V18 boundary SSIM fails.",
+    "Both results point to tile_04/background as the horizon hazard, and tile_04 as the primary boundary-quality lever. tile_10 density-v2 is not the horizon blocker when tile_04/background are rollback.",
+    "No current candidate passes both: one fixes boundary V18 but breaks horizon; the other fixes horizon but breaks boundary.",
+    "The next rational step is not another full run or LOD package; it is no-spend planning for a tile_04-specific repair that decouples boundary training from background selection, likely by pinning/forcing the merged background to tile_10 during no-training merge/review before any tile_04 retraining."
+  ],
+  "decision": {
+    "full_14tile_training_allowed": false,
+    "lod_packaging_allowed": false,
+    "next_unblocked_step": "Implement a no-spend background-source override/dry-run gate for remote merge, then test tile04-candidate with tile10 background before more leaf training.",
+    "paid_training_allowed_next": false,
+    "production_ready": false,
+    "why_no_more_compute_now": "The two isolation reviews already identify the axis split; more paid training without a tile_04/background-decoupled strategy would be guesswork."
+  },
+  "purpose": "Consolidate the two paid no-training isolation merge/review results after boundary density-v2 failed.",
+  "spend_this_consolidated_isolation_loop_usd": {
+    "t04_candidate_t10_rollback_merge_g4dn": 0.291,
+    "t04_candidate_t10_rollback_review_g5_2xlarge": 0.321,
+    "t04_rollback_t10_candidate_merge_g4dn": 0.292,
+    "t04_rollback_t10_candidate_review_g5_2xlarge": 0.327,
+    "total": 1.231
+  },
+  "variants": {
+    "both_candidate": {
+      "merge": {
+        "background_asset": {
+          "asset": "background_skybox.webp",
+          "retained_gaussians": 549619,
+          "selection_score": 0.6362313764733385,
+          "source_asset": "/opt/ml/processing/output/artifact/tiles/tile_04/background_skybox.webp",
+          "source_tile_id": "tile_04"
+        },
+        "dropped_gaussians": 389353,
+        "fallback_tile_count": 0,
+        "retain_all_tile_count": 0,
+        "retained_gaussians": 8077783,
+        "source_gaussians": 8467136
+      },
+      "per_bucket_delta": {
+        "boundary": {
+          "lpips": 0.010680407285690308,
+          "psnr": 0.0935542128739062,
+          "ssim": -0.006753653287887573
+        },
+        "horizon": {
+          "lpips": 0.013932526111602783,
+          "psnr": -0.3584170808697582,
+          "ssim": -0.014109387993812561
+        },
+        "near_detail": {
+          "lpips": -0.011673986911773682,
+          "psnr": -0.08929351966797583,
+          "ssim": -0.0006229132413864136
+        }
+      },
+      "promotion": {
+        "block_reasons": [
+          "boundary_no_required_improvement",
+          "horizon_ssim_regression"
+        ],
+        "status": "blocked"
+      },
+      "v18_non_regression": {
+        "block_reasons": [
+          "boundary_v18_median_ssim_regression",
+          "boundary_v18_median_lpips_regression",
+          "horizon_v18_median_psnr_regression",
+          "horizon_v18_median_ssim_regression",
+          "horizon_v18_median_lpips_regression"
+        ],
+        "status": "blocked"
+      }
+    },
+    "rollback_proof": {
+      "merge": {
+        "background_asset": {
+          "asset": "background_skybox.webp",
+          "retained_gaussians": 378953,
+          "selection_score": 0.6353789878019934,
+          "source_asset": "/opt/ml/processing/output/artifact/tiles/tile_10/background_skybox.webp",
+          "source_tile_id": "tile_10"
+        },
+        "dropped_gaussians": 365766,
+        "fallback_tile_count": 0,
+        "retain_all_tile_count": 0,
+        "retained_gaussians": 8423919,
+        "source_gaussians": 8789685
+      },
+      "per_bucket_delta": {
+        "boundary": {
+          "lpips": 8.553266525268555e-06,
+          "psnr": 9.09046563180027e-06,
+          "ssim": 3.2186508178710938e-06
+        },
+        "horizon": {
+          "lpips": -0.00018274784088134766,
+          "psnr": 0.0005739663803741024,
+          "ssim": 7.712841033935547e-05
+        },
+        "near_detail": {
+          "lpips": 4.172325134277344e-07,
+          "psnr": 1.0107651498003634e-06,
+          "ssim": 0.0
+        }
+      },
+      "promotion": {
+        "block_reasons": [
+          "boundary_no_required_improvement"
+        ],
+        "status": "blocked"
+      },
+      "v18_non_regression": {
+        "block_reasons": [],
+        "status": "promoted"
+      }
+    },
+    "t04_candidate_t10_rollback": {
+      "merge": {
+        "background_asset": {
+          "asset": "background_skybox.webp",
+          "retained_gaussians": 549619,
+          "selection_score": 0.6362313764733385,
+          "source_asset": "/opt/ml/processing/output/artifact/tiles/tile_04/background_skybox.webp",
+          "source_tile_id": "tile_04"
+        },
+        "dropped_gaussians": 367928,
+        "fallback_tile_count": 0,
+        "retain_all_tile_count": 0,
+        "retained_gaussians": 8017261,
+        "source_gaussians": 8385189
+      },
+      "per_bucket_delta": {
+        "boundary": {
+          "lpips": 0.006327122449874878,
+          "psnr": 0.11361538077147415,
+          "ssim": -0.004192575812339783
+        },
+        "horizon": {
+          "lpips": 0.013814032077789307,
+          "psnr": -0.38499572754335176,
+          "ssim": -0.013684168457984924
+        },
+        "near_detail": {
+          "lpips": -0.004164069890975952,
+          "psnr": -0.0046730081003243384,
+          "ssim": 0.0002659410238265991
+        }
+      },
+      "promotion": {
+        "block_reasons": [
+          "boundary_no_required_improvement",
+          "horizon_ssim_regression"
+        ],
+        "status": "blocked"
+      },
+      "v18_non_regression": {
+        "block_reasons": [
+          "horizon_v18_median_psnr_regression",
+          "horizon_v18_median_ssim_regression",
+          "horizon_v18_median_lpips_regression",
+          "horizon_v18_single_camera_lpips_regression"
+        ],
+        "status": "blocked"
+      }
+    },
+    "t04_rollback_t10_candidate": {
+      "merge": {
+        "background_asset": {
+          "asset": "background_skybox.webp",
+          "retained_gaussians": 439475,
+          "selection_score": 0.6353789878019934,
+          "source_asset": "/opt/ml/processing/output/artifact/tiles/tile_10/background_skybox.webp",
+          "source_tile_id": "tile_10"
+        },
+        "dropped_gaussians": 387191,
+        "fallback_tile_count": 0,
+        "retain_all_tile_count": 0,
+        "retained_gaussians": 8484441,
+        "source_gaussians": 8871632
+      },
+      "per_bucket_delta": {
+        "boundary": {
+          "lpips": 0.005125820636749268,
+          "psnr": -0.07268883980001561,
+          "ssim": -0.016584977507591248
+        },
+        "horizon": {
+          "lpips": 0.0009123682975769043,
+          "psnr": 0.024977858393119945,
+          "ssim": -0.0022343844175338745
+        },
+        "near_detail": {
+          "lpips": -0.005861341953277588,
+          "psnr": -0.04251754623228621,
+          "ssim": -0.0006404072046279907
+        }
+      },
+      "promotion": {
+        "block_reasons": [
+          "boundary_ssim_regression",
+          "boundary_no_required_improvement"
+        ],
+        "status": "blocked"
+      },
+      "v18_non_regression": {
+        "block_reasons": [
+          "boundary_v18_median_ssim_regression"
+        ],
+        "status": "blocked"
+      }
+    }
+  }
+}

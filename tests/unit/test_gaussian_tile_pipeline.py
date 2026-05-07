@@ -734,6 +734,83 @@ class GaussianTilePipelineTests(unittest.TestCase):
             self.assertTrue((root / "merged" / "background_skybox.webp").exists())
             manifest = json.loads((root / "merged" / "background_manifest.json").read_text(encoding="utf-8"))
             self.assertEqual(manifest["source_tile_id"], "tile_01")
+            self.assertEqual(manifest["selection_mode"], "best_score")
+
+    def test_merge_tile_outputs_can_force_background_skybox_source(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            tile_zero_dir = root / "tiles" / "tile_00"
+            tile_one_dir = root / "tiles" / "tile_01"
+            tile_zero_dir.mkdir(parents=True)
+            tile_one_dir.mkdir(parents=True)
+            write_test_ply(tile_zero_dir / "splat.ply", [(0.0, 0.0, 0.0, 0.9)])
+            write_test_ply(tile_one_dir / "splat.ply", [(10.0, 0.0, 0.0, 0.9)])
+            (tile_zero_dir / "background_skybox.webp").write_bytes(b"tile-zero")
+            (tile_one_dir / "background_skybox.webp").write_bytes(b"tile-one")
+            (tile_zero_dir / "background_manifest.json").write_text(
+                json.dumps({"selection": {"score": 0.25}}),
+                encoding="utf-8",
+            )
+            (tile_one_dir / "background_manifest.json").write_text(
+                json.dumps({"selection": {"score": 0.9}}),
+                encoding="utf-8",
+            )
+
+            report = tile_pipeline.merge_tile_outputs(
+                tile_manifest={
+                    "tiles": [
+                        {
+                            "tile_id": "tile_00",
+                            "core_bounds": {
+                                "min_x": -1.0,
+                                "max_x": 1.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                            "overlap_bounds": {
+                                "min_x": -1.0,
+                                "max_x": 1.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                        },
+                        {
+                            "tile_id": "tile_01",
+                            "core_bounds": {
+                                "min_x": 9.0,
+                                "max_x": 11.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                            "overlap_bounds": {
+                                "min_x": 9.0,
+                                "max_x": 11.0,
+                                "min_y": -1.0,
+                                "max_y": 1.0,
+                                "min_z": -1.0,
+                                "max_z": 1.0,
+                            },
+                        },
+                    ]
+                },
+                tile_output_dirs={"tile_00": tile_zero_dir, "tile_01": tile_one_dir},
+                output_dir=root / "merged",
+                background_source_tile_id="tile_00",
+            )
+
+            self.assertEqual(report["background_asset"]["source_tile_id"], "tile_00")
+            self.assertEqual(report["background_asset"]["selection_mode"], "forced_tile")
+            self.assertEqual(report["background_asset"]["requested_source_tile_id"], "tile_00")
+            self.assertEqual((root / "merged" / "background_skybox.webp").read_bytes(), b"tile-zero")
+            manifest = json.loads((root / "merged" / "background_manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(manifest["source_tile_id"], "tile_00")
+            self.assertEqual(manifest["selection_mode"], "forced_tile")
 
     def test_rank_candidate_tile_pairs_uses_shared_images_boundary_support_and_fallback(self):
         manifest = {

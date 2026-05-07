@@ -68,6 +68,7 @@ class TiledMergeProcessingPlannerTests(unittest.TestCase):
                 {"artifact_input_name": "artifact-00", "artifact_uri": "s3://bucket/a/model.tar.gz"}
             ],
             merge_mode="support_weighted_overlap",
+            background_source_tile_id="tile_10",
             instance_type="ml.g5.2xlarge",
             volume_size_gb=80,
             max_runtime_seconds=3600,
@@ -83,6 +84,7 @@ class TiledMergeProcessingPlannerTests(unittest.TestCase):
             ["merge-plan", "tile-selection", "artifact-00"],
         )
         self.assertEqual(payload["Environment"]["MERGE_MODE"], "support_weighted_overlap")
+        self.assertEqual(payload["Environment"]["BACKGROUND_SOURCE_TILE_ID"], "tile_10")
 
     def test_packager_resets_output_mount_contents_without_removing_mount(self):
         with tempfile.TemporaryDirectory() as tmp:

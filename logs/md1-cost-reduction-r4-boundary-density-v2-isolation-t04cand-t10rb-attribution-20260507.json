@@ -1,0 +1,105 @@
+{
+  "checked_at": "2026-05-07T02:58:00Z",
+  "current_minus_both_candidate_delta_change": {
+    "boundary": {
+      "lpips": -0.00435328483581543,
+      "psnr": 0.020061167897567955,
+      "ssim": 0.0025610774755477905
+    },
+    "horizon": {
+      "lpips": -0.00011849403381347656,
+      "psnr": -0.026578646673593553,
+      "ssim": 0.0004252195358276367
+    },
+    "near_detail": {
+      "lpips": 0.0075099170207977295,
+      "psnr": 0.08462051156765149,
+      "ssim": 0.0008888542652130127
+    }
+  },
+  "current_minus_rollback_delta_change": {
+    "boundary": {
+      "lpips": 0.006318569183349609,
+      "psnr": 0.11360629030584235,
+      "ssim": -0.004195794463157654
+    },
+    "horizon": {
+      "lpips": 0.013996779918670654,
+      "psnr": -0.38556969392372586,
+      "ssim": -0.01376129686832428
+    },
+    "near_detail": {
+      "lpips": -0.00416448712348938,
+      "psnr": -0.004674018865474139,
+      "ssim": 0.0002659410238265991
+    }
+  },
+  "decision": {
+    "estimated_incremental_cost_usd_if_merge_plus_review": 0.612,
+    "full_14tile_training_allowed": false,
+    "lod_packaging_allowed": false,
+    "next_unblocked_step": "Submit second no-training isolation only if accepting another bounded ~$0.61 processing+review proof; otherwise hold and design a tile_04/background-specific strategy from current evidence.",
+    "paid_training_allowed": false,
+    "second_isolation_rationale": "tests tile_04/background as horizon and boundary-improvement limiter using already-built artifacts only",
+    "second_no_training_isolation_merge_candidate": "tile04-rollback-tile10-candidate"
+  },
+  "findings": [
+    "Restoring tile_10 rollback cleared the boundary V18 non-regression blockers seen in the both-candidate review.",
+    "Restoring tile_10 did not clear boundary_no_required_improvement; boundary PSNR improved only +0.114 dB vs the +0.5 dB promotion target, while SSIM/LPIPS moved the wrong direction.",
+    "Horizon remains below V18 even with tile_10 rollback, and the merge still selected tile_04 as the background source, so tile_04/background selection remains a likely horizon cause.",
+    "No leaf training should run next; the only rational paid follow-up, if any, is the second no-training isolation tile04-rollback/tile10-candidate to test whether restoring tile_04/background clears horizon before designing a new strategy."
+  ],
+  "promotion": {
+    "both_candidate": {
+      "block_reasons": [
+        "boundary_no_required_improvement",
+        "horizon_ssim_regression"
+      ],
+      "status": "blocked"
+    },
+    "rollback_proof": {
+      "block_reasons": [
+        "boundary_no_required_improvement"
+      ],
+      "status": "blocked"
+    },
+    "tile04_candidate_tile10_rollback": {
+      "block_reasons": [
+        "boundary_no_required_improvement",
+        "horizon_ssim_regression"
+      ],
+      "status": "blocked"
+    }
+  },
+  "purpose": "No-spend attribution after first boundary density-v2 isolation paid merge/review.",
+  "v18_non_regression": {
+    "both_candidate": {
+      "block_reasons": [
+        "boundary_v18_median_ssim_regression",
+        "boundary_v18_median_lpips_regression",
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_median_ssim_regression",
+        "horizon_v18_median_lpips_regression"
+      ],
+      "status": "blocked"
+    },
+    "rollback_proof": {
+      "block_reasons": [],
+      "status": "promoted"
+    },
+    "tile04_candidate_tile10_rollback": {
+      "block_reasons": [
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_median_ssim_regression",
+        "horizon_v18_median_lpips_regression",
+        "horizon_v18_single_camera_lpips_regression"
+      ],
+      "status": "blocked"
+    }
+  },
+  "variants": {
+    "both_candidate": "r4-boundary-paired-density-v2-support-overlap-smoke-p24",
+    "rollback_proof": "r4-tile10-rollback-isolation-smoke-p24",
+    "tile04_candidate_tile10_rollback": "r4-isot04cand-t10rb-smoke-p24"
+  }
+}

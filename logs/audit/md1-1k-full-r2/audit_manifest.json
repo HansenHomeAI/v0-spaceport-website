@@ -12657,5 +12657,170 @@
       "lod_packaging_allowed": false,
       "full_14tile_training_allowed": false
     }
+  },
+  "md1_r4_boundary_density_v2_isolation_t04_candidate_t10_rollback_20260507": {
+    "checked_at": "2026-05-07T03:53:01.533230Z",
+    "status": "quality_blocked_after_preflight_and_frozen_review",
+    "purpose": "Isolate tile_04 candidate with tile_10 restored to rollback/V18 source after paired density-v2 review failed.",
+    "merge_processing_job": "md1-r4iso-t04cand-t10rb-20260507",
+    "estimated_spend_usd": {
+      "remote_g4dn_merge": 0.291,
+      "frozen_review": 0.321
+    },
+    "preflight": {
+      "summary_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-candidate-tile10-rollback-remote-merge-g4dn-preflight-20260507.json",
+      "job_name": "md1-r4iso-t04cand-t10rb-20260507",
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-candidate-tile10-rollback-merge-g4dn-20260507/output/artifact/model.tar.gz",
+      "artifact_complete": true,
+      "block_reasons": [],
+      "decision": "preflight_passed_run_frozen_smoke_review",
+      "retained_gaussians": 8017261,
+      "source_gaussians": 8385189,
+      "dropped_gaussians": 367928,
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "background_source_tile_id": "tile_04"
+    },
+    "review": {
+      "review_output_dir": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-isot04cand-t10rb-smoke-p24",
+      "review_comparison_json": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-isot04cand-t10rb-smoke-p24/review_comparison.json",
+      "quality_review_manifest_json": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-isot04cand-t10rb-smoke-p24/quality_review_manifest.json",
+      "promotion_status": "blocked",
+      "promotion_block_reasons": [
+        "boundary_no_required_improvement",
+        "horizon_ssim_regression"
+      ],
+      "v18_non_regression_status": "blocked",
+      "v18_non_regression_block_reasons": [
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_median_ssim_regression",
+        "horizon_v18_median_lpips_regression",
+        "horizon_v18_single_camera_lpips_regression"
+      ],
+      "bucket_deltas_vs_v18": {
+        "near_detail": {
+          "psnr": -0.0046730081003243384,
+          "ssim": 0.0002659410238265991,
+          "lpips": -0.004164069890975952
+        },
+        "boundary": {
+          "psnr": 0.11361538077147415,
+          "ssim": -0.004192575812339783,
+          "lpips": 0.006327122449874878
+        },
+        "horizon": {
+          "psnr": -0.38499572754335176,
+          "ssim": -0.013684168457984924,
+          "lpips": 0.013814032077789307
+        }
+      }
+    },
+    "review_plan_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-candidate-tile10-rollback-review-20260507.json",
+    "analysis_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-t04cand-t10rb-review-analysis-20260507.json",
+    "attribution_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-t04cand-t10rb-attribution-20260507.json",
+    "decision": {
+      "production_ready": false,
+      "paid_training_allowed_next": false,
+      "lod_packaging_allowed": false,
+      "summary": "Boundary improved over rollback but not enough for promotion; horizon regressed while background source was tile_04."
+    }
+  },
+  "md1_r4_boundary_density_v2_isolation_t04_rollback_t10_candidate_20260507": {
+    "checked_at": "2026-05-07T03:53:01.533230Z",
+    "status": "quality_blocked_after_preflight_and_frozen_review",
+    "purpose": "Isolate tile_10 density-v2 candidate with tile_04 restored to rollback/V18 source after paired density-v2 review failed.",
+    "merge_processing_job": "md1-r4iso-t04rb-t10cand-20260507",
+    "estimated_spend_usd": {
+      "remote_g4dn_merge": 0.292,
+      "frozen_review": 0.327
+    },
+    "preflight": {
+      "summary_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-rollback-tile10-candidate-remote-merge-g4dn-preflight-20260507.json",
+      "job_name": "md1-r4iso-t04rb-t10cand-20260507",
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-rollback-tile10-candidate-merge-g4dn-20260507/output/artifact/model.tar.gz",
+      "artifact_complete": true,
+      "block_reasons": [],
+      "decision": "preflight_passed_run_frozen_smoke_review",
+      "retained_gaussians": 8484441,
+      "source_gaussians": 8871632,
+      "dropped_gaussians": 387191,
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "background_source_tile_id": "tile_10"
+    },
+    "review": {
+      "review_output_dir": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-isot04rb-t10cand-smoke-p24",
+      "review_comparison_json": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-isot04rb-t10cand-smoke-p24/review_comparison.json",
+      "quality_review_manifest_json": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-isot04rb-t10cand-smoke-p24/quality_review_manifest.json",
+      "promotion_status": "blocked",
+      "promotion_block_reasons": [
+        "boundary_ssim_regression",
+        "boundary_no_required_improvement"
+      ],
+      "v18_non_regression_status": "blocked",
+      "v18_non_regression_block_reasons": [
+        "boundary_v18_median_ssim_regression"
+      ],
+      "bucket_deltas_vs_v18": {
+        "near_detail": {
+          "psnr": -0.04251754623228621,
+          "ssim": -0.0006404072046279907,
+          "lpips": -0.005861341953277588
+        },
+        "boundary": {
+          "psnr": -0.07268883980001561,
+          "ssim": -0.016584977507591248,
+          "lpips": 0.005125820636749268
+        },
+        "horizon": {
+          "psnr": 0.024977858393119945,
+          "ssim": -0.0022343844175338745,
+          "lpips": 0.0009123682975769043
+        }
+      }
+    },
+    "review_plan_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-rollback-tile10-candidate-review-20260507.json",
+    "analysis_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-t04rb-t10cand-review-analysis-20260507.json",
+    "decision": {
+      "production_ready": false,
+      "paid_training_allowed_next": false,
+      "lod_packaging_allowed": false,
+      "summary": "Horizon cleared with rollback tile_04/background tile_10, but boundary failed V18 median SSIM and promotion."
+    }
+  },
+  "md1_r4_boundary_density_v2_isolation_consolidated_attribution_20260507": {
+    "checked_at": "2026-05-07T03:53:01.533230Z",
+    "status": "paid_compute_stopped_pending_background_override_proof",
+    "purpose": "Consolidate the two isolation reviews and decide the next cheapest non-training step.",
+    "summary_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-consolidated-attribution-20260507.json",
+    "tile04_candidate_t10_rollback_analysis_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-t04cand-t10rb-review-analysis-20260507.json",
+    "tile04_rollback_t10_candidate_analysis_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-t04rb-t10cand-review-analysis-20260507.json",
+    "spend_this_consolidated_isolation_loop_usd": 1.231,
+    "decision": {
+      "production_ready": false,
+      "paid_training_allowed_next": false,
+      "lod_packaging_allowed": false,
+      "next_unblocked_step": "Use background-source override to test tile04 candidate with tile10 background before any more leaf training."
+    }
+  },
+  "md1_r4_boundary_density_v2_background_override_dryrun_20260507": {
+    "checked_at": "2026-05-07T03:53:01.533230Z",
+    "status": "no_spend_background_override_dryrun_ready_container_rebuild_required",
+    "purpose": "Prepare tile04-candidate/tile10-rollback no-training merge while forcing BACKGROUND_SOURCE_TILE_ID=tile_10.",
+    "summary_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-background-override-dryrun-20260507.json",
+    "merge_plan_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-candidate-tile10-rollback-bg-tile10-remote-merge-g4dn-plan-dryrun-20260507.json",
+    "payload_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-candidate-tile10-rollback-bg-tile10-remote-merge-g4dn-payload-dryrun-20260507.json",
+    "background_source_tile_id": "tile_10",
+    "processing_job_name_if_submitted": "md1-r4iso-t04cand-t10rb-bg10-20260507",
+    "submitted_jobs": [],
+    "training_jobs_to_submit": 0,
+    "processing_jobs_submitted": 0,
+    "decision": {
+      "production_ready": false,
+      "paid_training_allowed": false,
+      "lod_packaging_allowed": false,
+      "full_14tile_training_allowed": false,
+      "next_unblocked_step": "After branch 3DGS image rebuilds with BACKGROUND_SOURCE_TILE_ID support, submit exactly this one no-training g4dn merge, then preflight/review only if preflight passes."
+    }
   }
 }

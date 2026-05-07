@@ -1517,6 +1517,7 @@ def copy_best_background_skybox(
     tile_output_dirs: Mapping[str, Path],
     report_tiles: Sequence[Mapping[str, Any]],
     output_dir: Path,
+    background_source_tile_id: str = "",
 ) -> dict[str, Any] | None:
     candidates: list[dict[str, Any]] = []
     retained_counts = {
@@ -1564,16 +1565,28 @@ def copy_best_background_skybox(
     if not candidates:
         return None
 
-    candidates.sort(
-        key=lambda candidate: (
-            candidate["selection_score"] is not None,
-            float(candidate["selection_score"] or float("-inf")),
-            candidate["retained_gaussians"],
-            -candidate["report_index"],
-        ),
-        reverse=True,
-    )
-    selected = candidates[0]
+    forced_tile_id = background_source_tile_id.strip()
+    if forced_tile_id:
+        selected = next((candidate for candidate in candidates if candidate["tile_id"] == forced_tile_id), None)
+        if selected is None:
+            available_tile_ids = sorted(candidate["tile_id"] for candidate in candidates)
+            raise RuntimeError(
+                f"Requested background source tile {forced_tile_id} has no background_skybox.webp; "
+                f"available tiles: {available_tile_ids}"
+            )
+        selection_mode = "forced_tile"
+    else:
+        candidates.sort(
+            key=lambda candidate: (
+                candidate["selection_score"] is not None,
+                float(candidate["selection_score"] or float("-inf")),
+                candidate["retained_gaussians"],
+                -candidate["report_index"],
+            ),
+            reverse=True,
+        )
+        selected = candidates[0]
+        selection_mode = "best_score"
     merged_skybox_path = output_dir / "background_skybox.webp"
     shutil.copy2(selected["skybox_path"], merged_skybox_path)
 
@@ -1581,6 +1594,7 @@ def copy_best_background_skybox(
     merged_background_manifest["asset"] = merged_skybox_path.name
     merged_background_manifest["source_tile_id"] = selected["tile_id"]
     merged_background_manifest["source_asset"] = str(selected["skybox_path"])
+    merged_background_manifest["selection_mode"] = selection_mode
     if selected["selection_score"] is not None:
         merged_background_manifest["selection_score"] = selected["selection_score"]
     with open(output_dir / "background_manifest.json", "w", encoding="utf-8") as handle:
@@ -1591,6 +1605,8 @@ def copy_best_background_skybox(
         "source_tile_id": selected["tile_id"],
         "source_asset": str(selected["skybox_path"]),
         "selection_score": selected["selection_score"],
+        "selection_mode": selection_mode,
+        "requested_source_tile_id": forced_tile_id or None,
         "retained_gaussians": selected["retained_gaussians"],
     }
 
@@ -1756,6 +1772,7 @@ def merge_tile_outputs(
     tile_output_dirs: Mapping[str, Path],
     output_dir: Path,
     merge_mode: str = "strict_core",
+    background_source_tile_id: str = "",
 ) -> dict[str, Any]:
     normalized_mode = merge_mode.strip().lower()
     if normalized_mode not in {"raw_union", "strict_core", "support_weighted_overlap"}:
@@ -1926,6 +1943,7 @@ def merge_tile_outputs(
         tile_output_dirs=tile_output_dirs,
         report_tiles=report_tiles,
         output_dir=output_dir,
+        background_source_tile_id=background_source_tile_id,
     )
     if background_asset is not None:
         report["background_asset"] = background_asset

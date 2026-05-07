@@ -1,0 +1,39 @@
+{
+  "artifact_input_count": 3,
+  "background_source_tile_id": "tile_10",
+  "checked_at": "2026-05-07T03:49:00Z",
+  "decision": {
+    "full_14tile_training_allowed": false,
+    "lod_packaging_allowed": false,
+    "next_unblocked_step": "After the branch container rebuilds with BACKGROUND_SOURCE_TILE_ID support, submit this one no-training g4dn background-override merge, then preflight and review only if preflight passes.",
+    "paid_training_allowed": false
+  },
+  "instance_type": "ml.g4dn.xlarge",
+  "max_runtime_seconds": 3600,
+  "merge_plan_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-candidate-tile10-rollback-bg-tile10-remote-merge-g4dn-plan-dryrun-20260507.json",
+  "merge_plan_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-candidate-tile10-rollback-bg-tile10-merge-g4dn-20260507/inputs/merge-plan/merge_plan.json",
+  "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-candidate-tile10-rollback-bg-tile10-merge-g4dn-20260507/output/artifact",
+  "payload_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-candidate-tile10-rollback-bg-tile10-remote-merge-g4dn-payload-dryrun-20260507.json",
+  "processing_job_name_if_submitted": "md1-r4iso-t04cand-t10rb-bg10-20260507",
+  "processing_jobs_submitted": 0,
+  "purpose": "Prepare the next no-training isolation after paid attribution split boundary and horizon. This dry-run keeps tile_04 boundary candidate and tile_10 rollback, but forces the merged background skybox to tile_10 before any more leaf training.",
+  "selected_tile_ids": [
+    "tile_00",
+    "tile_01",
+    "tile_02",
+    "tile_03",
+    "tile_04",
+    "tile_05",
+    "tile_06",
+    "tile_07",
+    "tile_08",
+    "tile_09",
+    "tile_10",
+    "tile_11",
+    "tile_12",
+    "tile_13"
+  ],
+  "status": "no_spend_background_override_dryrun_ready",
+  "submitted_jobs": [],
+  "training_jobs_to_submit": 0
+}

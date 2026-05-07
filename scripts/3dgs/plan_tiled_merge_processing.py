@@ -82,6 +82,7 @@ def create_tiled_merge_processing_payload(
     instance_type: str,
     volume_size_gb: int,
     max_runtime_seconds: int,
+    background_source_tile_id: str = "",
 ) -> dict:
     processing_inputs = [
         {
@@ -117,6 +118,16 @@ def create_tiled_merge_processing_payload(
             }
         )
 
+    environment = {
+        "MERGE_MODE": merge_mode,
+        "MERGE_PLAN_PATH": "/opt/ml/processing/input/merge-plan/merge_plan.json",
+        "TILE_MANIFEST_PATH": "/opt/ml/processing/input/tile-selection/3dgs_tile_manifest.json",
+        "VIEW_BUCKET_MANIFEST_PATH": "/opt/ml/processing/input/tile-selection/3dgs_view_buckets.json",
+        "OUTPUT_DIR": "/opt/ml/processing/output/artifact",
+    }
+    if background_source_tile_id.strip():
+        environment["BACKGROUND_SOURCE_TILE_ID"] = background_source_tile_id.strip()
+
     return {
         "ProcessingJobName": job_name,
         "RoleArn": role_arn,
@@ -124,13 +135,7 @@ def create_tiled_merge_processing_payload(
             "ImageUri": image_uri,
             "ContainerEntrypoint": ["python3", "/opt/ml/code/run_tiled_merge_packaging.py"],
         },
-        "Environment": {
-            "MERGE_MODE": merge_mode,
-            "MERGE_PLAN_PATH": "/opt/ml/processing/input/merge-plan/merge_plan.json",
-            "TILE_MANIFEST_PATH": "/opt/ml/processing/input/tile-selection/3dgs_tile_manifest.json",
-            "VIEW_BUCKET_MANIFEST_PATH": "/opt/ml/processing/input/tile-selection/3dgs_view_buckets.json",
-            "OUTPUT_DIR": "/opt/ml/processing/output/artifact",
-        },
+        "Environment": environment,
         "ProcessingInputs": processing_inputs,
         "ProcessingOutputConfig": {
             "Outputs": [
@@ -175,6 +180,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--image-uri", default="")
     parser.add_argument("--branch", default="")
     parser.add_argument("--merge-mode", default="")
+    parser.add_argument("--background-source-tile-id", default="")
     parser.add_argument("--instance-type", default="ml.g5.2xlarge")
     parser.add_argument("--volume-size-gb", type=int, default=80)
     parser.add_argument("--max-runtime-seconds", type=int, default=3600)
@@ -210,6 +216,7 @@ def main() -> int:
             tile_selection_s3_uri=args.tile_selection_s3_uri or str(summary.get("tile_selection_input_s3_uri") or ""),
             artifact_inputs=merge_plan["artifact_inputs"],
             merge_mode=args.merge_mode or str(summary.get("merge_mode") or "support_weighted_overlap"),
+            background_source_tile_id=args.background_source_tile_id,
             instance_type=args.instance_type,
             volume_size_gb=args.volume_size_gb,
             max_runtime_seconds=args.max_runtime_seconds,

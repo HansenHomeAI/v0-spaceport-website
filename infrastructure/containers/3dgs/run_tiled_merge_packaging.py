@@ -209,6 +209,7 @@ def main() -> int:
     output_root = Path(os.environ.get("OUTPUT_DIR", "/opt/ml/processing/output/artifact"))
     work_root = Path(os.environ.get("WORK_DIR", "/opt/ml/processing/tmp/tiled-merge"))
     merge_mode = os.environ.get("MERGE_MODE", "support_weighted_overlap")
+    background_source_tile_id = os.environ.get("BACKGROUND_SOURCE_TILE_ID", "").strip()
 
     if work_root.exists():
         shutil.rmtree(work_root)
@@ -250,12 +251,14 @@ def main() -> int:
         tile_output_dirs=extracted_tiles,
         output_dir=output_root / "merged",
         merge_mode=merge_mode,
+        background_source_tile_id=background_source_tile_id,
     )
     summary = {
         "created_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
         "training_completed": True,
         "training_mode": "remote_no_training_tiled_merge",
         "merge_mode": merge_mode,
+        "background_source_tile_id": background_source_tile_id or None,
         "merge_plan": merge_plan,
         "extracted_tiles": extraction_records,
         "merge_report": merge_report,
