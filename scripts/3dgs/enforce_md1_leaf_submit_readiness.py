@@ -60,6 +60,18 @@ def cost_estimate(strategy: dict[str, Any]) -> float | None:
     return None
 
 
+def quality_gate_decision(quality_gate: dict[str, Any]) -> str | None:
+    decision = quality_gate.get("decision")
+    if isinstance(decision, str) and decision:
+        return decision
+    candidate_gate = quality_gate.get("candidate_objective_gate")
+    if isinstance(candidate_gate, dict):
+        nested_decision = candidate_gate.get("decision")
+        if isinstance(nested_decision, str) and nested_decision:
+            return nested_decision
+    return None
+
+
 def env_labels(strategy: dict[str, Any], key: str) -> list[str]:
     labels: list[str] = []
     stages = strategy.get("stages")
@@ -201,7 +213,8 @@ def evaluate_gate(
     elif cost > max_estimated_usd:
         block_reasons.append("estimated_usd_above_cap")
 
-    if quality_gate.get("decision") != "paid_retry_allowed":
+    quality_decision = quality_gate_decision(quality_gate)
+    if quality_decision != "paid_retry_allowed":
         block_reasons.append("quality_strategy_gate_not_allowed")
     if not merge_review_blocks_only_missing_leaf_summaries(merge_review_gate, missing_leaf_summary_tiles):
         block_reasons.append("merge_review_gate_not_blocked_only_on_leaf_summaries")
@@ -242,7 +255,7 @@ def evaluate_gate(
         "required_targeted_blockers": required_targeted_blockers,
         "targeted_quality_blockers": target_labels,
         "post_leaf_preflight_gate_tile_ids": emitted_leaf_gates,
-        "quality_strategy_decision": quality_gate.get("decision"),
+        "quality_strategy_decision": quality_decision,
         "merge_review_gate_decision": merge_review_gate.get("decision"),
         "estimated_usd": cost,
         "max_estimated_usd": max_estimated_usd,

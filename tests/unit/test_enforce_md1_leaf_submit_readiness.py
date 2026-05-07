@@ -83,6 +83,18 @@ class EnforceMd1LeafSubmitReadinessTests(unittest.TestCase):
         self.assertEqual(summary["decision"], "leaf_submit_allowed")
         self.assertEqual(summary["block_reasons"], [])
 
+    def test_allows_nested_candidate_objective_gate_decision(self):
+        summary = allowed_summary(
+            quality_gate={
+                "candidate_objective_gate": {
+                    "decision": "paid_retry_allowed",
+                }
+            }
+        )
+
+        self.assertEqual(summary["decision"], "leaf_submit_allowed")
+        self.assertEqual(summary["quality_strategy_decision"], "paid_retry_allowed")
+
     def test_blocks_when_live_training_job_exists(self):
         summary = allowed_summary(training_jobs_in_progress=["active-job"])
 
