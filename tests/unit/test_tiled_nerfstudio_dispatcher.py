@@ -154,6 +154,30 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             self.assertTrue(trainer.temp_dir.exists())
             self.assertTrue(trainer.training_output_dir.exists())
 
+    def test_trainer_applies_ssim_lambda_override(self):
+        module = load_module_with_stubs()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config_path = root / "config.yml"
+            output_dir = root / "model"
+            config_path.write_text("{}", encoding="utf-8")
+
+            original_environ = module.os.environ.copy()
+            try:
+                module.os.environ.clear()
+                module.os.environ.update(
+                    {
+                        "SM_MODEL_DIR": str(output_dir),
+                        "SSIM_LAMBDA": "0.35",
+                    }
+                )
+                trainer = module.NerfStudioTrainer(str(config_path))
+            finally:
+                module.os.environ.clear()
+                module.os.environ.update(original_environ)
+
+            self.assertEqual(trainer.config["model"]["ssim_lambda"], 0.35)
+
     def test_trainer_stages_compact_checkpoint_for_sync(self):
         module = load_module_with_stubs()
         with tempfile.TemporaryDirectory() as tmp:

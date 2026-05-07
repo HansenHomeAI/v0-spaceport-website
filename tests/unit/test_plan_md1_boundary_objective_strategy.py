@@ -59,6 +59,11 @@ def valid_candidate() -> dict:
         "horizon_camera_ids": ["DJI_0066.JPG", "DJI_0073.JPG"],
         "expected_metric_axes": ["boundary.required_improvement", "boundary.psnr", "boundary.ssim"],
         "objective_changes": ["boundary_camera_weighting", "boundary_loss_weighting"],
+        "objective_implementation": {
+            "source_file": "infrastructure/containers/3dgs/train_nerfstudio_production.py",
+            "training_config": {"ssim_lambda": 0.35},
+            "environment": {"SSIM_LAMBDA": "0.35"},
+        },
         "planned_cost_estimate": {"estimated_usd": 1.5},
         "submitted_jobs": [],
         "no_full_14tile_training": True,
@@ -107,7 +112,26 @@ class PlanMd1BoundaryObjectiveStrategyTests(unittest.TestCase):
         self.assertEqual(gate["decision"], "paid_retry_allowed")
         self.assertEqual(gate["block_reasons"], [])
         self.assertEqual(gate["covered_tile_ids"], ["tile_01", "tile_04", "tile_10", "tile_13"])
+        self.assertEqual(gate["loss_weighting_implementation"]["environment"], {"SSIM_LAMBDA": "0.35"})
         self.assertTrue(report["paid_retry_allowed"])
+
+    def test_blocks_loss_weighting_claim_without_implemented_knob(self):
+        candidate = valid_candidate()
+        candidate.pop("objective_implementation")
+
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=attribution(),
+            candidate_objective=candidate,
+            max_estimated_usd=2.0,
+        )
+
+        self.assertIn(
+            "objective_missing_loss_weighting_implementation",
+            report["candidate_objective_gate"]["block_reasons"],
+        )
+        self.assertFalse(report["paid_retry_allowed"])
 
     def test_blocks_density_only_candidate_even_when_tiles_and_cameras_match(self):
         candidate = valid_candidate()

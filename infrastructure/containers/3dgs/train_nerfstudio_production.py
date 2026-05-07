@@ -773,6 +773,7 @@ class NerfStudioTrainer:
             'VIEWER_QUIT_ON_TRAIN_COMPLETION': 'training.quit_on_train_completion',
             'MODEL_VARIANT': 'model.variant',
             'RASTERIZE_MODE': 'model.rasterize_mode',
+            'SSIM_LAMBDA': 'model.ssim_lambda',
             'USE_SCALE_REGULARIZATION': 'model.use_scale_regularization',
             'CULL_ALPHA_THRESH': 'model.cull_alpha_thresh',
             'CULL_SCALE_THRESH': 'model.cull_scale_thresh',
@@ -827,7 +828,7 @@ class NerfStudioTrainer:
                     value = value.lower() in ('true', '1', 'yes', 'on')
                 elif env_var in ['MAX_ITERATIONS', 'LOG_INTERVAL', 'TRAINING_DATALOADER_NUM_WORKERS', 'TRAINING_MAX_SELECTED_IMAGES', 'TRAINING_SELECTION_STRIDE', 'BOUNDARY_CAMERA_REPEAT_FACTOR', 'TRAINING_REVIEW_IMAGES_PER_BUCKET', 'TRAINING_STEPS_PER_EVAL_IMAGE', 'TRAINING_STEPS_PER_EVAL_ALL_IMAGES', 'TRAINING_STEPS_PER_SAVE', 'TRAINING_STOP_SPLIT_AT', 'SH_DEGREE', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'TRAINING_DOWNSCALE_FACTOR', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT', 'GLOBAL_SCAFFOLD_MAX_IMAGES', 'GLOBAL_SCAFFOLD_FRAME_STRIDE', 'GLOBAL_SCAFFOLD_MAX_ITERATIONS', 'GLOBAL_SCAFFOLD_SH_DEGREE', 'GLOBAL_SCAFFOLD_INIT_MAX_POINTS', 'TILED_MAX_TILES']:
                     value = int(value)
-                elif env_var in ['TARGET_PSNR', 'CULL_ALPHA_THRESH', 'CULL_SCALE_THRESH', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_SKY_MIN_LUMINANCE', 'FLOATER_PRUNING_SKY_MIN_SATURATION', 'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE', 'GLOBAL_SCAFFOLD_MAX_GAUSS_RATIO']:
+                elif env_var in ['TARGET_PSNR', 'SSIM_LAMBDA', 'CULL_ALPHA_THRESH', 'CULL_SCALE_THRESH', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_SKY_MIN_LUMINANCE', 'FLOATER_PRUNING_SKY_MIN_SATURATION', 'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE', 'GLOBAL_SCAFFOLD_MAX_GAUSS_RATIO']:
                     value = float(value)
                 
                 # Set nested config values
@@ -2429,6 +2430,7 @@ class NerfStudioTrainer:
             and supports_bilateral_processing(model_variant)
         )
         rasterize_mode = model_config.get('rasterize_mode', 'classic')
+        ssim_lambda = float(model_config.get('ssim_lambda', 0.2))
         use_scale_regularization = model_config.get('use_scale_regularization', True)
         cull_alpha_thresh = model_config.get('cull_alpha_thresh', 0.12)
         cull_scale_thresh = model_config.get('cull_scale_thresh', 0.35)
@@ -2474,6 +2476,7 @@ class NerfStudioTrainer:
         logger.info(f"   Max iterations: {max_iterations}")
         logger.info(f"   SH degree: {sh_degree}")
         logger.info(f"   Rasterize mode: {rasterize_mode}")
+        logger.info(f"   SSIM lambda: {ssim_lambda}")
         logger.info(f"   Scale regularization: {use_scale_regularization}")
         logger.info(f"   Cull alpha threshold: {cull_alpha_thresh}")
         logger.info(f"   Cull scale threshold: {cull_scale_thresh}")
@@ -2548,6 +2551,7 @@ class NerfStudioTrainer:
         if model_variant in {"splatfacto-w-light", "splatfacto-w"}:
             method_args.extend([
                 "--pipeline.model.rasterize_mode", str(rasterize_mode),
+                "--pipeline.model.ssim_lambda", str(ssim_lambda),
                 "--pipeline.model.use_scale_regularization", str(use_scale_regularization),
                 "--pipeline.model.cull_alpha_thresh", str(cull_alpha_thresh),
                 "--pipeline.model.cull_scale_thresh", str(cull_scale_thresh),
@@ -2955,6 +2959,7 @@ class NerfStudioTrainer:
             ),
             'bilateral_guided_processing_requested': self.config.get('model', {}).get('bilateral_processing', False),
             'sh_degree': self.config.get('model', {}).get('sh_degree', 3),
+            'ssim_lambda': self.config.get('model', {}).get('ssim_lambda', 0.2),
             'enable_bg_model': self.config.get('model', {}).get('enable_bg_model', True),
             'enable_alpha_loss': self.config.get('model', {}).get('enable_alpha_loss', True),
             'enable_robust_mask': self.config.get('model', {}).get('enable_robust_mask', True),

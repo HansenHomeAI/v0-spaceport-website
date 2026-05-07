@@ -47,6 +47,18 @@ LOSS_WEIGHTING_TERMS = (
     "ssim_loss",
     "lpips_loss",
 )
+LOSS_WEIGHTING_ENV_KEYS = (
+    "SSIM_LAMBDA",
+    "BOUNDARY_LOSS_WEIGHT",
+    "BOUNDARY_SSIM_LOSS_WEIGHT",
+    "BOUNDARY_LPIPS_LOSS_WEIGHT",
+)
+LOSS_WEIGHTING_CONFIG_KEYS = (
+    "ssim_lambda",
+    "boundary_loss_weight",
+    "boundary_ssim_loss_weight",
+    "boundary_lpips_loss_weight",
+)
 
 
 def now_iso() -> str:
@@ -210,6 +222,54 @@ def objective_changes(strategy: Mapping[str, Any] | None) -> list[str]:
             "HYPOTHESIS",
         ),
     )
+
+
+def objective_implementation(strategy: Mapping[str, Any] | None) -> dict[str, Any]:
+    if not isinstance(strategy, Mapping):
+        return {"environment": {}, "training_config": {}}
+
+    environment: dict[str, str] = {}
+    training_config: dict[str, Any] = {}
+    direct_environment = strategy.get("environment")
+    if isinstance(direct_environment, Mapping):
+        environment.update({str(key): str(value) for key, value in direct_environment.items()})
+    direct_training_config = strategy.get("training_config")
+    if isinstance(direct_training_config, Mapping):
+        training_config.update(dict(direct_training_config))
+
+    nested = strategy.get("objective_implementation")
+    if isinstance(nested, Mapping):
+        nested_environment = nested.get("environment")
+        if isinstance(nested_environment, Mapping):
+            environment.update({str(key): str(value) for key, value in nested_environment.items()})
+        nested_training_config = nested.get("training_config")
+        if isinstance(nested_training_config, Mapping):
+            training_config.update(dict(nested_training_config))
+
+    stages = strategy.get("stages")
+    if isinstance(stages, list):
+        for stage in stages:
+            if not isinstance(stage, Mapping):
+                continue
+            stage_environment = stage.get("environment")
+            if isinstance(stage_environment, Mapping):
+                environment.update({str(key): str(value) for key, value in stage_environment.items()})
+
+    return {"environment": environment, "training_config": training_config}
+
+
+def has_loss_weighting_change(changes: Sequence[str]) -> bool:
+    normalized = " ".join(changes).lower()
+    return any(term in normalized for term in LOSS_WEIGHTING_TERMS)
+
+
+def implemented_loss_weighting_knobs(strategy: Mapping[str, Any] | None) -> dict[str, Any]:
+    implementation = objective_implementation(strategy)
+    environment = implementation["environment"]
+    training_config = implementation["training_config"]
+    env_knobs = {key: environment[key] for key in LOSS_WEIGHTING_ENV_KEYS if key in environment}
+    config_knobs = {key: training_config[key] for key in LOSS_WEIGHTING_CONFIG_KEYS if key in training_config}
+    return {"environment": env_knobs, "training_config": config_knobs}
 
 
 def estimated_usd(strategy: Mapping[str, Any] | None) -> float | None:
@@ -420,6 +480,9 @@ def evaluate_candidate_objective(
         block_reasons.append("objective_repeats_failed_density_or_merge_only_hypothesis")
     if repeats_failed_frame_repeat_without_loss(changes):
         block_reasons.append("objective_repeats_failed_frame_repeat_without_loss_weighting")
+    loss_weighting_knobs = implemented_loss_weighting_knobs(candidate_objective)
+    if has_loss_weighting_change(changes) and not any(loss_weighting_knobs.values()):
+        block_reasons.append("objective_missing_loss_weighting_implementation")
 
     submitted_jobs = candidate_objective.get("submitted_jobs")
     if submitted_jobs not in ([], None):
@@ -456,6 +519,7 @@ def evaluate_candidate_objective(
         "expected_metric_axes": axes,
         "missing_horizon_metric_axes": missing_horizon_axes,
         "objective_changes": changes,
+        "loss_weighting_implementation": loss_weighting_knobs,
         "estimated_usd": cost,
         "max_estimated_usd": max_estimated_usd or None,
         "submitted_jobs": submitted_jobs,
