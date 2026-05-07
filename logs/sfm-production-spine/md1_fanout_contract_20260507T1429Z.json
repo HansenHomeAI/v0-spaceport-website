@@ -1,0 +1,808 @@
+{
+  "status": "dry_run_contract_ready",
+  "no_compute_launched": true,
+  "branch": "agent-73948216-sfm-production-spine",
+  "head": "a1ae5883a13323f0d5312059b21d225c9c55f9e8",
+  "input_s3_uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+  "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z",
+  "planner_manifest": "logs/sfm-production-spine/r4exact739s1-1777612249-chunk_planner_manifest.json",
+  "planner_manifest_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/chunk_planner_manifest.json",
+  "planner": "footprint_graph_v1",
+  "pipeline_mode": "distributed_chunked_v1",
+  "chunk_count": 8,
+  "leaf_job_count": 8,
+  "coverage": {
+    "selected_chunk_indexes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "expected_chunk_indexes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "unique_core_images": 2157,
+    "unique_leaf_images": 2157,
+    "duplicate_core_images": 33,
+    "max_leaf_image_count": 320,
+    "max_core_image_count": 320
+  },
+  "leaf_jobs": [
+    {
+      "chunk_index": 0,
+      "job_name": "md1-fanout-20260507T1429Z-leaf-00",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-00/colmap",
+      "image_count": 320,
+      "core_image_count": 320,
+      "overlap_image_count": 0,
+      "selected_chunk_indexes": [
+        0
+      ],
+      "processing_job_spec": {
+        "ProcessingJobName": "md1-fanout-20260507T1429Z-leaf-00",
+        "AppSpecification": {
+          "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine",
+          "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 120
+          }
+        },
+        "ProcessingInputs": [
+          {
+            "InputName": "sfm-input",
+            "S3Input": {
+              "S3Uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+              "LocalPath": "/opt/ml/processing/input",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File",
+              "S3DataDistributionType": "FullyReplicated",
+              "S3CompressionType": "None"
+            }
+          }
+        ],
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "OutputName": "colmap-output",
+              "S3Output": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-00/colmap",
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob"
+              },
+              "AppManaged": false
+            }
+          ]
+        },
+        "Environment": {
+          "AWS_DEFAULT_REGION": "us-west-2",
+          "PYTHONUNBUFFERED": "1",
+          "SFM_BRANCH_NAME": "agent-73948216-sfm-production-spine",
+          "SFM_GIT_HEAD": "a1ae5883a13323f0d5312059b21d225c9c55f9e8",
+          "SFM_INPUT_URI": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+          "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-00/colmap",
+          "SFM_JOB_NAME": "md1-fanout-20260507T1429Z-leaf-00",
+          "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+          "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+          "COLMAP_CHUNK_PLANNER": "footprint_graph_v1",
+          "COLMAP_ONLY_CHUNK_INDEXES": "0",
+          "COLMAP_LEAF_TARGET_IMAGES": "200",
+          "COLMAP_LEAF_HARD_CAP": "320",
+          "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/chunk_planner_manifest.json"
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "SfM"
+          },
+          {
+            "Key": "Benchmark",
+            "Value": "true"
+          },
+          {
+            "Key": "Branch",
+            "Value": "agent-73948216-sfm-production-spine"
+          },
+          {
+            "Key": "FanoutProof",
+            "Value": "true"
+          }
+        ]
+      }
+    },
+    {
+      "chunk_index": 1,
+      "job_name": "md1-fanout-20260507T1429Z-leaf-01",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-01/colmap",
+      "image_count": 320,
+      "core_image_count": 320,
+      "overlap_image_count": 0,
+      "selected_chunk_indexes": [
+        1
+      ],
+      "processing_job_spec": {
+        "ProcessingJobName": "md1-fanout-20260507T1429Z-leaf-01",
+        "AppSpecification": {
+          "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine",
+          "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 120
+          }
+        },
+        "ProcessingInputs": [
+          {
+            "InputName": "sfm-input",
+            "S3Input": {
+              "S3Uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+              "LocalPath": "/opt/ml/processing/input",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File",
+              "S3DataDistributionType": "FullyReplicated",
+              "S3CompressionType": "None"
+            }
+          }
+        ],
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "OutputName": "colmap-output",
+              "S3Output": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-01/colmap",
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob"
+              },
+              "AppManaged": false
+            }
+          ]
+        },
+        "Environment": {
+          "AWS_DEFAULT_REGION": "us-west-2",
+          "PYTHONUNBUFFERED": "1",
+          "SFM_BRANCH_NAME": "agent-73948216-sfm-production-spine",
+          "SFM_GIT_HEAD": "a1ae5883a13323f0d5312059b21d225c9c55f9e8",
+          "SFM_INPUT_URI": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+          "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-01/colmap",
+          "SFM_JOB_NAME": "md1-fanout-20260507T1429Z-leaf-01",
+          "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+          "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+          "COLMAP_CHUNK_PLANNER": "footprint_graph_v1",
+          "COLMAP_ONLY_CHUNK_INDEXES": "1",
+          "COLMAP_LEAF_TARGET_IMAGES": "200",
+          "COLMAP_LEAF_HARD_CAP": "320",
+          "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/chunk_planner_manifest.json"
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "SfM"
+          },
+          {
+            "Key": "Benchmark",
+            "Value": "true"
+          },
+          {
+            "Key": "Branch",
+            "Value": "agent-73948216-sfm-production-spine"
+          },
+          {
+            "Key": "FanoutProof",
+            "Value": "true"
+          }
+        ]
+      }
+    },
+    {
+      "chunk_index": 2,
+      "job_name": "md1-fanout-20260507T1429Z-leaf-02",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-02/colmap",
+      "image_count": 167,
+      "core_image_count": 120,
+      "overlap_image_count": 47,
+      "selected_chunk_indexes": [
+        2
+      ],
+      "processing_job_spec": {
+        "ProcessingJobName": "md1-fanout-20260507T1429Z-leaf-02",
+        "AppSpecification": {
+          "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine",
+          "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 120
+          }
+        },
+        "ProcessingInputs": [
+          {
+            "InputName": "sfm-input",
+            "S3Input": {
+              "S3Uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+              "LocalPath": "/opt/ml/processing/input",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File",
+              "S3DataDistributionType": "FullyReplicated",
+              "S3CompressionType": "None"
+            }
+          }
+        ],
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "OutputName": "colmap-output",
+              "S3Output": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-02/colmap",
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob"
+              },
+              "AppManaged": false
+            }
+          ]
+        },
+        "Environment": {
+          "AWS_DEFAULT_REGION": "us-west-2",
+          "PYTHONUNBUFFERED": "1",
+          "SFM_BRANCH_NAME": "agent-73948216-sfm-production-spine",
+          "SFM_GIT_HEAD": "a1ae5883a13323f0d5312059b21d225c9c55f9e8",
+          "SFM_INPUT_URI": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+          "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-02/colmap",
+          "SFM_JOB_NAME": "md1-fanout-20260507T1429Z-leaf-02",
+          "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+          "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+          "COLMAP_CHUNK_PLANNER": "footprint_graph_v1",
+          "COLMAP_ONLY_CHUNK_INDEXES": "2",
+          "COLMAP_LEAF_TARGET_IMAGES": "200",
+          "COLMAP_LEAF_HARD_CAP": "320",
+          "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/chunk_planner_manifest.json"
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "SfM"
+          },
+          {
+            "Key": "Benchmark",
+            "Value": "true"
+          },
+          {
+            "Key": "Branch",
+            "Value": "agent-73948216-sfm-production-spine"
+          },
+          {
+            "Key": "FanoutProof",
+            "Value": "true"
+          }
+        ]
+      }
+    },
+    {
+      "chunk_index": 3,
+      "job_name": "md1-fanout-20260507T1429Z-leaf-03",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-03/colmap",
+      "image_count": 320,
+      "core_image_count": 320,
+      "overlap_image_count": 0,
+      "selected_chunk_indexes": [
+        3
+      ],
+      "processing_job_spec": {
+        "ProcessingJobName": "md1-fanout-20260507T1429Z-leaf-03",
+        "AppSpecification": {
+          "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine",
+          "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 120
+          }
+        },
+        "ProcessingInputs": [
+          {
+            "InputName": "sfm-input",
+            "S3Input": {
+              "S3Uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+              "LocalPath": "/opt/ml/processing/input",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File",
+              "S3DataDistributionType": "FullyReplicated",
+              "S3CompressionType": "None"
+            }
+          }
+        ],
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "OutputName": "colmap-output",
+              "S3Output": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-03/colmap",
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob"
+              },
+              "AppManaged": false
+            }
+          ]
+        },
+        "Environment": {
+          "AWS_DEFAULT_REGION": "us-west-2",
+          "PYTHONUNBUFFERED": "1",
+          "SFM_BRANCH_NAME": "agent-73948216-sfm-production-spine",
+          "SFM_GIT_HEAD": "a1ae5883a13323f0d5312059b21d225c9c55f9e8",
+          "SFM_INPUT_URI": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+          "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-03/colmap",
+          "SFM_JOB_NAME": "md1-fanout-20260507T1429Z-leaf-03",
+          "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+          "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+          "COLMAP_CHUNK_PLANNER": "footprint_graph_v1",
+          "COLMAP_ONLY_CHUNK_INDEXES": "3",
+          "COLMAP_LEAF_TARGET_IMAGES": "200",
+          "COLMAP_LEAF_HARD_CAP": "320",
+          "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/chunk_planner_manifest.json"
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "SfM"
+          },
+          {
+            "Key": "Benchmark",
+            "Value": "true"
+          },
+          {
+            "Key": "Branch",
+            "Value": "agent-73948216-sfm-production-spine"
+          },
+          {
+            "Key": "FanoutProof",
+            "Value": "true"
+          }
+        ]
+      }
+    },
+    {
+      "chunk_index": 4,
+      "job_name": "md1-fanout-20260507T1429Z-leaf-04",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-04/colmap",
+      "image_count": 320,
+      "core_image_count": 320,
+      "overlap_image_count": 0,
+      "selected_chunk_indexes": [
+        4
+      ],
+      "processing_job_spec": {
+        "ProcessingJobName": "md1-fanout-20260507T1429Z-leaf-04",
+        "AppSpecification": {
+          "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine",
+          "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 120
+          }
+        },
+        "ProcessingInputs": [
+          {
+            "InputName": "sfm-input",
+            "S3Input": {
+              "S3Uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+              "LocalPath": "/opt/ml/processing/input",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File",
+              "S3DataDistributionType": "FullyReplicated",
+              "S3CompressionType": "None"
+            }
+          }
+        ],
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "OutputName": "colmap-output",
+              "S3Output": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-04/colmap",
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob"
+              },
+              "AppManaged": false
+            }
+          ]
+        },
+        "Environment": {
+          "AWS_DEFAULT_REGION": "us-west-2",
+          "PYTHONUNBUFFERED": "1",
+          "SFM_BRANCH_NAME": "agent-73948216-sfm-production-spine",
+          "SFM_GIT_HEAD": "a1ae5883a13323f0d5312059b21d225c9c55f9e8",
+          "SFM_INPUT_URI": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+          "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-04/colmap",
+          "SFM_JOB_NAME": "md1-fanout-20260507T1429Z-leaf-04",
+          "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+          "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+          "COLMAP_CHUNK_PLANNER": "footprint_graph_v1",
+          "COLMAP_ONLY_CHUNK_INDEXES": "4",
+          "COLMAP_LEAF_TARGET_IMAGES": "200",
+          "COLMAP_LEAF_HARD_CAP": "320",
+          "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/chunk_planner_manifest.json"
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "SfM"
+          },
+          {
+            "Key": "Benchmark",
+            "Value": "true"
+          },
+          {
+            "Key": "Branch",
+            "Value": "agent-73948216-sfm-production-spine"
+          },
+          {
+            "Key": "FanoutProof",
+            "Value": "true"
+          }
+        ]
+      }
+    },
+    {
+      "chunk_index": 5,
+      "job_name": "md1-fanout-20260507T1429Z-leaf-05",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-05/colmap",
+      "image_count": 320,
+      "core_image_count": 233,
+      "overlap_image_count": 87,
+      "selected_chunk_indexes": [
+        5
+      ],
+      "processing_job_spec": {
+        "ProcessingJobName": "md1-fanout-20260507T1429Z-leaf-05",
+        "AppSpecification": {
+          "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine",
+          "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 120
+          }
+        },
+        "ProcessingInputs": [
+          {
+            "InputName": "sfm-input",
+            "S3Input": {
+              "S3Uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+              "LocalPath": "/opt/ml/processing/input",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File",
+              "S3DataDistributionType": "FullyReplicated",
+              "S3CompressionType": "None"
+            }
+          }
+        ],
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "OutputName": "colmap-output",
+              "S3Output": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-05/colmap",
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob"
+              },
+              "AppManaged": false
+            }
+          ]
+        },
+        "Environment": {
+          "AWS_DEFAULT_REGION": "us-west-2",
+          "PYTHONUNBUFFERED": "1",
+          "SFM_BRANCH_NAME": "agent-73948216-sfm-production-spine",
+          "SFM_GIT_HEAD": "a1ae5883a13323f0d5312059b21d225c9c55f9e8",
+          "SFM_INPUT_URI": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+          "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-05/colmap",
+          "SFM_JOB_NAME": "md1-fanout-20260507T1429Z-leaf-05",
+          "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+          "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+          "COLMAP_CHUNK_PLANNER": "footprint_graph_v1",
+          "COLMAP_ONLY_CHUNK_INDEXES": "5",
+          "COLMAP_LEAF_TARGET_IMAGES": "200",
+          "COLMAP_LEAF_HARD_CAP": "320",
+          "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/chunk_planner_manifest.json"
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "SfM"
+          },
+          {
+            "Key": "Benchmark",
+            "Value": "true"
+          },
+          {
+            "Key": "Branch",
+            "Value": "agent-73948216-sfm-production-spine"
+          },
+          {
+            "Key": "FanoutProof",
+            "Value": "true"
+          }
+        ]
+      }
+    },
+    {
+      "chunk_index": 6,
+      "job_name": "md1-fanout-20260507T1429Z-leaf-06",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-06/colmap",
+      "image_count": 320,
+      "core_image_count": 271,
+      "overlap_image_count": 49,
+      "selected_chunk_indexes": [
+        6
+      ],
+      "processing_job_spec": {
+        "ProcessingJobName": "md1-fanout-20260507T1429Z-leaf-06",
+        "AppSpecification": {
+          "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine",
+          "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 120
+          }
+        },
+        "ProcessingInputs": [
+          {
+            "InputName": "sfm-input",
+            "S3Input": {
+              "S3Uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+              "LocalPath": "/opt/ml/processing/input",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File",
+              "S3DataDistributionType": "FullyReplicated",
+              "S3CompressionType": "None"
+            }
+          }
+        ],
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "OutputName": "colmap-output",
+              "S3Output": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-06/colmap",
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob"
+              },
+              "AppManaged": false
+            }
+          ]
+        },
+        "Environment": {
+          "AWS_DEFAULT_REGION": "us-west-2",
+          "PYTHONUNBUFFERED": "1",
+          "SFM_BRANCH_NAME": "agent-73948216-sfm-production-spine",
+          "SFM_GIT_HEAD": "a1ae5883a13323f0d5312059b21d225c9c55f9e8",
+          "SFM_INPUT_URI": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+          "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-06/colmap",
+          "SFM_JOB_NAME": "md1-fanout-20260507T1429Z-leaf-06",
+          "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+          "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+          "COLMAP_CHUNK_PLANNER": "footprint_graph_v1",
+          "COLMAP_ONLY_CHUNK_INDEXES": "6",
+          "COLMAP_LEAF_TARGET_IMAGES": "200",
+          "COLMAP_LEAF_HARD_CAP": "320",
+          "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/chunk_planner_manifest.json"
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "SfM"
+          },
+          {
+            "Key": "Benchmark",
+            "Value": "true"
+          },
+          {
+            "Key": "Branch",
+            "Value": "agent-73948216-sfm-production-spine"
+          },
+          {
+            "Key": "FanoutProof",
+            "Value": "true"
+          }
+        ]
+      }
+    },
+    {
+      "chunk_index": 7,
+      "job_name": "md1-fanout-20260507T1429Z-leaf-07",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-07/colmap",
+      "image_count": 320,
+      "core_image_count": 286,
+      "overlap_image_count": 34,
+      "selected_chunk_indexes": [
+        7
+      ],
+      "processing_job_spec": {
+        "ProcessingJobName": "md1-fanout-20260507T1429Z-leaf-07",
+        "AppSpecification": {
+          "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine",
+          "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 120
+          }
+        },
+        "ProcessingInputs": [
+          {
+            "InputName": "sfm-input",
+            "S3Input": {
+              "S3Uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+              "LocalPath": "/opt/ml/processing/input",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File",
+              "S3DataDistributionType": "FullyReplicated",
+              "S3CompressionType": "None"
+            }
+          }
+        ],
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "OutputName": "colmap-output",
+              "S3Output": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-07/colmap",
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob"
+              },
+              "AppManaged": false
+            }
+          ]
+        },
+        "Environment": {
+          "AWS_DEFAULT_REGION": "us-west-2",
+          "PYTHONUNBUFFERED": "1",
+          "SFM_BRANCH_NAME": "agent-73948216-sfm-production-spine",
+          "SFM_GIT_HEAD": "a1ae5883a13323f0d5312059b21d225c9c55f9e8",
+          "SFM_INPUT_URI": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+          "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-07/colmap",
+          "SFM_JOB_NAME": "md1-fanout-20260507T1429Z-leaf-07",
+          "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+          "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+          "COLMAP_CHUNK_PLANNER": "footprint_graph_v1",
+          "COLMAP_ONLY_CHUNK_INDEXES": "7",
+          "COLMAP_LEAF_TARGET_IMAGES": "200",
+          "COLMAP_LEAF_HARD_CAP": "320",
+          "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/chunk_planner_manifest.json"
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "SfM"
+          },
+          {
+            "Key": "Benchmark",
+            "Value": "true"
+          },
+          {
+            "Key": "Branch",
+            "Value": "agent-73948216-sfm-production-spine"
+          },
+          {
+            "Key": "FanoutProof",
+            "Value": "true"
+          }
+        ]
+      }
+    }
+  ],
+  "reducer_contract": {
+    "expected_leaf_count": 8,
+    "leaf_output_uris": [
+      "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-00/colmap",
+      "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-01/colmap",
+      "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-02/colmap",
+      "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-03/colmap",
+      "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-04/colmap",
+      "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-05/colmap",
+      "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-06/colmap",
+      "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/leaves/leaf-07/colmap"
+    ],
+    "final_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1429Z/merged/colmap",
+    "required_leaf_artifacts": [
+      "chunk_planner_manifest.json",
+      "leaf_metadata.json",
+      "sparse/0/cameras.txt",
+      "sparse/0/images.txt",
+      "sparse/0/points3D.txt"
+    ],
+    "promotion_gates": [
+      "all leaf jobs Completed",
+      "failed_leaf_count == 0 after bounded retries",
+      "merged_component_count == expected_component_count",
+      "standard sparse/0 exists",
+      "registration and speed gates compare against md1p24e752k-1776314974"
+    ]
+  },
+  "gaps": [],
+  "warnings": [
+    "core image ownership has duplicate images; reducer must de-duplicate overlap"
+  ],
+  "unresolved_after_dry_run": [
+    "actual multi-instance SageMaker leaf execution is not yet proven",
+    "reducer merge from independently uploaded leaf outputs is not yet proven"
+  ],
+  "next_validation_step": "Upload the immutable planner manifest, launch a two-leaf canary with this contract, then run the reducer against the two independent leaf prefixes before any repeat full MD1 fanout."
+}

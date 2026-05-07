@@ -829,6 +829,10 @@ class ColmapPipeline:
         )
         self.input_subset_manifest_uri = os.environ.get("COLMAP_INPUT_SUBSET_MANIFEST_URI", "").strip()
         self.input_subset_name = os.environ.get("COLMAP_INPUT_SUBSET_NAME", "").strip()
+        self.input_chunk_planner_manifest_uri = os.environ.get(
+            "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI", ""
+        ).strip()
+        self.input_chunk_planner_manifest: dict[str, object] | None = None
         if (
             self.enable_sequential_matcher
             and self.spatial_neighbors == profile_defaults["spatial_neighbors"]
@@ -1201,6 +1205,8 @@ class ColmapPipeline:
             )
 
     def load_requested_input_subset_names(self) -> Set[str]:
+        if self.input_chunk_planner_manifest_uri and self.only_chunk_indexes:
+            return self.selected_chunk_manifest_image_names()
         if not self.input_subset_name:
             return set()
         if not self.input_subset_manifest_uri:
@@ -1232,6 +1238,135 @@ class ColmapPipeline:
             for image_name in image_names
             if str(image_name).strip()
         }
+
+    def load_input_chunk_planner_manifest(self) -> dict[str, object] | None:
+        if not self.input_chunk_planner_manifest_uri:
+            return None
+        if self.input_chunk_planner_manifest is None:
+            manifest = load_json_uri(self.input_chunk_planner_manifest_uri)
+            chunks = manifest.get("chunks")
+            if not isinstance(chunks, list) or not chunks:
+                raise RuntimeError(
+                    "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI did not contain a non-empty chunks array"
+                )
+            self.input_chunk_planner_manifest = manifest
+        return self.input_chunk_planner_manifest
+
+    def selected_chunk_manifest_image_names(self) -> Set[str]:
+        manifest = self.load_input_chunk_planner_manifest()
+        if manifest is None:
+            return set()
+        selected_names: Set[str] = set()
+        found_indexes: Set[int] = set()
+        selected_indexes = set(self.only_chunk_indexes)
+        for raw_chunk in manifest.get("chunks", []):
+            if not isinstance(raw_chunk, dict):
+                continue
+            try:
+                chunk_index = int(raw_chunk.get("index"))
+            except (TypeError, ValueError):
+                continue
+            if chunk_index not in selected_indexes:
+                continue
+            found_indexes.add(chunk_index)
+            image_names = raw_chunk.get("image_names") or []
+            if not isinstance(image_names, list):
+                raise RuntimeError(
+                    f"Chunk {chunk_index} in COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI has invalid image_names"
+                )
+            selected_names.update(
+                str(image_name).strip() for image_name in image_names if str(image_name).strip()
+            )
+        missing_indexes = selected_indexes.difference(found_indexes)
+        if missing_indexes:
+            raise RuntimeError(
+                "COLMAP_ONLY_CHUNK_INDEXES requested indexes missing from "
+                f"COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI: {sorted(missing_indexes)}"
+            )
+        if not selected_names:
+            raise RuntimeError("Selected planner manifest chunks did not contain any image_names")
+        return selected_names
+
+    def chunk_plans_from_input_manifest(self) -> List[ChunkPlan] | None:
+        manifest = self.load_input_chunk_planner_manifest()
+        if manifest is None:
+            return None
+        self.chunk_matcher_strategy = str(
+            manifest.get("chunk_matcher_strategy")
+            or ("pair_list" if self.colmap_capabilities.get("supports_matches_importer") else "exhaustive")
+        )
+        self.build_single_image_groups()
+        chunk_plans: List[ChunkPlan] = []
+        missing_names: Set[str] = set()
+        selected_indexes = set(self.only_chunk_indexes)
+        for raw_chunk in manifest.get("chunks", []):
+            if not isinstance(raw_chunk, dict):
+                continue
+            try:
+                chunk_index = int(raw_chunk.get("index"))
+            except (TypeError, ValueError):
+                continue
+            if selected_indexes and chunk_index not in selected_indexes:
+                continue
+            core_names = [
+                str(name).strip()
+                for name in raw_chunk.get("core_names", [])
+                if str(name).strip()
+            ]
+            overlap_names = [
+                str(name).strip()
+                for name in raw_chunk.get("overlap_names", [])
+                if str(name).strip()
+            ]
+            raw_image_names = raw_chunk.get("image_names") or []
+            image_names = [str(name).strip() for name in raw_image_names if str(name).strip()]
+            if not image_names:
+                image_names = sorted(set(core_names).union(overlap_names))
+            for image_name in image_names:
+                if image_name not in self.exif_records:
+                    missing_names.add(image_name)
+            core_group_indices = [
+                self.image_group_indices[name] for name in core_names if name in self.image_group_indices
+            ]
+            overlap_group_indices = [
+                self.image_group_indices[name] for name in overlap_names if name in self.image_group_indices
+            ]
+            group_indices = sorted(
+                self.image_group_indices[name] for name in image_names if name in self.image_group_indices
+            )
+            chunk_plans.append(
+                ChunkPlan(
+                    index=chunk_index,
+                    core_names=core_names,
+                    image_names=image_names,
+                    overlap_names=overlap_names,
+                    core_group_indices=core_group_indices,
+                    group_indices=group_indices,
+                    overlap_group_indices=overlap_group_indices,
+                    segment_indices=[],
+                    source_chunk_indexes=[chunk_index],
+                )
+            )
+        if missing_names:
+            raise RuntimeError(
+                "Input chunk planner manifest references images that were not extracted: "
+                + ", ".join(sorted(missing_names)[:10])
+                + (" ..." if len(missing_names) > 10 else "")
+            )
+        if not chunk_plans:
+            raise RuntimeError("Input chunk planner manifest produced no chunk plans")
+        self.chunk_sizes = [len(chunk_plan.image_names) for chunk_plan in chunk_plans]
+        self.chunk_overlap_image_count = sum(len(chunk_plan.overlap_names) for chunk_plan in chunk_plans)
+        self.chunk_group_count = int(manifest.get("chunk_group_count") or self.chunk_group_count or 0)
+        self.chunk_segment_count = int(manifest.get("chunk_segment_count") or self.chunk_segment_count or 0)
+        self.chunk_graph_probe_manifest = manifest.get("footprint_graph_manifest") or {}
+        logger.info(
+            "Loaded %s/%s chunk plans from immutable planner manifest %s",
+            len(chunk_plans),
+            manifest.get("chunk_count") or len(chunk_plans),
+            self.input_chunk_planner_manifest_uri,
+        )
+        return chunk_plans
 
     def populate_local_coordinates(
         self, exif_records: Dict[str, Dict[str, float | str | None]]
@@ -4653,6 +4788,9 @@ class ColmapPipeline:
         return ladder_subsets
 
     def build_chunk_plans(self) -> List[ChunkPlan]:
+        manifest_chunk_plans = self.chunk_plans_from_input_manifest()
+        if manifest_chunk_plans is not None:
+            return manifest_chunk_plans
         if self.chunk_planner == "footprint_graph_v1":
             self.chunk_matcher_strategy = (
                 "pair_list" if self.colmap_capabilities.get("supports_matches_importer") else "exhaustive"
@@ -8183,6 +8321,7 @@ class ColmapPipeline:
             "input_subset_name": self.input_subset_name,
             "input_subset_requested": self.selected_input_images_requested,
             "input_subset_requested_image_count": len(self.selected_input_image_names),
+            "input_chunk_planner_manifest_uri": self.input_chunk_planner_manifest_uri,
             "colmap_capabilities": self.colmap_capabilities,
             "leaf_target_images": self.active_leaf_target_images(),
             "leaf_hard_cap_images": self.active_leaf_hard_cap_images(),

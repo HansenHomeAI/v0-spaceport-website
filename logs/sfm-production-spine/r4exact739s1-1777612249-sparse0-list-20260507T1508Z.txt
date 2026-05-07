@@ -1,0 +1,8 @@
+2026-05-01 06:43:09  195 Bytes manual-validations/r4exact739s1-1777612249/colmap/sparse/0/cameras.txt
+2026-05-01 06:43:09  342.2 KiB manual-validations/r4exact739s1-1777612249/colmap/sparse/0/frames.txt
+2026-05-01 06:43:09  858.2 MiB manual-validations/r4exact739s1-1777612249/colmap/sparse/0/images.txt
+2026-05-01 06:43:09  185.2 MiB manual-validations/r4exact739s1-1777612249/colmap/sparse/0/points3D.txt
+2026-05-01 06:43:09  218 Bytes manual-validations/r4exact739s1-1777612249/colmap/sparse/0/rigs.txt
+
+Total Objects: 5
+   Total Size: 1.0 GiB

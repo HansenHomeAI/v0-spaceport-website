@@ -1,0 +1,30 @@
+{
+  "updated_at": "2026-05-07T14:29:32Z",
+  "branch": "agent-73948216-sfm-production-spine",
+  "head": "a1ae5883a13323f0d5312059b21d225c9c55f9e8",
+  "status": "implemented_and_unit_verified_locally",
+  "problem_found": "The 2026-05-07T13:51Z fanout dry-run contract used COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI, but run_colmap_sfm.py did not yet implement that environment variable.",
+  "implementation": {
+    "file": "infrastructure/containers/sfm/run_colmap_sfm.py",
+    "behavior": [
+      "reads COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI",
+      "loads the immutable planner manifest from local path or S3 through load_json_uri",
+      "limits extraction to selected chunk image_names when COLMAP_ONLY_CHUNK_INDEXES is set",
+      "builds ChunkPlan records from the immutable manifest instead of replanning locally",
+      "records input_chunk_planner_manifest_uri in metadata"
+    ]
+  },
+  "tests": {
+    "command": "python3 -m unittest tests.unit.test_colmap_gps_priors.ColmapGpsPriorTests.test_selected_chunk_manifest_limits_extraction_to_leaf_images tests.unit.test_colmap_gps_priors.ColmapGpsPriorTests.test_build_chunk_plans_uses_input_chunk_planner_manifest tests.unit.test_colmap_gps_priors.ColmapGpsPriorTests.test_run_spatial_heading_chunked_path_supports_selected_chunk_indexes tests.unit.test_sfm_fanout_contract",
+    "result": "passed",
+    "log": "logs/sfm-production-spine/fanout-runtime-support-tests-20260507T1429Z.log"
+  },
+  "canary_contract": {
+    "contract": "logs/sfm-production-spine/md1_fanout_contract_20260507T1429Z.json",
+    "status": "dry_run_contract_ready",
+    "leaf_job_count": 8,
+    "selected_chunk_indexes": [0, 1, 2, 3, 4, 5, 6, 7],
+    "planner_manifest_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/chunk_planner_manifest.json"
+  },
+  "remaining_gap": "This is local runtime support only. The branch/container must be built from this head before launching the two-leaf canary if the canary is meant to prove immutable-manifest fanout rather than the older selected-chunk primitive."
+}

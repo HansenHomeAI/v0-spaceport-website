@@ -1,0 +1,39 @@
+{
+  "updated_at": "2026-05-07T14:29:32Z",
+  "status": "prepared_not_launched",
+  "purpose": "Smallest useful proof of true multi-instance SageMaker leaf fanout before any repeat full MD1 fanout.",
+  "branch": "agent-73948216-sfm-production-spine",
+  "head": "a1ae5883a13323f0d5312059b21d225c9c55f9e8",
+  "preconditions": [
+    "branch container image is built from head a1ae5883a13323f0d5312059b21d225c9c55f9e8 or newer",
+    "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI support is present in that container",
+    "no active task-owned SageMaker jobs are already running"
+  ],
+  "input_uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+  "planner_manifest_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/chunk_planner_manifest.json",
+  "selected_leaf_indexes": [1, 2],
+  "reason_for_leaf_choice": "chunk 2 was the weak recovered leaf in the promoted MD1 artifact, and chunk 1 is its adjacent neighbor; this gives the canary a useful recovery/merge signal without launching all eight leaves.",
+  "leaf_jobs": [
+    {
+      "chunk_index": 1,
+      "job_prefix": "md1-fanout-20260507T1429Z-c01",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-01/colmap",
+      "launch_command": "python3 scripts/sfm/run_sfm_benchmark.py --branch agent-73948216-sfm-production-spine --input-s3-uri s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip --output-s3-uri s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-01/colmap --job-prefix md1-fanout-20260507T1429Z-c01 --mode chunked --subset-strategy md1_fanout_two_leaf_canary --instance-type ml.g4dn.xlarge --volume-size-gb 120 --only-chunk-indexes 1 --env COLMAP_PIPELINE_MODE=distributed_chunked_v1 --env COLMAP_CHUNK_PLANNER=footprint_graph_v1 --env COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI=s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/chunk_planner_manifest.json --env COLMAP_MATCH_PROFILE=P3 --env COLMAP_PAIR_CAP_LOCAL=24 --env COLMAP_PAIR_CAP_REVISIT=10 --env COLMAP_PAIR_CAP_SEAM=10 --summary-json-output logs/sfm-production-spine/md1-fanout-20260507T1429Z-c01-submit.json"
+    },
+    {
+      "chunk_index": 2,
+      "job_prefix": "md1-fanout-20260507T1429Z-c02",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-02/colmap",
+      "launch_command": "python3 scripts/sfm/run_sfm_benchmark.py --branch agent-73948216-sfm-production-spine --input-s3-uri s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip --output-s3-uri s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-02/colmap --job-prefix md1-fanout-20260507T1429Z-c02 --mode chunked --subset-strategy md1_fanout_two_leaf_canary --instance-type ml.g4dn.xlarge --volume-size-gb 120 --only-chunk-indexes 2 --env COLMAP_PIPELINE_MODE=distributed_chunked_v1 --env COLMAP_CHUNK_PLANNER=footprint_graph_v1 --env COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI=s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/chunk_planner_manifest.json --env COLMAP_MATCH_PROFILE=P3 --env COLMAP_PAIR_CAP_LOCAL=24 --env COLMAP_PAIR_CAP_REVISIT=10 --env COLMAP_PAIR_CAP_SEAM=10 --summary-json-output logs/sfm-production-spine/md1-fanout-20260507T1429Z-c02-submit.json"
+    }
+  ],
+  "reducer_validation_target": {
+    "input_leaf_prefixes": [
+      "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-01/colmap",
+      "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-02/colmap"
+    ],
+    "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/merged/colmap",
+    "required_result": "independent leaf outputs can be consumed by reducer without re-running full MD1"
+  },
+  "not_launched_reason": "The next safe step is to build/publish the current branch container first so the canary proves the new immutable-manifest fanout path, not stale container behavior."
+}

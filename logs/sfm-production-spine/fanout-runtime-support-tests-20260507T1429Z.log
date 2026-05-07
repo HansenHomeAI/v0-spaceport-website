@@ -1,0 +1,7 @@
+.2026-05-07 08:35:30,499 - INFO - Loaded 1/2 chunk plans from immutable planner manifest /var/folders/rl/60hgx6_j38v9r57h3sxmg0sc0000gn/T/tmp05d38rrn/chunk_planner_manifest.json
+.2026-05-07 08:35:30,559 - INFO - Restricting chunk execution to chunk indexes [1] (1 chunks)
+...
+----------------------------------------------------------------------
+Ran 5 tests in 0.223s
+
+OK

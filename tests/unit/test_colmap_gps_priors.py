@@ -6678,6 +6678,106 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(pipeline.chunk_execution_image_count, 2)
             self.assertEqual(pipeline.final_matcher_mode, "spatial_heading_chunked_subset")
 
+    def test_selected_chunk_manifest_limits_extraction_to_leaf_images(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            manifest_path = root / "chunk_planner_manifest.json"
+            manifest_path.write_text(
+                json.dumps(
+                    {
+                        "chunks": [
+                            {
+                                "index": 0,
+                                "core_names": ["a.JPG"],
+                                "overlap_names": [],
+                                "image_names": ["a.JPG"],
+                            },
+                            {
+                                "index": 1,
+                                "core_names": ["b.JPG", "c.JPG"],
+                                "overlap_names": ["shared.JPG"],
+                                "image_names": ["b.JPG", "c.JPG", "shared.JPG"],
+                            },
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with mock.patch.dict(
+                os.environ,
+                {
+                    "COLMAP_ONLY_CHUNK_INDEXES": "1",
+                    "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI": str(manifest_path),
+                },
+                clear=False,
+            ):
+                pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+
+            self.assertEqual(
+                pipeline.load_requested_input_subset_names(),
+                {"b.JPG", "c.JPG", "shared.JPG"},
+            )
+
+    def test_build_chunk_plans_uses_input_chunk_planner_manifest(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            manifest_path = root / "chunk_planner_manifest.json"
+            manifest_path.write_text(
+                json.dumps(
+                    {
+                        "chunk_count": 2,
+                        "chunk_matcher_strategy": "pair_list",
+                        "chunks": [
+                            {
+                                "index": 0,
+                                "core_names": ["a.JPG"],
+                                "overlap_names": [],
+                                "image_names": ["a.JPG"],
+                            },
+                            {
+                                "index": 1,
+                                "core_names": ["b.JPG", "c.JPG"],
+                                "overlap_names": ["shared.JPG"],
+                                "image_names": ["b.JPG", "c.JPG", "shared.JPG"],
+                            },
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with mock.patch.dict(
+                os.environ,
+                {
+                    "COLMAP_ONLY_CHUNK_INDEXES": "1",
+                    "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI": str(manifest_path),
+                },
+                clear=False,
+            ):
+                pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.capture_ordered_names = ["b.JPG", "c.JPG", "shared.JPG"]
+            pipeline.exif_records = {
+                name: {
+                    "local_x_m": float(index),
+                    "local_y_m": 0.0,
+                    "local_z_m": 0.0,
+                    "heading_deg": 90.0,
+                    "pitch_deg": -75.0,
+                    "capture_time_s": float(index),
+                }
+                for index, name in enumerate(pipeline.capture_ordered_names)
+            }
+
+            chunk_plans = pipeline.build_chunk_plans()
+
+            self.assertEqual(len(chunk_plans), 1)
+            self.assertEqual(chunk_plans[0].index, 1)
+            self.assertEqual(chunk_plans[0].core_names, ["b.JPG", "c.JPG"])
+            self.assertEqual(chunk_plans[0].overlap_names, ["shared.JPG"])
+            self.assertEqual(chunk_plans[0].image_names, ["b.JPG", "c.JPG", "shared.JPG"])
+            self.assertEqual(pipeline.chunk_matcher_strategy, "pair_list")
+
     def test_stream_command_times_out(self):
         started = time.time()
         with self.assertRaises(RuntimeError) as raised:
