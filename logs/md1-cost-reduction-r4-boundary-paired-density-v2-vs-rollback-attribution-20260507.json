@@ -1,0 +1,156 @@
+{
+  "checked_at": "2026-05-07T01:32:20.999443+00:00",
+  "purpose": "No-spend attribution after boundary paired density-v2 failed V18 review; compare to prior tile10 rollback isolation proof that passed V18 non-regression.",
+  "inputs": {
+    "current_review_comparison_json": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-boundary-paired-density-v2-support-overlap-smoke-p24/review_comparison.json",
+    "rollback_review_comparison_json": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-tile10-rollback-isolation-smoke-p24/review_comparison.json",
+    "current_preflight_json": "logs/md1-cost-reduction-r4-boundary-paired-density-v2-support-overlap-remote-merge-g4dn-preflight-20260507.json",
+    "rollback_preflight_json": "logs/md1-cost-reduction-r4-tile10-rollback-isolation-remote-merge-g4dn-preflight-20260505.json",
+    "current_summary_json": "logs/md1-cost-reduction-r4-boundary-paired-density-v2-fullscene-summary-20260506.json",
+    "rollback_analysis_json": "logs/md1-cost-reduction-r4-tile10-rollback-isolation-review-analysis-20260505.json"
+  },
+  "review_statuses": {
+    "current_promotion": "blocked",
+    "current_promotion_block_reasons": [
+      "boundary_no_required_improvement",
+      "horizon_ssim_regression"
+    ],
+    "current_v18_non_regression": "blocked",
+    "current_v18_block_reasons": [
+      "boundary_v18_median_ssim_regression",
+      "boundary_v18_median_lpips_regression",
+      "horizon_v18_median_psnr_regression",
+      "horizon_v18_median_ssim_regression",
+      "horizon_v18_median_lpips_regression"
+    ],
+    "rollback_promotion": "blocked",
+    "rollback_promotion_block_reasons": [
+      "boundary_no_required_improvement"
+    ],
+    "rollback_v18_non_regression": "promoted",
+    "rollback_v18_block_reasons": []
+  },
+  "bucket_delta_comparison": {
+    "boundary": {
+      "rollback_delta_vs_v18": {
+        "psnr": 9.09046563180027e-06,
+        "ssim": 3.2186508178710938e-06,
+        "lpips": 8.553266525268555e-06
+      },
+      "current_delta_vs_v18": {
+        "psnr": 0.0935542128739062,
+        "ssim": -0.006753653287887573,
+        "lpips": 0.010680407285690308
+      },
+      "current_minus_rollback": {
+        "psnr": 0.0935451224082744,
+        "ssim": -0.006756871938705444,
+        "lpips": 0.010671854019165039
+      },
+      "current_block_reasons": [
+        "boundary_v18_median_ssim_regression",
+        "boundary_v18_median_lpips_regression"
+      ],
+      "rollback_block_reasons": []
+    },
+    "horizon": {
+      "rollback_delta_vs_v18": {
+        "psnr": 0.0005739663803741024,
+        "ssim": 7.712841033935547e-05,
+        "lpips": -0.00018274784088134766
+      },
+      "current_delta_vs_v18": {
+        "psnr": -0.3584170808697582,
+        "ssim": -0.014109387993812561,
+        "lpips": 0.013932526111602783
+      },
+      "current_minus_rollback": {
+        "psnr": -0.3589910472501323,
+        "ssim": -0.014186516404151917,
+        "lpips": 0.01411527395248413
+      },
+      "current_block_reasons": [
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_median_ssim_regression",
+        "horizon_v18_median_lpips_regression"
+      ],
+      "rollback_block_reasons": []
+    },
+    "near_detail": {
+      "rollback_delta_vs_v18": {
+        "psnr": 1.0107651498003634e-06,
+        "ssim": 0.0,
+        "lpips": 4.172325134277344e-07
+      },
+      "current_delta_vs_v18": {
+        "psnr": -0.08929351966797583,
+        "ssim": -0.0006229132413864136,
+        "lpips": -0.011673986911773682
+      },
+      "current_minus_rollback": {
+        "psnr": -0.08929453043312563,
+        "ssim": -0.0006229132413864136,
+        "lpips": -0.01167440414428711
+      },
+      "current_block_reasons": [],
+      "rollback_block_reasons": []
+    }
+  },
+  "merge_comparison": {
+    "current": {
+      "retained_gaussians": 8077783,
+      "source_gaussians": 8467136,
+      "dropped_gaussians": 389353,
+      "background_source_tile_id": "tile_04",
+      "background_retained_gaussians": 549619,
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0
+    },
+    "rollback": {
+      "retained_gaussians": 8423919,
+      "source_gaussians": 8789685,
+      "dropped_gaussians": 365766,
+      "background_source_tile_id": "tile_10",
+      "background_retained_gaussians": 378953,
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0
+    },
+    "current_minus_rollback": {
+      "retained_gaussians": -346136,
+      "source_gaussians": -322549,
+      "dropped_gaussians": 23587
+    }
+  },
+  "changed_primary_sources_in_current_candidate": {
+    "tile_04": {
+      "selected_source": "boundary_leaf_repair_candidate",
+      "source_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4boundarypair-1778102774/3dgs/tiles/tile_04/md1-r4boundarypair-1778102774-tile-04/output/model.tar.gz",
+      "stage_name": "T0_tile_04_boundary_leaf"
+    },
+    "tile_10": {
+      "selected_source": "boundary_leaf_repair_candidate",
+      "source_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4t10v2-1778108204/3dgs/tiles/tile_10/md1-r4t10v2-1778108204-tile-10/output/model.tar.gz",
+      "stage_name": "T0_tile_10_density_v2_leaf"
+    },
+    "tile_11": {
+      "selected_source": "candidate",
+      "source_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_11/md1-r4leafreb-1777858863-tile-11/output/model.tar.gz",
+      "stage_name": "T0_tile_11"
+    }
+  },
+  "attribution": {
+    "status": "paid_retry_blocked_pending_new_no_spend_strategy",
+    "high_confidence_findings": [
+      "The current candidate changes both primary boundary tiles relative to the rollback proof path and fails V18 non-regression; the rollback proof passed V18 non-regression with tile10 on context-density/V18 rollback.",
+      "The current merge selected background_skybox.webp from tile_04, while the rollback proof selected it from tile_10; horizon regressed even though the horizon camera set is unchanged.",
+      "The current full-scene merge retained 346136 fewer gaussians than the rollback proof, so quality loss is not explained by fallback/retain-all behavior; both are zero."
+    ],
+    "most_likely_causes_to_test_no_spend_first": [
+      "Run a no-training mix that keeps tile_04 density-v2/leaf candidate but restores tile_10 and/or background to rollback source, to isolate whether tile_04 alone causes horizon regression.",
+      "Run a no-training mix that keeps tile_10 density-v2 but restores tile_04/background to rollback source, to isolate whether tile_10 density-v2 can pass without tile_04 under-density.",
+      "Before any new training, design the next strategy to target both boundary_no_required_improvement and horizon_ssim_regression, not only tile density."
+    ],
+    "paid_compute_decision": "no_paid_retry_yet",
+    "lod_packaging_decision": "blocked"
+  }
+}

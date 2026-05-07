@@ -1,0 +1,30 @@
+{
+  "checked_at": "2026-05-07T01:34:37.467549+00:00",
+  "status": "no_spend_isolation_merge_dryruns_ready",
+  "purpose": "Prepare the next cheapest isolation tests after boundary paired density-v2 failed V18 review. These are dry-run merge plans only; no S3 upload, Processing job, review, or training was submitted.",
+  "blockers_targeted": [
+    "boundary_no_required_improvement",
+    "horizon_ssim_regression"
+  ],
+  "submitted_jobs": [],
+  "training_jobs_to_submit": 0,
+  "processing_jobs_submitted": 0,
+  "variants": {
+    "tile04-candidate-tile10-rollback": {
+      "fullscene_summary_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-candidate-tile10-rollback-fullscene-summary-dryrun-20260507.json",
+      "remote_merge_plan_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-candidate-tile10-rollback-remote-merge-g4dn-plan-dryrun-20260507.json",
+      "remote_merge_payload_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-candidate-tile10-rollback-remote-merge-g4dn-payload-dryrun-20260507.json"
+    },
+    "tile04-rollback-tile10-candidate": {
+      "fullscene_summary_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-rollback-tile10-candidate-fullscene-summary-dryrun-20260507.json",
+      "remote_merge_plan_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-rollback-tile10-candidate-remote-merge-g4dn-plan-dryrun-20260507.json",
+      "remote_merge_payload_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-rollback-tile10-candidate-remote-merge-g4dn-payload-dryrun-20260507.json"
+    }
+  },
+  "decision": {
+    "next_unblocked_step": "If continuing, submit at most one bounded no-training g4dn isolation merge first, then streaming preflight, then frozen review only if preflight passes. Do not launch new leaf training until the isolation result identifies the responsible tile/background path.",
+    "paid_training_allowed": false,
+    "lod_packaging_allowed": false,
+    "full_14tile_training_allowed": false
+  }
+}

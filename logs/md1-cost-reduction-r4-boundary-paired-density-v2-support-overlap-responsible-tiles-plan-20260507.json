@@ -1,0 +1,376 @@
+{
+  "boundary_frozen_cameras": [
+    "DJI_0067.JPG",
+    "DJI_0068.JPG",
+    "DJI_0069.JPG",
+    "DJI_0070.JPG"
+  ],
+  "boundary_improvement_gap": {
+    "actual_delta": {
+      "lpips": 0.010680407285690308,
+      "psnr": 0.0935542128739062,
+      "ssim": -0.006753653287887573
+    },
+    "remaining_gap": {
+      "lpips": 0.03568040728569031,
+      "psnr": 0.4064457871260938,
+      "ssim": 0.016753653287887575
+    },
+    "required_improvement": {
+      "lpips": -0.025,
+      "psnr": 0.5,
+      "ssim": 0.01
+    }
+  },
+  "candidate_strategy_block_reasons": [
+    "candidate_strategy_does_not_target_boundary_blocker"
+  ],
+  "candidate_strategy_targeted_quality_blockers": [],
+  "candidate_strategy_tile_ids": [
+    "tile_00",
+    "tile_01",
+    "tile_02",
+    "tile_03",
+    "tile_04",
+    "tile_05",
+    "tile_06",
+    "tile_07",
+    "tile_08",
+    "tile_09",
+    "tile_10",
+    "tile_11",
+    "tile_12",
+    "tile_13"
+  ],
+  "checked_at": "2026-05-07T01:28:27.451373+00:00",
+  "current_quality_blockers": [
+    "boundary_no_required_improvement",
+    "horizon_ssim_regression"
+  ],
+  "paid_retry_recommended": false,
+  "paid_retry_requirements_before_submit": [
+    "targeted_quality_blockers must include boundary_no_required_improvement",
+    "selected tiles must include every primary_responsible_tile_id",
+    "strategy must name the boundary frozen cameras and expected metric axis",
+    "leaf preflight density/reference gates must pass before any merge or review spend",
+    "no full 14-tile training before R0/R1/R2/R3 evidence gates pass"
+  ],
+  "per_boundary_camera": [
+    {
+      "embedded_boundary_context_tile_ids": [
+        "tile_04",
+        "tile_10"
+      ],
+      "image_name": "DJI_0067.JPG",
+      "primary_responsible_tile_ids": [
+        "tile_04",
+        "tile_10"
+      ],
+      "support_roles_by_tile": {
+        "tile_04": [
+          "base",
+          "image"
+        ],
+        "tile_10": [
+          "base",
+          "image"
+        ],
+        "tile_13": [
+          "context"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_04",
+        "tile_10",
+        "tile_13"
+      ]
+    },
+    {
+      "embedded_boundary_context_tile_ids": [
+        "tile_04",
+        "tile_10"
+      ],
+      "image_name": "DJI_0068.JPG",
+      "primary_responsible_tile_ids": [
+        "tile_04",
+        "tile_10"
+      ],
+      "support_roles_by_tile": {
+        "tile_04": [
+          "base",
+          "image"
+        ],
+        "tile_10": [
+          "base",
+          "image"
+        ],
+        "tile_13": [
+          "context"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_04",
+        "tile_10",
+        "tile_13"
+      ]
+    },
+    {
+      "embedded_boundary_context_tile_ids": [
+        "tile_04",
+        "tile_10"
+      ],
+      "image_name": "DJI_0069.JPG",
+      "primary_responsible_tile_ids": [
+        "tile_04",
+        "tile_10"
+      ],
+      "support_roles_by_tile": {
+        "tile_04": [
+          "base",
+          "image"
+        ],
+        "tile_10": [
+          "base",
+          "image"
+        ],
+        "tile_13": [
+          "context"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_04",
+        "tile_10",
+        "tile_13"
+      ]
+    },
+    {
+      "embedded_boundary_context_tile_ids": [
+        "tile_04",
+        "tile_10"
+      ],
+      "image_name": "DJI_0070.JPG",
+      "primary_responsible_tile_ids": [
+        "tile_04",
+        "tile_10"
+      ],
+      "support_roles_by_tile": {
+        "tile_04": [
+          "base",
+          "image"
+        ],
+        "tile_10": [
+          "base",
+          "image"
+        ],
+        "tile_13": [
+          "context"
+        ]
+      },
+      "support_tile_ids": [
+        "tile_04",
+        "tile_10",
+        "tile_13"
+      ]
+    }
+  ],
+  "primary_responsible_tile_ids": [
+    "tile_04",
+    "tile_10"
+  ],
+  "proposed_no_spend_next_step": {
+    "action": "dry_run_paired_boundary_tile_strategy",
+    "context_support_tile_ids": [
+      "tile_13"
+    ],
+    "rationale": "The frozen boundary cameras are jointly supported by the primary boundary tiles; a single-tile density retry cannot plausibly move the boundary PSNR/SSIM/LPIPS gate enough.",
+    "tile_scope": [
+      "tile_04",
+      "tile_10"
+    ]
+  },
+  "quality_strategy_reference": {
+    "boundary_improvement_gap": {
+      "actual_delta": {
+        "lpips": 0.010680407285690308,
+        "psnr": 0.0935542128739062,
+        "ssim": -0.006753653287887573
+      },
+      "passes_any_improvement_axis": false,
+      "remaining_gap": {
+        "lpips": 0.03568040728569031,
+        "psnr": 0.4064457871260938,
+        "ssim": 0.016753653287887575
+      },
+      "required_improvement": {
+        "lpips": -0.025,
+        "psnr": 0.5,
+        "ssim": 0.01
+      }
+    },
+    "candidate_no_full_14tile_training": null,
+    "candidate_planned_cost_usd": 0.0,
+    "candidate_strategy_present": true,
+    "candidate_submitted_jobs": [],
+    "candidate_targeted_quality_blockers": [],
+    "checked_at": "2026-05-07T01:28:15.346367+00:00",
+    "current_quality_blockers": [
+      "boundary_no_required_improvement",
+      "horizon_ssim_regression"
+    ],
+    "max_estimated_usd": null,
+    "missing_targeted_blockers": [
+      "boundary_no_required_improvement",
+      "horizon_ssim_regression"
+    ],
+    "paid_retry_recommended": false,
+    "promotion_decision_status": "blocked",
+    "recommendation": "hold_paid_retry",
+    "recommended_actions": [
+      {
+        "action": "produce_boundary_focused_no_spend_plan_before_paid_retry",
+        "blocker": "boundary_no_required_improvement",
+        "evidence_needed": [
+          "targeted_quality_blockers includes boundary_no_required_improvement",
+          "boundary frozen cameras and responsible tiles are listed",
+          "planned change can plausibly improve boundary PSNR/SSIM/LPIPS, not only tile density",
+          "max_estimated_usd remains capped before submit"
+        ]
+      },
+      {
+        "action": "do_not_submit_current_candidate_strategy",
+        "blocker": "candidate_strategy_missing_current_blockers",
+        "missing_targeted_blockers": [
+          "boundary_no_required_improvement",
+          "horizon_ssim_regression"
+        ]
+      }
+    ]
+  },
+  "ranked_responsible_tiles": [
+    {
+      "density_context_summary": {
+        "hard_repair": {
+          "context_preserve_enabled": true,
+          "max_iterations": 12000,
+          "retained_context_count": 55771,
+          "retained_gaussians": 292678,
+          "retained_overlap_count": 5352,
+          "selected_image_count": 188,
+          "view_bucket_counts": {
+            "boundary": 176,
+            "horizon": 52,
+            "near_detail": 0
+          }
+        },
+        "hard_retained_gap_vs_v18": 663599,
+        "hard_to_v18_retained_ratio": 0.30605985504200145,
+        "r5_serial_leaf_remaining_to_v18_retained_ratio": 0.380996301280905,
+        "standard_retained_gap_vs_v18": 619135,
+        "standard_to_v18_retained_ratio": 0.35255684283947014,
+        "standard_v18color": {
+          "context_preserve_enabled": true,
+          "max_iterations": 8000,
+          "retained_context_count": 44923,
+          "retained_gaussians": 337142,
+          "retained_overlap_count": 7010,
+          "selected_image_count": 128,
+          "view_bucket_counts": {
+            "boundary": 120,
+            "horizon": 37,
+            "near_detail": 0
+          }
+        }
+      },
+      "neighbor_tile_ids": [
+        "tile_06"
+      ],
+      "primary_boundary_camera_count": 4,
+      "selected_image_count": 188,
+      "support_boundary_camera_count": 4,
+      "support_role_counts": {
+        "base": 4,
+        "image": 4
+      },
+      "tile_id": "tile_04",
+      "view_bucket_counts": {
+        "boundary": 176,
+        "horizon": 40,
+        "near_detail": 0
+      }
+    },
+    {
+      "density_context_summary": {
+        "hard_repair": {
+          "context_preserve_enabled": false,
+          "max_iterations": 12000,
+          "retained_context_count": 0,
+          "retained_gaussians": 321267,
+          "retained_overlap_count": 0,
+          "selected_image_count": 188,
+          "view_bucket_counts": {
+            "boundary": 31,
+            "horizon": 16,
+            "near_detail": 52
+          }
+        },
+        "hard_retained_gap_vs_v18": 57686,
+        "hard_to_v18_retained_ratio": 0.8477753177834718,
+        "standard_retained_gap_vs_v18": 7792,
+        "standard_to_v18_retained_ratio": 0.9794380833507058,
+        "standard_v18color": {
+          "context_preserve_enabled": false,
+          "max_iterations": 8000,
+          "retained_context_count": 0,
+          "retained_gaussians": 371161,
+          "retained_overlap_count": 0,
+          "selected_image_count": 128,
+          "view_bucket_counts": {
+            "boundary": 22,
+            "horizon": 12,
+            "near_detail": 35
+          }
+        }
+      },
+      "neighbor_tile_ids": [
+        "tile_13"
+      ],
+      "primary_boundary_camera_count": 4,
+      "selected_image_count": 188,
+      "support_boundary_camera_count": 4,
+      "support_role_counts": {
+        "base": 4,
+        "image": 4
+      },
+      "tile_id": "tile_10",
+      "view_bucket_counts": {
+        "boundary": 31,
+        "horizon": 16,
+        "near_detail": 40
+      }
+    },
+    {
+      "density_context_summary": null,
+      "neighbor_tile_ids": [
+        "tile_10"
+      ],
+      "primary_boundary_camera_count": 0,
+      "selected_image_count": 188,
+      "support_boundary_camera_count": 4,
+      "support_role_counts": {
+        "context": 4
+      },
+      "tile_id": "tile_13",
+      "view_bucket_counts": {
+        "boundary": 0,
+        "horizon": 0,
+        "near_detail": 176
+      }
+    }
+  ],
+  "recommendation": "hold_paid_retry",
+  "support_tile_ids": [
+    "tile_04",
+    "tile_10",
+    "tile_13"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "tile_id": "tile_10",
+  "stage_type": "train",
+  "source_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4t10v2-1778108204/3dgs/tiles/tile_10/md1-r4t10v2-1778108204-tile-10/output/model.tar.gz",
+  "source_member": "splat.ply",
+  "splat_size_bytes": 48791088,
+  "stage_elapsed_seconds": 0
+}

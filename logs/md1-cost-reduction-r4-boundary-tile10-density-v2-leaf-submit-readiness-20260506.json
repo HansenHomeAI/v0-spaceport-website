@@ -1,0 +1,56 @@
+{
+  "checked_at": "2026-05-06T22:56:29.749036+00:00",
+  "decision": "leaf_submit_allowed",
+  "block_reasons": [],
+  "exact_head": "7cb92b8b8a4e5a146ee515d3a43512b6080261f1",
+  "git_head": "7cb92b8b8a4e5a146ee515d3a43512b6080261f1",
+  "workflow_conclusion": "success",
+  "v18_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review",
+  "expected_v18_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review",
+  "training_jobs_in_progress": [],
+  "processing_jobs_in_progress": [],
+  "required_tile_ids": [
+    "tile_04",
+    "tile_10"
+  ],
+  "selected_tile_ids": [
+    "tile_10"
+  ],
+  "stage_tile_ids": [
+    "tile_10"
+  ],
+  "prior_leaf_gate_tile_ids": [
+    "tile_04"
+  ],
+  "passing_prior_leaf_tile_ids": [
+    "tile_04"
+  ],
+  "covered_required_tile_ids": [
+    "tile_10",
+    "tile_04"
+  ],
+  "merge_review_missing_leaf_summary_tile_ids": [
+    "tile_10"
+  ],
+  "required_context_tile_ids": [
+    "tile_13"
+  ],
+  "context_support_tile_ids": [
+    "tile_13"
+  ],
+  "required_targeted_blockers": [
+    "boundary_no_required_improvement"
+  ],
+  "targeted_quality_blockers": [
+    "boundary_no_required_improvement"
+  ],
+  "post_leaf_preflight_gate_tile_ids": [
+    "tile_10"
+  ],
+  "quality_strategy_decision": "paid_retry_allowed",
+  "merge_review_gate_decision": "merge_review_blocked",
+  "estimated_usd": 1.6665,
+  "max_estimated_usd": 2.0,
+  "submitted_jobs": [],
+  "next_required_action": "submit leaf-only fanout with --skip-merge/--skip-review and run emitted post_leaf_preflight_gates"
+}

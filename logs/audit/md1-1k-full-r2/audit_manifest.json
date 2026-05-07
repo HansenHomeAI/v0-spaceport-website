@@ -12491,5 +12491,171 @@
     ],
     "full_14tile_training_launched": false,
     "next_unblocked_step": "Commit/push/gate subset retry support, rerun leaf-submit readiness on the new exact head with prior tile_04 leaf gate, then submit only tile_10 density-v2 if AWS remains idle."
+  },
+  "md1_r4_boundary_tile10_density_v2_leaf_and_merge_20260507": {
+    "generated_at": "2026-05-07T01:11:07Z",
+    "head_before_commit": "7cb92b8b8a4e5a146ee515d3a43512b6080261f1",
+    "tile10_leaf_job": {
+      "name": "md1-r4t10v2-1778108204-tile-10",
+      "status": "Completed",
+      "billable_seconds": 3486,
+      "estimated_cost_usd_at_1_515_per_hour": 1.467,
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4t10v2-1778108204/3dgs/tiles/tile_10/md1-r4t10v2-1778108204-tile-10/output/model.tar.gz",
+      "preflight_json": "logs/md1-r4-boundary-tile10-density-v2-20260506-tile_10-leaf-preflight.json",
+      "leaf_gate_json": "logs/md1-r4-boundary-tile10-density-v2-20260506-tile_10-leaf-gate.json",
+      "splat_vertex_count": 469139,
+      "reference_splat_count": 378953,
+      "observed_reference_ratio": 1.237987296577676,
+      "leaf_gate_decision": "merge_review_allowed",
+      "block_reasons": [],
+      "max_reference_splat_ratio": 1.5
+    },
+    "merge_review_gate_json": "logs/md1-cost-reduction-r4-boundary-tile10-density-v2-merge-review-gate-after-leaf-20260506.json",
+    "merge_review_gate_decision": "merge_review_allowed",
+    "remote_merge": {
+      "job_name": "md1-r4bpairv2-swo-1778111640",
+      "status": "Completed",
+      "instance_type": "ml.g4dn.xlarge",
+      "elapsed_seconds": 1384.391,
+      "estimated_cost_usd_at_0_736_per_hour": 0.283,
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-paired-density-v2-support-overlap-merge-g4dn-202605062354/output/artifact/model.tar.gz",
+      "model_tar_gz_bytes": 3028610353,
+      "merged_splat_ply_bytes": 840090065,
+      "plan_json": "logs/md1-cost-reduction-r4-boundary-paired-density-v2-support-overlap-remote-merge-g4dn-plan-20260506.json",
+      "payload_json": "logs/md1-cost-reduction-r4-boundary-paired-density-v2-support-overlap-remote-merge-g4dn-payload-submit-20260506.json"
+    },
+    "streaming_preflight": {
+      "summary_json": "logs/md1-cost-reduction-r4-boundary-paired-density-v2-support-overlap-remote-merge-g4dn-preflight-20260507.json",
+      "decision": "preflight_passed_run_frozen_smoke_review",
+      "block_reasons": [],
+      "tile_count": 14,
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "retained_gaussians": 8077783,
+      "source_gaussians": 8467136,
+      "dropped_gaussians": 389353,
+      "background_source_tile_id": "tile_04"
+    }
+  },
+  "md1_r4_boundary_paired_density_v2_review_20260507": {
+    "generated_at": "2026-05-07T01:28:27Z",
+    "head_before_commit": "7cb92b8b8a4e5a146ee515d3a43512b6080261f1",
+    "candidate_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-paired-density-v2-support-overlap-merge-g4dn-202605062354/output/artifact/model.tar.gz",
+    "review_summary_json": "logs/md1-cost-reduction-r4-boundary-paired-density-v2-support-overlap-review-20260507.json",
+    "quality_review_manifest_json": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-boundary-paired-density-v2-support-overlap-smoke-p24/quality_review_manifest.json",
+    "review_comparison_json": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-boundary-paired-density-v2-support-overlap-smoke-p24/review_comparison.json",
+    "review_analysis_json": "logs/md1-cost-reduction-r4-boundary-paired-density-v2-support-overlap-review-analysis-20260507.json",
+    "responsible_tiles_plan_json": "logs/md1-cost-reduction-r4-boundary-paired-density-v2-support-overlap-responsible-tiles-plan-20260507.json",
+    "review_job": {
+      "name": "md1-r1-r4-boundary-paired-density-v2-support-overlap-smoke-p24",
+      "status": "Completed",
+      "billable_seconds": 777,
+      "estimated_cost_usd_at_1_515_per_hour": 0.327,
+      "model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-paired-density-v2-support-overlap-review-20260507/outputs/r4-boundary-paired-density-v2-support-overlap-smoke-p24/md1-r1-r4-boundary-paired-density-v2-support-overlap-smoke-p24/output/model.tar.gz",
+      "max_runtime_seconds": 1200
+    },
+    "gates": {
+      "camera_coverage": "ok",
+      "render_sanity": "ok",
+      "promotion_decision": "blocked",
+      "promotion_block_reasons": [
+        "boundary_no_required_improvement",
+        "horizon_ssim_regression"
+      ],
+      "v18_non_regression_status": "blocked",
+      "v18_non_regression_block_reasons": [
+        "boundary_v18_median_ssim_regression",
+        "boundary_v18_median_lpips_regression",
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_median_ssim_regression",
+        "horizon_v18_median_lpips_regression"
+      ]
+    },
+    "per_bucket_v18_deltas": {
+      "near_detail": {
+        "psnr": -0.08929351966797583,
+        "ssim": -0.0006229132413864136,
+        "lpips": -0.011673986911773682
+      },
+      "boundary": {
+        "psnr": 0.0935542128739062,
+        "ssim": -0.006753653287887573,
+        "lpips": 0.010680407285690308
+      },
+      "horizon": {
+        "psnr": -0.3584170808697582,
+        "ssim": -0.014109387993812561,
+        "lpips": 0.013932526111602783
+      }
+    },
+    "decision": {
+      "production_ready": false,
+      "lod_packaging_allowed": false,
+      "status": "quality_blocked_do_not_package_lod",
+      "next_unblocked_step": "No new paid training. Compare current tile_04/tile_10/background deltas against the tile10 rollback proof and design a no-spend strategy that targets both boundary_no_required_improvement and horizon_ssim_regression before any paid retry."
+    },
+    "cost_summary": {
+      "paired_tile04_tile10_leaf_proof_usd": 3.1394166667,
+      "tile10_density_v2_leaf_usd": 1.467,
+      "remote_g4dn_merge_usd": 0.283,
+      "frozen_review_usd": 0.327,
+      "total_current_loop_usd": 5.216
+    }
+  },
+  "md1_r4_boundary_paired_density_v2_vs_rollback_attribution_20260507": {
+    "generated_at": "2026-05-07T01:32:20.999443+00:00",
+    "attribution_json": "logs/md1-cost-reduction-r4-boundary-paired-density-v2-vs-rollback-attribution-20260507.json",
+    "current_review_comparison_json": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-boundary-paired-density-v2-support-overlap-smoke-p24/review_comparison.json",
+    "rollback_review_comparison_json": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-tile10-rollback-isolation-smoke-p24/review_comparison.json",
+    "current_v18_non_regression": "blocked",
+    "rollback_v18_non_regression": "promoted",
+    "merge_retained_delta_current_minus_rollback": -346136,
+    "current_background_source_tile_id": "tile_04",
+    "rollback_background_source_tile_id": "tile_10",
+    "decision": {
+      "status": "paid_retry_blocked_pending_new_no_spend_strategy",
+      "high_confidence_findings": [
+        "The current candidate changes both primary boundary tiles relative to the rollback proof path and fails V18 non-regression; the rollback proof passed V18 non-regression with tile10 on context-density/V18 rollback.",
+        "The current merge selected background_skybox.webp from tile_04, while the rollback proof selected it from tile_10; horizon regressed even though the horizon camera set is unchanged.",
+        "The current full-scene merge retained 346136 fewer gaussians than the rollback proof, so quality loss is not explained by fallback/retain-all behavior; both are zero."
+      ],
+      "most_likely_causes_to_test_no_spend_first": [
+        "Run a no-training mix that keeps tile_04 density-v2/leaf candidate but restores tile_10 and/or background to rollback source, to isolate whether tile_04 alone causes horizon regression.",
+        "Run a no-training mix that keeps tile_10 density-v2 but restores tile_04/background to rollback source, to isolate whether tile_10 density-v2 can pass without tile_04 under-density.",
+        "Before any new training, design the next strategy to target both boundary_no_required_improvement and horizon_ssim_regression, not only tile density."
+      ],
+      "paid_compute_decision": "no_paid_retry_yet",
+      "lod_packaging_decision": "blocked"
+    }
+  },
+  "md1_r4_boundary_density_v2_isolation_dryruns_20260507": {
+    "checked_at": "2026-05-07T01:34:37.467549+00:00",
+    "status": "no_spend_isolation_merge_dryruns_ready",
+    "purpose": "Prepare the next cheapest isolation tests after boundary paired density-v2 failed V18 review. These are dry-run merge plans only; no S3 upload, Processing job, review, or training was submitted.",
+    "blockers_targeted": [
+      "boundary_no_required_improvement",
+      "horizon_ssim_regression"
+    ],
+    "submitted_jobs": [],
+    "training_jobs_to_submit": 0,
+    "processing_jobs_submitted": 0,
+    "variants": {
+      "tile04-candidate-tile10-rollback": {
+        "fullscene_summary_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-candidate-tile10-rollback-fullscene-summary-dryrun-20260507.json",
+        "remote_merge_plan_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-candidate-tile10-rollback-remote-merge-g4dn-plan-dryrun-20260507.json",
+        "remote_merge_payload_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-candidate-tile10-rollback-remote-merge-g4dn-payload-dryrun-20260507.json"
+      },
+      "tile04-rollback-tile10-candidate": {
+        "fullscene_summary_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-rollback-tile10-candidate-fullscene-summary-dryrun-20260507.json",
+        "remote_merge_plan_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-rollback-tile10-candidate-remote-merge-g4dn-plan-dryrun-20260507.json",
+        "remote_merge_payload_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-rollback-tile10-candidate-remote-merge-g4dn-payload-dryrun-20260507.json"
+      }
+    },
+    "decision": {
+      "next_unblocked_step": "If continuing, submit at most one bounded no-training g4dn isolation merge first, then streaming preflight, then frozen review only if preflight passes. Do not launch new leaf training until the isolation result identifies the responsible tile/background path.",
+      "paid_training_allowed": false,
+      "lod_packaging_allowed": false,
+      "full_14tile_training_allowed": false
+    }
   }
 }
