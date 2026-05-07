@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "boundary_no_required_improvement; protected-overlap merge retained extra overlap splats but frozen review metrics did not improve; no boundary camera/loss weighting candidate objective exists yet.",
+  "blocked_promotion_reason": "Boundary-camera weighting leaf is valid for merge/review, but no merged frozen-quality result exists yet; previous candidates remain blocked by boundary_no_required_improvement. Do not promote/package LOD.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "exact head 918d01b4e5fddf036ddfee802714390a8acdc7cf green; local preconversion-subset repair pending commit/build",
-  "current_exact_head_gate_status": "exact-head 918d01b4e5fddf036ddfee802714390a8acdc7cf green on CDK Deploy 25499432235; last green 3DGS container remains 19839a174f113491c613a5d0a4ed30330953f678 until repair build",
-  "current_live_compute_status": "Verified 2026-05-07T14:08Z: no MD1 SageMaker training or processing jobs InProgress after failed leaf proof",
-  "current_rung": "R4_boundary_camera_weighting_preconversion_subset_repair",
+  "current_branch_head": "c27d17dbbf750fc5747fb8ee33d2265f45bc197a",
+  "current_exact_head_gate_status": "exact-head c27d17dbbf750fc5747fb8ee33d2265f45bc197a green on CDK Deploy 25501137128 and Trigger ML Container Build 25501137146; CodeBuild spaceport-ml-containers:2fe787f5-342a-4064-8da3-c6ad76aa0c2bfd9 succeeded; 3DGS ECR digest sha256:e6b165785c12816a388d3aafd85eb1f360085afbf9f11cd752f24767b41cfb2a",
+  "current_live_compute_status": "2026-05-07T15:36Z: no MD1 SageMaker training jobs InProgress; external MD1-named SFM processing jobs md1-fanout-20260507T1429Z-c01-1778167770 and c02 are InProgress, so hold paid merge",
+  "current_rung": "R4_boundary_camera_weighting_leaf_passed_merge_dryrun",
   "exact_head_gate_status": "exact-head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 green on CDK Deploy 25478133157; Deploy CDK Stacks and CDK Diff skipped by scope detection; no ML Container Build appeared for this non-container status commit; previous container-affecting head 6249a280443438790e5f9d11512fe6714c1a0728 remains green on CDK Deploy 25475213765, Trigger ML Container Build 25475213781, and CodeBuild spaceport-ml-containers:ae9b6cea-6c39-4bf8-a885-f0eb5336ee4a",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -920,7 +920,7 @@
     "local_status_update_pending_commit": true,
     "ml_container_build": "not_triggered_for_non_container_status_commit"
   },
-  "last_updated": "2026-05-07T14:08:45Z",
+  "last_updated": "2026-05-07T15:39:26Z",
   "latest_boundary_merge_review_gate_status": "logs/md1-cost-reduction-r4-boundary-paired-merge-review-gate-blocked-20260506.json blocks merge/review spend until tile_04 and tile_10 leaf gate summaries are present and passing; it confirms the paired strategy targets boundary_no_required_improvement and includes tile_13 context support.",
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
@@ -954,7 +954,7 @@
   "latest_quality_strategy_gate_status": "tile04_boundary_horizon_leaf_dryrun_quality_gate_allowed; boundary_only_previous_dryrun_blocked_missing_horizon",
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-t04bh-bg10-bop-v18colmap-smoke-p24/review_comparison.json",
   "latest_review_status": "protected-overlap review completed in 787 billable seconds/about $0.331; promotion blocked only on boundary_no_required_improvement; V18 non-regression blocked on horizon median and near_detail single-camera LPIPS; metrics identical to rollback bg10 despite +18104 retained overlap splats.",
-  "latest_sagemaker_evidence_spend_total_usd": 11.054,
+  "latest_sagemaker_evidence_spend_total_usd": 11.915,
   "latest_tile04_leaf_reuse_merge_dryrun_status": "protected tile_04/tile_10 overlap-retention merge and review completed; no metric gain versus rollback bg10, so no paid retry is recommended without redesigned boundary objective/camera weighting.",
   "latest_training_cost_reduction_status": "Evidence spend now about $10.855; no full 14-tile training or LOD packaging launched in protected-overlap step. Current accepted rollback-based LOD remains the only viewer-validated candidate; cheaper high-quality production path remains blocked on boundary_no_required_improvement.",
   "live_compute_status": "No SageMaker training jobs are InProgress. Exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. Tile_13 hard proof is complete/preflighted/cached; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
@@ -7587,7 +7587,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Commit/push preconversion-subset repair, watch exact-head CDK Deploy and ML Container Build/CodeBuild to green, verify AWS idle, rerun leaf-submit readiness on new exact head, then retry exactly one bounded tile_04 leaf-only proof; no merge/review/LOD/full14 until leaf preflight passes",
+  "next_unblocked_step": "Wait for external md1-fanout SFM Processing jobs to finish, re-check AWS idle, upload boundary-camera-weighting bg10 merge_plan.json, submit at most one bounded no-training g4dn merge, then streaming preflight before any frozen V18 review; no full14 training/LOD/promotion",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -13937,25 +13937,22 @@
     "post_commit_aws_idle_checked_at": "2026-05-07T13:38:00Z"
   },
   "latest_boundary_camera_weighting_candidate_status": {
-    "checked_at": "2026-05-07T13:38:00Z",
-    "status": "leaf_failed_before_training_preconversion_subset_repair_pending_build",
-    "candidate_objective_gate_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-objective-gate-20260507.json",
-    "leaf_dryrun_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-dryrun-20260507.json",
-    "leaf_submit_readiness_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-submit-readiness-20260507.json",
-    "candidate_objective_decision": "paid_retry_allowed",
-    "leaf_submit_decision": "leaf_submit_allowed",
-    "estimated_usd": 0.8096,
-    "worst_case_usd": 0.9813,
-    "submitted_jobs": [],
-    "next_required_action": "build repaired container and rerun current-head leaf-submit readiness before retry",
-    "post_commit_head": "19839a174f113491c613a5d0a4ed30330953f678",
-    "post_commit_cdk_run_id": 25498678127,
-    "post_commit_ml_container_run_id": 25498678312,
-    "post_commit_codebuild_id": "spaceport-ml-containers:13075863-149d-48c7-9dfd-c966a0c2bfd9",
-    "post_commit_ecr_digest": "sha256:807e4e09f47c9130b5e80dd19b5436ad2c82709ef3767fe6405ad9d5d5e9bb3b",
-    "leaf_submit_readiness_current_head_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-submit-readiness-current-head-20260507.json",
-    "failed_job_name": "md1-r4t04cw-20260507-1778161516-tile-04",
-    "failure_repair_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-failure-repair-20260507.json"
+    "checked_at": "2026-05-07T15:39:26Z",
+    "status": "leaf_retry_passed_merge_dryrun_ready_but_paid_merge_held_for_live_processing_jobs",
+    "post_commit_head": "c27d17dbbf750fc5747fb8ee33d2265f45bc197a",
+    "post_commit_cdk_run_id": 25501137128,
+    "post_commit_ml_container_run_id": 25501137146,
+    "post_commit_codebuild_id": "spaceport-ml-containers:2fe787f5-342a-4064-8da3-c6ad76aa0c2bfd9",
+    "post_commit_ecr_digest": "sha256:e6b165785c12816a388d3aafd85eb1f360085afbf9f11cd752f24767b41cfb2a",
+    "leaf_submit_readiness_repair_head_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-submit-readiness-repair-head-20260507.json",
+    "leaf_retry_summary_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-retry-submit-20260507.json",
+    "leaf_preflight_json": "logs/md1-r4-boundary-camera-weighting-20260507-tile_04-leaf-preflight.json",
+    "leaf_gate_json": "logs/md1-r4-boundary-camera-weighting-20260507-tile_04-leaf-gate.json",
+    "merge_review_gate_after_leaf_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-merge-review-gate-after-leaf-20260507.json",
+    "fullscene_dryrun_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-tile10-rollback-fullscene-summary-dryrun-20260507.json",
+    "remote_merge_plan_dryrun_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-plan-dryrun-20260507.json",
+    "remote_merge_payload_dryrun_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-payload-dryrun-20260507.json",
+    "next_required_action": "wait for live processing idle before one bounded no-training merge"
   },
   "md1_r4_boundary_camera_weighting_leaf_failure_repair_20260507": {
     "checked_at": "2026-05-07T14:08:45Z",
@@ -13976,5 +13973,66 @@
       "git diff --check"
     ],
     "next_required_action": "commit/push repair, wait exact-head CDK+ML container build, verify AWS idle, rerun leaf-submit readiness, then retry exactly one bounded tile_04 leaf-only proof"
+  },
+  "md1_r4_boundary_camera_weighting_leaf_retry_20260507": {
+    "checked_at": "2026-05-07T15:39:26Z",
+    "training_job_name": "md1-r4t04cw2-20260507-1778163890-tile-04",
+    "status": "leaf_preflight_passed_merge_review_allowed",
+    "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-camera-weighting-20260507/tiles/tile_04/md1-r4t04cw2-20260507-1778163890-tile-04/output/model.tar.gz",
+    "billable_seconds": 4214,
+    "estimated_usd": 0.861,
+    "splat_vertex_count": 961849,
+    "reference_splat_count": 956277,
+    "observed_reference_ratio": 1.0058,
+    "selected_image_count": 188,
+    "filtered_scaffold_ok": true,
+    "checkpoint_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-camera-weighting-20260507/checkpoints/md1-r4t04cw2-20260507-1778163890-tile-04/",
+    "resume_checkpoint_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-camera-weighting-20260507/checkpoints/md1-r4t04cw2-20260507-1778163890-tile-04/resume_checkpoint/nerfstudio_models/step-000011999.ckpt",
+    "leaf_retry_summary_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-retry-submit-20260507.json",
+    "leaf_preflight_json": "logs/md1-r4-boundary-camera-weighting-20260507-tile_04-leaf-preflight.json",
+    "leaf_gate_json": "logs/md1-r4-boundary-camera-weighting-20260507-tile_04-leaf-gate.json",
+    "merge_review_gate_after_leaf_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-merge-review-gate-after-leaf-20260507.json",
+    "preconversion_subset_repair_validated": true,
+    "full_14tile_training_launched": false,
+    "merge_review_launched": false,
+    "lod_packaging_launched": false
+  },
+  "md1_r4_boundary_camera_weighting_leaf_merge_dryrun_20260507": {
+    "checked_at": "2026-05-07T15:39:26Z",
+    "status": "no_training_bg10_merge_payload_ready",
+    "fullscene_summary_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-tile10-rollback-fullscene-summary-dryrun-20260507.json",
+    "remote_merge_plan_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-plan-dryrun-20260507.json",
+    "remote_merge_payload_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-payload-dryrun-20260507.json",
+    "merge_plan_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-camera-weighting-leaf-tile10-rollback-bg10-merge-g4dn-20260507/inputs/merge-plan/merge_plan.json",
+    "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-camera-weighting-leaf-tile10-rollback-bg10-merge-g4dn-20260507/output/artifact",
+    "job_name": "md1-r4t04cw-bg10-20260507",
+    "selected_tile_ids": [
+      "tile_00",
+      "tile_01",
+      "tile_02",
+      "tile_03",
+      "tile_04",
+      "tile_05",
+      "tile_06",
+      "tile_07",
+      "tile_08",
+      "tile_09",
+      "tile_10",
+      "tile_11",
+      "tile_12",
+      "tile_13"
+    ],
+    "artifact_input_count": 3,
+    "training_jobs_to_submit": 0,
+    "submitted_jobs": [],
+    "background_source_tile_id": "tile_10",
+    "merge_mode": "support_weighted_overlap",
+    "artifact_heads_checked": true,
+    "tile_selection_s3_checked": true,
+    "paid_merge_held_reason": "external_md1_named_sfm_processing_jobs_active",
+    "active_processing_jobs": [
+      "md1-fanout-20260507T1429Z-c01-1778167770",
+      "md1-fanout-20260507T1429Z-c02-1778167770"
+    ]
   }
 }
