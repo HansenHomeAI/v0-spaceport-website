@@ -198,6 +198,10 @@ def reset_directory_contents(path: Path) -> None:
             child.unlink()
 
 
+def parse_csv_values(value: str) -> list[str]:
+    return [item.strip() for item in value.split(",") if item.strip()]
+
+
 def main() -> int:
     merge_plan_path = Path(os.environ.get("MERGE_PLAN_PATH", "/opt/ml/processing/input/merge-plan/merge_plan.json"))
     tile_manifest_path = Path(
@@ -210,6 +214,8 @@ def main() -> int:
     work_root = Path(os.environ.get("WORK_DIR", "/opt/ml/processing/tmp/tiled-merge"))
     merge_mode = os.environ.get("MERGE_MODE", "support_weighted_overlap")
     background_source_tile_id = os.environ.get("BACKGROUND_SOURCE_TILE_ID", "").strip()
+    protected_overlap_tile_ids = parse_csv_values(os.environ.get("MERGE_PROTECTED_OVERLAP_TILE_IDS", ""))
+    protected_overlap_mode = os.environ.get("MERGE_PROTECTED_OVERLAP_MODE", "").strip()
 
     if work_root.exists():
         shutil.rmtree(work_root)
@@ -252,6 +258,8 @@ def main() -> int:
         output_dir=output_root / "merged",
         merge_mode=merge_mode,
         background_source_tile_id=background_source_tile_id,
+        protected_overlap_tile_ids=protected_overlap_tile_ids,
+        protected_overlap_mode=protected_overlap_mode,
     )
     summary = {
         "created_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
@@ -259,6 +267,8 @@ def main() -> int:
         "training_mode": "remote_no_training_tiled_merge",
         "merge_mode": merge_mode,
         "background_source_tile_id": background_source_tile_id or None,
+        "protected_overlap_tile_ids": protected_overlap_tile_ids,
+        "protected_overlap_mode": protected_overlap_mode or None,
         "merge_plan": merge_plan,
         "extracted_tiles": extraction_records,
         "merge_report": merge_report,

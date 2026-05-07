@@ -69,6 +69,8 @@ class TiledMergeProcessingPlannerTests(unittest.TestCase):
             ],
             merge_mode="support_weighted_overlap",
             background_source_tile_id="tile_10",
+            protected_overlap_tile_ids="tile_04,tile_10",
+            protected_overlap_mode="retain_all",
             instance_type="ml.g5.2xlarge",
             volume_size_gb=80,
             max_runtime_seconds=3600,
@@ -85,6 +87,8 @@ class TiledMergeProcessingPlannerTests(unittest.TestCase):
         )
         self.assertEqual(payload["Environment"]["MERGE_MODE"], "support_weighted_overlap")
         self.assertEqual(payload["Environment"]["BACKGROUND_SOURCE_TILE_ID"], "tile_10")
+        self.assertEqual(payload["Environment"]["MERGE_PROTECTED_OVERLAP_TILE_IDS"], "tile_04,tile_10")
+        self.assertEqual(payload["Environment"]["MERGE_PROTECTED_OVERLAP_MODE"], "retain_all")
 
     def test_packager_resets_output_mount_contents_without_removing_mount(self):
         with tempfile.TemporaryDirectory() as tmp:

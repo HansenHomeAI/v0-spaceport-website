@@ -1038,6 +1038,80 @@ class GaussianTilePipelineTests(unittest.TestCase):
             self.assertEqual(report["retained_gaussians"], 3)
             self.assertEqual(report["tiles"][0]["support_weighted_overlap"]["overlap_candidate_count"], 1)
 
+    def test_merge_tile_outputs_support_weighted_overlap_can_protect_boundary_candidates(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            tile_zero_dir = root / "tiles" / "tile_00"
+            tile_one_dir = root / "tiles" / "tile_01"
+            tile_zero_dir.mkdir(parents=True)
+            tile_one_dir.mkdir(parents=True)
+            write_test_ply(tile_zero_dir / "splat.ply", [(1.0, 0.0, 0.0, 0.9), (5.5, 0.0, 0.0, 0.9)])
+            write_test_ply(tile_one_dir / "splat.ply", [(5.5, 0.0, 0.0, 0.9), (7.0, 0.0, 0.0, 0.9)])
+
+            manifest = {
+                "tiles": [
+                    {
+                        "tile_id": "tile_00",
+                        "neighbor_tile_ids": ["tile_01"],
+                        "image_names": ["a.jpg", "shared.jpg", "boundary.jpg"],
+                        "core_bounds": {
+                            "min_x": 0.0,
+                            "max_x": 3.0,
+                            "min_y": -1.0,
+                            "max_y": 1.0,
+                            "min_z": -1.0,
+                            "max_z": 1.0,
+                        },
+                        "overlap_bounds": {
+                            "min_x": 0.0,
+                            "max_x": 6.0,
+                            "min_y": -1.0,
+                            "max_y": 1.0,
+                            "min_z": -1.0,
+                            "max_z": 1.0,
+                        },
+                    },
+                    {
+                        "tile_id": "tile_01",
+                        "neighbor_tile_ids": ["tile_00"],
+                        "image_names": ["b.jpg", "shared.jpg", "boundary.jpg"],
+                        "core_bounds": {
+                            "min_x": 5.0,
+                            "max_x": 8.0,
+                            "min_y": -1.0,
+                            "max_y": 1.0,
+                            "min_z": -1.0,
+                            "max_z": 1.0,
+                        },
+                        "overlap_bounds": {
+                            "min_x": 2.0,
+                            "max_x": 8.0,
+                            "min_y": -1.0,
+                            "max_y": 1.0,
+                            "min_z": -1.0,
+                            "max_z": 1.0,
+                        },
+                    },
+                ]
+            }
+
+            report = tile_pipeline.merge_tile_outputs(
+                tile_manifest=manifest,
+                tile_output_dirs={"tile_00": tile_zero_dir, "tile_01": tile_one_dir},
+                output_dir=root / "support_weighted_protected",
+                merge_mode="support_weighted_overlap",
+                protected_overlap_tile_ids=["tile_00"],
+                protected_overlap_mode="retain_all",
+            )
+
+            self.assertEqual(report["retained_gaussians"], 4)
+            self.assertEqual(report["protected_overlap_mode"], "retain_all")
+            self.assertEqual(report["protected_overlap_tile_ids"], ["tile_00"])
+            stats = report["tiles"][0]["support_weighted_overlap"]
+            self.assertTrue(stats["protected_overlap_enabled"])
+            self.assertEqual(stats["protected_overlap_retained_count"], 1)
+            self.assertEqual(stats["protected_overlap_added_count"], 1)
+
     def test_merge_tile_outputs_support_weighted_overlap_preserves_marked_context(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

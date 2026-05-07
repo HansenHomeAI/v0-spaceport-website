@@ -83,6 +83,8 @@ def create_tiled_merge_processing_payload(
     volume_size_gb: int,
     max_runtime_seconds: int,
     background_source_tile_id: str = "",
+    protected_overlap_tile_ids: str = "",
+    protected_overlap_mode: str = "",
 ) -> dict:
     processing_inputs = [
         {
@@ -127,6 +129,10 @@ def create_tiled_merge_processing_payload(
     }
     if background_source_tile_id.strip():
         environment["BACKGROUND_SOURCE_TILE_ID"] = background_source_tile_id.strip()
+    if protected_overlap_tile_ids.strip():
+        environment["MERGE_PROTECTED_OVERLAP_TILE_IDS"] = protected_overlap_tile_ids.strip()
+    if protected_overlap_mode.strip():
+        environment["MERGE_PROTECTED_OVERLAP_MODE"] = protected_overlap_mode.strip()
 
     return {
         "ProcessingJobName": job_name,
@@ -181,6 +187,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--branch", default="")
     parser.add_argument("--merge-mode", default="")
     parser.add_argument("--background-source-tile-id", default="")
+    parser.add_argument("--merge-protected-overlap-tile-ids", default="")
+    parser.add_argument("--merge-protected-overlap-mode", default="")
     parser.add_argument("--instance-type", default="ml.g5.2xlarge")
     parser.add_argument("--volume-size-gb", type=int, default=80)
     parser.add_argument("--max-runtime-seconds", type=int, default=3600)
@@ -217,6 +225,8 @@ def main() -> int:
             artifact_inputs=merge_plan["artifact_inputs"],
             merge_mode=args.merge_mode or str(summary.get("merge_mode") or "support_weighted_overlap"),
             background_source_tile_id=args.background_source_tile_id,
+            protected_overlap_tile_ids=args.merge_protected_overlap_tile_ids,
+            protected_overlap_mode=args.merge_protected_overlap_mode,
             instance_type=args.instance_type,
             volume_size_gb=args.volume_size_gb,
             max_runtime_seconds=args.max_runtime_seconds,

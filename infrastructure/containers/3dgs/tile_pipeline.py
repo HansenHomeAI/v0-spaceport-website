@@ -1699,6 +1699,8 @@ def _support_weighted_overlap_mask(
     vertex: np.ndarray,
     tile_entry: Mapping[str, Any],
     tile_by_id: Mapping[str, Mapping[str, Any]],
+    protected_overlap_tile_ids: set[str] | None = None,
+    protected_overlap_mode: str = "",
 ) -> tuple[np.ndarray, dict[str, Any]]:
     core_bounds = AxisAlignedBounds.from_dict(tile_entry["core_bounds"]) if bounds_available(tile_entry.get("core_bounds")) else None
     overlap_bounds = (
@@ -1754,6 +1756,13 @@ def _support_weighted_overlap_mask(
         ties_score = np.abs(own_scores - best_neighbor_score) <= 1e-6
         wins_tie = np.asarray([tile_id <= str(value) for value in best_neighbor_id], dtype=bool)
         keep_mask |= candidate_mask & (no_competitor | wins_score | (ties_score & wins_tie))
+    overlap_keep_before_protection = keep_mask & candidate_mask
+    protected_overlap_enabled = (
+        protected_overlap_mode == "retain_all"
+        and tile_id in (protected_overlap_tile_ids or set())
+    )
+    if protected_overlap_enabled:
+        keep_mask |= candidate_mask
     keep_mask |= context_mask
     return keep_mask, {
         "core_candidate_count": int(np.count_nonzero(core_mask)),
@@ -1761,6 +1770,14 @@ def _support_weighted_overlap_mask(
         "context_candidate_count": int(np.count_nonzero(context_mask)),
         "retained_overlap_count": int(np.count_nonzero(keep_mask & candidate_mask)),
         "retained_context_count": int(np.count_nonzero(keep_mask & context_mask)),
+        "protected_overlap_enabled": protected_overlap_enabled,
+        "protected_overlap_mode": protected_overlap_mode or None,
+        "protected_overlap_retained_count": int(np.count_nonzero(keep_mask & candidate_mask))
+        if protected_overlap_enabled
+        else 0,
+        "protected_overlap_added_count": int(np.count_nonzero(candidate_mask & ~overlap_keep_before_protection))
+        if protected_overlap_enabled
+        else 0,
         "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
         "context_preserve_enabled": bool(tile_entry.get("preserve_context_gaussians")),
     }
@@ -1773,10 +1790,22 @@ def merge_tile_outputs(
     output_dir: Path,
     merge_mode: str = "strict_core",
     background_source_tile_id: str = "",
+    protected_overlap_tile_ids: Sequence[str] | None = None,
+    protected_overlap_mode: str = "",
 ) -> dict[str, Any]:
     normalized_mode = merge_mode.strip().lower()
     if normalized_mode not in {"raw_union", "strict_core", "support_weighted_overlap"}:
         raise ValueError(f"Unsupported merge_mode={merge_mode}")
+    protected_ids = {
+        str(tile_id).strip()
+        for tile_id in (protected_overlap_tile_ids or [])
+        if str(tile_id).strip()
+    }
+    normalized_protected_mode = protected_overlap_mode.strip().lower()
+    if normalized_protected_mode in {"", "none", "off"}:
+        normalized_protected_mode = ""
+    if normalized_protected_mode and normalized_protected_mode != "retain_all":
+        raise ValueError(f"Unsupported protected_overlap_mode={protected_overlap_mode}")
     if PlyData is None or PlyElement is None:
         raise ModuleNotFoundError("plyfile is required to merge tile outputs")
 
@@ -1847,6 +1876,8 @@ def merge_tile_outputs(
                 vertex=vertex,
                 tile_entry=tile_entry,
                 tile_by_id=tile_by_id,
+                protected_overlap_tile_ids=protected_ids,
+                protected_overlap_mode=normalized_protected_mode,
             )
             retention_strategy = "support_weighted_overlap"
         elif not core_bounds.is_degenerate():
@@ -1921,6 +1952,8 @@ def merge_tile_outputs(
 
     report = {
         "merge_mode": normalized_mode,
+        "protected_overlap_mode": normalized_protected_mode or None,
+        "protected_overlap_tile_ids": sorted(protected_ids),
         "merged_ply": str(merged_path),
         "tile_count": len(report_tiles),
         "source_gaussians": sum(tile["source_gaussians"] for tile in report_tiles),

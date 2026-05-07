@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "Current tile04/background override candidates remain blocked on boundary_no_required_improvement and horizon/V18 regressions; do not promote/package LOD from them.",
+  "blocked_promotion_reason": "Current best tile04 boundary/horizon leaf plus tile10 rollback/density variants remain blocked on boundary_no_required_improvement; do not promote/package LOD from them.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "pushed head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 records the exact-head gate result for the tile_04 boundary/horizon strategy; meaningful implementation commit is 7fd8ecf0be698f3aea4289beb0ea1266428ab151",
-  "current_exact_head_gate_status": "exact-head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 green on CDK Deploy 25478133157; Deploy CDK Stacks and CDK Diff skipped by scope detection; no ML Container Build appeared for this non-container status commit; previous container-affecting head 6249a280443438790e5f9d11512fe6714c1a0728 remains green on CDK Deploy 25475213765, Trigger ML Container Build 25475213781, and CodeBuild spaceport-ml-containers:ae9b6cea-6c39-4bf8-a885-f0eb5336ee4a",
-  "current_live_compute_status": "No MD1 SageMaker training or processing jobs are InProgress after exact-head status gate; re-check immediately before any paid submit",
-  "current_rung": "R4_tile04_boundary_horizon_leaf_tile10_density_v2_review_blocked_boundary_only",
+  "current_branch_head": "this commit records protected tile_04/tile_10 overlap-retention merge support and no-spend dry-run evidence; push and exact-head gate next",
+  "current_exact_head_gate_status": "previous pushed head a4719dc231c8e0d4d5cd68be1af3b990617a23dc was green on CDK Deploy 25488628449; this container-affecting protected-overlap merge commit is not pushed/gated yet",
+  "current_live_compute_status": "Verified 2026-05-07T10:25Z: no MD1 SageMaker training jobs and no MD1 SageMaker processing jobs are InProgress; re-check before any paid merge submit",
+  "current_rung": "R4_boundary_overlap_protected_merge_dryrun_ready_no_spend",
   "exact_head_gate_status": "exact-head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 green on CDK Deploy 25478133157; Deploy CDK Stacks and CDK Diff skipped by scope detection; no ML Container Build appeared for this non-container status commit; previous container-affecting head 6249a280443438790e5f9d11512fe6714c1a0728 remains green on CDK Deploy 25475213765, Trigger ML Container Build 25475213781, and CodeBuild spaceport-ml-containers:ae9b6cea-6c39-4bf8-a885-f0eb5336ee4a",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -920,7 +920,7 @@
     "local_status_update_pending_commit": true,
     "ml_container_build": "not_triggered_for_non_container_status_commit"
   },
-  "last_updated": "2026-05-07T09:46:30Z",
+  "last_updated": "2026-05-07T10:33:37Z",
   "latest_boundary_merge_review_gate_status": "logs/md1-cost-reduction-r4-boundary-paired-merge-review-gate-blocked-20260506.json blocks merge/review spend until tile_04 and tile_10 leaf gate summaries are present and passing; it confirms the paired strategy targets boundary_no_required_improvement and includes tile_13 context support.",
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
@@ -961,7 +961,7 @@
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-tile10-rollback-isolation-smoke-p24/review_comparison.json",
   "latest_review_status": "support_weighted_overlap tile10 density-relaxed review completed in 788 billable seconds/about $0.332 with coverage/render sanity OK but blocked promotion and V18 non-regression: near_detail PSNR, boundary SSIM, horizon PSNR/SSIM/sky score, horizon DJI_0073 PSNR.",
   "latest_sagemaker_evidence_spend_total_usd": 10.226,
-  "latest_tile04_leaf_reuse_merge_dryrun_status": "tile04+tile10v2 bg10 merge/review completed; still boundary_no_required_improvement only; tile10 density worsened boundary versus rollback",
+  "latest_tile04_leaf_reuse_merge_dryrun_status": "tile04+tile10v2 review stayed boundary-blocked; new no-spend protected tile_04/tile_10 overlap-retention dry-run is ready and launches no jobs",
   "latest_training_cost_reduction_status": "total SageMaker evidence spend is about $8.982 after one capped tile_04 leaf proof; new merge dry-runs added no paid compute and no full 14-tile training",
   "live_compute_status": "No SageMaker training jobs are InProgress. Exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. Tile_13 hard proof is complete/preflighted/cached; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
@@ -1379,6 +1379,59 @@
     },
     "review_plan_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-rollback-tile10-candidate-review-20260507.json",
     "status": "quality_blocked_after_preflight_and_frozen_review"
+  },
+  "md1_r4_boundary_overlap_protected_merge_dryrun_20260507": {
+    "branch_head_before_changes": "a4719dc231c8e0d4d5cd68be1af3b990617a23dc",
+    "checked_at": "2026-05-07T10:33:37Z",
+    "decision": {
+      "baseline_to_beat": "tile04_boundary_horizon_leaf_plus_tile10_rollback_bg10",
+      "paid_retry_recommended_now": false,
+      "quality_blocker_targeted": [
+        "boundary_no_required_improvement"
+      ],
+      "why_this_next": "tile_10 density-v2 increased retained splats but worsened boundary metrics; this no-spend change tests whether support-overlap pruning is dropping useful tile_04/tile_10 boundary candidates without another training run."
+    },
+    "dryrun": {
+      "estimated_spend_usd": 0.0,
+      "instance_type": "ml.g4dn.xlarge",
+      "job_name": "md1-r4t04bh-bg10-bop-20260507",
+      "max_runtime_seconds": 3600,
+      "merge_plan_json": "logs/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-tile10-rollback-bg10-boundary-overlap-protected-remote-merge-g4dn-plan-dryrun-20260507.json",
+      "merge_plan_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-tile10-rollback-bg10-boundary-overlap-protected-merge-g4dn-20260507/inputs/merge-plan/merge_plan.json",
+      "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-tile10-rollback-bg10-boundary-overlap-protected-merge-g4dn-20260507/output/artifact",
+      "payload_json": "logs/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-tile10-rollback-bg10-boundary-overlap-protected-remote-merge-g4dn-payload-dryrun-20260507.json",
+      "source_summary_json": "logs/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-tile10-rollback-fullscene-summary-dryrun-20260507.json",
+      "submitted_jobs": [],
+      "training_jobs_to_submit": 0
+    },
+    "guardrails": {
+      "full_14tile_training_allowed": false,
+      "lod_packaging_allowed": false,
+      "new_training_allowed": false,
+      "next_paid_action_if_gates_pass": "at most one bounded no-training g4dn merge/preflight of this protected-overlap variant, then frozen V18 p24 review only if preflight is clean",
+      "paid_merge_allowed_before_exact_head_container_gate": false
+    },
+    "implementation": {
+      "background_source_tile_id": "tile_10",
+      "files_changed": [
+        "infrastructure/containers/3dgs/tile_pipeline.py",
+        "infrastructure/containers/3dgs/run_tiled_merge_packaging.py",
+        "scripts/3dgs/plan_tiled_merge_processing.py",
+        "tests/unit/test_gaussian_tile_pipeline.py",
+        "tests/unit/test_tiled_merge_processing_planner.py"
+      ],
+      "merge_mode": "support_weighted_overlap",
+      "protected_overlap_mode": "retain_all",
+      "protected_overlap_tile_ids": [
+        "tile_04",
+        "tile_10"
+      ]
+    },
+    "spend": {
+      "current_evidence_spend_total_usd": 10.226,
+      "incremental_spend_usd": 0.0
+    },
+    "status": "dryrun_ready_no_spend"
   },
   "md1_r4_boundary_paired_density_v2_review_20260507": {
     "candidate_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-paired-density-v2-support-overlap-merge-g4dn-202605062354/output/artifact/model.tar.gz",
@@ -7530,7 +7583,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Commit/push/gate tile04+tile10v2 merge/review evidence. After exact-head green and fresh AWS idle check, do not launch more paid compute until a no-spend boundary strategy changes the hypothesis beyond tile10 density; likely tile04/tile10 overlap scoring, boundary-camera weighting, or merge-retention policy. No full14, LOD, or new training.",
+  "next_unblocked_step": "Push and gate this protected-overlap merge implementation/dry-run commit. After exact-head CDK/container gates and fresh AWS idle check, only one bounded no-training g4dn protected-overlap merge/preflight may run; no new training, full14, or LOD packaging.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
