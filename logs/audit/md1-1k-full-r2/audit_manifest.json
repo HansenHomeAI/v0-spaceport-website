@@ -589,8 +589,8 @@
       ]
     }
   ],
-  "current_branch_head": "local evidence update from 5a243a2954befc24afe2a97b23b1d3dc90f23e6b records protected-overlap merge/review result; commit/push pending at write time",
-  "current_exact_head_gate_status": "exact-head 5a243a2954befc24afe2a97b23b1d3dc90f23e6b green on CDK Deploy 25491241373; container-affecting head 4027f4897c2d914f1d55f824a551b7e12f2cc96e green on CDK Deploy 25490669185, Trigger ML Container Build 25490669247, CodeBuild spaceport-ml-containers:9ddc4da9-0399-467c-b240-906ffe254fd4, ECR digest sha256:dfe1f7c16b570ae56503fe9156e76a1ce39be3d0346031fc35e11a916d09215e.",
+  "current_branch_head": "pushed evidence head adcb20dc027f14ea0965d8ca96d3637134eb2b44 records protected-overlap merge/review result; exact-head CDK gate passed.",
+  "current_exact_head_gate_status": "exact-head adcb20dc027f14ea0965d8ca96d3637134eb2b44 green on CDK Deploy 25494070950; no ML Container Build appeared/needed for evidence-only commit. Container-affecting head 4027f4897c2d914f1d55f824a551b7e12f2cc96e remains green on CDK Deploy 25490669185, Trigger ML Container Build 25490669247, CodeBuild spaceport-ml-containers:9ddc4da9-0399-467c-b240-906ffe254fd4, ECR digest sha256:dfe1f7c16b570ae56503fe9156e76a1ce39be3d0346031fc35e11a916d09215e.",
   "current_live_compute_status": "Verified 2026-05-07T11:45Z after protected-overlap review: no MD1 SageMaker training or processing jobs are InProgress.",
   "current_rung": "R4_boundary_overlap_protected_review_blocked_no_metric_gain",
   "exact_head_gate_status": "exact-head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 green on CDK Deploy 25478133157; Deploy CDK Stacks and CDK Diff skipped by scope detection; no ML Container Build appeared for this non-container status commit; previous container-affecting head 6249a280443438790e5f9d11512fe6714c1a0728 remains green on CDK Deploy 25475213765, Trigger ML Container Build 25475213781, and CodeBuild spaceport-ml-containers:ae9b6cea-6c39-4bf8-a885-f0eb5336ee4a",
@@ -926,15 +926,14 @@
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
   "latest_boundary_responsible_tile_plan_status": "boundary primary tile_04/tile_10; horizon primary tile_04/tile_01; tile04 dryrun covers tile01/tile10 context support",
   "latest_exact_head_gate": {
+    "checked_at": "2026-05-07T11:56:00Z",
+    "head": "adcb20dc027f14ea0965d8ca96d3637134eb2b44",
+    "cdk_deploy_run_id": 25494070950,
     "cdk_deploy_conclusion": "success",
-    "cdk_deploy_run_id": 25478133157,
-    "checked_at": "2026-05-07T05:46:48Z",
-    "cloudflare_pages": "not_triggered_for_non_web_status_commit",
-    "head": "b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9",
-    "live_md1_processing_jobs_in_progress": 0,
-    "live_md1_training_jobs_in_progress": 0,
-    "local_status_update_pending_commit": true,
-    "ml_container_build": "not_triggered_for_non_container_status_commit"
+    "cloudflare_pages": "not_triggered_for_evidence_only_commit",
+    "ml_container_build": "not_triggered_for_evidence_only_commit",
+    "live_md1_training_jobs_in_progress": [],
+    "live_md1_processing_jobs_in_progress": []
   },
   "latest_leaf_submit_readiness_gate_status": "tile04_boundary_horizon_leaf_submit_allowed_on_b8f3_and_leaf_gate_passed; no further leaf submit needed before the next bounded no-training merge",
   "latest_live_compute_status": {
@@ -13520,7 +13519,7 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-07T11:48:06Z",
+  "updated": "2026-05-07T11:56:00Z",
   "version": "1.0.0",
   "md1_r4_boundary_overlap_protected_merge_review_20260507": {
     "checked_at": "2026-05-07T11:48:06Z",
@@ -13699,5 +13698,14 @@
       "next_no_spend_step": "design a boundary-specific tile_04/tile_10 camera-weighted strategy before any more paid leaf/merge/review",
       "production_promotion_allowed": false
     }
+  },
+  "md1_r4_boundary_overlap_protected_review_gate_20260507": {
+    "checked_at": "2026-05-07T11:56:00Z",
+    "status": "exact_head_gate_passed",
+    "head_sha": "adcb20dc027f14ea0965d8ca96d3637134eb2b44",
+    "cdk_deploy_run_id": 25494070950,
+    "cdk_deploy_conclusion": "success",
+    "ml_container_build": "not_triggered_for_evidence_only_commit",
+    "next_unblocked_step": "No-spend only: design a boundary-specific tile_04/tile_10 strategy using frozen boundary cameras and camera/objective weighting before any further paid leaf/merge/review. Do not launch full14, LOD, or another paid retry from protected-overlap evidence."
   }
 }
