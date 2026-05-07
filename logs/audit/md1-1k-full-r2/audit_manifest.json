@@ -592,7 +592,7 @@
   "current_branch_head": "pushed head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 records the exact-head gate result for the tile_04 boundary/horizon strategy; meaningful implementation commit is 7fd8ecf0be698f3aea4289beb0ea1266428ab151",
   "current_exact_head_gate_status": "exact-head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 green on CDK Deploy 25478133157; Deploy CDK Stacks and CDK Diff skipped by scope detection; no ML Container Build appeared for this non-container status commit; previous container-affecting head 6249a280443438790e5f9d11512fe6714c1a0728 remains green on CDK Deploy 25475213765, Trigger ML Container Build 25475213781, and CodeBuild spaceport-ml-containers:ae9b6cea-6c39-4bf8-a885-f0eb5336ee4a",
   "current_live_compute_status": "No MD1 SageMaker training or processing jobs are InProgress after exact-head status gate; re-check immediately before any paid submit",
-  "current_rung": "R4_tile04_boundary_horizon_leaf_passed_merge_dryruns_ready",
+  "current_rung": "R4_tile04_boundary_horizon_leaf_bg10_review_horizon_cleared_boundary_only_blocked",
   "exact_head_gate_status": "exact-head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 green on CDK Deploy 25478133157; Deploy CDK Stacks and CDK Diff skipped by scope detection; no ML Container Build appeared for this non-container status commit; previous container-affecting head 6249a280443438790e5f9d11512fe6714c1a0728 remains green on CDK Deploy 25475213765, Trigger ML Container Build 25475213781, and CodeBuild spaceport-ml-containers:ae9b6cea-6c39-4bf8-a885-f0eb5336ee4a",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -920,7 +920,7 @@
     "local_status_update_pending_commit": true,
     "ml_container_build": "not_triggered_for_non_container_status_commit"
   },
-  "last_updated": "2026-05-07T07:47:58Z",
+  "last_updated": "2026-05-07T08:52:45Z",
   "latest_boundary_merge_review_gate_status": "logs/md1-cost-reduction-r4-boundary-paired-merge-review-gate-blocked-20260506.json blocks merge/review spend until tile_04 and tile_10 leaf gate summaries are present and passing; it confirms the paired strategy targets boundary_no_required_improvement and includes tile_13 context support.",
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
@@ -944,6 +944,11 @@
     "training_jobs_in_progress": []
   },
   "latest_lod_production_readiness_status": "logs/md1-r4-tile10-rollback-lod-production-readiness-20260506.json reports viewer_ready_quality_blocked; --require-promotion-ready now exits 3 and wrote logs/md1-r4-tile10-rollback-lod-production-readiness-promotion-required-20260506.json, preventing promotion callers from accepting viewer readiness alone.",
+  "latest_md1_live_compute_status": {
+    "checked_at": "2026-05-07T08:52:45Z",
+    "in_progress_processing_jobs": [],
+    "in_progress_training_jobs": []
+  },
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
     "head": "07c50ac09a7ac88ea218c5784f045154a102917e",
@@ -955,7 +960,8 @@
   "latest_quality_strategy_gate_status": "tile04_boundary_horizon_leaf_dryrun_quality_gate_allowed; boundary_only_previous_dryrun_blocked_missing_horizon",
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-tile10-rollback-isolation-smoke-p24/review_comparison.json",
   "latest_review_status": "support_weighted_overlap tile10 density-relaxed review completed in 788 billable seconds/about $0.332 with coverage/render sanity OK but blocked promotion and V18 non-regression: near_detail PSNR, boundary SSIM, horizon PSNR/SSIM/sky score, horizon DJI_0073 PSNR.",
-  "latest_tile04_leaf_reuse_merge_dryrun_status": "zero-training bg04/bg10 g4dn dry-run payloads ready; submit bg10 first only after exact-head green and fresh AWS idle check",
+  "latest_sagemaker_evidence_spend_total_usd": 9.607,
+  "latest_tile04_leaf_reuse_merge_dryrun_status": "bg10 merge/review completed; horizon cleared; boundary_no_required_improvement remains; tile04+tile10v2 zero-training reuse dry-run ready but unsubmitted",
   "latest_training_cost_reduction_status": "total SageMaker evidence spend is about $8.982 after one capped tile_04 leaf proof; new merge dry-runs added no paid compute and no full 14-tile training",
   "live_compute_status": "No SageMaker training jobs are InProgress. Exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. Tile_13 hard proof is complete/preflighted/cached; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
@@ -4969,6 +4975,92 @@
       "v18_non_regression_status": "blocked"
     }
   },
+  "md1_r4_tile04_boundary_horizon_leaf_bg10_merge_review_20260507": {
+    "aws_idle_before_submit": true,
+    "branch_head_before_submit": "b745d29defdc12a9e94013cd59a0686ef5d0a128",
+    "checked_at": "2026-05-07T08:52:45Z",
+    "decision": {
+      "next_no_spend_step": "combine validated tile_04 boundary/horizon leaf with existing tile_10 density-v2 leaf in a zero-training bg10 merge plan before considering spend",
+      "paid_retry_recommended_now": false,
+      "reason": "quality strategy says hold_paid_retry because boundary improvement is close but still under required threshold"
+    },
+    "exact_head_gate": {
+      "conclusion": "success",
+      "run_id": 25483172935,
+      "workflow": "CDK Deploy"
+    },
+    "frozen_v18_p24_review": {
+      "baseline_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-9tile-canary-review-20260505/baselines/v18-smoke-p24",
+      "billable_seconds": 778,
+      "block_reasons": [
+        "boundary_no_required_improvement"
+      ],
+      "boundary_remaining_gap_to_required_improvement": {
+        "lpips_needed": -0.022784227132797243,
+        "psnr_needed": 0.3693424042293074,
+        "ssim_needed": 0.0047456717491149904
+      },
+      "bucket_deltas": {
+        "boundary": {
+          "lpips": -0.002215772867202759,
+          "psnr": 0.13065759577069258,
+          "ssim": 0.00525432825088501
+        },
+        "horizon": {
+          "lpips": 0.010840654373168945,
+          "psnr": -0.299692841819045,
+          "ssim": -0.010585620999336243
+        },
+        "near_detail": {
+          "lpips": -0.045768529176712036,
+          "psnr": 0.5776066932227408,
+          "ssim": 0.0029085129499435425
+        }
+      },
+      "colmap_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap",
+      "estimated_cost_usd_at_1_515_per_hour": 0.327,
+      "horizon_regression_cleared": true,
+      "instance_type": "ml.g5.2xlarge",
+      "job_name": "md1-r1-r4-t04bh-leaf-bg10-v18colmap-smoke-p24-1778142526-qualit",
+      "model_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-tile10-rollback-bg10-merge-g4dn-20260507/output/artifact/model.tar.gz",
+      "only_remaining_promotion_blocker": "boundary_no_required_improvement",
+      "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-bg10-review-v18colmap-20260507/outputs/r4-t04bh-leaf-bg10-v18colmap-smoke-p24",
+      "promotion_status": "blocked",
+      "quality_review_manifest_json": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-t04bh-leaf-bg10-v18colmap-smoke-p24/quality_review_manifest.json",
+      "review_comparison_json": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-t04bh-leaf-bg10-v18colmap-smoke-p24/review_comparison.json",
+      "summary_json": "logs/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-bg10-v18colmap-review-20260507.json"
+    },
+    "full_14tile_training_launched": false,
+    "lod_packaging_launched": false,
+    "new_training_launched": false,
+    "processing_merge": {
+      "artifact_etag": "dcf4b9b9ff268163a6aee314445b718f-615",
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-tile10-rollback-bg10-merge-g4dn-20260507/output/artifact/model.tar.gz",
+      "artifact_size_bytes": 3223751509,
+      "background_selection_mode": "forced_tile",
+      "background_source_tile_id": "tile_10",
+      "dropped_gaussians": 375670,
+      "duration_seconds": 1459,
+      "estimated_cost_usd_at_0_736_per_hour": 0.298,
+      "fallback_tile_count": 0,
+      "instance_type": "ml.g4dn.xlarge",
+      "job_name": "md1-r4t04bh-bg10-20260507",
+      "merge_mode": "support_weighted_overlap",
+      "preflight_decision": "preflight_passed_run_frozen_smoke_review",
+      "preflight_dir": "logs/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260507",
+      "preflight_json": "logs/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260507.json",
+      "retain_all_tile_count": 0,
+      "retained_gaussians": 8530978,
+      "source_gaussians": 8906648
+    },
+    "spend": {
+      "current_evidence_spend_total_usd": 9.607,
+      "incremental_merge_usd": 0.298,
+      "incremental_review_usd": 0.327,
+      "prior_evidence_spend_usd": 8.982
+    },
+    "status": "quality_blocked_boundary_only_horizon_cleared"
+  },
   "md1_r4_tile04_boundary_horizon_leaf_reuse_merge_dryruns_20260507": {
     "checked_at": "2026-05-07T07:47:58Z",
     "decision": {
@@ -5037,6 +5129,104 @@
       "splat_vertex_count": 1081440,
       "status": "Completed"
     }
+  },
+  "md1_r4_tile04_boundary_horizon_leaf_tile10_density_v2_reuse_dryrun_20260507": {
+    "artifact_input_count": 4,
+    "background_source_tile_id": "tile_10",
+    "checked_at": "2026-05-07T08:52:45Z",
+    "current_quality_blockers": [
+      "boundary_no_required_improvement"
+    ],
+    "decision": {
+      "full_14tile_training_allowed": false,
+      "lod_packaging_allowed": false,
+      "new_training_allowed_next": false,
+      "paid_merge_allowed_next_after_exact_head_and_idle": "one_no_training_g4dn_merge_only",
+      "paid_review_allowed_next": "only_if_streaming_preflight_passes"
+    },
+    "fullscene_summary_json": "logs/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-tile10-density-v2-fullscene-summary-dryrun-20260507.json",
+    "max_runtime_seconds": 3600,
+    "merge_mode": "support_weighted_overlap",
+    "merge_plan_json": "logs/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-tile10-density-v2-bg10-remote-merge-g4dn-plan-dryrun-20260507.json",
+    "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-tile10-density-v2-bg10-merge-g4dn-20260507/output/artifact",
+    "paid_retry_recommended": false,
+    "primary_tiles": {
+      "boundary": [
+        "tile_04",
+        "tile_10"
+      ],
+      "combined": [
+        "tile_04",
+        "tile_10",
+        "tile_01"
+      ],
+      "horizon": [
+        "tile_01",
+        "tile_04"
+      ]
+    },
+    "processing_instance_type": "ml.g4dn.xlarge",
+    "processing_job_name": "md1-r4t04bh-t10v2-bg10-20260507",
+    "processing_payload_json": "logs/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-tile10-density-v2-bg10-remote-merge-g4dn-payload-dryrun-20260507.json",
+    "proposed_no_spend_next_step": {
+      "action": "dry_run_tile04_boundary_horizon_strategy",
+      "context_support_tile_ids": [
+        "tile_13",
+        "tile_00",
+        "tile_02",
+        "tile_06"
+      ],
+      "rationale": "The frozen boundary and horizon cameras must be protected together; tile_04 is the horizon lever and boundary still depends on the tile_04/tile_10 overlap context.",
+      "tile_scope": [
+        "tile_04",
+        "tile_10",
+        "tile_01"
+      ]
+    },
+    "quality_strategy_json": "logs/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-bg10-quality-strategy-20260507.json",
+    "quality_strategy_recommendation": "hold_paid_retry",
+    "responsible_tiles_json": "logs/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-bg10-boundary-responsible-tiles-20260507.json",
+    "reused_leaf_tiles": [
+      {
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile04-boundary-horizon-20260507/tiles/tile_04/md1-r4t04bh-20260507-1778134942-tile-04/output/model.tar.gz",
+        "cache_status": "validated_leaf_reuse",
+        "quality_gate_status": "leaf_gate_passed_merge_review_allowed",
+        "tile_id": "tile_04"
+      },
+      {
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4t10v2-1778108204/3dgs/tiles/tile_10/md1-r4t10v2-1778108204-tile-10/output/model.tar.gz",
+        "cache_status": "validated_leaf_reuse",
+        "quality_gate_status": "leaf_gate_passed_merge_review_allowed",
+        "tile_id": "tile_10"
+      }
+    ],
+    "selected_tile_count": 14,
+    "status": "zero_training_merge_dryrun_ready_unsubmitted",
+    "submitted_jobs": [],
+    "support_tiles": {
+      "boundary": [
+        "tile_04",
+        "tile_10",
+        "tile_13"
+      ],
+      "combined": [
+        "tile_04",
+        "tile_10",
+        "tile_13",
+        "tile_00",
+        "tile_01",
+        "tile_02",
+        "tile_06"
+      ],
+      "horizon": [
+        "tile_00",
+        "tile_01",
+        "tile_02",
+        "tile_04",
+        "tile_06"
+      ]
+    },
+    "training_jobs_to_submit": 0
   },
   "md1_r4_tile04_boundary_horizon_strategy_20260507": {
     "boundary_frozen_cameras": [
@@ -7135,7 +7325,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Commit/push/gate the leaf-reuse planner and dry-run evidence; then after exact-head green and fresh AWS idle check upload only the bg10 merge plan and submit at most one bounded no-training ml.g4dn.xlarge merge before streaming preflight. No full 14-tile training or LOD packaging.",
+  "next_unblocked_step": "Commit/push/gate bg10 merge/review evidence and tile04+tile10v2 dry-run. After exact-head green and fresh AWS idle check, at most one no-training ml.g4dn.xlarge merge of md1-r4t04bh-t10v2-bg10-20260507 may run, followed by streaming preflight and one frozen V18 p24 review only if preflight passes; no full14, LOD, or new training.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -13063,6 +13253,6 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-07T07:47:58Z",
+  "updated": "2026-05-07T08:52:45Z",
   "version": "1.0.0"
 }
