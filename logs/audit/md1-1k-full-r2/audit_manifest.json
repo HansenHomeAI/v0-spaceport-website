@@ -12822,5 +12822,90 @@
       "full_14tile_training_allowed": false,
       "next_unblocked_step": "After branch 3DGS image rebuilds with BACKGROUND_SOURCE_TILE_ID support, submit exactly this one no-training g4dn merge, then preflight/review only if preflight passes."
     }
+  },
+  "md1_r4_boundary_density_v2_background_override_result_20260507": {
+    "checked_at": "2026-05-07T05:07:39.261274Z",
+    "status": "background_override_quality_blocked_stop_paid_compute",
+    "purpose": "Evaluate whether forcing tile_10 background fixes the tile04-candidate/tile10-rollback horizon regression.",
+    "analysis_json": "logs/md1-cost-reduction-r4-boundary-density-v2-background-override-analysis-20260507.json",
+    "preflight_summary_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-candidate-tile10-rollback-bg-tile10-remote-merge-g4dn-preflight-20260507.json",
+    "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-candidate-tile10-rollback-bg-tile10-merge-g4dn-20260507/output/artifact/model.tar.gz",
+    "processing_job_name": "md1-r4iso-t04cand-t10rb-bg10-20260507",
+    "forced_background_source_tile_id": "tile_10",
+    "background_selection_mode": "forced_tile",
+    "retained_gaussians": 8017261,
+    "source_gaussians": 8385189,
+    "dropped_gaussians": 367928,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "valid_review": {
+      "summary_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-candidate-tile10-rollback-bg-tile10-v18colmap-review-20260507.json",
+      "review_output_dir": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-isot04cand-t10rb-bg10-v18colmap-smoke-p24",
+      "review_comparison_json": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-isot04cand-t10rb-bg10-v18colmap-smoke-p24/review_comparison.json",
+      "promotion_status": "blocked",
+      "promotion_block_reasons": [
+        "boundary_no_required_improvement",
+        "horizon_ssim_regression"
+      ],
+      "v18_non_regression_status": "blocked",
+      "v18_non_regression_block_reasons": [
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_median_ssim_regression",
+        "horizon_v18_median_lpips_regression",
+        "horizon_v18_single_camera_lpips_regression"
+      ],
+      "bucket_deltas_vs_v18": {
+        "boundary": {
+          "lpips": 0.00634649395942688,
+          "psnr": 0.11298282288051809,
+          "ssim": -0.004256293177604675
+        },
+        "horizon": {
+          "lpips": 0.013834714889526367,
+          "psnr": -0.385793050161098,
+          "ssim": -0.014109566807746887
+        },
+        "near_detail": {
+          "lpips": -0.004183650016784668,
+          "psnr": -0.004384039267897322,
+          "ssim": 0.0002629011869430542
+        }
+      }
+    },
+    "invalid_review": {
+      "summary_json": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-candidate-tile10-rollback-bg-tile10-review-20260507.json",
+      "review_output_dir": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-isot04cand-t10rb-bg10-smoke-p24",
+      "invalid_reason": "Used script default COLMAP s3://spaceport-ml-processing-staging/manual-validations/md1p27eba1k-1776107310/colmap instead of frozen p24 COLMAP s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap."
+    },
+    "cost_summary_usd": {
+      "background_override_g4dn_merge": 0.291,
+      "current_total_sagemaker_evidence_spend": 7.304,
+      "incremental_after_prior_6_447": 0.857,
+      "invalid_default_colmap_review": 0.241,
+      "valid_v18_colmap_review": 0.325
+    },
+    "decision": {
+      "full_14tile_training_allowed": false,
+      "lod_packaging_allowed": false,
+      "next_unblocked_step": "Stop paid compute. Build a no-spend tile_04 boundary/horizon strategy and a submit gate that requires both boundary_no_required_improvement and horizon regression to be targeted before any tile_04 retrain.",
+      "paid_review_allowed_next": false,
+      "paid_training_allowed_next": false,
+      "production_ready": false
+    }
+  },
+  "md1_r4_review_colmap_submit_guard_20260507": {
+    "checked_at": "2026-05-07T05:07:39.261274Z",
+    "status": "implemented_no_spend_guard",
+    "purpose": "Prevent baseline-comparison frozen reviews from silently using the default COLMAP URI when --colmap-s3-uri is omitted.",
+    "changed_files": [
+      "scripts/3dgs/run_md1_geometry_r1_review.py",
+      "tests/unit/test_md1_geometry_r1_review.py"
+    ],
+    "triggering_invalid_review": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-candidate-tile10-rollback-bg-tile10-review-20260507.json",
+    "decision": {
+      "paid_review_guard": "baseline review submit now requires explicit --colmap-s3-uri",
+      "paid_training_allowed_next": false,
+      "next_unblocked_step": "Run tests, commit/push evidence and guard, then continue no-spend tile_04 strategy only."
+    }
   }
 }

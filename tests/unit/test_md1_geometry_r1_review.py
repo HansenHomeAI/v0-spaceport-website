@@ -131,6 +131,24 @@ class MD1GeometryR1ReviewTests(unittest.TestCase):
         self.assertEqual(jobs["strict_core"]["baseline_review_manifest_s3_uri"], "")
         self.assertEqual(jobs["strict_core"]["payload"]["baseline_review_manifest_s3_uri"], "")
 
+    def test_submit_with_baseline_requires_explicit_colmap(self):
+        with self.assertRaisesRegex(ValueError, "--colmap-s3-uri is required"):
+            md1_review.resolve_review_colmap_s3_uri(
+                explicit_colmap_s3_uri="",
+                baseline_review_manifest_s3_uri="s3://bucket/baseline",
+                submit=True,
+            )
+
+    def test_non_baseline_review_can_use_default_colmap(self):
+        self.assertEqual(
+            md1_review.resolve_review_colmap_s3_uri(
+                explicit_colmap_s3_uri="",
+                baseline_review_manifest_s3_uri="",
+                submit=True,
+            ),
+            md1_review.DEFAULT_COLMAP_S3_URI,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -360,7 +360,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--audit-root", type=Path, default=REPO_ROOT / "logs" / "audit" / "md1-1k-full-r2")
     parser.add_argument("--branch", default="")
     parser.add_argument("--stack-name", default="")
-    parser.add_argument("--colmap-s3-uri", default=DEFAULT_COLMAP_S3_URI)
+    parser.add_argument("--colmap-s3-uri", default="")
     parser.add_argument("--output-root-s3-uri", default="")
     parser.add_argument("--variant", action="append", choices=DEFAULT_VARIANTS, default=[])
     parser.add_argument(
@@ -391,9 +391,21 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def resolve_review_colmap_s3_uri(*, explicit_colmap_s3_uri: str, baseline_review_manifest_s3_uri: str, submit: bool) -> str:
+    colmap_s3_uri = explicit_colmap_s3_uri.strip()
+    if submit and baseline_review_manifest_s3_uri.strip() and not colmap_s3_uri:
+        raise ValueError("--colmap-s3-uri is required when submitting a baseline-comparison review")
+    return colmap_s3_uri or DEFAULT_COLMAP_S3_URI
+
+
 def main() -> int:
     args = parse_args()
     branch_name = args.branch or get_current_branch()
+    colmap_s3_uri = resolve_review_colmap_s3_uri(
+        explicit_colmap_s3_uri=args.colmap_s3_uri,
+        baseline_review_manifest_s3_uri=args.baseline_review_manifest_s3_uri,
+        submit=args.submit,
+    )
     direct_candidate_uri = args.candidate_model_artifact_s3_uri.strip()
     if direct_candidate_uri and args.variant:
         raise ValueError("--candidate-model-artifact-s3-uri cannot be combined with --variant")
@@ -425,7 +437,7 @@ def main() -> int:
         branch_name=branch_name,
         image_uri=image_uri,
         role_arn=role_arn,
-        colmap_s3_uri=args.colmap_s3_uri,
+        colmap_s3_uri=colmap_s3_uri,
         output_root_s3_uri=output_root_s3_uri,
         review_camera_manifest_s3_uri=staged["review_camera_manifest_s3_uri"],
         staged_variants=staged["variants"],
@@ -455,7 +467,7 @@ def main() -> int:
         "stack_resolution": stack_resolution,
         "image_uri": image_uri,
         "role_arn": role_arn,
-        "colmap_s3_uri": args.colmap_s3_uri,
+        "colmap_s3_uri": colmap_s3_uri,
         "output_root_s3_uri": output_root_s3_uri,
         "review_camera_manifest_s3_uri": staged["review_camera_manifest_s3_uri"],
         "baseline_review_manifest_s3_uri": args.baseline_review_manifest_s3_uri,
