@@ -589,8 +589,8 @@
       ]
     }
   ],
-  "current_branch_head": "pre-edit status head 4c26c91118f1e3399d915deb6041aab54c371416 is green; next commit adds no-spend boundary-objective strategy/gate evidence",
-  "current_exact_head_gate_status": "exact-head 4c26c91118f1e3399d915deb6041aab54c371416 green on CDK Deploy 25494289477; container-affecting head 4027f4897c2d914f1d55f824a551b7e12f2cc96e remains green on CDK Deploy 25490669185, Trigger ML Container Build 25490669247, CodeBuild spaceport-ml-containers:9ddc4da9-0399-467c-b240-906ffe254fd4, and branch ECR digest sha256:dfe1f7c16b570ae56503fe9156e76a1ce39be3d0346031fc35e11a916d09215e.",
+  "current_branch_head": "19839a174f113491c613a5d0a4ed30330953f678",
+  "current_exact_head_gate_status": "green on CDK Deploy 25498678127 and Trigger ML Container Build 25498678312; CodeBuild spaceport-ml-containers:13075863-149d-48c7-9dfd-c966a0c2bfd9; ECR digest sha256:807e4e09f47c9130b5e80dd19b5436ad2c82709ef3767fe6405ad9d5d5e9bb3b",
   "current_live_compute_status": "Verified 2026-05-07T12:31Z: no MD1 SageMaker training or processing jobs are InProgress.",
   "current_rung": "R4_boundary_objective_strategy_no_spend_gate",
   "exact_head_gate_status": "exact-head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 green on CDK Deploy 25478133157; Deploy CDK Stacks and CDK Diff skipped by scope detection; no ML Container Build appeared for this non-container status commit; previous container-affecting head 6249a280443438790e5f9d11512fe6714c1a0728 remains green on CDK Deploy 25475213765, Trigger ML Container Build 25475213781, and CodeBuild spaceport-ml-containers:ae9b6cea-6c39-4bf8-a885-f0eb5336ee4a",
@@ -942,11 +942,7 @@
     "processing_jobs_in_progress": []
   },
   "latest_lod_production_readiness_status": "logs/md1-r4-tile10-rollback-lod-production-readiness-20260506.json reports viewer_ready_quality_blocked; --require-promotion-ready now exits 3 and wrote logs/md1-r4-tile10-rollback-lod-production-readiness-promotion-required-20260506.json, preventing promotion callers from accepting viewer readiness alone.",
-  "latest_md1_live_compute_status": {
-    "checked_at": "2026-05-07T09:46:30Z",
-    "in_progress_processing_jobs": [],
-    "in_progress_training_jobs": []
-  },
+  "latest_md1_live_compute_status": "2026-05-07T13:38Z no MD1 SageMaker training or processing jobs InProgress",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
     "head": "07c50ac09a7ac88ea218c5784f045154a102917e",
@@ -13931,11 +13927,18 @@
     "no_new_compute_launched": true,
     "full_14tile_training_launched": false,
     "merge_review_allowed": false,
-    "next_required_action": "submit leaf-only fanout with --skip-merge/--skip-review and run emitted post_leaf_preflight_gates"
+    "next_required_action": "submit leaf-only fanout with --skip-merge/--skip-review and run emitted post_leaf_preflight_gates",
+    "post_commit_head": "19839a174f113491c613a5d0a4ed30330953f678",
+    "post_commit_cdk_run_id": 25498678127,
+    "post_commit_ml_container_run_id": 25498678312,
+    "post_commit_codebuild_id": "spaceport-ml-containers:13075863-149d-48c7-9dfd-c966a0c2bfd9",
+    "post_commit_ecr_digest": "sha256:807e4e09f47c9130b5e80dd19b5436ad2c82709ef3767fe6405ad9d5d5e9bb3b",
+    "post_commit_gate_status": "green",
+    "post_commit_aws_idle_checked_at": "2026-05-07T13:38:00Z"
   },
   "latest_boundary_camera_weighting_candidate_status": {
-    "checked_at": "2026-05-07T13:24:00Z",
-    "status": "no_spend_boundary_camera_weighting_leaf_ready_on_green_head",
+    "checked_at": "2026-05-07T13:38:00Z",
+    "status": "container_built_leaf_readiness_must_be_rerun_on_current_head_before_submit",
     "candidate_objective_gate_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-objective-gate-20260507.json",
     "leaf_dryrun_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-dryrun-20260507.json",
     "leaf_submit_readiness_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-submit-readiness-20260507.json",
@@ -13944,6 +13947,11 @@
     "estimated_usd": 0.8096,
     "worst_case_usd": 0.9813,
     "submitted_jobs": [],
-    "next_required_action": "submit leaf-only fanout with --skip-merge/--skip-review and run emitted post_leaf_preflight_gates"
+    "next_required_action": "rerun leaf-submit readiness on current exact head, then submit only one bounded tile_04 leaf proof if allowed",
+    "post_commit_head": "19839a174f113491c613a5d0a4ed30330953f678",
+    "post_commit_cdk_run_id": 25498678127,
+    "post_commit_ml_container_run_id": 25498678312,
+    "post_commit_codebuild_id": "spaceport-ml-containers:13075863-149d-48c7-9dfd-c966a0c2bfd9",
+    "post_commit_ecr_digest": "sha256:807e4e09f47c9130b5e80dd19b5436ad2c82709ef3767fe6405ad9d5d5e9bb3b"
   }
 }
