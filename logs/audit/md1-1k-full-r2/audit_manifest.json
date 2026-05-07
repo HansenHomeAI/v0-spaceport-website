@@ -589,11 +589,11 @@
       ]
     }
   ],
-  "current_branch_head": "pushed head 7fd8ecf0be698f3aea4289beb0ea1266428ab151 contains the tile_04 boundary/horizon strategy gate, leaf dry-run, and min/max leaf density guards",
-  "current_exact_head_gate_status": "exact-head 7fd8ecf0be698f3aea4289beb0ea1266428ab151 green on CDK Deploy 25477958435; Deploy CDK Stacks and CDK Diff skipped by scope detection; no ML Container Build appeared for this non-container commit; previous container-affecting head 6249a280443438790e5f9d11512fe6714c1a0728 remains green on CDK Deploy 25475213765, Trigger ML Container Build 25475213781, and CodeBuild spaceport-ml-containers:ae9b6cea-6c39-4bf8-a885-f0eb5336ee4a",
-  "current_live_compute_status": "No MD1 SageMaker training or processing jobs are InProgress after exact-head gate; re-check immediately before any paid submit",
-  "current_rung": "R4_tile04_boundary_horizon_leaf_strategy_ready",
-  "exact_head_gate_status": "exact-head 7fd8ecf0be698f3aea4289beb0ea1266428ab151 green on CDK Deploy 25477958435; Deploy CDK Stacks and CDK Diff skipped by scope detection; no ML Container Build appeared for this non-container commit; previous container-affecting head 6249a280443438790e5f9d11512fe6714c1a0728 remains green on CDK Deploy 25475213765, Trigger ML Container Build 25475213781, and CodeBuild spaceport-ml-containers:ae9b6cea-6c39-4bf8-a885-f0eb5336ee4a",
+  "current_branch_head": "pushed head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 records the exact-head gate result for the tile_04 boundary/horizon strategy; meaningful implementation commit is 7fd8ecf0be698f3aea4289beb0ea1266428ab151",
+  "current_exact_head_gate_status": "exact-head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 green on CDK Deploy 25478133157; Deploy CDK Stacks and CDK Diff skipped by scope detection; no ML Container Build appeared for this non-container status commit; previous container-affecting head 6249a280443438790e5f9d11512fe6714c1a0728 remains green on CDK Deploy 25475213765, Trigger ML Container Build 25475213781, and CodeBuild spaceport-ml-containers:ae9b6cea-6c39-4bf8-a885-f0eb5336ee4a",
+  "current_live_compute_status": "No MD1 SageMaker training or processing jobs are InProgress after exact-head status gate; re-check immediately before any paid submit",
+  "current_rung": "R4_tile04_boundary_horizon_leaf_passed_merge_dryruns_ready",
+  "exact_head_gate_status": "exact-head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 green on CDK Deploy 25478133157; Deploy CDK Stacks and CDK Diff skipped by scope detection; no ML Container Build appeared for this non-container status commit; previous container-affecting head 6249a280443438790e5f9d11512fe6714c1a0728 remains green on CDK Deploy 25475213765, Trigger ML Container Build 25475213781, and CodeBuild spaceport-ml-containers:ae9b6cea-6c39-4bf8-a885-f0eb5336ee4a",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
     "buckets": {
@@ -908,38 +908,38 @@
     ],
     "view_bucket_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiled_pipeline/inputs/scaffold/3dgs_view_buckets.json"
   },
-  "last_commit": "7fd8ecf0be698f3aea4289beb0ea1266428ab151",
+  "last_commit": "b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9",
   "last_exact_head_gates": {
     "cdk_deploy_conclusion": "success",
-    "cdk_deploy_run_id": 25477958435,
-    "checked_at": "2026-05-07T05:41:19Z",
-    "cloudflare_pages": "not_triggered_for_non_web_strategy_commit",
-    "head": "7fd8ecf0be698f3aea4289beb0ea1266428ab151",
+    "cdk_deploy_run_id": 25478133157,
+    "checked_at": "2026-05-07T05:46:48Z",
+    "cloudflare_pages": "not_triggered_for_non_web_status_commit",
+    "head": "b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9",
     "live_md1_processing_jobs_in_progress": 0,
     "live_md1_training_jobs_in_progress": 0,
     "local_status_update_pending_commit": true,
-    "ml_container_build": "not_triggered_for_non_container_strategy_commit"
+    "ml_container_build": "not_triggered_for_non_container_status_commit"
   },
-  "last_updated": "2026-05-07T05:41:19Z",
+  "last_updated": "2026-05-07T07:47:58Z",
   "latest_boundary_merge_review_gate_status": "logs/md1-cost-reduction-r4-boundary-paired-merge-review-gate-blocked-20260506.json blocks merge/review spend until tile_04 and tile_10 leaf gate summaries are present and passing; it confirms the paired strategy targets boundary_no_required_improvement and includes tile_13 context support.",
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
   "latest_boundary_responsible_tile_plan_status": "boundary primary tile_04/tile_10; horizon primary tile_04/tile_01; tile04 dryrun covers tile01/tile10 context support",
   "latest_exact_head_gate": {
     "cdk_deploy_conclusion": "success",
-    "cdk_deploy_run_id": 25477958435,
-    "checked_at": "2026-05-07T05:41:19Z",
-    "cloudflare_pages": "not_triggered_for_non_web_strategy_commit",
-    "head": "7fd8ecf0be698f3aea4289beb0ea1266428ab151",
+    "cdk_deploy_run_id": 25478133157,
+    "checked_at": "2026-05-07T05:46:48Z",
+    "cloudflare_pages": "not_triggered_for_non_web_status_commit",
+    "head": "b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9",
     "live_md1_processing_jobs_in_progress": 0,
     "live_md1_training_jobs_in_progress": 0,
     "local_status_update_pending_commit": true,
-    "ml_container_build": "not_triggered_for_non_container_strategy_commit"
+    "ml_container_build": "not_triggered_for_non_container_status_commit"
   },
-  "latest_leaf_submit_readiness_gate_status": "tile04_boundary_horizon_leaf_submit_allowed_on_d0_dryrun; must rerun readiness against exact head 7fd8 before any paid submit",
+  "latest_leaf_submit_readiness_gate_status": "tile04_boundary_horizon_leaf_submit_allowed_on_b8f3_and_leaf_gate_passed; no further leaf submit needed before the next bounded no-training merge",
   "latest_live_compute_status": {
-    "checked_at": "2026-05-07T05:41:19Z",
-    "note": "No MD1 SageMaker training or processing jobs are InProgress after exact-head gate; re-check immediately before any paid submit",
+    "checked_at": "2026-05-07T05:46:48Z",
+    "note": "No MD1 SageMaker training or processing jobs are InProgress after exact-head status gate; re-check immediately before any paid submit",
     "processing_jobs_in_progress": [],
     "training_jobs_in_progress": []
   },
@@ -955,7 +955,8 @@
   "latest_quality_strategy_gate_status": "tile04_boundary_horizon_leaf_dryrun_quality_gate_allowed; boundary_only_previous_dryrun_blocked_missing_horizon",
   "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-tile10-rollback-isolation-smoke-p24/review_comparison.json",
   "latest_review_status": "support_weighted_overlap tile10 density-relaxed review completed in 788 billable seconds/about $0.332 with coverage/render sanity OK but blocked promotion and V18 non-regression: near_detail PSNR, boundary SSIM, horizon PSNR/SSIM/sky score, horizon DJI_0073 PSNR.",
-  "latest_training_cost_reduction_status": "total SageMaker evidence spend remains about $7.304; this commit/gate added no paid compute and no full 14-tile training",
+  "latest_tile04_leaf_reuse_merge_dryrun_status": "zero-training bg04/bg10 g4dn dry-run payloads ready; submit bg10 first only after exact-head green and fresh AWS idle check",
+  "latest_training_cost_reduction_status": "total SageMaker evidence spend is about $8.982 after one capped tile_04 leaf proof; new merge dry-runs added no paid compute and no full 14-tile training",
   "live_compute_status": "No SageMaker training jobs are InProgress. Exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. Tile_13 hard proof is complete/preflighted/cached; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
@@ -4968,6 +4969,75 @@
       "v18_non_regression_status": "blocked"
     }
   },
+  "md1_r4_tile04_boundary_horizon_leaf_reuse_merge_dryruns_20260507": {
+    "checked_at": "2026-05-07T07:47:58Z",
+    "decision": {
+      "full_14tile_training_allowed": false,
+      "lod_packaging_allowed": false,
+      "next_unblocked_step": "Commit/push/gate planner and dry-run evidence; after exact-head green and fresh AWS idle check, submit at most one bounded bg10 no-training merge, then streaming preflight before any paid review.",
+      "paid_merge_allowed_next_after_exact_head_gate": "bg10_only",
+      "paid_review_allowed_next": false
+    },
+    "full_14tile_training_launched": false,
+    "head_before_commit": "b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9",
+    "leaf_reuse_planner": {
+      "decision": "manual_json_swap_replaced_by_validated_leaf_gate_parser",
+      "script": "scripts/3dgs/plan_md1_leaf_reuse_merge.py",
+      "submitted_jobs": [],
+      "summary_json": "logs/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-tile10-rollback-fullscene-summary-dryrun-20260507.json",
+      "tests": "tests/unit/test_md1_leaf_reuse_merge.py",
+      "training_jobs_to_submit": 0
+    },
+    "lod_packaging_launched": false,
+    "remote_merge_dryruns": {
+      "artifact_input_count": 3,
+      "artifact_inputs_s3_checked": [
+        "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile04-boundary-horizon-20260507/tiles/tile_04/md1-r4t04bh-20260507-1778134942-tile-04/output/model.tar.gz",
+        "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+        "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_11/md1-r4leafreb-1777858863-tile-11/output/model.tar.gz"
+      ],
+      "bg04": {
+        "background_source_tile_id": "tile_04",
+        "job_name": "md1-r4t04bh-bg04-20260507",
+        "payload_json": "logs/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-tile10-rollback-bg04-remote-merge-g4dn-payload-dryrun-20260507.json",
+        "plan_json": "logs/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-tile10-rollback-bg04-remote-merge-g4dn-plan-dryrun-20260507.json",
+        "submitted_jobs": []
+      },
+      "bg10": {
+        "background_source_tile_id": "tile_10",
+        "job_name": "md1-r4t04bh-bg10-20260507",
+        "payload_json": "logs/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-tile10-rollback-bg10-remote-merge-g4dn-payload-dryrun-20260507.json",
+        "plan_json": "logs/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-tile10-rollback-bg10-remote-merge-g4dn-plan-dryrun-20260507.json",
+        "submitted_jobs": []
+      },
+      "instance_type": "ml.g4dn.xlarge",
+      "max_runtime_seconds": 3600,
+      "merge_mode": "support_weighted_overlap",
+      "selected_first_submit_candidate": "bg10",
+      "selected_tile_count": 14,
+      "selection_reason": "tile_10/V18 context background is the safer first paid merge because prior horizon-clearing isolation used tile_10 background and bg04 remains a control",
+      "tile_selection_input_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4t10v2-1778108204/3dgs/inputs/tile-selection",
+      "volume_size_gb": 120
+    },
+    "sagemaker_evidence_spend_total_usd": 8.982,
+    "status": "tile04_leaf_passed_zero_training_merge_dryruns_ready",
+    "tile04_leaf_job": {
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile04-boundary-horizon-20260507/tiles/tile_04/md1-r4t04bh-20260507-1778134942-tile-04/output/model.tar.gz",
+      "artifact_sha256": "21596fba70d2c35282b56000fd1240c30686a8199f0f57a750379115b0a879a9",
+      "artifact_size_bytes": 95409356,
+      "billable_seconds": 3988,
+      "estimated_cost_usd_at_1_515_per_hour": 1.678,
+      "leaf_gate_decision": "merge_review_allowed",
+      "leaf_gate_json": "logs/md1-r4-tile04-boundary-horizon-20260507-tile_04-leaf-gate.json",
+      "name": "md1-r4t04bh-20260507-1778134942-tile-04",
+      "observed_reference_ratio": 1.1308857161680141,
+      "preflight_json": "logs/md1-r4-tile04-boundary-horizon-20260507-tile_04-leaf-preflight.json",
+      "reference_splat_count": 956277,
+      "selected_image_count": 188,
+      "splat_vertex_count": 1081440,
+      "status": "Completed"
+    }
+  },
   "md1_r4_tile04_boundary_horizon_strategy_20260507": {
     "boundary_frozen_cameras": [
       "DJI_0067.JPG",
@@ -5001,20 +5071,21 @@
     ],
     "decision": {
       "full_14tile_training_allowed": false,
-      "leaf_submit_readiness": "rerun_required_on_exact_head_7fd8_before_paid_submit",
+      "leaf_submit_readiness": "rerun_required_on_exact_head_b8f3_before_paid_submit",
       "lod_packaging_allowed": false,
       "merge_review_allowed": false,
-      "next_unblocked_step": "Rerun leaf-submit readiness on 7fd8 exact head, then only one tile_04 leaf-only proof under $2.25 is eligible; merge/review stays blocked until the emitted leaf preflight gate passes.",
+      "next_unblocked_step": "Rerun leaf-submit readiness on b8f3 exact head, then only one tile_04 leaf-only proof under $2.25 is eligible; merge/review stays blocked until the emitted leaf preflight gate passes.",
       "paid_review_allowed_next": false,
       "quality_strategy_gate": "paid_retry_allowed_for_tile04_leaf_dryrun_labels_only"
     },
     "exact_head_gate": {
-      "cdk_deploy_run_id": 25477958435,
-      "checked_at": "2026-05-07T05:41:19Z",
+      "cdk_deploy_run_id": 25478133157,
+      "checked_at": "2026-05-07T05:46:48Z",
       "conclusion": "success",
-      "head": "7fd8ecf0be698f3aea4289beb0ea1266428ab151",
+      "head": "b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9",
       "live_md1_processing_jobs_in_progress": 0,
-      "live_md1_training_jobs_in_progress": 0
+      "live_md1_training_jobs_in_progress": 0,
+      "local_status_update_pending_commit": true
     },
     "full_14tile_training_launched": false,
     "horizon_frozen_cameras": [
@@ -5023,6 +5094,7 @@
       "DJI_0146.JPG",
       "DJI_0147.JPG"
     ],
+    "latest_status_commit": "b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9",
     "leaf_dryrun_json": "logs/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-dryrun-20260507.json",
     "leaf_quality_gate_json": "logs/md1-cost-reduction-r4-quality-strategy-gate-tile04-boundary-horizon-leaf-dryrun-20260507.json",
     "leaf_reference_guard": {
@@ -7063,7 +7135,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Rerun leaf-submit readiness on exact head 7fd8ecf0be698f3aea4289beb0ea1266428ab151 with a fresh AWS idle check; then only one tile_04 leaf-only proof under $2.25 is eligible. Merge/review/LOD/full14 remain blocked until leaf preflight and quality gates pass.",
+  "next_unblocked_step": "Commit/push/gate the leaf-reuse planner and dry-run evidence; then after exact-head green and fresh AWS idle check upload only the bg10 merge plan and submit at most one bounded no-training ml.g4dn.xlarge merge before streaming preflight. No full 14-tile training or LOD packaging.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -12991,6 +13063,6 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-06T09:33:10Z",
+  "updated": "2026-05-07T07:47:58Z",
   "version": "1.0.0"
 }
