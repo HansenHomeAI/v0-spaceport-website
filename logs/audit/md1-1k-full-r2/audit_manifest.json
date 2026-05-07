@@ -935,7 +935,7 @@
     "live_md1_training_jobs_in_progress": [],
     "live_md1_processing_jobs_in_progress": []
   },
-  "latest_leaf_submit_readiness_gate_status": "tile04_boundary_horizon_leaf_submit_allowed_on_b8f3_and_leaf_gate_passed; no further leaf submit needed before the next bounded no-training merge",
+  "latest_leaf_submit_readiness_gate_status": "boundary_camera_weighting_tile04_leaf_submit_allowed_on_95bc_exact_head; no merge/review/full14 until the emitted tile_04 leaf preflight gate passes.",
   "latest_live_compute_status": {
     "checked_at": "2026-05-07T11:45Z",
     "training_jobs_in_progress": [],
@@ -1712,9 +1712,9 @@
   },
   "md1_r4_boundary_quality_strategy_20260506": {
     "boundary_actual_delta": {
-      "lpips": 0.000008553266525268555,
-      "psnr": 0.00000909046563180027,
-      "ssim": 0.0000032186508178710938
+      "lpips": 8.553266525268555e-06,
+      "psnr": 9.09046563180027e-06,
+      "ssim": 3.2186508178710938e-06
     },
     "boundary_remaining_gap": {
       "lpips": 0.02500855326652527,
@@ -13709,14 +13709,12 @@
     "next_unblocked_step": "No-spend only: design a boundary-specific tile_04/tile_10 strategy using frozen boundary cameras and camera/objective weighting before any further paid leaf/merge/review. Do not launch full14, LOD, or another paid retry from protected-overlap evidence."
   },
   "latest_boundary_objective_strategy_status": {
-    "checked_at": "2026-05-07T12:37:59Z",
-    "strategy_json": "logs/md1-cost-reduction-r4-boundary-objective-strategy-20260507.json",
-    "recommendation": "no_paid_retry_until_objective_redesign",
-    "paid_retry_allowed": false,
-    "candidate_objective_decision": "paid_retry_blocked",
-    "candidate_objective_block_reasons": [
-      "candidate_objective_missing"
-    ],
+    "checked_at": "2026-05-07T13:24:00Z",
+    "strategy_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-objective-gate-20260507.json",
+    "recommendation": "candidate_objective_can_enter_leaf_only_gate",
+    "paid_retry_allowed": true,
+    "candidate_objective_decision": "paid_retry_allowed",
+    "candidate_objective_block_reasons": [],
     "failed_hypotheses": [
       "tile10_density_v2",
       "protected_overlap_retention"
@@ -13731,7 +13729,7 @@
       "DJI_0069.JPG",
       "DJI_0070.JPG"
     ],
-    "max_estimated_usd": 2.0
+    "max_estimated_usd": 2.25
   },
   "md1_r4_boundary_objective_strategy_20260507": {
     "checked_at": "2026-05-07T12:37:59Z",
@@ -13852,5 +13850,100 @@
     "no_new_compute_launched": true,
     "full_14tile_training_launched": false,
     "lod_packaging_launched": false
+  },
+  "md1_r4_boundary_camera_weighting_candidate_20260507": {
+    "checked_at": "2026-05-07T13:24:00Z",
+    "status": "no_spend_boundary_camera_weighting_leaf_ready_on_green_head",
+    "branch_head_before_commit": "95bc3b877ec7da7e77e314d60f07fb3ff173a410",
+    "implementation_files": [
+      "infrastructure/containers/3dgs/train_nerfstudio_production.py",
+      "scripts/3dgs/enforce_md1_quality_strategy_gate.py"
+    ],
+    "candidate_objective_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-objective-candidate-20260507.json",
+    "candidate_objective_gate_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-objective-gate-20260507.json",
+    "leaf_dryrun_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-dryrun-20260507.json",
+    "quality_strategy_gate_json": "logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-camera-weighting-20260507.json",
+    "merge_review_gate_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-merge-review-gate-blocked-20260507.json",
+    "leaf_submit_readiness_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-submit-readiness-20260507.json",
+    "candidate_objective_decision": "paid_retry_allowed",
+    "quality_strategy_decision": "paid_retry_allowed",
+    "merge_review_decision": "merge_review_blocked",
+    "leaf_submit_decision": "leaf_submit_allowed",
+    "selected_tile_ids": [
+      "tile_04"
+    ],
+    "context_support_tile_ids": [
+      "tile_01",
+      "tile_10",
+      "tile_13",
+      "tile_00",
+      "tile_02",
+      "tile_06"
+    ],
+    "boundary_camera_repeat_factor": 3,
+    "boundary_frozen_cameras": [
+      "DJI_0067.JPG",
+      "DJI_0068.JPG",
+      "DJI_0069.JPG",
+      "DJI_0070.JPG"
+    ],
+    "horizon_frozen_cameras": [
+      "DJI_0066.JPG",
+      "DJI_0073.JPG",
+      "DJI_0146.JPG",
+      "DJI_0147.JPG"
+    ],
+    "objective_changes": [
+      "boundary_camera_weighting",
+      "boundary_frame_repeat_weighting",
+      "frozen_camera_weighting"
+    ],
+    "cost_estimate": {
+      "instance_type": "ml.g4dn.xlarge",
+      "hourly_rate_usd": 0.736,
+      "train_stage_count": 1,
+      "estimated_billable_hours": 1.1,
+      "estimated_usd": 0.8096,
+      "worst_case_billable_hours": 1.3333,
+      "worst_case_usd": 0.9813,
+      "baseline_iterations": 12000,
+      "stage_estimates": [
+        {
+          "stage_name": "T0_tile_04",
+          "training_mode": "leaf_tile",
+          "tile_id": "tile_04",
+          "max_iterations": 12000,
+          "stage_multiplier": 1,
+          "estimated_billable_hours": 1.1,
+          "estimated_usd": 0.8096,
+          "budget_class": "hard",
+          "prior_duration_hours": 2.82,
+          "prior_fanout_duration_hours": 1.1,
+          "cost_basis": "observed_fanout_leaf_duration",
+          "runtime_risk": null,
+          "runtime_cap_shortfall_hours": 0.0
+        }
+      ],
+      "pricing_source": "static_us-west-2-rates-verified-2026-04-30"
+    },
+    "max_estimated_usd": 2.25,
+    "submitted_jobs": [],
+    "no_new_compute_launched": true,
+    "full_14tile_training_launched": false,
+    "merge_review_allowed": false,
+    "next_required_action": "submit leaf-only fanout with --skip-merge/--skip-review and run emitted post_leaf_preflight_gates"
+  },
+  "latest_boundary_camera_weighting_candidate_status": {
+    "checked_at": "2026-05-07T13:24:00Z",
+    "status": "no_spend_boundary_camera_weighting_leaf_ready_on_green_head",
+    "candidate_objective_gate_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-objective-gate-20260507.json",
+    "leaf_dryrun_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-dryrun-20260507.json",
+    "leaf_submit_readiness_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-submit-readiness-20260507.json",
+    "candidate_objective_decision": "paid_retry_allowed",
+    "leaf_submit_decision": "leaf_submit_allowed",
+    "estimated_usd": 0.8096,
+    "worst_case_usd": 0.9813,
+    "submitted_jobs": [],
+    "next_required_action": "submit leaf-only fanout with --skip-merge/--skip-review and run emitted post_leaf_preflight_gates"
   }
 }

@@ -38,6 +38,10 @@ def split_label_list(value: Any) -> list[str]:
 
 
 def quality_blockers(readiness_report: dict[str, Any]) -> list[str]:
+    direct_blockers = list_strings(readiness_report.get("current_quality_blockers"))
+    if direct_blockers:
+        return sorted(set(direct_blockers))
+
     gate = readiness_report.get("quality_gate") if isinstance(readiness_report.get("quality_gate"), dict) else {}
     blockers = list_strings(gate.get("block_reasons"))
     if blockers:

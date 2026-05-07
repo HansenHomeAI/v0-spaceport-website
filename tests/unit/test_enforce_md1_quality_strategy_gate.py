@@ -70,6 +70,16 @@ class EnforceMd1QualityStrategyGateTests(unittest.TestCase):
         self.assertEqual(summary["decision"], "paid_retry_allowed")
         self.assertEqual(summary["block_reasons"], [])
 
+    def test_reads_current_quality_blockers_from_strategy_reports(self):
+        summary = gate.evaluate_gate(
+            readiness_report={"current_quality_blockers": ["boundary_no_required_improvement"]},
+            strategy=strategy("boundary_no_required_improvement"),
+            max_estimated_usd=2.5,
+        )
+
+        self.assertEqual(summary["decision"], "paid_retry_allowed")
+        self.assertEqual(summary["current_quality_blockers"], ["boundary_no_required_improvement"])
+
     def test_blocks_full_14tile_and_already_submitted_strategies(self):
         bad_strategy = strategy("boundary_no_required_improvement")
         bad_strategy["no_full_14tile_training"] = False

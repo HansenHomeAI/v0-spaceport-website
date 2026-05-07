@@ -700,6 +700,85 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
                 "native_3dgs_manifests",
             )
 
+    def test_apply_training_selection_repeats_boundary_frames_for_weighting(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            input_dir = root / "input"
+            output_dir = root / "output"
+            (input_dir / "images").mkdir(parents=True)
+            output_dir.mkdir()
+            (input_dir / "3dgs_tile_manifest.json").write_text(
+                json.dumps(
+                    {
+                        "tiles": [{"tile_id": "tile_00", "base_camera_ids": ["frame_00002.JPG", "frame_00003.JPG"]}],
+                        "global_scaffold_camera_ids": ["frame_00002.JPG", "frame_00003.JPG"],
+                        "all_image_names": ["frame_00002.JPG", "frame_00003.JPG"],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (input_dir / "3dgs_view_buckets.json").write_text(
+                json.dumps({"boundary_camera_ids": ["frame_00002.JPG"]}),
+                encoding="utf-8",
+            )
+            (input_dir / "transforms.json").write_text(
+                json.dumps(
+                    {
+                        "frames": [
+                            {"file_path": "images/frame_00002.JPG"},
+                            {"file_path": "images/frame_00003.JPG"},
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.config = {
+                "tiling": {
+                    "training_mode": "leaf_tile",
+                    "tile_manifest_path": "3dgs_tile_manifest.json",
+                    "view_bucket_manifest_path": "3dgs_view_buckets.json",
+                    "tile_id": "tile_00",
+                },
+                "training": {
+                    "review_images_per_bucket": 1,
+                    "max_selected_images": 0,
+                    "selection_stride": 1,
+                    "boundary_camera_repeat_factor": 3,
+                    "boundary_frozen_cameras": ["frame_00002.JPG"],
+                },
+            }
+            trainer.input_dir = input_dir
+            trainer.output_dir = output_dir
+            trainer.temp_dir = root / "tmp"
+            trainer.tile_manifest_resolution = None
+            trainer.training_selection_result = None
+
+            selected = ["frame_00002.JPG", "frame_00003.JPG"]
+            original_select = module.select_training_image_names
+            try:
+                module.select_training_image_names = lambda **_kwargs: selected
+                self.assertTrue(trainer.apply_training_selection())
+            finally:
+                module.select_training_image_names = original_select
+
+            weighted_transforms = json.loads((input_dir / "transforms.json").read_text(encoding="utf-8"))
+            self.assertEqual(len(weighted_transforms["frames"]), 4)
+            self.assertEqual(
+                [Path(frame["file_path"]).name for frame in weighted_transforms["frames"]],
+                ["frame_00002.JPG", "frame_00002.JPG", "frame_00002.JPG", "frame_00003.JPG"],
+            )
+            self.assertEqual(trainer.training_selection_result["selected_image_count"], 2)
+            self.assertEqual(trainer.training_selection_result["weighted_frame_count"], 4)
+            camera_weighting = trainer.training_selection_result["camera_weighting"]
+            self.assertTrue(camera_weighting["enabled"])
+            self.assertEqual(camera_weighting["repeat_factor"], 3)
+            self.assertEqual(camera_weighting["added_weighted_frames"], 2)
+            self.assertEqual(camera_weighting["matched_boundary_camera_ids"], ["frame_00002.JPG"])
+
     def test_prepare_tiled_stage_dataset_copies_sparse_point_cloud(self):
         module = load_module_with_stubs()
 

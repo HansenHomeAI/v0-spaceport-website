@@ -1,0 +1,75 @@
+{
+  "candidate_id": "md1-r4-boundary-camera-weighting-tile04-leaf-20260507",
+  "created_at": "2026-05-07T13:20:00Z",
+  "targeted_quality_blockers": [
+    "boundary_no_required_improvement"
+  ],
+  "selected_tile_ids": [
+    "tile_04"
+  ],
+  "context_support_tile_ids": [
+    "tile_10",
+    "tile_13",
+    "tile_01",
+    "tile_00",
+    "tile_02",
+    "tile_06"
+  ],
+  "boundary_camera_ids": [
+    "DJI_0067.JPG",
+    "DJI_0068.JPG",
+    "DJI_0069.JPG",
+    "DJI_0070.JPG"
+  ],
+  "horizon_camera_ids": [
+    "DJI_0066.JPG",
+    "DJI_0073.JPG",
+    "DJI_0146.JPG",
+    "DJI_0147.JPG"
+  ],
+  "expected_metric_axes": [
+    "boundary.required_improvement",
+    "boundary.psnr",
+    "boundary.ssim",
+    "boundary.lpips",
+    "horizon.ssim"
+  ],
+  "objective_changes": [
+    "boundary_camera_weighting",
+    "frozen_camera_weighting",
+    "boundary_frame_repeat_weighting"
+  ],
+  "objective_implementation": {
+    "source_file": "infrastructure/containers/3dgs/train_nerfstudio_production.py",
+    "training_config": {
+      "boundary_camera_repeat_factor": 3,
+      "boundary_frozen_cameras": [
+        "DJI_0067.JPG",
+        "DJI_0068.JPG",
+        "DJI_0069.JPG",
+        "DJI_0070.JPG"
+      ]
+    },
+    "environment": {
+      "BOUNDARY_CAMERA_REPEAT_FACTOR": "3",
+      "BOUNDARY_FROZEN_CAMERAS": "DJI_0067.JPG,DJI_0068.JPG,DJI_0069.JPG,DJI_0070.JPG"
+    },
+    "training_selection_result_fields": [
+      "selected_image_count",
+      "weighted_frame_count",
+      "camera_weighting"
+    ]
+  },
+  "planned_cost_estimate": {
+    "estimated_usd": 1.6665,
+    "max_estimated_usd": 2.25,
+    "basis": "one bounded tile_04 leaf-only proof on ml.g4dn.xlarge; no merge/review/full14 until leaf preflight gates pass"
+  },
+  "submitted_jobs": [],
+  "no_full_14tile_training": true,
+  "merge_review_allowed": false,
+  "lod_packaging_allowed": false,
+  "rollback": {
+    "use_v18_or_prior_tile04_leaf_artifact_until_candidate_passes": true
+  }
+}

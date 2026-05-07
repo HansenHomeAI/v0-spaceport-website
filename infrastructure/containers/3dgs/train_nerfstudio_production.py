@@ -221,6 +221,97 @@ def limit_selected_image_names(
     return chosen[:max_images]
 
 
+def parse_image_name_list(value: Any) -> list[str]:
+    """Parse comma-separated or list image names into normalized basenames."""
+    if isinstance(value, list):
+        raw_values = value
+    elif isinstance(value, str):
+        raw_values = value.replace(";", ",").split(",")
+    else:
+        raw_values = []
+    return unique_preserving_order(Path(str(item).strip()).name for item in raw_values if str(item).strip())
+
+
+def frame_original_aliases(frame: Dict[str, Any], image_name_map: Optional[Dict[str, Any]]) -> set[str]:
+    """Resolve original image-name aliases for a NerfStudio frame."""
+    aliases: set[str] = set()
+    for key in ("file_path", "original_file_path", "original_image_name"):
+        value = frame.get(key)
+        if value:
+            aliases.add(Path(str(value)).name)
+
+    if not isinstance(image_name_map, dict):
+        return aliases
+
+    converted_name = Path(str(frame.get("file_path", ""))).name
+    converted_entry = (image_name_map.get("by_converted_name") or {}).get(converted_name)
+    if isinstance(converted_entry, dict) and converted_entry.get("original_image_name"):
+        aliases.add(Path(str(converted_entry["original_image_name"])).name)
+
+    colmap_im_id = frame.get("colmap_im_id")
+    if colmap_im_id is not None:
+        colmap_entry = (image_name_map.get("by_colmap_im_id") or {}).get(str(colmap_im_id))
+        if isinstance(colmap_entry, dict) and colmap_entry.get("original_image_name"):
+            aliases.add(Path(str(colmap_entry["original_image_name"])).name)
+
+    return aliases
+
+
+def apply_boundary_frame_repeat_weighting(
+    transforms: Dict[str, Any],
+    *,
+    boundary_camera_ids: Sequence[str],
+    repeat_factor: int,
+    image_name_map: Optional[Dict[str, Any]] = None,
+) -> tuple[Dict[str, Any], Dict[str, Any]]:
+    """Weight frozen boundary cameras by repeating their frame entries."""
+    frames = transforms.get("frames", [])
+    if not isinstance(frames, list):
+        frames = []
+
+    normalized_boundary = set(parse_image_name_list(list(boundary_camera_ids)))
+    bounded_repeat_factor = max(1, min(int(repeat_factor or 1), 8))
+    if bounded_repeat_factor <= 1 or not normalized_boundary or not frames:
+        return dict(transforms), {
+            "enabled": False,
+            "repeat_factor": bounded_repeat_factor,
+            "boundary_camera_ids": sorted(normalized_boundary),
+            "matched_boundary_camera_ids": [],
+            "matched_frame_count": 0,
+            "unique_frame_count": len(frames),
+            "weighted_frame_count": len(frames),
+            "added_weighted_frames": 0,
+        }
+
+    weighted_frames: list[Dict[str, Any]] = []
+    matched_names: list[str] = []
+    for frame in frames:
+        if not isinstance(frame, dict):
+            continue
+        aliases = frame_original_aliases(frame, image_name_map)
+        matched = sorted(aliases & normalized_boundary)
+        weighted_frames.append(frame)
+        if not matched:
+            continue
+        matched_names.extend(matched)
+        for _index in range(bounded_repeat_factor - 1):
+            weighted_frames.append(dict(frame))
+
+    weighted = dict(transforms)
+    weighted["frames"] = weighted_frames
+    matched_unique = unique_preserving_order(matched_names)
+    return weighted, {
+        "enabled": bool(matched_unique),
+        "repeat_factor": bounded_repeat_factor,
+        "boundary_camera_ids": sorted(normalized_boundary),
+        "matched_boundary_camera_ids": matched_unique,
+        "matched_frame_count": len(matched_names),
+        "unique_frame_count": len(frames),
+        "weighted_frame_count": len(weighted_frames),
+        "added_weighted_frames": len(weighted_frames) - len(frames),
+    }
+
+
 def run_command_with_log_file(
     cmd: Sequence[str],
     *,
@@ -491,6 +582,7 @@ class NerfStudioTrainer:
             'TRAINING_DATALOADER_NUM_WORKERS': 'training.dataloader_num_workers',
             'TRAINING_MAX_SELECTED_IMAGES': 'training.max_selected_images',
             'TRAINING_SELECTION_STRIDE': 'training.selection_stride',
+            'BOUNDARY_CAMERA_REPEAT_FACTOR': 'training.boundary_camera_repeat_factor',
             'TRAINING_REVIEW_IMAGES_PER_BUCKET': 'training.review_images_per_bucket',
             'TRAINING_STEPS_PER_EVAL_IMAGE': 'training.steps_per_eval_image',
             'TRAINING_STEPS_PER_EVAL_ALL_IMAGES': 'training.steps_per_eval_all_images',
@@ -552,7 +644,7 @@ class NerfStudioTrainer:
                 # Convert string values to appropriate types
                 if env_var in ['BILATERAL_PROCESSING', 'USE_SCALE_REGULARIZATION', 'ENABLE_BG_MODEL', 'ENABLE_ALPHA_LOSS', 'ENABLE_ROBUST_MASK', 'FLOATER_PRUNING_ENABLED', 'TILED_INCLUDE_SCAFFOLD', 'TILED_INCLUDE_MERGE', 'TILED_RESUME_EXISTING', 'VIEWER_QUIT_ON_TRAIN_COMPLETION']:
                     value = value.lower() in ('true', '1', 'yes', 'on')
-                elif env_var in ['MAX_ITERATIONS', 'LOG_INTERVAL', 'TRAINING_DATALOADER_NUM_WORKERS', 'TRAINING_MAX_SELECTED_IMAGES', 'TRAINING_SELECTION_STRIDE', 'TRAINING_REVIEW_IMAGES_PER_BUCKET', 'TRAINING_STEPS_PER_EVAL_IMAGE', 'TRAINING_STEPS_PER_EVAL_ALL_IMAGES', 'TRAINING_STEPS_PER_SAVE', 'TRAINING_STOP_SPLIT_AT', 'SH_DEGREE', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'TRAINING_DOWNSCALE_FACTOR', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT', 'GLOBAL_SCAFFOLD_MAX_IMAGES', 'GLOBAL_SCAFFOLD_FRAME_STRIDE', 'GLOBAL_SCAFFOLD_MAX_ITERATIONS', 'GLOBAL_SCAFFOLD_SH_DEGREE', 'GLOBAL_SCAFFOLD_INIT_MAX_POINTS', 'TILED_MAX_TILES']:
+                elif env_var in ['MAX_ITERATIONS', 'LOG_INTERVAL', 'TRAINING_DATALOADER_NUM_WORKERS', 'TRAINING_MAX_SELECTED_IMAGES', 'TRAINING_SELECTION_STRIDE', 'BOUNDARY_CAMERA_REPEAT_FACTOR', 'TRAINING_REVIEW_IMAGES_PER_BUCKET', 'TRAINING_STEPS_PER_EVAL_IMAGE', 'TRAINING_STEPS_PER_EVAL_ALL_IMAGES', 'TRAINING_STEPS_PER_SAVE', 'TRAINING_STOP_SPLIT_AT', 'SH_DEGREE', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'TRAINING_DOWNSCALE_FACTOR', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT', 'GLOBAL_SCAFFOLD_MAX_IMAGES', 'GLOBAL_SCAFFOLD_FRAME_STRIDE', 'GLOBAL_SCAFFOLD_MAX_ITERATIONS', 'GLOBAL_SCAFFOLD_SH_DEGREE', 'GLOBAL_SCAFFOLD_INIT_MAX_POINTS', 'TILED_MAX_TILES']:
                     value = int(value)
                 elif env_var in ['TARGET_PSNR', 'CULL_ALPHA_THRESH', 'CULL_SCALE_THRESH', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_SKY_MIN_LUMINANCE', 'FLOATER_PRUNING_SKY_MIN_SATURATION', 'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE', 'GLOBAL_SCAFFOLD_MAX_GAUSS_RATIO']:
                     value = float(value)
@@ -1835,11 +1927,24 @@ class NerfStudioTrainer:
             logger.error("   Sample selected image names: %s", selected_image_names[:5])
             return False
 
+        boundary_repeat_factor = max(1, int(training_config.get("boundary_camera_repeat_factor", 1) or 1))
+        boundary_weight_cameras = parse_image_name_list(
+            os.environ.get("BOUNDARY_FROZEN_CAMERAS")
+            or training_config.get("boundary_frozen_cameras")
+            or (view_buckets or {}).get("boundary_camera_ids", [])
+        )
+        weighted_transforms, weighting_summary = apply_boundary_frame_repeat_weighting(
+            filtered_transforms,
+            boundary_camera_ids=boundary_weight_cameras,
+            repeat_factor=boundary_repeat_factor,
+            image_name_map=image_name_map,
+        )
+
         backup_path = self.input_dir / "transforms.full.json"
         if not backup_path.exists():
             shutil.copy2(transforms_path, backup_path)
         with open(transforms_path, 'w', encoding='utf-8') as f:
-            json.dump(filtered_transforms, f, indent=2)
+            json.dump(weighted_transforms, f, indent=2)
 
         bucket_payload = {
             bucket_name.replace('_camera_ids', ''): image_names
@@ -1855,6 +1960,7 @@ class NerfStudioTrainer:
             'tile_id': tile_id,
             'selected_image_names': selected_image_names,
             'selected_image_count': selected_frame_count,
+            'weighted_frame_count': weighting_summary.get('weighted_frame_count', selected_frame_count),
             'max_selected_images': proof_max_images,
             'selection_stride': proof_selection_stride,
             'view_bucket_counts': selection_counts_for_buckets(selected_image_names, bucket_payload),
@@ -1863,6 +1969,7 @@ class NerfStudioTrainer:
             'view_bucket_manifest_path': str(tiling_config.get('view_bucket_manifest_path', '')).strip() or None,
             'image_name_map_path': str(image_name_map_path) if image_name_map_path.exists() else None,
             'scaffold_initialization': scaffold_init_metadata,
+            'camera_weighting': weighting_summary,
             'tile_manifest_resolution': self.tile_manifest_resolution,
         }
 
@@ -1879,6 +1986,13 @@ class NerfStudioTrainer:
             logger.info(f"   Proof image cap: {proof_max_images}")
         if proof_selection_stride > 1:
             logger.info(f"   Selection stride: {proof_selection_stride}")
+        if weighting_summary.get("enabled"):
+            logger.info(
+                "   Boundary camera weighting: repeat_factor=%s added_frames=%s matched=%s",
+                weighting_summary.get("repeat_factor"),
+                weighting_summary.get("added_weighted_frames"),
+                weighting_summary.get("matched_boundary_camera_ids"),
+            )
         logger.info(f"   Selection summary: {self.training_selection_result['view_bucket_counts']}")
         return True
 

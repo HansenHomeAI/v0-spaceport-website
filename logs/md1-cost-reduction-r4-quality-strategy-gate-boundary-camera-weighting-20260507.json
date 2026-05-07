@@ -1,0 +1,43 @@
+{
+  "checked_at": "2026-05-07T13:23:28.819392+00:00",
+  "decision": "paid_retry_allowed",
+  "promotion_ready": false,
+  "current_quality_blockers": [
+    "boundary_no_required_improvement"
+  ],
+  "targeted_quality_blockers": [
+    "boundary_no_required_improvement"
+  ],
+  "missing_targeted_blockers": [],
+  "selected_tile_ids": [
+    "tile_04"
+  ],
+  "boundary_camera_ids": [
+    "DJI_0067.JPG",
+    "DJI_0068.JPG",
+    "DJI_0069.JPG",
+    "DJI_0070.JPG"
+  ],
+  "horizon_camera_ids": [
+    "DJI_0066.JPG",
+    "DJI_0073.JPG",
+    "DJI_0146.JPG",
+    "DJI_0147.JPG"
+  ],
+  "expected_metric_axes": [
+    "boundary.lpips",
+    "boundary.psnr",
+    "boundary.required_improvement",
+    "boundary.ssim",
+    "horizon.ssim"
+  ],
+  "block_reasons": [],
+  "warnings": [],
+  "max_estimated_usd": 2.25,
+  "estimated_usd": 0.8096,
+  "require_no_full_14tile": true,
+  "require_dry_run": true,
+  "no_full_14tile_training": true,
+  "submitted_jobs": [],
+  "next_required_action": "paid retry may proceed through its own leaf/preflight gates"
+}
