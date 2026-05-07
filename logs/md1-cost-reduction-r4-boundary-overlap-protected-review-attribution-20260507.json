@@ -1,0 +1,192 @@
+{
+  "checked_at": "2026-05-07T11:46:45Z",
+  "status": "protected_overlap_retained_splats_but_no_render_metric_gain",
+  "baseline_candidate": "tile04_boundary_horizon_leaf_plus_tile10_rollback_bg10",
+  "protected_candidate": "tile04_boundary_horizon_leaf_plus_tile10_rollback_bg10_boundary_overlap_protected",
+  "density_v2_candidate": "tile04_boundary_horizon_leaf_plus_tile10_density_v2_bg10",
+  "review_comparison_json": {
+    "baseline": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-t04bh-leaf-bg10-v18colmap-smoke-p24/review_comparison.json",
+    "protected": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-t04bh-bg10-bop-v18colmap-smoke-p24/review_comparison.json",
+    "density_v2": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-t04bh-t10v2-bg10-v18colmap-smoke-p24/review_comparison.json"
+  },
+  "merge_report_json": {
+    "baseline": "logs/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260507/merged/merge_report.json",
+    "protected": "logs/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-tile10-rollback-bg10-boundary-overlap-protected-remote-merge-g4dn-preflight-20260507/merged/merge_report.json",
+    "density_v2": "logs/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-tile10-density-v2-bg10-remote-merge-g4dn-preflight-20260507/merged/merge_report.json"
+  },
+  "promotion_status": {
+    "baseline": "blocked",
+    "protected": "blocked",
+    "density_v2": "blocked"
+  },
+  "block_reasons": {
+    "baseline": [
+      "boundary_no_required_improvement"
+    ],
+    "protected": [
+      "boundary_no_required_improvement"
+    ],
+    "density_v2": [
+      "boundary_no_required_improvement"
+    ]
+  },
+  "v18_non_regression_status": {
+    "protected": "blocked",
+    "protected_block_reasons": [
+      "horizon_v18_median_psnr_regression",
+      "horizon_v18_median_ssim_regression",
+      "horizon_v18_median_lpips_regression",
+      "near_detail_v18_single_camera_lpips_regression"
+    ]
+  },
+  "bucket_deltas_vs_v18": {
+    "baseline": {
+      "near_detail": {
+        "psnr": 0.5776066932227408,
+        "ssim": 0.0029085129499435425,
+        "lpips": -0.045768529176712036
+      },
+      "boundary": {
+        "psnr": 0.13065759577069258,
+        "ssim": 0.00525432825088501,
+        "lpips": -0.002215772867202759
+      },
+      "horizon": {
+        "psnr": -0.299692841819045,
+        "ssim": -0.010585620999336243,
+        "lpips": 0.010840654373168945
+      }
+    },
+    "protected": {
+      "near_detail": {
+        "psnr": 0.5776066932227408,
+        "ssim": 0.0029085129499435425,
+        "lpips": -0.045768529176712036
+      },
+      "boundary": {
+        "psnr": 0.13065759577069258,
+        "ssim": 0.00525432825088501,
+        "lpips": -0.002215772867202759
+      },
+      "horizon": {
+        "psnr": -0.299692841819045,
+        "ssim": -0.010585620999336243,
+        "lpips": 0.010840654373168945
+      }
+    },
+    "density_v2": {
+      "near_detail": {
+        "psnr": 0.5709904733354225,
+        "ssim": 0.0022834837436676025,
+        "lpips": -0.04604899883270264
+      },
+      "boundary": {
+        "psnr": 0.11537937981358581,
+        "ssim": 0.004023641347885132,
+        "lpips": -0.0003056526184082031
+      },
+      "horizon": {
+        "psnr": -0.26549906527780465,
+        "ssim": -0.010892495512962341,
+        "lpips": 0.010201066732406616
+      }
+    }
+  },
+  "protected_minus_baseline_bucket_delta": {
+    "near_detail": {
+      "psnr": 0,
+      "ssim": 0,
+      "lpips": 0
+    },
+    "boundary": {
+      "psnr": 0,
+      "ssim": 0,
+      "lpips": 0
+    },
+    "horizon": {
+      "psnr": 0,
+      "ssim": 0,
+      "lpips": 0
+    }
+  },
+  "density_v2_minus_baseline_bucket_delta": {
+    "near_detail": {
+      "psnr": -0.006616219887318309,
+      "ssim": -0.0006250292062759399,
+      "lpips": -0.0002804696559906006
+    },
+    "boundary": {
+      "psnr": -0.015278215957106767,
+      "ssim": -0.001230686902999878,
+      "lpips": 0.0019101202487945557
+    },
+    "horizon": {
+      "psnr": 0.03419377654124034,
+      "ssim": -0.00030687451362609863,
+      "lpips": -0.0006395876407623291
+    }
+  },
+  "merge_stats": {
+    "baseline": {
+      "retained_gaussians": 8530978,
+      "source_gaussians": 8906648,
+      "dropped_gaussians": 375670,
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "background_source_tile_id": "tile_10"
+    },
+    "protected": {
+      "retained_gaussians": 8549082,
+      "source_gaussians": 8906648,
+      "dropped_gaussians": 357566,
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "background_source_tile_id": "tile_10"
+    },
+    "density_v2": {
+      "retained_gaussians": 8591500,
+      "source_gaussians": 8988595,
+      "dropped_gaussians": 397095,
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "background_source_tile_id": "tile_10"
+    }
+  },
+  "protected_minus_baseline_merge_delta": {
+    "retained_gaussians": 18104,
+    "source_gaussians": 0,
+    "dropped_gaussians": -18104,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0
+  },
+  "protected_overlap_tile_stats": {
+    "tile_04": {
+      "source_gaussians": 1081440,
+      "retained_gaussians": 1081440,
+      "dropped_gaussians": 0,
+      "protected_overlap_enabled": true,
+      "protected_overlap_retained_count": 28388,
+      "protected_overlap_added_count": 18104,
+      "retained_overlap_count": 28388,
+      "context_preserve_enabled": true
+    },
+    "tile_10": {
+      "source_gaussians": 387192,
+      "retained_gaussians": 378953,
+      "dropped_gaussians": 8239,
+      "protected_overlap_enabled": true,
+      "protected_overlap_added_count": 0
+    }
+  },
+  "interpretation": [
+    "Protected overlap did exactly what the merge code intended: tile_04 retained all 28,388 overlap candidates and added 18,104 splats relative to the normal support-weighted overlap scorer.",
+    "The frozen p24 review metrics are numerically identical to the prior rollback bg10 candidate, so the added overlap splats are not visible to the frozen cameras or are not the boundary-quality driver.",
+    "Tile_10 density-v2 was already worse on boundary. Combined evidence says more retained splats, either in tile_10 or protected overlap, is not the current low-hanging fix."
+  ],
+  "decision": {
+    "launch_more_paid_compute_now": false,
+    "full_14tile_training_allowed": false,
+    "lod_packaging_allowed": false,
+    "next_step": "no-spend strategy only: redesign tile_04/tile_10 boundary objective or frozen-camera weighting before any further paid leaf/merge/review"
+  }
+}
