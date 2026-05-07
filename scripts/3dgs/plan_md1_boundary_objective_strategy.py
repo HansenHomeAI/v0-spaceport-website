@@ -1,0 +1,495 @@
+#!/usr/bin/env python3
+"""Plan and gate the next MD1 boundary-objective retry."""
+
+from __future__ import annotations
+
+import argparse
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Mapping, Sequence
+
+
+BOUNDARY_BLOCKER = "boundary_no_required_improvement"
+HORIZON_SSIM_BLOCKER = "horizon_ssim_regression"
+APPROVED_OBJECTIVE_TERMS = (
+    "boundary_camera_weighting",
+    "boundary_loss_weighting",
+    "camera_weighting",
+    "frozen_camera_weighting",
+    "visibility_weighted_camera_sampling",
+    "tile04_tile10_joint_objective",
+    "tile_04_tile_10_joint_objective",
+    "boundary_visibility_weighting",
+)
+FAILED_DENSITY_OR_MERGE_TERMS = (
+    "density_only",
+    "more_density",
+    "more_splats",
+    "tile10_density",
+    "tile_10_density",
+    "protected_overlap",
+    "retain_overlap",
+    "merge_only",
+    "retention_only",
+)
+
+
+def now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def load_json(path: str | Path) -> dict[str, Any]:
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError(f"Expected JSON object at {path}")
+    return payload
+
+
+def write_json(path: str | Path, payload: Mapping[str, Any]) -> None:
+    output_path = Path(path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def list_strings(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item) for item in value if str(item)]
+
+
+def split_label_list(value: Any) -> list[str]:
+    if isinstance(value, list):
+        return list_strings(value)
+    if not isinstance(value, str):
+        return []
+    result: list[str] = []
+    for item in value.replace(";", ",").split(","):
+        cleaned = item.strip()
+        if cleaned:
+            result.append(cleaned)
+    return result
+
+
+def ordered_unique(items: Sequence[str]) -> list[str]:
+    seen: set[str] = set()
+    result: list[str] = []
+    for item in items:
+        normalized = str(item).strip()
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        result.append(normalized)
+    return result
+
+
+def sorted_unique(items: Sequence[str]) -> list[str]:
+    return sorted(set(item for item in items if item))
+
+
+def strategy_values(
+    strategy: Mapping[str, Any] | None,
+    direct_keys: tuple[str, ...],
+    env_keys: tuple[str, ...] = (),
+) -> list[str]:
+    if not strategy:
+        return []
+    values: list[str] = []
+    for key in direct_keys:
+        values.extend(split_label_list(strategy.get(key)))
+    nested = strategy.get("quality_strategy")
+    if isinstance(nested, Mapping):
+        for key in direct_keys:
+            values.extend(split_label_list(nested.get(key)))
+    stages = strategy.get("stages")
+    if isinstance(stages, list):
+        for stage in stages:
+            if not isinstance(stage, Mapping):
+                continue
+            if stage.get("tile_id"):
+                if "tile_id" in direct_keys:
+                    values.append(str(stage["tile_id"]))
+            env = stage.get("environment")
+            if not isinstance(env, Mapping):
+                continue
+            for key in env_keys:
+                values.extend(split_label_list(env.get(key)))
+    return sorted_unique(values)
+
+
+def selected_tile_ids(strategy: Mapping[str, Any] | None) -> list[str]:
+    values = strategy_values(strategy, ("selected_tile_ids", "tile_ids", "tile_id"), ("TILE_IDS", "TILE_ID"))
+    if strategy and isinstance(strategy.get("planned_tiles"), list):
+        for tile in strategy["planned_tiles"]:
+            if isinstance(tile, Mapping) and tile.get("tile_id"):
+                values.append(str(tile["tile_id"]))
+    return sorted_unique(values)
+
+
+def context_tile_ids(strategy: Mapping[str, Any] | None) -> list[str]:
+    return strategy_values(
+        strategy,
+        (
+            "context_support_tile_ids",
+            "reuse_context_tile_ids",
+            "source_context_tile_ids",
+            "protected_context_tile_ids",
+        ),
+        (
+            "CONTEXT_SUPPORT_TILE_IDS",
+            "REUSE_CONTEXT_TILE_IDS",
+            "SOURCE_CONTEXT_TILE_IDS",
+            "PROTECTED_CONTEXT_TILE_IDS",
+        ),
+    )
+
+
+def targeted_blockers(strategy: Mapping[str, Any] | None) -> list[str]:
+    return strategy_values(
+        strategy,
+        ("targeted_quality_blockers", "targeted_quality_block_reasons"),
+        ("TARGETED_QUALITY_BLOCKERS", "TARGETED_QUALITY_BLOCK_REASONS"),
+    )
+
+
+def boundary_cameras(strategy: Mapping[str, Any] | None) -> list[str]:
+    return strategy_values(
+        strategy,
+        ("boundary_camera_ids", "boundary_frozen_cameras"),
+        ("BOUNDARY_CAMERA_IDS", "BOUNDARY_FROZEN_CAMERAS"),
+    )
+
+
+def horizon_cameras(strategy: Mapping[str, Any] | None) -> list[str]:
+    return strategy_values(
+        strategy,
+        ("horizon_camera_ids", "horizon_frozen_cameras"),
+        ("HORIZON_CAMERA_IDS", "HORIZON_FROZEN_CAMERAS"),
+    )
+
+
+def expected_metric_axes(strategy: Mapping[str, Any] | None) -> list[str]:
+    return strategy_values(
+        strategy,
+        ("expected_metric_axes", "expected_metric_axis"),
+        ("EXPECTED_METRIC_AXES", "EXPECTED_METRIC_AXIS"),
+    )
+
+
+def objective_changes(strategy: Mapping[str, Any] | None) -> list[str]:
+    return strategy_values(
+        strategy,
+        (
+            "objective_changes",
+            "training_objective_changes",
+            "camera_weighting_strategy",
+            "loss_weighting_strategy",
+            "sampling_strategy",
+            "hypothesis",
+        ),
+        (
+            "OBJECTIVE_CHANGES",
+            "TRAINING_OBJECTIVE_CHANGES",
+            "CAMERA_WEIGHTING_STRATEGY",
+            "LOSS_WEIGHTING_STRATEGY",
+            "SAMPLING_STRATEGY",
+            "HYPOTHESIS",
+        ),
+    )
+
+
+def estimated_usd(strategy: Mapping[str, Any] | None) -> float | None:
+    if not strategy:
+        return None
+    cost = strategy.get("planned_cost_estimate")
+    if not isinstance(cost, Mapping):
+        cost = strategy.get("cost_estimate")
+    if not isinstance(cost, Mapping):
+        return None
+    for key in ("estimated_usd", "worst_case_usd"):
+        if cost.get(key) is not None:
+            try:
+                return float(cost[key])
+            except (TypeError, ValueError):
+                return None
+    return None
+
+
+def no_full_14tile_training_confirmed(strategy: Mapping[str, Any] | None) -> bool:
+    if not strategy:
+        return False
+    if strategy.get("no_full_14tile_training") is True:
+        return True
+    if strategy.get("full_14tile_training_launched") is False:
+        return True
+    tiles = selected_tile_ids(strategy)
+    return 0 < len(tiles) < 14
+
+
+def current_quality_blockers(
+    quality_strategy: Mapping[str, Any],
+    responsible_tiles: Mapping[str, Any],
+    attribution: Mapping[str, Any],
+) -> list[str]:
+    values = list_strings(quality_strategy.get("current_quality_blockers"))
+    values.extend(list_strings(responsible_tiles.get("current_quality_blockers")))
+    block_reasons = attribution.get("block_reasons")
+    if isinstance(block_reasons, Mapping):
+        values.extend(list_strings(block_reasons.get("protected")))
+    return sorted_unique(values)
+
+
+def extract_failed_hypotheses(attribution: Mapping[str, Any]) -> list[dict[str, Any]]:
+    failed: list[dict[str, Any]] = []
+    density_delta = attribution.get("density_v2_minus_baseline_bucket_delta")
+    if isinstance(density_delta, Mapping):
+        failed.append(
+            {
+                "hypothesis": "tile10_density_v2",
+                "status": "failed",
+                "evidence": "Increasing tile_10 retained density did not fix boundary quality.",
+                "metric_delta_vs_rollback_bg10": density_delta,
+            }
+        )
+    protected_merge_delta = attribution.get("protected_minus_baseline_merge_delta")
+    protected_bucket_delta = attribution.get("protected_minus_baseline_bucket_delta")
+    if isinstance(protected_merge_delta, Mapping) or isinstance(protected_bucket_delta, Mapping):
+        failed.append(
+            {
+                "hypothesis": "protected_overlap_retention",
+                "status": "failed",
+                "evidence": "Retaining extra overlap splats changed merge counts but not frozen rendered metrics.",
+                "merge_delta_vs_rollback_bg10": protected_merge_delta if isinstance(protected_merge_delta, Mapping) else {},
+                "bucket_delta_vs_rollback_bg10": protected_bucket_delta if isinstance(protected_bucket_delta, Mapping) else {},
+            }
+        )
+    return failed
+
+
+def has_approved_objective(changes: Sequence[str]) -> bool:
+    normalized = " ".join(changes).lower()
+    return any(term in normalized for term in APPROVED_OBJECTIVE_TERMS)
+
+
+def repeats_failed_density_or_merge_only(changes: Sequence[str]) -> bool:
+    if not changes:
+        return False
+    normalized = " ".join(changes).lower()
+    return any(term in normalized for term in FAILED_DENSITY_OR_MERGE_TERMS) and not has_approved_objective(changes)
+
+
+def evaluate_candidate_objective(
+    *,
+    candidate_objective: Mapping[str, Any] | None,
+    current_blockers: Sequence[str],
+    responsible_tiles: Mapping[str, Any],
+    max_estimated_usd: float,
+) -> dict[str, Any]:
+    block_reasons: list[str] = []
+    warnings: list[str] = []
+
+    if not candidate_objective:
+        return {
+            "present": False,
+            "decision": "paid_retry_blocked",
+            "block_reasons": ["candidate_objective_missing"],
+            "warnings": [],
+            "targeted_quality_blockers": [],
+            "selected_tile_ids": [],
+            "context_support_tile_ids": [],
+            "covered_tile_ids": [],
+            "boundary_camera_ids": [],
+            "horizon_camera_ids": [],
+            "expected_metric_axes": [],
+            "objective_changes": [],
+            "estimated_usd": None,
+            "max_estimated_usd": max_estimated_usd or None,
+        }
+
+    targets = targeted_blockers(candidate_objective)
+    missing_targets = [reason for reason in current_blockers if reason not in targets]
+    if not targets:
+        block_reasons.append("objective_missing_targeted_quality_blockers")
+    elif missing_targets:
+        block_reasons.append("objective_does_not_target_current_blockers")
+
+    tiles = selected_tile_ids(candidate_objective)
+    contexts = context_tile_ids(candidate_objective)
+    covered = sorted_unique(tiles + contexts)
+    primary_boundary_tiles = list_strings(responsible_tiles.get("primary_responsible_tile_ids"))
+    missing_primary_boundary_tiles = [tile_id for tile_id in primary_boundary_tiles if tile_id not in covered]
+    if BOUNDARY_BLOCKER in current_blockers and missing_primary_boundary_tiles:
+        block_reasons.append("objective_omits_primary_boundary_tiles")
+
+    horizon_primary_tiles = list_strings(responsible_tiles.get("horizon_primary_responsible_tile_ids"))
+    missing_horizon_tiles = [tile_id for tile_id in horizon_primary_tiles if tile_id not in covered]
+    if HORIZON_SSIM_BLOCKER in current_blockers and missing_horizon_tiles:
+        block_reasons.append("objective_omits_primary_horizon_tiles")
+    elif missing_horizon_tiles:
+        warnings.append("objective_does_not_cover_all_horizon_context_tiles")
+
+    expected_boundary_cameras = list_strings(responsible_tiles.get("boundary_frozen_cameras"))
+    candidate_boundary_cameras = boundary_cameras(candidate_objective)
+    missing_boundary_cameras = [
+        camera_id for camera_id in expected_boundary_cameras if camera_id not in candidate_boundary_cameras
+    ]
+    if BOUNDARY_BLOCKER in current_blockers and missing_boundary_cameras:
+        block_reasons.append("objective_missing_boundary_frozen_cameras")
+
+    expected_horizon_cameras = list_strings(responsible_tiles.get("horizon_frozen_cameras"))
+    candidate_horizon_cameras = horizon_cameras(candidate_objective)
+    missing_horizon_cameras = [
+        camera_id for camera_id in expected_horizon_cameras if camera_id not in candidate_horizon_cameras
+    ]
+    if HORIZON_SSIM_BLOCKER in current_blockers and missing_horizon_cameras:
+        block_reasons.append("objective_missing_horizon_frozen_cameras")
+    elif missing_horizon_cameras:
+        warnings.append("objective_does_not_name_all_horizon_frozen_cameras")
+
+    axes = expected_metric_axes(candidate_objective)
+    if BOUNDARY_BLOCKER in current_blockers and "boundary.required_improvement" not in axes:
+        block_reasons.append("objective_missing_boundary_required_improvement_axis")
+    if HORIZON_SSIM_BLOCKER in current_blockers and "horizon.ssim" not in axes:
+        block_reasons.append("objective_missing_horizon_ssim_axis")
+
+    changes = objective_changes(candidate_objective)
+    if not has_approved_objective(changes):
+        block_reasons.append("objective_lacks_camera_or_loss_weighting_change")
+    if repeats_failed_density_or_merge_only(changes):
+        block_reasons.append("objective_repeats_failed_density_or_merge_only_hypothesis")
+
+    submitted_jobs = candidate_objective.get("submitted_jobs")
+    if submitted_jobs not in ([], None):
+        block_reasons.append("objective_already_submitted_jobs")
+
+    if not no_full_14tile_training_confirmed(candidate_objective):
+        block_reasons.append("no_full_14tile_training_not_confirmed")
+
+    cost = estimated_usd(candidate_objective)
+    if max_estimated_usd > 0:
+        if cost is None:
+            block_reasons.append("objective_missing_cost_estimate")
+        elif cost > max_estimated_usd:
+            block_reasons.append("objective_estimated_cost_above_cap")
+    elif cost is None:
+        warnings.append("objective_missing_cost_estimate")
+
+    return {
+        "present": True,
+        "decision": "paid_retry_allowed" if not block_reasons else "paid_retry_blocked",
+        "block_reasons": block_reasons,
+        "warnings": warnings,
+        "targeted_quality_blockers": targets,
+        "missing_targeted_quality_blockers": missing_targets,
+        "selected_tile_ids": tiles,
+        "context_support_tile_ids": contexts,
+        "covered_tile_ids": covered,
+        "missing_primary_boundary_tile_ids": missing_primary_boundary_tiles,
+        "missing_primary_horizon_tile_ids": missing_horizon_tiles,
+        "boundary_camera_ids": candidate_boundary_cameras,
+        "missing_boundary_frozen_cameras": missing_boundary_cameras,
+        "horizon_camera_ids": candidate_horizon_cameras,
+        "missing_horizon_frozen_cameras": missing_horizon_cameras,
+        "expected_metric_axes": axes,
+        "objective_changes": changes,
+        "estimated_usd": cost,
+        "max_estimated_usd": max_estimated_usd or None,
+        "submitted_jobs": submitted_jobs,
+        "no_full_14tile_training": no_full_14tile_training_confirmed(candidate_objective),
+    }
+
+
+def plan_boundary_objective_strategy(
+    *,
+    quality_strategy: Mapping[str, Any],
+    responsible_tiles: Mapping[str, Any],
+    attribution: Mapping[str, Any],
+    candidate_objective: Mapping[str, Any] | None = None,
+    max_estimated_usd: float = 0.0,
+) -> dict[str, Any]:
+    blockers = current_quality_blockers(quality_strategy, responsible_tiles, attribution)
+    failed_hypotheses = extract_failed_hypotheses(attribution)
+    candidate_gate = evaluate_candidate_objective(
+        candidate_objective=candidate_objective,
+        current_blockers=blockers,
+        responsible_tiles=responsible_tiles,
+        max_estimated_usd=max_estimated_usd,
+    )
+    primary_boundary_tiles = list_strings(responsible_tiles.get("primary_responsible_tile_ids"))
+    horizon_primary_tiles = list_strings(responsible_tiles.get("horizon_primary_responsible_tile_ids"))
+    support_tiles = [
+        tile_id
+        for tile_id in list_strings(responsible_tiles.get("combined_support_tile_ids"))
+        if tile_id not in primary_boundary_tiles and tile_id not in horizon_primary_tiles
+    ]
+    protected_v18_status = attribution.get("v18_non_regression_status")
+    if not isinstance(protected_v18_status, Mapping):
+        protected_v18_status = {}
+
+    paid_allowed = candidate_gate["decision"] == "paid_retry_allowed"
+    recommendation = "candidate_objective_can_enter_leaf_only_gate" if paid_allowed else "no_paid_retry_until_objective_redesign"
+
+    return {
+        "checked_at": now_iso(),
+        "recommendation": recommendation,
+        "paid_retry_allowed": paid_allowed,
+        "paid_retry_recommended": paid_allowed,
+        "current_quality_blockers": blockers,
+        "boundary_improvement_gap": quality_strategy.get("boundary_improvement_gap"),
+        "horizon_regression_gap": quality_strategy.get("horizon_regression_gap"),
+        "protected_v18_non_regression_status": protected_v18_status,
+        "boundary_frozen_cameras": list_strings(responsible_tiles.get("boundary_frozen_cameras")),
+        "horizon_frozen_cameras": list_strings(responsible_tiles.get("horizon_frozen_cameras")),
+        "primary_boundary_tile_ids": primary_boundary_tiles,
+        "primary_horizon_tile_ids": horizon_primary_tiles,
+        "context_support_tile_ids": support_tiles,
+        "failed_hypotheses": failed_hypotheses,
+        "required_next_hypothesis": {
+            "must_change": [
+                "camera/objective weighting during leaf training or selection",
+                "explicit boundary frozen-camera emphasis for DJI_0067.JPG-DJI_0070.JPG",
+                "tile_04/tile_10 boundary context coverage before merge/review",
+            ],
+            "must_not_repeat": [
+                "tile_10 density-only repair",
+                "merge-only protected overlap retention",
+                "full 14-tile training before staged R0/R1/R2/R3 gates",
+            ],
+            "expected_metric_axes": ["boundary.required_improvement", "boundary.psnr", "boundary.ssim", "boundary.lpips"],
+        },
+        "candidate_objective_gate": candidate_gate,
+        "next_no_spend_actions": [
+            "write a concrete candidate objective JSON that names the frozen cameras, primary tiles, metric axis, cost cap, and no-full14 guard",
+            "run this planner against that candidate objective and require candidate_objective_gate.decision=paid_retry_allowed",
+            "only then run leaf-only submit readiness; merge/review spend remains blocked until leaf gates pass",
+        ],
+    }
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--quality-strategy-json", required=True)
+    parser.add_argument("--responsible-tiles-json", required=True)
+    parser.add_argument("--attribution-json", required=True)
+    parser.add_argument("--candidate-objective-json", default="")
+    parser.add_argument("--max-estimated-usd", type=float, default=0.0)
+    parser.add_argument("--output-json", required=True)
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
+    report = plan_boundary_objective_strategy(
+        quality_strategy=load_json(args.quality_strategy_json),
+        responsible_tiles=load_json(args.responsible_tiles_json),
+        attribution=load_json(args.attribution_json),
+        candidate_objective=load_json(args.candidate_objective_json) if args.candidate_objective_json else None,
+        max_estimated_usd=args.max_estimated_usd,
+    )
+    write_json(args.output_json, report)
+    print(json.dumps(report, indent=2, sort_keys=True))
+    return 0 if report["candidate_objective_gate"]["decision"] == "paid_retry_allowed" else 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

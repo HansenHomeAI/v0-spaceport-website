@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "boundary_no_required_improvement; protected-overlap merge retained extra overlap splats but frozen review metrics did not improve.",
+  "blocked_promotion_reason": "boundary_no_required_improvement; protected-overlap merge retained extra overlap splats but frozen review metrics did not improve; no boundary camera/loss weighting candidate objective exists yet.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "pushed evidence head adcb20dc027f14ea0965d8ca96d3637134eb2b44 records protected-overlap merge/review result; exact-head CDK gate passed.",
-  "current_exact_head_gate_status": "exact-head adcb20dc027f14ea0965d8ca96d3637134eb2b44 green on CDK Deploy 25494070950; no ML Container Build appeared/needed for evidence-only commit. Container-affecting head 4027f4897c2d914f1d55f824a551b7e12f2cc96e remains green on CDK Deploy 25490669185, Trigger ML Container Build 25490669247, CodeBuild spaceport-ml-containers:9ddc4da9-0399-467c-b240-906ffe254fd4, ECR digest sha256:dfe1f7c16b570ae56503fe9156e76a1ce39be3d0346031fc35e11a916d09215e.",
-  "current_live_compute_status": "Verified 2026-05-07T11:45Z after protected-overlap review: no MD1 SageMaker training or processing jobs are InProgress.",
-  "current_rung": "R4_boundary_overlap_protected_review_blocked_no_metric_gain",
+  "current_branch_head": "pre-edit status head 4c26c91118f1e3399d915deb6041aab54c371416 is green; next commit adds no-spend boundary-objective strategy/gate evidence",
+  "current_exact_head_gate_status": "exact-head 4c26c91118f1e3399d915deb6041aab54c371416 green on CDK Deploy 25494289477; container-affecting head 4027f4897c2d914f1d55f824a551b7e12f2cc96e remains green on CDK Deploy 25490669185, Trigger ML Container Build 25490669247, CodeBuild spaceport-ml-containers:9ddc4da9-0399-467c-b240-906ffe254fd4, and branch ECR digest sha256:dfe1f7c16b570ae56503fe9156e76a1ce39be3d0346031fc35e11a916d09215e.",
+  "current_live_compute_status": "Verified 2026-05-07T12:31Z: no MD1 SageMaker training or processing jobs are InProgress.",
+  "current_rung": "R4_boundary_objective_strategy_no_spend_gate",
   "exact_head_gate_status": "exact-head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 green on CDK Deploy 25478133157; Deploy CDK Stacks and CDK Diff skipped by scope detection; no ML Container Build appeared for this non-container status commit; previous container-affecting head 6249a280443438790e5f9d11512fe6714c1a0728 remains green on CDK Deploy 25475213765, Trigger ML Container Build 25475213781, and CodeBuild spaceport-ml-containers:ae9b6cea-6c39-4bf8-a885-f0eb5336ee4a",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -920,7 +920,7 @@
     "local_status_update_pending_commit": true,
     "ml_container_build": "not_triggered_for_non_container_status_commit"
   },
-  "last_updated": "2026-05-07T10:47:34Z",
+  "last_updated": "2026-05-07T12:37:59Z",
   "latest_boundary_merge_review_gate_status": "logs/md1-cost-reduction-r4-boundary-paired-merge-review-gate-blocked-20260506.json blocks merge/review spend until tile_04 and tile_10 leaf gate summaries are present and passing; it confirms the paired strategy targets boundary_no_required_improvement and includes tile_13 context support.",
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
@@ -7591,7 +7591,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "No-spend only: design a boundary-specific tile_04/tile_10 strategy using frozen boundary cameras and camera/objective weighting before any further paid leaf/merge/review. Do not launch full14, LOD, or another paid retry from protected-overlap evidence.",
+  "next_unblocked_step": "No-spend only: write a concrete candidate objective JSON for boundary camera/loss weighting, run scripts/3dgs/plan_md1_boundary_objective_strategy.py, and require candidate_objective_gate.decision=paid_retry_allowed before any leaf-only paid proof. No full14, LOD, merge/review, or paid retry from protected-overlap evidence.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -13519,7 +13519,7 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-07T11:56:00Z",
+  "updated": "2026-05-07T12:37:59Z",
   "version": "1.0.0",
   "md1_r4_boundary_overlap_protected_merge_review_20260507": {
     "checked_at": "2026-05-07T11:48:06Z",
@@ -13707,5 +13707,150 @@
     "cdk_deploy_conclusion": "success",
     "ml_container_build": "not_triggered_for_evidence_only_commit",
     "next_unblocked_step": "No-spend only: design a boundary-specific tile_04/tile_10 strategy using frozen boundary cameras and camera/objective weighting before any further paid leaf/merge/review. Do not launch full14, LOD, or another paid retry from protected-overlap evidence."
+  },
+  "latest_boundary_objective_strategy_status": {
+    "checked_at": "2026-05-07T12:37:59Z",
+    "strategy_json": "logs/md1-cost-reduction-r4-boundary-objective-strategy-20260507.json",
+    "recommendation": "no_paid_retry_until_objective_redesign",
+    "paid_retry_allowed": false,
+    "candidate_objective_decision": "paid_retry_blocked",
+    "candidate_objective_block_reasons": [
+      "candidate_objective_missing"
+    ],
+    "failed_hypotheses": [
+      "tile10_density_v2",
+      "protected_overlap_retention"
+    ],
+    "primary_boundary_tile_ids": [
+      "tile_04",
+      "tile_10"
+    ],
+    "boundary_frozen_cameras": [
+      "DJI_0067.JPG",
+      "DJI_0068.JPG",
+      "DJI_0069.JPG",
+      "DJI_0070.JPG"
+    ],
+    "max_estimated_usd": 2.0
+  },
+  "md1_r4_boundary_objective_strategy_20260507": {
+    "checked_at": "2026-05-07T12:37:59Z",
+    "status": "no_spend_paid_retry_blocked_until_boundary_objective_candidate",
+    "branch_head_before_commit": "4c26c91118f1e3399d915deb6041aab54c371416",
+    "strategy_json": "logs/md1-cost-reduction-r4-boundary-objective-strategy-20260507.json",
+    "current_quality_blockers": [
+      "boundary_no_required_improvement"
+    ],
+    "boundary_improvement_gap": {
+      "actual_delta": {
+        "lpips": -0.002215772867202759,
+        "psnr": 0.13065759577069258,
+        "ssim": 0.00525432825088501
+      },
+      "passes_any_improvement_axis": false,
+      "remaining_gap": {
+        "lpips": 0.022784227132797243,
+        "psnr": 0.3693424042293074,
+        "ssim": 0.0047456717491149904
+      },
+      "required_improvement": {
+        "lpips": -0.025,
+        "psnr": 0.5,
+        "ssim": 0.01
+      }
+    },
+    "failed_hypotheses": [
+      {
+        "evidence": "Increasing tile_10 retained density did not fix boundary quality.",
+        "hypothesis": "tile10_density_v2",
+        "metric_delta_vs_rollback_bg10": {
+          "boundary": {
+            "lpips": 0.0019101202487945557,
+            "psnr": -0.015278215957106767,
+            "ssim": -0.001230686902999878
+          },
+          "horizon": {
+            "lpips": -0.0006395876407623291,
+            "psnr": 0.03419377654124034,
+            "ssim": -0.00030687451362609863
+          },
+          "near_detail": {
+            "lpips": -0.0002804696559906006,
+            "psnr": -0.006616219887318309,
+            "ssim": -0.0006250292062759399
+          }
+        },
+        "status": "failed"
+      },
+      {
+        "bucket_delta_vs_rollback_bg10": {
+          "boundary": {
+            "lpips": 0,
+            "psnr": 0,
+            "ssim": 0
+          },
+          "horizon": {
+            "lpips": 0,
+            "psnr": 0,
+            "ssim": 0
+          },
+          "near_detail": {
+            "lpips": 0,
+            "psnr": 0,
+            "ssim": 0
+          }
+        },
+        "evidence": "Retaining extra overlap splats changed merge counts but not frozen rendered metrics.",
+        "hypothesis": "protected_overlap_retention",
+        "merge_delta_vs_rollback_bg10": {
+          "dropped_gaussians": -18104,
+          "fallback_tile_count": 0,
+          "retain_all_tile_count": 0,
+          "retained_gaussians": 18104,
+          "source_gaussians": 0
+        },
+        "status": "failed"
+      }
+    ],
+    "required_next_hypothesis": {
+      "expected_metric_axes": [
+        "boundary.required_improvement",
+        "boundary.psnr",
+        "boundary.ssim",
+        "boundary.lpips"
+      ],
+      "must_change": [
+        "camera/objective weighting during leaf training or selection",
+        "explicit boundary frozen-camera emphasis for DJI_0067.JPG-DJI_0070.JPG",
+        "tile_04/tile_10 boundary context coverage before merge/review"
+      ],
+      "must_not_repeat": [
+        "tile_10 density-only repair",
+        "merge-only protected overlap retention",
+        "full 14-tile training before staged R0/R1/R2/R3 gates"
+      ]
+    },
+    "candidate_objective_gate": {
+      "block_reasons": [
+        "candidate_objective_missing"
+      ],
+      "boundary_camera_ids": [],
+      "context_support_tile_ids": [],
+      "covered_tile_ids": [],
+      "decision": "paid_retry_blocked",
+      "estimated_usd": null,
+      "expected_metric_axes": [],
+      "horizon_camera_ids": [],
+      "max_estimated_usd": 2.0,
+      "objective_changes": [],
+      "present": false,
+      "selected_tile_ids": [],
+      "targeted_quality_blockers": [],
+      "warnings": []
+    },
+    "paid_retry_allowed": false,
+    "no_new_compute_launched": true,
+    "full_14tile_training_launched": false,
+    "lod_packaging_launched": false
   }
 }
