@@ -72,6 +72,27 @@ class EnforceLeafPreflightGateTests(unittest.TestCase):
         self.assertIn("splat_vertex_count_above_reference_ratio", summary["block_reasons"])
         self.assertIn("splat_vertex_count_above_hard_max", summary["block_reasons"])
 
+    def test_blocks_under_dense_leaf_before_merge_review(self):
+        preflight = passing_preflight()
+        preflight["splat_vertex_count"] = 559_981
+        preflight["splat_reference_guard"] = {
+            "enabled": True,
+            "status": "blocked",
+            "block_reason": "splat_vertex_count_below_reference_ratio",
+        }
+
+        summary = gate.evaluate_gate(
+            preflight=preflight,
+            gate={"required_leaf_preflight_gate": {"hard_min_splat_count": 765021}},
+            expected_tile_id="tile_10",
+            expected_selected_image_count=188,
+            require_filtered_scaffold=True,
+        )
+
+        self.assertEqual(summary["decision"], "merge_review_blocked")
+        self.assertIn("splat_vertex_count_below_reference_ratio", summary["block_reasons"])
+        self.assertIn("splat_vertex_count_below_hard_min", summary["block_reasons"])
+
     def test_blocks_missing_filtered_scaffold(self):
         preflight = passing_preflight()
         preflight["training_selection"]["scaffold_initialization"] = {"fallback_used": True}

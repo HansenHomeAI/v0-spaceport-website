@@ -67,8 +67,12 @@ def targeted_quality_blockers(strategy: dict[str, Any]) -> list[str]:
 def context_tile_ids(strategy: dict[str, Any]) -> list[str]:
     labels = list_strings(strategy.get("context_support_tile_ids"))
     labels.extend(list_strings(strategy.get("boundary_context_tile_ids")))
+    labels.extend(list_strings(strategy.get("horizon_context_tile_ids")))
     labels.extend(list_strings(strategy.get("context_tile_ids")))
+    labels.extend(list_strings(strategy.get("reuse_context_tile_ids")))
     labels.extend(env_labels(strategy, "BOUNDARY_CONTEXT_TILE_IDS"))
+    labels.extend(env_labels(strategy, "HORIZON_CONTEXT_TILE_IDS"))
+    labels.extend(env_labels(strategy, "CONTEXT_SUPPORT_TILE_IDS"))
     return ordered_unique(labels)
 
 

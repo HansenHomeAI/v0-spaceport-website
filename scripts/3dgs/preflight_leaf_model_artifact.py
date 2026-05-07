@@ -119,6 +119,7 @@ def build_splat_reference_guard(
     splat_vertex_count: int | None,
     reference_splat_count: int,
     max_reference_splat_ratio: float,
+    min_reference_splat_ratio: float = 0.0,
 ) -> dict:
     if reference_splat_count <= 0 or max_reference_splat_ratio <= 0:
         return {
@@ -126,6 +127,7 @@ def build_splat_reference_guard(
             "status": "not_configured",
             "reference_splat_count": reference_splat_count,
             "max_reference_splat_ratio": max_reference_splat_ratio,
+            "min_reference_splat_ratio": min_reference_splat_ratio,
             "splat_vertex_count": splat_vertex_count,
             "observed_reference_ratio": None,
             "block_reason": None,
@@ -136,21 +138,29 @@ def build_splat_reference_guard(
             "status": "blocked",
             "reference_splat_count": reference_splat_count,
             "max_reference_splat_ratio": max_reference_splat_ratio,
+            "min_reference_splat_ratio": min_reference_splat_ratio,
             "splat_vertex_count": None,
             "observed_reference_ratio": None,
             "block_reason": "splat_vertex_count_missing_for_reference_guard",
         }
 
     observed_ratio = float(splat_vertex_count) / float(reference_splat_count)
-    blocked = observed_ratio > max_reference_splat_ratio
+    too_dense = observed_ratio > max_reference_splat_ratio
+    too_sparse = min_reference_splat_ratio > 0 and observed_ratio < min_reference_splat_ratio
+    block_reason = None
+    if too_dense:
+        block_reason = "splat_vertex_count_above_reference_ratio"
+    elif too_sparse:
+        block_reason = "splat_vertex_count_below_reference_ratio"
     return {
         "enabled": True,
-        "status": "blocked" if blocked else "ok",
+        "status": "blocked" if block_reason else "ok",
         "reference_splat_count": reference_splat_count,
         "max_reference_splat_ratio": max_reference_splat_ratio,
+        "min_reference_splat_ratio": min_reference_splat_ratio,
         "splat_vertex_count": splat_vertex_count,
         "observed_reference_ratio": observed_ratio,
-        "block_reason": "splat_vertex_count_above_reference_ratio" if blocked else None,
+        "block_reason": block_reason,
     }
 
 
@@ -205,6 +215,7 @@ def build_summary(
     job_name: str,
     reference_splat_count: int = 0,
     max_reference_splat_ratio: float = 0.0,
+    min_reference_splat_ratio: float = 0.0,
 ) -> dict:
     head = artifact_head(artifact_uri)
     sha256 = stream_sha256(artifact_uri)
@@ -228,6 +239,7 @@ def build_summary(
         splat_vertex_count=inventory.get("splat_vertex_count"),
         reference_splat_count=reference_splat_count,
         max_reference_splat_ratio=max_reference_splat_ratio,
+        min_reference_splat_ratio=min_reference_splat_ratio,
     )
     if reference_guard.get("block_reason"):
         block_reasons.append(str(reference_guard["block_reason"]))
@@ -295,6 +307,12 @@ def parse_args() -> argparse.Namespace:
         default=0.0,
         help="Optional max allowed splat_vertex_count/reference_splat_count ratio.",
     )
+    parser.add_argument(
+        "--min-reference-splat-ratio",
+        type=float,
+        default=0.0,
+        help="Optional min allowed splat_vertex_count/reference_splat_count ratio.",
+    )
     parser.add_argument("--summary-json-output", required=True)
     return parser.parse_args()
 
@@ -309,6 +327,7 @@ def main() -> int:
         job_name=args.job_name,
         reference_splat_count=args.reference_splat_count,
         max_reference_splat_ratio=args.max_reference_splat_ratio,
+        min_reference_splat_ratio=args.min_reference_splat_ratio,
     )
     summary_path = Path(args.summary_json_output)
     summary_path.parent.mkdir(parents=True, exist_ok=True)

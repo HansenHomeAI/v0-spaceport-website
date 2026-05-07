@@ -28,10 +28,23 @@ class PreflightLeafModelArtifactTests(unittest.TestCase):
             splat_vertex_count=420_000,
             reference_splat_count=387_192,
             max_reference_splat_ratio=1.5,
+            min_reference_splat_ratio=0.8,
         )
 
         self.assertEqual(guard["status"], "ok")
         self.assertIsNone(guard["block_reason"])
+
+    def test_reference_guard_blocks_under_dense_leaf(self):
+        guard = preflight.build_splat_reference_guard(
+            splat_vertex_count=559_981,
+            reference_splat_count=956_277,
+            max_reference_splat_ratio=1.5,
+            min_reference_splat_ratio=0.8,
+        )
+
+        self.assertEqual(guard["status"], "blocked")
+        self.assertEqual(guard["block_reason"], "splat_vertex_count_below_reference_ratio")
+        self.assertAlmostEqual(guard["observed_reference_ratio"], 0.586, places=3)
 
     def test_reference_guard_is_optional(self):
         guard = preflight.build_splat_reference_guard(

@@ -1,0 +1,87 @@
+{
+  "checked_at": "2026-05-07T05:19:54.076130+00:00",
+  "promotion_decision_status": "blocked",
+  "current_quality_blockers": [
+    "boundary_no_required_improvement",
+    "horizon_ssim_regression"
+  ],
+  "candidate_strategy_present": true,
+  "candidate_targeted_quality_blockers": [
+    "boundary_no_required_improvement"
+  ],
+  "missing_targeted_blockers": [
+    "horizon_ssim_regression"
+  ],
+  "candidate_planned_cost_usd": 3.333,
+  "max_estimated_usd": 4.0,
+  "candidate_no_full_14tile_training": null,
+  "candidate_submitted_jobs": [],
+  "boundary_improvement_gap": {
+    "actual_delta": {
+      "psnr": 0.11298282288051809,
+      "ssim": -0.004256293177604675,
+      "lpips": 0.00634649395942688
+    },
+    "required_improvement": {
+      "psnr": 0.5,
+      "ssim": 0.01,
+      "lpips": -0.025
+    },
+    "remaining_gap": {
+      "psnr": 0.3870171771194819,
+      "ssim": 0.014256293177604676,
+      "lpips": 0.03134649395942688
+    },
+    "passes_any_improvement_axis": false
+  },
+  "horizon_regression_gap": {
+    "actual_delta": {
+      "psnr": -0.385793050161098,
+      "ssim": -0.014109566807746887,
+      "lpips": 0.013834714889526367
+    },
+    "allowed_regression": {
+      "psnr_min_delta": -0.75,
+      "ssim_min_delta": -0.012,
+      "lpips_max_delta": 0.03
+    },
+    "remaining_gap_to_pass": {
+      "psnr": 0.0,
+      "ssim": 0.002109566807746887,
+      "lpips": 0.0
+    },
+    "passes_regression_gate": false
+  },
+  "recommendation": "hold_paid_retry",
+  "recommended_actions": [
+    {
+      "blocker": "boundary_no_required_improvement",
+      "action": "produce_boundary_focused_no_spend_plan_before_paid_retry",
+      "evidence_needed": [
+        "targeted_quality_blockers includes boundary_no_required_improvement",
+        "boundary frozen cameras and responsible tiles are listed",
+        "planned change can plausibly improve boundary PSNR/SSIM/LPIPS, not only tile density",
+        "max_estimated_usd remains capped before submit"
+      ]
+    },
+    {
+      "blocker": "horizon_ssim_regression",
+      "action": "produce_horizon_protection_no_spend_plan_before_tile04_paid_retry",
+      "evidence_needed": [
+        "targeted_quality_blockers includes horizon_ssim_regression",
+        "horizon frozen cameras are listed",
+        "expected_metric_axes includes horizon.ssim",
+        "tile_04 strategy explains how it preserves horizon cameras while improving boundary",
+        "background override evidence is cited and not reused as a fix"
+      ]
+    },
+    {
+      "blocker": "candidate_strategy_missing_current_blockers",
+      "action": "do_not_submit_current_candidate_strategy",
+      "missing_targeted_blockers": [
+        "horizon_ssim_regression"
+      ]
+    }
+  ],
+  "paid_retry_recommended": false
+}

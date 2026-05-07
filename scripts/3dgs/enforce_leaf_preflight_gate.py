@@ -34,6 +34,16 @@ def hard_max_splat_count(gate: dict[str, Any]) -> int:
     return 0
 
 
+def hard_min_splat_count(gate: dict[str, Any]) -> int:
+    direct = gate.get("hard_min_splat_count")
+    if direct is not None:
+        return int(direct)
+    nested = gate.get("required_leaf_preflight_gate") or {}
+    if isinstance(nested, dict) and nested.get("hard_min_splat_count") is not None:
+        return int(nested["hard_min_splat_count"])
+    return 0
+
+
 def expected_pass_decision(gate: dict[str, Any]) -> str:
     nested = gate.get("required_leaf_preflight_gate") or {}
     if isinstance(nested, dict) and nested.get("pass_decision"):
@@ -99,6 +109,9 @@ def evaluate_gate(
         max_splats = hard_max_splat_count(gate)
         if max_splats > 0 and splat_count > max_splats:
             block_reasons.append("splat_vertex_count_above_hard_max")
+        min_splats = hard_min_splat_count(gate)
+        if min_splats > 0 and splat_count < min_splats:
+            block_reasons.append("splat_vertex_count_below_hard_min")
 
     scaffold = selection.get("scaffold_initialization")
     if require_filtered_scaffold and not scaffold_is_filtered(scaffold):
@@ -119,6 +132,7 @@ def evaluate_gate(
         "expected_leaf_preflight_decision": expected_decision,
         "splat_vertex_count": splat_count,
         "hard_max_splat_count": hard_max_splat_count(gate) or None,
+        "hard_min_splat_count": hard_min_splat_count(gate) or None,
         "splat_reference_guard": reference_guard,
         "selected_image_count": selected_count,
         "expected_selected_image_count": expected_selected_image_count or None,

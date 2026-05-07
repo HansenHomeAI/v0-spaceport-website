@@ -23,6 +23,13 @@ def review_comparison(*blockers: str) -> dict:
                         "ssim": 0.002,
                         "lpips": -0.004,
                     }
+                },
+                "horizon": {
+                    "delta": {
+                        "psnr": -0.38,
+                        "ssim": -0.014,
+                        "lpips": 0.014,
+                    }
                 }
             },
             "thresholds": {
@@ -32,6 +39,11 @@ def review_comparison(*blockers: str) -> dict:
                         "ssim": 0.01,
                         "lpips": -0.025,
                     }
+                },
+                "horizon": {
+                    "psnr_min_delta": -0.75,
+                    "ssim_min_delta": -0.012,
+                    "lpips_max_delta": 0.03,
                 }
             },
         }
@@ -69,6 +81,53 @@ class PlanMd1QualityStrategyTests(unittest.TestCase):
         self.assertEqual(report["recommendation"], "hold_paid_retry")
         self.assertFalse(report["paid_retry_recommended"])
         self.assertEqual(report["missing_targeted_blockers"], ["boundary_no_required_improvement"])
+
+    def test_reports_horizon_gap_and_requires_horizon_target(self):
+        report = planner.plan_quality_strategy(
+            review_comparison=review_comparison(
+                "boundary_no_required_improvement",
+                "horizon_ssim_regression",
+            ),
+            candidate_strategy=strategy("boundary_no_required_improvement"),
+            max_estimated_usd=2.5,
+        )
+
+        self.assertEqual(report["recommendation"], "hold_paid_retry")
+        self.assertEqual(report["missing_targeted_blockers"], ["horizon_ssim_regression"])
+        self.assertAlmostEqual(report["horizon_regression_gap"]["remaining_gap_to_pass"]["ssim"], 0.002)
+        self.assertIn(
+            "horizon_ssim_regression",
+            [action["blocker"] for action in report["recommended_actions"]],
+        )
+
+    def test_reads_targeted_blockers_from_stage_environment(self):
+        candidate = {
+            "selected_tile_ids": ["tile_04"],
+            "no_full_14tile_training": True,
+            "submitted_jobs": [],
+            "planned_cost_estimate": {"estimated_usd": 1.25},
+            "stages": [
+                {
+                    "environment": {
+                        "TARGETED_QUALITY_BLOCKERS": (
+                            "boundary_no_required_improvement,horizon_ssim_regression"
+                        )
+                    }
+                }
+            ],
+        }
+
+        report = planner.plan_quality_strategy(
+            review_comparison=review_comparison(
+                "boundary_no_required_improvement",
+                "horizon_ssim_regression",
+            ),
+            candidate_strategy=candidate,
+            max_estimated_usd=2.5,
+        )
+
+        self.assertEqual(report["missing_targeted_blockers"], [])
+        self.assertEqual(report["recommendation"], "candidate_strategy_targets_current_blockers")
 
     def test_recommends_candidate_strategy_only_when_current_blockers_are_targeted(self):
         report = planner.plan_quality_strategy(

@@ -123,6 +123,19 @@ class EnforceMd1LeafSubmitReadinessTests(unittest.TestCase):
         self.assertEqual(summary["decision"], "leaf_submit_blocked")
         self.assertIn("strategy_v18_review_manifest_mismatch", summary["block_reasons"])
 
+    def test_reads_generic_context_support_from_stage_environment(self):
+        candidate = strategy()
+        for stage in candidate["stages"]:
+            stage["environment"].pop("BOUNDARY_CONTEXT_TILE_IDS")
+            stage["environment"]["CONTEXT_SUPPORT_TILE_IDS"] = "tile_13,tile_01"
+        summary = allowed_summary(
+            strategy=candidate,
+            required_context_tile_ids=["tile_13", "tile_01"],
+        )
+
+        self.assertEqual(summary["decision"], "leaf_submit_allowed")
+        self.assertEqual(summary["block_reasons"], [])
+
     def test_allows_subset_retry_when_prior_leaf_gate_passed(self):
         candidate = strategy()
         candidate["selected_tile_ids"] = ["tile_10"]

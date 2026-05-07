@@ -1549,6 +1549,7 @@ def build_post_leaf_preflight_gates(
     *,
     reference_splat_counts: Dict[str, int],
     max_reference_splat_ratio: float,
+    min_reference_splat_ratio: float = 0.0,
     experiment_id: str,
     gate_json_path: str,
 ) -> list[dict]:
@@ -1568,6 +1569,7 @@ def build_post_leaf_preflight_gates(
         if not artifact_uri:
             continue
         hard_max = int(reference_count * max_reference_splat_ratio)
+        hard_min = int(reference_count * min_reference_splat_ratio) if min_reference_splat_ratio > 0 else 0
         log_stem = safe_log_stem(f"{experiment_id or stage.job_name or '3dgs'}-{stage.tile_id}")
         preflight_json = f"logs/{log_stem}-leaf-preflight.json"
         gate_output_json = f"logs/{log_stem}-leaf-gate.json"
@@ -1589,6 +1591,8 @@ def build_post_leaf_preflight_gates(
             "--max-reference-splat-ratio",
             str(max_reference_splat_ratio),
         ]
+        if min_reference_splat_ratio > 0:
+            preflight_command.extend(["--min-reference-splat-ratio", str(min_reference_splat_ratio)])
         enforce_command = [
             "python3",
             "scripts/3dgs/enforce_leaf_preflight_gate.py",
@@ -1612,13 +1616,17 @@ def build_post_leaf_preflight_gates(
                 "artifact_uri": artifact_uri,
                 "reference_splat_count": reference_count,
                 "max_reference_splat_ratio": max_reference_splat_ratio,
+                "min_reference_splat_ratio": min_reference_splat_ratio or None,
                 "hard_max_splat_count": hard_max,
+                "hard_min_splat_count": hard_min or None,
                 "expected_selected_image_count": stage.selected_image_count,
                 "required_leaf_preflight_gate": {
                     "pass_decision": "leaf_preflight_passed_cache_candidate",
                     "reference_splat_count": reference_count,
                     "max_reference_splat_ratio": max_reference_splat_ratio,
+                    "min_reference_splat_ratio": min_reference_splat_ratio or None,
                     "hard_max_splat_count": hard_max,
+                    "hard_min_splat_count": hard_min or None,
                     "require_filtered_scaffold": True,
                     "expected_selected_image_count": stage.selected_image_count,
                 },
@@ -2695,6 +2703,12 @@ def parse_args() -> argparse.Namespace:
         default=0.0,
         help="Maximum allowed leaf splat ratio versus --leaf-reference-splat-count before merge/review spend.",
     )
+    parser.add_argument(
+        "--leaf-min-reference-splat-ratio",
+        type=float,
+        default=0.0,
+        help="Minimum allowed leaf splat ratio versus --leaf-reference-splat-count before merge/review spend.",
+    )
     parser.add_argument("--image-tag", default="", help="Override the ECR image tag. Defaults to current branch tag.")
     parser.add_argument("--image-uri", default="", help="Fully qualified training image URI override.")
     parser.add_argument(
@@ -2961,6 +2975,7 @@ def main() -> int:
         stages,
         reference_splat_counts=leaf_reference_splat_counts,
         max_reference_splat_ratio=args.leaf_max_reference_splat_ratio,
+        min_reference_splat_ratio=args.leaf_min_reference_splat_ratio,
         experiment_id=args.experiment_id,
         gate_json_path=args.summary_json_output,
     )
@@ -3000,6 +3015,7 @@ def main() -> int:
         "training_max_runtime_seconds": args.training_max_runtime_seconds,
         "leaf_reference_splat_counts": leaf_reference_splat_counts,
         "leaf_max_reference_splat_ratio": args.leaf_max_reference_splat_ratio,
+        "leaf_min_reference_splat_ratio": args.leaf_min_reference_splat_ratio or None,
         "unused_leaf_reference_splat_counts": unused_leaf_reference_splat_counts,
         "post_leaf_preflight_gates": post_leaf_preflight_gates,
         "compatibility_gate": bool(args.compatibility_gate),

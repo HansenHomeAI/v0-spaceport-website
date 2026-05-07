@@ -81,6 +81,38 @@ def targeted_blockers(strategy: dict[str, Any]) -> list[str]:
     return sorted(set(stage_targets))
 
 
+def selected_tile_ids(strategy: dict[str, Any]) -> list[str]:
+    values = list_strings(strategy.get("selected_tile_ids"))
+    values.extend(list_strings(strategy.get("tile_ids")))
+    stages = strategy.get("stages")
+    if isinstance(stages, list):
+        for stage in stages:
+            if isinstance(stage, dict) and stage.get("tile_id"):
+                values.append(str(stage["tile_id"]))
+    return sorted(set(values))
+
+
+def strategy_values(strategy: dict[str, Any], direct_keys: tuple[str, ...], env_keys: tuple[str, ...]) -> list[str]:
+    values: list[str] = []
+    for key in direct_keys:
+        values.extend(split_label_list(strategy.get(key)))
+    nested = strategy.get("quality_strategy")
+    if isinstance(nested, dict):
+        for key in direct_keys:
+            values.extend(split_label_list(nested.get(key)))
+    stages = strategy.get("stages")
+    if isinstance(stages, list):
+        for stage in stages:
+            if not isinstance(stage, dict):
+                continue
+            env = stage.get("environment")
+            if not isinstance(env, dict):
+                continue
+            for key in env_keys:
+                values.extend(split_label_list(env.get(key)))
+    return sorted(set(values))
+
+
 def estimated_usd(strategy: dict[str, Any]) -> float | None:
     cost = strategy.get("planned_cost_estimate")
     if not isinstance(cost, dict):
@@ -129,6 +161,38 @@ def evaluate_gate(
     elif missing_targets:
         block_reasons.append("quality_strategy_does_not_target_current_blockers")
 
+    tiles = selected_tile_ids(strategy)
+    boundary_cameras = strategy_values(
+        strategy,
+        ("boundary_camera_ids", "boundary_frozen_cameras"),
+        ("BOUNDARY_FROZEN_CAMERAS", "BOUNDARY_CAMERA_IDS"),
+    )
+    horizon_cameras = strategy_values(
+        strategy,
+        ("horizon_camera_ids", "horizon_frozen_cameras"),
+        ("HORIZON_FROZEN_CAMERAS", "HORIZON_CAMERA_IDS"),
+    )
+    expected_axes = strategy_values(
+        strategy,
+        ("expected_metric_axes", "expected_metric_axis"),
+        ("EXPECTED_METRIC_AXES", "EXPECTED_METRIC_AXIS"),
+    )
+    has_boundary_horizon_block = (
+        "boundary_no_required_improvement" in current_blockers
+        and "horizon_ssim_regression" in current_blockers
+    )
+    if has_boundary_horizon_block:
+        if "tile_04" not in tiles:
+            block_reasons.append("tile04_boundary_horizon_strategy_missing_tile04")
+        if not boundary_cameras:
+            block_reasons.append("boundary_strategy_missing_frozen_cameras")
+        if not horizon_cameras:
+            block_reasons.append("horizon_strategy_missing_frozen_cameras")
+        if "boundary.required_improvement" not in expected_axes:
+            block_reasons.append("boundary_strategy_missing_expected_metric_axis")
+        if "horizon.ssim" not in expected_axes:
+            block_reasons.append("horizon_strategy_missing_expected_metric_axis")
+
     no_full_14tile = no_full_14tile_training_confirmed(strategy)
     if require_no_full_14tile and not no_full_14tile:
         block_reasons.append("no_full_14tile_training_not_confirmed")
@@ -164,6 +228,10 @@ def evaluate_gate(
         "current_quality_blockers": current_blockers,
         "targeted_quality_blockers": targets,
         "missing_targeted_blockers": missing_targets,
+        "selected_tile_ids": tiles,
+        "boundary_camera_ids": boundary_cameras,
+        "horizon_camera_ids": horizon_cameras,
+        "expected_metric_axes": expected_axes,
         "block_reasons": block_reasons,
         "warnings": warnings,
         "max_estimated_usd": max_estimated_usd or None,

@@ -1,0 +1,41 @@
+{
+  "checked_at": "2026-05-07T05:19:54.329765+00:00",
+  "decision": "paid_retry_blocked",
+  "promotion_ready": false,
+  "current_quality_blockers": [
+    "boundary_no_required_improvement",
+    "horizon_ssim_regression"
+  ],
+  "targeted_quality_blockers": [
+    "boundary_no_required_improvement"
+  ],
+  "missing_targeted_blockers": [
+    "horizon_ssim_regression"
+  ],
+  "selected_tile_ids": [
+    "tile_04",
+    "tile_10"
+  ],
+  "boundary_camera_ids": [
+    "DJI_0067.JPG",
+    "DJI_0068.JPG",
+    "DJI_0069.JPG",
+    "DJI_0070.JPG"
+  ],
+  "horizon_camera_ids": [],
+  "expected_metric_axes": [],
+  "block_reasons": [
+    "quality_strategy_does_not_target_current_blockers",
+    "horizon_strategy_missing_frozen_cameras",
+    "boundary_strategy_missing_expected_metric_axis",
+    "horizon_strategy_missing_expected_metric_axis"
+  ],
+  "warnings": [],
+  "max_estimated_usd": 4.0,
+  "estimated_usd": 3.333,
+  "require_no_full_14tile": true,
+  "require_dry_run": true,
+  "no_full_14tile_training": true,
+  "submitted_jobs": [],
+  "next_required_action": "add an explicit no-spend quality strategy that targets every current frozen-quality blocker before paid retry"
+}

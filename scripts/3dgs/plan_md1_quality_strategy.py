@@ -24,6 +24,19 @@ def list_strings(value: Any) -> list[str]:
     return [str(item) for item in value if str(item)]
 
 
+def split_label_list(value: Any) -> list[str]:
+    if isinstance(value, list):
+        return list_strings(value)
+    if not isinstance(value, str):
+        return []
+    result: list[str] = []
+    for item in value.replace(";", ",").split(","):
+        cleaned = item.strip()
+        if cleaned:
+            result.append(cleaned)
+    return result
+
+
 def promotion_decision(review_comparison: dict[str, Any]) -> dict[str, Any]:
     decision = review_comparison.get("promotion_decision")
     return decision if isinstance(decision, dict) else {}
@@ -40,13 +53,19 @@ def strategy_targets(strategy: dict[str, Any] | None) -> list[str]:
         return sorted(set(direct))
     nested = strategy.get("quality_strategy")
     if isinstance(nested, dict):
-        return sorted(
-            set(
-                list_strings(nested.get("targeted_quality_blockers"))
-                + list_strings(nested.get("targeted_quality_block_reasons"))
-            )
-        )
-    return []
+        direct.extend(list_strings(nested.get("targeted_quality_blockers")))
+        direct.extend(list_strings(nested.get("targeted_quality_block_reasons")))
+    stages = strategy.get("stages")
+    if isinstance(stages, list):
+        for stage in stages:
+            if not isinstance(stage, dict):
+                continue
+            env = stage.get("environment")
+            if not isinstance(env, dict):
+                continue
+            direct.extend(split_label_list(env.get("TARGETED_QUALITY_BLOCKERS")))
+            direct.extend(split_label_list(env.get("TARGETED_QUALITY_BLOCK_REASONS")))
+    return sorted(set(direct))
 
 
 def planned_cost(strategy: dict[str, Any] | None) -> float | None:
@@ -111,6 +130,46 @@ def boundary_improvement_gaps(decision: dict[str, Any]) -> dict[str, Any] | None
     }
 
 
+def horizon_regression_gaps(decision: dict[str, Any]) -> dict[str, Any] | None:
+    per_bucket = decision.get("per_bucket") if isinstance(decision.get("per_bucket"), dict) else {}
+    horizon = per_bucket.get("horizon") if isinstance(per_bucket.get("horizon"), dict) else {}
+    deltas = horizon.get("delta") if isinstance(horizon.get("delta"), dict) else {}
+    thresholds = decision.get("thresholds") if isinstance(decision.get("thresholds"), dict) else {}
+    horizon_thresholds = thresholds.get("horizon") if isinstance(thresholds.get("horizon"), dict) else {}
+    if not deltas or not horizon_thresholds:
+        return None
+
+    psnr_delta = float(deltas.get("psnr") or 0.0)
+    ssim_delta = float(deltas.get("ssim") or 0.0)
+    lpips_delta = float(deltas.get("lpips") or 0.0)
+    psnr_min_delta = float(horizon_thresholds.get("psnr_min_delta") or 0.0)
+    ssim_min_delta = float(horizon_thresholds.get("ssim_min_delta") or 0.0)
+    lpips_max_delta = float(horizon_thresholds.get("lpips_max_delta") or 0.0)
+
+    return {
+        "actual_delta": {
+            "psnr": psnr_delta,
+            "ssim": ssim_delta,
+            "lpips": lpips_delta,
+        },
+        "allowed_regression": {
+            "psnr_min_delta": psnr_min_delta,
+            "ssim_min_delta": ssim_min_delta,
+            "lpips_max_delta": lpips_max_delta,
+        },
+        "remaining_gap_to_pass": {
+            "psnr": max(0.0, psnr_min_delta - psnr_delta),
+            "ssim": max(0.0, ssim_min_delta - ssim_delta),
+            "lpips": max(0.0, lpips_delta - lpips_max_delta),
+        },
+        "passes_regression_gate": (
+            psnr_delta >= psnr_min_delta
+            and ssim_delta >= ssim_min_delta
+            and lpips_delta <= lpips_max_delta
+        ),
+    }
+
+
 def plan_quality_strategy(
     *,
     review_comparison: dict[str, Any],
@@ -123,6 +182,7 @@ def plan_quality_strategy(
     missing_targets = [reason for reason in blockers if reason not in targets]
     cost = planned_cost(candidate_strategy)
     boundary_gap = boundary_improvement_gaps(decision)
+    horizon_gap = horizon_regression_gaps(decision)
     submitted_jobs = candidate_strategy.get("submitted_jobs") if candidate_strategy else None
     no_full_14tile = candidate_strategy.get("no_full_14tile_training") if candidate_strategy else None
 
@@ -154,6 +214,20 @@ def plan_quality_strategy(
                 ],
             }
         )
+    if "horizon_ssim_regression" in blockers:
+        actions.append(
+            {
+                "blocker": "horizon_ssim_regression",
+                "action": "produce_horizon_protection_no_spend_plan_before_tile04_paid_retry",
+                "evidence_needed": [
+                    "targeted_quality_blockers includes horizon_ssim_regression",
+                    "horizon frozen cameras are listed",
+                    "expected_metric_axes includes horizon.ssim",
+                    "tile_04 strategy explains how it preserves horizon cameras while improving boundary",
+                    "background override evidence is cited and not reused as a fix",
+                ],
+            }
+        )
 
     if missing_targets:
         actions.append(
@@ -176,6 +250,7 @@ def plan_quality_strategy(
         "candidate_no_full_14tile_training": no_full_14tile,
         "candidate_submitted_jobs": submitted_jobs,
         "boundary_improvement_gap": boundary_gap,
+        "horizon_regression_gap": horizon_gap,
         "recommendation": recommendation,
         "recommended_actions": actions,
         "paid_retry_recommended": recommendation == "candidate_strategy_targets_current_blockers",

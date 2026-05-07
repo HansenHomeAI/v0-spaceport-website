@@ -63,6 +63,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             [stage],
             reference_splat_counts={"tile_10": 387192},
             max_reference_splat_ratio=1.5,
+            min_reference_splat_ratio=0.8,
             experiment_id="exp",
             gate_json_path="logs/summary.json",
         )
@@ -71,7 +72,9 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         gate = gates[0]
         self.assertEqual(gate["artifact_uri"], "s3://bucket/run/tiles/tile_10/tile10-proof/output/model.tar.gz")
         self.assertEqual(gate["hard_max_splat_count"], 580788)
+        self.assertEqual(gate["hard_min_splat_count"], 309753)
         self.assertIn("--reference-splat-count", gate["preflight_command"])
+        self.assertIn("--min-reference-splat-ratio", gate["preflight_command"])
         self.assertIn("--gate-json", gate["enforce_gate_command"])
         self.assertIn("logs/summary.json", gate["enforce_gate_command"])
 

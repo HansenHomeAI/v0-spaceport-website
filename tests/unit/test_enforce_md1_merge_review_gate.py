@@ -79,6 +79,21 @@ class EnforceMd1MergeReviewGateTests(unittest.TestCase):
         self.assertEqual(summary["decision"], "merge_review_blocked")
         self.assertIn("context_support_tile_missing:tile_13", summary["block_reasons"])
 
+    def test_reads_generic_context_support_from_stage_environment(self):
+        candidate = strategy()
+        candidate["stages"][0]["environment"].pop("BOUNDARY_CONTEXT_TILE_IDS")
+        candidate["stages"][0]["environment"]["CONTEXT_SUPPORT_TILE_IDS"] = "tile_13,tile_01"
+        summary = gate.evaluate_gate(
+            strategy=candidate,
+            required_tile_ids=["tile_04", "tile_10"],
+            required_context_tile_ids=["tile_13", "tile_01"],
+            required_targeted_blockers=["boundary_no_required_improvement"],
+            leaf_gates=[allowed_leaf("tile_04"), allowed_leaf("tile_10")],
+        )
+
+        self.assertEqual(summary["decision"], "merge_review_allowed")
+        self.assertEqual(summary["block_reasons"], [])
+
     def test_blocks_non_dryrun_strategy(self):
         candidate = strategy()
         candidate["submitted_jobs"] = [{"job_name": "already-spent"}]

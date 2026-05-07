@@ -1,0 +1,71 @@
+{
+  "background_override_result": {
+    "forced_background_source_tile_id": "tile_10",
+    "interpretation": "Forced tile_10 background produced effectively the same frozen-camera deltas as the original tile04-candidate/tile10-rollback review, so skybox ownership is not the horizon fix."
+  },
+  "boundary_camera_ids": [
+    "DJI_0067.JPG",
+    "DJI_0068.JPG",
+    "DJI_0069.JPG",
+    "DJI_0070.JPG"
+  ],
+  "checked_at": "2026-05-07T05:19:34.925072+00:00",
+  "context_support_tile_ids": [
+    "tile_01",
+    "tile_10",
+    "tile_13",
+    "tile_00",
+    "tile_02",
+    "tile_06"
+  ],
+  "current_v18_non_regression_blockers": [
+    "horizon_v18_median_psnr_regression",
+    "horizon_v18_median_ssim_regression",
+    "horizon_v18_median_lpips_regression",
+    "horizon_v18_single_camera_lpips_regression"
+  ],
+  "current_valid_review_blockers": [
+    "boundary_no_required_improvement",
+    "horizon_ssim_regression"
+  ],
+  "expected_metric_axes": [
+    "boundary.required_improvement",
+    "horizon.ssim"
+  ],
+  "horizon_camera_ids": [
+    "DJI_0066.JPG",
+    "DJI_0073.JPG",
+    "DJI_0146.JPG",
+    "DJI_0147.JPG"
+  ],
+  "next_required_action": "convert this skeleton into a bounded dry-run payload before any tile_04 paid submit; quality gate may pass the labels, but leaf/merge/review gates remain required",
+  "no_full_14tile_training": true,
+  "paid_training_allowed_by_this_file": false,
+  "planned_cost_estimate": {
+    "estimated_usd": 0.0
+  },
+  "purpose": "Define the minimum evidence a future tile_04 retry must satisfy before any paid submit after background override failed to fix horizon.",
+  "quality_constraints_before_paid_submit": [
+    "do not use invalid default-COLMAP review as comparable evidence",
+    "target both boundary_no_required_improvement and horizon_ssim_regression",
+    "hold tile_10 rollback/context support unless a cheaper tile_10 proof passes first",
+    "hold tile_01 rollback/context support because horizon cameras DJI_0073/DJI_0146/DJI_0147 are also primary-supported by tile_01",
+    "preserve horizon frozen cameras DJI_0066/DJI_0073/DJI_0146/DJI_0147 while improving boundary frozen cameras DJI_0067-DJI_0070",
+    "run leaf preflight before merge/review; no merge/review spend until leaf gates pass"
+  ],
+  "reuse_context_tile_ids": [
+    "tile_01",
+    "tile_10"
+  ],
+  "selected_tile_ids": [
+    "tile_04"
+  ],
+  "source_background_override_analysis_json": "logs/md1-cost-reduction-r4-boundary-density-v2-background-override-analysis-20260507.json",
+  "source_review_comparison_json": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-isot04cand-t10rb-bg10-v18colmap-smoke-p24/review_comparison.json",
+  "status": "no_spend_tile04_boundary_horizon_strategy_skeleton",
+  "submitted_jobs": [],
+  "targeted_quality_blockers": [
+    "boundary_no_required_improvement",
+    "horizon_ssim_regression"
+  ]
+}

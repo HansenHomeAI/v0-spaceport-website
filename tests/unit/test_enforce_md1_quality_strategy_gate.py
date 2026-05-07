@@ -141,6 +141,69 @@ class EnforceMd1QualityStrategyGateTests(unittest.TestCase):
         self.assertEqual(summary["targeted_quality_blockers"], ["boundary_no_required_improvement"])
         self.assertTrue(summary["no_full_14tile_training"])
 
+    def test_blocks_tile04_retry_when_boundary_and_horizon_are_not_both_targeted(self):
+        summary = gate.evaluate_gate(
+            readiness_report=readiness(
+                "boundary_no_required_improvement",
+                "horizon_ssim_regression",
+            ),
+            strategy={
+                "selected_tile_ids": ["tile_04"],
+                "submitted_jobs": [],
+                "cost_estimate": {"estimated_usd": 0.0},
+                "stages": [
+                    {
+                        "tile_id": "tile_04",
+                        "environment": {
+                            "TARGETED_QUALITY_BLOCKERS": "boundary_no_required_improvement",
+                            "BOUNDARY_FROZEN_CAMERAS": "DJI_0067.JPG,DJI_0068.JPG",
+                            "EXPECTED_METRIC_AXES": "boundary.required_improvement",
+                        },
+                    }
+                ],
+            },
+            max_estimated_usd=1.0,
+        )
+
+        self.assertEqual(summary["decision"], "paid_retry_blocked")
+        self.assertIn("quality_strategy_does_not_target_current_blockers", summary["block_reasons"])
+        self.assertIn("horizon_strategy_missing_frozen_cameras", summary["block_reasons"])
+        self.assertEqual(summary["missing_targeted_blockers"], ["horizon_ssim_regression"])
+
+    def test_allows_tile04_retry_when_boundary_and_horizon_evidence_are_present(self):
+        summary = gate.evaluate_gate(
+            readiness_report=readiness(
+                "boundary_no_required_improvement",
+                "horizon_ssim_regression",
+            ),
+            strategy={
+                "selected_tile_ids": ["tile_04"],
+                "submitted_jobs": [],
+                "cost_estimate": {"estimated_usd": 0.0},
+                "stages": [
+                    {
+                        "tile_id": "tile_04",
+                        "environment": {
+                            "TARGETED_QUALITY_BLOCKERS": (
+                                "boundary_no_required_improvement,horizon_ssim_regression"
+                            ),
+                            "BOUNDARY_FROZEN_CAMERAS": "DJI_0067.JPG,DJI_0068.JPG",
+                            "HORIZON_FROZEN_CAMERAS": "DJI_0066.JPG,DJI_0073.JPG",
+                            "EXPECTED_METRIC_AXES": "boundary.required_improvement,horizon.ssim",
+                        },
+                    }
+                ],
+            },
+            max_estimated_usd=1.0,
+        )
+
+        self.assertEqual(summary["decision"], "paid_retry_allowed")
+        self.assertEqual(
+            summary["targeted_quality_blockers"],
+            ["boundary_no_required_improvement", "horizon_ssim_regression"],
+        )
+        self.assertTrue(summary["no_full_14tile_training"])
+
     def test_blocks_benchmark_dryrun_when_selected_tile_scope_is_full_14_without_explicit_guard(self):
         summary = gate.evaluate_gate(
             readiness_report=readiness("boundary_no_required_improvement"),
