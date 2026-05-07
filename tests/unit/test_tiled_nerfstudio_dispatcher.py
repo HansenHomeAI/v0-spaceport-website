@@ -779,6 +779,72 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             self.assertEqual(camera_weighting["added_weighted_frames"], 2)
             self.assertEqual(camera_weighting["matched_boundary_camera_ids"], ["frame_00002.JPG"])
 
+    def test_prepare_colmap_subset_for_image_names_filters_before_conversion(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "source"
+            subset = root / "subset"
+            sparse = source / "sparse" / "0"
+            images = source / "images"
+            sparse.mkdir(parents=True)
+            images.mkdir(parents=True)
+            (sparse / "cameras.txt").write_text(
+                "1 SIMPLE_RADIAL 4000 2250 3000 2000 1125 0\n",
+                encoding="utf-8",
+            )
+            (sparse / "images.txt").write_text(
+                "\n".join(
+                    [
+                        "# Image list",
+                        "1 1 0 0 0 0 0 0 1 DJI_0001.JPG",
+                        "0 0 10 1 1 20",
+                        "2 1 0 0 0 1 0 0 1 DJI_0002.JPG",
+                        "0 0 10 1 1 -1",
+                        "3 1 0 0 0 2 0 0 1 DJI_0003.JPG",
+                        "0 0 30",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            (sparse / "points3D.txt").write_text(
+                "\n".join(
+                    [
+                        "10 0 0 0 255 0 0 1.0 1 0 2 0",
+                        "20 1 0 0 0 255 0 1.0 1 1",
+                        "30 2 0 0 0 0 255 1.0 3 0",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            for name in ["DJI_0001.JPG", "DJI_0002.JPG", "DJI_0003.JPG"]:
+                (images / name).write_text("image", encoding="utf-8")
+
+            summary = module.prepare_colmap_subset_for_image_names(
+                source,
+                subset,
+                ["DJI_0002.JPG", "DJI_0003.JPG"],
+            )
+
+            self.assertTrue(summary["enabled"])
+            self.assertEqual(summary["source_image_count"], 3)
+            self.assertEqual(summary["selected_image_count"], 2)
+            self.assertEqual(summary["linked_image_count"], 2)
+            self.assertEqual(summary["retained_sparse_point_count"], 2)
+            images_txt = (subset / "sparse" / "0" / "images.txt").read_text(encoding="utf-8")
+            points_txt = (subset / "sparse" / "0" / "points3D.txt").read_text(encoding="utf-8")
+            self.assertNotIn("DJI_0001.JPG", images_txt)
+            self.assertIn("DJI_0002.JPG", images_txt)
+            self.assertIn("DJI_0003.JPG", images_txt)
+            self.assertIn("10 0 0 0 255 0 0 1.0 2 0", points_txt)
+            self.assertNotIn("20 1 0 0", points_txt)
+            self.assertIn("30 2 0 0 0 0 255 1.0 3 0", points_txt)
+            self.assertTrue((subset / "images" / "DJI_0002.JPG").exists())
+            self.assertTrue((subset / "images" / "DJI_0003.JPG").exists())
+
     def test_prepare_tiled_stage_dataset_copies_sparse_point_cloud(self):
         module = load_module_with_stubs()
 

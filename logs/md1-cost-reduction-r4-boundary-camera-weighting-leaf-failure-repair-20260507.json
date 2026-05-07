@@ -1,0 +1,18 @@
+{
+  "checked_at": "2026-05-07T14:08:45Z",
+  "decision": "leaf_retry_required_after_container_rebuild",
+  "training_job_name": "md1-r4t04cw-20260507-1778161516-tile-04",
+  "training_job_status": "Failed",
+  "failure_class": "pre_training_colmap_conversion_timeout",
+  "failure_reason": "COLMAP conversion timeout before training",
+  "billable_seconds": 973,
+  "estimated_usd": 0.19892444444444443,
+  "model_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-camera-weighting-20260507/tiles/tile_04/md1-r4t04cw-20260507-1778161516-tile-04/output/model.tar.gz",
+  "artifact_produced": false,
+  "checkpoint_produced": false,
+  "log_stream": "md1-r4t04cw-20260507-1778161516-tile-04/algo-1-1778161564",
+  "no_full14_training_launched": true,
+  "no_merge_review_lod_launched": true,
+  "repair": "preconversion COLMAP/image subset before ns-process-data plus configurable conversion timeout",
+  "next_required_action": "commit/push container repair, wait exact-head CDK+ML container build, rerun leaf-submit readiness, then resubmit one bounded tile_04 leaf-only proof"
+}

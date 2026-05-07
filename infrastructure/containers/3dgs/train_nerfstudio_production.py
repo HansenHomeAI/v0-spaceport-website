@@ -136,6 +136,186 @@ def load_colmap_image_id_name_map(images_txt: Path) -> dict[str, str]:
     return mapping
 
 
+def load_colmap_image_records(images_txt: Path) -> list[dict[str, Any]]:
+    """Read COLMAP images.txt as two-line image records."""
+    records: list[dict[str, Any]] = []
+    if not images_txt.exists():
+        return records
+
+    with open(images_txt, 'r', encoding='utf-8') as handle:
+        lines = handle.readlines()
+
+    line_index = 0
+    while line_index < len(lines):
+        header = lines[line_index].rstrip("\n")
+        stripped = header.strip()
+        if not stripped or stripped.startswith('#'):
+            line_index += 1
+            continue
+
+        points_line = lines[line_index + 1].rstrip("\n") if line_index + 1 < len(lines) else ""
+        parts = stripped.split()
+        if len(parts) >= 10:
+            try:
+                image_id = int(parts[0])
+            except ValueError:
+                line_index += 1
+                continue
+            records.append(
+                {
+                    "image_id": image_id,
+                    "image_name": parts[9],
+                    "header": header,
+                    "points_line": points_line,
+                }
+            )
+            line_index += 2
+            continue
+        line_index += 1
+
+    return records
+
+
+def colmap_points3d_ids_for_points_line(points_line: str) -> set[str]:
+    """Extract non-negative POINT3D_ID values from a COLMAP image points line."""
+    point_ids: set[str] = set()
+    tokens = points_line.split()
+    for index in range(2, len(tokens), 3):
+        point_id = tokens[index]
+        if point_id != "-1":
+            point_ids.add(point_id)
+    return point_ids
+
+
+def filter_colmap_points_line(points_line: str, retained_point_ids: set[str]) -> str:
+    """Drop references to removed sparse points from a COLMAP image points line."""
+    tokens = points_line.split()
+    if len(tokens) < 3:
+        return points_line
+    filtered = list(tokens)
+    for index in range(2, len(filtered), 3):
+        if filtered[index] != "-1" and filtered[index] not in retained_point_ids:
+            filtered[index] = "-1"
+    return " ".join(filtered)
+
+
+def prepare_colmap_subset_for_image_names(
+    source_input_dir: Path,
+    subset_input_dir: Path,
+    selected_image_names: Sequence[str],
+) -> dict[str, Any]:
+    """Materialize a small COLMAP dataset containing only selected image records."""
+    selected_basenames = set(parse_image_name_list(list(selected_image_names)))
+    if not selected_basenames:
+        return {
+            "enabled": False,
+            "reason": "no_selected_images",
+            "selected_image_count": 0,
+        }
+
+    source_sparse = source_input_dir / "sparse" / "0"
+    source_images = source_input_dir / "images"
+    source_images_txt = source_sparse / "images.txt"
+    source_points_txt = source_sparse / "points3D.txt"
+    source_cameras_txt = source_sparse / "cameras.txt"
+    records = load_colmap_image_records(source_images_txt)
+    selected_records = [
+        record
+        for record in records
+        if Path(str(record.get("image_name", ""))).name in selected_basenames
+    ]
+    if len(selected_records) < 2:
+        return {
+            "enabled": False,
+            "reason": "fewer_than_two_selected_colmap_records",
+            "selected_image_count": len(selected_records),
+            "requested_image_count": len(selected_basenames),
+        }
+
+    if subset_input_dir.exists():
+        shutil.rmtree(subset_input_dir)
+    subset_sparse = subset_input_dir / "sparse" / "0"
+    subset_images = subset_input_dir / "images"
+    subset_sparse.mkdir(parents=True, exist_ok=True)
+    subset_images.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(source_cameras_txt, subset_sparse / "cameras.txt")
+
+    selected_image_ids = {int(record["image_id"]) for record in selected_records}
+    observed_point_ids: set[str] = set()
+    for record in selected_records:
+        observed_point_ids.update(colmap_points3d_ids_for_points_line(str(record.get("points_line", ""))))
+
+    retained_point_ids: set[str] = set()
+    retained_point_lines: list[str] = []
+    if source_points_txt.exists():
+        with open(source_points_txt, 'r', encoding='utf-8') as handle:
+            for raw_line in handle:
+                line = raw_line.strip()
+                if not line or line.startswith('#'):
+                    continue
+                parts = line.split()
+                if not parts or parts[0] not in observed_point_ids:
+                    continue
+                prefix = parts[:8]
+                track_tokens = parts[8:]
+                filtered_track: list[str] = []
+                for index in range(0, len(track_tokens) - 1, 2):
+                    try:
+                        track_image_id = int(track_tokens[index])
+                    except ValueError:
+                        continue
+                    if track_image_id not in selected_image_ids:
+                        continue
+                    filtered_track.extend([track_tokens[index], track_tokens[index + 1]])
+                if not filtered_track:
+                    continue
+                retained_point_ids.add(parts[0])
+                retained_point_lines.append(" ".join([*prefix, *filtered_track]))
+
+    with open(subset_sparse / "images.txt", 'w', encoding='utf-8') as handle:
+        handle.write("# Filtered COLMAP images for bounded tile training\n")
+        handle.write(f"# Number of images: {len(selected_records)}\n")
+        for record in selected_records:
+            handle.write(f"{record['header']}\n")
+            handle.write(f"{filter_colmap_points_line(str(record.get('points_line', '')), retained_point_ids)}\n")
+
+    with open(subset_sparse / "points3D.txt", 'w', encoding='utf-8') as handle:
+        handle.write("# Filtered COLMAP sparse points for bounded tile training\n")
+        handle.write(f"# Number of points: {len(retained_point_lines)}\n")
+        for line in retained_point_lines:
+            handle.write(f"{line}\n")
+
+    source_image_by_lower_name = {path.name.lower(): path for path in source_images.iterdir() if path.is_file()}
+    linked_image_count = 0
+    missing_images: list[str] = []
+    for record in selected_records:
+        image_name = Path(str(record["image_name"])).name
+        source_image = source_images / image_name
+        if not source_image.exists():
+            source_image = source_image_by_lower_name.get(image_name.lower(), source_image)
+        if not source_image.exists():
+            missing_images.append(image_name)
+            continue
+        target_image = subset_images / image_name
+        try:
+            os.symlink(source_image, target_image)
+        except OSError:
+            shutil.copy2(source_image, target_image)
+        linked_image_count += 1
+
+    return {
+        "enabled": True,
+        "subset_input_dir": str(subset_input_dir),
+        "requested_image_count": len(selected_basenames),
+        "selected_image_count": len(selected_records),
+        "linked_image_count": linked_image_count,
+        "source_image_count": len(records),
+        "retained_sparse_point_count": len(retained_point_lines),
+        "missing_image_count": len(missing_images),
+        "missing_images": missing_images[:20],
+    }
+
+
 def unique_preserving_order(names: Sequence[str]) -> list[str]:
     """Drop duplicates while preserving the original order."""
     unique_names: list[str] = []
@@ -551,6 +731,7 @@ class NerfStudioTrainer:
         self.background_selection_result: Optional[BackgroundSelectionResult] = None
         self.floater_pruning_result: Optional[FloaterPruningResult] = None
         self.training_selection_result: Optional[Dict[str, Any]] = None
+        self.preconversion_selection_result: Optional[Dict[str, Any]] = None
         self.tile_manifest_resolution: Optional[Dict[str, Any]] = None
         
         # Apply Step Functions parameter overrides
@@ -763,6 +944,81 @@ class NerfStudioTrainer:
         logger.info("✅ COLMAP data validation passed - converting to NerfStudio format")
         return self.convert_colmap_to_nerfstudio()
 
+    def resolve_preconversion_selected_image_names(self) -> list[str]:
+        """Resolve bounded image selection before expensive ns-process-data conversion."""
+        training_mode = self.resolve_training_mode()
+        if training_mode not in {"global_scaffold", "leaf_tile"}:
+            return []
+
+        tile_manifest, view_buckets = self.load_tile_selection_inputs()
+        if tile_manifest is None:
+            return []
+
+        tiling_config = self.config.get('tiling', {})
+        scaffold_config = tiling_config.get('global_scaffold', {})
+        training_config = self.config.get('training', {})
+        tile_id = str(tiling_config.get('tile_id', '')).strip() or None
+        max_images = int(scaffold_config.get('max_images', 0)) if training_mode == 'global_scaffold' else None
+        frame_stride = int(scaffold_config.get('frame_stride', 1)) if training_mode == 'global_scaffold' else 1
+        proof_max_images = int(training_config.get('max_selected_images', 0) or 0)
+        proof_selection_stride = max(1, int(training_config.get('selection_stride', 1) or 1))
+
+        selected_image_names = select_training_image_names(
+            training_mode=training_mode,
+            tile_manifest=tile_manifest,
+            tile_id=tile_id,
+            max_images=max_images,
+            stride=frame_stride,
+        )
+        return limit_selected_image_names(
+            selected_image_names,
+            view_buckets=view_buckets,
+            max_images=proof_max_images,
+            selection_stride=proof_selection_stride,
+        )
+
+    def prepare_preconversion_input_dir(self, source_input_dir: Path) -> Path:
+        """Subset COLMAP/images before conversion so tile caps bound preprocessing cost."""
+        selected_image_names = self.resolve_preconversion_selected_image_names()
+        if not selected_image_names:
+            self.preconversion_selection_result = {
+                "enabled": False,
+                "reason": "no_preconversion_selection",
+            }
+            return source_input_dir
+
+        subset_input_dir = self.temp_dir / "preconversion_selected_input"
+        summary = prepare_colmap_subset_for_image_names(
+            source_input_dir,
+            subset_input_dir,
+            selected_image_names,
+        )
+        self.preconversion_selection_result = summary
+        if not summary.get("enabled"):
+            logger.warning("⚠️ Pre-conversion COLMAP subsetting skipped: %s", summary)
+            return source_input_dir
+        if int(summary.get("missing_image_count", 0) or 0) > 0:
+            logger.error("❌ Pre-conversion subset has missing selected images: %s", summary)
+            raise RuntimeError("Pre-conversion COLMAP subset is missing selected images")
+
+        logger.info("🧩 Pre-conversion COLMAP subset enabled:")
+        logger.info(
+            "   Images: %s selected from %s source records; sparse points retained: %s",
+            summary.get("selected_image_count"),
+            summary.get("source_image_count"),
+            summary.get("retained_sparse_point_count"),
+        )
+        logger.info("   Subset input: %s", summary.get("subset_input_dir"))
+        return subset_input_dir
+
+    def colmap_to_nerfstudio_timeout_seconds(self) -> int:
+        """Timeout for ns-process-data conversion; bounded tile subsets should finish fast."""
+        env_value = str(os.environ.get("COLMAP_NERFSTUDIO_TIMEOUT_SECONDS", "")).strip()
+        if env_value:
+            return max(60, int(env_value))
+        training_config = self.config.get("training", {})
+        return max(60, int(training_config.get("colmap_nerfstudio_timeout_seconds", 1200) or 1200))
+
     @staticmethod
     def build_sparse_point_cloud_ply(points_txt: Path, output_ply: Path) -> bool:
         """Write a lightweight sparse COLMAP point cloud PLY for NerfStudio startup."""
@@ -815,6 +1071,7 @@ class NerfStudioTrainer:
         """Convert COLMAP data to NerfStudio transforms.json format"""
         logger.info("🔄 Converting COLMAP data to NerfStudio format...")
         source_input_dir = self.input_dir
+        conversion_input_dir = self.prepare_preconversion_input_dir(source_input_dir)
         
         # Create converted data directory
         converted_dir = self.temp_dir / "converted_data"
@@ -823,7 +1080,7 @@ class NerfStudioTrainer:
         converted_dir.mkdir(exist_ok=True, parents=True)
         
         # Convert COLMAP TXT to BIN into a dedicated directory (industry-standard for NerfStudio)
-        sparse_txt_dir = self.input_dir / "sparse" / "0"
+        sparse_txt_dir = conversion_input_dir / "sparse" / "0"
         sparse_bin_dir = self.temp_dir / "colmap_bin" / "0"
         if sparse_bin_dir.parent.exists():
             shutil.rmtree(sparse_bin_dir.parent)
@@ -836,21 +1093,23 @@ class NerfStudioTrainer:
         # Use ns-process-data to convert COLMAP to transforms.json
         convert_cmd = [
             "ns-process-data", "images",
-            "--data", str(self.input_dir / "images"),
+            "--data", str(conversion_input_dir / "images"),
             "--output-dir", str(converted_dir),
             "--skip-colmap",  # Skip running COLMAP; reuse existing model
             "--colmap-model-path", str(sparse_bin_dir)
         ]
+        conversion_timeout = self.colmap_to_nerfstudio_timeout_seconds()
         
         logger.info(f"🚀 Executing COLMAP conversion command:")
         logger.info(f"   {' '.join(convert_cmd)}")
+        logger.info(f"   Timeout: {conversion_timeout}s")
         
         try:
             result = subprocess.run(
                 convert_cmd,
                 capture_output=True,
                 text=True,
-                timeout=600  # 10 minute timeout
+                timeout=conversion_timeout,
             )
             
             # COMPREHENSIVE LOGGING: Always log the output for debugging
@@ -902,7 +1161,7 @@ class NerfStudioTrainer:
                     transforms_payload = json.load(f)
                 image_name_map = build_converted_image_name_map(
                     transforms_payload,
-                    source_input_dir / "sparse" / "0" / "images.txt",
+                    conversion_input_dir / "sparse" / "0" / "images.txt",
                 )
                 image_name_map_path = converted_dir / "colmap_image_name_map.json"
                 with open(image_name_map_path, 'w', encoding='utf-8') as f:
@@ -913,7 +1172,7 @@ class NerfStudioTrainer:
                 )
                 sparse_pc_path = converted_dir / "sparse_pc.ply"
                 if self.build_sparse_point_cloud_ply(
-                    source_input_dir / "sparse" / "0" / "points3D.txt",
+                    conversion_input_dir / "sparse" / "0" / "points3D.txt",
                     sparse_pc_path,
                 ):
                     logger.info(f"☁️ Saved sparse point cloud PLY: {sparse_pc_path}")
@@ -928,7 +1187,7 @@ class NerfStudioTrainer:
             return True
             
         except subprocess.TimeoutExpired:
-            logger.error("❌ COLMAP conversion timeout (10 minutes exceeded)")
+            logger.error(f"❌ COLMAP conversion timeout ({conversion_timeout} seconds exceeded)")
             return False
         except Exception as e:
             logger.error(f"❌ COLMAP conversion failed: {e}")
@@ -1970,6 +2229,7 @@ class NerfStudioTrainer:
             'image_name_map_path': str(image_name_map_path) if image_name_map_path.exists() else None,
             'scaffold_initialization': scaffold_init_metadata,
             'camera_weighting': weighting_summary,
+            'preconversion_selection': getattr(self, "preconversion_selection_result", None),
             'tile_manifest_resolution': self.tile_manifest_resolution,
         }
 
@@ -2732,6 +2992,9 @@ class NerfStudioTrainer:
                 logger.warning(f"⚠️ Could not read export manifest: {exc}")
         if self.training_selection_result is not None:
             metadata['training_selection'] = self.training_selection_result
+        preconversion_selection = getattr(self, "preconversion_selection_result", None)
+        if preconversion_selection is not None:
+            metadata['preconversion_selection'] = preconversion_selection
         if self.tile_manifest_resolution is not None:
             metadata['tile_manifest_resolution'] = self.tile_manifest_resolution
 
