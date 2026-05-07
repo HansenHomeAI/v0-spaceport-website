@@ -1,0 +1,7 @@
+2026-05-07 09:49:26     294793 manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-01/colmap/chunk_planner_manifest.json
+2026-05-07 09:49:26        493 manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-01/colmap/planner_static_report.json
+2026-05-07 09:49:26        684 manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-01/colmap/reducer_metadata.json
+2026-05-07 09:49:26       8411 manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-01/colmap/sfm_metadata.json
+
+Total Objects: 4
+   Total Size: 304381

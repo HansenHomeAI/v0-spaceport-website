@@ -1,0 +1,28 @@
+{
+  "jobs": [
+    {
+      "job": "md1-fanout-20260507T1429Z-c01-1778167770",
+      "status": "InProgress",
+      "failure": null,
+      "start": null,
+      "arn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-fanout-20260507T1429Z-c01-1778167770",
+      "output": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-01/colmap",
+      "image": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine",
+      "instance_count": 1,
+      "instance_type": "ml.g4dn.xlarge",
+      "volume": 120
+    },
+    {
+      "job": "md1-fanout-20260507T1429Z-c02-1778167770",
+      "status": "InProgress",
+      "failure": null,
+      "start": null,
+      "arn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-fanout-20260507T1429Z-c02-1778167770",
+      "output": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-02/colmap",
+      "image": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine",
+      "instance_count": 1,
+      "instance_type": "ml.g4dn.xlarge",
+      "volume": 120
+    }
+  ]
+}

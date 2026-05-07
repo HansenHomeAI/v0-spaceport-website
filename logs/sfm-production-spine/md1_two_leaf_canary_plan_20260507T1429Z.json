@@ -1,9 +1,9 @@
 {
-  "updated_at": "2026-05-07T14:29:32Z",
-  "status": "prepared_not_launched",
+  "updated_at": "2026-05-07T15:31:00Z",
+  "status": "launched_running",
   "purpose": "Smallest useful proof of true multi-instance SageMaker leaf fanout before any repeat full MD1 fanout.",
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "a1ae5883a13323f0d5312059b21d225c9c55f9e8",
+  "head": "2d1649cbc70d29804e9e1d22893ac746e2c84381",
   "preconditions": [
     "branch container image is built from head a1ae5883a13323f0d5312059b21d225c9c55f9e8 or newer",
     "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI support is present in that container",
@@ -11,7 +11,10 @@
   ],
   "input_uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
   "planner_manifest_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/chunk_planner_manifest.json",
-  "selected_leaf_indexes": [1, 2],
+  "selected_leaf_indexes": [
+    1,
+    2
+  ],
   "reason_for_leaf_choice": "chunk 2 was the weak recovered leaf in the promoted MD1 artifact, and chunk 1 is its adjacent neighbor; this gives the canary a useful recovery/merge signal without launching all eight leaves.",
   "leaf_jobs": [
     {
@@ -35,5 +38,32 @@
     "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/merged/colmap",
     "required_result": "independent leaf outputs can be consumed by reducer without re-running full MD1"
   },
-  "not_launched_reason": "The next safe step is to build/publish the current branch container first so the canary proves the new immutable-manifest fanout path, not stale container behavior."
+  "container_build": {
+    "commit": "2d1649cbc70d29804e9e1d22893ac746e2c84381",
+    "workflow_run": "25504602999",
+    "codebuild_id": "spaceport-ml-containers:be6a6ead-1127-46c4-be86-0587d2625fe7",
+    "status": "SUCCEEDED"
+  },
+  "launched_jobs": [
+    {
+      "job": "md1-fanout-20260507T1429Z-c01-1778167770",
+      "chunk_index": 1,
+      "status": "InProgress",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-01/colmap",
+      "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine",
+      "instance_type": "ml.g4dn.xlarge",
+      "volume_size_gb": 120,
+      "describe_artifact": "logs/sfm-production-spine/md1-fanout-20260507T1429Z-c01-1778167770-sagemaker-describe-submit.json"
+    },
+    {
+      "job": "md1-fanout-20260507T1429Z-c02-1778167770",
+      "chunk_index": 2,
+      "status": "InProgress",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-02/colmap",
+      "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine",
+      "instance_type": "ml.g4dn.xlarge",
+      "volume_size_gb": 120,
+      "describe_artifact": "logs/sfm-production-spine/md1-fanout-20260507T1429Z-c02-1778167770-sagemaker-describe-submit.json"
+    }
+  ]
 }

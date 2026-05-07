@@ -6769,7 +6769,11 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 for index, name in enumerate(pipeline.capture_ordered_names)
             }
 
-            chunk_plans = pipeline.build_chunk_plans()
+            with mock.patch.object(pipeline, "build_view_geometries") as build_views_mock, mock.patch.object(
+                pipeline,
+                "build_candidate_graph",
+            ) as build_graph_mock:
+                chunk_plans = pipeline.build_chunk_plans()
 
             self.assertEqual(len(chunk_plans), 1)
             self.assertEqual(chunk_plans[0].index, 1)
@@ -6777,6 +6781,8 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(chunk_plans[0].overlap_names, ["shared.JPG"])
             self.assertEqual(chunk_plans[0].image_names, ["b.JPG", "c.JPG", "shared.JPG"])
             self.assertEqual(pipeline.chunk_matcher_strategy, "pair_list")
+            build_views_mock.assert_called_once_with()
+            build_graph_mock.assert_called_once_with()
 
     def test_stream_command_times_out(self):
         started = time.time()

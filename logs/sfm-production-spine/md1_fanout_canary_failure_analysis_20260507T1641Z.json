@@ -1,0 +1,32 @@
+{
+  "updated_at": "2026-05-07T16:41:45Z",
+  "branch": "agent-73948216-sfm-production-spine",
+  "head_at_failure": "2d1649cbc70d29804e9e1d22893ac746e2c84381",
+  "canary_result": "partial_failure",
+  "jobs": [
+    {
+      "job": "md1-fanout-20260507T1429Z-c01-1778167770",
+      "chunk_index": 1,
+      "status": "Failed",
+      "failure": "AlgorithmError exit code 1",
+      "root_cause": "0 verified image pairs imported; chunk_01_mapper_initial had no images with matches"
+    },
+    {
+      "job": "md1-fanout-20260507T1429Z-c02-1778167770",
+      "chunk_index": 2,
+      "status": "Completed",
+      "registered": "167/167",
+      "points": 122715,
+      "runtime_sec": 1170.86
+    }
+  ],
+  "evidence": [
+    "logs/sfm-production-spine/md1-fanout-c01-cloudwatch-tail-20260507T1639Z.json",
+    "logs/sfm-production-spine/leaf-01-sfm_metadata-20260507T1639Z.json",
+    "logs/sfm-production-spine/leaf-02-sfm_metadata-20260507T1639Z.json",
+    "logs/sfm-production-spine/leaf-02-colmap-s3-20260507T1639Z.txt"
+  ],
+  "fix_status": "implemented_locally_unit_verified",
+  "fix_test_log": "logs/sfm-production-spine/fanout-runtime-support-tests-20260507T1639Z.log",
+  "next_step": "commit/push fix, verify container build, then relaunch chunk 1 retry only"
+}

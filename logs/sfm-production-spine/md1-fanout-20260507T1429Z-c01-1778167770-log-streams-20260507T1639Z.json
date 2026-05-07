@@ -1,0 +1,14 @@
+{
+    "logStreams": [
+        {
+            "logStreamName": "md1-fanout-20260507T1429Z-c01-1778167770/algo-1-1778167812",
+            "creationTime": 1778168211872,
+            "firstEventTimestamp": 1778168205636,
+            "lastEventTimestamp": 1778168955540,
+            "lastIngestionTime": 1778168956663,
+            "uploadSequenceToken": "49039859671300401899581529056128962441161415769975566124",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:md1-fanout-20260507T1429Z-c01-1778167770/algo-1-1778167812",
+            "storedBytes": 0
+        }
+    ]
+}

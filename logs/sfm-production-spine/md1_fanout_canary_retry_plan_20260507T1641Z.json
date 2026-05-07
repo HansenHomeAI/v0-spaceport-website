@@ -1,0 +1,13 @@
+{
+  "updated_at": "2026-05-07T16:41:45Z",
+  "status": "prepared_not_launched_requires_container_rebuild",
+  "reason": "Canary leaf chunk 1 failed because immutable planner-manifest path did not rebuild the candidate graph before writing the footprint pair-list, so matches_importer imported 0 pairs and mapper had no matches.",
+  "fix": "chunk_plans_from_input_manifest now calls build_view_geometries() and build_candidate_graph() after selected leaf extraction and before match-list generation.",
+  "failed_job": "md1-fanout-20260507T1429Z-c01-1778167770",
+  "completed_peer_job": "md1-fanout-20260507T1429Z-c02-1778167770",
+  "retry_chunk_index": 1,
+  "retry_job_prefix": "md1-fanout-20260507T1639Z-c01r2",
+  "retry_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1639Z/leaves/leaf-01-r2/colmap",
+  "launch_command": "python3 scripts/sfm/run_sfm_benchmark.py --branch agent-73948216-sfm-production-spine --input-s3-uri s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip --output-s3-uri s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1639Z/leaves/leaf-01-r2/colmap --job-prefix md1-fanout-20260507T1639Z-c01r2 --mode chunked --subset-strategy md1_fanout_two_leaf_canary_retry --instance-type ml.g4dn.xlarge --volume-size-gb 120 --only-chunk-indexes 1 --env COLMAP_PIPELINE_MODE=distributed_chunked_v1 --env COLMAP_CHUNK_PLANNER=footprint_graph_v1 --env COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI=s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/chunk_planner_manifest.json --env COLMAP_MATCH_PROFILE=P3 --env COLMAP_PAIR_CAP_LOCAL=24 --env COLMAP_PAIR_CAP_REVISIT=10 --env COLMAP_PAIR_CAP_SEAM=10 --summary-json-output logs/sfm-production-spine/md1-fanout-20260507T1639Z-c01r2-submit.json",
+  "precondition": "commit/push fix and verify sfm container image built from the new head before launching retry"
+}

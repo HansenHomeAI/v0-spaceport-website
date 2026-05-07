@@ -1,0 +1,18 @@
+{
+  "branch": "agent-73948216-sfm-production-spine",
+  "head": "2d1649cbc70d29804e9e1d22893ac746e2c84381",
+  "input_uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+  "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-01/colmap",
+  "planner_manifest": "chunk_planner_manifest.json",
+  "leaf_count": 0,
+  "passed_leaf_count": 0,
+  "failed_leaf_count": 0,
+  "merge_strategy": "overlap_first_balanced",
+  "merged_component_count": 0,
+  "expected_component_count": 1,
+  "ba_policy": "local_or_deferred_global",
+  "standard_sparse0_exists": false,
+  "promotion_blockers": [
+    "missing_sparse0"
+  ]
+}

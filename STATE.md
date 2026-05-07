@@ -1,24 +1,66 @@
-reason: building the mature-branch distributed SfM production spine from origin/agent-31459027-sfm-final-bridge-fallback without mutating the mature branch; sfm-reality-check heartbeat stays active until full verified end-goal proof or explicit owner stop.
-last_step: R5 full huge-acreage proof completed and was rechecked. SageMaker job r5full80s2-1777973662 is terminal Completed with no FailureReason; current active-processing-job query returned none; reducer passed 11/11 leaves with merged_component_count=1 expected_component_count=1 and promotion_blockers=[]; standard sparse/0 exists with cameras.txt, frames.txt, images.txt, points3D.txt, and rigs.txt; metadata reports 1452/1456 registered images, 1253309 raw points, 864755 filtered points, 863.16 raw pts/registered image, 595.56 filtered pts/registered image, runtime 30531.75s; pipeline-viewer API/viewer loaded HTTP 200 with 1452 cameras, 1253309 exact points, 18000 sampled points, 11 chunks, one nonblank canvas, and no page errors. Seam14 retry timed out and raw merge was retained, but this is recorded in metadata and final report; full global BA was deferred above threshold and recorded.
-next_unblocked_step: commit and push the R5 proof ledger/report, monitor the branch workflows kicked off by that push, and then keep sfm-reality-check active until the pushed proof is confirmed and owner expectations are satisfied. Do not delete sfm-reality-check.
+reason: project-level continuation after stable MD1 SfM artifact proof; automation remains active because the owner has not confirmed the final project is done and project-level caveats remain.
+last_step: 2026-05-07T16:41Z two-leaf canary reached terminal state. Chunk 2 job md1-fanout-20260507T1429Z-c02-1778167770 completed with 167/167 registered and sparse/0 present. Chunk 1 job md1-fanout-20260507T1429Z-c01-1778167770 failed because matches_importer imported 0 verified pairs and mapper had no images with matches. Root cause found: the immutable planner-manifest path loaded selected chunk plans but did not rebuild view geometries/candidate graph before writing the footprint pair list. I fixed that locally and unit verification passed.
+next_unblocked_step: Commit/push the candidate-graph fix, wait for sfm container build from the new head, then relaunch only the failed chunk-1 canary retry from logs/sfm-production-spine/md1_fanout_canary_retry_plan_20260507T1641Z.json.
 owner_action_needed: none
 active_jobs: []
-latest_artifacts:
-  - logs/sfm-production-spine/r5full80s2-1777973662-sagemaker-describe-1839.json
-  - logs/sfm-production-spine/r5full80s2-1777973662-cloudwatch-tail-1839.json
-  - logs/sfm-production-spine/r5full80s2-1777973662-s3-1839.txt
-  - logs/sfm-production-spine/r5full80s2-1777973662-sfm_metadata.json
-  - logs/sfm-production-spine/r5full80s2-1777973662-reducer_metadata.json
-  - logs/sfm-production-spine/r5full80s2-1777973662-leaf_metadata.json
-  - logs/sfm-production-spine/r5full80s2-1777973662-planner_static_report.json
-  - logs/sfm-production-spine/r5full80s2-1777973662-sparse0-list.txt
-  - logs/sfm-production-spine/pipeline-viewer-r5full80s2-proof.json
-  - logs/sfm-production-spine/pipeline-viewer-preview-r5full80s2-desktop.png
-  - logs/sfm-production-spine/pipeline-viewer-preview-r5full80s2-canvas.png
-  - logs/sfm-production-spine/active-processing-jobs-20260505T1849Z.json
-  - logs/sfm-production-spine/r5full80s2-1777973662-sagemaker-describe-1849.json
-  - logs/sfm-production-spine/r5full80s2-1777973662-sparse0-list-1849.txt
-  - s3://spaceport-ml-processing-staging/manual-validations/r5full80s2-1777973662/colmap/sparse/0/
 branch: agent-73948216-sfm-production-spine
-head: a6360e1f555709d4482d200282cd7f81b0a6c3f3
-updated: 2026-05-05T18:51:17Z
+head: 2d1649cbc70d29804e9e1d22893ac746e2c84381
+updated: 2026-05-07T16:41:45Z
+project_status: not_final_project_closed
+md1_artifact_status: stable_promotable_md1_sfm_artifact
+md1_result:
+  decision: promote_md1_sfm_artifact_not_close_entire_project
+  job: r4exact739s1-1777612249
+  input_uri: s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip
+  output_uri: s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap
+  sparse0_uri: s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/sparse/0/
+  registered: 2157
+  total: 2157
+  raw_points: 1708813
+  filtered_points: 1222473
+  runtime_sec: 26614.34
+  mature_baseline_runtime_sec: 36033.85
+  speedup_percent: 26.14
+  mature_baseline_job: md1p24e752k-1776314974
+project_level_caveats:
+  - true multi-instance SageMaker leaf fanout canary partially failed: chunk 2 succeeded, chunk 1 needs retry after candidate-graph fix
+  - reducer-from-independent-leaf-prefixes has not been proven because both canary leaves are not successful yet
+  - filtered point count is 6.88% below the mature baseline even though raw points and registration pass
+  - downstream 3DGS/splat training quality is not proven by the SfM sparse/0 proof packet
+latest_artifacts:
+  - logs/sfm-production-spine/md1_fanout_canary_failure_analysis_20260507T1641Z.json
+  - logs/sfm-production-spine/md1_fanout_canary_retry_plan_20260507T1641Z.json
+  - logs/sfm-production-spine/fanout-runtime-support-tests-20260507T1639Z.log
+  - logs/sfm-production-spine/md1-fanout-c01-cloudwatch-tail-20260507T1639Z.json
+  - logs/sfm-production-spine/md1-fanout-c02-cloudwatch-tail-20260507T1639Z.json
+  - logs/sfm-production-spine/leaf-01-sfm_metadata-20260507T1639Z.json
+  - logs/sfm-production-spine/leaf-02-sfm_metadata-20260507T1639Z.json
+  - logs/sfm-production-spine/fanout_canary_progress_20260507T1531Z.json
+  - logs/sfm-production-spine/md1_fanout_canary_submit_20260507T1517Z.json
+  - logs/sfm-production-spine/md1-fanout-20260507T1429Z-c01-1778167770-sagemaker-describe-submit.json
+  - logs/sfm-production-spine/md1-fanout-20260507T1429Z-c02-1778167770-sagemaker-describe-submit.json
+  - logs/sfm-production-spine/codebuild-be6a6ead-poll6.json
+  - logs/sfm-production-spine/github-runs-2d1649cb-poll6.json
+  - logs/sfm-production-spine/project_level_gap_assessment_20260507T1351Z.json
+  - logs/sfm-production-spine/project_level_gap_assessment_20260507T1351Z.md
+  - logs/sfm-production-spine/md1_fanout_contract_20260507T1351Z.json
+  - logs/sfm-production-spine/fanout_runtime_support_20260507T1429Z.json
+  - logs/sfm-production-spine/md1_fanout_contract_20260507T1429Z.json
+  - logs/sfm-production-spine/md1_two_leaf_canary_plan_20260507T1429Z.json
+  - logs/sfm-production-spine/fanout-runtime-support-tests-20260507T1429Z.log
+  - infrastructure/containers/sfm/run_colmap_sfm.py
+  - scripts/sfm/build_sfm_fanout_contract.py
+  - tests/unit/test_sfm_fanout_contract.py
+  - tests/unit/test_colmap_gps_priors.py
+  - logs/sfm-production-spine/active-processing-jobs-20260507T1429Z.json
+  - logs/sfm-production-spine/r4exact739s1-1777612249-sagemaker-describe-20260507T1429Z.json
+  - logs/sfm-production-spine/r4exact739s1-1777612249-sparse0-list-20260507T1429Z.txt
+  - logs/sfm-production-spine/r4exact739s1-1777612249-pipeline-viewer-api-20260507T1429Z.json
+  - logs/sfm-production-spine/active-processing-jobs-20260507T1351Z.json
+  - logs/sfm-production-spine/r4exact739s1-1777612249-sagemaker-describe-20260507T1351Z.json
+  - logs/sfm-production-spine/r4exact739s1-1777612249-sparse0-list-20260507T1351Z.txt
+  - logs/sfm-production-spine/r4exact739s1-1777612249-pipeline-viewer-api-20260507T1351Z.json
+  - logs/sfm-production-spine/final_promotion_packet.json
+  - logs/sfm-production-spine/md1_speed_proof_audit.json
+  - logs/sfm-production-spine/comparison_report.json
+  - s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/sparse/0/

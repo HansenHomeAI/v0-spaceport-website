@@ -1296,6 +1296,8 @@ class ColmapPipeline:
             or ("pair_list" if self.colmap_capabilities.get("supports_matches_importer") else "exhaustive")
         )
         self.build_single_image_groups()
+        self.build_view_geometries()
+        self.build_candidate_graph()
         chunk_plans: List[ChunkPlan] = []
         missing_names: Set[str] = set()
         selected_indexes = set(self.only_chunk_indexes)
