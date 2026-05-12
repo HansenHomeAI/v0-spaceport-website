@@ -41,6 +41,13 @@ output:
   include_camera_parameters: true
   include_point_statistics: true
 
+# Promotion Quality Gates
+quality:
+  heldout_eval:
+    enabled: true                    # Run ns-eval after training
+    fail_on_missing_metrics: true    # Fail job if PSNR/SSIM/LPIPS or render panels are missing
+    timeout_seconds: 1800            # Keep validation bounded for cost control
+
 # Advanced Features (Vincent Woo's methodology)
 advanced:
   # Bilateral guided radiance fields (Vincent's exposure correction)

@@ -1,12 +1,12 @@
 {
   "branch": "agent-73948216-sfm-production-spine",
   "head": "677f55090f4ec8b76c3622f8fd1371a8610d809f",
-  "updated": "2026-05-12T18:38:48Z",
-  "current_rung": "VISUAL_QUALITY_GATE_CONTRACT_AFTER_REDUCER_PROOF",
+  "updated": "2026-05-12T19:03:30Z",
+  "current_rung": "ACTIVE_3DGS_VISUAL_QUALITY_WIRING_AFTER_REDUCER_PROOF",
   "current_goal": "Production-ready huge-scene tiled SfM: same-MD1 quality, meaningfully faster, restartable, distributed, promotion-safe, and backed by sparse, viewer, render, and AI visual proof.",
   "active_jobs": [],
   "blockers": [],
-  "last_command": "Implemented heldout render metrics and AI visual review gate ingestion; added deterministic source/render pair evaluator that writes PSNR/SSIM/proof panels and blocks promotion until LPIPS is present; re-ran the current reducer quality report and it correctly remains needs_more_proof without real splat renders.",
+  "last_command": "Wired the active NerfStudio/3DGS container entrypoint to run ns-eval after training, preserve heldout render proof panels, emit quality_eval/splat_heldout_render_metrics.json with PSNR/SSIM/LPIPS/blockers, and fail required quality output when metrics or proof panels are missing; focused tests now pass.",
   "last_metrics": {
     "canonical_md1_artifact": {
       "job": "r4exact739s1-1777612249",
@@ -127,17 +127,20 @@
       "screenshot_unique_colors": 9199
     },
     "visual_quality_gate_contract_20260512T1838Z": {
-      "status": "implemented_not_run_on_real_splat",
+      "status": "implemented_and_wired_to_active_3dgs_entrypoint_not_run_on_real_splat",
       "heldout_pair_evaluator": "scripts/sfm/evaluate_visual_quality.py",
+      "nerfstudio_eval_normalizer": "scripts/sfm/normalize_nerfstudio_eval.py",
       "integrated_quality_gate": "scripts/sfm/evaluate_sfm_quality.py",
+      "active_3dgs_entrypoint": "infrastructure/containers/3dgs/train_nerfstudio_production.py",
+      "active_3dgs_config": "infrastructure/containers/3dgs/nerfstudio_config.yaml",
       "expected_render_report_kind": "splat_heldout_render_metrics",
       "expected_ai_report_kind": "ai_visual_review_report",
       "quality_decision_without_render_pairs": "needs_more_proof",
       "local_tests": {
-        "command": "python3 -m unittest tests.unit.test_sfm_quality_eval tests.unit.test_sfm_visual_quality tests.unit.test_sfm_fanout_reducer tests.unit.test_sfm_reducer_canary tests.unit.test_sfm_fanout_contract",
-        "result": "14 tests passed"
+        "command": "python3 -m unittest tests.unit.test_sfm_quality_eval tests.unit.test_sfm_visual_quality tests.unit.test_sfm_nerfstudio_eval_normalizer tests.unit.test_nerfstudio_training_quality_gate tests.unit.test_sfm_fanout_reducer tests.unit.test_sfm_reducer_canary tests.unit.test_sfm_fanout_contract",
+        "result": "19 tests passed"
       },
-      "py_compile": "scripts/sfm/evaluate_sfm_quality.py and scripts/sfm/evaluate_visual_quality.py passed"
+      "py_compile": "infrastructure/containers/3dgs/train_nerfstudio_production.py, scripts/sfm/evaluate_sfm_quality.py, scripts/sfm/evaluate_visual_quality.py, and scripts/sfm/normalize_nerfstudio_eval.py passed"
     }
   },
   "latest_artifacts": [
@@ -161,16 +164,21 @@
     "logs/sfm-production-spine/md1-fanout-reducer-proof-viewer-20260512T1803Z.png",
     "logs/sfm-production-spine/md1_fanout_reducer_proof_s3_20260512T1803Z.txt",
     "scripts/sfm/evaluate_visual_quality.py",
+    "scripts/sfm/normalize_nerfstudio_eval.py",
+    "infrastructure/containers/3dgs/train_nerfstudio_production.py",
+    "infrastructure/containers/3dgs/nerfstudio_config.yaml",
     "tests/unit/test_sfm_visual_quality.py",
+    "tests/unit/test_sfm_nerfstudio_eval_normalizer.py",
+    "tests/unit/test_nerfstudio_training_quality_gate.py",
     "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged/colmap"
   ],
   "project_level_caveats": [
     "full 8-leaf multi-instance MD1 fanout plus reducer has not been run on the production reducer path",
-    "active NerfStudio/3DGS path does not yet emit deterministic heldout render pairs with PSNR/SSIM/LPIPS",
+    "active NerfStudio/3DGS quality emission is wired in code but not yet verified in a SageMaker/container run on the two-leaf reducer artifact",
     "AI visual defect review has not been run on source/render/diff proof panels from a real splat artifact",
     "filtered point count is 6.88% below the mature baseline even though raw points and registration pass"
   ],
-  "next_unblocked_step": "Wire the active NerfStudio/3DGS path to preserve or regenerate deterministic heldout renders, emit splat_heldout_render_metrics with PSNR/SSIM/LPIPS plus proof panels, run AI visual review on those panels, then execute this cheaply on the two-leaf reducer artifact before any full 8-leaf MD1 rerun.",
+  "next_unblocked_step": "After this branch/container build is green, run the cheapest two-leaf reducer artifact through the active 3DGS path and verify the emitted ns-eval quality report plus AI visual review panels before any full 8-leaf MD1 rerun.",
   "owner_action_needed": "none",
   "automation": {
     "id": "sfm-reality-check",

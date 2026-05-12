@@ -20,6 +20,8 @@ import sys
 import json
 import yaml
 import time
+import math
+import statistics
 import logging
 import argparse
 import subprocess
@@ -60,6 +62,135 @@ for var in ('LD_LIBRARY_PATH', 'LIBRARY_PATH'):
 from pathlib import Path
 from typing import Dict, Any, Optional
 import shutil
+
+# Metrics and proof panels emitted by `ns-eval` become the deterministic
+# downstream visual gate for promotion.
+METRIC_NAMES = {"psnr", "ssim", "lpips"}
+RENDER_SUFFIXES = {".png", ".jpg", ".jpeg", ".webp", ".ppm"}
+
+
+def quantile(values: list[float], q: float) -> Optional[float]:
+    if not values:
+        return None
+    ordered = sorted(values)
+    index = min(max(math.ceil(q * len(ordered)) - 1, 0), len(ordered) - 1)
+    return round(ordered[index], 4)
+
+
+def summarize_metric_values(values: list[float]) -> Dict[str, Any]:
+    numbers = [float(value) for value in values if math.isfinite(float(value))]
+    if not numbers:
+        return {"count": 0, "min": None, "p10": None, "median": None, "p90": None, "p95": None, "max": None}
+    return {
+        "count": len(numbers),
+        "min": round(min(numbers), 4),
+        "p10": quantile(numbers, 0.10),
+        "median": round(statistics.median(numbers), 4),
+        "p90": quantile(numbers, 0.90),
+        "p95": quantile(numbers, 0.95),
+        "max": round(max(numbers), 4),
+    }
+
+
+def ns_eval_metric_name(key: str) -> Optional[str]:
+    normalized = key.lower().replace("-", "_")
+    tail = normalized.split("/")[-1].split(".")[-1]
+    if tail in METRIC_NAMES:
+        return tail
+    for metric in METRIC_NAMES:
+        if tail.endswith(f"_{metric}"):
+            return metric
+    return None
+
+
+def collect_ns_eval_metrics(payload: Any, out: Dict[str, list[float]]) -> None:
+    if isinstance(payload, dict):
+        for key, value in payload.items():
+            metric = ns_eval_metric_name(str(key))
+            if metric and isinstance(value, (int, float)) and math.isfinite(float(value)):
+                out[metric].append(float(value))
+            else:
+                collect_ns_eval_metrics(value, out)
+    elif isinstance(payload, list):
+        for item in payload:
+            collect_ns_eval_metrics(item, out)
+
+
+def find_ns_eval_image_count(payload: Any) -> int:
+    if isinstance(payload, dict):
+        for key in ("holdout_count", "validation_images", "eval_images", "num_eval_images", "num_images", "image_count"):
+            value = payload.get(key)
+            if isinstance(value, int) and value > 0:
+                return value
+        for value in payload.values():
+            found = find_ns_eval_image_count(value)
+            if found:
+                return found
+    elif isinstance(payload, list):
+        for item in payload:
+            found = find_ns_eval_image_count(item)
+            if found:
+                return found
+    return 0
+
+
+def list_render_proof_paths(render_dir: Path) -> list[str]:
+    if not render_dir.exists():
+        return []
+    return [
+        str(path)
+        for path in sorted(render_dir.rglob("*"))
+        if path.is_file() and path.suffix.lower() in RENDER_SUFFIXES
+    ]
+
+
+def build_splat_heldout_render_report(
+    raw_ns_eval_path: Path,
+    render_dir: Path,
+    config_file: Path,
+    model_uri: str = "",
+) -> Dict[str, Any]:
+    with open(raw_ns_eval_path, "r") as f:
+        raw_eval = json.load(f)
+
+    metrics = {name: [] for name in sorted(METRIC_NAMES)}
+    collect_ns_eval_metrics(raw_eval, metrics)
+    proof_paths = list_render_proof_paths(render_dir)
+    holdout_count = find_ns_eval_image_count(raw_eval) or len(proof_paths) or len(metrics["psnr"])
+    successful_count = len(proof_paths) or len(metrics["psnr"])
+
+    blockers = []
+    for metric in ("psnr", "ssim", "lpips"):
+        if not metrics[metric]:
+            blockers.append(f"missing_{metric}")
+    if holdout_count <= 0:
+        blockers.append("missing_holdout_count")
+    if not proof_paths:
+        blockers.append("missing_render_proof_panels")
+
+    return {
+        "schema_version": 1,
+        "artifact_kind": "splat_heldout_render_metrics",
+        "source": "nerfstudio_ns_eval",
+        "decision": "fail" if blockers else "pass",
+        "model_uri": model_uri,
+        "raw_ns_eval_json": str(raw_ns_eval_path),
+        "load_config": str(config_file),
+        "holdout_count": holdout_count,
+        "successful_render_count": successful_count,
+        "metrics": {
+            "psnr": summarize_metric_values(metrics["psnr"]),
+            "ssim": summarize_metric_values(metrics["ssim"]),
+            "lpips": summarize_metric_values(metrics["lpips"]),
+        },
+        "proof_panels": {
+            "panel_dir": str(render_dir),
+            "count": len(proof_paths),
+            "paths": proof_paths,
+        },
+        "blockers": blockers,
+    }
+
 
 # Configure production logging
 logging.basicConfig(
@@ -604,19 +735,125 @@ class NerfStudioTrainer:
         except Exception as e:
             logger.error(f"❌ Training execution failed: {e}")
             return False
+
+    def find_latest_config_file(self) -> Optional[Path]:
+        """Find the most recent NerfStudio training config."""
+        config_files = list(self.temp_dir.glob("**/config.yml"))
+        if not config_files:
+            return None
+        return max(config_files, key=lambda x: x.stat().st_mtime)
+
+    def quality_eval_enabled(self) -> bool:
+        """Return whether heldout rendering metrics should run after training."""
+        env_value = os.environ.get("RUN_HELDOUT_EVAL")
+        if env_value is not None:
+            return env_value.lower() in ("1", "true", "yes", "on")
+        quality_config = self.config.get("quality", {}).get("heldout_eval", {})
+        return bool(quality_config.get("enabled", True))
+
+    def quality_eval_required(self) -> bool:
+        """Return whether missing heldout metrics should fail the training job."""
+        env_value = os.environ.get("QUALITY_EVAL_REQUIRED")
+        if env_value is not None:
+            return env_value.lower() in ("1", "true", "yes", "on")
+        quality_config = self.config.get("quality", {}).get("heldout_eval", {})
+        return bool(quality_config.get("fail_on_missing_metrics", True))
+
+    def quality_eval_timeout_seconds(self) -> int:
+        env_value = os.environ.get("NS_EVAL_TIMEOUT_SEC")
+        if env_value:
+            return int(env_value)
+        quality_config = self.config.get("quality", {}).get("heldout_eval", {})
+        return int(quality_config.get("timeout_seconds", 1800))
+
+    def run_nerfstudio_evaluation(self) -> bool:
+        """Run NerfStudio heldout evaluation and emit the promotion gate report."""
+        if not self.quality_eval_enabled():
+            logger.warning("⚠️ Heldout visual quality evaluation disabled")
+            return True
+
+        logger.info("📸 Running NerfStudio heldout render evaluation...")
+        config_file = self.find_latest_config_file()
+        if not config_file:
+            logger.error("❌ No config.yml found for NerfStudio evaluation")
+            return not self.quality_eval_required()
+
+        eval_dir = self.output_dir / "quality_eval"
+        render_dir = eval_dir / "heldout_renders"
+        eval_dir.mkdir(parents=True, exist_ok=True)
+        render_dir.mkdir(parents=True, exist_ok=True)
+
+        raw_eval_path = eval_dir / "ns_eval.json"
+        report_path = eval_dir / "splat_heldout_render_metrics.json"
+        stdout_path = eval_dir / "ns_eval_stdout.log"
+        stderr_path = eval_dir / "ns_eval_stderr.log"
+
+        eval_cmd = [
+            "ns-eval",
+            "--load-config", str(config_file),
+            "--output-path", str(raw_eval_path),
+            "--render-output-path", str(render_dir),
+        ]
+        logger.info("🔄 Executing NerfStudio eval command:")
+        logger.info(f"   {' '.join(eval_cmd)}")
+
+        try:
+            result = subprocess.run(
+                eval_cmd,
+                capture_output=True,
+                text=True,
+                timeout=self.quality_eval_timeout_seconds(),
+            )
+        except subprocess.TimeoutExpired:
+            logger.error(f"❌ NerfStudio evaluation timeout ({self.quality_eval_timeout_seconds()}s exceeded)")
+            return not self.quality_eval_required()
+        except Exception as e:
+            logger.error(f"❌ NerfStudio evaluation execution failed: {e}")
+            return not self.quality_eval_required()
+
+        stdout_path.write_text(result.stdout or "", encoding="utf-8")
+        stderr_path.write_text(result.stderr or "", encoding="utf-8")
+
+        if result.returncode != 0:
+            logger.error("❌ NerfStudio evaluation failed:")
+            logger.error(f"Exit code: {result.returncode}")
+            logger.error(f"STDOUT log: {stdout_path}")
+            logger.error(f"STDERR log: {stderr_path}")
+            return not self.quality_eval_required()
+
+        if not raw_eval_path.exists():
+            logger.error(f"❌ NerfStudio evaluation did not write {raw_eval_path}")
+            return not self.quality_eval_required()
+
+        report = build_splat_heldout_render_report(raw_eval_path, render_dir, config_file)
+        with open(report_path, "w") as f:
+            json.dump(report, f, indent=2)
+            f.write("\n")
+
+        logger.info("📊 Heldout visual quality report:")
+        logger.info(f"   Report: {report_path}")
+        logger.info(f"   Decision: {report['decision']}")
+        logger.info(f"   Holdout images: {report['holdout_count']}")
+        logger.info(f"   Proof panels: {report['proof_panels']['count']}")
+        logger.info(f"   PSNR median: {report['metrics']['psnr']['median']}")
+        logger.info(f"   SSIM median: {report['metrics']['ssim']['median']}")
+        logger.info(f"   LPIPS median: {report['metrics']['lpips']['median']}")
+        if report["blockers"]:
+            logger.error(f"❌ Visual quality blockers: {report['blockers']}")
+            return not self.quality_eval_required()
+
+        logger.info("✅ NerfStudio heldout render evaluation completed")
+        return True
     
     def export_trained_model(self) -> bool:
         """Export trained model to PLY format (SOGS compatible)"""
         logger.info("📦 Exporting trained model to PLY format...")
         
         # Find the latest config file in training output
-        config_files = list(self.temp_dir.glob("**/config.yml"))
-        if not config_files:
+        config_file = self.find_latest_config_file()
+        if not config_file:
             logger.error("❌ No config.yml found in training output")
             return False
-        
-        # Use the most recent config file
-        config_file = max(config_files, key=lambda x: x.stat().st_mtime)
         logger.info(f"📄 Using config: {config_file}")
         
         # Export command
@@ -688,6 +925,19 @@ class NerfStudioTrainer:
             ply_file = ply_files[0]
             metadata['output_file'] = ply_file.name
             metadata['file_size_mb'] = ply_file.stat().st_size / (1024 * 1024)
+
+        quality_report = self.output_dir / "quality_eval" / "splat_heldout_render_metrics.json"
+        if quality_report.exists():
+            with open(quality_report, "r") as f:
+                quality_payload = json.load(f)
+            metadata["quality_eval_completed"] = True
+            metadata["quality_eval_report"] = str(quality_report.relative_to(self.output_dir))
+            metadata["heldout_render_decision"] = quality_payload.get("decision")
+            metadata["heldout_render_metrics"] = quality_payload.get("metrics")
+            metadata["heldout_render_blockers"] = quality_payload.get("blockers") or []
+            metadata["heldout_render_proof_panel_count"] = (quality_payload.get("proof_panels") or {}).get("count")
+        else:
+            metadata["quality_eval_completed"] = False
         
         # Save metadata
         metadata_path = self.output_dir / "training_metadata.json"
@@ -726,15 +976,20 @@ class NerfStudioTrainer:
                 logger.error("❌ NerfStudio training failed")
                 return False
             
-            # Step 3: Export trained model
+            # Step 3: Run deterministic heldout render metrics before promotion
+            if not self.run_nerfstudio_evaluation():
+                logger.error("❌ NerfStudio heldout render evaluation failed")
+                return False
+
+            # Step 4: Export trained model
             if not self.export_trained_model():
                 logger.error("❌ Model export failed")
                 return False
             
-            # Step 4: Generate metadata
+            # Step 5: Generate metadata
             metadata = self.generate_training_metadata()
             
-            # Step 5: Cleanup
+            # Step 6: Cleanup
             self.cleanup_temp_files()
             
             logger.info("=" * 80)

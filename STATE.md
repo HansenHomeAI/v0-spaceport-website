@@ -1,11 +1,11 @@
 reason: project-level continuation toward production-ready huge-scene tiled SfM; automation is active and must remain active until final proof has no unresolved caveats or owner explicitly stops it.
-last_step: 2026-05-12T18:38Z implemented schema-first heldout render metrics and AI visual review gate ingestion; added deterministic source/render pair evaluator with PSNR/SSIM/proof-panel output and LPIPS-required blocking semantics; re-ran quality gate on the two-leaf reducer proof and it correctly remains needs_more_proof until real splat render pairs exist.
-next_unblocked_step: Wire the active NerfStudio/3DGS path to preserve or regenerate deterministic heldout renders, emit splat_heldout_render_metrics with PSNR/SSIM/LPIPS plus proof panels, run AI visual review on those panels, then execute this cheaply on the two-leaf reducer artifact before any full 8-leaf MD1 rerun.
+last_step: 2026-05-12T19:03Z wired the active NerfStudio/3DGS container entrypoint to run ns-eval after training, preserve heldout render panels, emit quality_eval/splat_heldout_render_metrics.json with PSNR/SSIM/LPIPS/blockers, and fail production output when required metrics or proof panels are missing; focused tests now cover the normalizer, pair evaluator, integrated gate, reducer, fanout contract, and container quality wiring.
+next_unblocked_step: After this branch/container build is green, run the cheapest two-leaf reducer artifact through the active 3DGS path and verify the emitted ns-eval quality report plus AI visual review panels before any full 8-leaf MD1 rerun.
 owner_action_needed: none
 active_jobs: []
 branch: agent-73948216-sfm-production-spine
 head: 677f55090f4ec8b76c3622f8fd1371a8610d809f
-updated: 2026-05-12T18:38:48Z
+updated: 2026-05-12T19:03:30Z
 project_status: not_final_project_closed
 automation:
   id: sfm-reality-check
@@ -94,11 +94,16 @@ production_fanout_reducer_proof:
   browser_render_proof: logs/sfm-production-spine/md1_fanout_reducer_proof_playwright_20260512T1803Z.json
   viewer_screenshot: logs/sfm-production-spine/md1-fanout-reducer-proof-viewer-20260512T1803Z.png
 visual_quality_gate_contract:
-  status: implemented_not_run_on_real_splat
+  status: implemented_and_wired_to_active_3dgs_entrypoint_not_run_on_real_splat
   heldout_pair_evaluator: scripts/sfm/evaluate_visual_quality.py
+  nerfstudio_eval_normalizer: scripts/sfm/normalize_nerfstudio_eval.py
   integrated_quality_gate: scripts/sfm/evaluate_sfm_quality.py
+  active_3dgs_entrypoint: infrastructure/containers/3dgs/train_nerfstudio_production.py
+  active_3dgs_config: infrastructure/containers/3dgs/nerfstudio_config.yaml
   tests:
     - tests/unit/test_sfm_visual_quality.py
+    - tests/unit/test_sfm_nerfstudio_eval_normalizer.py
+    - tests/unit/test_nerfstudio_training_quality_gate.py
     - tests/unit/test_sfm_quality_eval.py
   latest_quality_report: logs/sfm-production-spine/md1_fanout_reducer_proof_quality_20260512T1803Z.json
   expected_render_report_kind: splat_heldout_render_metrics
@@ -106,7 +111,7 @@ visual_quality_gate_contract:
   current_decision_without_render_pairs: needs_more_proof
 project_level_caveats:
   - full 8-leaf multi-instance MD1 fanout plus reducer has not been run on the production reducer path
-  - active NerfStudio/3DGS path does not yet emit deterministic heldout render pairs with PSNR/SSIM/LPIPS
+  - active NerfStudio/3DGS quality emission is wired in code but not yet verified in a SageMaker/container run on the two-leaf reducer artifact
   - AI visual defect review has not been run on source/render/diff proof panels from a real splat artifact
   - filtered point count is 6.88% below the mature baseline even though raw points and registration pass
 latest_artifacts:
@@ -129,6 +134,11 @@ latest_artifacts:
   - logs/sfm-production-spine/md1-fanout-reducer-proof-viewer-20260512T1803Z.png
   - logs/sfm-production-spine/md1_fanout_reducer_proof_s3_20260512T1803Z.txt
   - scripts/sfm/evaluate_visual_quality.py
+  - scripts/sfm/normalize_nerfstudio_eval.py
+  - infrastructure/containers/3dgs/train_nerfstudio_production.py
+  - infrastructure/containers/3dgs/nerfstudio_config.yaml
   - tests/unit/test_sfm_visual_quality.py
+  - tests/unit/test_sfm_nerfstudio_eval_normalizer.py
+  - tests/unit/test_nerfstudio_training_quality_gate.py
   - s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260512/merged-pose-aligned/colmap
   - s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged/colmap
