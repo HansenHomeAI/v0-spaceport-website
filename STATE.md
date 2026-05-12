@@ -1,11 +1,11 @@
 reason: project-level continuation toward production-ready huge-scene tiled SfM; automation is active and must remain active until final proof has no unresolved caveats or owner explicitly stops it.
-last_step: 2026-05-12T20:14Z stopped md1-2leaf-3dgs-qc-1778614174 after 2437 billable seconds because ns-train produced no progress logs beyond command start; patched the trainer to stream long-running ns-train output instead of buffering it.
-next_unblocked_step: Commit and push the streaming-log patch, wait for CDK/container build on the new branch head, then relaunch the two-leaf 3DGS quality canary with the streamed trainer image and inspect emitted ns-eval metrics/proof panels.
+last_step: 2026-05-12T20:55Z stopped md1-2leaf-3dgs-stream-2030-1778617849 after 1294 billable seconds; streamed logs proved the pipe fix, then the job stalled at NerfStudio GPU train-image caching, so the trainer now uses tensorboard vis and CPU image cache.
+next_unblocked_step: Commit and push the CPU-cache/no-viewer 3DGS patch, wait for CDK/container build on the new head, then relaunch the two-leaf 3DGS quality canary and require terminal model artifact plus ns-eval metrics/proof panels.
 owner_action_needed: none
 active_jobs: []
 branch: agent-73948216-sfm-production-spine
-head: 2421ae9c33a352f1b7da98b4745b401b953eae81
-updated: 2026-05-12T20:15:07Z
+head: 3d81a8f4aa72d550e982d312b87fbe365dce6327
+updated: 2026-05-12T20:57:10Z
 project_status: not_final_project_closed
 automation:
   id: sfm-reality-check

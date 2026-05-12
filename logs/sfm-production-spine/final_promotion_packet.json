@@ -1,7 +1,7 @@
 {
-  "updated_at": "2026-05-12T20:15:07Z",
+  "updated_at": "2026-05-12T20:57:10Z",
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "2421ae9c33a352f1b7da98b4745b401b953eae81",
+  "head": "3d81a8f4aa72d550e982d312b87fbe365dce6327",
   "project_final_decision": "not_final_project_closed",
   "md1_sfm_artifact_decision": "promotable_sparse_sfm_artifact_but_not_full_project_proof",
   "automation_recommendation": "keep_sfm_reality_check_active_until_owner_confirms_final_project_or_project_level_caveats_resolve",
@@ -108,7 +108,7 @@
     "AI visual defect review has not been run on source/render/diff proof panels from a real splat artifact",
     "filtered point count is 6.88% below the mature baseline even though raw points and registration pass"
   ],
-  "final_next_step": "Commit and push the streaming-log patch, wait for CDK/container build on the new branch head, then relaunch the two-leaf 3DGS quality canary with the streamed trainer image and inspect emitted ns-eval metrics/proof panels.",
+  "final_next_step": "Commit and push the CPU-cache/no-viewer 3DGS patch, wait for CDK/container build on the new head, then relaunch the two-leaf 3DGS quality canary and require terminal model artifact plus ns-eval metrics/proof panels.",
   "proof_artifacts": [
     "STATE.md",
     "logs/sfm-production-spine/frontier.json",
@@ -142,7 +142,15 @@
     "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-quality-canary-20260512T192934Z/",
     "logs/sfm-production-spine/md1_2leaf_3dgs_quality_canary_describe_stopped_20260512T201410Z.json",
     "logs/sfm-production-spine/md1_2leaf_3dgs_quality_canary_cloudwatch_terminal_20260512T201410Z.json",
-    "logs/sfm-production-spine/md1_2leaf_3dgs_quality_canary_s3_stopped_20260512T201410Z.txt"
+    "logs/sfm-production-spine/md1_2leaf_3dgs_quality_canary_s3_stopped_20260512T201410Z.txt",
+    "logs/sfm-production-spine/md1_2leaf_3dgs_stream_canary_config_20260512T203049Z.json",
+    "logs/sfm-production-spine/md1_2leaf_3dgs_stream_canary_launch_20260512T203049Z.json",
+    "logs/sfm-production-spine/md1_2leaf_3dgs_stream_canary_create_20260512T203049Z.json",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-stream-canary-20260512T203049Z/",
+    "logs/sfm-production-spine/md1_2leaf_3dgs_stream_canary_describe_stopped_20260512T205540Z.json",
+    "logs/sfm-production-spine/md1_2leaf_3dgs_stream_canary_cloudwatch_terminal_20260512T205540Z.json",
+    "logs/sfm-production-spine/md1_2leaf_3dgs_stream_canary_s3_stopped_20260512T205540Z.txt",
+    "logs/sfm-production-spine/md1_2leaf_3dgs_stream_canary_log_stream.txt"
   ],
   "active_jobs": [],
   "stopped_jobs": [
@@ -157,6 +165,18 @@
       "terminal_describe": "logs/sfm-production-spine/md1_2leaf_3dgs_quality_canary_describe_stopped_20260512T201410Z.json",
       "terminal_cloudwatch": "logs/sfm-production-spine/md1_2leaf_3dgs_quality_canary_cloudwatch_terminal_20260512T201410Z.json",
       "terminal_s3_listing": "logs/sfm-production-spine/md1_2leaf_3dgs_quality_canary_s3_stopped_20260512T201410Z.txt"
+    },
+    {
+      "name": "md1-2leaf-3dgs-stream-2030-1778617849",
+      "type": "sagemaker_training",
+      "status": "Stopped",
+      "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable/colmap",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-stream-canary-20260512T203049Z/",
+      "billable_time_seconds": 1294,
+      "stop_reason": "budget stop after streamed logs proved live output but job made no progress past NerfStudio GPU train-image caching; patched trainer to use tensorboard vis and CPU image cache for huge-scene scalability",
+      "terminal_describe": "logs/sfm-production-spine/md1_2leaf_3dgs_stream_canary_describe_stopped_20260512T205540Z.json",
+      "terminal_cloudwatch": "logs/sfm-production-spine/md1_2leaf_3dgs_stream_canary_cloudwatch_terminal_20260512T205540Z.json",
+      "terminal_s3_listing": "logs/sfm-production-spine/md1_2leaf_3dgs_stream_canary_s3_stopped_20260512T205540Z.txt"
     }
   ]
 }

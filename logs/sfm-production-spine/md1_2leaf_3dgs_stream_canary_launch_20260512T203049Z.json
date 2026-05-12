@@ -1,0 +1,14 @@
+{
+  "created_at": "2026-05-12T20:30:50.927323Z",
+  "job_name": "md1-2leaf-3dgs-stream-2030-1778617849",
+  "job_arn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-2leaf-3dgs-stream-2030-1778617849",
+  "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable/colmap",
+  "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-stream-canary-20260512T203049Z/",
+  "training_image": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent73948216sfmproductionspine",
+  "branch_head": "3d81a8f4aa72d550e982d312b87fbe365dce6327",
+  "ecr_digest": "sha256:05b4d859b06744ae36f93ebffdc4ae920ef4ef76bf1b6e81678414a9f7e572c2",
+  "max_iterations": 50,
+  "purpose": "streamed-log real SageMaker contract check for ns-eval heldout metrics and render panel emission before full MD1 fanout rerun",
+  "config_path": "logs/sfm-production-spine/md1_2leaf_3dgs_stream_canary_config_20260512T203049Z.json",
+  "create_response_path": "logs/sfm-production-spine/md1_2leaf_3dgs_stream_canary_create_20260512T203049Z.json"
+}

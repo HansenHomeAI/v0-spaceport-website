@@ -733,8 +733,9 @@ class NerfStudioTrainer:
             "--output-dir", str(self.temp_dir),
             "--max_num_iterations", str(max_iterations),
             "--pipeline.model.sh_degree", str(sh_degree),
-            "--viewer.quit_on_train_completion", "True",
-            "--logging.steps_per_log", str(log_interval)
+            "--logging.steps_per_log", str(log_interval),
+            "--vis", "tensorboard",
+            "--pipeline.datamanager.cache-images", "cpu",
         ]
         
         # Add bilateral guided processing (Vincent's exposure correction)
@@ -749,9 +750,8 @@ class NerfStudioTrainer:
         # Using max-gauss-ratio instead of max_num_gaussians (suggested by NerfStudio error)
         cmd.extend([
             "--pipeline.model.max-gauss-ratio", "10.0",  # Conservative ratio for A10G
-            "--viewer.websocket_port", "7007"  # Avoid conflicts
         ])
-        logger.info("🖥️  A10G GPU optimization enabled (max-gauss-ratio: 10.0)")
+        logger.info("🖥️  A10G GPU optimization enabled (max-gauss-ratio: 10.0, image cache: cpu)")
         
         logger.info("🚀 Executing NerfStudio training command:")
         logger.info(f"   {' '.join(cmd)}")
