@@ -1,0 +1,22 @@
+{
+  "block_reasons": {
+    "protected": [
+      "boundary_no_required_improvement",
+      "horizon_psnr_regression"
+    ]
+  },
+  "leaf_gate_block_reasons": [
+    "leaf_preflight_decision_not_pass",
+    "splat_vertex_count_above_reference_ratio",
+    "splat_vertex_count_above_hard_max"
+  ],
+  "observed_reference_ratio": 2.057896404493677,
+  "reference_splat_count": 956277,
+  "splat_vertex_count": 1967919,
+  "v18_non_regression_status": {
+    "protected": "blocked",
+    "protected_block_reasons": [
+      "horizon_v18_median_psnr_regression"
+    ]
+  }
+}

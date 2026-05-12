@@ -1,0 +1,42 @@
+{
+  "boundary_improvement_gap": {
+    "actual_delta": {
+      "lpips": -0.002215772867202759,
+      "psnr": 0.13065759577069258,
+      "ssim": 0.00525432825088501
+    },
+    "passes_any_improvement_axis": false,
+    "remaining_gap": {
+      "lpips": 0.022784227132797243,
+      "psnr": 0.3693424042293074,
+      "ssim": 0.0047456717491149904
+    },
+    "required_improvement": {
+      "lpips": -0.025,
+      "psnr": 0.5,
+      "ssim": 0.01
+    }
+  },
+  "current_quality_blockers": [
+    "boundary_no_required_improvement",
+    "horizon_psnr_regression"
+  ],
+  "horizon_regression_gap": {
+    "actual_delta": {
+      "lpips": 0.010840654373168945,
+      "psnr": -0.299692841819045,
+      "ssim": -0.010585620999336243
+    },
+    "allowed_regression": {
+      "lpips_max_delta": 0.03,
+      "psnr_min_delta": -0.75,
+      "ssim_min_delta": -0.012
+    },
+    "passes_regression_gate": true,
+    "remaining_gap_to_pass": {
+      "lpips": 0.0,
+      "psnr": 0.0,
+      "ssim": 0.0
+    }
+  }
+}

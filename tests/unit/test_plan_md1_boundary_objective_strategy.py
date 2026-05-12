@@ -50,6 +50,23 @@ def attribution() -> dict:
     }
 
 
+def overdense_leaf_attribution() -> dict:
+    attr = attribution()
+    attr.update(
+        {
+            "leaf_gate_block_reasons": [
+                "leaf_preflight_decision_not_pass",
+                "splat_vertex_count_above_reference_ratio",
+                "splat_vertex_count_above_hard_max",
+            ],
+            "splat_vertex_count": 1_967_919,
+            "reference_splat_count": 956_277,
+            "observed_reference_ratio": 2.0579,
+        }
+    )
+    return attr
+
+
 def valid_candidate() -> dict:
     return {
         "targeted_quality_blockers": ["boundary_no_required_improvement"],
@@ -210,6 +227,68 @@ class PlanMd1BoundaryObjectiveStrategyTests(unittest.TestCase):
 
         self.assertIn("objective_missing_horizon_psnr_axis", report["candidate_objective_gate"]["block_reasons"])
         self.assertFalse(report["paid_retry_allowed"])
+
+    def test_records_overdense_leaf_as_failed_hypothesis(self):
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=overdense_leaf_attribution(),
+            candidate_objective=None,
+            max_estimated_usd=2.0,
+        )
+
+        hypotheses = {item["hypothesis"] for item in report["failed_hypotheses"]}
+        self.assertIn("loss_weighting_overdense_leaf", hypotheses)
+        loss_hypothesis = next(
+            item for item in report["failed_hypotheses"] if item["hypothesis"] == "loss_weighting_overdense_leaf"
+        )
+        self.assertEqual(loss_hypothesis["splat_vertex_count"], 1_967_919)
+        self.assertEqual(loss_hypothesis["reference_splat_count"], 956_277)
+
+    def test_blocks_next_candidate_without_density_controls_after_overdense_leaf(self):
+        candidate = valid_candidate()
+        candidate["targeted_quality_blockers"].extend(
+            ["splat_vertex_count_above_reference_ratio", "splat_vertex_count_above_hard_max"]
+        )
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=overdense_leaf_attribution(),
+            candidate_objective=candidate,
+            max_estimated_usd=2.0,
+        )
+
+        gate = report["candidate_objective_gate"]
+        self.assertIn("objective_missing_density_control_after_overdense_leaf", gate["block_reasons"])
+        self.assertFalse(report["paid_retry_allowed"])
+
+    def test_allows_next_candidate_with_density_controls_after_overdense_leaf(self):
+        candidate = valid_candidate()
+        candidate["targeted_quality_blockers"].extend(
+            ["splat_vertex_count_above_reference_ratio", "splat_vertex_count_above_hard_max"]
+        )
+        candidate["objective_implementation"]["environment"].update(
+            {
+                "TRAINING_MAX_GAUSS_RATIO": "3.0",
+                "TRAINING_STOP_SPLIT_AT": "6500",
+            }
+        )
+
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=overdense_leaf_attribution(),
+            candidate_objective=candidate,
+            max_estimated_usd=2.0,
+        )
+
+        gate = report["candidate_objective_gate"]
+        self.assertEqual(gate["decision"], "paid_retry_allowed")
+        self.assertEqual(gate["block_reasons"], [])
+        self.assertEqual(
+            gate["density_control_implementation"]["environment"],
+            {"TRAINING_MAX_GAUSS_RATIO": "3.0", "TRAINING_STOP_SPLIT_AT": "6500"},
+        )
 
 
 if __name__ == "__main__":

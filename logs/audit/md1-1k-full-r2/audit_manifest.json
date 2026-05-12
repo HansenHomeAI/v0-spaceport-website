@@ -7616,7 +7616,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Commit/push visual QA tooling and watch exact-head CDK plus ML Container Build; then use no-spend readiness before any next paid candidate.",
+  "next_unblocked_step": "Commit/push the over-dense retry guard after visual QA workflow gates finish; then exact-head workflow watch and no-spend next objective readiness.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -14286,6 +14286,59 @@
     ],
     "new_compute_launched": false,
     "full_14tile_training_launched": false,
-    "next_required_action": "commit/push and watch exact-head CDK plus ML Container Build because quality-review container code changed"
+    "next_required_action": "commit/push and watch exact-head CDK plus ML Container Build because quality-review container code changed",
+    "workflow_gates": {
+      "commit_head": "21533e29c2e09bab42112d102cf7be6ef10eff5a",
+      "cdk_run_id": 25750282050,
+      "cdk_conclusion": "success",
+      "ml_container_run_id": 25750282106,
+      "ml_container_conclusion": "success",
+      "codebuild_id": "spaceport-ml-containers:dd1301c5-f075-4312-ad1a-2a92f8c26f73",
+      "codebuild_status": "SUCCEEDED",
+      "branch_3dgs_digest": "sha256:a9c9a8d1ab7afcac17fc6c0d7aa78b43242c83e3226606c2579452eb204f8b2d"
+    }
+  },
+  "md1_overdense_leaf_retry_guard_20260512": {
+    "checked_at": "2026-05-12T17:20:17Z",
+    "status": "implemented_no_spend_overdense_leaf_retry_guard",
+    "failed_hypothesis_recorded": "loss_weighting_overdense_leaf",
+    "overdense_block_reasons": [
+      "splat_vertex_count_above_reference_ratio",
+      "splat_vertex_count_above_hard_max"
+    ],
+    "required_next_candidate_behavior": [
+      "target over-dense leaf block reasons if present",
+      "include concrete density-control implementation knobs after over-dense leaf failure",
+      "keep normal boundary/horizon objective, cost, no-full14, frozen camera, and context tile gates"
+    ],
+    "accepted_density_control_knobs": [
+      "TRAINING_MAX_GAUSS_RATIO",
+      "TRAINING_STOP_SPLIT_AT",
+      "CULL_ALPHA_THRESH",
+      "CULL_SCALE_THRESH",
+      "MAX_REFERENCE_SPLAT_RATIO",
+      "training_max_gauss_ratio",
+      "training_stop_split_at",
+      "cull_alpha_thresh",
+      "cull_scale_thresh",
+      "max_reference_splat_ratio"
+    ],
+    "tests": [
+      "python3 -m unittest tests.unit.test_plan_md1_boundary_objective_strategy tests.unit.test_tiled_quality_review tests.unit.test_extract_md1_visual_qa_bundle tests.unit.test_evaluate_md1_visual_qa_gate tests.unit.test_enforce_md1_leaf_submit_readiness",
+      "python3 -m py_compile scripts/3dgs/plan_md1_boundary_objective_strategy.py"
+    ],
+    "new_compute_launched": false,
+    "full_14tile_training_launched": false,
+    "gate_evidence": {
+      "quality_strategy_json": "logs/md1-r4-overdense-leaf-quality-strategy-20260512.json",
+      "responsible_tiles_json": "logs/md1-r4-overdense-leaf-responsible-tiles-20260512.json",
+      "attribution_json": "logs/md1-r4-overdense-leaf-attribution-20260512.json",
+      "blocked_candidate_json": "logs/md1-r4-overdense-leaf-candidate-without-density-control-20260512.json",
+      "gate_output_json": "logs/md1-r4-overdense-leaf-objective-gate-blocked-20260512.json",
+      "gate_decision": "paid_retry_blocked",
+      "gate_block_reasons": [
+        "objective_missing_density_control_after_overdense_leaf"
+      ]
+    }
   }
 }

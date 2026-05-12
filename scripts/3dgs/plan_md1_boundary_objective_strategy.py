@@ -59,6 +59,24 @@ LOSS_WEIGHTING_CONFIG_KEYS = (
     "boundary_ssim_loss_weight",
     "boundary_lpips_loss_weight",
 )
+DENSITY_CONTROL_ENV_KEYS = (
+    "TRAINING_MAX_GAUSS_RATIO",
+    "TRAINING_STOP_SPLIT_AT",
+    "CULL_ALPHA_THRESH",
+    "CULL_SCALE_THRESH",
+    "MAX_REFERENCE_SPLAT_RATIO",
+)
+DENSITY_CONTROL_CONFIG_KEYS = (
+    "training_max_gauss_ratio",
+    "training_stop_split_at",
+    "cull_alpha_thresh",
+    "cull_scale_thresh",
+    "max_reference_splat_ratio",
+)
+OVERDENSE_LEAF_REASONS = (
+    "splat_vertex_count_above_reference_ratio",
+    "splat_vertex_count_above_hard_max",
+)
 
 
 def now_iso() -> str:
@@ -272,6 +290,15 @@ def implemented_loss_weighting_knobs(strategy: Mapping[str, Any] | None) -> dict
     return {"environment": env_knobs, "training_config": config_knobs}
 
 
+def implemented_density_control_knobs(strategy: Mapping[str, Any] | None) -> dict[str, Any]:
+    implementation = objective_implementation(strategy)
+    environment = implementation["environment"]
+    training_config = implementation["training_config"]
+    env_knobs = {key: environment[key] for key in DENSITY_CONTROL_ENV_KEYS if key in environment}
+    config_knobs = {key: training_config[key] for key in DENSITY_CONTROL_CONFIG_KEYS if key in training_config}
+    return {"environment": env_knobs, "training_config": config_knobs}
+
+
 def estimated_usd(strategy: Mapping[str, Any] | None) -> float | None:
     if not strategy:
         return None
@@ -310,6 +337,8 @@ def current_quality_blockers(
     block_reasons = attribution.get("block_reasons")
     if isinstance(block_reasons, Mapping):
         values.extend(list_strings(block_reasons.get("protected")))
+        values.extend(reason for reason in list_strings(block_reasons.get("leaf_gate")) if reason in OVERDENSE_LEAF_REASONS)
+    values.extend(reason for reason in list_strings(attribution.get("leaf_gate_block_reasons")) if reason in OVERDENSE_LEAF_REASONS)
     return sorted_unique(values)
 
 
@@ -349,6 +378,22 @@ def extract_failed_hypotheses(attribution: Mapping[str, Any]) -> list[dict[str, 
                 "status": "failed",
                 "evidence": "Repeating frozen boundary cameras changed the tile_04 leaf but did not improve the frozen boundary gate and introduced horizon PSNR regression.",
                 "metric_delta_vs_reference_bg10": camera_weighting_delta,
+            }
+        )
+    leaf_gate_block_reasons = list_strings(attribution.get("leaf_gate_block_reasons"))
+    block_reasons = attribution.get("block_reasons")
+    if isinstance(block_reasons, Mapping):
+        leaf_gate_block_reasons.extend(list_strings(block_reasons.get("leaf_gate")))
+    if any(reason in leaf_gate_block_reasons for reason in OVERDENSE_LEAF_REASONS):
+        failed.append(
+            {
+                "hypothesis": "loss_weighting_overdense_leaf",
+                "status": "failed",
+                "evidence": "The previous loss-weighted tile_04 leaf completed but was rejected before merge/review because retained splats exceeded the reference-ratio hard max.",
+                "leaf_gate_block_reasons": sorted_unique(leaf_gate_block_reasons),
+                "splat_vertex_count": attribution.get("splat_vertex_count"),
+                "reference_splat_count": attribution.get("reference_splat_count"),
+                "observed_reference_ratio": attribution.get("observed_reference_ratio"),
             }
         )
     return failed
@@ -396,6 +441,10 @@ def required_horizon_axes(blockers: Sequence[str]) -> list[str]:
     return ordered_unique(required)
 
 
+def has_overdense_leaf_blocker(blockers: Sequence[str]) -> bool:
+    return any(reason in blockers for reason in OVERDENSE_LEAF_REASONS)
+
+
 def evaluate_candidate_objective(
     *,
     candidate_objective: Mapping[str, Any] | None,
@@ -421,6 +470,8 @@ def evaluate_candidate_objective(
             "horizon_camera_ids": [],
             "expected_metric_axes": [],
             "objective_changes": [],
+            "loss_weighting_implementation": {"environment": {}, "training_config": {}},
+            "density_control_implementation": {"environment": {}, "training_config": {}},
             "estimated_usd": None,
             "max_estimated_usd": max_estimated_usd or None,
         }
@@ -483,6 +534,9 @@ def evaluate_candidate_objective(
     loss_weighting_knobs = implemented_loss_weighting_knobs(candidate_objective)
     if has_loss_weighting_change(changes) and not any(loss_weighting_knobs.values()):
         block_reasons.append("objective_missing_loss_weighting_implementation")
+    density_control_knobs = implemented_density_control_knobs(candidate_objective)
+    if has_overdense_leaf_blocker(current_blockers) and not any(density_control_knobs.values()):
+        block_reasons.append("objective_missing_density_control_after_overdense_leaf")
 
     submitted_jobs = candidate_objective.get("submitted_jobs")
     if submitted_jobs not in ([], None):
@@ -520,6 +574,7 @@ def evaluate_candidate_objective(
         "missing_horizon_metric_axes": missing_horizon_axes,
         "objective_changes": changes,
         "loss_weighting_implementation": loss_weighting_knobs,
+        "density_control_implementation": density_control_knobs,
         "estimated_usd": cost,
         "max_estimated_usd": max_estimated_usd or None,
         "submitted_jobs": submitted_jobs,

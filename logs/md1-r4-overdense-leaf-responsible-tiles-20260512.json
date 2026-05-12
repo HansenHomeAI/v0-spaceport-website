@@ -1,0 +1,35 @@
+{
+  "boundary_frozen_cameras": [
+    "DJI_0067.JPG",
+    "DJI_0068.JPG",
+    "DJI_0069.JPG",
+    "DJI_0070.JPG"
+  ],
+  "combined_support_tile_ids": [
+    "tile_04",
+    "tile_10",
+    "tile_13",
+    "tile_01",
+    "tile_00",
+    "tile_02",
+    "tile_06"
+  ],
+  "current_quality_blockers": [
+    "boundary_no_required_improvement",
+    "horizon_psnr_regression"
+  ],
+  "horizon_frozen_cameras": [
+    "DJI_0066.JPG",
+    "DJI_0073.JPG",
+    "DJI_0146.JPG",
+    "DJI_0147.JPG"
+  ],
+  "horizon_primary_responsible_tile_ids": [
+    "tile_01",
+    "tile_04"
+  ],
+  "primary_responsible_tile_ids": [
+    "tile_04",
+    "tile_10"
+  ]
+}
