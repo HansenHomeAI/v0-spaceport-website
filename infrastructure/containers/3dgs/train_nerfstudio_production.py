@@ -830,7 +830,8 @@ class NerfStudioTrainer:
         raw_eval_path = eval_dir / "ns_eval.json"
         report_path = eval_dir / "splat_heldout_render_metrics.json"
         stdout_path = eval_dir / "ns_eval_stdout.log"
-        stderr_path = eval_dir / "ns_eval_stderr.log"
+        config_snapshot_path = eval_dir / "nerfstudio_config.yml"
+        shutil.copy2(config_file, config_snapshot_path)
 
         eval_cmd = [
             "ns-eval",
@@ -841,35 +842,28 @@ class NerfStudioTrainer:
         logger.info("🔄 Executing NerfStudio eval command:")
         logger.info(f"   {' '.join(eval_cmd)}")
 
-        try:
-            result = subprocess.run(
-                eval_cmd,
-                capture_output=True,
-                text=True,
-                timeout=self.quality_eval_timeout_seconds(),
-            )
-        except subprocess.TimeoutExpired:
+        return_code, tail, timed_out = run_logged_command(
+            eval_cmd,
+            timeout_seconds=self.quality_eval_timeout_seconds(),
+            log_prefix="NS_EVAL: ",
+        )
+        stdout_path.write_text("\n".join(tail) + ("\n" if tail else ""), encoding="utf-8")
+
+        if timed_out:
             logger.error(f"❌ NerfStudio evaluation timeout ({self.quality_eval_timeout_seconds()}s exceeded)")
             return not self.quality_eval_required()
-        except Exception as e:
-            logger.error(f"❌ NerfStudio evaluation execution failed: {e}")
-            return not self.quality_eval_required()
 
-        stdout_path.write_text(result.stdout or "", encoding="utf-8")
-        stderr_path.write_text(result.stderr or "", encoding="utf-8")
-
-        if result.returncode != 0:
+        if return_code != 0:
             logger.error("❌ NerfStudio evaluation failed:")
-            logger.error(f"Exit code: {result.returncode}")
-            logger.error(f"STDOUT log: {stdout_path}")
-            logger.error(f"STDERR log: {stderr_path}")
+            logger.error(f"Exit code: {return_code}")
+            logger.error(f"Output tail log: {stdout_path}")
             return not self.quality_eval_required()
 
         if not raw_eval_path.exists():
             logger.error(f"❌ NerfStudio evaluation did not write {raw_eval_path}")
             return not self.quality_eval_required()
 
-        report = build_splat_heldout_render_report(raw_eval_path, render_dir, config_file)
+        report = build_splat_heldout_render_report(raw_eval_path, render_dir, config_snapshot_path)
         with open(report_path, "w") as f:
             json.dump(report, f, indent=2)
             f.write("\n")

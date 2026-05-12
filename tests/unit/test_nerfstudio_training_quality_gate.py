@@ -1,10 +1,12 @@
 import importlib.util
 import json
+import os
 import sys
 import tempfile
 import types
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -88,6 +90,59 @@ class NerfstudioTrainingQualityGateTest(unittest.TestCase):
         self.assertIn("heldout_eval:", config_text)
         self.assertIn("enabled: true", config_text)
         self.assertIn("fail_on_missing_metrics: true", config_text)
+
+    def test_ns_eval_preserves_config_snapshot_inside_model_artifact(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config = root / "container_config.yaml"
+            config.write_text("quality:\n  heldout_eval:\n    enabled: true\n", encoding="utf-8")
+            with mock.patch.dict(
+                os.environ,
+                {
+                    "SM_MODEL_DIR": str(root / "model"),
+                    "SM_CHANNEL_TRAINING": str(root / "input"),
+                },
+            ):
+                trainer = self.training.NerfStudioTrainer(str(config))
+            trainer.output_dir = root / "model"
+            trainer.temp_dir = root / "training"
+            run_dir = trainer.temp_dir / "run"
+            run_dir.mkdir(parents=True)
+            latest_config = run_dir / "config.yml"
+            latest_config.write_text("method_name: splatfacto\n", encoding="utf-8")
+
+            def fake_run_logged_command(cmd, *, timeout_seconds, log_prefix, tail_limit=120):
+                raw_path = Path(cmd[cmd.index("--output-path") + 1])
+                render_dir = Path(cmd[cmd.index("--render-output-path") + 1])
+                render_dir.mkdir(parents=True, exist_ok=True)
+                (render_dir / "heldout-000.png").write_bytes(b"fake")
+                raw_path.write_text(
+                    json.dumps(
+                        {
+                            "num_eval_images": 1,
+                            "results": {
+                                "eval/psnr": 28.0,
+                                "eval/ssim": 0.86,
+                                "eval/lpips": 0.16,
+                            },
+                        }
+                    ),
+                    encoding="utf-8",
+                )
+                return 0, [f"{log_prefix}complete"], False
+
+            with mock.patch.object(self.training, "run_logged_command", side_effect=fake_run_logged_command):
+                self.assertTrue(trainer.run_nerfstudio_evaluation())
+
+            eval_dir = trainer.output_dir / "quality_eval"
+            snapshot = eval_dir / "nerfstudio_config.yml"
+            report = json.loads((eval_dir / "splat_heldout_render_metrics.json").read_text(encoding="utf-8"))
+            stdout_log = (eval_dir / "ns_eval_stdout.log").read_text(encoding="utf-8")
+
+            self.assertTrue(snapshot.exists())
+            self.assertEqual(snapshot.read_text(encoding="utf-8"), "method_name: splatfacto\n")
+            self.assertEqual(report["load_config"], str(snapshot))
+            self.assertIn("NS_EVAL: complete", stdout_log)
 
 
 if __name__ == "__main__":
