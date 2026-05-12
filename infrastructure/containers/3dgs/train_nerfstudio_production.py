@@ -21,6 +21,7 @@ import json
 import yaml
 import time
 import math
+import selectors
 import statistics
 import logging
 import argparse
@@ -190,6 +191,60 @@ def build_splat_heldout_render_report(
         },
         "blockers": blockers,
     }
+
+
+def run_logged_command(
+    cmd: list[str],
+    *,
+    timeout_seconds: int,
+    log_prefix: str,
+    tail_limit: int = 120,
+) -> tuple[int, list[str], bool]:
+    """Run a long command while streaming logs and retaining only a bounded tail."""
+    tail: list[str] = []
+    deadline = time.monotonic() + timeout_seconds
+    timed_out = False
+
+    process = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        bufsize=1,
+    )
+    assert process.stdout is not None
+
+    selector = selectors.DefaultSelector()
+    selector.register(process.stdout, selectors.EVENT_READ)
+
+    try:
+        while process.poll() is None:
+            if time.monotonic() > deadline:
+                timed_out = True
+                process.kill()
+                break
+
+            for key, _ in selector.select(timeout=1.0):
+                line = key.fileobj.readline()
+                if not line:
+                    continue
+                clean_line = line.rstrip()
+                if clean_line:
+                    logger.info(f"{log_prefix}{clean_line[:2000]}")
+                    tail.append(clean_line)
+                    tail = tail[-tail_limit:]
+
+        for line in process.stdout:
+            clean_line = line.rstrip()
+            if clean_line:
+                logger.info(f"{log_prefix}{clean_line[:2000]}")
+                tail.append(clean_line)
+                tail = tail[-tail_limit:]
+    finally:
+        selector.close()
+        process.stdout.close()
+
+    return process.wait(), tail, timed_out
 
 
 # Configure production logging
@@ -702,39 +757,28 @@ class NerfStudioTrainer:
         logger.info(f"   {' '.join(cmd)}")
         logger.info("=" * 60)
         
-        # Execute training
-        try:
-            result = subprocess.run(
-                cmd,
-                capture_output=True,
-                text=True,
-                timeout=7200  # 2 hour timeout
-            )
-            
-            if result.returncode != 0:
-                logger.error("❌ NerfStudio training failed:")
-                logger.error(f"Exit code: {result.returncode}")
-                logger.error(f"STDOUT: {result.stdout}")
-                logger.error(f"STDERR: {result.stderr}")
-                return False
-            
-            logger.info("✅ NerfStudio training completed successfully")
-            logger.info("📊 Training output:")
-            
-            # Log relevant output (last 20 lines)
-            stdout_lines = result.stdout.split('\n')
-            for line in stdout_lines[-20:]:
-                if line.strip():
-                    logger.info(f"   {line}")
-            
-            return True
-            
-        except subprocess.TimeoutExpired:
+        return_code, tail, timed_out = run_logged_command(
+            cmd,
+            timeout_seconds=7200,
+            log_prefix="NS_TRAIN: ",
+        )
+        if timed_out:
             logger.error("❌ Training timeout (2 hours exceeded)")
             return False
-        except Exception as e:
-            logger.error(f"❌ Training execution failed: {e}")
+
+        if return_code != 0:
+            logger.error("❌ NerfStudio training failed:")
+            logger.error(f"Exit code: {return_code}")
+            logger.error("Last training output lines:")
+            for line in tail[-20:]:
+                logger.error(f"   {line}")
             return False
+
+        logger.info("✅ NerfStudio training completed successfully")
+        logger.info("📊 Final training output tail:")
+        for line in tail[-20:]:
+            logger.info(f"   {line}")
+        return True
 
     def find_latest_config_file(self) -> Optional[Path]:
         """Find the most recent NerfStudio training config."""

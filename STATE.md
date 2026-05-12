@@ -1,11 +1,11 @@
 reason: project-level continuation toward production-ready huge-scene tiled SfM; automation is active and must remain active until final proof has no unresolved caveats or owner explicitly stops it.
-last_step: 2026-05-12T19:03Z wired the active NerfStudio/3DGS container entrypoint to run ns-eval after training, preserve heldout render panels, emit quality_eval/splat_heldout_render_metrics.json with PSNR/SSIM/LPIPS/blockers, and fail production output when required metrics or proof panels are missing; focused tests now cover the normalizer, pair evaluator, integrated gate, reducer, fanout contract, and container quality wiring.
-next_unblocked_step: After this branch/container build is green, run the cheapest two-leaf reducer artifact through the active 3DGS path and verify the emitted ns-eval quality report plus AI visual review panels before any full 8-leaf MD1 rerun.
+last_step: 2026-05-12T20:14Z stopped md1-2leaf-3dgs-qc-1778614174 after 2437 billable seconds because ns-train produced no progress logs beyond command start; patched the trainer to stream long-running ns-train output instead of buffering it.
+next_unblocked_step: Commit and push the streaming-log patch, wait for CDK/container build on the new branch head, then relaunch the two-leaf 3DGS quality canary with the streamed trainer image and inspect emitted ns-eval metrics/proof panels.
 owner_action_needed: none
 active_jobs: []
 branch: agent-73948216-sfm-production-spine
-head: 677f55090f4ec8b76c3622f8fd1371a8610d809f
-updated: 2026-05-12T19:03:30Z
+head: 2421ae9c33a352f1b7da98b4745b401b953eae81
+updated: 2026-05-12T20:15:07Z
 project_status: not_final_project_closed
 automation:
   id: sfm-reality-check
@@ -93,6 +93,10 @@ production_fanout_reducer_proof:
   viewer_api_summary: logs/sfm-production-spine/md1_fanout_reducer_proof_viewer_api_summary_20260512T1803Z.json
   browser_render_proof: logs/sfm-production-spine/md1_fanout_reducer_proof_playwright_20260512T1803Z.json
   viewer_screenshot: logs/sfm-production-spine/md1-fanout-reducer-proof-viewer-20260512T1803Z.png
+  trainable_colmap_uri: s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable/colmap
+  trainable_image_count: 447
+  trainable_object_count: 453
+  trainable_total_size_bytes: 2104226723
 visual_quality_gate_contract:
   status: implemented_and_wired_to_active_3dgs_entrypoint_not_run_on_real_splat
   heldout_pair_evaluator: scripts/sfm/evaluate_visual_quality.py
@@ -142,3 +146,4 @@ latest_artifacts:
   - tests/unit/test_nerfstudio_training_quality_gate.py
   - s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260512/merged-pose-aligned/colmap
   - s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged/colmap
+  - s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable/colmap

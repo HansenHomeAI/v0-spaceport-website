@@ -1,7 +1,7 @@
 {
-  "updated_at": "2026-05-12T19:03:30Z",
+  "updated_at": "2026-05-12T20:15:07Z",
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "677f55090f4ec8b76c3622f8fd1371a8610d809f",
+  "head": "2421ae9c33a352f1b7da98b4745b401b953eae81",
   "project_final_decision": "not_final_project_closed",
   "md1_sfm_artifact_decision": "promotable_sparse_sfm_artifact_but_not_full_project_proof",
   "automation_recommendation": "keep_sfm_reality_check_active_until_owner_confirms_final_project_or_project_level_caveats_resolve",
@@ -95,7 +95,11 @@
       "viewer_api_summary": "logs/sfm-production-spine/md1_fanout_reducer_proof_viewer_api_summary_20260512T1803Z.json",
       "browser_render_proof": "logs/sfm-production-spine/md1_fanout_reducer_proof_playwright_20260512T1803Z.json",
       "viewer_screenshot": "logs/sfm-production-spine/md1-fanout-reducer-proof-viewer-20260512T1803Z.png",
-      "s3_listing": "logs/sfm-production-spine/md1_fanout_reducer_proof_s3_20260512T1803Z.txt"
+      "s3_listing": "logs/sfm-production-spine/md1_fanout_reducer_proof_s3_20260512T1803Z.txt",
+      "trainable_colmap_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable/colmap",
+      "trainable_image_count": 447,
+      "trainable_object_count": 453,
+      "trainable_total_size_bytes": 2104226723
     }
   },
   "project_level_unresolved_caveats": [
@@ -104,7 +108,7 @@
     "AI visual defect review has not been run on source/render/diff proof panels from a real splat artifact",
     "filtered point count is 6.88% below the mature baseline even though raw points and registration pass"
   ],
-  "final_next_step": "After this branch/container build is green, run the cheapest two-leaf reducer artifact through the active 3DGS path and verify the emitted ns-eval quality report plus AI visual review panels before any full 8-leaf MD1 rerun.",
+  "final_next_step": "Commit and push the streaming-log patch, wait for CDK/container build on the new branch head, then relaunch the two-leaf 3DGS quality canary with the streamed trainer image and inspect emitted ns-eval metrics/proof panels.",
   "proof_artifacts": [
     "STATE.md",
     "logs/sfm-production-spine/frontier.json",
@@ -131,6 +135,28 @@
     "tests/unit/test_sfm_visual_quality.py",
     "tests/unit/test_sfm_nerfstudio_eval_normalizer.py",
     "tests/unit/test_nerfstudio_training_quality_gate.py",
-    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged/colmap"
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged/colmap",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable/colmap",
+    "logs/sfm-production-spine/md1_2leaf_3dgs_quality_canary_config_20260512T192934Z.json",
+    "logs/sfm-production-spine/md1_2leaf_3dgs_quality_canary_launch_20260512T192934Z.json",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-quality-canary-20260512T192934Z/",
+    "logs/sfm-production-spine/md1_2leaf_3dgs_quality_canary_describe_stopped_20260512T201410Z.json",
+    "logs/sfm-production-spine/md1_2leaf_3dgs_quality_canary_cloudwatch_terminal_20260512T201410Z.json",
+    "logs/sfm-production-spine/md1_2leaf_3dgs_quality_canary_s3_stopped_20260512T201410Z.txt"
+  ],
+  "active_jobs": [],
+  "stopped_jobs": [
+    {
+      "name": "md1-2leaf-3dgs-qc-1778614174",
+      "type": "sagemaker_training",
+      "status": "Stopped",
+      "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable/colmap",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-quality-canary-20260512T192934Z/",
+      "billable_time_seconds": 2437,
+      "stop_reason": "budget stop after ns-train produced no CloudWatch progress beyond command start; code path used subprocess.run(capture_output=True), which can block verbose training on a filled pipe; patched trainer to stream logs before rerun",
+      "terminal_describe": "logs/sfm-production-spine/md1_2leaf_3dgs_quality_canary_describe_stopped_20260512T201410Z.json",
+      "terminal_cloudwatch": "logs/sfm-production-spine/md1_2leaf_3dgs_quality_canary_cloudwatch_terminal_20260512T201410Z.json",
+      "terminal_s3_listing": "logs/sfm-production-spine/md1_2leaf_3dgs_quality_canary_s3_stopped_20260512T201410Z.txt"
+    }
   ]
 }

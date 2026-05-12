@@ -1,12 +1,12 @@
 {
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "677f55090f4ec8b76c3622f8fd1371a8610d809f",
-  "updated": "2026-05-12T19:03:30Z",
-  "current_rung": "ACTIVE_3DGS_VISUAL_QUALITY_WIRING_AFTER_REDUCER_PROOF",
+  "head": "2421ae9c33a352f1b7da98b4745b401b953eae81",
+  "updated": "2026-05-12T20:15:07Z",
+  "current_rung": "PATCHING_3DGS_STREAMING_LOGS_AFTER_CANARY_STOP",
   "current_goal": "Production-ready huge-scene tiled SfM: same-MD1 quality, meaningfully faster, restartable, distributed, promotion-safe, and backed by sparse, viewer, render, and AI visual proof.",
   "active_jobs": [],
   "blockers": [],
-  "last_command": "Wired the active NerfStudio/3DGS container entrypoint to run ns-eval after training, preserve heldout render proof panels, emit quality_eval/splat_heldout_render_metrics.json with PSNR/SSIM/LPIPS/blockers, and fail required quality output when metrics or proof panels are missing; focused tests now pass.",
+  "last_command": "Stopped md1-2leaf-3dgs-qc-1778614174 after 2437 billable seconds with no ns-train progress logs; patched train_nerfstudio_production.py to stream long-running ns-train output and retain bounded tail.",
   "last_metrics": {
     "canonical_md1_artifact": {
       "job": "r4exact739s1-1777612249",
@@ -124,7 +124,11 @@
       "viewer_api_status": 200,
       "viewer_sampled_points": 80000,
       "browser_error_count": 0,
-      "screenshot_unique_colors": 9199
+      "screenshot_unique_colors": 9199,
+      "trainable_colmap_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable/colmap",
+      "trainable_image_count": 447,
+      "trainable_object_count": 453,
+      "trainable_total_size_bytes": 2104226723
     },
     "visual_quality_gate_contract_20260512T1838Z": {
       "status": "implemented_and_wired_to_active_3dgs_entrypoint_not_run_on_real_splat",
@@ -141,6 +145,28 @@
         "result": "19 tests passed"
       },
       "py_compile": "infrastructure/containers/3dgs/train_nerfstudio_production.py, scripts/sfm/evaluate_sfm_quality.py, scripts/sfm/evaluate_visual_quality.py, and scripts/sfm/normalize_nerfstudio_eval.py passed"
+    },
+    "two_leaf_3dgs_quality_canary_20260512T192934Z": {
+      "job_name": "md1-2leaf-3dgs-qc-1778614174",
+      "status": "Stopped",
+      "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable/colmap",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-quality-canary-20260512T192934Z/",
+      "training_image": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent73948216sfmproductionspine",
+      "max_iterations": 250,
+      "config": "logs/sfm-production-spine/md1_2leaf_3dgs_quality_canary_config_20260512T192934Z.json",
+      "launch": "logs/sfm-production-spine/md1_2leaf_3dgs_quality_canary_launch_20260512T192934Z.json",
+      "name": "md1-2leaf-3dgs-qc-1778614174",
+      "type": "sagemaker_training",
+      "billable_time_seconds": 2437,
+      "stop_reason": "budget stop after ns-train produced no CloudWatch progress beyond command start; code path used subprocess.run(capture_output=True), which can block verbose training on a filled pipe; patched trainer to stream logs before rerun",
+      "terminal_describe": "logs/sfm-production-spine/md1_2leaf_3dgs_quality_canary_describe_stopped_20260512T201410Z.json",
+      "terminal_cloudwatch": "logs/sfm-production-spine/md1_2leaf_3dgs_quality_canary_cloudwatch_terminal_20260512T201410Z.json",
+      "terminal_s3_listing": "logs/sfm-production-spine/md1_2leaf_3dgs_quality_canary_s3_stopped_20260512T201410Z.txt"
+    },
+    "streamed_ns_train_patch_20260512T2014Z": {
+      "file": "infrastructure/containers/3dgs/train_nerfstudio_production.py",
+      "behavior": "run ns-train through Popen/selectors streaming instead of subprocess.run(capture_output=True)",
+      "verification": "python3 -m py_compile plus 19 focused unit tests passed"
     }
   },
   "latest_artifacts": [
@@ -170,7 +196,8 @@
     "tests/unit/test_sfm_visual_quality.py",
     "tests/unit/test_sfm_nerfstudio_eval_normalizer.py",
     "tests/unit/test_nerfstudio_training_quality_gate.py",
-    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged/colmap"
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged/colmap",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable/colmap"
   ],
   "project_level_caveats": [
     "full 8-leaf multi-instance MD1 fanout plus reducer has not been run on the production reducer path",
@@ -178,7 +205,7 @@
     "AI visual defect review has not been run on source/render/diff proof panels from a real splat artifact",
     "filtered point count is 6.88% below the mature baseline even though raw points and registration pass"
   ],
-  "next_unblocked_step": "After this branch/container build is green, run the cheapest two-leaf reducer artifact through the active 3DGS path and verify the emitted ns-eval quality report plus AI visual review panels before any full 8-leaf MD1 rerun.",
+  "next_unblocked_step": "Commit and push the streaming-log patch, wait for CDK/container build on the new branch head, then relaunch the two-leaf 3DGS quality canary with the streamed trainer image and inspect emitted ns-eval metrics/proof panels.",
   "owner_action_needed": "none",
   "automation": {
     "id": "sfm-reality-check",
