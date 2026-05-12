@@ -149,18 +149,18 @@ def viewer_stats(payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def merge_stats(sfm_metadata: dict[str, Any], reducer_metadata: dict[str, Any]) -> dict[str, Any]:
-    if reducer_metadata.get("artifact_kind") == "sfm_reducer_canary_report":
+    if reducer_metadata.get("artifact_kind") in {"sfm_reducer_canary_report", "sfm_fanout_reducer_report"}:
         transforms = (reducer_metadata.get("fallback") or {}).get("transforms") or []
         shared_counts = [int(item.get("shared_registered_images") or 0) for item in transforms]
         leaf_count = int(reducer_metadata.get("leaf_count") or 0)
         passed = reducer_metadata.get("decision") == "pass"
-        blockers = reducer_metadata.get("blockers") or []
+        blockers = reducer_metadata.get("promotion_blockers") or reducer_metadata.get("blockers") or []
         return {
             "leaf_count": leaf_count,
-            "passed_leaf_count": leaf_count if passed else 0,
-            "failed_leaf_count": 0 if passed else leaf_count,
-            "merged_component_count": 1 if passed else 0,
-            "expected_component_count": 1,
+            "passed_leaf_count": reducer_metadata.get("passed_leaf_count", leaf_count if passed else 0),
+            "failed_leaf_count": reducer_metadata.get("failed_leaf_count", 0 if passed else leaf_count),
+            "merged_component_count": reducer_metadata.get("merged_component_count", 1 if passed else 0),
+            "expected_component_count": reducer_metadata.get("expected_component_count", 1),
             "promotion_blockers": blockers,
             "pre_merge_retention_ratio": min(reducer_metadata.get("leaf_retention_ratios") or [0.0]),
             "final_merged_registered_images": reducer_metadata.get("merged_registered_images"),

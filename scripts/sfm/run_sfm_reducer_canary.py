@@ -252,15 +252,32 @@ def write_pose_aligned_merge(
     additional_points_lines: list[str] = []
     next_point_id = point_id_range(anchor / "points3D.txt")[1] + 1
 
-    for leaf_index, leaf_dir in enumerate(normalized_dirs[1:], start=1):
-        leaf_pairs = image_record_pairs(leaf_dir / "images.txt")
-        leaf_by_name = {parts[9]: (parts, points_line) for parts, points_line in leaf_pairs}
-        shared_names = sorted(set(anchor_by_name).intersection(leaf_by_name))
-        if len(shared_names) < min_shared_images:
+    pending_leaf_dirs = list(enumerate(normalized_dirs[1:], start=1))
+    while pending_leaf_dirs:
+        ranked_leaf_dirs: list[tuple[int, int, Path, dict[str, tuple[list[str], str]], list[str]]] = []
+        for leaf_index, leaf_dir in pending_leaf_dirs:
+            leaf_pairs = image_record_pairs(leaf_dir / "images.txt")
+            leaf_by_name = {parts[9]: (parts, points_line) for parts, points_line in leaf_pairs}
+            shared_names = sorted(set(anchor_by_name).intersection(leaf_by_name))
+            ranked_leaf_dirs.append((-len(shared_names), leaf_index, leaf_dir, leaf_by_name, shared_names))
+        ranked_leaf_dirs.sort()
+        shared_count = -ranked_leaf_dirs[0][0]
+        if shared_count < min_shared_images:
+            leaf_summaries = [
+                {"leaf_index": leaf_index, "shared_registered_images": -negative_shared_count}
+                for negative_shared_count, leaf_index, _, _, _ in ranked_leaf_dirs
+            ]
             raise RuntimeError(
-                f"leaf {leaf_index} has only {len(shared_names)} shared registered images; "
-                f"minimum is {min_shared_images}"
+                f"unable to continue chained pose-aligned merge; best remaining leaf has "
+                f"{shared_count} shared registered images, minimum is {min_shared_images}: {leaf_summaries}"
             )
+        _, leaf_index, leaf_dir, leaf_by_name, shared_names = ranked_leaf_dirs[0]
+        pending_leaf_dirs = [
+            (candidate_index, candidate_dir)
+            for candidate_index, candidate_dir in pending_leaf_dirs
+            if candidate_index != leaf_index
+        ]
+        leaf_pairs = image_record_pairs(leaf_dir / "images.txt")
         source = np.array([camera_center(leaf_by_name[name][0]) for name in shared_names], dtype=float)
         target = np.array([camera_center(anchor_by_name[name][0]) for name in shared_names], dtype=float)
         transform = estimate_similarity(source, target)
@@ -302,6 +319,7 @@ def write_pose_aligned_merge(
                 rewritten_points.extend((point_parts[offset], point_parts[offset + 1], str(new_point_id)))
             additional_image_lines.append((transformed_parts, " ".join(rewritten_points), point_map))
             emitted_names.add(image_name)
+            anchor_by_name[image_name] = (transformed_parts, " ".join(rewritten_points))
 
         transforms.append(
             {
@@ -531,21 +549,30 @@ def main() -> int:
     fallback_report: dict[str, object] | None = None
     fallback_validation_command: dict[str, object] | None = None
     if all(command["returncode"] == 0 for command in convert_commands):
-        merged_binary.mkdir(parents=True, exist_ok=True)
-        merge_command = run_command(
-            [
-                args.colmap_bin,
-                "model_merger",
-                "--input_path1",
-                str(binary_dirs[0]),
-                "--input_path2",
-                str(binary_dirs[1]),
-                "--output_path",
-                str(merged_binary),
-                "--max_reproj_error",
-                "64",
-            ]
-        )
+        if len(binary_dirs) == 2:
+            merged_binary.mkdir(parents=True, exist_ok=True)
+            merge_command = run_command(
+                [
+                    args.colmap_bin,
+                    "model_merger",
+                    "--input_path1",
+                    str(binary_dirs[0]),
+                    "--input_path2",
+                    str(binary_dirs[1]),
+                    "--output_path",
+                    str(merged_binary),
+                    "--max_reproj_error",
+                    "64",
+                ]
+            )
+        else:
+            merge_command = {
+                "command": ["colmap", "model_merger"],
+                "returncode": 64,
+                "seconds": 0.0,
+                "stdout_tail": "",
+                "stderr_tail": "stock model_merger skipped: more than two independent leaf models",
+            }
         if merge_command["returncode"] == 0:
             merged_text.mkdir(parents=True, exist_ok=True)
             convert_merged_command = run_command(

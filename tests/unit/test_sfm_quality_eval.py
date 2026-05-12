@@ -148,6 +148,45 @@ class SfmQualityEvalTest(unittest.TestCase):
         gates = {gate["gate"]: gate["status"] for gate in report["gates"]}
         self.assertEqual(gates["single_component"], "pass")
 
+    def test_fanout_reducer_report_counts_as_component_proof(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            reducer = root / "fanout_reducer.json"
+            reducer.write_text(
+                json.dumps(
+                    {
+                        "artifact_kind": "sfm_fanout_reducer_report",
+                        "decision": "pass",
+                        "leaf_count": 2,
+                        "passed_leaf_count": 2,
+                        "failed_leaf_count": 0,
+                        "merged_component_count": 1,
+                        "expected_component_count": 1,
+                        "promotion_blockers": [],
+                        "merged_registered_images": 3,
+                        "leaf_retention_ratios": [1.0, 1.0],
+                        "fallback": {"transforms": [{"leaf_index": 1, "shared_registered_images": 12}]},
+                    }
+                ),
+                encoding="utf-8",
+            )
+            report = quality_eval.build_report(
+                SimpleNamespace(
+                    sparse_dir="",
+                    viewer_api_json="",
+                    sfm_metadata="",
+                    reducer_metadata=str(reducer),
+                    expected_images=3,
+                    min_registered_ratio=0.98,
+                    min_points=0,
+                    max_reprojection_error_p95=8.0,
+                    output=str(root / "report.json"),
+                )
+            )
+
+        gates = {gate["gate"]: gate["status"] for gate in report["gates"]}
+        self.assertEqual(gates["reducer_blockers"], "pass")
+
 
 if __name__ == "__main__":
     unittest.main()

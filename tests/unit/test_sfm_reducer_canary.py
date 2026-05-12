@@ -14,6 +14,51 @@ SPEC.loader.exec_module(reducer_canary)
 
 
 class SfmReducerCanaryTest(unittest.TestCase):
+    def write_model(
+        self,
+        path: Path,
+        image_names: list[str],
+        point_tracks: list[tuple[str, str]],
+    ) -> None:
+        path.mkdir(parents=True, exist_ok=True)
+        (path / "cameras.txt").write_text("# Camera list\n1 PINHOLE 100 100 1 2 3 4\n", encoding="utf-8")
+        image_name_to_id = {name: index + 1 for index, name in enumerate(image_names)}
+        image_lines: list[str] = ["# Image list\n"]
+        for index, name in enumerate(image_names, start=1):
+            image_lines.append(f"{index} 1 0 0 0 {-float(index)} 0 0 1 {name}\n")
+            image_lines.append("0 0 -1\n")
+        (path / "images.txt").write_text("".join(image_lines), encoding="utf-8")
+        point_lines: list[str] = ["# Point list\n"]
+        for point_id, (first_name, second_name) in enumerate(point_tracks, start=1):
+            point_lines.append(
+                f"{point_id} {float(point_id)} 0 0 255 0 0 0.5 "
+                f"{image_name_to_id[first_name]} 0 {image_name_to_id[second_name]} 0\n"
+            )
+        (path / "points3D.txt").write_text("".join(point_lines), encoding="utf-8")
+
+    def test_pose_aligned_merge_chains_through_intermediate_leaf(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            leaf0 = root / "leaf0"
+            leaf1 = root / "leaf1"
+            leaf2 = root / "leaf2"
+            output = root / "merged"
+            self.write_model(leaf0, ["A.JPG", "B.JPG", "C.JPG", "D.JPG"], [("A.JPG", "B.JPG")])
+            self.write_model(leaf1, ["B.JPG", "C.JPG", "D.JPG", "E.JPG", "F.JPG", "G.JPG"], [("E.JPG", "F.JPG")])
+            self.write_model(leaf2, ["E.JPG", "F.JPG", "G.JPG", "H.JPG", "I.JPG"], [("H.JPG", "I.JPG")])
+
+            report = reducer_canary.write_pose_aligned_merge(
+                normalized_dirs=[leaf0, leaf1, leaf2],
+                output_dir=output,
+                min_shared_images=3,
+            )
+
+            images = (output / "images.txt").read_text(encoding="utf-8")
+
+        self.assertEqual([item["leaf_index"] for item in report["transforms"]], [1, 2])
+        self.assertIn("H.JPG", images)
+        self.assertIn("I.JPG", images)
+
     def test_rewrite_model_text_normalizes_image_camera_and_track_ids(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
