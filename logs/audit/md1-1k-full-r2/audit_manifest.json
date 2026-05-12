@@ -920,29 +920,33 @@
     "local_status_update_pending_commit": true,
     "ml_container_build": "not_triggered_for_non_container_status_commit"
   },
-  "last_updated": "2026-05-07T17:48:00Z",
+  "last_updated": "2026-05-12T19:19:13Z",
   "latest_boundary_merge_review_gate_status": "logs/md1-cost-reduction-r4-boundary-paired-merge-review-gate-blocked-20260506.json blocks merge/review spend until tile_04 and tile_10 leaf gate summaries are present and passing; it confirms the paired strategy targets boundary_no_required_improvement and includes tile_13 context support.",
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
   "latest_boundary_responsible_tile_plan_status": "boundary primary tile_04/tile_10; horizon primary tile_04/tile_01; tile04 dryrun covers tile01/tile10 context support",
   "latest_exact_head_gate": {
-    "checked_at": "2026-05-07T11:56:00Z",
-    "head": "adcb20dc027f14ea0965d8ca96d3637134eb2b44",
-    "cdk_deploy_run_id": 25494070950,
+    "checked_at": "2026-05-12T18:21:07Z",
+    "head": "cbbda33d8afd5da9a77d0f660cc0e8c68b7ee79e",
+    "cdk_deploy_run_id": 25753158350,
     "cdk_deploy_conclusion": "success",
-    "cloudflare_pages": "not_triggered_for_evidence_only_commit",
-    "ml_container_build": "not_triggered_for_evidence_only_commit",
+    "cloudflare_pages": "not_triggered_for_non_web_commit",
+    "ml_container_build_run_id": 25753158308,
+    "ml_container_build_conclusion": "success",
+    "codebuild_id": "spaceport-ml-containers:1b090df3-a556-49f9-8793-43f90aff4d86",
+    "codebuild_status": "SUCCEEDED",
+    "branch_3dgs_digest": "sha256:c5bdfdd8ecd1d97def34421db8c529094d56c99d0e8f0d804ba4bd93d37214c6",
     "live_md1_training_jobs_in_progress": [],
     "live_md1_processing_jobs_in_progress": []
   },
-  "latest_leaf_submit_readiness_gate_status": "boundary_loss_weighting leaf readiness not submitted yet; objective gate is green, merge/review gate is blocked only on missing tile_04 leaf gate, and paid submit still requires exact-head container rebuild plus fresh AWS idle check.",
+  "latest_leaf_submit_readiness_gate_status": "density-capped loss-weighting tile_04 leaf was submitted after exact-head cbbda33d gates and fresh AWS idle; job completed under cap and post-leaf preflight/gate passed, so merge/review is now allowed only for the generated no-training bg10 merge plan.",
   "latest_live_compute_status": {
-    "checked_at": "2026-05-07T11:45Z",
+    "checked_at": "2026-05-12T19:12Z",
     "training_jobs_in_progress": [],
     "processing_jobs_in_progress": []
   },
   "latest_lod_production_readiness_status": "logs/md1-r4-tile10-rollback-lod-production-readiness-20260506.json reports viewer_ready_quality_blocked; --require-promotion-ready now exits 3 and wrote logs/md1-r4-tile10-rollback-lod-production-readiness-promotion-required-20260506.json, preventing promotion callers from accepting viewer readiness alone.",
-  "latest_md1_live_compute_status": "2026-05-07T13:38Z no MD1 SageMaker training or processing jobs InProgress",
+  "latest_md1_live_compute_status": "2026-05-12T19:12Z no MD1 SageMaker training or processing jobs InProgress after density-capped tile_04 leaf gate passed",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
     "head": "07c50ac09a7ac88ea218c5784f045154a102917e",
@@ -983,9 +987,9 @@
     },
     "no_full14_or_lod_launched": true
   },
-  "latest_sagemaker_evidence_spend_total_usd": 13.554,
-  "latest_tile04_leaf_reuse_merge_dryrun_status": "protected tile_04/tile_10 overlap-retention merge and review completed; no metric gain versus rollback bg10, so no paid retry is recommended without redesigned boundary objective/camera weighting.",
-  "latest_training_cost_reduction_status": "Evidence spend now about $10.855; no full 14-tile training or LOD packaging launched in protected-overlap step. Current accepted rollback-based LOD remains the only viewer-validated candidate; cheaper high-quality production path remains blocked on boundary_no_required_improvement.",
+  "latest_sagemaker_evidence_spend_total_usd": 14.067,
+  "latest_tile04_leaf_reuse_merge_dryrun_status": "density-capped tile_04 leaf passed post-leaf preflight/gate with 984154 splats, 128 images, and filtered scaffold; no-training bg10 tile_10 rollback merge payload dry-run is generated and merge/review gate allows only that next step.",
+  "latest_training_cost_reduction_status": "Evidence spend now about $14.067. The over-dense tile_04 loss-weighting failure was fixed with a density-capped leaf that passed the splat guard at 1.029x reference in 2508 billable seconds/about $0.513. No full 14-tile training, paid merge/review, LOD packaging, or promotion launched; next step is bounded no-training merge/review plus V18/visual QA gates.",
   "live_compute_status": "No SageMaker training jobs are InProgress. Exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. Tile_13 hard proof is complete/preflighted/cached; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
@@ -14399,5 +14403,57 @@
     "new_compute_launched": false,
     "full_14tile_training_launched": false,
     "next_required_action": "commit/push, wait exact-head CDK plus ML Container Build, then rerun leaf-submit readiness on the new green SHA before any one-tile paid leaf proof"
+  },
+  "md1_r4_density_capped_loss_weighting_leaf_pass_20260512": {
+    "checked_at": "2026-05-12T19:19:13Z",
+    "status": "leaf_preflight_gate_passed_no_training_merge_plan_ready",
+    "source_commit_head": "cbbda33d8afd5da9a77d0f660cc0e8c68b7ee79e",
+    "training_job": {
+      "name": "md1-r4t04dcap-1778610214-tile-04",
+      "status": "Completed",
+      "instance_type": "ml.g4dn.xlarge",
+      "billable_time_seconds": 2508,
+      "estimated_usd": 0.5127,
+      "max_estimated_usd": 2.25,
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4t04dcap-1778610214/3dgs/tiles/tile_04/md1-r4t04dcap-1778610214-tile-04/output/model.tar.gz"
+    },
+    "checkpoint_evidence": {
+      "checkpoint_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-density-capped-loss-weighting-20260512/checkpoints/md1-r4t04dcap-1778610214-tile-04",
+      "latest_checkpoint": "nerfstudio_models/step-000007999.ckpt",
+      "resume_checkpoint": "resume_checkpoint/nerfstudio_models/step-000007999.ckpt",
+      "s3_object_count": 11,
+      "s3_total_size_bytes": 1060159428
+    },
+    "leaf_preflight_gate": {
+      "preflight_json": "logs/md1-cost-reduction-r4-density-capped-loss-weighting-20260512-tile_04-leaf-preflight.json",
+      "gate_json": "logs/md1-cost-reduction-r4-density-capped-loss-weighting-20260512-tile_04-leaf-gate.json",
+      "preflight_decision": "leaf_preflight_passed_cache_candidate",
+      "gate_decision": "merge_review_allowed",
+      "splat_vertex_count": 984154,
+      "reference_splat_count": 956277,
+      "observed_reference_ratio": 1.0291515951967891,
+      "selected_image_count": 128,
+      "hard_min_splat_count": 765021,
+      "hard_max_splat_count": 1290973,
+      "filtered_scaffold_ok": true,
+      "density_cap_enabled": true
+    },
+    "no_training_merge_plan": {
+      "fullscene_summary_json": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-fullscene-summary-dryrun-20260512.json",
+      "merge_review_gate_json": "logs/md1-r4-density-capped-loss-weighting-merge-review-gate-20260512.json",
+      "merge_review_gate_decision": "merge_review_allowed",
+      "merge_plan_json": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-plan-dryrun-20260512.json",
+      "payload_json": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-payload-dryrun-20260512.json",
+      "background_source_tile_id": "tile_10",
+      "merge_mode": "support_weighted_overlap",
+      "submitted_jobs": []
+    },
+    "live_compute_after_gate": {
+      "md1_training_jobs_in_progress": [],
+      "md1_processing_jobs_in_progress": []
+    },
+    "new_compute_launched_after_leaf": false,
+    "full_14tile_training_launched": false,
+    "next_required_action": "commit/push evidence and planner fix, gate exact head, then submit at most one bounded no-training bg10 merge/preflight/review after fresh AWS idle"
   }
 }

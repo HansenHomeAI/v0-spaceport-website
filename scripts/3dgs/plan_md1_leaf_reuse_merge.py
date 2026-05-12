@@ -33,6 +33,17 @@ def as_list(value: object) -> list[Any]:
     return value if isinstance(value, list) else []
 
 
+def ordered_unique(values: list[str]) -> list[str]:
+    seen: set[str] = set()
+    result: list[str] = []
+    for value in values:
+        cleaned = str(value).strip()
+        if cleaned and cleaned not in seen:
+            seen.add(cleaned)
+            result.append(cleaned)
+    return result
+
+
 def string_value(payload: dict[str, Any], *keys: str) -> str:
     for key in keys:
         value = payload.get(key)
@@ -125,6 +136,8 @@ def build_leaf_reuse_summary(
     passed_leaves: list[PassedLeaf],
     candidate_label: str,
     experiment_id: str,
+    targeted_quality_blockers: list[str] | None = None,
+    context_tile_ids: list[str] | None = None,
 ) -> dict[str, Any]:
     summary = copy.deepcopy(base_summary)
     leaves_by_tile = {leaf.tile_id: leaf for leaf in passed_leaves}
@@ -182,6 +195,31 @@ def build_leaf_reuse_summary(
     summary["training_jobs_to_submit"] = 0
     summary["cost_estimate"] = {"estimated_usd": 0.0, "training_stage_count": 0}
     summary["no_full_14tile_training"] = True
+    if targeted_quality_blockers:
+        summary["targeted_quality_blockers"] = ordered_unique(targeted_quality_blockers)
+    if context_tile_ids:
+        summary["context_support_tile_ids"] = ordered_unique(context_tile_ids)
+        summary["reuse_context_tile_ids"] = ordered_unique(context_tile_ids)
+
+    existing_post_leaf_gates = [
+        gate
+        for gate in as_list(summary.get("post_leaf_preflight_gates"))
+        if isinstance(gate, dict) and string_value(gate, "tile_id") not in leaves_by_tile
+    ]
+    summary["post_leaf_preflight_gates"] = existing_post_leaf_gates + [
+        {
+            "tile_id": leaf.tile_id,
+            "artifact_uri": leaf.artifact_uri,
+            "preflight_summary_json": leaf.preflight_json,
+            "gate_summary_json": leaf.gate_json,
+            "splat_vertex_count": leaf.splat_vertex_count,
+            "selected_image_count": leaf.selected_image_count,
+            "reference_splat_count": leaf.reference_splat_count,
+            "observed_reference_splat_ratio": leaf.observed_reference_splat_ratio,
+            "merge_review_allowed_only_if": "leaf_gate_json decision is merge_review_allowed",
+        }
+        for leaf in passed_leaves
+    ]
     summary["source_leaf_reuse_base_summary_json"] = base_summary_json
     summary["source_leaf_preflight_jsons"] = [leaf.preflight_json for leaf in passed_leaves]
     summary["source_leaf_gate_jsons"] = [leaf.gate_json for leaf in passed_leaves]
@@ -192,6 +230,8 @@ def build_leaf_reuse_summary(
         "experiment_id": summary["experiment_id"],
         "replaced_tile_ids": [entry["tile_id"] for entry in replaced],
         "replaced_artifacts": replaced,
+        "targeted_quality_blockers": ordered_unique(targeted_quality_blockers or []),
+        "context_tile_ids": ordered_unique(context_tile_ids or []),
         "submitted_jobs": [],
         "training_jobs_to_submit": 0,
         "no_full_14tile_training": True,
@@ -208,6 +248,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--leaf-gate-json", action="append", required=True)
     parser.add_argument("--candidate-label", required=True)
     parser.add_argument("--experiment-id", default="")
+    parser.add_argument("--targeted-quality-blocker", action="append", default=[])
+    parser.add_argument("--context-tile-id", action="append", default=[])
     parser.add_argument("--output-json", required=True)
     return parser.parse_args()
 
@@ -232,6 +274,8 @@ def main() -> int:
         passed_leaves=leaves,
         candidate_label=args.candidate_label,
         experiment_id=args.experiment_id,
+        targeted_quality_blockers=args.targeted_quality_blocker,
+        context_tile_ids=args.context_tile_id,
     )
     output_path = Path(args.output_json)
     output_path.parent.mkdir(parents=True, exist_ok=True)

@@ -94,6 +94,38 @@ class MD1LeafReuseMergeTests(unittest.TestCase):
         self.assertEqual(tile04["splat_vertex_count"], 1081440)
         self.assertEqual(tile10["source_artifact_uri"], "s3://bucket/v18/model.tar.gz")
         self.assertEqual(summary["leaf_reuse_merge"]["replaced_tile_ids"], ["tile_04"])
+        self.assertEqual(summary["post_leaf_preflight_gates"][0]["tile_id"], "tile_04")
+        self.assertEqual(summary["post_leaf_preflight_gates"][0]["gate_summary_json"], "leaf-gate.json")
+
+    def test_records_current_objective_context_for_merge_review_gate(self):
+        leaf = planner.validate_passed_leaf(
+            preflight=passed_preflight(),
+            gate=passed_gate(),
+            preflight_json="leaf-preflight.json",
+            gate_json="leaf-gate.json",
+        )
+
+        summary = planner.build_leaf_reuse_summary(
+            base_summary=base_summary(),
+            base_summary_json="base.json",
+            passed_leaves=[leaf],
+            candidate_label="new-leaf-reuse",
+            experiment_id="new-experiment",
+            targeted_quality_blockers=["boundary_no_required_improvement", "horizon_psnr_regression"],
+            context_tile_ids=["tile_10"],
+        )
+
+        self.assertEqual(
+            summary["targeted_quality_blockers"],
+            ["boundary_no_required_improvement", "horizon_psnr_regression"],
+        )
+        self.assertEqual(summary["context_support_tile_ids"], ["tile_10"])
+        self.assertEqual(summary["reuse_context_tile_ids"], ["tile_10"])
+        self.assertEqual(
+            summary["leaf_reuse_merge"]["targeted_quality_blockers"],
+            ["boundary_no_required_improvement", "horizon_psnr_regression"],
+        )
+        self.assertEqual(summary["leaf_reuse_merge"]["context_tile_ids"], ["tile_10"])
 
     def test_rejects_nonpassing_leaf_gate(self):
         with self.assertRaisesRegex(ValueError, "leaf_gate_not_merge_review_allowed"):

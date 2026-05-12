@@ -1,0 +1,87 @@
+{
+  "checked_at": "2026-05-12T19:19:13Z",
+  "experiment_id": "md1-cost-reduction-r4-density-capped-loss-weighting-20260512",
+  "git_head": "cbbda33d8afd5da9a77d0f660cc0e8c68b7ee79e",
+  "job": {
+    "name": "md1-r4t04dcap-1778610214-tile-04",
+    "arn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-r4t04dcap-1778610214-tile-04",
+    "status": "Completed",
+    "secondary_status": "Completed",
+    "instance_type": "ml.g4dn.xlarge",
+    "volume_size_gb": 125,
+    "training_time_seconds": 2508,
+    "billable_time_seconds": 2508,
+    "estimated_usd": 0.5127,
+    "max_estimated_usd": 2.25,
+    "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4t04dcap-1778610214/3dgs/tiles/tile_04/md1-r4t04dcap-1778610214-tile-04/output/model.tar.gz",
+    "artifact_size_bytes": 86903993
+  },
+  "submitted_scope": {
+    "tile_ids": [
+      "tile_04"
+    ],
+    "merge_submitted": false,
+    "review_submitted": false,
+    "lod_submitted": false,
+    "full_14tile_training_submitted": false
+  },
+  "training_controls": {
+    "max_iterations": 8000,
+    "selected_image_count": 128,
+    "training_max_selected_images": 128,
+    "ssim_lambda": 0.3,
+    "training_max_gauss_ratio": 1.0,
+    "training_stop_split_at": 6500,
+    "cull_alpha_thresh": 0.12,
+    "cull_scale_thresh": 0.35,
+    "density_cap_enabled": true,
+    "density_cap_policy": "opacity_topk",
+    "max_output_gaussians": 1290973
+  },
+  "checkpoint_evidence": {
+    "checkpoint_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-density-capped-loss-weighting-20260512/checkpoints/md1-r4t04dcap-1778610214-tile-04",
+    "latest_checkpoint": "nerfstudio_models/step-000007999.ckpt",
+    "resume_checkpoint": "resume_checkpoint/nerfstudio_models/step-000007999.ckpt",
+    "s3_object_count": 11,
+    "s3_total_size_bytes": 1060159428
+  },
+  "leaf_preflight": {
+    "summary_json": "logs/md1-cost-reduction-r4-density-capped-loss-weighting-20260512-tile_04-leaf-preflight.json",
+    "decision": "leaf_preflight_passed_cache_candidate",
+    "block_reasons": [],
+    "splat_vertex_count": 984154,
+    "reference_splat_count": 956277,
+    "observed_reference_ratio": 1.0291515951967891,
+    "selected_image_count": 128,
+    "filtered_scaffold_ok": true,
+    "density_cap_summary": {
+      "enabled": true,
+      "policy": "opacity_topk",
+      "max_gaussians": 1290973,
+      "original_gaussians": 984154,
+      "kept_gaussians": 984154,
+      "removed_gaussians": 0
+    }
+  },
+  "leaf_gate": {
+    "summary_json": "logs/md1-cost-reduction-r4-density-capped-loss-weighting-20260512-tile_04-leaf-gate.json",
+    "decision": "merge_review_allowed",
+    "block_reasons": [],
+    "hard_min_splat_count": 765021,
+    "hard_max_splat_count": 1290973,
+    "expected_selected_image_count": 128
+  },
+  "next_no_spend_merge_plan": {
+    "fullscene_summary_json": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-fullscene-summary-dryrun-20260512.json",
+    "merge_review_gate_json": "logs/md1-r4-density-capped-loss-weighting-merge-review-gate-20260512.json",
+    "merge_plan_json": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-plan-dryrun-20260512.json",
+    "payload_json": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-payload-dryrun-20260512.json",
+    "merge_review_gate_decision": "merge_review_allowed",
+    "submitted_jobs": []
+  },
+  "live_compute_after_gate": {
+    "md1_training_jobs_in_progress": [],
+    "md1_processing_jobs_in_progress": []
+  },
+  "decision": "leaf_passed_next_step_no_training_merge_review_plan_ready"
+}
