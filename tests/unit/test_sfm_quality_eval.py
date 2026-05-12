@@ -191,6 +191,130 @@ class SfmQualityEvalTest(unittest.TestCase):
             report["next_required_gates"],
         )
 
+    def test_render_and_visual_gates_can_promote_when_all_proof_is_present(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            sparse = root / "sparse" / "0"
+            sparse.mkdir(parents=True)
+            (sparse / "images.txt").write_text(
+                "1 1 0 0 0 0 0 0 1 A.JPG\n0 0 -1\n"
+                "2 1 0 0 0 1 0 0 1 B.JPG\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            (sparse / "points3D.txt").write_text(
+                "1 0 0 0 255 0 0 0.5 1 0 2 0\n"
+                "2 1 0 0 0 255 0 1.0 1 1 2 1 1 2\n",
+                encoding="utf-8",
+            )
+            reducer = root / "reducer.json"
+            reducer.write_text(
+                json.dumps(
+                    {
+                        "artifact_kind": "sfm_fanout_reducer_report",
+                        "decision": "pass",
+                        "leaf_count": 2,
+                        "passed_leaf_count": 2,
+                        "failed_leaf_count": 0,
+                        "merged_component_count": 1,
+                        "expected_component_count": 1,
+                        "promotion_blockers": [],
+                        "merged_registered_images": 2,
+                        "leaf_retention_ratios": [1.0, 1.0],
+                        "fallback": {"transforms": [{"leaf_index": 1, "shared_registered_images": 12}]},
+                    }
+                ),
+                encoding="utf-8",
+            )
+            render = root / "render.json"
+            render.write_text(
+                json.dumps(
+                    {
+                        "artifact_kind": "splat_heldout_render_metrics",
+                        "holdout_count": 8,
+                        "successful_render_count": 8,
+                        "metrics": {
+                            "psnr": {"median": 28.0, "p10": 24.0},
+                            "ssim": {"median": 0.86, "p10": 0.78},
+                            "lpips": {"median": 0.18, "p90": 0.28},
+                        },
+                        "baseline_metrics": {
+                            "psnr": {"median": 28.4},
+                            "ssim": {"median": 0.87},
+                            "lpips": {"median": 0.17},
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            visual = root / "visual.json"
+            visual.write_text(
+                json.dumps(
+                    {
+                        "artifact_kind": "ai_visual_review_report",
+                        "decision": "pass",
+                        "panel_count": 6,
+                        "reviewed_panel_count": 6,
+                        "blocking_defect_count": 0,
+                        "warning_defect_count": 0,
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            report = quality_eval.build_report(
+                SimpleNamespace(
+                    sparse_dir=str(sparse),
+                    viewer_api_json="",
+                    sfm_metadata="",
+                    reducer_metadata=str(reducer),
+                    heldout_render_json=str(render),
+                    ai_visual_review_json=str(visual),
+                    expected_images=2,
+                    min_registered_ratio=0.98,
+                    min_points=2,
+                    max_reprojection_error_p95=8.0,
+                    output=str(root / "report.json"),
+                )
+            )
+
+        gates = {gate["gate"]: gate["status"] for gate in report["gates"]}
+        self.assertEqual(gates["heldout_render_metrics"], "pass")
+        self.assertEqual(gates["ai_visual_review"], "pass")
+        self.assertEqual(report["decision"], "promote")
+
+    def test_incomplete_render_metrics_fail_instead_of_pretending_quality(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            render = root / "render.json"
+            render.write_text(
+                json.dumps(
+                    {
+                        "artifact_kind": "training_metadata",
+                        "validation_images": 8,
+                        "final_validation_psnr": 25.0,
+                    }
+                ),
+                encoding="utf-8",
+            )
+            report = quality_eval.build_report(
+                SimpleNamespace(
+                    sparse_dir="",
+                    viewer_api_json="",
+                    sfm_metadata="",
+                    reducer_metadata="",
+                    heldout_render_json=str(render),
+                    ai_visual_review_json="",
+                    expected_images=0,
+                    min_registered_ratio=0.98,
+                    min_points=0,
+                    max_reprojection_error_p95=8.0,
+                    output=str(root / "report.json"),
+                )
+            )
+
+        gates = {gate["gate"]: gate["status"] for gate in report["gates"]}
+        self.assertEqual(gates["heldout_render_metrics"], "fail")
+
 
 if __name__ == "__main__":
     unittest.main()

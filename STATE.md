@@ -1,11 +1,11 @@
 reason: project-level continuation toward production-ready huge-scene tiled SfM; automation is active and must remain active until final proof has no unresolved caveats or owner explicitly stops it.
-last_step: 2026-05-12T18:16Z added committed production fanout reducer support for independent leaf S3 outputs, proved it on the two completed MD1 leaf canaries, uploaded a standard sparse/0 reducer package, and verified deterministic quality plus local viewer/API/render proof.
-next_unblocked_step: Budget gate: use the production reducer on the remaining MD1 leaf set only after launching/completing missing leaves; in parallel add heldout render and AI visual review gates so the next full fanout can close quality, not just sparse merge.
+last_step: 2026-05-12T18:38Z implemented schema-first heldout render metrics and AI visual review gate ingestion; added deterministic source/render pair evaluator with PSNR/SSIM/proof-panel output and LPIPS-required blocking semantics; re-ran quality gate on the two-leaf reducer proof and it correctly remains needs_more_proof until real splat render pairs exist.
+next_unblocked_step: Wire the active NerfStudio/3DGS path to preserve or regenerate deterministic heldout renders, emit splat_heldout_render_metrics with PSNR/SSIM/LPIPS plus proof panels, run AI visual review on those panels, then execute this cheaply on the two-leaf reducer artifact before any full 8-leaf MD1 rerun.
 owner_action_needed: none
 active_jobs: []
 branch: agent-73948216-sfm-production-spine
-head: e6e7fccfa0eac5ee3b396772bfa3ef049b423559
-updated: 2026-05-12T18:16:21Z
+head: 677f55090f4ec8b76c3622f8fd1371a8610d809f
+updated: 2026-05-12T18:38:48Z
 project_status: not_final_project_closed
 automation:
   id: sfm-reality-check
@@ -93,10 +93,21 @@ production_fanout_reducer_proof:
   viewer_api_summary: logs/sfm-production-spine/md1_fanout_reducer_proof_viewer_api_summary_20260512T1803Z.json
   browser_render_proof: logs/sfm-production-spine/md1_fanout_reducer_proof_playwright_20260512T1803Z.json
   viewer_screenshot: logs/sfm-production-spine/md1-fanout-reducer-proof-viewer-20260512T1803Z.png
+visual_quality_gate_contract:
+  status: implemented_not_run_on_real_splat
+  heldout_pair_evaluator: scripts/sfm/evaluate_visual_quality.py
+  integrated_quality_gate: scripts/sfm/evaluate_sfm_quality.py
+  tests:
+    - tests/unit/test_sfm_visual_quality.py
+    - tests/unit/test_sfm_quality_eval.py
+  latest_quality_report: logs/sfm-production-spine/md1_fanout_reducer_proof_quality_20260512T1803Z.json
+  expected_render_report_kind: splat_heldout_render_metrics
+  expected_ai_report_kind: ai_visual_review_report
+  current_decision_without_render_pairs: needs_more_proof
 project_level_caveats:
   - full 8-leaf multi-instance MD1 fanout plus reducer has not been run on the production reducer path
-  - downstream 3DGS/splat heldout render metrics are not implemented/proven
-  - AI visual defect review proof panels are not implemented/proven
+  - active NerfStudio/3DGS path does not yet emit deterministic heldout render pairs with PSNR/SSIM/LPIPS
+  - AI visual defect review has not been run on source/render/diff proof panels from a real splat artifact
   - filtered point count is 6.88% below the mature baseline even though raw points and registration pass
 latest_artifacts:
   - scripts/sfm/evaluate_sfm_quality.py
@@ -117,5 +128,7 @@ latest_artifacts:
   - logs/sfm-production-spine/md1_fanout_reducer_proof_playwright_20260512T1803Z.json
   - logs/sfm-production-spine/md1-fanout-reducer-proof-viewer-20260512T1803Z.png
   - logs/sfm-production-spine/md1_fanout_reducer_proof_s3_20260512T1803Z.txt
+  - scripts/sfm/evaluate_visual_quality.py
+  - tests/unit/test_sfm_visual_quality.py
   - s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260512/merged-pose-aligned/colmap
   - s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged/colmap

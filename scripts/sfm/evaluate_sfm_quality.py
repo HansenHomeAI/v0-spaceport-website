@@ -18,6 +18,10 @@ def load_json(path: str | None) -> dict[str, Any]:
         return json.load(handle)
 
 
+def arg_value(args: argparse.Namespace, name: str, default: Any) -> Any:
+    return getattr(args, name, default)
+
+
 def quantile(values: list[float], q: float) -> float | None:
     if not values:
         return None
@@ -148,6 +152,86 @@ def viewer_stats(payload: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def metric_at(payload: dict[str, Any], metric: str, stat: str) -> float | None:
+    metrics = payload.get("metrics") if isinstance(payload.get("metrics"), dict) else payload
+    if not isinstance(metrics, dict):
+        return None
+    metric_payload = metrics.get(metric)
+    if isinstance(metric_payload, dict):
+        value = metric_payload.get(stat)
+    else:
+        value = metrics.get(f"{metric}_{stat}") or metrics.get(metric)
+    if value is None:
+        return None
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    return number if math.isfinite(number) else None
+
+
+def render_metric_stats(payload: dict[str, Any]) -> dict[str, Any]:
+    if not payload:
+        return {}
+
+    baseline = payload.get("baseline_metrics") or payload.get("baseline") or {}
+    holdout_count = int(payload.get("holdout_count") or payload.get("validation_images") or payload.get("sample_count") or 0)
+    successful_count = int(payload.get("successful_render_count") or payload.get("successful_count") or 0)
+    if not successful_count and payload.get("final_validation_psnr") is not None:
+        successful_count = holdout_count
+
+    psnr_median = metric_at(payload, "psnr", "median")
+    if psnr_median is None and payload.get("final_validation_psnr") is not None:
+        psnr_median = float(payload["final_validation_psnr"])
+    stats = {
+        "artifact_kind": payload.get("artifact_kind"),
+        "decision": payload.get("decision"),
+        "holdout_count": holdout_count,
+        "successful_render_count": successful_count,
+        "success_ratio": round(successful_count / holdout_count, 4) if holdout_count else None,
+        "psnr_median": psnr_median,
+        "psnr_p10": metric_at(payload, "psnr", "p10"),
+        "ssim_median": metric_at(payload, "ssim", "median"),
+        "ssim_p10": metric_at(payload, "ssim", "p10"),
+        "lpips_median": metric_at(payload, "lpips", "median"),
+        "lpips_p90": metric_at(payload, "lpips", "p90"),
+        "blockers": payload.get("blockers") or payload.get("promotion_blockers") or [],
+        "proof_panels": payload.get("proof_panels") or payload.get("proof_panel_manifest"),
+    }
+    stats["baseline"] = {
+        "psnr_median": metric_at(baseline, "psnr", "median"),
+        "ssim_median": metric_at(baseline, "ssim", "median"),
+        "lpips_median": metric_at(baseline, "lpips", "median"),
+    }
+    return stats
+
+
+def visual_review_stats(payload: dict[str, Any]) -> dict[str, Any]:
+    if not payload:
+        return {}
+    findings = payload.get("findings") or []
+    blocking_from_findings = sum(
+        1 for finding in findings if str(finding.get("severity", "")).lower() in {"blocker", "critical", "fail"}
+    )
+    warning_from_findings = sum(
+        1 for finding in findings if str(finding.get("severity", "")).lower() in {"warning", "warn"}
+    )
+    panel_count = int(payload.get("panel_count") or len(payload.get("panels") or []) or 0)
+    reviewed_count = int(payload.get("reviewed_panel_count") or payload.get("reviewed_count") or panel_count)
+    blocking_count = int(payload.get("blocking_defect_count") or blocking_from_findings)
+    warning_count = int(payload.get("warning_defect_count") or warning_from_findings)
+    return {
+        "artifact_kind": payload.get("artifact_kind"),
+        "decision": payload.get("decision"),
+        "panel_count": panel_count,
+        "reviewed_panel_count": reviewed_count,
+        "blocking_defect_count": blocking_count,
+        "warning_defect_count": warning_count,
+        "findings": findings[:20],
+        "proof_panel_manifest": payload.get("proof_panel_manifest"),
+    }
+
+
 def merge_stats(sfm_metadata: dict[str, Any], reducer_metadata: dict[str, Any]) -> dict[str, Any]:
     if reducer_metadata.get("artifact_kind") in {"sfm_reducer_canary_report", "sfm_fanout_reducer_report"}:
         transforms = (reducer_metadata.get("fallback") or {}).get("transforms") or []
@@ -213,16 +297,121 @@ def add_gate(gates: list[dict[str, Any]], name: str, status: str, evidence: str)
     gates.append({"gate": name, "status": status, "evidence": evidence})
 
 
+def add_heldout_render_gate(gates: list[dict[str, Any]], stats: dict[str, Any], args: argparse.Namespace) -> None:
+    if not stats:
+        add_gate(
+            gates,
+            "heldout_render_metrics",
+            "not_run",
+            "requires downstream splat renders from held-out source cameras",
+        )
+        return
+
+    failures: list[str] = []
+    blockers = stats.get("blockers") or []
+    if blockers:
+        failures.append(f"blockers={blockers}")
+    if str(stats.get("decision") or "").lower() in {"fail", "do_not_promote"}:
+        failures.append(f"decision={stats.get('decision')}")
+
+    holdout_count = int(stats.get("holdout_count") or 0)
+    success_ratio = stats.get("success_ratio")
+    if holdout_count < arg_value(args, "min_heldout_render_count", 8):
+        failures.append(f"holdout_count={holdout_count}")
+    if success_ratio is None or float(success_ratio) < arg_value(args, "min_heldout_success_ratio", 0.95):
+        failures.append(f"success_ratio={success_ratio}")
+
+    required_metrics = ("psnr_median", "ssim_median", "lpips_median")
+    missing = [name for name in required_metrics if stats.get(name) is None]
+    if missing:
+        failures.append(f"missing_metrics={missing}")
+    if stats.get("psnr_median") is not None and float(stats["psnr_median"]) < arg_value(args, "min_heldout_psnr_median", 22.0):
+        failures.append(f"psnr_median={stats['psnr_median']}")
+    if stats.get("ssim_median") is not None and float(stats["ssim_median"]) < arg_value(args, "min_heldout_ssim_median", 0.70):
+        failures.append(f"ssim_median={stats['ssim_median']}")
+    if stats.get("lpips_median") is not None and float(stats["lpips_median"]) > arg_value(args, "max_heldout_lpips_median", 0.35):
+        failures.append(f"lpips_median={stats['lpips_median']}")
+
+    baseline = stats.get("baseline") or {}
+    if baseline.get("psnr_median") is not None and stats.get("psnr_median") is not None:
+        delta = float(stats["psnr_median"]) - float(baseline["psnr_median"])
+        if delta < -arg_value(args, "max_psnr_regression", 1.0):
+            failures.append(f"psnr_regression={round(delta, 4)}")
+    if baseline.get("ssim_median") is not None and stats.get("ssim_median") is not None:
+        delta = float(stats["ssim_median"]) - float(baseline["ssim_median"])
+        if delta < -arg_value(args, "max_ssim_regression", 0.03):
+            failures.append(f"ssim_regression={round(delta, 4)}")
+    if baseline.get("lpips_median") is not None and stats.get("lpips_median") is not None:
+        delta = float(stats["lpips_median"]) - float(baseline["lpips_median"])
+        if delta > arg_value(args, "max_lpips_regression", 0.03):
+            failures.append(f"lpips_regression={round(delta, 4)}")
+
+    add_gate(
+        gates,
+        "heldout_render_metrics",
+        "fail" if failures else "pass",
+        "render_metrics="
+        + json.dumps(
+            {
+                "holdout_count": holdout_count,
+                "success_ratio": success_ratio,
+                "psnr_median": stats.get("psnr_median"),
+                "ssim_median": stats.get("ssim_median"),
+                "lpips_median": stats.get("lpips_median"),
+                "failures": failures,
+            },
+            sort_keys=True,
+        ),
+    )
+
+
+def add_ai_visual_gate(gates: list[dict[str, Any]], stats: dict[str, Any], args: argparse.Namespace) -> None:
+    if not stats:
+        add_gate(
+            gates,
+            "ai_visual_review",
+            "not_run",
+            "requires fixed side-by-side render proof panels",
+        )
+        return
+
+    panel_count = int(stats.get("panel_count") or 0)
+    reviewed_count = int(stats.get("reviewed_panel_count") or 0)
+    blockers = int(stats.get("blocking_defect_count") or 0)
+    warnings = int(stats.get("warning_defect_count") or 0)
+    failures: list[str] = []
+    if panel_count < arg_value(args, "min_visual_review_panels", 6):
+        failures.append(f"panel_count={panel_count}")
+    if reviewed_count < panel_count:
+        failures.append(f"reviewed_panel_count={reviewed_count}")
+    if blockers:
+        failures.append(f"blocking_defect_count={blockers}")
+    if str(stats.get("decision") or "").lower() in {"fail", "do_not_promote"}:
+        failures.append(f"decision={stats.get('decision')}")
+
+    status = "fail" if failures else "warning" if warnings else "pass"
+    add_gate(
+        gates,
+        "ai_visual_review",
+        status,
+        f"panels={panel_count}, reviewed={reviewed_count}, blocking={blockers}, warnings={warnings}, failures={failures}",
+    )
+
+
 def build_report(args: argparse.Namespace) -> dict[str, Any]:
     sfm_metadata = load_json(args.sfm_metadata)
     reducer_metadata = load_json(args.reducer_metadata)
     viewer_payload = load_json(args.viewer_api_json)
+    heldout_render_payload = load_json(arg_value(args, "heldout_render_json", ""))
+    ai_visual_payload = load_json(arg_value(args, "ai_visual_review_json", ""))
     sparse_dir = Path(args.sparse_dir) if args.sparse_dir else None
 
     sparse_images = parse_images(sparse_dir / "images.txt") if sparse_dir else {}
     sparse_points = parse_points3d(sparse_dir / "points3D.txt") if sparse_dir else {}
     viewer = viewer_stats(viewer_payload)
     merge = merge_stats(sfm_metadata, reducer_metadata)
+    heldout_render = render_metric_stats(heldout_render_payload)
+    ai_visual_review = visual_review_stats(ai_visual_payload)
 
     registered = (
         sparse_images.get("registered_image_count")
@@ -284,8 +473,8 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
     add_gate(
         gates,
         "reprojection_error_sample",
-        "pass" if error_p95 is not None and float(error_p95) <= args.max_reprojection_error_p95 else "warning",
-        f"p95={error_p95}, max={args.max_reprojection_error_p95}",
+        "pass" if error_p95 is not None and float(error_p95) <= arg_value(args, "max_reprojection_error_p95", 8.0) else "warning",
+        f"p95={error_p95}, max={arg_value(args, 'max_reprojection_error_p95', 8.0)}",
     )
     up_y_median = (viewer.get("camera_up_y") or {}).get("median")
     add_gate(
@@ -294,18 +483,8 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
         "pass" if up_y_median is None or float(up_y_median) > 0.0 else "fail",
         f"median camera up.y={up_y_median}",
     )
-    add_gate(
-        gates,
-        "heldout_render_metrics",
-        "not_run",
-        "requires downstream splat renders from held-out source cameras",
-    )
-    add_gate(
-        gates,
-        "ai_visual_review",
-        "not_run",
-        "requires fixed side-by-side render proof panels",
-    )
+    add_heldout_render_gate(gates, heldout_render, args)
+    add_ai_visual_gate(gates, ai_visual_review, args)
 
     statuses = {gate["status"] for gate in gates}
     decision = "do_not_promote" if "fail" in statuses else "needs_more_proof" if statuses & {"warning", "not_run"} else "promote"
@@ -324,6 +503,8 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
             "viewer_api_json": args.viewer_api_json,
             "sfm_metadata": args.sfm_metadata,
             "reducer_metadata": args.reducer_metadata,
+            "heldout_render_json": arg_value(args, "heldout_render_json", ""),
+            "ai_visual_review_json": arg_value(args, "ai_visual_review_json", ""),
         },
         "summary": {
             "registered_images": registered,
@@ -336,6 +517,8 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
         "sparse_points": sparse_points,
         "viewer": viewer,
         "merge": merge,
+        "heldout_render": heldout_render,
+        "ai_visual_review": ai_visual_review,
         "next_required_gates": next_required_gates,
     }
 
@@ -346,10 +529,21 @@ def main() -> int:
     parser.add_argument("--viewer-api-json", default="")
     parser.add_argument("--sfm-metadata", default="")
     parser.add_argument("--reducer-metadata", default="")
+    parser.add_argument("--heldout-render-json", default="")
+    parser.add_argument("--ai-visual-review-json", default="")
     parser.add_argument("--expected-images", type=int, default=0)
     parser.add_argument("--min-registered-ratio", type=float, default=0.98)
     parser.add_argument("--min-points", type=int, default=1000)
     parser.add_argument("--max-reprojection-error-p95", type=float, default=8.0)
+    parser.add_argument("--min-heldout-render-count", type=int, default=8)
+    parser.add_argument("--min-heldout-success-ratio", type=float, default=0.95)
+    parser.add_argument("--min-heldout-psnr-median", type=float, default=22.0)
+    parser.add_argument("--min-heldout-ssim-median", type=float, default=0.70)
+    parser.add_argument("--max-heldout-lpips-median", type=float, default=0.35)
+    parser.add_argument("--max-psnr-regression", type=float, default=1.0)
+    parser.add_argument("--max-ssim-regression", type=float, default=0.03)
+    parser.add_argument("--max-lpips-regression", type=float, default=0.03)
+    parser.add_argument("--min-visual-review-panels", type=int, default=6)
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
 

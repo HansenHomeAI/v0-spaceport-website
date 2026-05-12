@@ -1,7 +1,7 @@
 {
-  "updated_at": "2026-05-12T18:16:21Z",
+  "updated_at": "2026-05-12T18:38:48Z",
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "e6e7fccfa0eac5ee3b396772bfa3ef049b423559",
+  "head": "677f55090f4ec8b76c3622f8fd1371a8610d809f",
   "project_final_decision": "not_final_project_closed",
   "md1_sfm_artifact_decision": "promotable_sparse_sfm_artifact_but_not_full_project_proof",
   "automation_recommendation": "keep_sfm_reality_check_active_until_owner_confirms_final_project_or_project_level_caveats_resolve",
@@ -26,11 +26,18 @@
     "two_leaf_reducer_quality_report": "logs/sfm-production-spine/md1_two_leaf_reducer_canary_quality_20260512.json",
     "two_leaf_reducer_decision": "needs_more_proof",
     "reason_not_promote_final_project": [
-      "heldout_render_metrics_not_run",
-      "ai_visual_review_not_run"
+      "active_3dgs_path_does_not_emit_splat_heldout_render_metrics_yet",
+      "ai_visual_review_not_run_on_real_source_render_diff_panels_yet"
     ],
     "production_reducer_quality_report": "logs/sfm-production-spine/md1_fanout_reducer_proof_quality_20260512T1803Z.json",
-    "production_reducer_decision": "needs_more_proof"
+    "production_reducer_decision": "needs_more_proof",
+    "visual_quality_gate_contract": {
+      "heldout_pair_evaluator": "scripts/sfm/evaluate_visual_quality.py",
+      "integrated_quality_gate": "scripts/sfm/evaluate_sfm_quality.py",
+      "expected_render_report_kind": "splat_heldout_render_metrics",
+      "expected_ai_report_kind": "ai_visual_review_report",
+      "local_tests": "14 unit tests passed"
+    }
   },
   "two_leaf_fanout_and_reducer_proof": {
     "leaf_jobs": [
@@ -90,11 +97,11 @@
   },
   "project_level_unresolved_caveats": [
     "full 8-leaf multi-instance MD1 fanout plus reducer has not been run on the production reducer path",
-    "downstream 3DGS/splat heldout render metrics are not implemented/proven",
-    "AI visual defect review proof panels are not implemented/proven",
+    "active NerfStudio/3DGS path does not yet emit deterministic heldout render pairs with PSNR/SSIM/LPIPS",
+    "AI visual defect review has not been run on source/render/diff proof panels from a real splat artifact",
     "filtered point count is 6.88% below the mature baseline even though raw points and registration pass"
   ],
-  "final_next_step": "Budget gate: use the production reducer on the remaining MD1 leaf set only after launching/completing missing leaves; in parallel add heldout render and AI visual review gates so the next full fanout can close quality, not just sparse merge.",
+  "final_next_step": "Wire the active NerfStudio/3DGS path to preserve or regenerate deterministic heldout renders, emit splat_heldout_render_metrics with PSNR/SSIM/LPIPS plus proof panels, run AI visual review on those panels, then execute this cheaply on the two-leaf reducer artifact before any full 8-leaf MD1 rerun.",
   "proof_artifacts": [
     "STATE.md",
     "logs/sfm-production-spine/frontier.json",
@@ -114,6 +121,8 @@
     "logs/sfm-production-spine/md1_fanout_reducer_proof_playwright_20260512T1803Z.json",
     "logs/sfm-production-spine/md1-fanout-reducer-proof-viewer-20260512T1803Z.png",
     "logs/sfm-production-spine/md1_fanout_reducer_proof_s3_20260512T1803Z.txt",
+    "scripts/sfm/evaluate_visual_quality.py",
+    "tests/unit/test_sfm_visual_quality.py",
     "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged/colmap"
   ]
 }

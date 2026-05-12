@@ -6,7 +6,9 @@
     "sparse_dir": "logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/output_package/sparse/0",
     "viewer_api_json": "",
     "sfm_metadata": "",
-    "reducer_metadata": "logs/sfm-production-spine/md1_fanout_reducer_proof_20260512T1803Z.json"
+    "reducer_metadata": "logs/sfm-production-spine/md1_fanout_reducer_proof_20260512T1803Z.json",
+    "heldout_render_json": "",
+    "ai_visual_review_json": ""
   },
   "summary": {
     "registered_images": 447,
@@ -156,6 +158,8 @@
     },
     "weak_merge_nodes": []
   },
+  "heldout_render": {},
+  "ai_visual_review": {},
   "next_required_gates": [
     "render held-out images from the splat and compute PSNR/SSIM/LPIPS",
     "generate fixed proof panels and run AI visual defect review"
