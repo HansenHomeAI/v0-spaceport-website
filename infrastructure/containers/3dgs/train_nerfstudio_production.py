@@ -735,7 +735,7 @@ class NerfStudioTrainer:
             "--pipeline.model.sh_degree", str(sh_degree),
             "--logging.steps_per_log", str(log_interval),
             "--vis", "tensorboard",
-            "--pipeline.datamanager.cache-images", "cpu",
+            "--pipeline.datamanager.cache-images", "disk",
         ]
         
         # Add bilateral guided processing (Vincent's exposure correction)
@@ -751,7 +751,7 @@ class NerfStudioTrainer:
         cmd.extend([
             "--pipeline.model.max-gauss-ratio", "10.0",  # Conservative ratio for A10G
         ])
-        logger.info("🖥️  A10G GPU optimization enabled (max-gauss-ratio: 10.0, image cache: cpu)")
+        logger.info("🖥️  A10G GPU optimization enabled (max-gauss-ratio: 10.0, image cache: disk)")
         
         logger.info("🚀 Executing NerfStudio training command:")
         logger.info(f"   {' '.join(cmd)}")

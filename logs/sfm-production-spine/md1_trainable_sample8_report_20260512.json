@@ -1,0 +1,39 @@
+{
+  "artifact_kind": "colmap_training_sample_report",
+  "input_colmap_dir": "logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/output_package/sparse/0",
+  "output_colmap_dir": "logs/sfm-production-spine/md1-trainable-sample8-20260512/colmap",
+  "selection": "camera-stratified-contiguous",
+  "max_images": 8,
+  "source_image_count": 447,
+  "selected_image_count": 8,
+  "selected_camera_counts": {
+    "1": 4,
+    "2": 4
+  },
+  "selected_image_ids": [
+    1,
+    3,
+    2,
+    4,
+    40,
+    39,
+    41,
+    42
+  ],
+  "selected_image_names": [
+    "DJI_01001.JPG",
+    "DJI_01003.JPG",
+    "DJI_01002.JPG",
+    "DJI_01004.JPG",
+    "DJI_01040.JPG",
+    "DJI_01039.JPG",
+    "DJI_01041.JPG",
+    "DJI_01042.JPG"
+  ],
+  "min_track_length": 2,
+  "kept_points3d": 12322,
+  "kept_frames": 8,
+  "copied_images": 0,
+  "missing_images": [],
+  "decision": "pass"
+}

@@ -1,0 +1,606 @@
+{
+    "events": [
+        {
+            "timestamp": 1778622533978,
+            "message": "2026-05-12 21:48:53,553 - INFO - NS_TRAIN:                 lr=0.0025,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533978,
+            "message": "2026-05-12 21:48:53,553 - INFO - NS_TRAIN:                 eps=1e-15,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533978,
+            "message": "2026-05-12 21:48:53,553 - INFO - NS_TRAIN:                 max_norm=None,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533978,
+            "message": "2026-05-12 21:48:53,553 - INFO - NS_TRAIN:                 weight_decay=0",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533978,
+            "message": "2026-05-12 21:48:53,553 - INFO - NS_TRAIN:             ),",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533978,
+            "message": "2026-05-12 21:48:53,554 - INFO - NS_TRAIN:             'scheduler': None",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533978,
+            "message": "2026-05-12 21:48:53,554 - INFO - NS_TRAIN:         },",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533978,
+            "message": "2026-05-12 21:48:53,554 - INFO - NS_TRAIN:         'features_rest': {",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533978,
+            "message": "2026-05-12 21:48:53,554 - INFO - NS_TRAIN:             'optimizer': AdamOptimizerConfig(",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533978,
+            "message": "2026-05-12 21:48:53,554 - INFO - NS_TRAIN:                 _target=<class 'torch.optim.adam.Adam'>,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533978,
+            "message": "2026-05-12 21:48:53,554 - INFO - NS_TRAIN:                 lr=0.000125,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533978,
+            "message": "2026-05-12 21:48:53,554 - INFO - NS_TRAIN:                 eps=1e-15,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533978,
+            "message": "2026-05-12 21:48:53,554 - INFO - NS_TRAIN:                 max_norm=None,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533978,
+            "message": "2026-05-12 21:48:53,554 - INFO - NS_TRAIN:                 weight_decay=0",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533978,
+            "message": "2026-05-12 21:48:53,554 - INFO - NS_TRAIN:             ),",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533978,
+            "message": "2026-05-12 21:48:53,554 - INFO - NS_TRAIN:             'scheduler': None",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533978,
+            "message": "2026-05-12 21:48:53,554 - INFO - NS_TRAIN:         },",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533978,
+            "message": "2026-05-12 21:48:53,554 - INFO - NS_TRAIN:         'opacities': {",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533978,
+            "message": "2026-05-12 21:48:53,554 - INFO - NS_TRAIN:             'optimizer': AdamOptimizerConfig(",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533978,
+            "message": "2026-05-12 21:48:53,554 - INFO - NS_TRAIN:                 _target=<class 'torch.optim.adam.Adam'>,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533978,
+            "message": "2026-05-12 21:48:53,554 - INFO - NS_TRAIN:                 lr=0.05,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533978,
+            "message": "2026-05-12 21:48:53,554 - INFO - NS_TRAIN:                 eps=1e-15,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,554 - INFO - NS_TRAIN:                 max_norm=None,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,554 - INFO - NS_TRAIN:                 weight_decay=0",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,555 - INFO - NS_TRAIN:             ),",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,555 - INFO - NS_TRAIN:             'scheduler': None",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,555 - INFO - NS_TRAIN:         },",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,555 - INFO - NS_TRAIN:         'scales': {",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,555 - INFO - NS_TRAIN:             'optimizer': AdamOptimizerConfig(",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,555 - INFO - NS_TRAIN:                 _target=<class 'torch.optim.adam.Adam'>,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,555 - INFO - NS_TRAIN:                 lr=0.005,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,555 - INFO - NS_TRAIN:                 eps=1e-15,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,555 - INFO - NS_TRAIN:                 max_norm=None,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,555 - INFO - NS_TRAIN:                 weight_decay=0",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,555 - INFO - NS_TRAIN:             ),",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,555 - INFO - NS_TRAIN:             'scheduler': None",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,555 - INFO - NS_TRAIN:         },",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,555 - INFO - NS_TRAIN:         'quats': {",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,555 - INFO - NS_TRAIN:             'optimizer': AdamOptimizerConfig(",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,555 - INFO - NS_TRAIN:                 _target=<class 'torch.optim.adam.Adam'>,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,555 - INFO - NS_TRAIN:                 lr=0.001,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,555 - INFO - NS_TRAIN:                 eps=1e-15,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,556 - INFO - NS_TRAIN:                 max_norm=None,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,556 - INFO - NS_TRAIN:                 weight_decay=0",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,556 - INFO - NS_TRAIN:             ),",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,556 - INFO - NS_TRAIN:             'scheduler': None",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,556 - INFO - NS_TRAIN:         },",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,556 - INFO - NS_TRAIN:         'camera_opt': {",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,556 - INFO - NS_TRAIN:             'optimizer': AdamOptimizerConfig(",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,556 - INFO - NS_TRAIN:                 _target=<class 'torch.optim.adam.Adam'>,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,556 - INFO - NS_TRAIN:                 lr=0.0001,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,556 - INFO - NS_TRAIN:                 eps=1e-15,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,556 - INFO - NS_TRAIN:                 max_norm=None,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,556 - INFO - NS_TRAIN:                 weight_decay=0",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,556 - INFO - NS_TRAIN:             ),",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,556 - INFO - NS_TRAIN:             'scheduler': ExponentialDecaySchedulerConfig(",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,556 - INFO - NS_TRAIN:                 _target=<class 'nerfstudio.engine.schedulers.ExponentialDecayScheduler'>,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,556 - INFO - NS_TRAIN:                 lr_pre_warmup=0,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,556 - INFO - NS_TRAIN:                 lr_final=5e-07,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,556 - INFO - NS_TRAIN:                 warmup_steps=1000,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,557 - INFO - NS_TRAIN:                 max_steps=30000,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,557 - INFO - NS_TRAIN:                 ramp='cosine'",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,557 - INFO - NS_TRAIN:             )",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,557 - INFO - NS_TRAIN:         },",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,557 - INFO - NS_TRAIN:         'bilateral_grid': {",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,557 - INFO - NS_TRAIN:             'optimizer': AdamOptimizerConfig(",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,557 - INFO - NS_TRAIN:                 _target=<class 'torch.optim.adam.Adam'>,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533979,
+            "message": "2026-05-12 21:48:53,557 - INFO - NS_TRAIN:                 lr=0.002,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,557 - INFO - NS_TRAIN:                 eps=1e-15,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,557 - INFO - NS_TRAIN:                 max_norm=None,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,557 - INFO - NS_TRAIN:                 weight_decay=0",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,557 - INFO - NS_TRAIN:             ),",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,557 - INFO - NS_TRAIN:             'scheduler': ExponentialDecaySchedulerConfig(",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,557 - INFO - NS_TRAIN:                 _target=<class 'nerfstudio.engine.schedulers.ExponentialDecayScheduler'>,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,557 - INFO - NS_TRAIN:                 lr_pre_warmup=0,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,557 - INFO - NS_TRAIN:                 lr_final=0.0001,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,557 - INFO - NS_TRAIN:                 warmup_steps=1000,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,557 - INFO - NS_TRAIN:                 max_steps=30000,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,557 - INFO - NS_TRAIN:                 ramp='cosine'",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,558 - INFO - NS_TRAIN:             )",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,558 - INFO - NS_TRAIN:         }",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,558 - INFO - NS_TRAIN:     },",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,558 - INFO - NS_TRAIN:     vis='tensorboard',",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,558 - INFO - NS_TRAIN:     data=PosixPath('/tmp/nerfstudio_training/converted_data'),",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,558 - INFO - NS_TRAIN:     prompt=None,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,558 - INFO - NS_TRAIN:     relative_model_dir=PosixPath('nerfstudio_models'),",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,564 - INFO - NS_TRAIN:     load_scheduler=True,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,564 - INFO - NS_TRAIN:     steps_per_save=2000,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,564 - INFO - NS_TRAIN:     steps_per_eval_batch=0,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,564 - INFO - NS_TRAIN:     steps_per_eval_image=100,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,564 - INFO - NS_TRAIN:     steps_per_eval_all_images=1000,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,564 - INFO - NS_TRAIN:     max_num_iterations=25,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,564 - INFO - NS_TRAIN:     mixed_precision=False,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,564 - INFO - NS_TRAIN:     use_grad_scaler=False,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,565 - INFO - NS_TRAIN:     save_only_latest_checkpoint=True,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,565 - INFO - NS_TRAIN:     load_dir=None,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,565 - INFO - NS_TRAIN:     load_step=None,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,565 - INFO - NS_TRAIN:     load_config=None,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,565 - INFO - NS_TRAIN:     load_checkpoint=None,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,565 - INFO - NS_TRAIN:     log_gradients=False,",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,565 - INFO - NS_TRAIN:     gradient_accumulation_steps={},",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,565 - INFO - NS_TRAIN:     start_paused=False",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,565 - INFO - NS_TRAIN: )",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,565 - INFO - NS_TRAIN: ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,565 - INFO - NS_TRAIN:            Saving config to:                                                                    experiment_config.py:136",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,565 - INFO - NS_TRAIN:            /tmp/nerfstudio_training/converted_data/splatfacto/2026-05-12_214853/config.yml",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,565 - INFO - NS_TRAIN:            Saving checkpoints to:                                                                         trainer.py:142",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,567 - INFO - NS_TRAIN:            /tmp/nerfstudio_training/converted_data/splatfacto/2026-05-12_214853/nerfstudio_models",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622533980,
+            "message": "2026-05-12 21:48:53,567 - INFO - NS_TRAIN:            Auto image downscale factor of 4                                                 nerfstudio_dataparser.py:484",
+            "ingestionTime": 1778622536006
+        },
+        {
+            "timestamp": 1778622537981,
+            "message": "2026-05-12 21:48:57,236 - INFO - NS_TRAIN: Downloading: \"https://download.pytorch.org/models/alexnet-owt-7be5be79.pth\" to /root/.cache/torch/hub/checkpoints/alexnet-owt-7be5be79.pth",
+            "ingestionTime": 1778622543055
+        },
+        {
+            "timestamp": 1778622537981,
+            "message": "2026-05-12 21:48:57,443 - INFO - NS_TRAIN:   0%|          | 0.00/233M [00:00<?, ?B/s]",
+            "ingestionTime": 1778622543055
+        },
+        {
+            "timestamp": 1778622537981,
+            "message": "2026-05-12 21:48:57,543 - INFO - NS_TRAIN:  14%|█▍        | 32.4M/233M [00:00<00:00, 340MB/s]",
+            "ingestionTime": 1778622543055
+        },
+        {
+            "timestamp": 1778622537981,
+            "message": "2026-05-12 21:48:57,643 - INFO - NS_TRAIN:  33%|███▎      | 76.8M/233M [00:00<00:00, 414MB/s]",
+            "ingestionTime": 1778622543055
+        },
+        {
+            "timestamp": 1778622537982,
+            "message": "2026-05-12 21:48:57,743 - INFO - NS_TRAIN:  50%|█████     | 117M/233M [00:00<00:00, 418MB/s]",
+            "ingestionTime": 1778622543055
+        },
+        {
+            "timestamp": 1778622537982,
+            "message": "2026-05-12 21:48:57,861 - INFO - NS_TRAIN:  68%|██████▊   | 158M/233M [00:00<00:00, 421MB/s]",
+            "ingestionTime": 1778622543055
+        },
+        {
+            "timestamp": 1778622537982,
+            "message": "2026-05-12 21:48:57,950 - INFO - NS_TRAIN:  85%|████████▍ | 198M/233M [00:00<00:00, 395MB/s]",
+            "ingestionTime": 1778622543055
+        },
+        {
+            "timestamp": 1778622538982,
+            "message": "2026-05-12 21:48:58,122 - INFO - NS_TRAIN: 100%|██████████| 233M/233M [00:00<00:00, 403MB/s]",
+            "ingestionTime": 1778622543055
+        },
+        {
+            "timestamp": 1778622538982,
+            "message": "2026-05-12 21:48:58,122 - INFO - NS_TRAIN: No Nerfstudio checkpoint to load, so training from scratch.",
+            "ingestionTime": 1778622543055
+        },
+        {
+            "timestamp": 1778622538982,
+            "message": "2026-05-12 21:48:58,123 - INFO - NS_TRAIN: logging events to: /tmp/nerfstudio_training/converted_data/splatfacto/2026-05-12_214853",
+            "ingestionTime": 1778622543055
+        },
+        {
+            "timestamp": 1778622538982,
+            "message": "2026-05-12 21:48:58,125 - INFO - NS_TRAIN: [21:48:58] Caching / undistorting train images                                            full_images_datamanager.py:230",
+            "ingestionTime": 1778622543055
+        }
+    ],
+    "nextForwardToken": "f/39664608046201182589827087092386798276301860466416549898/s",
+    "nextBackwardToken": "b/39664607934608253616379848883620835463464171721409954011/s"
+}

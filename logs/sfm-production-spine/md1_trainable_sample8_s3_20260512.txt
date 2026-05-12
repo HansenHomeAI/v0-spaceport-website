@@ -1,0 +1,16 @@
+2026-05-12 15:56:14    3.9 MiB manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap/images/DJI_01001.JPG
+2026-05-12 15:56:14    3.9 MiB manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap/images/DJI_01002.JPG
+2026-05-12 15:56:14    4.0 MiB manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap/images/DJI_01003.JPG
+2026-05-12 15:56:14    4.1 MiB manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap/images/DJI_01004.JPG
+2026-05-12 15:56:14    3.9 MiB manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap/images/DJI_01039.JPG
+2026-05-12 15:56:14    3.9 MiB manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap/images/DJI_01040.JPG
+2026-05-12 15:56:14    4.1 MiB manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap/images/DJI_01041.JPG
+2026-05-12 15:56:14    4.0 MiB manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap/images/DJI_01042.JPG
+2026-05-12 15:56:14  271 Bytes manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap/sparse/0/cameras.txt
+2026-05-12 15:56:14    1.3 KiB manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap/sparse/0/frames.txt
+2026-05-12 15:56:14    3.4 MiB manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap/sparse/0/images.txt
+2026-05-12 15:56:14    1.2 MiB manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap/sparse/0/points3D.txt
+2026-05-12 15:56:15  218 Bytes manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap/sparse/0/rigs.txt
+
+Total Objects: 13
+   Total Size: 36.4 MiB

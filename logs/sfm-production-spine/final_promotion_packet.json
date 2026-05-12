@@ -1,7 +1,7 @@
 {
-  "updated_at": "2026-05-12T20:57:10Z",
+  "updated_at": "2026-05-12T22:06:45Z",
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "3d81a8f4aa72d550e982d312b87fbe365dce6327",
+  "head": "6347e1189df32d65d2b4dd296ad4164e0488eb25",
   "project_final_decision": "not_final_project_closed",
   "md1_sfm_artifact_decision": "promotable_sparse_sfm_artifact_but_not_full_project_proof",
   "automation_recommendation": "keep_sfm_reality_check_active_until_owner_confirms_final_project_or_project_level_caveats_resolve",
@@ -108,7 +108,7 @@
     "AI visual defect review has not been run on source/render/diff proof panels from a real splat artifact",
     "filtered point count is 6.88% below the mature baseline even though raw points and registration pass"
   ],
-  "final_next_step": "Commit and push the CPU-cache/no-viewer 3DGS patch, wait for CDK/container build on the new head, then relaunch the two-leaf 3DGS quality canary and require terminal model artifact plus ns-eval metrics/proof panels.",
+  "final_next_step": "Commit and push disk-cache trainer patch, wait for container build/deploy, then relaunch sample8 canary with the new ECR digest and verify heldout render metrics/panels.",
   "proof_artifacts": [
     "STATE.md",
     "logs/sfm-production-spine/frontier.json",
@@ -150,7 +150,38 @@
     "logs/sfm-production-spine/md1_2leaf_3dgs_stream_canary_describe_stopped_20260512T205540Z.json",
     "logs/sfm-production-spine/md1_2leaf_3dgs_stream_canary_cloudwatch_terminal_20260512T205540Z.json",
     "logs/sfm-production-spine/md1_2leaf_3dgs_stream_canary_s3_stopped_20260512T205540Z.txt",
-    "logs/sfm-production-spine/md1_2leaf_3dgs_stream_canary_log_stream.txt"
+    "logs/sfm-production-spine/md1_2leaf_3dgs_stream_canary_log_stream.txt",
+    "logs/sfm-production-spine/md1_2leaf_3dgs_cpu_canary_config_20260512T211403Z.json",
+    "logs/sfm-production-spine/md1_2leaf_3dgs_cpu_canary_create_20260512T211403Z.json",
+    "logs/sfm-production-spine/md1_2leaf_3dgs_cpu_canary_launch_20260512T211403Z.json",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-cpu-canary-20260512T211403Z/",
+    "scripts/sfm/prepare_colmap_training_sample.py",
+    "tests/unit/test_colmap_training_sample.py",
+    "logs/sfm-production-spine/md1_trainable_sample40_report_20260512.json",
+    "logs/sfm-production-spine/md1_trainable_sample40_colmap_converter_20260512.log",
+    "logs/sfm-production-spine/md1_trainable_sample40_s3_20260512.txt",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample40/colmap",
+    "logs/sfm-production-spine/md1_sample40_3dgs_quality_config_20260512T214324Z.json",
+    "logs/sfm-production-spine/md1_sample40_3dgs_quality_launch_20260512T214324Z.json",
+    "logs/sfm-production-spine/md1_sample40_3dgs_quality_create_20260512T214324Z.json",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample40-quality-20260512T214324Z/",
+    "logs/sfm-production-spine/md1_2leaf_3dgs_cpu_canary_describe_stopped_20260512T2142Z.json",
+    "logs/sfm-production-spine/md1_2leaf_3dgs_cpu_canary_cloudwatch_terminal_20260512T2142Z.json",
+    "logs/sfm-production-spine/md1_2leaf_3dgs_cpu_canary_s3_stopped_20260512T2142Z.txt",
+    "logs/sfm-production-spine/md1_trainable_sample8_report_20260512.json",
+    "logs/sfm-production-spine/md1_trainable_sample8_colmap_converter_20260512.log",
+    "logs/sfm-production-spine/md1_trainable_sample8_s3_20260512.txt",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap",
+    "logs/sfm-production-spine/md1_sample8_3dgs_quality_config_20260512T215720Z.json",
+    "logs/sfm-production-spine/md1_sample8_3dgs_quality_launch_20260512T215720Z.json",
+    "logs/sfm-production-spine/md1_sample8_3dgs_quality_create_20260512T215720Z.json",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample8-quality-20260512T215720Z/",
+    "logs/sfm-production-spine/md1_sample40_3dgs_quality_describe_20260512T215709Z.json",
+    "logs/sfm-production-spine/md1_sample40_3dgs_quality_cloudwatch_20260512T215606Z.json",
+    "logs/sfm-production-spine/md1_sample40_3dgs_quality_s3_terminal_20260512T215709Z.txt",
+    "logs/sfm-production-spine/md1_sample8_3dgs_quality_describe_20260512T220631Z.json",
+    "logs/sfm-production-spine/md1_sample8_3dgs_quality_cloudwatch_20260512T220631Z.json",
+    "logs/sfm-production-spine/md1_sample8_3dgs_quality_s3_terminal_20260512T220631Z.txt"
   ],
   "active_jobs": [],
   "stopped_jobs": [
@@ -177,6 +208,80 @@
       "terminal_describe": "logs/sfm-production-spine/md1_2leaf_3dgs_stream_canary_describe_stopped_20260512T205540Z.json",
       "terminal_cloudwatch": "logs/sfm-production-spine/md1_2leaf_3dgs_stream_canary_cloudwatch_terminal_20260512T205540Z.json",
       "terminal_s3_listing": "logs/sfm-production-spine/md1_2leaf_3dgs_stream_canary_s3_stopped_20260512T205540Z.txt"
+    },
+    {
+      "name": "md1-2leaf-3dgs-cpu-2114-1778620443",
+      "type": "sagemaker_training",
+      "status": "Stopped",
+      "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable/colmap",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-cpu-canary-20260512T211403Z/",
+      "billable_time_seconds": 1561,
+      "stop_reason": "budget stop after CPU-cache/no-viewer run still made no CloudWatch progress past NerfStudio train-image caching; pivoted to deterministic 40-image trainable sample canary",
+      "terminal_describe": "logs/sfm-production-spine/md1_2leaf_3dgs_cpu_canary_describe_stopped_20260512T2142Z.json",
+      "terminal_cloudwatch": "logs/sfm-production-spine/md1_2leaf_3dgs_cpu_canary_cloudwatch_terminal_20260512T2142Z.json",
+      "terminal_s3_listing": "logs/sfm-production-spine/md1_2leaf_3dgs_cpu_canary_s3_stopped_20260512T2142Z.txt"
+    },
+    {
+      "name": "md1-sample40-3dgs-qc-1778622216",
+      "type": "sagemaker_training",
+      "status": "Stopped",
+      "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample40/colmap",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample40-quality-20260512T214324Z/",
+      "billable_time_seconds": 738,
+      "stop_reason": "budget stop after sample40 repeated no-progress NerfStudio train-image caching stall; sample8 launched to isolate image-cache scale versus trainer/eval path",
+      "terminal_describe_pattern": "logs/sfm-production-spine/md1_sample40_3dgs_quality_describe_20260512T215709Z.json",
+      "terminal_cloudwatch_pattern": "logs/sfm-production-spine/md1_sample40_3dgs_quality_cloudwatch_20260512T215606Z.json",
+      "terminal_s3_listing_pattern": "logs/sfm-production-spine/md1_sample40_3dgs_quality_s3_terminal_20260512T215709Z.txt"
+    },
+    {
+      "name": "md1-sample8-3dgs-qc-1778623053",
+      "type": "sagemaker_training",
+      "status": "Stopped",
+      "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample8-quality-20260512T215720Z/",
+      "billable_time_seconds": 447,
+      "stop_reason": "budget stop after sample8 repeated no-progress NerfStudio train-image caching stall; root cause identified as using cache-images cpu despite Nerfstudio large-splatfacto docs recommending cache-images disk",
+      "terminal_describe": "logs/sfm-production-spine/md1_sample8_3dgs_quality_describe_20260512T220631Z.json",
+      "terminal_cloudwatch": "logs/sfm-production-spine/md1_sample8_3dgs_quality_cloudwatch_20260512T220631Z.json",
+      "terminal_s3_listing": "logs/sfm-production-spine/md1_sample8_3dgs_quality_s3_terminal_20260512T220631Z.txt"
     }
-  ]
+  ],
+  "sample40_trainable_canary_input": {
+    "status": "prepared_uploaded_colmap_valid",
+    "script": "scripts/sfm/prepare_colmap_training_sample.py",
+    "unit_test": "tests/unit/test_colmap_training_sample.py",
+    "report": "logs/sfm-production-spine/md1_trainable_sample40_report_20260512.json",
+    "local_colmap_converter_log": "logs/sfm-production-spine/md1_trainable_sample40_colmap_converter_20260512.log",
+    "s3_listing": "logs/sfm-production-spine/md1_trainable_sample40_s3_20260512.txt",
+    "s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample40/colmap",
+    "selected_image_count": 40,
+    "selected_camera_counts": {
+      "1": 20,
+      "2": 20
+    },
+    "kept_points3d": 50982,
+    "total_size": "180.3 MiB"
+  },
+  "sample8_trainable_canary_input": {
+    "status": "prepared_uploaded_colmap_valid",
+    "script": "scripts/sfm/prepare_colmap_training_sample.py",
+    "report": "logs/sfm-production-spine/md1_trainable_sample8_report_20260512.json",
+    "local_colmap_converter_log": "logs/sfm-production-spine/md1_trainable_sample8_colmap_converter_20260512.log",
+    "s3_listing": "logs/sfm-production-spine/md1_trainable_sample8_s3_20260512.txt",
+    "s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap",
+    "selected_image_count": 8,
+    "selected_camera_counts": {
+      "1": 4,
+      "2": 4
+    },
+    "kept_points3d": 12322,
+    "total_size": "36.4 MiB"
+  },
+  "disk_cache_3dgs_patch": {
+    "file": "infrastructure/containers/3dgs/train_nerfstudio_production.py",
+    "behavior": "ns-train now uses --pipeline.datamanager.cache-images disk instead of cpu for splatfacto large-dataset path",
+    "reason": "Nerfstudio large-dataset docs recommend cache-images disk for splatfacto; cpu pre-caching stalled even at 8 images in SageMaker canaries",
+    "verification": "python3 -m py_compile plus 21 focused unit tests passed",
+    "next_build": "commit/push and wait for container workflow, then relaunch sample8 using new ECR digest"
+  }
 }

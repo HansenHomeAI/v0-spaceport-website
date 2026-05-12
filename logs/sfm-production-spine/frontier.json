@@ -1,12 +1,12 @@
 {
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "3d81a8f4aa72d550e982d312b87fbe365dce6327",
-  "updated": "2026-05-12T20:57:10Z",
-  "current_rung": "PATCHING_3DGS_CPU_CACHE_AFTER_STREAMED_CANARY_STOP",
+  "head": "6347e1189df32d65d2b4dd296ad4164e0488eb25",
+  "updated": "2026-05-12T22:06:45Z",
+  "current_rung": "DISK_CACHE_3DGS_PATCH_READY_FOR_CONTAINER_BUILD",
   "current_goal": "Production-ready huge-scene tiled SfM: same-MD1 quality, meaningfully faster, restartable, distributed, promotion-safe, and backed by sparse, viewer, render, and AI visual proof.",
   "active_jobs": [],
   "blockers": [],
-  "last_command": "Stopped md1-2leaf-3dgs-stream-2030-1778617849 after streamed logs proved the pipe fix but no progress occurred beyond NerfStudio train-image caching; patched ns-train to use tensorboard vis and CPU image cache.",
+  "last_command": "Stopped sample8 CPU-cache canary and patched Nerfstudio splatfacto cache-images from cpu to disk; next is commit/push container rebuild and sample8 relaunch.",
   "last_metrics": {
     "canonical_md1_artifact": {
       "job": "r4exact739s1-1777612249",
@@ -193,6 +193,80 @@
       "behavior": "ns-train now uses --vis tensorboard and --pipeline.datamanager.cache-images cpu instead of viewer/gpu cache",
       "reason": "avoid SageMaker viewer server and non-scalable GPU full-image caching on large leaves",
       "verification": "python3 -m py_compile plus 19 focused unit tests passed"
+    },
+    "two_leaf_3dgs_cpu_canary_20260512T211403Z": {
+      "name": "md1-2leaf-3dgs-cpu-2114-1778620443",
+      "type": "sagemaker_training",
+      "status": "Stopped",
+      "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable/colmap",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-cpu-canary-20260512T211403Z/",
+      "billable_time_seconds": 1561,
+      "stop_reason": "budget stop after CPU-cache/no-viewer run still made no CloudWatch progress past NerfStudio train-image caching; pivoted to deterministic 40-image trainable sample canary",
+      "terminal_describe": "logs/sfm-production-spine/md1_2leaf_3dgs_cpu_canary_describe_stopped_20260512T2142Z.json",
+      "terminal_cloudwatch": "logs/sfm-production-spine/md1_2leaf_3dgs_cpu_canary_cloudwatch_terminal_20260512T2142Z.json",
+      "terminal_s3_listing": "logs/sfm-production-spine/md1_2leaf_3dgs_cpu_canary_s3_stopped_20260512T2142Z.txt"
+    },
+    "trainable_sample40_20260512": {
+      "status": "prepared_uploaded_colmap_valid",
+      "script": "scripts/sfm/prepare_colmap_training_sample.py",
+      "unit_test": "tests/unit/test_colmap_training_sample.py",
+      "report": "logs/sfm-production-spine/md1_trainable_sample40_report_20260512.json",
+      "local_colmap_converter_log": "logs/sfm-production-spine/md1_trainable_sample40_colmap_converter_20260512.log",
+      "s3_listing": "logs/sfm-production-spine/md1_trainable_sample40_s3_20260512.txt",
+      "s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample40/colmap",
+      "selected_image_count": 40,
+      "selected_camera_counts": {
+        "1": 20,
+        "2": 20
+      },
+      "kept_points3d": 50982,
+      "total_size": "180.3 MiB"
+    },
+    "sample40_3dgs_quality_canary_20260512T214324Z": {
+      "name": "md1-sample40-3dgs-qc-1778622216",
+      "type": "sagemaker_training",
+      "status": "Stopped",
+      "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample40/colmap",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample40-quality-20260512T214324Z/",
+      "billable_time_seconds": 738,
+      "stop_reason": "budget stop after sample40 repeated no-progress NerfStudio train-image caching stall; sample8 launched to isolate image-cache scale versus trainer/eval path",
+      "terminal_describe_pattern": "logs/sfm-production-spine/md1_sample40_3dgs_quality_describe_20260512T215709Z.json",
+      "terminal_cloudwatch_pattern": "logs/sfm-production-spine/md1_sample40_3dgs_quality_cloudwatch_20260512T215606Z.json",
+      "terminal_s3_listing_pattern": "logs/sfm-production-spine/md1_sample40_3dgs_quality_s3_terminal_20260512T215709Z.txt"
+    },
+    "trainable_sample8_20260512": {
+      "status": "prepared_uploaded_colmap_valid",
+      "script": "scripts/sfm/prepare_colmap_training_sample.py",
+      "report": "logs/sfm-production-spine/md1_trainable_sample8_report_20260512.json",
+      "local_colmap_converter_log": "logs/sfm-production-spine/md1_trainable_sample8_colmap_converter_20260512.log",
+      "s3_listing": "logs/sfm-production-spine/md1_trainable_sample8_s3_20260512.txt",
+      "s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap",
+      "selected_image_count": 8,
+      "selected_camera_counts": {
+        "1": 4,
+        "2": 4
+      },
+      "kept_points3d": 12322,
+      "total_size": "36.4 MiB"
+    },
+    "sample8_3dgs_quality_canary_20260512T215720Z": {
+      "name": "md1-sample8-3dgs-qc-1778623053",
+      "type": "sagemaker_training",
+      "status": "Stopped",
+      "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample8-quality-20260512T215720Z/",
+      "billable_time_seconds": 447,
+      "stop_reason": "budget stop after sample8 repeated no-progress NerfStudio train-image caching stall; root cause identified as using cache-images cpu despite Nerfstudio large-splatfacto docs recommending cache-images disk",
+      "terminal_describe": "logs/sfm-production-spine/md1_sample8_3dgs_quality_describe_20260512T220631Z.json",
+      "terminal_cloudwatch": "logs/sfm-production-spine/md1_sample8_3dgs_quality_cloudwatch_20260512T220631Z.json",
+      "terminal_s3_listing": "logs/sfm-production-spine/md1_sample8_3dgs_quality_s3_terminal_20260512T220631Z.txt"
+    },
+    "disk_cache_no_viewer_patch_20260512T2206Z": {
+      "file": "infrastructure/containers/3dgs/train_nerfstudio_production.py",
+      "behavior": "ns-train now uses --pipeline.datamanager.cache-images disk instead of cpu for splatfacto large-dataset path",
+      "reason": "Nerfstudio large-dataset docs recommend cache-images disk for splatfacto; cpu pre-caching stalled even at 8 images in SageMaker canaries",
+      "verification": "python3 -m py_compile plus 21 focused unit tests passed",
+      "next_build": "commit/push and wait for container workflow, then relaunch sample8 using new ECR digest"
     }
   },
   "latest_artifacts": [
@@ -223,7 +297,34 @@
     "tests/unit/test_sfm_nerfstudio_eval_normalizer.py",
     "tests/unit/test_nerfstudio_training_quality_gate.py",
     "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged/colmap",
-    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable/colmap"
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable/colmap",
+    "scripts/sfm/prepare_colmap_training_sample.py",
+    "tests/unit/test_colmap_training_sample.py",
+    "logs/sfm-production-spine/md1_trainable_sample40_report_20260512.json",
+    "logs/sfm-production-spine/md1_trainable_sample40_colmap_converter_20260512.log",
+    "logs/sfm-production-spine/md1_trainable_sample40_s3_20260512.txt",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample40/colmap",
+    "logs/sfm-production-spine/md1_sample40_3dgs_quality_config_20260512T214324Z.json",
+    "logs/sfm-production-spine/md1_sample40_3dgs_quality_launch_20260512T214324Z.json",
+    "logs/sfm-production-spine/md1_sample40_3dgs_quality_create_20260512T214324Z.json",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample40-quality-20260512T214324Z/",
+    "logs/sfm-production-spine/md1_2leaf_3dgs_cpu_canary_describe_stopped_20260512T2142Z.json",
+    "logs/sfm-production-spine/md1_2leaf_3dgs_cpu_canary_cloudwatch_terminal_20260512T2142Z.json",
+    "logs/sfm-production-spine/md1_2leaf_3dgs_cpu_canary_s3_stopped_20260512T2142Z.txt",
+    "logs/sfm-production-spine/md1_trainable_sample8_report_20260512.json",
+    "logs/sfm-production-spine/md1_trainable_sample8_colmap_converter_20260512.log",
+    "logs/sfm-production-spine/md1_trainable_sample8_s3_20260512.txt",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap",
+    "logs/sfm-production-spine/md1_sample8_3dgs_quality_config_20260512T215720Z.json",
+    "logs/sfm-production-spine/md1_sample8_3dgs_quality_launch_20260512T215720Z.json",
+    "logs/sfm-production-spine/md1_sample8_3dgs_quality_create_20260512T215720Z.json",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample8-quality-20260512T215720Z/",
+    "logs/sfm-production-spine/md1_sample40_3dgs_quality_describe_20260512T215709Z.json",
+    "logs/sfm-production-spine/md1_sample40_3dgs_quality_cloudwatch_20260512T215606Z.json",
+    "logs/sfm-production-spine/md1_sample40_3dgs_quality_s3_terminal_20260512T215709Z.txt",
+    "logs/sfm-production-spine/md1_sample8_3dgs_quality_describe_20260512T220631Z.json",
+    "logs/sfm-production-spine/md1_sample8_3dgs_quality_cloudwatch_20260512T220631Z.json",
+    "logs/sfm-production-spine/md1_sample8_3dgs_quality_s3_terminal_20260512T220631Z.txt"
   ],
   "project_level_caveats": [
     "full 8-leaf multi-instance MD1 fanout plus reducer has not been run on the production reducer path",
@@ -231,7 +332,7 @@
     "AI visual defect review has not been run on source/render/diff proof panels from a real splat artifact",
     "filtered point count is 6.88% below the mature baseline even though raw points and registration pass"
   ],
-  "next_unblocked_step": "Commit and push the CPU-cache/no-viewer 3DGS patch, wait for CDK/container build on the new head, then relaunch the two-leaf 3DGS quality canary and require terminal model artifact plus ns-eval metrics/proof panels.",
+  "next_unblocked_step": "Monitor md1-2leaf-3dgs-cpu-2114-1778620443 to terminal state; if it succeeds, extract model.tar.gz, verify quality_eval/splat_heldout_render_metrics.json and render panels, then run AI visual review before any full 8-leaf MD1 rerun.",
   "owner_action_needed": "none",
   "automation": {
     "id": "sfm-reality-check",

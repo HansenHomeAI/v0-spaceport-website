@@ -1,0 +1,9 @@
+{
+  "job_name": "md1-sample8-3dgs-qc-1778623053",
+  "stamp": "20260512T215720Z",
+  "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap",
+  "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample8-quality-20260512T215720Z/",
+  "branch_head": "6347e1189df32d65d2b4dd296ad4164e0488eb25",
+  "ecr_digest": "sha256:5a47a6284494522c678f07027c1f8d3e808867c903c56ebda1ab",
+  "max_iterations": 10
+}
