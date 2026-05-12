@@ -78,6 +78,35 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertIn("--gate-json", gate["enforce_gate_command"])
         self.assertIn("logs/summary.json", gate["enforce_gate_command"])
 
+    def test_build_post_leaf_preflight_gates_uses_effective_adaptive_image_cap(self):
+        stage = benchmark.BenchmarkStage(
+            stage_name="T0_tile_04",
+            stage_type="train",
+            training_mode="leaf_tile",
+            output_s3_uri="s3://bucket/run/tiles/tile_04",
+            job_name="tile04-proof",
+            tile_id="tile_04",
+            selected_image_count=188,
+            max_selected_images=128,
+        )
+
+        gates = benchmark.build_post_leaf_preflight_gates(
+            [stage],
+            reference_splat_counts={"tile_04": 956277},
+            max_reference_splat_ratio=1.35,
+            min_reference_splat_ratio=0.8,
+            experiment_id="exp",
+            gate_json_path="logs/summary.json",
+        )
+
+        gate = gates[0]
+        self.assertEqual(gate["selected_image_count"], 188)
+        self.assertEqual(gate["max_selected_images"], 128)
+        self.assertEqual(gate["expected_selected_image_count"], 128)
+        self.assertEqual(gate["required_leaf_preflight_gate"]["expected_selected_image_count"], 128)
+        expected_index = gate["enforce_gate_command"].index("--expected-selected-image-count") + 1
+        self.assertEqual(gate["enforce_gate_command"][expected_index], "128")
+
     def test_resolve_proof_profile_defaults_to_quality_gate_low_memory_for_single_job_review(self):
         resolved = benchmark.resolve_proof_profile(
             None,

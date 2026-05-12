@@ -1544,6 +1544,14 @@ def leaf_artifact_uri_for_stage(stage: BenchmarkStage) -> str:
     return f"{normalize_s3_prefix(stage.output_s3_uri)}/{stage.job_name}/output/model.tar.gz"
 
 
+def expected_selected_image_count_for_stage(stage: BenchmarkStage) -> int:
+    selected_count = int(stage.selected_image_count or 0)
+    max_selected_images = int(stage.max_selected_images or 0)
+    if selected_count > 0 and max_selected_images > 0:
+        return min(selected_count, max_selected_images)
+    return selected_count or max_selected_images
+
+
 def build_post_leaf_preflight_gates(
     stages: Sequence[BenchmarkStage],
     *,
@@ -1570,6 +1578,7 @@ def build_post_leaf_preflight_gates(
             continue
         hard_max = int(reference_count * max_reference_splat_ratio)
         hard_min = int(reference_count * min_reference_splat_ratio) if min_reference_splat_ratio > 0 else 0
+        expected_selected_image_count = expected_selected_image_count_for_stage(stage)
         log_stem = safe_log_stem(f"{experiment_id or stage.job_name or '3dgs'}-{stage.tile_id}")
         preflight_json = f"logs/{log_stem}-leaf-preflight.json"
         gate_output_json = f"logs/{log_stem}-leaf-gate.json"
@@ -1603,7 +1612,7 @@ def build_post_leaf_preflight_gates(
             "--expected-tile-id",
             stage.tile_id,
             "--expected-selected-image-count",
-            str(stage.selected_image_count or 0),
+            str(expected_selected_image_count),
             "--require-filtered-scaffold",
             "--summary-json-output",
             gate_output_json,
@@ -1619,7 +1628,9 @@ def build_post_leaf_preflight_gates(
                 "min_reference_splat_ratio": min_reference_splat_ratio or None,
                 "hard_max_splat_count": hard_max,
                 "hard_min_splat_count": hard_min or None,
-                "expected_selected_image_count": stage.selected_image_count,
+                "expected_selected_image_count": expected_selected_image_count,
+                "selected_image_count": stage.selected_image_count,
+                "max_selected_images": stage.max_selected_images,
                 "required_leaf_preflight_gate": {
                     "pass_decision": "leaf_preflight_passed_cache_candidate",
                     "reference_splat_count": reference_count,
@@ -1628,7 +1639,7 @@ def build_post_leaf_preflight_gates(
                     "hard_max_splat_count": hard_max,
                     "hard_min_splat_count": hard_min or None,
                     "require_filtered_scaffold": True,
-                    "expected_selected_image_count": stage.selected_image_count,
+                    "expected_selected_image_count": expected_selected_image_count,
                 },
                 "preflight_summary_json": preflight_json,
                 "gate_summary_json": gate_output_json,

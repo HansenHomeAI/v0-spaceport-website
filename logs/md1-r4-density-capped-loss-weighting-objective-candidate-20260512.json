@@ -1,0 +1,92 @@
+{
+  "boundary_camera_ids": [
+    "DJI_0067.JPG",
+    "DJI_0068.JPG",
+    "DJI_0069.JPG",
+    "DJI_0070.JPG"
+  ],
+  "candidate_id": "md1-r4-density-capped-loss-weighting-tile04-leaf-20260512",
+  "context_support_tile_ids": [
+    "tile_10",
+    "tile_13",
+    "tile_01",
+    "tile_00",
+    "tile_02",
+    "tile_06"
+  ],
+  "created_at": "2026-05-12T17:45:00Z",
+  "expected_metric_axes": [
+    "boundary.required_improvement",
+    "boundary.psnr",
+    "boundary.ssim",
+    "boundary.lpips",
+    "horizon.psnr",
+    "horizon.ssim",
+    "horizon.lpips"
+  ],
+  "horizon_camera_ids": [
+    "DJI_0066.JPG",
+    "DJI_0073.JPG",
+    "DJI_0146.JPG",
+    "DJI_0147.JPG"
+  ],
+  "lod_packaging_allowed": false,
+  "merge_review_allowed": false,
+  "no_full_14tile_training": true,
+  "objective_changes": [
+    "boundary_loss_weighting",
+    "global_ssim_loss_weighting",
+    "boundary_visibility_weighting",
+    "export_density_cap",
+    "split_stop_tightening"
+  ],
+  "objective_implementation": {
+    "environment": {
+      "BOUNDARY_CAMERA_REPEAT_FACTOR": "1",
+      "BOUNDARY_FROZEN_CAMERAS": "DJI_0067.JPG,DJI_0068.JPG,DJI_0069.JPG,DJI_0070.JPG",
+      "CULL_ALPHA_THRESH": "0.12",
+      "CULL_SCALE_THRESH": "0.35",
+      "EXPECTED_METRIC_AXES": "boundary.required_improvement,boundary.psnr,boundary.ssim,boundary.lpips,horizon.psnr,horizon.ssim,horizon.lpips",
+      "HORIZON_FROZEN_CAMERAS": "DJI_0066.JPG,DJI_0073.JPG,DJI_0146.JPG,DJI_0147.JPG",
+      "HORIZON_PROTECTION_REQUIRED": "true",
+      "LOSS_WEIGHTING_STRATEGY": "global_ssim_lambda_0_30_density_capped_no_frame_repeat",
+      "SSIM_LAMBDA": "0.30",
+      "TRAINING_DENSITY_CAP_ENABLED": "true",
+      "TRAINING_DENSITY_CAP_POLICY": "opacity_topk",
+      "TRAINING_MAX_GAUSS_RATIO": "1.0",
+      "TRAINING_MAX_OUTPUT_GAUSSIANS": "1290973",
+      "TRAINING_STOP_SPLIT_AT": "6500"
+    },
+    "source_files": [
+      "infrastructure/containers/3dgs/train_nerfstudio_production.py",
+      "infrastructure/containers/3dgs/sky_quality.py"
+    ],
+    "training_config": {
+      "cull_alpha_thresh": 0.12,
+      "cull_scale_thresh": 0.35,
+      "density_cap_enabled": true,
+      "max_output_gaussians": 1290973,
+      "ssim_lambda": 0.3,
+      "training_max_gauss_ratio": 1.0,
+      "training_stop_split_at": 6500
+    }
+  },
+  "planned_cost_estimate": {
+    "basis": "one bounded tile_04 leaf-only proof on ml.g4dn.xlarge; no merge/review/full14 until leaf preflight and visual QA gates pass",
+    "estimated_usd": 0.9813,
+    "max_estimated_usd": 2.25
+  },
+  "rollback": {
+    "keep_prior_tile04_boundary_horizon_leaf_and_v18_rollback_artifacts_until_candidate_passes": true
+  },
+  "selected_tile_ids": [
+    "tile_04"
+  ],
+  "submitted_jobs": [],
+  "targeted_quality_blockers": [
+    "boundary_no_required_improvement",
+    "horizon_psnr_regression",
+    "splat_vertex_count_above_reference_ratio",
+    "splat_vertex_count_above_hard_max"
+  ]
+}

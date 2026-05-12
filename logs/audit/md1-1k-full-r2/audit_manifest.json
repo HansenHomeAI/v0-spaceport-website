@@ -14316,12 +14316,14 @@
       "TRAINING_STOP_SPLIT_AT",
       "CULL_ALPHA_THRESH",
       "CULL_SCALE_THRESH",
-      "MAX_REFERENCE_SPLAT_RATIO",
+      "TRAINING_DENSITY_CAP_ENABLED",
+      "TRAINING_MAX_OUTPUT_GAUSSIANS",
       "training_max_gauss_ratio",
       "training_stop_split_at",
       "cull_alpha_thresh",
       "cull_scale_thresh",
-      "max_reference_splat_ratio"
+      "density_cap_enabled",
+      "max_output_gaussians"
     ],
     "tests": [
       "python3 -m unittest tests.unit.test_plan_md1_boundary_objective_strategy tests.unit.test_tiled_quality_review tests.unit.test_extract_md1_visual_qa_bundle tests.unit.test_evaluate_md1_visual_qa_gate tests.unit.test_enforce_md1_leaf_submit_readiness",
@@ -14340,5 +14342,62 @@
         "objective_missing_density_control_after_overdense_leaf"
       ]
     }
+  },
+  "md1_r4_density_capped_loss_weighting_no_spend_20260512": {
+    "checked_at": "2026-05-12T18:04:45Z",
+    "status": "implemented_no_spend_density_capped_leaf_objective",
+    "reason": "SSIM_LAMBDA=0.35 tile_04 leaf improved neither enough nor safely; it exported 1967919 splats versus 956277 reference, so the next proof needs a real exported density cap before merge/review spend.",
+    "implemented_controls": [
+      "TRAINING_DENSITY_CAP_ENABLED",
+      "TRAINING_MAX_OUTPUT_GAUSSIANS",
+      "TRAINING_DENSITY_CAP_POLICY",
+      "TRAINING_MAX_GAUSS_RATIO",
+      "TRAINING_STOP_SPLIT_AT",
+      "CULL_ALPHA_THRESH",
+      "CULL_SCALE_THRESH"
+    ],
+    "density_cap_policy": "opacity_topk",
+    "max_output_gaussians": 1290973,
+    "reference_splat_count": 956277,
+    "max_reference_splat_ratio": 1.35,
+    "candidate_objective_gate": {
+      "path": "logs/md1-r4-density-capped-loss-weighting-objective-gate-20260512.json",
+      "decision": "paid_retry_allowed",
+      "block_reasons": []
+    },
+    "leaf_dryrun": {
+      "path": "logs/md1-r4-density-capped-loss-weighting-leaf-dryrun-20260512.json",
+      "submitted_jobs": [],
+      "selected_tile_ids": [
+        "tile_04"
+      ],
+      "selected_image_count": 188,
+      "max_selected_images": 128,
+      "expected_selected_image_count": 128,
+      "max_iterations": 8000,
+      "instance_type": "ml.g4dn.xlarge",
+      "estimated_usd": 0.6542,
+      "worst_case_usd": 0.9813,
+      "max_estimated_usd": 2.25
+    },
+    "merge_review_gate": {
+      "path": "logs/md1-r4-density-capped-loss-weighting-merge-review-gate-blocked-20260512.json",
+      "decision": "merge_review_blocked",
+      "block_reasons": [
+        "leaf_gate_summary_missing:tile_04"
+      ]
+    },
+    "tests": [
+      "python3 -m py_compile scripts/3dgs/run_tiled_3dgs_benchmark.py infrastructure/containers/3dgs/sky_quality.py infrastructure/containers/3dgs/train_nerfstudio_production.py scripts/3dgs/plan_md1_boundary_objective_strategy.py scripts/3dgs/preflight_leaf_model_artifact.py",
+      "python3 -m unittest tests.unit.test_tiled_3dgs_benchmark tests.unit.test_tiled_nerfstudio_dispatcher tests.unit.test_plan_md1_boundary_objective_strategy tests.unit.test_preflight_leaf_model_artifact tests.unit.test_sky_quality_density_cap",
+      "python3 -m json.tool logs/md1-r4-density-capped-loss-weighting-objective-candidate-20260512.json",
+      "python3 -m json.tool logs/md1-r4-density-capped-loss-weighting-objective-gate-20260512.json",
+      "python3 -m json.tool logs/md1-r4-density-capped-loss-weighting-leaf-dryrun-20260512.json",
+      "python3 -m json.tool logs/md1-r4-density-capped-loss-weighting-merge-review-gate-blocked-20260512.json",
+      "git diff --check"
+    ],
+    "new_compute_launched": false,
+    "full_14tile_training_launched": false,
+    "next_required_action": "commit/push, wait exact-head CDK plus ML Container Build, then rerun leaf-submit readiness on the new green SHA before any one-tile paid leaf proof"
   }
 }

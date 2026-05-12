@@ -224,6 +224,7 @@ def build_summary(
     selection = load_json_if_present(output_dir, "training_selection.json")
     export = load_json_if_present(output_dir, "export_manifest.json")
     floater = load_json_if_present(output_dir, "floater_pruning_summary.json")
+    density_cap = load_json_if_present(output_dir, "density_cap_summary.json")
     background_manifest = load_json_if_present(output_dir, "background_manifest.json")
 
     block_reasons: list[str] = []
@@ -279,6 +280,7 @@ def build_summary(
             "foreground_coordinate_frame": export.get("foreground_coordinate_frame"),
         },
         "floater_pruning_summary": floater,
+        "density_cap_summary": density_cap,
         "background_manifest_keys": sorted(background_manifest.keys()),
         "splat_reference_guard": reference_guard,
         "splat_ply_size_bytes": inventory["splat_ply_size_bytes"],

@@ -64,14 +64,16 @@ DENSITY_CONTROL_ENV_KEYS = (
     "TRAINING_STOP_SPLIT_AT",
     "CULL_ALPHA_THRESH",
     "CULL_SCALE_THRESH",
-    "MAX_REFERENCE_SPLAT_RATIO",
+    "TRAINING_DENSITY_CAP_ENABLED",
+    "TRAINING_MAX_OUTPUT_GAUSSIANS",
 )
 DENSITY_CONTROL_CONFIG_KEYS = (
     "training_max_gauss_ratio",
     "training_stop_split_at",
     "cull_alpha_thresh",
     "cull_scale_thresh",
-    "max_reference_splat_ratio",
+    "density_cap_enabled",
+    "max_output_gaussians",
 )
 OVERDENSE_LEAF_REASONS = (
     "splat_vertex_count_above_reference_ratio",

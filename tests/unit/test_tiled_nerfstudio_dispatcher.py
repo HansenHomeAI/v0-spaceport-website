@@ -56,6 +56,8 @@ def load_module_with_stubs():
     sky_quality_stub = types.SimpleNamespace(
         BackgroundSelectionResult=object,
         FloaterPruningResult=object,
+        GaussianCountCapResult=object,
+        cap_gaussian_count_by_importance=lambda *args, **kwargs: None,
         prune_foreground_floaters=lambda *args, **kwargs: None,
         select_background_camera=lambda *args, **kwargs: None,
     )
@@ -177,6 +179,35 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
                 module.os.environ.update(original_environ)
 
             self.assertEqual(trainer.config["model"]["ssim_lambda"], 0.35)
+
+    def test_trainer_applies_density_cap_overrides(self):
+        module = load_module_with_stubs()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config_path = root / "config.yml"
+            output_dir = root / "model"
+            config_path.write_text("{}", encoding="utf-8")
+
+            original_environ = module.os.environ.copy()
+            try:
+                module.os.environ.clear()
+                module.os.environ.update(
+                    {
+                        "SM_MODEL_DIR": str(output_dir),
+                        "TRAINING_DENSITY_CAP_ENABLED": "true",
+                        "TRAINING_MAX_OUTPUT_GAUSSIANS": "1290973",
+                        "TRAINING_DENSITY_CAP_POLICY": "opacity_topk",
+                    }
+                )
+                trainer = module.NerfStudioTrainer(str(config_path))
+            finally:
+                module.os.environ.clear()
+                module.os.environ.update(original_environ)
+
+            density_cap = trainer.config["output"]["density_cap"]
+            self.assertTrue(density_cap["enabled"])
+            self.assertEqual(density_cap["max_gaussians"], 1_290_973)
+            self.assertEqual(density_cap["policy"], "opacity_topk")
 
     def test_trainer_stages_compact_checkpoint_for_sync(self):
         module = load_module_with_stubs()
@@ -1409,6 +1440,52 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             self.assertEqual(len(calls), 1)
             self.assertIn("--foreground-coordinate-frame", calls[0])
             self.assertEqual(calls[0][calls[0].index("--foreground-coordinate-frame") + 1], "planner")
+
+    def test_cap_exported_foreground_density_writes_summary(self):
+        module = load_module_with_stubs()
+
+        class FakeDensityCapResult:
+            policy = "opacity_topk"
+            max_gaussians = 12
+            original_gaussians = 20
+            kept_gaussians = 12
+            removed_gaussians = 8
+
+            def to_dict(self):
+                return {
+                    "enabled": True,
+                    "policy": self.policy,
+                    "max_gaussians": self.max_gaussians,
+                    "original_gaussians": self.original_gaussians,
+                    "kept_gaussians": self.kept_gaussians,
+                    "removed_gaussians": self.removed_gaussians,
+                }
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.config = {"output": {"density_cap": {"enabled": True, "max_gaussians": 12}}}
+            trainer.output_dir = root / "output"
+            trainer.output_dir.mkdir()
+            (trainer.output_dir / "splat.ply").write_text("ply\n", encoding="utf-8")
+
+            calls = []
+
+            def fake_cap(**kwargs):
+                calls.append(kwargs)
+                return FakeDensityCapResult()
+
+            original_cap = module.cap_gaussian_count_by_importance
+            module.cap_gaussian_count_by_importance = fake_cap
+            try:
+                result = trainer.cap_exported_foreground_density()
+            finally:
+                module.cap_gaussian_count_by_importance = original_cap
+
+            self.assertIs(result, trainer.density_cap_result)
+            self.assertEqual(calls[0]["max_gaussians"], 12)
+            summary = json.loads((trainer.output_dir / "density_cap_summary.json").read_text(encoding="utf-8"))
+            self.assertEqual(summary["kept_gaussians"], 12)
 
     def test_build_sparse_point_cloud_ply_writes_ascii_vertices(self):
         module = load_module_with_stubs()

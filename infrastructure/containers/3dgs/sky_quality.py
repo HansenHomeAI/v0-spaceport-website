@@ -63,6 +63,22 @@ class FloaterPruningResult:
         return asdict(self)
 
 
+@dataclass
+class GaussianCountCapResult:
+    enabled: bool
+    policy: str
+    max_gaussians: int
+    original_gaussians: int
+    kept_gaussians: int
+    removed_gaussians: int
+    min_kept_opacity: Optional[float]
+    max_removed_opacity: Optional[float]
+    score_quantile_cutoff: Optional[float]
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
 def _load_transforms(data_dir: Path) -> dict[str, Any]:
     transforms_path = data_dir / "transforms.json"
     with open(transforms_path, "r", encoding="utf-8") as f:
@@ -198,6 +214,15 @@ def _sigmoid(values: np.ndarray) -> np.ndarray:
     return 1.0 / (1.0 + np.exp(-values))
 
 
+def _scale_metric(vertex_data: np.ndarray) -> Optional[np.ndarray]:
+    names = vertex_data.dtype.names or ()
+    scale_names = [name for name in ("scale_0", "scale_1", "scale_2") if name in names]
+    if not scale_names:
+        return None
+    scales = np.stack([np.asarray(vertex_data[name], dtype=np.float32) for name in scale_names], axis=1)
+    return np.mean(np.exp(np.clip(scales, -20.0, 20.0)), axis=1)
+
+
 def _gaussian_rgb_from_vertex_data(vertex_data: np.ndarray) -> np.ndarray:
     sh0 = np.stack(
         [
@@ -208,6 +233,86 @@ def _gaussian_rgb_from_vertex_data(vertex_data: np.ndarray) -> np.ndarray:
         axis=1,
     )
     return np.clip((sh0 * SH_C0) + 0.5, 0.0, 1.0)
+
+
+def cap_gaussian_count_by_importance(
+    ply_path: Path,
+    max_gaussians: int,
+    policy: str = "opacity_topk",
+) -> GaussianCountCapResult:
+    """Hard-cap exported splats by keeping the most likely visible Gaussians.
+
+    Nerfstudio's max-gauss-ratio is a training-time densification hint, not a
+    reference-count guarantee. This post-export cap is intentionally simple and
+    deterministic: keep the highest-opacity splats, with a small penalty for
+    very large scale when scale fields are present.
+    """
+    bounded_max = int(max_gaussians or 0)
+    normalized_policy = str(policy or "opacity_topk").strip() or "opacity_topk"
+    ply = PlyData.read(str(ply_path))
+    vertex = ply["vertex"].data
+    original_count = int(len(vertex))
+    if bounded_max <= 0:
+        return GaussianCountCapResult(
+            enabled=False,
+            policy=normalized_policy,
+            max_gaussians=bounded_max,
+            original_gaussians=original_count,
+            kept_gaussians=original_count,
+            removed_gaussians=0,
+            min_kept_opacity=None,
+            max_removed_opacity=None,
+            score_quantile_cutoff=None,
+        )
+    if original_count <= bounded_max:
+        opacity = _sigmoid(np.asarray(vertex["opacity"], dtype=np.float32)) if "opacity" in (vertex.dtype.names or ()) else None
+        return GaussianCountCapResult(
+            enabled=True,
+            policy=normalized_policy,
+            max_gaussians=bounded_max,
+            original_gaussians=original_count,
+            kept_gaussians=original_count,
+            removed_gaussians=0,
+            min_kept_opacity=float(np.min(opacity)) if opacity is not None and opacity.size else None,
+            max_removed_opacity=None,
+            score_quantile_cutoff=None,
+        )
+
+    names = vertex.dtype.names or ()
+    if normalized_policy != "opacity_topk":
+        raise ValueError(f"Unsupported Gaussian count cap policy: {policy}")
+
+    if "opacity" in names:
+        opacity = _sigmoid(np.asarray(vertex["opacity"], dtype=np.float32))
+    else:
+        opacity = np.ones(original_count, dtype=np.float32)
+    score = opacity.astype(np.float32, copy=True)
+    scale_metric = _scale_metric(vertex)
+    if scale_metric is not None and scale_metric.size == score.size:
+        median_scale = float(np.median(scale_metric))
+        if median_scale > 0:
+            score -= (0.01 * np.log1p(scale_metric / median_scale)).astype(np.float32)
+
+    keep_indices = np.argpartition(score, -bounded_max)[-bounded_max:]
+    keep_indices.sort()
+    keep_mask = np.zeros(original_count, dtype=bool)
+    keep_mask[keep_indices] = True
+    kept_vertex = vertex[keep_mask]
+    PlyData([PlyElement.describe(kept_vertex, "vertex")], text=False).write(str(ply_path))
+
+    kept_opacity = opacity[keep_mask]
+    removed_opacity = opacity[~keep_mask]
+    return GaussianCountCapResult(
+        enabled=True,
+        policy=normalized_policy,
+        max_gaussians=bounded_max,
+        original_gaussians=original_count,
+        kept_gaussians=int(len(kept_vertex)),
+        removed_gaussians=int(original_count - len(kept_vertex)),
+        min_kept_opacity=float(np.min(kept_opacity)) if kept_opacity.size else None,
+        max_removed_opacity=float(np.max(removed_opacity)) if removed_opacity.size else None,
+        score_quantile_cutoff=float(np.min(score[keep_mask])) if keep_mask.any() else None,
+    )
 
 
 def _frame_intrinsics(frame: dict[str, Any], transforms: dict[str, Any]) -> tuple[float, float, float, float, int, int]:
