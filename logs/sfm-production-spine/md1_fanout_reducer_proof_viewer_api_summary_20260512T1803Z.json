@@ -1,0 +1,19 @@
+{
+  "url": "http://127.0.0.1:3000/api/sfm-preview?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fmd1-fanout-reducer-proof-20260512T1803Z%2Fmerged%2Fcolmap&maxPoints=80000",
+  "status": 200,
+  "seconds": 10.48,
+  "artifact": {
+    "bucket": "spaceport-ml-processing-staging",
+    "prefix": "manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged/colmap",
+    "outputS3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged/colmap",
+    "jobName": "merged"
+  },
+  "registeredImageCount": 447,
+  "exactPointCount": 336701,
+  "sampledPointCount": 80000,
+  "cameraCount": 447,
+  "positionValues": 240000,
+  "colorValues": 240000,
+  "hasPointErrors": true,
+  "hasTrackLengths": true
+}

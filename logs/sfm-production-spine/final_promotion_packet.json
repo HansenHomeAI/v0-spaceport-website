@@ -1,7 +1,7 @@
 {
-  "updated_at": "2026-05-12T17:31:54Z",
+  "updated_at": "2026-05-12T18:16:21Z",
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "51089eb20e3f6408af551590966d74d3b1b8bd4f",
+  "head": "e6e7fccfa0eac5ee3b396772bfa3ef049b423559",
   "project_final_decision": "not_final_project_closed",
   "md1_sfm_artifact_decision": "promotable_sparse_sfm_artifact_but_not_full_project_proof",
   "automation_recommendation": "keep_sfm_reality_check_active_until_owner_confirms_final_project_or_project_level_caveats_resolve",
@@ -28,7 +28,9 @@
     "reason_not_promote_final_project": [
       "heldout_render_metrics_not_run",
       "ai_visual_review_not_run"
-    ]
+    ],
+    "production_reducer_quality_report": "logs/sfm-production-spine/md1_fanout_reducer_proof_quality_20260512T1803Z.json",
+    "production_reducer_decision": "needs_more_proof"
   },
   "two_leaf_fanout_and_reducer_proof": {
     "leaf_jobs": [
@@ -61,20 +63,38 @@
     "shared_registered_images": 40,
     "alignment_error_p95_m": 0.0139,
     "leaf_retention_ratios": [
-      1.0,
-      1.0
+      1,
+      1
     ],
     "viewer_api_http_status": 200,
     "viewer_api_artifact": "logs/sfm-production-spine/md1_two_leaf_reducer_canary_viewer_api_summary_20260512.json",
-    "viewer_screenshot": "logs/sfm-production-spine/md1-two-leaf-reducer-canary-viewer-20260512.png"
+    "viewer_screenshot": "logs/sfm-production-spine/md1-two-leaf-reducer-canary-viewer-20260512.png",
+    "production_reducer": {
+      "code_head": "e6e7fccfa0eac5ee3b396772bfa3ef049b423559",
+      "report": "logs/sfm-production-spine/md1_fanout_reducer_proof_20260512T1803Z.json",
+      "decision": "pass",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged/colmap",
+      "registered": 447,
+      "exact_points": 336701,
+      "retention": [
+        1,
+        1
+      ],
+      "promotion_blockers": [],
+      "quality_report": "logs/sfm-production-spine/md1_fanout_reducer_proof_quality_20260512T1803Z.json",
+      "viewer_api_summary": "logs/sfm-production-spine/md1_fanout_reducer_proof_viewer_api_summary_20260512T1803Z.json",
+      "browser_render_proof": "logs/sfm-production-spine/md1_fanout_reducer_proof_playwright_20260512T1803Z.json",
+      "viewer_screenshot": "logs/sfm-production-spine/md1-fanout-reducer-proof-viewer-20260512T1803Z.png",
+      "s3_listing": "logs/sfm-production-spine/md1_fanout_reducer_proof_s3_20260512T1803Z.txt"
+    }
   },
   "project_level_unresolved_caveats": [
-    "full 8-leaf multi-instance MD1 fanout plus reducer has not been run on the new reducer path",
+    "full 8-leaf multi-instance MD1 fanout plus reducer has not been run on the production reducer path",
     "downstream 3DGS/splat heldout render metrics are not implemented/proven",
     "AI visual defect review proof panels are not implemented/proven",
-    "filtered point count is 6.88% below mature baseline"
+    "filtered point count is 6.88% below the mature baseline even though raw points and registration pass"
   ],
-  "final_next_step": "Promote the pose-aligned reducer canary into the production reducer path or switch fanout to shared feature/keypoint data, then add heldout render and AI visual gates before full 8-leaf MD1 rerun.",
+  "final_next_step": "Budget gate: use the production reducer on the remaining MD1 leaf set only after launching/completing missing leaves; in parallel add heldout render and AI visual review gates so the next full fanout can close quality, not just sparse merge.",
   "proof_artifacts": [
     "STATE.md",
     "logs/sfm-production-spine/frontier.json",
@@ -87,6 +107,13 @@
     "logs/sfm-production-spine/md1_two_leaf_reducer_canary_viewer_api_summary_20260512.json",
     "logs/sfm-production-spine/md1_two_leaf_reducer_canary_s3_20260512.txt",
     "logs/sfm-production-spine/md1-two-leaf-reducer-canary-viewer-20260512.png",
-    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260512/merged-pose-aligned/colmap"
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260512/merged-pose-aligned/colmap",
+    "logs/sfm-production-spine/md1_fanout_reducer_proof_20260512T1803Z.json",
+    "logs/sfm-production-spine/md1_fanout_reducer_proof_quality_20260512T1803Z.json",
+    "logs/sfm-production-spine/md1_fanout_reducer_proof_viewer_api_summary_20260512T1803Z.json",
+    "logs/sfm-production-spine/md1_fanout_reducer_proof_playwright_20260512T1803Z.json",
+    "logs/sfm-production-spine/md1-fanout-reducer-proof-viewer-20260512T1803Z.png",
+    "logs/sfm-production-spine/md1_fanout_reducer_proof_s3_20260512T1803Z.txt",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged/colmap"
   ]
 }

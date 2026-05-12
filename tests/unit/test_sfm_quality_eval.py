@@ -186,6 +186,10 @@ class SfmQualityEvalTest(unittest.TestCase):
 
         gates = {gate["gate"]: gate["status"] for gate in report["gates"]}
         self.assertEqual(gates["reducer_blockers"], "pass")
+        self.assertNotIn(
+            "prove reducer ingest from independent leaf prefixes before full fanout",
+            report["next_required_gates"],
+        )
 
 
 if __name__ == "__main__":

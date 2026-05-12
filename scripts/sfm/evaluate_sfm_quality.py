@@ -309,6 +309,12 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
 
     statuses = {gate["status"] for gate in gates}
     decision = "do_not_promote" if "fail" in statuses else "needs_more_proof" if statuses & {"warning", "not_run"} else "promote"
+    next_required_gates = [
+        "render held-out images from the splat and compute PSNR/SSIM/LPIPS",
+        "generate fixed proof panels and run AI visual defect review",
+    ]
+    if reducer_metadata.get("artifact_kind") != "sfm_fanout_reducer_report" or blockers:
+        next_required_gates.append("prove reducer ingest from independent leaf prefixes before full fanout")
     return {
         "schema_version": 1,
         "artifact_kind": "sfm_quality_report",
@@ -330,11 +336,7 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
         "sparse_points": sparse_points,
         "viewer": viewer,
         "merge": merge,
-        "next_required_gates": [
-            "render held-out images from the splat and compute PSNR/SSIM/LPIPS",
-            "generate fixed proof panels and run AI visual defect review",
-            "prove reducer ingest from independent leaf prefixes before full fanout",
-        ],
+        "next_required_gates": next_required_gates,
     }
 
 

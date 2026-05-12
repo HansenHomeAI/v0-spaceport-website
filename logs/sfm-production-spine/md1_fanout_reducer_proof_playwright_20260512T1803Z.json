@@ -1,0 +1,13 @@
+{
+  "url": "http://127.0.0.1:3000/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fmd1-fanout-reducer-proof-20260512T1803Z%2Fmerged%2Fcolmap&maxPoints=80000",
+  "title": "Pipeline Viewer",
+  "errorCount": 0,
+  "errors": [],
+  "visibleText": "SFM",
+  "screenshot": "logs/sfm-production-spine/md1-fanout-reducer-proof-viewer-20260512T1803Z.png",
+  "screenshotPixels": {
+    "width": 1600,
+    "height": 1000,
+    "uniqueColors": 9199
+  }
+}

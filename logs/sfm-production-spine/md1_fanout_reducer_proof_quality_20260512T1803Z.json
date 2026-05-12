@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "sfm_quality_report",
+  "decision": "needs_more_proof",
+  "inputs": {
+    "sparse_dir": "logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/output_package/sparse/0",
+    "viewer_api_json": "",
+    "sfm_metadata": "",
+    "reducer_metadata": "logs/sfm-production-spine/md1_fanout_reducer_proof_20260512T1803Z.json"
+  },
+  "summary": {
+    "registered_images": 447,
+    "expected_images": 447,
+    "registered_ratio": 1.0,
+    "points": 336701
+  },
+  "gates": [
+    {
+      "gate": "registration_coverage",
+      "status": "pass",
+      "evidence": "447/447 registered (1.0000)"
+    },
+    {
+      "gate": "point_count",
+      "status": "pass",
+      "evidence": "336701 points, minimum 100000"
+    },
+    {
+      "gate": "reducer_blockers",
+      "status": "pass",
+      "evidence": "promotion_blockers=[]"
+    },
+    {
+      "gate": "single_component",
+      "status": "pass",
+      "evidence": "merged=1 expected=1"
+    },
+    {
+      "gate": "merge_retention",
+      "status": "pass",
+      "evidence": "pre_merge_retention_ratio=1.0"
+    },
+    {
+      "gate": "seam_overlap",
+      "status": "pass",
+      "evidence": "0 merge nodes have <10 shared registered images"
+    },
+    {
+      "gate": "reprojection_error_sample",
+      "status": "pass",
+      "evidence": "p95=1.8095, max=8.0"
+    },
+    {
+      "gate": "viewer_axis_sanity",
+      "status": "pass",
+      "evidence": "median camera up.y=None"
+    },
+    {
+      "gate": "heldout_render_metrics",
+      "status": "not_run",
+      "evidence": "requires downstream splat renders from held-out source cameras"
+    },
+    {
+      "gate": "ai_visual_review",
+      "status": "not_run",
+      "evidence": "requires fixed side-by-side render proof panels"
+    }
+  ],
+  "sparse_images": {
+    "source": "logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/output_package/sparse/0/images.txt",
+    "registered_image_count": 447,
+    "sample_names": [
+      "DJI_01001.JPG",
+      "DJI_01003.JPG",
+      "DJI_01002.JPG",
+      "DJI_01004.JPG",
+      "DJI_01005.JPG",
+      "DJI_01006.JPG",
+      "DJI_01007.JPG",
+      "DJI_01008.JPG"
+    ]
+  },
+  "sparse_points": {
+    "source": "logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/output_package/sparse/0/points3D.txt",
+    "exact_point_count": 336701,
+    "reprojection_error": {
+      "count": 336701,
+      "min": 0.0001,
+      "p10": 0.4654,
+      "median": 0.9789,
+      "p90": 1.6003,
+      "p95": 1.8095,
+      "p99": 2.2368,
+      "max": 3.9363
+    },
+    "track_length": {
+      "count": 336701,
+      "min": 2.0,
+      "p10": 3.0,
+      "median": 4.0,
+      "p90": 12.0,
+      "p95": 18.0,
+      "p99": 32.0,
+      "max": 77.0
+    },
+    "low_track_ratio": 0.074,
+    "high_error_ratio": 0.0,
+    "bounds": {
+      "x": {
+        "min": -566.7453,
+        "max": 250.1099,
+        "span": 816.8551
+      },
+      "y": {
+        "min": -143.7037,
+        "max": 80.3864,
+        "span": 224.0901
+      },
+      "z": {
+        "min": -237.6761,
+        "max": 358.9769,
+        "span": 596.653
+      }
+    }
+  },
+  "viewer": {},
+  "merge": {
+    "leaf_count": 2,
+    "passed_leaf_count": 2,
+    "failed_leaf_count": 0,
+    "merged_component_count": 1,
+    "expected_component_count": 1,
+    "promotion_blockers": [],
+    "pre_merge_retention_ratio": 1.0,
+    "final_merged_registered_images": 447,
+    "merge_node_count": 1,
+    "shared_registered_images": {
+      "count": 1,
+      "min": 40.0,
+      "p10": 40.0,
+      "median": 40.0,
+      "p90": 40.0,
+      "p95": 40.0,
+      "p99": 40.0,
+      "max": 40.0
+    },
+    "cross_edge_count": {
+      "count": 0,
+      "min": null,
+      "p10": null,
+      "median": null,
+      "p90": null,
+      "p95": null,
+      "p99": null,
+      "max": null
+    },
+    "weak_merge_nodes": []
+  },
+  "next_required_gates": [
+    "render held-out images from the splat and compute PSNR/SSIM/LPIPS",
+    "generate fixed proof panels and run AI visual defect review"
+  ]
+}

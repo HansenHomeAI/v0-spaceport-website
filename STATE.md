@@ -1,11 +1,11 @@
 reason: project-level continuation toward production-ready huge-scene tiled SfM; automation is active and must remain active until final proof has no unresolved caveats or owner explicitly stops it.
-last_step: 2026-05-12T17:31Z verified no active task-owned SageMaker jobs, proved both two-leaf canary leaves are complete, added deterministic sparse/reducer quality gates, implemented a local reducer canary for independent leaf prefixes, discovered stock COLMAP model_merger fails after ID normalization because independent leaves have inconsistent keypoint counts for shared images, added pose-aligned text merge fallback, uploaded the merged canary to S3, and verified the local pipeline viewer API/browser renders it.
-next_unblocked_step: Implement production reducer support around the pose-aligned independent-leaf merge path or change fanout architecture to share a feature/keypoint database, then run the full 8-leaf MD1 fanout/reducer proof only after this reducer path and heldout render/AI gates are ready.
+last_step: 2026-05-12T18:16Z added committed production fanout reducer support for independent leaf S3 outputs, proved it on the two completed MD1 leaf canaries, uploaded a standard sparse/0 reducer package, and verified deterministic quality plus local viewer/API/render proof.
+next_unblocked_step: Budget gate: use the production reducer on the remaining MD1 leaf set only after launching/completing missing leaves; in parallel add heldout render and AI visual review gates so the next full fanout can close quality, not just sparse merge.
 owner_action_needed: none
 active_jobs: []
 branch: agent-73948216-sfm-production-spine
-head: 51089eb20e3f6408af551590966d74d3b1b8bd4f
-updated: 2026-05-12T17:31:54Z
+head: e6e7fccfa0eac5ee3b396772bfa3ef049b423559
+updated: 2026-05-12T18:16:21Z
 project_status: not_final_project_closed
 automation:
   id: sfm-reality-check
@@ -78,8 +78,23 @@ reducer_canary:
   leaf_retention_ratios:
     - 1.0
     - 1.0
+production_fanout_reducer_proof:
+  decision: pass
+  code_head: e6e7fccfa0eac5ee3b396772bfa3ef049b423559
+  report: logs/sfm-production-spine/md1_fanout_reducer_proof_20260512T1803Z.json
+  quality_report: logs/sfm-production-spine/md1_fanout_reducer_proof_quality_20260512T1803Z.json
+  output_uri: s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged/colmap
+  registered: 447
+  exact_points: 336701
+  leaf_retention_ratios:
+    - 1.0
+    - 1.0
+  promotion_blockers: []
+  viewer_api_summary: logs/sfm-production-spine/md1_fanout_reducer_proof_viewer_api_summary_20260512T1803Z.json
+  browser_render_proof: logs/sfm-production-spine/md1_fanout_reducer_proof_playwright_20260512T1803Z.json
+  viewer_screenshot: logs/sfm-production-spine/md1-fanout-reducer-proof-viewer-20260512T1803Z.png
 project_level_caveats:
-  - full 8-leaf multi-instance MD1 fanout plus reducer has not been run on the new reducer path
+  - full 8-leaf multi-instance MD1 fanout plus reducer has not been run on the production reducer path
   - downstream 3DGS/splat heldout render metrics are not implemented/proven
   - AI visual defect review proof panels are not implemented/proven
   - filtered point count is 6.88% below the mature baseline even though raw points and registration pass
@@ -94,4 +109,13 @@ latest_artifacts:
   - logs/sfm-production-spine/md1_two_leaf_reducer_canary_viewer_api_summary_20260512.json
   - logs/sfm-production-spine/md1-two-leaf-reducer-canary-viewer-20260512.png
   - logs/sfm-production-spine/md1_two_leaf_reducer_canary_s3_20260512.txt
+  - scripts/sfm/run_sfm_fanout_reducer.py
+  - tests/unit/test_sfm_fanout_reducer.py
+  - logs/sfm-production-spine/md1_fanout_reducer_proof_20260512T1803Z.json
+  - logs/sfm-production-spine/md1_fanout_reducer_proof_quality_20260512T1803Z.json
+  - logs/sfm-production-spine/md1_fanout_reducer_proof_viewer_api_summary_20260512T1803Z.json
+  - logs/sfm-production-spine/md1_fanout_reducer_proof_playwright_20260512T1803Z.json
+  - logs/sfm-production-spine/md1-fanout-reducer-proof-viewer-20260512T1803Z.png
+  - logs/sfm-production-spine/md1_fanout_reducer_proof_s3_20260512T1803Z.txt
   - s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260512/merged-pose-aligned/colmap
+  - s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged/colmap

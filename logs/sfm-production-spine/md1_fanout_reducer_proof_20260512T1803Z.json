@@ -1,0 +1,301 @@
+{
+  "artifact_kind": "sfm_fanout_reducer_report",
+  "schema_version": 1,
+  "decision": "pass",
+  "branch": "agent-73948216-sfm-production-spine",
+  "head": "e6e7fccfa0eac5ee3b396772bfa3ef049b423559",
+  "input_uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+  "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged/colmap",
+  "leaf_output_uris": [
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1639Z/leaves/leaf-01-r2/colmap",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-02/colmap"
+  ],
+  "leaf_count": 2,
+  "passed_leaf_count": 2,
+  "failed_leaf_count": 0,
+  "input_registered_images": [
+    320,
+    167
+  ],
+  "input_points3d": [
+    235216,
+    126462
+  ],
+  "unique_registered_images_before_merge": 447,
+  "merged_registered_images": 447,
+  "merged_points3d": 336701,
+  "leaf_retention_ratios": [
+    1.0,
+    1.0
+  ],
+  "min_retention_ratio": 0.95,
+  "min_shared_images": 8,
+  "merge_strategy": "stock_colmap_or_chained_pose_aligned_text_merge",
+  "merged_component_count": 1,
+  "expected_component_count": 1,
+  "ba_policy": "leaf_local_or_deferred_global",
+  "standard_sparse0_exists": true,
+  "promotion_blockers": [],
+  "blockers": [],
+  "materialize_reports": [
+    {
+      "leaf_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1639Z/leaves/leaf-01-r2/colmap",
+      "sparse_dir": "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/leaf_downloads/leaf-00/sparse_raw/0",
+      "commands": [
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1639Z/leaves/leaf-01-r2/colmap/sparse_raw/0/cameras.txt",
+            "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/leaf_downloads/leaf-00/sparse_raw/0/cameras.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 0.9,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1639Z/leaves/leaf-01-r2/colmap/sparse_raw/0/images.txt",
+            "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/leaf_downloads/leaf-00/sparse_raw/0/images.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 15.25,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1639Z/leaves/leaf-01-r2/colmap/sparse_raw/0/points3D.txt",
+            "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/leaf_downloads/leaf-00/sparse_raw/0/points3D.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 5.4,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1639Z/leaves/leaf-01-r2/colmap/sparse_raw/0/frames.txt",
+            "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/leaf_downloads/leaf-00/sparse_raw/0/frames.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.44,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1639Z/leaves/leaf-01-r2/colmap/sparse_raw/0/rigs.txt",
+            "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/leaf_downloads/leaf-00/sparse_raw/0/rigs.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 0.85,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        }
+      ]
+    },
+    {
+      "leaf_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-02/colmap",
+      "sparse_dir": "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/leaf_downloads/leaf-01/sparse_raw/0",
+      "commands": [
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-02/colmap/sparse_raw/0/cameras.txt",
+            "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/leaf_downloads/leaf-01/sparse_raw/0/cameras.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 0.94,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-02/colmap/sparse_raw/0/images.txt",
+            "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/leaf_downloads/leaf-01/sparse_raw/0/images.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 8.49,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-02/colmap/sparse_raw/0/points3D.txt",
+            "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/leaf_downloads/leaf-01/sparse_raw/0/points3D.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 3.39,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-02/colmap/sparse_raw/0/frames.txt",
+            "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/leaf_downloads/leaf-01/sparse_raw/0/frames.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 0.95,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-02/colmap/sparse_raw/0/rigs.txt",
+            "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/leaf_downloads/leaf-01/sparse_raw/0/rigs.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 0.85,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        }
+      ]
+    }
+  ],
+  "commands": {
+    "leaf_converters": [
+      {
+        "command": [
+          "colmap",
+          "model_converter",
+          "--input_path",
+          "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/merge/normalized/leaf-00",
+          "--output_path",
+          "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/merge/binary/leaf-00",
+          "--output_type",
+          "BIN"
+        ],
+        "returncode": 0,
+        "seconds": 2.65,
+        "stdout_tail": "",
+        "stderr_tail": ""
+      },
+      {
+        "command": [
+          "colmap",
+          "model_converter",
+          "--input_path",
+          "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/merge/normalized/leaf-01",
+          "--output_path",
+          "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/merge/binary/leaf-01",
+          "--output_type",
+          "BIN"
+        ],
+        "returncode": 0,
+        "seconds": 1.48,
+        "stdout_tail": "",
+        "stderr_tail": ""
+      }
+    ],
+    "model_merger": {
+      "command": [
+        "colmap",
+        "model_merger",
+        "--input_path1",
+        "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/merge/binary/leaf-00",
+        "--input_path2",
+        "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/merge/binary/leaf-01",
+        "--output_path",
+        "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/merge/merged_binary",
+        "--max_reproj_error",
+        "64"
+      ],
+      "returncode": -6,
+      "seconds": 0.79,
+      "stdout_tail": "",
+      "stderr_tail": "I20260512 12:04:58.594434 1433293 misc.cc:51] \nReconstruction 1\n----------------\nI20260512 12:04:58.594919 1433293 model.cc:736] Images: 320\nI20260512 12:04:58.594936 1433293 model.cc:737] Points: 235216\nI20260512 12:04:58.781355 1433293 misc.cc:51] \nReconstruction 2\n----------------\nI20260512 12:04:58.781399 1433293 model.cc:742] Images: 167\nI20260512 12:04:58.781415 1433293 model.cc:743] Points: 126462\nI20260512 12:04:58.781431 1433293 misc.cc:51] \nMerging reconstructions\n-----------------------\nE20260512 12:04:58.792285 1433293 alignment.cc:121] Check failed: src_image.NumPoints2D() == tgt_image.NumPoints2D() (9792 vs. 10459) \nlibc++abi: terminating due to uncaught exception of type std::invalid_argument: [alignment.cc:121] Check failed: src_image.NumPoints2D() == tgt_image.NumPoints2D() (9792 vs. 10459) \n*** Aborted at 1778609098 (unix time) try \"date -d @1778609098\" if you are using GNU date ***\nPC: @                0x0 expn_tab\n*** SIGABRT (@0x1873f45e8) received by PID 87263 (TID 0x1f32398c0) stack trace: ***\n    @        0x1874397a4 _sigtramp\n    @        0x18742f8d8 pthread_kill\n    @        0x187336790 abort\n    @        0x1873e672c __abort_message\n    @        0x1873d3570 demangling_terminate_handler()\n    @        0x186ff08a4 _objc_terminate()\n    @        0x1873e375c std::__terminate()\n    @        0x1873e5be4 __cxxabiv1::failed_throw()\n    @        0x1873d209c __cxa_throw\n    @        0x102586ad8 colmap::LogMessageFatalThrow<>::~LogMessageFatalThrow()\n    @        0x1027e4454 colmap::(anonymous namespace)::ReconstructionAlignmentEstimator::Residuals()\n    @        0x1027dfc88 colmap::AlignReconstructionsViaReprojections()\n    @        0x1027e1964 colmap::MergeReconstructions()\n    @        0x1026433fc colmap::MergeAndFilterReconstructions()\n    @        0x1025982c4 colmap::RunModelMerger()\n    @        0x10258bef8 main\n"
+    },
+    "merged_converter": null,
+    "pose_aligned_validator": {
+      "command": [
+        "colmap",
+        "model_converter",
+        "--input_path",
+        "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/merge/pose_aligned_text",
+        "--output_path",
+        "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/merge/pose_aligned_binary",
+        "--output_type",
+        "BIN"
+      ],
+      "returncode": 0,
+      "seconds": 3.49,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    }
+  },
+  "fallback": {
+    "strategy": "pose_aligned_text_merge",
+    "transforms": [
+      {
+        "leaf_index": 1,
+        "shared_registered_images": 40,
+        "scale": 1.17682531,
+        "alignment_error_m": {
+          "min": 0.0027,
+          "median": 0.0085,
+          "p95": 0.0139,
+          "max": 0.0201
+        },
+        "new_points_kept": 101485
+      }
+    ]
+  },
+  "merged_text_dir": "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/merge/pose_aligned_text",
+  "normalized_text_dirs": [
+    "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/merge/normalized/leaf-00",
+    "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/merge/normalized/leaf-01"
+  ],
+  "upload": {
+    "command": [
+      "aws",
+      "s3",
+      "sync",
+      "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/fanout-reducer-proof-20260512T1803Z/output_package",
+      "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged/colmap",
+      "--only-show-errors"
+    ],
+    "returncode": 0,
+    "seconds": 49.37,
+    "stdout_tail": "",
+    "stderr_tail": ""
+  }
+}

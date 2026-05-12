@@ -1,12 +1,12 @@
 {
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "51089eb20e3f6408af551590966d74d3b1b8bd4f",
-  "updated": "2026-05-12T17:31:54Z",
-  "current_rung": "PROJECT_LEVEL_CONTINUATION_AFTER_TWO_LEAF_REDUCER_CANARY",
+  "head": "e6e7fccfa0eac5ee3b396772bfa3ef049b423559",
+  "updated": "2026-05-12T18:16:21Z",
+  "current_rung": "PRODUCTION_REDUCER_PROOF_AFTER_TWO_LEAF_CANARY",
   "current_goal": "Production-ready huge-scene tiled SfM: same-MD1 quality, meaningfully faster, restartable, distributed, promotion-safe, and backed by sparse, viewer, render, and AI visual proof.",
   "active_jobs": [],
   "blockers": [],
-  "last_command": "Implemented deterministic sparse quality gates and a two-leaf independent-prefix reducer canary. Stock COLMAP model_merger failed after image/camera ID normalization because independent leaf jobs produce different shared-image keypoint counts. Added pose_aligned_text_merge fallback, produced a standard sparse text model, uploaded it to S3, and verified the local viewer API/browser renders it.",
+  "last_command": "Added committed fanout reducer entrypoint, proved it against two independent MD1 leaf S3 outputs, uploaded standard sparse/0 reducer package, verified viewer API and Playwright render proof.",
   "last_metrics": {
     "canonical_md1_artifact": {
       "job": "r4exact739s1-1777612249",
@@ -70,8 +70,8 @@
       "points": 336701,
       "shared_registered_images": 40,
       "leaf_retention_ratios": [
-        1.0,
-        1.0
+        1,
+        1
       ],
       "alignment_error_p95_m": 0.0139,
       "s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260512/merged-pose-aligned/colmap",
@@ -90,6 +90,41 @@
           "ai_visual_review"
         ]
       }
+    },
+    "production_fanout_reducer_proof_20260512T1803Z": {
+      "decision": "pass",
+      "code_head": "e6e7fccfa0eac5ee3b396772bfa3ef049b423559",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged/colmap",
+      "leaf_count": 2,
+      "passed_leaf_count": 2,
+      "failed_leaf_count": 0,
+      "merged_registered_images": 447,
+      "unique_registered_images_before_merge": 447,
+      "merged_points3d": 336701,
+      "leaf_retention_ratios": [
+        1,
+        1
+      ],
+      "promotion_blockers": [],
+      "quality_decision": "needs_more_proof",
+      "quality_passed_gates": [
+        "registration_coverage",
+        "point_count",
+        "reducer_blockers",
+        "single_component",
+        "merge_retention",
+        "seam_overlap",
+        "reprojection_error_sample",
+        "viewer_axis_sanity"
+      ],
+      "quality_not_run_gates": [
+        "heldout_render_metrics",
+        "ai_visual_review"
+      ],
+      "viewer_api_status": 200,
+      "viewer_sampled_points": 80000,
+      "browser_error_count": 0,
+      "screenshot_unique_colors": 9199
     }
   },
   "latest_artifacts": [
@@ -103,15 +138,24 @@
     "logs/sfm-production-spine/md1_two_leaf_reducer_canary_viewer_api_summary_20260512.json",
     "logs/sfm-production-spine/md1_two_leaf_reducer_canary_s3_20260512.txt",
     "logs/sfm-production-spine/md1-two-leaf-reducer-canary-viewer-20260512.png",
-    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260512/merged-pose-aligned/colmap"
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260512/merged-pose-aligned/colmap",
+    "scripts/sfm/run_sfm_fanout_reducer.py",
+    "tests/unit/test_sfm_fanout_reducer.py",
+    "logs/sfm-production-spine/md1_fanout_reducer_proof_20260512T1803Z.json",
+    "logs/sfm-production-spine/md1_fanout_reducer_proof_quality_20260512T1803Z.json",
+    "logs/sfm-production-spine/md1_fanout_reducer_proof_viewer_api_summary_20260512T1803Z.json",
+    "logs/sfm-production-spine/md1_fanout_reducer_proof_playwright_20260512T1803Z.json",
+    "logs/sfm-production-spine/md1-fanout-reducer-proof-viewer-20260512T1803Z.png",
+    "logs/sfm-production-spine/md1_fanout_reducer_proof_s3_20260512T1803Z.txt",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged/colmap"
   ],
   "project_level_caveats": [
-    "full 8-leaf multi-instance MD1 fanout plus reducer has not been run on the new reducer path",
+    "full 8-leaf multi-instance MD1 fanout plus reducer has not been run on the production reducer path",
     "downstream 3DGS/splat heldout render metrics are not implemented/proven",
     "AI visual defect review proof panels are not implemented/proven",
     "filtered point count is 6.88% below the mature baseline even though raw points and registration pass"
   ],
-  "next_unblocked_step": "Promote the pose-aligned reducer canary into the production reducer path or switch to shared feature/keypoint fanout, then add heldout render plus AI visual gates before any full 8-leaf MD1 rerun.",
+  "next_unblocked_step": "Budget gate: use the production reducer on the remaining MD1 leaf set only after launching/completing missing leaves; in parallel add heldout render and AI visual review gates so the next full fanout can close quality, not just sparse merge.",
   "owner_action_needed": "none",
   "automation": {
     "id": "sfm-reality-check",
