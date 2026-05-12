@@ -144,6 +144,39 @@ class NerfstudioTrainingQualityGateTest(unittest.TestCase):
             self.assertEqual(report["load_config"], str(snapshot))
             self.assertIn("NS_EVAL: complete", stdout_log)
 
+    def test_training_uses_supported_cpu_image_cache_by_default(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config = root / "container_config.yaml"
+            config.write_text("training:\n  max_iterations: 10\n", encoding="utf-8")
+            with mock.patch.dict(
+                os.environ,
+                {
+                    "SM_MODEL_DIR": str(root / "model"),
+                    "SM_CHANNEL_TRAINING": str(root / "input"),
+                },
+                clear=False,
+            ):
+                trainer = self.training.NerfStudioTrainer(str(config))
+            trainer.config = {
+                "model": {"variant": "splatfacto", "sh_degree": 3, "bilateral_processing": False},
+                "training": {"max_iterations": 10, "log_interval": 5},
+            }
+
+            captured = {}
+
+            def fake_run_logged_command(cmd, *, timeout_seconds, log_prefix, tail_limit=120):
+                captured["cmd"] = cmd
+                return 0, ["done"], False
+
+            with mock.patch.dict(os.environ, {"NS_CACHE_IMAGES": "disk"}, clear=False):
+                with mock.patch.object(self.training, "run_logged_command", side_effect=fake_run_logged_command):
+                    self.assertTrue(trainer.run_nerfstudio_training())
+
+            cmd = captured["cmd"]
+            cache_index = cmd.index("--pipeline.datamanager.cache-images") + 1
+            self.assertEqual(cmd[cache_index], "cpu")
+
 
 if __name__ == "__main__":
     unittest.main()

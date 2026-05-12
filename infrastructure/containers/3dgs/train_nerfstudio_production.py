@@ -716,6 +716,14 @@ class NerfStudioTrainer:
         sh_degree = model_config.get('sh_degree', 3)  # Industry standard (Vincent's setting)
         bilateral_processing = model_config.get('bilateral_processing', True)  # Vincent's key innovation
         log_interval = training_config.get('log_interval', 100)
+        cache_images = str(os.environ.get("NS_CACHE_IMAGES") or training_config.get("cache_images", "cpu")).lower()
+        if cache_images not in {"cpu", "gpu"}:
+            logger.warning(
+                "⚠️  Unsupported NerfStudio image cache mode %s; falling back to cpu "
+                "(this container accepts only cpu/gpu)",
+                cache_images,
+            )
+            cache_images = "cpu"
         
         logger.info(f"🎯 Training Configuration (Vincent Woo's methodology):")
         logger.info(f"   Model: {model_variant}")
@@ -735,7 +743,7 @@ class NerfStudioTrainer:
             "--pipeline.model.sh_degree", str(sh_degree),
             "--logging.steps_per_log", str(log_interval),
             "--vis", "tensorboard",
-            "--pipeline.datamanager.cache-images", "disk",
+            "--pipeline.datamanager.cache-images", cache_images,
         ]
         
         # Add bilateral guided processing (Vincent's exposure correction)
@@ -751,7 +759,7 @@ class NerfStudioTrainer:
         cmd.extend([
             "--pipeline.model.max-gauss-ratio", "10.0",  # Conservative ratio for A10G
         ])
-        logger.info("🖥️  A10G GPU optimization enabled (max-gauss-ratio: 10.0, image cache: disk)")
+        logger.info(f"🖥️  A10G GPU optimization enabled (max-gauss-ratio: 10.0, image cache: {cache_images})")
         
         logger.info("🚀 Executing NerfStudio training command:")
         logger.info(f"   {' '.join(cmd)}")
