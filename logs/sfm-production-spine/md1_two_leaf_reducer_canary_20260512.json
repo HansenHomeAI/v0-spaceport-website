@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "sfm_reducer_canary_report",
+  "decision": "pass",
+  "leaf_inputs": [
+    "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/reducer-canary-20260512/leaf-01-r2",
+    "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/reducer-canary-20260512/leaf-02"
+  ],
+  "output_dir": "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/reducer-canary-20260512/run",
+  "leaf_count": 2,
+  "input_registered_images": [
+    320,
+    167
+  ],
+  "input_points3d": [
+    235216,
+    126462
+  ],
+  "shared_registered_images_before_merge": 40,
+  "unique_registered_images_before_merge": 447,
+  "merged_registered_images": 447,
+  "merged_points3d": 336701,
+  "leaf_retention_ratios": [
+    1.0,
+    1.0
+  ],
+  "min_retention_ratio": 0.95,
+  "min_shared_images": 8,
+  "blockers": [],
+  "commands": {
+    "leaf_converters": [
+      {
+        "command": [
+          "colmap",
+          "model_converter",
+          "--input_path",
+          "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/reducer-canary-20260512/run/normalized/leaf-00",
+          "--output_path",
+          "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/reducer-canary-20260512/run/binary/leaf-00",
+          "--output_type",
+          "BIN"
+        ],
+        "returncode": 0,
+        "seconds": 2.68,
+        "stdout_tail": "",
+        "stderr_tail": ""
+      },
+      {
+        "command": [
+          "colmap",
+          "model_converter",
+          "--input_path",
+          "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/reducer-canary-20260512/run/normalized/leaf-01",
+          "--output_path",
+          "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/reducer-canary-20260512/run/binary/leaf-01",
+          "--output_type",
+          "BIN"
+        ],
+        "returncode": 0,
+        "seconds": 1.45,
+        "stdout_tail": "",
+        "stderr_tail": ""
+      }
+    ],
+    "model_merger": {
+      "command": [
+        "colmap",
+        "model_merger",
+        "--input_path1",
+        "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/reducer-canary-20260512/run/binary/leaf-00",
+        "--input_path2",
+        "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/reducer-canary-20260512/run/binary/leaf-01",
+        "--output_path",
+        "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/reducer-canary-20260512/run/merged_binary",
+        "--max_reproj_error",
+        "64"
+      ],
+      "returncode": -6,
+      "seconds": 0.97,
+      "stdout_tail": "",
+      "stderr_tail": "I20260512 11:28:26.489903 1379701 misc.cc:51] \nReconstruction 1\n----------------\nI20260512 11:28:26.491057 1379701 model.cc:736] Images: 320\nI20260512 11:28:26.491075 1379701 model.cc:737] Points: 235216\nI20260512 11:28:26.688508 1379701 misc.cc:51] \nReconstruction 2\n----------------\nI20260512 11:28:26.688557 1379701 model.cc:742] Images: 167\nI20260512 11:28:26.688575 1379701 model.cc:743] Points: 126462\nI20260512 11:28:26.688592 1379701 misc.cc:51] \nMerging reconstructions\n-----------------------\nE20260512 11:28:26.698278 1379701 alignment.cc:121] Check failed: src_image.NumPoints2D() == tgt_image.NumPoints2D() (9792 vs. 10459) \nlibc++abi: terminating due to uncaught exception of type std::invalid_argument: [alignment.cc:121] Check failed: src_image.NumPoints2D() == tgt_image.NumPoints2D() (9792 vs. 10459) \n*** Aborted at 1778606906 (unix time) try \"date -d @1778606906\" if you are using GNU date ***\nPC: @                0x0 expn_tab\n*** SIGABRT (@0x1873f45e8) received by PID 75244 (TID 0x1f32398c0) stack trace: ***\n    @        0x1874397a4 _sigtramp\n    @        0x18742f8d8 pthread_kill\n    @        0x187336790 abort\n    @        0x1873e672c __abort_message\n    @        0x1873d3570 demangling_terminate_handler()\n    @        0x186ff08a4 _objc_terminate()\n    @        0x1873e375c std::__terminate()\n    @        0x1873e5be4 __cxxabiv1::failed_throw()\n    @        0x1873d209c __cxa_throw\n    @        0x100866ad8 colmap::LogMessageFatalThrow<>::~LogMessageFatalThrow()\n    @        0x100ac4454 colmap::(anonymous namespace)::ReconstructionAlignmentEstimator::Residuals()\n    @        0x100abfc88 colmap::AlignReconstructionsViaReprojections()\n    @        0x100ac1964 colmap::MergeReconstructions()\n    @        0x1009233fc colmap::MergeAndFilterReconstructions()\n    @        0x1008782c4 colmap::RunModelMerger()\n    @        0x10086bef8 main\n"
+    },
+    "merged_converter": null,
+    "pose_aligned_validator": {
+      "command": [
+        "colmap",
+        "model_converter",
+        "--input_path",
+        "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/reducer-canary-20260512/run/pose_aligned_text",
+        "--output_path",
+        "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/reducer-canary-20260512/run/pose_aligned_binary",
+        "--output_type",
+        "BIN"
+      ],
+      "returncode": 0,
+      "seconds": 3.3,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    }
+  },
+  "fallback": {
+    "strategy": "pose_aligned_text_merge",
+    "transforms": [
+      {
+        "leaf_index": 1,
+        "shared_registered_images": 40,
+        "scale": 1.17682531,
+        "alignment_error_m": {
+          "min": 0.0027,
+          "median": 0.0085,
+          "p95": 0.0139,
+          "max": 0.0201
+        },
+        "new_points_kept": 101485
+      }
+    ]
+  },
+  "normalized_text_dirs": [
+    "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/reducer-canary-20260512/run/normalized/leaf-00",
+    "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/reducer-canary-20260512/run/normalized/leaf-01"
+  ],
+  "binary_dirs": [
+    "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/reducer-canary-20260512/run/binary/leaf-00",
+    "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/reducer-canary-20260512/run/binary/leaf-01"
+  ],
+  "merged_text_dir": "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/reducer-canary-20260512/run/pose_aligned_text"
+}

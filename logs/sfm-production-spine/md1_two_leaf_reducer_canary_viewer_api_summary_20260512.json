@@ -1,0 +1,10 @@
+{
+  "registeredImageCount": 447,
+  "exactPointCount": 336701,
+  "sampledPointCount": 80000,
+  "chunkCount": 0,
+  "cameras": 447,
+  "positions": 240000,
+  "colors": 240000,
+  "proof_url": "http://127.0.0.1:3000/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fmd1-fanout-canary-20260512%2Fmerged-pose-aligned%2Fcolmap&maxPoints=80000"
+}

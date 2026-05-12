@@ -1,213 +1,120 @@
 {
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "2d1649cbc70d29804e9e1d22893ac746e2c84381",
-  "updated": "2026-05-07T16:41:45Z",
-  "current_rung": "PROJECT_LEVEL_CONTINUATION_AFTER_MD1_ARTIFACT_PROOF",
-  "current_goal": "Keep moving toward final project proof: same-MD1 high-quality faster SfM remains stable, but true multi-instance leaf fanout and downstream splat-quality caveats are not fully closed.",
+  "head": "51089eb20e3f6408af551590966d74d3b1b8bd4f",
+  "updated": "2026-05-12T17:31:54Z",
+  "current_rung": "PROJECT_LEVEL_CONTINUATION_AFTER_TWO_LEAF_REDUCER_CANARY",
+  "current_goal": "Production-ready huge-scene tiled SfM: same-MD1 quality, meaningfully faster, restartable, distributed, promotion-safe, and backed by sparse, viewer, render, and AI visual proof.",
   "active_jobs": [],
   "blockers": [],
-  "last_command": "Two-leaf canary reached terminal state: chunk 2 completed 167/167, chunk 1 failed with 0 verified image pairs. Root cause found and fixed locally: immutable planner-manifest path did not build the candidate graph before pair-list matching. Unit verification passed.",
+  "last_command": "Implemented deterministic sparse quality gates and a two-leaf independent-prefix reducer canary. Stock COLMAP model_merger failed after image/camera ID normalization because independent leaf jobs produce different shared-image keypoint counts. Added pose_aligned_text_merge fallback, produced a standard sparse text model, uploaded it to S3, and verified the local viewer API/browser renders it.",
   "last_metrics": {
-    "candidate_job": "r4exact739s1-1777612249",
-    "candidate_status": "Completed",
-    "candidate_failure_reason": null,
-    "candidate_run_head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
-    "current_branch_head": "a1ae5883a13323f0d5312059b21d225c9c55f9e8",
-    "baseline_job": "md1p24e752k-1776314974",
-    "registered": "2157/2157",
-    "raw_points": 1708813,
-    "filtered_points": 1222473,
-    "runtime_sec": 26614.34,
-    "mature_runtime_sec": 36033.85,
-    "speedup_percent": 26.14,
-    "sparse0_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/sparse/0/",
-    "sparse0_objects_20260507T1351Z": 5,
-    "viewer_api_20260507T1351Z": {
-      "registeredImageCount": 2157,
-      "exactPointCount": 1708813,
-      "sampledPointCount": 1000,
-      "chunkCount": 8,
-      "cameras": 2157,
-      "positions": 3000,
-      "colors": 3000
+    "canonical_md1_artifact": {
+      "job": "r4exact739s1-1777612249",
+      "status": "Completed",
+      "input_uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap",
+      "registered": "2157/2157",
+      "raw_points": 1708813,
+      "filtered_points": 1222473,
+      "runtime_sec": 26614.34,
+      "baseline_job": "md1p24e752k-1776314974",
+      "baseline_runtime_sec": 36033.85,
+      "speedup_percent": 26.14,
+      "quality_report": {
+        "artifact": "logs/sfm-production-spine/r4exact739s1-1777612249-sfm_quality_report.json",
+        "decision": "needs_more_proof",
+        "passed_gates": [
+          "registration_coverage",
+          "point_count",
+          "reducer_blockers",
+          "single_component",
+          "merge_retention",
+          "reprojection_error_sample",
+          "viewer_axis_sanity"
+        ],
+        "warning_gates": [
+          "seam_overlap"
+        ],
+        "not_run_gates": [
+          "heldout_render_metrics",
+          "ai_visual_review"
+        ]
+      }
     },
-    "fanout_contract_20260507T1351Z": {
-      "status": "dry_run_contract_ready",
-      "chunk_count": 8,
-      "leaf_job_count": 8,
-      "selected_chunk_indexes": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7
+    "two_leaf_independent_fanout": {
+      "leaf_01_retry": {
+        "job": "md1-fanout-20260507T1639Z-c01r2-1778173164",
+        "status": "Completed",
+        "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1639Z/leaves/leaf-01-r2/colmap",
+        "registered": "320/320",
+        "points": 235216,
+        "runtime_sec": 2494.31,
+        "verified_pairs": 2491
+      },
+      "leaf_02": {
+        "job": "md1-fanout-20260507T1429Z-c02-1778167770",
+        "status": "Completed",
+        "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-02/colmap",
+        "registered": "167/167",
+        "points": 126462,
+        "runtime_sec": 1170.86,
+        "verified_pairs": 2196
+      }
+    },
+    "two_leaf_reducer_canary_20260512": {
+      "decision": "pass",
+      "strategy": "pose_aligned_text_merge",
+      "stock_model_merger_returncode": -6,
+      "stock_model_merger_failure": "shared images have inconsistent NumPoints2D after independent feature extraction",
+      "registered": "447/447",
+      "points": 336701,
+      "shared_registered_images": 40,
+      "leaf_retention_ratios": [
+        1.0,
+        1.0
       ],
-      "unique_core_images": 2157,
-      "unique_leaf_images": 2157,
-      "duplicate_core_images_warning": 33,
-      "max_leaf_image_count": 320,
-      "planner_manifest_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/chunk_planner_manifest.json",
-      "first_leaf_job": "md1-fanout-20260507T1351Z-leaf-00",
-      "first_leaf_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1351Z/leaves/leaf-00/colmap",
-      "reducer_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-contract-20260507T1351Z/merged/colmap"
-    },
-    "heartbeat_20260507T1429Z": {
-      "task_active_processing_jobs": 0,
-      "candidate_job": "r4exact739s1-1777612249",
-      "candidate_status": "Completed",
-      "candidate_failure_reason": null,
-      "sparse0_objects": 5,
-      "viewer_api_registered_images": 2157,
-      "viewer_api_exact_points": 1708813,
-      "viewer_api_sampled_points": 1000
-    },
-    "fanout_runtime_support_20260507T1429Z": {
-      "status": "implemented_and_unit_verified_locally",
-      "env": "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI",
-      "behaviors": [
-        "load immutable planner manifest from S3/local URI",
-        "limit extraction to selected chunk image_names",
-        "build selected ChunkPlan records from the immutable manifest",
-        "record input_chunk_planner_manifest_uri in metadata"
-      ],
-      "test_log": "logs/sfm-production-spine/fanout-runtime-support-tests-20260507T1429Z.log",
-      "tests": "passed"
-    },
-    "fanout_contract_20260507T1429Z": {
-      "status": "dry_run_contract_ready",
-      "chunk_count": 8,
-      "leaf_job_count": 8,
-      "selected_chunk_indexes": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7
-      ],
-      "planner_manifest_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/chunk_planner_manifest.json"
-    },
-    "two_leaf_canary_plan_20260507T1429Z": {
-      "status": "prepared_not_launched",
-      "selected_leaf_indexes": [
-        1,
-        2
-      ],
-      "reason": "chunk 2 was the weak recovered leaf and chunk 1 is adjacent",
-      "precondition": "branch container image must be built from a1ae5883a13323f0d5312059b21d225c9c55f9e8 or newer before launching",
-      "plan": "logs/sfm-production-spine/md1_two_leaf_canary_plan_20260507T1429Z.json"
-    },
-    "branch_build_20260507T1531Z": {
-      "commit": "2d1649cbc70d29804e9e1d22893ac746e2c84381",
-      "commit_message": "feat: add sfm fanout manifest contract",
-      "pushed": true,
-      "container_workflow_run": "25504602999",
-      "container_workflow_status": "completed_success",
-      "codebuild_id": "spaceport-ml-containers:be6a6ead-1127-46c4-be86-0587d2625fe7",
-      "codebuild_status": "SUCCEEDED",
-      "cdk_workflow_run": "25504602914",
-      "cdk_workflow_status": "completed_success",
-      "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine"
-    },
-    "two_leaf_canary_20260507T1531Z": {
-      "status": "launched_running",
-      "purpose": "prove true multi-instance SageMaker leaf fanout before repeat full MD1 fanout",
-      "selected_leaf_indexes": [
-        1,
-        2
-      ],
-      "planner_manifest_uri": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/chunk_planner_manifest.json",
-      "jobs": [
-        {
-          "job": "md1-fanout-20260507T1429Z-c01-1778167770",
-          "chunk_index": 1,
-          "status": "InProgress",
-          "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-01/colmap",
-          "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine",
-          "instance_type": "ml.g4dn.xlarge",
-          "volume_size_gb": 120,
-          "describe_artifact": "logs/sfm-production-spine/md1-fanout-20260507T1429Z-c01-1778167770-sagemaker-describe-submit.json"
-        },
-        {
-          "job": "md1-fanout-20260507T1429Z-c02-1778167770",
-          "chunk_index": 2,
-          "status": "InProgress",
-          "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-02/colmap",
-          "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine",
-          "instance_type": "ml.g4dn.xlarge",
-          "volume_size_gb": 120,
-          "describe_artifact": "logs/sfm-production-spine/md1-fanout-20260507T1429Z-c02-1778167770-sagemaker-describe-submit.json"
-        }
-      ],
-      "submit_artifact": "logs/sfm-production-spine/md1_fanout_canary_submit_20260507T1517Z.json",
-      "reducer_validation_target": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/merged/colmap"
-    },
-    "two_leaf_canary_20260507T1639Z": {
-      "status": "partial_failure_root_cause_fixed_locally",
-      "failed_job": "md1-fanout-20260507T1429Z-c01-1778167770",
-      "failed_chunk_index": 1,
-      "failed_reason": "matches_importer added 0 verified image pairs; mapper reported no images with matches",
-      "completed_job": "md1-fanout-20260507T1429Z-c02-1778167770",
-      "completed_chunk_index": 2,
-      "completed_leaf_registered": "167/167",
-      "completed_leaf_points": 122715,
-      "fix": "build candidate graph when using COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI",
-      "retry_plan": "logs/sfm-production-spine/md1_fanout_canary_retry_plan_20260507T1641Z.json"
+      "alignment_error_p95_m": 0.0139,
+      "s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260512/merged-pose-aligned/colmap",
+      "viewer_api": {
+        "http_status": 200,
+        "registeredImageCount": 447,
+        "exactPointCount": 336701,
+        "sampledPointCount": 80000,
+        "cameras": 447
+      },
+      "quality_report": {
+        "artifact": "logs/sfm-production-spine/md1_two_leaf_reducer_canary_quality_20260512.json",
+        "decision": "needs_more_proof",
+        "not_run_gates": [
+          "heldout_render_metrics",
+          "ai_visual_review"
+        ]
+      }
     }
   },
   "latest_artifacts": [
-    "logs/sfm-production-spine/fanout_runtime_support_20260507T1429Z.json",
-    "logs/sfm-production-spine/md1_fanout_contract_20260507T1429Z.json",
-    "logs/sfm-production-spine/md1_two_leaf_canary_plan_20260507T1429Z.json",
-    "logs/sfm-production-spine/fanout-runtime-support-tests-20260507T1429Z.log",
-    "logs/sfm-production-spine/active-processing-jobs-20260507T1429Z.json",
-    "logs/sfm-production-spine/r4exact739s1-1777612249-sagemaker-describe-20260507T1429Z.json",
-    "logs/sfm-production-spine/r4exact739s1-1777612249-sparse0-list-20260507T1429Z.txt",
-    "logs/sfm-production-spine/r4exact739s1-1777612249-pipeline-viewer-api-20260507T1429Z.json",
-    "infrastructure/containers/sfm/run_colmap_sfm.py",
-    "logs/sfm-production-spine/project_level_gap_assessment_20260507T1351Z.json",
-    "logs/sfm-production-spine/project_level_gap_assessment_20260507T1351Z.md",
-    "logs/sfm-production-spine/md1_fanout_contract_20260507T1351Z.json",
-    "scripts/sfm/build_sfm_fanout_contract.py",
-    "tests/unit/test_sfm_fanout_contract.py",
-    "logs/sfm-production-spine/active-processing-jobs-20260507T1351Z.json",
-    "logs/sfm-production-spine/r4exact739s1-1777612249-sagemaker-describe-20260507T1351Z.json",
-    "logs/sfm-production-spine/r4exact739s1-1777612249-sparse0-list-20260507T1351Z.txt",
-    "logs/sfm-production-spine/r4exact739s1-1777612249-pipeline-viewer-api-20260507T1351Z.json",
-    "logs/sfm-production-spine/final_promotion_packet.json",
-    "logs/sfm-production-spine/md1_speed_proof_audit.json",
-    "logs/sfm-production-spine/comparison_report.json",
-    "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/sparse/0/",
-    "http://127.0.0.1:3000/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fr4exact739s1-1777612249%2Fcolmap&maxPoints=80000",
-    "logs/sfm-production-spine/github-runs-2d1649cb-list.json",
-    "logs/sfm-production-spine/github-runs-2d1649cb-poll6.json",
-    "logs/sfm-production-spine/codebuild-be6a6ead-poll6.json",
-    "logs/sfm-production-spine/md1_fanout_canary_submit_20260507T1517Z.json",
-    "logs/sfm-production-spine/md1-fanout-20260507T1429Z-c01-1778167770-sagemaker-describe-submit.json",
-    "logs/sfm-production-spine/md1-fanout-20260507T1429Z-c02-1778167770-sagemaker-describe-submit.json",
-    "logs/sfm-production-spine/md1_fanout_canary_status_20260507T1639Z.json",
-    "logs/sfm-production-spine/md1_fanout_canary_failure_analysis_20260507T1641Z.json",
-    "logs/sfm-production-spine/md1_fanout_canary_retry_plan_20260507T1641Z.json",
-    "logs/sfm-production-spine/fanout-runtime-support-tests-20260507T1639Z.log",
-    "logs/sfm-production-spine/md1-fanout-c01-cloudwatch-tail-20260507T1639Z.json",
-    "logs/sfm-production-spine/md1-fanout-c02-cloudwatch-tail-20260507T1639Z.json",
-    "logs/sfm-production-spine/leaf-01-sfm_metadata-20260507T1639Z.json",
-    "logs/sfm-production-spine/leaf-02-sfm_metadata-20260507T1639Z.json"
+    "scripts/sfm/evaluate_sfm_quality.py",
+    "scripts/sfm/run_sfm_reducer_canary.py",
+    "tests/unit/test_sfm_quality_eval.py",
+    "tests/unit/test_sfm_reducer_canary.py",
+    "logs/sfm-production-spine/r4exact739s1-1777612249-sfm_quality_report.json",
+    "logs/sfm-production-spine/md1_two_leaf_reducer_canary_20260512.json",
+    "logs/sfm-production-spine/md1_two_leaf_reducer_canary_quality_20260512.json",
+    "logs/sfm-production-spine/md1_two_leaf_reducer_canary_viewer_api_summary_20260512.json",
+    "logs/sfm-production-spine/md1_two_leaf_reducer_canary_s3_20260512.txt",
+    "logs/sfm-production-spine/md1-two-leaf-reducer-canary-viewer-20260512.png",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260512/merged-pose-aligned/colmap"
   ],
   "project_level_caveats": [
-    "true multi-instance SageMaker leaf fanout canary partially failed: chunk 2 succeeded, chunk 1 needs retry after candidate-graph fix",
-    "reducer-from-independent-leaf-prefixes has not been proven because both canary leaves are not successful yet",
-    "filtered point count is 6.88% below the mature baseline even though raw points and registration pass",
-    "downstream 3DGS/splat training quality is not proven by the SfM sparse/0 proof packet"
+    "full 8-leaf multi-instance MD1 fanout plus reducer has not been run on the new reducer path",
+    "downstream 3DGS/splat heldout render metrics are not implemented/proven",
+    "AI visual defect review proof panels are not implemented/proven",
+    "filtered point count is 6.88% below the mature baseline even though raw points and registration pass"
   ],
-  "next_unblocked_step": "Commit/push the candidate-graph fix, wait for sfm container build from the new head, then relaunch only the failed chunk-1 canary retry from logs/sfm-production-spine/md1_fanout_canary_retry_plan_20260507T1641Z.json.",
+  "next_unblocked_step": "Promote the pose-aligned reducer canary into the production reducer path or switch to shared feature/keypoint fanout, then add heldout render plus AI visual gates before any full 8-leaf MD1 rerun.",
   "owner_action_needed": "none",
   "automation": {
+    "id": "sfm-reality-check",
     "keep_active": true,
     "reason": "Final project proof is not recorded with all project-level caveats resolved and the owner has not explicitly asked to stop."
   }

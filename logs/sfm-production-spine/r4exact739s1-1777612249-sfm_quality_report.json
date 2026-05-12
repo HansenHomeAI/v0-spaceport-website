@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "sfm_quality_report",
+  "decision": "needs_more_proof",
+  "inputs": {
+    "sparse_dir": "",
+    "viewer_api_json": "logs/sfm-production-spine/r4exact739s1-1777612249-pipeline-viewer-api-80000.json",
+    "sfm_metadata": "logs/sfm-production-spine/r4exact739s1-1777612249-sfm_metadata.json",
+    "reducer_metadata": "logs/sfm-production-spine/r4exact739s1-1777612249-reducer_metadata.json"
+  },
+  "summary": {
+    "registered_images": 2157,
+    "expected_images": 2157,
+    "registered_ratio": 1.0,
+    "points": 1708813
+  },
+  "gates": [
+    {
+      "gate": "registration_coverage",
+      "status": "pass",
+      "evidence": "2157/2157 registered (1.0000)"
+    },
+    {
+      "gate": "point_count",
+      "status": "pass",
+      "evidence": "1708813 points, minimum 1000"
+    },
+    {
+      "gate": "reducer_blockers",
+      "status": "pass",
+      "evidence": "promotion_blockers=[]"
+    },
+    {
+      "gate": "single_component",
+      "status": "pass",
+      "evidence": "merged=1 expected=1"
+    },
+    {
+      "gate": "merge_retention",
+      "status": "pass",
+      "evidence": "pre_merge_retention_ratio=1.0"
+    },
+    {
+      "gate": "seam_overlap",
+      "status": "warning",
+      "evidence": "1 merge nodes have <10 shared registered images"
+    },
+    {
+      "gate": "reprojection_error_sample",
+      "status": "pass",
+      "evidence": "p95=1.833, max=8.0"
+    },
+    {
+      "gate": "viewer_axis_sanity",
+      "status": "pass",
+      "evidence": "median camera up.y=0.9327"
+    },
+    {
+      "gate": "heldout_render_metrics",
+      "status": "not_run",
+      "evidence": "requires downstream splat renders from held-out source cameras"
+    },
+    {
+      "gate": "ai_visual_review",
+      "status": "not_run",
+      "evidence": "requires fixed side-by-side render proof panels"
+    }
+  ],
+  "sparse_images": {},
+  "sparse_points": {},
+  "viewer": {
+    "source_registered_images": 2157,
+    "exact_point_count": 1708813,
+    "sampled_point_count": 80000,
+    "chunk_count": 8,
+    "sample_bounds": {
+      "x": {
+        "min": -8.1041,
+        "max": 9.8583,
+        "span": 17.9624
+      },
+      "y": {
+        "min": -1.4139,
+        "max": 1.0653,
+        "span": 2.4792
+      },
+      "z": {
+        "min": -5.1521,
+        "max": 10.9931,
+        "span": 16.1451
+      }
+    },
+    "sample_reprojection_error": {
+      "count": 80000,
+      "min": 0.0001,
+      "p10": 0.5484,
+      "median": 1.1174,
+      "p90": 1.7057,
+      "p95": 1.833,
+      "p99": 1.9606,
+      "max": 1.9999
+    },
+    "sample_track_length": {
+      "count": 80000,
+      "min": 2.0,
+      "p10": 3.0,
+      "median": 4.0,
+      "p90": 13.0,
+      "p95": 19.0,
+      "p99": 42.0,
+      "max": 117.0
+    },
+    "sample_low_track_ratio": 0.0438,
+    "sample_high_error_ratio": 0.0,
+    "camera_up_y": {
+      "count": 2157,
+      "min": 0.7029,
+      "p10": 0.8539,
+      "median": 0.9327,
+      "p90": 0.9923,
+      "p95": 0.996,
+      "p99": 0.9979,
+      "max": 0.9993
+    },
+    "camera_step_length": {
+      "count": 2156,
+      "min": 0.0002,
+      "p10": 0.0026,
+      "median": 0.0065,
+      "p90": 0.2617,
+      "p95": 0.4184,
+      "p99": 0.5402,
+      "max": 1.5316
+    }
+  },
+  "merge": {
+    "leaf_count": 8,
+    "passed_leaf_count": 8,
+    "failed_leaf_count": 0,
+    "merged_component_count": 1,
+    "expected_component_count": 1,
+    "promotion_blockers": [],
+    "pre_merge_retention_ratio": 1.0,
+    "final_merged_registered_images": 2157,
+    "merge_node_count": 8,
+    "shared_registered_images": {
+      "count": 8,
+      "min": 4.0,
+      "p10": 4.0,
+      "median": 52.5,
+      "p90": 320.0,
+      "p95": 320.0,
+      "p99": 320.0,
+      "max": 320.0
+    },
+    "cross_edge_count": {
+      "count": 8,
+      "min": 637.0,
+      "p10": 637.0,
+      "median": 1976.5,
+      "p90": 16774.0,
+      "p95": 16774.0,
+      "p99": 16774.0,
+      "max": 16774.0
+    },
+    "weak_merge_nodes": [
+      {
+        "sequence": 7,
+        "shared_registered_image_count": 4,
+        "cross_edge_count": 799,
+        "left_stage": "chunk_model_merger_05_output_attempt_01",
+        "right_stage": "chunk_model_merger_06_output_attempt_01"
+      }
+    ]
+  },
+  "next_required_gates": [
+    "render held-out images from the splat and compute PSNR/SSIM/LPIPS",
+    "generate fixed proof panels and run AI visual defect review",
+    "prove reducer ingest from independent leaf prefixes before full fanout"
+  ]
+}

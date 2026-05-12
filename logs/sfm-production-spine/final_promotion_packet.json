@@ -1,24 +1,11 @@
 {
-  "updated_at": "2026-05-07T16:41:45Z",
+  "updated_at": "2026-05-12T17:31:54Z",
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "2d1649cbc70d29804e9e1d22893ac746e2c84381",
-  "candidate_run_head": "9f7bd89637c60f930eca1c14f1de340a14edfdf9",
-  "final_decision": "complete_for_md1_sfm_promotion_not_final_project_close",
-  "binary_answer": "yes_for_the_same_MD1_high_quality_meaningfully_faster_SfM_promotion_artifact",
-  "not_claimed": [
-    "not a proof of multi-instance SageMaker leaf fanout",
-    "not a guarantee that no future dataset will need fanout",
-    "not a 3DGS/splat training quality proof"
-  ],
+  "head": "51089eb20e3f6408af551590966d74d3b1b8bd4f",
+  "project_final_decision": "not_final_project_closed",
+  "md1_sfm_artifact_decision": "promotable_sparse_sfm_artifact_but_not_full_project_proof",
   "automation_recommendation": "keep_sfm_reality_check_active_until_owner_confirms_final_project_or_project_level_caveats_resolve",
-  "project_level_status": "not_final_project_closed_two_leaf_fanout_canary_partial_failure_root_cause_fixed",
-  "project_level_unresolved_caveats": [
-    "true multi-instance SageMaker leaf fanout canary partially failed and needs retry after local fix",
-    "reducer-from-independent-leaf-prefixes has not been proven",
-    "filtered point count is 6.88% below mature baseline",
-    "downstream 3DGS/splat quality is not proven by this sparse/0 packet"
-  ],
-  "candidate_summary": {
+  "canonical_md1_sfm_artifact": {
     "job": "r4exact739s1-1777612249",
     "status": "Completed",
     "input_uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
@@ -29,100 +16,77 @@
     "raw_points": 1708813,
     "filtered_points": 1222473,
     "runtime_sec": 26614.34,
-    "mature_runtime_sec": 36033.85,
-    "speedup_percent": 26.14,
-    "instance_count": 1,
-    "instance_type": "ml.g4dn.xlarge"
+    "mature_baseline_job": "md1p24e752k-1776314974",
+    "mature_baseline_runtime_sec": 36033.85,
+    "speedup_percent": 26.14
   },
-  "mature_baseline": {
-    "job": "md1p24e752k-1776314974",
-    "pipeline": "colmap_gpu_spatial_heading_chunked",
-    "registered": 2157,
-    "total": 2157,
-    "points": 1633948,
-    "filtered_points": 1312804,
-    "points_per_registered_image": 757.51,
-    "runtime_sec": 36033.85,
-    "chunk_count": 14
+  "deterministic_quality_gates": {
+    "canonical_md1_report": "logs/sfm-production-spine/r4exact739s1-1777612249-sfm_quality_report.json",
+    "canonical_md1_decision": "needs_more_proof",
+    "two_leaf_reducer_quality_report": "logs/sfm-production-spine/md1_two_leaf_reducer_canary_quality_20260512.json",
+    "two_leaf_reducer_decision": "needs_more_proof",
+    "reason_not_promote_final_project": [
+      "heldout_render_metrics_not_run",
+      "ai_visual_review_not_run"
+    ]
   },
-  "acceptance_gates": [
-    {
-      "gate": "same_md1_dataset",
-      "status": "pass",
-      "evidence": "2157/2157 candidate vs 2157/2157 mature baseline on s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip"
-    },
-    {
-      "gate": "meaningfully_faster_than_mature",
-      "status": "pass",
-      "evidence": "26614.34s vs 36033.85s; 26.14% faster"
-    },
-    {
-      "gate": "registration_quality",
-      "status": "pass",
-      "evidence": "2157/2157 registered, matching mature full registration"
-    },
-    {
-      "gate": "raw_point_quality",
-      "status": "pass",
-      "evidence": "1708813 raw points vs 1633948 mature raw points"
-    },
-    {
-      "gate": "filtered_point_quality",
-      "status": "warning_non_blocking",
-      "evidence": "1222473 filtered points vs 1312804; lower by -6.88% but raw points, registration, reducer, and viewer gates pass"
-    },
-    {
-      "gate": "standard_colmap_sparse0",
-      "status": "pass",
-      "evidence": "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/sparse/0/ with cameras/images/points3D/frames/rigs totaling 1094477191 bytes"
-    },
-    {
-      "gate": "single_component_reducer",
-      "status": "pass",
-      "evidence": "merged_component_count=1, expected_component_count=1, blockers=[]"
-    },
-    {
-      "gate": "viewer_load",
-      "status": "pass",
-      "evidence": "local API loaded 2157 cameras, 1708813 exact points, 1000 sampled points"
-    },
-    {
-      "gate": "sagemaker_terminal_status",
-      "status": "pass",
-      "evidence": "r4exact739s1-1777612249 Completed, FailureReason=null"
-    },
-    {
-      "gate": "restartable_leaf_primitive",
-      "status": "pass",
-      "evidence": "logs/sfm-production-spine/selected-chunk-indexes-unit-test-20260507T0534Z.log passed; run_sfm_benchmark exposes --only-chunk-indexes and runtime honors COLMAP_ONLY_CHUNK_INDEXES"
-    },
-    {
-      "gate": "true_multi_instance_leaf_fanout",
-      "status": "project_level_caveat_not_required_for_md1_artifact_promotion",
-      "evidence": "The MD1 artifact passes the same-dataset speed gate at 26.14% on one SageMaker processing job, but this does not close the owner's broader final-project requirement for true multi-instance leaf fanout unless explicitly waived."
-    },
-    {
-      "gate": "weak_leaf_caveat",
-      "status": "warning_non_blocking",
-      "evidence": "chunk 2 registered 68/167 as a leaf with bounded_chunk_recovery + seam_only_leaf_seed; final reducer still produced 2157/2157 in one component with no blockers"
-    }
+  "two_leaf_fanout_and_reducer_proof": {
+    "leaf_jobs": [
+      {
+        "job": "md1-fanout-20260507T1639Z-c01r2-1778173164",
+        "status": "Completed",
+        "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1639Z/leaves/leaf-01-r2/colmap",
+        "registered": 320,
+        "total": 320,
+        "points": 235216,
+        "runtime_sec": 2494.31
+      },
+      {
+        "job": "md1-fanout-20260507T1429Z-c02-1778167770",
+        "status": "Completed",
+        "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260507T1429Z/leaves/leaf-02/colmap",
+        "registered": 167,
+        "total": 167,
+        "points": 126462,
+        "runtime_sec": 1170.86
+      }
+    ],
+    "reducer_report": "logs/sfm-production-spine/md1_two_leaf_reducer_canary_20260512.json",
+    "reducer_decision": "pass",
+    "reducer_strategy": "pose_aligned_text_merge",
+    "stock_colmap_model_merger_result": "failed_on_independent_shared_image_keypoint_count_mismatch",
+    "merged_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260512/merged-pose-aligned/colmap",
+    "registered": 447,
+    "exact_points": 336701,
+    "shared_registered_images": 40,
+    "alignment_error_p95_m": 0.0139,
+    "leaf_retention_ratios": [
+      1.0,
+      1.0
+    ],
+    "viewer_api_http_status": 200,
+    "viewer_api_artifact": "logs/sfm-production-spine/md1_two_leaf_reducer_canary_viewer_api_summary_20260512.json",
+    "viewer_screenshot": "logs/sfm-production-spine/md1-two-leaf-reducer-canary-viewer-20260512.png"
+  },
+  "project_level_unresolved_caveats": [
+    "full 8-leaf multi-instance MD1 fanout plus reducer has not been run on the new reducer path",
+    "downstream 3DGS/splat heldout render metrics are not implemented/proven",
+    "AI visual defect review proof panels are not implemented/proven",
+    "filtered point count is 6.88% below mature baseline"
   ],
-  "active_processing_jobs_at_close": [],
-  "final_next_step": "Commit/push the candidate-graph fix, wait for sfm container build from the new head, then relaunch only the failed chunk-1 canary retry from logs/sfm-production-spine/md1_fanout_canary_retry_plan_20260507T1641Z.json.",
+  "final_next_step": "Promote the pose-aligned reducer canary into the production reducer path or switch fanout to shared feature/keypoint data, then add heldout render and AI visual gates before full 8-leaf MD1 rerun.",
   "proof_artifacts": [
+    "STATE.md",
+    "logs/sfm-production-spine/frontier.json",
     "logs/sfm-production-spine/md1_speed_proof_audit.json",
     "logs/sfm-production-spine/comparison_report.json",
     "logs/sfm-production-spine/final_promotion_packet.json",
-    "logs/sfm-production-spine/final_promotion_packet.md",
-    "logs/sfm-production-spine/r4exact739s1-1777612249-sagemaker-describe-20260507T0534Z.json",
-    "logs/sfm-production-spine/r4exact739s1-1777612249-sparse0-list-20260507T0534Z.txt",
-    "logs/sfm-production-spine/r4exact739s1-1777612249-pipeline-viewer-api-20260507T0534Z.json",
-    "logs/sfm-production-spine/selected-chunk-indexes-unit-test-20260507T0534Z.log",
-    "s3://spaceport-ml-processing-staging/manual-validations/r4exact739s1-1777612249/colmap/sparse/0/",
-    "http://127.0.0.1:3000/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fr4exact739s1-1777612249%2Fcolmap&maxPoints=80000",
-    "logs/sfm-production-spine/md1_fanout_canary_submit_20260507T1517Z.json",
-    "logs/sfm-production-spine/codebuild-be6a6ead-poll6.json",
-    "logs/sfm-production-spine/md1_fanout_canary_failure_analysis_20260507T1641Z.json",
-    "logs/sfm-production-spine/md1_fanout_canary_retry_plan_20260507T1641Z.json"
+    "logs/sfm-production-spine/r4exact739s1-1777612249-sfm_quality_report.json",
+    "logs/sfm-production-spine/md1_two_leaf_reducer_canary_20260512.json",
+    "logs/sfm-production-spine/md1_two_leaf_reducer_canary_quality_20260512.json",
+    "logs/sfm-production-spine/md1_two_leaf_reducer_canary_viewer_api_summary_20260512.json",
+    "logs/sfm-production-spine/md1_two_leaf_reducer_canary_s3_20260512.txt",
+    "logs/sfm-production-spine/md1-two-leaf-reducer-canary-viewer-20260512.png",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-canary-20260512/merged-pose-aligned/colmap"
   ]
 }
