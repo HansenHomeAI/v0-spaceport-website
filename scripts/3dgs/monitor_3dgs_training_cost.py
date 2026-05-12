@@ -62,6 +62,36 @@ def seconds_since(value: Any, *, now_epoch_seconds: float | None = None) -> int 
     return max(0, int((now - parsed).total_seconds()))
 
 
+def latest_cloudwatch_log_age_seconds(
+    training_job_name: str,
+    *,
+    now_epoch_seconds: float | None = None,
+) -> int | None:
+    try:
+        payload = run_aws_json(
+            "logs",
+            "describe-log-streams",
+            "--log-group-name",
+            "/aws/sagemaker/TrainingJobs",
+            "--log-stream-name-prefix",
+            training_job_name,
+        )
+    except subprocess.CalledProcessError:
+        return None
+
+    latest_ms = None
+    for stream in payload.get("logStreams", []) or []:
+        value = stream.get("lastEventTimestamp")
+        if value is None:
+            continue
+        latest_ms = max(int(value), int(latest_ms or 0))
+    if latest_ms is None:
+        return None
+
+    now = time.time() if now_epoch_seconds is None else now_epoch_seconds
+    return max(0, int(now - (latest_ms / 1000.0)))
+
+
 def latest_secondary_status_message(training_job: Mapping[str, Any]) -> str:
     transitions = training_job.get("SecondaryStatusTransitions") or []
     for transition in reversed(list(transitions)):
@@ -213,7 +243,11 @@ def main() -> int:
             "--training-job-name",
             args.training_job_name,
         )
-        latest_log_age_seconds = None if args.latest_log_age_seconds < 0 else args.latest_log_age_seconds
+        latest_log_age_seconds = (
+            latest_cloudwatch_log_age_seconds(args.training_job_name)
+            if args.latest_log_age_seconds < 0
+            else args.latest_log_age_seconds
+        )
         gpu_average_percent = None if args.gpu_average_percent < 0 else args.gpu_average_percent
         health = evaluate_training_health(
             training_job=training_job,

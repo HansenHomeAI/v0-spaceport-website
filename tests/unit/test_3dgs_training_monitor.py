@@ -95,6 +95,26 @@ class TrainingCostMonitorTests(unittest.TestCase):
         self.assertIn("startup_wait_over_limit", health["block_reasons"])
         self.assertIn("spot_capacity_wait_over_limit", health["block_reasons"])
 
+    def test_latest_cloudwatch_log_age_uses_newest_stream_event(self):
+        original = monitor.run_aws_json
+        try:
+            monitor.run_aws_json = lambda *args: {
+                "logStreams": [
+                    {"lastEventTimestamp": 1778620000000},
+                    {"lastEventTimestamp": 1778620030000},
+                    {},
+                ]
+            }
+
+            age = monitor.latest_cloudwatch_log_age_seconds(
+                "md1-cost-test",
+                now_epoch_seconds=1778620090,
+            )
+        finally:
+            monitor.run_aws_json = original
+
+        self.assertEqual(age, 60)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,65 @@
+{
+  "checked_at": "2026-05-12T21:27:16Z",
+  "decision": "review_retry_blocked_no_spend_fix_required",
+  "training_job_name": "md1-r1-r4-t04dcap-bg10-v18colmap-smoke-p24-1778620002-quality",
+  "stopped_by_monitor": true,
+  "stop_reason": "monitor_blocked_then_manual_stop; review was still in COLMAP/ns-process-data conversion before render outputs",
+  "spend": {
+    "instance_type": "ml.g4dn.xlarge",
+    "hourly_rate_usd": 0.736,
+    "billable_seconds": 989,
+    "billable_hours": 0.2747,
+    "estimated_usd": 0.2022
+  },
+  "block_reasons": [
+    "training_job_stopped"
+  ],
+  "latest_log_age_seconds": 813,
+  "training_status": "Stopped",
+  "secondary_status": "Stopped",
+  "training_start_time": "2026-05-12T15:07:36.162000-06:00",
+  "training_end_time": "2026-05-12T15:24:05.567000-06:00",
+  "secondary_status_transitions": [
+    {
+      "Status": "Starting",
+      "StartTime": "2026-05-12T15:06:43.080000-06:00",
+      "EndTime": "2026-05-12T15:07:36.162000-06:00",
+      "StatusMessage": "Preparing the instances for training"
+    },
+    {
+      "Status": "Downloading",
+      "StartTime": "2026-05-12T15:07:36.162000-06:00",
+      "EndTime": "2026-05-12T15:13:10.350000-06:00",
+      "StatusMessage": "Downloading the training image"
+    },
+    {
+      "Status": "Training",
+      "StartTime": "2026-05-12T15:13:10.350000-06:00",
+      "EndTime": "2026-05-12T15:23:52.634000-06:00",
+      "StatusMessage": "Training image download completed. Training in progress."
+    },
+    {
+      "Status": "Stopping",
+      "StartTime": "2026-05-12T15:23:52.634000-06:00",
+      "EndTime": "2026-05-12T15:23:58.034000-06:00",
+      "StatusMessage": "Stopping the training job"
+    },
+    {
+      "Status": "Uploading",
+      "StartTime": "2026-05-12T15:23:58.034000-06:00",
+      "EndTime": "2026-05-12T15:24:05.567000-06:00",
+      "StatusMessage": "Uploading generated training model"
+    },
+    {
+      "Status": "Stopped",
+      "StartTime": "2026-05-12T15:24:05.567000-06:00",
+      "EndTime": "2026-05-12T15:24:05.567000-06:00",
+      "StatusMessage": "Training job stopped"
+    }
+  ],
+  "s3_output_object_count": 0,
+  "cloudwatch_tail_path": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-cloudwatch-tail-20260512.txt",
+  "s3_objects_path": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-s3-objects-20260512.txt",
+  "root_cause_hypothesis": "quality review converts the full COLMAP/image set before frozen camera selection; retry must use review-camera preconversion subset and fixed log freshness monitor",
+  "next_unblocked_step": "commit no-spend review preconversion and monitor fixes, wait exact-head container build, then rerun one bounded V18 review only after AWS idle"
+}

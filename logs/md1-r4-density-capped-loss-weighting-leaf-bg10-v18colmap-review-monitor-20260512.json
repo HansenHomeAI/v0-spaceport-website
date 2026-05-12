@@ -1,0 +1,30 @@
+{
+  "checks": [
+    {
+      "status": "blocked",
+      "training_job_name": "md1-r1-r4-t04dcap-bg10-v18colmap-smoke-p24-1778620002-quality",
+      "training_status": "Stopped",
+      "secondary_status": "Stopped",
+      "elapsed_seconds": 989,
+      "latest_log_age_seconds": 813,
+      "gpu_average_percent": null,
+      "s3_output_object_count": 0,
+      "startup_wait_seconds": 1209,
+      "training_started": true,
+      "secondary_status_message": "Training job stopped",
+      "spend": {
+        "instance_type": "ml.g4dn.xlarge",
+        "hourly_rate_usd": 0.736,
+        "billable_seconds": 989,
+        "billable_hours": 0.2747,
+        "estimated_usd": 0.2022
+      },
+      "block_reasons": [
+        "training_job_stopped"
+      ],
+      "warnings": [],
+      "checked_at_epoch": 1778621212,
+      "poll_index": 0
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "checked_at": "2026-05-12T21:04:38Z",
+  "decision": "submit_bounded_v18_smoke_review_allowed",
+  "block_reasons": [],
+  "branch": "agent-90742618-md1-geometry-consistency",
+  "exact_head": "40224bc876238c229ba93334ceaf9143d97ca30a",
+  "exact_head_workflow": {
+    "workflow": "CDK Deploy",
+    "run_id": "25757283000",
+    "conclusion": "success"
+  },
+  "aws_idle_before_submit": true,
+  "cost_guard": {
+    "instance_type": "ml.g4dn.xlarge",
+    "hourly_rate_usd": 0.736,
+    "max_runtime_seconds": 1800,
+    "estimated_usd": 0.368,
+    "max_estimated_usd": 0.50
+  },
+  "density_guard": {
+    "source_preflight": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260512.json",
+    "required_paths_missing": 0,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "retained_gaussians": 8437595,
+    "source_gaussians": 8809362
+  },
+  "review_plan": {
+    "candidate_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-merge-g4dn-20260512/output/artifact/model.tar.gz",
+    "baseline_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-9tile-canary-review-20260505/baselines/v18-smoke-p24",
+    "output_root_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-density-capped-loss-weighting-leaf-bg10-review-v18colmap-20260512",
+    "camera_set": "frozen-promotion-p24",
+    "max_images_per_bucket": 4,
+    "render_scale": 0.5,
+    "max_gaussians_per_view": 2500000,
+    "cull_margin": 0.15,
+    "min_gaussians_on_oom": 800000
+  },
+  "no_full14_guard": true,
+  "stack_name": "SpaceportMLPipelineStagingStack",
+  "failed_local_attempt": {
+    "stack_name": "SpaceportStagingStack",
+    "submitted_job": false,
+    "reason": "Could not resolve SageMakerExecutionRole"
+  }
+}

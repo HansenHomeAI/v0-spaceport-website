@@ -1,0 +1,4 @@
+2026-05-12 15:06:43       1396 manual-validations/md1-cost-reduction-r4-density-capped-loss-weighting-leaf-bg10-review-v18colmap-20260512/review-input/review_camera_manifest.json
+
+Total Objects: 1
+   Total Size: 1396

@@ -38,7 +38,7 @@ from tile_pipeline import (
     select_pipeline_review_image_names_by_bucket,
     subset_tile_manifest,
 )
-from train_nerfstudio_production import NerfStudioTrainer
+from train_nerfstudio_production import NerfStudioTrainer, prepare_colmap_subset_for_image_names
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -157,10 +157,80 @@ def resolve_selected_tile_ids(
     return [str(tile.get("tile_id")) for tile in tile_manifest.get("tiles", []) if tile.get("tile_id")]
 
 
-def prepare_converted_dataset(colmap_input_dir: Path, temp_dir: Path) -> tuple[NerfStudioTrainer, Path, Path]:
+def review_images_for_preconversion(
+    frozen_review_camera_manifest_path: Path | None,
+    *,
+    max_images_per_bucket: int,
+    review_camera_set: str,
+) -> list[str]:
+    if frozen_review_camera_manifest_path is None or not frozen_review_camera_manifest_path.exists():
+        return []
+    review_images_by_bucket = load_frozen_review_images_by_bucket(
+        frozen_review_camera_manifest_path,
+        max_images_per_bucket=max_images_per_bucket,
+        camera_set=review_camera_set,
+    )
+    selected: list[str] = []
+    for bucket_key, _bucket_label in DEFAULT_BUCKET_ORDER:
+        selected.extend(review_images_by_bucket.get(bucket_key, []))
+    return ordered_unique(selected)
+
+
+def prepare_review_preconversion_input_dir(
+    review_input_dir: Path,
+    temp_dir: Path,
+    selected_image_names: Sequence[str],
+) -> tuple[Path, dict[str, Any]]:
+    if not selected_image_names:
+        return review_input_dir, {
+            "enabled": False,
+            "reason": "no_frozen_review_preconversion_selection",
+        }
+
+    subset_input_dir = temp_dir / "review_preconversion_selected_input"
+    summary = prepare_colmap_subset_for_image_names(
+        review_input_dir,
+        subset_input_dir,
+        selected_image_names,
+    )
+    if not summary.get("enabled"):
+        logger.warning("⚠️ Review pre-conversion COLMAP subsetting skipped: %s", summary)
+        return review_input_dir, summary
+    if int(summary.get("missing_image_count", 0) or 0) > 0:
+        logger.error("❌ Review pre-conversion subset has missing selected images: %s", summary)
+        raise RuntimeError("Review pre-conversion COLMAP subset is missing selected images")
+    logger.info("🧩 Review pre-conversion COLMAP subset enabled:")
+    logger.info(
+        "   Images: %s selected from %s source records; sparse points retained: %s",
+        summary.get("selected_image_count"),
+        summary.get("source_image_count"),
+        summary.get("retained_sparse_point_count"),
+    )
+    logger.info("   Subset input: %s", summary.get("subset_input_dir"))
+    return subset_input_dir, summary
+
+
+def prepare_converted_dataset(
+    colmap_input_dir: Path,
+    temp_dir: Path,
+    *,
+    frozen_review_camera_manifest_path: Path | None = None,
+    max_images_per_bucket: int = 4,
+    review_camera_set: str = "auto",
+) -> tuple[NerfStudioTrainer, Path, Path, dict[str, Any]]:
     review_input_dir = prepare_review_input_dir(colmap_input_dir, temp_dir / "source_input")
+    preconversion_names = review_images_for_preconversion(
+        frozen_review_camera_manifest_path,
+        max_images_per_bucket=max_images_per_bucket,
+        review_camera_set=review_camera_set,
+    )
+    conversion_input_dir, preconversion_summary = prepare_review_preconversion_input_dir(
+        review_input_dir,
+        temp_dir,
+        preconversion_names,
+    )
     trainer = NerfStudioTrainer(str(CONFIG_PATH))
-    trainer.input_dir = review_input_dir
+    trainer.input_dir = conversion_input_dir
     trainer.output_dir = temp_dir / "trainer_output"
     trainer.temp_dir = temp_dir / "trainer_work"
     trainer.output_dir.mkdir(parents=True, exist_ok=True)
@@ -168,7 +238,7 @@ def prepare_converted_dataset(colmap_input_dir: Path, temp_dir: Path) -> tuple[N
     if not trainer.validate_input_data():
         raise RuntimeError("COLMAP validation/conversion failed for tiled quality review")
     converted_dir = trainer.input_dir
-    return trainer, review_input_dir, converted_dir
+    return trainer, review_input_dir, converted_dir, preconversion_summary
 
 
 def load_frozen_review_images_by_bucket(
@@ -1128,7 +1198,13 @@ def main() -> None:
     try:
         model_tarball = find_model_artifact(model_input_dir)
         extracted_model_dir = extract_model_artifact(model_tarball, temp_dir / "model")
-        trainer, review_input_dir, converted_input_dir = prepare_converted_dataset(colmap_input_dir, temp_dir)
+        trainer, review_input_dir, converted_input_dir, preconversion_summary = prepare_converted_dataset(
+            colmap_input_dir,
+            temp_dir,
+            frozen_review_camera_manifest_path=frozen_review_camera_manifest_path,
+            max_images_per_bucket=max_images_per_bucket,
+            review_camera_set=review_camera_set,
+        )
         merged_ply_path = extracted_model_dir / "merged" / "merged_splat.ply"
         if not merged_ply_path.exists():
             raise FileNotFoundError(f"Merged tiled model was missing: {merged_ply_path}")
@@ -1321,6 +1397,7 @@ def main() -> None:
             merged_background_present=merged_background_path.exists(),
             render_settings=render_settings,
         )
+        manifest["preconversion_selection"] = preconversion_summary
         quality_review_manifest_path = output_dir / "quality_review_manifest.json"
         visual_qa_manifest = build_visual_qa_manifest(
             model_tarball=model_tarball,

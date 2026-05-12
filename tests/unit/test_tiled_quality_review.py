@@ -46,6 +46,7 @@ def load_module_with_stubs():
     tile_pipeline_stub.select_pipeline_review_image_names_by_bucket = lambda *_args, **_kwargs: {}
     tile_pipeline_stub.subset_tile_manifest = lambda manifest, selected_tile_ids: manifest
     trainer_stub.NerfStudioTrainer = type("NerfStudioTrainer", (), {})
+    trainer_stub.prepare_colmap_subset_for_image_names = lambda *_args, **_kwargs: {"enabled": False}
 
     for name, module in {
         "numpy": numpy_stub,
@@ -139,6 +140,64 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
                     "horizon_camera_ids": ["horizon_0"],
                 },
             )
+
+    def test_review_images_for_preconversion_flattens_frozen_camera_set(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            manifest_path = root / "review_camera_manifest.json"
+            manifest_path.write_text(
+                json.dumps(
+                    {
+                        "smoke_buckets": {
+                            "near_detail": ["near_0.JPG", "shared.JPG"],
+                            "boundary": ["boundary_0.JPG", "shared.JPG"],
+                            "horizon": ["horizon_0.JPG", "horizon_1.JPG"],
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            selected = module.review_images_for_preconversion(
+                manifest_path,
+                max_images_per_bucket=4,
+                review_camera_set="smoke",
+            )
+
+            self.assertEqual(
+                selected,
+                ["near_0.JPG", "shared.JPG", "boundary_0.JPG", "horizon_0.JPG", "horizon_1.JPG"],
+            )
+
+    def test_prepare_review_preconversion_input_uses_subset_summary(self):
+        module = load_module_with_stubs()
+        calls = []
+
+        def fake_subset(source_input_dir, subset_input_dir, selected_image_names):
+            calls.append((source_input_dir, subset_input_dir, list(selected_image_names)))
+            return {
+                "enabled": True,
+                "subset_input_dir": str(subset_input_dir),
+                "selected_image_count": len(selected_image_names),
+                "missing_image_count": 0,
+            }
+
+        module.prepare_colmap_subset_for_image_names = fake_subset
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            selected_dir, summary = module.prepare_review_preconversion_input_dir(
+                root / "source",
+                root / "tmp",
+                ["a.JPG", "b.JPG"],
+            )
+
+            self.assertEqual(selected_dir, root / "tmp" / "review_preconversion_selected_input")
+            self.assertTrue(summary["enabled"])
+            self.assertEqual(summary["selected_image_count"], 2)
+            self.assertEqual(calls[0][2], ["a.JPG", "b.JPG"])
 
     def test_build_review_manifest_marks_ready_for_manual_signoff(self):
         module = load_module_with_stubs()
