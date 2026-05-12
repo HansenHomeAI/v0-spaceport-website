@@ -18,7 +18,7 @@ from typing import Any, Mapping, Sequence
 
 import numpy as np
 import torch
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 from plyfile import PlyData
 from skimage.metrics import structural_similarity
 
@@ -331,6 +331,75 @@ def resize_image_array(image: np.ndarray, *, width: int, height: int) -> np.ndar
 def save_rgb_image(image: np.ndarray, output_path: Path) -> str:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     Image.fromarray(np.clip(image * 255.0, 0, 255).astype(np.uint8), mode="RGB").save(output_path)
+    return str(output_path)
+
+
+def build_difference_heatmap(reference: np.ndarray, prediction: np.ndarray) -> np.ndarray:
+    reference = np.clip(reference.astype(np.float32), 0.0, 1.0)
+    prediction = np.clip(prediction.astype(np.float32), 0.0, 1.0)
+    if reference.shape != prediction.shape:
+        raise ValueError(f"Heatmap inputs must share shape, got {reference.shape} and {prediction.shape}")
+    error = np.mean(np.abs(prediction - reference), axis=-1)
+    scaled = np.clip(error * 4.0, 0.0, 1.0)
+    heatmap = np.zeros((*scaled.shape, 3), dtype=np.float32)
+    heatmap[..., 0] = np.clip(scaled * 1.8, 0.0, 1.0)
+    heatmap[..., 1] = np.clip((scaled - 0.20) * 2.0, 0.0, 1.0)
+    heatmap[..., 2] = np.clip(1.0 - (scaled * 1.6), 0.0, 1.0) * (scaled > 0.001)
+    return heatmap
+
+
+def difference_summary_stats(reference: np.ndarray, prediction: np.ndarray) -> dict[str, float]:
+    reference = np.clip(reference.astype(np.float32), 0.0, 1.0)
+    prediction = np.clip(prediction.astype(np.float32), 0.0, 1.0)
+    if reference.shape != prediction.shape:
+        raise ValueError(f"Difference inputs must share shape, got {reference.shape} and {prediction.shape}")
+    error = np.mean(np.abs(prediction - reference), axis=-1)
+    return {
+        "mean_abs_rgb_error": float(np.mean(error)),
+        "p95_abs_rgb_error": float(np.percentile(error, 95)),
+        "p99_abs_rgb_error": float(np.percentile(error, 99)),
+        "max_abs_rgb_error": float(np.max(error)),
+    }
+
+
+def _array_to_pil_rgb(image: np.ndarray) -> Image.Image:
+    return Image.fromarray(np.clip(image * 255.0, 0, 255).astype(np.uint8), mode="RGB")
+
+
+def build_visual_qa_panel(
+    *,
+    reference: np.ndarray,
+    merged: np.ndarray,
+    merged_no_background: np.ndarray,
+    diff_heatmap: np.ndarray,
+    output_path: Path,
+) -> str:
+    labels = ["reference", "merged", "no_background", "abs_diff_x4"]
+    images = [
+        _array_to_pil_rgb(reference),
+        _array_to_pil_rgb(merged),
+        _array_to_pil_rgb(merged_no_background),
+        _array_to_pil_rgb(diff_heatmap),
+    ]
+    label_height = 28
+    gap = 6
+    width = sum(image.width for image in images) + (gap * (len(images) - 1))
+    height = max(image.height for image in images) + label_height
+    canvas = Image.new("RGB", (width, height), (255, 255, 255))
+    draw = ImageDraw.Draw(canvas)
+    try:
+        font = ImageFont.load_default()
+    except Exception:  # pragma: no cover - visual label fallback only
+        font = None
+
+    x = 0
+    for label, image in zip(labels, images):
+        draw.text((x + 4, 7), label, fill=(0, 0, 0), font=font)
+        canvas.paste(image, (x, label_height))
+        x += image.width + gap
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    canvas.save(output_path)
     return str(output_path)
 
 
@@ -861,6 +930,112 @@ def build_review_manifest(
     }
 
 
+def visual_asset_record(path_value: Any, *, output_dir: Path) -> dict[str, str] | None:
+    if not path_value:
+        return None
+    path_text = str(path_value)
+    record = {"path": path_text}
+    try:
+        record["artifact_relative_path"] = str(Path(path_text).relative_to(output_dir))
+    except ValueError:
+        record["artifact_relative_path"] = path_text
+    return record
+
+
+def build_visual_qa_manifest(
+    *,
+    model_tarball: Path,
+    selected_tile_ids: Sequence[str],
+    review_views: Sequence[Mapping[str, Any]],
+    output_dir: Path,
+    quality_review_manifest_path: Path,
+) -> dict[str, Any]:
+    bucket_counts: dict[str, int] = {}
+    visual_views: list[dict[str, Any]] = []
+    for view in review_views:
+        bucket = str(view.get("bucket", ""))
+        bucket_counts[bucket] = bucket_counts.get(bucket, 0) + 1
+        assets = {
+            "reference_image": visual_asset_record(view.get("reference_image"), output_dir=output_dir),
+            "merged_render": visual_asset_record(view.get("merged_render"), output_dir=output_dir),
+            "merged_no_background_render": visual_asset_record(
+                view.get("merged_no_background_render"),
+                output_dir=output_dir,
+            ),
+            "diff_heatmap": visual_asset_record(view.get("visual_diff_heatmap"), output_dir=output_dir),
+            "side_by_side_panel": visual_asset_record(view.get("visual_side_by_side_panel"), output_dir=output_dir),
+            "boundary_composite": visual_asset_record(view.get("boundary_composite"), output_dir=output_dir),
+        }
+        visual_views.append(
+            {
+                "bucket": bucket,
+                "image_name": view.get("image_name"),
+                "assets": {key: value for key, value in assets.items() if value is not None},
+                "metrics": view.get("metrics", {}),
+                "metrics_no_background": view.get("metrics_no_background", {}),
+                "sky_metrics": view.get("sky_metrics", {}),
+                "sky_metrics_no_background": view.get("sky_metrics_no_background", {}),
+                "difference_stats": view.get("difference_stats", {}),
+                "boundary_context_tile_ids": view.get("boundary_context_tile_ids", []),
+                "review_focus": [
+                    "geometry_alignment",
+                    "boundary_seams",
+                    "sky_horizon_continuity",
+                    "floaters_or_overdensity",
+                    "texture_blur_or_smearing",
+                    "missing_geometry_or_holes",
+                    "color_exposure_shift",
+                ],
+            }
+        )
+
+    panel_count = sum(1 for view in visual_views if view["assets"].get("side_by_side_panel"))
+    return {
+        "version": "1.0.0",
+        "model_artifact": str(model_tarball),
+        "selected_tile_ids": list(selected_tile_ids),
+        "quality_review_manifest": visual_asset_record(quality_review_manifest_path, output_dir=output_dir),
+        "view_count": len(visual_views),
+        "panel_count": panel_count,
+        "bucket_counts": bucket_counts,
+        "difference_heatmap_scale": "mean_abs_rgb_error_x4_clipped",
+        "ai_review_required": True,
+        "review_instructions": [
+            "Compare reference_image to merged_render for camera-by-camera usability, not only scalar metrics.",
+            "Use merged_no_background_render to separate gaussian foreground defects from skybox/background defects.",
+            "Use diff_heatmap and side_by_side_panel to identify localized regressions that bucket medians can hide.",
+            "Treat severe geometry drift, boundary seams, sky discontinuity, holes, floaters, blur, or exposure shift as blocking even when PSNR/SSIM passes.",
+        ],
+        "ai_review_response_schema": {
+            "type": "object",
+            "required": [
+                "overall_status",
+                "blocking_defects",
+                "per_view_findings",
+                "confidence",
+                "recommended_next_action",
+            ],
+            "properties": {
+                "overall_status": ["pass", "conditional_pass", "block"],
+                "blocking_defects": [
+                    "geometry_alignment",
+                    "boundary_seam",
+                    "horizon_or_sky",
+                    "missing_geometry",
+                    "floaters_or_overdensity",
+                    "texture_blur",
+                    "color_or_exposure",
+                    "viewer_packaging",
+                ],
+                "per_view_findings": "list of bucket/image findings with severity none|minor|major|blocking",
+                "confidence": "0.0-1.0 reviewer confidence",
+                "recommended_next_action": "one concise action before more paid compute",
+            },
+        },
+        "views": visual_views,
+    }
+
+
 def bucket_label(bucket_name: str) -> str:
     return bucket_name.replace("_camera_ids", "")
 
@@ -987,6 +1162,8 @@ def main() -> None:
         reference_root = review_root / "reference"
         merged_root = review_root / "merged"
         merged_no_background_root = review_root / "merged_no_background"
+        diff_heatmap_root = review_root / "diff_heatmaps"
+        visual_panel_root = review_root / "visual_panels"
         tiles_root = review_root / "tiles"
         composites_root = review_root / "boundary_composites"
         camera_manifest_entries: list[dict[str, Any]] = []
@@ -1031,6 +1208,17 @@ def main() -> None:
                 saved_merged_path = save_rgb_image(merged_final, merged_render_path)
                 merged_no_background_path = merged_no_background_root / bucket_label_value / f"{Path(image_name).stem}.png"
                 saved_merged_no_background_path = save_rgb_image(merged_foreground, merged_no_background_path)
+                diff_heatmap = build_difference_heatmap(reference_image, merged_final)
+                diff_heatmap_path = diff_heatmap_root / bucket_label_value / f"{Path(image_name).stem}.png"
+                saved_diff_heatmap_path = save_rgb_image(diff_heatmap, diff_heatmap_path)
+                visual_panel_path = visual_panel_root / bucket_label_value / f"{Path(image_name).stem}.png"
+                saved_visual_panel_path = build_visual_qa_panel(
+                    reference=reference_image,
+                    merged=merged_final,
+                    merged_no_background=merged_foreground,
+                    diff_heatmap=diff_heatmap,
+                    output_path=visual_panel_path,
+                )
 
                 metrics = compute_metrics(
                     merged_final,
@@ -1053,10 +1241,13 @@ def main() -> None:
                     "reference_image": saved_reference_path,
                     "merged_render": saved_merged_path,
                     "merged_no_background_render": saved_merged_no_background_path,
+                    "visual_diff_heatmap": saved_diff_heatmap_path,
+                    "visual_side_by_side_panel": saved_visual_panel_path,
                     "metrics": metrics,
                     "metrics_no_background": metrics_no_background,
                     "sky_metrics": sky_metrics,
                     "sky_metrics_no_background": sky_metrics_no_background,
+                    "difference_stats": difference_summary_stats(reference_image, merged_final),
                     "merged_render_stats": merged_render_stats,
                     "merged_alpha_stats": alpha_summary_stats(merged_alpha),
                     "merged_foreground_stats": image_summary_stats(merged_foreground),
@@ -1125,13 +1316,29 @@ def main() -> None:
             merge_report=merge_report,
             review_images_by_bucket=review_images_by_bucket,
             review_camera_manifest_path=review_camera_manifest_path,
-                    review_views=review_views,
-                    max_images_per_bucket=max_images_per_bucket,
-                    merged_background_present=merged_background_path.exists(),
-                    render_settings=render_settings,
-                )
-        with open(output_dir / "quality_review_manifest.json", "w", encoding="utf-8") as handle:
+            review_views=review_views,
+            max_images_per_bucket=max_images_per_bucket,
+            merged_background_present=merged_background_path.exists(),
+            render_settings=render_settings,
+        )
+        quality_review_manifest_path = output_dir / "quality_review_manifest.json"
+        visual_qa_manifest = build_visual_qa_manifest(
+            model_tarball=model_tarball,
+            selected_tile_ids=selected_tile_ids,
+            review_views=review_views,
+            output_dir=output_dir,
+            quality_review_manifest_path=quality_review_manifest_path,
+        )
+        manifest["visual_qa_manifest"] = {
+            "path": str(output_dir / "visual_qa_manifest.json"),
+            "view_count": visual_qa_manifest["view_count"],
+            "panel_count": visual_qa_manifest["panel_count"],
+            "ai_review_required": visual_qa_manifest["ai_review_required"],
+        }
+        with open(quality_review_manifest_path, "w", encoding="utf-8") as handle:
             json.dump(manifest, handle, indent=2)
+        with open(output_dir / "visual_qa_manifest.json", "w", encoding="utf-8") as handle:
+            json.dump(visual_qa_manifest, handle, indent=2)
         baseline_manifest_path = os.environ.get("BASELINE_REVIEW_MANIFEST", "").strip()
         if baseline_manifest_path:
             baseline_manifest = load_json(Path(baseline_manifest_path))

@@ -16,6 +16,8 @@ def load_module_with_stubs():
     numpy_stub = types.ModuleType("numpy")
     torch_stub = types.ModuleType("torch")
     pil_stub = types.ModuleType("PIL")
+    pil_image_draw_stub = types.ModuleType("PIL.ImageDraw")
+    pil_image_font_stub = types.ModuleType("PIL.ImageFont")
     plyfile_stub = types.ModuleType("plyfile")
     skimage_stub = types.ModuleType("skimage")
     skimage_metrics_stub = types.ModuleType("skimage.metrics")
@@ -26,6 +28,8 @@ def load_module_with_stubs():
     trainer_stub = types.ModuleType("train_nerfstudio_production")
 
     pil_stub.Image = types.SimpleNamespace()
+    pil_image_draw_stub.Draw = lambda *_args, **_kwargs: types.SimpleNamespace(text=lambda *_a, **_k: None)
+    pil_image_font_stub.load_default = lambda: None
     plyfile_stub.PlyData = type("PlyData", (), {})
     skimage_metrics_stub.structural_similarity = lambda *args, **kwargs: 1.0
     gsplat_stub.rasterization = types.SimpleNamespace()
@@ -47,6 +51,8 @@ def load_module_with_stubs():
         "numpy": numpy_stub,
         "torch": torch_stub,
         "PIL": pil_stub,
+        "PIL.ImageDraw": pil_image_draw_stub,
+        "PIL.ImageFont": pil_image_font_stub,
         "plyfile": plyfile_stub,
         "skimage": skimage_stub,
         "skimage.metrics": skimage_metrics_stub,
@@ -175,6 +181,41 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
                 "merged review included promoted background skybox",
                 manifest["promotion_readiness"]["notes"],
             )
+
+    def test_build_visual_qa_manifest_lists_panels_and_ai_schema(self):
+        module = load_module_with_stubs()
+
+        manifest = module.build_visual_qa_manifest(
+            model_tarball=Path("/tmp/model.tar.gz"),
+            selected_tile_ids=["tile_04", "tile_10"],
+            output_dir=Path("/tmp/review-output"),
+            quality_review_manifest_path=Path("/tmp/review-output/quality_review_manifest.json"),
+            review_views=[
+                {
+                    "bucket": "boundary",
+                    "image_name": "DJI_0068.JPG",
+                    "reference_image": "/tmp/review-output/quality_review/reference/boundary/DJI_0068.JPG",
+                    "merged_render": "/tmp/review-output/quality_review/merged/boundary/DJI_0068.png",
+                    "merged_no_background_render": "/tmp/review-output/quality_review/merged_no_background/boundary/DJI_0068.png",
+                    "visual_diff_heatmap": "/tmp/review-output/quality_review/diff_heatmaps/boundary/DJI_0068.png",
+                    "visual_side_by_side_panel": "/tmp/review-output/quality_review/visual_panels/boundary/DJI_0068.png",
+                    "boundary_composite": "/tmp/review-output/quality_review/boundary_composites/DJI_0068.png",
+                    "metrics": {"psnr": 29.0, "ssim": 0.91, "lpips": 0.07},
+                    "difference_stats": {"mean_abs_rgb_error": 0.04},
+                    "boundary_context_tile_ids": ["tile_04", "tile_10"],
+                }
+            ],
+        )
+
+        self.assertEqual(manifest["view_count"], 1)
+        self.assertEqual(manifest["panel_count"], 1)
+        self.assertTrue(manifest["ai_review_required"])
+        self.assertEqual(manifest["bucket_counts"], {"boundary": 1})
+        self.assertEqual(
+            manifest["views"][0]["assets"]["side_by_side_panel"]["artifact_relative_path"],
+            "quality_review/visual_panels/boundary/DJI_0068.png",
+        )
+        self.assertIn("blocking_defects", manifest["ai_review_response_schema"]["required"])
 
     def test_build_review_manifest_blocks_on_incomplete_buckets_or_retain_all(self):
         module = load_module_with_stubs()

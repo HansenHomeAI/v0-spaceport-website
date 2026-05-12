@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "Boundary camera repeat weighting failed promotion: boundary_no_required_improvement and horizon_psnr_regression; V18 non-regression also blocks on horizon PSNR. Stop paid compute until a new no-spend loss/objective hypothesis passes gates.",
+  "blocked_promotion_reason": "SSIM_LAMBDA=0.35 tile_04 leaf is over-dense: 1967919 splats vs 956277 reference, ratio 2.0579 over the 1.35 hard max; merge/review/full14/LOD remain blocked.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "ebc77782de34941b360f9c8e2283914faaf13ced",
-  "current_exact_head_gate_status": "exact-head ebc77782de34941b360f9c8e2283914faaf13ced green on CDK Deploy 25511683075. No ML Container Build appeared/was needed for the evidence-plus-script gate commit; last 3DGS image digest is sha256:e6b165785c12816a388d3aafd85eb1f360085afbf9f11cd752f24767b41cfb2a from c27d17dbbf750fc5747fb8ee33d2265f45bc197a.",
-  "current_live_compute_status": "2026-05-07T17:43Z: no MD1 SageMaker training jobs InProgress; external MD1-named SFM processing job md1-fanout-20260507T1639Z-c01r2-1778173164 is InProgress, so no paid MD1 proof is eligible until exact-head rebuild and fresh live idle check.",
-  "current_rung": "R4_boundary_loss_weighting_no_spend_dryrun",
+  "current_branch_head": "exact head 1c4881a93bb54c5077026ca1f6dbed9c61cd24cb is pushed and green on CDK Deploy 25513333194; SSIM_LAMBDA container head 652d403afb637bf160e4a59437ca5141c53cd616 is green on ML Container Build 25512581165 with 3DGS digest sha256:997c82a17b552ed34275f930ec160dcac4fbfbac04dac4c8cf00c6bc9c2cc989.",
+  "current_exact_head_gate_status": "exact-head 1c4881a93bb54c5077026ca1f6dbed9c61cd24cb green on CDK Deploy 25513333194. Branch 3DGS image digest sha256:997c82a17b552ed34275f930ec160dcac4fbfbac04dac4c8cf00c6bc9c2cc989 from 652d403afb637bf160e4a59437ca5141c53cd616.",
+  "current_live_compute_status": "2026-05-12T16:59Z: no MD1 SageMaker training or processing jobs are InProgress; SSIM_LAMBDA tile_04 leaf completed but is rejected before merge/review/full14/LOD.",
+  "current_rung": "R4_visual_qa_implementation_no_spend",
   "exact_head_gate_status": "exact-head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 green on CDK Deploy 25478133157; Deploy CDK Stacks and CDK Diff skipped by scope detection; no ML Container Build appeared for this non-container status commit; previous container-affecting head 6249a280443438790e5f9d11512fe6714c1a0728 remains green on CDK Deploy 25475213765, Trigger ML Container Build 25475213781, and CodeBuild spaceport-ml-containers:ae9b6cea-6c39-4bf8-a885-f0eb5336ee4a",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
@@ -983,7 +983,7 @@
     },
     "no_full14_or_lod_launched": true
   },
-  "latest_sagemaker_evidence_spend_total_usd": 12.545,
+  "latest_sagemaker_evidence_spend_total_usd": 13.554,
   "latest_tile04_leaf_reuse_merge_dryrun_status": "protected tile_04/tile_10 overlap-retention merge and review completed; no metric gain versus rollback bg10, so no paid retry is recommended without redesigned boundary objective/camera weighting.",
   "latest_training_cost_reduction_status": "Evidence spend now about $10.855; no full 14-tile training or LOD packaging launched in protected-overlap step. Current accepted rollback-based LOD remains the only viewer-validated candidate; cheaper high-quality production path remains blocked on boundary_no_required_improvement.",
   "live_compute_status": "No SageMaker training jobs are InProgress. Exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. Tile_13 hard proof is complete/preflighted/cached; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
@@ -1737,9 +1737,9 @@
   },
   "md1_r4_boundary_quality_strategy_20260506": {
     "boundary_actual_delta": {
-      "lpips": 0.000008553266525268555,
-      "psnr": 0.00000909046563180027,
-      "ssim": 0.0000032186508178710938
+      "lpips": 8.553266525268555e-06,
+      "psnr": 9.09046563180027e-06,
+      "ssim": 3.2186508178710938e-06
     },
     "boundary_remaining_gap": {
       "lpips": 0.02500855326652527,
@@ -7616,7 +7616,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Commit/push the SSIM loss-weighting knob and no-spend tile_04 loss-weighting dry-run, wait for exact-head CDK plus ML Container Build, then rerun leaf-submit readiness. Only one bounded tile_04 leaf proof may run if exact head is green and AWS is idle; merge/review/full14/LOD remain blocked.",
+  "next_unblocked_step": "Commit/push visual QA tooling and watch exact-head CDK plus ML Container Build; then use no-spend readiness before any next paid candidate.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -14197,5 +14197,95 @@
     },
     "current_total_evidence_spend_usd": 12.545,
     "next_required_action": "No-spend objective redesign; do not submit another paid retry until the gate allows it."
+  },
+  "md1_r4_boundary_loss_weighting_leaf_submit_20260507": {
+    "commit_head": "1c4881a93bb54c5077026ca1f6dbed9c61cd24cb",
+    "cdk_run_id": 25513333194,
+    "container_commit": "652d403afb637bf160e4a59437ca5141c53cd616",
+    "container_run_id": 25512581165,
+    "codebuild_id": "spaceport-ml-containers:8bc0cdd2-14af-4a82-8af3-0138bf2cf898",
+    "image_digest": "sha256:997c82a17b552ed34275f930ec160dcac4fbfbac04dac4c8cf00c6bc9c2cc989",
+    "readiness_json": "logs/md1-cost-reduction-r4-boundary-loss-weighting-leaf-submit-readiness-current-head-20260507.json",
+    "submit_summary_json": "logs/md1-cost-reduction-r4-boundary-loss-weighting-leaf-submit-20260507.json",
+    "submitted_training_job": "md1-r4t04lw-20260507-1778175750-1778177489-tile-04",
+    "describe_submitted_json": "logs/md1-r4t04lw-20260507-1778175750-1778177489-tile-04-describe-submitted.json",
+    "first_submit_failure": "pre-job ValidationException: ml.g4dn.xlarge fixed local storage rejected VolumeSizeInGB=250; corrected to 125GB before job creation",
+    "estimated_usd": 0.8096,
+    "max_estimated_usd": 2.25,
+    "worst_case_usd": 0.9813,
+    "scope": "one tile_04 leaf-only training job; skip-merge; skip-review; no full14; no LOD",
+    "objective_env": {
+      "SSIM_LAMBDA": "0.35",
+      "BOUNDARY_CAMERA_REPEAT_FACTOR": "1",
+      "LOSS_WEIGHTING_STRATEGY": "global_ssim_lambda_0_35_no_frame_repeat"
+    },
+    "next_gate": "no paid retry until visual QA tooling and density-controlled objective gates are implemented",
+    "terminal_describe_json": "logs/md1-r4t04lw-20260507-1778175750-1778177489-tile-04-describe-terminal.json",
+    "terminal_status": "Completed",
+    "training_time_seconds": 4935,
+    "billable_time_seconds": 4935,
+    "actual_cost_usd": 1.009,
+    "model_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-boundary-loss-weighting-20260507/tiles/tile_04/md1-r4t04lw-20260507-1778175750-1778177489-tile-04/output/model.tar.gz",
+    "preflight_json": "logs/md1-cost-reduction-r4-boundary-loss-weighting-20260507-tile_04-leaf-preflight.json",
+    "leaf_gate_json": "logs/md1-cost-reduction-r4-boundary-loss-weighting-20260507-tile_04-leaf-gate.json",
+    "leaf_preflight_decision": "leaf_preflight_blocked",
+    "leaf_gate_decision": "merge_review_blocked",
+    "leaf_gate_block_reasons": [
+      "leaf_preflight_decision_not_pass",
+      "splat_vertex_count_above_reference_ratio",
+      "splat_vertex_count_above_hard_max"
+    ],
+    "splat_vertex_count": 1967919,
+    "reference_splat_count": 956277,
+    "observed_reference_ratio": 2.057896404493677,
+    "hard_max_splat_count": 1290973,
+    "selected_image_count": 188,
+    "filtered_scaffold_ok": true,
+    "result": "rejected_before_merge_review",
+    "merge_review_launched": false,
+    "full_14tile_training_launched": false,
+    "lod_packaging_launched": false
+  },
+  "md1_visual_qa_tooling_20260512": {
+    "checked_at": "2026-05-12T17:05:00Z",
+    "status": "implemented_no_spend_visual_qa_bundle_and_gate",
+    "changed_files": [
+      "infrastructure/containers/3dgs/run_tiled_quality_review.py",
+      "scripts/3dgs/extract_md1_visual_qa_bundle.py",
+      "scripts/3dgs/evaluate_md1_visual_qa_gate.py",
+      "tests/unit/test_tiled_quality_review.py",
+      "tests/unit/test_extract_md1_visual_qa_bundle.py",
+      "tests/unit/test_evaluate_md1_visual_qa_gate.py"
+    ],
+    "review_outputs_added": [
+      "quality_review/diff_heatmaps/<bucket>/<camera>.png",
+      "quality_review/visual_panels/<bucket>/<camera>.png",
+      "visual_qa_manifest.json",
+      "quality_review_manifest.json.visual_qa_manifest"
+    ],
+    "visual_panel_columns": [
+      "reference",
+      "merged",
+      "no_background",
+      "abs_diff_x4"
+    ],
+    "extractor_scope": "visual QA images/manifests only; skips model PLY/weights",
+    "gate_blocks_on": [
+      "missing visual QA views",
+      "missing required per-view visual assets",
+      "missing extracted asset files when --asset-root is provided",
+      "panel coverage below threshold",
+      "AI visual review overall_status=block",
+      "AI visual review blocking defects",
+      "AI visual review blocking per-view findings"
+    ],
+    "tests": [
+      "python3 -m unittest tests.unit.test_tiled_quality_review tests.unit.test_extract_md1_visual_qa_bundle tests.unit.test_evaluate_md1_visual_qa_gate tests.unit.test_enforce_leaf_preflight_gate tests.unit.test_plan_md1_boundary_objective_strategy tests.unit.test_enforce_md1_leaf_submit_readiness",
+      "python3 -m py_compile infrastructure/containers/3dgs/run_tiled_quality_review.py scripts/3dgs/extract_md1_visual_qa_bundle.py scripts/3dgs/evaluate_md1_visual_qa_gate.py",
+      "git diff --check"
+    ],
+    "new_compute_launched": false,
+    "full_14tile_training_launched": false,
+    "next_required_action": "commit/push and watch exact-head CDK plus ML Container Build because quality-review container code changed"
   }
 }
