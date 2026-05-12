@@ -248,10 +248,12 @@ def load_frozen_review_images_by_bucket(
     camera_set: str,
 ) -> dict[str, list[str]]:
     payload = load_json(camera_manifest_path)
-    requested_set = camera_set.strip().lower()
+    requested_set = camera_set.strip().lower().replace("_", "-")
+    if requested_set.startswith("frozen-"):
+        requested_set = "auto"
     if requested_set in {"", "auto"}:
         requested_set = "smoke" if max_images_per_bucket <= 4 else "buckets"
-    if requested_set in {"full", "promotion", "buckets"}:
+    if requested_set in {"full", "promotion", "bucket", "buckets"}:
         set_key = "buckets"
     elif requested_set == "smoke":
         set_key = "smoke_buckets" if "smoke_buckets" in payload else "buckets"

@@ -141,6 +141,57 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
                 },
             )
 
+    def test_load_frozen_review_images_treats_named_frozen_sets_as_auto(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            manifest_path = root / "review_camera_manifest.json"
+            manifest_path.write_text(
+                json.dumps(
+                    {
+                        "buckets": {
+                            "near_detail": ["near_full_0", "near_full_1", "near_full_2", "near_full_3", "near_full_4"],
+                            "boundary": [
+                                "boundary_full_0",
+                                "boundary_full_1",
+                                "boundary_full_2",
+                                "boundary_full_3",
+                                "boundary_full_4",
+                            ],
+                            "horizon": [
+                                "horizon_full_0",
+                                "horizon_full_1",
+                                "horizon_full_2",
+                                "horizon_full_3",
+                                "horizon_full_4",
+                            ],
+                        },
+                        "smoke_buckets": {
+                            "near_detail": ["near_smoke_0", "near_smoke_1"],
+                            "boundary": ["boundary_smoke_0"],
+                            "horizon": ["horizon_smoke_0"],
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            selected = module.load_frozen_review_images_by_bucket(
+                manifest_path,
+                max_images_per_bucket=4,
+                camera_set="frozen-promotion-p24",
+            )
+
+            self.assertEqual(
+                selected,
+                {
+                    "near_detail_camera_ids": ["near_smoke_0", "near_smoke_1"],
+                    "boundary_camera_ids": ["boundary_smoke_0"],
+                    "horizon_camera_ids": ["horizon_smoke_0"],
+                },
+            )
+
     def test_review_images_for_preconversion_flattens_frozen_camera_set(self):
         module = load_module_with_stubs()
 

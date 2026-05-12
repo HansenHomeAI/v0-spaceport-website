@@ -1,0 +1,19 @@
+{
+  "checked_at": "2026-05-12T22:48:24.588914+00:00",
+  "candidate_label": "r4-t04dcap-bg10-v18colmap-smoke-p24-retry",
+  "job_name": "md1-r1-r4-t04dcap-bg10-v18colmap-smoke-p24-retry-1778625487-qua",
+  "training_job_status": "Failed",
+  "failure_reason": "AlgorithmError: exit code 1; CloudWatch shows ValueError Unknown QUALITY_REVIEW_CAMERA_SET=frozen-promotion-p24",
+  "root_cause": "quality review preconversion parser did not accept named frozen camera sets emitted by the review runner",
+  "billable_seconds": 412,
+  "estimated_usd": 0.0842,
+  "render_outputs_available": false,
+  "promotion_status": "blocked",
+  "model_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-density-capped-loss-weighting-leaf-bg10-review-v18colmap-retry-20260512/outputs/r4-t04dcap-bg10-v18colmap-smoke-p24-retry/md1-r1-r4-t04dcap-bg10-v18colmap-smoke-p24-retry-1778625487-qua/output/model.tar.gz",
+  "evidence": {
+    "describe_json": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-describe-20260512.json",
+    "cloudwatch_tail": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-cloudwatch-tail-20260512.txt",
+    "s3_objects": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-s3-objects-20260512.txt"
+  },
+  "next_unblocked_step": "commit/push frozen-* camera-set alias fix, rebuild exact-head container, then retry at most one bounded V18 smoke review after fresh guard and AWS idle"
+}

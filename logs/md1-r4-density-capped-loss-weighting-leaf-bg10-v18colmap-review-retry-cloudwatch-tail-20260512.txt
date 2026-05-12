@@ -1,0 +1,11 @@
+✅ sitecustomize: filtered deprecated CUDA arch flags (TORCH_CUDA_ARCH_LIST=7.0;8.0;8.6+PTX)	✅ sitecustomize: patched nerfstudio PIL conversion	✅ PyTorch version doesn't have dynamo module	✅ TORCH_COMPILE_DISABLE=1 set	✅ TORCH_CUDA_ARCH_LIST=7.0;8.0;8.6+PTX	✅ CUDAARCHS=70;80;86	✅ LD_LIBRARY_PATH=/opt/conda/lib/python3.10/site-packages/cv2/../../lib64:/usr/local/cuda/lib64:/usr/local/cuda/lib	✅ LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib	2026-05-12 22:44:13,981 - INFO - 🚀 Starting tiled 3DGS quality review	2026-05-12 22:44:13,981 - INFO - 📦 Model input: /opt/ml/input/data/model	2026-05-12 22:44:13,981 - INFO - 📁 COLMAP input: /opt/ml/input/data/colmap	2026-05-12 22:44:13,981 - INFO - 📁 Output dir: /opt/ml/model	2026-05-12 22:44:13,981 - INFO - 🖼️ Render settings: {'render_scale': 0.5, 'max_gaussians_per_view': 2500000, 'cull_margin': 0.15, 'min_gaussians_on_oom': 800000}	2026-05-12 22:44:13,982 - INFO - 📷 Frozen camera manifest: /opt/ml/input/data/review-manifest/review_camera_manifest.json	Traceback (most recent call last):
+  File "/opt/ml/code/run_tiled_quality_review.py", line 1443, in <module>
+    main()
+  File "/opt/ml/code/run_tiled_quality_review.py", line 1201, in main
+    trainer, review_input_dir, converted_input_dir, preconversion_summary = prepare_converted_dataset(
+  File "/opt/ml/code/run_tiled_quality_review.py", line 222, in prepare_converted_dataset
+    preconversion_names = review_images_for_preconversion(
+  File "/opt/ml/code/run_tiled_quality_review.py", line 168, in review_images_for_preconversion
+    review_images_by_bucket = load_frozen_review_images_by_bucket(
+  File "/opt/ml/code/run_tiled_quality_review.py", line 259, in load_frozen_review_images_by_bucket
+    raise ValueError(f"Unknown QUALITY_REVIEW_CAMERA_SET={camera_set!r}")	ValueError: Unknown QUALITY_REVIEW_CAMERA_SET='frozen-promotion-p24'
