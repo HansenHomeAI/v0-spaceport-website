@@ -28,6 +28,7 @@ Produce a development-based MD1 baseline with:
 - Active external canary at setup: `md1-sample5-cpu-r8-1778692401`; still `InProgress` with `TrainingTimeInSeconds=1938` at 2026-05-13T11:47:00-06:00.
 - That canary is owned by the separate SFM reality-check lineage (`CODE_HEAD=e0ed962f...`) and must not be stopped or counted as this run.
 - Automation created: `md1-baseline-e2e-monitor` hourly.
+- Branch preview uses shared staging ML outputs from `SpaceportMLPipelineStagingStack`; Pages output resolution now allows that fallback stack when it is in `UPDATE_ROLLBACK_COMPLETE` but still serving required outputs.
 
 ## Completed In This Branch
 
@@ -45,6 +46,7 @@ Produce a development-based MD1 baseline with:
 - `python3 -m unittest tests.unit.test_sogs_supersplat_bundle` passed.
 - `python3 -m py_compile ...` passed for compressor, SfM, and existing 3DGS entrypoints.
 - `git diff --check` passed.
+- First branch Pages deploy failed at CloudFormation output resolution because the fallback staging ML stack was `UPDATE_ROLLBACK_COMPLETE`; patched the Pages workflow gate and pushed a rerun fix.
 
 ## Gated Execution Plan
 
