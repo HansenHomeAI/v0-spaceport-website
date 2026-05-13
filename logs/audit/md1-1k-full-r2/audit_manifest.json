@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "fcd48cd72cdedaee5768e2b34ae1993d341563db pushed; exact-head CDK Deploy 25814665991 green before this active-SFM-canary evidence commit",
-  "current_exact_head_gate_status": "exact-head fcd48cd72cdedaee5768e2b34ae1993d341563db green on CDK Deploy 25814665991 before this active-SFM-canary evidence commit",
-  "current_live_compute_status": "Processing idle. Active training md1-sample5-cpu-r8-1778692401 is source-attributed to the separate ACTIVE sfm-reality-check automation on head e0ed962f5c003276e27f2556382deabc41dd94f5 and was recorded, not stopped.",
-  "current_rung": "R0_hardcap_quality_repair_early_visual_smoke_objective_gate_allowed_pending_exact_head",
+  "current_branch_head": "abab508ec6a5f301ced079a310e5481faf4772d6 pushed; exact-head CDK Deploy 25815046996 green",
+  "current_exact_head_gate_status": "exact-head abab508ec6a5f301ced079a310e5481faf4772d6 green on CDK Deploy 25815046996",
+  "current_live_compute_status": "Active source-attributed non-MD1 jobs: training md1-sample5-cachectl-r10-1778696805 owned by sfm-reality-check on head 08831258; processing md1-baseline-e2e-20260513115645-sfm owned by md1-baseline-e2e-monitor. Recorded, not stopped. MD1 paid submit blocked until AWS idle.",
+  "current_rung": "R0_visual_sentinel_leaf_readiness_blocked_on_source_attributed_active_jobs",
   "evidence_events": [
     {
       "billable_seconds": 412,
@@ -756,7 +756,7 @@
         "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-live-processing-inprogress-20260513.json"
       ],
       "next": "Commit/push/watch exact head, recheck AWS idle/readiness, then at most one bounded no-training bg10 merge/preflight.",
-      "spend_estimated_usd": 0.0,
+      "spend_estimated_usd": 0,
       "summary": "Built no-training bg10 merge/review plan from passed tile_04 visual-fidelity and tile_10 hard-output-cap leaves; executable readiness gate allows only bounded merge/preflight then V18/visual QA review after preflight. No paid compute launched.",
       "timestamp": "2026-05-13T14:25:00Z"
     },
@@ -771,7 +771,7 @@
         "tests/unit/test_enforce_md1_merge_review_submit_readiness.py"
       ],
       "next": "Commit/push/watch exact head; rerun readiness on new exact green head with AWS idle before at most one bounded no-training bg10 merge/preflight.",
-      "spend_estimated_usd": 0.0,
+      "spend_estimated_usd": 0,
       "summary": "Found and fixed a no-spend waste risk: the bg10 merge payload pointed at a missing tile-selection prefix. Uploaded the tiny tile manifest/view buckets and merge_plan.json to the current merge input prefix, repaired the payload, and tightened submit readiness so paid merge spend blocks unless inputs are materialized. No paid compute launched.",
       "timestamp": "2026-05-13T14:52:00Z"
     },
@@ -791,6 +791,23 @@
       "spend_estimated_usd": 0.0583,
       "summary": "The bounded no-training bg10 merge failed before output after 285 billable seconds/about $0.058 because the payload used unsupported MERGE_PROTECTED_OVERLAP_MODE=boundary. Stopped paid progression, attributed root cause, added planner/readiness guards, and prepared a corrected retry1 payload using retain_all. No V18 review/full14/LOD/promotion launched.",
       "timestamp": "2026-05-13T15:13:00Z"
+    },
+    {
+      "timestamp": "2026-05-13T18:33:49Z",
+      "event": "md1_r0_visual_sentinel_readiness_blocked_active_jobs",
+      "summary": "Generated no-spend R0 tile_04 visual-sentinel dry-run and readiness gate on exact green head. Candidate is structurally ready and under cap, but paid submit is blocked by source-attributed non-MD1 active SageMaker jobs. Updated automation and deleted duplicate baseline monitor.",
+      "evidence": [
+        "logs/md1-r0-visual-sentinel-leaf-dryrun-20260513.json",
+        "logs/md1-r0-visual-sentinel-merge-review-gate-20260513.json",
+        "logs/md1-r0-visual-sentinel-leaf-submit-readiness-current-head-20260513.json",
+        "logs/md1-r0-visual-sentinel-exact-head-workflows-20260513.json",
+        "logs/md1-r0-visual-sentinel-live-training-inprogress-current-20260513.json",
+        "logs/md1-r0-visual-sentinel-live-processing-inprogress-current-20260513.json",
+        "logs/md1-sample5-cachectl-r10-1778696805-active-describe-20260513.json",
+        "logs/md1-baseline-e2e-20260513115645-sfm-active-describe-20260513.json"
+      ],
+      "spend_estimated_usd": 0,
+      "next": "After commit/push/exact-head green, wait for source-attributed non-MD1 SageMaker jobs to terminal state, rerun leaf-submit readiness with AWS idle, then submit at most one R0 tile_04 visual-sentinel proof if readiness allows. No merge/review/full14/LOD/viewer smoke/promotion."
     }
   ],
   "exact_head_gate_status": "exact-head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 green on CDK Deploy 25478133157; Deploy CDK Stacks and CDK Diff skipped by scope detection; no ML Container Build appeared for this non-container status commit; previous container-affecting head 6249a280443438790e5f9d11512fe6714c1a0728 remains green on CDK Deploy 25475213765, Trigger ML Container Build 25475213781, and CodeBuild spaceport-ml-containers:ae9b6cea-6c39-4bf8-a885-f0eb5336ee4a",
@@ -1327,7 +1344,7 @@
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
   "latest_boundary_responsible_tile_plan_status": "boundary primary tile_04/tile_10; horizon primary tile_04/tile_01; tile04 dryrun covers tile01/tile10 context support",
-  "latest_cost_control": "No eligible MD1 compute launched in this loop. Future MD1 loops should not stop source-attributed SFM canaries; record/notify instead. Future eligible MD1 proof remains limited to one R0 visual-sentinel leaf-only run under $0.75/2400s/64 images/2000 iterations, with early visual-smoke abort; no merge/review/full14/LOD/promotion.",
+  "latest_cost_control": "No MD1 compute launched. Future eligible proof remains one R0 tile_04 visual-sentinel leaf-only run under $0.75/2400s/64 effective images/2000 iterations after AWS idle and readiness allowed. Duplicate baseline monitor deleted to reduce duplicate-job risk.",
   "latest_evidence": {
     "merge_preflight_summary": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260512.json",
     "review_retry_cloudwatch_tail": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-cloudwatch-tail-20260512.txt",
@@ -1337,18 +1354,10 @@
     "review_retry_summary": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-20260512.json"
   },
   "latest_exact_head_gate": {
-    "branch_3dgs_digest": "sha256:c5bdfdd8ecd1d97def34421db8c529094d56c99d0e8f0d804ba4bd93d37214c6",
-    "cdk_deploy_conclusion": "success",
-    "cdk_deploy_run_id": 25753158350,
-    "checked_at": "2026-05-12T18:21:07Z",
-    "cloudflare_pages": "not_triggered_for_non_web_commit",
-    "codebuild_id": "spaceport-ml-containers:1b090df3-a556-49f9-8793-43f90aff4d86",
-    "codebuild_status": "SUCCEEDED",
-    "head": "cbbda33d8afd5da9a77d0f660cc0e8c68b7ee79e",
-    "live_md1_processing_jobs_in_progress": [],
-    "live_md1_training_jobs_in_progress": [],
-    "ml_container_build_conclusion": "success",
-    "ml_container_build_run_id": 25753158308
+    "workflow": "CDK Deploy",
+    "run_id": 25815046996,
+    "conclusion": "success",
+    "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25815046996"
   },
   "latest_exact_head_workflows": {
     "cdk_deploy": {
@@ -1462,15 +1471,11 @@
     "visual_qa_gate_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-visual-qa-gate-with-ai-20260513.json",
     "visual_qa_manifest_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-visual-qa-manifest-20260513.json"
   },
-  "latest_leaf_submit_readiness_gate_status": "soft-density tile_04 leaf was submitted after exact-head gates and fresh AWS idle; job completed under cap and post-leaf preflight/gate passed, but the downstream bg10 review failed V18 and visual QA, so no paid retry is currently eligible.",
-  "latest_live_compute_status": {
-    "checked_at": "2026-05-13T06:12:00Z",
-    "processing_jobs_in_progress": [],
-    "training_jobs_in_progress": []
-  },
+  "latest_leaf_submit_readiness_gate_status": "R0 tile_04 visual-sentinel readiness blocked only by active source-attributed non-MD1 SageMaker training/processing jobs. Exact head green, objective gate allowed, merge/review gate blocked only on missing tile_04 leaf summary, strategy dry-run only, estimated $0.4907 under $0.75.",
+  "latest_live_compute_status": "Active source-attributed non-MD1 jobs: training md1-sample5-cachectl-r10-1778696805 owned by sfm-reality-check on head 08831258; processing md1-baseline-e2e-20260513115645-sfm owned by md1-baseline-e2e-monitor. Recorded, not stopped. MD1 paid submit blocked until AWS idle.",
   "latest_lod_production_readiness_status": "logs/md1-r4-tile10-rollback-lod-production-readiness-20260506.json reports viewer_ready_quality_blocked; --require-promotion-ready now exits 3 and wrote logs/md1-r4-tile10-rollback-lod-production-readiness-promotion-required-20260506.json, preventing promotion callers from accepting viewer readiness alone.",
   "latest_md1_cost_reduction_status": "soft_density_failed_hypothesis_encoded_no_paid_retry_allowed",
-  "latest_md1_live_compute_status": "2026-05-13T09:11Z no MD1 SageMaker training or processing jobs InProgress after visual-fidelity paired leaf proof",
+  "latest_md1_live_compute_status": "Active source-attributed non-MD1 jobs: training md1-sample5-cachectl-r10-1778696805 owned by sfm-reality-check on head 08831258; processing md1-baseline-e2e-20260513115645-sfm owned by md1-baseline-e2e-monitor. Recorded, not stopped. MD1 paid submit blocked until AWS idle.",
   "latest_no_spend_bg10_merge_review_plan": {
     "aws_idle_after_failure": true,
     "failed_merge_billable_seconds": 285,
@@ -1499,8 +1504,8 @@
     "status": "merge_retry1_guard_ready_no_paid_retry_launched",
     "v18_review_launched": false
   },
-  "latest_no_spend_evidence": "Objective evidence logs/md1-r4-hardcap-quality-repair-early-visual-smoke-objective-candidate-20260513.json and logs/md1-r4-hardcap-quality-repair-early-visual-smoke-objective-gate-20260513.json; source-attributed active SFM job evidence logs/md1-sample5-cpu-r8-1778692401-active-describe-20260513.json; source attribution /Users/gabrielhansen/.codex/automations/sfm-reality-check/automation.toml.",
-  "latest_no_spend_implementation": "Planner now requires early visual-smoke abort plans after hard-output-cap visual-fidelity quality failures, and the new candidate objective uses real implemented color/floater/density controls instead of fake perceptual env keys.",
+  "latest_no_spend_evidence": "R0 dry-run logs/md1-r0-visual-sentinel-leaf-dryrun-20260513.json; merge gate logs/md1-r0-visual-sentinel-merge-review-gate-20260513.json; readiness logs/md1-r0-visual-sentinel-leaf-submit-readiness-current-head-20260513.json; active-job evidence logs/md1-sample5-cachectl-r10-1778696805-active-describe-20260513.json and logs/md1-baseline-e2e-20260513115645-sfm-active-describe-20260513.json.",
+  "latest_no_spend_implementation": "Updated automation prompt to current abab508e R0 visual-sentinel readiness path, deleted duplicate baseline monitor md1-baseline-e2e-monitor-2, and added effective_selected_image_count to post-leaf dry-run gates for capped image-count clarity.",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
     "head": "07c50ac09a7ac88ea218c5784f045154a102917e",
@@ -1644,7 +1649,7 @@
     "remote_merge_plan_json": "logs/md1-r4-quality-preserving-soft-density-leaf-tile10-rollback-bg10-remote-merge-g4dn-plan-dryrun-20260513.json",
     "training_jobs_to_submit": 0
   },
-  "latest_testing": "62 targeted unit tests passed across planner/readiness/merge/leaf/visual QA suites; py_compile passed for planner/readiness/merge/visual QA scripts; jq validation and git diff --check passed.",
+  "latest_testing": "Passed: python3 -m unittest tests.unit.test_tiled_3dgs_benchmark tests.unit.test_enforce_md1_leaf_submit_readiness (92 tests); py_compile for run_tiled_3dgs_benchmark/enforce_md1_leaf_submit_readiness/enforce_md1_merge_review_gate; JSON validation for R0 evidence and audit; git diff --check.",
   "latest_tile04_leaf_reuse_merge_dryrun_status": "density-capped tile_04 leaf passed post-leaf preflight/gate with 984154 splats, 128 images, and filtered scaffold; no-training bg10 tile_10 rollback merge payload dry-run is generated and merge/review gate allows only that next step.",
   "latest_tracked_sagemaker_evidence_spend_before_untracked_stop_usd": 14.8046,
   "latest_training_cost_reduction_status": "Evidence/untracked spend remains about $17.100. Soft-density tile_04 passed leaf and merge structural gates but failed V18 and AI visual QA; no-spend planner now records soft_density_quality_regression and blocks repeating that objective. No full14/LOD/promotion/viewer smoke launched.",
@@ -3164,9 +3169,9 @@
   },
   "md1_r4_boundary_quality_strategy_20260506": {
     "boundary_actual_delta": {
-      "lpips": 8.553266525268555e-06,
-      "psnr": 9.09046563180027e-06,
-      "ssim": 3.2186508178710938e-06
+      "lpips": 0.000008553266525268555,
+      "psnr": 0.00000909046563180027,
+      "ssim": 0.0000032186508178710938
     },
     "boundary_remaining_gap": {
       "lpips": 0.02500855326652527,
@@ -10047,7 +10052,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Commit/push this active-SFM-canary evidence update, watch exact-head workflows, then rerun MD1 leaf-submit readiness on the new exact green head only if AWS is idle or only source-attributed non-MD1 jobs are active.",
+  "next_unblocked_step": "After commit/push/exact-head green, wait for source-attributed non-MD1 SageMaker jobs to terminal state, rerun leaf-submit readiness with AWS idle, then submit at most one R0 tile_04 visual-sentinel proof if readiness allows. No merge/review/full14/LOD/viewer smoke/promotion.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -16142,5 +16147,123 @@
   },
   "updated": "2026-05-13T17:19:00Z",
   "updated_at": "2026-05-13T17:19:00+00:00",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "md1_r0_visual_sentinel_readiness_blocked_active_jobs_20260513": {
+    "recorded_at": "2026-05-13T18:33:49Z",
+    "branch": "agent-90742618-md1-geometry-consistency",
+    "exact_head": "abab508ec6a5f301ced079a310e5481faf4772d6",
+    "exact_head_workflow": {
+      "workflow": "CDK Deploy",
+      "run_id": 25815046996,
+      "conclusion": "success",
+      "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25815046996"
+    },
+    "automation_updates": {
+      "md1_production_readiness_loop": {
+        "automation_id": "md1-production-readiness-loop",
+        "change": "prompt updated to current abab508e R0 visual-sentinel readiness path with no-stop policy and AWS-idle paid-submit guard",
+        "status": "ACTIVE"
+      },
+      "deleted_duplicate_baseline_monitor": {
+        "automation_id": "md1-baseline-e2e-monitor-2",
+        "reason": "duplicate of md1-baseline-e2e-monitor; deleted to reduce duplicate MD1 baseline job risk"
+      }
+    },
+    "active_source_attributed_non_md1_jobs": [
+      {
+        "job_name": "md1-sample5-cachectl-r10-1778696805",
+        "job_type": "training",
+        "status_at_record": "InProgress",
+        "secondary_status_at_record": "Training",
+        "code_head": "08831258ac744cc03fca9fa7407144fc533b389c",
+        "image_tag": "agent73948216sfmproductionspine",
+        "validation_run": "md1-sample5-cachectl-r10-quality-emission-smoke",
+        "relaunch_reason": "r9-maxruntime-stuck-at-cache-relaunch-with-thread1-downscale8",
+        "max_runtime_seconds": 1500,
+        "source_attribution": {
+          "automation_id": "sfm-reality-check",
+          "automation_path": "/Users/gabrielhansen/.codex/automations/sfm-reality-check/automation.toml",
+          "workspace": "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine",
+          "md1_action": "recorded_not_stopped"
+        },
+        "evidence": {
+          "describe_json": "logs/md1-sample5-cachectl-r10-1778696805-active-describe-20260513.json",
+          "tags_json": "logs/md1-sample5-cachectl-r10-1778696805-tags-20260513.json"
+        }
+      },
+      {
+        "job_name": "md1-baseline-e2e-20260513115645-sfm",
+        "job_type": "processing",
+        "status_at_record": "InProgress",
+        "component": "SfM",
+        "source_attribution": {
+          "automation_id": "md1-baseline-e2e-monitor",
+          "automation_path": "/Users/gabrielhansen/.codex/automations/md1-baseline-e2e-monitor/automation.toml",
+          "workspace": "/Users/gabrielhansen/MD1-Baseline",
+          "md1_action": "recorded_not_stopped"
+        },
+        "evidence": {
+          "describe_json": "logs/md1-baseline-e2e-20260513115645-sfm-active-describe-20260513.json",
+          "tags_json": "logs/md1-baseline-e2e-20260513115645-sfm-tags-20260513.json"
+        }
+      }
+    ],
+    "terminal_source_attributed_job": {
+      "job_name": "md1-sample5-gpu-r9-1778694553",
+      "status": "Stopped",
+      "secondary_status": "MaxRuntimeExceeded",
+      "training_time_seconds": 2017,
+      "source_attribution": "sfm-reality-check",
+      "evidence": "logs/md1-sample5-gpu-r9-1778694553-terminal-describe-20260513.json"
+    },
+    "r0_visual_sentinel_leaf_plan": {
+      "strategy_json": "logs/md1-r0-visual-sentinel-leaf-dryrun-20260513.json",
+      "selected_tile_ids": [
+        "tile_04"
+      ],
+      "stage_order": [
+        "tile_04_first",
+        "tile_10_only_if_tile04_visual_smoke_passes"
+      ],
+      "max_iterations": 2000,
+      "raw_selected_image_count": 188,
+      "max_selected_images": 64,
+      "effective_selected_image_count": 64,
+      "estimated_usd": 0.4907,
+      "max_estimated_usd": 0.75,
+      "runtime_cap_seconds": 2400,
+      "checkpoint_steps": [
+        1000,
+        2000
+      ],
+      "submitted_jobs": []
+    },
+    "gates": {
+      "objective_gate_json": "logs/md1-r4-hardcap-quality-repair-early-visual-smoke-objective-gate-20260513.json",
+      "objective_gate_decision": "paid_retry_allowed",
+      "merge_review_gate_json": "logs/md1-r0-visual-sentinel-merge-review-gate-20260513.json",
+      "merge_review_gate_decision": "merge_review_blocked",
+      "merge_review_block_reasons": [
+        "leaf_gate_summary_missing:tile_04"
+      ],
+      "leaf_submit_readiness_json": "logs/md1-r0-visual-sentinel-leaf-submit-readiness-current-head-20260513.json",
+      "leaf_submit_decision": "leaf_submit_blocked",
+      "leaf_submit_block_reasons": [
+        "training_jobs_in_progress",
+        "processing_jobs_in_progress"
+      ]
+    },
+    "code_change": {
+      "script": "scripts/3dgs/run_tiled_3dgs_benchmark.py",
+      "test": "tests/unit/test_tiled_3dgs_benchmark.py",
+      "change": "post_leaf_preflight_gates now include effective_selected_image_count equal to the enforced image count"
+    },
+    "next_unblocked_step": "After commit/push/exact-head green, wait for source-attributed non-MD1 SageMaker jobs to terminal state, rerun leaf-submit readiness with AWS idle, then submit at most one R0 tile_04 visual-sentinel proof if readiness allows. No merge/review/full14/LOD/viewer smoke/promotion.",
+    "test_evidence": {
+      "unit_tests": "python3 -m unittest tests.unit.test_tiled_3dgs_benchmark tests.unit.test_enforce_md1_leaf_submit_readiness -> 92 tests OK",
+      "py_compile": "passed for run_tiled_3dgs_benchmark.py, enforce_md1_leaf_submit_readiness.py, enforce_md1_merge_review_gate.py",
+      "json_validation": "passed for R0 dry-run, merge gate, readiness, and audit JSON",
+      "diff_check": "git diff --check passed"
+    }
+  }
 }

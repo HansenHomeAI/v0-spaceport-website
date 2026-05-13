@@ -103,6 +103,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertEqual(gate["selected_image_count"], 188)
         self.assertEqual(gate["max_selected_images"], 128)
         self.assertEqual(gate["expected_selected_image_count"], 128)
+        self.assertEqual(gate["effective_selected_image_count"], 128)
         self.assertEqual(gate["required_leaf_preflight_gate"]["expected_selected_image_count"], 128)
         expected_index = gate["enforce_gate_command"].index("--expected-selected-image-count") + 1
         self.assertEqual(gate["enforce_gate_command"][expected_index], "128")

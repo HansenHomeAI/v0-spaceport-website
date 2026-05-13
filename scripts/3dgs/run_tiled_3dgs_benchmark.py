@@ -1629,6 +1629,7 @@ def build_post_leaf_preflight_gates(
                 "hard_max_splat_count": hard_max,
                 "hard_min_splat_count": hard_min or None,
                 "expected_selected_image_count": expected_selected_image_count,
+                "effective_selected_image_count": expected_selected_image_count,
                 "selected_image_count": stage.selected_image_count,
                 "max_selected_images": stage.max_selected_images,
                 "required_leaf_preflight_gate": {

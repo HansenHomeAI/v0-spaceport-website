@@ -1,0 +1,28 @@
+{
+    "Tags": [
+        {
+            "Key": "Validation",
+            "Value": "md1-sample5-gpu-r9-quality-emission-smoke"
+        },
+        {
+            "Key": "Project",
+            "Value": "Spaceport"
+        },
+        {
+            "Key": "Environment",
+            "Value": "agent73948216sfmproductionspine"
+        },
+        {
+            "Key": "Component",
+            "Value": "3DGS"
+        },
+        {
+            "Key": "CodeHead",
+            "Value": "e0ed962f5c003276e27f2556382deabc41dd94f5"
+        },
+        {
+            "Key": "EcrDigest",
+            "Value": "c14cc1232fefcebb3ba14303f881da7dd67233437a2fc9060c3181a068886f09"
+        }
+    ]
+}
