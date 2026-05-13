@@ -724,6 +724,8 @@ class NerfStudioTrainer:
                 cache_images,
             )
             cache_images = "cpu"
+        max_thread_workers = self.resolve_optional_positive_int("NS_MAX_THREAD_WORKERS", "datamanager max-thread-workers")
+        downscale_factor = self.resolve_optional_positive_int("NS_DOWNSCALE_FACTOR", "nerfstudio-data downscale-factor")
         train_split_fraction = self.resolve_train_split_fraction(training_config)
         
         logger.info(f"🎯 Training Configuration (Vincent Woo's methodology):")
@@ -762,12 +764,18 @@ class NerfStudioTrainer:
             "--pipeline.model.max-gauss-ratio", "10.0",  # Conservative ratio for A10G
         ])
         logger.info(f"🖥️  A10G GPU optimization enabled (max-gauss-ratio: 10.0, image cache: {cache_images})")
+        if max_thread_workers is not None:
+            cmd.extend(["--pipeline.datamanager.max-thread-workers", str(max_thread_workers)])
+            logger.info(f"🧵 NerfStudio datamanager max-thread-workers: {max_thread_workers}")
 
         cmd.extend([
             "nerfstudio-data",
             "--eval-mode", "fraction",
             "--train-split-fraction", str(train_split_fraction),
         ])
+        if downscale_factor is not None:
+            cmd.extend(["--downscale-factor", str(downscale_factor)])
+            logger.info(f"📉 NerfStudio parser downscale-factor: {downscale_factor}")
         
         logger.info("🚀 Executing NerfStudio training command:")
         logger.info(f"   {' '.join(cmd)}")
@@ -795,6 +803,21 @@ class NerfStudioTrainer:
         for line in tail[-20:]:
             logger.info(f"   {line}")
         return True
+
+    def resolve_optional_positive_int(self, env_var: str, label: str) -> Optional[int]:
+        """Read an optional positive integer training knob from the environment."""
+        raw_value = os.environ.get(env_var)
+        if raw_value in (None, ""):
+            return None
+        try:
+            value = int(raw_value)
+        except ValueError:
+            logger.warning(f"⚠️  Invalid {label} {raw_value!r}; ignoring")
+            return None
+        if value <= 0:
+            logger.warning(f"⚠️  Invalid {label} {raw_value!r}; ignoring")
+            return None
+        return value
 
     def infer_training_frame_count(self) -> int:
         """Return the converted dataset frame count when transforms.json is available."""

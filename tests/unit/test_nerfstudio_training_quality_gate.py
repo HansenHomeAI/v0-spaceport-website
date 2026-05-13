@@ -222,6 +222,50 @@ class NerfstudioTrainingQualityGateTest(unittest.TestCase):
             self.assertEqual(cmd[split_index], "0.75")
             self.assertEqual(cmd[eval_mode_index], "fraction")
 
+    def test_training_exposes_datamanager_thread_and_downscale_knobs(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config = root / "container_config.yaml"
+            config.write_text("training:\n  max_iterations: 10\n", encoding="utf-8")
+            with mock.patch.dict(
+                os.environ,
+                {
+                    "SM_MODEL_DIR": str(root / "model"),
+                    "SM_CHANNEL_TRAINING": str(root / "input"),
+                    "NS_MAX_THREAD_WORKERS": "1",
+                    "NS_DOWNSCALE_FACTOR": "8",
+                },
+                clear=False,
+            ):
+                trainer = self.training.NerfStudioTrainer(str(config))
+            trainer.config = {
+                "model": {"variant": "splatfacto", "sh_degree": 3, "bilateral_processing": False},
+                "training": {"max_iterations": 10, "log_interval": 5},
+            }
+
+            captured = {}
+
+            def fake_run_logged_command(cmd, *, timeout_seconds, log_prefix, tail_limit=120):
+                captured["cmd"] = cmd
+                return 0, ["done"], False
+
+            with mock.patch.dict(
+                os.environ,
+                {"NS_MAX_THREAD_WORKERS": "1", "NS_DOWNSCALE_FACTOR": "8"},
+                clear=False,
+            ):
+                with mock.patch.object(self.training, "run_logged_command", side_effect=fake_run_logged_command):
+                    self.assertTrue(trainer.run_nerfstudio_training())
+
+            cmd = captured["cmd"]
+            parser_index = cmd.index("nerfstudio-data")
+            thread_index = cmd.index("--pipeline.datamanager.max-thread-workers") + 1
+            downscale_index = cmd.index("--downscale-factor") + 1
+            self.assertEqual(cmd[thread_index], "1")
+            self.assertEqual(cmd[downscale_index], "8")
+            self.assertLess(thread_index, parser_index)
+            self.assertGreater(downscale_index, parser_index)
+
     def test_training_split_fraction_env_override_is_clamped(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
