@@ -1,6 +1,6 @@
 # MD1 Baseline E2E State
 
-updated: 2026-05-13T11:57:30-06:00
+updated: 2026-05-13T12:00:45-06:00
 branch: agent-113647-md1-baseline-e2e
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -53,6 +53,10 @@ Produce a development-based MD1 baseline with:
   - payload: `logs/md1-baseline-e2e/md1-baseline-e2e-20260513115645-payload.json`
   - start proof: `logs/md1-baseline-e2e/md1-baseline-e2e-20260513115645-start.json`
   - current stage at launch verification: `WaitForSfM`; SageMaker processing job `md1-baseline-e2e-20260513115645-sfm` is `InProgress` on `ml.g4dn.xlarge`.
+- Public branch preview is live:
+  - alias: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/md1-viewer`
+  - hash: `https://830ad77b.v0-spaceport-website-preview2.pages.dev/md1-viewer`
+  - public Playwright smoke passed against the alias; desktop first frame `90.4ms`, mobile first frame `130.3ms`, LOD levels `4`, chunk files `44`.
 
 ## Gated Execution Plan
 
