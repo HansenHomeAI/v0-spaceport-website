@@ -866,6 +866,24 @@ def has_visual_qa_plan(strategy: Mapping[str, Any] | None) -> bool:
     return isinstance(plan, Mapping) and bool(plan)
 
 
+def has_early_visual_smoke_plan(strategy: Mapping[str, Any] | None) -> bool:
+    if not isinstance(strategy, Mapping):
+        return False
+    plan = strategy.get("early_visual_smoke_plan")
+    if not isinstance(plan, Mapping):
+        plan = strategy.get("early_checkpoint_visual_qa_plan")
+    if not isinstance(plan, Mapping) or not plan:
+        return False
+    checkpoint_steps = plan.get("checkpoint_steps")
+    frozen_cameras = plan.get("frozen_cameras") or plan.get("sentinel_cameras")
+    abort_on_failure = plan.get("abort_on_failure") is True
+    if not isinstance(checkpoint_steps, list) or not checkpoint_steps:
+        return False
+    if not isinstance(frozen_cameras, list) or not frozen_cameras:
+        return False
+    return abort_on_failure
+
+
 def has_horizon_blocker(blockers: Sequence[str]) -> bool:
     return any(str(reason).startswith("horizon_") for reason in blockers)
 
@@ -1007,6 +1025,8 @@ def evaluate_candidate_objective(
         and not any(hardcap_quality_repair_knobs.values())
     ):
         block_reasons.append("objective_missing_hard_output_cap_quality_repair_implementation")
+    if has_hardcap_visual_quality_failed(failed_hypotheses) and not has_early_visual_smoke_plan(candidate_objective):
+        block_reasons.append("objective_missing_early_visual_smoke_abort_plan_after_hardcap_visual_failure")
     loss_weighting_knobs = implemented_loss_weighting_knobs(candidate_objective)
     if has_loss_weighting_change(changes) and not any(loss_weighting_knobs.values()):
         block_reasons.append("objective_missing_loss_weighting_implementation")
@@ -1084,6 +1104,7 @@ def evaluate_candidate_objective(
         "max_estimated_usd": max_estimated_usd or None,
         "submitted_jobs": submitted_jobs,
         "no_full_14tile_training": no_full_14tile_training_confirmed(candidate_objective),
+        "early_visual_smoke_plan_present": has_early_visual_smoke_plan(candidate_objective),
     }
 
 
@@ -1152,6 +1173,7 @@ def plan_boundary_objective_strategy(
                 "density-controlled visual-fidelity tile_10 retry without a stronger cap/split/culling change after the latest over-dense leaf rejection",
                 "incremental tile_10 split/culling density retry without an exported-output hard cap at or below the post-leaf hard max",
                 "hard-output-cap visual-fidelity retry without a new color, exposure, geometry, or perceptual repair after AI visual QA blocks",
+                "long leaf proofs after visual QA failure unless a cheap early visual-smoke abort plan is present",
                 "full 14-tile training before staged R0/R1/R2/R3 gates",
             ],
             "expected_metric_axes": required_axes,

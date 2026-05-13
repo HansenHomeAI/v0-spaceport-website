@@ -332,6 +332,12 @@ def hard_output_cap_visual_candidate() -> dict:
     }
     candidate["visual_qa_plan"] = {"required": True}
     candidate["v18_non_regression_plan"] = {"required": True}
+    candidate["early_visual_smoke_plan"] = {
+        "required": True,
+        "checkpoint_steps": [1000, 2000],
+        "frozen_cameras": ["DJI_0067.JPG", "DJI_0073.JPG", "DJI_0262.JPG"],
+        "abort_on_failure": True,
+    }
     return candidate
 
 
@@ -1283,21 +1289,25 @@ class PlanMd1BoundaryObjectiveStrategyTests(unittest.TestCase):
         self.assertIn("ai_visual_color_shift_defect", report["current_quality_blockers"])
 
     def test_blocks_repeating_hard_output_cap_visual_fidelity_without_new_quality_repair(self):
+        candidate = hard_output_cap_visual_candidate()
+        candidate.pop("early_visual_smoke_plan")
         report = planner.plan_boundary_objective_strategy(
             quality_strategy=quality_strategy(),
             responsible_tiles=responsible_tiles(),
             attribution=hard_output_cap_visual_fidelity_quality_regression_attribution(),
-            candidate_objective=hard_output_cap_visual_candidate(),
+            candidate_objective=candidate,
             max_estimated_usd=2.0,
         )
 
         reasons = report["candidate_objective_gate"]["block_reasons"]
         self.assertIn("objective_repeats_failed_hard_output_cap_visual_fidelity_without_new_quality_repair", reasons)
+        self.assertIn("objective_missing_early_visual_smoke_abort_plan_after_hardcap_visual_failure", reasons)
         self.assertFalse(report["paid_retry_allowed"])
 
     def test_blocks_named_hard_output_cap_quality_repair_without_implementation(self):
         candidate = hard_output_cap_visual_candidate()
         candidate["objective_changes"].append("color_calibration")
+        candidate.pop("early_visual_smoke_plan")
 
         report = planner.plan_boundary_objective_strategy(
             quality_strategy=quality_strategy(),
@@ -1309,6 +1319,26 @@ class PlanMd1BoundaryObjectiveStrategyTests(unittest.TestCase):
 
         reasons = report["candidate_objective_gate"]["block_reasons"]
         self.assertIn("objective_missing_hard_output_cap_quality_repair_implementation", reasons)
+        self.assertIn("objective_missing_early_visual_smoke_abort_plan_after_hardcap_visual_failure", reasons)
+        self.assertFalse(report["paid_retry_allowed"])
+
+    def test_blocks_hard_output_cap_followup_without_early_visual_smoke_abort_plan(self):
+        candidate = hard_output_cap_visual_candidate()
+        candidate["objective_changes"].append("color_calibration")
+        candidate["objective_implementation"]["environment"]["FLOATER_PRUNING_MAX_COLOR_DISTANCE"] = "0.18"
+        candidate["objective_implementation"]["training_config"]["floater_pruning_max_color_distance"] = 0.18
+        candidate.pop("early_visual_smoke_plan")
+
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=hard_output_cap_visual_fidelity_quality_regression_attribution(),
+            candidate_objective=candidate,
+            max_estimated_usd=2.0,
+        )
+
+        reasons = report["candidate_objective_gate"]["block_reasons"]
+        self.assertIn("objective_missing_early_visual_smoke_abort_plan_after_hardcap_visual_failure", reasons)
         self.assertFalse(report["paid_retry_allowed"])
 
     def test_allows_hard_output_cap_followup_with_new_color_calibration_repair(self):
@@ -1329,6 +1359,7 @@ class PlanMd1BoundaryObjectiveStrategyTests(unittest.TestCase):
         self.assertEqual(gate["decision"], "paid_retry_allowed")
         self.assertEqual(gate["block_reasons"], [])
         self.assertEqual(gate["hardcap_quality_repair_implementation"]["environment"]["FLOATER_PRUNING_MAX_COLOR_DISTANCE"], "0.18")
+        self.assertTrue(gate["early_visual_smoke_plan_present"])
 
 
 if __name__ == "__main__":
