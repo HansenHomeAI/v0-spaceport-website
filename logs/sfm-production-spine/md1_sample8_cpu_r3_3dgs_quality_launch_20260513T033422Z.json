@@ -1,0 +1,17 @@
+{
+  "job_name": "md1-sample8-cpu-r3-1778643262",
+  "stamp": "20260513T033422Z",
+  "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap",
+  "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample8-cpu-r3-quality-20260513T033422Z/",
+  "code_head": "2048557893c8945a0b58abe6554b4dc0f4bea926",
+  "ecr_digest": "sha256:ab40eb8567affb24d02b800038f1061ec59c38338cd6a3fb8227a2ebf9dbe32a",
+  "previous_digest": "sha256:aee4976941af8ad3e031f3a79e498a7352e76913905bc962ef27ef131b5a76c9",
+  "github_trigger_ml_container_build_run": 25775709237,
+  "github_cdk_deploy_run": 25775709231,
+  "codebuild_id": "spaceport-ml-containers:5f1f5201-ddc5-4f80-bfd7-0a58743e6784",
+  "config": "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_config_20260513T033422Z.json",
+  "purpose": "cheap sample8 CPU-cache NerfStudio heldout quality canary after tiny heldout split patch",
+  "max_iterations": 10,
+  "max_runtime_sec": 2400,
+  "ns_train_split_fraction": 0.75
+}

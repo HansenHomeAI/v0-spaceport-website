@@ -1,0 +1,89 @@
+{
+  "TrainingJobName": "md1-sample8-cpu-r3-1778643262",
+  "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+  "AlgorithmSpecification": {
+    "TrainingImage": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent73948216sfmproductionspine",
+    "TrainingInputMode": "File"
+  },
+  "InputDataConfig": [
+    {
+      "ChannelName": "training",
+      "DataSource": {
+        "S3DataSource": {
+          "S3DataType": "S3Prefix",
+          "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap",
+          "S3DataDistributionType": "FullyReplicated"
+        }
+      }
+    }
+  ],
+  "OutputDataConfig": {
+    "S3OutputPath": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample8-cpu-r3-quality-20260513T033422Z/"
+  },
+  "ResourceConfig": {
+    "InstanceType": "ml.g5.2xlarge",
+    "InstanceCount": 1,
+    "VolumeSizeInGB": 60
+  },
+  "StoppingCondition": {
+    "MaxRuntimeInSeconds": 2400
+  },
+  "Environment": {
+    "AWS_DEFAULT_REGION": "us-west-2",
+    "PYTHONUNBUFFERED": "1",
+    "SAGEMAKER_PROGRAM": "train.py",
+    "TORCH_CUDA_ARCH_LIST": "8.0 8.6",
+    "CUDA_HOME": "/usr/local/cuda",
+    "LD_LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+    "LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+    "MAX_ITERATIONS": "10",
+    "TARGET_PSNR": "10.0",
+    "LOG_INTERVAL": "5",
+    "MODEL_VARIANT": "splatfacto",
+    "SH_DEGREE": "3",
+    "BILATERAL_PROCESSING": "true",
+    "RUN_HELDOUT_EVAL": "true",
+    "QUALITY_EVAL_REQUIRED": "true",
+    "NS_EVAL_TIMEOUT_SEC": "1200",
+    "NS_CACHE_IMAGES": "cpu",
+    "FRAMEWORK": "nerfstudio",
+    "METHODOLOGY": "vincent_woo_sutro_tower",
+    "LICENSE": "apache_2_0",
+    "COMMERCIAL_LICENSE": "true",
+    "OUTPUT_FORMAT": "ply",
+    "SOGS_COMPATIBLE": "true",
+    "MAX_NUM_GAUSSIANS": "250000",
+    "MEMORY_OPTIMIZATION": "true",
+    "VALIDATION_RUN": "md1-sample8-cpu-r3-quality-contract",
+    "CODE_HEAD": "2048557893c8945a0b58abe6554b4dc0f4bea926",
+    "ECR_DIGEST": "sha256:ab40eb8567affb24d02b800038f1061ec59c38338cd6a3fb8227a2ebf9dbe32a",
+    "NS_TRAIN_SPLIT_FRACTION": "0.75",
+    "RELAUNCH_REASON": "tiny-heldout-split-patch-after-empty-eval-failure"
+  },
+  "Tags": [
+    {
+      "Key": "Project",
+      "Value": "Spaceport"
+    },
+    {
+      "Key": "Component",
+      "Value": "3DGS"
+    },
+    {
+      "Key": "Environment",
+      "Value": "agent73948216sfmproductionspine"
+    },
+    {
+      "Key": "Validation",
+      "Value": "md1-sample8-cpu-r3-quality-contract"
+    },
+    {
+      "Key": "CodeHead",
+      "Value": "2048557893c8945a0b58abe6554b4dc0f4bea926"
+    },
+    {
+      "Key": "EcrDigest",
+      "Value": "ab40eb8567affb24d02b800038f1061ec59c38338cd6a3fb8227a2ebf9dbe32a"
+    }
+  ]
+}

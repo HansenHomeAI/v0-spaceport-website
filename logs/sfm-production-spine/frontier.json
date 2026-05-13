@@ -1,12 +1,12 @@
 {
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "bf279d3d7a88a029cabc42ca547cd9b9822521b4",
-  "updated": "2026-05-13T03:04:14Z",
-  "current_rung": "TINY_CANARY_HELDOUT_SPLIT_PATCH_READY_TO_PUSH",
+  "head": "2048557893c8945a0b58abe6554b4dc0f4bea926",
+  "updated": "2026-05-13T04:04:50Z",
+  "current_rung": "TINY_CANARY_PARSER_CLI_PATCH_READY",
   "current_goal": "Production-ready huge-scene tiled SfM: same-MD1 quality, meaningfully faster, restartable, distributed, promotion-safe, and backed by sparse, viewer, render, and AI visual proof.",
   "active_jobs": [],
   "blockers": [],
-  "last_command": "sample8 r2 trained but ns-eval failed with empty eval image set; patched train split for tiny canaries and verified local tests before push/build/relaunch.",
+  "last_command": "sample8 r3 failed fast on NerfStudio parser CLI ordering; patched command order and 25 focused tests pass",
   "last_metrics": {
     "canonical_md1_artifact": {
       "job": "r4exact739s1-1777612249",
@@ -349,6 +349,94 @@
       "behavior": "tiny converted datasets <=20 frames use train_split_fraction 0.75 so ns-eval has heldout images; env override is clamped 0.1..0.95",
       "verification": "python3 -m py_compile plus 25 focused unit tests passed",
       "next_step": "commit/push, rebuild 3dgs image, relaunch sample8"
+    },
+    "tiny_canary_heldout_split_build_20260513T0310Z": {
+      "head": "2048557893c8945a0b58abe6554b4dc0f4bea926",
+      "github_trigger_ml_container_build_run": 25775709237,
+      "github_cdk_deploy_run": 25775709231,
+      "codebuild_id": "spaceport-ml-containers:5f1f5201-ddc5-4f80-bfd7-0a58743e6784",
+      "previous_ecr_digest": "sha256:aee4976941af8ad3e031f3a79e498a7352e76913905bc962ef27ef131b5a76c9",
+      "next_step": "wait build, verify digest change, relaunch sample8"
+    },
+    "tiny_canary_heldout_split_build_20260513T0317Z": {
+      "head": "2048557893c8945a0b58abe6554b4dc0f4bea926",
+      "github_trigger_ml_container_build_run": 25775709237,
+      "github_trigger_ml_container_build_status": "success",
+      "github_cdk_deploy_run": 25775709231,
+      "github_cdk_deploy_status": "success",
+      "codebuild_id": "spaceport-ml-containers:5f1f5201-ddc5-4f80-bfd7-0a58743e6784",
+      "codebuild_status": "SUCCEEDED",
+      "previous_ecr_digest": "sha256:aee4976941af8ad3e031f3a79e498a7352e76913905bc962ef27ef131b5a76c9",
+      "new_ecr_digest": "sha256:ab40eb8567affb24d02b800038f1061ec59c38338cd6a3fb8227a2ebf9dbe32a",
+      "digest_changed": true,
+      "artifacts": [
+        "logs/sfm-production-spine/github-container-25775709237-terminal.json",
+        "logs/sfm-production-spine/github-cdk-25775709231-terminal.json",
+        "logs/sfm-production-spine/codebuild-5f1f5201-terminal.json",
+        "logs/sfm-production-spine/ecr-3dgs-agent73948216-digest-20260513T0317Z.json"
+      ]
+    },
+    "sample8_cpu_r3_heldout_canary_20260513T033422Z": {
+      "name": "md1-sample8-cpu-r3-1778643262",
+      "type": "sagemaker_training",
+      "status": "InProgress",
+      "secondary_status": "Downloading",
+      "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample8-cpu-r3-quality-20260513T033422Z/",
+      "training_image": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent73948216sfmproductionspine",
+      "branch_head": "2048557893c8945a0b58abe6554b4dc0f4bea926",
+      "ecr_digest": "sha256:ab40eb8567affb24d02b800038f1061ec59c38338cd6a3fb8227a2ebf9dbe32a",
+      "previous_digest": "sha256:aee4976941af8ad3e031f3a79e498a7352e76913905bc962ef27ef131b5a76c9",
+      "ecr_digest_changed": true,
+      "github_trigger_ml_container_build_run": 25775709237,
+      "github_cdk_deploy_run": 25775709231,
+      "codebuild_id": "spaceport-ml-containers:5f1f5201-ddc5-4f80-bfd7-0a58743e6784",
+      "codebuild_status": "SUCCEEDED",
+      "max_iterations": 10,
+      "max_runtime_sec": 2400,
+      "cache_images": "cpu",
+      "ns_train_split_fraction": 0.75,
+      "run_heldout_eval": true,
+      "quality_eval_required": true,
+      "config": "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_config_20260513T033422Z.json",
+      "launch": "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_launch_20260513T033422Z.json",
+      "create_response": "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_create_20260513T033422Z.json",
+      "launch_describe": "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_describe_initial_20260513T033422Z.json",
+      "s3_listing": "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_s3_initial_20260513T033422Z.txt",
+      "next_step": "monitor to terminal; extract and verify quality_eval artifacts if completed",
+      "last_poll": "2026-05-13T03:38:29Z",
+      "poll_describe": "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_describe_poll1_20260513T033422Z.json",
+      "poll_logstreams": "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_logstreams_poll1_20260513T033422Z.json",
+      "poll_s3_listing": "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_s3_poll1_20260513T033422Z.txt"
+    },
+    "sample8_cpu_r3_parser_cli_failure_20260513T0401Z": {
+      "name": "md1-sample8-cpu-r3-1778643262",
+      "type": "sagemaker_training",
+      "status": "Failed",
+      "secondary_status": "Failed",
+      "failure_reason": "AlgorithmError exit code 1; ns-train rejected dataparser split flags before the required nerfstudio-data subcommand",
+      "billable_time_seconds": 266,
+      "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample8-cpu-r3-quality-20260513T033422Z/",
+      "branch_head": "2048557893c8945a0b58abe6554b4dc0f4bea926",
+      "ecr_digest": "sha256:ab40eb8567affb24d02b800038f1061ec59c38338cd6a3fb8227a2ebf9dbe32a",
+      "terminal_describe": "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_describe_poll2_20260513T0401Z.json",
+      "terminal_logstreams": "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_logstreams_poll2_20260513T0401Z.json",
+      "terminal_cloudwatch": "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_cloudwatch_tail_20260513T0401Z.json",
+      "terminal_s3_listing": "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_s3_poll2_20260513T0401Z.txt",
+      "model_artifacts_claim": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample8-cpu-r3-quality-20260513T033422Z/md1-sample8-cpu-r3-1778643262/output/model.tar.gz",
+      "model_artifacts_present": false,
+      "fix": "move NerfStudio split flags after the nerfstudio-data parser subcommand as --eval-mode fraction --train-split-fraction 0.75"
+    },
+    "nerfstudio_parser_cli_order_patch_20260513T0404Z": {
+      "files": [
+        "infrastructure/containers/3dgs/train_nerfstudio_production.py",
+        "tests/unit/test_nerfstudio_training_quality_gate.py"
+      ],
+      "behavior": "ns-train now appends nerfstudio-data --eval-mode fraction --train-split-fraction <value> after method/model args; tiny canaries still use 0.75 split",
+      "root_cause": "AlgorithmError exit code 1; ns-train rejected dataparser split flags before the required nerfstudio-data subcommand",
+      "verification": "python3 -m py_compile plus 25 focused unit tests passed",
+      "next_step": "commit/push, rebuild 3dgs image, verify new ECR digest, then relaunch sample8 once using the fixed parser CLI order"
     }
   },
   "latest_artifacts": [
@@ -406,7 +494,26 @@
     "logs/sfm-production-spine/md1_sample40_3dgs_quality_s3_terminal_20260512T215709Z.txt",
     "logs/sfm-production-spine/md1_sample8_3dgs_quality_describe_20260512T220631Z.json",
     "logs/sfm-production-spine/md1_sample8_3dgs_quality_cloudwatch_20260512T220631Z.json",
-    "logs/sfm-production-spine/md1_sample8_3dgs_quality_s3_terminal_20260512T220631Z.txt"
+    "logs/sfm-production-spine/md1_sample8_3dgs_quality_s3_terminal_20260512T220631Z.txt",
+    "logs/sfm-production-spine/github-container-25775709237-terminal.json",
+    "logs/sfm-production-spine/github-cdk-25775709231-terminal.json",
+    "logs/sfm-production-spine/codebuild-5f1f5201-terminal.json",
+    "logs/sfm-production-spine/ecr-3dgs-agent73948216-digest-20260513T0317Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_config_20260513T033422Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_launch_20260513T033422Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_create_20260513T033422Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_describe_initial_20260513T033422Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_s3_initial_20260513T033422Z.txt",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample8-cpu-r3-quality-20260513T033422Z/",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_describe_poll1_20260513T033422Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_logstreams_poll1_20260513T033422Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_s3_poll1_20260513T033422Z.txt",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_describe_poll2_20260513T0401Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_logstreams_poll2_20260513T0401Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_cloudwatch_tail_20260513T0401Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_s3_poll2_20260513T0401Z.txt",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_s3_output_20260513T0401Z.txt",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_model_artifact_ls_20260513T0401Z.txt"
   ],
   "project_level_caveats": [
     "full 8-leaf multi-instance MD1 fanout plus reducer has not been run on the production reducer path",
@@ -414,7 +521,7 @@
     "AI visual defect review has not been run on source/render/diff proof panels from a real splat artifact",
     "filtered point count is 6.88% below the mature baseline even though raw points and registration pass"
   ],
-  "next_unblocked_step": "Monitor md1-2leaf-3dgs-cpu-2114-1778620443 to terminal state; if it succeeds, extract model.tar.gz, verify quality_eval/splat_heldout_render_metrics.json and render panels, then run AI visual review before any full 8-leaf MD1 rerun.",
+  "next_unblocked_step": "Commit/push parser CLI order fix, wait exact-head 3dgs image build, verify digest change, then relaunch only cheap sample8 canary.",
   "owner_action_needed": "none",
   "automation": {
     "id": "sfm-reality-check",
@@ -425,24 +532,19 @@
   "active_workflows": [
     {
       "workflow": "Trigger ML Container Build",
-      "run_id": 25767307091,
-      "head": "bf279d3d7a88a029cabc42ca547cd9b9822521b4",
-      "status": "in_progress"
+      "run_id": 25775709237,
+      "head": "2048557893c8945a0b58abe6554b4dc0f4bea926",
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "workflow": "CDK Deploy",
-      "run_id": 25767307088,
-      "head": "bf279d3d7a88a029cabc42ca547cd9b9822521b4",
-      "status": "in_progress"
+      "run_id": 25775709231,
+      "head": "2048557893c8945a0b58abe6554b4dc0f4bea926",
+      "status": "completed",
+      "conclusion": "success"
     }
   ],
-  "capacity_wait": {
-    "blocking_build_id": "spaceport-ml-containers:1cf1c51c-5bcf-4977-b46d-e76bb9a7b04b",
-    "blocking_branch_suffix": "agent90742618md1geometryconsistency",
-    "our_container_workflow_run_id": 25767307091,
-    "our_cdk_workflow_run_id": 25767307088,
-    "current_ecr_digest": "sha256:3334ae160fe078a08eee59274e6fbd755e36ea809ce0e6a2ece0d615abb41615"
-  },
   "proof_artifacts": [
     "logs/sfm-production-spine/github-container-25767307091-terminal.json",
     "logs/sfm-production-spine/github-cdk-25767307088-terminal.json",
@@ -454,6 +556,27 @@
     "logs/sfm-production-spine/md1_sample8_cpu_3dgs_quality_describe_poll1_20260513T003200Z.json",
     "logs/sfm-production-spine/md1_sample8_cpu_3dgs_quality_logstreams_poll1_20260513T003200Z.json",
     "logs/sfm-production-spine/md1_sample8_cpu_3dgs_quality_s3_poll1_20260513T003200Z.txt",
-    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample8-cpu-quality-20260513T003200Z/"
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample8-cpu-quality-20260513T003200Z/",
+    "logs/sfm-production-spine/github-container-25775709237-terminal.json",
+    "logs/sfm-production-spine/github-cdk-25775709231-terminal.json",
+    "logs/sfm-production-spine/codebuild-5f1f5201-terminal.json",
+    "logs/sfm-production-spine/ecr-3dgs-agent73948216-digest-20260513T0317Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_config_20260513T033422Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_launch_20260513T033422Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_create_20260513T033422Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_describe_initial_20260513T033422Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_s3_initial_20260513T033422Z.txt",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample8-cpu-r3-quality-20260513T033422Z/",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_describe_poll1_20260513T033422Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_logstreams_poll1_20260513T033422Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_s3_poll1_20260513T033422Z.txt",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_describe_poll2_20260513T0401Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_logstreams_poll2_20260513T0401Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_cloudwatch_tail_20260513T0401Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_s3_poll2_20260513T0401Z.txt",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_s3_output_20260513T0401Z.txt",
+    "logs/sfm-production-spine/md1_sample8_cpu_r3_3dgs_quality_model_artifact_ls_20260513T0401Z.txt",
+    "infrastructure/containers/3dgs/train_nerfstudio_production.py",
+    "tests/unit/test_nerfstudio_training_quality_gate.py"
   ]
 }

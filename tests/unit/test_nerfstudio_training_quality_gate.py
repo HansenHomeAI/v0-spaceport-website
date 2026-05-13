@@ -213,8 +213,12 @@ class NerfstudioTrainingQualityGateTest(unittest.TestCase):
                 self.assertTrue(trainer.run_nerfstudio_training())
 
             cmd = captured["cmd"]
-            split_index = cmd.index("--pipeline.datamanager.dataparser.train-split-fraction") + 1
-            eval_mode_index = cmd.index("--pipeline.datamanager.dataparser.eval-mode") + 1
+            parser_index = cmd.index("nerfstudio-data")
+            split_index = cmd.index("--train-split-fraction") + 1
+            eval_mode_index = cmd.index("--eval-mode") + 1
+            self.assertGreater(parser_index, cmd.index("--pipeline.model.max-gauss-ratio"))
+            self.assertGreater(split_index, parser_index)
+            self.assertGreater(eval_mode_index, parser_index)
             self.assertEqual(cmd[split_index], "0.75")
             self.assertEqual(cmd[eval_mode_index], "fraction")
 

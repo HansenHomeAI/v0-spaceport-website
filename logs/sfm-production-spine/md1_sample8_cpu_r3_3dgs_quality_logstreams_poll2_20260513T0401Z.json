@@ -1,0 +1,14 @@
+{
+    "logStreams": [
+        {
+            "logStreamName": "md1-sample8-cpu-r3-1778643262/algo-1-1778643349",
+            "creationTime": 1778643603987,
+            "firstEventTimestamp": 1778643597770,
+            "lastEventTimestamp": 1778643600777,
+            "lastIngestionTime": 1778643604035,
+            "uploadSequenceToken": "49039859671931316474569674668333433007553896156908969811",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/TrainingJobs:log-stream:md1-sample8-cpu-r3-1778643262/algo-1-1778643349",
+            "storedBytes": 0
+        }
+    ]
+}
