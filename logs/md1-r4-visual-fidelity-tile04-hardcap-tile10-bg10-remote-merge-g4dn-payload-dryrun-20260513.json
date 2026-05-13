@@ -32,7 +32,7 @@
         "LocalPath": "/opt/ml/processing/input/tile-selection",
         "S3DataType": "S3Prefix",
         "S3InputMode": "File",
-        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4visualpair-20260513-1778656480/3dgs/inputs/tile-selection"
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-g4dn-20260513/inputs/tile-selection"
       }
     },
     {

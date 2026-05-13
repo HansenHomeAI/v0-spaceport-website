@@ -120,6 +120,24 @@ def has_required_viewer_smoke_plan(plan: dict[str, Any]) -> bool:
     )
 
 
+def materialized_inputs(plan: dict[str, Any]) -> dict[str, Any]:
+    value = plan.get("input_materialization")
+    return value if isinstance(value, dict) else {}
+
+
+def has_required_materialized_inputs(plan: dict[str, Any]) -> bool:
+    materialized = materialized_inputs(plan)
+    return all(
+        [
+            materialized.get("required") is True,
+            materialized.get("merge_plan_uploaded") is True,
+            materialized.get("tile_manifest_available") is True,
+            materialized.get("view_buckets_available") is True,
+            materialized.get("artifact_inputs_available") is True,
+        ]
+    )
+
+
 def has_required_v18_review_plan(plan: dict[str, Any], max_review_estimated_usd: float, max_review_runtime_seconds: int) -> bool:
     review = nested_dict(plan, "review_plan")
     estimated = numeric_value(review, "max_estimated_usd")
@@ -212,6 +230,8 @@ def evaluate_gate(
         block_reasons.append("visual_qa_plan_missing")
     if not has_required_viewer_smoke_plan(readiness_plan):
         block_reasons.append("viewer_smoke_plan_missing")
+    if not has_required_materialized_inputs(readiness_plan):
+        block_reasons.append("merge_inputs_not_materialized")
 
     return {
         "checked_at": datetime.now(timezone.utc).isoformat(),
@@ -228,6 +248,7 @@ def evaluate_gate(
         "merge_review_gate_decision": merge_review_gate.get("decision"),
         "payload_input_names": payload_input_names(payload),
         "payload_max_runtime_seconds": runtime,
+        "input_materialization": materialized_inputs(readiness_plan),
         "max_merge_estimated_usd": max_merge_estimated_usd,
         "max_merge_runtime_seconds": max_merge_runtime_seconds,
         "max_review_estimated_usd": max_review_estimated_usd,

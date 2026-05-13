@@ -77,6 +77,13 @@ def readiness_plan() -> dict:
             "no_local_model_weight_bloat": True,
             "checks": ["nonblank_canvas", "camera_navigation", "serious_console_errors"],
         },
+        "input_materialization": {
+            "required": True,
+            "merge_plan_uploaded": True,
+            "tile_manifest_available": True,
+            "view_buckets_available": True,
+            "artifact_inputs_available": True,
+        },
     }
 
 
@@ -138,6 +145,14 @@ class EnforceMd1MergeReviewSubmitReadinessTests(unittest.TestCase):
 
         self.assertEqual(summary["decision"], "merge_review_submit_blocked")
         self.assertIn("payload_runtime_above_cap", summary["block_reasons"])
+
+    def test_blocks_missing_materialized_inputs(self):
+        plan = readiness_plan()
+        plan["input_materialization"]["tile_manifest_available"] = False
+        summary = allowed_summary(readiness_plan=plan)
+
+        self.assertEqual(summary["decision"], "merge_review_submit_blocked")
+        self.assertIn("merge_inputs_not_materialized", summary["block_reasons"])
 
 
 if __name__ == "__main__":
