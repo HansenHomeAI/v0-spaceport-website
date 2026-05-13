@@ -1,0 +1,29 @@
+{
+  "checked_at": "2026-05-13T05:09:34.882540+00:00",
+  "preflight_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-quality-preserving-soft-density-20260513/tiles/tile_04/md1-r4t04soft-20260513-1778644232-tile-04/output/model.tar.gz",
+  "preflight_job_name": "md1-r4t04soft-20260513-1778644232-tile-04",
+  "tile_id": "tile_04",
+  "expected_tile_id": "tile_04",
+  "decision": "merge_review_allowed",
+  "block_reasons": [],
+  "warnings": [],
+  "leaf_preflight_decision": "leaf_preflight_passed_cache_candidate",
+  "expected_leaf_preflight_decision": "leaf_preflight_passed_cache_candidate",
+  "splat_vertex_count": 1115152,
+  "hard_max_splat_count": 1290973,
+  "hard_min_splat_count": 765021,
+  "splat_reference_guard": {
+    "enabled": true,
+    "status": "ok",
+    "reference_splat_count": 956277,
+    "max_reference_splat_ratio": 1.35,
+    "min_reference_splat_ratio": 0.8,
+    "splat_vertex_count": 1115152,
+    "observed_reference_ratio": 1.166139099863324,
+    "block_reason": null
+  },
+  "selected_image_count": 188,
+  "expected_selected_image_count": 188,
+  "filtered_scaffold_required": true,
+  "filtered_scaffold_ok": true
+}

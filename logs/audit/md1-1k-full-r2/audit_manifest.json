@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "8ce0b3bf2f0db750abc94503e761698b89baba61",
-  "current_exact_head_gate_status": "exact-head c27fbe995784c4a37b7f3649c270de243bfffc88 green on CDK Deploy 25766801621 and ML Container Build 25766801616 before bounded V18 retry2",
-  "current_live_compute_status": "No SageMaker training jobs or processing jobs are InProgress after retry2; review job completed and failed quality gates.",
-  "current_rung": "R4_quality_preserving_soft_density_candidate_leaf_submit_ready",
+  "current_branch_head": "46e1a7970bdd7e5b5d3bdb0b45435aef73422ec0",
+  "current_exact_head_gate_status": "exact-head 46e1a7970bdd7e5b5d3bdb0b45435aef73422ec0 green on CDK Deploy 25776890292; no ML container build was triggered for evidence-only commit.",
+  "current_live_compute_status": "No MD1 SageMaker training or processing jobs were InProgress after soft-density leaf proof completed and untracked md1-sample8-cpu-r4-1778646749 was stopped.",
+  "current_rung": "R4_soft_density_tile04_leaf_passed_bg10_merge_dryrun_ready",
   "evidence_events": [
     {
       "billable_seconds": 412,
@@ -625,6 +625,29 @@
       "status": "failed_before_render_outputs",
       "timestamp": "2026-05-12T22:48:07.792556+00:00",
       "type": "bounded_paid_review_failure_then_no_spend_fix"
+    },
+    {
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-quality-preserving-soft-density-20260513/tiles/tile_04/md1-r4t04soft-20260513-1778644232-tile-04/output/model.tar.gz",
+      "billable_time_seconds": 4542,
+      "cdk_run_id": 25776890292,
+      "estimated_usd": 0.9286,
+      "event": "soft_density_tile04_leaf_passed_and_bg10_merge_dryrun_ready",
+      "full14_lod_promotion_launched": false,
+      "git_head": "46e1a7970bdd7e5b5d3bdb0b45435aef73422ec0",
+      "job_name": "md1-r4t04soft-20260513-1778644232-tile-04",
+      "leaf_gate_json": "logs/md1-cost-reduction-r4-quality-preserving-soft-density-20260513-tile_04-leaf-gate.json",
+      "merge_payload_json": "logs/md1-r4-quality-preserving-soft-density-leaf-tile10-rollback-bg10-remote-merge-g4dn-payload-dryrun-20260513.json",
+      "next_unblocked_step": "commit/push evidence, exact-head workflow green, fresh AWS idle, then at most one bounded no-training bg10 merge/preflight",
+      "timestamp": "2026-05-13T05:12:00Z"
+    },
+    {
+      "billable_time_seconds": 1956,
+      "describe_json": "logs/md1-sample8-cpu-r4-1778646749-stopped-describe-20260513.json",
+      "estimated_usd": 0.8231,
+      "event": "untracked_ineligible_training_job_stopped",
+      "job_name": "md1-sample8-cpu-r4-1778646749",
+      "reason": "not recorded in state/audit, older branch image tag, active on g5.2xlarge",
+      "timestamp": "2026-05-13T05:06:29Z"
     }
   ],
   "exact_head_gate_status": "exact-head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 green on CDK Deploy 25478133157; Deploy CDK Stacks and CDK Diff skipped by scope detection; no ML Container Build appeared for this non-container status commit; previous container-affecting head 6249a280443438790e5f9d11512fe6714c1a0728 remains green on CDK Deploy 25475213765, Trigger ML Container Build 25475213781, and CodeBuild spaceport-ml-containers:ae9b6cea-6c39-4bf8-a885-f0eb5336ee4a",
@@ -1000,7 +1023,7 @@
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
   "latest_boundary_responsible_tile_plan_status": "boundary primary tile_04/tile_10; horizon primary tile_04/tile_01; tile04 dryrun covers tile01/tile10 context support",
-  "latest_cost_control": "soft_density_candidate_leaf_submit_ready; no paid job launched in this step; next paid action limited to one tile_04 leaf-only g4dn/checkpointed proof after exact-head workflows and fresh AWS idle",
+  "latest_cost_control": "Full14/LOD/promotion remain blocked. Next eligible paid step is one bounded no-training g4dn bg10 merge/preflight after evidence commit is pushed, exact-head workflows are green, and AWS is idle.",
   "latest_evidence": {
     "merge_preflight_summary": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260512.json",
     "review_retry_cloudwatch_tail": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-cloudwatch-tail-20260512.txt",
@@ -1063,9 +1086,42 @@
   "latest_review_comparison_path": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-density-capped-loss-weighting-leaf-bg10-review-v18colmap-retry2-20260512/outputs/r4-t04dcap-bg10-v18colmap-smoke-p24-retry2/md1-r1-r4-t04dcap-bg10-v18colmap-smoke-p24-retry2-1778630491-qu/output/model.tar.gz::review_comparison.json",
   "latest_review_status": "Retry2 rendered the frozen p24 cameras, but V18 non-regression and AI visual QA are blocked; no promotion/viewer smoke/full14 is eligible.",
   "latest_sagemaker_evidence_spend_total_usd": 14.9046,
+  "latest_soft_density_leaf_proof": {
+    "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-quality-preserving-soft-density-20260513/tiles/tile_04/md1-r4t04soft-20260513-1778644232-tile-04/output/model.tar.gz",
+    "billable_time_seconds": 4542,
+    "checkpoint_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-quality-preserving-soft-density-20260513/checkpoints/md1-r4t04soft-20260513-1778644232-tile-04",
+    "decision": "merge_review_allowed",
+    "estimated_usd": 0.9286,
+    "instance_type": "ml.g4dn.xlarge",
+    "job_name": "md1-r4t04soft-20260513-1778644232-tile-04",
+    "leaf_gate_json": "logs/md1-cost-reduction-r4-quality-preserving-soft-density-20260513-tile_04-leaf-gate.json",
+    "observed_reference_ratio": 1.166139099863324,
+    "preflight_json": "logs/md1-cost-reduction-r4-quality-preserving-soft-density-20260513-tile_04-leaf-preflight.json",
+    "selected_image_count": 188,
+    "splat_vertex_count": 1115152
+  },
+  "latest_soft_density_merge_dryrun": {
+    "decision": "merge_review_allowed",
+    "fullscene_summary_json": "logs/md1-r4-quality-preserving-soft-density-leaf-tile10-rollback-fullscene-summary-dryrun-20260513.json",
+    "merge_plan_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-quality-preserving-soft-density-leaf-tile10-rollback-bg10-merge-g4dn-20260513/inputs/merge-plan/merge_plan.json",
+    "merge_review_gate_json": "logs/md1-r4-quality-preserving-soft-density-leaf-tile10-rollback-bg10-merge-review-gate-20260513.json",
+    "processing_job_name": "md1-r4t04soft-bg10-20260513",
+    "remote_merge_payload_json": "logs/md1-r4-quality-preserving-soft-density-leaf-tile10-rollback-bg10-remote-merge-g4dn-payload-dryrun-20260513.json",
+    "remote_merge_plan_json": "logs/md1-r4-quality-preserving-soft-density-leaf-tile10-rollback-bg10-remote-merge-g4dn-plan-dryrun-20260513.json",
+    "training_jobs_to_submit": 0
+  },
   "latest_tile04_leaf_reuse_merge_dryrun_status": "density-capped tile_04 leaf passed post-leaf preflight/gate with 984154 splats, 128 images, and filtered scaffold; no-training bg10 tile_10 rollback merge payload dry-run is generated and merge/review gate allows only that next step.",
   "latest_tracked_sagemaker_evidence_spend_before_untracked_stop_usd": 14.8046,
   "latest_training_cost_reduction_status": "Evidence spend now about $14.067. The over-dense tile_04 loss-weighting failure was fixed with a density-capped leaf that passed the splat guard at 1.029x reference in 2508 billable seconds/about $0.513. No full 14-tile training, paid merge/review, LOD packaging, or promotion launched; next step is bounded no-training merge/review plus V18/visual QA gates.",
+  "latest_untracked_compute_stop": {
+    "billable_time_seconds": 1956,
+    "describe_json": "logs/md1-sample8-cpu-r4-1778646749-stopped-describe-20260513.json",
+    "estimated_usd": 0.8231,
+    "image_tag": "agent73948216sfmproductionspine",
+    "instance_type": "ml.g5.2xlarge",
+    "job_name": "md1-sample8-cpu-r4-1778646749",
+    "reason": "unrecorded/ineligible active MD1 job found during heartbeat guard"
+  },
   "latest_untracked_sagemaker_stop_20260513": {
     "checked_at": "2026-05-13T00:37:08Z",
     "describe_json": "logs/md1-sample8-cpu-qc-1778632320-describe-20260513.json",

@@ -1,0 +1,65 @@
+{
+  "checked_at": "2026-05-13T05:11:29.640016+00:00",
+  "decision": "merge_review_allowed",
+  "block_reasons": [],
+  "required_tile_ids": [
+    "tile_04"
+  ],
+  "selected_tile_ids": [
+    "tile_00",
+    "tile_01",
+    "tile_02",
+    "tile_03",
+    "tile_04",
+    "tile_05",
+    "tile_06",
+    "tile_07",
+    "tile_08",
+    "tile_09",
+    "tile_10",
+    "tile_11",
+    "tile_12",
+    "tile_13"
+  ],
+  "required_context_tile_ids": [
+    "tile_10",
+    "tile_13",
+    "tile_01",
+    "tile_00",
+    "tile_02",
+    "tile_06"
+  ],
+  "context_support_tile_ids": [
+    "tile_10",
+    "tile_13",
+    "tile_01",
+    "tile_00",
+    "tile_02",
+    "tile_06"
+  ],
+  "required_targeted_blockers": [
+    "boundary_no_required_improvement",
+    "boundary_lpips_regression",
+    "horizon_psnr_regression",
+    "horizon_ssim_regression",
+    "horizon_lpips_regression"
+  ],
+  "targeted_quality_blockers": [
+    "boundary_no_required_improvement",
+    "boundary_lpips_regression",
+    "horizon_psnr_regression",
+    "horizon_ssim_regression",
+    "horizon_lpips_regression"
+  ],
+  "post_leaf_preflight_gate_tile_ids": [
+    "tile_04"
+  ],
+  "leaf_gate_summary_tile_ids": [
+    "tile_04"
+  ],
+  "passing_prior_or_current_leaf_tile_ids": [
+    "tile_04"
+  ],
+  "submitted_jobs": [],
+  "next_required_action": "merge/review may proceed"
+}
