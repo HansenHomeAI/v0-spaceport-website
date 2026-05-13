@@ -1,0 +1,4 @@
+2026-05-12 19:47:26       2935 manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample8-cpu-r2-quality-20260513T010227Z/md1-sample8-cpu-r2-1778634147/output/model.tar.gz
+
+Total Objects: 1
+   Total Size: 2935

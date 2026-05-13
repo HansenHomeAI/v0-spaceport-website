@@ -724,6 +724,7 @@ class NerfStudioTrainer:
                 cache_images,
             )
             cache_images = "cpu"
+        train_split_fraction = self.resolve_train_split_fraction(training_config)
         
         logger.info(f"🎯 Training Configuration (Vincent Woo's methodology):")
         logger.info(f"   Model: {model_variant}")
@@ -731,6 +732,7 @@ class NerfStudioTrainer:
         logger.info(f"   SH degree: {sh_degree} (16 coefficients)")
         logger.info(f"   Bilateral guided processing: {bilateral_processing}")
         logger.info(f"   Log interval: {log_interval}")
+        logger.info(f"   Train split fraction: {train_split_fraction}")
         logger.info(f"   Dataparser: transforms.json (via ns-process-data conversion)")
         
         # Build NerfStudio command with Vincent's exact parameters on converted transforms.json dataset
@@ -744,6 +746,8 @@ class NerfStudioTrainer:
             "--logging.steps_per_log", str(log_interval),
             "--vis", "tensorboard",
             "--pipeline.datamanager.cache-images", cache_images,
+            "--pipeline.datamanager.dataparser.eval-mode", "fraction",
+            "--pipeline.datamanager.dataparser.train-split-fraction", str(train_split_fraction),
         ]
         
         # Add bilateral guided processing (Vincent's exposure correction)
@@ -787,6 +791,39 @@ class NerfStudioTrainer:
         for line in tail[-20:]:
             logger.info(f"   {line}")
         return True
+
+    def infer_training_frame_count(self) -> int:
+        """Return the converted dataset frame count when transforms.json is available."""
+        transforms_file = self.input_dir / "transforms.json"
+        if not transforms_file.exists():
+            return 0
+        try:
+            with open(transforms_file, "r") as f:
+                transforms = json.load(f)
+            frames = transforms.get("frames", [])
+            return len(frames) if isinstance(frames, list) else 0
+        except Exception as exc:
+            logger.warning(f"⚠️  Could not infer frame count from {transforms_file}: {exc}")
+            return 0
+
+    def resolve_train_split_fraction(self, training_config: Dict[str, Any]) -> float:
+        """Choose a train split that leaves heldout images for tiny canary datasets."""
+        raw_value = os.environ.get("NS_TRAIN_SPLIT_FRACTION")
+        if raw_value is None:
+            raw_value = training_config.get("train_split_fraction")
+        if raw_value is not None:
+            try:
+                value = float(raw_value)
+            except (TypeError, ValueError):
+                logger.warning(f"⚠️  Invalid train split fraction {raw_value!r}; using automatic split")
+            else:
+                return min(max(value, 0.1), 0.95)
+
+        frame_count = self.infer_training_frame_count()
+        if 0 < frame_count <= 20:
+            # NerfStudio's default 0.9 split can round tiny samples into zero eval images.
+            return 0.75
+        return 0.9
 
     def find_latest_config_file(self) -> Optional[Path]:
         """Find the most recent NerfStudio training config."""

@@ -177,6 +177,64 @@ class NerfstudioTrainingQualityGateTest(unittest.TestCase):
             cache_index = cmd.index("--pipeline.datamanager.cache-images") + 1
             self.assertEqual(cmd[cache_index], "cpu")
 
+    def test_training_forces_heldout_split_for_tiny_canary_samples(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config = root / "container_config.yaml"
+            config.write_text("training:\n  max_iterations: 10\n", encoding="utf-8")
+            input_dir = root / "input"
+            input_dir.mkdir()
+            (input_dir / "transforms.json").write_text(
+                json.dumps({"frames": [{"file_path": f"images/{index}.jpg"} for index in range(8)]}),
+                encoding="utf-8",
+            )
+            with mock.patch.dict(
+                os.environ,
+                {
+                    "SM_MODEL_DIR": str(root / "model"),
+                    "SM_CHANNEL_TRAINING": str(input_dir),
+                },
+                clear=False,
+            ):
+                trainer = self.training.NerfStudioTrainer(str(config))
+            trainer.config = {
+                "model": {"variant": "splatfacto", "sh_degree": 3, "bilateral_processing": False},
+                "training": {"max_iterations": 10, "log_interval": 5},
+            }
+            trainer.input_dir = input_dir
+
+            captured = {}
+
+            def fake_run_logged_command(cmd, *, timeout_seconds, log_prefix, tail_limit=120):
+                captured["cmd"] = cmd
+                return 0, ["done"], False
+
+            with mock.patch.object(self.training, "run_logged_command", side_effect=fake_run_logged_command):
+                self.assertTrue(trainer.run_nerfstudio_training())
+
+            cmd = captured["cmd"]
+            split_index = cmd.index("--pipeline.datamanager.dataparser.train-split-fraction") + 1
+            eval_mode_index = cmd.index("--pipeline.datamanager.dataparser.eval-mode") + 1
+            self.assertEqual(cmd[split_index], "0.75")
+            self.assertEqual(cmd[eval_mode_index], "fraction")
+
+    def test_training_split_fraction_env_override_is_clamped(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config = root / "container_config.yaml"
+            config.write_text("training:\n  max_iterations: 10\n", encoding="utf-8")
+            with mock.patch.dict(
+                os.environ,
+                {
+                    "SM_MODEL_DIR": str(root / "model"),
+                    "SM_CHANNEL_TRAINING": str(root / "input"),
+                    "NS_TRAIN_SPLIT_FRACTION": "0.99",
+                },
+                clear=False,
+            ):
+                trainer = self.training.NerfStudioTrainer(str(config))
+                self.assertEqual(trainer.resolve_train_split_fraction({}), 0.95)
+
 
 if __name__ == "__main__":
     unittest.main()

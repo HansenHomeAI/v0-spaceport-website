@@ -1,10 +1,10 @@
 {
-  "updated_at": "2026-05-12T22:06:45Z",
+  "updated_at": "2026-05-13T03:04:14Z",
   "branch": "agent-73948216-sfm-production-spine",
-  "head": "6347e1189df32d65d2b4dd296ad4164e0488eb25",
+  "head": "bf279d3d7a88a029cabc42ca547cd9b9822521b4",
   "project_final_decision": "not_final_project_closed",
   "md1_sfm_artifact_decision": "promotable_sparse_sfm_artifact_but_not_full_project_proof",
-  "automation_recommendation": "keep_sfm_reality_check_active_until_owner_confirms_final_project_or_project_level_caveats_resolve",
+  "automation_recommendation": "keep_sfm_reality_check_active; tiny-canary heldout split patch needs exact-head rebuild and sample8 relaunch",
   "canonical_md1_sfm_artifact": {
     "job": "r4exact739s1-1777612249",
     "status": "Completed",
@@ -39,7 +39,9 @@
       "active_3dgs_config": "infrastructure/containers/3dgs/nerfstudio_config.yaml",
       "expected_render_report_kind": "splat_heldout_render_metrics",
       "expected_ai_report_kind": "ai_visual_review_report",
-      "local_tests": "19 unit tests passed"
+      "local_tests": "22 focused unit tests passed",
+      "active_3dgs_entrypoint_head": "3a35b8d7ea973d6de845eebcbe83c8c81287aa7f",
+      "durable_eval_artifacts": "quality_eval/ns_eval.json, quality_eval/ns_eval_stdout.log, quality_eval/nerfstudio_config.yml, quality_eval/splat_heldout_render_metrics.json, quality_eval/heldout_renders/*"
     }
   },
   "two_leaf_fanout_and_reducer_proof": {
@@ -108,7 +110,7 @@
     "AI visual defect review has not been run on source/render/diff proof panels from a real splat artifact",
     "filtered point count is 6.88% below the mature baseline even though raw points and registration pass"
   ],
-  "final_next_step": "Commit and push disk-cache trainer patch, wait for container build/deploy, then relaunch sample8 canary with the new ECR digest and verify heldout render metrics/panels.",
+  "final_next_step": "Commit/push tiny-canary heldout split patch, rebuild exact-head 3dgs image, then relaunch sample8 CPU-cache canary and verify quality_eval artifacts.",
   "proof_artifacts": [
     "STATE.md",
     "logs/sfm-production-spine/frontier.json",
@@ -181,7 +183,22 @@
     "logs/sfm-production-spine/md1_sample40_3dgs_quality_s3_terminal_20260512T215709Z.txt",
     "logs/sfm-production-spine/md1_sample8_3dgs_quality_describe_20260512T220631Z.json",
     "logs/sfm-production-spine/md1_sample8_3dgs_quality_cloudwatch_20260512T220631Z.json",
-    "logs/sfm-production-spine/md1_sample8_3dgs_quality_s3_terminal_20260512T220631Z.txt"
+    "logs/sfm-production-spine/md1_sample8_3dgs_quality_s3_terminal_20260512T220631Z.txt",
+    "logs/sfm-production-spine/md1_sample8_disk_3dgs_quality_config_20260512T225407Z.json",
+    "logs/sfm-production-spine/md1_sample8_disk_3dgs_quality_create_20260512T225407Z.json",
+    "logs/sfm-production-spine/md1_sample8_disk_3dgs_quality_describe_initial_20260512T225407Z.json",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample8-disk-quality-20260512T225407Z/",
+    "logs/sfm-production-spine/github-container-25767307091-terminal.json",
+    "logs/sfm-production-spine/github-cdk-25767307088-terminal.json",
+    "logs/sfm-production-spine/codebuild-8f733d42-terminal.json",
+    "logs/sfm-production-spine/ecr-3dgs-agent73948216-digest-20260513T0032Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_3dgs_quality_config_20260513T003200Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_3dgs_quality_launch_20260513T003200Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_3dgs_quality_create_20260513T003200Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_3dgs_quality_describe_poll1_20260513T003200Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_3dgs_quality_logstreams_poll1_20260513T003200Z.json",
+    "logs/sfm-production-spine/md1_sample8_cpu_3dgs_quality_s3_poll1_20260513T003200Z.txt",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample8-cpu-quality-20260513T003200Z/"
   ],
   "active_jobs": [],
   "stopped_jobs": [
@@ -244,6 +261,18 @@
       "terminal_describe": "logs/sfm-production-spine/md1_sample8_3dgs_quality_describe_20260512T220631Z.json",
       "terminal_cloudwatch": "logs/sfm-production-spine/md1_sample8_3dgs_quality_cloudwatch_20260512T220631Z.json",
       "terminal_s3_listing": "logs/sfm-production-spine/md1_sample8_3dgs_quality_s3_terminal_20260512T220631Z.txt"
+    },
+    {
+      "name": "md1-sample8-disk-qc-1778626447",
+      "type": "sagemaker_training",
+      "status": "Failed",
+      "billable_time_seconds": 256,
+      "failure_reason": "AlgorithmError exit code 1; ns-train rejected --pipeline.datamanager.cache-images disk; expected one of cpu,gpu",
+      "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample8-disk-quality-20260512T225407Z/",
+      "terminal_describe": "logs/sfm-production-spine/md1_sample8_disk_3dgs_quality_describe_poll2_20260512T225407Z.json",
+      "terminal_cloudwatch": "logs/sfm-production-spine/md1_sample8_disk_3dgs_quality_cloudwatch_poll2_20260512T225407Z.txt",
+      "terminal_s3_listing": "logs/sfm-production-spine/md1_sample8_disk_3dgs_quality_s3_terminal_20260512T225407Z.txt"
     }
   ],
   "sample40_trainable_canary_input": {
@@ -283,5 +312,88 @@
     "reason": "Nerfstudio large-dataset docs recommend cache-images disk for splatfacto; cpu pre-caching stalled even at 8 images in SageMaker canaries",
     "verification": "python3 -m py_compile plus 21 focused unit tests passed",
     "next_build": "commit/push and wait for container workflow, then relaunch sample8 using new ECR digest"
+  },
+  "updated": null,
+  "active_workflows": [
+    {
+      "workflow": "Trigger ML Container Build",
+      "run_id": 25767307091,
+      "head": "bf279d3d7a88a029cabc42ca547cd9b9822521b4",
+      "status": "in_progress"
+    },
+    {
+      "workflow": "CDK Deploy",
+      "run_id": 25767307088,
+      "head": "bf279d3d7a88a029cabc42ca547cd9b9822521b4",
+      "status": "in_progress"
+    }
+  ],
+  "container_build_proof": {
+    "supported_cpu_cache_exact_head_20260513": {
+      "head": "bf279d3d7a88a029cabc42ca547cd9b9822521b4",
+      "github_trigger_ml_container_build_run": 25767307091,
+      "github_cdk_deploy_run": 25767307088,
+      "codebuild_id": "spaceport-ml-containers:8f733d42-e4d8-455b-b666-df88da238feb",
+      "codebuild_status": "SUCCEEDED",
+      "old_digest": "sha256:3334ae160fe078a08eee59274e6fbd755e36ea809ce0e6a2ece0d615abb41615",
+      "new_digest": "sha256:aee4976941af8ad3e031f3a79e498a7352e76913905bc962ef27ef131b5a76c9",
+      "digest_changed": true,
+      "artifacts": [
+        "logs/sfm-production-spine/github-container-25767307091-terminal.json",
+        "logs/sfm-production-spine/github-cdk-25767307088-terminal.json",
+        "logs/sfm-production-spine/codebuild-8f733d42-terminal.json",
+        "logs/sfm-production-spine/ecr-3dgs-agent73948216-digest-20260513T0032Z.json"
+      ]
+    }
+  },
+  "quality_canaries": {
+    "sample8_cpu_cache_20260513T003200Z": {
+      "name": "md1-sample8-cpu-qc-1778632320",
+      "type": "sagemaker_training",
+      "status": "InProgress",
+      "secondary_status": "Downloading",
+      "input_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample8/colmap",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample8-cpu-quality-20260513T003200Z/",
+      "training_image": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent73948216sfmproductionspine",
+      "branch_head": "bf279d3d7a88a029cabc42ca547cd9b9822521b4",
+      "ecr_digest": "sha256:aee4976941af8ad3e031f3a79e498a7352e76913905bc962ef27ef131b5a76c9",
+      "previous_digest": "sha256:3334ae160fe078a08eee59274e6fbd755e36ea809ce0e6a2ece0d615abb41615",
+      "ecr_digest_changed": true,
+      "github_trigger_ml_container_build_run": 25767307091,
+      "github_cdk_deploy_run": 25767307088,
+      "codebuild_id": "spaceport-ml-containers:8f733d42-e4d8-455b-b666-df88da238feb",
+      "codebuild_status": "SUCCEEDED",
+      "max_iterations": 10,
+      "max_runtime_sec": 2400,
+      "cache_images": "cpu",
+      "run_heldout_eval": true,
+      "quality_eval_required": true,
+      "config": "logs/sfm-production-spine/md1_sample8_cpu_3dgs_quality_config_20260513T003200Z.json",
+      "launch": "logs/sfm-production-spine/md1_sample8_cpu_3dgs_quality_launch_20260513T003200Z.json",
+      "create_response": "logs/sfm-production-spine/md1_sample8_cpu_3dgs_quality_create_20260513T003200Z.json",
+      "launch_describe": "logs/sfm-production-spine/md1_sample8_cpu_3dgs_quality_describe_poll1_20260513T003200Z.json",
+      "s3_listing": "logs/sfm-production-spine/md1_sample8_cpu_3dgs_quality_s3_poll1_20260513T003200Z.txt",
+      "next_step": "monitor to terminal; extract and verify quality_eval artifacts if completed"
+    },
+    "sample8_cpu_r2_20260513T010227Z": {
+      "name": "md1-sample8-cpu-r2-1778634147",
+      "status": "Failed",
+      "billable_time_seconds": 2639,
+      "failure_reason": "ns-eval empty eval image set after training; patched tiny canary split before relaunch",
+      "terminal_describe": "logs/sfm-production-spine/md1_sample8_cpu_r2_3dgs_quality_describe_failed_20260513T0302Z.json",
+      "cloudwatch_tail": "logs/sfm-production-spine/md1_sample8_cpu_r2_3dgs_quality_cloudwatch_tail_20260513T0308Z.txt",
+      "model_artifacts": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample8-cpu-r2-quality-20260513T010227Z/md1-sample8-cpu-r2-1778634147/output/model.tar.gz"
+    }
+  },
+  "implementation_patches": {
+    "tiny_canary_heldout_split_20260513T0308Z": {
+      "files": [
+        "infrastructure/containers/3dgs/train_nerfstudio_production.py",
+        "tests/unit/test_nerfstudio_training_quality_gate.py"
+      ],
+      "behavior": "tiny converted datasets <=20 frames use train_split_fraction 0.75 so ns-eval has heldout images; env override is clamped 0.1..0.95",
+      "verification": "python3 -m py_compile plus 25 focused unit tests passed",
+      "next_step": "commit/push, rebuild 3dgs image, relaunch sample8"
+    }
   }
 }
