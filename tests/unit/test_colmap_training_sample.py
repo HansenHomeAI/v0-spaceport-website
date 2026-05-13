@@ -109,6 +109,36 @@ class ColmapTrainingSampleTest(unittest.TestCase):
 
         self.assertEqual([record.image_id for record in selected], [1, 5, 10])
 
+    def test_image_max_width_scales_camera_intrinsics(self):
+        line = "1 SIMPLE_RADIAL 4000 2250 3031.6234657742921 2000 1125 0.0011838781410337805"
+
+        scaled, scale = sample.scale_camera_line(line, 1000)
+
+        self.assertEqual(scale, 0.25)
+        self.assertEqual(scaled, "1 SIMPLE_RADIAL 1000 562 757.905866444 500 281.25 0.0011838781410337805")
+
+    def test_prepare_sample_writes_scaled_cameras_without_images(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "source"
+            output = root / "sample"
+            write_model(source)
+
+            report = sample.prepare_sample(
+                input_colmap_dir=source,
+                output_colmap_dir=output,
+                max_images=2,
+                selection="camera-stratified-contiguous",
+                min_track_length=1,
+                image_max_width=50,
+            )
+
+            cameras = (output / "sparse" / "0" / "cameras.txt").read_text(encoding="utf-8")
+            self.assertEqual(report["scaled_camera_count"], 2)
+            self.assertEqual(report["camera_scales"], {"1": 0.5, "2": 0.5})
+            self.assertIn("1 PINHOLE 50 50 25 25 25 25", cameras)
+            self.assertIn("2 PINHOLE 50 50 25 25 25 25", cameras)
+
 
 if __name__ == "__main__":
     unittest.main()

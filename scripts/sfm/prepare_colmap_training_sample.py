@@ -7,6 +7,7 @@ import argparse
 import json
 import math
 import shutil
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -31,6 +32,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--selection", choices=("camera-stratified-contiguous", "evenly-spaced"), default="camera-stratified-contiguous")
     parser.add_argument("--min-track-length", type=int, default=2)
     parser.add_argument("--source-images-dir", help="Optional local image directory to copy selected images from.")
+    parser.add_argument("--image-max-width", type=int, default=0, help="Optional max copied image width; camera intrinsics are scaled to match.")
     parser.add_argument("--report-json-output", required=True)
     return parser.parse_args()
 
@@ -210,18 +212,107 @@ def filter_frames(input_path: Path, output_path: Path, selected_image_ids: set[i
     return len(kept_lines)
 
 
-def copy_selected_images(source_images_dir: Path, output_images_dir: Path, selected: list[ImageRecord]) -> tuple[int, list[str]]:
+def camera_param_scale_indexes(model: str) -> tuple[int, ...]:
+    model = model.upper()
+    if model in {"SIMPLE_PINHOLE", "SIMPLE_RADIAL", "RADIAL", "SIMPLE_RADIAL_FISHEYE", "RADIAL_FISHEYE"}:
+        return (0, 1, 2)
+    if model in {"PINHOLE", "OPENCV", "OPENCV_FISHEYE", "FULL_OPENCV", "FOV", "THIN_PRISM_FISHEYE"}:
+        return (0, 1, 2, 3)
+    return ()
+
+
+def scale_camera_line(line: str, image_max_width: int) -> tuple[str, float]:
+    tokens = line.split()
+    if len(tokens) < 5 or image_max_width <= 0:
+        return line, 1.0
+
+    width = int(tokens[2])
+    height = int(tokens[3])
+    if width <= image_max_width:
+        return line, 1.0
+
+    scale = image_max_width / width
+    tokens[2] = str(max(1, int(round(width * scale))))
+    tokens[3] = str(max(1, int(round(height * scale))))
+
+    indexes = camera_param_scale_indexes(tokens[1])
+    params = tokens[4:]
+    for index in indexes:
+        if index < len(params):
+            params[index] = f"{float(params[index]) * scale:.12g}"
+    return " ".join(tokens[:4] + params), scale
+
+
+def write_cameras_txt(input_path: Path, output_path: Path, image_max_width: int) -> tuple[dict[int, float], int]:
+    scales: dict[int, float] = {}
+    scaled_count = 0
+    lines: list[str] = []
+    with input_path.open("r", encoding="utf-8") as handle:
+        for line in handle:
+            if line.startswith("#") or not line.strip():
+                lines.append(line)
+                continue
+            scaled_line, scale = scale_camera_line(line.strip(), image_max_width)
+            camera_id = int(scaled_line.split()[0])
+            scales[camera_id] = scale
+            if scale < 1.0:
+                scaled_count += 1
+            lines.append(scaled_line + "\n")
+    output_path.write_text("".join(lines), encoding="utf-8")
+    return scales, scaled_count
+
+
+def resize_or_copy_image(source: Path, target: Path, max_width: int) -> bool:
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if max_width <= 0:
+        shutil.copy2(source, target)
+        return False
+
+    try:
+        from PIL import Image  # type: ignore
+    except Exception:
+        Image = None
+
+    if Image is not None:
+        with Image.open(source) as image:
+            if image.width <= max_width:
+                shutil.copy2(source, target)
+                return False
+            image.thumbnail((max_width, max_width * 100), Image.Resampling.LANCZOS)
+            image.save(target, quality=92)
+            shutil.copystat(source, target)
+            return True
+
+    sips = shutil.which("sips")
+    if not sips:
+        raise RuntimeError("image downscale requested but neither Pillow nor sips is available")
+    result = subprocess.run([sips, "--resampleWidth", str(max_width), str(source), "--out", str(target)], capture_output=True, text=True)
+    if result.returncode != 0:
+        raise RuntimeError(f"sips failed for {source.name}: {result.stderr.strip() or result.stdout.strip()}")
+    shutil.copystat(source, target)
+    return True
+
+
+def copy_selected_images(
+    source_images_dir: Path,
+    output_images_dir: Path,
+    selected: list[ImageRecord],
+    *,
+    image_max_width: int = 0,
+) -> tuple[int, list[str], int]:
     output_images_dir.mkdir(parents=True, exist_ok=True)
     missing: list[str] = []
     copied = 0
+    downscaled = 0
     for record in selected:
         source = source_images_dir / record.name
         if not source.exists():
             missing.append(record.name)
             continue
-        shutil.copy2(source, output_images_dir / record.name)
+        if resize_or_copy_image(source, output_images_dir / record.name, image_max_width):
+            downscaled += 1
         copied += 1
-    return copied, missing
+    return copied, missing, downscaled
 
 
 def prepare_sample(
@@ -232,6 +323,7 @@ def prepare_sample(
     selection: str,
     min_track_length: int,
     source_images_dir: Path | None = None,
+    image_max_width: int = 0,
 ) -> dict[str, object]:
     input_sparse = sparse_dir(input_colmap_dir)
     target_sparse = output_sparse_dir(output_colmap_dir)
@@ -250,19 +342,21 @@ def prepare_sample(
     )
     write_images_txt(target_sparse / "images.txt", comments, selected, kept_point_ids)
 
-    for file_name in ("cameras.txt", "rigs.txt"):
-        source = input_sparse / file_name
-        if source.exists():
-            shutil.copy2(source, target_sparse / file_name)
+    camera_scales, scaled_camera_count = write_cameras_txt(input_sparse / "cameras.txt", target_sparse / "cameras.txt", image_max_width)
+    rigs_source = input_sparse / "rigs.txt"
+    if rigs_source.exists():
+        shutil.copy2(rigs_source, target_sparse / "rigs.txt")
     frame_count = filter_frames(input_sparse / "frames.txt", target_sparse / "frames.txt", selected_image_ids)
 
     copied_images = 0
     missing_images: list[str] = []
+    downscaled_images = 0
     if source_images_dir:
-        copied_images, missing_images = copy_selected_images(
+        copied_images, missing_images, downscaled_images = copy_selected_images(
             source_images_dir,
             output_colmap_dir / "images",
             selected,
+            image_max_width=image_max_width,
         )
 
     camera_counts: dict[str, int] = {}
@@ -281,9 +375,13 @@ def prepare_sample(
         "selected_image_ids": [record.image_id for record in selected],
         "selected_image_names": [record.name for record in selected],
         "min_track_length": min_track_length,
+        "image_max_width": image_max_width,
+        "camera_scales": {str(camera_id): scale for camera_id, scale in sorted(camera_scales.items())},
+        "scaled_camera_count": scaled_camera_count,
         "kept_points3d": kept_point_count,
         "kept_frames": frame_count,
         "copied_images": copied_images,
+        "downscaled_images": downscaled_images,
         "missing_images": missing_images,
         "decision": "pass" if selected and kept_point_count > 0 and not missing_images else "needs_attention",
     }
@@ -298,6 +396,7 @@ def main() -> int:
         selection=args.selection,
         min_track_length=args.min_track_length,
         source_images_dir=Path(args.source_images_dir) if args.source_images_dir else None,
+        image_max_width=args.image_max_width,
     )
     Path(args.report_json_output).parent.mkdir(parents=True, exist_ok=True)
     Path(args.report_json_output).write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
