@@ -1,0 +1,61 @@
+{
+  "lodUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json",
+  "results": [
+    {
+      "scenario": "desktop",
+      "metrics": {
+        "bundleKind": "lod-streaming",
+        "rootFile": "lod-meta.json",
+        "sourceUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json",
+        "viewerUrl": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json",
+        "lodLevels": 4,
+        "chunkFiles": 44,
+        "chunkMetaRequests": 3,
+        "firstFrameMs": 263.5,
+        "lodMin": 0,
+        "lodMax": 3
+      },
+      "visualStats": {
+        "width": 1440,
+        "height": 960,
+        "sampled": 38400,
+        "visibleRatio": 1,
+        "brightRatio": 0.957265625,
+        "darkRatio": 0,
+        "meanLuma": 189.9541759218729,
+        "lumaStdDev": 54.38596800580743,
+        "meanColorSpread": 49.8709375
+      },
+      "chunkMetaResponses": 4,
+      "screenshotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-production-viewer-desktop.png"
+    },
+    {
+      "scenario": "mobile",
+      "metrics": {
+        "bundleKind": "lod-streaming",
+        "rootFile": "lod-meta.json",
+        "sourceUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json",
+        "viewerUrl": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json",
+        "lodLevels": 4,
+        "chunkFiles": 44,
+        "chunkMetaRequests": 8,
+        "firstFrameMs": 63.19999998807907,
+        "lodMin": 2,
+        "lodMax": 3
+      },
+      "visualStats": {
+        "width": 414,
+        "height": 896,
+        "sampled": 92736,
+        "visibleRatio": 1,
+        "brightRatio": 0.8938599896480331,
+        "darkRatio": 0,
+        "meanLuma": 173.69383061377417,
+        "lumaStdDev": 57.00918207474496,
+        "meanColorSpread": 47.63900750517598
+      },
+      "chunkMetaResponses": 13,
+      "screenshotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-production-viewer-mobile.png"
+    }
+  ]
+}

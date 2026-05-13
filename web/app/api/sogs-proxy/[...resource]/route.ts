@@ -7,6 +7,8 @@ export const runtime = "edge";
 const ALLOWED_HOSTS = new Set([
   "spaceport-ml-processing.s3.amazonaws.com",
   "spaceport-ml-processing.s3.us-west-2.amazonaws.com",
+  "spaceport-ml-processing-staging.s3.amazonaws.com",
+  "spaceport-ml-processing-staging.s3.us-west-2.amazonaws.com",
 ]);
 
 const S3_REGION = process.env.AWS_REGION ?? "us-west-2";
@@ -37,8 +39,12 @@ function awsCredentialsAvailable(): boolean {
   return Boolean(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY);
 }
 
-function shouldEdgeCache(url: URL, response: Response): boolean {
+function shouldEdgeCache(request: NextRequest, url: URL, response: Response): boolean {
   if (!response.ok) {
+    return false;
+  }
+
+  if (request.headers.has("range")) {
     return false;
   }
 
@@ -192,12 +198,27 @@ async function toSignedS3HttpsUrl(url: URL): Promise<URL | null> {
   return toRegionalS3HttpsUrl(url);
 }
 
-async function fetchS3Signed(url: URL, accept: string): Promise<Response> {
+function createUpstreamHeaders(request: NextRequest): Headers {
+  const headers = new Headers();
+  headers.set("Accept", request.headers.get("accept") ?? "*/*");
+
+  const range = request.headers.get("range");
+  if (range) {
+    headers.set("Range", range);
+  }
+
+  const ifRange = request.headers.get("if-range");
+  if (ifRange) {
+    headers.set("If-Range", ifRange);
+  }
+
+  return headers;
+}
+
+async function fetchS3Signed(url: URL, headers: Headers): Promise<Response> {
   const regional = await toSignedS3HttpsUrl(url);
   if (!regional) {
-    return fetch(url, {
-      headers: { Accept: accept },
-    });
+    return fetch(url, { headers });
   }
   const client = new AwsClient({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
@@ -205,7 +226,7 @@ async function fetchS3Signed(url: URL, accept: string): Promise<Response> {
     sessionToken: process.env.AWS_SESSION_TOKEN,
     region: S3_REGION,
   });
-  return client.fetch(regional.toString());
+  return client.fetch(regional.toString(), { headers });
 }
 
 const normalizeUpstreamUrl = (segments: string[]): URL | null => {
@@ -252,14 +273,12 @@ export async function GET(request: NextRequest, { params }: { params: { resource
   }
 
   const shouldUseSignedS3First = isAllowedEdgeBundleUrl(upstreamUrl) && awsCredentialsAvailable();
-  const accept = request.headers.get("accept") ?? "*/*";
+  const upstreamHeaders = createUpstreamHeaders(request);
 
   let upstreamResponse = shouldUseSignedS3First
-    ? await fetchS3Signed(upstreamUrl, accept)
+    ? await fetchS3Signed(upstreamUrl, upstreamHeaders)
     : await fetch(upstreamUrl, {
-        headers: {
-          Accept: accept,
-        },
+        headers: upstreamHeaders,
       });
 
   // Legacy direct-S3 bundle URLs may still require SigV4 depending on bucket/object policy.
@@ -268,7 +287,7 @@ export async function GET(request: NextRequest, { params }: { params: { resource
     awsCredentialsAvailable()
   ) {
     try {
-      upstreamResponse = await fetchS3Signed(upstreamUrl, accept);
+      upstreamResponse = await fetchS3Signed(upstreamUrl, upstreamHeaders);
     } catch {
       /* keep original response */
     }
@@ -277,7 +296,7 @@ export async function GET(request: NextRequest, { params }: { params: { resource
   const headers = new Headers(upstreamResponse.headers);
   headers.set("Access-Control-Allow-Origin", "*");
   headers.delete("content-security-policy");
-  if (shouldEdgeCache(upstreamUrl, upstreamResponse)) {
+  if (shouldEdgeCache(request, upstreamUrl, upstreamResponse)) {
     headers.set("Cache-Control", headers.get("Cache-Control") || IMMUTABLE_EDGE_CACHE_CONTROL);
   }
 
@@ -287,7 +306,7 @@ export async function GET(request: NextRequest, { params }: { params: { resource
     headers,
   });
 
-  if (edgeCache && shouldEdgeCache(upstreamUrl, response)) {
+  if (edgeCache && shouldEdgeCache(request, upstreamUrl, response)) {
     await edgeCache.put(cacheKey, response.clone());
   }
 

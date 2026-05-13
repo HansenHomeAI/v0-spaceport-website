@@ -1,446 +1,549 @@
 #!/usr/bin/env python3
 """
-Production PlayCanvas SOGS Compression Container
-Real implementation using the official PlayCanvas SOGS package from:
-https://github.com/playcanvas/sogs
+Spaceport SuperSplat compression container.
 
-This container uses the actual `sogs-compress` CLI tool to compress 3D Gaussian splats
-into WebP textures and metadata for use with SuperSplat viewer.
+The current PlayCanvas path for large streamed scenes is `@playcanvas/splat-transform`,
+not the archived `playcanvas/sogs` package. This entrypoint keeps the existing SageMaker
+contract, but now generates:
+
+- `supersplat_bundle/meta.json` for single-bundle fallback loading
+- `supersplat_bundle/lod-meta.json` plus chunk directories for streamed LOD loading
 """
 
-import os
-import sys
+from __future__ import annotations
+
 import json
 import logging
+import os
+import shlex
+import shutil
+import subprocess
+import sys
 import tarfile
 import tempfile
 import zipfile
-import subprocess
 from pathlib import Path
-from typing import Dict, List, Any
-import boto3
+from typing import Any, Dict, Iterable, List, Sequence
 
-# Configure logging so container diagnostics are surfaced consistently.
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
+try:
+    import boto3
+except ModuleNotFoundError:  # pragma: no cover - local smoke environments can omit boto3.
+    boto3 = None
+
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-def _diagnose_gpu_environment():
-    """Diagnose GPU and CUDA environment for debugging"""
-    logger.info("=== GPU Environment Diagnosis ===")
-    
-    # Check if CUDA is available in PyTorch
+SKYBOX_SOURCE_ASSET_NAME = "kloppenheim_06_puresky_equirect.png"
+SKYBOX_SOURCE_BUNDLE_RELATIVE_PATH = f"skybox/{SKYBOX_SOURCE_ASSET_NAME}"
+SKYBOX_GENERATED_ASSET_NAME = "kloppenheim_06_puresky_equirect.webp"
+SKYBOX_BUNDLE_RELATIVE_PATH = f"skybox/{SKYBOX_GENERATED_ASSET_NAME}"
+SKYBOX_WEBP_QUALITY = 80
+CONTAINER_SKYBOX_SOURCE = Path(__file__).resolve().parent / "assets" / "skybox" / SKYBOX_SOURCE_ASSET_NAME
+
+DEFAULT_LOD_DECIMATION = ("30%", "10%", "3%")
+DEFAULT_LOD_CHUNK_COUNT = 1024
+DEFAULT_LOD_CHUNK_EXTENT = 32
+DEFAULT_SOG_SETTINGS = {
+    "background": {"color": [0, 0, 0, 1]},
+    "camera": {
+        "fov": 60,
+        "position": [0, 0.5, -2],
+        "target": [0, 0, 0],
+        "startAnim": "orbit",
+    },
+}
+
+
+class InputSource:
+    def __init__(self, kind: str, path: Path, root: Path, supporting_files: list[Path] | None = None):
+        self.kind = kind
+        self.path = path
+        self.root = root
+        self.supporting_files = list(supporting_files or [])
+
+
+def _convert_skybox_to_webp(source_path: Path, destination_path: Path) -> bool:
+    if source_path.suffix.lower() == ".webp":
+        shutil.copy2(source_path, destination_path)
+        return True
+
     try:
-        import torch
-        logger.info(f"PyTorch version: {torch.__version__}")
-        logger.info(f"PyTorch CUDA version: {torch.version.cuda}")
-        logger.info(f"CUDA available: {torch.cuda.is_available()}")
-        
-        if torch.cuda.is_available():
-            logger.info(f"CUDA device count: {torch.cuda.device_count()}")
-            logger.info(f"Current CUDA device: {torch.cuda.current_device()}")
-            logger.info(f"Device name: {torch.cuda.get_device_name(0)}")
-            logger.info(f"Device capability: {torch.cuda.get_device_capability(0)}")
-        else:
-            logger.error("CUDA is not available in PyTorch!")
-            
-    except Exception as e:
-        logger.error(f"Error checking PyTorch CUDA: {e}")
-    
-    # Check system CUDA
-    try:
-        result = subprocess.run(['nvidia-smi'], capture_output=True, text=True, timeout=10)
-        if result.returncode == 0:
-            logger.info("nvidia-smi output:")
-            logger.info(result.stdout)
-        else:
-            logger.error(f"nvidia-smi failed: {result.stderr}")
-    except Exception as e:
-        logger.error(f"Error running nvidia-smi: {e}")
-    
-    # Check CUDA runtime
-    try:
-        result = subprocess.run(['nvcc', '--version'], capture_output=True, text=True, timeout=10)
-        if result.returncode == 0:
-            logger.info("CUDA compiler version:")
-            logger.info(result.stdout)
-        else:
-            logger.error(f"nvcc failed: {result.stderr}")
-    except Exception as e:
-        logger.error(f"Error running nvcc: {e}")
-    
-    # Check environment variables
-    logger.info(f"CUDA_HOME: {os.environ.get('CUDA_HOME', 'Not set')}")
-    logger.info(f"CUDA_VISIBLE_DEVICES: {os.environ.get('CUDA_VISIBLE_DEVICES', 'Not set')}")
-    logger.info(f"NVIDIA_VISIBLE_DEVICES: {os.environ.get('NVIDIA_VISIBLE_DEVICES', 'Not set')}")
-    logger.info("=== End GPU Diagnosis ===")
+        subprocess.run(
+            [
+                "cwebp",
+                "-quiet",
+                "-q",
+                str(SKYBOX_WEBP_QUALITY),
+                str(source_path),
+                "-o",
+                str(destination_path),
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        return True
+    except (FileNotFoundError, subprocess.CalledProcessError) as exc:
+        logger.warning("Failed to convert bundled skybox to WebP: %s", exc)
+        return False
+
+
+def _bundle_skybox_asset(bundle_dir: Path) -> str | None:
+    if not CONTAINER_SKYBOX_SOURCE.exists():
+        logger.warning("Bundled skybox asset not found at %s", CONTAINER_SKYBOX_SOURCE)
+        return None
+
+    skybox_dir = bundle_dir / "skybox"
+    skybox_dir.mkdir(parents=True, exist_ok=True)
+    generated_destination = skybox_dir / SKYBOX_GENERATED_ASSET_NAME
+    if _convert_skybox_to_webp(CONTAINER_SKYBOX_SOURCE, generated_destination):
+        logger.info("Bundled optimized skybox %s into SuperSplat bundle", SKYBOX_GENERATED_ASSET_NAME)
+        return SKYBOX_BUNDLE_RELATIVE_PATH
+
+    fallback_destination = skybox_dir / SKYBOX_SOURCE_ASSET_NAME
+    shutil.copy2(CONTAINER_SKYBOX_SOURCE, fallback_destination)
+    logger.info("Bundled fallback skybox %s into SuperSplat bundle", SKYBOX_SOURCE_ASSET_NAME)
+    return SKYBOX_SOURCE_BUNDLE_RELATIVE_PATH
+
+
+def _count_tree_nodes(node: dict[str, Any] | None) -> int:
+    if not isinstance(node, dict):
+        return 0
+    children = node.get("children")
+    if not isinstance(children, list) or not children:
+        return 1 if isinstance(node.get("lods"), dict) else 0
+    return sum(_count_tree_nodes(child) for child in children)
+
 
 class PlayCanvasSOGSCompressor:
-    """Real PlayCanvas SOGS Compression Implementation using official package"""
-    
+    """SageMaker entrypoint that builds streamed SuperSplat bundles via splat-transform."""
+
     def __init__(self):
-        self.s3_client = boto3.client('s3')
+        self.s3_client = boto3.client("s3") if boto3 else None
         self.input_dir = "/opt/ml/processing/input"
         self.output_dir = "/opt/ml/processing/output"
-        
-        # Verify GPU availability
-        try:
-            import torch
-            if not torch.cuda.is_available():
-                logger.error("GPU not available - SOGS requires CUDA GPU!")
-                sys.exit(1)
-            logger.info("✅ GPU available for SOGS compression")
-        except ImportError:
-            logger.error("PyTorch not available")
-            sys.exit(1)
-        
-        # Verify SOGS CLI is available
-        try:
-            result = subprocess.run(['sogs-compress', '--help'], 
-                                  capture_output=True, text=True, timeout=10)
-            if result.returncode == 0:
-                logger.info("✅ SOGS CLI tool available")
-            else:
-                logger.error("❌ SOGS CLI tool not working properly")
-                sys.exit(1)
-        except (subprocess.TimeoutExpired, FileNotFoundError) as e:
-            logger.error(f"❌ SOGS CLI tool not found: {e}")
-            sys.exit(1)
-
-    def _discover_sidecar_assets(self, ply_file: str) -> List[str]:
-        """Locate viewer sidecars exported alongside the training artifact."""
-        sidecar_names = (
-            "background_skybox.webp",
-            "background_manifest.json",
-            "training_metadata.json",
-            "export_manifest.json",
+        self.device = (os.environ.get("SOGS_DEVICE") or "cpu").strip() or "cpu"
+        self.lod_decimation = self._read_lod_decimation()
+        self.lod_chunk_count = int(os.environ.get("SOGS_LOD_CHUNK_COUNT", DEFAULT_LOD_CHUNK_COUNT))
+        self.lod_chunk_extent = int(os.environ.get("SOGS_LOD_CHUNK_EXTENT", DEFAULT_LOD_CHUNK_EXTENT))
+        self.transform_bin = self._resolve_transform_bin()
+        self.version = self._get_splat_transform_version()
+        logger.info(
+            "Using splat-transform %s (device=%s, lod_decimation=%s, chunk_count=%sK, chunk_extent=%s)",
+            self.version,
+            self.device,
+            ",".join(self.lod_decimation),
+            self.lod_chunk_count,
+            self.lod_chunk_extent,
         )
-        search_roots = [Path(ply_file).parent]
-        search_roots.extend(Path(ply_file).parents[:2])
 
-        assets: List[str] = []
-        seen = set()
-        for root in search_roots:
-            for name in sidecar_names:
-                candidate = root / name
-                if candidate.exists() and candidate.is_file():
-                    resolved = str(candidate.resolve())
-                    if resolved not in seen:
-                        seen.add(resolved)
-                        assets.append(resolved)
-        if assets:
-            logger.info(f"✅ Found sidecar assets for bundle: {[Path(path).name for path in assets]}")
-        return assets
-    
-    def compress_gaussian_splats(self, input_ply_files: List[str], output_dir: str) -> Dict[str, Any]:
-        """
-        Compress Gaussian splats using real PlayCanvas SOGS CLI tool
-        
-        Args:
-            input_ply_files: List of PLY file paths to compress
-            output_dir: Directory to save compressed output
-            
-        Returns:
-            Dict containing compression results and metadata
-        """
-        logger.info(f"🚀 Starting PlayCanvas SOGS compression on {len(input_ply_files)} PLY files")
-        
-        results = {
-            'method': 'playcanvas_sogs_official',
-            'version': self._get_sogs_version(),
-            'gpu_accelerated': True,
-            'input_files': input_ply_files,
-            'compressed_outputs': [],
-            'compression_stats': {}
-        }
-        
-        for i, ply_file in enumerate(input_ply_files):
-            logger.info(f"Processing PLY file {i+1}/{len(input_ply_files)}: {ply_file}")
-            
-            try:
-                # Create output directory for this PLY file
-                file_base = Path(ply_file).stem
-                compress_dir = os.path.join(output_dir, f"compressed_{file_base}")
-                os.makedirs(compress_dir, exist_ok=True)
-                
-                # Run PlayCanvas SOGS compression
-                compression_result = self._run_sogs_compression(ply_file, compress_dir)
-                
-                # Collect output files and calculate statistics
-                output_files = list(Path(compress_dir).glob('*'))
-                original_size = os.path.getsize(ply_file)
-                compressed_size = sum(f.stat().st_size for f in output_files)
-                compression_ratio = original_size / compressed_size if compressed_size > 0 else 0
-                
-                file_result = {
-                    'input_file': ply_file,
-                    'output_dir': compress_dir,
-                    'output_files': [str(f) for f in output_files],
-                    'original_size_mb': original_size / (1024 * 1024),
-                    'compressed_size_mb': compressed_size / (1024 * 1024),
-                    'compression_ratio': compression_ratio,
-                    'webp_files': [str(f) for f in output_files if f.suffix == '.webp'],
-                    'metadata_file': str(Path(compress_dir) / 'meta.json') if (Path(compress_dir) / 'meta.json').exists() else None,
-                    'sidecar_files': self._discover_sidecar_assets(ply_file),
-                }
-                
-                results['compressed_outputs'].append(file_result)
-                results['compression_stats'][f'file_{i}'] = {
-                    'original_size_mb': file_result['original_size_mb'],
-                    'compressed_size_mb': file_result['compressed_size_mb'],
-                    'compression_ratio': compression_ratio,
-                    'webp_count': len(file_result['webp_files'])
-                }
-                
-                logger.info(f"✅ File {i+1} compressed: {compression_ratio:.2f}x ratio, {len(file_result['webp_files'])} WebP files")
-            
-            except Exception as e:
-                logger.error(f"Failed to compress {ply_file}: {e}")
-                raise
-        
-        # Generate final summary
-        total_original = sum(stats['original_size_mb'] for stats in results['compression_stats'].values())
-        total_compressed = sum(stats['compressed_size_mb'] for stats in results['compression_stats'].values())
-        overall_ratio = total_original / total_compressed if total_compressed > 0 else 0
-        
-        results['overall_compression_ratio'] = overall_ratio
-        results['total_original_mb'] = total_original
-        results['total_compressed_mb'] = total_compressed
-        results['total_webp_files'] = sum(stats['webp_count'] for stats in results['compression_stats'].values())
-        
-        logger.info(f"🎯 PlayCanvas SOGS Compression Complete: {overall_ratio:.2f}x overall compression")
-        logger.info(f"📁 Generated {results['total_webp_files']} WebP texture files")
-        
-        return results
+    def _resolve_transform_bin(self) -> list[str]:
+        override = (os.environ.get("SPLAT_TRANSFORM_BIN") or "").strip()
+        if override:
+            return shlex.split(override)
+        return ["splat-transform"]
 
-    def _run_sogs_compression(self, ply_file: str, output_dir: str) -> Dict[str, Any]:
-        """Run the official PlayCanvas SOGS compression CLI tool"""
-        logger.info(f"🔧 Running SOGS compression: {ply_file} -> {output_dir}")
-        
-        # Run the official SOGS CLI command
-        cmd = ['sogs-compress', '--ply', ply_file, '--output-dir', output_dir]
-        
-        logger.info(f"Executing: {' '.join(cmd)}")
-        
+    def _read_lod_decimation(self) -> list[str]:
+        raw = (os.environ.get("SOGS_LOD_DECIMATION") or "").strip()
+        if not raw:
+            return list(DEFAULT_LOD_DECIMATION)
+        values = [value.strip() for value in raw.split(",") if value.strip()]
+        return values or list(DEFAULT_LOD_DECIMATION)
+
+    def _run_command(
+        self,
+        command: Sequence[str],
+        *,
+        cwd: Path | None = None,
+        timeout: int = 3600,
+        log_stdout: bool = True,
+    ) -> subprocess.CompletedProcess[str]:
+        logger.info("Executing: %s", " ".join(shlex.quote(part) for part in command))
+        result = subprocess.run(
+            list(command),
+            cwd=str(cwd) if cwd else None,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            check=False,
+        )
+        if result.returncode != 0:
+            logger.error("Command failed (%s): %s", result.returncode, " ".join(command))
+            if result.stdout:
+                logger.error("STDOUT:\n%s", result.stdout)
+            if result.stderr:
+                logger.error("STDERR:\n%s", result.stderr)
+            raise RuntimeError(f"Command failed with exit code {result.returncode}: {' '.join(command)}")
+        if log_stdout and result.stdout.strip():
+            logger.info(result.stdout.strip())
+        if result.stderr.strip():
+            logger.info(result.stderr.strip())
+        return result
+
+    def _get_splat_transform_version(self) -> str:
         try:
-            result = subprocess.run(
-                cmd,
-                capture_output=True,
-                text=True,
-                timeout=1800,  # 30 minutes timeout
-                cwd=output_dir
-            )
-            
-            if result.returncode == 0:
-                logger.info("✅ SOGS compression completed successfully")
-                logger.info(f"STDOUT: {result.stdout}")
-                if result.stderr:
-                    logger.info(f"STDERR: {result.stderr}")
-                
-                # Check for expected output files
-                output_files = list(Path(output_dir).glob('*'))
-                webp_files = [f for f in output_files if f.suffix == '.webp']
-                meta_file = Path(output_dir) / 'meta.json'
-                
-                logger.info(f"Generated {len(webp_files)} WebP files: {[f.name for f in webp_files]}")
-                
-                if meta_file.exists():
-                    logger.info("✅ meta.json file generated")
-                    with open(meta_file, 'r') as f:
-                        metadata = json.load(f)
-                        logger.info(f"Metadata keys: {list(metadata.keys())}")
-                else:
-                    logger.warning("⚠️ meta.json file not found")
-                
-                return {
-                    'success': True,
-                    'output_files': len(output_files),
-                    'webp_files': len(webp_files),
-                    'has_metadata': meta_file.exists()
-                }
+            result = self._run_command([*self.transform_bin, "--version"], timeout=30, log_stdout=False)
+        except Exception:
+            return "unknown"
+        output = (result.stdout or result.stderr).strip()
+        return output.splitlines()[0].strip() if output else "unknown"
+
+    def _extract_archive(self, archive_path: Path, destination: Path) -> None:
+        destination.mkdir(parents=True, exist_ok=True)
+        if archive_path.name.endswith(".tar.gz"):
+            with tarfile.open(archive_path, "r:gz") as tar:
+                self._safe_extract_tar(tar, destination)
+            return
+        if archive_path.suffix.lower() == ".zip":
+            with zipfile.ZipFile(archive_path, "r") as zip_file:
+                zip_file.extractall(destination)
+            return
+        raise ValueError(f"Unsupported archive type: {archive_path}")
+
+    def _safe_extract_tar(self, tar: tarfile.TarFile, destination: Path) -> None:
+        dest_root = destination.resolve()
+        for member in tar.getmembers():
+            member_path = (destination / member.name).resolve()
+            if not str(member_path).startswith(str(dest_root)):
+                raise ValueError(f"Unsafe archive member path: {member.name}")
+        tar.extractall(destination)
+
+    def _scan_root_for_inputs(self, root: Path) -> tuple[list[Path], list[Path], list[Path]]:
+        lcc_files: list[Path] = []
+        ply_files: list[Path] = []
+        supporting_files: list[Path] = []
+        for path in root.rglob("*"):
+            if not path.is_file():
+                continue
+            lower_name = path.name.lower()
+            lower_path = str(path).lower()
+            if lower_name == "training_metadata.json":
+                supporting_files.append(path)
+            if path.suffix.lower() == ".lcc":
+                lcc_files.append(path)
+            elif path.suffix.lower() == ".ply" and "__macosx" not in lower_path:
+                ply_files.append(path)
+        return lcc_files, ply_files, supporting_files
+
+    def _pick_best_input(self, files: list[Path], *, kind: str) -> Path:
+        def rank(path: Path) -> tuple[int, int, str]:
+            name = path.name.lower()
+            if kind == "lcc":
+                preferred = 0 if name.endswith(".lcc") else 1
             else:
-                logger.error(f"❌ SOGS compression failed with return code {result.returncode}")
-                logger.error(f"STDOUT: {result.stdout}")
-                logger.error(f"STDERR: {result.stderr}")
-                raise RuntimeError(f"SOGS compression failed: {result.stderr}")
-                
-        except subprocess.TimeoutExpired:
-            logger.error("❌ SOGS compression timed out after 30 minutes")
-            raise RuntimeError("SOGS compression timed out")
-        except Exception as e:
-            logger.error(f"❌ SOGS compression failed: {e}")
-            raise
+                if name == "splat.ply":
+                    preferred = 0
+                elif "final_model" in name:
+                    preferred = 1
+                else:
+                    preferred = 2
+            try:
+                size = -path.stat().st_size
+            except OSError:
+                size = 0
+            return (preferred, size, str(path))
 
-    def _get_sogs_version(self) -> str:
-        """Get the version of the SOGS package"""
-        try:
-            result = subprocess.run(['pip', 'show', 'sogs'], 
-                                  capture_output=True, text=True, timeout=10)
-            if result.returncode == 0:
-                for line in result.stdout.split('\n'):
-                    if line.startswith('Version:'):
-                        return line.split(':', 1)[1].strip()
-            return "unknown"
-        except:
-            return "unknown"
+        return sorted(files, key=rank)[0]
 
-    def process_job(self):
-        """Main processing function for SageMaker"""
-        logger.info("🚀 Starting PlayCanvas SOGS compression job")
-        
-        # Run GPU diagnostics first
-        _diagnose_gpu_environment()
-        
-        try:
-            # Find PLY files in input
-            ply_files = []
-            
-            # Check for PLY files and archives recursively
-            for root, dirs, files in os.walk(self.input_dir):
-                for file in files:
-                    file_path = os.path.join(root, file)
-                    if file.endswith('.ply'):
-                        ply_files.append(file_path)
-                    elif file.endswith(('.tar.gz', '.zip')):
-                        # Extract and find PLY files
-                        extracted_plys = self._extract_and_find_plys(file_path)
-                        ply_files.extend(extracted_plys)
-            
-            if not ply_files:
-                logger.error("No PLY files found in input directory")
-                sys.exit(1)
-            
-            logger.info(f"Found {len(ply_files)} PLY files to compress")
-            
-            # Verify PLY files are valid for SOGS
-            for ply_file in ply_files:
-                if not self._validate_ply_for_sogs(ply_file):
-                    logger.error(f"PLY file not compatible with SOGS: {ply_file}")
-                    sys.exit(1)
-            
-            # Compress using PlayCanvas SOGS
-            results = self.compress_gaussian_splats(ply_files, self.output_dir)
-            
-            # Save compression summary
-            summary_path = os.path.join(self.output_dir, "sogs_compression_summary.json")
-            with open(summary_path, 'w') as f:
-                json.dump(results, f, indent=2, cls=NumpyEncoder)
-            
-            # Create SuperSplat viewer compatible structure
-            self._create_supersplat_bundle(results)
-            
-            logger.info(f"✅ PlayCanvas SOGS compression completed successfully")
-            logger.info(f"📊 Overall compression ratio: {results['overall_compression_ratio']:.2f}x")
-            logger.info(f"📁 WebP texture files: {results['total_webp_files']}")
-            logger.info(f"💾 Output saved to: {self.output_dir}")
-            
-        except Exception as e:
-            logger.error(f"Compression job failed: {e}")
-            raise
+    def _discover_input_source(self) -> InputSource:
+        input_root = Path(self.input_dir)
+        extraction_root = input_root / "__extracted_archives"
+        extraction_root.mkdir(parents=True, exist_ok=True)
+
+        archives = sorted(
+            [
+                path
+                for path in input_root.rglob("*")
+                if path.is_file() and (path.name.endswith(".tar.gz") or path.suffix.lower() == ".zip")
+            ]
+        )
+        for index, archive in enumerate(archives):
+            destination = extraction_root / f"{index:02d}-{archive.stem.replace('.', '-')}"
+            logger.info("Extracting archive %s -> %s", archive, destination)
+            self._extract_archive(archive, destination)
+
+        search_roots = [input_root]
+        if extraction_root.exists():
+            search_roots.extend([path for path in extraction_root.iterdir() if path.is_dir()])
+
+        lcc_candidates: list[tuple[Path, Path, list[Path]]] = []
+        ply_candidates: list[tuple[Path, Path, list[Path]]] = []
+        for root in search_roots:
+            lcc_files, ply_files, supporting_files = self._scan_root_for_inputs(root)
+            for path in lcc_files:
+                lcc_candidates.append((path, root, supporting_files))
+            for path in ply_files:
+                ply_candidates.append((path, root, supporting_files))
+
+        if lcc_candidates:
+            best = self._pick_best_input([entry[0] for entry in lcc_candidates], kind="lcc")
+            for candidate, root, supporting_files in lcc_candidates:
+                if candidate == best:
+                    return InputSource("lcc", candidate, root, supporting_files)
+
+        if ply_candidates:
+            best = self._pick_best_input([entry[0] for entry in ply_candidates], kind="ply")
+            for candidate, root, supporting_files in ply_candidates:
+                if candidate == best:
+                    return InputSource("ply", candidate, root, supporting_files)
+
+        raise RuntimeError(f"No .lcc or .ply source found under {self.input_dir}")
+
+    def _copy_supporting_files(self, supporting_files: Iterable[Path], bundle_dir: Path) -> list[str]:
+        copied: list[str] = []
+        for path in supporting_files:
+            destination = bundle_dir / path.name
+            if destination.exists():
+                continue
+            shutil.copy2(path, destination)
+            copied.append(path.name)
+        return copied
 
     def _validate_ply_for_sogs(self, ply_file: str) -> bool:
-        """Validate that PLY file has required fields for SOGS compression"""
         try:
-            with open(ply_file, 'rb') as f:
-                header = f.read(2048).decode('utf-8', errors='ignore')
-                
-            # Check for required fields
-            required_fields = ['f_dc_0', 'f_dc_1', 'f_dc_2', 'opacity', 'scale_0', 'scale_1', 'scale_2']
-            
-            for field in required_fields:
-                if field not in header:
-                    logger.error(f"Missing required field '{field}' in PLY file: {ply_file}")
-                    return False
-            
-            logger.info(f"✅ PLY file validated for SOGS: {ply_file}")
+            with open(ply_file, "rb") as file_obj:
+                header = file_obj.read(4096).decode("utf-8", errors="ignore")
+            required_fields = ["f_dc_0", "f_dc_1", "f_dc_2", "opacity", "scale_0", "scale_1", "scale_2"]
+            missing = [field for field in required_fields if field not in header]
+            if missing:
+                logger.error("Missing required PLY fields %s in %s", missing, ply_file)
+                return False
             return True
-            
-        except Exception as e:
-            logger.error(f"Failed to validate PLY file {ply_file}: {e}")
+        except Exception as exc:
+            logger.error("Failed to validate PLY file %s: %s", ply_file, exc)
             return False
 
-    def _create_supersplat_bundle(self, results: Dict[str, Any]):
-        """Create a bundle compatible with SuperSplat viewer"""
-        logger.info("📦 Creating SuperSplat viewer bundle")
-        
-        # Find the largest/best compression result
-        if not results['compressed_outputs']:
-            logger.warning("No compressed outputs to bundle")
-            return
-        
-        # Use the first result (or could select based on size/quality)
-        best_result = results['compressed_outputs'][0]
-        source_dir = Path(best_result['output_dir'])
-        bundle_dir = Path(self.output_dir) / "supersplat_bundle"
-        bundle_dir.mkdir(exist_ok=True)
-        
-        # Copy all WebP files and metadata
-        for file_path in Path(best_result['output_dir']).glob('*'):
-            if file_path.is_file():
-                dest_path = bundle_dir / file_path.name
-                import shutil
-                shutil.copy2(file_path, dest_path)
-                logger.info(f"Copied {file_path.name} to SuperSplat bundle")
+    def _build_single_bundle(self, source: Path, bundle_dir: Path) -> None:
+        bundle_dir.mkdir(parents=True, exist_ok=True)
+        output = bundle_dir / "meta.json"
+        if source.suffix.lower() == ".lcc":
+            command = [*self.transform_bin, "-w", "-g", self.device, "-O", "0", str(source), str(output)]
+        else:
+            command = [*self.transform_bin, "-w", "-g", self.device, str(source), str(output)]
+        self._run_command(command)
 
-        for sidecar_path in best_result.get('sidecar_files', []):
-            src = Path(sidecar_path)
-            if src.is_file():
-                dest_path = bundle_dir / src.name
-                import shutil
-                shutil.copy2(src, dest_path)
-                logger.info(f"Copied sidecar asset {src.name} to SuperSplat bundle")
-        
-        # Create viewer settings file for SuperSplat
-        settings = {
-            "background": {"color": [0, 0, 0, 0]},
-            "camera": {
-                "fov": 1.0,
-                "position": [0, 1, -1],
-                "target": [0, 0, 0],
-                "startAnim": "orbit"
-            }
+    def _build_lod_inputs_from_ply(self, source: Path, work_dir: Path) -> list[tuple[int, Path]]:
+        work_dir.mkdir(parents=True, exist_ok=True)
+        lod_inputs: list[tuple[int, Path]] = [(0, source)]
+        for level, decimation in enumerate(self.lod_decimation, start=1):
+            output = work_dir / f"lod{level}.ply"
+            command = [*self.transform_bin, "-w", str(source), "-F", decimation, str(output)]
+            self._run_command(command)
+            lod_inputs.append((level, output))
+        return lod_inputs
+
+    def _build_lod_bundle_from_lcc(self, source: Path, bundle_dir: Path) -> None:
+        bundle_dir.mkdir(parents=True, exist_ok=True)
+        levels = ",".join(str(level) for level in range(len(self.lod_decimation) + 1))
+        command = [
+            *self.transform_bin,
+            "-w",
+            "-g",
+            self.device,
+            "-O",
+            levels,
+            "-C",
+            str(self.lod_chunk_count),
+            "-X",
+            str(self.lod_chunk_extent),
+            str(source),
+            str(bundle_dir / "lod-meta.json"),
+        ]
+        self._run_command(command, timeout=7200)
+
+    def _build_lod_bundle_from_inputs(self, lod_inputs: Sequence[tuple[int, Path]], bundle_dir: Path) -> None:
+        bundle_dir.mkdir(parents=True, exist_ok=True)
+        command = [
+            *self.transform_bin,
+            "-w",
+            "-g",
+            self.device,
+            "-C",
+            str(self.lod_chunk_count),
+            "-X",
+            str(self.lod_chunk_extent),
+        ]
+        for level, path in lod_inputs:
+            command.extend([str(path), "-l", str(level)])
+        command.append(str(bundle_dir / "lod-meta.json"))
+        self._run_command(command, timeout=7200)
+
+    def _collect_bundle_metrics(self, bundle_dir: Path) -> dict[str, Any]:
+        metrics: dict[str, Any] = {
+            "bundleDir": str(bundle_dir),
+            "fileCount": 0,
+            "bundleSizeBytes": 0,
+            "hasMetaJson": False,
+            "hasLodMetaJson": False,
+            "splatCount": None,
+            "lodLevels": None,
+            "chunkFiles": 0,
+            "lodTreeNodes": 0,
+            "bounds": None,
         }
-        
-        settings_path = bundle_dir / "settings.json"
-        with open(settings_path, 'w') as f:
-            json.dump(settings, f, indent=2)
-        
-        logger.info(f"✅ SuperSplat bundle created at: {bundle_dir}")
 
-    def _extract_and_find_plys(self, archive_path: str) -> List[str]:
-        """Extract archive and find PLY files"""
-        logger.info(f"Extracting archive: {archive_path}")
-        
-        extract_dir = os.path.join(self.input_dir, "extracted")
-        os.makedirs(extract_dir, exist_ok=True)
-        
-        if archive_path.endswith('.tar.gz'):
-            with tarfile.open(archive_path, 'r:gz') as tar:
-                tar.extractall(extract_dir)
-        elif archive_path.endswith('.zip'):
-            with zipfile.ZipFile(archive_path, 'r') as zip_file:
-                zip_file.extractall(extract_dir)
-        
-        # Find PLY files recursively
-        ply_files = []
-        for root, dirs, files in os.walk(extract_dir):
-            for file in files:
-                if file.endswith('.ply'):
-                    ply_files.append(os.path.join(root, file))
-        
-        logger.info(f"Found {len(ply_files)} PLY files in archive")
-        return ply_files
+        if not bundle_dir.exists():
+            return metrics
 
-class NumpyEncoder(json.JSONEncoder):
-    """JSON encoder for numpy arrays"""
-    def default(self, obj):
-        import numpy as np
-        if isinstance(obj, np.ndarray):
-            return obj.tolist()
-        return super().default(obj)
+        files = [path for path in bundle_dir.rglob("*") if path.is_file()]
+        metrics["fileCount"] = len(files)
+        metrics["bundleSizeBytes"] = sum(path.stat().st_size for path in files)
+
+        meta_path = bundle_dir / "meta.json"
+        if meta_path.exists():
+            metrics["hasMetaJson"] = True
+            try:
+                meta = json.loads(meta_path.read_text(encoding="utf-8"))
+                shape = meta.get("means", {}).get("shape")
+                if isinstance(shape, list) and shape:
+                    metrics["splatCount"] = shape[0]
+            except json.JSONDecodeError:
+                logger.warning("Failed to parse %s", meta_path)
+
+        lod_meta_path = bundle_dir / "lod-meta.json"
+        if lod_meta_path.exists():
+            metrics["hasLodMetaJson"] = True
+            try:
+                lod_meta = json.loads(lod_meta_path.read_text(encoding="utf-8"))
+                metrics["lodLevels"] = lod_meta.get("lodLevels")
+                filenames = lod_meta.get("filenames")
+                if isinstance(filenames, list):
+                    metrics["chunkFiles"] = len(filenames)
+                tree = lod_meta.get("tree")
+                metrics["lodTreeNodes"] = _count_tree_nodes(tree)
+                if isinstance(tree, dict) and isinstance(tree.get("bound"), dict):
+                    metrics["bounds"] = tree["bound"]
+            except json.JSONDecodeError:
+                logger.warning("Failed to parse %s", lod_meta_path)
+
+        return metrics
+
+    def compress_gaussian_splats(self, input_sources: List[str], output_dir: str) -> Dict[str, Any]:
+        if not input_sources:
+            raise ValueError("compress_gaussian_splats requires at least one input source")
+
+        source = Path(input_sources[0])
+        bundle_source_dir = Path(output_dir) / "generated_bundle"
+        bundle_source_dir.mkdir(parents=True, exist_ok=True)
+
+        if source.suffix.lower() == ".lcc":
+            self._build_single_bundle(source, bundle_source_dir)
+            self._build_lod_bundle_from_lcc(source, bundle_source_dir)
+        else:
+            if not self._validate_ply_for_sogs(str(source)):
+                raise RuntimeError(f"PLY file is not compatible with splat-transform SOG output: {source}")
+            self._build_single_bundle(source, bundle_source_dir)
+            lod_inputs = self._build_lod_inputs_from_ply(source, Path(output_dir) / "lod_inputs")
+            self._build_lod_bundle_from_inputs(lod_inputs, bundle_source_dir)
+
+        metrics = self._collect_bundle_metrics(bundle_source_dir)
+        original_size = source.stat().st_size
+        compressed_size = metrics["bundleSizeBytes"]
+        ratio = round(original_size / compressed_size, 4) if compressed_size else None
+
+        return {
+            "method": "playcanvas_splat_transform",
+            "version": self.version,
+            "gpu_accelerated": self.device != "cpu",
+            "device": self.device,
+            "lodDecimation": list(self.lod_decimation),
+            "lodChunkCount": self.lod_chunk_count,
+            "lodChunkExtent": self.lod_chunk_extent,
+            "input_files": input_sources,
+            "bundle_source_dir": str(bundle_source_dir),
+            "compressed_outputs": [
+                {
+                    "input_file": str(source),
+                    "output_dir": str(bundle_source_dir),
+                    "original_size_mb": round(original_size / (1024 * 1024), 3),
+                    "compressed_size_mb": round(compressed_size / (1024 * 1024), 3),
+                    "compression_ratio": ratio,
+                }
+            ],
+            "overall_compression_ratio": ratio,
+            "bundle_metrics": metrics,
+        }
+
+    def _create_supersplat_bundle(self, results: Dict[str, Any]) -> None:
+        source_dir_value = results.get("bundle_source_dir")
+        if source_dir_value:
+            source_dir = Path(source_dir_value)
+        else:
+            outputs = results.get("compressed_outputs") or []
+            if not outputs:
+                raise ValueError("No compressed outputs to package")
+            source_dir = Path(outputs[0]["output_dir"])
+
+        bundle_dir = Path(self.output_dir) / "supersplat_bundle"
+        if bundle_dir.exists():
+            shutil.rmtree(bundle_dir)
+        bundle_dir.mkdir(parents=True, exist_ok=True)
+
+        for path in source_dir.rglob("*"):
+            relative = path.relative_to(source_dir)
+            destination = bundle_dir / relative
+            if path.is_dir():
+                destination.mkdir(parents=True, exist_ok=True)
+            else:
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(path, destination)
+
+        skybox_manifest_path = _bundle_skybox_asset(bundle_dir)
+
+        with open(bundle_dir / "settings.json", "w", encoding="utf-8") as file_obj:
+            json.dump(DEFAULT_SOG_SETTINGS, file_obj, indent=2)
+
+        bundle_metrics = self._collect_bundle_metrics(bundle_dir)
+        entrypoints: dict[str, Any] = {
+            "default": "lod-meta.json" if bundle_metrics["hasLodMetaJson"] else "meta.json",
+            "fallback": "meta.json" if bundle_metrics["hasMetaJson"] else None,
+        }
+        bundle_manifest = {
+            "version": 1,
+            "skybox": {"type": "equirect", "path": skybox_manifest_path} if skybox_manifest_path else None,
+            "entrypoints": entrypoints,
+            "streaming": {
+                "enabled": bool(bundle_metrics["hasLodMetaJson"]),
+                "lodLevels": bundle_metrics["lodLevels"],
+                "chunkFiles": bundle_metrics["chunkFiles"],
+                "bounds": bundle_metrics["bounds"],
+            },
+        }
+        with open(bundle_dir / "spaceport_bundle.json", "w", encoding="utf-8") as file_obj:
+            json.dump(bundle_manifest, file_obj, indent=2)
+
+    def process_job(self) -> None:
+        logger.info("Starting SuperSplat compression job")
+        os.makedirs(self.output_dir, exist_ok=True)
+
+        source = self._discover_input_source()
+        logger.info("Selected %s source: %s", source.kind, source.path)
+        logger.info("Supporting files discovered: %s", [path.name for path in source.supporting_files])
+
+        with tempfile.TemporaryDirectory(prefix="sogs-work-") as temp_dir:
+            results = self.compress_gaussian_splats([str(source.path)], temp_dir)
+            self._create_supersplat_bundle(results)
+
+        bundle_dir = Path(self.output_dir) / "supersplat_bundle"
+        copied_supporting_files = self._copy_supporting_files(source.supporting_files, bundle_dir)
+        results["copied_supporting_files"] = copied_supporting_files
+        results["source_kind"] = source.kind
+        results["source_path"] = str(source.path)
+        results["bundle_metrics"] = self._collect_bundle_metrics(bundle_dir)
+
+        summary_path = Path(self.output_dir) / "sogs_compression_summary.json"
+        with open(summary_path, "w", encoding="utf-8") as file_obj:
+            json.dump(results, file_obj, indent=2)
+
+        logger.info("Compression complete")
+        logger.info("Bundle output: %s", bundle_dir)
+        logger.info("Bundle metrics: %s", json.dumps(results["bundle_metrics"], indent=2))
+
 
 if __name__ == "__main__":
-    compressor = PlayCanvasSOGSCompressor()
-    compressor.process_job() 
+    try:
+        PlayCanvasSOGSCompressor().process_job()
+    except Exception as exc:
+        logger.error("Compression job failed: %s", exc)
+        sys.exit(1)
