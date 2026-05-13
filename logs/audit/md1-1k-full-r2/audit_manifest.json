@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "0b2e6a114bced1ab153c56a036ca4e88bf9dcfd5 pushed; exact-head CDK Deploy 25818985400 green; MD1 paid submit blocked until SageMaker idle.",
-  "current_exact_head_gate_status": "exact-head 0b2e6a114bced1ab153c56a036ca4e88bf9dcfd5 green on CDK Deploy 25818985400.",
-  "current_live_compute_status": "SageMaker active jobs remain source-attributed: training md1-sample5-cachectl-r10-1778696805 (sfm-reality-check, Component=3DGS, CodeHead=08831258) and processing md1-baseline-e2e-20260513115645-sfm (baseline E2E monitor, Component=SfM). No MD1 compute launched from this loop.",
-  "current_rung": "R0_visual_sentinel_leaf_readiness_blocked_on_active_sagemaker_jobs",
+  "current_branch_head": "5ad488b9bed408182dee8aedf438372ae42f8149 pushed; exact-head CDK Deploy 25819651655 green; MD1 paid submit blocked only by active SageMaker processing.",
+  "current_exact_head_gate_status": "exact-head 5ad488b9bed408182dee8aedf438372ae42f8149 green on CDK Deploy 25819651655.",
+  "current_live_compute_status": "SageMaker training is idle. Processing md1-baseline-e2e-20260513115645-sfm remains InProgress and source-attributed to the baseline E2E monitor. No MD1 compute launched from this loop.",
+  "current_rung": "R0_visual_sentinel_leaf_readiness_blocked_on_source_attributed_processing_job",
   "evidence_events": [
     {
       "billable_seconds": 412,
@@ -825,6 +825,19 @@
       "spend_estimated_usd": 0,
       "next": "Commit/push post-exact readiness evidence, watch exact-head workflows, then wait for SageMaker idle before one R0 tile_04 visual-sentinel proof.",
       "test_evidence": "Passed after readiness parser fix and post-exact ledger update: python3 -m unittest tests.unit.test_enforce_md1_leaf_submit_readiness tests.unit.test_tiled_3dgs_benchmark (93 tests); py_compile for enforce_md1_leaf_submit_readiness/run_tiled_3dgs_benchmark/enforce_md1_merge_review_gate; JSON validation for post-exact readiness/live AWS/audit evidence; git diff --check."
+    },
+    {
+      "timestamp": "2026-05-13T18:56:51Z",
+      "event": "md1_r0_visual_sentinel_final_readiness_blocked_processing_job",
+      "summary": "Exact-head CDK for 5ad488b9 is green. Source-attributed SFM training is terminal/stopped, SageMaker training is idle, but baseline E2E processing remains InProgress, so R0 visual-sentinel paid leaf submit is still blocked. No MD1 compute launched.",
+      "evidence": [
+        "logs/md1-r0-visual-sentinel-leaf-submit-readiness-finalcheck-20260513.json",
+        "logs/md1-r0-visual-sentinel-live-training-inprogress-finalcheck-20260513.json",
+        "logs/md1-r0-visual-sentinel-live-processing-inprogress-finalcheck-20260513.json",
+        "logs/md1-sample5-cachectl-r10-1778696805-terminal-describe-20260513.json"
+      ],
+      "spend_estimated_usd": 0,
+      "next": "Commit/push final readiness evidence, watch exact-head workflows, then wait for processing idle before one R0 tile_04 visual-sentinel proof."
     }
   ],
   "exact_head_gate_status": "exact-head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 green on CDK Deploy 25478133157; Deploy CDK Stacks and CDK Diff skipped by scope detection; no ML Container Build appeared for this non-container status commit; previous container-affecting head 6249a280443438790e5f9d11512fe6714c1a0728 remains green on CDK Deploy 25475213765, Trigger ML Container Build 25475213781, and CodeBuild spaceport-ml-containers:ae9b6cea-6c39-4bf8-a885-f0eb5336ee4a",
@@ -1521,7 +1534,7 @@
     "status": "merge_retry1_guard_ready_no_paid_retry_launched",
     "v18_review_launched": false
   },
-  "latest_no_spend_evidence": "R0 dry-run logs/md1-r0-visual-sentinel-leaf-dryrun-20260513.json; merge gate logs/md1-r0-visual-sentinel-merge-review-gate-20260513.json; post-exact readiness logs/md1-r0-visual-sentinel-leaf-submit-readiness-postexact-20260513.json; active-job evidence logs/md1-sample5-cachectl-r10-1778696805-active-describe-postexact-20260513.json, logs/md1-sample5-cachectl-r10-1778696805-tags-postexact-20260513.json, logs/md1-baseline-e2e-20260513115645-sfm-active-describe-postexact-20260513.json, logs/md1-baseline-e2e-20260513115645-sfm-tags-postexact-20260513.json.",
+  "latest_no_spend_evidence": "R0 dry-run logs/md1-r0-visual-sentinel-leaf-dryrun-20260513.json; merge gate logs/md1-r0-visual-sentinel-merge-review-gate-20260513.json; final readiness logs/md1-r0-visual-sentinel-leaf-submit-readiness-finalcheck-20260513.json; training terminal evidence logs/md1-sample5-cachectl-r10-1778696805-terminal-describe-20260513.json; live AWS lists logs/md1-r0-visual-sentinel-live-training-inprogress-finalcheck-20260513.json and logs/md1-r0-visual-sentinel-live-processing-inprogress-finalcheck-20260513.json.",
   "latest_no_spend_implementation": "Updated automation prompt to current abab508e R0 visual-sentinel readiness path, deleted duplicate baseline monitor md1-baseline-e2e-monitor-2, and added effective_selected_image_count to post-leaf dry-run gates for capped image-count clarity.",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
@@ -10069,7 +10082,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Run targeted verification, commit/push post-exact readiness evidence, watch exact-head workflows, then wait for SageMaker idle before rerunning readiness and submitting at most one R0 tile_04 visual-sentinel leaf proof.",
+  "next_unblocked_step": "Commit/push final readiness evidence, watch exact-head workflows, then wait for SageMaker processing idle before rerunning readiness and submitting at most one R0 tile_04 visual-sentinel leaf proof.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -16308,5 +16321,27 @@
     "spend_estimated_usd": 0,
     "next": "Commit/push post-exact readiness evidence, watch exact-head workflows, then wait for SageMaker idle before one R0 tile_04 visual-sentinel proof.",
     "test_evidence": "Passed after readiness parser fix and post-exact ledger update: python3 -m unittest tests.unit.test_enforce_md1_leaf_submit_readiness tests.unit.test_tiled_3dgs_benchmark (93 tests); py_compile for enforce_md1_leaf_submit_readiness/run_tiled_3dgs_benchmark/enforce_md1_merge_review_gate; JSON validation for post-exact readiness/live AWS/audit evidence; git diff --check."
+  },
+  "md1_r0_visual_sentinel_final_readiness_20260513": {
+    "timestamp": "2026-05-13T18:56:51Z",
+    "head": "5ad488b9bed408182dee8aedf438372ae42f8149",
+    "exact_head_cdk_run": 25819651655,
+    "decision": "leaf_submit_blocked",
+    "block_reasons": [
+      "processing_jobs_in_progress"
+    ],
+    "training_jobs_in_progress": [],
+    "processing_jobs_in_progress": [
+      "md1-baseline-e2e-20260513115645-sfm"
+    ],
+    "training_terminal_evidence": "logs/md1-sample5-cachectl-r10-1778696805-terminal-describe-20260513.json",
+    "dry_run_json": "logs/md1-r0-visual-sentinel-leaf-dryrun-20260513.json",
+    "objective_gate_json": "logs/md1-r4-hardcap-quality-repair-early-visual-smoke-objective-gate-20260513.json",
+    "merge_review_gate_json": "logs/md1-r0-visual-sentinel-merge-review-gate-20260513.json",
+    "leaf_submit_readiness_json": "logs/md1-r0-visual-sentinel-leaf-submit-readiness-finalcheck-20260513.json",
+    "live_training_jobs_json": "logs/md1-r0-visual-sentinel-live-training-inprogress-finalcheck-20260513.json",
+    "live_processing_jobs_json": "logs/md1-r0-visual-sentinel-live-processing-inprogress-finalcheck-20260513.json",
+    "spend_estimated_usd": 0,
+    "next": "Do not submit MD1 paid proof until exact head remains green and SageMaker processing is idle."
   }
 }
