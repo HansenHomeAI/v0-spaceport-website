@@ -1,0 +1,94 @@
+{
+  "overall_status": "block",
+  "confidence": 0.92,
+  "recommended_next_action": "Reject the soft-density tile_04 bg10 candidate for promotion and stop paid compute. Do no-spend attribution against the last passing tile_04 boundary/horizon reference before another objective.",
+  "checked_panels": [
+    "/tmp/md1_softdensity_visual_qa_bundle/quality_review/visual_panels/horizon/DJI_0073.png",
+    "/tmp/md1_softdensity_visual_qa_bundle/quality_review/visual_panels/horizon/DJI_0146.png",
+    "/tmp/md1_softdensity_visual_qa_bundle/quality_review/visual_panels/boundary/DJI_0068.png",
+    "/tmp/md1_softdensity_visual_qa_bundle/quality_review/visual_panels/near_detail/DJI_0262.png"
+  ],
+  "blocking_defects": [
+    {
+      "category": "sky_horizon_continuity",
+      "severity": "blocking",
+      "description": "Horizon views show broad purple-blue haze bands over mountains, roads, and valley terrain, with obvious loss of horizon structure compared with the reference."
+    },
+    {
+      "category": "geometry_alignment",
+      "severity": "blocking",
+      "description": "Roads, ridge lines, lake edges, and golf course geometry are displaced or smeared enough that the render would not pass human inspection during viewer navigation."
+    },
+    {
+      "category": "texture_blur_or_smearing",
+      "severity": "blocking",
+      "description": "Fine terrain, shrubs, roads, buildings, and trees collapse into low-frequency purple and cyan texture fields across both boundary and horizon panels."
+    },
+    {
+      "category": "color_exposure_shift",
+      "severity": "blocking",
+      "description": "The candidate render has a large magenta/purple color cast and washed-out blue haze that is not present in the source images."
+    }
+  ],
+  "per_view_findings": [
+    {
+      "bucket": "horizon",
+      "image_name": "DJI_0073.JPG",
+      "severity": "blocking",
+      "findings": [
+        "mountain and valley detail replaced by smeared purple texture",
+        "road and creek corridor shape no longer readable",
+        "large high-error regions across nearly the full panel"
+      ]
+    },
+    {
+      "bucket": "horizon",
+      "image_name": "DJI_0146.JPG",
+      "severity": "blocking",
+      "findings": [
+        "lake shore and road geometry is washed out",
+        "distant hills and sky transition are flattened into haze",
+        "foreground and midground terrain are heavily blurred"
+      ]
+    },
+    {
+      "bucket": "boundary",
+      "image_name": "DJI_0068.JPG",
+      "severity": "blocking",
+      "findings": [
+        "tile boundary area has visible smear and color shift",
+        "golf greens, trees, and roads lose crisp shape",
+        "no-background render still shows the same broad artifacts"
+      ]
+    },
+    {
+      "bucket": "near_detail",
+      "image_name": "DJI_0262.JPG",
+      "severity": "blocking",
+      "findings": [
+        "near terrain is not inspectable at human quality",
+        "large magenta bands cover the central scene",
+        "local detail is materially worse than the source view"
+      ]
+    }
+  ],
+  "evidence": {
+    "numeric_gate": {
+      "promotion_block_reasons": [
+        "boundary_lpips_regression",
+        "boundary_no_required_improvement",
+        "horizon_psnr_regression",
+        "horizon_lpips_regression"
+      ],
+      "v18_block_reasons": [
+        "near_detail_v18_median_psnr_regression",
+        "near_detail_v18_median_lpips_regression",
+        "boundary_v18_median_psnr_regression",
+        "boundary_v18_median_lpips_regression",
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_median_lpips_regression"
+      ]
+    },
+    "visual_gate_basis": "Reference, merged render, no-background render, and absolute-difference panel were inspected side by side."
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "AlgorithmSpecification": {
+    "ContainerEntrypoint": [
+      "python3",
+      "/opt/ml/code/run_tiled_quality_review.py"
+    ],
+    "TrainingImage": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent90742618md1geometryconsistency",
+    "TrainingInputMode": "File"
+  },
+  "Environment": {
+    "BASELINE_REVIEW_MANIFEST": "/opt/ml/input/data/baseline-review/quality_review_manifest.json",
+    "COLMAP_INPUT_DIR": "/opt/ml/input/data/colmap",
+    "FROZEN_REVIEW_CAMERA_MANIFEST": "/opt/ml/input/data/review-manifest/review_camera_manifest.json",
+    "MODEL_INPUT_DIR": "/opt/ml/input/data/model",
+    "OUTPUT_DIR": "/opt/ml/model",
+    "PYTHONUNBUFFERED": "1",
+    "QUALITY_REVIEW_CAMERA_SET": "frozen-promotion-p24",
+    "QUALITY_REVIEW_CULL_MARGIN": "0.15",
+    "QUALITY_REVIEW_MAX_GAUSSIANS_PER_VIEW": "2500000",
+    "QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET": "4",
+    "QUALITY_REVIEW_MIN_GAUSSIANS_ON_OOM": "800000",
+    "QUALITY_REVIEW_RENDER_SCALE": "0.5",
+    "QUALITY_REVIEW_TILE_IDS": "tile_02,tile_05"
+  },
+  "InputDataConfig": [
+    {
+      "ChannelName": "model",
+      "CompressionType": "None",
+      "DataSource": {
+        "S3DataSource": {
+          "S3DataDistributionType": "FullyReplicated",
+          "S3DataType": "S3Prefix",
+          "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-quality-preserving-soft-density-leaf-tile10-rollback-bg10-merge-g4dn-20260513/output/artifact/model.tar.gz"
+        }
+      },
+      "RecordWrapperType": "None"
+    },
+    {
+      "ChannelName": "colmap",
+      "CompressionType": "None",
+      "DataSource": {
+        "S3DataSource": {
+          "S3DataDistributionType": "FullyReplicated",
+          "S3DataType": "S3Prefix",
+          "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap"
+        }
+      },
+      "RecordWrapperType": "None"
+    },
+    {
+      "ChannelName": "review-manifest",
+      "CompressionType": "None",
+      "DataSource": {
+        "S3DataSource": {
+          "S3DataDistributionType": "FullyReplicated",
+          "S3DataType": "S3Prefix",
+          "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-quality-preserving-soft-density-leaf-bg10-review-v18colmap-20260513/review-input"
+        }
+      },
+      "RecordWrapperType": "None"
+    },
+    {
+      "ChannelName": "baseline-review",
+      "CompressionType": "None",
+      "DataSource": {
+        "S3DataSource": {
+          "S3DataDistributionType": "FullyReplicated",
+          "S3DataType": "S3Prefix",
+          "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-9tile-canary-review-20260505/baselines/v18-smoke-p24"
+        }
+      },
+      "RecordWrapperType": "None"
+    }
+  ],
+  "OutputDataConfig": {
+    "S3OutputPath": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-quality-preserving-soft-density-leaf-bg10-review-v18colmap-20260513/outputs/r4-t04soft-bg10-v18colmap-smoke-p24"
+  },
+  "ResourceConfig": {
+    "InstanceCount": 1,
+    "InstanceType": "ml.g4dn.xlarge",
+    "VolumeSizeInGB": 125
+  },
+  "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+  "StoppingCondition": {
+    "MaxRuntimeInSeconds": 1800
+  },
+  "Tags": [
+    {
+      "Key": "Project",
+      "Value": "Spaceport"
+    },
+    {
+      "Key": "Component",
+      "Value": "3DGS"
+    },
+    {
+      "Key": "Benchmark",
+      "Value": "true"
+    },
+    {
+      "Key": "Branch",
+      "Value": "agent-90742618-md1-geometry-consistency"
+    },
+    {
+      "Key": "Stage",
+      "Value": "quality-review"
+    }
+  ],
+  "TrainingJobName": "md1-r1-r4-t04soft-bg10-v18p24-1778651573"
+}

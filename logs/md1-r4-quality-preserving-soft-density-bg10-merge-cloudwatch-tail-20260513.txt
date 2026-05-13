@@ -1,0 +1,698 @@
+✅ sitecustomize: filtered deprecated CUDA arch flags (TORCH_CUDA_ARCH_LIST=7.0;8.0;8.6+PTX)	✅ sitecustomize: patched nerfstudio PIL conversion	{
+  "created_at": "2026-05-13T05:36:10Z",
+  "training_completed": true,
+  "training_mode": "remote_no_training_tiled_merge",
+  "merge_mode": "support_weighted_overlap",
+  "background_source_tile_id": "tile_10",
+  "protected_overlap_tile_ids": [],
+  "protected_overlap_mode": null,
+  "merge_plan": {
+    "artifact_inputs": [
+      {
+        "artifact_input_name": "artifact-00",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz"
+      },
+      {
+        "artifact_input_name": "artifact-01",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-quality-preserving-soft-density-20260513/tiles/tile_04/md1-r4t04soft-20260513-1778644232-tile-04/output/model.tar.gz"
+      },
+      {
+        "artifact_input_name": "artifact-02",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_11/md1-r4leafreb-1777858863-tile-11/output/model.tar.gz"
+      }
+    ],
+    "selected_tile_ids": [
+      "tile_00",
+      "tile_01",
+      "tile_02",
+      "tile_03",
+      "tile_04",
+      "tile_05",
+      "tile_06",
+      "tile_07",
+      "tile_08",
+      "tile_09",
+      "tile_10",
+      "tile_11",
+      "tile_12",
+      "tile_13"
+    ],
+    "source_summary_json": "logs/md1-r4-quality-preserving-soft-density-leaf-tile10-rollback-fullscene-summary-dryrun-20260513.json",
+    "tiles": [
+      {
+        "artifact_input_name": "artifact-00",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+        "cache_status": "context_density_hit",
+        "candidate_members": [
+          "tiles/tile_00/splat.ply",
+          "splat.ply"
+        ],
+        "quality_gate_status": "passed",
+        "stage_name": "T0_tile_00",
+        "stage_type": "context_density_tile",
+        "tile_id": "tile_00"
+      },
+      {
+        "artifact_input_name": "artifact-00",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+        "cache_status": "context_density_hit",
+        "candidate_members": [
+          "tiles/tile_01/splat.ply",
+          "splat.ply"
+        ],
+        "quality_gate_status": "passed",
+        "stage_name": "T0_tile_01",
+        "stage_type": "context_density_tile",
+        "tile_id": "tile_01"
+      },
+      {
+        "artifact_input_name": "artifact-00",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+        "cache_status": "context_density_hit",
+        "candidate_members": [
+          "tiles/tile_02/splat.ply",
+          "splat.ply"
+        ],
+        "quality_gate_status": "passed",
+        "stage_name": "T0_tile_02",
+        "stage_type": "context_density_tile",
+        "tile_id": "tile_02"
+      },
+      {
+        "artifact_input_name": "artifact-00",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+        "cache_status": "context_density_hit",
+        "candidate_members": [
+          "tiles/tile_03/splat.ply",
+          "splat.ply"
+        ],
+        "quality_gate_status": "passed",
+        "stage_name": "T0_tile_03",
+        "stage_type": "context_density_tile",
+        "tile_id": "tile_03"
+      },
+      {
+        "artifact_input_name": "artifact-01",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-quality-preserving-soft-density-20260513/tiles/tile_04/md1-r4t04soft-20260513-1778644232-tile-04/output/model.tar.gz",
+        "cache_status": "validated_leaf_reuse",
+        "candidate_members": [
+          "splat.ply"
+        ],
+        "quality_gate_status": "leaf_gate_passed_merge_review_allowed",
+        "stage_name": "T0_tile_04_validated_leaf_reuse",
+        "stage_type": "train",
+        "tile_id": "tile_04"
+      },
+      {
+        "artifact_input_name": "artifact-00",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+        "cache_status": "context_density_hit",
+        "candidate_members": [
+          "tiles/tile_05/splat.ply",
+          "splat.ply"
+        ],
+        "quality_gate_status": "passed",
+        "stage_name": "T0_tile_05",
+        "stage_type": "context_density_tile",
+        "tile_id": "tile_05"
+      },
+      {
+        "artifact_input_name": "artifact-00",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+        "cache_status": "context_density_hit",
+        "candidate_members": [
+          "tiles/tile_06/splat.ply",
+          "splat.ply"
+        ],
+        "quality_gate_status": "passed",
+        "stage_name": "T0_tile_06",
+        "stage_type": "context_density_tile",
+        "tile_id": "tile_06"
+      },
+      {
+        "artifact_input_name": "artifact-00",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+        "cache_status": "context_density_hit",
+        "candidate_members": [
+          "tiles/tile_07/splat.ply",
+          "splat.ply"
+        ],
+        "quality_gate_status": "passed",
+        "stage_name": "T0_tile_07",
+        "stage_type": "context_density_tile",
+        "tile_id": "tile_07"
+      },
+      {
+        "artifact_input_name": "artifact-00",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+        "cache_status": "context_density_hit",
+        "candidate_members": [
+          "tiles/tile_08/splat.ply",
+          "splat.ply"
+        ],
+        "quality_gate_status": "passed",
+        "stage_name": "T0_tile_08",
+        "stage_type": "context_density_tile",
+        "tile_id": "tile_08"
+      },
+      {
+        "artifact_input_name": "artifact-00",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+        "cache_status": "context_density_hit",
+        "candidate_members": [
+          "tiles/tile_09/splat.ply",
+          "splat.ply"
+        ],
+        "quality_gate_status": "passed",
+        "stage_name": "T0_tile_09",
+        "stage_type": "context_density_tile",
+        "tile_id": "tile_09"
+      },
+      {
+        "artifact_input_name": "artifact-00",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+        "cache_status": "context_density_rollback",
+        "candidate_members": [
+          "tiles/tile_10/splat.ply",
+          "splat.ply"
+        ],
+        "quality_gate_status": "dryrun_isolation_candidate",
+        "stage_name": "T0_tile_10_context_density_rollback",
+        "stage_type": "context_density_tile",
+        "tile_id": "tile_10"
+      },
+      {
+        "artifact_input_name": "artifact-02",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_11/md1-r4leafreb-1777858863-tile-11/output/model.tar.gz",
+        "cache_status": "hit",
+        "candidate_members": [
+          "splat.ply"
+        ],
+        "quality_gate_status": "passed",
+        "stage_name": "T0_tile_11",
+        "stage_type": "cached_tile",
+        "tile_id": "tile_11"
+      },
+      {
+        "artifact_input_name": "artifact-00",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+        "cache_status": "context_density_hit",
+        "candidate_members": [
+          "tiles/tile_12/splat.ply",
+          "splat.ply"
+        ],
+        "quality_gate_status": "passed",
+        "stage_name": "T0_tile_12",
+        "stage_type": "context_density_tile",
+        "tile_id": "tile_12"
+      },
+      {
+        "artifact_input_name": "artifact-00",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+        "cache_status": "context_density_hit",
+        "candidate_members": [
+          "tiles/tile_13/splat.ply",
+          "splat.ply"
+        ],
+        "quality_gate_status": "passed",
+        "stage_name": "T0_tile_13",
+        "stage_type": "context_density_tile",
+        "tile_id": "tile_13"
+      }
+    ]
+  },
+  "extracted_tiles": [
+    {
+      "tile_id": "tile_00",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "artifact_input_name": "artifact-00",
+      "selected_member": "tiles/tile_00/splat.ply",
+      "selected_size_bytes": 161628697,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_00"
+    },
+    {
+      "tile_id": "tile_01",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "artifact_input_name": "artifact-00",
+      "selected_member": "tiles/tile_01/splat.ply",
+      "selected_size_bytes": 43736584,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_01"
+    },
+    {
+      "tile_id": "tile_02",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "artifact_input_name": "artifact-00",
+      "selected_member": "tiles/tile_02/splat.ply",
+      "selected_size_bytes": 105947097,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_02"
+    },
+    {
+      "tile_id": "tile_03",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "artifact_input_name": "artifact-00",
+      "selected_member": "tiles/tile_03/splat.ply",
+      "selected_size_bytes": 46967136,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_03"
+    },
+    {
+      "tile_id": "tile_04",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-quality-preserving-soft-density-20260513/tiles/tile_04/md1-r4t04soft-20260513-1778644232-tile-04/output/model.tar.gz",
+      "artifact_input_name": "artifact-01",
+      "selected_member": "splat.ply",
+      "selected_size_bytes": 115976441,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_04"
+    },
+    {
+      "tile_id": "tile_05",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "artifact_input_name": "artifact-00",
+      "selected_member": "tiles/tile_05/splat.ply",
+      "selected_size_bytes": 93252648,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_05"
+    },
+    {
+      "tile_id": "tile_06",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "artifact_input_name": "artifact-00",
+      "selected_member": "tiles/tile_06/splat.ply",
+      "selected_size_bytes": 123636353,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_06"
+    },
+    {
+      "tile_id": "tile_07",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "artifact_input_name": "artifact-00",
+      "selected_member": "tiles/tile_07/splat.ply",
+      "selected_size_bytes": 49545712,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_07"
+    },
+    {
+      "tile_id": "tile_08",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "artifact_input_name": "artifact-00",
+      "selected_member": "tiles/tile_08/splat.ply",
+      "selected_size_bytes": 49531464,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_08"
+    },
+    {
+      "tile_id": "tile_09",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "artifact_input_name": "artifact-00",
+      "selected_member": "tiles/tile_09/splat.ply",
+      "selected_size_bytes": 21554008,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_09"
+    },
+    {
+      "tile_id": "tile_10",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "artifact_input_name": "artifact-00",
+      "selected_member": "tiles/tile_10/splat.ply",
+      "selected_size_bytes": 40268600,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_10"
+    },
+    {
+      "tile_id": "tile_11",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-leaf-scaffold-init-canary-rebuild-v18manifest-20260504/tiles/tile_11/md1-r4leafreb-1777858863-tile-11/output/model.tar.gz",
+      "artifact_input_name": "artifact-02",
+      "selected_member": "splat.ply",
+      "selected_size_bytes": 13005,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_11"
+    },
+    {
+      "tile_id": "tile_12",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "artifact_input_name": "artifact-00",
+      "selected_member": "tiles/tile_12/splat.ply",
+      "selected_size_bytes": 45431160,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_12"
+    },
+    {
+      "tile_id": "tile_13",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz",
+      "artifact_input_name": "artifact-00",
+      "selected_member": "tiles/tile_13/splat.ply",
+      "selected_size_bytes": 32317384,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_13"
+    }
+  ],
+  "merge_report": {
+    "merge_mode": "support_weighted_overlap",
+    "protected_overlap_mode": null,
+    "protected_overlap_tile_ids": [],
+    "merged_ply": "/opt/ml/processing/output/artifact/merged/merged_splat.ply",
+    "tile_count": 14,
+    "source_gaussians": 8940360,
+    "retained_gaussians": 8560936,
+    "dropped_gaussians": 379424,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "fallback_reasons": [],
+    "tiles": [
+      {
+        "tile_id": "tile_00",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_00/splat.ply",
+        "source_gaussians": 1554116,
+        "retained_gaussians": 1554116,
+        "dropped_gaussians": 0,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 1554108,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 8,
+          "retained_overlap_count": 0,
+          "retained_context_count": 8,
+          "protected_overlap_enabled": false,
+          "protected_overlap_mode": null,
+          "protected_overlap_retained_count": 0,
+          "protected_overlap_added_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_01",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_01/splat.ply",
+        "source_gaussians": 420538,
+        "retained_gaussians": 420538,
+        "dropped_gaussians": 0,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 322211,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 98327,
+          "retained_overlap_count": 0,
+          "retained_context_count": 98327,
+          "protected_overlap_enabled": false,
+          "protected_overlap_mode": null,
+          "protected_overlap_retained_count": 0,
+          "protected_overlap_added_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_02",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_02/splat.ply",
+        "source_gaussians": 1018716,
+        "retained_gaussians": 1018716,
+        "dropped_gaussians": 0,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 934761,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 83955,
+          "retained_overlap_count": 0,
+          "retained_context_count": 83955,
+          "protected_overlap_enabled": false,
+          "protected_overlap_mode": null,
+          "protected_overlap_retained_count": 0,
+          "protected_overlap_added_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_03",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_03/splat.ply",
+        "source_gaussians": 451601,
+        "retained_gaussians": 404551,
+        "dropped_gaussians": 47050,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 404551,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "protected_overlap_enabled": false,
+          "protected_overlap_mode": null,
+          "protected_overlap_retained_count": 0,
+          "protected_overlap_added_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": false
+        }
+      },
+      {
+        "tile_id": "tile_04",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_04/splat.ply",
+        "source_gaussians": 1115152,
+        "retained_gaussians": 1093294,
+        "dropped_gaussians": 21858,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 1007739,
+          "overlap_candidate_count": 32340,
+          "context_candidate_count": 75071,
+          "retained_overlap_count": 10484,
+          "retained_context_count": 75071,
+          "protected_overlap_enabled": false,
+          "protected_overlap_mode": null,
+          "protected_overlap_retained_count": 0,
+          "protected_overlap_added_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_05",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_05/splat.ply",
+        "source_gaussians": 896654,
+        "retained_gaussians": 896654,
+        "dropped_gaussians": 0,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 780101,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 116553,
+          "retained_overlap_count": 0,
+          "retained_context_count": 116553,
+          "protected_overlap_enabled": false,
+          "protected_overlap_mode": null,
+          "protected_overlap_retained_count": 0,
+          "protected_overlap_added_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_06",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_06/splat.ply",
+        "source_gaussians": 1188805,
+        "retained_gaussians": 1188805,
+        "dropped_gaussians": 0,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 571557,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 617248,
+          "retained_overlap_count": 0,
+          "retained_context_count": 617248,
+          "protected_overlap_enabled": false,
+          "protected_overlap_mode": null,
+          "protected_overlap_retained_count": 0,
+          "protected_overlap_added_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": true
+        }
+      },
+      {
+        "tile_id": "tile_07",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_07/splat.ply",
+        "source_gaussians": 476395,
+        "retained_gaussians": 436385,
+        "dropped_gaussians": 40010,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 436385,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "protected_overlap_enabled": false,
+          "protected_overlap_mode": null,
+          "protected_overlap_retained_count": 0,
+          "protected_overlap_added_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": false
+        }
+      },
+      {
+        "tile_id": "tile_08",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_08/splat.ply",
+        "source_gaussians": 476258,
+        "retained_gaussians": 434060,
+        "dropped_gaussians": 42198,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 434060,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "protected_overlap_enabled": false,
+          "protected_overlap_mode": null,
+          "protected_overlap_retained_count": 0,
+          "protected_overlap_added_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": false
+        }
+      },
+      {
+        "tile_id": "tile_09",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_09/splat.ply",
+        "source_gaussians": 207244,
+        "retained_gaussians": 111383,
+        "dropped_gaussians": 95861,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 111383,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "protected_overlap_enabled": false,
+          "protected_overlap_mode": null,
+          "protected_overlap_retained_count": 0,
+          "protected_overlap_added_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": false
+        }
+      },
+      {
+        "tile_id": "tile_10",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_10/splat.ply",
+        "source_gaussians": 387192,
+        "retained_gaussians": 378953,
+        "dropped_gaussians": 8239,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 378953,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "protected_overlap_enabled": false,
+          "protected_overlap_mode": null,
+          "protected_overlap_retained_count": 0,
+          "protected_overlap_added_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": false
+        }
+      },
+      {
+        "tile_id": "tile_11",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_11/splat.ply",
+        "source_gaussians": 119,
+        "retained_gaussians": 119,
+        "dropped_gaussians": 0,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 119,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "protected_overlap_enabled": false,
+          "protected_overlap_mode": null,
+          "protected_overlap_retained_count": 0,
+          "protected_overlap_added_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": false
+        }
+      },
+      {
+        "tile_id": "tile_12",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_12/splat.ply",
+        "source_gaussians": 436832,
+        "retained_gaussians": 395633,
+        "dropped_gaussians": 41199,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 395633,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "protected_overlap_enabled": false,
+          "protected_overlap_mode": null,
+          "protected_overlap_retained_count": 0,
+          "protected_overlap_added_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": false
+        }
+      },
+      {
+        "tile_id": "tile_13",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_13/splat.ply",
+        "source_gaussians": 310738,
+        "retained_gaussians": 227729,
+        "dropped_gaussians": 83009,
+        "retention_strategy": "support_weighted_overlap",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true,
+        "support_weighted_overlap": {
+          "core_candidate_count": 227729,
+          "overlap_candidate_count": 0,
+          "context_candidate_count": 0,
+          "retained_overlap_count": 0,
+          "retained_context_count": 0,
+          "protected_overlap_enabled": false,
+          "protected_overlap_mode": null,
+          "protected_overlap_retained_count": 0,
+          "protected_overlap_added_count": 0,
+          "score_proxy": "0.55*shared_view_projection_support+0.20*opacity+0.15*core_distance-0.10*large_scale_floater_penalty",
+          "context_preserve_enabled": false
+        }
+      }
+    ],
+    "background_asset": {
+      "asset": "background_skybox.webp",
+      "source_tile_id": "tile_10",
+      "source_asset": "/opt/ml/processing/output/artifact/tiles/tile_10/background_skybox.webp",
+      "selection_score": 0.6353789878019934,
+      "selection_mode": "forced_tile",
+      "requested_source_tile_id": "tile_10",
+      "retained_gaussians": 378953
+    }
+  },
+  "model_artifact": "model.tar.gz"	}

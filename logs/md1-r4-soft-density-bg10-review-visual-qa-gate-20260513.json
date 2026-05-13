@@ -1,0 +1,21 @@
+{
+  "decision": "visual_qa_blocked",
+  "block_reasons": [
+    "ai_visual_review_blocking_defects",
+    "ai_visual_review_blocking_view_findings",
+    "ai_visual_review_status_block"
+  ],
+  "warnings": [],
+  "view_count": 12,
+  "panel_count": 12,
+  "panel_ratio": 1.0,
+  "missing_assets": [],
+  "missing_files": [],
+  "ai_review_summary": {
+    "overall_status": "block",
+    "blocking_defect_count": 4,
+    "blocking_view_finding_count": 4,
+    "confidence": 0.92,
+    "recommended_next_action": "Reject the soft-density tile_04 bg10 candidate for promotion and stop paid compute. Do no-spend attribution against the last passing tile_04 boundary/horizon reference before another objective."
+  }
+}

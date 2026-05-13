@@ -1,0 +1,2 @@
+2026-05-13 00:05:00  207581956 manual-validations/md1-cost-reduction-r4-quality-preserving-soft-density-leaf-bg10-review-v18colmap-20260513/outputs/r4-t04soft-bg10-v18colmap-smoke-p24/md1-r1-r4-t04soft-bg10-v18p24-1778651573/output/model.tar.gz
+2026-05-12 23:52:54       1396 manual-validations/md1-cost-reduction-r4-quality-preserving-soft-density-leaf-bg10-review-v18colmap-20260513/review-input/review_camera_manifest.json
