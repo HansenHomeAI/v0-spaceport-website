@@ -589,9 +589,9 @@
       ]
     }
   ],
-  "current_branch_head": "631d9cc2ec113129ab5ee9ccde9d7ef605aac0de pushed; exact-head CDK Deploy 25814156641 green before this third stop/source-attribution commit",
-  "current_exact_head_gate_status": "exact-head 631d9cc2ec113129ab5ee9ccde9d7ef605aac0de green on CDK Deploy 25814156641 before this third stop/source-attribution commit",
-  "current_live_compute_status": "Training and processing were idle at 2026-05-13T17:10:55Z after stopping sample8 r5, sample5 r6, and sample5 r7. Source attribution then showed these are task-owned by the separate ACTIVE sfm-reality-check automation on head e0ed962f5c003276e27f2556382deabc41dd94f5; future MD1 loops should not stop them.",
+  "current_branch_head": "fcd48cd72cdedaee5768e2b34ae1993d341563db pushed; exact-head CDK Deploy 25814665991 green before this active-SFM-canary evidence commit",
+  "current_exact_head_gate_status": "exact-head fcd48cd72cdedaee5768e2b34ae1993d341563db green on CDK Deploy 25814665991 before this active-SFM-canary evidence commit",
+  "current_live_compute_status": "Processing idle. Active training md1-sample5-cpu-r8-1778692401 is source-attributed to the separate ACTIVE sfm-reality-check automation on head e0ed962f5c003276e27f2556382deabc41dd94f5 and was recorded, not stopped.",
   "current_rung": "R0_hardcap_quality_repair_early_visual_smoke_objective_gate_allowed_pending_exact_head",
   "evidence_events": [
     {
@@ -1327,7 +1327,7 @@
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
   "latest_boundary_responsible_tile_plan_status": "boundary primary tile_04/tile_10; horizon primary tile_04/tile_01; tile04 dryrun covers tile01/tile10 context support",
-  "latest_cost_control": "No eligible MD1 compute launched in this loop. Three old-code sample canaries were stopped before source attribution, totaling about $0.744; they are now attributed to the separate SFM reality-check automation, so future MD1 loops should record/notify rather than stop those jobs. Future eligible MD1 proof remains limited to one R0 visual-sentinel leaf-only run under $0.75/2400s/64 images/2000 iterations, with early visual-smoke abort; no merge/review/full14/LOD/promotion.",
+  "latest_cost_control": "No eligible MD1 compute launched in this loop. Future MD1 loops should not stop source-attributed SFM canaries; record/notify instead. Future eligible MD1 proof remains limited to one R0 visual-sentinel leaf-only run under $0.75/2400s/64 images/2000 iterations, with early visual-smoke abort; no merge/review/full14/LOD/promotion.",
   "latest_evidence": {
     "merge_preflight_summary": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260512.json",
     "review_retry_cloudwatch_tail": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-cloudwatch-tail-20260512.txt",
@@ -1499,7 +1499,7 @@
     "status": "merge_retry1_guard_ready_no_paid_retry_launched",
     "v18_review_launched": false
   },
-  "latest_no_spend_evidence": "Objective evidence logs/md1-r4-hardcap-quality-repair-early-visual-smoke-objective-candidate-20260513.json and logs/md1-r4-hardcap-quality-repair-early-visual-smoke-objective-gate-20260513.json; stopped canary evidence logs/md1-sample8-cpu-r5-1778689607-stopped-describe-20260513.json, logs/md1-sample5-cpu-r6-1778691426-stopped-describe-20260513.json, logs/md1-sample5-cpu-r7-1778692118-stopped-describe-20260513.json; source attribution /Users/gabrielhansen/.codex/automations/sfm-reality-check/automation.toml.",
+  "latest_no_spend_evidence": "Objective evidence logs/md1-r4-hardcap-quality-repair-early-visual-smoke-objective-candidate-20260513.json and logs/md1-r4-hardcap-quality-repair-early-visual-smoke-objective-gate-20260513.json; source-attributed active SFM job evidence logs/md1-sample5-cpu-r8-1778692401-active-describe-20260513.json; source attribution /Users/gabrielhansen/.codex/automations/sfm-reality-check/automation.toml.",
   "latest_no_spend_implementation": "Planner now requires early visual-smoke abort plans after hard-output-cap visual-fidelity quality failures, and the new candidate objective uses real implemented color/floater/density controls instead of fake perceptual env keys.",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
@@ -1680,6 +1680,41 @@
     "canonical_model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
     "extracted_subset_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/manifest_inputs/canonical",
     "note": "small canonical tarball subset; full model extraction was pruned locally for disk headroom"
+  },
+  "md1_active_sfm_canary_r8_recorded_20260513": {
+    "active_source_attributed_non_md1_job": {
+      "code_head": "e0ed962f5c003276e27f2556382deabc41dd94f5",
+      "describe_json": "logs/md1-sample5-cpu-r8-1778692401-active-describe-20260513.json",
+      "image_tag": "agent73948216sfmproductionspine",
+      "instance_type": "ml.g5.2xlarge",
+      "job_name": "md1-sample5-cpu-r8-1778692401",
+      "relaunch_reason": "all-known-stop-automation-prompts-safed",
+      "secondary_status_at_record": "Training",
+      "status_at_record": "InProgress",
+      "training_time_seconds_at_record": 278,
+      "validation_run": "md1-sample5-cpu-r8-quality-emission-smoke"
+    },
+    "aws_processing_inprogress": 0,
+    "branch": "agent-90742618-md1-geometry-consistency",
+    "exact_head_before_active_job_evidence_commit": "fcd48cd72cdedaee5768e2b34ae1993d341563db",
+    "exact_head_workflow": {
+      "conclusion": "success",
+      "run_id": 25814665991,
+      "workflow": "CDK Deploy"
+    },
+    "md1_automation_update": {
+      "automation_id": "md1-production-readiness-loop",
+      "change": "prompt updated to current R0 visual-sentinel readiness step and explicit no-stop policy for jobs from any automation",
+      "status": "PAUSED"
+    },
+    "recorded_at": "2026-05-13T17:19:00Z",
+    "source_attribution": {
+      "automation_id": "sfm-reality-check",
+      "automation_path": "/Users/gabrielhansen/.codex/automations/sfm-reality-check/automation.toml",
+      "md1_action": "recorded_not_stopped",
+      "status": "ACTIVE",
+      "task_owned_head": "e0ed962f5c003276e27f2556382deabc41dd94f5"
+    }
   },
   "md1_overdense_leaf_retry_guard_20260512": {
     "accepted_density_control_knobs": [
@@ -6264,6 +6299,18 @@
     "visual_qa_manifest_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-visual-qa-manifest-20260513.json"
   },
   "md1_r4_hardcap_quality_repair_early_visual_smoke_objective_20260513": {
+    "active_source_attributed_non_md1_job": {
+      "code_head": "e0ed962f5c003276e27f2556382deabc41dd94f5",
+      "describe_json": "logs/md1-sample5-cpu-r8-1778692401-active-describe-20260513.json",
+      "image_tag": "agent73948216sfmproductionspine",
+      "instance_type": "ml.g5.2xlarge",
+      "job_name": "md1-sample5-cpu-r8-1778692401",
+      "relaunch_reason": "all-known-stop-automation-prompts-safed",
+      "secondary_status_at_record": "Training",
+      "status_at_record": "InProgress",
+      "training_time_seconds_at_record": 278,
+      "validation_run": "md1-sample5-cpu-r8-quality-emission-smoke"
+    },
     "aws_idle_after_second_stop": {
       "processing_inprogress": 0,
       "training_inprogress_after_stop": 0
@@ -6327,7 +6374,12 @@
       "run_id": 25810620460,
       "workflow": "CDK Deploy"
     },
-    "next_unblocked_step": "Commit/push source attribution, watch exact-head workflows, verify current AWS state without stopping task-owned SFM jobs, then rerun MD1 leaf-submit readiness only when allowed.",
+    "md1_automation_update": {
+      "automation_id": "md1-production-readiness-loop",
+      "change": "prompt updated to current R0 visual-sentinel readiness step and explicit no-stop policy for jobs from any automation",
+      "status": "PAUSED"
+    },
+    "next_unblocked_step": "Watch exact-head workflows, then rerun MD1 leaf-submit readiness only if AWS is idle or only source-attributed non-MD1 jobs are active.",
     "objective_gate": {
       "block_reasons": [],
       "decision": "paid_retry_allowed",
@@ -9995,7 +10047,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Commit/push this third stop/source-attribution update, watch exact-head workflows, verify current AWS state without stopping task-owned SFM jobs, then rerun MD1 leaf-submit readiness on the new exact green head only if AWS is idle or only source-attributed non-MD1 jobs are active.",
+  "next_unblocked_step": "Commit/push this active-SFM-canary evidence update, watch exact-head workflows, then rerun MD1 leaf-submit readiness on the new exact green head only if AWS is idle or only source-attributed non-MD1 jobs are active.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -16088,7 +16140,7 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-13T17:10:55Z",
-  "updated_at": "2026-05-13T17:10:55+00:00",
+  "updated": "2026-05-13T17:19:00Z",
+  "updated_at": "2026-05-13T17:19:00+00:00",
   "version": "1.0.0"
 }
