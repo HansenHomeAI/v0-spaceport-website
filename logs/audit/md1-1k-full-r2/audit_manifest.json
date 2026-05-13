@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "5ad488b9bed408182dee8aedf438372ae42f8149 pushed; exact-head CDK Deploy 25819651655 green; MD1 paid submit blocked only by active SageMaker processing.",
-  "current_exact_head_gate_status": "exact-head 5ad488b9bed408182dee8aedf438372ae42f8149 green on CDK Deploy 25819651655.",
-  "current_live_compute_status": "SageMaker training is idle. Processing md1-baseline-e2e-20260513115645-sfm remains InProgress and source-attributed to the baseline E2E monitor. No MD1 compute launched from this loop.",
-  "current_rung": "R0_visual_sentinel_leaf_readiness_blocked_on_source_attributed_processing_job",
+  "current_branch_head": "914df66f3abfd6444f15208351ba2fa408383a95 pushed; exact-head CDK Deploy 25820042748 green; MD1 paid submit blocked by active source-attributed SageMaker jobs.",
+  "current_exact_head_gate_status": "exact-head 914df66f3abfd6444f15208351ba2fa408383a95 green on CDK Deploy 25820042748.",
+  "current_live_compute_status": "SageMaker active jobs: training md1-sample5-cachectl-r11-1778698613 source-attributed to sfm-reality-check/SFM production spine clues (Environment=agent73948216sfmproductionspine, CodeHead=08831258ac744cc03fca9fa7407144fc533b389c, Validation=md1-sample5-cachectl-r11-quality-emission-smoke) and processing md1-baseline-e2e-20260513115645-sfm source-attributed to baseline E2E monitor. No MD1 compute launched from this loop.",
+  "current_rung": "R0_visual_sentinel_leaf_readiness_blocked_on_source_attributed_active_jobs",
   "evidence_events": [
     {
       "billable_seconds": 412,
@@ -838,6 +838,21 @@
       ],
       "spend_estimated_usd": 0,
       "next": "Commit/push final readiness evidence, watch exact-head workflows, then wait for processing idle before one R0 tile_04 visual-sentinel proof."
+    },
+    {
+      "timestamp": "2026-05-13T19:06:47Z",
+      "event": "md1_r0_visual_sentinel_r11_active_jobs_recorded",
+      "summary": "Heartbeat verified exact-head 914df66f is green, but source-attributed SFM canary training r11 and baseline E2E processing are active. Recorded owner clues/evidence and launched no MD1 compute.",
+      "evidence": [
+        "logs/md1-r0-visual-sentinel-live-training-inprogress-r11-20260513.json",
+        "logs/md1-r0-visual-sentinel-live-processing-inprogress-r11-20260513.json",
+        "logs/md1-sample5-cachectl-r11-1778698613-active-describe-20260513.json",
+        "logs/md1-sample5-cachectl-r11-1778698613-tags-20260513.json",
+        "logs/md1-baseline-e2e-20260513115645-sfm-active-describe-r11check-20260513.json",
+        "logs/md1-baseline-e2e-20260513115645-sfm-tags-r11check-20260513.json"
+      ],
+      "spend_estimated_usd": 0,
+      "next": "Wait for AWS idle, rerun readiness, then at most one R0 tile_04 visual-sentinel proof."
     }
   ],
   "exact_head_gate_status": "exact-head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 green on CDK Deploy 25478133157; Deploy CDK Stacks and CDK Diff skipped by scope detection; no ML Container Build appeared for this non-container status commit; previous container-affecting head 6249a280443438790e5f9d11512fe6714c1a0728 remains green on CDK Deploy 25475213765, Trigger ML Container Build 25475213781, and CodeBuild spaceport-ml-containers:ae9b6cea-6c39-4bf8-a885-f0eb5336ee4a",
@@ -1534,7 +1549,7 @@
     "status": "merge_retry1_guard_ready_no_paid_retry_launched",
     "v18_review_launched": false
   },
-  "latest_no_spend_evidence": "R0 dry-run logs/md1-r0-visual-sentinel-leaf-dryrun-20260513.json; merge gate logs/md1-r0-visual-sentinel-merge-review-gate-20260513.json; final readiness logs/md1-r0-visual-sentinel-leaf-submit-readiness-finalcheck-20260513.json; training terminal evidence logs/md1-sample5-cachectl-r10-1778696805-terminal-describe-20260513.json; live AWS lists logs/md1-r0-visual-sentinel-live-training-inprogress-finalcheck-20260513.json and logs/md1-r0-visual-sentinel-live-processing-inprogress-finalcheck-20260513.json.",
+  "latest_no_spend_evidence": "R0 dry-run logs/md1-r0-visual-sentinel-leaf-dryrun-20260513.json; merge gate logs/md1-r0-visual-sentinel-merge-review-gate-20260513.json; live active-job evidence logs/md1-r0-visual-sentinel-live-training-inprogress-r11-20260513.json, logs/md1-r0-visual-sentinel-live-processing-inprogress-r11-20260513.json, logs/md1-sample5-cachectl-r11-1778698613-active-describe-20260513.json, logs/md1-sample5-cachectl-r11-1778698613-tags-20260513.json, logs/md1-baseline-e2e-20260513115645-sfm-active-describe-r11check-20260513.json, logs/md1-baseline-e2e-20260513115645-sfm-tags-r11check-20260513.json.",
   "latest_no_spend_implementation": "Updated automation prompt to current abab508e R0 visual-sentinel readiness path, deleted duplicate baseline monitor md1-baseline-e2e-monitor-2, and added effective_selected_image_count to post-leaf dry-run gates for capped image-count clarity.",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
@@ -10082,7 +10097,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Commit/push final readiness evidence, watch exact-head workflows, then wait for SageMaker processing idle before rerunning readiness and submitting at most one R0 tile_04 visual-sentinel leaf proof.",
+  "next_unblocked_step": "Commit/push active-job evidence. After SageMaker training and processing are idle, rerun MD1 leaf-submit readiness on exact green head and submit at most one R0 tile_04 visual-sentinel leaf proof only if readiness allows.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -16343,5 +16358,36 @@
     "live_processing_jobs_json": "logs/md1-r0-visual-sentinel-live-processing-inprogress-finalcheck-20260513.json",
     "spend_estimated_usd": 0,
     "next": "Do not submit MD1 paid proof until exact head remains green and SageMaker processing is idle."
+  },
+  "md1_r0_visual_sentinel_r11_active_jobs_20260513": {
+    "timestamp": "2026-05-13T19:06:47Z",
+    "head": "914df66f3abfd6444f15208351ba2fa408383a95",
+    "exact_head_cdk_run": 25820042748,
+    "decision": "no_md1_compute_active_sagemaker_jobs",
+    "active_training_job": "md1-sample5-cachectl-r11-1778698613",
+    "active_processing_job": "md1-baseline-e2e-20260513115645-sfm",
+    "source_attribution": {
+      "md1-sample5-cachectl-r11-1778698613": {
+        "environment": "agent73948216sfmproductionspine",
+        "code_head": "08831258ac744cc03fca9fa7407144fc533b389c",
+        "validation": "md1-sample5-cachectl-r11-quality-emission-smoke",
+        "component": "3DGS"
+      },
+      "md1-baseline-e2e-20260513115645-sfm": {
+        "component": "SfM",
+        "environment": "staging",
+        "owner_clue": "md1-baseline-e2e-monitor"
+      }
+    },
+    "evidence": [
+      "logs/md1-r0-visual-sentinel-live-training-inprogress-r11-20260513.json",
+      "logs/md1-r0-visual-sentinel-live-processing-inprogress-r11-20260513.json",
+      "logs/md1-sample5-cachectl-r11-1778698613-active-describe-20260513.json",
+      "logs/md1-sample5-cachectl-r11-1778698613-tags-20260513.json",
+      "logs/md1-baseline-e2e-20260513115645-sfm-active-describe-r11check-20260513.json",
+      "logs/md1-baseline-e2e-20260513115645-sfm-tags-r11check-20260513.json"
+    ],
+    "spend_estimated_usd": 0,
+    "next": "Do not submit paid MD1 proof until SageMaker training and processing are both idle."
   }
 }
