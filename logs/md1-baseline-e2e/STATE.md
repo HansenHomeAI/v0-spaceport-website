@@ -1,6 +1,6 @@
 # MD1 Baseline E2E State
 
-updated: 2026-05-13T13:52:21-06:00
+updated: 2026-05-13T15:01:20-06:00
 branch: agent-113647-md1-baseline-e2e
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -150,3 +150,23 @@ Produce a development-based MD1 baseline with:
   - `logs/md1-baseline-e2e/md1-baseline-e2e-20260513115645-sfm-cloudwatch-tail-20260513T195138Z.json`
 - Most recent observed progress (from the captured tail):
   - `COLMAP[feature_extractor] ... Processed file [2828/3076]` (feature extraction ongoing)
+
+### 2026-05-13T15:01:20-06:00
+
+- Git: on `agent-113647-md1-baseline-e2e` @ `2806e54c` (logs updated locally; no new AWS runs launched).
+- AWS identity: `aws sts get-caller-identity` -> Account `975050048887` (region `us-west-2`).
+- Step Functions execution: still `RUNNING`
+  - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-baseline-e2e-20260513115645`
+- SageMaker (this run):
+  - Processing job: `md1-baseline-e2e-20260513115645-sfm` -> `InProgress` (`S3UploadMode=EndOfJob`)
+  - Output prefix: `s3://spaceport-ml-processing-staging/colmap/md1-baseline-e2e-20260513115645/` (still empty)
+- SageMaker (external; do not stop; not owned by this automation):
+  - `md1-sample5-ds1000-r12-1778700562` -> `Stopped` (`MaxRuntimeExceeded`)
+  - `md1-sample40-ds1000-r13-1778701888` -> `Completed`
+  - `md1-sample40-ds1000-r14-1778705722` -> `InProgress` (`Downloading`)
+- Snapshot:
+  - `logs/md1-baseline-e2e/monitor-md1-baseline-e2e-20260513115645-20260513T210120Z.txt`
+- SfM CloudWatch tail (mapping stage; latest 20m):
+  - `logs/md1-baseline-e2e/md1-baseline-e2e-20260513115645-sfm-cloudwatch-tail-20260513T205956Z.log`
+  - Most recent observed line: `COLMAP[mapper_spatial_sequential_only] ... Registering image #1369` at `2026-05-13T20:59:56Z`
+- Follow-up poll: `2026-05-13T15:05:51-06:00` -> SfM still `InProgress`, Step Functions still `RUNNING`, S3 outputs still empty.
