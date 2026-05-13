@@ -589,9 +589,9 @@
       ]
     }
   ],
-  "current_branch_head": "6ad425b88e6e7ba4c5d3854791c5afb4f60e6bdd pushed; exact-head CDK Deploy 25820645608 green; MD1 paid submit blocked by active source-attributed SageMaker jobs.",
-  "current_exact_head_gate_status": "exact-head 6ad425b88e6e7ba4c5d3854791c5afb4f60e6bdd green on CDK Deploy 25820645608.",
-  "current_live_compute_status": "SageMaker active jobs: training md1-sample5-ds1000-r12-1778700562 source-attributed to sfm-reality-check/SFM production spine clues (Environment=agent73948216sfmproductionspine, CodeHead=26f52a8d98ef8e010dd0c9b89ade122aed11429a, Validation=md1-sample5-ds1000-r12-quality-emission-smoke), training md1-sample5-cachectl-r11-1778698613 source-attributed to the same SFM spine lineage (CodeHead=08831258ac744cc03fca9fa7407144fc533b389c), and processing md1-baseline-e2e-20260513115645-sfm source-attributed to baseline E2E monitor. No MD1 compute launched from this loop.",
+  "current_branch_head": "3cb73a962d830aa14d79e46af9bfba630e5ac233 pushed; exact-head CDK Deploy 25822173633 green; MD1 paid submit blocked by active source-attributed SageMaker jobs.",
+  "current_exact_head_gate_status": "exact-head 3cb73a962d830aa14d79e46af9bfba630e5ac233 green on CDK Deploy 25822173633.",
+  "current_live_compute_status": "Exact-head 3cb73a96 is green on CDK Deploy 25822173633. AWS still has source-attributed SFM training md1-sample40-ds1000-r13-1778701888 InProgress (Environment=agent73948216sfmproductionspine, CodeHead=26f52a8d98ef8e010dd0c9b89ade122aed11429a, Validation=md1-sample40-ds1000-r13-quality-canary, MaxRuntime=7200) plus baseline processing md1-baseline-e2e-20260513115645-sfm InProgress. No MD1 compute launched.",
   "current_rung": "R0_visual_sentinel_leaf_readiness_blocked_on_source_attributed_active_jobs",
   "evidence_events": [
     {
@@ -868,6 +868,22 @@
         "logs/md1-sample5-cachectl-r11-1778698613-tags-r12check-20260513.json",
         "logs/md1-baseline-e2e-20260513115645-sfm-active-describe-r12check-20260513.json",
         "logs/md1-baseline-e2e-20260513115645-sfm-tags-r12check-20260513.json"
+      ],
+      "spend_estimated_usd": 0,
+      "next": "Wait for AWS idle, rerun readiness, then at most one R0 tile_04 visual-sentinel proof."
+    },
+    {
+      "timestamp": "2026-05-13T20:06:49Z",
+      "event": "md1_r0_visual_sentinel_r13_active_jobs_recorded",
+      "summary": "Exact-head 3cb73a96 is green on CDK Deploy 25822173633. AWS still has source-attributed SFM training md1-sample40-ds1000-r13-1778701888 InProgress (Environment=agent73948216sfmproductionspine, CodeHead=26f52a8d98ef8e010dd0c9b89ade122aed11429a, Validation=md1-sample40-ds1000-r13-quality-canary, MaxRuntime=7200) plus baseline processing md1-baseline-e2e-20260513115645-sfm InProgress. No MD1 compute launched.",
+      "evidence": [
+        "logs/md1-r0-visual-sentinel-exact-head-workflows-r13hold-20260513.json",
+        "logs/md1-r0-visual-sentinel-live-training-inprogress-r13-20260513.json",
+        "logs/md1-r0-visual-sentinel-live-processing-inprogress-r13-20260513.json",
+        "logs/md1-sample40-ds1000-r13-1778701888-active-describe-20260513.json",
+        "logs/md1-sample40-ds1000-r13-1778701888-tags-20260513.json",
+        "logs/md1-baseline-e2e-20260513115645-sfm-active-describe-r13check-20260513.json",
+        "logs/md1-baseline-e2e-20260513115645-sfm-tags-r13check-20260513.json"
       ],
       "spend_estimated_usd": 0,
       "next": "Wait for AWS idle, rerun readiness, then at most one R0 tile_04 visual-sentinel proof."
@@ -1200,7 +1216,7 @@
     "local_status_update_pending_commit": true,
     "ml_container_build": "not_triggered_for_non_container_status_commit"
   },
-  "last_updated": "2026-05-13T15:55:05.004408+00:00",
+  "last_updated": "2026-05-13T20:06:49Z",
   "latest_bg10_merge_input_materialization_status": {
     "exact_head_workflows_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-exact-head-workflows-current-20260513.json",
     "input_materialization_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-input-materialization-current-20260513.json",
@@ -1422,25 +1438,7 @@
     "conclusion": "success",
     "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25815046996"
   },
-  "latest_exact_head_workflows": {
-    "cdk_deploy": {
-      "conclusion": "success",
-      "run_id": 25766801621
-    },
-    "codebuild": {
-      "id": "spaceport-ml-containers:1cf1c51c-5bcf-4977-b46d-e76bb9a7b04b",
-      "status": "SUCCEEDED"
-    },
-    "head": "c27fbe995784c4a37b7f3649c270de243bfffc88",
-    "image": {
-      "digest": "sha256:f41d4f12c308bda3fd61e9d49ecbc18a58486f5bfe4395b67a112186446d6b1d",
-      "tag": "agent90742618md1geometryconsistency"
-    },
-    "ml_container_build": {
-      "conclusion": "success",
-      "run_id": 25766801616
-    }
-  },
+  "latest_exact_head_workflows": "logs/md1-r0-visual-sentinel-exact-head-workflows-r13hold-20260513.json",
   "latest_hard_output_cap_visual_fidelity_review_status": {
     "ai_visual_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-ai-visual-review-20260513.json",
     "attribution_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-review-r1-attribution-20260513.json",
@@ -1535,10 +1533,10 @@
     "visual_qa_manifest_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-visual-qa-manifest-20260513.json"
   },
   "latest_leaf_submit_readiness_gate_status": "R0 tile_04 visual-sentinel readiness blocked only by active source-attributed non-MD1 SageMaker training/processing jobs. Exact head green, objective gate allowed, merge/review gate blocked only on missing tile_04 leaf summary, strategy dry-run only, estimated $0.4907 under $0.75.",
-  "latest_live_compute_status": "Active source-attributed non-MD1 jobs: training md1-sample5-cachectl-r10-1778696805 owned by sfm-reality-check on head 08831258; processing md1-baseline-e2e-20260513115645-sfm owned by md1-baseline-e2e-monitor. Recorded, not stopped. MD1 paid submit blocked until AWS idle.",
+  "latest_live_compute_status": "Exact-head 3cb73a96 is green on CDK Deploy 25822173633. AWS still has source-attributed SFM training md1-sample40-ds1000-r13-1778701888 InProgress (Environment=agent73948216sfmproductionspine, CodeHead=26f52a8d98ef8e010dd0c9b89ade122aed11429a, Validation=md1-sample40-ds1000-r13-quality-canary, MaxRuntime=7200) plus baseline processing md1-baseline-e2e-20260513115645-sfm InProgress. No MD1 compute launched.",
   "latest_lod_production_readiness_status": "logs/md1-r4-tile10-rollback-lod-production-readiness-20260506.json reports viewer_ready_quality_blocked; --require-promotion-ready now exits 3 and wrote logs/md1-r4-tile10-rollback-lod-production-readiness-promotion-required-20260506.json, preventing promotion callers from accepting viewer readiness alone.",
   "latest_md1_cost_reduction_status": "soft_density_failed_hypothesis_encoded_no_paid_retry_allowed",
-  "latest_md1_live_compute_status": "Active source-attributed non-MD1 jobs: training md1-sample5-cachectl-r10-1778696805 owned by sfm-reality-check on head 08831258; processing md1-baseline-e2e-20260513115645-sfm owned by md1-baseline-e2e-monitor. Recorded, not stopped. MD1 paid submit blocked until AWS idle.",
+  "latest_md1_live_compute_status": "Exact-head 3cb73a96 is green on CDK Deploy 25822173633. AWS still has source-attributed SFM training md1-sample40-ds1000-r13-1778701888 InProgress (Environment=agent73948216sfmproductionspine, CodeHead=26f52a8d98ef8e010dd0c9b89ade122aed11429a, Validation=md1-sample40-ds1000-r13-quality-canary, MaxRuntime=7200) plus baseline processing md1-baseline-e2e-20260513115645-sfm InProgress. No MD1 compute launched.",
   "latest_no_spend_bg10_merge_review_plan": {
     "aws_idle_after_failure": true,
     "failed_merge_billable_seconds": 285,
@@ -1567,7 +1565,7 @@
     "status": "merge_retry1_guard_ready_no_paid_retry_launched",
     "v18_review_launched": false
   },
-  "latest_no_spend_evidence": "R0 dry-run logs/md1-r0-visual-sentinel-leaf-dryrun-20260513.json; merge gate logs/md1-r0-visual-sentinel-merge-review-gate-20260513.json; live active-job evidence logs/md1-r0-active-job-hold-head-workflows-20260513.json, logs/md1-r0-visual-sentinel-live-training-inprogress-r12-20260513.json, logs/md1-r0-visual-sentinel-live-processing-inprogress-r12-20260513.json, logs/md1-sample5-ds1000-r12-1778700562-active-describe-20260513.json, logs/md1-sample5-ds1000-r12-1778700562-tags-20260513.json, logs/md1-sample5-cachectl-r11-1778698613-active-describe-r12check-20260513.json, logs/md1-sample5-cachectl-r11-1778698613-tags-r12check-20260513.json, logs/md1-baseline-e2e-20260513115645-sfm-active-describe-r12check-20260513.json, logs/md1-baseline-e2e-20260513115645-sfm-tags-r12check-20260513.json.",
+  "latest_no_spend_evidence": "R0 visual-sentinel tile_04 dry-run remains structurally ready, but fresh r13 live AWS evidence blocks paid MD1 proof until SageMaker training and processing are idle.",
   "latest_no_spend_implementation": "Updated automation prompt to current abab508e R0 visual-sentinel readiness path, deleted duplicate baseline monitor md1-baseline-e2e-monitor-2, and added effective_selected_image_count to post-leaf dry-run gates for capped image-count clarity.",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
@@ -16209,7 +16207,7 @@
     "shared_assigned_fallback_pair_count": 2
   },
   "updated": "2026-05-13T17:19:00Z",
-  "updated_at": "2026-05-13T17:19:00+00:00",
+  "updated_at": "2026-05-13T20:06:49Z",
   "version": "1.0.0",
   "md1_r0_visual_sentinel_readiness_blocked_active_jobs_20260513": {
     "recorded_at": "2026-05-13T18:33:49Z",
@@ -16452,5 +16450,20 @@
     ],
     "spend_estimated_usd": 0,
     "next": "Do not submit paid MD1 proof until SageMaker training and processing are both idle."
+  },
+  "md1_r0_visual_sentinel_r13_active_jobs_20260513": {
+    "timestamp": "2026-05-13T20:06:49Z",
+    "summary": "Exact-head 3cb73a96 is green on CDK Deploy 25822173633. AWS still has source-attributed SFM training md1-sample40-ds1000-r13-1778701888 InProgress (Environment=agent73948216sfmproductionspine, CodeHead=26f52a8d98ef8e010dd0c9b89ade122aed11429a, Validation=md1-sample40-ds1000-r13-quality-canary, MaxRuntime=7200) plus baseline processing md1-baseline-e2e-20260513115645-sfm InProgress. No MD1 compute launched.",
+    "evidence": [
+      "logs/md1-r0-visual-sentinel-exact-head-workflows-r13hold-20260513.json",
+      "logs/md1-r0-visual-sentinel-live-training-inprogress-r13-20260513.json",
+      "logs/md1-r0-visual-sentinel-live-processing-inprogress-r13-20260513.json",
+      "logs/md1-sample40-ds1000-r13-1778701888-active-describe-20260513.json",
+      "logs/md1-sample40-ds1000-r13-1778701888-tags-20260513.json",
+      "logs/md1-baseline-e2e-20260513115645-sfm-active-describe-r13check-20260513.json",
+      "logs/md1-baseline-e2e-20260513115645-sfm-tags-r13check-20260513.json"
+    ],
+    "spend_estimated_usd": 0,
+    "next": "Wait for AWS idle, rerun readiness, then at most one R0 tile_04 visual-sentinel proof."
   }
 }
