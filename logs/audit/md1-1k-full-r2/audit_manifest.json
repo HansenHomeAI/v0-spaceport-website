@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "d8baa0a268096be35714cba91eaf88523f58cadd exact-head CDK Deploy 25795496650 green; local stronger-density proof attribution and hard-output-cap no-spend candidate evidence pending commit.",
-  "current_exact_head_gate_status": "exact-head d8baa0a268096be35714cba91eaf88523f58cadd green on CDK Deploy 25795496650; next commit must be gated before paid hard-output-cap retry.",
-  "current_live_compute_status": "AWS SageMaker training/processing idle after md1-r4t10vfdc3-1778671321-1778671321-tile-10 completed and post-leaf gates ran.",
-  "current_rung": "R4_tile10_hard_output_cap_visual_fidelity_no_spend_ready_pending_exact_head",
+  "current_branch_head": "aae88102bc330cdfe637be785151b0e8112a99c0 exact-head CDK Deploy 25799817045 success; hard-output-cap tile_10 leaf proof evidence recorded and pending commit.",
+  "current_exact_head_gate_status": "exact-head aae88102bc330cdfe637be785151b0e8112a99c0 green on CDK Deploy 25799817045 success; current-head readiness passed before the paid hard-output-cap leaf proof.",
+  "current_live_compute_status": "AWS SageMaker training/processing idle after hard-output-cap tile_10 leaf proof and post-leaf gates.",
+  "current_rung": "R4_tile10_hard_output_cap_leaf_gate_passed_pending_no_spend_bg10_merge_plan",
   "evidence_events": [
     {
       "billable_seconds": 412,
@@ -726,6 +726,21 @@
         "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-readiness-20260513.json"
       ],
       "next": "Commit/push/watch exact head; after AWS idle rerun readiness on new green SHA before at most one hard-output-cap tile_10 leaf-only proof."
+    },
+    {
+      "event": "tile10_hard_output_cap_leaf_gate_passed",
+      "timestamp": "2026-05-13T14:05:20Z",
+      "summary": "One bounded hard-output-cap tile_10 leaf proof completed under cap and passed density gate at 511000 splats/1.348x reference under the 511586 hard max; merge-review gate allows when evaluated against the dry-run strategy plus this passed leaf gate. No merge/review/full14/LOD/promotion launched.",
+      "spend_estimated_usd": 0.8435,
+      "evidence": [
+        "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-readiness-current-head-20260513.json",
+        "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-current-head-20260513.json",
+        "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-describe-20260513.json",
+        "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-20260513-tile_10-leaf-preflight.json",
+        "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-20260513-tile_10-leaf-gate.json",
+        "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-merge-review-gate-after-leaf-fixed-20260513.json"
+      ],
+      "next": "Commit/push/watch exact head; then no-spend bg10 merge/preflight/review planning only before any further spend."
     }
   ],
   "exact_head_gate_status": "exact-head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 green on CDK Deploy 25478133157; Deploy CDK Stacks and CDK Diff skipped by scope detection; no ML Container Build appeared for this non-container status commit; previous container-affecting head 6249a280443438790e5f9d11512fe6714c1a0728 remains green on CDK Deploy 25475213765, Trigger ML Container Build 25475213781, and CodeBuild spaceport-ml-containers:ae9b6cea-6c39-4bf8-a885-f0eb5336ee4a",
@@ -1101,7 +1116,7 @@
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
   "latest_boundary_responsible_tile_plan_status": "boundary primary tile_04/tile_10; horizon primary tile_04/tile_01; tile04 dryrun covers tile01/tile10 context support",
-  "latest_cost_control": "Full14, LOD, merge/review, viewer smoke, and promotion remain blocked. Paid compute is stopped after the stronger-density tile_10 leaf failed its post-leaf gate. Next eligible paid step is only after this evidence/code commit is pushed, exact-head workflows are green, AWS is idle, and readiness is rerun on the new exact head: at most one bounded hard-output-cap tile_10 leaf-only proof with skip-merge/skip-review, $2.25 cap, 4800s runtime cap, 12000 iterations, 188 images, and emitted post-leaf density gate.",
+  "latest_cost_control": "Full14, LOD, viewer smoke, promotion, and paid merge/review remain unlaunched. Next eligible work is no-spend bg10 merge/preflight/review planning using the passed hard-output-cap tile_10 leaf plus the existing passing tile_04 visual-fidelity leaf; any paid merge/review still needs exact-head green, AWS idle, V18 comparison plan, visual QA plan, and explicit spend caps.",
   "latest_evidence": {
     "merge_preflight_summary": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260512.json",
     "review_retry_cloudwatch_tail": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-cloudwatch-tail-20260512.txt",
@@ -2686,9 +2701,9 @@
   },
   "md1_r4_boundary_quality_strategy_20260506": {
     "boundary_actual_delta": {
-      "lpips": 0.000008553266525268555,
-      "psnr": 0.00000909046563180027,
-      "ssim": 0.0000032186508178710938
+      "lpips": 8.553266525268555e-06,
+      "psnr": 9.09046563180027e-06,
+      "ssim": 3.2186508178710938e-06
     },
     "boundary_remaining_gap": {
       "lpips": 0.02500855326652527,
@@ -9032,7 +9047,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Commit/push the visual-fidelity paired proof attribution plus density-controlled tile_10 objective/gate/dry-run/readiness evidence, watch exact-head workflows, verify AWS idle, then rerun leaf-submit readiness on the new exact green head before any paid tile_10 leaf-only proof.",
+  "next_unblocked_step": "Commit/push hard-output-cap tile_10 proof evidence, watch exact-head workflows, verify AWS idle, then no-spend bg10 merge/preflight/review planning only.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -15125,8 +15140,8 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-13T09:32:05Z",
-  "updated_at": "2026-05-13T12:38:30Z",
+  "updated": "2026-05-13T14:05:20Z",
+  "updated_at": "2026-05-13T14:05:20Z",
   "version": "1.0.0",
   "md1_r4_visual_fidelity_paired_leaf_proof_20260513": {
     "status": "merge_review_blocked_tile_10_overdense",
@@ -15261,14 +15276,14 @@
     "no_merge_review_full14_lod_or_promotion_launched": true
   },
   "md1_r4_tile10_hard_output_cap_visual_fidelity_candidate_20260513": {
-    "status": "no_spend_candidate_ready_pending_commit_exact_head",
+    "status": "leaf_gate_passed_pending_no_spend_merge_plan",
     "candidate_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-objective-candidate-20260513.json",
     "objective_gate_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-objective-gate-20260513.json",
     "leaf_dryrun_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-dryrun-20260513.json",
     "merge_review_gate_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-merge-review-gate-20260513.json",
     "leaf_submit_readiness_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-readiness-20260513.json",
     "candidate_objective_gate_decision": "paid_retry_allowed",
-    "leaf_submit_readiness_decision": "leaf_submit_allowed_pre_commit_head",
+    "leaf_submit_readiness_decision": "leaf_submit_allowed_current_exact_head",
     "must_rerun_readiness_after_commit_exact_head": true,
     "selected_tile_ids": [
       "tile_10"
@@ -15281,7 +15296,7 @@
       "TRAINING_MAX_OUTPUT_GAUSSIANS": "511000",
       "TRAINING_DENSITY_CAP_POLICY": "opacity_topk"
     },
-    "estimated_usd": 0.8096,
+    "estimated_usd": 0.8435,
     "worst_case_usd": 0.9813,
     "max_estimated_usd": 2.25,
     "runtime_cap_seconds": 4800,
@@ -15293,6 +15308,56 @@
       "hard_min": 303162,
       "hard_max": 511586
     },
-    "merge_review_blocked_until_leaf_gate_passes": true
+    "merge_review_blocked_until_leaf_gate_passes": true,
+    "current_head_leaf_submit_readiness_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-readiness-current-head-20260513.json",
+    "submit_summary_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-current-head-20260513.json",
+    "describe_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-describe-20260513.json",
+    "preflight_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-20260513-tile_10-leaf-preflight.json",
+    "leaf_gate_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-20260513-tile_10-leaf-gate.json",
+    "merge_review_gate_after_leaf_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-merge-review-gate-after-leaf-fixed-20260513.json",
+    "leaf_gate_decision": "merge_review_allowed",
+    "merge_review_gate_after_leaf_decision": "merge_review_allowed",
+    "job_name": "md1-r4t10vfdc4-1778676812-1778676812-tile-10",
+    "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/tiles/tile_10/md1-r4t10vfdc4-1778676812-1778676812-tile-10/output/model.tar.gz",
+    "exact_head": "aae88102bc330cdfe637be785151b0e8112a99c0",
+    "workflow": "CDK Deploy 25799817045 success",
+    "billable_seconds": 4126,
+    "splat_vertex_count": 511000,
+    "reference_splat_count": 378953,
+    "observed_reference_ratio": 1.3484521827245068,
+    "hard_max_splat_count": 511586,
+    "filtered_scaffold_ok": true,
+    "density_cap_summary": {
+      "policy": "opacity_topk",
+      "max_gaussians": 511000,
+      "original_gaussians": 735506,
+      "kept_gaussians": 511000,
+      "removed_gaussians": 224506
+    },
+    "no_merge_review_full14_lod_or_promotion_launched": true,
+    "next": "no_spend_bg10_merge_preflight_review_plan_only"
+  },
+  "latest_paid_steps": "Hard-output-cap tile_10 retry on exact green head aae88102 completed in 4126 billable seconds/about $0.843 and passed the post-leaf density gate at 511000 splats/1.348x reference under the 511586 hard max. No merge/review/full14/LOD/promotion launched.",
+  "md1_r4_tile10_hard_output_cap_visual_fidelity_leaf_passed_20260513": {
+    "status": "leaf_gate_passed_no_merge_review_launched",
+    "exact_head": "aae88102bc330cdfe637be785151b0e8112a99c0",
+    "workflow": "CDK Deploy 25799817045 success",
+    "readiness_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-readiness-current-head-20260513.json",
+    "submit_summary_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-current-head-20260513.json",
+    "describe_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-describe-20260513.json",
+    "preflight_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-20260513-tile_10-leaf-preflight.json",
+    "leaf_gate_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-20260513-tile_10-leaf-gate.json",
+    "merge_review_gate_after_leaf_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-merge-review-gate-after-leaf-fixed-20260513.json",
+    "job_name": "md1-r4t10vfdc4-1778676812-1778676812-tile-10",
+    "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/tiles/tile_10/md1-r4t10vfdc4-1778676812-1778676812-tile-10/output/model.tar.gz",
+    "billable_seconds": 4126,
+    "estimated_usd": 0.8435,
+    "splat_vertex_count": 511000,
+    "reference_splat_count": 378953,
+    "observed_reference_ratio": 1.3484521827245068,
+    "hard_max_splat_count": 511586,
+    "leaf_gate_decision": "merge_review_allowed",
+    "merge_review_gate_decision": "merge_review_allowed",
+    "no_merge_review_full14_lod_or_promotion": true
   }
 }
