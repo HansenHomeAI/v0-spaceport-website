@@ -191,3 +191,10 @@ Produce a development-based MD1 baseline with:
 - Snapshot:
   - `logs/md1-baseline-e2e/monitor-md1-baseline-e2e-20260513115645-20260513T220031Z.txt`
 - No-spend regression check: `python3 -m unittest tests.unit.test_sogs_supersplat_bundle` -> `OK`
+
+### 2026-05-13T16:04:30-06:00
+
+- Git: committed + pushed monitor snapshot `4d8b3997` (no code-path changes; logs/state only).
+- CI:
+  - `CDK Deploy` run `25829028805` -> `success` (head `4d8b3997`)
+  - No new `Deploy Next.js to Cloudflare Pages` run was triggered by this logs-only commit; latest Pages run on this branch remains `25816779815` -> `success` (workflow_dispatch)
