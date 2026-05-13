@@ -1,0 +1,63 @@
+{
+  "boundary_improvement_gap": {
+    "actual_delta": {
+      "lpips": 0.06214261054992676,
+      "psnr": -0.3590508562559034,
+      "ssim": -0.004133880138397217
+    },
+    "passes_any_improvement_axis": false,
+    "remaining_gap": {
+      "lpips": 0.08714261054992675,
+      "psnr": 0.8590508562559034,
+      "ssim": 0.014133880138397217
+    },
+    "required_improvement": {
+      "lpips": -0.025,
+      "psnr": 0.5,
+      "ssim": 0.01
+    }
+  },
+  "checked_at": "2026-05-13T06:37:54.425482+00:00",
+  "current_quality_blockers": [
+    "boundary_lpips_regression",
+    "boundary_no_required_improvement",
+    "horizon_psnr_regression",
+    "horizon_lpips_regression",
+    "visual_qa_ai_visual_review_blocking_defects",
+    "visual_qa_ai_visual_review_blocking_view_findings",
+    "visual_qa_ai_visual_review_status_block",
+    "ai_visual_color_shift_defect",
+    "ai_visual_geometry_alignment_defect",
+    "ai_visual_horizon_continuity_defect",
+    "ai_visual_texture_smearing_defect"
+  ],
+  "horizon_regression_gap": {
+    "actual_delta": {
+      "lpips": 0.10286948084831238,
+      "psnr": -1.0588342766792334,
+      "ssim": -0.003927096724510193
+    },
+    "allowed_regression": {
+      "lpips_max_delta": 0.03,
+      "psnr_min_delta": -0.75,
+      "ssim_min_delta": -0.012
+    },
+    "passes_regression_gate": false,
+    "remaining_gap_to_pass": {
+      "lpips": 0.07286948084831238,
+      "psnr": 0.30883427667923335,
+      "ssim": 0.0
+    }
+  },
+  "paid_retry_recommended": false,
+  "promotion_decision_status": "blocked",
+  "recommendation": "hold_paid_retry",
+  "recommended_actions": [
+    "record soft_density_quality_regression as failed hypothesis",
+    "require a new no-spend candidate objective before leaf-submit readiness",
+    "require V18 non-regression plan and visual QA plan before any paid proof"
+  ],
+  "status": "hold_paid_retry_soft_density_quality_blocked",
+  "v18_non_regression_status": "blocked",
+  "visual_qa_decision": "visual_qa_blocked"
+}

@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "341ec8058495fc5b5fa8294b3718f2d645455266",
-  "current_exact_head_gate_status": "exact-head 341ec8058495fc5b5fa8294b3718f2d645455266 green on CDK Deploy 25779814639; no ML container build was triggered for evidence-only commit.",
-  "current_live_compute_status": "No MD1 SageMaker training or processing jobs were InProgress after soft-density bg10 merge/review completed and untracked md1-sample8-cpu-r4-1778646749 was stopped.",
-  "current_rung": "R4_soft_density_bg10_review_blocked",
+  "current_branch_head": "a30173fdf2b062c88a8e30401ae23e9d5a164721",
+  "current_exact_head_gate_status": "exact-head a30173fdf2b062c88a8e30401ae23e9d5a164721 green on CDK Deploy 25782377608; no ML container build triggered for evidence-only commit",
+  "current_live_compute_status": "No MD1 SageMaker training or processing jobs are InProgress after the soft-density failed-hypothesis no-spend guard check.",
+  "current_rung": "R4_soft_density_objective_guarded_no_spend",
   "evidence_events": [
     {
       "billable_seconds": 412,
@@ -670,6 +670,34 @@
         "visual_qa_gate_json": "logs/md1-r4-soft-density-bg10-review-visual-qa-gate-20260513.json"
       },
       "timestamp": "2026-05-13T06:12:00Z"
+    },
+    {
+      "at": "2026-05-13T06:38:31Z",
+      "aws_processing_inprogress": [],
+      "aws_training_inprogress": [],
+      "blocked_repetition_reasons": [
+        "objective_does_not_target_current_blockers",
+        "objective_repeats_failed_soft_density_hypothesis"
+      ],
+      "event": "soft_density_failed_hypothesis_guarded_no_spend",
+      "evidence": {
+        "attribution_json": "logs/md1-r4-soft-density-bg10-review-attribution-20260513.json",
+        "objective_strategy_json": "logs/md1-r4-soft-density-quality-regression-objective-strategy-20260513.json",
+        "planner": "scripts/3dgs/plan_md1_boundary_objective_strategy.py",
+        "quality_strategy_json": "logs/md1-r4-soft-density-bg10-review-quality-strategy-20260513.json",
+        "repeat_objective_blocked_json": "logs/md1-r4-soft-density-repeat-objective-blocked-20260513.json",
+        "unit_test": "tests/unit/test_plan_md1_boundary_objective_strategy.py"
+      },
+      "head_verified_before_change": "a30173fdf2b062c88a8e30401ae23e9d5a164721",
+      "required_next_candidate": [
+        "target promotion blockers and AI visual defect blockers",
+        "include V18 non-regression plan",
+        "include visual QA bundle/gate and AI visual review plan",
+        "name new appearance, geometry, color, or perceptual objective rather than repeat soft-density/global-SSIM",
+        "pass leaf-submit readiness on exact green head with AWS idle and explicit cost/runtime caps"
+      ],
+      "status": "paid_retry_blocked_until_new_objective",
+      "workflow": "CDK Deploy 25782377608 success"
     }
   ],
   "exact_head_gate_status": "exact-head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 green on CDK Deploy 25478133157; Deploy CDK Stacks and CDK Diff skipped by scope detection; no ML Container Build appeared for this non-container status commit; previous container-affecting head 6249a280443438790e5f9d11512fe6714c1a0728 remains green on CDK Deploy 25475213765, Trigger ML Container Build 25475213781, and CodeBuild spaceport-ml-containers:ae9b6cea-6c39-4bf8-a885-f0eb5336ee4a",
@@ -1045,7 +1073,7 @@
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
   "latest_boundary_responsible_tile_plan_status": "boundary primary tile_04/tile_10; horizon primary tile_04/tile_01; tile04 dryrun covers tile01/tile10 context support",
-  "latest_cost_control": "Full14/LOD/promotion/viewer smoke remain blocked. The soft-density leaf proof and bg10 merge/review completed under bounded caps but failed V18 and visual QA, so the next eligible step is no-spend attribution/objective redesign only.",
+  "latest_cost_control": "Full14/LOD/promotion/viewer smoke remain blocked. The next eligible step is a new no-spend candidate objective only; no paid proof is eligible until objective gate, V18 plan, visual QA plan, leaf-submit readiness, exact-head gates, AWS idle, and explicit cost/runtime caps pass.",
   "latest_evidence": {
     "merge_preflight_summary": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260512.json",
     "review_retry_cloudwatch_tail": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-cloudwatch-tail-20260512.txt",
@@ -1094,7 +1122,7 @@
     "training_jobs_in_progress": []
   },
   "latest_lod_production_readiness_status": "logs/md1-r4-tile10-rollback-lod-production-readiness-20260506.json reports viewer_ready_quality_blocked; --require-promotion-ready now exits 3 and wrote logs/md1-r4-tile10-rollback-lod-production-readiness-promotion-required-20260506.json, preventing promotion callers from accepting viewer readiness alone.",
-  "latest_md1_cost_reduction_status": "soft_density_bg10_review_blocked_no_paid_retry_allowed",
+  "latest_md1_cost_reduction_status": "soft_density_failed_hypothesis_encoded_no_paid_retry_allowed",
   "latest_md1_live_compute_status": "2026-05-13T06:12Z no MD1 SageMaker training or processing jobs InProgress after soft-density bg10 review completed",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
@@ -1108,6 +1136,20 @@
   "latest_review_comparison_path": "logs/md1-r4-soft-density-bg10-review-comparison-20260513.json",
   "latest_review_status": "Soft-density bg10 review rendered all 12 frozen p24 cameras, but V18 non-regression and AI visual QA are blocked; no promotion/viewer smoke/full14/LOD is eligible.",
   "latest_sagemaker_evidence_spend_total_usd": 17.1006,
+  "latest_soft_density_bg10_review": {
+    "ai_visual_review_json": "logs/md1-r4-soft-density-bg10-review-ai-visual-review-20260513.json",
+    "bg10_merge_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-quality-preserving-soft-density-leaf-tile10-rollback-bg10-merge-g4dn-20260513/output/artifact/model.tar.gz",
+    "bg10_merge_estimated_usd": 0.3034,
+    "bg10_merge_job_name": "md1-r4t04soft-bg10-20260513",
+    "bg10_merge_preflight_json": "logs/md1-r4-quality-preserving-soft-density-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260513.json",
+    "decision": "blocked",
+    "review_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-quality-preserving-soft-density-leaf-bg10-review-v18colmap-20260513/outputs/r4-t04soft-bg10-v18colmap-smoke-p24/md1-r1-r4-t04soft-bg10-v18p24-1778651573/output/model.tar.gz",
+    "review_billable_seconds": 686,
+    "review_comparison_json": "logs/md1-r4-soft-density-bg10-review-comparison-20260513.json",
+    "review_estimated_usd": 0.1402,
+    "review_job_name": "md1-r1-r4-t04soft-bg10-v18p24-1778651573",
+    "visual_qa_gate_json": "logs/md1-r4-soft-density-bg10-review-visual-qa-gate-20260513.json"
+  },
   "latest_soft_density_leaf_proof": {
     "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-quality-preserving-soft-density-20260513/tiles/tile_04/md1-r4t04soft-20260513-1778644232-tile-04/output/model.tar.gz",
     "billable_time_seconds": 4542,
@@ -1132,23 +1174,9 @@
     "remote_merge_plan_json": "logs/md1-r4-quality-preserving-soft-density-leaf-tile10-rollback-bg10-remote-merge-g4dn-plan-dryrun-20260513.json",
     "training_jobs_to_submit": 0
   },
-  "latest_soft_density_bg10_review": {
-    "ai_visual_review_json": "logs/md1-r4-soft-density-bg10-review-ai-visual-review-20260513.json",
-    "bg10_merge_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-quality-preserving-soft-density-leaf-tile10-rollback-bg10-merge-g4dn-20260513/output/artifact/model.tar.gz",
-    "bg10_merge_estimated_usd": 0.3034,
-    "bg10_merge_job_name": "md1-r4t04soft-bg10-20260513",
-    "bg10_merge_preflight_json": "logs/md1-r4-quality-preserving-soft-density-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260513.json",
-    "decision": "blocked",
-    "review_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-quality-preserving-soft-density-leaf-bg10-review-v18colmap-20260513/outputs/r4-t04soft-bg10-v18colmap-smoke-p24/md1-r1-r4-t04soft-bg10-v18p24-1778651573/output/model.tar.gz",
-    "review_billable_seconds": 686,
-    "review_comparison_json": "logs/md1-r4-soft-density-bg10-review-comparison-20260513.json",
-    "review_estimated_usd": 0.1402,
-    "review_job_name": "md1-r1-r4-t04soft-bg10-v18p24-1778651573",
-    "visual_qa_gate_json": "logs/md1-r4-soft-density-bg10-review-visual-qa-gate-20260513.json"
-  },
   "latest_tile04_leaf_reuse_merge_dryrun_status": "density-capped tile_04 leaf passed post-leaf preflight/gate with 984154 splats, 128 images, and filtered scaffold; no-training bg10 tile_10 rollback merge payload dry-run is generated and merge/review gate allows only that next step.",
   "latest_tracked_sagemaker_evidence_spend_before_untracked_stop_usd": 14.8046,
-  "latest_training_cost_reduction_status": "Evidence/untracked spend now about $17.100. Soft-density tile_04 passed leaf and merge structural gates, but V18 and AI visual QA failed after bounded bg10 review. No full 14-tile training, LOD packaging, viewer smoke, or promotion launched; next step is no-spend attribution/objective redesign.",
+  "latest_training_cost_reduction_status": "Evidence/untracked spend remains about $17.100. Soft-density tile_04 passed leaf and merge structural gates but failed V18 and AI visual QA; no-spend planner now records soft_density_quality_regression and blocks repeating that objective. No full14/LOD/promotion/viewer smoke launched.",
   "latest_untracked_compute_stop": {
     "billable_time_seconds": 1956,
     "describe_json": "logs/md1-sample8-cpu-r4-1778646749-stopped-describe-20260513.json",
@@ -5982,6 +6010,34 @@
     "status": "implemented_no_spend_guard",
     "triggering_invalid_review": "logs/md1-cost-reduction-r4-boundary-density-v2-isolation-tile04-candidate-tile10-rollback-bg-tile10-review-20260507.json"
   },
+  "md1_r4_soft_density_failed_hypothesis_guard_20260513": {
+    "at": "2026-05-13T06:38:31Z",
+    "aws_processing_inprogress": [],
+    "aws_training_inprogress": [],
+    "blocked_repetition_reasons": [
+      "objective_does_not_target_current_blockers",
+      "objective_repeats_failed_soft_density_hypothesis"
+    ],
+    "event": "soft_density_failed_hypothesis_guarded_no_spend",
+    "evidence": {
+      "attribution_json": "logs/md1-r4-soft-density-bg10-review-attribution-20260513.json",
+      "objective_strategy_json": "logs/md1-r4-soft-density-quality-regression-objective-strategy-20260513.json",
+      "planner": "scripts/3dgs/plan_md1_boundary_objective_strategy.py",
+      "quality_strategy_json": "logs/md1-r4-soft-density-bg10-review-quality-strategy-20260513.json",
+      "repeat_objective_blocked_json": "logs/md1-r4-soft-density-repeat-objective-blocked-20260513.json",
+      "unit_test": "tests/unit/test_plan_md1_boundary_objective_strategy.py"
+    },
+    "head_verified_before_change": "a30173fdf2b062c88a8e30401ae23e9d5a164721",
+    "required_next_candidate": [
+      "target promotion blockers and AI visual defect blockers",
+      "include V18 non-regression plan",
+      "include visual QA bundle/gate and AI visual review plan",
+      "name new appearance, geometry, color, or perceptual objective rather than repeat soft-density/global-SSIM",
+      "pass leaf-submit readiness on exact green head with AWS idle and explicit cost/runtime caps"
+    ],
+    "status": "paid_retry_blocked_until_new_objective",
+    "workflow": "CDK Deploy 25782377608 success"
+  },
   "md1_r4_standard_v18color_review_20260505": {
     "branch": "agent-90742618-md1-geometry-consistency",
     "candidate": {
@@ -8948,7 +9004,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Commit/push soft-density bg10 rejection evidence and watch exact-head workflows; then continue no-spend attribution/objective redesign only. Do not launch another paid leaf/review/full14/LOD/promotion until the failed soft-density hypothesis is encoded and a new objective gate plus submit readiness pass.",
+  "next_unblocked_step": "Design a new no-spend candidate objective that targets promotion blockers plus AI visual defects, includes V18 non-regression and visual QA plans, and passes objective gate; do not launch paid leaf/review/full14/LOD/promotion.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -14877,5 +14933,6 @@
     "shared_assigned_fallback_pair_count": 2
   },
   "updated": "2026-05-13T06:12:00Z",
+  "updated_at": "2026-05-13T06:38:31Z",
   "version": "1.0.0"
 }

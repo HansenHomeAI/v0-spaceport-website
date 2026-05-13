@@ -1,0 +1,178 @@
+{
+  "ai_visual_defect_blockers": [
+    "ai_visual_color_shift_defect",
+    "ai_visual_geometry_alignment_defect",
+    "ai_visual_horizon_continuity_defect",
+    "ai_visual_texture_smearing_defect"
+  ],
+  "attribution_id": "md1-r4-soft-density-bg10-review-attribution-20260513",
+  "checked_at": "2026-05-13T06:37:54.424555+00:00",
+  "interpretation": [
+    "Soft-density passed leaf density and merge structure but failed frozen visual quality after render.",
+    "The failure is not a missing-artifact or coverage problem: 12/12 frozen cameras rendered and visual QA assets were complete.",
+    "Extra retained splats did not protect appearance; the candidate regressed boundary LPIPS, horizon PSNR/LPIPS, and visible color/geometry/texture quality."
+  ],
+  "next_paid_objective_requirements": [
+    "Must not repeat soft-density/global-SSIM without a new appearance, color, geometry, or perceptual objective.",
+    "Must target promotion blockers plus AI visual defect blockers in the candidate objective JSON.",
+    "Must include V18 non-regression and visual QA bundle/gate plans before leaf-submit readiness.",
+    "Must keep no-full14 guard, cost/runtime caps, exact-head workflow gate, AWS idle check, and density guard before any paid proof."
+  ],
+  "promotion_block_reasons": [
+    "boundary_lpips_regression",
+    "boundary_no_required_improvement",
+    "horizon_psnr_regression",
+    "horizon_lpips_regression"
+  ],
+  "recommended_no_spend_next_step": "Use the objective planner to block paid retries until a new candidate objective names the visual defect blockers and has V18 plus visual QA validation plans.",
+  "reference_candidate": {
+    "bucket_metrics": {
+      "boundary": {
+        "lpips": 0.7800296545028687,
+        "psnr": 14.315955739441744,
+        "ssim": 0.4327641427516937
+      },
+      "horizon": {
+        "lpips": 0.8303832709789276,
+        "psnr": 15.518785862438865,
+        "ssim": 0.3774964064359665
+      },
+      "near_detail": {
+        "lpips": 0.9159154295921326,
+        "psnr": 11.342806679576887,
+        "ssim": 0.38599395751953125
+      }
+    },
+    "candidate": "v18_baseline_or_reference_bg10_in_review",
+    "evidence": "logs/md1-r4-soft-density-bg10-review-comparison-20260513.json",
+    "merge": {
+      "fallback_reasons": [],
+      "fallback_tile_count": 0,
+      "merge_mode": "support_weighted_overlap",
+      "retain_all_tile_count": 0,
+      "retained_gaussians": 8423868,
+      "source_gaussians": 8789634
+    },
+    "status": "reference_for_frozen_p24_non_regression"
+  },
+  "soft_density_minus_reference_bucket_delta": {
+    "boundary": {
+      "lpips": 0.06214261054992676,
+      "psnr": -0.3590508562559034,
+      "ssim": -0.004133880138397217
+    },
+    "horizon": {
+      "lpips": 0.10286948084831238,
+      "psnr": -1.0588342766792334,
+      "ssim": -0.003927096724510193
+    },
+    "near_detail": {
+      "lpips": 0.014839410781860352,
+      "psnr": -0.31359825831651555,
+      "ssim": 0.015221402049064636
+    }
+  },
+  "soft_density_minus_reference_merge_delta": {
+    "fallback_tile_count_delta": 0,
+    "retain_all_tile_count_delta": 0,
+    "retained_gaussians": 137068,
+    "source_gaussians": 150726
+  },
+  "soft_density_minus_v18_bucket_delta": {
+    "boundary": {
+      "lpips": 0.06214261054992676,
+      "psnr": -0.3590508562559034,
+      "ssim": -0.004133880138397217
+    },
+    "horizon": {
+      "lpips": 0.10286948084831238,
+      "psnr": -1.0588342766792334,
+      "ssim": -0.003927096724510193
+    },
+    "near_detail": {
+      "lpips": 0.014839410781860352,
+      "psnr": -0.31359825831651555,
+      "ssim": 0.015221402049064636
+    }
+  },
+  "source_ai_visual_review_json": "logs/md1-r4-soft-density-bg10-review-ai-visual-review-20260513.json",
+  "source_review_comparison_json": "logs/md1-r4-soft-density-bg10-review-comparison-20260513.json",
+  "source_visual_qa_gate_json": "logs/md1-r4-soft-density-bg10-review-visual-qa-gate-20260513.json",
+  "status": "hold_paid_retry_soft_density_hypothesis_failed",
+  "tested_candidate": {
+    "ai_visual_defect_blockers": [
+      "ai_visual_color_shift_defect",
+      "ai_visual_geometry_alignment_defect",
+      "ai_visual_horizon_continuity_defect",
+      "ai_visual_texture_smearing_defect"
+    ],
+    "bucket_deltas_vs_v18": {
+      "boundary": {
+        "lpips": 0.06214261054992676,
+        "psnr": -0.3590508562559034,
+        "ssim": -0.004133880138397217
+      },
+      "horizon": {
+        "lpips": 0.10286948084831238,
+        "psnr": -1.0588342766792334,
+        "ssim": -0.003927096724510193
+      },
+      "near_detail": {
+        "lpips": 0.014839410781860352,
+        "psnr": -0.31359825831651555,
+        "ssim": 0.015221402049064636
+      }
+    },
+    "candidate": "quality_preserving_soft_density_tile04_plus_tile10_rollback_bg10",
+    "evidence": "md1_r4_soft_density_bg10_review_blocked_20260513",
+    "merge": {
+      "fallback_reasons": [],
+      "fallback_tile_count": 0,
+      "merge_mode": "support_weighted_overlap",
+      "retain_all_tile_count": 0,
+      "retained_gaussians": 8560936,
+      "source_gaussians": 8940360
+    },
+    "promotion_block_reasons": [
+      "boundary_lpips_regression",
+      "boundary_no_required_improvement",
+      "horizon_psnr_regression",
+      "horizon_lpips_regression"
+    ],
+    "status": "rendered_quality_blocked",
+    "v18_non_regression_block_reasons": [
+      "near_detail_v18_median_psnr_regression",
+      "near_detail_v18_median_lpips_regression",
+      "boundary_v18_median_psnr_regression",
+      "boundary_v18_median_lpips_regression",
+      "horizon_v18_median_psnr_regression",
+      "horizon_v18_median_lpips_regression",
+      "near_detail_v18_single_camera_lpips_regression",
+      "boundary_v18_single_camera_lpips_regression",
+      "horizon_v18_single_camera_lpips_regression",
+      "horizon_v18_single_camera_psnr_regression"
+    ],
+    "visual_qa_block_reasons": [
+      "visual_qa_ai_visual_review_blocking_defects",
+      "visual_qa_ai_visual_review_blocking_view_findings",
+      "visual_qa_ai_visual_review_status_block"
+    ]
+  },
+  "v18_non_regression_block_reasons": [
+    "near_detail_v18_median_psnr_regression",
+    "near_detail_v18_median_lpips_regression",
+    "boundary_v18_median_psnr_regression",
+    "boundary_v18_median_lpips_regression",
+    "horizon_v18_median_psnr_regression",
+    "horizon_v18_median_lpips_regression",
+    "near_detail_v18_single_camera_lpips_regression",
+    "boundary_v18_single_camera_lpips_regression",
+    "horizon_v18_single_camera_lpips_regression",
+    "horizon_v18_single_camera_psnr_regression"
+  ],
+  "visual_qa_gate_block_reasons": [
+    "visual_qa_ai_visual_review_blocking_defects",
+    "visual_qa_ai_visual_review_blocking_view_findings",
+    "visual_qa_ai_visual_review_status_block"
+  ]
+}

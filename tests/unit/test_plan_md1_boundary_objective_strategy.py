@@ -93,6 +93,42 @@ def density_capped_regression_attribution() -> dict:
     return attr
 
 
+def soft_density_regression_attribution() -> dict:
+    attr = attribution()
+    attr.pop("density_v2_minus_baseline_bucket_delta", None)
+    attr["soft_density_minus_reference_bucket_delta"] = {
+        "boundary": {"psnr": -0.3591, "ssim": -0.0041, "lpips": 0.0621},
+        "horizon": {"psnr": -1.0588, "ssim": -0.0039, "lpips": 0.1029},
+        "near_detail": {"psnr": -0.3136, "ssim": 0.0152, "lpips": 0.0148},
+    }
+    attr["tested_candidate"] = {
+        "candidate": "soft_density_tile04_plus_tile10_rollback_bg10",
+        "promotion_block_reasons": [
+            "boundary_lpips_regression",
+            "boundary_no_required_improvement",
+            "horizon_psnr_regression",
+            "horizon_lpips_regression",
+        ],
+        "v18_non_regression_block_reasons": [
+            "near_detail_v18_median_psnr_regression",
+            "boundary_v18_median_lpips_regression",
+            "horizon_v18_median_psnr_regression",
+            "horizon_v18_median_lpips_regression",
+        ],
+    }
+    attr["visual_qa_gate_block_reasons"] = [
+        "visual_qa_ai_visual_review_blocking_defects",
+        "visual_qa_ai_visual_review_status_block",
+    ]
+    attr["ai_visual_defect_blockers"] = [
+        "ai_visual_horizon_continuity_defect",
+        "ai_visual_geometry_alignment_defect",
+        "ai_visual_texture_smearing_defect",
+        "ai_visual_color_shift_defect",
+    ]
+    return attr
+
+
 def valid_candidate() -> dict:
     return {
         "targeted_quality_blockers": ["boundary_no_required_improvement"],
@@ -110,6 +146,8 @@ def valid_candidate() -> dict:
         "planned_cost_estimate": {"estimated_usd": 1.5},
         "submitted_jobs": [],
         "no_full_14tile_training": True,
+        "v18_review_manifest_s3_uri": "s3://example/v18-review",
+        "visual_qa_required": True,
     }
 
 
@@ -413,6 +451,122 @@ class PlanMd1BoundaryObjectiveStrategyTests(unittest.TestCase):
         )
 
         self.assertEqual(report["candidate_objective_gate"]["decision"], "paid_retry_allowed")
+
+    def test_records_soft_density_quality_regression_and_ai_visual_blockers(self):
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=soft_density_regression_attribution(),
+            candidate_objective=None,
+            max_estimated_usd=2.0,
+        )
+
+        hypotheses = {item["hypothesis"] for item in report["failed_hypotheses"]}
+        self.assertIn("soft_density_quality_regression", hypotheses)
+        self.assertIn("boundary_lpips_regression", report["current_quality_blockers"])
+        self.assertIn("horizon_lpips_regression", report["current_quality_blockers"])
+        self.assertIn("ai_visual_color_shift_defect", report["current_quality_blockers"])
+        self.assertIn(
+            "soft-density/global-SSIM retry without a new appearance, geometry, color, or perceptual objective",
+            report["required_next_hypothesis"]["must_not_repeat"],
+        )
+
+    def test_blocks_repeating_soft_density_after_visual_quality_failure(self):
+        candidate = valid_candidate()
+        candidate["targeted_quality_blockers"] = [
+            "boundary_no_required_improvement",
+            "boundary_lpips_regression",
+            "horizon_psnr_regression",
+            "horizon_lpips_regression",
+            "visual_qa_ai_visual_review_blocking_defects",
+            "visual_qa_ai_visual_review_status_block",
+            "ai_visual_horizon_continuity_defect",
+            "ai_visual_geometry_alignment_defect",
+            "ai_visual_texture_smearing_defect",
+            "ai_visual_color_shift_defect",
+        ]
+        candidate["expected_metric_axes"] = [
+            "boundary.required_improvement",
+            "boundary.lpips",
+            "horizon.psnr",
+            "horizon.lpips",
+        ]
+        candidate["objective_changes"] = [
+            "boundary_loss_weighting",
+            "global_ssim_loss_weighting",
+            "soft_density_control",
+            "quality_preserving",
+            "horizon_preserving",
+        ]
+        candidate["objective_implementation"]["environment"].update(
+            {
+                "BOUNDARY_LOSS_WEIGHT": "1.15",
+                "TRAINING_MAX_GAUSS_RATIO": "1.35",
+                "TRAINING_STOP_SPLIT_AT": "7600",
+            }
+        )
+
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=soft_density_regression_attribution(),
+            candidate_objective=candidate,
+            max_estimated_usd=2.0,
+        )
+
+        self.assertIn(
+            "objective_repeats_failed_soft_density_hypothesis",
+            report["candidate_objective_gate"]["block_reasons"],
+        )
+        self.assertFalse(report["paid_retry_allowed"])
+
+    def test_requires_v18_and_visual_qa_plans_after_soft_density_ai_block(self):
+        candidate = valid_candidate()
+        candidate.pop("v18_review_manifest_s3_uri")
+        candidate.pop("visual_qa_required")
+        candidate["targeted_quality_blockers"] = [
+            "boundary_no_required_improvement",
+            "boundary_lpips_regression",
+            "horizon_psnr_regression",
+            "horizon_lpips_regression",
+            "visual_qa_ai_visual_review_blocking_defects",
+            "visual_qa_ai_visual_review_status_block",
+            "ai_visual_horizon_continuity_defect",
+            "ai_visual_geometry_alignment_defect",
+            "ai_visual_texture_smearing_defect",
+            "ai_visual_color_shift_defect",
+        ]
+        candidate["expected_metric_axes"] = [
+            "boundary.required_improvement",
+            "boundary.lpips",
+            "horizon.psnr",
+            "horizon.lpips",
+        ]
+        candidate["objective_changes"] = [
+            "boundary_loss_weighting",
+            "lpips_loss_weighting",
+            "appearance_consistency",
+            "color_consistency",
+        ]
+        candidate["objective_implementation"]["environment"].update(
+            {
+                "BOUNDARY_LOSS_WEIGHT": "1.15",
+                "BOUNDARY_LPIPS_LOSS_WEIGHT": "0.10",
+            }
+        )
+
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=soft_density_regression_attribution(),
+            candidate_objective=candidate,
+            max_estimated_usd=2.0,
+        )
+
+        reasons = report["candidate_objective_gate"]["block_reasons"]
+        self.assertIn("objective_missing_v18_non_regression_plan_after_soft_density_failure", reasons)
+        self.assertIn("objective_missing_visual_qa_plan_after_ai_block", reasons)
+        self.assertFalse(report["paid_retry_allowed"])
 
 
 if __name__ == "__main__":

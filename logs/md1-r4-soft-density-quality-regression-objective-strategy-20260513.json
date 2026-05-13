@@ -1,0 +1,189 @@
+{
+  "boundary_frozen_cameras": [
+    "DJI_0067.JPG",
+    "DJI_0068.JPG",
+    "DJI_0069.JPG",
+    "DJI_0070.JPG"
+  ],
+  "boundary_improvement_gap": {
+    "actual_delta": {
+      "lpips": 0.06214261054992676,
+      "psnr": -0.3590508562559034,
+      "ssim": -0.004133880138397217
+    },
+    "passes_any_improvement_axis": false,
+    "remaining_gap": {
+      "lpips": 0.08714261054992675,
+      "psnr": 0.8590508562559034,
+      "ssim": 0.014133880138397217
+    },
+    "required_improvement": {
+      "lpips": -0.025,
+      "psnr": 0.5,
+      "ssim": 0.01
+    }
+  },
+  "candidate_objective_gate": {
+    "block_reasons": [
+      "candidate_objective_missing"
+    ],
+    "boundary_camera_ids": [],
+    "context_support_tile_ids": [],
+    "covered_tile_ids": [],
+    "decision": "paid_retry_blocked",
+    "density_control_implementation": {
+      "environment": {},
+      "training_config": {}
+    },
+    "estimated_usd": null,
+    "expected_metric_axes": [],
+    "horizon_camera_ids": [],
+    "loss_weighting_implementation": {
+      "environment": {},
+      "training_config": {}
+    },
+    "max_estimated_usd": 0.75,
+    "objective_changes": [],
+    "present": false,
+    "selected_tile_ids": [],
+    "targeted_quality_blockers": [],
+    "warnings": []
+  },
+  "checked_at": "2026-05-13T06:37:54.487753+00:00",
+  "context_support_tile_ids": [
+    "tile_13",
+    "tile_00",
+    "tile_02",
+    "tile_06"
+  ],
+  "current_quality_blockers": [
+    "ai_visual_color_shift_defect",
+    "ai_visual_geometry_alignment_defect",
+    "ai_visual_horizon_continuity_defect",
+    "ai_visual_texture_smearing_defect",
+    "boundary_lpips_regression",
+    "boundary_no_required_improvement",
+    "horizon_lpips_regression",
+    "horizon_psnr_regression",
+    "visual_qa_ai_visual_review_blocking_defects",
+    "visual_qa_ai_visual_review_blocking_view_findings",
+    "visual_qa_ai_visual_review_status_block"
+  ],
+  "failed_hypotheses": [
+    {
+      "ai_visual_defect_blockers": [
+        "ai_visual_color_shift_defect",
+        "ai_visual_geometry_alignment_defect",
+        "ai_visual_horizon_continuity_defect",
+        "ai_visual_texture_smearing_defect"
+      ],
+      "evidence": "The soft-density tile_04 leaf passed density guards and structural merge/review gates, but V18 metrics and AI visual QA showed horizon/geometry/texture/color regressions.",
+      "hypothesis": "soft_density_quality_regression",
+      "metric_delta_vs_reference_bg10": {
+        "boundary": {
+          "lpips": 0.06214261054992676,
+          "psnr": -0.3590508562559034,
+          "ssim": -0.004133880138397217
+        },
+        "horizon": {
+          "lpips": 0.10286948084831238,
+          "psnr": -1.0588342766792334,
+          "ssim": -0.003927096724510193
+        },
+        "near_detail": {
+          "lpips": 0.014839410781860352,
+          "psnr": -0.31359825831651555,
+          "ssim": 0.015221402049064636
+        }
+      },
+      "promotion_block_reasons": [
+        "boundary_lpips_regression",
+        "boundary_no_required_improvement",
+        "horizon_psnr_regression",
+        "horizon_lpips_regression"
+      ],
+      "status": "failed",
+      "v18_non_regression_block_reasons": [
+        "near_detail_v18_median_psnr_regression",
+        "near_detail_v18_median_lpips_regression",
+        "boundary_v18_median_psnr_regression",
+        "boundary_v18_median_lpips_regression",
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_median_lpips_regression",
+        "near_detail_v18_single_camera_lpips_regression",
+        "boundary_v18_single_camera_lpips_regression",
+        "horizon_v18_single_camera_lpips_regression",
+        "horizon_v18_single_camera_psnr_regression"
+      ],
+      "visual_qa_gate_block_reasons": [
+        "visual_qa_ai_visual_review_blocking_defects",
+        "visual_qa_ai_visual_review_blocking_view_findings",
+        "visual_qa_ai_visual_review_status_block"
+      ]
+    }
+  ],
+  "horizon_frozen_cameras": [
+    "DJI_0066.JPG",
+    "DJI_0073.JPG",
+    "DJI_0146.JPG",
+    "DJI_0147.JPG"
+  ],
+  "horizon_regression_gap": {
+    "actual_delta": {
+      "lpips": 0.10286948084831238,
+      "psnr": -1.0588342766792334,
+      "ssim": -0.003927096724510193
+    },
+    "allowed_regression": {
+      "lpips_max_delta": 0.03,
+      "psnr_min_delta": -0.75,
+      "ssim_min_delta": -0.012
+    },
+    "passes_regression_gate": false,
+    "remaining_gap_to_pass": {
+      "lpips": 0.07286948084831238,
+      "psnr": 0.30883427667923335,
+      "ssim": 0.0
+    }
+  },
+  "next_no_spend_actions": [
+    "write a concrete candidate objective JSON that names the frozen cameras, primary tiles, metric axis, cost cap, and no-full14 guard",
+    "run this planner against that candidate objective and require candidate_objective_gate.decision=paid_retry_allowed",
+    "only then run leaf-only submit readiness; merge/review spend remains blocked until leaf gates pass"
+  ],
+  "paid_retry_allowed": false,
+  "paid_retry_recommended": false,
+  "primary_boundary_tile_ids": [
+    "tile_04",
+    "tile_10"
+  ],
+  "primary_horizon_tile_ids": [
+    "tile_01",
+    "tile_04"
+  ],
+  "protected_v18_non_regression_status": {},
+  "recommendation": "no_paid_retry_until_objective_redesign",
+  "required_next_hypothesis": {
+    "expected_metric_axes": [
+      "boundary.lpips",
+      "boundary.required_improvement",
+      "horizon.lpips",
+      "horizon.psnr",
+      "boundary.psnr",
+      "boundary.ssim"
+    ],
+    "must_change": [
+      "camera/objective weighting during leaf training or selection",
+      "explicit boundary frozen-camera emphasis for DJI_0067.JPG-DJI_0070.JPG",
+      "tile_04/tile_10 boundary context coverage before merge/review"
+    ],
+    "must_not_repeat": [
+      "tile_10 density-only repair",
+      "merge-only protected overlap retention",
+      "frame-repeat-only camera weighting without loss/objective redesign",
+      "hard density-cap/loss-weighting retry that does not explicitly preserve horizon and LPIPS quality",
+      "soft-density/global-SSIM retry without a new appearance, geometry, color, or perceptual objective",
+      "full 14-tile training before staged R0/R1/R2/R3 gates"
+    ]
+  }
+}

@@ -21,6 +21,11 @@ APPROVED_OBJECTIVE_TERMS = (
     "tile04_tile10_joint_objective",
     "tile_04_tile_10_joint_objective",
     "boundary_visibility_weighting",
+    "perceptual_loss_weighting",
+    "lpips_loss_weighting",
+    "appearance_consistency",
+    "color_consistency",
+    "horizon_appearance_protection",
 )
 FAILED_DENSITY_OR_MERGE_TERMS = (
     "density_only",
@@ -44,6 +49,23 @@ QUALITY_PRESERVING_DENSITY_TERMS = (
     "soft_density_control",
     "horizon_preserving",
     "quality_preserving",
+)
+FAILED_SOFT_DENSITY_TERMS = (
+    "soft_density",
+    "soft_density_control",
+    "global_ssim_loss_weighting",
+    "ssim_lambda_0_28",
+)
+VISUAL_FIDELITY_OBJECTIVE_TERMS = (
+    "appearance",
+    "color",
+    "exposure",
+    "geometry",
+    "perceptual",
+    "lpips",
+    "sky",
+    "horizon_continuity",
+    "texture",
 )
 FAILED_FRAME_REPEAT_TERMS = (
     "boundary_frame_repeat",
@@ -352,11 +374,14 @@ def current_quality_blockers(
     tested_candidate = attribution.get("tested_candidate")
     if isinstance(tested_candidate, Mapping):
         values.extend(list_strings(tested_candidate.get("promotion_block_reasons")))
+        values.extend(list_strings(tested_candidate.get("visual_qa_block_reasons")))
     block_reasons = attribution.get("block_reasons")
     if isinstance(block_reasons, Mapping):
         values.extend(list_strings(block_reasons.get("protected")))
         values.extend(reason for reason in list_strings(block_reasons.get("leaf_gate")) if reason in OVERDENSE_LEAF_REASONS)
     values.extend(reason for reason in list_strings(attribution.get("leaf_gate_block_reasons")) if reason in OVERDENSE_LEAF_REASONS)
+    values.extend(list_strings(attribution.get("visual_qa_gate_block_reasons")))
+    values.extend(list_strings(attribution.get("ai_visual_defect_blockers")))
     return sorted_unique(values)
 
 
@@ -415,6 +440,27 @@ def extract_failed_hypotheses(attribution: Mapping[str, Any]) -> list[dict[str, 
                 ),
             }
         )
+    soft_density_delta = attribution.get("soft_density_minus_reference_bucket_delta") or attribution.get(
+        "soft_density_minus_v18_bucket_delta"
+    )
+    if isinstance(soft_density_delta, Mapping):
+        tested_candidate = attribution.get("tested_candidate")
+        if not isinstance(tested_candidate, Mapping):
+            tested_candidate = {}
+        failed.append(
+            {
+                "hypothesis": "soft_density_quality_regression",
+                "status": "failed",
+                "evidence": "The soft-density tile_04 leaf passed density guards and structural merge/review gates, but V18 metrics and AI visual QA showed horizon/geometry/texture/color regressions.",
+                "metric_delta_vs_reference_bg10": soft_density_delta,
+                "promotion_block_reasons": list_strings(tested_candidate.get("promotion_block_reasons")),
+                "v18_non_regression_block_reasons": list_strings(
+                    tested_candidate.get("v18_non_regression_block_reasons")
+                ),
+                "visual_qa_gate_block_reasons": list_strings(attribution.get("visual_qa_gate_block_reasons")),
+                "ai_visual_defect_blockers": list_strings(attribution.get("ai_visual_defect_blockers")),
+            }
+        )
     leaf_gate_block_reasons = list_strings(attribution.get("leaf_gate_block_reasons"))
     block_reasons = attribution.get("block_reasons")
     if isinstance(block_reasons, Mapping):
@@ -464,6 +510,43 @@ def repeats_failed_density_cap(changes: Sequence[str], failed_hypotheses: Sequen
     has_hard_cap = any(term in normalized for term in FAILED_DENSITY_CAP_TERMS)
     has_quality_preserving_density = any(term in normalized for term in QUALITY_PRESERVING_DENSITY_TERMS)
     return has_hard_cap and not has_quality_preserving_density
+
+
+def repeats_failed_soft_density(changes: Sequence[str], failed_hypotheses: Sequence[Mapping[str, Any]]) -> bool:
+    if not changes:
+        return False
+    if not any(item.get("hypothesis") == "soft_density_quality_regression" for item in failed_hypotheses):
+        return False
+    normalized = " ".join(changes).lower()
+    repeats_soft_density = any(term in normalized for term in FAILED_SOFT_DENSITY_TERMS)
+    adds_visual_fidelity_objective = any(term in normalized for term in VISUAL_FIDELITY_OBJECTIVE_TERMS)
+    return repeats_soft_density and not adds_visual_fidelity_objective
+
+
+def has_soft_density_failed(failed_hypotheses: Sequence[Mapping[str, Any]]) -> bool:
+    return any(item.get("hypothesis") == "soft_density_quality_regression" for item in failed_hypotheses)
+
+
+def has_ai_visual_blocker(blockers: Sequence[str]) -> bool:
+    return any(str(reason).startswith("ai_visual_") or str(reason).startswith("visual_qa_") for reason in blockers)
+
+
+def has_v18_comparison_plan(strategy: Mapping[str, Any] | None) -> bool:
+    if not isinstance(strategy, Mapping):
+        return False
+    if strategy.get("v18_review_manifest_s3_uri") or strategy.get("v18_comparison_plan"):
+        return True
+    plan = strategy.get("v18_non_regression_plan")
+    return isinstance(plan, Mapping) and bool(plan)
+
+
+def has_visual_qa_plan(strategy: Mapping[str, Any] | None) -> bool:
+    if not isinstance(strategy, Mapping):
+        return False
+    if strategy.get("visual_qa_required") is True or strategy.get("visual_qa_plan"):
+        return True
+    plan = strategy.get("ai_visual_review_plan")
+    return isinstance(plan, Mapping) and bool(plan)
 
 
 def has_horizon_blocker(blockers: Sequence[str]) -> bool:
@@ -594,12 +677,18 @@ def evaluate_candidate_objective(
         block_reasons.append("objective_repeats_failed_frame_repeat_without_loss_weighting")
     if repeats_failed_density_cap(changes, failed_hypotheses):
         block_reasons.append("objective_repeats_failed_density_cap_loss_weighting_hypothesis")
+    if repeats_failed_soft_density(changes, failed_hypotheses):
+        block_reasons.append("objective_repeats_failed_soft_density_hypothesis")
     loss_weighting_knobs = implemented_loss_weighting_knobs(candidate_objective)
     if has_loss_weighting_change(changes) and not any(loss_weighting_knobs.values()):
         block_reasons.append("objective_missing_loss_weighting_implementation")
     density_control_knobs = implemented_density_control_knobs(candidate_objective)
     if has_overdense_leaf_blocker(current_blockers) and not any(density_control_knobs.values()):
         block_reasons.append("objective_missing_density_control_after_overdense_leaf")
+    if has_soft_density_failed(failed_hypotheses) and not has_v18_comparison_plan(candidate_objective):
+        block_reasons.append("objective_missing_v18_non_regression_plan_after_soft_density_failure")
+    if has_ai_visual_blocker(current_blockers) and not has_visual_qa_plan(candidate_objective):
+        block_reasons.append("objective_missing_visual_qa_plan_after_ai_block")
 
     submitted_jobs = candidate_objective.get("submitted_jobs")
     if submitted_jobs not in ([], None):
@@ -706,6 +795,7 @@ def plan_boundary_objective_strategy(
                 "merge-only protected overlap retention",
                 "frame-repeat-only camera weighting without loss/objective redesign",
                 "hard density-cap/loss-weighting retry that does not explicitly preserve horizon and LPIPS quality",
+                "soft-density/global-SSIM retry without a new appearance, geometry, color, or perceptual objective",
                 "full 14-tile training before staged R0/R1/R2/R3 gates",
             ],
             "expected_metric_axes": required_axes,
