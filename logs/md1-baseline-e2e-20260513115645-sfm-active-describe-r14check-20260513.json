@@ -1,55 +1,55 @@
 {
-    "ProcessingInputs": [
-        {
-            "InputName": "input-data",
-            "AppManaged": false,
-            "S3Input": {
-                "S3Uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
-                "LocalPath": "/opt/ml/processing/input",
-                "S3DataType": "S3Prefix",
-                "S3InputMode": "File",
-                "S3DataDistributionType": "FullyReplicated"
-            }
-        }
-    ],
-    "ProcessingOutputConfig": {
-        "Outputs": [
-            {
-                "OutputName": "colmap-output",
-                "S3Output": {
-                    "S3Uri": "s3://spaceport-ml-processing-staging/colmap/md1-baseline-e2e-20260513115645/",
-                    "LocalPath": "/opt/ml/processing/output",
-                    "S3UploadMode": "EndOfJob"
-                },
-                "AppManaged": false
-            }
-        ]
-    },
-    "ProcessingJobName": "md1-baseline-e2e-20260513115645-sfm",
-    "ProcessingResources": {
-        "ClusterConfig": {
-            "InstanceCount": 1,
-            "InstanceType": "ml.g4dn.xlarge",
-            "VolumeSizeInGB": 100
-        }
-    },
-    "StoppingCondition": {
-        "MaxRuntimeInSeconds": 86400
-    },
-    "AppSpecification": {
-        "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:latest",
-        "ContainerEntrypoint": [
-            "/opt/ml/code/run_sfm.sh"
-        ]
-    },
-    "Environment": {
-        "AWS_DEFAULT_REGION": "us-west-2",
-        "PYTHONUNBUFFERED": "1"
-    },
-    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
-    "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-baseline-e2e-20260513115645-sfm",
-    "ProcessingJobStatus": "InProgress",
-    "ProcessingStartTime": "2026-05-13T11:57:28.961000-06:00",
-    "LastModifiedTime": "2026-05-13T11:59:21.462000-06:00",
-    "CreationTime": "2026-05-13T11:56:50.368000-06:00"
+  "ProcessingInputs": [
+    {
+      "InputName": "input-data",
+      "AppManaged": false,
+      "S3Input": {
+        "S3Uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+        "LocalPath": "/opt/ml/processing/input",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3DataDistributionType": "FullyReplicated"
+      }
+    }
+  ],
+  "ProcessingOutputConfig": {
+    "Outputs": [
+      {
+        "OutputName": "colmap-output",
+        "S3Output": {
+          "S3Uri": "s3://spaceport-ml-processing-staging/colmap/md1-baseline-e2e-20260513115645/",
+          "LocalPath": "/opt/ml/processing/output",
+          "S3UploadMode": "EndOfJob"
+        },
+        "AppManaged": false
+      }
+    ]
+  },
+  "ProcessingJobName": "md1-baseline-e2e-20260513115645-sfm",
+  "ProcessingResources": {
+    "ClusterConfig": {
+      "InstanceCount": 1,
+      "InstanceType": "ml.g4dn.xlarge",
+      "VolumeSizeInGB": 100
+    }
+  },
+  "StoppingCondition": {
+    "MaxRuntimeInSeconds": 86400
+  },
+  "AppSpecification": {
+    "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:latest",
+    "ContainerEntrypoint": [
+      "/opt/ml/code/run_sfm.sh"
+    ]
+  },
+  "Environment": {
+    "AWS_DEFAULT_REGION": "us-west-2",
+    "PYTHONUNBUFFERED": "1"
+  },
+  "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+  "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-baseline-e2e-20260513115645-sfm",
+  "ProcessingJobStatus": "InProgress",
+  "ProcessingStartTime": "2026-05-13T11:57:28.961000-06:00",
+  "LastModifiedTime": "2026-05-13T11:59:21.462000-06:00",
+  "CreationTime": "2026-05-13T11:56:50.368000-06:00"
 }
