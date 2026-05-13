@@ -1,4 +1,5 @@
 import importlib.util
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -100,6 +101,18 @@ class EnforceMd1LeafSubmitReadinessTests(unittest.TestCase):
 
         self.assertEqual(summary["decision"], "leaf_submit_blocked")
         self.assertIn("training_jobs_in_progress", summary["block_reasons"])
+
+    def test_parse_json_list_accepts_aws_summary_file(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            temp_path = Path(tmpdir) / "training-jobs.json"
+            temp_path.write_text(
+                '{"TrainingJobSummaries": [{"TrainingJobName": "active-job"}]}\n',
+                encoding="utf-8",
+            )
+            self.assertEqual(
+                gate.parse_json_list(str(temp_path)),
+                [{"TrainingJobName": "active-job"}],
+            )
 
     def test_blocks_when_quality_gate_is_not_allowed(self):
         summary = allowed_summary(quality_gate={"decision": "paid_retry_blocked"})

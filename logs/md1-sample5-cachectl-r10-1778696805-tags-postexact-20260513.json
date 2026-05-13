@@ -1,0 +1,28 @@
+{
+    "Tags": [
+        {
+            "Key": "Validation",
+            "Value": "md1-sample5-cachectl-r10-quality-emission-smoke"
+        },
+        {
+            "Key": "Project",
+            "Value": "Spaceport"
+        },
+        {
+            "Key": "Environment",
+            "Value": "agent73948216sfmproductionspine"
+        },
+        {
+            "Key": "Component",
+            "Value": "3DGS"
+        },
+        {
+            "Key": "CodeHead",
+            "Value": "08831258ac744cc03fca9fa7407144fc533b389c"
+        },
+        {
+            "Key": "EcrDigest",
+            "Value": "e56a0d0ad6c6eeac2e2966c29360243330ff18a2fd11882d19fdfdd87cc810ac"
+        }
+    ]
+}

@@ -15,8 +15,17 @@ def load_json(path: str) -> dict[str, Any]:
 
 
 def parse_json_list(value: str) -> list[Any]:
-    parsed = json.loads(value)
+    source = value
+    possible_path = Path(value)
+    if possible_path.exists() and possible_path.is_file():
+        source = possible_path.read_text(encoding="utf-8")
+    parsed = json.loads(source)
     if not isinstance(parsed, list):
+        if isinstance(parsed, dict):
+            for key in ("TrainingJobSummaries", "ProcessingJobSummaries"):
+                summaries = parsed.get(key)
+                if isinstance(summaries, list):
+                    return summaries
         raise ValueError(f"expected JSON list, got {type(parsed).__name__}")
     return parsed
 
