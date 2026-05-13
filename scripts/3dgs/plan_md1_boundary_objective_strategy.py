@@ -56,6 +56,32 @@ FAILED_SOFT_DENSITY_TERMS = (
     "global_ssim_loss_weighting",
     "ssim_lambda_0_28",
 )
+FAILED_HARD_OUTPUT_CAP_VISUAL_FIDELITY_TERMS = (
+    "hard_output_cap",
+    "hard_output_density_cap",
+    "output_cap",
+    "opacity_topk",
+)
+QUALITY_REPAIR_AFTER_HARDCAP_TERMS = (
+    "anti_magenta",
+    "color_calibration",
+    "exposure_calibration",
+    "geometry_alignment_loss",
+    "per_camera_color",
+    "perceptual_color_loss",
+    "photometric_calibration",
+    "render_color_normalization",
+    "sky_mask",
+    "white_balance",
+)
+QUALITY_REPAIR_AFTER_HARDCAP_ENV_KEYS = (
+    "BILATERAL_PROCESSING",
+    "FLOATER_PRUNING_MAX_COLOR_DISTANCE",
+)
+QUALITY_REPAIR_AFTER_HARDCAP_CONFIG_KEYS = (
+    "bilateral_processing",
+    "floater_pruning_max_color_distance",
+)
 VISUAL_FIDELITY_OBJECTIVE_TERMS = (
     "appearance",
     "color",
@@ -360,6 +386,15 @@ def implemented_visual_fidelity_knobs(strategy: Mapping[str, Any] | None) -> dic
     return {"environment": env_knobs, "training_config": config_knobs}
 
 
+def implemented_hardcap_quality_repair_knobs(strategy: Mapping[str, Any] | None) -> dict[str, Any]:
+    implementation = objective_implementation(strategy)
+    environment = implementation["environment"]
+    training_config = implementation["training_config"]
+    env_knobs = {key: environment[key] for key in QUALITY_REPAIR_AFTER_HARDCAP_ENV_KEYS if key in environment}
+    config_knobs = {key: training_config[key] for key in QUALITY_REPAIR_AFTER_HARDCAP_CONFIG_KEYS if key in training_config}
+    return {"environment": env_knobs, "training_config": config_knobs}
+
+
 def float_value(value: Any) -> float | None:
     try:
         if value is None or value == "":
@@ -569,6 +604,27 @@ def extract_failed_hypotheses(attribution: Mapping[str, Any]) -> list[dict[str, 
                 "ai_visual_defect_blockers": list_strings(attribution.get("ai_visual_defect_blockers")),
             }
         )
+    hard_output_cap_visual_delta = attribution.get("hard_output_cap_visual_fidelity_minus_v18_bucket_delta") or attribution.get(
+        "hard_output_cap_visual_fidelity_minus_reference_bucket_delta"
+    )
+    if isinstance(hard_output_cap_visual_delta, Mapping):
+        tested_candidate = attribution.get("tested_candidate")
+        if not isinstance(tested_candidate, Mapping):
+            tested_candidate = {}
+        failed.append(
+            {
+                "hypothesis": "hard_output_cap_visual_fidelity_quality_regression",
+                "status": "failed",
+                "evidence": "The hard-output-cap tile_10 plus visual-fidelity tile_04 bg10 merge passed density and structural preflight, but V18 metrics and AI visual QA blocked it for false color, horizon, near-detail, and perceptual regressions.",
+                "metric_delta_vs_v18": hard_output_cap_visual_delta,
+                "promotion_block_reasons": list_strings(tested_candidate.get("promotion_block_reasons")),
+                "v18_non_regression_block_reasons": list_strings(
+                    tested_candidate.get("v18_non_regression_block_reasons")
+                ),
+                "visual_qa_gate_block_reasons": list_strings(attribution.get("visual_qa_gate_block_reasons")),
+                "ai_visual_defect_blockers": list_strings(attribution.get("ai_visual_defect_blockers")),
+            }
+        )
     hypothesis_context = str(attribution.get("hypothesis", "")).lower()
     visual_fidelity_context = "visual_fidelity" in hypothesis_context
     stronger_density_context = (
@@ -659,6 +715,33 @@ def repeats_failed_soft_density(changes: Sequence[str], failed_hypotheses: Seque
 
 def has_soft_density_failed(failed_hypotheses: Sequence[Mapping[str, Any]]) -> bool:
     return any(item.get("hypothesis") == "soft_density_quality_regression" for item in failed_hypotheses)
+
+
+def has_hardcap_visual_quality_failed(failed_hypotheses: Sequence[Mapping[str, Any]]) -> bool:
+    return any(item.get("hypothesis") == "hard_output_cap_visual_fidelity_quality_regression" for item in failed_hypotheses)
+
+
+def repeats_failed_hardcap_visual_without_quality_repair(
+    changes: Sequence[str],
+    failed_hypotheses: Sequence[Mapping[str, Any]],
+) -> bool:
+    if not changes or not has_hardcap_visual_quality_failed(failed_hypotheses):
+        return False
+    normalized = " ".join(changes).lower()
+    repeats_hardcap_visual = any(term in normalized for term in FAILED_HARD_OUTPUT_CAP_VISUAL_FIDELITY_TERMS) and any(
+        term in normalized for term in VISUAL_FIDELITY_OBJECTIVE_TERMS
+    )
+    adds_new_quality_repair = any(term in normalized for term in QUALITY_REPAIR_AFTER_HARDCAP_TERMS)
+    return repeats_hardcap_visual and not adds_new_quality_repair
+
+
+def repeats_failed_hardcap_visual(changes: Sequence[str], failed_hypotheses: Sequence[Mapping[str, Any]]) -> bool:
+    if not changes or not has_hardcap_visual_quality_failed(failed_hypotheses):
+        return False
+    normalized = " ".join(changes).lower()
+    return any(term in normalized for term in FAILED_HARD_OUTPUT_CAP_VISUAL_FIDELITY_TERMS) and any(
+        term in normalized for term in VISUAL_FIDELITY_OBJECTIVE_TERMS
+    )
 
 
 def has_visual_fidelity_overdense_failed(failed_hypotheses: Sequence[Mapping[str, Any]]) -> bool:
@@ -849,6 +932,7 @@ def evaluate_candidate_objective(
             "loss_weighting_implementation": {"environment": {}, "training_config": {}},
             "density_control_implementation": {"environment": {}, "training_config": {}},
             "visual_fidelity_implementation": {"environment": {}, "training_config": {}},
+            "hardcap_quality_repair_implementation": {"environment": {}, "training_config": {}},
             "estimated_usd": None,
             "max_estimated_usd": max_estimated_usd or None,
         }
@@ -914,6 +998,15 @@ def evaluate_candidate_objective(
         block_reasons.append("objective_repeats_failed_density_cap_loss_weighting_hypothesis")
     if repeats_failed_soft_density(changes, failed_hypotheses):
         block_reasons.append("objective_repeats_failed_soft_density_hypothesis")
+    if repeats_failed_hardcap_visual_without_quality_repair(changes, failed_hypotheses):
+        block_reasons.append("objective_repeats_failed_hard_output_cap_visual_fidelity_without_new_quality_repair")
+    hardcap_quality_repair_knobs = implemented_hardcap_quality_repair_knobs(candidate_objective)
+    if (
+        repeats_failed_hardcap_visual(changes, failed_hypotheses)
+        and not repeats_failed_hardcap_visual_without_quality_repair(changes, failed_hypotheses)
+        and not any(hardcap_quality_repair_knobs.values())
+    ):
+        block_reasons.append("objective_missing_hard_output_cap_quality_repair_implementation")
     loss_weighting_knobs = implemented_loss_weighting_knobs(candidate_objective)
     if has_loss_weighting_change(changes) and not any(loss_weighting_knobs.values()):
         block_reasons.append("objective_missing_loss_weighting_implementation")
@@ -986,6 +1079,7 @@ def evaluate_candidate_objective(
         "loss_weighting_implementation": loss_weighting_knobs,
         "density_control_implementation": density_control_knobs,
         "visual_fidelity_implementation": visual_fidelity_knobs,
+        "hardcap_quality_repair_implementation": hardcap_quality_repair_knobs,
         "estimated_usd": cost,
         "max_estimated_usd": max_estimated_usd or None,
         "submitted_jobs": submitted_jobs,
@@ -1057,6 +1151,7 @@ def plan_boundary_objective_strategy(
                 "visual-fidelity tile_10 retry without concrete density control after over-dense leaf rejection",
                 "density-controlled visual-fidelity tile_10 retry without a stronger cap/split/culling change after the latest over-dense leaf rejection",
                 "incremental tile_10 split/culling density retry without an exported-output hard cap at or below the post-leaf hard max",
+                "hard-output-cap visual-fidelity retry without a new color, exposure, geometry, or perceptual repair after AI visual QA blocks",
                 "full 14-tile training before staged R0/R1/R2/R3 gates",
             ],
             "expected_metric_axes": required_axes,

@@ -1,0 +1,21 @@
+{
+  "decision": "visual_qa_blocked",
+  "block_reasons": [
+    "ai_visual_review_blocking_defects",
+    "ai_visual_review_blocking_view_findings",
+    "ai_visual_review_status_block"
+  ],
+  "warnings": [],
+  "view_count": 12,
+  "panel_count": 12,
+  "panel_ratio": 1.0,
+  "missing_assets": [],
+  "missing_files": [],
+  "ai_review_summary": {
+    "overall_status": "block",
+    "blocking_defect_count": 4,
+    "blocking_view_finding_count": 12,
+    "confidence": 0.93,
+    "recommended_next_action": "Stop promotion and paid retries for this candidate. Do no-spend attribution on why the two-tile hard-output-cap merge improves boundary PSNR/SSIM but destroys color/perceptual quality, horizon, and near-detail structure before proposing another objective."
+  }
+}

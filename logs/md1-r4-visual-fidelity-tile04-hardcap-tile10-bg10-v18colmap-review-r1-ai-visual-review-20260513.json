@@ -1,0 +1,92 @@
+{
+  "overall_status": "block",
+  "blocking_defects": [
+    "geometry_alignment",
+    "horizon_or_sky",
+    "texture_blur",
+    "color_or_exposure"
+  ],
+  "per_view_findings": [
+    {
+      "bucket": "boundary",
+      "image_name": "DJI_0067.JPG",
+      "severity": "blocking",
+      "finding": "Candidate render has strong magenta/green false color, smeared terrain, and saturated diff coverage across the road and hillside boundary."
+    },
+    {
+      "bucket": "boundary",
+      "image_name": "DJI_0068.JPG",
+      "severity": "blocking",
+      "finding": "Boundary structure is present, but the render is not visually usable because the terrain is washed in purple/green noise and the heatmap is broadly saturated."
+    },
+    {
+      "bucket": "boundary",
+      "image_name": "DJI_0069.JPG",
+      "severity": "blocking",
+      "finding": "Road and hillside detail are heavily smeared with broad magenta cast; the visual mismatch is obvious despite metric gains in PSNR/SSIM."
+    },
+    {
+      "bucket": "boundary",
+      "image_name": "DJI_0070.JPG",
+      "severity": "blocking",
+      "finding": "Boundary panel keeps rough layout but loses natural color and fine detail; the diff panel is saturated across most terrain."
+    },
+    {
+      "bucket": "horizon",
+      "image_name": "DJI_0066.JPG",
+      "severity": "blocking",
+      "finding": "Horizon/terrain separation is unstable, with false cyan/magenta color and high diff response over the full landscape."
+    },
+    {
+      "bucket": "horizon",
+      "image_name": "DJI_0073.JPG",
+      "severity": "blocking",
+      "finding": "Mountain and foreground textures collapse into purple/black smear; horizon quality is worse than the reference and not production usable."
+    },
+    {
+      "bucket": "horizon",
+      "image_name": "DJI_0146.JPG",
+      "severity": "blocking",
+      "finding": "Long-range terrain and sky-adjacent areas show heavy magenta artifacts and texture smearing, matching the horizon metric regressions."
+    },
+    {
+      "bucket": "horizon",
+      "image_name": "DJI_0147.JPG",
+      "severity": "blocking",
+      "finding": "Horizon view has broad false-color artifacts and saturated difference heatmap, with visually obvious regression from the input frame."
+    },
+    {
+      "bucket": "near_detail",
+      "image_name": "DJI_0258.JPG",
+      "severity": "blocking",
+      "finding": "Near-detail landscape is dominated by magenta/green false color and soft texture; the rendered detail would fail human inspection."
+    },
+    {
+      "bucket": "near_detail",
+      "image_name": "DJI_0261.JPG",
+      "severity": "blocking",
+      "finding": "Road and lake context remain roughly aligned, but texture and color are heavily distorted and the diff map is nearly full-frame."
+    },
+    {
+      "bucket": "near_detail",
+      "image_name": "DJI_0262.JPG",
+      "severity": "blocking",
+      "finding": "Candidate view shows dense purple/black texture noise and severe blur, consistent with the single-camera LPIPS regression."
+    },
+    {
+      "bucket": "near_detail",
+      "image_name": "DJI_0263.JPG",
+      "severity": "blocking",
+      "finding": "Near-detail candidate is overrun by magenta false color and smeared terrain; it is not usable despite having nonblank render output."
+    }
+  ],
+  "confidence": 0.93,
+  "recommended_next_action": "Stop promotion and paid retries for this candidate. Do no-spend attribution on why the two-tile hard-output-cap merge improves boundary PSNR/SSIM but destroys color/perceptual quality, horizon, and near-detail structure before proposing another objective.",
+  "evidence": {
+    "review_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-review-v18colmap-r1-20260513/outputs/r4-t04vis-t10cap-bg10-v18colmap-smoke-p24-r1/md1-r1-r4-t04vis-t10cap-bg10-v18colmap-smoke-p24-r1-1778686244/output/model.tar.gz",
+    "candidate_model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-g4dn-20260513/output/artifact/model.tar.gz",
+    "contact_sheet_local_path": "/tmp/md1_t04vis_t10cap_bg10_r1_visual_panels_contact.jpg",
+    "visual_bundle_local_path": "/tmp/md1_t04vis_t10cap_bg10_r1_visual_qa_bundle",
+    "basis": "Codex visual inspection of generated side-by-side panels after no-weights visual QA extraction, plus V18 comparison metrics."
+  }
+}

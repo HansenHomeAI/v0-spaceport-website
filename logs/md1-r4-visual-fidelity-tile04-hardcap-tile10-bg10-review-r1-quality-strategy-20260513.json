@@ -1,0 +1,65 @@
+{
+  "boundary_improvement_gap": {
+    "actual_delta": {
+      "lpips": 0.030524849891662598,
+      "psnr": 0.8883187974103848,
+      "ssim": 0.03027184307575226
+    },
+    "lpips_regression_observed": true,
+    "passes_psnr_or_ssim_improvement": true,
+    "required_improvement": {
+      "lpips": -0.025,
+      "psnr": 0.5,
+      "ssim": 0.01
+    }
+  },
+  "checked_at": "2026-05-13T15:51:51.569962+00:00",
+  "current_quality_blockers": [
+    "ai_visual_color_shift_defect",
+    "ai_visual_geometry_alignment_defect",
+    "ai_visual_horizon_continuity_defect",
+    "ai_visual_review_blocking_defects",
+    "ai_visual_review_blocking_view_findings",
+    "ai_visual_review_status_block",
+    "ai_visual_texture_smearing_defect",
+    "boundary_v18_median_lpips_regression",
+    "boundary_v18_single_camera_lpips_regression",
+    "horizon_lpips_regression",
+    "horizon_psnr_regression",
+    "horizon_sky_score_regression",
+    "horizon_ssim_regression",
+    "horizon_v18_median_lpips_regression",
+    "horizon_v18_median_psnr_regression",
+    "horizon_v18_median_ssim_regression",
+    "horizon_v18_single_camera_lpips_regression",
+    "horizon_v18_single_camera_psnr_regression",
+    "horizon_v18_sky_score_regression",
+    "near_detail_ssim_regression",
+    "near_detail_v18_median_ssim_regression",
+    "near_detail_v18_single_camera_lpips_regression"
+  ],
+  "horizon_regression_gap": {
+    "actual_delta": {
+      "lpips": 0.08243861794471741,
+      "psnr": -1.1750026031112348,
+      "ssim": -0.03138488531112671
+    },
+    "allowed_regression": {
+      "lpips_max_delta": 0.03,
+      "psnr_min_delta": -0.75,
+      "sky_score_min_ratio": 0.9,
+      "ssim_min_delta": -0.012
+    },
+    "passes_regression_gate": false
+  },
+  "promotion_decision_status": "blocked",
+  "recommendation": "hold_paid_retries_until_new_quality_repair_objective",
+  "recommended_actions": [
+    "Treat hard-output-cap visual-fidelity bg10 as failed for quality despite passing density and structural preflight.",
+    "Do not repeat hard-output-cap visual-fidelity without a new color/exposure/geometry/perceptual repair objective.",
+    "Run objective gate and leaf-submit readiness before any further paid proof."
+  ],
+  "status": "no_paid_retry_until_objective_redesign",
+  "v18_non_regression_status": "blocked",
+  "visual_qa_decision": "visual_qa_blocked"
+}

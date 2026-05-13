@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "Soft-density bg10 quality/V18/AI visual gates remain blocked; visual-fidelity tile_10 retries are blocked before merge/review because tile_10 failed density gates. Latest density-controlled tile_10 proof improved to 655109 splats but still exceeded hard max 511586, so merge/review/full14/LOD/promotion remain blocked.",
+  "blocked_promotion_reason": "Hard-output-cap tile_10 plus visual-fidelity tile_04 bg10 passed density/preflight but failed quality: boundary LPIPS +0.0305, horizon PSNR -1.175/SSIM -0.0314/LPIPS +0.0824, near_detail SSIM -0.0178, and AI visual QA blocks all 12 panels for severe false color and smearing.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "91c3f2105f317b2576e03aa00425c2492371806f pushed; exact-head CDK Deploy 25807155511 green before unsupported-merge-env guard commit",
-  "current_exact_head_gate_status": "CDK Deploy 25807155511 success for exact head 91c3f2105f317b2576e03aa00425c2492371806f",
-  "current_live_compute_status": "AWS SageMaker training=0 processing=0 InProgress after failed no-training merge attempt; no V18 review/full14/LOD/promotion launched",
-  "current_rung": "R4_tile04_visual_fidelity_tile10_hardcap_bg10_merge_retry1_no_spend_guard_ready_pending_exact_head",
+  "current_branch_head": "f1f5b98b11c518dc7ee8b0c49949d88f50acf140 pushed; exact-head CDK Deploy 25808280921 green before this evidence/guard commit",
+  "current_exact_head_gate_status": "exact-head f1f5b98b11c518dc7ee8b0c49949d88f50acf140 green on CDK Deploy 25808280921 before this evidence/guard commit",
+  "current_live_compute_status": "No SageMaker training or processing jobs are InProgress in the current live checks.",
+  "current_rung": "R4_tile04_visual_fidelity_tile10_hardcap_bg10_v18_visual_qa_blocked_no_spend_attribution_ready",
   "evidence_events": [
     {
       "billable_seconds": 412,
@@ -701,9 +701,6 @@
     },
     {
       "event": "tile10_density_controlled_leaf_still_overdense_and_stronger_candidate_ready",
-      "timestamp": "2026-05-13T11:08:30Z",
-      "summary": "One bounded tile_10 density-controlled leaf proof completed under cap but failed density gate at 655109 splats/1.729x reference; merge/review blocked. Added planner guard and stronger no-spend candidate requiring stricter density controls before any paid retry.",
-      "spend_estimated_usd": 0.8538,
       "evidence": [
         "logs/md1-r4-tile10-density-controlled-visual-fidelity-leaf-submit-current-head-20260513.json",
         "logs/md1-r4-tile10-density-controlled-visual-fidelity-20260513-tile_10-leaf-gate.json",
@@ -711,13 +708,13 @@
         "logs/md1-r4-tile10-stronger-density-visual-fidelity-objective-gate-20260513.json",
         "logs/md1-r4-tile10-stronger-density-visual-fidelity-leaf-submit-readiness-20260513.json"
       ],
-      "next": "Commit/push/watch exact head; after AWS idle rerun readiness on new green SHA before at most one stronger-density tile_10 leaf-only proof."
+      "next": "Commit/push/watch exact head; after AWS idle rerun readiness on new green SHA before at most one stronger-density tile_10 leaf-only proof.",
+      "spend_estimated_usd": 0.8538,
+      "summary": "One bounded tile_10 density-controlled leaf proof completed under cap but failed density gate at 655109 splats/1.729x reference; merge/review blocked. Added planner guard and stronger no-spend candidate requiring stricter density controls before any paid retry.",
+      "timestamp": "2026-05-13T11:08:30Z"
     },
     {
       "event": "tile10_stronger_density_leaf_still_overdense_and_hard_output_cap_candidate_ready",
-      "timestamp": "2026-05-13T12:38:30Z",
-      "summary": "One bounded stronger-density tile_10 leaf proof completed under cap but failed density gate at 645285 splats/1.703x reference; merge/review blocked. Added planner guard requiring hard output cap after this incremental density-control failure and drafted a no-spend hard-output-cap candidate.",
-      "spend_estimated_usd": 0.8251,
       "evidence": [
         "logs/md1-r4-tile10-stronger-density-visual-fidelity-leaf-submit-current-head-20260513.json",
         "logs/md1-r4-tile10-stronger-density-visual-fidelity-20260513-tile_10-leaf-gate.json",
@@ -725,13 +722,13 @@
         "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-objective-gate-20260513.json",
         "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-readiness-20260513.json"
       ],
-      "next": "Commit/push/watch exact head; after AWS idle rerun readiness on new green SHA before at most one hard-output-cap tile_10 leaf-only proof."
+      "next": "Commit/push/watch exact head; after AWS idle rerun readiness on new green SHA before at most one hard-output-cap tile_10 leaf-only proof.",
+      "spend_estimated_usd": 0.8251,
+      "summary": "One bounded stronger-density tile_10 leaf proof completed under cap but failed density gate at 645285 splats/1.703x reference; merge/review blocked. Added planner guard requiring hard output cap after this incremental density-control failure and drafted a no-spend hard-output-cap candidate.",
+      "timestamp": "2026-05-13T12:38:30Z"
     },
     {
       "event": "tile10_hard_output_cap_leaf_gate_passed",
-      "timestamp": "2026-05-13T14:05:20Z",
-      "summary": "One bounded hard-output-cap tile_10 leaf proof completed under cap and passed density gate at 511000 splats/1.348x reference under the 511586 hard max; merge-review gate allows when evaluated against the dry-run strategy plus this passed leaf gate. No merge/review/full14/LOD/promotion launched.",
-      "spend_estimated_usd": 0.8435,
       "evidence": [
         "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-readiness-current-head-20260513.json",
         "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-current-head-20260513.json",
@@ -740,13 +737,13 @@
         "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-20260513-tile_10-leaf-gate.json",
         "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-merge-review-gate-after-leaf-fixed-20260513.json"
       ],
-      "next": "Commit/push/watch exact head; then no-spend bg10 merge/preflight/review planning only before any further spend."
+      "next": "Commit/push/watch exact head; then no-spend bg10 merge/preflight/review planning only before any further spend.",
+      "spend_estimated_usd": 0.8435,
+      "summary": "One bounded hard-output-cap tile_10 leaf proof completed under cap and passed density gate at 511000 splats/1.348x reference under the 511586 hard max; merge-review gate allows when evaluated against the dry-run strategy plus this passed leaf gate. No merge/review/full14/LOD/promotion launched.",
+      "timestamp": "2026-05-13T14:05:20Z"
     },
     {
       "event": "tile04_visual_tile10_hardcap_bg10_no_spend_plan_gated",
-      "timestamp": "2026-05-13T14:25:00Z",
-      "summary": "Built no-training bg10 merge/review plan from passed tile_04 visual-fidelity and tile_10 hard-output-cap leaves; executable readiness gate allows only bounded merge/preflight then V18/visual QA review after preflight. No paid compute launched.",
-      "spend_estimated_usd": 0.0,
       "evidence": [
         "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-leaf-reuse-summary-20260513.json",
         "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-remote-merge-g4dn-plan-dryrun-20260513.json",
@@ -758,13 +755,13 @@
         "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-live-training-inprogress-20260513.json",
         "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-live-processing-inprogress-20260513.json"
       ],
-      "next": "Commit/push/watch exact head, recheck AWS idle/readiness, then at most one bounded no-training bg10 merge/preflight."
+      "next": "Commit/push/watch exact head, recheck AWS idle/readiness, then at most one bounded no-training bg10 merge/preflight.",
+      "spend_estimated_usd": 0.0,
+      "summary": "Built no-training bg10 merge/review plan from passed tile_04 visual-fidelity and tile_10 hard-output-cap leaves; executable readiness gate allows only bounded merge/preflight then V18/visual QA review after preflight. No paid compute launched.",
+      "timestamp": "2026-05-13T14:25:00Z"
     },
     {
       "event": "tile04_visual_tile10_hardcap_bg10_merge_inputs_materialized_and_submit_guarded",
-      "timestamp": "2026-05-13T14:52:00Z",
-      "summary": "Found and fixed a no-spend waste risk: the bg10 merge payload pointed at a missing tile-selection prefix. Uploaded the tiny tile manifest/view buckets and merge_plan.json to the current merge input prefix, repaired the payload, and tightened submit readiness so paid merge spend blocks unless inputs are materialized. No paid compute launched.",
-      "spend_estimated_usd": 0.0,
       "evidence": [
         "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-input-materialization-current-20260513.json",
         "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-readiness-plan-20260513.json",
@@ -773,13 +770,13 @@
         "scripts/3dgs/enforce_md1_merge_review_submit_readiness.py",
         "tests/unit/test_enforce_md1_merge_review_submit_readiness.py"
       ],
-      "next": "Commit/push/watch exact head; rerun readiness on new exact green head with AWS idle before at most one bounded no-training bg10 merge/preflight."
+      "next": "Commit/push/watch exact head; rerun readiness on new exact green head with AWS idle before at most one bounded no-training bg10 merge/preflight.",
+      "spend_estimated_usd": 0.0,
+      "summary": "Found and fixed a no-spend waste risk: the bg10 merge payload pointed at a missing tile-selection prefix. Uploaded the tiny tile manifest/view buckets and merge_plan.json to the current merge input prefix, repaired the payload, and tightened submit readiness so paid merge spend blocks unless inputs are materialized. No paid compute launched.",
+      "timestamp": "2026-05-13T14:52:00Z"
     },
     {
       "event": "tile04_visual_tile10_hardcap_bg10_merge_failed_unsupported_env_guarded_retry1_ready",
-      "timestamp": "2026-05-13T15:13:00Z",
-      "summary": "The bounded no-training bg10 merge failed before output after 285 billable seconds/about $0.058 because the payload used unsupported MERGE_PROTECTED_OVERLAP_MODE=boundary. Stopped paid progression, attributed root cause, added planner/readiness guards, and prepared a corrected retry1 payload using retain_all. No V18 review/full14/LOD/promotion launched.",
-      "spend_estimated_usd": 0.0583,
       "evidence": [
         "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-describe-exact91c3-20260513.json",
         "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-cloudwatch-events-exact91c3-20260513.json",
@@ -790,7 +787,10 @@
         "scripts/3dgs/plan_tiled_merge_processing.py",
         "scripts/3dgs/enforce_md1_merge_review_submit_readiness.py"
       ],
-      "next": "Commit/push/watch exact head; rerun readiness on the new exact green head before at most one corrected no-training merge retry."
+      "next": "Commit/push/watch exact head; rerun readiness on the new exact green head before at most one corrected no-training merge retry.",
+      "spend_estimated_usd": 0.0583,
+      "summary": "The bounded no-training bg10 merge failed before output after 285 billable seconds/about $0.058 because the payload used unsupported MERGE_PROTECTED_OVERLAP_MODE=boundary. Stopped paid progression, attributed root cause, added planner/readiness guards, and prepared a corrected retry1 payload using retain_all. No V18 review/full14/LOD/promotion launched.",
+      "timestamp": "2026-05-13T15:13:00Z"
     }
   ],
   "exact_head_gate_status": "exact-head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 green on CDK Deploy 25478133157; Deploy CDK Stacks and CDK Diff skipped by scope detection; no ML Container Build appeared for this non-container status commit; previous container-affecting head 6249a280443438790e5f9d11512fe6714c1a0728 remains green on CDK Deploy 25475213765, Trigger ML Container Build 25475213781, and CodeBuild spaceport-ml-containers:ae9b6cea-6c39-4bf8-a885-f0eb5336ee4a",
@@ -1120,7 +1120,168 @@
     "local_status_update_pending_commit": true,
     "ml_container_build": "not_triggered_for_non_container_status_commit"
   },
-  "last_updated": "2026-05-13T15:13:00Z",
+  "last_updated": "2026-05-13T15:55:05.004408+00:00",
+  "latest_bg10_merge_input_materialization_status": {
+    "exact_head_workflows_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-exact-head-workflows-current-20260513.json",
+    "input_materialization_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-input-materialization-current-20260513.json",
+    "leaf_reuse_summary_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-leaf-reuse-summary-20260513.json",
+    "live_processing_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-live-processing-inprogress-current-20260513.json",
+    "live_training_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-live-training-inprogress-current-20260513.json",
+    "materialized_s3_inputs": {
+      "artifact_inputs_available": true,
+      "merge_plan_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-g4dn-20260513/inputs/merge-plan/merge_plan.json",
+      "merge_plan_uploaded": true,
+      "tile_manifest_available": true,
+      "tile_selection_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-g4dn-20260513/inputs/tile-selection",
+      "view_buckets_available": true
+    },
+    "merge_cap_usd": 0.5,
+    "merge_payload_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-remote-merge-g4dn-payload-dryrun-20260513.json",
+    "merge_plan_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-remote-merge-g4dn-plan-dryrun-20260513.json",
+    "merge_review_gate_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-review-gate-20260513.json",
+    "merge_runtime_cap_seconds": 3600,
+    "no_full14_lod_or_promotion": true,
+    "paid_compute_launched": false,
+    "pre_guard_exact_head": "58fb10a439875c4aa8d3e1dd48453630ba53b03f",
+    "pre_guard_workflow": "CDK Deploy 25805561789 success",
+    "readiness_block_reasons": [],
+    "readiness_decision": "merge_review_submit_allowed",
+    "readiness_gate_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-review-submit-readiness-current-head-20260513.json",
+    "readiness_plan_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-readiness-plan-20260513.json",
+    "required_tiles": [
+      "tile_04",
+      "tile_10"
+    ],
+    "review_cap_usd": 0.5,
+    "review_runtime_cap_seconds": 1800,
+    "status": "materialized_merge_inputs_readiness_gate_passed_no_paid_compute_launched",
+    "tile04_leaf_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4visualpair-20260513-1778657808/3dgs/tiles/tile_04/md1-r4visualpair-20260513-1778657808-tile-04/output/model.tar.gz",
+    "tile10_leaf_artifact": "s3://spaceport-ml-processing-staging/manual-validations/tiles/tile_10/md1-r4t10vfdc4-1778676812-1778676812-tile-10/output/model.tar.gz",
+    "v18_non_regression_required": true,
+    "viewer_smoke_required": true,
+    "visual_qa_required": true
+  },
+  "latest_bg10_merge_retry1_guard_status": {
+    "aws_idle_after_failure": true,
+    "failed_merge_billable_seconds": 285,
+    "failed_merge_cloudwatch_events_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-cloudwatch-events-exact91c3-20260513.json",
+    "failed_merge_describe_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-describe-exact91c3-20260513.json",
+    "failed_merge_detail": "MERGE_PROTECTED_OVERLAP_MODE=boundary is unsupported; container accepts retain_all/off",
+    "failed_merge_estimated_usd": 0.0583,
+    "failed_merge_job_name": "md1-r4t04vis-t10cap-bg10-20260513",
+    "failed_merge_root_cause": "unsupported_payload_merge_environment",
+    "failed_merge_status": "Failed",
+    "failure_attribution_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-failure-attribution-exact91c3-20260513.json",
+    "full14_lod_or_promotion_launched": false,
+    "guard_fix": [
+      "scripts/3dgs/plan_tiled_merge_processing.py rejects unsupported protected-overlap mode before payload emission",
+      "scripts/3dgs/enforce_md1_merge_review_submit_readiness.py blocks unsupported payload merge env before paid submit"
+    ],
+    "next": "Commit/push/watch exact head, rerun readiness with retry1 payload and AWS idle, then at most one corrected no-training merge retry if allowed.",
+    "paid_retry_launched": false,
+    "pre_guard_exact_head": "91c3f2105f317b2576e03aa00425c2492371806f",
+    "pre_guard_workflow": "CDK Deploy 25807155511 success",
+    "retry_job_name": "md1-r4t04vis-t10cap-bg10-r1-20260513",
+    "retry_payload_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-remote-merge-g4dn-payload-retry1-dryrun-20260513.json",
+    "retry_precommit_readiness_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-retry1-submit-readiness-precommit-20260513.json",
+    "retry_protected_overlap_mode": "retain_all",
+    "retry_readiness_plan_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-retry1-readiness-plan-20260513.json",
+    "status": "merge_retry1_guard_ready_no_paid_retry_launched",
+    "v18_review_launched": false
+  },
+  "latest_bg10_merge_review_plan": {
+    "ai_visual_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-ai-visual-review-20260513.json",
+    "attribution_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-review-r1-attribution-20260513.json",
+    "aws_idle_after_spend": true,
+    "aws_idle_before_spend": true,
+    "bounded_bg10_rung_spend_including_failed_merge_usd": 0.2777,
+    "checked_at": "2026-05-13T15:55:05.004408+00:00",
+    "exact_head_before_spend": "f1f5b98b11c518dc7ee8b0c49949d88f50acf140",
+    "exact_head_workflow": "CDK Deploy 25808280921 success",
+    "exact_head_workflows_after_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-exact-head-workflows-after-review-20260513.json",
+    "failed_hypothesis_encoded": "hard_output_cap_visual_fidelity_quality_regression",
+    "full14_lod_viewer_smoke_or_promotion_launched": false,
+    "incremental_spend_post_f1f_usd": 0.2194,
+    "key_metric_deltas_vs_v18": {
+      "boundary": {
+        "lpips": 0.030524849891662598,
+        "psnr": 0.8883187974103848,
+        "ssim": 0.03027184307575226
+      },
+      "horizon": {
+        "lpips": 0.08243861794471741,
+        "psnr": -1.1750026031112348,
+        "ssim": -0.03138488531112671
+      },
+      "near_detail": {
+        "lpips": 0.00043138861656188965,
+        "psnr": 0.4843710435541535,
+        "ssim": -0.017835795879364014
+      }
+    },
+    "live_processing_after_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-live-processing-inprogress-after-review-20260513.json",
+    "live_training_after_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-live-training-inprogress-after-review-20260513.json",
+    "merge_dropped_gaussians": 20492,
+    "merge_fallback_tile_count": 0,
+    "merge_preflight_decision": "preflight_passed_run_frozen_smoke_review",
+    "merge_preflight_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-retry1-preflight-exactf1f5-20260513.json",
+    "merge_retain_all_tile_count": 0,
+    "merge_retained_gaussians": 1514910,
+    "merge_retry_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-g4dn-20260513/output/artifact/model.tar.gz",
+    "merge_retry_billable_seconds": 386,
+    "merge_retry_estimated_usd": 0.0789,
+    "merge_retry_job_name": "md1-r4t04vis-t10cap-bg10-r1-20260513",
+    "merge_retry_status": "Completed",
+    "merge_source_gaussians": 1535402,
+    "next": "No paid retry. Commit/push/watch exact head, then no-spend candidate objective with a real color/exposure/geometry/perceptual repair before any leaf readiness.",
+    "objective_strategy_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-review-r1-objective-strategy-20260513.json",
+    "planner_guard_added": "objective_repeats_failed_hard_output_cap_visual_fidelity_without_new_quality_repair plus objective_missing_hard_output_cap_quality_repair_implementation",
+    "promotion_decision": {
+      "block_reasons": [
+        "near_detail_ssim_regression",
+        "horizon_psnr_regression",
+        "horizon_ssim_regression",
+        "horizon_lpips_regression",
+        "horizon_sky_score_regression"
+      ],
+      "status": "blocked"
+    },
+    "quality_review_manifest_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-quality-review-manifest-20260513.json",
+    "review_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-review-v18colmap-r1-20260513/outputs/r4-t04vis-t10cap-bg10-v18colmap-smoke-p24-r1/md1-r1-r4-t04vis-t10cap-bg10-v18colmap-smoke-p24-r1-1778686244/output/model.tar.gz",
+    "review_billable_seconds": 687,
+    "review_comparison_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-review-comparison-20260513.json",
+    "review_estimated_usd": 0.1405,
+    "review_job_name": "md1-r1-r4-t04vis-t10cap-bg10-v18colmap-smoke-p24-r1-1778686244",
+    "review_status": "Completed",
+    "review_summary_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-20260513.json",
+    "status": "blocked_quality_after_density_and_preflight_passed",
+    "v18_non_regression_decision": {
+      "block_reasons": [
+        "near_detail_v18_median_ssim_regression",
+        "boundary_v18_median_lpips_regression",
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_median_ssim_regression",
+        "horizon_v18_median_lpips_regression",
+        "horizon_v18_sky_score_regression",
+        "near_detail_v18_single_camera_lpips_regression",
+        "boundary_v18_single_camera_lpips_regression",
+        "horizon_v18_single_camera_psnr_regression",
+        "horizon_v18_single_camera_lpips_regression"
+      ],
+      "status": "blocked"
+    },
+    "visual_qa_decision": {
+      "ai_blocking_view_count": 12,
+      "block_reasons": [
+        "ai_visual_review_blocking_defects",
+        "ai_visual_review_blocking_view_findings",
+        "ai_visual_review_status_block"
+      ],
+      "status": "blocked"
+    },
+    "visual_qa_gate_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-visual-qa-gate-with-ai-20260513.json",
+    "visual_qa_manifest_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-visual-qa-manifest-20260513.json"
+  },
   "latest_boundary_camera_weighting_candidate_status": {
     "checked_at": "2026-05-07T15:39:26Z",
     "fullscene_dryrun_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-tile10-rollback-fullscene-summary-dryrun-20260507.json",
@@ -1166,7 +1327,7 @@
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
   "latest_boundary_responsible_tile_plan_status": "boundary primary tile_04/tile_10; horizon primary tile_04/tile_01; tile04 dryrun covers tile01/tile10 context support",
-  "latest_cost_control": "Full14, LOD, viewer smoke, promotion, and paid merge/review remain unlaunched. A no-spend bg10 merge/review plan for tile_04 visual-fidelity plus tile_10 hard-output-cap is gated with $0.50/3600s merge and $0.50/1800s V18 review caps, but any paid action still requires this commit pushed, exact-head green, and AWS idle recheck.",
+  "latest_cost_control": "Full14, LOD, viewer smoke, and promotion remain unlaunched. Corrected bg10 merge retry plus V18 review spent about $0.219 after f1f5b98b; bounded bg10 rung including the prior failed merge spent about $0.278. Candidate is quality-blocked, paid compute is stopped, and next work is no-spend objective redesign only.",
   "latest_evidence": {
     "merge_preflight_summary": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260512.json",
     "review_retry_cloudwatch_tail": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-cloudwatch-tail-20260512.txt",
@@ -1208,6 +1369,99 @@
       "run_id": 25766801616
     }
   },
+  "latest_hard_output_cap_visual_fidelity_review_status": {
+    "ai_visual_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-ai-visual-review-20260513.json",
+    "attribution_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-review-r1-attribution-20260513.json",
+    "aws_idle_after_spend": true,
+    "aws_idle_before_spend": true,
+    "bounded_bg10_rung_spend_including_failed_merge_usd": 0.2777,
+    "checked_at": "2026-05-13T15:55:05.004408+00:00",
+    "exact_head_before_spend": "f1f5b98b11c518dc7ee8b0c49949d88f50acf140",
+    "exact_head_workflow": "CDK Deploy 25808280921 success",
+    "exact_head_workflows_after_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-exact-head-workflows-after-review-20260513.json",
+    "failed_hypothesis_encoded": "hard_output_cap_visual_fidelity_quality_regression",
+    "full14_lod_viewer_smoke_or_promotion_launched": false,
+    "incremental_spend_post_f1f_usd": 0.2194,
+    "key_metric_deltas_vs_v18": {
+      "boundary": {
+        "lpips": 0.030524849891662598,
+        "psnr": 0.8883187974103848,
+        "ssim": 0.03027184307575226
+      },
+      "horizon": {
+        "lpips": 0.08243861794471741,
+        "psnr": -1.1750026031112348,
+        "ssim": -0.03138488531112671
+      },
+      "near_detail": {
+        "lpips": 0.00043138861656188965,
+        "psnr": 0.4843710435541535,
+        "ssim": -0.017835795879364014
+      }
+    },
+    "live_processing_after_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-live-processing-inprogress-after-review-20260513.json",
+    "live_training_after_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-live-training-inprogress-after-review-20260513.json",
+    "merge_dropped_gaussians": 20492,
+    "merge_fallback_tile_count": 0,
+    "merge_preflight_decision": "preflight_passed_run_frozen_smoke_review",
+    "merge_preflight_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-retry1-preflight-exactf1f5-20260513.json",
+    "merge_retain_all_tile_count": 0,
+    "merge_retained_gaussians": 1514910,
+    "merge_retry_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-g4dn-20260513/output/artifact/model.tar.gz",
+    "merge_retry_billable_seconds": 386,
+    "merge_retry_estimated_usd": 0.0789,
+    "merge_retry_job_name": "md1-r4t04vis-t10cap-bg10-r1-20260513",
+    "merge_retry_status": "Completed",
+    "merge_source_gaussians": 1535402,
+    "next": "No paid retry. Commit/push/watch exact head, then no-spend candidate objective with a real color/exposure/geometry/perceptual repair before any leaf readiness.",
+    "objective_strategy_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-review-r1-objective-strategy-20260513.json",
+    "planner_guard_added": "objective_repeats_failed_hard_output_cap_visual_fidelity_without_new_quality_repair plus objective_missing_hard_output_cap_quality_repair_implementation",
+    "promotion_decision": {
+      "block_reasons": [
+        "near_detail_ssim_regression",
+        "horizon_psnr_regression",
+        "horizon_ssim_regression",
+        "horizon_lpips_regression",
+        "horizon_sky_score_regression"
+      ],
+      "status": "blocked"
+    },
+    "quality_review_manifest_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-quality-review-manifest-20260513.json",
+    "review_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-review-v18colmap-r1-20260513/outputs/r4-t04vis-t10cap-bg10-v18colmap-smoke-p24-r1/md1-r1-r4-t04vis-t10cap-bg10-v18colmap-smoke-p24-r1-1778686244/output/model.tar.gz",
+    "review_billable_seconds": 687,
+    "review_comparison_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-review-comparison-20260513.json",
+    "review_estimated_usd": 0.1405,
+    "review_job_name": "md1-r1-r4-t04vis-t10cap-bg10-v18colmap-smoke-p24-r1-1778686244",
+    "review_status": "Completed",
+    "review_summary_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-20260513.json",
+    "status": "blocked_quality_after_density_and_preflight_passed",
+    "v18_non_regression_decision": {
+      "block_reasons": [
+        "near_detail_v18_median_ssim_regression",
+        "boundary_v18_median_lpips_regression",
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_median_ssim_regression",
+        "horizon_v18_median_lpips_regression",
+        "horizon_v18_sky_score_regression",
+        "near_detail_v18_single_camera_lpips_regression",
+        "boundary_v18_single_camera_lpips_regression",
+        "horizon_v18_single_camera_psnr_regression",
+        "horizon_v18_single_camera_lpips_regression"
+      ],
+      "status": "blocked"
+    },
+    "visual_qa_decision": {
+      "ai_blocking_view_count": 12,
+      "block_reasons": [
+        "ai_visual_review_blocking_defects",
+        "ai_visual_review_blocking_view_findings",
+        "ai_visual_review_status_block"
+      ],
+      "status": "blocked"
+    },
+    "visual_qa_gate_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-visual-qa-gate-with-ai-20260513.json",
+    "visual_qa_manifest_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-visual-qa-manifest-20260513.json"
+  },
   "latest_leaf_submit_readiness_gate_status": "soft-density tile_04 leaf was submitted after exact-head gates and fresh AWS idle; job completed under cap and post-leaf preflight/gate passed, but the downstream bg10 review failed V18 and visual QA, so no paid retry is currently eligible.",
   "latest_live_compute_status": {
     "checked_at": "2026-05-13T06:12:00Z",
@@ -1217,6 +1471,36 @@
   "latest_lod_production_readiness_status": "logs/md1-r4-tile10-rollback-lod-production-readiness-20260506.json reports viewer_ready_quality_blocked; --require-promotion-ready now exits 3 and wrote logs/md1-r4-tile10-rollback-lod-production-readiness-promotion-required-20260506.json, preventing promotion callers from accepting viewer readiness alone.",
   "latest_md1_cost_reduction_status": "soft_density_failed_hypothesis_encoded_no_paid_retry_allowed",
   "latest_md1_live_compute_status": "2026-05-13T09:11Z no MD1 SageMaker training or processing jobs InProgress after visual-fidelity paired leaf proof",
+  "latest_no_spend_bg10_merge_review_plan": {
+    "aws_idle_after_failure": true,
+    "failed_merge_billable_seconds": 285,
+    "failed_merge_cloudwatch_events_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-cloudwatch-events-exact91c3-20260513.json",
+    "failed_merge_describe_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-describe-exact91c3-20260513.json",
+    "failed_merge_detail": "MERGE_PROTECTED_OVERLAP_MODE=boundary is unsupported; container accepts retain_all/off",
+    "failed_merge_estimated_usd": 0.0583,
+    "failed_merge_job_name": "md1-r4t04vis-t10cap-bg10-20260513",
+    "failed_merge_root_cause": "unsupported_payload_merge_environment",
+    "failed_merge_status": "Failed",
+    "failure_attribution_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-failure-attribution-exact91c3-20260513.json",
+    "full14_lod_or_promotion_launched": false,
+    "guard_fix": [
+      "scripts/3dgs/plan_tiled_merge_processing.py rejects unsupported protected-overlap mode before payload emission",
+      "scripts/3dgs/enforce_md1_merge_review_submit_readiness.py blocks unsupported payload merge env before paid submit"
+    ],
+    "next": "Commit/push/watch exact head, rerun readiness with retry1 payload and AWS idle, then at most one corrected no-training merge retry if allowed.",
+    "paid_retry_launched": false,
+    "pre_guard_exact_head": "91c3f2105f317b2576e03aa00425c2492371806f",
+    "pre_guard_workflow": "CDK Deploy 25807155511 success",
+    "retry_job_name": "md1-r4t04vis-t10cap-bg10-r1-20260513",
+    "retry_payload_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-remote-merge-g4dn-payload-retry1-dryrun-20260513.json",
+    "retry_precommit_readiness_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-retry1-submit-readiness-precommit-20260513.json",
+    "retry_protected_overlap_mode": "retain_all",
+    "retry_readiness_plan_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-retry1-readiness-plan-20260513.json",
+    "status": "merge_retry1_guard_ready_no_paid_retry_launched",
+    "v18_review_launched": false
+  },
+  "latest_no_spend_evidence": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-review-r1-attribution-20260513.json, logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-review-r1-objective-strategy-20260513.json, logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-visual-qa-gate-with-ai-20260513.json",
+  "latest_no_spend_implementation": "Planner now records hard_output_cap_visual_fidelity_quality_regression and blocks hard-output-cap visual-fidelity repeats unless the next objective includes a new implemented color/exposure/geometry/perceptual repair knob.",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
     "head": "07c50ac09a7ac88ea218c5784f045154a102917e",
@@ -1225,10 +1509,103 @@
     "pages_hash_url": "https://20660d91.v0-spaceport-website-preview2.pages.dev",
     "pages_run_id": 25107446761
   },
+  "latest_paid_steps": "Corrected no-training bg10 merge retry passed preflight, then bounded V18/visual QA review completed but blocked on near_detail SSIM, horizon PSNR/SSIM/LPIPS/sky, V18 boundary/horizon/near_detail regressions, and AI-observed false-color/smear defects across all 12 panels.",
   "latest_quality_strategy_gate_status": "tile04_boundary_horizon_leaf_dryrun_quality_gate_allowed; boundary_only_previous_dryrun_blocked_missing_horizon",
   "latest_review_comparison_path": "logs/md1-r4-soft-density-bg10-review-comparison-20260513.json",
-  "latest_review_status": "Soft-density bg10 review rendered all 12 frozen p24 cameras, but V18 non-regression and AI visual QA are blocked; no promotion/viewer smoke/full14/LOD is eligible.",
-  "latest_sagemaker_evidence_spend_total_usd": 19.1007,
+  "latest_review_status": {
+    "ai_visual_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-ai-visual-review-20260513.json",
+    "attribution_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-review-r1-attribution-20260513.json",
+    "aws_idle_after_spend": true,
+    "aws_idle_before_spend": true,
+    "bounded_bg10_rung_spend_including_failed_merge_usd": 0.2777,
+    "checked_at": "2026-05-13T15:55:05.004408+00:00",
+    "exact_head_before_spend": "f1f5b98b11c518dc7ee8b0c49949d88f50acf140",
+    "exact_head_workflow": "CDK Deploy 25808280921 success",
+    "exact_head_workflows_after_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-exact-head-workflows-after-review-20260513.json",
+    "failed_hypothesis_encoded": "hard_output_cap_visual_fidelity_quality_regression",
+    "full14_lod_viewer_smoke_or_promotion_launched": false,
+    "incremental_spend_post_f1f_usd": 0.2194,
+    "key_metric_deltas_vs_v18": {
+      "boundary": {
+        "lpips": 0.030524849891662598,
+        "psnr": 0.8883187974103848,
+        "ssim": 0.03027184307575226
+      },
+      "horizon": {
+        "lpips": 0.08243861794471741,
+        "psnr": -1.1750026031112348,
+        "ssim": -0.03138488531112671
+      },
+      "near_detail": {
+        "lpips": 0.00043138861656188965,
+        "psnr": 0.4843710435541535,
+        "ssim": -0.017835795879364014
+      }
+    },
+    "live_processing_after_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-live-processing-inprogress-after-review-20260513.json",
+    "live_training_after_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-live-training-inprogress-after-review-20260513.json",
+    "merge_dropped_gaussians": 20492,
+    "merge_fallback_tile_count": 0,
+    "merge_preflight_decision": "preflight_passed_run_frozen_smoke_review",
+    "merge_preflight_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-retry1-preflight-exactf1f5-20260513.json",
+    "merge_retain_all_tile_count": 0,
+    "merge_retained_gaussians": 1514910,
+    "merge_retry_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-g4dn-20260513/output/artifact/model.tar.gz",
+    "merge_retry_billable_seconds": 386,
+    "merge_retry_estimated_usd": 0.0789,
+    "merge_retry_job_name": "md1-r4t04vis-t10cap-bg10-r1-20260513",
+    "merge_retry_status": "Completed",
+    "merge_source_gaussians": 1535402,
+    "next": "No paid retry. Commit/push/watch exact head, then no-spend candidate objective with a real color/exposure/geometry/perceptual repair before any leaf readiness.",
+    "objective_strategy_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-review-r1-objective-strategy-20260513.json",
+    "planner_guard_added": "objective_repeats_failed_hard_output_cap_visual_fidelity_without_new_quality_repair plus objective_missing_hard_output_cap_quality_repair_implementation",
+    "promotion_decision": {
+      "block_reasons": [
+        "near_detail_ssim_regression",
+        "horizon_psnr_regression",
+        "horizon_ssim_regression",
+        "horizon_lpips_regression",
+        "horizon_sky_score_regression"
+      ],
+      "status": "blocked"
+    },
+    "quality_review_manifest_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-quality-review-manifest-20260513.json",
+    "review_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-review-v18colmap-r1-20260513/outputs/r4-t04vis-t10cap-bg10-v18colmap-smoke-p24-r1/md1-r1-r4-t04vis-t10cap-bg10-v18colmap-smoke-p24-r1-1778686244/output/model.tar.gz",
+    "review_billable_seconds": 687,
+    "review_comparison_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-review-comparison-20260513.json",
+    "review_estimated_usd": 0.1405,
+    "review_job_name": "md1-r1-r4-t04vis-t10cap-bg10-v18colmap-smoke-p24-r1-1778686244",
+    "review_status": "Completed",
+    "review_summary_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-20260513.json",
+    "status": "blocked_quality_after_density_and_preflight_passed",
+    "v18_non_regression_decision": {
+      "block_reasons": [
+        "near_detail_v18_median_ssim_regression",
+        "boundary_v18_median_lpips_regression",
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_median_ssim_regression",
+        "horizon_v18_median_lpips_regression",
+        "horizon_v18_sky_score_regression",
+        "near_detail_v18_single_camera_lpips_regression",
+        "boundary_v18_single_camera_lpips_regression",
+        "horizon_v18_single_camera_psnr_regression",
+        "horizon_v18_single_camera_lpips_regression"
+      ],
+      "status": "blocked"
+    },
+    "visual_qa_decision": {
+      "ai_blocking_view_count": 12,
+      "block_reasons": [
+        "ai_visual_review_blocking_defects",
+        "ai_visual_review_blocking_view_findings",
+        "ai_visual_review_status_block"
+      ],
+      "status": "blocked"
+    },
+    "visual_qa_gate_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-visual-qa-gate-with-ai-20260513.json",
+    "visual_qa_manifest_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-visual-qa-manifest-20260513.json"
+  },
+  "latest_sagemaker_evidence_spend_total_usd": 19.3201,
   "latest_soft_density_bg10_review": {
     "ai_visual_review_json": "logs/md1-r4-soft-density-bg10-review-ai-visual-review-20260513.json",
     "bg10_merge_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-quality-preserving-soft-density-leaf-tile10-rollback-bg10-merge-g4dn-20260513/output/artifact/model.tar.gz",
@@ -1267,6 +1644,7 @@
     "remote_merge_plan_json": "logs/md1-r4-quality-preserving-soft-density-leaf-tile10-rollback-bg10-remote-merge-g4dn-plan-dryrun-20260513.json",
     "training_jobs_to_submit": 0
   },
+  "latest_testing": "Targeted planner tests pass for hard-output-cap visual-fidelity quality-regression recording, blocking fake quality repairs, and allowing only implemented repair knobs; visual QA gate blocks with AI review as expected.",
   "latest_tile04_leaf_reuse_merge_dryrun_status": "density-capped tile_04 leaf passed post-leaf preflight/gate with 984154 splats, 128 images, and filtered scaffold; no-training bg10 tile_10 rollback merge payload dry-run is generated and merge/review gate allows only that next step.",
   "latest_tracked_sagemaker_evidence_spend_before_untracked_stop_usd": 14.8046,
   "latest_training_cost_reduction_status": "Evidence/untracked spend remains about $17.100. Soft-density tile_04 passed leaf and merge structural gates but failed V18 and AI visual QA; no-spend planner now records soft_density_quality_regression and blocks repeating that objective. No full14/LOD/promotion/viewer smoke launched.",
@@ -5792,6 +6170,99 @@
     },
     "worst_case_usd": 4.545
   },
+  "md1_r4_hardcap_bg10_review_quality_blocked_20260513": {
+    "ai_visual_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-ai-visual-review-20260513.json",
+    "attribution_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-review-r1-attribution-20260513.json",
+    "aws_idle_after_spend": true,
+    "aws_idle_before_spend": true,
+    "bounded_bg10_rung_spend_including_failed_merge_usd": 0.2777,
+    "checked_at": "2026-05-13T15:55:05.004408+00:00",
+    "exact_head_before_spend": "f1f5b98b11c518dc7ee8b0c49949d88f50acf140",
+    "exact_head_workflow": "CDK Deploy 25808280921 success",
+    "exact_head_workflows_after_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-exact-head-workflows-after-review-20260513.json",
+    "failed_hypothesis_encoded": "hard_output_cap_visual_fidelity_quality_regression",
+    "full14_lod_viewer_smoke_or_promotion_launched": false,
+    "incremental_spend_post_f1f_usd": 0.2194,
+    "key_metric_deltas_vs_v18": {
+      "boundary": {
+        "lpips": 0.030524849891662598,
+        "psnr": 0.8883187974103848,
+        "ssim": 0.03027184307575226
+      },
+      "horizon": {
+        "lpips": 0.08243861794471741,
+        "psnr": -1.1750026031112348,
+        "ssim": -0.03138488531112671
+      },
+      "near_detail": {
+        "lpips": 0.00043138861656188965,
+        "psnr": 0.4843710435541535,
+        "ssim": -0.017835795879364014
+      }
+    },
+    "live_processing_after_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-live-processing-inprogress-after-review-20260513.json",
+    "live_training_after_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-live-training-inprogress-after-review-20260513.json",
+    "merge_dropped_gaussians": 20492,
+    "merge_fallback_tile_count": 0,
+    "merge_preflight_decision": "preflight_passed_run_frozen_smoke_review",
+    "merge_preflight_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-retry1-preflight-exactf1f5-20260513.json",
+    "merge_retain_all_tile_count": 0,
+    "merge_retained_gaussians": 1514910,
+    "merge_retry_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-g4dn-20260513/output/artifact/model.tar.gz",
+    "merge_retry_billable_seconds": 386,
+    "merge_retry_estimated_usd": 0.0789,
+    "merge_retry_job_name": "md1-r4t04vis-t10cap-bg10-r1-20260513",
+    "merge_retry_status": "Completed",
+    "merge_source_gaussians": 1535402,
+    "next": "No paid retry. Commit/push/watch exact head, then no-spend candidate objective with a real color/exposure/geometry/perceptual repair before any leaf readiness.",
+    "objective_strategy_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-review-r1-objective-strategy-20260513.json",
+    "planner_guard_added": "objective_repeats_failed_hard_output_cap_visual_fidelity_without_new_quality_repair plus objective_missing_hard_output_cap_quality_repair_implementation",
+    "promotion_decision": {
+      "block_reasons": [
+        "near_detail_ssim_regression",
+        "horizon_psnr_regression",
+        "horizon_ssim_regression",
+        "horizon_lpips_regression",
+        "horizon_sky_score_regression"
+      ],
+      "status": "blocked"
+    },
+    "quality_review_manifest_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-quality-review-manifest-20260513.json",
+    "review_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-review-v18colmap-r1-20260513/outputs/r4-t04vis-t10cap-bg10-v18colmap-smoke-p24-r1/md1-r1-r4-t04vis-t10cap-bg10-v18colmap-smoke-p24-r1-1778686244/output/model.tar.gz",
+    "review_billable_seconds": 687,
+    "review_comparison_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-review-comparison-20260513.json",
+    "review_estimated_usd": 0.1405,
+    "review_job_name": "md1-r1-r4-t04vis-t10cap-bg10-v18colmap-smoke-p24-r1-1778686244",
+    "review_status": "Completed",
+    "review_summary_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-20260513.json",
+    "status": "blocked_quality_after_density_and_preflight_passed",
+    "v18_non_regression_decision": {
+      "block_reasons": [
+        "near_detail_v18_median_ssim_regression",
+        "boundary_v18_median_lpips_regression",
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_median_ssim_regression",
+        "horizon_v18_median_lpips_regression",
+        "horizon_v18_sky_score_regression",
+        "near_detail_v18_single_camera_lpips_regression",
+        "boundary_v18_single_camera_lpips_regression",
+        "horizon_v18_single_camera_psnr_regression",
+        "horizon_v18_single_camera_lpips_regression"
+      ],
+      "status": "blocked"
+    },
+    "visual_qa_decision": {
+      "ai_blocking_view_count": 12,
+      "block_reasons": [
+        "ai_visual_review_blocking_defects",
+        "ai_visual_review_blocking_view_findings",
+        "ai_visual_review_status_block"
+      ],
+      "status": "blocked"
+    },
+    "visual_qa_gate_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-visual-qa-gate-with-ai-20260513.json",
+    "visual_qa_manifest_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-visual-qa-manifest-20260513.json"
+  },
   "md1_r4_leaf_scaffold_init_canary_review_20260503": {
     "billable_seconds": 712,
     "estimated_usd": 0.3,
@@ -7327,6 +7798,57 @@
     "submitted_jobs": [],
     "worst_case_usd": 3.03
   },
+  "md1_r4_tile10_density_controlled_visual_fidelity_candidate_20260513": {
+    "candidate_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-objective-candidate-20260513.json",
+    "checked_at": "2026-05-13T09:32:05Z",
+    "estimated_usd": 0.8096,
+    "leaf_dryrun_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-leaf-dryrun-20260513.json",
+    "leaf_submit_readiness_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-leaf-submit-readiness-20260513.json",
+    "max_estimated_usd": 2.25,
+    "merge_review_gate_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-merge-review-gate-20260513.json",
+    "must_rerun_readiness_after_commit_exact_head_green": true,
+    "no_merge_review_full14_lod_promotion_launched": true,
+    "objective_gate_decision": "paid_retry_allowed",
+    "objective_gate_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-objective-gate-20260513.json",
+    "readiness_decision": "leaf_submit_allowed",
+    "selected_tile_ids": [
+      "tile_10"
+    ],
+    "status": "no_spend_leaf_submit_ready_pending_new_exact_head_rerun",
+    "submitted_jobs": [],
+    "worst_case_usd": 0.9813
+  },
+  "md1_r4_tile10_density_controlled_visual_fidelity_leaf_blocked_20260513": {
+    "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/tiles/tile_10/md1-r4t10vfdc2-1778665856-1778665857-tile-10/output/model.tar.gz",
+    "attribution_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-leaf-attribution-20260513.json",
+    "billable_seconds": 4176,
+    "block_reasons": [
+      "leaf_preflight_decision_not_pass",
+      "splat_vertex_count_above_reference_ratio",
+      "splat_vertex_count_above_hard_max"
+    ],
+    "describe_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-leaf-submit-describe-20260513.json",
+    "estimated_usd": 0.8538,
+    "exact_head": "7fc3c5410c3c33a0eb2f1fefef27cf733f79269d",
+    "hard_max_splat_count": 511586,
+    "job_name": "md1-r4t10vfdc2-1778665856-1778665857-tile-10",
+    "leaf_gate_decision": "merge_review_blocked",
+    "leaf_gate_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-20260513-tile_10-leaf-gate.json",
+    "merge_review_block_reasons": [
+      "leaf_gate_not_allowed:tile_10"
+    ],
+    "merge_review_decision": "merge_review_blocked",
+    "merge_review_gate_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-merge-review-gate-after-leaf-20260513.json",
+    "no_merge_review_full14_lod_promotion": true,
+    "observed_reference_ratio": 1.728734170200526,
+    "preflight_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-20260513-tile_10-leaf-preflight.json",
+    "readiness_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-leaf-submit-readiness-current-head-20260513.json",
+    "reference_splat_count": 378953,
+    "splat_vertex_count": 655109,
+    "status": "blocked_before_merge_review",
+    "submit_summary_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-leaf-submit-current-head-20260513.json",
+    "workflow_run": "25790990300"
+  },
   "md1_r4_tile10_density_relaxed_failure_attribution_20260506": {
     "attribution_json": "logs/md1-cost-reduction-r4-tile10-density-relaxed-failure-attribution-20260506.json",
     "checked_at": "2026-05-06T07:58:41Z",
@@ -7597,6 +8119,90 @@
       "horizon_v18_single_camera_psnr_regression"
     ],
     "verdict": "blocked_support_overlap_did_not_fix_tile10_density_repair"
+  },
+  "md1_r4_tile10_hard_output_cap_visual_fidelity_candidate_20260513": {
+    "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/tiles/tile_10/md1-r4t10vfdc4-1778676812-1778676812-tile-10/output/model.tar.gz",
+    "billable_seconds": 4126,
+    "candidate_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-objective-candidate-20260513.json",
+    "candidate_objective_gate_decision": "paid_retry_allowed",
+    "current_head_leaf_submit_readiness_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-readiness-current-head-20260513.json",
+    "density_cap_summary": {
+      "kept_gaussians": 511000,
+      "max_gaussians": 511000,
+      "original_gaussians": 735506,
+      "policy": "opacity_topk",
+      "removed_gaussians": 224506
+    },
+    "density_controls": {
+      "CULL_ALPHA_THRESH": "0.14",
+      "CULL_SCALE_THRESH": "0.30",
+      "TRAINING_DENSITY_CAP_POLICY": "opacity_topk",
+      "TRAINING_MAX_GAUSS_RATIO": "0.95",
+      "TRAINING_MAX_OUTPUT_GAUSSIANS": "511000",
+      "TRAINING_STOP_SPLIT_AT": "5600"
+    },
+    "density_guard": {
+      "hard_max": 511586,
+      "hard_min": 303162,
+      "max_ratio": 1.35,
+      "min_ratio": 0.8,
+      "reference_splat_count": 378953
+    },
+    "describe_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-describe-20260513.json",
+    "estimated_usd": 0.8435,
+    "exact_head": "aae88102bc330cdfe637be785151b0e8112a99c0",
+    "filtered_scaffold_ok": true,
+    "hard_max_splat_count": 511586,
+    "job_name": "md1-r4t10vfdc4-1778676812-1778676812-tile-10",
+    "leaf_dryrun_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-dryrun-20260513.json",
+    "leaf_gate_decision": "merge_review_allowed",
+    "leaf_gate_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-20260513-tile_10-leaf-gate.json",
+    "leaf_submit_readiness_decision": "leaf_submit_allowed_current_exact_head",
+    "leaf_submit_readiness_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-readiness-20260513.json",
+    "max_estimated_usd": 2.25,
+    "merge_review_blocked_until_leaf_gate_passes": true,
+    "merge_review_gate_after_leaf_decision": "merge_review_allowed",
+    "merge_review_gate_after_leaf_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-merge-review-gate-after-leaf-fixed-20260513.json",
+    "merge_review_gate_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-merge-review-gate-20260513.json",
+    "must_rerun_readiness_after_commit_exact_head": true,
+    "next": "no_spend_bg10_merge_preflight_review_plan_only",
+    "no_merge_review_full14_lod_or_promotion_launched": true,
+    "objective_gate_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-objective-gate-20260513.json",
+    "observed_reference_ratio": 1.3484521827245068,
+    "preflight_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-20260513-tile_10-leaf-preflight.json",
+    "reference_splat_count": 378953,
+    "runtime_cap_seconds": 4800,
+    "selected_image_count": 188,
+    "selected_tile_ids": [
+      "tile_10"
+    ],
+    "splat_vertex_count": 511000,
+    "status": "leaf_gate_passed_pending_no_spend_merge_plan",
+    "submit_summary_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-current-head-20260513.json",
+    "workflow": "CDK Deploy 25799817045 success",
+    "worst_case_usd": 0.9813
+  },
+  "md1_r4_tile10_hard_output_cap_visual_fidelity_leaf_passed_20260513": {
+    "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/tiles/tile_10/md1-r4t10vfdc4-1778676812-1778676812-tile-10/output/model.tar.gz",
+    "billable_seconds": 4126,
+    "describe_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-describe-20260513.json",
+    "estimated_usd": 0.8435,
+    "exact_head": "aae88102bc330cdfe637be785151b0e8112a99c0",
+    "hard_max_splat_count": 511586,
+    "job_name": "md1-r4t10vfdc4-1778676812-1778676812-tile-10",
+    "leaf_gate_decision": "merge_review_allowed",
+    "leaf_gate_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-20260513-tile_10-leaf-gate.json",
+    "merge_review_gate_after_leaf_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-merge-review-gate-after-leaf-fixed-20260513.json",
+    "merge_review_gate_decision": "merge_review_allowed",
+    "no_merge_review_full14_lod_or_promotion": true,
+    "observed_reference_ratio": 1.3484521827245068,
+    "preflight_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-20260513-tile_10-leaf-preflight.json",
+    "readiness_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-readiness-current-head-20260513.json",
+    "reference_splat_count": 378953,
+    "splat_vertex_count": 511000,
+    "status": "leaf_gate_passed_no_merge_review_launched",
+    "submit_summary_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-current-head-20260513.json",
+    "workflow": "CDK Deploy 25799817045 success"
   },
   "md1_r4_tile10_leaf_density_reference_guard_20260506": {
     "block_reason": "splat_vertex_count_above_reference_ratio",
@@ -8075,6 +8681,64 @@
     "live_md1_training_jobs_in_progress": 0,
     "next_unblocked_step": "User-facing promotion decision for rollback-based LOD candidate, or bounded tile_10 repair proof only; do not run full 14-tile training."
   },
+  "md1_r4_tile10_stronger_density_visual_fidelity_candidate_20260513": {
+    "candidate_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-objective-candidate-20260513.json",
+    "candidate_objective_gate_decision": "paid_retry_allowed",
+    "density_controls": {
+      "CULL_ALPHA_THRESH": "0.14",
+      "CULL_SCALE_THRESH": "0.30",
+      "TRAINING_MAX_GAUSS_RATIO": "0.95",
+      "TRAINING_STOP_SPLIT_AT": "5600"
+    },
+    "density_guard": {
+      "hard_max": 511586,
+      "hard_min": 303162,
+      "max_ratio": 1.35,
+      "min_ratio": 0.8,
+      "reference_splat_count": 378953
+    },
+    "estimated_usd": 0.8096,
+    "leaf_dryrun_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-leaf-dryrun-20260513.json",
+    "leaf_submit_readiness_decision": "leaf_submit_allowed_pre_commit_head",
+    "leaf_submit_readiness_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-leaf-submit-readiness-20260513.json",
+    "max_estimated_usd": 2.25,
+    "merge_review_blocked_until_leaf_gate_passes": true,
+    "merge_review_gate_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-merge-review-gate-20260513.json",
+    "must_rerun_readiness_after_commit_exact_head": true,
+    "objective_gate_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-objective-gate-20260513.json",
+    "runtime_cap_seconds": 4800,
+    "selected_image_count": 188,
+    "selected_tile_ids": [
+      "tile_10"
+    ],
+    "status": "no_spend_candidate_ready_pending_commit_exact_head",
+    "worst_case_usd": 0.9813
+  },
+  "md1_r4_tile10_stronger_density_visual_fidelity_leaf_blocked_20260513": {
+    "attribution_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-leaf-attribution-20260513.json",
+    "billable_seconds": 4036,
+    "block_reasons": [
+      "leaf_preflight_decision_not_pass",
+      "splat_vertex_count_above_reference_ratio",
+      "splat_vertex_count_above_hard_max"
+    ],
+    "describe_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-leaf-submit-describe-20260513.json",
+    "estimated_usd": 0.8251,
+    "exact_head": "d8baa0a268096be35714cba91eaf88523f58cadd",
+    "hard_max_splat_count": 511586,
+    "job_name": "md1-r4t10vfdc3-1778671321-1778671321-tile-10",
+    "leaf_gate_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-20260513-tile_10-leaf-gate.json",
+    "merge_review_gate_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-merge-review-gate-after-leaf-20260513.json",
+    "no_merge_review_full14_lod_or_promotion_launched": true,
+    "observed_reference_ratio": 1.7028101110164058,
+    "preflight_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-20260513-tile_10-leaf-preflight.json",
+    "readiness_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-leaf-submit-readiness-current-head-20260513.json",
+    "reference_splat_count": 378953,
+    "splat_vertex_count": 645285,
+    "status": "leaf_gate_blocked_no_merge_review",
+    "submit_summary_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-leaf-submit-current-head-20260513.json",
+    "workflow": "CDK Deploy 25795496650 success"
+  },
   "md1_r4_tile11_reuse_proof_20260505": {
     "decision": {
       "next_unblocked_step": "Keep tile_10 on V18/context-density rollback or run only a bounded tile_10 repair proof; do not run full 14-tile training.",
@@ -8446,6 +9110,29 @@
     "review_job_name": "md1-r1-r4-expanded-mix-hard01-standardrest-1777964534-quality",
     "review_model_artifacts_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-tile-mix-hard01-review-20260505/outputs/r4-expanded-mix-hard01-standardrest/md1-r1-r4-expanded-mix-hard01-standardrest-1777964534-quality/output/model.tar.gz",
     "status": "hard01_tile_mix_rejected_no_full_training"
+  },
+  "md1_r4_visual_fidelity_paired_leaf_proof_20260513": {
+    "attribution_json": "logs/md1-r4-visual-fidelity-paired-leaf-attribution-20260513.json",
+    "aws_idle_after_proof": true,
+    "aws_idle_before_submit": true,
+    "checked_at": "2026-05-13T09:11:54Z",
+    "cost_cap_usd": 2.25,
+    "cost_estimated_usd": 2.0001,
+    "exact_head_before_submit": "30352e809e8495fd6482e0185f72a645bc966dd8",
+    "exact_head_cdk_run_id": 25784494941,
+    "merge_review_gate_after_leaf_json": "logs/md1-r4-visual-fidelity-paired-merge-review-gate-after-leaf-fixed-20260513.json",
+    "next_unblocked_step": "No-spend tile_10 objective redesign only; no paid retry until objective/readiness/exact-head/AWS-idle/V18/visual-QA gates pass.",
+    "no_merge_review_full14_lod_promotion_launched": true,
+    "readiness_json": "logs/md1-r4-visual-fidelity-paired-leaf-submit-readiness-current-head-20260513.json",
+    "status": "merge_review_blocked_tile_10_overdense",
+    "submit_json": "logs/md1-r4-visual-fidelity-paired-leaf-submit-20260513.json",
+    "tile_04_gate": "merge_review_allowed",
+    "tile_10_block_reasons": [
+      "leaf_preflight_decision_not_pass",
+      "splat_vertex_count_above_reference_ratio",
+      "splat_vertex_count_above_hard_max"
+    ],
+    "tile_10_gate": "merge_review_blocked"
   },
   "md1_training_cost_reduction_controls": {
     "base_head_before_commit": "9535796028311b9e21004e40f391907103c7240a",
@@ -9097,7 +9784,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Push/watch this no-spend bg10 merge/review plan commit; re-run AWS idle and readiness on the new exact green head before at most one bounded no-training bg10 merge/preflight. Review only after merge preflight passes.",
+  "next_unblocked_step": "Commit/push this bg10 review evidence and hard-output-cap visual-fidelity failure guard, watch exact-head workflows, then draft only a no-spend candidate objective with real color/exposure/geometry/perceptual repair implementation before any paid leaf-only proof.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -11033,6 +11720,14 @@
     "v18_reference_retention_ratio": 0.732865
   },
   "r4_visual_fidelity_paired_objective_20260513": {
+    "actual_cost_estimate": {
+      "cap_usd": 2.25,
+      "hourly_rate_usd": 0.736,
+      "instance_type": "ml.g4dn.xlarge",
+      "tile_04_usd": 0.9513,
+      "tile_10_usd": 1.0488,
+      "total_usd": 2.0001
+    },
     "adaptive_downshift_rejected_json": "logs/md1-r4-visual-fidelity-paired-leaf-dryrun-20260513.json",
     "aws_live_state": {
       "processing_inprogress": [],
@@ -11051,6 +11746,9 @@
       "max_estimated_usd": 2.25,
       "submitted_jobs": []
     },
+    "current_exact_head": "30352e809e8495fd6482e0185f72a645bc966dd8",
+    "current_exact_head_workflow": "CDK Deploy 25784494941 success",
+    "current_head_leaf_submit_readiness_json": "logs/md1-r4-visual-fidelity-paired-leaf-submit-readiness-current-head-20260513.json",
     "density_guard": {
       "max_reference_splat_ratio": 1.35,
       "min_reference_splat_ratio": 0.8,
@@ -11073,8 +11771,89 @@
       "ENABLE_ALPHA_LOSS",
       "ENABLE_ROBUST_MASK"
     ],
+    "leaf_attribution_json": "logs/md1-r4-visual-fidelity-paired-leaf-attribution-20260513.json",
+    "leaf_results": {
+      "tile_04": {
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4visualpair-20260513-1778657808/3dgs/tiles/tile_04/md1-r4visualpair-20260513-1778657808-tile-04/output/model.tar.gz",
+        "billable_time_seconds": 4653,
+        "gate_decision": "merge_review_allowed",
+        "gate_json": "logs/md1-r4-visual-fidelity-paired-20260513-tile_04-leaf-gate.json",
+        "job_name": "md1-r4visualpair-20260513-1778657808-tile-04",
+        "observed_reference_ratio": 1.0712398185881287,
+        "preflight_json": "logs/md1-r4-visual-fidelity-paired-20260513-tile_04-leaf-preflight.json",
+        "reference_splat_count": 956277,
+        "selected_image_count": 188,
+        "splat_vertex_count": 1024402
+      },
+      "tile_10": {
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4visualpair-20260513-1778657808/3dgs/tiles/tile_10/md1-r4visualpair-20260513-1778657808-tile-10/output/model.tar.gz",
+        "billable_time_seconds": 5130,
+        "block_reasons": [
+          "leaf_preflight_decision_not_pass",
+          "splat_vertex_count_above_reference_ratio",
+          "splat_vertex_count_above_hard_max"
+        ],
+        "gate_decision": "merge_review_blocked",
+        "gate_json": "logs/md1-r4-visual-fidelity-paired-20260513-tile_10-leaf-gate.json",
+        "hard_max_splat_count": 511586,
+        "job_name": "md1-r4visualpair-20260513-1778657808-tile-10",
+        "observed_reference_ratio": 3.7724440761783122,
+        "preflight_json": "logs/md1-r4-visual-fidelity-paired-20260513-tile_10-leaf-preflight.json",
+        "reference_splat_count": 378953,
+        "selected_image_count": 188,
+        "splat_vertex_count": 1429579
+      }
+    },
+    "leaf_submit_json": "logs/md1-r4-visual-fidelity-paired-leaf-submit-20260513.json",
     "leaf_submit_readiness_json": "logs/md1-r4-visual-fidelity-paired-leaf-submit-readiness-20260513.json",
+    "merge_review_gate_after_leaf_json": "logs/md1-r4-visual-fidelity-paired-merge-review-gate-after-leaf-fixed-20260513.json",
     "merge_review_gate_json": "logs/md1-r4-visual-fidelity-paired-merge-review-gate-20260513.json",
+    "next_candidate_after_tile10_overdensity": {
+      "candidate_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-objective-candidate-20260513.json",
+      "context_support_tile_ids": [
+        "tile_04",
+        "tile_13",
+        "tile_01",
+        "tile_00",
+        "tile_02",
+        "tile_06"
+      ],
+      "cost_estimate": {
+        "cap_usd": 2.25,
+        "estimated_usd": 0.8096,
+        "worst_case_usd": 0.9813
+      },
+      "density_control": {
+        "CULL_ALPHA_THRESH": "0.12",
+        "CULL_SCALE_THRESH": "0.35",
+        "TRAINING_MAX_GAUSS_RATIO": "1.10",
+        "TRAINING_STOP_SPLIT_AT": "6200"
+      },
+      "leaf_dryrun_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-leaf-dryrun-20260513.json",
+      "leaf_submit_readiness_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-leaf-submit-readiness-20260513.json",
+      "merge_review_gate_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-merge-review-gate-20260513.json",
+      "objective_gate_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-objective-gate-20260513.json",
+      "objective_strategy_json": "logs/md1-r4-visual-fidelity-tile10-overdense-objective-strategy-20260513.json",
+      "post_leaf_gate": {
+        "hard_max_splat_count": 511586,
+        "hard_min_splat_count": 303162,
+        "selected_image_count": 188,
+        "tile_id": "tile_10"
+      },
+      "readiness_note": "Allowed only on pre-commit exact head 30352e80; rerun on the new exact green head before any paid proof.",
+      "selected_tile_ids": [
+        "tile_10"
+      ],
+      "status": "no_spend_ready_pending_commit_exact_head_rerun_readiness",
+      "visual_fidelity_knobs": [
+        "APPEARANCE_EMBED_DIM",
+        "BG_SH_DEGREE",
+        "SH_DEGREE",
+        "ENABLE_BG_MODEL",
+        "ENABLE_ALPHA_LOSS",
+        "ENABLE_ROBUST_MASK"
+      ]
+    },
     "objective_gate_json": "logs/md1-r4-visual-fidelity-paired-objective-gate-20260513.json",
     "previous_exact_head": "985a509c37ec18d4279178e3ba6926131ad5b0e1",
     "previous_exact_head_workflow": "CDK Deploy 25782881107 success",
@@ -11103,99 +11882,7 @@
       "ai_visual_geometry_alignment_defect",
       "ai_visual_horizon_continuity_defect",
       "ai_visual_texture_smearing_defect"
-    ],
-    "current_exact_head": "30352e809e8495fd6482e0185f72a645bc966dd8",
-    "current_exact_head_workflow": "CDK Deploy 25784494941 success",
-    "current_head_leaf_submit_readiness_json": "logs/md1-r4-visual-fidelity-paired-leaf-submit-readiness-current-head-20260513.json",
-    "leaf_submit_json": "logs/md1-r4-visual-fidelity-paired-leaf-submit-20260513.json",
-    "leaf_attribution_json": "logs/md1-r4-visual-fidelity-paired-leaf-attribution-20260513.json",
-    "merge_review_gate_after_leaf_json": "logs/md1-r4-visual-fidelity-paired-merge-review-gate-after-leaf-fixed-20260513.json",
-    "actual_cost_estimate": {
-      "tile_04_usd": 0.9513,
-      "tile_10_usd": 1.0488,
-      "total_usd": 2.0001,
-      "cap_usd": 2.25,
-      "hourly_rate_usd": 0.736,
-      "instance_type": "ml.g4dn.xlarge"
-    },
-    "leaf_results": {
-      "tile_04": {
-        "job_name": "md1-r4visualpair-20260513-1778657808-tile-04",
-        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4visualpair-20260513-1778657808/3dgs/tiles/tile_04/md1-r4visualpair-20260513-1778657808-tile-04/output/model.tar.gz",
-        "billable_time_seconds": 4653,
-        "preflight_json": "logs/md1-r4-visual-fidelity-paired-20260513-tile_04-leaf-preflight.json",
-        "gate_json": "logs/md1-r4-visual-fidelity-paired-20260513-tile_04-leaf-gate.json",
-        "gate_decision": "merge_review_allowed",
-        "splat_vertex_count": 1024402,
-        "reference_splat_count": 956277,
-        "observed_reference_ratio": 1.0712398185881287,
-        "selected_image_count": 188
-      },
-      "tile_10": {
-        "job_name": "md1-r4visualpair-20260513-1778657808-tile-10",
-        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4visualpair-20260513-1778657808/3dgs/tiles/tile_10/md1-r4visualpair-20260513-1778657808-tile-10/output/model.tar.gz",
-        "billable_time_seconds": 5130,
-        "preflight_json": "logs/md1-r4-visual-fidelity-paired-20260513-tile_10-leaf-preflight.json",
-        "gate_json": "logs/md1-r4-visual-fidelity-paired-20260513-tile_10-leaf-gate.json",
-        "gate_decision": "merge_review_blocked",
-        "block_reasons": [
-          "leaf_preflight_decision_not_pass",
-          "splat_vertex_count_above_reference_ratio",
-          "splat_vertex_count_above_hard_max"
-        ],
-        "splat_vertex_count": 1429579,
-        "reference_splat_count": 378953,
-        "observed_reference_ratio": 3.7724440761783122,
-        "hard_max_splat_count": 511586,
-        "selected_image_count": 188
-      }
-    },
-    "next_candidate_after_tile10_overdensity": {
-      "candidate_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-objective-candidate-20260513.json",
-      "objective_strategy_json": "logs/md1-r4-visual-fidelity-tile10-overdense-objective-strategy-20260513.json",
-      "objective_gate_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-objective-gate-20260513.json",
-      "leaf_dryrun_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-leaf-dryrun-20260513.json",
-      "merge_review_gate_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-merge-review-gate-20260513.json",
-      "leaf_submit_readiness_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-leaf-submit-readiness-20260513.json",
-      "status": "no_spend_ready_pending_commit_exact_head_rerun_readiness",
-      "selected_tile_ids": [
-        "tile_10"
-      ],
-      "context_support_tile_ids": [
-        "tile_04",
-        "tile_13",
-        "tile_01",
-        "tile_00",
-        "tile_02",
-        "tile_06"
-      ],
-      "density_control": {
-        "TRAINING_MAX_GAUSS_RATIO": "1.10",
-        "TRAINING_STOP_SPLIT_AT": "6200",
-        "CULL_ALPHA_THRESH": "0.12",
-        "CULL_SCALE_THRESH": "0.35"
-      },
-      "visual_fidelity_knobs": [
-        "APPEARANCE_EMBED_DIM",
-        "BG_SH_DEGREE",
-        "SH_DEGREE",
-        "ENABLE_BG_MODEL",
-        "ENABLE_ALPHA_LOSS",
-        "ENABLE_ROBUST_MASK"
-      ],
-      "cost_estimate": {
-        "estimated_usd": 0.8096,
-        "worst_case_usd": 0.9813,
-        "cap_usd": 2.25
-      },
-      "post_leaf_gate": {
-        "tile_id": "tile_10",
-        "selected_image_count": 188,
-        "hard_min_splat_count": 303162,
-        "hard_max_splat_count": 511586
-      },
-      "readiness_note": "Allowed only on pre-commit exact head 30352e80; rerun on the new exact green head before any paid proof."
-    }
+    ]
   },
   "r5_14tile_2k_dryrun": {
     "chunk_planner_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap/chunk_planner_manifest.json",
@@ -15191,348 +15878,6 @@
     "shared_assigned_fallback_pair_count": 2
   },
   "updated": "2026-05-13T14:05:20Z",
-  "updated_at": "2026-05-13T14:27:14Z",
-  "version": "1.0.0",
-  "md1_r4_visual_fidelity_paired_leaf_proof_20260513": {
-    "status": "merge_review_blocked_tile_10_overdense",
-    "checked_at": "2026-05-13T09:11:54Z",
-    "exact_head_before_submit": "30352e809e8495fd6482e0185f72a645bc966dd8",
-    "exact_head_cdk_run_id": 25784494941,
-    "aws_idle_before_submit": true,
-    "aws_idle_after_proof": true,
-    "readiness_json": "logs/md1-r4-visual-fidelity-paired-leaf-submit-readiness-current-head-20260513.json",
-    "submit_json": "logs/md1-r4-visual-fidelity-paired-leaf-submit-20260513.json",
-    "attribution_json": "logs/md1-r4-visual-fidelity-paired-leaf-attribution-20260513.json",
-    "merge_review_gate_after_leaf_json": "logs/md1-r4-visual-fidelity-paired-merge-review-gate-after-leaf-fixed-20260513.json",
-    "cost_estimated_usd": 2.0001,
-    "cost_cap_usd": 2.25,
-    "tile_04_gate": "merge_review_allowed",
-    "tile_10_gate": "merge_review_blocked",
-    "tile_10_block_reasons": [
-      "leaf_preflight_decision_not_pass",
-      "splat_vertex_count_above_reference_ratio",
-      "splat_vertex_count_above_hard_max"
-    ],
-    "no_merge_review_full14_lod_promotion_launched": true,
-    "next_unblocked_step": "No-spend tile_10 objective redesign only; no paid retry until objective/readiness/exact-head/AWS-idle/V18/visual-QA gates pass."
-  },
-  "md1_r4_tile10_density_controlled_visual_fidelity_candidate_20260513": {
-    "status": "no_spend_leaf_submit_ready_pending_new_exact_head_rerun",
-    "checked_at": "2026-05-13T09:32:05Z",
-    "candidate_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-objective-candidate-20260513.json",
-    "objective_gate_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-objective-gate-20260513.json",
-    "leaf_dryrun_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-leaf-dryrun-20260513.json",
-    "merge_review_gate_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-merge-review-gate-20260513.json",
-    "leaf_submit_readiness_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-leaf-submit-readiness-20260513.json",
-    "objective_gate_decision": "paid_retry_allowed",
-    "readiness_decision": "leaf_submit_allowed",
-    "selected_tile_ids": [
-      "tile_10"
-    ],
-    "submitted_jobs": [],
-    "max_estimated_usd": 2.25,
-    "estimated_usd": 0.8096,
-    "worst_case_usd": 0.9813,
-    "must_rerun_readiness_after_commit_exact_head_green": true,
-    "no_merge_review_full14_lod_promotion_launched": true
-  },
-  "md1_r4_tile10_density_controlled_visual_fidelity_leaf_blocked_20260513": {
-    "status": "blocked_before_merge_review",
-    "exact_head": "7fc3c5410c3c33a0eb2f1fefef27cf733f79269d",
-    "workflow_run": "25790990300",
-    "readiness_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-leaf-submit-readiness-current-head-20260513.json",
-    "submit_summary_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-leaf-submit-current-head-20260513.json",
-    "describe_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-leaf-submit-describe-20260513.json",
-    "preflight_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-20260513-tile_10-leaf-preflight.json",
-    "leaf_gate_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-20260513-tile_10-leaf-gate.json",
-    "merge_review_gate_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-merge-review-gate-after-leaf-20260513.json",
-    "attribution_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-leaf-attribution-20260513.json",
-    "job_name": "md1-r4t10vfdc2-1778665856-1778665857-tile-10",
-    "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/tiles/tile_10/md1-r4t10vfdc2-1778665856-1778665857-tile-10/output/model.tar.gz",
-    "billable_seconds": 4176,
-    "estimated_usd": 0.8538,
-    "splat_vertex_count": 655109,
-    "reference_splat_count": 378953,
-    "observed_reference_ratio": 1.728734170200526,
-    "hard_max_splat_count": 511586,
-    "leaf_gate_decision": "merge_review_blocked",
-    "block_reasons": [
-      "leaf_preflight_decision_not_pass",
-      "splat_vertex_count_above_reference_ratio",
-      "splat_vertex_count_above_hard_max"
-    ],
-    "merge_review_decision": "merge_review_blocked",
-    "merge_review_block_reasons": [
-      "leaf_gate_not_allowed:tile_10"
-    ],
-    "no_merge_review_full14_lod_promotion": true
-  },
-  "md1_r4_tile10_stronger_density_visual_fidelity_candidate_20260513": {
-    "status": "no_spend_candidate_ready_pending_commit_exact_head",
-    "candidate_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-objective-candidate-20260513.json",
-    "objective_gate_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-objective-gate-20260513.json",
-    "leaf_dryrun_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-leaf-dryrun-20260513.json",
-    "merge_review_gate_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-merge-review-gate-20260513.json",
-    "leaf_submit_readiness_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-leaf-submit-readiness-20260513.json",
-    "candidate_objective_gate_decision": "paid_retry_allowed",
-    "leaf_submit_readiness_decision": "leaf_submit_allowed_pre_commit_head",
-    "must_rerun_readiness_after_commit_exact_head": true,
-    "selected_tile_ids": [
-      "tile_10"
-    ],
-    "density_controls": {
-      "TRAINING_MAX_GAUSS_RATIO": "0.95",
-      "TRAINING_STOP_SPLIT_AT": "5600",
-      "CULL_ALPHA_THRESH": "0.14",
-      "CULL_SCALE_THRESH": "0.30"
-    },
-    "estimated_usd": 0.8096,
-    "worst_case_usd": 0.9813,
-    "max_estimated_usd": 2.25,
-    "runtime_cap_seconds": 4800,
-    "selected_image_count": 188,
-    "density_guard": {
-      "reference_splat_count": 378953,
-      "min_ratio": 0.8,
-      "max_ratio": 1.35,
-      "hard_min": 303162,
-      "hard_max": 511586
-    },
-    "merge_review_blocked_until_leaf_gate_passes": true
-  },
-  "md1_r4_tile10_stronger_density_visual_fidelity_leaf_blocked_20260513": {
-    "status": "leaf_gate_blocked_no_merge_review",
-    "exact_head": "d8baa0a268096be35714cba91eaf88523f58cadd",
-    "workflow": "CDK Deploy 25795496650 success",
-    "readiness_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-leaf-submit-readiness-current-head-20260513.json",
-    "submit_summary_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-leaf-submit-current-head-20260513.json",
-    "describe_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-leaf-submit-describe-20260513.json",
-    "preflight_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-20260513-tile_10-leaf-preflight.json",
-    "leaf_gate_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-20260513-tile_10-leaf-gate.json",
-    "merge_review_gate_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-merge-review-gate-after-leaf-20260513.json",
-    "attribution_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-leaf-attribution-20260513.json",
-    "job_name": "md1-r4t10vfdc3-1778671321-1778671321-tile-10",
-    "billable_seconds": 4036,
-    "estimated_usd": 0.8251,
-    "splat_vertex_count": 645285,
-    "reference_splat_count": 378953,
-    "observed_reference_ratio": 1.7028101110164058,
-    "hard_max_splat_count": 511586,
-    "block_reasons": [
-      "leaf_preflight_decision_not_pass",
-      "splat_vertex_count_above_reference_ratio",
-      "splat_vertex_count_above_hard_max"
-    ],
-    "no_merge_review_full14_lod_or_promotion_launched": true
-  },
-  "md1_r4_tile10_hard_output_cap_visual_fidelity_candidate_20260513": {
-    "status": "leaf_gate_passed_pending_no_spend_merge_plan",
-    "candidate_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-objective-candidate-20260513.json",
-    "objective_gate_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-objective-gate-20260513.json",
-    "leaf_dryrun_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-dryrun-20260513.json",
-    "merge_review_gate_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-merge-review-gate-20260513.json",
-    "leaf_submit_readiness_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-readiness-20260513.json",
-    "candidate_objective_gate_decision": "paid_retry_allowed",
-    "leaf_submit_readiness_decision": "leaf_submit_allowed_current_exact_head",
-    "must_rerun_readiness_after_commit_exact_head": true,
-    "selected_tile_ids": [
-      "tile_10"
-    ],
-    "density_controls": {
-      "TRAINING_MAX_GAUSS_RATIO": "0.95",
-      "TRAINING_STOP_SPLIT_AT": "5600",
-      "CULL_ALPHA_THRESH": "0.14",
-      "CULL_SCALE_THRESH": "0.30",
-      "TRAINING_MAX_OUTPUT_GAUSSIANS": "511000",
-      "TRAINING_DENSITY_CAP_POLICY": "opacity_topk"
-    },
-    "estimated_usd": 0.8435,
-    "worst_case_usd": 0.9813,
-    "max_estimated_usd": 2.25,
-    "runtime_cap_seconds": 4800,
-    "selected_image_count": 188,
-    "density_guard": {
-      "reference_splat_count": 378953,
-      "min_ratio": 0.8,
-      "max_ratio": 1.35,
-      "hard_min": 303162,
-      "hard_max": 511586
-    },
-    "merge_review_blocked_until_leaf_gate_passes": true,
-    "current_head_leaf_submit_readiness_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-readiness-current-head-20260513.json",
-    "submit_summary_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-current-head-20260513.json",
-    "describe_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-describe-20260513.json",
-    "preflight_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-20260513-tile_10-leaf-preflight.json",
-    "leaf_gate_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-20260513-tile_10-leaf-gate.json",
-    "merge_review_gate_after_leaf_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-merge-review-gate-after-leaf-fixed-20260513.json",
-    "leaf_gate_decision": "merge_review_allowed",
-    "merge_review_gate_after_leaf_decision": "merge_review_allowed",
-    "job_name": "md1-r4t10vfdc4-1778676812-1778676812-tile-10",
-    "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/tiles/tile_10/md1-r4t10vfdc4-1778676812-1778676812-tile-10/output/model.tar.gz",
-    "exact_head": "aae88102bc330cdfe637be785151b0e8112a99c0",
-    "workflow": "CDK Deploy 25799817045 success",
-    "billable_seconds": 4126,
-    "splat_vertex_count": 511000,
-    "reference_splat_count": 378953,
-    "observed_reference_ratio": 1.3484521827245068,
-    "hard_max_splat_count": 511586,
-    "filtered_scaffold_ok": true,
-    "density_cap_summary": {
-      "policy": "opacity_topk",
-      "max_gaussians": 511000,
-      "original_gaussians": 735506,
-      "kept_gaussians": 511000,
-      "removed_gaussians": 224506
-    },
-    "no_merge_review_full14_lod_or_promotion_launched": true,
-    "next": "no_spend_bg10_merge_preflight_review_plan_only"
-  },
-  "latest_paid_steps": "Hard-output-cap tile_10 retry on exact green head aae88102 completed in 4126 billable seconds/about $0.843 and passed the post-leaf density gate at 511000 splats/1.348x reference under the 511586 hard max. No merge/review/full14/LOD/promotion launched.",
-  "md1_r4_tile10_hard_output_cap_visual_fidelity_leaf_passed_20260513": {
-    "status": "leaf_gate_passed_no_merge_review_launched",
-    "exact_head": "aae88102bc330cdfe637be785151b0e8112a99c0",
-    "workflow": "CDK Deploy 25799817045 success",
-    "readiness_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-readiness-current-head-20260513.json",
-    "submit_summary_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-current-head-20260513.json",
-    "describe_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-leaf-submit-describe-20260513.json",
-    "preflight_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-20260513-tile_10-leaf-preflight.json",
-    "leaf_gate_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-20260513-tile_10-leaf-gate.json",
-    "merge_review_gate_after_leaf_json": "logs/md1-r4-tile10-hard-output-cap-visual-fidelity-merge-review-gate-after-leaf-fixed-20260513.json",
-    "job_name": "md1-r4t10vfdc4-1778676812-1778676812-tile-10",
-    "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/tiles/tile_10/md1-r4t10vfdc4-1778676812-1778676812-tile-10/output/model.tar.gz",
-    "billable_seconds": 4126,
-    "estimated_usd": 0.8435,
-    "splat_vertex_count": 511000,
-    "reference_splat_count": 378953,
-    "observed_reference_ratio": 1.3484521827245068,
-    "hard_max_splat_count": 511586,
-    "leaf_gate_decision": "merge_review_allowed",
-    "merge_review_gate_decision": "merge_review_allowed",
-    "no_merge_review_full14_lod_or_promotion": true
-  },
-  "latest_no_spend_bg10_merge_review_plan": {
-    "status": "merge_retry1_guard_ready_no_paid_retry_launched",
-    "pre_guard_exact_head": "91c3f2105f317b2576e03aa00425c2492371806f",
-    "pre_guard_workflow": "CDK Deploy 25807155511 success",
-    "failed_merge_job_name": "md1-r4t04vis-t10cap-bg10-20260513",
-    "failed_merge_status": "Failed",
-    "failed_merge_billable_seconds": 285,
-    "failed_merge_estimated_usd": 0.0583,
-    "failed_merge_root_cause": "unsupported_payload_merge_environment",
-    "failed_merge_detail": "MERGE_PROTECTED_OVERLAP_MODE=boundary is unsupported; container accepts retain_all/off",
-    "failed_merge_describe_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-describe-exact91c3-20260513.json",
-    "failed_merge_cloudwatch_events_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-cloudwatch-events-exact91c3-20260513.json",
-    "failure_attribution_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-failure-attribution-exact91c3-20260513.json",
-    "retry_payload_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-remote-merge-g4dn-payload-retry1-dryrun-20260513.json",
-    "retry_readiness_plan_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-retry1-readiness-plan-20260513.json",
-    "retry_precommit_readiness_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-retry1-submit-readiness-precommit-20260513.json",
-    "retry_job_name": "md1-r4t04vis-t10cap-bg10-r1-20260513",
-    "retry_protected_overlap_mode": "retain_all",
-    "guard_fix": [
-      "scripts/3dgs/plan_tiled_merge_processing.py rejects unsupported protected-overlap mode before payload emission",
-      "scripts/3dgs/enforce_md1_merge_review_submit_readiness.py blocks unsupported payload merge env before paid submit"
-    ],
-    "aws_idle_after_failure": true,
-    "v18_review_launched": false,
-    "full14_lod_or_promotion_launched": false,
-    "paid_retry_launched": false,
-    "next": "Commit/push/watch exact head, rerun readiness with retry1 payload and AWS idle, then at most one corrected no-training merge retry if allowed."
-  },
-  "latest_testing": "Targeted unit tests: 23 passed across merge-review submit readiness, leaf reuse, leaf submit readiness, and visual QA gates; py_compile, JSON validation, and git diff --check passed.",
-  "latest_bg10_merge_input_materialization_status": {
-    "status": "materialized_merge_inputs_readiness_gate_passed_no_paid_compute_launched",
-    "pre_guard_exact_head": "58fb10a439875c4aa8d3e1dd48453630ba53b03f",
-    "pre_guard_workflow": "CDK Deploy 25805561789 success",
-    "leaf_reuse_summary_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-leaf-reuse-summary-20260513.json",
-    "merge_plan_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-remote-merge-g4dn-plan-dryrun-20260513.json",
-    "merge_payload_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-remote-merge-g4dn-payload-dryrun-20260513.json",
-    "merge_review_gate_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-review-gate-20260513.json",
-    "readiness_plan_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-readiness-plan-20260513.json",
-    "input_materialization_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-input-materialization-current-20260513.json",
-    "readiness_gate_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-review-submit-readiness-current-head-20260513.json",
-    "exact_head_workflows_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-exact-head-workflows-current-20260513.json",
-    "live_training_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-live-training-inprogress-current-20260513.json",
-    "live_processing_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-live-processing-inprogress-current-20260513.json",
-    "materialized_s3_inputs": {
-      "tile_selection_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-g4dn-20260513/inputs/tile-selection",
-      "merge_plan_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-g4dn-20260513/inputs/merge-plan/merge_plan.json",
-      "tile_manifest_available": true,
-      "view_buckets_available": true,
-      "merge_plan_uploaded": true,
-      "artifact_inputs_available": true
-    },
-    "required_tiles": [
-      "tile_04",
-      "tile_10"
-    ],
-    "tile04_leaf_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4visualpair-20260513-1778657808/3dgs/tiles/tile_04/md1-r4visualpair-20260513-1778657808-tile-04/output/model.tar.gz",
-    "tile10_leaf_artifact": "s3://spaceport-ml-processing-staging/manual-validations/tiles/tile_10/md1-r4t10vfdc4-1778676812-1778676812-tile-10/output/model.tar.gz",
-    "readiness_decision": "merge_review_submit_allowed",
-    "readiness_block_reasons": [],
-    "merge_cap_usd": 0.5,
-    "merge_runtime_cap_seconds": 3600,
-    "review_cap_usd": 0.5,
-    "review_runtime_cap_seconds": 1800,
-    "v18_non_regression_required": true,
-    "visual_qa_required": true,
-    "viewer_smoke_required": true,
-    "no_full14_lod_or_promotion": true,
-    "paid_compute_launched": false
-  },
-  "latest_bg10_merge_review_plan": {
-    "status": "merge_retry1_guard_ready_no_paid_retry_launched",
-    "pre_guard_exact_head": "91c3f2105f317b2576e03aa00425c2492371806f",
-    "pre_guard_workflow": "CDK Deploy 25807155511 success",
-    "failed_merge_job_name": "md1-r4t04vis-t10cap-bg10-20260513",
-    "failed_merge_status": "Failed",
-    "failed_merge_billable_seconds": 285,
-    "failed_merge_estimated_usd": 0.0583,
-    "failed_merge_root_cause": "unsupported_payload_merge_environment",
-    "failed_merge_detail": "MERGE_PROTECTED_OVERLAP_MODE=boundary is unsupported; container accepts retain_all/off",
-    "failed_merge_describe_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-describe-exact91c3-20260513.json",
-    "failed_merge_cloudwatch_events_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-cloudwatch-events-exact91c3-20260513.json",
-    "failure_attribution_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-failure-attribution-exact91c3-20260513.json",
-    "retry_payload_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-remote-merge-g4dn-payload-retry1-dryrun-20260513.json",
-    "retry_readiness_plan_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-retry1-readiness-plan-20260513.json",
-    "retry_precommit_readiness_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-retry1-submit-readiness-precommit-20260513.json",
-    "retry_job_name": "md1-r4t04vis-t10cap-bg10-r1-20260513",
-    "retry_protected_overlap_mode": "retain_all",
-    "guard_fix": [
-      "scripts/3dgs/plan_tiled_merge_processing.py rejects unsupported protected-overlap mode before payload emission",
-      "scripts/3dgs/enforce_md1_merge_review_submit_readiness.py blocks unsupported payload merge env before paid submit"
-    ],
-    "aws_idle_after_failure": true,
-    "v18_review_launched": false,
-    "full14_lod_or_promotion_launched": false,
-    "paid_retry_launched": false,
-    "next": "Commit/push/watch exact head, rerun readiness with retry1 payload and AWS idle, then at most one corrected no-training merge retry if allowed."
-  },
-  "latest_bg10_merge_retry1_guard_status": {
-    "status": "merge_retry1_guard_ready_no_paid_retry_launched",
-    "pre_guard_exact_head": "91c3f2105f317b2576e03aa00425c2492371806f",
-    "pre_guard_workflow": "CDK Deploy 25807155511 success",
-    "failed_merge_job_name": "md1-r4t04vis-t10cap-bg10-20260513",
-    "failed_merge_status": "Failed",
-    "failed_merge_billable_seconds": 285,
-    "failed_merge_estimated_usd": 0.0583,
-    "failed_merge_root_cause": "unsupported_payload_merge_environment",
-    "failed_merge_detail": "MERGE_PROTECTED_OVERLAP_MODE=boundary is unsupported; container accepts retain_all/off",
-    "failed_merge_describe_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-describe-exact91c3-20260513.json",
-    "failed_merge_cloudwatch_events_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-cloudwatch-events-exact91c3-20260513.json",
-    "failure_attribution_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-failure-attribution-exact91c3-20260513.json",
-    "retry_payload_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-remote-merge-g4dn-payload-retry1-dryrun-20260513.json",
-    "retry_readiness_plan_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-retry1-readiness-plan-20260513.json",
-    "retry_precommit_readiness_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-retry1-submit-readiness-precommit-20260513.json",
-    "retry_job_name": "md1-r4t04vis-t10cap-bg10-r1-20260513",
-    "retry_protected_overlap_mode": "retain_all",
-    "guard_fix": [
-      "scripts/3dgs/plan_tiled_merge_processing.py rejects unsupported protected-overlap mode before payload emission",
-      "scripts/3dgs/enforce_md1_merge_review_submit_readiness.py blocks unsupported payload merge env before paid submit"
-    ],
-    "aws_idle_after_failure": true,
-    "v18_review_launched": false,
-    "full14_lod_or_promotion_launched": false,
-    "paid_retry_launched": false,
-    "next": "Commit/push/watch exact head, rerun readiness with retry1 payload and AWS idle, then at most one corrected no-training merge retry if allowed."
-  }
+  "updated_at": "2026-05-13T15:55:05.004408+00:00",
+  "version": "1.0.0"
 }

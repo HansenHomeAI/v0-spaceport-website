@@ -223,6 +223,118 @@ def stronger_density_visual_fidelity_overdense_attribution() -> dict:
     return attr
 
 
+def hard_output_cap_visual_fidelity_quality_regression_attribution() -> dict:
+    attr = soft_density_regression_attribution()
+    attr["hypothesis"] = "hard_output_cap_visual_fidelity_bg10_review"
+    attr["hard_output_cap_visual_fidelity_minus_v18_bucket_delta"] = {
+        "near_detail": {"psnr": 0.4844, "ssim": -0.0178, "lpips": 0.0004},
+        "boundary": {"psnr": 0.8883, "ssim": 0.0303, "lpips": 0.0305},
+        "horizon": {"psnr": -1.175, "ssim": -0.0314, "lpips": 0.0824},
+    }
+    attr["tested_candidate"] = {
+        "candidate": "hard_output_cap_tile10_plus_visual_fidelity_tile04_bg10",
+        "promotion_block_reasons": [
+            "near_detail_ssim_regression",
+            "horizon_psnr_regression",
+            "horizon_ssim_regression",
+            "horizon_lpips_regression",
+            "horizon_sky_score_regression",
+        ],
+        "v18_non_regression_block_reasons": [
+            "near_detail_v18_median_ssim_regression",
+            "boundary_v18_median_lpips_regression",
+            "horizon_v18_median_psnr_regression",
+            "horizon_v18_median_ssim_regression",
+            "horizon_v18_median_lpips_regression",
+        ],
+    }
+    attr["visual_qa_gate_block_reasons"] = [
+        "ai_visual_review_blocking_defects",
+        "ai_visual_review_blocking_view_findings",
+        "ai_visual_review_status_block",
+    ]
+    attr["ai_visual_defect_blockers"] = [
+        "ai_visual_color_shift_defect",
+        "ai_visual_geometry_alignment_defect",
+        "ai_visual_horizon_continuity_defect",
+        "ai_visual_texture_smearing_defect",
+    ]
+    return attr
+
+
+def hard_output_cap_visual_candidate() -> dict:
+    candidate = valid_candidate()
+    candidate["selected_tile_ids"] = ["tile_10"]
+    candidate["context_support_tile_ids"] = ["tile_04", "tile_13", "tile_01", "tile_00", "tile_02", "tile_06"]
+    candidate["targeted_quality_blockers"] = [
+        "boundary_no_required_improvement",
+        "near_detail_ssim_regression",
+        "horizon_psnr_regression",
+        "horizon_ssim_regression",
+        "horizon_lpips_regression",
+        "horizon_sky_score_regression",
+        "ai_visual_review_blocking_defects",
+        "ai_visual_review_blocking_view_findings",
+        "ai_visual_review_status_block",
+        "ai_visual_color_shift_defect",
+        "ai_visual_geometry_alignment_defect",
+        "ai_visual_horizon_continuity_defect",
+        "ai_visual_texture_smearing_defect",
+    ]
+    candidate["horizon_camera_ids"] = ["DJI_0066.JPG", "DJI_0073.JPG", "DJI_0146.JPG", "DJI_0147.JPG"]
+    candidate["expected_metric_axes"] = [
+        "boundary.required_improvement",
+        "horizon.psnr",
+        "horizon.ssim",
+        "horizon.lpips",
+        "horizon.sky_score",
+        "visual_qa.color_shift",
+        "visual_qa.geometry_alignment",
+        "visual_qa.horizon_continuity",
+        "visual_qa.texture_smearing",
+    ]
+    candidate["objective_changes"] = [
+        "hard_output_density_cap",
+        "density_preserving_tile10_control",
+        "appearance_consistency",
+        "color_consistency",
+        "horizon_appearance_protection",
+    ]
+    candidate["objective_implementation"] = {
+        "environment": {
+            "TRAINING_MAX_GAUSS_RATIO": "0.95",
+            "TRAINING_STOP_SPLIT_AT": "5600",
+            "CULL_ALPHA_THRESH": "0.14",
+            "CULL_SCALE_THRESH": "0.30",
+            "TRAINING_MAX_OUTPUT_GAUSSIANS": "511000",
+            "TRAINING_DENSITY_CAP_POLICY": "opacity_topk",
+            "APPEARANCE_EMBED_DIM": "64",
+            "BG_SH_DEGREE": "2",
+            "SH_DEGREE": "1",
+            "ENABLE_BG_MODEL": "true",
+            "ENABLE_ALPHA_LOSS": "true",
+            "ENABLE_ROBUST_MASK": "true",
+        },
+        "training_config": {
+            "training_max_gauss_ratio": 0.95,
+            "training_stop_split_at": 5600,
+            "cull_alpha_thresh": 0.14,
+            "cull_scale_thresh": 0.30,
+            "max_output_gaussians": 511000,
+            "density_cap_policy": "opacity_topk",
+            "appearance_embed_dim": 64,
+            "bg_sh_degree": 2,
+            "sh_degree": 1,
+            "enable_bg_model": True,
+            "enable_alpha_loss": True,
+            "enable_robust_mask": True,
+        },
+    }
+    candidate["visual_qa_plan"] = {"required": True}
+    candidate["v18_non_regression_plan"] = {"required": True}
+    return candidate
+
+
 def valid_candidate() -> dict:
     return {
         "targeted_quality_blockers": ["boundary_no_required_improvement"],
@@ -1155,6 +1267,68 @@ class PlanMd1BoundaryObjectiveStrategyTests(unittest.TestCase):
         self.assertEqual(gate["decision"], "paid_retry_allowed")
         self.assertEqual(gate["block_reasons"], [])
         self.assertEqual(gate["density_control_implementation"]["environment"]["TRAINING_MAX_OUTPUT_GAUSSIANS"], "511000")
+
+    def test_records_hard_output_cap_visual_fidelity_quality_regression(self):
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=hard_output_cap_visual_fidelity_quality_regression_attribution(),
+            candidate_objective=None,
+            max_estimated_usd=2.0,
+        )
+
+        hypotheses = {item["hypothesis"] for item in report["failed_hypotheses"]}
+        self.assertIn("hard_output_cap_visual_fidelity_quality_regression", hypotheses)
+        self.assertIn("horizon_psnr_regression", report["current_quality_blockers"])
+        self.assertIn("ai_visual_color_shift_defect", report["current_quality_blockers"])
+
+    def test_blocks_repeating_hard_output_cap_visual_fidelity_without_new_quality_repair(self):
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=hard_output_cap_visual_fidelity_quality_regression_attribution(),
+            candidate_objective=hard_output_cap_visual_candidate(),
+            max_estimated_usd=2.0,
+        )
+
+        reasons = report["candidate_objective_gate"]["block_reasons"]
+        self.assertIn("objective_repeats_failed_hard_output_cap_visual_fidelity_without_new_quality_repair", reasons)
+        self.assertFalse(report["paid_retry_allowed"])
+
+    def test_blocks_named_hard_output_cap_quality_repair_without_implementation(self):
+        candidate = hard_output_cap_visual_candidate()
+        candidate["objective_changes"].append("color_calibration")
+
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=hard_output_cap_visual_fidelity_quality_regression_attribution(),
+            candidate_objective=candidate,
+            max_estimated_usd=2.0,
+        )
+
+        reasons = report["candidate_objective_gate"]["block_reasons"]
+        self.assertIn("objective_missing_hard_output_cap_quality_repair_implementation", reasons)
+        self.assertFalse(report["paid_retry_allowed"])
+
+    def test_allows_hard_output_cap_followup_with_new_color_calibration_repair(self):
+        candidate = hard_output_cap_visual_candidate()
+        candidate["objective_changes"].append("color_calibration")
+        candidate["objective_implementation"]["environment"]["FLOATER_PRUNING_MAX_COLOR_DISTANCE"] = "0.18"
+        candidate["objective_implementation"]["training_config"]["floater_pruning_max_color_distance"] = 0.18
+
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=hard_output_cap_visual_fidelity_quality_regression_attribution(),
+            candidate_objective=candidate,
+            max_estimated_usd=2.0,
+        )
+
+        gate = report["candidate_objective_gate"]
+        self.assertEqual(gate["decision"], "paid_retry_allowed")
+        self.assertEqual(gate["block_reasons"], [])
+        self.assertEqual(gate["hardcap_quality_repair_implementation"]["environment"]["FLOATER_PRUNING_MAX_COLOR_DISTANCE"], "0.18")
 
 
 if __name__ == "__main__":

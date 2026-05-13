@@ -1,0 +1,96 @@
+{
+    "ProcessingInputs": [
+        {
+            "InputName": "merge-plan",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-g4dn-20260513/inputs/merge-plan/merge_plan.json",
+                "LocalPath": "/opt/ml/processing/input/merge-plan",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated"
+            }
+        },
+        {
+            "InputName": "tile-selection",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-g4dn-20260513/inputs/tile-selection",
+                "LocalPath": "/opt/ml/processing/input/tile-selection",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated"
+            }
+        },
+        {
+            "InputName": "artifact-00",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4visualpair-20260513-1778657808/3dgs/tiles/tile_04/md1-r4visualpair-20260513-1778657808-tile-04/output/model.tar.gz",
+                "LocalPath": "/opt/ml/processing/input/artifacts/artifact-00",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated"
+            }
+        },
+        {
+            "InputName": "artifact-01",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/tiles/tile_10/md1-r4t10vfdc4-1778676812-1778676812-tile-10/output/model.tar.gz",
+                "LocalPath": "/opt/ml/processing/input/artifacts/artifact-01",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated"
+            }
+        }
+    ],
+    "ProcessingOutputConfig": {
+        "Outputs": [
+            {
+                "OutputName": "artifact",
+                "S3Output": {
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-g4dn-20260513/output/artifact",
+                    "LocalPath": "/opt/ml/processing/output/artifact",
+                    "S3UploadMode": "EndOfJob"
+                },
+                "AppManaged": false
+            }
+        ]
+    },
+    "ProcessingJobName": "md1-r4t04vis-t10cap-bg10-r1-20260513",
+    "ProcessingResources": {
+        "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 120
+        }
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 3600
+    },
+    "AppSpecification": {
+        "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent90742618md1geometryconsistency",
+        "ContainerEntrypoint": [
+            "python3",
+            "/opt/ml/code/run_tiled_merge_packaging.py"
+        ]
+    },
+    "Environment": {
+        "BACKGROUND_SOURCE_TILE_ID": "tile_10",
+        "MERGE_MODE": "support_weighted_overlap",
+        "MERGE_PLAN_PATH": "/opt/ml/processing/input/merge-plan/merge_plan.json",
+        "MERGE_PROTECTED_OVERLAP_MODE": "retain_all",
+        "MERGE_PROTECTED_OVERLAP_TILE_IDS": "tile_04,tile_10",
+        "OUTPUT_DIR": "/opt/ml/processing/output/artifact",
+        "TILE_MANIFEST_PATH": "/opt/ml/processing/input/tile-selection/3dgs_tile_manifest.json",
+        "VIEW_BUCKET_MANIFEST_PATH": "/opt/ml/processing/input/tile-selection/3dgs_view_buckets.json"
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-r4t04vis-t10cap-bg10-r1-20260513",
+    "ProcessingJobStatus": "Completed",
+    "ProcessingEndTime": "2026-05-13T09:27:39.285000-06:00",
+    "ProcessingStartTime": "2026-05-13T09:21:13.527000-06:00",
+    "LastModifiedTime": "2026-05-13T09:28:04.249000-06:00",
+    "CreationTime": "2026-05-13T09:20:31.944000-06:00"
+}

@@ -1,0 +1,13 @@
+{
+  "decision": "visual_qa_ready",
+  "block_reasons": [],
+  "warnings": [
+    "ai_visual_review_not_provided"
+  ],
+  "view_count": 12,
+  "panel_count": 12,
+  "panel_ratio": 1.0,
+  "missing_assets": [],
+  "missing_files": [],
+  "ai_review_summary": null
+}
