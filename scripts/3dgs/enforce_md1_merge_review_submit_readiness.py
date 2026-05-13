@@ -10,6 +10,9 @@ from pathlib import Path
 from typing import Any
 
 
+SUPPORTED_PROTECTED_OVERLAP_MODES = {"", "none", "off", "retain_all"}
+
+
 def load_json(path: str) -> dict[str, Any]:
     payload = json.loads(Path(path).read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
@@ -73,6 +76,19 @@ def payload_input_names(payload: dict[str, Any]) -> list[str]:
     return ordered_unique(
         [str(item.get("InputName") or "") for item in inputs if isinstance(item, dict) and item.get("InputName")]
     )
+
+
+def payload_environment(payload: dict[str, Any]) -> dict[str, Any]:
+    value = payload.get("Environment")
+    return value if isinstance(value, dict) else {}
+
+
+def unsupported_payload_merge_env(payload: dict[str, Any]) -> list[str]:
+    environment = payload_environment(payload)
+    mode = str(environment.get("MERGE_PROTECTED_OVERLAP_MODE") or "").strip().lower()
+    if mode and mode not in SUPPORTED_PROTECTED_OVERLAP_MODES:
+        return [f"MERGE_PROTECTED_OVERLAP_MODE={mode}"]
+    return []
 
 
 def merge_plan_tile_ids(merge_plan: dict[str, Any]) -> list[str]:
@@ -180,6 +196,7 @@ def evaluate_gate(
     merge = nested_dict(readiness_plan, "merge_plan")
     merge_estimated = numeric_value(merge, "max_estimated_usd")
     merge_runtime = numeric_value(merge, "max_runtime_seconds")
+    unsupported_env = unsupported_payload_merge_env(payload)
 
     if git_head != exact_head:
         block_reasons.append("git_head_not_exact_head")
@@ -208,6 +225,8 @@ def evaluate_gate(
         block_reasons.append("payload_missing_merge_plan_input")
     if "tile-selection" not in payload_input_names(payload):
         block_reasons.append("payload_missing_tile_selection_input")
+    if unsupported_env:
+        block_reasons.append("payload_unsupported_merge_environment")
     if runtime is None:
         block_reasons.append("payload_runtime_missing")
     elif runtime > max_merge_runtime_seconds:
@@ -247,6 +266,7 @@ def evaluate_gate(
         "merge_plan_tile_ids": plan_tiles,
         "merge_review_gate_decision": merge_review_gate.get("decision"),
         "payload_input_names": payload_input_names(payload),
+        "payload_unsupported_merge_environment": unsupported_env,
         "payload_max_runtime_seconds": runtime,
         "input_materialization": materialized_inputs(readiness_plan),
         "max_merge_estimated_usd": max_merge_estimated_usd,

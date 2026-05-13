@@ -10,6 +10,7 @@ from typing import Sequence
 
 
 MERGEABLE_STAGE_TYPES = {"train", "cached_tile", "context_density_tile"}
+SUPPORTED_PROTECTED_OVERLAP_MODES = {"", "none", "off", "retain_all"}
 
 
 def load_json(path: str) -> dict:
@@ -18,6 +19,16 @@ def load_json(path: str) -> dict:
 
 def normalize_s3_prefix(uri: str) -> str:
     return uri.rstrip("/")
+
+
+def normalize_protected_overlap_mode(mode: str) -> str:
+    normalized = mode.strip().lower()
+    if normalized not in SUPPORTED_PROTECTED_OVERLAP_MODES:
+        raise ValueError(
+            "unsupported --merge-protected-overlap-mode "
+            f"{mode!r}; expected one of retain_all, none, off"
+        )
+    return "" if normalized in {"", "none", "off"} else normalized
 
 
 def stage_artifact_uri(stage: dict) -> str:
@@ -131,8 +142,9 @@ def create_tiled_merge_processing_payload(
         environment["BACKGROUND_SOURCE_TILE_ID"] = background_source_tile_id.strip()
     if protected_overlap_tile_ids.strip():
         environment["MERGE_PROTECTED_OVERLAP_TILE_IDS"] = protected_overlap_tile_ids.strip()
-    if protected_overlap_mode.strip():
-        environment["MERGE_PROTECTED_OVERLAP_MODE"] = protected_overlap_mode.strip()
+    normalized_protected_overlap_mode = normalize_protected_overlap_mode(protected_overlap_mode)
+    if normalized_protected_overlap_mode:
+        environment["MERGE_PROTECTED_OVERLAP_MODE"] = normalized_protected_overlap_mode
 
     return {
         "ProcessingJobName": job_name,

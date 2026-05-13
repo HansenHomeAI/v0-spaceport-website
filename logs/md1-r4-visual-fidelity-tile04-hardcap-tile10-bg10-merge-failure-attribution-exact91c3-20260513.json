@@ -1,0 +1,27 @@
+{
+  "billable_seconds": 285,
+  "checked_at": "2026-05-13T15:12:00Z",
+  "cloudwatch_log_events_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-cloudwatch-events-exact91c3-20260513.json",
+  "describe_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-describe-exact91c3-20260513.json",
+  "estimated_usd": 0.0583,
+  "failure_reason": "AlgorithmError: , exit code: 1",
+  "guard_fix": [
+    "scripts/3dgs/plan_tiled_merge_processing.py rejects unsupported --merge-protected-overlap-mode before payload emission",
+    "scripts/3dgs/enforce_md1_merge_review_submit_readiness.py blocks unsupported payload merge environment before paid submit"
+  ],
+  "no_full14_lod_or_promotion": true,
+  "paid_retry_allowed_now": false,
+  "paid_retry_requirements": [
+    "commit and push guard plus retry payload evidence",
+    "watch exact-head workflows green",
+    "verify AWS idle",
+    "rerun merge/review submit readiness with retry1 payload on exact green head"
+  ],
+  "processing_job_name": "md1-r4t04vis-t10cap-bg10-20260513",
+  "retry_job_name": "md1-r4t04vis-t10cap-bg10-r1-20260513",
+  "retry_mode": "retain_all",
+  "retry_payload_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-remote-merge-g4dn-payload-retry1-dryrun-20260513.json",
+  "root_cause": "unsupported_payload_merge_environment",
+  "root_cause_detail": "Payload set MERGE_PROTECTED_OVERLAP_MODE=boundary, but infrastructure/containers/3dgs/tile_pipeline.py accepts only retain_all/off for protected overlap.",
+  "status": "Failed"
+}

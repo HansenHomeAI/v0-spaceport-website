@@ -90,6 +90,29 @@ class TiledMergeProcessingPlannerTests(unittest.TestCase):
         self.assertEqual(payload["Environment"]["MERGE_PROTECTED_OVERLAP_TILE_IDS"], "tile_04,tile_10")
         self.assertEqual(payload["Environment"]["MERGE_PROTECTED_OVERLAP_MODE"], "retain_all")
 
+    def test_create_tiled_merge_processing_payload_rejects_unsupported_protected_overlap_mode(self):
+        with self.assertRaises(ValueError) as context:
+            planner.create_tiled_merge_processing_payload(
+                branch_name="agent-branch",
+                job_name="merge-job",
+                image_uri="123.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:latest",
+                role_arn="arn:aws:iam::123:role/test",
+                output_s3_uri="s3://bucket/output",
+                merge_plan_s3_uri="s3://bucket/merge-plan",
+                tile_selection_s3_uri="s3://bucket/tile-selection",
+                artifact_inputs=[
+                    {"artifact_input_name": "artifact-00", "artifact_uri": "s3://bucket/a/model.tar.gz"}
+                ],
+                merge_mode="support_weighted_overlap",
+                protected_overlap_tile_ids="tile_04,tile_10",
+                protected_overlap_mode="boundary",
+                instance_type="ml.g5.2xlarge",
+                volume_size_gb=80,
+                max_runtime_seconds=3600,
+            )
+
+        self.assertIn("unsupported --merge-protected-overlap-mode", str(context.exception))
+
     def test_packager_resets_output_mount_contents_without_removing_mount(self):
         with tempfile.TemporaryDirectory() as tmp:
             output_root = Path(tmp) / "artifact"

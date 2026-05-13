@@ -1,0 +1,14 @@
+{
+    "logStreams": [
+        {
+            "logStreamName": "md1-r4t04vis-t10cap-bg10-20260513/algo-1-1778684561",
+            "creationTime": 1778684831185,
+            "firstEventTimestamp": 1778684825000,
+            "lastEventTimestamp": 1778684825000,
+            "lastIngestionTime": 1778684831199,
+            "uploadSequenceToken": "49039859671986116775145293145430515400178902711770696153",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:md1-r4t04vis-t10cap-bg10-20260513/algo-1-1778684561",
+            "storedBytes": 0
+        }
+    ]
+}

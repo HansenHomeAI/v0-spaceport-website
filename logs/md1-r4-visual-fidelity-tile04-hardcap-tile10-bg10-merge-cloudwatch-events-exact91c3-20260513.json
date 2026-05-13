@@ -1,0 +1,26 @@
+{
+    "events": [
+        {
+            "timestamp": 1778684825000,
+            "message": "✅ sitecustomize: filtered deprecated CUDA arch flags (TORCH_CUDA_ARCH_LIST=7.0;8.0;8.6+PTX)",
+            "ingestionTime": 1778684831199
+        },
+        {
+            "timestamp": 1778684825000,
+            "message": "✅ sitecustomize: patched nerfstudio PIL conversion",
+            "ingestionTime": 1778684831199
+        },
+        {
+            "timestamp": 1778684830008,
+            "message": "Traceback (most recent call last):\n  File \"/opt/ml/code/run_tiled_merge_packaging.py\", line 286, in <module>\n    raise SystemExit(main())\n  File \"/opt/ml/code/run_tiled_merge_packaging.py\", line 255, in main\n    merge_report = merge_tile_outputs(\n  File \"/opt/ml/code/tile_pipeline.py\", line 1808, in merge_tile_outputs\n    raise ValueError(f\"Unsupported protected_overlap_mode={protected_overlap_mode}\")",
+            "ingestionTime": 1778684835232
+        },
+        {
+            "timestamp": 1778684830008,
+            "message": "ValueError: Unsupported protected_overlap_mode=boundary",
+            "ingestionTime": 1778684835232
+        }
+    ],
+    "nextForwardToken": "f/39665997182500163636035068002114928652997001238883598337/s",
+    "nextBackwardToken": "b/39665997070818031681793707304428647840172873580723765248/s"
+}

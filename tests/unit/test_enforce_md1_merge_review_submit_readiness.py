@@ -146,6 +146,14 @@ class EnforceMd1MergeReviewSubmitReadinessTests(unittest.TestCase):
         self.assertEqual(summary["decision"], "merge_review_submit_blocked")
         self.assertIn("payload_runtime_above_cap", summary["block_reasons"])
 
+    def test_blocks_unsupported_merge_environment(self):
+        processing_payload = payload()
+        processing_payload["Environment"] = {"MERGE_PROTECTED_OVERLAP_MODE": "boundary"}
+        summary = allowed_summary(payload=processing_payload)
+
+        self.assertEqual(summary["decision"], "merge_review_submit_blocked")
+        self.assertIn("payload_unsupported_merge_environment", summary["block_reasons"])
+
     def test_blocks_missing_materialized_inputs(self):
         plan = readiness_plan()
         plan["input_materialization"]["tile_manifest_available"] = False
