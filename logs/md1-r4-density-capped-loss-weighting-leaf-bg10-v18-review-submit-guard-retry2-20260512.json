@@ -1,0 +1,72 @@
+{
+  "checked_at": "2026-05-13T00:01:20.453504+00:00",
+  "decision": "paid_review_retry_allowed_once_after_alias_fix",
+  "max_estimated_usd": 0.5,
+  "max_runtime_seconds": 1800,
+  "instance_type": "ml.g4dn.xlarge",
+  "volume_size_gb": 125,
+  "exact_head": "c27fbe995784c4a37b7f3649c270de243bfffc88",
+  "exact_head_github_workflows": {
+    "cdk_deploy": {
+      "run_id": 25766801621,
+      "conclusion": "success"
+    },
+    "ml_container_build": {
+      "run_id": 25766801616,
+      "conclusion": "success"
+    },
+    "codebuild": {
+      "id": "spaceport-ml-containers:1cf1c51c-5bcf-4977-b46d-e76bb9a7b04b",
+      "status": "SUCCEEDED"
+    }
+  },
+  "container": {
+    "repository": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs",
+    "tag": "agent90742618md1geometryconsistency",
+    "digest": "sha256:f41d4f12c308bda3fd61e9d49ecbc18a58486f5bfe4395b67a112186446d6b1d"
+  },
+  "aws_sagemaker_idle_state": {
+    "training_jobs_in_progress": [],
+    "processing_jobs_in_progress": []
+  },
+  "fix_gate": {
+    "commit": "c27fbe995784c4a37b7f3649c270de243bfffc88",
+    "fix": "frozen-* camera-set aliases resolve through auto smoke/full selection",
+    "tests": [
+      "python3 -m py_compile infrastructure/containers/3dgs/run_tiled_quality_review.py scripts/3dgs/monitor_3dgs_training_cost.py",
+      "python3 -m unittest tests.unit.test_tiled_quality_review tests.unit.test_3dgs_training_monitor",
+      "git diff --check"
+    ]
+  },
+  "density_guard": {
+    "leaf_tile_id": "tile_04",
+    "leaf_preflight_decision": "leaf_preflight_passed_cache_candidate",
+    "observed_splats": 984154,
+    "reference_splats": 956277,
+    "observed_ratio": 1.02915,
+    "hard_max_ratio": 1.35,
+    "density_cap_summary_required": true
+  },
+  "merge_preflight": {
+    "summary_json": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260512.json",
+    "decision": "preflight_passed_run_frozen_smoke_review",
+    "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-merge-g4dn-20260512/output/artifact/model.tar.gz",
+    "retained_gaussians": 8437595,
+    "source_gaussians": 8809362,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "background_source_tile_id": "tile_10"
+  },
+  "v18_comparison_plan": {
+    "baseline_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-9tile-canary-review-20260505/baselines/v18-smoke-p24",
+    "camera_set": "frozen-promotion-p24",
+    "max_images_per_bucket": 4,
+    "render_scale": 0.5,
+    "required_gates": [
+      "V18 non-regression",
+      "visual QA bundle/gate",
+      "viewer smoke before promotion"
+    ]
+  },
+  "allowed_action": "submit one bounded V18 smoke review only; no full14, no LOD, no promotion"
+}

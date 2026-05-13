@@ -1,0 +1,171 @@
+{
+  "checked_at": "2026-05-13T00:28:00Z",
+  "decision": "hold_paid_retry",
+  "density_capped_minus_reference_bucket_delta": {
+    "boundary": {
+      "lpips": 0.07264009118080139,
+      "psnr": -0.3660794812030641,
+      "ssim": -0.005880624055862427
+    },
+    "horizon": {
+      "lpips": 0.09649869799613953,
+      "psnr": -0.7839341166942368,
+      "ssim": -0.013720974326133728
+    },
+    "near_detail": {
+      "lpips": 0.062287867069244385,
+      "psnr": -0.8099468848893085,
+      "ssim": 0.016530081629753113
+    }
+  },
+  "density_capped_minus_reference_merge_delta": {
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "retained_gaussians": -93383,
+    "source_gaussians": -97286
+  },
+  "failed_hypotheses": [
+    {
+      "bucket_deltas_vs_v18": {
+        "boundary": {
+          "lpips": -0.0003056526184082031,
+          "psnr": 0.11537937981358581,
+          "ssim": 0.004023641347885132
+        },
+        "horizon": {
+          "lpips": 0.010201066732406616,
+          "psnr": -0.26549906527780465,
+          "ssim": -0.010892495512962341
+        },
+        "near_detail": {
+          "lpips": -0.04604899883270264,
+          "psnr": 0.5709904733354225,
+          "ssim": 0.0022834837436676025
+        }
+      },
+      "candidate": "tile10_density_v2_with_tile04_boundary_horizon_leaf",
+      "finding": "More tile_10 density did not help the boundary; it slightly worsened boundary PSNR/SSIM/LPIPS versus tile10 rollback while horizon stayed acceptable.",
+      "status": "failed_hypothesis_boundary_not_helpful"
+    },
+    {
+      "candidate": "protected_overlap_merge",
+      "finding": "Retaining 18104 extra tile_04 overlap splats changed merge density but produced zero frozen-camera metric gain.",
+      "status": "failed_hypothesis_no_render_metric_gain"
+    },
+    {
+      "bucket_deltas_vs_v18": {
+        "boundary": {
+          "lpips": -0.005315691232681274,
+          "psnr": 0.010892982651201422,
+          "ssim": -0.0019781887531280518
+        },
+        "horizon": {
+          "lpips": -0.0014438331127166748,
+          "psnr": -0.7868157535148654,
+          "ssim": -0.0036685913801193237
+        },
+        "near_detail": {
+          "lpips": -0.016674429178237915,
+          "psnr": 0.002160486271270301,
+          "ssim": 0.00010511279106140137
+        }
+      },
+      "candidate": "boundary_camera_repeat_weighting",
+      "finding": "Frame-repeat weighting worsened boundary PSNR/SSIM and reintroduced horizon PSNR regression; repeat-only weighting should remain blocked.",
+      "status": "failed_hypothesis_horizon_regression"
+    }
+  ],
+  "interpretation": [
+    "The density-capped tile_04 leaf passed splat-count guards, but the merged/reviewed model is substantially worse than the prior tile04 boundary+horizon bg10 reference on horizon and LPIPS.",
+    "The cap did not merely reduce redundant splats; it likely removed or reweighted appearance support needed for horizon/texture fidelity, or the loss-weighting objective moved color/texture away from V18.",
+    "Boundary still misses the required improvement and now has a large LPIPS regression, so this is not an acceptable trade for cost."
+  ],
+  "next_paid_objective_requirements": [
+    "Must beat the tile04 boundary+horizon bg10 reference, not just pass density guards.",
+    "Must explicitly target horizon PSNR/SSIM/LPIPS and boundary LPIPS/no-required-improvement together.",
+    "Must preserve selected camera coverage and keep tile_04 splats within the 0.8x-1.35x guard.",
+    "Must include a no-spend dry-run, exact-head workflow gate, AWS idle check, max_estimated_usd, max_runtime_seconds, and V18 comparison plan before submit."
+  ],
+  "recommended_no_spend_next_step": "Design a conservative objective that starts from the tile04 boundary+horizon leaf settings, avoids frame-repeat-only and hard density-cap-only changes, and uses camera/bucket validation to protect horizon before another one-tile proof.",
+  "reference_candidate": {
+    "bucket_deltas_vs_v18": {
+      "boundary": {
+        "lpips": -0.002215772867202759,
+        "psnr": 0.13065759577069258,
+        "ssim": 0.00525432825088501
+      },
+      "horizon": {
+        "lpips": 0.010840654373168945,
+        "psnr": -0.299692841819045,
+        "ssim": -0.010585620999336243
+      },
+      "near_detail": {
+        "lpips": -0.045768529176712036,
+        "psnr": 0.5776066932227408,
+        "ssim": 0.0029085129499435425
+      }
+    },
+    "candidate": "tile04_boundary_horizon_leaf_plus_tile10_rollback_bg10",
+    "evidence": "md1_r4_tile04_boundary_horizon_leaf_bg10_merge_review_20260507",
+    "merge": {
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "retained_gaussians": 8530978,
+      "source_gaussians": 8906648
+    },
+    "promotion_block_reasons": [
+      "boundary_no_required_improvement"
+    ],
+    "status": "best_current_quality_reference_non_promotable"
+  },
+  "tested_candidate": {
+    "bucket_deltas_vs_v18": {
+      "boundary": {
+        "lpips": 0.07042431831359863,
+        "psnr": -0.23542188543237152,
+        "ssim": -0.000626295804977417
+      },
+      "horizon": {
+        "lpips": 0.10733935236930847,
+        "psnr": -1.0836269585132818,
+        "ssim": -0.02430659532546997
+      },
+      "near_detail": {
+        "lpips": 0.01651933789253235,
+        "psnr": -0.23234019166656772,
+        "ssim": 0.019438594579696655
+      }
+    },
+    "candidate": "density_capped_loss_weighting_tile04_plus_tile10_rollback_bg10",
+    "evidence": "md1_r4_density_capped_loss_weighting_review_retry2_20260512",
+    "leaf_gate": {
+      "density_cap_enabled": true,
+      "observed_reference_ratio": 1.0291515951967891,
+      "reference_splat_count": 956277,
+      "selected_image_count": 128,
+      "splat_vertex_count": 984154,
+      "tile_id": "tile_04"
+    },
+    "merge": {
+      "fallback_tile_count": 0,
+      "retain_all_tile_count": 0,
+      "retained_gaussians": 8437595,
+      "source_gaussians": 8809362
+    },
+    "promotion_block_reasons": [
+      "boundary_lpips_regression",
+      "boundary_no_required_improvement",
+      "horizon_psnr_regression",
+      "horizon_ssim_regression",
+      "horizon_lpips_regression"
+    ],
+    "status": "rendered_quality_blocked",
+    "v18_non_regression_block_reasons": [
+      "near_detail_v18_median_lpips_regression",
+      "boundary_v18_median_lpips_regression",
+      "horizon_v18_median_psnr_regression",
+      "horizon_v18_median_ssim_regression",
+      "horizon_v18_median_lpips_regression"
+    ]
+  }
+}

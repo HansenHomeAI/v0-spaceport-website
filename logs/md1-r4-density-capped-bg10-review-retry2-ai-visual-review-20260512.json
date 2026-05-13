@@ -1,0 +1,49 @@
+{
+  "overall_status": "block",
+  "blocking_defects": [
+    "geometry_alignment",
+    "horizon_or_sky",
+    "texture_blur",
+    "color_or_exposure"
+  ],
+  "per_view_findings": [
+    {
+      "bucket": "boundary",
+      "image_name": "DJI_0067.JPG",
+      "severity": "blocking",
+      "finding": "Merged render is heavily smeared versus the input frame, with the road/terrain boundary losing usable detail."
+    },
+    {
+      "bucket": "boundary",
+      "image_name": "DJI_0068.JPG",
+      "severity": "blocking",
+      "finding": "Boundary panel shows broad purple/blue color shift and texture washout; this matches the LPIPS regression."
+    },
+    {
+      "bucket": "horizon",
+      "image_name": "DJI_0073.JPG",
+      "severity": "blocking",
+      "finding": "Horizon view is visually unstable: mountains and foreground are blurred together and sky/terrain separation is weak."
+    },
+    {
+      "bucket": "horizon",
+      "image_name": "DJI_0146.JPG",
+      "severity": "blocking",
+      "finding": "Long-range horizon detail is not production usable; the render has severe magenta color shift and low-frequency smearing."
+    },
+    {
+      "bucket": "near_detail",
+      "image_name": "DJI_0262.JPG",
+      "severity": "major",
+      "finding": "Near-detail geometry is present, but texture is soft and color shifted compared with the reference."
+    }
+  ],
+  "confidence": 0.88,
+  "recommended_next_action": "Stop promotion and paid retries for this candidate; do no-spend attribution on why density-capped tile_04 plus tile_10 rollback regressed horizon and LPIPS before proposing another objective.",
+  "evidence": {
+    "review_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-density-capped-loss-weighting-leaf-bg10-review-v18colmap-retry2-20260512/outputs/r4-t04dcap-bg10-v18colmap-smoke-p24-retry2/md1-r1-r4-t04dcap-bg10-v18colmap-smoke-p24-retry2-1778630491-qu/output/model.tar.gz",
+    "contact_sheet_local_path": "/tmp/md1_retry2_visual_panels_contact.png",
+    "visual_bundle_local_path": "/tmp/md1_retry2_visual_qa_bundle",
+    "basis": "AI visual inspection of the generated side-by-side review panels plus V18 comparison metrics."
+  }
+}

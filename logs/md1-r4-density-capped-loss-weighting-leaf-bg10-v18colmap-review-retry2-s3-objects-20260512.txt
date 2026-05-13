@@ -1,0 +1,5 @@
+2026-05-12 18:15:14  204598445 manual-validations/md1-cost-reduction-r4-density-capped-loss-weighting-leaf-bg10-review-v18colmap-retry2-20260512/outputs/r4-t04dcap-bg10-v18colmap-smoke-p24-retry2/md1-r1-r4-t04dcap-bg10-v18colmap-smoke-p24-retry2-1778630491-qu/output/model.tar.gz
+2026-05-12 18:01:32       1396 manual-validations/md1-cost-reduction-r4-density-capped-loss-weighting-leaf-bg10-review-v18colmap-retry2-20260512/review-input/review_camera_manifest.json
+
+Total Objects: 2
+   Total Size: 204599841

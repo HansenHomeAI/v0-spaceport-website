@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "Density-capped bg10 merge artifact passed streaming preflight, but V18 non-regression/visual QA/viewer smoke are still blocked because the exact-head V18 retry failed before rendering on a camera-set alias parser gap. Need no-spend frozen-* camera set alias fix built before any retry.",
+  "blocked_promotion_reason": "Density-capped bg10 merge passed structural preflight and rendered review outputs, but V18 non-regression blocks on near_detail/boundary/horizon LPIPS plus horizon PSNR/SSIM; AI visual QA blocks on geometry alignment, horizon/sky, texture blur, and color/exposure defects. No-spend attribution shows density-capped retry2 is worse than the prior tile04 boundary+horizon bg10 reference by boundary LPIPS +0.0726 and horizon PSNR -0.7839 / LPIPS +0.0965.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "40224bc876238c229ba93334ceaf9143d97ca30a pushed; exact-head CDK Deploy 25757283000 green before no-training merge/review attempt",
-  "current_exact_head_gate_status": "exact-head 40224bc876238c229ba93334ceaf9143d97ca30a green on CDK Deploy 25757283000; container digest from cbbda33d remains sha256:c5bdfdd8ecd1d97def34421db8c529094d56c99d0e8f0d804ba4bd93d37214c6",
-  "current_live_compute_status": "Verified after stopped review: no intended job from this branch remains running; review job md1-r1-r4-t04dcap-bg10-v18colmap-smoke-p24-1778620002-quality is Stopped. AWS is not idle because external MD1 training job md1-2leaf-3dgs-cpu-2114-1778620443 is InProgress on ml.g5.2xlarge from image tag agent73948216sfmproductionspine.",
-  "current_rung": "R4_density_capped_bg10_merge_preflight_passed_review_stopped_no_spend_fix_required",
+  "current_branch_head": "c27fbe995784c4a37b7f3649c270de243bfffc88",
+  "current_exact_head_gate_status": "exact-head c27fbe995784c4a37b7f3649c270de243bfffc88 green on CDK Deploy 25766801621 and ML Container Build 25766801616 before bounded V18 retry2",
+  "current_live_compute_status": "No SageMaker training jobs or processing jobs are InProgress after retry2; review job completed and failed quality gates.",
+  "current_rung": "R4_density_capped_bg10_merge_preflight_passed_review_rendered_but_quality_blocked",
   "evidence_events": [
     {
       "billable_seconds": 412,
@@ -954,7 +954,7 @@
     "local_status_update_pending_commit": true,
     "ml_container_build": "not_triggered_for_non_container_status_commit"
   },
-  "last_updated": "2026-05-12T21:27:49Z",
+  "last_updated": "2026-05-13T00:28:00Z",
   "latest_boundary_camera_weighting_candidate_status": {
     "checked_at": "2026-05-07T15:39:26Z",
     "fullscene_dryrun_json": "logs/md1-cost-reduction-r4-boundary-camera-weighting-leaf-tile10-rollback-fullscene-summary-dryrun-20260507.json",
@@ -1025,33 +1025,30 @@
   "latest_exact_head_workflows": {
     "cdk_deploy": {
       "conclusion": "success",
-      "run_id": 25763390862
+      "run_id": 25766801621
     },
     "codebuild": {
-      "id": "spaceport-ml-containers:d35af21a-09fc-4820-a23b-83e0d52b6692",
+      "id": "spaceport-ml-containers:1cf1c51c-5bcf-4977-b46d-e76bb9a7b04b",
       "status": "SUCCEEDED"
     },
-    "head": "f972a35ab6e23b65525aaf7ae52726b2bf6b81ec",
+    "head": "c27fbe995784c4a37b7f3649c270de243bfffc88",
     "image": {
-      "digest": "sha256:a12644114a0ea44a6df0b7da9e53009fcb4e45cdbb9699515d4bb647f32ddd30",
+      "digest": "sha256:f41d4f12c308bda3fd61e9d49ecbc18a58486f5bfe4395b67a112186446d6b1d",
       "tag": "agent90742618md1geometryconsistency"
     },
     "ml_container_build": {
       "conclusion": "success",
-      "run_id": 25763391114
+      "run_id": 25766801616
     }
   },
   "latest_leaf_submit_readiness_gate_status": "density-capped loss-weighting tile_04 leaf was submitted after exact-head cbbda33d gates and fresh AWS idle; job completed under cap and post-leaf preflight/gate passed, so merge/review is now allowed only for the generated no-training bg10 merge plan.",
   "latest_live_compute_status": {
-    "checked_at": "2026-05-12T21:30:14Z",
-    "md1_processing_jobs_in_progress": [],
-    "md1_training_jobs_in_progress": [
-      "md1-2leaf-3dgs-cpu-2114-1778620443"
-    ],
-    "note": "external active job; do not submit retry until idle"
+    "checked_at": "2026-05-13T00:22:00Z",
+    "processing_jobs_in_progress": [],
+    "training_jobs_in_progress": []
   },
   "latest_lod_production_readiness_status": "logs/md1-r4-tile10-rollback-lod-production-readiness-20260506.json reports viewer_ready_quality_blocked; --require-promotion-ready now exits 3 and wrote logs/md1-r4-tile10-rollback-lod-production-readiness-promotion-required-20260506.json, preventing promotion callers from accepting viewer readiness alone.",
-  "latest_md1_cost_reduction_status": "density_capped_bg10_merge_preflight_passed_review_retry_failed_alias_fix_uncommitted",
+  "latest_md1_cost_reduction_status": "density_capped_bg10_review_retry2_quality_blocked_attribution_holds_paid_retry",
   "latest_md1_live_compute_status": "2026-05-12T19:12Z no MD1 SageMaker training or processing jobs InProgress after density-capped tile_04 leaf gate passed",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
@@ -1062,9 +1059,9 @@
     "pages_run_id": 25107446761
   },
   "latest_quality_strategy_gate_status": "tile04_boundary_horizon_leaf_dryrun_quality_gate_allowed; boundary_only_previous_dryrun_blocked_missing_horizon",
-  "latest_review_comparison_path": "logs/audit/md1-1k-full-r2/r1_review_outputs/r4-t04cw-bg10-v18colmap-smoke-p24/review_comparison.json",
-  "latest_review_status": "No promotable review yet. The bounded V18 smoke review was stopped at about $0.202 after monitor evidence and logs showed it was still in COLMAP/ns-process-data conversion before render outputs.",
-  "latest_sagemaker_evidence_spend_total_usd": 14.6527,
+  "latest_review_comparison_path": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-density-capped-loss-weighting-leaf-bg10-review-v18colmap-retry2-20260512/outputs/r4-t04dcap-bg10-v18colmap-smoke-p24-retry2/md1-r1-r4-t04dcap-bg10-v18colmap-smoke-p24-retry2-1778630491-qu/output/model.tar.gz::review_comparison.json",
+  "latest_review_status": "Retry2 rendered the frozen p24 cameras, but V18 non-regression and AI visual QA are blocked; no promotion/viewer smoke/full14 is eligible.",
+  "latest_sagemaker_evidence_spend_total_usd": 14.8046,
   "latest_tile04_leaf_reuse_merge_dryrun_status": "density-capped tile_04 leaf passed post-leaf preflight/gate with 984154 splats, 128 images, and filtered scaffold; no-training bg10 tile_10 rollback merge payload dry-run is generated and merge/review gate allows only that next step.",
   "latest_training_cost_reduction_status": "Evidence spend now about $14.067. The over-dense tile_04 loss-weighting failure was fixed with a density-capped leaf that passed the splat guard at 1.029x reference in 2508 billable seconds/about $0.513. No full 14-tile training, paid merge/review, LOD packaging, or promotion launched; next step is bounded no-training merge/review plus V18/visual QA gates.",
   "live_compute_status": "No SageMaker training jobs are InProgress. Exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. Tile_13 hard proof is complete/preflighted/cached; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
@@ -3947,6 +3944,33 @@
     "review_summary_json": "logs/md1-cost-reduction-r4-context-density-all9-v18-review-20260505.json",
     "status": "completed_blocked_quality"
   },
+  "md1_r4_density_capped_bg10_retry2_attribution_20260512": {
+    "attribution_json": "logs/md1-r4-density-capped-bg10-review-retry2-attribution-20260512.json",
+    "checked_at": "2026-05-13T00:28:00Z",
+    "density_capped_minus_reference_bucket_delta": {
+      "boundary": {
+        "lpips": 0.07264009118080139,
+        "psnr": -0.3660794812030641,
+        "ssim": -0.005880624055862427
+      },
+      "horizon": {
+        "lpips": 0.09649869799613953,
+        "psnr": -0.7839341166942368,
+        "ssim": -0.013720974326133728
+      },
+      "near_detail": {
+        "lpips": 0.062287867069244385,
+        "psnr": -0.8099468848893085,
+        "ssim": 0.016530081629753113
+      }
+    },
+    "failed_hypothesis": "density_capped_loss_weighting_tile04_plus_tile10_rollback_bg10",
+    "full_14tile_training_launched": false,
+    "lod_or_promotion_launched": false,
+    "next_required_action": "no-spend conservative objective design; must protect horizon and beat the tile04 boundary+horizon bg10 reference before any paid proof",
+    "reference_candidate": "tile04_boundary_horizon_leaf_plus_tile10_rollback_bg10",
+    "status": "hold_paid_retry_density_cap_hypothesis_failed"
+  },
   "md1_r4_density_capped_loss_weighting_leaf_pass_20260512": {
     "checked_at": "2026-05-12T19:19:13Z",
     "checkpoint_evidence": {
@@ -4101,6 +4125,117 @@
       "python3 -m json.tool logs/md1-r4-density-capped-loss-weighting-merge-review-gate-blocked-20260512.json",
       "git diff --check"
     ]
+  },
+  "md1_r4_density_capped_loss_weighting_review_retry2_20260512": {
+    "camera_coverage_status": "ok",
+    "checked_at": "2026-05-13T00:22:00Z",
+    "exact_head_gates": {
+      "cdk_deploy": {
+        "conclusion": "success",
+        "run_id": 25766801621
+      },
+      "codebuild": {
+        "id": "spaceport-ml-containers:1cf1c51c-5bcf-4977-b46d-e76bb9a7b04b",
+        "status": "SUCCEEDED"
+      },
+      "image": {
+        "digest": "sha256:f41d4f12c308bda3fd61e9d49ecbc18a58486f5bfe4395b67a112186446d6b1d",
+        "tag": "agent90742618md1geometryconsistency"
+      },
+      "ml_container_build": {
+        "conclusion": "success",
+        "run_id": 25766801616
+      }
+    },
+    "full_14tile_training_launched": false,
+    "live_compute_after": {
+      "md1_processing_jobs_in_progress": [],
+      "md1_training_jobs_in_progress": []
+    },
+    "lod_or_promotion_launched": false,
+    "next_required_action": "no-spend attribution comparing prior tile_04 boundary+horizon bg10, camera-weighted bg10, and density-capped bg10 before any new paid objective",
+    "preconversion_selection": {
+      "enabled": true,
+      "evidence": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry2-cloudwatch-tail-20260512.txt",
+      "retained_sparse_point_count": 31382,
+      "selected_image_count": 12,
+      "source_image_count": 2157
+    },
+    "promotion_decision": {
+      "block_reasons": [
+        "boundary_lpips_regression",
+        "boundary_no_required_improvement",
+        "horizon_psnr_regression",
+        "horizon_ssim_regression",
+        "horizon_lpips_regression"
+      ],
+      "status": "blocked"
+    },
+    "review_outputs": {
+      "ai_visual_review": "logs/md1-r4-density-capped-bg10-review-retry2-ai-visual-review-20260512.json",
+      "describe_json": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry2-describe-20260512.json",
+      "s3_objects": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry2-s3-objects-20260512.txt",
+      "summary_json": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry2-20260512.json",
+      "visual_qa_extract": "logs/md1-r4-density-capped-bg10-review-retry2-visual-qa-extract-20260512.json",
+      "visual_qa_gate": "logs/md1-r4-density-capped-bg10-review-retry2-visual-qa-gate-20260512.json"
+    },
+    "source_commit_head": "c27fbe995784c4a37b7f3649c270de243bfffc88",
+    "status": "review_rendered_quality_blocked_stop_paid_compute",
+    "submit_guard_json": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18-review-submit-guard-retry2-20260512.json",
+    "training_job": {
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-density-capped-loss-weighting-leaf-bg10-review-v18colmap-retry2-20260512/outputs/r4-t04dcap-bg10-v18colmap-smoke-p24-retry2/md1-r1-r4-t04dcap-bg10-v18colmap-smoke-p24-retry2-1778630491-qu/output/model.tar.gz",
+      "billable_time_seconds": 743,
+      "estimated_usd": 0.1519,
+      "instance_type": "ml.g4dn.xlarge",
+      "max_estimated_usd": 0.5,
+      "max_runtime_seconds": 1800,
+      "name": "md1-r1-r4-t04dcap-bg10-v18colmap-smoke-p24-retry2-1778630491-qu",
+      "status": "Completed"
+    },
+    "v18_non_regression_decision": {
+      "block_reasons": [
+        "near_detail_v18_median_lpips_regression",
+        "boundary_v18_median_lpips_regression",
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_median_ssim_regression",
+        "horizon_v18_median_lpips_regression",
+        "near_detail_v18_single_camera_lpips_regression",
+        "boundary_v18_single_camera_lpips_regression",
+        "horizon_v18_single_camera_lpips_regression",
+        "horizon_v18_single_camera_psnr_regression"
+      ],
+      "bucket_deltas": {
+        "boundary": {
+          "lpips": 0.07042431831359863,
+          "psnr": -0.23542188543237152,
+          "ssim": -0.000626295804977417
+        },
+        "horizon": {
+          "lpips": 0.10733935236930847,
+          "psnr": -1.0836269585132818,
+          "ssim": -0.02430659532546997
+        },
+        "near_detail": {
+          "lpips": 0.01651933789253235,
+          "psnr": -0.23234019166656772,
+          "ssim": 0.019438594579696655
+        }
+      },
+      "status": "blocked"
+    },
+    "visual_qa_gate": {
+      "ai_confidence": 0.88,
+      "block_reasons": [
+        "ai_visual_review_blocking_defects",
+        "ai_visual_review_blocking_view_findings",
+        "ai_visual_review_status_block"
+      ],
+      "decision": "visual_qa_blocked",
+      "missing_assets": 0,
+      "missing_files": 0,
+      "panel_count": 12,
+      "view_count": 12
+    }
   },
   "md1_r4_density_context_attribution_20260505": {
     "analysis_path": "logs/md1-cost-reduction-r4-density-context-attribution-20260505.json",
@@ -8608,7 +8743,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Commit/push the no-spend frozen camera-set alias fix plus failed retry evidence, watch exact-head CDK + ML container build, then rerun at most one bounded V18 smoke review only after AWS idle and an updated submit guard.",
+  "next_unblocked_step": "Commit/push retry2 evidence/status/attribution, then design a conservative no-spend objective that starts from the tile04 boundary+horizon leaf reference, avoids repeat-only and hard density-cap-only changes, protects horizon metrics, and requires a fresh dry-run/objective gate before any new paid proof. Do not launch full14/LOD/promotion.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -14529,7 +14664,7 @@
     },
     "source_model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz"
   },
-  "root_cause_classification": "production_training_cost_serial_tiles_unbounded_image_count_missing_cache_reuse_and_context_density_quality_gap",
+  "root_cause_classification": "production_training_cost_serial_tiles_unbounded_image_count_missing_cache_reuse_quality_regression_after_density_capped_tile04_candidate",
   "rung": "R5_v16_photometric_foreground_diagnosis",
   "support_statistics": {
     "candidate_pair_count": 5,

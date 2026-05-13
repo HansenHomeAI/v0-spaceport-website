@@ -1,0 +1,139 @@
+{
+    "TrainingJobName": "md1-r1-r4-t04dcap-bg10-v18colmap-smoke-p24-retry2-1778630491-qu",
+    "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-r1-r4-t04dcap-bg10-v18colmap-smoke-p24-retry2-1778630491-qu",
+    "ModelArtifacts": {
+        "S3ModelArtifacts": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-density-capped-loss-weighting-leaf-bg10-review-v18colmap-retry2-20260512/outputs/r4-t04dcap-bg10-v18colmap-smoke-p24-retry2/md1-r1-r4-t04dcap-bg10-v18colmap-smoke-p24-retry2-1778630491-qu/output/model.tar.gz"
+    },
+    "TrainingJobStatus": "Completed",
+    "SecondaryStatus": "Completed",
+    "AlgorithmSpecification": {
+        "TrainingImage": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent90742618md1geometryconsistency",
+        "TrainingInputMode": "File",
+        "EnableSageMakerMetricsTimeSeries": false,
+        "ContainerEntrypoint": [
+            "python3",
+            "/opt/ml/code/run_tiled_quality_review.py"
+        ]
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "InputDataConfig": [
+        {
+            "ChannelName": "model",
+            "DataSource": {
+                "S3DataSource": {
+                    "S3DataType": "S3Prefix",
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-merge-g4dn-20260512/output/artifact/model.tar.gz",
+                    "S3DataDistributionType": "FullyReplicated"
+                }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None"
+        },
+        {
+            "ChannelName": "colmap",
+            "DataSource": {
+                "S3DataSource": {
+                    "S3DataType": "S3Prefix",
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap",
+                    "S3DataDistributionType": "FullyReplicated"
+                }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None"
+        },
+        {
+            "ChannelName": "review-manifest",
+            "DataSource": {
+                "S3DataSource": {
+                    "S3DataType": "S3Prefix",
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-density-capped-loss-weighting-leaf-bg10-review-v18colmap-retry2-20260512/review-input",
+                    "S3DataDistributionType": "FullyReplicated"
+                }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None"
+        },
+        {
+            "ChannelName": "baseline-review",
+            "DataSource": {
+                "S3DataSource": {
+                    "S3DataType": "S3Prefix",
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-expanded-9tile-canary-review-20260505/baselines/v18-smoke-p24",
+                    "S3DataDistributionType": "FullyReplicated"
+                }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None"
+        }
+    ],
+    "OutputDataConfig": {
+        "KmsKeyId": "",
+        "S3OutputPath": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-density-capped-loss-weighting-leaf-bg10-review-v18colmap-retry2-20260512/outputs/r4-t04dcap-bg10-v18colmap-smoke-p24-retry2",
+        "CompressionType": "GZIP"
+    },
+    "ResourceConfig": {
+        "InstanceType": "ml.g4dn.xlarge",
+        "InstanceCount": 1,
+        "VolumeSizeInGB": 125
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 1800
+    },
+    "CreationTime": "2026-05-12T18:01:32.636000-06:00",
+    "TrainingStartTime": "2026-05-12T18:02:58.411000-06:00",
+    "TrainingEndTime": "2026-05-12T18:15:21.531000-06:00",
+    "LastModifiedTime": "2026-05-12T18:15:21.796000-06:00",
+    "SecondaryStatusTransitions": [
+        {
+            "Status": "Starting",
+            "StartTime": "2026-05-12T18:01:32.636000-06:00",
+            "EndTime": "2026-05-12T18:02:58.411000-06:00",
+            "StatusMessage": "Preparing the instances for training"
+        },
+        {
+            "Status": "Downloading",
+            "StartTime": "2026-05-12T18:02:58.411000-06:00",
+            "EndTime": "2026-05-12T18:09:07.387000-06:00",
+            "StatusMessage": "Downloading the training image"
+        },
+        {
+            "Status": "Training",
+            "StartTime": "2026-05-12T18:09:07.387000-06:00",
+            "EndTime": "2026-05-12T18:15:09.025000-06:00",
+            "StatusMessage": "Training image download completed. Training in progress."
+        },
+        {
+            "Status": "Uploading",
+            "StartTime": "2026-05-12T18:15:09.025000-06:00",
+            "EndTime": "2026-05-12T18:15:21.531000-06:00",
+            "StatusMessage": "Uploading generated training model"
+        },
+        {
+            "Status": "Completed",
+            "StartTime": "2026-05-12T18:15:21.531000-06:00",
+            "EndTime": "2026-05-12T18:15:21.531000-06:00",
+            "StatusMessage": "Training job completed"
+        }
+    ],
+    "EnableNetworkIsolation": false,
+    "EnableInterContainerTrafficEncryption": false,
+    "EnableManagedSpotTraining": false,
+    "TrainingTimeInSeconds": 743,
+    "BillableTimeInSeconds": 743,
+    "ProfilingStatus": "Disabled",
+    "Environment": {
+        "BASELINE_REVIEW_MANIFEST": "/opt/ml/input/data/baseline-review/quality_review_manifest.json",
+        "COLMAP_INPUT_DIR": "/opt/ml/input/data/colmap",
+        "FROZEN_REVIEW_CAMERA_MANIFEST": "/opt/ml/input/data/review-manifest/review_camera_manifest.json",
+        "MODEL_INPUT_DIR": "/opt/ml/input/data/model",
+        "OUTPUT_DIR": "/opt/ml/model",
+        "PYTHONUNBUFFERED": "1",
+        "QUALITY_REVIEW_CAMERA_SET": "frozen-promotion-p24",
+        "QUALITY_REVIEW_CULL_MARGIN": "0.15",
+        "QUALITY_REVIEW_MAX_GAUSSIANS_PER_VIEW": "2500000",
+        "QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET": "4",
+        "QUALITY_REVIEW_MIN_GAUSSIANS_ON_OOM": "800000",
+        "QUALITY_REVIEW_RENDER_SCALE": "0.5",
+        "QUALITY_REVIEW_TILE_IDS": "tile_02,tile_05"
+    }
+}
