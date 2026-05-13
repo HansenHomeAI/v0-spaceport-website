@@ -1,0 +1,3 @@
+monitor_start_utc=2026-05-13T18:47:04Z
+[2026-05-13T18:47:07Z] status=InProgress | 2026-05-13T18:46:55 COLMAP[feature_extractor] I20260513 18:46:55.644886   122 feature_extraction.cc:280] Processed file [1077/3076]
+[2026-05-13T18:49:10Z] status=InProgress | 2026-05-13T18:49:04 COLMAP[feature_extractor] I20260513 18:49:04.589974   122 feature_extraction.cc:280] Processed file [1136/3076]
