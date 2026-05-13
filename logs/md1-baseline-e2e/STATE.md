@@ -1,6 +1,6 @@
 # MD1 Baseline E2E State
 
-updated: 2026-05-13T11:48:00-06:00
+updated: 2026-05-13T11:57:30-06:00
 branch: agent-113647-md1-baseline-e2e
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -47,6 +47,12 @@ Produce a development-based MD1 baseline with:
 - `python3 -m py_compile ...` passed for compressor, SfM, and existing 3DGS entrypoints.
 - `git diff --check` passed.
 - First branch Pages deploy failed at CloudFormation output resolution because the fallback staging ML stack was `UPDATE_ROLLBACK_COMPLETE`; patched the Pages workflow gate and pushed a rerun fix.
+- Full MD1 baseline run launched once:
+  - execution: `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-baseline-e2e-20260513115645`
+  - job id/name: `md1-baseline-e2e-20260513115645`
+  - payload: `logs/md1-baseline-e2e/md1-baseline-e2e-20260513115645-payload.json`
+  - start proof: `logs/md1-baseline-e2e/md1-baseline-e2e-20260513115645-start.json`
+  - current stage at launch verification: `WaitForSfM`; SageMaker processing job `md1-baseline-e2e-20260513115645-sfm` is `InProgress` on `ml.g4dn.xlarge`.
 
 ## Gated Execution Plan
 
