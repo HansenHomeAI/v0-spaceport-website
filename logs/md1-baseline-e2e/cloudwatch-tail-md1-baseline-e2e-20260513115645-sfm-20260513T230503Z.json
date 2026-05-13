@@ -1,0 +1,281 @@
+{
+    "events": [
+        {
+            "timestamp": 1778710202219,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6760s idle=900s",
+            "ingestionTime": 1778710208650
+        },
+        {
+            "timestamp": 1778710262708,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6820s idle=960s",
+            "ingestionTime": 1778710268451
+        },
+        {
+            "timestamp": 1778710322099,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6880s idle=1020s",
+            "ingestionTime": 1778710327990
+        },
+        {
+            "timestamp": 1778710382519,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6940s idle=1080s",
+            "ingestionTime": 1778710388383
+        },
+        {
+            "timestamp": 1778710441871,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=7000s idle=1140s",
+            "ingestionTime": 1778710447959
+        },
+        {
+            "timestamp": 1778710502099,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=7060s idle=1200s",
+            "ingestionTime": 1778710507476
+        },
+        {
+            "timestamp": 1778710562483,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=7120s idle=1260s",
+            "ingestionTime": 1778710568032
+        },
+        {
+            "timestamp": 1778710622435,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=7180s idle=1320s",
+            "ingestionTime": 1778710627553
+        },
+        {
+            "timestamp": 1778710682824,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=7240s idle=1380s",
+            "ingestionTime": 1778710688121
+        },
+        {
+            "timestamp": 1778710742119,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=7300s idle=1440s",
+            "ingestionTime": 1778710747671
+        },
+        {
+            "timestamp": 1778710802815,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=7360s idle=1500s",
+            "ingestionTime": 1778710808144
+        },
+        {
+            "timestamp": 1778710862123,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=7420s idle=1560s",
+            "ingestionTime": 1778710867456
+        },
+        {
+            "timestamp": 1778710922303,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=7480s idle=1620s",
+            "ingestionTime": 1778710927748
+        },
+        {
+            "timestamp": 1778710982760,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=7540s idle=1680s",
+            "ingestionTime": 1778710988246
+        },
+        {
+            "timestamp": 1778711042199,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=7600s idle=1740s",
+            "ingestionTime": 1778711047655
+        },
+        {
+            "timestamp": 1778711102566,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=7660s idle=1800s",
+            "ingestionTime": 1778711108024
+        },
+        {
+            "timestamp": 1778711162871,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=7720s idle=1860s",
+            "ingestionTime": 1778711168456
+        },
+        {
+            "timestamp": 1778711222375,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=7780s idle=1920s",
+            "ingestionTime": 1778711227881
+        },
+        {
+            "timestamp": 1778711282735,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=7840s idle=1980s",
+            "ingestionTime": 1778711288378
+        },
+        {
+            "timestamp": 1778711342155,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=7900s idle=2040s",
+            "ingestionTime": 1778711347747
+        },
+        {
+            "timestamp": 1778711402561,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=7960s idle=2100s",
+            "ingestionTime": 1778711408338
+        },
+        {
+            "timestamp": 1778711462991,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=8020s idle=2160s",
+            "ingestionTime": 1778711468995
+        },
+        {
+            "timestamp": 1778711522287,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=8080s idle=2220s",
+            "ingestionTime": 1778711528492
+        },
+        {
+            "timestamp": 1778711582627,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=8140s idle=2280s",
+            "ingestionTime": 1778711588030
+        },
+        {
+            "timestamp": 1778711643034,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=8200s idle=2340s",
+            "ingestionTime": 1778711648431
+        },
+        {
+            "timestamp": 1778711702327,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=8260s idle=2400s",
+            "ingestionTime": 1778711707980
+        },
+        {
+            "timestamp": 1778711762795,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=8320s idle=2460s",
+            "ingestionTime": 1778711768335
+        },
+        {
+            "timestamp": 1778711822243,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=8380s idle=2520s",
+            "ingestionTime": 1778711827741
+        },
+        {
+            "timestamp": 1778711882699,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=8441s idle=2580s",
+            "ingestionTime": 1778711888289
+        },
+        {
+            "timestamp": 1778711942897,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=8501s idle=2640s",
+            "ingestionTime": 1778711948972
+        },
+        {
+            "timestamp": 1778712002435,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=8561s idle=2700s",
+            "ingestionTime": 1778712008419
+        },
+        {
+            "timestamp": 1778712062755,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=8621s idle=2760s",
+            "ingestionTime": 1778712068083
+        },
+        {
+            "timestamp": 1778712123119,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=8681s idle=2820s",
+            "ingestionTime": 1778712128492
+        },
+        {
+            "timestamp": 1778712182459,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=8741s idle=2880s",
+            "ingestionTime": 1778712187868
+        },
+        {
+            "timestamp": 1778712243055,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=8801s idle=2940s",
+            "ingestionTime": 1778712248506
+        },
+        {
+            "timestamp": 1778712302771,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=8861s idle=3000s",
+            "ingestionTime": 1778712308195
+        },
+        {
+            "timestamp": 1778712362392,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=8921s idle=3060s",
+            "ingestionTime": 1778712368004
+        },
+        {
+            "timestamp": 1778712423231,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=8981s idle=3120s",
+            "ingestionTime": 1778712428690
+        },
+        {
+            "timestamp": 1778712482820,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=9041s idle=3180s",
+            "ingestionTime": 1778712488227
+        },
+        {
+            "timestamp": 1778712542316,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=9101s idle=3240s",
+            "ingestionTime": 1778712547703
+        },
+        {
+            "timestamp": 1778712602827,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=9161s idle=3300s",
+            "ingestionTime": 1778712608303
+        },
+        {
+            "timestamp": 1778712662275,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=9221s idle=3360s",
+            "ingestionTime": 1778712668151
+        },
+        {
+            "timestamp": 1778712722743,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=9281s idle=3420s",
+            "ingestionTime": 1778712728864
+        },
+        {
+            "timestamp": 1778712783227,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=9341s idle=3480s",
+            "ingestionTime": 1778712788421
+        },
+        {
+            "timestamp": 1778712842743,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=9401s idle=3540s",
+            "ingestionTime": 1778712848094
+        },
+        {
+            "timestamp": 1778712903131,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=9461s idle=3600s",
+            "ingestionTime": 1778712909591
+        },
+        {
+            "timestamp": 1778712963015,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=9521s idle=3660s",
+            "ingestionTime": 1778712968414
+        },
+        {
+            "timestamp": 1778713022483,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=9581s idle=3720s",
+            "ingestionTime": 1778713028097
+        },
+        {
+            "timestamp": 1778713083084,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=9641s idle=3780s",
+            "ingestionTime": 1778713088655
+        },
+        {
+            "timestamp": 1778713142744,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=9701s idle=3840s",
+            "ingestionTime": 1778713148149
+        },
+        {
+            "timestamp": 1778713203193,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=9761s idle=3900s",
+            "ingestionTime": 1778713209053
+        },
+        {
+            "timestamp": 1778713262727,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=9821s idle=3960s",
+            "ingestionTime": 1778713268513
+        },
+        {
+            "timestamp": 1778713323303,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=9881s idle=4020s",
+            "ingestionTime": 1778713329176
+        },
+        {
+            "timestamp": 1778713382963,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=9941s idle=4080s",
+            "ingestionTime": 1778713388863
+        },
+        {
+            "timestamp": 1778713442618,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=10001s idle=4140s",
+            "ingestionTime": 1778713448644
+        }
+    ],
+    "nextForwardToken": "f/39666635265025238565328108329915306421011783423424200704/s",
+    "nextBackwardToken": "b/39666563001712797991895407203803096928433774599591690240/s"
+}

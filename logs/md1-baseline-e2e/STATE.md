@@ -223,3 +223,25 @@ Produce a development-based MD1 baseline with:
 - Git: pushed monitor progress commit `6691d8c3`.
 - CI:
   - `CDK Deploy` run `25829447798` -> `success` (head `6691d8c3`)
+
+### 2026-05-13T17:05:58-06:00
+
+- Git: on `agent-113647-md1-baseline-e2e` @ `d5ad81b9957d46920f563eea817dba26431901f3` (no new commits; logs captured locally).
+- AWS identity: `aws sts get-caller-identity` -> Account `975050048887` (region `us-west-2`).
+- Step Functions execution: still `RUNNING`
+  - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-baseline-e2e-20260513115645`
+  - describe snapshot: `logs/md1-baseline-e2e/stepfunctions-describe-20260513T230503Z.json`
+  - history snapshot (reverse order): `logs/md1-baseline-e2e/stepfunctions-history-reverse-20260513T230133Z.json`
+  - latest observed state: `WaitForSfM` (still waiting on SfM completion)
+- SageMaker (this run):
+  - Processing job: `md1-baseline-e2e-20260513115645-sfm` -> `InProgress` (`S3UploadMode=EndOfJob`)
+  - describe snapshot: `logs/md1-baseline-e2e/sagemaker-describe-md1-baseline-e2e-20260513115645-sfm-20260513T230503Z.json`
+  - Output prefix: `s3://spaceport-ml-processing-staging/colmap/md1-baseline-e2e-20260513115645/` -> `Total Objects: 0` (still empty)
+  - S3 listing snapshot: `logs/md1-baseline-e2e/s3-colmap-md1-baseline-e2e-20260513115645-20260513T230527Z.txt`
+- SfM CloudWatch tail (latest):
+  - Log stream: `/aws/sagemaker/ProcessingJobs` / `md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048`
+  - Tail json: `logs/md1-baseline-e2e/cloudwatch-tail-md1-baseline-e2e-20260513115645-sfm-20260513T230503Z.json`
+  - Most recent observed lines: `COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=10001s idle=4140s` (mapper still alive; long idle suggests global BA/cleanup phase)
+- SageMaker (external; do not stop; not owned by this automation):
+  - Training job observed: `md1-sample120-ds1000-r16-1778713144` -> `InProgress` (`Downloading`)
+  - snapshot: `logs/md1-baseline-e2e/sagemaker-training-inprogress-20260513T230204Z.json`
