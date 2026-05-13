@@ -589,9 +589,9 @@
       ]
     }
   ],
-  "current_branch_head": "913f8520be184fc041f19cea734358c2a0c8a7fc pushed; exact-head CDK Deploy 25813728846 green before this second stop-evidence commit",
-  "current_exact_head_gate_status": "exact-head 913f8520be184fc041f19cea734358c2a0c8a7fc green on CDK Deploy 25813728846 before this second stop-evidence commit",
-  "current_live_compute_status": "Training and processing idle after stopping two unrecorded/ineligible old-code sample jobs: md1-sample8-cpu-r5-1778689607 after 1535 billable seconds/about $0.646 and md1-sample5-cpu-r6-1778691426 after 198 billable seconds/about $0.083.",
+  "current_branch_head": "631d9cc2ec113129ab5ee9ccde9d7ef605aac0de pushed; exact-head CDK Deploy 25814156641 green before this third stop/source-attribution commit",
+  "current_exact_head_gate_status": "exact-head 631d9cc2ec113129ab5ee9ccde9d7ef605aac0de green on CDK Deploy 25814156641 before this third stop/source-attribution commit",
+  "current_live_compute_status": "Training and processing were idle at 2026-05-13T17:10:55Z after stopping sample8 r5, sample5 r6, and sample5 r7. Source attribution then showed these are task-owned by the separate ACTIVE sfm-reality-check automation on head e0ed962f5c003276e27f2556382deabc41dd94f5; future MD1 loops should not stop them.",
   "current_rung": "R0_hardcap_quality_repair_early_visual_smoke_objective_gate_allowed_pending_exact_head",
   "evidence_events": [
     {
@@ -1327,7 +1327,7 @@
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
   "latest_boundary_responsible_tile_plan_status": "boundary primary tile_04/tile_10; horizon primary tile_04/tile_01; tile04 dryrun covers tile01/tile10 context support",
-  "latest_cost_control": "No eligible paid compute launched in this loop. Two unrecorded/ineligible active g5.2xlarge jobs were stopped, totaling about $0.729 stray spend. Future eligible proof is limited to one R0 visual-sentinel leaf-only run under $0.75/2400s/64 images/2000 iterations, with early visual-smoke abort; no merge/review/full14/LOD/promotion.",
+  "latest_cost_control": "No eligible MD1 compute launched in this loop. Three old-code sample canaries were stopped before source attribution, totaling about $0.744; they are now attributed to the separate SFM reality-check automation, so future MD1 loops should record/notify rather than stop those jobs. Future eligible MD1 proof remains limited to one R0 visual-sentinel leaf-only run under $0.75/2400s/64 images/2000 iterations, with early visual-smoke abort; no merge/review/full14/LOD/promotion.",
   "latest_evidence": {
     "merge_preflight_summary": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260512.json",
     "review_retry_cloudwatch_tail": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-cloudwatch-tail-20260512.txt",
@@ -1499,7 +1499,7 @@
     "status": "merge_retry1_guard_ready_no_paid_retry_launched",
     "v18_review_launched": false
   },
-  "latest_no_spend_evidence": "Objective evidence logs/md1-r4-hardcap-quality-repair-early-visual-smoke-objective-candidate-20260513.json and logs/md1-r4-hardcap-quality-repair-early-visual-smoke-objective-gate-20260513.json; unrecorded stop evidence logs/md1-sample8-cpu-r5-1778689607-stopped-describe-20260513.json and logs/md1-sample5-cpu-r6-1778691426-stopped-describe-20260513.json.",
+  "latest_no_spend_evidence": "Objective evidence logs/md1-r4-hardcap-quality-repair-early-visual-smoke-objective-candidate-20260513.json and logs/md1-r4-hardcap-quality-repair-early-visual-smoke-objective-gate-20260513.json; stopped canary evidence logs/md1-sample8-cpu-r5-1778689607-stopped-describe-20260513.json, logs/md1-sample5-cpu-r6-1778691426-stopped-describe-20260513.json, logs/md1-sample5-cpu-r7-1778692118-stopped-describe-20260513.json; source attribution /Users/gabrielhansen/.codex/automations/sfm-reality-check/automation.toml.",
   "latest_no_spend_implementation": "Planner now requires early visual-smoke abort plans after hard-output-cap visual-fidelity quality failures, and the new candidate objective uses real implemented color/floater/density controls instead of fake perceptual env keys.",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
@@ -6327,7 +6327,7 @@
       "run_id": 25810620460,
       "workflow": "CDK Deploy"
     },
-    "next_unblocked_step": "Commit/push the second stop evidence, watch exact-head workflows, verify AWS idle, then rerun leaf-submit readiness on the R0 visual-sentinel objective before any paid proof.",
+    "next_unblocked_step": "Commit/push source attribution, watch exact-head workflows, verify current AWS state without stopping task-owned SFM jobs, then rerun MD1 leaf-submit readiness only when allowed.",
     "objective_gate": {
       "block_reasons": [],
       "decision": "paid_retry_allowed",
@@ -6354,6 +6354,14 @@
       "visual_qa_gate": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-visual-qa-gate-with-ai-20260513.json"
     },
     "recorded_at": "2026-05-13T16:53:42Z",
+    "sample_canary_source_attribution": {
+      "automation_id": "sfm-reality-check",
+      "automation_path": "/Users/gabrielhansen/.codex/automations/sfm-reality-check/automation.toml",
+      "instruction": "do not stop task-owned jobs; monitor to terminal state",
+      "md1_loop_followup_rule": "record and notify for SFM-owned canaries instead of stopping them from MD1 loop",
+      "status": "ACTIVE",
+      "task_owned_head": "e0ed962f5c003276e27f2556382deabc41dd94f5"
+    },
     "second_stopped_unrecorded_or_ineligible_job": {
       "billable_seconds": 198,
       "code_head": "e0ed962f5c003276e27f2556382deabc41dd94f5",
@@ -6386,6 +6394,20 @@
       "py_compile": "passed for plan_md1_boundary_objective_strategy.py, enforce_md1_merge_review_submit_readiness.py, plan_tiled_merge_processing.py, evaluate_md1_visual_qa_gate.py",
       "unit_tests": "python3 -m unittest tests.unit.test_plan_md1_boundary_objective_strategy tests.unit.test_enforce_md1_merge_review_submit_readiness tests.unit.test_tiled_merge_processing_planner tests.unit.test_md1_leaf_reuse_merge tests.unit.test_enforce_md1_leaf_submit_readiness tests.unit.test_evaluate_md1_visual_qa_gate -> 62 tests OK"
     },
+    "third_stopped_sample_canary": {
+      "billable_seconds": 36,
+      "code_head": "e0ed962f5c003276e27f2556382deabc41dd94f5",
+      "estimated_usd": 0.015,
+      "image_tag": "agent73948216sfmproductionspine",
+      "instance_type": "ml.g5.2xlarge",
+      "job_name": "md1-sample5-cpu-r7-1778692118",
+      "pre_stop_describe": "logs/md1-sample5-cpu-r7-1778692118-describe-20260513.json",
+      "relaunch_reason": "automation-prompt-updated-after-local-stop-training-events",
+      "status_after_stop": "Stopped",
+      "stop_requested_describe": "logs/md1-sample5-cpu-r7-1778692118-stop-requested-describe-20260513.json",
+      "stopped_describe": "logs/md1-sample5-cpu-r7-1778692118-stopped-describe-20260513.json"
+    },
+    "total_stopped_old_code_sample_canary_estimated_usd_this_loop": 0.744,
     "total_unrecorded_stopped_estimated_usd_this_loop": 0.729
   },
   "md1_r4_leaf_scaffold_init_canary_review_20260503": {
@@ -9259,6 +9281,42 @@
     ],
     "tile_10_gate": "merge_review_blocked"
   },
+  "md1_sample_canary_source_attribution_20260513": {
+    "aws_state_after_stop": {
+      "checked_at": "2026-05-13T17:10:55Z",
+      "processing_inprogress": 0,
+      "training_inprogress_after_stop": 0
+    },
+    "branch": "agent-90742618-md1-geometry-consistency",
+    "exact_head_before_stop_evidence_commit": "631d9cc2ec113129ab5ee9ccde9d7ef605aac0de",
+    "exact_head_workflow": {
+      "conclusion": "success",
+      "run_id": 25814156641,
+      "workflow": "CDK Deploy"
+    },
+    "recorded_at": "2026-05-13T17:10:55Z",
+    "source_attribution_after_stop": {
+      "automation_id": "sfm-reality-check",
+      "automation_path": "/Users/gabrielhansen/.codex/automations/sfm-reality-check/automation.toml",
+      "instruction": "do not stop task-owned jobs; monitor to terminal state",
+      "md1_loop_followup_rule": "record and notify for SFM-owned canaries instead of stopping them from MD1 loop",
+      "status": "ACTIVE",
+      "task_owned_head": "e0ed962f5c003276e27f2556382deabc41dd94f5"
+    },
+    "stopped_job": {
+      "billable_seconds": 36,
+      "code_head": "e0ed962f5c003276e27f2556382deabc41dd94f5",
+      "estimated_usd": 0.015,
+      "image_tag": "agent73948216sfmproductionspine",
+      "instance_type": "ml.g5.2xlarge",
+      "job_name": "md1-sample5-cpu-r7-1778692118",
+      "pre_stop_describe": "logs/md1-sample5-cpu-r7-1778692118-describe-20260513.json",
+      "relaunch_reason": "automation-prompt-updated-after-local-stop-training-events",
+      "status_after_stop": "Stopped",
+      "stop_requested_describe": "logs/md1-sample5-cpu-r7-1778692118-stop-requested-describe-20260513.json",
+      "stopped_describe": "logs/md1-sample5-cpu-r7-1778692118-stopped-describe-20260513.json"
+    }
+  },
   "md1_training_cost_reduction_controls": {
     "base_head_before_commit": "9535796028311b9e21004e40f391907103c7240a",
     "baseline_cost": {
@@ -9937,7 +9995,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Commit/push this second stop-evidence update, watch exact-head workflows, verify AWS idle, then rerun leaf-submit readiness on the new exact green head. Only if allowed may a future loop submit at most one R0 leaf-only visual-sentinel proof under the $0.75/2400s cap; no merge/review/full14/LOD/viewer smoke/promotion.",
+  "next_unblocked_step": "Commit/push this third stop/source-attribution update, watch exact-head workflows, verify current AWS state without stopping task-owned SFM jobs, then rerun MD1 leaf-submit readiness on the new exact green head only if AWS is idle or only source-attributed non-MD1 jobs are active.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -16030,7 +16088,7 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-13T17:02:06Z",
-  "updated_at": "2026-05-13T17:02:06+00:00",
+  "updated": "2026-05-13T17:10:55Z",
+  "updated_at": "2026-05-13T17:10:55+00:00",
   "version": "1.0.0"
 }
