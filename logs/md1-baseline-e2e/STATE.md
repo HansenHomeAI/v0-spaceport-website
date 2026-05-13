@@ -198,3 +198,22 @@ Produce a development-based MD1 baseline with:
 - CI:
   - `CDK Deploy` run `25829028805` -> `success` (head `4d8b3997`)
   - No new `Deploy Next.js to Cloudflare Pages` run was triggered by this logs-only commit; latest Pages run on this branch remains `25816779815` -> `success` (workflow_dispatch)
+
+### 2026-05-13T16:12:30-06:00
+
+- Git: on `agent-113647-md1-baseline-e2e` @ `81cb1205` (latest push was CI-log only).
+- CI:
+  - `CDK Deploy` run `25829233748` -> `success` (head `81cb1205`)
+- Step Functions execution: still `RUNNING`
+  - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-baseline-e2e-20260513115645`
+  - Latest history snapshot (reverse order): `logs/md1-baseline-e2e/stepfunctions-execution-md1-baseline-e2e-20260513115645-history-reverse-20260513T221209Z.json`
+  - Latest state observed: `WaitForSfM` at `2026-05-13T16:11:43-06:00`
+- SageMaker (this run):
+  - Processing job: `md1-baseline-e2e-20260513115645-sfm` -> `InProgress`
+  - Output prefix: `s3://spaceport-ml-processing-staging/colmap/md1-baseline-e2e-20260513115645/` -> `Total Objects: 0` (still empty; `S3UploadMode=EndOfJob`)
+- SfM CloudWatch tail (latest ~30m):
+  - tail json: `logs/md1-baseline-e2e/md1-baseline-e2e-20260513115645-sfm-cloudwatch-tail-20260513T221150Z.json`
+  - tail txt: `logs/md1-baseline-e2e/md1-baseline-e2e-20260513115645-sfm-cloudwatch-tail-20260513T221150Z.txt`
+  - Most recent observed progress: mapper remains in `Global bundle adjustment` with heartbeats increasing to `idle=960s` at `2026-05-13T22:11:02Z`
+- Snapshot:
+  - `logs/md1-baseline-e2e/monitor-md1-baseline-e2e-20260513115645-20260513T221209Z.txt`

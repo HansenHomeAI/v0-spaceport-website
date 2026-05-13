@@ -1,0 +1,28 @@
+timestamp_utc=20260513T221209Z
+
+git_head=81cb1205f98cbb3aff14de5ce94e66df8b1284a9
+branch=agent-113647-md1-baseline-e2e
+
+stepfunctions_status=RUNNING
+stepfunctions_latest_event={"id":2302,"type":"WaitStateEntered","timestamp":"2026-05-13T16:11:43.348000-06:00","waitName":null,"taskName":null,"stateName":"WaitForSfM"}
+
+sfm_processing_status=InProgress
+
+cloudwatch_tail_last_lines:
+1778709602246	COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6160s idle=300s
+1778709662534	COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6220s idle=360s
+1778709721899	COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6280s idle=420s
+1778709782283	COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6340s idle=480s
+1778709842585	COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6400s idle=540s
+1778709902003	COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6460s idle=600s
+1778709962408	COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6520s idle=660s
+1778710021900	COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6580s idle=720s
+1778710082375	COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6640s idle=780s
+1778710142819	COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6700s idle=840s
+1778710202219	COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6760s idle=900s
+1778710262708	COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6820s idle=960s
+
+s3_colmap_prefix_ls:
+
+Total Objects: 0
+   Total Size: 0

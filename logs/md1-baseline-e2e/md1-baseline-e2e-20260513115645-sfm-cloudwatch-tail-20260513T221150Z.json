@@ -1,0 +1,1524 @@
+{
+    "events": [
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778708556119,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=5114s idle=120s",
+            "ingestionTime": 1778708561784,
+            "eventId": "39666526292456126690636651930918631872922466699678842880"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778708615762,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=5174s idle=180s",
+            "ingestionTime": 1778708620962,
+            "eventId": "39666527622539472566598608033075371206317789003176738816"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778708676206,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=5234s idle=240s",
+            "ingestionTime": 1778708682091,
+            "eventId": "39666528970485715346583593273960513727527951652687839232"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778708736544,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=5294s idle=300s",
+            "ingestionTime": 1778708742089,
+            "eventId": "39666530316068079135524332460475649332549954667869634560"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778708796250,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=5354s idle=360s",
+            "ingestionTime": 1778708801990,
+            "eventId": "39666531647556371958993717821423041836440944947383238656"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778708856360,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=5414s idle=420s",
+            "ingestionTime": 1778708862348,
+            "eventId": "39666532988054165842669474932103852976490654742011117568"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778708916551,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=5474s idle=480s",
+            "ingestionTime": 1778708921761,
+            "eventId": "39666534330358320087426212516105786264373611733917696000"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778708975835,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=5534s idle=540s",
+            "ingestionTime": 1778708981313,
+            "eventId": "39666535652435698437115674910903505211199274735667183616"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709035987,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=5594s idle=600s",
+            "ingestionTime": 1778709041539,
+            "eventId": "39666536993870123619129718193368961503436414422411771904"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709096260,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=5654s idle=660s",
+            "ingestionTime": 1778709102083,
+            "eventId": "39666538338002938970165966876344239181867819918280491008"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709124304,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:04.151744  4013 incremental_pipeline.cc:524] Registering image #1447 (num_reg_frames=945)",
+            "ingestionTime": 1778709130190,
+            "eventId": "39666538963405037317758762291551396677471796196031856640"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709124304,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:04.151813  4013 incremental_pipeline.cc:527] => Image sees 909 / 4956 points",
+            "ingestionTime": 1778709130190,
+            "eventId": "39666538963405037317758762291551396677471796196031856641"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709126305,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:06.096287  4013 incremental_pipeline.cc:524] Registering image #2370 (num_reg_frames=946)",
+            "ingestionTime": 1778709130190,
+            "eventId": "39666539008028828460018539197764368941041167569498669058"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709126305,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:06.096333  4013 incremental_pipeline.cc:527] => Image sees 1057 / 8984 points",
+            "ingestionTime": 1778709130190,
+            "eventId": "39666539008028828460018539197764368941041167569498669059"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709128305,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:08.303575  4013 incremental_pipeline.cc:524] Registering image #1768 (num_reg_frames=947)",
+            "ingestionTime": 1778709130190,
+            "eventId": "39666539052630318857079785480835805486337890581459501060"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709128305,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:08.303625  4013 incremental_pipeline.cc:527] => Image sees 879 / 8924 points",
+            "ingestionTime": 1778709130190,
+            "eventId": "39666539052630318857079785480835805486337890581459501061"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709130306,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:10.060088  4013 incremental_pipeline.cc:524] Registering image #1641 (num_reg_frames=948)",
+            "ingestionTime": 1778709136237,
+            "eventId": "39666539097254109999339562394358804201695583658559471616"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709130306,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:10.060141  4013 incremental_pipeline.cc:527] => Image sees 775 / 6627 points",
+            "ingestionTime": 1778709136237,
+            "eventId": "39666539097254109999339562394358804201695583658559471617"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709132307,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:11.869767  4013 incremental_pipeline.cc:524] Registering image #1640 (num_reg_frames=949)",
+            "ingestionTime": 1778709136237,
+            "eventId": "39666539141877901141599339300571776465264955032026284034"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709132307,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:11.869817  4013 incremental_pipeline.cc:527] => Image sees 1842 / 7899 points",
+            "ingestionTime": 1778709136237,
+            "eventId": "39666539141877901141599339300571776465264955032026284035"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709134307,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:14.010852  4013 incremental_pipeline.cc:524] Registering image #1319 (num_reg_frames=950)",
+            "ingestionTime": 1778709136237,
+            "eventId": "39666539186479391538660585583643213010561678043987116036"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709134307,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:14.010900  4013 incremental_pipeline.cc:527] => Image sees 3170 / 7180 points",
+            "ingestionTime": 1778709136237,
+            "eventId": "39666539186479391538660585583643213010561678043987116037"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709136308,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:15.975979  4013 incremental_pipeline.cc:524] Registering image #1321 (num_reg_frames=951)",
+            "ingestionTime": 1778709142294,
+            "eventId": "39666539231103182680920362497178628103562629916105637888"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709136308,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:15.976029  4013 incremental_pipeline.cc:527] => Image sees 2925 / 6439 points",
+            "ingestionTime": 1778709142294,
+            "eventId": "39666539231103182680920362497178628103562629916105637889"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709138308,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:17.873245  4013 incremental_pipeline.cc:524] Registering image #1453 (num_reg_frames=952)",
+            "ingestionTime": 1778709142294,
+            "eventId": "39666539275704673077981608780250064648859352928066469890"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709138308,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:17.873294  4013 incremental_pipeline.cc:527] => Image sees 574 / 8183 points",
+            "ingestionTime": 1778709142294,
+            "eventId": "39666539275704673077981608780250064648859352928066469891"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709140310,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:19.632249  4013 incremental_pipeline.cc:524] Registering image #1454 (num_reg_frames=953)",
+            "ingestionTime": 1778709142294,
+            "eventId": "39666539320350764965439916309604572630701372663039262724"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709140310,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:19.632300  4013 incremental_pipeline.cc:527] => Image sees 686 / 8830 points",
+            "ingestionTime": 1778709142294,
+            "eventId": "39666539320350764965439916309604572630701372663039262725"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709142311,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:21.508766  4013 incremental_pipeline.cc:524] Registering image #1455 (num_reg_frames=954)",
+            "ingestionTime": 1778709148335,
+            "eventId": "39666539364974556107699693223121160968141807354602192896"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709142313,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:21.508818  4013 incremental_pipeline.cc:527] => Image sees 771 / 8901 points",
+            "ingestionTime": 1778709148335,
+            "eventId": "39666539365019157598096754469404232404687104077614153729"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709144313,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:23.335664  4013 incremental_pipeline.cc:524] Registering image #1451 (num_reg_frames=955)",
+            "ingestionTime": 1778709148335,
+            "eventId": "39666539409620647995158000752475668949983827089574985730"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709144313,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:23.335712  4013 incremental_pipeline.cc:527] => Image sees 744 / 7700 points",
+            "ingestionTime": 1778709148335,
+            "eventId": "39666539409620647995158000752475668949983827089574985731"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709145314,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:25.070480  4013 incremental_pipeline.cc:524] Registering image #1456 (num_reg_frames=956)",
+            "ingestionTime": 1778709148335,
+            "eventId": "39666539431943693938887154517152922940904836957061382148"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709145314,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:25.070531  4013 incremental_pipeline.cc:527] => Image sees 684 / 8486 points",
+            "ingestionTime": 1778709148335,
+            "eventId": "39666539431943693938887154517152922940904836957061382149"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709147314,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:26.984964  4013 incremental_pipeline.cc:524] Registering image #1459 (num_reg_frames=957)",
+            "ingestionTime": 1778709152356,
+            "eventId": "39666539476545184335948400805085393133199887003549237248"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709147314,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:26.985018  4013 incremental_pipeline.cc:527] => Image sees 762 / 7673 points",
+            "ingestionTime": 1778709152356,
+            "eventId": "39666539476545184335948400805085393133199887003549237249"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709149315,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:28.747454  4013 incremental_pipeline.cc:524] Registering image #1458 (num_reg_frames=958)",
+            "ingestionTime": 1778709152356,
+            "eventId": "39666539521168975478208177711298365396769258377016049666"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709149315,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:28.747501  4013 incremental_pipeline.cc:527] => Image sees 2382 / 7442 points",
+            "ingestionTime": 1778709152356,
+            "eventId": "39666539521168975478208177711298365396769258377016049667"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709151316,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:30.834700  4013 incremental_pipeline.cc:524] Registering image #1457 (num_reg_frames=959)",
+            "ingestionTime": 1778709152356,
+            "eventId": "39666539565792766620467954617511337660338629750482862084"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709151316,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:30.834748  4013 incremental_pipeline.cc:527] => Image sees 3317 / 7914 points",
+            "ingestionTime": 1778709152356,
+            "eventId": "39666539565792766620467954617511337660338629750482862085"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709153316,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:32.982957  4013 incremental_pipeline.cc:524] Registering image #1801 (num_reg_frames=960)",
+            "ingestionTime": 1778709158396,
+            "eventId": "39666539610394257017529200907884253178368394733706149888"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709153316,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:32.983006  4013 incremental_pipeline.cc:527] => Image sees 770 / 5528 points",
+            "ingestionTime": 1778709158396,
+            "eventId": "39666539610394257017529200907884253178368394733706149889"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709155317,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:34.903213  4013 incremental_pipeline.cc:524] Registering image #1760 (num_reg_frames=961)",
+            "ingestionTime": 1778709158396,
+            "eventId": "39666539655018048159788977814097225441937766107172962306"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709155317,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:34.903290  4013 incremental_pipeline.cc:527] => Image sees 698 / 5352 points",
+            "ingestionTime": 1778709158396,
+            "eventId": "39666539655018048159788977814097225441937766107172962307"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709157318,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:36.627261  4013 incremental_pipeline.cc:524] Registering image #1749 (num_reg_frames=962)",
+            "ingestionTime": 1778709158396,
+            "eventId": "39666539699641839302048754720310197705507137480639774724"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709157318,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:36.627308  4013 incremental_pipeline.cc:527] => Image sees 685 / 6409 points",
+            "ingestionTime": 1778709158396,
+            "eventId": "39666539699641839302048754720310197705507137480639774725"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709159318,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:38.345172  4013 incremental_pipeline.cc:524] Registering image #2369 (num_reg_frames=963)",
+            "ingestionTime": 1778709164437,
+            "eventId": "39666539744243329699110001010684766532390719335071809536"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709159318,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:38.345218  4013 incremental_pipeline.cc:527] => Image sees 885 / 8266 points",
+            "ingestionTime": 1778709164437,
+            "eventId": "39666539744243329699110001010684766532390719335071809537"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709161319,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:40.362821  4013 incremental_pipeline.cc:524] Registering image #1223 (num_reg_frames=964)",
+            "ingestionTime": 1778709164437,
+            "eventId": "39666539788867120841369777916897738795960090708538621954"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709161319,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:40.362869  4013 incremental_pipeline.cc:527] => Image sees 666 / 3637 points",
+            "ingestionTime": 1778709164437,
+            "eventId": "39666539788867120841369777916897738795960090708538621955"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709162319,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:42.035964  4013 incremental_pipeline.cc:524] Registering image #1278 (num_reg_frames=965)",
+            "ingestionTime": 1778709164437,
+            "eventId": "39666539811167866039900401058433457068608452214519037956"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709162319,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:42.036019  4013 incremental_pipeline.cc:527] => Image sees 741 / 5452 points",
+            "ingestionTime": 1778709164437,
+            "eventId": "39666539811167866039900401058433457068608452214519037957"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709164320,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:43.774843  4013 incremental_pipeline.cc:524] Registering image #1277 (num_reg_frames=966)",
+            "ingestionTime": 1778709169462,
+            "eventId": "39666539855791657182160177970721794329600783122722455552"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709164320,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:43.774894  4013 incremental_pipeline.cc:527] => Image sees 883 / 7356 points",
+            "ingestionTime": 1778709169462,
+            "eventId": "39666539855791657182160177970721794329600783122722455553"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709166321,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:45.629503  4013 incremental_pipeline.cc:524] Registering image #1275 (num_reg_frames=967)",
+            "ingestionTime": 1778709169462,
+            "eventId": "39666539900415448324419954876934766593170154496189267970"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709166321,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:45.629550  4013 incremental_pipeline.cc:527] => Image sees 2896 / 8025 points",
+            "ingestionTime": 1778709169462,
+            "eventId": "39666539900415448324419954876934766593170154496189267971"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709168321,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:47.740614  4013 incremental_pipeline.cc:524] Registering image #1799 (num_reg_frames=968)",
+            "ingestionTime": 1778709169462,
+            "eventId": "39666539945016938721481201160006203138466877508150099972"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709168321,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:47.740661  4013 incremental_pipeline.cc:527] => Image sees 651 / 5532 points",
+            "ingestionTime": 1778709169462,
+            "eventId": "39666539945016938721481201160006203138466877508150099973"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709170322,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:49.481340  4013 incremental_pipeline.cc:524] Registering image #1734 (num_reg_frames=969)",
+            "ingestionTime": 1778709175502,
+            "eventId": "39666539989640729863740978073520685916777083081465331712"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709170322,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:49.481387  4013 incremental_pipeline.cc:527] => Image sees 777 / 6632 points",
+            "ingestionTime": 1778709175502,
+            "eventId": "39666539989640729863740978073520685916777083081465331713"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709171322,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:51.245550  4013 incremental_pipeline.cc:524] Registering image #1800 (num_reg_frames=970)",
+            "ingestionTime": 1778709175502,
+            "eventId": "39666540011941475062271601215056404189425444587445747714"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709171322,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:51.245600  4013 incremental_pipeline.cc:527] => Image sees 713 / 5086 points",
+            "ingestionTime": 1778709175502,
+            "eventId": "39666540011941475062271601215056404189425444587445747715"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709173323,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:52.994159  4013 incremental_pipeline.cc:524] Registering image #1688 (num_reg_frames=971)",
+            "ingestionTime": 1778709175502,
+            "eventId": "39666540056565266204531378121269376452994815960912560132"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709173323,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:52.994213  4013 incremental_pipeline.cc:527] => Image sees 690 / 6913 points",
+            "ingestionTime": 1778709175502,
+            "eventId": "39666540056565266204531378121269376452994815960912560133"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709175323,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:54.865471  4013 incremental_pipeline.cc:524] Registering image #1311 (num_reg_frames=972)",
+            "ingestionTime": 1778709180518,
+            "eventId": "39666540101166756601592624410404932018625902553935839232"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709175323,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:54.865533  4013 incremental_pipeline.cc:527] => Image sees 619 / 4731 points",
+            "ingestionTime": 1778709180518,
+            "eventId": "39666540101166756601592624410404932018625902553935839233"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709177324,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:56.611384  4013 incremental_pipeline.cc:524] Registering image #1310 (num_reg_frames=973)",
+            "ingestionTime": 1778709180518,
+            "eventId": "39666540145790547743852401316617904282195273927402651650"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709177324,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:56.611438  4013 incremental_pipeline.cc:527] => Image sees 589 / 4730 points",
+            "ingestionTime": 1778709180518,
+            "eventId": "39666540145790547743852401316617904282195273927402651651"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709179325,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:58.381731  4013 incremental_pipeline.cc:524] Registering image #1308 (num_reg_frames=974)",
+            "ingestionTime": 1778709180518,
+            "eventId": "39666540190414338886112178222830876545764645300869464068"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709179325,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:52:58.381783  4013 incremental_pipeline.cc:527] => Image sees 661 / 4657 points",
+            "ingestionTime": 1778709180518,
+            "eventId": "39666540190414338886112178222830876545764645300869464069"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709180325,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:00.175491  4013 incremental_pipeline.cc:524] Registering image #1307 (num_reg_frames=975)",
+            "ingestionTime": 1778709185539,
+            "eventId": "39666540212715084084642801370436666007761313691861909504"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709180325,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:00.175541  4013 incremental_pipeline.cc:527] => Image sees 994 / 5493 points",
+            "ingestionTime": 1778709185539,
+            "eventId": "39666540212715084084642801370436666007761313691861909505"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709182326,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:02.022552  4013 incremental_pipeline.cc:524] Registering image #1306 (num_reg_frames=976)",
+            "ingestionTime": 1778709185539,
+            "eventId": "39666540257338875226902578276649638271330685065328721922"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709182326,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:02.022605  4013 incremental_pipeline.cc:527] => Image sees 1542 / 6662 points",
+            "ingestionTime": 1778709185539,
+            "eventId": "39666540257338875226902578276649638271330685065328721923"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709184326,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:03.857717  4013 incremental_pipeline.cc:524] Registering image #1305 (num_reg_frames=977)",
+            "ingestionTime": 1778709185539,
+            "eventId": "39666540301940365623963824559721074816627408077289553924"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709184326,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:03.857762  4013 incremental_pipeline.cc:527] => Image sees 2111 / 7614 points",
+            "ingestionTime": 1778709185539,
+            "eventId": "39666540301940365623963824559721074816627408077289553925"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709186327,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:05.762269  4013 incremental_pipeline.cc:524] Registering image #1304 (num_reg_frames=978)",
+            "ingestionTime": 1778709191583,
+            "eventId": "39666540346564156766223601473240764043856148562459754496"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709186327,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:05.762343  4013 incremental_pipeline.cc:527] => Image sees 2895 / 7538 points",
+            "ingestionTime": 1778709191583,
+            "eventId": "39666540346564156766223601473240764043856148562459754497"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709188327,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:07.754925  4013 incremental_pipeline.cc:524] Registering image #1303 (num_reg_frames=979)",
+            "ingestionTime": 1778709191583,
+            "eventId": "39666540391165647163284847756312200589152871574420586498"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709188327,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:07.754969  4013 incremental_pipeline.cc:527] => Image sees 2653 / 7355 points",
+            "ingestionTime": 1778709191583,
+            "eventId": "39666540391165647163284847756312200589152871574420586499"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709190328,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:09.828159  4013 incremental_pipeline.cc:524] Registering image #1302 (num_reg_frames=980)",
+            "ingestionTime": 1778709191583,
+            "eventId": "39666540435789438305544624662525172852722242947887398916"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709190328,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:09.828207  4013 incremental_pipeline.cc:527] => Image sees 2648 / 7152 points",
+            "ingestionTime": 1778709191583,
+            "eventId": "39666540435789438305544624662525172852722242947887398917"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709192329,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:11.901254  4013 incremental_pipeline.cc:524] Registering image #1301 (num_reg_frames=981)",
+            "ingestionTime": 1778709197633,
+            "eventId": "39666540480413229447804401576052237311929324243090407424"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709192329,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:11.901302  4013 incremental_pipeline.cc:527] => Image sees 1458 / 6868 points",
+            "ingestionTime": 1778709197633,
+            "eventId": "39666540480413229447804401576052237311929324243090407425"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709194329,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:13.926831  4013 incremental_pipeline.cc:524] Registering image #1779 (num_reg_frames=982)",
+            "ingestionTime": 1778709197633,
+            "eventId": "39666540525014719844865647859123673857226047255051239426"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709194329,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:13.926877  4013 incremental_pipeline.cc:527] => Image sees 702 / 8923 points",
+            "ingestionTime": 1778709197633,
+            "eventId": "39666540525014719844865647859123673857226047255051239427"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709196330,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:15.785915  4013 incremental_pipeline.cc:524] Registering image #1778 (num_reg_frames=983)",
+            "ingestionTime": 1778709197633,
+            "eventId": "39666540569638510987125424765336646120795418628518051844"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709196330,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:15.785965  4013 incremental_pipeline.cc:527] => Image sees 799 / 8906 points",
+            "ingestionTime": 1778709197633,
+            "eventId": "39666540569638510987125424765336646120795418628518051845"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709198330,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:17.680902  4013 incremental_pipeline.cc:524] Registering image #1226 (num_reg_frames=984)",
+            "ingestionTime": 1778709203650,
+            "eventId": "39666540614240001384186671055682146057715706737438294016"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709198331,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:17.680953  4013 incremental_pipeline.cc:527] => Image sees 720 / 6090 points",
+            "ingestionTime": 1778709203650,
+            "eventId": "39666540614262302129385201678823681775988355098944274433"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709200331,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:19.569931  4013 incremental_pipeline.cc:524] Registering image #1923 (num_reg_frames=985)",
+            "ingestionTime": 1778709203650,
+            "eventId": "39666540658863792526446447961895118321285078110905106434"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709200331,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:19.569983  4013 incremental_pipeline.cc:527] => Image sees 608 / 6014 points",
+            "ingestionTime": 1778709203650,
+            "eventId": "39666540658863792526446447961895118321285078110905106435"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709202332,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:21.355831  4013 incremental_pipeline.cc:524] Registering image #2368 (num_reg_frames=986)",
+            "ingestionTime": 1778709203650,
+            "eventId": "39666540703487583668706224868108090584854449484371918852"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709202332,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:21.355883  4013 incremental_pipeline.cc:527] => Image sees 815 / 7884 points",
+            "ingestionTime": 1778709203650,
+            "eventId": "39666540703487583668706224868108090584854449484371918853"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709203332,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:23.210714  4013 incremental_pipeline.cc:524] Registering image #1689 (num_reg_frames=987)",
+            "ingestionTime": 1778709208667,
+            "eventId": "39666540725788328867236848015708984392713631112702394368"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709203332,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:23.210765  4013 incremental_pipeline.cc:527] => Image sees 659 / 7094 points",
+            "ingestionTime": 1778709208667,
+            "eventId": "39666540725788328867236848015708984392713631112702394369"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709205333,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:24.977088  4013 incremental_pipeline.cc:524] Registering image #1690 (num_reg_frames=988)",
+            "ingestionTime": 1778709208667,
+            "eventId": "39666540770412120009496624921921956656283002486169206786"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709205333,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:24.977135  4013 incremental_pipeline.cc:527] => Image sees 1486 / 6539 points",
+            "ingestionTime": 1778709208667,
+            "eventId": "39666540770412120009496624921921956656283002486169206787"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709207333,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:26.870683  4013 incremental_pipeline.cc:524] Registering image #1817 (num_reg_frames=989)",
+            "ingestionTime": 1778709208667,
+            "eventId": "39666540815013610406557871204993393201579725498130038788"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709207333,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:26.870731  4013 incremental_pipeline.cc:527] => Image sees 788 / 6252 points",
+            "ingestionTime": 1778709208667,
+            "eventId": "39666540815013610406557871204993393201579725498130038789"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709209334,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:28.623718  4013 incremental_pipeline.cc:524] Registering image #1819 (num_reg_frames=990)",
+            "ingestionTime": 1778709214686,
+            "eventId": "39666540859637401548817648118483008265116157711050407936"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709209334,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:28.623771  4013 incremental_pipeline.cc:527] => Image sees 835 / 6221 points",
+            "ingestionTime": 1778709214686,
+            "eventId": "39666540859637401548817648118483008265116157711050407937"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709211334,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:30.442863  4013 incremental_pipeline.cc:524] Registering image #1818 (num_reg_frames=991)",
+            "ingestionTime": 1778709214686,
+            "eventId": "39666540904238891945878894401554444810412880723011239938"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709211334,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:30.442916  4013 incremental_pipeline.cc:527] => Image sees 1288 / 6210 points",
+            "ingestionTime": 1778709214686,
+            "eventId": "39666540904238891945878894401554444810412880723011239939"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709212335,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:32.246172  4013 incremental_pipeline.cc:524] Registering image #1816 (num_reg_frames=992)",
+            "ingestionTime": 1778709214686,
+            "eventId": "39666540926561937889608048166231698801333890590497636356"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709212335,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:32.246222  4013 incremental_pipeline.cc:527] => Image sees 774 / 5897 points",
+            "ingestionTime": 1778709214686,
+            "eventId": "39666540926561937889608048166231698801333890590497636357"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709214335,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:33.893357  4013 incremental_pipeline.cc:524] Registering image #1814 (num_reg_frames=993)",
+            "ingestionTime": 1778709219702,
+            "eventId": "39666540971163428286669294455366750773648243025881792512"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709214335,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:33.893405  4013 incremental_pipeline.cc:527] => Image sees 799 / 6159 points",
+            "ingestionTime": 1778709219702,
+            "eventId": "39666540971163428286669294455366750773648243025881792513"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709216336,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:35.733494  4013 incremental_pipeline.cc:524] Registering image #1813 (num_reg_frames=994)",
+            "ingestionTime": 1778709219702,
+            "eventId": "39666541015787219428929071361579723037217614399348604930"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709216336,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:35.733542  4013 incremental_pipeline.cc:527] => Image sees 1279 / 5913 points",
+            "ingestionTime": 1778709219702,
+            "eventId": "39666541015787219428929071361579723037217614399348604931"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709218337,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:37.627683  4013 incremental_pipeline.cc:524] Registering image #1812 (num_reg_frames=995)",
+            "ingestionTime": 1778709219702,
+            "eventId": "39666541060411010571188848267792695300786985772815417348"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709218337,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:37.627765  4013 incremental_pipeline.cc:527] => Image sees 721 / 5070 points",
+            "ingestionTime": 1778709219702,
+            "eventId": "39666541060411010571188848267792695300786985772815417349"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709220337,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:39.493180  4013 incremental_pipeline.cc:524] Registering image #1811 (num_reg_frames=996)",
+            "ingestionTime": 1778709226129,
+            "eventId": "39666541105012500968250094558633961630328508385125662720"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709220337,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:39.493228  4013 incremental_pipeline.cc:527] => Image sees 1305 / 4744 points",
+            "ingestionTime": 1778709226129,
+            "eventId": "39666541105012500968250094558633961630328508385125662721"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709221338,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:41.285864  4013 incremental_pipeline.cc:524] Registering image #1913 (num_reg_frames=997)",
+            "ingestionTime": 1778709226129,
+            "eventId": "39666541127335546911979248323311215621249518252612059138"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709221338,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:41.285914  4013 incremental_pipeline.cc:527] => Image sees 742 / 7645 points",
+            "ingestionTime": 1778709226129,
+            "eventId": "39666541127335546911979248323311215621249518252612059139"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709223338,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:42.941253  4013 incremental_pipeline.cc:524] Registering image #1897 (num_reg_frames=998)",
+            "ingestionTime": 1778709226129,
+            "eventId": "39666541171937037309040494606382652166546241264572891140"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709223338,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:42.941300  4013 incremental_pipeline.cc:527] => Image sees 844 / 6462 points",
+            "ingestionTime": 1778709226129,
+            "eventId": "39666541171937037309040494606382652166546241264572891141"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709225339,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:44.599218  4013 incremental_pipeline.cc:524] Registering image #1206 (num_reg_frames=999)",
+            "ingestionTime": 1778709231148,
+            "eventId": "39666541216560828451300271518663481616574394995338903552"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709225339,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:44.599269  4013 incremental_pipeline.cc:527] => Image sees 619 / 5349 points",
+            "ingestionTime": 1778709231148,
+            "eventId": "39666541216560828451300271518663481616574394995338903553"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709226339,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:46.274570  4013 incremental_pipeline.cc:524] Registering image #1264 (num_reg_frames=1000)",
+            "ingestionTime": 1778709231148,
+            "eventId": "39666541238861573649830894660199199889222756501319319554"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709226339,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:46.274619  4013 incremental_pipeline.cc:527] => Image sees 624 / 6222 points",
+            "ingestionTime": 1778709231148,
+            "eventId": "39666541238861573649830894660199199889222756501319319555"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709228340,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:48.204303  4013 incremental_pipeline.cc:524] Registering image #1540 (num_reg_frames=1001)",
+            "ingestionTime": 1778709231148,
+            "eventId": "39666541283485364792090671566412172152792127874786131972"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709228340,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:48.204351  4013 incremental_pipeline.cc:527] => Image sees 589 / 5643 points",
+            "ingestionTime": 1778709231148,
+            "eventId": "39666541283485364792090671566412172152792127874786131973"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709230341,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:50.032208  4013 incremental_pipeline.cc:524] Registering image #2393 (num_reg_frames=1002)",
+            "ingestionTime": 1778709236165,
+            "eventId": "39666541328109155934350448478690237370106664410167640064"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709230341,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:50.032256  4013 incremental_pipeline.cc:527] => Image sees 510 / 6465 points",
+            "ingestionTime": 1778709236165,
+            "eventId": "39666541328109155934350448478690237370106664410167640065"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709232341,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:51.630194  4013 incremental_pipeline.cc:524] Registering image #2391 (num_reg_frames=1003)",
+            "ingestionTime": 1778709236165,
+            "eventId": "39666541372710646331411694761761673915403387422128472066"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709232341,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:51.630244  4013 incremental_pipeline.cc:527] => Image sees 795 / 7848 points",
+            "ingestionTime": 1778709236165,
+            "eventId": "39666541372710646331411694761761673915403387422128472067"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709233342,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:53.167979  4013 incremental_pipeline.cc:524] Registering image #2392 (num_reg_frames=1004)",
+            "ingestionTime": 1778709236165,
+            "eventId": "39666541395033692275140848526438927906324397289614868484"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709233342,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:53.168028  4013 incremental_pipeline.cc:527] => Image sees 1318 / 7225 points",
+            "ingestionTime": 1778709236165,
+            "eventId": "39666541395033692275140848526438927906324397289614868485"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709235342,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:54.904693  4013 incremental_pipeline.cc:524] Registering image #2390 (num_reg_frames=1005)",
+            "ingestionTime": 1778709241182,
+            "eventId": "39666541439635182672202094815575169199694036950996090880"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709235342,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:54.904742  4013 incremental_pipeline.cc:527] => Image sees 1512 / 7028 points",
+            "ingestionTime": 1778709241182,
+            "eventId": "39666541439635182672202094815575169199694036950996090881"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709237343,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:56.701934  4013 incremental_pipeline.cc:524] Registering image #2394 (num_reg_frames=1006)",
+            "ingestionTime": 1778709241182,
+            "eventId": "39666541484258973814461871721788141463263408324462903298"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709237343,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:56.701989  4013 incremental_pipeline.cc:527] => Image sees 890 / 5168 points",
+            "ingestionTime": 1778709241182,
+            "eventId": "39666541484258973814461871721788141463263408324462903299"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709239343,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:58.415889  4013 incremental_pipeline.cc:524] Registering image #2325 (num_reg_frames=1007)",
+            "ingestionTime": 1778709241182,
+            "eventId": "39666541528860464211523118004859578008560131336423735300"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709239344,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:53:58.415936  4013 incremental_pipeline.cc:527] => Image sees 568 / 6511 points",
+            "ingestionTime": 1778709241182,
+            "eventId": "39666541528882764956721648628001113726832779697929715717"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709240344,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:00.251173  4013 incremental_pipeline.cc:524] Registering image #1777 (num_reg_frames=1008)",
+            "ingestionTime": 1778709246245,
+            "eventId": "39666541551183510155252271775658165345800804822431301632"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709240344,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:00.251219  4013 incremental_pipeline.cc:527] => Image sees 587 / 8760 points",
+            "ingestionTime": 1778709246245,
+            "eventId": "39666541551183510155252271775658165345800804822431301633"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709242344,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:02.125790  4013 incremental_pipeline.cc:524] Registering image #2362 (num_reg_frames=1009)",
+            "ingestionTime": 1778709246245,
+            "eventId": "39666541595785000552313518058729601891097527834392133634"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709242344,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:02.125844  4013 incremental_pipeline.cc:527] => Image sees 543 / 6371 points",
+            "ingestionTime": 1778709246245,
+            "eventId": "39666541595785000552313518058729601891097527834392133635"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709244345,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:03.831004  4013 incremental_pipeline.cc:524] Registering image #2361 (num_reg_frames=1010)",
+            "ingestionTime": 1778709246245,
+            "eventId": "39666541640408791694573294964942574154666899207858946052"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709244345,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:03.831071  4013 incremental_pipeline.cc:527] => Image sees 849 / 5555 points",
+            "ingestionTime": 1778709246245,
+            "eventId": "39666541640408791694573294964942574154666899207858946053"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709246346,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:05.489384  4013 incremental_pipeline.cc:524] Registering image #2395 (num_reg_frames=1011)",
+            "ingestionTime": 1778709252267,
+            "eventId": "39666541685032582836833071878435319918041570990004961280"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709246346,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:05.489435  4013 incremental_pipeline.cc:527] => Image sees 645 / 5513 points",
+            "ingestionTime": 1778709252267,
+            "eventId": "39666541685032582836833071878435319918041570990004961281"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709247346,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:07.137369  4013 incremental_pipeline.cc:524] Registering image #2363 (num_reg_frames=1012)",
+            "ingestionTime": 1778709252267,
+            "eventId": "39666541707333328035363695019971038190689932495985377282"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709247346,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:07.137418  4013 incremental_pipeline.cc:527] => Image sees 632 / 6238 points",
+            "ingestionTime": 1778709252267,
+            "eventId": "39666541707333328035363695019971038190689932495985377283"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709249346,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:08.967280  4013 incremental_pipeline.cc:524] Registering image #2360 (num_reg_frames=1013)",
+            "ingestionTime": 1778709252267,
+            "eventId": "39666541751934818432424941303042474735986655507946209284"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709249346,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:08.967366  4013 incremental_pipeline.cc:527] => Image sees 562 / 5668 points",
+            "ingestionTime": 1778709252267,
+            "eventId": "39666541751934818432424941303042474735986655507946209285"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709251347,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:10.554190  4013 incremental_pipeline.cc:524] Registering image #2358 (num_reg_frames=1014)",
+            "ingestionTime": 1778709257285,
+            "eventId": "39666541796558609574684718215321756414531333948135112704"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709251347,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:10.554236  4013 incremental_pipeline.cc:527] => Image sees 571 / 8425 points",
+            "ingestionTime": 1778709257285,
+            "eventId": "39666541796558609574684718215321756414531333948135112705"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709252347,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:12.322091  4013 incremental_pipeline.cc:524] Registering image #2359 (num_reg_frames=1015)",
+            "ingestionTime": 1778709257285,
+            "eventId": "39666541818859354773215341356857474687179695454115528706"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709252348,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:12.322139  4013 incremental_pipeline.cc:527] => Image sees 1220 / 6167 points",
+            "ingestionTime": 1778709257285,
+            "eventId": "39666541818881655518413871979999010405452343815621509123"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709254348,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:14.019279  4013 incremental_pipeline.cc:524] Registering image #2357 (num_reg_frames=1016)",
+            "ingestionTime": 1778709257285,
+            "eventId": "39666541863483145915475118263070446950749066827582341124"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709254348,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:14.019327  4013 incremental_pipeline.cc:527] => Image sees 1161 / 6620 points",
+            "ingestionTime": 1778709257285,
+            "eventId": "39666541863483145915475118263070446950749066827582341125"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709256349,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:15.881199  4013 incremental_pipeline.cc:524] Registering image #2356 (num_reg_frames=1017)",
+            "ingestionTime": 1778709262303,
+            "eventId": "39666541908106937057734895175349859724443034739925581824"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709256349,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:15.881249  4013 incremental_pipeline.cc:527] => Image sees 1275 / 9585 points",
+            "ingestionTime": 1778709262303,
+            "eventId": "39666541908106937057734895175349859724443034739925581825"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709258349,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:17.827809  4013 incremental_pipeline.cc:524] Registering image #2355 (num_reg_frames=1018)",
+            "ingestionTime": 1778709262303,
+            "eventId": "39666541952708427454796141458421296269739757751886413826"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709258349,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:17.827864  4013 incremental_pipeline.cc:527] => Image sees 1493 / 9783 points",
+            "ingestionTime": 1778709262303,
+            "eventId": "39666541952708427454796141458421296269739757751886413827"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709260350,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:19.842918  4013 incremental_pipeline.cc:524] Registering image #2354 (num_reg_frames=1019)",
+            "ingestionTime": 1778709262303,
+            "eventId": "39666541997332218597055918364634268533309129125353226244"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709260350,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:19.842968  4013 incremental_pipeline.cc:527] => Image sees 1894 / 9831 points",
+            "ingestionTime": 1778709262303,
+            "eventId": "39666541997332218597055918364634268533309129125353226245"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709262350,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:21.998145  4013 incremental_pipeline.cc:524] Registering image #2352 (num_reg_frames=1020)",
+            "ingestionTime": 1778709268796,
+            "eventId": "39666542041933708994117164655555650169915406169175031808"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709262350,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:21.998193  4013 incremental_pipeline.cc:527] => Image sees 1668 / 8715 points",
+            "ingestionTime": 1778709268796,
+            "eventId": "39666542041933708994117164655555650169915406169175031809"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709264351,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:24.073153  4013 incremental_pipeline.cc:524] Registering image #2351 (num_reg_frames=1021)",
+            "ingestionTime": 1778709268796,
+            "eventId": "39666542086557500136376941561768622433484777542641844226"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709264351,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:24.073203  4013 incremental_pipeline.cc:527] => Image sees 1097 / 8505 points",
+            "ingestionTime": 1778709268796,
+            "eventId": "39666542086557500136376941561768622433484777542641844227"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709266351,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:26.104591  4013 incremental_pipeline.cc:524] Registering image #2334 (num_reg_frames=1022)",
+            "ingestionTime": 1778709268796,
+            "eventId": "39666542131158990533438187844840058978781500554602676228"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709266351,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:26.104643  4013 incremental_pipeline.cc:527] => Image sees 695 / 7808 points",
+            "ingestionTime": 1778709268796,
+            "eventId": "39666542131158990533438187844840058978781500554602676229"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709268352,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:27.860240  4013 incremental_pipeline.cc:524] Registering image #2333 (num_reg_frames=1023)",
+            "ingestionTime": 1778709273811,
+            "eventId": "39666542175782781675697964757115318579538151978642636800"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709268352,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:27.860288  4013 incremental_pipeline.cc:527] => Image sees 1170 / 8722 points",
+            "ingestionTime": 1778709273811,
+            "eventId": "39666542175782781675697964757115318579538151978642636801"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709270353,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:29.591856  4013 incremental_pipeline.cc:524] Registering image #2330 (num_reg_frames=1024)",
+            "ingestionTime": 1778709273811,
+            "eventId": "39666542220406572817957741663328290843107523352109449218"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709270353,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:29.591905  4013 incremental_pipeline.cc:527] => Image sees 2030 / 10153 points",
+            "ingestionTime": 1778709273811,
+            "eventId": "39666542220406572817957741663328290843107523352109449219"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709272353,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:31.555631  4013 incremental_pipeline.cc:524] Registering image #2332 (num_reg_frames=1025)",
+            "ingestionTime": 1778709273811,
+            "eventId": "39666542265008063215018987946399727388404246364070281220"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709272353,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:31.555692  4013 incremental_pipeline.cc:527] => Image sees 3996 / 9604 points",
+            "ingestionTime": 1778709273811,
+            "eventId": "39666542265008063215018987946399727388404246364070281221"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709274354,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:33.710563  4013 incremental_pipeline.cc:524] Registering image #2329 (num_reg_frames=1026)",
+            "ingestionTime": 1778709279832,
+            "eventId": "39666542309631854357278764859891652891275912194736979968"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709274354,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:33.710613  4013 incremental_pipeline.cc:527] => Image sees 3787 / 10344 points",
+            "ingestionTime": 1778709279832,
+            "eventId": "39666542309631854357278764859891652891275912194736979969"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709276354,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:35.821771  4013 incremental_pipeline.cc:524] Registering image #2328 (num_reg_frames=1027)",
+            "ingestionTime": 1778709279832,
+            "eventId": "39666542354233344754340011142963089436572635206697811970"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709276354,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:35.821830  4013 incremental_pipeline.cc:527] => Image sees 3763 / 10131 points",
+            "ingestionTime": 1778709279832,
+            "eventId": "39666542354233344754340011142963089436572635206697811971"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709278355,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:38.010484  4013 incremental_pipeline.cc:524] Registering image #2327 (num_reg_frames=1028)",
+            "ingestionTime": 1778709279832,
+            "eventId": "39666542398857135896599788049176061700142006580164624388"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709278355,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:38.010533  4013 incremental_pipeline.cc:527] => Image sees 3395 / 9879 points",
+            "ingestionTime": 1778709279832,
+            "eventId": "39666542398857135896599788049176061700142006580164624389"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709280355,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:40.218325  4013 incremental_pipeline.cc:524] Registering image #2326 (num_reg_frames=1029)",
+            "ingestionTime": 1778709285877,
+            "eventId": "39666542443458626293661034339555653214566656322394718208"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709280355,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:40.218389  4013 incremental_pipeline.cc:527] => Image sees 2722 / 8427 points",
+            "ingestionTime": 1778709285877,
+            "eventId": "39666542443458626293661034339555653214566656322394718209"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709283361,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:42.463464  4013 incremental_pipeline.cc:524] Registering image #2349 (num_reg_frames=1030)",
+            "ingestionTime": 1778709285877,
+            "eventId": "39666542510494666360444087503012022342147631009371848706"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709283361,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:42.463510  4013 incremental_pipeline.cc:527] => Image sees 1048 / 6833 points",
+            "ingestionTime": 1778709285877,
+            "eventId": "39666542510494666360444087503012022342147631009371848707"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709284362,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:44.349936  4013 incremental_pipeline.cc:524] Registering image #2350 (num_reg_frames=1031)",
+            "ingestionTime": 1778709285877,
+            "eventId": "39666542532817712304173241267689276333068640876858245124"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709284362,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:44.349980  4013 incremental_pipeline.cc:527] => Image sees 2001 / 7964 points",
+            "ingestionTime": 1778709285877,
+            "eventId": "39666542532817712304173241267689276333068640876858245125"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709287363,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:46.453594  4013 incremental_pipeline.cc:524] Registering image #2331 (num_reg_frames=1032)",
+            "ingestionTime": 1778709292924,
+            "eventId": "39666542599742248644963641323957342968317427272141504512"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709287363,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:46.453642  4013 incremental_pipeline.cc:527] => Image sees 687 / 10640 points",
+            "ingestionTime": 1778709292924,
+            "eventId": "39666542599742248644963641323957342968317427272141504513"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709288363,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:48.054188  4013 incremental_pipeline.cc:524] Registering image #2320 (num_reg_frames=1033)",
+            "ingestionTime": 1778709292924,
+            "eventId": "39666542622042993843494264465493061240965788778121920514"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709288363,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:48.054239  4013 incremental_pipeline.cc:527] => Image sees 972 / 10506 points",
+            "ingestionTime": 1778709292924,
+            "eventId": "39666542622042993843494264465493061240965788778121920515"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709290363,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:49.813135  4013 incremental_pipeline.cc:524] Registering image #2309 (num_reg_frames=1034)",
+            "ingestionTime": 1778709292924,
+            "eventId": "39666542666644484240555510748564497786262511790082752516"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709290364,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:49.813184  4013 incremental_pipeline.cc:527] => Image sees 1176 / 10509 points",
+            "ingestionTime": 1778709292924,
+            "eventId": "39666542666666784985754041371706033504535160151588732933"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709292364,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:51.692260  4013 incremental_pipeline.cc:524] Registering image #2298 (num_reg_frames=1035)",
+            "ingestionTime": 1778709297941,
+            "eventId": "39666542711268275382815287660842336626221050776051318784"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709292364,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:51.692310  4013 incremental_pipeline.cc:527] => Image sees 1197 / 10242 points",
+            "ingestionTime": 1778709297941,
+            "eventId": "39666542711268275382815287660842336626221050776051318785"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709294365,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:53.809103  4013 incremental_pipeline.cc:524] Registering image #2459 (num_reg_frames=1036)",
+            "ingestionTime": 1778709297941,
+            "eventId": "39666542755892066525075064567055308889790422149518131202"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709294365,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:53.809152  4013 incremental_pipeline.cc:527] => Image sees 1097 / 9873 points",
+            "ingestionTime": 1778709297941,
+            "eventId": "39666542755892066525075064567055308889790422149518131203"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709296365,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:55.523775  4013 incremental_pipeline.cc:524] Registering image #2869 (num_reg_frames=1037)",
+            "ingestionTime": 1778709297941,
+            "eventId": "39666542800493556922136310850126745435087145161478963204"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709296365,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:55.523824  4013 incremental_pipeline.cc:527] => Image sees 1740 / 9892 points",
+            "ingestionTime": 1778709297941,
+            "eventId": "39666542800493556922136310850126745435087145161478963205"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709297366,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:57.335476  4013 incremental_pipeline.cc:524] Registering image #2491 (num_reg_frames=1038)",
+            "ingestionTime": 1778709302958,
+            "eventId": "39666542822816602865865464620869396904498954040751882240"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709297366,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:57.335526  4013 incremental_pipeline.cc:527] => Image sees 1458 / 8722 points",
+            "ingestionTime": 1778709302958,
+            "eventId": "39666542822816602865865464620869396904498954040751882241"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709299366,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:58.935783  4013 incremental_pipeline.cc:524] Registering image #2457 (num_reg_frames=1039)",
+            "ingestionTime": 1778709302958,
+            "eventId": "39666542867418093262926710903940833449795677052712714242"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709299367,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:54:58.935829  4013 incremental_pipeline.cc:527] => Image sees 1902 / 10498 points",
+            "ingestionTime": 1778709302958,
+            "eventId": "39666542867440394008125241527082369168068325414218694659"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709301367,
+            "message": "COLMAP[mapper_spatial_sequential_only] I20260513 21:55:00.700836  4013 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1778709302958,
+            "eventId": "39666542912041884405186487810153805713365048426179526660"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709361863,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=5920s idle=60s",
+            "ingestionTime": 1778709367336,
+            "eventId": "39666544261147765935495065458326982910611760541240393728"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709422175,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=5980s idle=120s",
+            "ingestionTime": 1778709427988,
+            "eventId": "39666545606150310349274008443952780197914543036305309696"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709482518,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6040s idle=180s",
+            "ingestionTime": 1778709488419,
+            "eventId": "39666546951844177864207400746699603347920739832658657280"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709541948,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6100s idle=240s",
+            "ingestionTime": 1778709547783,
+            "eventId": "39666548277177465012882334119933692567847038734160035840"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709602246,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6160s idle=300s",
+            "ingestionTime": 1778709608174,
+            "eventId": "39666549621867798993881848381262998932819088351782043648"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709662534,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6220s idle=360s",
+            "ingestionTime": 1778709667882,
+            "eventId": "39666550966335125522896056410350404713436209910941810688"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709721899,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6280s idle=420s",
+            "ingestionTime": 1778709727519,
+            "eventId": "39666552290218864233666499279715222812321370367368232960"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709782283,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6340s idle=480s",
+            "ingestionTime": 1778709788084,
+            "eventId": "39666553636827062301739647131426424148365267588744806400"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709842585,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6400s idle=540s",
+            "ingestionTime": 1778709848663,
+            "eventId": "39666554981606599263533283885548825039671723904003735552"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709902003,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6460s idle=600s",
+            "ingestionTime": 1778709908035,
+            "eventId": "39666556306672277469825849781094651410479130687057035264"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778709962408,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6520s idle=660s",
+            "ingestionTime": 1778709967649,
+            "eventId": "39666557653748791187068140717628732784222502815987335168"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778710021900,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6580s idle=720s",
+            "ingestionTime": 1778710027148,
+            "eventId": "39666558980464724538051972725801674181154965274564296704"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778710082375,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6640s idle=780s",
+            "ingestionTime": 1778710087642,
+            "eventId": "39666560329102290419191407283307014075959656569589792768"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778710142819,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6700s idle=840s",
+            "ingestionTime": 1778710148390,
+            "eventId": "39666561677048533199176392523731764665006523829846409216"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778710202219,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6760s idle=900s",
+            "ingestionTime": 1778710208650,
+            "eventId": "39666563001712797991895407203803096928433774599591690240"
+        },
+        {
+            "logStreamName": "md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048",
+            "timestamp": 1778710262708,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6820s idle=960s",
+            "ingestionTime": 1778710268451,
+            "eventId": "39666564350662574305814270484452249253867284725848539136"
+        }
+    ],
+    "searchedLogStreams": []
+}
