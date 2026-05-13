@@ -67,6 +67,32 @@ def overdense_leaf_attribution() -> dict:
     return attr
 
 
+def density_capped_regression_attribution() -> dict:
+    attr = attribution()
+    attr.pop("density_v2_minus_baseline_bucket_delta", None)
+    attr["density_capped_minus_reference_bucket_delta"] = {
+        "boundary": {"psnr": -0.366, "ssim": -0.0058, "lpips": 0.0726},
+        "horizon": {"psnr": -0.784, "ssim": -0.0137, "lpips": 0.0965},
+        "near_detail": {"psnr": -0.81, "ssim": 0.0165, "lpips": 0.0623},
+    }
+    attr["tested_candidate"] = {
+        "candidate": "density_capped_loss_weighting_tile04_plus_tile10_rollback_bg10",
+        "promotion_block_reasons": [
+            "boundary_lpips_regression",
+            "boundary_no_required_improvement",
+            "horizon_psnr_regression",
+            "horizon_ssim_regression",
+            "horizon_lpips_regression",
+        ],
+        "v18_non_regression_block_reasons": [
+            "boundary_v18_median_lpips_regression",
+            "horizon_v18_median_psnr_regression",
+            "horizon_v18_median_lpips_regression",
+        ],
+    }
+    return attr
+
+
 def valid_candidate() -> dict:
     return {
         "targeted_quality_blockers": ["boundary_no_required_improvement"],
@@ -289,6 +315,104 @@ class PlanMd1BoundaryObjectiveStrategyTests(unittest.TestCase):
             gate["density_control_implementation"]["environment"],
             {"TRAINING_MAX_GAUSS_RATIO": "3.0", "TRAINING_STOP_SPLIT_AT": "6500"},
         )
+
+    def test_records_density_capped_quality_regression_as_failed_hypothesis(self):
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=density_capped_regression_attribution(),
+            candidate_objective=None,
+            max_estimated_usd=2.0,
+        )
+
+        hypotheses = {item["hypothesis"] for item in report["failed_hypotheses"]}
+        self.assertIn("density_capped_loss_weighting_quality_regression", hypotheses)
+        self.assertIn("boundary_lpips_regression", report["current_quality_blockers"])
+        self.assertIn("horizon_lpips_regression", report["current_quality_blockers"])
+        self.assertIn("horizon.lpips", report["required_next_hypothesis"]["expected_metric_axes"])
+
+    def test_blocks_next_candidate_that_repeats_hard_density_cap_after_quality_regression(self):
+        candidate = valid_candidate()
+        candidate["targeted_quality_blockers"] = [
+            "boundary_no_required_improvement",
+            "boundary_lpips_regression",
+            "horizon_psnr_regression",
+            "horizon_ssim_regression",
+            "horizon_lpips_regression",
+        ]
+        candidate["expected_metric_axes"] = [
+            "boundary.required_improvement",
+            "boundary.lpips",
+            "horizon.psnr",
+            "horizon.ssim",
+            "horizon.lpips",
+        ]
+        candidate["objective_changes"] = [
+            "boundary_loss_weighting",
+            "density_capped_loss_weighting",
+        ]
+        candidate["objective_implementation"]["environment"].update(
+            {
+                "BOUNDARY_LOSS_WEIGHT": "1.15",
+                "TRAINING_DENSITY_CAP_ENABLED": "1",
+                "TRAINING_MAX_OUTPUT_GAUSSIANS": "984154",
+            }
+        )
+
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=density_capped_regression_attribution(),
+            candidate_objective=candidate,
+            max_estimated_usd=2.0,
+        )
+
+        gate = report["candidate_objective_gate"]
+        self.assertIn(
+            "objective_repeats_failed_density_cap_loss_weighting_hypothesis",
+            gate["block_reasons"],
+        )
+        self.assertFalse(report["paid_retry_allowed"])
+
+    def test_allows_quality_preserving_density_control_after_density_cap_regression(self):
+        candidate = valid_candidate()
+        candidate["targeted_quality_blockers"] = [
+            "boundary_no_required_improvement",
+            "boundary_lpips_regression",
+            "horizon_psnr_regression",
+            "horizon_ssim_regression",
+            "horizon_lpips_regression",
+        ]
+        candidate["expected_metric_axes"] = [
+            "boundary.required_improvement",
+            "boundary.lpips",
+            "horizon.psnr",
+            "horizon.ssim",
+            "horizon.lpips",
+        ]
+        candidate["objective_changes"] = [
+            "boundary_loss_weighting",
+            "soft_density_control",
+            "quality_preserving",
+            "horizon_preserving",
+        ]
+        candidate["objective_implementation"]["environment"].update(
+            {
+                "BOUNDARY_LOSS_WEIGHT": "1.15",
+                "TRAINING_MAX_GAUSS_RATIO": "1.35",
+                "TRAINING_STOP_SPLIT_AT": "6500",
+            }
+        )
+
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=density_capped_regression_attribution(),
+            candidate_objective=candidate,
+            max_estimated_usd=2.0,
+        )
+
+        self.assertEqual(report["candidate_objective_gate"]["decision"], "paid_retry_allowed")
 
 
 if __name__ == "__main__":

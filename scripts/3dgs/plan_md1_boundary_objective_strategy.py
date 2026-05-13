@@ -33,6 +33,18 @@ FAILED_DENSITY_OR_MERGE_TERMS = (
     "merge_only",
     "retention_only",
 )
+FAILED_DENSITY_CAP_TERMS = (
+    "density_cap",
+    "density_capped",
+    "hard_cap",
+    "output_cap",
+)
+QUALITY_PRESERVING_DENSITY_TERMS = (
+    "density_preserving",
+    "soft_density_control",
+    "horizon_preserving",
+    "quality_preserving",
+)
 FAILED_FRAME_REPEAT_TERMS = (
     "boundary_frame_repeat",
     "camera_repeat",
@@ -336,6 +348,10 @@ def current_quality_blockers(
 ) -> list[str]:
     values = list_strings(quality_strategy.get("current_quality_blockers"))
     values.extend(list_strings(responsible_tiles.get("current_quality_blockers")))
+    values.extend(list_strings(attribution.get("promotion_block_reasons")))
+    tested_candidate = attribution.get("tested_candidate")
+    if isinstance(tested_candidate, Mapping):
+        values.extend(list_strings(tested_candidate.get("promotion_block_reasons")))
     block_reasons = attribution.get("block_reasons")
     if isinstance(block_reasons, Mapping):
         values.extend(list_strings(block_reasons.get("protected")))
@@ -382,6 +398,23 @@ def extract_failed_hypotheses(attribution: Mapping[str, Any]) -> list[dict[str, 
                 "metric_delta_vs_reference_bg10": camera_weighting_delta,
             }
         )
+    density_capped_delta = attribution.get("density_capped_minus_reference_bucket_delta")
+    if isinstance(density_capped_delta, Mapping):
+        tested_candidate = attribution.get("tested_candidate")
+        if not isinstance(tested_candidate, Mapping):
+            tested_candidate = {}
+        failed.append(
+            {
+                "hypothesis": "density_capped_loss_weighting_quality_regression",
+                "status": "failed",
+                "evidence": "The density-capped/loss-weighted tile_04 leaf passed density guards but worsened horizon, boundary LPIPS, and near-detail LPIPS versus the tile04 boundary+horizon bg10 reference.",
+                "metric_delta_vs_reference_bg10": density_capped_delta,
+                "promotion_block_reasons": list_strings(tested_candidate.get("promotion_block_reasons")),
+                "v18_non_regression_block_reasons": list_strings(
+                    tested_candidate.get("v18_non_regression_block_reasons")
+                ),
+            }
+        )
     leaf_gate_block_reasons = list_strings(attribution.get("leaf_gate_block_reasons"))
     block_reasons = attribution.get("block_reasons")
     if isinstance(block_reasons, Mapping):
@@ -422,24 +455,47 @@ def repeats_failed_frame_repeat_without_loss(changes: Sequence[str]) -> bool:
     return has_frame_repeat and not has_loss_weighting
 
 
+def repeats_failed_density_cap(changes: Sequence[str], failed_hypotheses: Sequence[Mapping[str, Any]]) -> bool:
+    if not changes:
+        return False
+    if not any(item.get("hypothesis") == "density_capped_loss_weighting_quality_regression" for item in failed_hypotheses):
+        return False
+    normalized = " ".join(changes).lower()
+    has_hard_cap = any(term in normalized for term in FAILED_DENSITY_CAP_TERMS)
+    has_quality_preserving_density = any(term in normalized for term in QUALITY_PRESERVING_DENSITY_TERMS)
+    return has_hard_cap and not has_quality_preserving_density
+
+
 def has_horizon_blocker(blockers: Sequence[str]) -> bool:
     return any(str(reason).startswith("horizon_") for reason in blockers)
 
 
-def required_horizon_axes(blockers: Sequence[str]) -> list[str]:
+def required_bucket_axes(blockers: Sequence[str], *, bucket: str) -> list[str]:
     required: list[str] = []
+    prefix = f"{bucket}_"
     for reason in blockers:
         normalized = str(reason).lower()
-        if not normalized.startswith("horizon_"):
+        if not normalized.startswith(prefix):
             continue
         if "psnr" in normalized:
-            required.append("horizon.psnr")
+            required.append(f"{bucket}.psnr")
         if "ssim" in normalized:
-            required.append("horizon.ssim")
+            required.append(f"{bucket}.ssim")
         if "lpips" in normalized:
-            required.append("horizon.lpips")
+            required.append(f"{bucket}.lpips")
         if "sky" in normalized:
-            required.append("horizon.sky_score")
+            required.append(f"{bucket}.sky_score")
+    return ordered_unique(required)
+
+
+def required_horizon_axes(blockers: Sequence[str]) -> list[str]:
+    return required_bucket_axes(blockers, bucket="horizon")
+
+
+def required_boundary_axes(blockers: Sequence[str]) -> list[str]:
+    required = required_bucket_axes(blockers, bucket="boundary")
+    if BOUNDARY_BLOCKER in blockers:
+        required.append("boundary.required_improvement")
     return ordered_unique(required)
 
 
@@ -452,6 +508,7 @@ def evaluate_candidate_objective(
     candidate_objective: Mapping[str, Any] | None,
     current_blockers: Sequence[str],
     responsible_tiles: Mapping[str, Any],
+    failed_hypotheses: Sequence[Mapping[str, Any]] = (),
     max_estimated_usd: float,
 ) -> dict[str, Any]:
     block_reasons: list[str] = []
@@ -519,8 +576,10 @@ def evaluate_candidate_objective(
         warnings.append("objective_does_not_name_all_horizon_frozen_cameras")
 
     axes = expected_metric_axes(candidate_objective)
-    if BOUNDARY_BLOCKER in current_blockers and "boundary.required_improvement" not in axes:
-        block_reasons.append("objective_missing_boundary_required_improvement_axis")
+    missing_boundary_axes = [axis for axis in required_boundary_axes(current_blockers) if axis not in axes]
+    for axis in missing_boundary_axes:
+        suffix = axis.rsplit(".", 1)[-1]
+        block_reasons.append(f"objective_missing_boundary_{suffix}_axis")
     missing_horizon_axes = [axis for axis in required_horizon_axes(current_blockers) if axis not in axes]
     for axis in missing_horizon_axes:
         suffix = axis.rsplit(".", 1)[-1]
@@ -533,6 +592,8 @@ def evaluate_candidate_objective(
         block_reasons.append("objective_repeats_failed_density_or_merge_only_hypothesis")
     if repeats_failed_frame_repeat_without_loss(changes):
         block_reasons.append("objective_repeats_failed_frame_repeat_without_loss_weighting")
+    if repeats_failed_density_cap(changes, failed_hypotheses):
+        block_reasons.append("objective_repeats_failed_density_cap_loss_weighting_hypothesis")
     loss_weighting_knobs = implemented_loss_weighting_knobs(candidate_objective)
     if has_loss_weighting_change(changes) and not any(loss_weighting_knobs.values()):
         block_reasons.append("objective_missing_loss_weighting_implementation")
@@ -573,6 +634,7 @@ def evaluate_candidate_objective(
         "horizon_camera_ids": candidate_horizon_cameras,
         "missing_horizon_frozen_cameras": missing_horizon_cameras,
         "expected_metric_axes": axes,
+        "missing_boundary_metric_axes": missing_boundary_axes,
         "missing_horizon_metric_axes": missing_horizon_axes,
         "objective_changes": changes,
         "loss_weighting_implementation": loss_weighting_knobs,
@@ -598,6 +660,7 @@ def plan_boundary_objective_strategy(
         candidate_objective=candidate_objective,
         current_blockers=blockers,
         responsible_tiles=responsible_tiles,
+        failed_hypotheses=failed_hypotheses,
         max_estimated_usd=max_estimated_usd,
     )
     primary_boundary_tiles = list_strings(responsible_tiles.get("primary_responsible_tile_ids"))
@@ -613,6 +676,9 @@ def plan_boundary_objective_strategy(
 
     paid_allowed = candidate_gate["decision"] == "paid_retry_allowed"
     recommendation = "candidate_objective_can_enter_leaf_only_gate" if paid_allowed else "no_paid_retry_until_objective_redesign"
+    required_axes = ordered_unique(
+        required_boundary_axes(blockers) + required_horizon_axes(blockers) + ["boundary.psnr", "boundary.ssim", "boundary.lpips"]
+    )
 
     return {
         "checked_at": now_iso(),
@@ -639,9 +705,10 @@ def plan_boundary_objective_strategy(
                 "tile_10 density-only repair",
                 "merge-only protected overlap retention",
                 "frame-repeat-only camera weighting without loss/objective redesign",
+                "hard density-cap/loss-weighting retry that does not explicitly preserve horizon and LPIPS quality",
                 "full 14-tile training before staged R0/R1/R2/R3 gates",
             ],
-            "expected_metric_axes": ["boundary.required_improvement", "boundary.psnr", "boundary.ssim", "boundary.lpips"],
+            "expected_metric_axes": required_axes,
         },
         "candidate_objective_gate": candidate_gate,
         "next_no_spend_actions": [

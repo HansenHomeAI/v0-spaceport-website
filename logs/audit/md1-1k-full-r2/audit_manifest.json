@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "c27fbe995784c4a37b7f3649c270de243bfffc88",
+  "current_branch_head": "b25ea9e9dbadc95bc92748d99ab5f7815619cea5",
   "current_exact_head_gate_status": "exact-head c27fbe995784c4a37b7f3649c270de243bfffc88 green on CDK Deploy 25766801621 and ML Container Build 25766801616 before bounded V18 retry2",
   "current_live_compute_status": "No SageMaker training jobs or processing jobs are InProgress after retry2; review job completed and failed quality gates.",
-  "current_rung": "R4_density_capped_bg10_merge_preflight_passed_review_rendered_but_quality_blocked",
+  "current_rung": "R4_density_capped_bg10_review_quality_blocked_no_spend_objective_redesign",
   "evidence_events": [
     {
       "billable_seconds": 412,
@@ -1000,6 +1000,7 @@
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
   "latest_boundary_responsible_tile_plan_status": "boundary primary tile_04/tile_10; horizon primary tile_04/tile_01; tile04 dryrun covers tile01/tile10 context support",
+  "latest_cost_control": "full14_lod_promotion_blocked; no paid retry until density-cap regression objective guard plus concrete quality-preserving candidate and leaf-submit readiness pass; unrecorded active job was stopped and recorded",
   "latest_evidence": {
     "merge_preflight_summary": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260512.json",
     "review_retry_cloudwatch_tail": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-cloudwatch-tail-20260512.txt",
@@ -1048,7 +1049,7 @@
     "training_jobs_in_progress": []
   },
   "latest_lod_production_readiness_status": "logs/md1-r4-tile10-rollback-lod-production-readiness-20260506.json reports viewer_ready_quality_blocked; --require-promotion-ready now exits 3 and wrote logs/md1-r4-tile10-rollback-lod-production-readiness-promotion-required-20260506.json, preventing promotion callers from accepting viewer readiness alone.",
-  "latest_md1_cost_reduction_status": "density_capped_bg10_review_retry2_quality_blocked_attribution_holds_paid_retry",
+  "latest_md1_cost_reduction_status": "density_capped_quality_blocked_no_spend_objective_redesign_guarded_untracked_compute_stopped",
   "latest_md1_live_compute_status": "2026-05-12T19:12Z no MD1 SageMaker training or processing jobs InProgress after density-capped tile_04 leaf gate passed",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
@@ -1061,9 +1062,27 @@
   "latest_quality_strategy_gate_status": "tile04_boundary_horizon_leaf_dryrun_quality_gate_allowed; boundary_only_previous_dryrun_blocked_missing_horizon",
   "latest_review_comparison_path": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-r4-density-capped-loss-weighting-leaf-bg10-review-v18colmap-retry2-20260512/outputs/r4-t04dcap-bg10-v18colmap-smoke-p24-retry2/md1-r1-r4-t04dcap-bg10-v18colmap-smoke-p24-retry2-1778630491-qu/output/model.tar.gz::review_comparison.json",
   "latest_review_status": "Retry2 rendered the frozen p24 cameras, but V18 non-regression and AI visual QA are blocked; no promotion/viewer smoke/full14 is eligible.",
-  "latest_sagemaker_evidence_spend_total_usd": 14.8046,
+  "latest_sagemaker_evidence_spend_total_usd": 14.9046,
   "latest_tile04_leaf_reuse_merge_dryrun_status": "density-capped tile_04 leaf passed post-leaf preflight/gate with 984154 splats, 128 images, and filtered scaffold; no-training bg10 tile_10 rollback merge payload dry-run is generated and merge/review gate allows only that next step.",
+  "latest_tracked_sagemaker_evidence_spend_before_untracked_stop_usd": 14.8046,
   "latest_training_cost_reduction_status": "Evidence spend now about $14.067. The over-dense tile_04 loss-weighting failure was fixed with a density-capped leaf that passed the splat guard at 1.029x reference in 2508 billable seconds/about $0.513. No full 14-tile training, paid merge/review, LOD packaging, or promotion launched; next step is bounded no-training merge/review plus V18/visual QA gates.",
+  "latest_untracked_sagemaker_stop_20260513": {
+    "checked_at": "2026-05-13T00:37:08Z",
+    "describe_json": "logs/md1-sample8-cpu-qc-1778632320-describe-20260513.json",
+    "estimated_usd": 0.1,
+    "full_14tile_training_launched": false,
+    "image_tag": "agent73948216sfmproductionspine",
+    "instance_type": "ml.g5.2xlarge",
+    "job_name": "md1-sample8-cpu-qc-1778632320",
+    "lod_or_promotion_launched": false,
+    "max_runtime_seconds": 2400,
+    "output_s3_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample8-cpu-quality-20260513T003200Z/",
+    "reason": "unrecorded active paid job found during heartbeat AWS live-state check; no matching STATE/log/audit entry and older image tag",
+    "runtime_seconds_estimate": 237.589,
+    "started_at": "2026-05-13T00:33:10.248Z",
+    "status": "Stopped",
+    "stopped_at": "2026-05-13T00:37:07.837Z"
+  },
   "live_compute_status": "No SageMaker training jobs are InProgress. Exact-head 921af091c12623e48ef5059d4d690ae22a41e5be has green CDK Deploy 25290626758. Tile_13 hard proof is complete/preflighted/cached; unrelated Meadow processing r5l80c1098adj-1777834845 remains InProgress.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
@@ -4236,6 +4255,43 @@
       "panel_count": 12,
       "view_count": 12
     }
+  },
+  "md1_r4_density_capped_quality_regression_objective_strategy_20260513": {
+    "candidate_objective_block_reasons": [
+      "candidate_objective_missing"
+    ],
+    "candidate_objective_decision": "paid_retry_blocked",
+    "checked_at": "2026-05-13T00:39:18Z",
+    "current_quality_blockers": [
+      "boundary_lpips_regression",
+      "boundary_no_required_improvement",
+      "horizon_lpips_regression",
+      "horizon_psnr_regression",
+      "horizon_ssim_regression"
+    ],
+    "failed_hypotheses": [
+      "density_capped_loss_weighting_quality_regression"
+    ],
+    "full_14tile_training_launched": false,
+    "hard_density_cap_repetition_block_reason": "objective_repeats_failed_density_cap_loss_weighting_hypothesis",
+    "lod_or_promotion_launched": false,
+    "next_required_action": "no-spend concrete candidate objective JSON only; require objective gate plus leaf-submit readiness, exact-head workflows, AWS idle, cost/runtime caps, density guard, and V18 comparison plan before any paid proof",
+    "report_json": "logs/md1-r4-density-capped-quality-regression-objective-strategy-20260513.json",
+    "required_metric_axes": [
+      "boundary.lpips",
+      "boundary.required_improvement",
+      "horizon.lpips",
+      "horizon.psnr",
+      "horizon.ssim",
+      "boundary.psnr",
+      "boundary.ssim"
+    ],
+    "script": "scripts/3dgs/plan_md1_boundary_objective_strategy.py",
+    "status": "no_spend_guard_added_paid_retry_blocked",
+    "tests": [
+      "python3 -m unittest tests.unit.test_plan_md1_boundary_objective_strategy",
+      "python3 -m py_compile scripts/3dgs/plan_md1_boundary_objective_strategy.py"
+    ]
   },
   "md1_r4_density_context_attribution_20260505": {
     "analysis_path": "logs/md1-cost-reduction-r4-density-context-attribution-20260505.json",
@@ -8743,7 +8799,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Commit/push retry2 evidence/status/attribution, then design a conservative no-spend objective that starts from the tile04 boundary+horizon leaf reference, avoids repeat-only and hard density-cap-only changes, protects horizon metrics, and requires a fresh dry-run/objective gate before any new paid proof. Do not launch full14/LOD/promotion.",
+  "next_unblocked_step": "Draft a no-spend concrete candidate objective JSON starting from tile04 boundary+horizon bg10 reference, using quality-preserving soft density controls rather than hard density cap repetition, targeting boundary LPIPS/no-required-improvement plus horizon PSNR/SSIM/LPIPS; then run objective and leaf-submit gates before any paid proof.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
