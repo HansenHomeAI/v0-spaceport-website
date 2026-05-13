@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "bfb69b3e177d5ae3baeb2c7f7cf919943e2e87b0 pushed; exact-head CDK Deploy 25823709959 green; MD1 paid submit blocked by active baseline processing job.",
-  "current_exact_head_gate_status": "exact-head bfb69b3e177d5ae3baeb2c7f7cf919943e2e87b0 green on CDK Deploy 25823709959.",
-  "current_live_compute_status": "Exact-head bfb69b3e is green on CDK Deploy 25823709959. SageMaker training is idle; source-attributed SFM canary md1-sample40-ds1000-r13-1778701888 completed in 2658 billable seconds with artifact s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample40-ds1000-r13-quality-20260513T195128Z/md1-sample40-ds1000-r13-1778701888/output/model.tar.gz. Baseline processing md1-baseline-e2e-20260513115645-sfm remains InProgress, so no MD1 compute launched.",
-  "current_rung": "R0_visual_sentinel_leaf_readiness_blocked_on_source_attributed_active_processing",
+  "current_branch_head": "f1ecbcdbbac82b07f69f36c96090e1c9012274bb pushed; exact-head CDK Deploy 25825161997 green; MD1 paid submit blocked by active source-attributed SageMaker jobs.",
+  "current_exact_head_gate_status": "exact-head f1ecbcdbbac82b07f69f36c96090e1c9012274bb green on CDK Deploy 25825161997.",
+  "current_live_compute_status": "Exact-head f1ecbcdb is green on CDK Deploy 25825161997. AWS still has source-attributed SFM training md1-sample40-ds1000-r14-1778705722 InProgress (Environment=agent73948216sfmproductionspine, CodeHead=fadf6e35623789c64ed7497ceda09c87376b46e8, Validation=md1-sample40-ds1000-r14-quality-canary, MaxRuntime=14400) plus baseline processing md1-baseline-e2e-20260513115645-sfm InProgress. No MD1 compute launched.",
+  "current_rung": "R0_visual_sentinel_leaf_readiness_blocked_on_source_attributed_active_jobs",
   "evidence_events": [
     {
       "billable_seconds": 412,
@@ -901,6 +901,22 @@
       ],
       "spend_estimated_usd": 0,
       "next": "Wait for processing idle, rerun readiness, then at most one R0 tile_04 visual-sentinel proof."
+    },
+    {
+      "timestamp": "2026-05-13T21:06:55Z",
+      "event": "md1_r0_visual_sentinel_r14_active_jobs_recorded",
+      "summary": "Exact-head f1ecbcdb is green on CDK Deploy 25825161997. AWS still has source-attributed SFM training md1-sample40-ds1000-r14-1778705722 InProgress (Environment=agent73948216sfmproductionspine, CodeHead=fadf6e35623789c64ed7497ceda09c87376b46e8, Validation=md1-sample40-ds1000-r14-quality-canary, MaxRuntime=14400) plus baseline processing md1-baseline-e2e-20260513115645-sfm InProgress. No MD1 compute launched.",
+      "evidence": [
+        "logs/md1-r0-visual-sentinel-exact-head-workflows-r14hold-20260513.json",
+        "logs/md1-r0-visual-sentinel-live-training-inprogress-r14-20260513.json",
+        "logs/md1-r0-visual-sentinel-live-processing-inprogress-r14-20260513.json",
+        "logs/md1-sample40-ds1000-r14-1778705722-active-describe-20260513.json",
+        "logs/md1-sample40-ds1000-r14-1778705722-tags-20260513.json",
+        "logs/md1-baseline-e2e-20260513115645-sfm-active-describe-r14check-20260513.json",
+        "logs/md1-baseline-e2e-20260513115645-sfm-tags-r14check-20260513.json"
+      ],
+      "spend_estimated_usd": 0,
+      "next": "Wait for AWS idle, rerun readiness, then at most one R0 tile_04 visual-sentinel proof."
     }
   ],
   "exact_head_gate_status": "exact-head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 green on CDK Deploy 25478133157; Deploy CDK Stacks and CDK Diff skipped by scope detection; no ML Container Build appeared for this non-container status commit; previous container-affecting head 6249a280443438790e5f9d11512fe6714c1a0728 remains green on CDK Deploy 25475213765, Trigger ML Container Build 25475213781, and CodeBuild spaceport-ml-containers:ae9b6cea-6c39-4bf8-a885-f0eb5336ee4a",
@@ -1230,7 +1246,7 @@
     "local_status_update_pending_commit": true,
     "ml_container_build": "not_triggered_for_non_container_status_commit"
   },
-  "last_updated": "2026-05-13T20:36:48Z",
+  "last_updated": "2026-05-13T21:06:55Z",
   "latest_bg10_merge_input_materialization_status": {
     "exact_head_workflows_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-exact-head-workflows-current-20260513.json",
     "input_materialization_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-input-materialization-current-20260513.json",
@@ -1452,7 +1468,7 @@
     "conclusion": "success",
     "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25815046996"
   },
-  "latest_exact_head_workflows": "logs/md1-r0-visual-sentinel-exact-head-workflows-training-idle-processing-active-20260513.json",
+  "latest_exact_head_workflows": "logs/md1-r0-visual-sentinel-exact-head-workflows-r14hold-20260513.json",
   "latest_hard_output_cap_visual_fidelity_review_status": {
     "ai_visual_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-ai-visual-review-20260513.json",
     "attribution_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-review-r1-attribution-20260513.json",
@@ -1547,10 +1563,10 @@
     "visual_qa_manifest_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-visual-qa-manifest-20260513.json"
   },
   "latest_leaf_submit_readiness_gate_status": "R0 tile_04 visual-sentinel readiness blocked only by active source-attributed non-MD1 SageMaker training/processing jobs. Exact head green, objective gate allowed, merge/review gate blocked only on missing tile_04 leaf summary, strategy dry-run only, estimated $0.4907 under $0.75.",
-  "latest_live_compute_status": "Exact-head bfb69b3e is green on CDK Deploy 25823709959. SageMaker training is idle; source-attributed SFM canary md1-sample40-ds1000-r13-1778701888 completed in 2658 billable seconds with artifact s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample40-ds1000-r13-quality-20260513T195128Z/md1-sample40-ds1000-r13-1778701888/output/model.tar.gz. Baseline processing md1-baseline-e2e-20260513115645-sfm remains InProgress, so no MD1 compute launched.",
+  "latest_live_compute_status": "Exact-head f1ecbcdb is green on CDK Deploy 25825161997. AWS still has source-attributed SFM training md1-sample40-ds1000-r14-1778705722 InProgress (Environment=agent73948216sfmproductionspine, CodeHead=fadf6e35623789c64ed7497ceda09c87376b46e8, Validation=md1-sample40-ds1000-r14-quality-canary, MaxRuntime=14400) plus baseline processing md1-baseline-e2e-20260513115645-sfm InProgress. No MD1 compute launched.",
   "latest_lod_production_readiness_status": "logs/md1-r4-tile10-rollback-lod-production-readiness-20260506.json reports viewer_ready_quality_blocked; --require-promotion-ready now exits 3 and wrote logs/md1-r4-tile10-rollback-lod-production-readiness-promotion-required-20260506.json, preventing promotion callers from accepting viewer readiness alone.",
   "latest_md1_cost_reduction_status": "soft_density_failed_hypothesis_encoded_no_paid_retry_allowed",
-  "latest_md1_live_compute_status": "Exact-head bfb69b3e is green on CDK Deploy 25823709959. SageMaker training is idle; source-attributed SFM canary md1-sample40-ds1000-r13-1778701888 completed in 2658 billable seconds with artifact s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample40-ds1000-r13-quality-20260513T195128Z/md1-sample40-ds1000-r13-1778701888/output/model.tar.gz. Baseline processing md1-baseline-e2e-20260513115645-sfm remains InProgress, so no MD1 compute launched.",
+  "latest_md1_live_compute_status": "Exact-head f1ecbcdb is green on CDK Deploy 25825161997. AWS still has source-attributed SFM training md1-sample40-ds1000-r14-1778705722 InProgress (Environment=agent73948216sfmproductionspine, CodeHead=fadf6e35623789c64ed7497ceda09c87376b46e8, Validation=md1-sample40-ds1000-r14-quality-canary, MaxRuntime=14400) plus baseline processing md1-baseline-e2e-20260513115645-sfm InProgress. No MD1 compute launched.",
   "latest_no_spend_bg10_merge_review_plan": {
     "aws_idle_after_failure": true,
     "failed_merge_billable_seconds": 285,
@@ -1579,7 +1595,7 @@
     "status": "merge_retry1_guard_ready_no_paid_retry_launched",
     "v18_review_launched": false
   },
-  "latest_no_spend_evidence": "R0 visual-sentinel tile_04 dry-run remains structurally ready, but fresh live AWS evidence shows baseline processing still active, so paid MD1 proof remains blocked until processing is idle.",
+  "latest_no_spend_evidence": "R0 visual-sentinel tile_04 dry-run remains structurally ready, but fresh r14 live AWS evidence blocks paid MD1 proof until SageMaker training and processing are idle.",
   "latest_no_spend_implementation": "Updated automation prompt to current abab508e R0 visual-sentinel readiness path, deleted duplicate baseline monitor md1-baseline-e2e-monitor-2, and added effective_selected_image_count to post-leaf dry-run gates for capped image-count clarity.",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
@@ -10127,7 +10143,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "After SageMaker processing is idle, rerun MD1 leaf-submit readiness on exact green head and submit at most one R0 tile_04 visual-sentinel leaf proof only if readiness allows.",
+  "next_unblocked_step": "After SageMaker training and processing are idle, rerun MD1 leaf-submit readiness on exact green head and submit at most one R0 tile_04 visual-sentinel leaf proof only if readiness allows.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -16221,7 +16237,7 @@
     "shared_assigned_fallback_pair_count": 2
   },
   "updated": "2026-05-13T17:19:00Z",
-  "updated_at": "2026-05-13T20:36:48Z",
+  "updated_at": "2026-05-13T21:06:55Z",
   "version": "1.0.0",
   "md1_r0_visual_sentinel_readiness_blocked_active_jobs_20260513": {
     "recorded_at": "2026-05-13T18:33:49Z",
@@ -16492,5 +16508,20 @@
     ],
     "spend_estimated_usd": 0,
     "next": "Wait for processing idle, rerun readiness, then at most one R0 tile_04 visual-sentinel proof."
+  },
+  "md1_r0_visual_sentinel_r14_active_jobs_20260513": {
+    "timestamp": "2026-05-13T21:06:55Z",
+    "summary": "Exact-head f1ecbcdb is green on CDK Deploy 25825161997. AWS still has source-attributed SFM training md1-sample40-ds1000-r14-1778705722 InProgress (Environment=agent73948216sfmproductionspine, CodeHead=fadf6e35623789c64ed7497ceda09c87376b46e8, Validation=md1-sample40-ds1000-r14-quality-canary, MaxRuntime=14400) plus baseline processing md1-baseline-e2e-20260513115645-sfm InProgress. No MD1 compute launched.",
+    "evidence": [
+      "logs/md1-r0-visual-sentinel-exact-head-workflows-r14hold-20260513.json",
+      "logs/md1-r0-visual-sentinel-live-training-inprogress-r14-20260513.json",
+      "logs/md1-r0-visual-sentinel-live-processing-inprogress-r14-20260513.json",
+      "logs/md1-sample40-ds1000-r14-1778705722-active-describe-20260513.json",
+      "logs/md1-sample40-ds1000-r14-1778705722-tags-20260513.json",
+      "logs/md1-baseline-e2e-20260513115645-sfm-active-describe-r14check-20260513.json",
+      "logs/md1-baseline-e2e-20260513115645-sfm-tags-r14check-20260513.json"
+    ],
+    "spend_estimated_usd": 0,
+    "next": "Wait for AWS idle, rerun readiness, then at most one R0 tile_04 visual-sentinel proof."
   }
 }
