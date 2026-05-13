@@ -170,3 +170,24 @@ Produce a development-based MD1 baseline with:
   - `logs/md1-baseline-e2e/md1-baseline-e2e-20260513115645-sfm-cloudwatch-tail-20260513T205956Z.log`
   - Most recent observed line: `COLMAP[mapper_spatial_sequential_only] ... Registering image #1369` at `2026-05-13T20:59:56Z`
 - Follow-up poll: `2026-05-13T15:05:51-06:00` -> SfM still `InProgress`, Step Functions still `RUNNING`, S3 outputs still empty.
+
+### 2026-05-13T16:00:45-06:00
+
+- Git: on `agent-113647-md1-baseline-e2e` @ `1e8301b1` (monitor artifacts captured locally; no new AWS runs launched).
+- AWS identity: `aws sts get-caller-identity` -> Account `975050048887` (region `us-west-2`).
+- Step Functions execution: still `RUNNING`
+  - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-baseline-e2e-20260513115645`
+  - Latest history snapshot (reverse order): `logs/md1-baseline-e2e/stepfunctions-execution-md1-baseline-e2e-20260513115645-history-reverse-20260513T220011Z.json`
+  - Latest state observed: `WaitForSfM` / `WaitForSfMCompletion` at `2026-05-13T15:59:40-06:00`
+- SageMaker (this run):
+  - Processing job: `md1-baseline-e2e-20260513115645-sfm` -> `InProgress` (`S3UploadMode=EndOfJob`)
+  - Output prefix: `s3://spaceport-ml-processing-staging/colmap/md1-baseline-e2e-20260513115645/` -> `Total Objects: 0`
+- SageMaker (external; do not stop; not owned by this automation):
+  - Training job observed: `md1-sample40-ds1000-r15-1778709400` -> `InProgress` (`Downloading`)
+- SfM CloudWatch tail (latest ~30m):
+  - tail json: `logs/md1-baseline-e2e/md1-baseline-e2e-20260513115645-sfm-cloudwatch-tail-20260513T215950Z.json`
+  - tail txt: `logs/md1-baseline-e2e/md1-baseline-e2e-20260513115645-sfm-cloudwatch-tail-20260513T215950Z.txt`
+  - Most recent observed transition: `Retriangulation and Global bundle adjustment` at `2026-05-13T21:55:00Z`, then `HEARTBEAT idle=240s` at `2026-05-13T21:59:02Z`
+- Snapshot:
+  - `logs/md1-baseline-e2e/monitor-md1-baseline-e2e-20260513115645-20260513T220031Z.txt`
+- No-spend regression check: `python3 -m unittest tests.unit.test_sogs_supersplat_bundle` -> `OK`

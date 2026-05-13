@@ -1,0 +1,27 @@
+timestamp_utc=20260513T220031Z
+
+git_head=1e8301b1b5ad243232430cddba77d77565f6fa9c
+branch=agent-113647-md1-baseline-e2e
+
+stepfunctions_status=RUNNING
+
+sfm_processing_status=InProgress
+
+s3_colmap_prefix_ls:
+
+Total Objects: 0
+   Total Size: 0
+
+cloudwatch_tail_last_lines:
+1778709294365	COLMAP[mapper_spatial_sequential_only] I20260513 21:54:53.809152  4013 incremental_pipeline.cc:527] => Image sees 1097 / 9873 points
+1778709296365	COLMAP[mapper_spatial_sequential_only] I20260513 21:54:55.523775  4013 incremental_pipeline.cc:524] Registering image #2869 (num_reg_frames=1037)
+1778709296365	COLMAP[mapper_spatial_sequential_only] I20260513 21:54:55.523824  4013 incremental_pipeline.cc:527] => Image sees 1740 / 9892 points
+1778709297366	COLMAP[mapper_spatial_sequential_only] I20260513 21:54:57.335476  4013 incremental_pipeline.cc:524] Registering image #2491 (num_reg_frames=1038)
+1778709297366	COLMAP[mapper_spatial_sequential_only] I20260513 21:54:57.335526  4013 incremental_pipeline.cc:527] => Image sees 1458 / 8722 points
+1778709299366	COLMAP[mapper_spatial_sequential_only] I20260513 21:54:58.935783  4013 incremental_pipeline.cc:524] Registering image #2457 (num_reg_frames=1039)
+1778709299367	COLMAP[mapper_spatial_sequential_only] I20260513 21:54:58.935829  4013 incremental_pipeline.cc:527] => Image sees 1902 / 10498 points
+1778709301367	COLMAP[mapper_spatial_sequential_only] I20260513 21:55:00.700836  4013 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+1778709361863	COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=5920s idle=60s
+1778709422175	COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=5980s idle=120s
+1778709482518	COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6040s idle=180s
+1778709541948	COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=6100s idle=240s
