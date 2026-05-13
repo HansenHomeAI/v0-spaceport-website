@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "Soft-density bg10 remains blocked on V18/promotion and AI visual QA defects; the newer visual-fidelity paired proof is blocked earlier because tile_10 failed the post-leaf density gate at 1,429,579 splats, 3.772x its 378,953 reference and above the 511,586 hard max. Merge/review/full14/LOD/promotion are not eligible.",
+  "blocked_promotion_reason": "Soft-density bg10 quality/V18/AI visual gates remain blocked; visual-fidelity tile_10 retries are blocked before merge/review because tile_10 failed density gates. Latest density-controlled tile_10 proof improved to 655109 splats but still exceeded hard max 511586, so merge/review/full14/LOD/promotion remain blocked.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "30352e809e8495fd6482e0185f72a645bc966dd8",
-  "current_exact_head_gate_status": "exact-head 30352e809e8495fd6482e0185f72a645bc966dd8 green on CDK Deploy 25784494941; no ML container build triggered for evidence-only commit",
-  "current_live_compute_status": "No MD1 SageMaker training or processing jobs are InProgress after the visual-fidelity paired leaf proof.",
-  "current_rung": "R4_tile10_density_controlled_visual_fidelity_no_spend_ready_pending_exact_head",
+  "current_branch_head": "7fc3c5410c3c33a0eb2f1fefef27cf733f79269d exact-head CDK Deploy 25790990300 green; local tile_10 density-controlled proof and stronger no-spend candidate evidence pending commit.",
+  "current_exact_head_gate_status": "exact-head 7fc3c5410c3c33a0eb2f1fefef27cf733f79269d green on CDK Deploy 25790990300; next commit must be gated before paid retry.",
+  "current_live_compute_status": "AWS SageMaker training/processing idle after md1-r4t10vfdc2-1778665856-1778665857-tile-10 completed and post-leaf gates ran.",
+  "current_rung": "R4_tile10_stronger_density_visual_fidelity_no_spend_ready_pending_exact_head",
   "evidence_events": [
     {
       "billable_seconds": 412,
@@ -698,6 +698,20 @@
       ],
       "status": "paid_retry_blocked_until_new_objective",
       "workflow": "CDK Deploy 25782377608 success"
+    },
+    {
+      "event": "tile10_density_controlled_leaf_still_overdense_and_stronger_candidate_ready",
+      "timestamp": "2026-05-13T11:08:30Z",
+      "summary": "One bounded tile_10 density-controlled leaf proof completed under cap but failed density gate at 655109 splats/1.729x reference; merge/review blocked. Added planner guard and stronger no-spend candidate requiring stricter density controls before any paid retry.",
+      "spend_estimated_usd": 0.8538,
+      "evidence": [
+        "logs/md1-r4-tile10-density-controlled-visual-fidelity-leaf-submit-current-head-20260513.json",
+        "logs/md1-r4-tile10-density-controlled-visual-fidelity-20260513-tile_10-leaf-gate.json",
+        "logs/md1-r4-tile10-density-controlled-visual-fidelity-leaf-attribution-20260513.json",
+        "logs/md1-r4-tile10-stronger-density-visual-fidelity-objective-gate-20260513.json",
+        "logs/md1-r4-tile10-stronger-density-visual-fidelity-leaf-submit-readiness-20260513.json"
+      ],
+      "next": "Commit/push/watch exact head; after AWS idle rerun readiness on new green SHA before at most one stronger-density tile_10 leaf-only proof."
     }
   ],
   "exact_head_gate_status": "exact-head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 green on CDK Deploy 25478133157; Deploy CDK Stacks and CDK Diff skipped by scope detection; no ML Container Build appeared for this non-container status commit; previous container-affecting head 6249a280443438790e5f9d11512fe6714c1a0728 remains green on CDK Deploy 25475213765, Trigger ML Container Build 25475213781, and CodeBuild spaceport-ml-containers:ae9b6cea-6c39-4bf8-a885-f0eb5336ee4a",
@@ -15142,5 +15156,69 @@
     "worst_case_usd": 0.9813,
     "must_rerun_readiness_after_commit_exact_head_green": true,
     "no_merge_review_full14_lod_promotion_launched": true
+  },
+  "md1_r4_tile10_density_controlled_visual_fidelity_leaf_blocked_20260513": {
+    "status": "blocked_before_merge_review",
+    "exact_head": "7fc3c5410c3c33a0eb2f1fefef27cf733f79269d",
+    "workflow_run": "25790990300",
+    "readiness_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-leaf-submit-readiness-current-head-20260513.json",
+    "submit_summary_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-leaf-submit-current-head-20260513.json",
+    "describe_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-leaf-submit-describe-20260513.json",
+    "preflight_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-20260513-tile_10-leaf-preflight.json",
+    "leaf_gate_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-20260513-tile_10-leaf-gate.json",
+    "merge_review_gate_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-merge-review-gate-after-leaf-20260513.json",
+    "attribution_json": "logs/md1-r4-tile10-density-controlled-visual-fidelity-leaf-attribution-20260513.json",
+    "job_name": "md1-r4t10vfdc2-1778665856-1778665857-tile-10",
+    "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/tiles/tile_10/md1-r4t10vfdc2-1778665856-1778665857-tile-10/output/model.tar.gz",
+    "billable_seconds": 4176,
+    "estimated_usd": 0.8538,
+    "splat_vertex_count": 655109,
+    "reference_splat_count": 378953,
+    "observed_reference_ratio": 1.728734170200526,
+    "hard_max_splat_count": 511586,
+    "leaf_gate_decision": "merge_review_blocked",
+    "block_reasons": [
+      "leaf_preflight_decision_not_pass",
+      "splat_vertex_count_above_reference_ratio",
+      "splat_vertex_count_above_hard_max"
+    ],
+    "merge_review_decision": "merge_review_blocked",
+    "merge_review_block_reasons": [
+      "leaf_gate_not_allowed:tile_10"
+    ],
+    "no_merge_review_full14_lod_promotion": true
+  },
+  "md1_r4_tile10_stronger_density_visual_fidelity_candidate_20260513": {
+    "status": "no_spend_candidate_ready_pending_commit_exact_head",
+    "candidate_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-objective-candidate-20260513.json",
+    "objective_gate_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-objective-gate-20260513.json",
+    "leaf_dryrun_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-leaf-dryrun-20260513.json",
+    "merge_review_gate_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-merge-review-gate-20260513.json",
+    "leaf_submit_readiness_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-leaf-submit-readiness-20260513.json",
+    "candidate_objective_gate_decision": "paid_retry_allowed",
+    "leaf_submit_readiness_decision": "leaf_submit_allowed_pre_commit_head",
+    "must_rerun_readiness_after_commit_exact_head": true,
+    "selected_tile_ids": [
+      "tile_10"
+    ],
+    "density_controls": {
+      "TRAINING_MAX_GAUSS_RATIO": "0.95",
+      "TRAINING_STOP_SPLIT_AT": "5600",
+      "CULL_ALPHA_THRESH": "0.14",
+      "CULL_SCALE_THRESH": "0.30"
+    },
+    "estimated_usd": 0.8096,
+    "worst_case_usd": 0.9813,
+    "max_estimated_usd": 2.25,
+    "runtime_cap_seconds": 4800,
+    "selected_image_count": 188,
+    "density_guard": {
+      "reference_splat_count": 378953,
+      "min_ratio": 0.8,
+      "max_ratio": 1.35,
+      "hard_min": 303162,
+      "hard_max": 511586
+    },
+    "merge_review_blocked_until_leaf_gate_passes": true
   }
 }

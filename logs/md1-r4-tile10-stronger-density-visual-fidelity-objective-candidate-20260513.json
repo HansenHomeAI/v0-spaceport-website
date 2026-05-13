@@ -1,0 +1,120 @@
+{
+  "candidate": "tile10_stronger_density_visual_fidelity_leaf_repair",
+  "boundary_camera_ids": [
+    "DJI_0067.JPG",
+    "DJI_0068.JPG",
+    "DJI_0069.JPG",
+    "DJI_0070.JPG"
+  ],
+  "context_support_tile_ids": [
+    "tile_04",
+    "tile_13",
+    "tile_01",
+    "tile_00",
+    "tile_02",
+    "tile_06"
+  ],
+  "expected_metric_axes": [
+    "boundary.required_improvement",
+    "boundary.psnr",
+    "boundary.ssim",
+    "boundary.lpips",
+    "horizon.psnr",
+    "horizon.lpips",
+    "visual_qa.geometry_alignment",
+    "visual_qa.horizon_continuity",
+    "visual_qa.texture_smearing",
+    "visual_qa.color_shift"
+  ],
+  "merge_review_blocked_until_leaf_gate_passes": true,
+  "horizon_camera_ids": [
+    "DJI_0066.JPG",
+    "DJI_0073.JPG",
+    "DJI_0146.JPG",
+    "DJI_0147.JPG"
+  ],
+  "no_full_14tile_training": true,
+  "objective_changes": [
+    "density_preserving_tile10_control",
+    "stronger_tile10_split_stop",
+    "stronger_tile10_culling",
+    "appearance_consistency",
+    "color_consistency",
+    "horizon_appearance_protection",
+    "boundary_visibility_weighting",
+    "reuse_passing_tile04_visual_fidelity_leaf"
+  ],
+  "objective_implementation": {
+    "environment": {
+      "APPEARANCE_EMBED_DIM": "64",
+      "BG_SH_DEGREE": "2",
+      "BOUNDARY_CAMERA_REPEAT_FACTOR": "1",
+      "CULL_ALPHA_THRESH": "0.14",
+      "CULL_SCALE_THRESH": "0.30",
+      "ENABLE_ALPHA_LOSS": "true",
+      "ENABLE_BG_MODEL": "true",
+      "ENABLE_ROBUST_MASK": "true",
+      "SH_DEGREE": "1",
+      "TRAINING_MAX_GAUSS_RATIO": "0.95",
+      "TRAINING_STOP_SPLIT_AT": "5600"
+    },
+    "source_file": "infrastructure/containers/3dgs/train_nerfstudio_production.py",
+    "training_config": {
+      "appearance_embed_dim": 64,
+      "bg_sh_degree": 2,
+      "cull_alpha_thresh": 0.14,
+      "cull_scale_thresh": 0.3,
+      "enable_alpha_loss": true,
+      "enable_bg_model": true,
+      "enable_robust_mask": true,
+      "sh_degree": 1,
+      "training_max_gauss_ratio": 0.95,
+      "training_stop_split_at": 5600
+    }
+  },
+  "planned_cost_estimate": {
+    "estimated_usd": 0.9813,
+    "instance_type": "ml.g4dn.xlarge",
+    "max_estimated_usd": 2.25,
+    "max_images_per_tile": 188,
+    "runtime_cap_seconds": 4800,
+    "tile_max_iterations": 12000
+  },
+  "rationale": "The previous density-controlled tile_10 proof reduced density but still landed at 655,109 splats, 1.729x reference and above the 511,586 hard max. This no-spend candidate makes the next proof materially stricter before any paid retry: lower TRAINING_MAX_GAUSS_RATIO from 1.10 to 0.95, stop splitting earlier at 5600 instead of 6200, and use stronger culling thresholds while preserving the visual-fidelity knobs.",
+  "selected_tile_ids": [
+    "tile_10"
+  ],
+  "status": "no_spend_candidate_objective",
+  "submitted_jobs": [],
+  "targeted_quality_blockers": [
+    "boundary_lpips_regression",
+    "boundary_no_required_improvement",
+    "horizon_psnr_regression",
+    "horizon_lpips_regression",
+    "visual_qa_ai_visual_review_blocking_defects",
+    "visual_qa_ai_visual_review_blocking_view_findings",
+    "visual_qa_ai_visual_review_status_block",
+    "ai_visual_color_shift_defect",
+    "ai_visual_geometry_alignment_defect",
+    "ai_visual_horizon_continuity_defect",
+    "ai_visual_texture_smearing_defect",
+    "splat_vertex_count_above_reference_ratio",
+    "splat_vertex_count_above_hard_max"
+  ],
+  "v18_non_regression_plan": {
+    "comparison_reference": "V18 frozen p24 manifest",
+    "minimum_gate": "no boundary/horizon LPIPS or PSNR regression versus the current V18/reference gate",
+    "required": true
+  },
+  "visual_qa_plan": {
+    "ai_visual_review_required": true,
+    "blocking_defects": [
+      "geometry_alignment",
+      "horizon_continuity",
+      "texture_smearing",
+      "color_shift"
+    ],
+    "bundle_required": true,
+    "required": true
+  }
+}

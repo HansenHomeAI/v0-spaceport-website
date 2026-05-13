@@ -1,0 +1,94 @@
+{
+  "ai_visual_defect_blockers": [
+    "ai_visual_horizon_continuity_defect",
+    "ai_visual_geometry_alignment_defect",
+    "ai_visual_texture_smearing_defect",
+    "ai_visual_color_shift_defect"
+  ],
+  "block_reasons": {
+    "leaf_gate": [
+      "leaf_preflight_decision_not_pass",
+      "splat_vertex_count_above_reference_ratio",
+      "splat_vertex_count_above_hard_max"
+    ]
+  },
+  "conclusion": "The density-controlled visual-fidelity tile_10 retry reduced splats from the prior 1,429,579 to 655,109, but it still exceeds the 511,586 hard max and cannot proceed to merge/review. Stop paid compute; any retry needs stronger density control before readiness can pass.",
+  "failed_density_control_environment": {
+    "APPEARANCE_EMBED_DIM": "64",
+    "BG_SH_DEGREE": "2",
+    "CULL_ALPHA_THRESH": "0.12",
+    "CULL_SCALE_THRESH": "0.35",
+    "ENABLE_ALPHA_LOSS": "true",
+    "ENABLE_BG_MODEL": "true",
+    "ENABLE_ROBUST_MASK": "true",
+    "SH_DEGREE": "1",
+    "TRAINING_MAX_GAUSS_RATIO": "1.10",
+    "TRAINING_STOP_SPLIT_AT": "6200"
+  },
+  "failed_density_control_training_config": {
+    "appearance_embed_dim": 64,
+    "bg_sh_degree": 2,
+    "cull_alpha_thresh": 0.12,
+    "cull_scale_thresh": 0.35,
+    "enable_alpha_loss": true,
+    "enable_bg_model": true,
+    "enable_robust_mask": true,
+    "sh_degree": 1,
+    "training_max_gauss_ratio": 1.1,
+    "training_stop_split_at": 6200
+  },
+  "hard_max_splat_count": 511586,
+  "hypothesis": "density_controlled_visual_fidelity_tile10_leaf_only_proof",
+  "leaf_gate_block_reasons": [
+    "leaf_preflight_decision_not_pass",
+    "splat_vertex_count_above_reference_ratio",
+    "splat_vertex_count_above_hard_max"
+  ],
+  "merge_review_block_reasons": [
+    "leaf_gate_not_allowed:tile_10"
+  ],
+  "observed_reference_ratio": 1.728734170200526,
+  "paid_jobs": [
+    {
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/tiles/tile_10/md1-r4t10vfdc2-1778665856-1778665857-tile-10/output/model.tar.gz",
+      "billable_seconds": 4176,
+      "block_reasons": [
+        "leaf_preflight_decision_not_pass",
+        "splat_vertex_count_above_reference_ratio",
+        "splat_vertex_count_above_hard_max"
+      ],
+      "estimated_usd": 0.8538,
+      "gate_decision": "merge_review_blocked",
+      "hard_max_splat_count": 511586,
+      "job_name": "md1-r4t10vfdc2-1778665856-1778665857-tile-10",
+      "observed_reference_ratio": 1.728734170200526,
+      "reference_splat_count": 378953,
+      "splat_vertex_count": 655109,
+      "tile_id": "tile_10"
+    }
+  ],
+  "promotion_block_reasons": [
+    "boundary_lpips_regression",
+    "boundary_no_required_improvement",
+    "horizon_psnr_regression",
+    "horizon_lpips_regression",
+    "visual_qa_ai_visual_review_blocking_defects",
+    "visual_qa_ai_visual_review_blocking_view_findings",
+    "visual_qa_ai_visual_review_status_block",
+    "ai_visual_color_shift_defect",
+    "ai_visual_geometry_alignment_defect",
+    "ai_visual_horizon_continuity_defect",
+    "ai_visual_texture_smearing_defect",
+    "splat_vertex_count_above_reference_ratio",
+    "splat_vertex_count_above_hard_max"
+  ],
+  "reference_splat_count": 378953,
+  "splat_vertex_count": 655109,
+  "status": "failed_hypothesis",
+  "tile_id": "tile_10",
+  "visual_qa_gate_block_reasons": [
+    "visual_qa_ai_visual_review_blocking_defects",
+    "visual_qa_ai_visual_review_blocking_view_findings",
+    "visual_qa_ai_visual_review_status_block"
+  ]
+}

@@ -157,6 +157,39 @@ def visual_fidelity_overdense_attribution() -> dict:
     return attr
 
 
+def density_controlled_visual_fidelity_overdense_attribution() -> dict:
+    attr = visual_fidelity_overdense_attribution()
+    attr["hypothesis"] = "density_controlled_visual_fidelity_tile10_leaf_only_proof"
+    attr["paid_jobs"] = [
+        {
+            "tile_id": "tile_10",
+            "gate_decision": "merge_review_blocked",
+            "block_reasons": [
+                "leaf_preflight_decision_not_pass",
+                "splat_vertex_count_above_reference_ratio",
+                "splat_vertex_count_above_hard_max",
+            ],
+            "splat_vertex_count": 655_109,
+            "reference_splat_count": 378_953,
+            "observed_reference_ratio": 1.7287,
+            "hard_max_splat_count": 511_586,
+        }
+    ]
+    attr["failed_density_control_environment"] = {
+        "TRAINING_MAX_GAUSS_RATIO": "1.10",
+        "TRAINING_STOP_SPLIT_AT": "6200",
+        "CULL_ALPHA_THRESH": "0.12",
+        "CULL_SCALE_THRESH": "0.35",
+    }
+    attr["failed_density_control_training_config"] = {
+        "training_max_gauss_ratio": 1.10,
+        "training_stop_split_at": 6200,
+        "cull_alpha_thresh": 0.12,
+        "cull_scale_thresh": 0.35,
+    }
+    return attr
+
+
 def valid_candidate() -> dict:
     return {
         "targeted_quality_blockers": ["boundary_no_required_improvement"],
@@ -814,6 +847,141 @@ class PlanMd1BoundaryObjectiveStrategyTests(unittest.TestCase):
         self.assertEqual(gate["decision"], "paid_retry_allowed")
         self.assertEqual(gate["block_reasons"], [])
         self.assertEqual(gate["density_control_implementation"]["environment"]["TRAINING_MAX_GAUSS_RATIO"], "1.10")
+
+    def test_blocks_repeating_same_density_control_after_density_controlled_tile10_overdense_leaf(self):
+        candidate = valid_candidate()
+        candidate["targeted_quality_blockers"] = [
+            "boundary_no_required_improvement",
+            "boundary_lpips_regression",
+            "horizon_psnr_regression",
+            "horizon_lpips_regression",
+            "visual_qa_ai_visual_review_blocking_defects",
+            "visual_qa_ai_visual_review_status_block",
+            "ai_visual_horizon_continuity_defect",
+            "ai_visual_geometry_alignment_defect",
+            "ai_visual_texture_smearing_defect",
+            "ai_visual_color_shift_defect",
+            "splat_vertex_count_above_reference_ratio",
+            "splat_vertex_count_above_hard_max",
+        ]
+        candidate["expected_metric_axes"] = [
+            "boundary.required_improvement",
+            "boundary.lpips",
+            "horizon.psnr",
+            "horizon.lpips",
+        ]
+        candidate["objective_changes"] = [
+            "density_preserving_tile10_control",
+            "appearance_consistency",
+            "color_consistency",
+            "horizon_appearance_protection",
+        ]
+        candidate["objective_implementation"] = {
+            "environment": {
+                "TRAINING_MAX_GAUSS_RATIO": "1.10",
+                "TRAINING_STOP_SPLIT_AT": "6200",
+                "CULL_ALPHA_THRESH": "0.12",
+                "CULL_SCALE_THRESH": "0.35",
+                "APPEARANCE_EMBED_DIM": "64",
+                "BG_SH_DEGREE": "2",
+                "SH_DEGREE": "1",
+                "ENABLE_ROBUST_MASK": "true",
+            },
+            "training_config": {
+                "training_max_gauss_ratio": 1.10,
+                "training_stop_split_at": 6200,
+                "cull_alpha_thresh": 0.12,
+                "cull_scale_thresh": 0.35,
+                "appearance_embed_dim": 64,
+                "bg_sh_degree": 2,
+                "sh_degree": 1,
+                "enable_robust_mask": True,
+            },
+        }
+        candidate["visual_qa_plan"] = {"required": True}
+        candidate["v18_non_regression_plan"] = {"required": True}
+
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=density_controlled_visual_fidelity_overdense_attribution(),
+            candidate_objective=candidate,
+            max_estimated_usd=2.0,
+        )
+
+        hypotheses = {item["hypothesis"] for item in report["failed_hypotheses"]}
+        self.assertIn("density_controlled_visual_fidelity_tile10_overdense_leaf", hypotheses)
+        self.assertIn(
+            "objective_repeats_failed_density_control_without_stronger_cap",
+            report["candidate_objective_gate"]["block_reasons"],
+        )
+        self.assertFalse(report["paid_retry_allowed"])
+
+    def test_allows_density_controlled_tile10_retry_with_stronger_cap(self):
+        candidate = valid_candidate()
+        candidate["targeted_quality_blockers"] = [
+            "boundary_no_required_improvement",
+            "boundary_lpips_regression",
+            "horizon_psnr_regression",
+            "horizon_lpips_regression",
+            "visual_qa_ai_visual_review_blocking_defects",
+            "visual_qa_ai_visual_review_status_block",
+            "ai_visual_horizon_continuity_defect",
+            "ai_visual_geometry_alignment_defect",
+            "ai_visual_texture_smearing_defect",
+            "ai_visual_color_shift_defect",
+            "splat_vertex_count_above_reference_ratio",
+            "splat_vertex_count_above_hard_max",
+        ]
+        candidate["expected_metric_axes"] = [
+            "boundary.required_improvement",
+            "boundary.lpips",
+            "horizon.psnr",
+            "horizon.lpips",
+        ]
+        candidate["objective_changes"] = [
+            "density_preserving_tile10_control",
+            "appearance_consistency",
+            "color_consistency",
+            "horizon_appearance_protection",
+        ]
+        candidate["objective_implementation"] = {
+            "environment": {
+                "TRAINING_MAX_GAUSS_RATIO": "0.95",
+                "TRAINING_STOP_SPLIT_AT": "5600",
+                "CULL_ALPHA_THRESH": "0.14",
+                "CULL_SCALE_THRESH": "0.30",
+                "APPEARANCE_EMBED_DIM": "64",
+                "BG_SH_DEGREE": "2",
+                "SH_DEGREE": "1",
+                "ENABLE_ROBUST_MASK": "true",
+            },
+            "training_config": {
+                "training_max_gauss_ratio": 0.95,
+                "training_stop_split_at": 5600,
+                "cull_alpha_thresh": 0.14,
+                "cull_scale_thresh": 0.30,
+                "appearance_embed_dim": 64,
+                "bg_sh_degree": 2,
+                "sh_degree": 1,
+                "enable_robust_mask": True,
+            },
+        }
+        candidate["visual_qa_plan"] = {"required": True}
+        candidate["v18_non_regression_plan"] = {"required": True}
+
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=density_controlled_visual_fidelity_overdense_attribution(),
+            candidate_objective=candidate,
+            max_estimated_usd=2.0,
+        )
+
+        gate = report["candidate_objective_gate"]
+        self.assertEqual(gate["decision"], "paid_retry_allowed")
+        self.assertEqual(gate["block_reasons"], [])
+        self.assertEqual(gate["density_control_implementation"]["environment"]["TRAINING_MAX_GAUSS_RATIO"], "0.95")
 
 
 if __name__ == "__main__":
