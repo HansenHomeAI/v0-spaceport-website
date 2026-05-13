@@ -1,0 +1,75 @@
+{
+  "attributed_at": "2026-05-13T12:35:00Z",
+  "hypothesis": "stronger_density_visual_fidelity_tile10_leaf_only_proof",
+  "status": "failed_leaf_density_gate",
+  "decision": "stop_paid_compute_before_retry",
+  "exact_head": "d8baa0a268096be35714cba91eaf88523f58cadd",
+  "readiness_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-leaf-submit-readiness-current-head-20260513.json",
+  "submit_summary_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-leaf-submit-current-head-20260513.json",
+  "describe_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-leaf-submit-describe-20260513.json",
+  "preflight_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-20260513-tile_10-leaf-preflight.json",
+  "leaf_gate_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-20260513-tile_10-leaf-gate.json",
+  "merge_review_gate_json": "logs/md1-r4-tile10-stronger-density-visual-fidelity-merge-review-gate-after-leaf-20260513.json",
+  "paid_jobs": [
+    {
+      "job_name": "md1-r4t10vfdc3-1778671321-1778671321-tile-10",
+      "tile_id": "tile_10",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/tiles/tile_10/md1-r4t10vfdc3-1778671321-1778671321-tile-10/output/model.tar.gz",
+      "instance_type": "ml.g4dn.xlarge",
+      "billable_seconds": 4036,
+      "estimated_cost_usd": 0.8251,
+      "gate_decision": "merge_review_blocked",
+      "block_reasons": [
+        "leaf_preflight_decision_not_pass",
+        "splat_vertex_count_above_reference_ratio",
+        "splat_vertex_count_above_hard_max"
+      ],
+      "splat_vertex_count": 645285,
+      "reference_splat_count": 378953,
+      "observed_reference_ratio": 1.7028101110164058,
+      "hard_max_splat_count": 511586,
+      "selected_image_count": 188,
+      "density_control_environment": {
+        "TRAINING_MAX_GAUSS_RATIO": "0.95",
+        "TRAINING_STOP_SPLIT_AT": "5600",
+        "CULL_ALPHA_THRESH": "0.14",
+        "CULL_SCALE_THRESH": "0.30"
+      },
+      "density_control_training_config": {
+        "training_max_gauss_ratio": 0.95,
+        "training_stop_split_at": 5600,
+        "cull_alpha_thresh": 0.14,
+        "cull_scale_thresh": 0.3
+      }
+    }
+  ],
+  "failed_density_control_environment": {
+    "TRAINING_MAX_GAUSS_RATIO": "0.95",
+    "TRAINING_STOP_SPLIT_AT": "5600",
+    "CULL_ALPHA_THRESH": "0.14",
+    "CULL_SCALE_THRESH": "0.30"
+  },
+  "failed_density_control_training_config": {
+    "training_max_gauss_ratio": 0.95,
+    "training_stop_split_at": 5600,
+    "cull_alpha_thresh": 0.14,
+    "cull_scale_thresh": 0.3
+  },
+  "prior_density_controlled_tile10_result": {
+    "splat_vertex_count": 655109,
+    "observed_reference_ratio": 1.728734170200526,
+    "estimated_cost_usd": 0.8538
+  },
+  "latest_result_delta_vs_prior": {
+    "splat_reduction": 9824,
+    "observed_reference_ratio_delta": -0.0259240591841202,
+    "relative_splat_reduction": 0.01499681732322321
+  },
+  "remaining_gap_to_hard_max": {
+    "splat_reduction_needed": 133699,
+    "relative_reduction_needed_from_latest": 0.2071952695316736
+  },
+  "conclusion": "Incrementally stronger TRAINING_MAX_GAUSS_RATIO, TRAINING_STOP_SPLIT_AT, and culling controls reduced tile_10 splats by only about 1.5 percent versus the prior density-controlled leaf. The leaf remains 26.1 percent above the hard max, so another small split/culling tweak is not justified before a hard exported-output cap is planned and gated.",
+  "next_no_spend_requirement": "Any retry must use an explicit hard output cap at or below the tile_10 hard max, keep V18 and visual QA plans, rerun objective/readiness gates on exact green head, and remain leaf-only with skip-merge/skip-review until the post-leaf gate passes.",
+  "no_merge_review_full14_lod_or_promotion_launched": true
+}

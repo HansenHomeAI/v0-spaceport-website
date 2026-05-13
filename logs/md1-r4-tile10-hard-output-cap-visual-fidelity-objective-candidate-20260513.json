@@ -1,0 +1,124 @@
+{
+  "status": "draft_no_spend_candidate",
+  "candidate": "tile10_hard_output_cap_visual_fidelity_leaf_repair",
+  "rationale": "The stronger density-controlled tile_10 proof still failed density at 645,285 splats, only 1.5 percent below the prior density-controlled proof and above the 511,586 hard max. The next candidate must make the density target mechanical with a hard exported-output cap while preserving the visual-fidelity objective.",
+  "selected_tile_ids": [
+    "tile_10"
+  ],
+  "context_support_tile_ids": [
+    "tile_04",
+    "tile_13",
+    "tile_01",
+    "tile_00",
+    "tile_02",
+    "tile_06"
+  ],
+  "targeted_quality_blockers": [
+    "boundary_lpips_regression",
+    "boundary_no_required_improvement",
+    "horizon_psnr_regression",
+    "horizon_lpips_regression",
+    "visual_qa_ai_visual_review_blocking_defects",
+    "visual_qa_ai_visual_review_blocking_view_findings",
+    "visual_qa_ai_visual_review_status_block",
+    "ai_visual_color_shift_defect",
+    "ai_visual_geometry_alignment_defect",
+    "ai_visual_horizon_continuity_defect",
+    "ai_visual_texture_smearing_defect",
+    "splat_vertex_count_above_reference_ratio",
+    "splat_vertex_count_above_hard_max"
+  ],
+  "boundary_camera_ids": [
+    "DJI_0067.JPG",
+    "DJI_0068.JPG",
+    "DJI_0069.JPG",
+    "DJI_0070.JPG"
+  ],
+  "horizon_camera_ids": [
+    "DJI_0066.JPG",
+    "DJI_0073.JPG",
+    "DJI_0146.JPG",
+    "DJI_0147.JPG"
+  ],
+  "expected_metric_axes": [
+    "boundary.required_improvement",
+    "boundary.psnr",
+    "boundary.ssim",
+    "boundary.lpips",
+    "horizon.psnr",
+    "horizon.lpips",
+    "visual_qa.geometry_alignment",
+    "visual_qa.horizon_continuity",
+    "visual_qa.texture_smearing",
+    "visual_qa.color_shift"
+  ],
+  "objective_changes": [
+    "hard_output_density_cap",
+    "density_preserving_tile10_control",
+    "appearance_consistency",
+    "color_consistency",
+    "horizon_appearance_protection",
+    "boundary_visibility_weighting",
+    "reuse_passing_tile04_visual_fidelity_leaf"
+  ],
+  "objective_implementation": {
+    "source_file": "infrastructure/containers/3dgs/train_nerfstudio_production.py",
+    "environment": {
+      "TRAINING_MAX_GAUSS_RATIO": "0.95",
+      "TRAINING_STOP_SPLIT_AT": "5600",
+      "CULL_ALPHA_THRESH": "0.14",
+      "CULL_SCALE_THRESH": "0.30",
+      "TRAINING_MAX_OUTPUT_GAUSSIANS": "511000",
+      "TRAINING_DENSITY_CAP_POLICY": "opacity_topk",
+      "APPEARANCE_EMBED_DIM": "64",
+      "BG_SH_DEGREE": "2",
+      "SH_DEGREE": "1",
+      "ENABLE_BG_MODEL": "true",
+      "ENABLE_ALPHA_LOSS": "true",
+      "ENABLE_ROBUST_MASK": "true",
+      "BOUNDARY_CAMERA_REPEAT_FACTOR": "1"
+    },
+    "training_config": {
+      "training_max_gauss_ratio": 0.95,
+      "training_stop_split_at": 5600,
+      "cull_alpha_thresh": 0.14,
+      "cull_scale_thresh": 0.3,
+      "max_output_gaussians": 511000,
+      "density_cap_policy": "opacity_topk",
+      "appearance_embed_dim": 64,
+      "bg_sh_degree": 2,
+      "sh_degree": 1,
+      "enable_bg_model": true,
+      "enable_alpha_loss": true,
+      "enable_robust_mask": true
+    }
+  },
+  "planned_cost_estimate": {
+    "instance_type": "ml.g4dn.xlarge",
+    "runtime_cap_seconds": 4800,
+    "tile_max_iterations": 12000,
+    "max_images_per_tile": 188,
+    "estimated_usd": 0.9813,
+    "max_estimated_usd": 2.25
+  },
+  "v18_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review",
+  "v18_non_regression_plan": {
+    "required": true,
+    "comparison_reference": "V18 frozen p24 manifest",
+    "minimum_gate": "no boundary/horizon LPIPS or PSNR regression versus the current V18/reference gate"
+  },
+  "visual_qa_plan": {
+    "required": true,
+    "bundle_required": true,
+    "ai_visual_review_required": true,
+    "blocking_defects": [
+      "geometry_alignment",
+      "horizon_continuity",
+      "texture_smearing",
+      "color_shift"
+    ]
+  },
+  "submitted_jobs": [],
+  "no_full_14tile_training": true,
+  "merge_review_blocked_until_leaf_gate_passes": true
+}

@@ -114,6 +114,7 @@ DENSITY_CONTROL_ENV_KEYS = (
     "CULL_SCALE_THRESH",
     "TRAINING_DENSITY_CAP_ENABLED",
     "TRAINING_MAX_OUTPUT_GAUSSIANS",
+    "TRAINING_DENSITY_CAP_POLICY",
 )
 DENSITY_CONTROL_CONFIG_KEYS = (
     "training_max_gauss_ratio",
@@ -122,6 +123,7 @@ DENSITY_CONTROL_CONFIG_KEYS = (
     "cull_scale_thresh",
     "density_cap_enabled",
     "max_output_gaussians",
+    "density_cap_policy",
 )
 OVERDENSE_LEAF_REASONS = (
     "splat_vertex_count_above_reference_ratio",
@@ -569,9 +571,16 @@ def extract_failed_hypotheses(attribution: Mapping[str, Any]) -> list[dict[str, 
         )
     hypothesis_context = str(attribution.get("hypothesis", "")).lower()
     visual_fidelity_context = "visual_fidelity" in hypothesis_context
+    stronger_density_context = (
+        "stronger_density" in hypothesis_context
+        or "stronger-density" in hypothesis_context
+        or "hard_output_cap" in hypothesis_context
+        or "vfdc3" in hypothesis_context
+    )
     density_controlled_context = (
         "density_controlled" in hypothesis_context
         or "density-controlled" in hypothesis_context
+        or stronger_density_context
         or "vfdc" in hypothesis_context
         or isinstance(attribution.get("failed_density_control_environment"), Mapping)
     )
@@ -584,6 +593,9 @@ def extract_failed_hypotheses(attribution: Mapping[str, Any]) -> list[dict[str, 
         if density_controlled_context and overdense_record.get("tile_id") == "tile_10":
             hypothesis = "density_controlled_visual_fidelity_tile10_overdense_leaf"
             evidence = "The density-controlled visual-fidelity tile_10 leaf reduced splat count but still exceeded the hard density guard, so the same density controls cannot be repeated."
+        if stronger_density_context and overdense_record.get("tile_id") == "tile_10":
+            hypothesis = "stronger_density_visual_fidelity_tile10_overdense_leaf"
+            evidence = "The stronger split/culling visual-fidelity tile_10 leaf only made a small density improvement and still exceeded the hard density guard, so the next retry needs a hard exported-output cap."
         failed.append(
             {
                 "hypothesis": hypothesis,
@@ -655,6 +667,7 @@ def has_visual_fidelity_overdense_failed(failed_hypotheses: Sequence[Mapping[str
         in (
             "visual_fidelity_tile10_overdense_leaf",
             "density_controlled_visual_fidelity_tile10_overdense_leaf",
+            "stronger_density_visual_fidelity_tile10_overdense_leaf",
         )
         for item in failed_hypotheses
     )
@@ -668,6 +681,37 @@ def density_controlled_visual_fidelity_failures(
         for item in failed_hypotheses
         if item.get("hypothesis") == "density_controlled_visual_fidelity_tile10_overdense_leaf"
     ]
+
+
+def stronger_density_visual_fidelity_failures(
+    failed_hypotheses: Sequence[Mapping[str, Any]],
+) -> list[Mapping[str, Any]]:
+    return [
+        item
+        for item in failed_hypotheses
+        if item.get("hypothesis") == "stronger_density_visual_fidelity_tile10_overdense_leaf"
+    ]
+
+
+def has_hard_output_density_cap(
+    density_control_knobs: Mapping[str, Any],
+    failed_hypotheses: Sequence[Mapping[str, Any]],
+) -> bool:
+    env = density_control_knobs.get("environment")
+    if not isinstance(env, Mapping):
+        env = {}
+    config = density_control_knobs.get("training_config")
+    if not isinstance(config, Mapping):
+        config = {}
+    candidate_output_cap = float_value(env.get("TRAINING_MAX_OUTPUT_GAUSSIANS") or config.get("max_output_gaussians"))
+    if candidate_output_cap is None:
+        return False
+    hard_maxes = [
+        hard_max
+        for hard_max in (float_value(failure.get("hard_max_splat_count")) for failure in failed_hypotheses)
+        if hard_max is not None
+    ]
+    return not hard_maxes or any(candidate_output_cap <= hard_max for hard_max in hard_maxes)
 
 
 def has_stronger_density_control(
@@ -889,6 +933,12 @@ def evaluate_candidate_objective(
         and not has_stronger_density_control(density_control_knobs, failed_hypotheses)
     ):
         block_reasons.append("objective_repeats_failed_density_control_without_stronger_cap")
+    if (
+        stronger_density_visual_fidelity_failures(failed_hypotheses)
+        and any(term in normalized_changes for term in VISUAL_FIDELITY_OBJECTIVE_TERMS)
+        and not has_hard_output_density_cap(density_control_knobs, failed_hypotheses)
+    ):
+        block_reasons.append("objective_repeats_failed_incremental_density_control_without_hard_output_cap")
     visual_fidelity_knobs = implemented_visual_fidelity_knobs(candidate_objective)
     if has_ai_visual_blocker(current_blockers) and not any(visual_fidelity_knobs.values()):
         block_reasons.append("objective_missing_visual_fidelity_implementation_after_ai_block")
@@ -1006,6 +1056,7 @@ def plan_boundary_objective_strategy(
                 "soft-density/global-SSIM retry without a new appearance, geometry, color, or perceptual objective",
                 "visual-fidelity tile_10 retry without concrete density control after over-dense leaf rejection",
                 "density-controlled visual-fidelity tile_10 retry without a stronger cap/split/culling change after the latest over-dense leaf rejection",
+                "incremental tile_10 split/culling density retry without an exported-output hard cap at or below the post-leaf hard max",
                 "full 14-tile training before staged R0/R1/R2/R3 gates",
             ],
             "expected_metric_axes": required_axes,
