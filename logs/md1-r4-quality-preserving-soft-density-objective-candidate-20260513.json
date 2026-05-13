@@ -1,0 +1,97 @@
+{
+  "baseline_reference": {
+    "candidate": "tile04_boundary_horizon_leaf_plus_tile10_rollback_bg10",
+    "evidence": "logs/md1-r4-density-capped-bg10-review-retry2-attribution-20260512.json",
+    "must_beat_before_merge_review": true
+  },
+  "boundary_camera_ids": [
+    "DJI_0067.JPG",
+    "DJI_0068.JPG",
+    "DJI_0069.JPG",
+    "DJI_0070.JPG"
+  ],
+  "candidate_id": "md1-r4-quality-preserving-soft-density-tile04-leaf-20260513",
+  "context_support_tile_ids": [
+    "tile_10",
+    "tile_13",
+    "tile_01",
+    "tile_00",
+    "tile_02",
+    "tile_06"
+  ],
+  "created_at": "2026-05-13T03:11:29Z",
+  "expected_metric_axes": [
+    "boundary.required_improvement",
+    "boundary.psnr",
+    "boundary.ssim",
+    "boundary.lpips",
+    "horizon.psnr",
+    "horizon.ssim",
+    "horizon.lpips"
+  ],
+  "horizon_camera_ids": [
+    "DJI_0066.JPG",
+    "DJI_0073.JPG",
+    "DJI_0146.JPG",
+    "DJI_0147.JPG"
+  ],
+  "lod_packaging_allowed": false,
+  "merge_review_allowed": false,
+  "no_full_14tile_training": true,
+  "objective_changes": [
+    "boundary_loss_weighting",
+    "global_ssim_loss_weighting",
+    "boundary_visibility_weighting",
+    "soft_density_control",
+    "quality_preserving",
+    "horizon_preserving",
+    "no_frame_repeat"
+  ],
+  "objective_implementation": {
+    "environment": {
+      "BOUNDARY_CAMERA_REPEAT_FACTOR": "1",
+      "BOUNDARY_FROZEN_CAMERAS": "DJI_0067.JPG,DJI_0068.JPG,DJI_0069.JPG,DJI_0070.JPG",
+      "CULL_ALPHA_THRESH": "0.06",
+      "CULL_SCALE_THRESH": "0.45",
+      "EXPECTED_METRIC_AXES": "boundary.required_improvement,boundary.psnr,boundary.ssim,boundary.lpips,horizon.psnr,horizon.ssim,horizon.lpips",
+      "HORIZON_FROZEN_CAMERAS": "DJI_0066.JPG,DJI_0073.JPG,DJI_0146.JPG,DJI_0147.JPG",
+      "HORIZON_PROTECTION_REQUIRED": "true",
+      "LOSS_WEIGHTING_STRATEGY": "global_ssim_lambda_0_28_soft_density_no_frame_repeat",
+      "SSIM_LAMBDA": "0.28",
+      "TRAINING_MAX_GAUSS_RATIO": "1.35",
+      "TRAINING_STOP_SPLIT_AT": "7600"
+    },
+    "source_file": "infrastructure/containers/3dgs/train_nerfstudio_production.py",
+    "training_config": {
+      "boundary_camera_repeat_factor": 1,
+      "cull_alpha_thresh": 0.06,
+      "cull_scale_thresh": 0.45,
+      "ssim_lambda": 0.28,
+      "training_max_gauss_ratio": 1.35,
+      "training_stop_split_at": 7600
+    }
+  },
+  "planned_cost_estimate": {
+    "basis": "one bounded tile_04 leaf-only proof on ml.g4dn.xlarge; no merge/review/full14 until leaf preflight, V18, and visual QA gates pass",
+    "estimated_usd": 0.8096,
+    "max_estimated_usd": 2.25,
+    "worst_case_usd": 1.472
+  },
+  "rollback": {
+    "keep_prior_tile04_boundary_horizon_leaf_and_v18_rollback_artifacts_until_candidate_passes": true,
+    "tile10_context_source": "v18_context_density_rollback"
+  },
+  "selected_tile_ids": [
+    "tile_04"
+  ],
+  "submitted_jobs": [],
+  "targeted_quality_blockers": [
+    "boundary_no_required_improvement",
+    "boundary_lpips_regression",
+    "horizon_psnr_regression",
+    "horizon_ssim_regression",
+    "horizon_lpips_regression"
+  ],
+  "v18_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review",
+  "visual_qa_required": true
+}

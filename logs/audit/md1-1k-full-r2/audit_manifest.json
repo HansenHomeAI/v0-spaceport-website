@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "b25ea9e9dbadc95bc92748d99ab5f7815619cea5",
+  "current_branch_head": "8ce0b3bf2f0db750abc94503e761698b89baba61",
   "current_exact_head_gate_status": "exact-head c27fbe995784c4a37b7f3649c270de243bfffc88 green on CDK Deploy 25766801621 and ML Container Build 25766801616 before bounded V18 retry2",
   "current_live_compute_status": "No SageMaker training jobs or processing jobs are InProgress after retry2; review job completed and failed quality gates.",
-  "current_rung": "R4_density_capped_bg10_review_quality_blocked_no_spend_objective_redesign",
+  "current_rung": "R4_quality_preserving_soft_density_candidate_leaf_submit_ready",
   "evidence_events": [
     {
       "billable_seconds": 412,
@@ -1000,7 +1000,7 @@
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
   "latest_boundary_responsible_tile_plan_status": "boundary primary tile_04/tile_10; horizon primary tile_04/tile_01; tile04 dryrun covers tile01/tile10 context support",
-  "latest_cost_control": "full14_lod_promotion_blocked; no paid retry until density-cap regression objective guard plus concrete quality-preserving candidate and leaf-submit readiness pass; unrecorded active job was stopped and recorded",
+  "latest_cost_control": "soft_density_candidate_leaf_submit_ready; no paid job launched in this step; next paid action limited to one tile_04 leaf-only g4dn/checkpointed proof after exact-head workflows and fresh AWS idle",
   "latest_evidence": {
     "merge_preflight_summary": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260512.json",
     "review_retry_cloudwatch_tail": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-cloudwatch-tail-20260512.txt",
@@ -1049,7 +1049,7 @@
     "training_jobs_in_progress": []
   },
   "latest_lod_production_readiness_status": "logs/md1-r4-tile10-rollback-lod-production-readiness-20260506.json reports viewer_ready_quality_blocked; --require-promotion-ready now exits 3 and wrote logs/md1-r4-tile10-rollback-lod-production-readiness-promotion-required-20260506.json, preventing promotion callers from accepting viewer readiness alone.",
-  "latest_md1_cost_reduction_status": "density_capped_quality_blocked_no_spend_objective_redesign_guarded_untracked_compute_stopped",
+  "latest_md1_cost_reduction_status": "soft_density_candidate_leaf_submit_ready_no_paid_job_launched",
   "latest_md1_live_compute_status": "2026-05-12T19:12Z no MD1 SageMaker training or processing jobs InProgress after density-capped tile_04 leaf gate passed",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
@@ -5769,6 +5769,63 @@
     ],
     "worst_case_usd": 3.03
   },
+  "md1_r4_quality_preserving_soft_density_candidate_20260513": {
+    "candidate_controls": {
+      "BOUNDARY_CAMERA_REPEAT_FACTOR": "1",
+      "CULL_ALPHA_THRESH": "0.06",
+      "CULL_SCALE_THRESH": "0.45",
+      "SSIM_LAMBDA": "0.28",
+      "TRAINING_MAX_GAUSS_RATIO": "1.35",
+      "TRAINING_STOP_SPLIT_AT": "7600",
+      "checkpoints_enabled": true,
+      "hard_density_cap_enabled": false,
+      "instance_type": "ml.g4dn.xlarge",
+      "max_iterations": 12000,
+      "max_runtime_seconds": 7200,
+      "max_selected_images": 188
+    },
+    "candidate_objective_json": "logs/md1-r4-quality-preserving-soft-density-objective-candidate-20260513.json",
+    "checked_at": "2026-05-13T03:15:10Z",
+    "context_support_tile_ids": [
+      "tile_10",
+      "tile_13",
+      "tile_01",
+      "tile_00",
+      "tile_02",
+      "tile_06"
+    ],
+    "cost_estimate": {
+      "estimated_usd": 0.8096,
+      "max_estimated_usd": 2.25,
+      "worst_case_usd": 1.472
+    },
+    "full_14tile_training_launched": false,
+    "leaf_dryrun_json": "logs/md1-r4-quality-preserving-soft-density-leaf-dryrun-20260513.json",
+    "leaf_submit_readiness_decision": "leaf_submit_allowed",
+    "leaf_submit_readiness_json": "logs/md1-r4-quality-preserving-soft-density-leaf-submit-readiness-20260513.json",
+    "lod_or_promotion_launched": false,
+    "merge_review_gate_block_reasons": [
+      "leaf_gate_summary_missing:tile_04"
+    ],
+    "merge_review_gate_decision": "merge_review_blocked",
+    "merge_review_gate_json": "logs/md1-r4-quality-preserving-soft-density-merge-review-gate-20260513.json",
+    "next_required_action": "commit/push/watch exact-head workflows, then after fresh AWS idle submit at most one bounded tile_04 leaf-only proof; merge/review remains blocked until emitted leaf preflight/gate passes",
+    "objective_gate_decision": "paid_retry_allowed",
+    "objective_gate_json": "logs/md1-r4-quality-preserving-soft-density-objective-gate-20260513.json",
+    "selected_tile_ids": [
+      "tile_04"
+    ],
+    "status": "leaf_submit_ready_no_paid_job_launched",
+    "submitted_jobs": [],
+    "targeted_quality_blockers": [
+      "boundary_no_required_improvement",
+      "boundary_lpips_regression",
+      "horizon_psnr_regression",
+      "horizon_ssim_regression",
+      "horizon_lpips_regression"
+    ],
+    "v18_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review"
+  },
   "md1_r4_quality_strategy_paid_retry_gate_20260506": {
     "block_reasons": [
       "quality_strategy_missing_targeted_blockers"
@@ -8799,7 +8856,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Draft a no-spend concrete candidate objective JSON starting from tile04 boundary+horizon bg10 reference, using quality-preserving soft density controls rather than hard density cap repetition, targeting boundary LPIPS/no-required-improvement plus horizon PSNR/SSIM/LPIPS; then run objective and leaf-submit gates before any paid proof.",
+  "next_unblocked_step": "Commit/push soft-density candidate evidence and watch exact-head workflows; after green workflows and AWS idle, submit at most one bounded tile_04 leaf-only proof from logs/md1-r4-quality-preserving-soft-density-leaf-dryrun-20260513.json; do not launch merge/review/full14/LOD until leaf gate passes.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
