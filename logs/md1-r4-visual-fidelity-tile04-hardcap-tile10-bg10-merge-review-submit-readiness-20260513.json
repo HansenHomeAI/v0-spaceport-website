@@ -1,0 +1,35 @@
+{
+  "checked_at": "2026-05-13T14:24:56.511219+00:00",
+  "decision": "merge_review_submit_allowed",
+  "block_reasons": [],
+  "exact_head": "14fbfca1c4f2f607989c77a8285408de12b761f9",
+  "git_head": "14fbfca1c4f2f607989c77a8285408de12b761f9",
+  "workflow_conclusion": "success",
+  "training_jobs_in_progress": [],
+  "processing_jobs_in_progress": [],
+  "required_tile_ids": [
+    "tile_04",
+    "tile_10"
+  ],
+  "leaf_reuse_summary_tile_ids": [
+    "tile_04",
+    "tile_10"
+  ],
+  "merge_plan_tile_ids": [
+    "tile_04",
+    "tile_10"
+  ],
+  "merge_review_gate_decision": "merge_review_allowed",
+  "payload_input_names": [
+    "merge-plan",
+    "tile-selection",
+    "artifact-00",
+    "artifact-01"
+  ],
+  "payload_max_runtime_seconds": 3600,
+  "max_merge_estimated_usd": 0.5,
+  "max_merge_runtime_seconds": 3600,
+  "max_review_estimated_usd": 0.5,
+  "max_review_runtime_seconds": 1800,
+  "next_required_action": "submit at most one bounded no-training merge/preflight, then one bounded V18/visual QA review only if merge preflight passes"
+}
