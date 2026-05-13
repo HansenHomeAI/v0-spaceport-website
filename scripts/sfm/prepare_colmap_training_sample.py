@@ -132,12 +132,29 @@ def select_records(records: list[ImageRecord], max_images: int, selection: str) 
     return select_camera_stratified_contiguous(records, max_images)
 
 
-def write_images_txt(output_path: Path, comments: list[str], selected: list[ImageRecord], kept_point_ids: set[int]) -> None:
+def count_base_comments(comments: list[str]) -> list[str]:
+    return [line for line in comments if not line.startswith("# Number of ")]
+
+
+def scaled_coordinate(value: str, scale: float) -> str:
+    if scale == 1.0:
+        return value
+    return f"{float(value) * scale:.12g}"
+
+
+def write_images_txt(
+    output_path: Path,
+    comments: list[str],
+    selected: list[ImageRecord],
+    kept_point_ids: set[int],
+    camera_scales: dict[int, float],
+) -> None:
     lines: list[str] = []
-    lines.extend(comments[:3])
+    lines.extend(count_base_comments(comments))
     lines.append(f"# Number of images: {len(selected)}\n")
     for record in selected:
         rewritten_points: list[str] = []
+        scale = camera_scales.get(record.camera_id, 1.0)
         tokens = record.points2d.split()
         for index in range(0, len(tokens), 3):
             if index + 2 >= len(tokens):
@@ -145,7 +162,13 @@ def write_images_txt(output_path: Path, comments: list[str], selected: list[Imag
             point_id = int(tokens[index + 2])
             if point_id != -1 and point_id not in kept_point_ids:
                 point_id = -1
-            rewritten_points.extend((tokens[index], tokens[index + 1], str(point_id)))
+            rewritten_points.extend(
+                (
+                    scaled_coordinate(tokens[index], scale),
+                    scaled_coordinate(tokens[index + 1], scale),
+                    str(point_id),
+                )
+            )
         lines.append(record.header + "\n")
         lines.append(" ".join(rewritten_points) + "\n")
     output_path.write_text("".join(lines), encoding="utf-8")
@@ -179,7 +202,7 @@ def filter_points3d(
                 kept_ids.add(point_id)
                 kept_lines.append(" ".join(tokens[:8] + filtered_track) + "\n")
 
-    header = comments[:3] + [f"# Number of points: {len(kept_lines)}\n"]
+    header = count_base_comments(comments) + [f"# Number of points: {len(kept_lines)}\n"]
     output_path.write_text("".join(header + kept_lines), encoding="utf-8")
     return kept_ids, len(kept_lines)
 
@@ -207,7 +230,7 @@ def filter_frames(input_path: Path, output_path: Path, selected_image_ids: set[i
                     kept_data.extend(data_tokens[index : index + 3])
             if kept_data:
                 kept_lines.append(" ".join(prefix + [str(len(kept_data) // 3)] + kept_data) + "\n")
-    header = comments[:3] + [f"# Number of frames: {len(kept_lines)}\n"]
+    header = count_base_comments(comments) + [f"# Number of frames: {len(kept_lines)}\n"]
     output_path.write_text("".join(header + kept_lines), encoding="utf-8")
     return len(kept_lines)
 
@@ -246,11 +269,12 @@ def scale_camera_line(line: str, image_max_width: int) -> tuple[str, float]:
 def write_cameras_txt(input_path: Path, output_path: Path, image_max_width: int) -> tuple[dict[int, float], int]:
     scales: dict[int, float] = {}
     scaled_count = 0
+    comments: list[str] = []
     lines: list[str] = []
     with input_path.open("r", encoding="utf-8") as handle:
         for line in handle:
             if line.startswith("#") or not line.strip():
-                lines.append(line)
+                comments.append(line)
                 continue
             scaled_line, scale = scale_camera_line(line.strip(), image_max_width)
             camera_id = int(scaled_line.split()[0])
@@ -258,7 +282,8 @@ def write_cameras_txt(input_path: Path, output_path: Path, image_max_width: int)
             if scale < 1.0:
                 scaled_count += 1
             lines.append(scaled_line + "\n")
-    output_path.write_text("".join(lines), encoding="utf-8")
+    header = count_base_comments(comments) + [f"# Number of cameras: {len(lines)}\n"]
+    output_path.write_text("".join(header + lines), encoding="utf-8")
     return scales, scaled_count
 
 
@@ -340,9 +365,8 @@ def prepare_sample(
         selected_image_ids,
         min_track_length,
     )
-    write_images_txt(target_sparse / "images.txt", comments, selected, kept_point_ids)
-
     camera_scales, scaled_camera_count = write_cameras_txt(input_sparse / "cameras.txt", target_sparse / "cameras.txt", image_max_width)
+    write_images_txt(target_sparse / "images.txt", comments, selected, kept_point_ids, camera_scales)
     rigs_source = input_sparse / "rigs.txt"
     if rigs_source.exists():
         shutil.copy2(rigs_source, target_sparse / "rigs.txt")

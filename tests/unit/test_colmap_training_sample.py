@@ -138,6 +138,31 @@ class ColmapTrainingSampleTest(unittest.TestCase):
             self.assertEqual(report["camera_scales"], {"1": 0.5, "2": 0.5})
             self.assertIn("1 PINHOLE 50 50 25 25 25 25", cameras)
             self.assertIn("2 PINHOLE 50 50 25 25 25 25", cameras)
+            self.assertEqual(cameras.count("# Number of cameras:"), 1)
+            self.assertIn("# Number of cameras: 2", cameras)
+
+    def test_prepare_sample_scales_points2d_when_images_are_downscaled(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "source"
+            output = root / "sample"
+            write_model(source)
+
+            report = sample.prepare_sample(
+                input_colmap_dir=source,
+                output_colmap_dir=output,
+                max_images=2,
+                selection="camera-stratified-contiguous",
+                min_track_length=1,
+                image_max_width=50,
+            )
+
+            images = (output / "sparse" / "0" / "images.txt").read_text(encoding="utf-8")
+            points = (output / "sparse" / "0" / "points3D.txt").read_text(encoding="utf-8")
+            self.assertEqual(report["decision"], "pass")
+            self.assertIn("0.5 0.5 10 1 1 11 1.5 1.5 -1", images)
+            self.assertEqual(images.count("# Number of images:"), 1)
+            self.assertEqual(points.count("# Number of points:"), 1)
 
 
 if __name__ == "__main__":
