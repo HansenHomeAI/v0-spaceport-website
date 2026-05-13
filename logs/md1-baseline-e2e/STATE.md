@@ -1,6 +1,6 @@
 # MD1 Baseline E2E State
 
-updated: 2026-05-13T12:45:30-06:00
+updated: 2026-05-13T12:56:00-06:00
 branch: agent-113647-md1-baseline-e2e
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -91,6 +91,14 @@ Produce a development-based MD1 baseline with:
   - `logs/md1-baseline-e2e/md1-baseline-e2e-20260513115645-sfm-cloudwatch-tail-20260513T184500Z.log`
   - Latest observed progress: `Processed file [1061/3076]` at `2026-05-13T18:46:21Z`
   - Short poll log: `logs/md1-baseline-e2e/monitor-md1-baseline-e2e-20260513115645-20260513T184704Z.txt` (1077 -> 1136 / 3076 over ~2m)
+
+### 2026-05-13T12:56:00-06:00
+
+- CI: `CDK Deploy` run `25819707178` -> `success` after pushing `ec9926be` (log-only update; no workflow changes).
+- SfM progress (from `logs/md1-baseline-e2e/monitor-md1-baseline-e2e-20260513115645-20260513T184704Z.txt`):
+  - `Processed file [1136/3076]` at `2026-05-13T18:49:04Z` (still `InProgress`).
+- Expected S3 outputs are still empty until job end (`S3UploadMode=EndOfJob`):
+  - `aws s3 ls s3://spaceport-ml-processing-staging/colmap/md1-baseline-e2e-20260513115645/ --summarize` -> `Total Objects: 0`
 
 ## Latest Monitor Snapshot (2026-05-13T12:45:15-06:00)
 
