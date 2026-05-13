@@ -1,0 +1,153 @@
+{
+  "baseline_reference": {
+    "candidate": "tile04_boundary_horizon_leaf_plus_tile10_rollback_bg10",
+    "evidence": "logs/md1-cost-reduction-r4-tile04-boundary-horizon-leaf-bg10-quality-strategy-20260507.json",
+    "must_beat_before_merge_review": true
+  },
+  "boundary_camera_ids": [
+    "DJI_0067.JPG",
+    "DJI_0068.JPG",
+    "DJI_0069.JPG",
+    "DJI_0070.JPG"
+  ],
+  "candidate_id": "md1-r4-visual-fidelity-paired-tile04-tile10-20260513",
+  "context_support_tile_ids": [
+    "tile_13",
+    "tile_01",
+    "tile_00",
+    "tile_02",
+    "tile_06"
+  ],
+  "created_at": "2026-05-13T07:07:51.840154+00:00",
+  "expected_metric_axes": [
+    "boundary.required_improvement",
+    "boundary.psnr",
+    "boundary.ssim",
+    "boundary.lpips",
+    "horizon.psnr",
+    "horizon.ssim",
+    "horizon.lpips",
+    "visual_qa.geometry_alignment",
+    "visual_qa.horizon_continuity",
+    "visual_qa.texture_smearing",
+    "visual_qa.color_shift"
+  ],
+  "failed_hypothesis_response": {
+    "avoids_repeating": [
+      "density_capped_loss_weighting_quality_regression",
+      "soft_density_quality_regression",
+      "boundary_frame_repeat_weighting",
+      "protected_overlap_retention",
+      "tile10_density_v2"
+    ],
+    "new_objective": "paired tile_04/tile_10 visual-fidelity leaf proof using implemented appearance/background capacity knobs, not global SSIM or frame repeat"
+  },
+  "horizon_camera_ids": [
+    "DJI_0066.JPG",
+    "DJI_0073.JPG",
+    "DJI_0146.JPG",
+    "DJI_0147.JPG"
+  ],
+  "leaf_budget_plan": {
+    "adaptive_downshift_evidence_json": "logs/md1-r4-visual-fidelity-paired-leaf-dryrun-20260513.json",
+    "dry_run_json": "logs/md1-r4-visual-fidelity-paired-leaf-dryrun-fixed-20260513.json",
+    "max_images_per_tile": 188,
+    "max_tile_concurrency": 2,
+    "reason": "adaptive dry-run downshifted visual proof to 8000 iterations/128 images; fixed mode preserves the 188-image quality floor while remaining under the 2.25 USD cap",
+    "required_preflight_expected_selected_image_count": 188,
+    "tile_budget_mode": "fixed",
+    "tile_max_iterations": 12000
+  },
+  "lod_packaging_allowed": false,
+  "merge_review_allowed": false,
+  "no_full_14tile_training": true,
+  "objective_changes": [
+    "tile04_tile10_joint_objective",
+    "appearance_consistency",
+    "color_consistency",
+    "horizon_appearance_protection",
+    "boundary_visibility_weighting",
+    "no_frame_repeat",
+    "no_global_ssim_increase",
+    "no_hard_output_density_cap"
+  ],
+  "objective_implementation": {
+    "environment": {
+      "APPEARANCE_EMBED_DIM": "64",
+      "BG_SH_DEGREE": "2",
+      "BOUNDARY_CAMERA_REPEAT_FACTOR": "1",
+      "CULL_ALPHA_THRESH": "0.06",
+      "CULL_SCALE_THRESH": "0.45",
+      "ENABLE_ALPHA_LOSS": "true",
+      "ENABLE_BG_MODEL": "true",
+      "ENABLE_ROBUST_MASK": "true",
+      "SH_DEGREE": "1",
+      "TRAINING_MAX_GAUSS_RATIO": "1.35",
+      "TRAINING_STOP_SPLIT_AT": "7600"
+    },
+    "implemented_knob_policy": "only env keys already wired in train_nerfstudio_production.py are used; no fake LPIPS loss knob is claimed",
+    "source_file": "infrastructure/containers/3dgs/train_nerfstudio_production.py",
+    "training_config": {
+      "appearance_embed_dim": 64,
+      "bg_sh_degree": 2,
+      "boundary_camera_repeat_factor": 1,
+      "cull_alpha_thresh": 0.06,
+      "cull_scale_thresh": 0.45,
+      "enable_alpha_loss": true,
+      "enable_bg_model": true,
+      "enable_robust_mask": true,
+      "sh_degree": 1,
+      "training_max_gauss_ratio": 1.35,
+      "training_stop_split_at": 7600
+    }
+  },
+  "planned_cost_estimate": {
+    "basis": "two fixed-budget fanout leaf-only proofs on ml.g4dn.xlarge: tile_04 and tile_10 each capped at 12000 iterations/188 images; no merge/review/full14 until both leaf gates pass",
+    "estimated_usd": 1.9627,
+    "max_estimated_usd": 2.25,
+    "worst_case_usd": 1.9627
+  },
+  "rollback": {
+    "keep_v18_and_prior_boundary_horizon_bg10_as_rollback": true
+  },
+  "selected_tile_ids": [
+    "tile_04",
+    "tile_10"
+  ],
+  "submitted_jobs": [],
+  "targeted_quality_blockers": [
+    "boundary_lpips_regression",
+    "boundary_no_required_improvement",
+    "horizon_psnr_regression",
+    "horizon_lpips_regression",
+    "visual_qa_ai_visual_review_blocking_defects",
+    "visual_qa_ai_visual_review_blocking_view_findings",
+    "visual_qa_ai_visual_review_status_block",
+    "ai_visual_color_shift_defect",
+    "ai_visual_geometry_alignment_defect",
+    "ai_visual_horizon_continuity_defect",
+    "ai_visual_texture_smearing_defect"
+  ],
+  "updated_at": "2026-05-13T07:16:40.283452+00:00",
+  "v18_non_regression_plan": {
+    "camera_set": "frozen-promotion-p24",
+    "manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review",
+    "must_pass_buckets": [
+      "near_detail",
+      "boundary",
+      "horizon"
+    ],
+    "required": true
+  },
+  "visual_qa_plan": {
+    "ai_visual_review_required": true,
+    "blocking_defects": [
+      "geometry_alignment",
+      "sky_horizon_continuity",
+      "texture_blur_or_smearing",
+      "color_exposure_shift"
+    ],
+    "extract_visual_qa_bundle": true,
+    "required": true
+  }
+}

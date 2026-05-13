@@ -10939,6 +10939,78 @@
     "source_tile_core_ratio": 0.025578,
     "v18_reference_retention_ratio": 0.732865
   },
+  "r4_visual_fidelity_paired_objective_20260513": {
+    "adaptive_downshift_rejected_json": "logs/md1-r4-visual-fidelity-paired-leaf-dryrun-20260513.json",
+    "aws_live_state": {
+      "processing_inprogress": [],
+      "training_inprogress": []
+    },
+    "candidate_json": "logs/md1-r4-visual-fidelity-paired-objective-candidate-20260513.json",
+    "context_support_tile_ids": [
+      "tile_13",
+      "tile_01",
+      "tile_00",
+      "tile_02",
+      "tile_06"
+    ],
+    "cost_cap": {
+      "estimated_usd": 1.9627,
+      "max_estimated_usd": 2.25,
+      "submitted_jobs": []
+    },
+    "density_guard": {
+      "max_reference_splat_ratio": 1.35,
+      "min_reference_splat_ratio": 0.8,
+      "tile_04_reference_splats": 956277,
+      "tile_10_reference_splats": 378953
+    },
+    "fixed_leaf_budget": {
+      "expected_selected_image_count_per_tile": 188,
+      "max_images_per_tile": 188,
+      "max_tile_concurrency": 2,
+      "tile_budget_mode": "fixed",
+      "tile_max_iterations": 12000
+    },
+    "fixed_leaf_dryrun_json": "logs/md1-r4-visual-fidelity-paired-leaf-dryrun-fixed-20260513.json",
+    "implemented_visual_fidelity_knobs": [
+      "APPEARANCE_EMBED_DIM",
+      "BG_SH_DEGREE",
+      "SH_DEGREE",
+      "ENABLE_BG_MODEL",
+      "ENABLE_ALPHA_LOSS",
+      "ENABLE_ROBUST_MASK"
+    ],
+    "leaf_submit_readiness_json": "logs/md1-r4-visual-fidelity-paired-leaf-submit-readiness-20260513.json",
+    "merge_review_gate_json": "logs/md1-r4-visual-fidelity-paired-merge-review-gate-20260513.json",
+    "objective_gate_json": "logs/md1-r4-visual-fidelity-paired-objective-gate-20260513.json",
+    "previous_exact_head": "985a509c37ec18d4279178e3ba6926131ad5b0e1",
+    "previous_exact_head_workflow": "CDK Deploy 25782881107 success",
+    "promotion_blocked_until": [
+      "tile_04_leaf_gate_passes",
+      "tile_10_leaf_gate_passes",
+      "V18_non_regression_passes",
+      "visual_QA_bundle_gate_passes",
+      "viewer_smoke_passes"
+    ],
+    "selected_tile_ids": [
+      "tile_04",
+      "tile_10"
+    ],
+    "status": "no_spend_leaf_submit_ready_pending_new_exact_head_gate",
+    "targeted_quality_blockers": [
+      "boundary_lpips_regression",
+      "boundary_no_required_improvement",
+      "horizon_psnr_regression",
+      "horizon_lpips_regression",
+      "visual_qa_ai_visual_review_blocking_defects",
+      "visual_qa_ai_visual_review_blocking_view_findings",
+      "visual_qa_ai_visual_review_status_block",
+      "ai_visual_color_shift_defect",
+      "ai_visual_geometry_alignment_defect",
+      "ai_visual_horizon_continuity_defect",
+      "ai_visual_texture_smearing_defect"
+    ]
+  },
   "r5_14tile_2k_dryrun": {
     "chunk_planner_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap/chunk_planner_manifest.json",
     "dryrun_summary": "logs/audit/md1-1k-full-r2/r5_14tile_2k_dryrun_20260426214655.json",
@@ -14925,14 +14997,14 @@
     },
     "source_model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz"
   },
-  "root_cause_classification": "production_training_cost_serial_tiles_unbounded_image_count_missing_cache_reuse_quality_regression_after_density_capped_and_soft_density_tile04_candidates",
-  "rung": "R4_soft_density_bg10_review_blocked",
+  "root_cause_classification": "production_training_cost_serial_tiles_unbounded_image_count_missing_cache_reuse_quality_regression_after_density_capped_and_soft_density_tile04_candidates_plus_visual_quality_gate_objective_redesign",
+  "rung": "R4_visual_fidelity_paired_objective_no_spend_ready",
   "support_statistics": {
     "candidate_pair_count": 5,
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-13T06:12:00Z",
-  "updated_at": "2026-05-13T06:38:31Z",
+  "updated": "2026-05-13T07:18:14Z",
+  "updated_at": "2026-05-13T07:18:14Z",
   "version": "1.0.0"
 }

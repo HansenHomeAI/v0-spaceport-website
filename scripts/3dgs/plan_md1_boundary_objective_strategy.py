@@ -83,15 +83,29 @@ LOSS_WEIGHTING_TERMS = (
 )
 LOSS_WEIGHTING_ENV_KEYS = (
     "SSIM_LAMBDA",
-    "BOUNDARY_LOSS_WEIGHT",
-    "BOUNDARY_SSIM_LOSS_WEIGHT",
-    "BOUNDARY_LPIPS_LOSS_WEIGHT",
 )
 LOSS_WEIGHTING_CONFIG_KEYS = (
     "ssim_lambda",
-    "boundary_loss_weight",
-    "boundary_ssim_loss_weight",
-    "boundary_lpips_loss_weight",
+)
+VISUAL_FIDELITY_ENV_KEYS = (
+    "APPEARANCE_EMBED_DIM",
+    "BG_SH_DEGREE",
+    "SH_DEGREE",
+    "ENABLE_BG_MODEL",
+    "ENABLE_ALPHA_LOSS",
+    "ENABLE_ROBUST_MASK",
+    "BILATERAL_PROCESSING",
+    "MODEL_VARIANT",
+)
+VISUAL_FIDELITY_CONFIG_KEYS = (
+    "appearance_embed_dim",
+    "bg_sh_degree",
+    "sh_degree",
+    "enable_bg_model",
+    "enable_alpha_loss",
+    "enable_robust_mask",
+    "bilateral_processing",
+    "model_variant",
 )
 DENSITY_CONTROL_ENV_KEYS = (
     "TRAINING_MAX_GAUSS_RATIO",
@@ -332,6 +346,15 @@ def implemented_density_control_knobs(strategy: Mapping[str, Any] | None) -> dic
     training_config = implementation["training_config"]
     env_knobs = {key: environment[key] for key in DENSITY_CONTROL_ENV_KEYS if key in environment}
     config_knobs = {key: training_config[key] for key in DENSITY_CONTROL_CONFIG_KEYS if key in training_config}
+    return {"environment": env_knobs, "training_config": config_knobs}
+
+
+def implemented_visual_fidelity_knobs(strategy: Mapping[str, Any] | None) -> dict[str, Any]:
+    implementation = objective_implementation(strategy)
+    environment = implementation["environment"]
+    training_config = implementation["training_config"]
+    env_knobs = {key: environment[key] for key in VISUAL_FIDELITY_ENV_KEYS if key in environment}
+    config_knobs = {key: training_config[key] for key in VISUAL_FIDELITY_CONFIG_KEYS if key in training_config}
     return {"environment": env_knobs, "training_config": config_knobs}
 
 
@@ -614,6 +637,7 @@ def evaluate_candidate_objective(
             "objective_changes": [],
             "loss_weighting_implementation": {"environment": {}, "training_config": {}},
             "density_control_implementation": {"environment": {}, "training_config": {}},
+            "visual_fidelity_implementation": {"environment": {}, "training_config": {}},
             "estimated_usd": None,
             "max_estimated_usd": max_estimated_usd or None,
         }
@@ -685,6 +709,9 @@ def evaluate_candidate_objective(
     density_control_knobs = implemented_density_control_knobs(candidate_objective)
     if has_overdense_leaf_blocker(current_blockers) and not any(density_control_knobs.values()):
         block_reasons.append("objective_missing_density_control_after_overdense_leaf")
+    visual_fidelity_knobs = implemented_visual_fidelity_knobs(candidate_objective)
+    if has_ai_visual_blocker(current_blockers) and not any(visual_fidelity_knobs.values()):
+        block_reasons.append("objective_missing_visual_fidelity_implementation_after_ai_block")
     if has_soft_density_failed(failed_hypotheses) and not has_v18_comparison_plan(candidate_objective):
         block_reasons.append("objective_missing_v18_non_regression_plan_after_soft_density_failure")
     if has_ai_visual_blocker(current_blockers) and not has_visual_qa_plan(candidate_objective):
@@ -728,6 +755,7 @@ def evaluate_candidate_objective(
         "objective_changes": changes,
         "loss_weighting_implementation": loss_weighting_knobs,
         "density_control_implementation": density_control_knobs,
+        "visual_fidelity_implementation": visual_fidelity_knobs,
         "estimated_usd": cost,
         "max_estimated_usd": max_estimated_usd or None,
         "submitted_jobs": submitted_jobs,

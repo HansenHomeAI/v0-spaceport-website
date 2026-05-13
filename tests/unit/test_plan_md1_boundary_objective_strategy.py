@@ -565,8 +565,86 @@ class PlanMd1BoundaryObjectiveStrategyTests(unittest.TestCase):
 
         reasons = report["candidate_objective_gate"]["block_reasons"]
         self.assertIn("objective_missing_v18_non_regression_plan_after_soft_density_failure", reasons)
+        self.assertIn("objective_missing_visual_fidelity_implementation_after_ai_block", reasons)
         self.assertIn("objective_missing_visual_qa_plan_after_ai_block", reasons)
         self.assertFalse(report["paid_retry_allowed"])
+
+    def test_blocks_fake_unimplemented_lpips_loss_knob(self):
+        candidate = valid_candidate()
+        candidate["objective_changes"] = ["lpips_loss_weighting", "appearance_consistency"]
+        candidate["objective_implementation"] = {
+            "environment": {"BOUNDARY_LPIPS_LOSS_WEIGHT": "0.10"},
+            "training_config": {"boundary_lpips_loss_weight": 0.10},
+        }
+
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=attribution(),
+            candidate_objective=candidate,
+            max_estimated_usd=2.0,
+        )
+
+        gate = report["candidate_objective_gate"]
+        self.assertIn("objective_missing_loss_weighting_implementation", gate["block_reasons"])
+        self.assertEqual(gate["loss_weighting_implementation"], {"environment": {}, "training_config": {}})
+        self.assertFalse(report["paid_retry_allowed"])
+
+    def test_allows_visual_candidate_with_real_visual_fidelity_knobs_after_ai_block(self):
+        candidate = valid_candidate()
+        candidate["targeted_quality_blockers"] = [
+            "boundary_no_required_improvement",
+            "boundary_lpips_regression",
+            "horizon_psnr_regression",
+            "horizon_lpips_regression",
+            "visual_qa_ai_visual_review_blocking_defects",
+            "visual_qa_ai_visual_review_status_block",
+            "ai_visual_horizon_continuity_defect",
+            "ai_visual_geometry_alignment_defect",
+            "ai_visual_texture_smearing_defect",
+            "ai_visual_color_shift_defect",
+        ]
+        candidate["expected_metric_axes"] = [
+            "boundary.required_improvement",
+            "boundary.lpips",
+            "horizon.psnr",
+            "horizon.lpips",
+        ]
+        candidate["objective_changes"] = [
+            "appearance_consistency",
+            "color_consistency",
+            "horizon_appearance_protection",
+            "boundary_visibility_weighting",
+        ]
+        candidate["objective_implementation"] = {
+            "environment": {
+                "APPEARANCE_EMBED_DIM": "64",
+                "BG_SH_DEGREE": "2",
+                "SH_DEGREE": "1",
+                "ENABLE_ROBUST_MASK": "true",
+            },
+            "training_config": {
+                "appearance_embed_dim": 64,
+                "bg_sh_degree": 2,
+                "sh_degree": 1,
+                "enable_robust_mask": True,
+            },
+        }
+        candidate["visual_qa_plan"] = {"required": True}
+        candidate["v18_non_regression_plan"] = {"required": True}
+
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=soft_density_regression_attribution(),
+            candidate_objective=candidate,
+            max_estimated_usd=2.0,
+        )
+
+        gate = report["candidate_objective_gate"]
+        self.assertEqual(gate["decision"], "paid_retry_allowed")
+        self.assertEqual(gate["block_reasons"], [])
+        self.assertEqual(gate["visual_fidelity_implementation"]["environment"]["APPEARANCE_EMBED_DIM"], "64")
 
 
 if __name__ == "__main__":

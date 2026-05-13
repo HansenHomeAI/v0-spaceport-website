@@ -107,6 +107,61 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         expected_index = gate["enforce_gate_command"].index("--expected-selected-image-count") + 1
         self.assertEqual(gate["enforce_gate_command"][expected_index], "128")
 
+    def test_fixed_leaf_budget_records_image_cap_for_preflight_gate(self):
+        manifest = {
+            "tiles": [
+                {
+                    "tile_id": "tile_04",
+                    "base_camera_ids": [f"frame_{index:03d}.jpg" for index in range(188)],
+                }
+            ]
+        }
+
+        stages = benchmark.build_benchmark_stages(
+            manifest=manifest,
+            branch_name="agent-branch",
+            output_root_s3_uri="s3://bucket/out",
+            job_prefix="bench",
+            include_monolithic=False,
+            include_scaffold=False,
+            include_merge=False,
+            orchestration_mode="fanout",
+            tile_ids=["tile_04"],
+            monolithic_max_iterations=8000,
+            scaffold_max_iterations=2000,
+            tile_max_iterations=12000,
+            training_max_runtime_seconds=4800,
+            extra_env={},
+            timestamp=456,
+            downscale_factor=1,
+            include_review=False,
+            proof_profile=benchmark.PROOF_PROFILE_NONE,
+            tile_budget_mode="fixed",
+            max_images_per_tile=188,
+            input_colmap_s3_uri="s3://bucket/colmap",
+            image_uri="123.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:test",
+        )
+
+        tile_stage = stages[0]
+        self.assertEqual(tile_stage.selected_image_count, 188)
+        self.assertEqual(tile_stage.max_selected_images, 188)
+        self.assertEqual(tile_stage.environment["TRAINING_MAX_SELECTED_IMAGES"], "188")
+
+        gates = benchmark.build_post_leaf_preflight_gates(
+            stages,
+            reference_splat_counts={"tile_04": 956277},
+            max_reference_splat_ratio=1.35,
+            min_reference_splat_ratio=0.8,
+            experiment_id="exp",
+            gate_json_path="logs/summary.json",
+        )
+
+        gate = gates[0]
+        self.assertEqual(gate["expected_selected_image_count"], 188)
+        self.assertEqual(gate["required_leaf_preflight_gate"]["expected_selected_image_count"], 188)
+        expected_index = gate["enforce_gate_command"].index("--expected-selected-image-count") + 1
+        self.assertEqual(gate["enforce_gate_command"][expected_index], "188")
+
     def test_resolve_proof_profile_defaults_to_quality_gate_low_memory_for_single_job_review(self):
         resolved = benchmark.resolve_proof_profile(
             None,
