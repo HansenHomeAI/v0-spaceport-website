@@ -1,6 +1,6 @@
 # MD1 Baseline E2E State
 
-updated: 2026-05-13T12:56:00-06:00
+updated: 2026-05-13T13:52:21-06:00
 branch: agent-113647-md1-baseline-e2e
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -100,11 +100,28 @@ Produce a development-based MD1 baseline with:
 - Expected S3 outputs are still empty until job end (`S3UploadMode=EndOfJob`):
   - `aws s3 ls s3://spaceport-ml-processing-staging/colmap/md1-baseline-e2e-20260513115645/ --summarize` -> `Total Objects: 0`
 
-## Latest Monitor Snapshot (2026-05-13T12:45:15-06:00)
+### 2026-05-13T13:52:21-06:00
+
+- Git: `agent-113647-md1-baseline-e2e` clean on `e4d77b1b` (`git status -sb`).
+- AWS identity: `aws sts get-caller-identity` -> Account `975050048887` (region `us-west-2`).
+- Step Functions execution: still `RUNNING`
+  - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-baseline-e2e-20260513115645`
+- Active SageMaker jobs (no duplicate MD1 E2E runs launched):
+  - Processing (ours): `md1-baseline-e2e-20260513115645-sfm` -> `InProgress`
+  - Training (external; do not stop): `md1-sample5-ds1000-r12-1778700562` -> `InProgress`
+  - Training (external; do not stop): `md1-sample40-ds1000-r13-1778701888` -> `InProgress`
+- SfM progress proof (CloudWatch tail, last 10m):
+  - tail json: `logs/md1-baseline-e2e/md1-baseline-e2e-20260513115645-sfm-cloudwatch-tail-20260513T195138Z.json`
+  - tail log: `logs/md1-baseline-e2e/md1-baseline-e2e-20260513115645-sfm-cloudwatch-tail-20260513T195138Z.log`
+  - Latest observed progress: `Processed file [2828/3076]` at `2026-05-13T19:51:26Z`
+- S3 outputs still empty (expected until job end): `Total Objects: 0` under `s3://spaceport-ml-processing-staging/colmap/md1-baseline-e2e-20260513115645/`
+- No-spend regression check: `python3 -m unittest tests.unit.test_sogs_supersplat_bundle` -> `OK`
+
+## Latest Monitor Snapshot (2026-05-13T13:52:21-06:00)
 
 ### Repo / local (no-spend)
 
-- `git status -sb` clean on `agent-113647-md1-baseline-e2e` @ `c0eae7e4`
+- `git status -sb` clean on `agent-113647-md1-baseline-e2e` @ `e4d77b1b`
 - `python3 -m unittest tests.unit.test_sogs_supersplat_bundle` OK
 
 ### AWS identity
@@ -122,13 +139,14 @@ Produce a development-based MD1 baseline with:
 - This run SfM processing job is still `InProgress`:
   - `md1-baseline-e2e-20260513115645-sfm` (`ml.g4dn.xlarge`)
   - output target: `s3://spaceport-ml-processing-staging/colmap/md1-baseline-e2e-20260513115645/`
-- External training job observed (do not stop; not owned by this automation):
-  - `md1-sample5-cachectl-r10-1778696805` (`ml.g5.2xlarge`) is `InProgress`
+- External training jobs observed (do not stop; not owned by this automation):
+  - `md1-sample5-ds1000-r12-1778700562` is `InProgress`
+  - `md1-sample40-ds1000-r13-1778701888` is `InProgress`
 
 ### SfM CloudWatch progress proof
 
 - Log stream: `/aws/sagemaker/ProcessingJobs` / `md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048`
-- Tail captured:
-  - `logs/md1-baseline-e2e/md1-baseline-e2e-20260513115645-sfm-cloudwatch-tail.json`
+- Tail captured (latest):
+  - `logs/md1-baseline-e2e/md1-baseline-e2e-20260513115645-sfm-cloudwatch-tail-20260513T195138Z.json`
 - Most recent observed progress (from the captured tail):
-  - `COLMAP[feature_extractor] ... Processed file [1005/3076]` (feature extraction ongoing)
+  - `COLMAP[feature_extractor] ... Processed file [2828/3076]` (feature extraction ongoing)
