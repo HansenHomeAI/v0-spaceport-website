@@ -1,0 +1,66 @@
+{
+  "checked_at": "2026-05-13T09:30:43.339310+00:00",
+  "decision": "merge_review_blocked",
+  "block_reasons": [
+    "leaf_gate_summary_missing:tile_10"
+  ],
+  "required_tile_ids": [
+    "tile_10"
+  ],
+  "selected_tile_ids": [
+    "tile_10"
+  ],
+  "required_context_tile_ids": [
+    "tile_04",
+    "tile_13",
+    "tile_01",
+    "tile_00",
+    "tile_02",
+    "tile_06"
+  ],
+  "context_support_tile_ids": [
+    "tile_04",
+    "tile_13",
+    "tile_01",
+    "tile_00",
+    "tile_02",
+    "tile_06"
+  ],
+  "required_targeted_blockers": [
+    "boundary_lpips_regression",
+    "boundary_no_required_improvement",
+    "horizon_psnr_regression",
+    "horizon_lpips_regression",
+    "visual_qa_ai_visual_review_blocking_defects",
+    "visual_qa_ai_visual_review_blocking_view_findings",
+    "visual_qa_ai_visual_review_status_block",
+    "ai_visual_color_shift_defect",
+    "ai_visual_geometry_alignment_defect",
+    "ai_visual_horizon_continuity_defect",
+    "ai_visual_texture_smearing_defect",
+    "splat_vertex_count_above_reference_ratio",
+    "splat_vertex_count_above_hard_max"
+  ],
+  "targeted_quality_blockers": [
+    "boundary_lpips_regression",
+    "boundary_no_required_improvement",
+    "horizon_psnr_regression",
+    "horizon_lpips_regression",
+    "visual_qa_ai_visual_review_blocking_defects",
+    "visual_qa_ai_visual_review_blocking_view_findings",
+    "visual_qa_ai_visual_review_status_block",
+    "ai_visual_color_shift_defect",
+    "ai_visual_geometry_alignment_defect",
+    "ai_visual_horizon_continuity_defect",
+    "ai_visual_texture_smearing_defect",
+    "splat_vertex_count_above_reference_ratio",
+    "splat_vertex_count_above_hard_max"
+  ],
+  "post_leaf_preflight_gate_tile_ids": [
+    "tile_10"
+  ],
+  "leaf_gate_summary_tile_ids": [],
+  "passing_prior_or_current_leaf_tile_ids": [],
+  "submitted_jobs": [],
+  "next_required_action": "run each required leaf proof, run its emitted preflight/enforce gate, and provide passing leaf gate summaries before merge/review spend"
+}

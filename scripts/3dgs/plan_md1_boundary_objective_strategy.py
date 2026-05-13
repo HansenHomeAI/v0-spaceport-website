@@ -403,9 +403,67 @@ def current_quality_blockers(
         values.extend(list_strings(block_reasons.get("protected")))
         values.extend(reason for reason in list_strings(block_reasons.get("leaf_gate")) if reason in OVERDENSE_LEAF_REASONS)
     values.extend(reason for reason in list_strings(attribution.get("leaf_gate_block_reasons")) if reason in OVERDENSE_LEAF_REASONS)
+    values.extend(reason for reason in list_strings(attribution.get("merge_review_block_reasons")) if reason in OVERDENSE_LEAF_REASONS)
+    paid_jobs = attribution.get("paid_jobs")
+    if isinstance(paid_jobs, list):
+        for job in paid_jobs:
+            if not isinstance(job, Mapping):
+                continue
+            values.extend(reason for reason in list_strings(job.get("block_reasons")) if reason in OVERDENSE_LEAF_REASONS)
     values.extend(list_strings(attribution.get("visual_qa_gate_block_reasons")))
     values.extend(list_strings(attribution.get("ai_visual_defect_blockers")))
     return sorted_unique(values)
+
+
+def overdense_leaf_records(attribution: Mapping[str, Any]) -> list[dict[str, Any]]:
+    records: list[dict[str, Any]] = []
+    leaf_gate_block_reasons = list_strings(attribution.get("leaf_gate_block_reasons"))
+    block_reasons = attribution.get("block_reasons")
+    if isinstance(block_reasons, Mapping):
+        leaf_gate_block_reasons.extend(list_strings(block_reasons.get("leaf_gate")))
+    if any(reason in leaf_gate_block_reasons for reason in OVERDENSE_LEAF_REASONS):
+        records.append(
+            {
+                "tile_id": attribution.get("tile_id"),
+                "leaf_gate_block_reasons": sorted_unique(leaf_gate_block_reasons),
+                "splat_vertex_count": attribution.get("splat_vertex_count"),
+                "reference_splat_count": attribution.get("reference_splat_count"),
+                "observed_reference_ratio": attribution.get("observed_reference_ratio"),
+                "hard_max_splat_count": attribution.get("hard_max_splat_count"),
+            }
+        )
+    paid_jobs = attribution.get("paid_jobs")
+    if isinstance(paid_jobs, list):
+        for job in paid_jobs:
+            if not isinstance(job, Mapping):
+                continue
+            job_reasons = list_strings(job.get("block_reasons"))
+            if any(reason in job_reasons for reason in OVERDENSE_LEAF_REASONS):
+                records.append(
+                    {
+                        "tile_id": job.get("tile_id"),
+                        "leaf_gate_block_reasons": sorted_unique(job_reasons),
+                        "splat_vertex_count": job.get("splat_vertex_count"),
+                        "reference_splat_count": job.get("reference_splat_count"),
+                        "observed_reference_ratio": job.get("observed_reference_ratio"),
+                        "hard_max_splat_count": job.get("hard_max_splat_count"),
+                    }
+                )
+    deduped: list[dict[str, Any]] = []
+    seen: set[tuple[Any, ...]] = set()
+    for record in records:
+        key = (
+            record.get("tile_id"),
+            tuple(record.get("leaf_gate_block_reasons", [])),
+            record.get("splat_vertex_count"),
+            record.get("reference_splat_count"),
+            record.get("hard_max_splat_count"),
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(record)
+    return deduped
 
 
 def extract_failed_hypotheses(attribution: Mapping[str, Any]) -> list[dict[str, Any]]:
@@ -484,20 +542,24 @@ def extract_failed_hypotheses(attribution: Mapping[str, Any]) -> list[dict[str, 
                 "ai_visual_defect_blockers": list_strings(attribution.get("ai_visual_defect_blockers")),
             }
         )
-    leaf_gate_block_reasons = list_strings(attribution.get("leaf_gate_block_reasons"))
-    block_reasons = attribution.get("block_reasons")
-    if isinstance(block_reasons, Mapping):
-        leaf_gate_block_reasons.extend(list_strings(block_reasons.get("leaf_gate")))
-    if any(reason in leaf_gate_block_reasons for reason in OVERDENSE_LEAF_REASONS):
+    visual_fidelity_context = "visual_fidelity" in str(attribution.get("hypothesis", "")).lower()
+    for overdense_record in overdense_leaf_records(attribution):
+        hypothesis = "loss_weighting_overdense_leaf"
+        evidence = "The previous loss-weighted tile_04 leaf completed but was rejected before merge/review because retained splats exceeded the reference-ratio hard max."
+        if visual_fidelity_context or overdense_record.get("tile_id") == "tile_10":
+            hypothesis = "visual_fidelity_tile10_overdense_leaf"
+            evidence = "The visual-fidelity paired leaf proof improved the objective surface but tile_10 was rejected before merge/review because retained splats exceeded the density guard."
         failed.append(
             {
-                "hypothesis": "loss_weighting_overdense_leaf",
+                "hypothesis": hypothesis,
                 "status": "failed",
-                "evidence": "The previous loss-weighted tile_04 leaf completed but was rejected before merge/review because retained splats exceeded the reference-ratio hard max.",
-                "leaf_gate_block_reasons": sorted_unique(leaf_gate_block_reasons),
-                "splat_vertex_count": attribution.get("splat_vertex_count"),
-                "reference_splat_count": attribution.get("reference_splat_count"),
-                "observed_reference_ratio": attribution.get("observed_reference_ratio"),
+                "evidence": evidence,
+                "tile_id": overdense_record.get("tile_id"),
+                "leaf_gate_block_reasons": overdense_record["leaf_gate_block_reasons"],
+                "splat_vertex_count": overdense_record.get("splat_vertex_count"),
+                "reference_splat_count": overdense_record.get("reference_splat_count"),
+                "observed_reference_ratio": overdense_record.get("observed_reference_ratio"),
+                "hard_max_splat_count": overdense_record.get("hard_max_splat_count"),
             }
         )
     return failed
@@ -548,6 +610,10 @@ def repeats_failed_soft_density(changes: Sequence[str], failed_hypotheses: Seque
 
 def has_soft_density_failed(failed_hypotheses: Sequence[Mapping[str, Any]]) -> bool:
     return any(item.get("hypothesis") == "soft_density_quality_regression" for item in failed_hypotheses)
+
+
+def has_visual_fidelity_overdense_failed(failed_hypotheses: Sequence[Mapping[str, Any]]) -> bool:
+    return any(item.get("hypothesis") == "visual_fidelity_tile10_overdense_leaf" for item in failed_hypotheses)
 
 
 def has_ai_visual_blocker(blockers: Sequence[str]) -> bool:
@@ -709,6 +775,13 @@ def evaluate_candidate_objective(
     density_control_knobs = implemented_density_control_knobs(candidate_objective)
     if has_overdense_leaf_blocker(current_blockers) and not any(density_control_knobs.values()):
         block_reasons.append("objective_missing_density_control_after_overdense_leaf")
+    normalized_changes = " ".join(changes).lower()
+    if (
+        has_visual_fidelity_overdense_failed(failed_hypotheses)
+        and any(term in normalized_changes for term in VISUAL_FIDELITY_OBJECTIVE_TERMS)
+        and not any(density_control_knobs.values())
+    ):
+        block_reasons.append("objective_repeats_failed_visual_fidelity_without_density_control")
     visual_fidelity_knobs = implemented_visual_fidelity_knobs(candidate_objective)
     if has_ai_visual_blocker(current_blockers) and not any(visual_fidelity_knobs.values()):
         block_reasons.append("objective_missing_visual_fidelity_implementation_after_ai_block")
@@ -824,6 +897,7 @@ def plan_boundary_objective_strategy(
                 "frame-repeat-only camera weighting without loss/objective redesign",
                 "hard density-cap/loss-weighting retry that does not explicitly preserve horizon and LPIPS quality",
                 "soft-density/global-SSIM retry without a new appearance, geometry, color, or perceptual objective",
+                "visual-fidelity tile_10 retry without concrete density control after over-dense leaf rejection",
                 "full 14-tile training before staged R0/R1/R2/R3 gates",
             ],
             "expected_metric_axes": required_axes,

@@ -1,0 +1,91 @@
+{
+  "checked_at": "2026-05-13T09:11:54Z",
+  "status": "failed_hypothesis",
+  "hypothesis": "visual_fidelity_paired_tile04_tile10_leaf_only_proof",
+  "conclusion": "The paired visual-fidelity leaf proof cannot advance to merge/review. tile_04 passed the emitted leaf gate and is reusable evidence, but tile_10 exceeded the density guard by 3.7724x versus its V18/reference splat count.",
+  "exact_head_before_submit": {
+    "head": "30352e809e8495fd6482e0185f72a645bc966dd8",
+    "cdk_deploy_run_id": 25784494941,
+    "cdk_deploy_conclusion": "success",
+    "aws_idle_before_submit": true
+  },
+  "submit_summary_json": "logs/md1-r4-visual-fidelity-paired-leaf-submit-20260513.json",
+  "readiness_json": "logs/md1-r4-visual-fidelity-paired-leaf-submit-readiness-current-head-20260513.json",
+  "cost_cap": {
+    "cap_usd": 2.25,
+    "estimated_usd": 1.9627,
+    "actual_estimated_usd": 2.0001,
+    "instance_type": "ml.g4dn.xlarge",
+    "hourly_rate_usd": 0.736
+  },
+  "paid_jobs": [
+    {
+      "tile_id": "tile_04",
+      "job_name": "md1-r4visualpair-20260513-1778657808-tile-04",
+      "billable_time_seconds": 4653,
+      "estimated_usd": 0.9513,
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4visualpair-20260513-1778657808/3dgs/tiles/tile_04/md1-r4visualpair-20260513-1778657808-tile-04/output/model.tar.gz",
+      "preflight_json": "logs/md1-r4-visual-fidelity-paired-20260513-tile_04-leaf-preflight.json",
+      "gate_json": "logs/md1-r4-visual-fidelity-paired-20260513-tile_04-leaf-gate.json",
+      "gate_decision": "merge_review_allowed",
+      "splat_vertex_count": 1024402,
+      "reference_splat_count": 956277,
+      "observed_reference_ratio": 1.0712398185881287,
+      "selected_image_count": 188
+    },
+    {
+      "tile_id": "tile_10",
+      "job_name": "md1-r4visualpair-20260513-1778657808-tile-10",
+      "billable_time_seconds": 5130,
+      "estimated_usd": 1.0488,
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4visualpair-20260513-1778657808/3dgs/tiles/tile_10/md1-r4visualpair-20260513-1778657808-tile-10/output/model.tar.gz",
+      "preflight_json": "logs/md1-r4-visual-fidelity-paired-20260513-tile_10-leaf-preflight.json",
+      "gate_json": "logs/md1-r4-visual-fidelity-paired-20260513-tile_10-leaf-gate.json",
+      "gate_decision": "merge_review_blocked",
+      "block_reasons": [
+        "leaf_preflight_decision_not_pass",
+        "splat_vertex_count_above_reference_ratio",
+        "splat_vertex_count_above_hard_max"
+      ],
+      "splat_vertex_count": 1429579,
+      "reference_splat_count": 378953,
+      "observed_reference_ratio": 3.7724440761783122,
+      "hard_max_splat_count": 511586,
+      "selected_image_count": 188
+    }
+  ],
+  "merge_review_gate_after_leaf_json": "logs/md1-r4-visual-fidelity-paired-merge-review-gate-after-leaf-fixed-20260513.json",
+  "merge_review_decision": "merge_review_blocked",
+  "merge_review_block_reasons": [
+    "leaf_gate_not_allowed:tile_10"
+  ],
+  "failed_tile_id": "tile_10",
+  "tile_id": "tile_10",
+  "leaf_gate_block_reasons": [
+    "leaf_preflight_decision_not_pass",
+    "splat_vertex_count_above_reference_ratio",
+    "splat_vertex_count_above_hard_max"
+  ],
+  "splat_vertex_count": 1429579,
+  "reference_splat_count": 378953,
+  "observed_reference_ratio": 3.7724440761783122,
+  "hard_max_splat_count": 511586,
+  "aws_live_state_after_proof": {
+    "training_inprogress": [],
+    "processing_inprogress": []
+  },
+  "blocked_next_spend": [
+    "merge",
+    "review",
+    "full14",
+    "lod",
+    "promotion",
+    "repeat_visual_fidelity_tile10_leaf"
+  ],
+  "next_no_spend_actions": [
+    "Treat tile_04 visual-fidelity leaf as reusable passing evidence only.",
+    "Attribute tile_10 over-density to the visual-fidelity/global-scaffold objective before any retry.",
+    "Design a new tile_10 objective with a concrete density-control mechanism plus appearance/geometry/color/perceptual targets.",
+    "Require V18 non-regression and visual QA plans, objective gate, leaf-submit readiness, exact-head green, AWS idle, and explicit cost/runtime caps before any paid proof."
+  ]
+}

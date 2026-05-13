@@ -1,0 +1,118 @@
+{
+  "candidate": "tile10_density_controlled_visual_fidelity_leaf_repair",
+  "status": "no_spend_candidate_objective",
+  "rationale": "The previous visual-fidelity paired leaf proof gave usable tile_04 evidence but made tile_10 3.772x over the reference density. This candidate keeps the visual-fidelity knobs but makes tile_10 a density-controlled leaf proof with tile_04 reused as passing context evidence.",
+  "targeted_quality_blockers": [
+    "boundary_lpips_regression",
+    "boundary_no_required_improvement",
+    "horizon_psnr_regression",
+    "horizon_lpips_regression",
+    "visual_qa_ai_visual_review_blocking_defects",
+    "visual_qa_ai_visual_review_blocking_view_findings",
+    "visual_qa_ai_visual_review_status_block",
+    "ai_visual_color_shift_defect",
+    "ai_visual_geometry_alignment_defect",
+    "ai_visual_horizon_continuity_defect",
+    "ai_visual_texture_smearing_defect",
+    "splat_vertex_count_above_reference_ratio",
+    "splat_vertex_count_above_hard_max"
+  ],
+  "selected_tile_ids": [
+    "tile_10"
+  ],
+  "context_support_tile_ids": [
+    "tile_04",
+    "tile_13",
+    "tile_01",
+    "tile_00",
+    "tile_02",
+    "tile_06"
+  ],
+  "boundary_camera_ids": [
+    "DJI_0067.JPG",
+    "DJI_0068.JPG",
+    "DJI_0069.JPG",
+    "DJI_0070.JPG"
+  ],
+  "horizon_camera_ids": [
+    "DJI_0066.JPG",
+    "DJI_0073.JPG",
+    "DJI_0146.JPG",
+    "DJI_0147.JPG"
+  ],
+  "expected_metric_axes": [
+    "boundary.required_improvement",
+    "boundary.psnr",
+    "boundary.ssim",
+    "boundary.lpips",
+    "horizon.psnr",
+    "horizon.lpips",
+    "visual_qa.geometry_alignment",
+    "visual_qa.horizon_continuity",
+    "visual_qa.texture_smearing",
+    "visual_qa.color_shift"
+  ],
+  "objective_changes": [
+    "density_preserving_tile10_control",
+    "appearance_consistency",
+    "color_consistency",
+    "horizon_appearance_protection",
+    "boundary_visibility_weighting",
+    "reuse_passing_tile04_visual_fidelity_leaf"
+  ],
+  "objective_implementation": {
+    "source_file": "infrastructure/containers/3dgs/train_nerfstudio_production.py",
+    "environment": {
+      "TRAINING_MAX_GAUSS_RATIO": "1.10",
+      "TRAINING_STOP_SPLIT_AT": "6200",
+      "CULL_ALPHA_THRESH": "0.12",
+      "CULL_SCALE_THRESH": "0.35",
+      "APPEARANCE_EMBED_DIM": "64",
+      "BG_SH_DEGREE": "2",
+      "SH_DEGREE": "1",
+      "ENABLE_BG_MODEL": "true",
+      "ENABLE_ALPHA_LOSS": "true",
+      "ENABLE_ROBUST_MASK": "true",
+      "BOUNDARY_CAMERA_REPEAT_FACTOR": "1"
+    },
+    "training_config": {
+      "training_max_gauss_ratio": 1.1,
+      "training_stop_split_at": 6200,
+      "cull_alpha_thresh": 0.12,
+      "cull_scale_thresh": 0.35,
+      "appearance_embed_dim": 64,
+      "bg_sh_degree": 2,
+      "sh_degree": 1,
+      "enable_bg_model": true,
+      "enable_alpha_loss": true,
+      "enable_robust_mask": true
+    }
+  },
+  "v18_non_regression_plan": {
+    "required": true,
+    "comparison_reference": "V18 frozen p24 manifest",
+    "minimum_gate": "no boundary/horizon LPIPS or PSNR regression versus the current V18/reference gate"
+  },
+  "visual_qa_plan": {
+    "required": true,
+    "bundle_required": true,
+    "ai_visual_review_required": true,
+    "blocking_defects": [
+      "geometry_alignment",
+      "horizon_continuity",
+      "texture_smearing",
+      "color_shift"
+    ]
+  },
+  "planned_cost_estimate": {
+    "instance_type": "ml.g4dn.xlarge",
+    "estimated_usd": 0.9813,
+    "max_estimated_usd": 2.25,
+    "runtime_cap_seconds": 4800,
+    "tile_max_iterations": 12000,
+    "max_images_per_tile": 188
+  },
+  "submitted_jobs": [],
+  "no_full_14tile_training": true,
+  "merge_review_blocked_until_leaf_gate_passes": true
+}
