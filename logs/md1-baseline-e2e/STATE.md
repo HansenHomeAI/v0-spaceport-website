@@ -1,6 +1,6 @@
 # MD1 Baseline E2E State
 
-updated: 2026-05-13T21:25:52-0600
+updated: 2026-05-13T23:20:18-0600
 branch: agent-113647-md1-baseline-e2e
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -392,3 +392,30 @@ Produce a development-based MD1 baseline with:
   - Most recent parsed progress: `processed=825/3076` (feature extraction still underway)
 - Snapshot:
   - `logs/md1-baseline-e2e/monitor-md1-baseline-e2e-20260514032448-20260514T041906Z.txt`
+
+### 2026-05-13T23:20:18-0600
+
+- Git: on `agent-113647-md1-baseline-e2e` @ `d70a57a7` (no working tree changes).
+- No-spend static checks:
+  - `python3 -m unittest tests.unit.test_sogs_supersplat_bundle` -> `OK`
+  - `cd web && npx next lint` -> `0` (warnings only)
+  - `cd web && npm run build` -> `success` (warnings only)
+- AWS identity: `aws sts get-caller-identity` -> Account `975050048887` (region `us-west-2`).
+- Step Functions:
+  - state machine arn: `arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging`
+  - execution: `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-baseline-e2e-20260514032448` -> still `RUNNING` (latest state `WaitForSfM`)
+  - describe snapshot: `logs/md1-baseline-e2e/stepfunctions-describe-md1-baseline-e2e-20260514032448-20260514T051731Z.json`
+  - history snapshot (reverse): `logs/md1-baseline-e2e/stepfunctions-history-reverse-md1-baseline-e2e-20260514032448-20260514T051731Z.json`
+  - list snapshot (RUNNING): `logs/md1-baseline-e2e/stepfunctions-list-running-20260514T051731Z.json`
+- SageMaker (this run):
+  - Processing job: `md1-baseline-e2e-20260514032448-sfm` -> `InProgress` (instance `ml.g4dn.xlarge`, volume `100GB`, `MaxRuntimeInSeconds=86400`)
+  - describe snapshot: `logs/md1-baseline-e2e/sagemaker-describe-md1-baseline-e2e-20260514032448-sfm-20260514T032511Z.json`
+  - Output prefix (S3UploadMode=EndOfJob): `s3://spaceport-ml-processing-staging/colmap/md1-baseline-e2e-20260514032448/` -> still empty
+  - S3 listing snapshot: `logs/md1-baseline-e2e/s3-colmap-md1-baseline-e2e-20260514032448-20260514T051731Z.txt`
+- SageMaker (other in-progress; do not stop unless proven orphaned):
+  - Training job observed: `md1-sample120-ds1500-r21-1778733520` -> `InProgress` (`Training`)
+- SfM CloudWatch progress:
+  - Stream: `/aws/sagemaker/ProcessingJobs` / `md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134`
+  - Streams snapshot: `logs/md1-baseline-e2e/cloudwatch-streams-md1-baseline-e2e-20260514032448-sfm-20260514T051731Z.json`
+  - Tail txt: `logs/md1-baseline-e2e/md1-baseline-e2e-20260514032448-sfm-cloudwatch-tail-20260514T051815Z.txt`
+  - Most recent parsed progress in that tail: `processed=2691/3076` (feature_extractor) at ~`2026-05-14T05:18:15Z`
