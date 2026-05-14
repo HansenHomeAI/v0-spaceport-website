@@ -1818,7 +1818,7 @@
   "latest_live_compute_status": "AWS idle before R0 v3 paid proof; training and processing active lists empty in head633 evidence",
   "latest_lod_production_readiness_status": "logs/md1-r4-tile10-rollback-lod-production-readiness-20260506.json reports viewer_ready_quality_blocked; --require-promotion-ready now exits 3 and wrote logs/md1-r4-tile10-rollback-lod-production-readiness-promotion-required-20260506.json, preventing promotion callers from accepting viewer readiness alone.",
   "latest_md1_cost_reduction_status": "soft_density_failed_hypothesis_encoded_no_paid_retry_allowed",
-  "latest_md1_live_compute_status": "Exact-head 9421a6f72a0ff72825f50ad1d934a1735e135a3d is green on CDK Deploy 25884029052. AWS is not idle: staging 3DGS job md1-e2e-vsfm-light-202605141942-3dgs remains InProgress/Training on ml.g5.2xlarge with Component=3DGS/Project=Spaceport/Environment=staging, observed TrainingTimeInSeconds=4489, and MaxRuntime=14400; processing is idle. No MD1 compute launched.",
+  "latest_md1_live_compute_status": "Exact-head 3d6318576e99cf0d01f0cba4611d468550187506 is green on CDK Deploy 25885364199. AWS is not idle: staging 3DGS job md1-e2e-vsfm-light-202605141942-3dgs remains InProgress/Training on ml.g5.2xlarge with Component=3DGS/Project=Spaceport/Environment=staging, observed TrainingTimeInSeconds=6287, and MaxRuntime=14400; processing is idle. No MD1 compute launched.",
   "latest_no_spend_bg10_merge_review_plan": {
     "aws_idle_after_failure": true,
     "failed_merge_billable_seconds": 285,
@@ -17761,5 +17761,37 @@
       "logs/md1-r0-visual-sentinel-v4-active-training-md1-e2e-vsfm-light-202605141942-3dgs-tags-20260514T205549Z.json"
     ],
     "next": "Wait for AWS idle, rerun v4 leaf-submit readiness on exact green head 9421, then submit at most one bounded tile_04 leaf-only proof if allowed. No merge/review/full14/LOD/promotion."
+  },
+  "md1_r0_visual_sentinel_v4_training_active_head3d63_20260514": {
+    "timestamp": "2026-05-14T21:25:43Z",
+    "exact_head": "3d6318576e99cf0d01f0cba4611d468550187506",
+    "exact_head_workflow": "CDK Deploy 25885364199 success",
+    "decision": "compute_hold_no_md1_submit",
+    "aws_state": {
+      "training_idle": false,
+      "processing_idle": true,
+      "active_training_job": "md1-e2e-vsfm-light-202605141942-3dgs",
+      "active_training_status": "InProgress/Training",
+      "active_training_instance_type": "ml.g5.2xlarge",
+      "active_training_observed_seconds": 6287,
+      "active_training_max_runtime_seconds": 14400,
+      "source_attribution": "staging 3DGS job tagged Component=3DGS Project=Spaceport Environment=staging; do not stop jobs owned by other automations"
+    },
+    "v4_candidate_status": {
+      "objective_gate": "paid_retry_allowed",
+      "dry_run_submitted_jobs": [],
+      "estimated_usd": 0.736,
+      "max_estimated_usd": 0.75,
+      "merge_review_gate": "blocked_until_tile04_leaf_gate_summary_exists",
+      "next_readiness_condition": "rerun readiness only after AWS training and processing are idle"
+    },
+    "evidence": [
+      "logs/md1-r0-visual-sentinel-v4-exact-head-workflows-head3d63-20260514T212543Z.json",
+      "logs/md1-r0-visual-sentinel-v4-live-training-head3d63-20260514T212543Z.json",
+      "logs/md1-r0-visual-sentinel-v4-live-processing-head3d63-20260514T212543Z.json",
+      "logs/md1-r0-visual-sentinel-v4-active-training-md1-e2e-vsfm-light-202605141942-3dgs-describe-20260514T212543Z.json",
+      "logs/md1-r0-visual-sentinel-v4-active-training-md1-e2e-vsfm-light-202605141942-3dgs-tags-20260514T212543Z.json"
+    ],
+    "next": "Wait for AWS idle, rerun v4 leaf-submit readiness on exact green head 3d63, then submit at most one bounded tile_04 leaf-only proof if allowed. No merge/review/full14/LOD/promotion."
   }
 }
