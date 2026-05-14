@@ -1,0 +1,449 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "sfm_quality_report",
+  "decision": "needs_more_proof",
+  "inputs": {
+    "sparse_dir": "logs/sfm-production-spine/md1-trainable-sample120-ds1500-r19-20260514/colmap/sparse/0",
+    "viewer_api_json": "logs/sfm-production-spine/md1_fanout_reducer_proof_viewer_api_summary_20260512T1803Z.json",
+    "sfm_metadata": "",
+    "reducer_metadata": "logs/sfm-production-spine/md1_fanout_reducer_proof_20260512T1803Z.json",
+    "heldout_render_json": "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/splat_heldout_render_metrics.json",
+    "ai_visual_review_json": "logs/sfm-production-spine/md1_sample120_ds1500_r21_ai_visual_review_20260514T0600Z.json",
+    "panel_diagnostics_json": "logs/sfm-production-spine/md1_sample120_ds1500_r21_panel_diagnostics_20260514T0607Z.json"
+  },
+  "summary": {
+    "registered_images": 120,
+    "expected_images": 120,
+    "registered_ratio": 1.0,
+    "points": 144483
+  },
+  "gates": [
+    {
+      "gate": "registration_coverage",
+      "status": "pass",
+      "evidence": "120/120 registered (1.0000)"
+    },
+    {
+      "gate": "point_count",
+      "status": "pass",
+      "evidence": "144483 points, minimum 100000"
+    },
+    {
+      "gate": "reducer_blockers",
+      "status": "pass",
+      "evidence": "promotion_blockers=[]"
+    },
+    {
+      "gate": "single_component",
+      "status": "pass",
+      "evidence": "merged=1 expected=1"
+    },
+    {
+      "gate": "merge_retention",
+      "status": "pass",
+      "evidence": "pre_merge_retention_ratio=1.0"
+    },
+    {
+      "gate": "seam_overlap",
+      "status": "pass",
+      "evidence": "0 merge nodes have <10 shared registered images"
+    },
+    {
+      "gate": "reprojection_error_sample",
+      "status": "pass",
+      "evidence": "p95=1.8027, max=8.0"
+    },
+    {
+      "gate": "viewer_axis_sanity",
+      "status": "pass",
+      "evidence": "median camera up.y=None"
+    },
+    {
+      "gate": "heldout_render_metrics",
+      "status": "pass",
+      "evidence": "render_metrics={\"failures\": [], \"holdout_count\": 24, \"lpips_median\": 0.1825, \"psnr_median\": 23.3154, \"ssim_median\": 0.7842, \"success_ratio\": 1.0}"
+    },
+    {
+      "gate": "ai_visual_review",
+      "status": "warning",
+      "evidence": "panels=24, reviewed=24, blocking=0, warnings=3, failures=[]"
+    },
+    {
+      "gate": "heldout_panel_diagnostics",
+      "status": "warning",
+      "evidence": "panel_diagnostics={\"bottom_band_rmse_p90\": 0.1184, \"edge_retention_median\": 0.8066, \"failures\": [], \"panel_count\": 24, \"top_band_rmse_median\": 0.0575, \"warnings\": 1}"
+    }
+  ],
+  "sparse_images": {
+    "source": "logs/sfm-production-spine/md1-trainable-sample120-ds1500-r19-20260514/colmap/sparse/0/images.txt",
+    "registered_image_count": 120,
+    "sample_names": [
+      "DJI_01001.JPG",
+      "DJI_01003.JPG",
+      "DJI_01002.JPG",
+      "DJI_01004.JPG",
+      "DJI_01005.JPG",
+      "DJI_01006.JPG",
+      "DJI_01007.JPG",
+      "DJI_01008.JPG"
+    ]
+  },
+  "sparse_points": {
+    "source": "logs/sfm-production-spine/md1-trainable-sample120-ds1500-r19-20260514/colmap/sparse/0/points3D.txt",
+    "exact_point_count": 144483,
+    "reprojection_error": {
+      "count": 144483,
+      "min": 0.0001,
+      "p10": 0.4993,
+      "median": 1.0158,
+      "p90": 1.6051,
+      "p95": 1.8027,
+      "p99": 2.2029,
+      "max": 3.902
+    },
+    "track_length": {
+      "count": 144483,
+      "min": 1.0,
+      "p10": 1.0,
+      "median": 3.0,
+      "p90": 8.0,
+      "p95": 11.0,
+      "p99": 16.0,
+      "max": 26.0
+    },
+    "low_track_ratio": 0.3701,
+    "high_error_ratio": 0.0,
+    "bounds": {
+      "x": {
+        "min": -566.7453,
+        "max": 250.1099,
+        "span": 816.8551
+      },
+      "y": {
+        "min": -143.7037,
+        "max": 80.3864,
+        "span": 224.0901
+      },
+      "z": {
+        "min": -237.6761,
+        "max": 358.9769,
+        "span": 596.653
+      }
+    }
+  },
+  "viewer": {
+    "source_registered_images": 447,
+    "exact_point_count": 336701,
+    "sampled_point_count": 80000,
+    "chunk_count": null,
+    "sample_bounds": {},
+    "sample_reprojection_error": {
+      "count": 0,
+      "min": null,
+      "p10": null,
+      "median": null,
+      "p90": null,
+      "p95": null,
+      "p99": null,
+      "max": null
+    },
+    "sample_track_length": {
+      "count": 0,
+      "min": null,
+      "p10": null,
+      "median": null,
+      "p90": null,
+      "p95": null,
+      "p99": null,
+      "max": null
+    },
+    "sample_low_track_ratio": null,
+    "sample_high_error_ratio": null,
+    "camera_up_y": {
+      "count": 0,
+      "min": null,
+      "p10": null,
+      "median": null,
+      "p90": null,
+      "p95": null,
+      "p99": null,
+      "max": null
+    },
+    "camera_step_length": {
+      "count": 0,
+      "min": null,
+      "p10": null,
+      "median": null,
+      "p90": null,
+      "p95": null,
+      "p99": null,
+      "max": null
+    }
+  },
+  "merge": {
+    "leaf_count": 2,
+    "passed_leaf_count": 2,
+    "failed_leaf_count": 0,
+    "merged_component_count": 1,
+    "expected_component_count": 1,
+    "promotion_blockers": [],
+    "pre_merge_retention_ratio": 1.0,
+    "final_merged_registered_images": 447,
+    "merge_node_count": 1,
+    "shared_registered_images": {
+      "count": 1,
+      "min": 40.0,
+      "p10": 40.0,
+      "median": 40.0,
+      "p90": 40.0,
+      "p95": 40.0,
+      "p99": 40.0,
+      "max": 40.0
+    },
+    "cross_edge_count": {
+      "count": 0,
+      "min": null,
+      "p10": null,
+      "median": null,
+      "p90": null,
+      "p95": null,
+      "p99": null,
+      "max": null
+    },
+    "weak_merge_nodes": []
+  },
+  "heldout_render": {
+    "artifact_kind": "splat_heldout_render_metrics",
+    "decision": "pass",
+    "holdout_count": 24,
+    "successful_render_count": 24,
+    "success_ratio": 1.0,
+    "psnr_median": 23.3154,
+    "psnr_p10": 23.3154,
+    "ssim_median": 0.7842,
+    "ssim_p10": 0.7842,
+    "lpips_median": 0.1825,
+    "lpips_p90": 0.1825,
+    "blockers": [],
+    "proof_panels": {
+      "panel_dir": "/opt/ml/model/quality_eval/heldout_renders",
+      "count": 24,
+      "paths": [
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0000.png",
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0001.png",
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0002.png",
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0003.png",
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0004.png",
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0005.png",
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0006.png",
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0007.png",
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0008.png",
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0009.png",
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0010.png",
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0011.png",
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0012.png",
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0013.png",
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0014.png",
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0015.png",
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0016.png",
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0017.png",
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0018.png",
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0019.png",
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0020.png",
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0021.png",
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0022.png",
+        "/opt/ml/model/quality_eval/heldout_renders/eval_img_0023.png"
+      ]
+    },
+    "baseline": {
+      "psnr_median": null,
+      "ssim_median": null,
+      "lpips_median": null
+    }
+  },
+  "ai_visual_review": {
+    "artifact_kind": "ai_visual_review_report",
+    "decision": "pass",
+    "panel_count": 24,
+    "reviewed_panel_count": 24,
+    "blocking_defect_count": 0,
+    "warning_defect_count": 3,
+    "findings": [
+      {
+        "severity": "warning",
+        "category": "fine_detail_fidelity",
+        "description": "Road edges, scrub texture, golf boundaries, small buildings, and distant city detail remain softer in renders than in source imagery even though coarse terrain shape aligns."
+      },
+      {
+        "severity": "warning",
+        "category": "sky_and_horizon",
+        "description": "Bright sky, snowline, and distant horizon/mountain regions remain hazy or partially washed out in multiple panels."
+      },
+      {
+        "severity": "warning",
+        "category": "near_camera_artifacts",
+        "description": "Foreground hillside vegetation and brush still show mild painterly blur or smear in several views."
+      }
+    ],
+    "proof_panel_manifest": [
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0000.png",
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0001.png",
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0002.png",
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0003.png",
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0004.png",
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0005.png",
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0006.png",
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0007.png",
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0008.png",
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0009.png",
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0010.png",
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0011.png",
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0012.png",
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0013.png",
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0014.png",
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0015.png",
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0016.png",
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0017.png",
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0018.png",
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0019.png",
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0020.png",
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0021.png",
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0022.png",
+      "logs/sfm-production-spine/md1_sample120_ds1500_r21_artifact/extracted/quality_eval/heldout_renders/eval_img_0023.png"
+    ]
+  },
+  "panel_diagnostics": {
+    "artifact_kind": "heldout_panel_diagnostics",
+    "decision": "warning",
+    "panel_count": 24,
+    "blocking_defect_count": 0,
+    "warning_defect_count": 1,
+    "metrics": {
+      "rmse": {
+        "count": 24,
+        "min": 0.0391,
+        "p10": 0.0454,
+        "median": 0.0707,
+        "p90": 0.0969,
+        "p95": 0.109,
+        "max": 0.1113
+      },
+      "mae": {
+        "count": 24,
+        "min": 0.0305,
+        "p10": 0.0362,
+        "median": 0.0491,
+        "p90": 0.0773,
+        "p95": 0.0822,
+        "max": 0.0988
+      },
+      "psnr": {
+        "count": 24,
+        "min": 19.0666,
+        "p10": 20.2762,
+        "median": 23.0102,
+        "p90": 26.8568,
+        "p95": 26.9307,
+        "max": 28.1535
+      },
+      "edge_retention_ratio": {
+        "count": 24,
+        "min": 0.7241,
+        "p10": 0.7507,
+        "median": 0.8066,
+        "p90": 0.8827,
+        "p95": 0.8863,
+        "max": 0.893
+      },
+      "top_band_rmse": {
+        "count": 24,
+        "min": 0.0346,
+        "p10": 0.0503,
+        "median": 0.0575,
+        "p90": 0.091,
+        "p95": 0.0938,
+        "max": 0.1308
+      },
+      "top_band_brightness_delta": {
+        "count": 24,
+        "min": -0.1114,
+        "p10": -0.085,
+        "median": -0.0359,
+        "p90": 0.0314,
+        "p95": 0.0423,
+        "max": 0.0564
+      },
+      "bottom_band_rmse": {
+        "count": 24,
+        "min": 0.0351,
+        "p10": 0.0425,
+        "median": 0.0634,
+        "p90": 0.1184,
+        "p95": 0.1241,
+        "max": 0.1404
+      },
+      "bottom_band_brightness_delta": {
+        "count": 24,
+        "min": -0.0893,
+        "p10": -0.0559,
+        "median": 0.015,
+        "p90": 0.0748,
+        "p95": 0.0759,
+        "max": 0.1019
+      }
+    },
+    "findings": [
+      {
+        "severity": "warning",
+        "category": "fine_detail_softness",
+        "evidence": "median edge retention 0.8066 < 0.92"
+      }
+    ],
+    "comparison": {
+      "rmse": {
+        "current_median": 0.0707,
+        "baseline_median": 0.0709,
+        "delta": -0.0002
+      },
+      "mae": {
+        "current_median": 0.0491,
+        "baseline_median": 0.05,
+        "delta": -0.0009
+      },
+      "psnr": {
+        "current_median": 23.0102,
+        "baseline_median": 22.9865,
+        "delta": 0.0237
+      },
+      "edge_retention_ratio": {
+        "current_median": 0.8066,
+        "baseline_median": 0.7371,
+        "delta": 0.0695
+      },
+      "top_band_rmse": {
+        "current_median": 0.0575,
+        "baseline_median": 0.0567,
+        "delta": 0.0008
+      },
+      "top_band_brightness_delta": {
+        "current_median": -0.0359,
+        "baseline_median": -0.0316,
+        "delta": -0.0043
+      },
+      "bottom_band_rmse": {
+        "current_median": 0.0634,
+        "baseline_median": 0.0657,
+        "delta": -0.0023
+      },
+      "bottom_band_brightness_delta": {
+        "current_median": 0.015,
+        "baseline_median": 0.0092,
+        "delta": 0.0058
+      }
+    }
+  },
+  "next_required_gates": [
+    "render held-out images from the splat and compute PSNR/SSIM/LPIPS",
+    "generate fixed proof panels and run AI visual defect review"
+  ]
+}

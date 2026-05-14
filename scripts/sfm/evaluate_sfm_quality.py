@@ -232,6 +232,28 @@ def visual_review_stats(payload: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def panel_diagnostics_stats(payload: dict[str, Any]) -> dict[str, Any]:
+    if not payload:
+        return {}
+    findings = payload.get("findings") or []
+    blocking_from_findings = sum(
+        1 for finding in findings if str(finding.get("severity", "")).lower() in {"blocker", "critical", "fail"}
+    )
+    warning_from_findings = sum(
+        1 for finding in findings if str(finding.get("severity", "")).lower() in {"warning", "warn"}
+    )
+    return {
+        "artifact_kind": payload.get("artifact_kind"),
+        "decision": payload.get("decision"),
+        "panel_count": int(payload.get("panel_count") or 0),
+        "blocking_defect_count": int(payload.get("blocking_defect_count") or blocking_from_findings),
+        "warning_defect_count": int(payload.get("warning_defect_count") or warning_from_findings),
+        "metrics": payload.get("metrics") or {},
+        "findings": findings[:20],
+        "comparison": payload.get("comparison"),
+    }
+
+
 def merge_stats(sfm_metadata: dict[str, Any], reducer_metadata: dict[str, Any]) -> dict[str, Any]:
     if reducer_metadata.get("artifact_kind") in {"sfm_reducer_canary_report", "sfm_fanout_reducer_report"}:
         transforms = (reducer_metadata.get("fallback") or {}).get("transforms") or []
@@ -398,12 +420,52 @@ def add_ai_visual_gate(gates: list[dict[str, Any]], stats: dict[str, Any], args:
     )
 
 
+def add_panel_diagnostics_gate(gates: list[dict[str, Any]], stats: dict[str, Any], args: argparse.Namespace) -> None:
+    if not stats:
+        return
+
+    panel_count = int(stats.get("panel_count") or 0)
+    blockers = int(stats.get("blocking_defect_count") or 0)
+    warnings = int(stats.get("warning_defect_count") or 0)
+    failures: list[str] = []
+    if panel_count < arg_value(args, "min_panel_diagnostics_panels", 6):
+        failures.append(f"panel_count={panel_count}")
+    if blockers:
+        failures.append(f"blocking_defect_count={blockers}")
+    if str(stats.get("decision") or "").lower() in {"fail", "do_not_promote"}:
+        failures.append(f"decision={stats.get('decision')}")
+
+    metrics = stats.get("metrics") or {}
+    edge_retention = (metrics.get("edge_retention_ratio") or {}).get("median")
+    top_rmse = (metrics.get("top_band_rmse") or {}).get("median")
+    bottom_rmse_p90 = (metrics.get("bottom_band_rmse") or {}).get("p90")
+    status = "fail" if failures else "warning" if warnings else "pass"
+    add_gate(
+        gates,
+        "heldout_panel_diagnostics",
+        status,
+        "panel_diagnostics="
+        + json.dumps(
+            {
+                "panel_count": panel_count,
+                "edge_retention_median": edge_retention,
+                "top_band_rmse_median": top_rmse,
+                "bottom_band_rmse_p90": bottom_rmse_p90,
+                "warnings": warnings,
+                "failures": failures,
+            },
+            sort_keys=True,
+        ),
+    )
+
+
 def build_report(args: argparse.Namespace) -> dict[str, Any]:
     sfm_metadata = load_json(args.sfm_metadata)
     reducer_metadata = load_json(args.reducer_metadata)
     viewer_payload = load_json(args.viewer_api_json)
     heldout_render_payload = load_json(arg_value(args, "heldout_render_json", ""))
     ai_visual_payload = load_json(arg_value(args, "ai_visual_review_json", ""))
+    panel_diagnostics_payload = load_json(arg_value(args, "panel_diagnostics_json", ""))
     sparse_dir = Path(args.sparse_dir) if args.sparse_dir else None
 
     sparse_images = parse_images(sparse_dir / "images.txt") if sparse_dir else {}
@@ -412,6 +474,7 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
     merge = merge_stats(sfm_metadata, reducer_metadata)
     heldout_render = render_metric_stats(heldout_render_payload)
     ai_visual_review = visual_review_stats(ai_visual_payload)
+    panel_diagnostics = panel_diagnostics_stats(panel_diagnostics_payload)
 
     registered = (
         sparse_images.get("registered_image_count")
@@ -485,6 +548,7 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
     )
     add_heldout_render_gate(gates, heldout_render, args)
     add_ai_visual_gate(gates, ai_visual_review, args)
+    add_panel_diagnostics_gate(gates, panel_diagnostics, args)
 
     statuses = {gate["status"] for gate in gates}
     decision = "do_not_promote" if "fail" in statuses else "needs_more_proof" if statuses & {"warning", "not_run"} else "promote"
@@ -505,6 +569,7 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
             "reducer_metadata": args.reducer_metadata,
             "heldout_render_json": arg_value(args, "heldout_render_json", ""),
             "ai_visual_review_json": arg_value(args, "ai_visual_review_json", ""),
+            "panel_diagnostics_json": arg_value(args, "panel_diagnostics_json", ""),
         },
         "summary": {
             "registered_images": registered,
@@ -519,6 +584,7 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
         "merge": merge,
         "heldout_render": heldout_render,
         "ai_visual_review": ai_visual_review,
+        "panel_diagnostics": panel_diagnostics,
         "next_required_gates": next_required_gates,
     }
 
@@ -531,6 +597,7 @@ def main() -> int:
     parser.add_argument("--reducer-metadata", default="")
     parser.add_argument("--heldout-render-json", default="")
     parser.add_argument("--ai-visual-review-json", default="")
+    parser.add_argument("--panel-diagnostics-json", default="")
     parser.add_argument("--expected-images", type=int, default=0)
     parser.add_argument("--min-registered-ratio", type=float, default=0.98)
     parser.add_argument("--min-points", type=int, default=1000)
@@ -544,6 +611,7 @@ def main() -> int:
     parser.add_argument("--max-ssim-regression", type=float, default=0.03)
     parser.add_argument("--max-lpips-regression", type=float, default=0.03)
     parser.add_argument("--min-visual-review-panels", type=int, default=6)
+    parser.add_argument("--min-panel-diagnostics-panels", type=int, default=6)
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
 

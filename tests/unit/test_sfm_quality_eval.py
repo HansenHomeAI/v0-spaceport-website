@@ -315,6 +315,75 @@ class SfmQualityEvalTest(unittest.TestCase):
         gates = {gate["gate"]: gate["status"] for gate in report["gates"]}
         self.assertEqual(gates["heldout_render_metrics"], "fail")
 
+    def test_panel_diagnostics_warning_keeps_report_from_promotion(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            panel = root / "panel.json"
+            panel.write_text(
+                json.dumps(
+                    {
+                        "artifact_kind": "heldout_panel_diagnostics",
+                        "decision": "warning",
+                        "panel_count": 24,
+                        "metrics": {
+                            "edge_retention_ratio": {"median": 0.8066},
+                            "top_band_rmse": {"median": 0.0575},
+                            "bottom_band_rmse": {"p90": 0.1184},
+                        },
+                        "findings": [
+                            {
+                                "severity": "warning",
+                                "category": "fine_detail_softness",
+                                "evidence": "median edge retention 0.8066 < 0.92",
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            reducer = root / "reducer.json"
+            reducer.write_text(
+                json.dumps(
+                    {
+                        "artifact_kind": "sfm_fanout_reducer_report",
+                        "decision": "pass",
+                        "leaf_count": 2,
+                        "passed_leaf_count": 2,
+                        "failed_leaf_count": 0,
+                        "merged_component_count": 1,
+                        "expected_component_count": 1,
+                        "promotion_blockers": [],
+                        "merged_registered_images": 0,
+                        "leaf_retention_ratios": [1.0, 1.0],
+                        "fallback": {"transforms": [{"leaf_index": 1, "shared_registered_images": 12}]},
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            report = quality_eval.build_report(
+                SimpleNamespace(
+                    sparse_dir="",
+                    viewer_api_json="",
+                    sfm_metadata="",
+                    reducer_metadata=str(reducer),
+                    heldout_render_json="",
+                    ai_visual_review_json="",
+                    panel_diagnostics_json=str(panel),
+                    expected_images=0,
+                    min_registered_ratio=0.0,
+                    min_points=0,
+                    max_reprojection_error_p95=8.0,
+                    min_panel_diagnostics_panels=6,
+                    output=str(root / "report.json"),
+                )
+            )
+
+        gates = {gate["gate"]: gate["status"] for gate in report["gates"]}
+        self.assertEqual(gates["heldout_panel_diagnostics"], "warning")
+        self.assertEqual(report["panel_diagnostics"]["warning_defect_count"], 1)
+        self.assertEqual(report["decision"], "needs_more_proof")
+
 
 if __name__ == "__main__":
     unittest.main()
