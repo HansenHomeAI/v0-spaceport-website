@@ -1,0 +1,1006 @@
+{
+    "events": [
+        {
+            "timestamp": 1778722439139,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=18997s idle=2220s",
+            "ingestionTime": 1778722445127
+        },
+        {
+            "timestamp": 1778722499767,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19057s idle=2280s",
+            "ingestionTime": 1778722505684
+        },
+        {
+            "timestamp": 1778722559109,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19117s idle=2340s",
+            "ingestionTime": 1778722564282
+        },
+        {
+            "timestamp": 1778722619863,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19177s idle=2400s",
+            "ingestionTime": 1778722625896
+        },
+        {
+            "timestamp": 1778722679173,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19237s idle=2460s",
+            "ingestionTime": 1778722684285
+        },
+        {
+            "timestamp": 1778722739535,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19297s idle=2520s",
+            "ingestionTime": 1778722745020
+        },
+        {
+            "timestamp": 1778722799942,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19357s idle=2580s",
+            "ingestionTime": 1778722805413
+        },
+        {
+            "timestamp": 1778722859636,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19417s idle=2640s",
+            "ingestionTime": 1778722865787
+        },
+        {
+            "timestamp": 1778722919259,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19477s idle=2700s",
+            "ingestionTime": 1778722925130
+        },
+        {
+            "timestamp": 1778722979715,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19537s idle=2760s",
+            "ingestionTime": 1778722985514
+        },
+        {
+            "timestamp": 1778723039136,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19598s idle=2820s",
+            "ingestionTime": 1778723045203
+        },
+        {
+            "timestamp": 1778723099548,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19658s idle=2880s",
+            "ingestionTime": 1778723105091
+        },
+        {
+            "timestamp": 1778723160001,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19718s idle=2940s",
+            "ingestionTime": 1778723165866
+        },
+        {
+            "timestamp": 1778723219419,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19778s idle=3000s",
+            "ingestionTime": 1778723225180
+        },
+        {
+            "timestamp": 1778723279723,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19838s idle=3060s",
+            "ingestionTime": 1778723285488
+        },
+        {
+            "timestamp": 1778723340049,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19898s idle=3120s",
+            "ingestionTime": 1778723345182
+        },
+        {
+            "timestamp": 1778723399454,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19958s idle=3180s",
+            "ingestionTime": 1778723404684
+        },
+        {
+            "timestamp": 1778723459755,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20018s idle=3240s",
+            "ingestionTime": 1778723464990
+        },
+        {
+            "timestamp": 1778723519231,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20078s idle=3300s",
+            "ingestionTime": 1778723524371
+        },
+        {
+            "timestamp": 1778723579763,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20138s idle=3360s",
+            "ingestionTime": 1778723584895
+        },
+        {
+            "timestamp": 1778723640177,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20198s idle=3420s",
+            "ingestionTime": 1778723645450
+        },
+        {
+            "timestamp": 1778723700056,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20258s idle=3480s",
+            "ingestionTime": 1778723705209
+        },
+        {
+            "timestamp": 1778723759787,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20318s idle=3540s",
+            "ingestionTime": 1778723765036
+        },
+        {
+            "timestamp": 1778723819267,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20378s idle=3600s",
+            "ingestionTime": 1778723824689
+        },
+        {
+            "timestamp": 1778723879772,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20438s idle=3660s",
+            "ingestionTime": 1778723885170
+        },
+        {
+            "timestamp": 1778723939424,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20498s idle=3720s",
+            "ingestionTime": 1778723945083
+        },
+        {
+            "timestamp": 1778724000092,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20558s idle=3780s",
+            "ingestionTime": 1778724005935
+        },
+        {
+            "timestamp": 1778724060159,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20618s idle=3840s",
+            "ingestionTime": 1778724065633
+        },
+        {
+            "timestamp": 1778724119431,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20678s idle=3900s",
+            "ingestionTime": 1778724125212
+        },
+        {
+            "timestamp": 1778724179968,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20738s idle=3960s",
+            "ingestionTime": 1778724185704
+        },
+        {
+            "timestamp": 1778724239911,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20798s idle=4020s",
+            "ingestionTime": 1778724246032
+        },
+        {
+            "timestamp": 1778724299503,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20858s idle=4080s",
+            "ingestionTime": 1778724305615
+        },
+        {
+            "timestamp": 1778724359983,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20918s idle=4140s",
+            "ingestionTime": 1778724365340
+        },
+        {
+            "timestamp": 1778724419658,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20978s idle=4200s",
+            "ingestionTime": 1778724425089
+        },
+        {
+            "timestamp": 1778724480339,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21038s idle=4260s",
+            "ingestionTime": 1778724485891
+        },
+        {
+            "timestamp": 1778724539756,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21098s idle=4320s",
+            "ingestionTime": 1778724545558
+        },
+        {
+            "timestamp": 1778724600099,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21158s idle=4380s",
+            "ingestionTime": 1778724605993
+        },
+        {
+            "timestamp": 1778724659426,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21218s idle=4440s",
+            "ingestionTime": 1778724664573
+        },
+        {
+            "timestamp": 1778724719900,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21278s idle=4500s",
+            "ingestionTime": 1778724725287
+        },
+        {
+            "timestamp": 1778724779453,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21338s idle=4560s",
+            "ingestionTime": 1778724785224
+        },
+        {
+            "timestamp": 1778724839707,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21398s idle=4620s",
+            "ingestionTime": 1778724845596
+        },
+        {
+            "timestamp": 1778724899422,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21458s idle=4680s",
+            "ingestionTime": 1778724904541
+        },
+        {
+            "timestamp": 1778724959991,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21518s idle=4740s",
+            "ingestionTime": 1778724965666
+        },
+        {
+            "timestamp": 1778725019511,
+            "message": "COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21578s idle=4800s",
+            "ingestionTime": 1778725025294
+        },
+        {
+            "timestamp": 1778725041807,
+            "message": "2026-05-14 02:17:20,900 - ERROR - COLMAP pipeline failed: GPS-first mapper failed: mapper_spatial_sequential_only timed out after 21600s",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041807,
+            "message": "I20260514 00:55:53.003726  4013 incremental_pipeline.cc:527] => Image sees 2442 / 7776 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041807,
+            "message": "I20260514 00:55:55.418728  4013 incremental_pipeline.cc:524] Registering image #2566 (num_reg_frames=1224)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041807,
+            "message": "I20260514 00:55:55.418778  4013 incremental_pipeline.cc:527] => Image sees 3095 / 9020 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041807,
+            "message": "I20260514 00:55:57.893148  4013 incremental_pipeline.cc:524] Registering image #2622 (num_reg_frames=1225)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041807,
+            "message": "I20260514 00:55:57.893198  4013 incremental_pipeline.cc:527] => Image sees 2835 / 9424 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041807,
+            "message": "I20260514 00:56:00.356321  4013 incremental_pipeline.cc:524] Registering image #2654 (num_reg_frames=1226)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041807,
+            "message": "I20260514 00:56:00.356369  4013 incremental_pipeline.cc:527] => Image sees 3416 / 9102 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041807,
+            "message": "I20260514 00:56:02.955333  4013 incremental_pipeline.cc:524] Registering image #2847 (num_reg_frames=1227)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041807,
+            "message": "I20260514 00:56:02.955391  4013 incremental_pipeline.cc:527] => Image sees 2379 / 7944 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041807,
+            "message": "I20260514 00:56:05.300330  4013 incremental_pipeline.cc:524] Registering image #2824 (num_reg_frames=1228)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:05.300402  4013 incremental_pipeline.cc:527] => Image sees 2341 / 7171 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:07.988765  4013 incremental_pipeline.cc:524] Registering image #2838 (num_reg_frames=1229)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:07.988821  4013 incremental_pipeline.cc:527] => Image sees 2839 / 8022 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:10.683800  4013 incremental_pipeline.cc:524] Registering image #2892 (num_reg_frames=1230)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:10.683854  4013 incremental_pipeline.cc:527] => Image sees 2694 / 8684 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:13.225672  4013 incremental_pipeline.cc:524] Registering image #2559 (num_reg_frames=1231)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:13.225731  4013 incremental_pipeline.cc:527] => Image sees 2959 / 8857 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:15.981252  4013 incremental_pipeline.cc:524] Registering image #2527 (num_reg_frames=1232)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:15.981307  4013 incremental_pipeline.cc:527] => Image sees 2582 / 8103 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:18.650846  4013 incremental_pipeline.cc:524] Registering image #2810 (num_reg_frames=1233)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:18.650898  4013 incremental_pipeline.cc:527] => Image sees 2400 / 6549 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:21.187428  4013 incremental_pipeline.cc:524] Registering image #2759 (num_reg_frames=1234)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:21.187480  4013 incremental_pipeline.cc:527] => Image sees 2940 / 6636 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:23.946135  4013 incremental_pipeline.cc:524] Registering image #2544 (num_reg_frames=1235)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:23.946189  4013 incremental_pipeline.cc:527] => Image sees 2478 / 7853 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:26.669600  4013 incremental_pipeline.cc:524] Registering image #2528 (num_reg_frames=1236)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:26.669656  4013 incremental_pipeline.cc:527] => Image sees 2451 / 8393 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:29.246116  4013 incremental_pipeline.cc:524] Registering image #2811 (num_reg_frames=1237)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:29.246163  4013 incremental_pipeline.cc:527] => Image sees 2241 / 7995 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:31.768640  4013 incremental_pipeline.cc:524] Registering image #2775 (num_reg_frames=1238)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:31.768694  4013 incremental_pipeline.cc:527] => Image sees 2231 / 6943 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:34.398787  4013 incremental_pipeline.cc:524] Registering image #2579 (num_reg_frames=1239)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:34.398836  4013 incremental_pipeline.cc:527] => Image sees 2638 / 8105 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:37.023322  4013 incremental_pipeline.cc:524] Registering image #2776 (num_reg_frames=1240)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:37.023407  4013 incremental_pipeline.cc:527] => Image sees 2295 / 7684 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:39.536139  4013 incremental_pipeline.cc:524] Registering image #2777 (num_reg_frames=1241)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:39.536191  4013 incremental_pipeline.cc:527] => Image sees 2437 / 8509 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:42.043859  4013 incremental_pipeline.cc:524] Registering image #2778 (num_reg_frames=1242)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:42.043911  4013 incremental_pipeline.cc:527] => Image sees 2747 / 8830 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041808,
+            "message": "I20260514 00:56:44.623543  4013 incremental_pipeline.cc:524] Registering image #2430 (num_reg_frames=1243)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:56:44.623602  4013 incremental_pipeline.cc:527] => Image sees 2730 / 8551 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:56:47.300009  4013 incremental_pipeline.cc:524] Registering image #2894 (num_reg_frames=1244)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:56:47.300060  4013 incremental_pipeline.cc:527] => Image sees 3223 / 8804 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:56:49.877228  4013 incremental_pipeline.cc:524] Registering image #2481 (num_reg_frames=1245)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:56:49.877279  4013 incremental_pipeline.cc:527] => Image sees 2287 / 7865 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:56:52.427990  4013 incremental_pipeline.cc:524] Registering image #2760 (num_reg_frames=1246)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:56:52.428047  4013 incremental_pipeline.cc:527] => Image sees 2490 / 7896 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:56:54.961879  4013 incremental_pipeline.cc:524] Registering image #2560 (num_reg_frames=1247)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:56:54.961928  4013 incremental_pipeline.cc:527] => Image sees 2816 / 8084 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:56:57.630205  4013 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "Traceback (most recent call last):\n  File \"/opt/ml/code/run_colmap_sfm.py\", line 7827, in run_monolithic_gps_first_path\n    spatial_model = self.run_mapper(\n                    ^^^^^^^^^^^^^^^^\n  File \"/opt/ml/code/run_colmap_sfm.py\", line 3421, in run_mapper\n    stream_command(\n  File \"/opt/ml/code/run_colmap_sfm.py\", line 314, in stream_command\n    raise RuntimeError(",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "RuntimeError: mapper_spatial_sequential_only timed out after 21600s",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:55:53.003726  4013 incremental_pipeline.cc:527] => Image sees 2442 / 7776 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:55:55.418728  4013 incremental_pipeline.cc:524] Registering image #2566 (num_reg_frames=1224)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:55:55.418778  4013 incremental_pipeline.cc:527] => Image sees 3095 / 9020 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:55:57.893148  4013 incremental_pipeline.cc:524] Registering image #2622 (num_reg_frames=1225)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:55:57.893198  4013 incremental_pipeline.cc:527] => Image sees 2835 / 9424 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:56:00.356321  4013 incremental_pipeline.cc:524] Registering image #2654 (num_reg_frames=1226)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:56:00.356369  4013 incremental_pipeline.cc:527] => Image sees 3416 / 9102 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:56:02.955333  4013 incremental_pipeline.cc:524] Registering image #2847 (num_reg_frames=1227)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:56:02.955391  4013 incremental_pipeline.cc:527] => Image sees 2379 / 7944 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:56:05.300330  4013 incremental_pipeline.cc:524] Registering image #2824 (num_reg_frames=1228)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:56:05.300402  4013 incremental_pipeline.cc:527] => Image sees 2341 / 7171 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:56:07.988765  4013 incremental_pipeline.cc:524] Registering image #2838 (num_reg_frames=1229)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:56:07.988821  4013 incremental_pipeline.cc:527] => Image sees 2839 / 8022 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:56:10.683800  4013 incremental_pipeline.cc:524] Registering image #2892 (num_reg_frames=1230)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041809,
+            "message": "I20260514 00:56:10.683854  4013 incremental_pipeline.cc:527] => Image sees 2694 / 8684 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:13.225672  4013 incremental_pipeline.cc:524] Registering image #2559 (num_reg_frames=1231)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:13.225731  4013 incremental_pipeline.cc:527] => Image sees 2959 / 8857 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:15.981252  4013 incremental_pipeline.cc:524] Registering image #2527 (num_reg_frames=1232)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:15.981307  4013 incremental_pipeline.cc:527] => Image sees 2582 / 8103 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:18.650846  4013 incremental_pipeline.cc:524] Registering image #2810 (num_reg_frames=1233)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:18.650898  4013 incremental_pipeline.cc:527] => Image sees 2400 / 6549 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:21.187428  4013 incremental_pipeline.cc:524] Registering image #2759 (num_reg_frames=1234)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:21.187480  4013 incremental_pipeline.cc:527] => Image sees 2940 / 6636 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:23.946135  4013 incremental_pipeline.cc:524] Registering image #2544 (num_reg_frames=1235)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:23.946189  4013 incremental_pipeline.cc:527] => Image sees 2478 / 7853 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:26.669600  4013 incremental_pipeline.cc:524] Registering image #2528 (num_reg_frames=1236)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:26.669656  4013 incremental_pipeline.cc:527] => Image sees 2451 / 8393 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:29.246116  4013 incremental_pipeline.cc:524] Registering image #2811 (num_reg_frames=1237)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:29.246163  4013 incremental_pipeline.cc:527] => Image sees 2241 / 7995 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:31.768640  4013 incremental_pipeline.cc:524] Registering image #2775 (num_reg_frames=1238)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:31.768694  4013 incremental_pipeline.cc:527] => Image sees 2231 / 6943 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:34.398787  4013 incremental_pipeline.cc:524] Registering image #2579 (num_reg_frames=1239)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:34.398836  4013 incremental_pipeline.cc:527] => Image sees 2638 / 8105 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:37.023322  4013 incremental_pipeline.cc:524] Registering image #2776 (num_reg_frames=1240)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:37.023407  4013 incremental_pipeline.cc:527] => Image sees 2295 / 7684 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:39.536139  4013 incremental_pipeline.cc:524] Registering image #2777 (num_reg_frames=1241)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:39.536191  4013 incremental_pipeline.cc:527] => Image sees 2437 / 8509 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:42.043859  4013 incremental_pipeline.cc:524] Registering image #2778 (num_reg_frames=1242)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:42.043911  4013 incremental_pipeline.cc:527] => Image sees 2747 / 8830 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:44.623543  4013 incremental_pipeline.cc:524] Registering image #2430 (num_reg_frames=1243)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:44.623602  4013 incremental_pipeline.cc:527] => Image sees 2730 / 8551 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:47.300009  4013 incremental_pipeline.cc:524] Registering image #2894 (num_reg_frames=1244)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:47.300060  4013 incremental_pipeline.cc:527] => Image sees 3223 / 8804 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:49.877228  4013 incremental_pipeline.cc:524] Registering image #2481 (num_reg_frames=1245)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:49.877279  4013 incremental_pipeline.cc:527] => Image sees 2287 / 7865 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:52.427990  4013 incremental_pipeline.cc:524] Registering image #2760 (num_reg_frames=1246)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:52.428047  4013 incremental_pipeline.cc:527] => Image sees 2490 / 7896 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:54.961879  4013 incremental_pipeline.cc:524] Registering image #2560 (num_reg_frames=1247)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:54.961928  4013 incremental_pipeline.cc:527] => Image sees 2816 / 8084 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "I20260514 00:56:57.630205  4013 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041810,
+            "message": "The above exception was the direct cause of the following exception:",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "Traceback (most recent call last):\n  File \"/opt/ml/code/run_colmap_sfm.py\", line 1072, in run\n    best_model = self.run_matching_and_mapping()\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/ml/code/run_colmap_sfm.py\", line 8103, in run_matching_and_mapping\n    return self.run_monolithic_gps_first_path()\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/ml/code/run_colmap_sfm.py\", line 7850, in run_monolithic_gps_first_path\n    raise RuntimeError(self.failure_reason_detail) from exc",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "RuntimeError: GPS-first mapper failed: mapper_spatial_sequential_only timed out after 21600s",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:55:53.003726  4013 incremental_pipeline.cc:527] => Image sees 2442 / 7776 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:55:55.418728  4013 incremental_pipeline.cc:524] Registering image #2566 (num_reg_frames=1224)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:55:55.418778  4013 incremental_pipeline.cc:527] => Image sees 3095 / 9020 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:55:57.893148  4013 incremental_pipeline.cc:524] Registering image #2622 (num_reg_frames=1225)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:55:57.893198  4013 incremental_pipeline.cc:527] => Image sees 2835 / 9424 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:00.356321  4013 incremental_pipeline.cc:524] Registering image #2654 (num_reg_frames=1226)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:00.356369  4013 incremental_pipeline.cc:527] => Image sees 3416 / 9102 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:02.955333  4013 incremental_pipeline.cc:524] Registering image #2847 (num_reg_frames=1227)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:02.955391  4013 incremental_pipeline.cc:527] => Image sees 2379 / 7944 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:05.300330  4013 incremental_pipeline.cc:524] Registering image #2824 (num_reg_frames=1228)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:05.300402  4013 incremental_pipeline.cc:527] => Image sees 2341 / 7171 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:07.988765  4013 incremental_pipeline.cc:524] Registering image #2838 (num_reg_frames=1229)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:07.988821  4013 incremental_pipeline.cc:527] => Image sees 2839 / 8022 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:10.683800  4013 incremental_pipeline.cc:524] Registering image #2892 (num_reg_frames=1230)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:10.683854  4013 incremental_pipeline.cc:527] => Image sees 2694 / 8684 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:13.225672  4013 incremental_pipeline.cc:524] Registering image #2559 (num_reg_frames=1231)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:13.225731  4013 incremental_pipeline.cc:527] => Image sees 2959 / 8857 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:15.981252  4013 incremental_pipeline.cc:524] Registering image #2527 (num_reg_frames=1232)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:15.981307  4013 incremental_pipeline.cc:527] => Image sees 2582 / 8103 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:18.650846  4013 incremental_pipeline.cc:524] Registering image #2810 (num_reg_frames=1233)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:18.650898  4013 incremental_pipeline.cc:527] => Image sees 2400 / 6549 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:21.187428  4013 incremental_pipeline.cc:524] Registering image #2759 (num_reg_frames=1234)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:21.187480  4013 incremental_pipeline.cc:527] => Image sees 2940 / 6636 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:23.946135  4013 incremental_pipeline.cc:524] Registering image #2544 (num_reg_frames=1235)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:23.946189  4013 incremental_pipeline.cc:527] => Image sees 2478 / 7853 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:26.669600  4013 incremental_pipeline.cc:524] Registering image #2528 (num_reg_frames=1236)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:26.669656  4013 incremental_pipeline.cc:527] => Image sees 2451 / 8393 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:29.246116  4013 incremental_pipeline.cc:524] Registering image #2811 (num_reg_frames=1237)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:29.246163  4013 incremental_pipeline.cc:527] => Image sees 2241 / 7995 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:31.768640  4013 incremental_pipeline.cc:524] Registering image #2775 (num_reg_frames=1238)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:31.768694  4013 incremental_pipeline.cc:527] => Image sees 2231 / 6943 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:34.398787  4013 incremental_pipeline.cc:524] Registering image #2579 (num_reg_frames=1239)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:34.398836  4013 incremental_pipeline.cc:527] => Image sees 2638 / 8105 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:37.023322  4013 incremental_pipeline.cc:524] Registering image #2776 (num_reg_frames=1240)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:37.023407  4013 incremental_pipeline.cc:527] => Image sees 2295 / 7684 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:39.536139  4013 incremental_pipeline.cc:524] Registering image #2777 (num_reg_frames=1241)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:39.536191  4013 incremental_pipeline.cc:527] => Image sees 2437 / 8509 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:42.043859  4013 incremental_pipeline.cc:524] Registering image #2778 (num_reg_frames=1242)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:42.043911  4013 incremental_pipeline.cc:527] => Image sees 2747 / 8830 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:44.623543  4013 incremental_pipeline.cc:524] Registering image #2430 (num_reg_frames=1243)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:44.623602  4013 incremental_pipeline.cc:527] => Image sees 2730 / 8551 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041811,
+            "message": "I20260514 00:56:47.300009  4013 incremental_pipeline.cc:524] Registering image #2894 (num_reg_frames=1244)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041812,
+            "message": "I20260514 00:56:47.300060  4013 incremental_pipeline.cc:527] => Image sees 3223 / 8804 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041812,
+            "message": "I20260514 00:56:49.877228  4013 incremental_pipeline.cc:524] Registering image #2481 (num_reg_frames=1245)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041812,
+            "message": "I20260514 00:56:49.877279  4013 incremental_pipeline.cc:527] => Image sees 2287 / 7865 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041812,
+            "message": "I20260514 00:56:52.427990  4013 incremental_pipeline.cc:524] Registering image #2760 (num_reg_frames=1246)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041812,
+            "message": "I20260514 00:56:52.428047  4013 incremental_pipeline.cc:527] => Image sees 2490 / 7896 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041812,
+            "message": "I20260514 00:56:54.961879  4013 incremental_pipeline.cc:524] Registering image #2560 (num_reg_frames=1247)",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041812,
+            "message": "I20260514 00:56:54.961928  4013 incremental_pipeline.cc:527] => Image sees 2816 / 8084 points",
+            "ingestionTime": 1778725047476
+        },
+        {
+            "timestamp": 1778725041812,
+            "message": "I20260514 00:56:57.630205  4013 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1778725047476
+        }
+    ],
+    "nextForwardToken": "f/39666893935695140890540881914297059447378238503373570203/s",
+    "nextBackwardToken": "b/39666835894147732795248355118057694576338537104363880448/s"
+}

@@ -451,7 +451,12 @@ class MLPipelineStack(Stack):
                 # Note: ExperimentConfig removed to avoid dependency on non-existent experiment
                 "Environment": {
                     "AWS_DEFAULT_REGION": self.region,
-                    "PYTHONUNBUFFERED": "1"
+                    "PYTHONUNBUFFERED": "1",
+                    # MD1-scale datasets can legitimately take longer than 6 hours for
+                    # monolithic mapping / bundle adjustment; avoid throwing away an
+                    # expensive SfM run due to an internal container timeout.
+                    "COLMAP_MONOLITHIC_MAPPER_TIMEOUT_SECONDS": "43200",
+                    "COLMAP_BUNDLE_ADJUSTER_TIMEOUT_SECONDS": "43200",
                 },
                 "Tags": [
                     {"Key": "Project", "Value": "Spaceport"},

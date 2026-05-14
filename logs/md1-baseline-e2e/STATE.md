@@ -1,6 +1,6 @@
 # MD1 Baseline E2E State
 
-updated: 2026-05-13T18:14:17-06:00
+updated: 2026-05-13T21:12:50-0600
 branch: agent-113647-md1-baseline-e2e
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -324,3 +324,23 @@ Produce a development-based MD1 baseline with:
   - Most recent observed heartbeat: `HEARTBEAT elapsed=17317s idle=540s` at `2026-05-14T01:05:59Z` (still in global BA / retriangulation phase)
 - Snapshot:
   - `logs/md1-baseline-e2e/monitor-md1-baseline-e2e-20260513115645-20260514T010553Z.txt`
+
+### 2026-05-13T21:12:50-0600
+
+- AWS identity: `aws sts get-caller-identity` -> Account `975050048887` (region `us-west-2`).
+- Step Functions execution (this run): `TIMED_OUT`
+  - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-baseline-e2e-20260513115645`
+  - describe snapshot: `logs/md1-baseline-e2e/stepfunctions-describe-20260514T031250Z.json`
+- SageMaker (this run):
+  - Processing job: `md1-baseline-e2e-20260513115645-sfm` -> `Failed` (`AlgorithmError`, exit code 1)
+  - describe snapshot: `logs/md1-baseline-e2e/sagemaker-describe-md1-baseline-e2e-20260513115645-sfm-20260514T031250Z.json`
+  - Root cause (from CloudWatch tail): internal mapper timeout: `RuntimeError: mapper_spatial_sequential_only timed out after 21600s`
+    - streams: `logs/md1-baseline-e2e/cloudwatch-logstreams-md1-baseline-e2e-20260513115645-sfm-20260514T000000Z.json`
+    - tail json: `logs/md1-baseline-e2e/cloudwatch-tail-md1-baseline-e2e-20260513115645-sfm-20260514T000000Z.json`
+    - tail txt: `logs/md1-baseline-e2e/md1-baseline-e2e-20260513115645-sfm-cloudwatch-tail-20260514T000000Z.txt`
+- SageMaker (external; do not stop; not owned by this automation):
+  - Training jobs InProgress snapshot: `logs/md1-baseline-e2e/sagemaker-list-training-inprogress-20260514T031250Z.json`
+  - Processing jobs InProgress snapshot: `logs/md1-baseline-e2e/sagemaker-list-processing-inprogress-20260514T031250Z.json`
+- Fix queued (proven by this run): raise SfM container timeout environment for future runs:
+  - set `COLMAP_MONOLITHIC_MAPPER_TIMEOUT_SECONDS=43200` and `COLMAP_BUNDLE_ADJUSTER_TIMEOUT_SECONDS=43200` on the SfM Processing Job in `infrastructure/spaceport_cdk/spaceport_cdk/ml_pipeline_stack.py`
+  - next: commit + push + wait for `CDK Deploy` green, then relaunch a single SfM-only execution (`pipelineStep=sfm`) with a new `jobName`.
