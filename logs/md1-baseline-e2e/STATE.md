@@ -1,6 +1,6 @@
 # MD1 Baseline E2E State
 
-updated: 2026-05-14T12:47:11-0600
+updated: 2026-05-14T17:24:39-0600
 branch: agent-113647-md1-baseline-e2e
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -966,3 +966,32 @@ Produce a development-based MD1 baseline with:
   - Monitor `md1-e2e-vsfm-fg-202605142314-3dgs`.
   - If it succeeds, validate gaussian count/file size before compression is accepted as final; then smoke and visually inspect the final viewer.
   - If it fails, capture exact logs and patch only that proven failure.
+
+### 2026-05-14T17:24:39-0600
+
+- Git / CI:
+  - Branch/head: `agent-113647-md1-baseline-e2e` @ `a1cd09b8e23fb2de37fb083ccb321591c4b845f7`.
+  - Working tree was clean before this ledger update.
+  - Exact-head GitHub workflow: `CDK Deploy` run `25891189386` -> `success`.
+- AWS identity:
+  - `aws sts get-caller-identity` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+- Active pipeline state:
+  - Running Step Functions executions for `SpaceportMLPipeline-staging`: only `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-fg-202605142314`.
+  - Execution status: `RUNNING`.
+  - SageMaker training job: `md1-e2e-vsfm-fg-202605142314-3dgs` -> `InProgress`, secondary status `Training`.
+  - Training image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent113647md1baselinee2e`.
+  - Training instance/runtime: `ml.g5.2xlarge`, `MaxRuntimeInSeconds=14400`.
+  - Training started at `2026-05-14T17:16:35-0600`; image download completed and `Training` began at `2026-05-14T17:20:58-0600`.
+  - Active processing jobs: none.
+  - Active training jobs: only `md1-e2e-vsfm-fg-202605142314-3dgs`.
+- Current log proof:
+  - Log stream: `/aws/sagemaker/TrainingJobs` / `md1-e2e-vsfm-fg-202605142314-3dgs/algo-1-1778800595`.
+  - COLMAP validation passed: `Cameras: 1`, `Images registered: 2157`, `Image files: 2157`, `3D points: 1312804`.
+  - Config overrides confirmed in the container: `enable_bg_model=False`, `enable_alpha_loss=False`, `enable_robust_mask=False`, `floater_pruning.enabled=False`, `cull_alpha_thresh=0.005`, `cull_scale_thresh=0.5`, `never_mask_upper=0.0`.
+  - `colmap model_converter` completed and produced `cameras.bin`, `images.bin`, and `points3D.bin`.
+  - Current visible step: `ns-process-data images --data /opt/ml/input/data/training/images --output-dir /tmp/nerfstudio_training/converted_data --skip-colmap --colmap-model-path /tmp/nerfstudio_training/colmap_bin/0`.
+- Output prefixes at this check:
+  - 3DGS output still empty as expected until SageMaker job end: `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-fg-202605142314/`.
+  - Compression output still empty because compression has not started: `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-fg-202605142314/`.
+- Next step:
+  - Continue monitoring the same foreground-only 3DGS job. Do not launch another retry while this one is active.
