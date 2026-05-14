@@ -1,0 +1,11 @@
+[20260513T230101Z] poll
+[20260513T230133Z] poll -> capture stepfunctions/sagemaker/s3
+[20260513T230503Z] repoll
+[20260514T000358Z] poll -> capture stepfunctions/sagemaker/s3/cloudwatch; revalidate web build -> wait for SfM completion
+[20260514T010553Z] poll -> StepFunctions RUNNING (WaitForSfM); SfM InProgress; S3 colmap empty (EndOfJob); cloudwatch HEARTBEAT idle=540s -> next: keep polling
+[2026-05-14T02:08:14Z] poll -> execution TIMED_OUT but sfm InProgress -> patch StepFunctions timeout to 24h
+[2026-05-14T02:19:07Z] fix -> update-state-machine TimeoutSeconds=86400 (manual because CF stack rollback)
+[2026-05-14T03:25:36Z] launched md1-baseline-e2e-20260514032448 -> RUNNING (SfM InProgress) -> monitor cloudwatch/stepfunctions
+[2026-05-14T06:20:02Z] poll sfm -> mapper running (bundle adj started) -> wait/poll again
+[2026-05-14T06:26:22Z] ci -> CDK Deploy 25845353313 success (25e686b1) -> continue sfm polling
+[2026-05-14T07:19:56Z] poll sfm -> mapper still active; StepFunctions RUNNING (WaitForSfMCompletion); S3 colmap empty (EndOfJob) -> next: keep polling

@@ -1,0 +1,12 @@
+{
+    "TrainingJobSummaries": [
+        {
+            "TrainingJobName": "md1-full447-ds1000-r22-1778742605",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-full447-ds1000-r22-1778742605",
+            "CreationTime": "2026-05-14T01:10:46.982000-06:00",
+            "LastModifiedTime": "2026-05-14T01:16:14.265000-06:00",
+            "TrainingJobStatus": "InProgress",
+            "SecondaryStatus": "Training"
+        }
+    ]
+}
