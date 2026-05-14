@@ -1,6 +1,6 @@
 # MD1 Baseline E2E State
 
-updated: 2026-05-14T08:24:23-0600
+updated: 2026-05-14T08:43:29-0600
 branch: agent-113647-md1-baseline-e2e
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -641,3 +641,18 @@ Produce a development-based MD1 baseline with:
 - No-spend regression check:
   - `python3 -m unittest tests.unit.test_sogs_supersplat_bundle` -> `OK`
   - output: `logs/md1-baseline-e2e/no-spend-unittest-test_sogs_supersplat_bundle-20260514T142423Z.txt`
+
+### 2026-05-14T08:43:29-0600
+
+- Viewer visual gate found a real issue:
+  - Fresh public smoke initially passed telemetry, but manual screenshot inspection showed `/md1-viewer` rendered the global header/footer feedback panel over the splat.
+  - This made the old viewer smoke too permissive: it verified pixels and telemetry, but did not verify that the viewer surface was actually unobstructed.
+- Fix applied:
+  - `web/components/SiteChrome.tsx`: treat `/md1-viewer` and `/sfm-output-viewer` as standalone routes, matching the existing SOGS viewer behavior.
+  - `web/scripts/test-md1-production-viewer.mjs`: fail if `/md1-viewer` renders `header`, `footer`, or `#footer-stats`.
+- Local verification:
+  - `npm run build` -> passed (existing lint warnings only).
+  - `MD1_VIEWER_URL=http://127.0.0.1:3032 node scripts/test-md1-production-viewer.mjs` -> passed with the stricter chrome assertions.
+  - local desktop first frame `213.2ms`, mobile first frame `199.3ms`.
+  - updated screenshots: `logs/md1-production-viewer-desktop.png`, `logs/md1-production-viewer-mobile.png` now show the MD1 panel only, no global header/footer feedback overlay.
+  - one-off Playwright check for `http://127.0.0.1:3032/sfm-output-viewer` -> `{"header":0,"footer":0,"feedback":0,"canvas":1}`.

@@ -274,6 +274,12 @@ async function runScenario(scenario) {
     const encoded = encodeURIComponent(lodUrl);
     const url = `${baseUrl}/md1-viewer?url=${encoded}${scenario.query}`;
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 120000 });
+    assert((await page.locator("header").count()) === 0, `${scenario.name}: md1-viewer should not render site header`);
+    assert((await page.locator("footer").count()) === 0, `${scenario.name}: md1-viewer should not render site footer`);
+    assert(
+      (await page.locator("#footer-stats").count()) === 0,
+      `${scenario.name}: md1-viewer should not render feedback footer panel`,
+    );
     try {
       await waitForReady(page, scenario.name);
     } catch (error) {

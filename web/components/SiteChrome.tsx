@@ -8,7 +8,11 @@ function isStandalonePath(pathname: string): boolean {
     pathname === "/sogs-viewer" ||
     pathname.startsWith("/sogs-viewer/") ||
     pathname === "/sogs-migrated-viewer" ||
-    pathname.startsWith("/sogs-migrated-viewer/")
+    pathname.startsWith("/sogs-migrated-viewer/") ||
+    pathname === "/md1-viewer" ||
+    pathname.startsWith("/md1-viewer/") ||
+    pathname === "/sfm-output-viewer" ||
+    pathname.startsWith("/sfm-output-viewer/")
   );
 }
 
