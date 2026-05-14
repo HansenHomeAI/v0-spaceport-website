@@ -16701,5 +16701,20 @@
     ],
     "spend_estimated_usd": 0,
     "next": "Wait for training idle and processing to remain idle, rerun readiness, then at most one R0 tile_04 visual-sentinel proof."
+  },
+  "md1_r0_visual_sentinel_r19_training_active_processing_idle_head5a5_20260514": {
+    "timestamp": "2026-05-14T02:47:18Z",
+    "summary": "Exact-head 5a5ff83 is green on CDK Deploy 25838456826. AWS still has source-attributed SFM training md1-sample120-ds1500-r19-1778723750 InProgress/Training (Environment=agent73948216sfmproductionspine, CodeHead=d34c3056b1515d5e15df8ef2e4fdd52d586e0ee6, Validation=md1-sample120-ds1500-r19-quality-canary, MaxRuntime=21600, TrainingTimeInSeconds=2978). SageMaker processing is idle after baseline processing md1-baseline-e2e-20260513115645-sfm ended Failed with FailureReason AlgorithmError exit code 1. No MD1 compute launched.",
+    "evidence": [
+      "logs/md1-r0-visual-sentinel-exact-head-workflows-r19training-processingidle-head5a5-20260514.json",
+      "logs/md1-r0-visual-sentinel-live-training-inprogress-r19-processingidle-head5a5-20260514.json",
+      "logs/md1-r0-visual-sentinel-live-processing-idle-r19active-head5a5-20260514.json",
+      "logs/md1-sample120-ds1500-r19-1778723750-active-describe-head5a5-20260514.json",
+      "logs/md1-sample120-ds1500-r19-1778723750-tags-head5a5-20260514.json",
+      "logs/md1-baseline-e2e-20260513115645-sfm-terminal-describe-20260514.json",
+      "logs/md1-baseline-e2e-20260513115645-sfm-tags-terminal-20260514.json"
+    ],
+    "spend_estimated_usd": 0,
+    "next": "Wait for training idle and processing to remain idle, rerun readiness, then at most one R0 tile_04 visual-sentinel proof."
   }
 }
