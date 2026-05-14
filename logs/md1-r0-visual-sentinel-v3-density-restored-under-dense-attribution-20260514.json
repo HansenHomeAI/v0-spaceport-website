@@ -1,0 +1,34 @@
+{
+  "hypothesis": "r0_visual_sentinel_v3_tile04_density_restored_leaf_only_proof",
+  "status": "failed",
+  "tile_id": "tile_04",
+  "leaf_gate_block_reasons": [
+    "leaf_preflight_decision_not_pass",
+    "splat_vertex_count_below_reference_ratio",
+    "splat_vertex_count_below_hard_min",
+    "filtered_scaffold_initialization_missing"
+  ],
+  "splat_vertex_count": 609243,
+  "reference_splat_count": 956277,
+  "observed_reference_ratio": 0.6370988740710066,
+  "hard_min_splat_count": 765021,
+  "hard_max_splat_count": 1290973,
+  "model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v3density-20260514/tiles/tile_04/md1-r0vissent-v3density-1778787389-tile-04/output/model.tar.gz",
+  "training_time_seconds": 1696,
+  "billable_time_seconds": 1696,
+  "failed_density_control_environment": {
+    "MAX_ITERATIONS": "6000",
+    "MODEL_VARIANT": "splatfacto-w-light",
+    "TRAINING_MAX_GAUSS_RATIO": "1.35",
+    "TRAINING_MAX_SELECTED_IMAGES": "188",
+    "TRAINING_STOP_SPLIT_AT": "5200"
+  },
+  "failed_density_control_training_config": {
+    "max_iterations": 6000,
+    "model_variant": "splatfacto-w-light",
+    "training_max_gauss_ratio": 1.35,
+    "training_max_selected_images": 188,
+    "training_stop_split_at": 5200
+  },
+  "finding": "R0 v3 restored training budget and sidecars, improving tile_04 from 458707 to 609243 splats, but it still missed the 765021 hard minimum and lacked filtered scaffold initialization."
+}

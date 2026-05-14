@@ -163,6 +163,18 @@ UNDERDENSE_REPAIR_CONFIG_KEYS = (
     "training_max_selected_images",
     "training_stop_split_at",
 )
+SCAFFOLD_REPAIR_ENV_KEYS = (
+    "GLOBAL_SCAFFOLD_SOURCE_DIR",
+    "GLOBAL_SCAFFOLD_INIT_MAX_POINTS",
+    "GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT",
+    "TILED_INCLUDE_SCAFFOLD",
+)
+SCAFFOLD_REPAIR_CONFIG_KEYS = (
+    "global_scaffold_source_dir",
+    "global_scaffold_init_max_points",
+    "tiled_include_scaffold",
+    "scaffold_artifact_s3_uri",
+)
 OVERDENSE_LEAF_REASONS = (
     "splat_vertex_count_above_reference_ratio",
     "splat_vertex_count_above_hard_max",
@@ -855,6 +867,9 @@ def extract_failed_hypotheses(attribution: Mapping[str, Any]) -> list[dict[str, 
             if failed_output_cap is not None:
                 hypothesis = "visual_sentinel_tile04_output_cap_underdense_leaf"
                 evidence = "The R0 visual-sentinel tile_04 leaf inherited an output cap that forced retained splats below the tile_04 hard minimum before any merge/review."
+            elif "filtered_scaffold_initialization_missing" in list_strings(underdense_record.get("leaf_gate_block_reasons")):
+                hypothesis = "visual_sentinel_tile04_density_restored_underdense_leaf"
+                evidence = "The R0 visual-sentinel tile_04 density-restored leaf increased iterations/images but still produced too few retained splats and lacked filtered scaffold initialization."
             else:
                 hypothesis = "visual_sentinel_tile04_budget_underdense_leaf"
                 evidence = "The R0 visual-sentinel tile_04 leaf removed the hard output cap and exported required sidecars, but the bounded training budget still produced too few retained splats before any merge/review."
@@ -949,6 +964,16 @@ def visual_sentinel_budget_underdense_failures(
     ]
 
 
+def visual_sentinel_density_restored_underdense_failures(
+    failed_hypotheses: Sequence[Mapping[str, Any]]
+) -> list[Mapping[str, Any]]:
+    return [
+        item
+        for item in failed_hypotheses
+        if item.get("hypothesis") == "visual_sentinel_tile04_density_restored_underdense_leaf"
+    ]
+
+
 def underdense_density_restoration_implementation(
     strategy: Mapping[str, Any] | None,
     failed_hypotheses: Sequence[Mapping[str, Any]],
@@ -1018,6 +1043,30 @@ def underdense_density_restoration_implementation(
         "training_config": config_knobs,
         "has_stronger_density_budget": stronger_budget,
         "comparisons": comparisons,
+    }
+
+
+def scaffold_density_restoration_implementation(strategy: Mapping[str, Any] | None) -> dict[str, Any]:
+    implementation = objective_implementation(strategy)
+    environment = implementation["environment"]
+    training_config = implementation["training_config"]
+    env_knobs = {key: environment[key] for key in SCAFFOLD_REPAIR_ENV_KEYS if key in environment}
+    config_knobs = {key: training_config[key] for key in SCAFFOLD_REPAIR_CONFIG_KEYS if key in training_config}
+    top_level_artifact = ""
+    if isinstance(strategy, Mapping):
+        top_level_artifact = str(strategy.get("scaffold_artifact_s3_uri") or "").strip()
+    source_dir = str(environment.get("GLOBAL_SCAFFOLD_SOURCE_DIR") or training_config.get("global_scaffold_source_dir") or "").strip()
+    artifact = str(training_config.get("scaffold_artifact_s3_uri") or top_level_artifact).strip()
+    include_scaffold = str(
+        environment.get("TILED_INCLUDE_SCAFFOLD")
+        or training_config.get("tiled_include_scaffold")
+        or ("true" if source_dir or artifact else "")
+    ).lower() in ("1", "true", "yes")
+    return {
+        "environment": env_knobs,
+        "training_config": config_knobs,
+        "scaffold_artifact_s3_uri": artifact,
+        "has_scaffold_restoration": include_scaffold and bool(source_dir or artifact),
     }
 
 
@@ -1259,6 +1308,12 @@ def evaluate_candidate_objective(
             "density_control_implementation": {"environment": {}, "training_config": {}},
             "visual_fidelity_implementation": {"environment": {}, "training_config": {}},
             "hardcap_quality_repair_implementation": {"environment": {}, "training_config": {}},
+            "scaffold_density_restoration_implementation": {
+                "environment": {},
+                "training_config": {},
+                "scaffold_artifact_s3_uri": "",
+                "has_scaffold_restoration": False,
+            },
             "leaf_sidecar_export_implementation_present": False,
             "hard_output_cap_below_leaf_min_violations": [],
             "sagemaker_env_value_length_violations": [],
@@ -1353,11 +1408,17 @@ def evaluate_candidate_objective(
     underdense_density_restoration = underdense_density_restoration_implementation(
         candidate_objective, failed_hypotheses
     )
+    scaffold_density_restoration = scaffold_density_restoration_implementation(candidate_objective)
     if (
         visual_sentinel_budget_underdense_failures(failed_hypotheses)
         and not underdense_density_restoration["has_stronger_density_budget"]
     ):
         block_reasons.append("objective_missing_density_restoration_after_visual_sentinel_underdense_leaf")
+    if (
+        visual_sentinel_density_restored_underdense_failures(failed_hypotheses)
+        and not scaffold_density_restoration["has_scaffold_restoration"]
+    ):
+        block_reasons.append("objective_missing_scaffold_restoration_after_density_restored_underdense_leaf")
     normalized_changes = " ".join(changes).lower()
     if (
         has_visual_fidelity_overdense_failed(failed_hypotheses)
@@ -1432,6 +1493,7 @@ def evaluate_candidate_objective(
         "visual_fidelity_implementation": visual_fidelity_knobs,
         "hardcap_quality_repair_implementation": hardcap_quality_repair_knobs,
         "underdense_density_restoration_implementation": underdense_density_restoration,
+        "scaffold_density_restoration_implementation": scaffold_density_restoration,
         "leaf_sidecar_export_implementation_present": sidecar_export_present,
         "hard_output_cap_below_leaf_min_violations": cap_violations,
         "sagemaker_env_value_length_violations": env_value_length_violations,

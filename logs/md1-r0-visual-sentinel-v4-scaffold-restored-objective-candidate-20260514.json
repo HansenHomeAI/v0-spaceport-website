@@ -1,0 +1,251 @@
+{
+  "candidate_id": "md1-r0-visual-sentinel-v4-scaffold-restored-tile04",
+  "selected_tile_ids": [
+    "tile_04"
+  ],
+  "context_support_tile_ids": [
+    "tile_10",
+    "tile_13",
+    "tile_01"
+  ],
+  "targeted_quality_blockers": [
+    "ai_visual_color_shift_defect",
+    "ai_visual_geometry_alignment_defect",
+    "ai_visual_horizon_continuity_defect",
+    "ai_visual_review_blocking_defects",
+    "ai_visual_review_blocking_view_findings",
+    "ai_visual_review_status_block",
+    "ai_visual_texture_smearing_defect",
+    "boundary_no_required_improvement",
+    "boundary_v18_median_lpips_regression",
+    "boundary_v18_single_camera_lpips_regression",
+    "horizon_lpips_regression",
+    "horizon_psnr_regression",
+    "horizon_sky_score_regression",
+    "horizon_ssim_regression",
+    "horizon_v18_median_lpips_regression",
+    "horizon_v18_median_psnr_regression",
+    "horizon_v18_median_ssim_regression",
+    "horizon_v18_single_camera_lpips_regression",
+    "horizon_v18_single_camera_psnr_regression",
+    "horizon_v18_sky_score_regression",
+    "leaf_required_paths_missing",
+    "near_detail_ssim_regression",
+    "near_detail_v18_median_ssim_regression",
+    "near_detail_v18_single_camera_lpips_regression",
+    "splat_vertex_count_below_hard_min",
+    "splat_vertex_count_below_reference_ratio"
+  ],
+  "boundary_camera_ids": [
+    "DJI_0067.JPG",
+    "DJI_0068.JPG",
+    "DJI_0069.JPG",
+    "DJI_0070.JPG"
+  ],
+  "horizon_camera_ids": [
+    "DJI_0066.JPG",
+    "DJI_0073.JPG",
+    "DJI_0146.JPG",
+    "DJI_0147.JPG"
+  ],
+  "expected_metric_axes": [
+    "boundary.lpips",
+    "boundary.required_improvement",
+    "horizon.lpips",
+    "horizon.psnr",
+    "horizon.sky_score",
+    "horizon.ssim",
+    "visual_qa.color_shift",
+    "visual_qa.geometry_alignment",
+    "visual_qa.horizon_continuity",
+    "visual_qa.texture_smearing"
+  ],
+  "objective_changes": [
+    "appearance_consistency",
+    "color_consistency",
+    "color_calibration",
+    "per_camera_color",
+    "photometric_calibration",
+    "perceptual_color_loss",
+    "geometry_alignment_loss",
+    "horizon_appearance_protection",
+    "density_restoring_tile04_training_budget",
+    "early_visual_sentinel_smoke_abort",
+    "filtered_global_scaffold_initialization",
+    "scaffold_restored_tile04_density_repair"
+  ],
+  "objective_implementation": {
+    "source_file": "infrastructure/containers/3dgs/train_nerfstudio_production.py",
+    "environment": {
+      "MAX_ITERATIONS": "6000",
+      "MODEL_VARIANT": "splatfacto-w-light",
+      "BILATERAL_PROCESSING": "false",
+      "ENABLE_BG_MODEL": "true",
+      "ENABLE_ALPHA_LOSS": "true",
+      "ENABLE_ROBUST_MASK": "true",
+      "BG_SH_DEGREE": "2",
+      "SH_DEGREE": "1",
+      "APPEARANCE_EMBED_DIM": "64",
+      "CULL_ALPHA_THRESH": "0.12",
+      "CULL_SCALE_THRESH": "0.35",
+      "TRAINING_MAX_GAUSS_RATIO": "1.35",
+      "TRAINING_MAX_SELECTED_IMAGES": "188",
+      "TRAINING_STOP_SPLIT_AT": "5200",
+      "FLOATER_PRUNING_ENABLED": "true",
+      "FLOATER_PRUNING_MAX_COLOR_DISTANCE": "0.18",
+      "FLOATER_PRUNING_MIN_EDGE_SUPPORT": "2",
+      "FLOATER_PRUNING_TOP_REGION_RATIO": "0.55",
+      "FLOATER_PRUNING_TOP_VIEW_FRACTION": "0.45",
+      "TRAINING_STEPS_PER_SAVE": "1500",
+      "BOUNDARY_FROZEN_CAMERAS": "DJI_0067.JPG,DJI_0068.JPG,DJI_0069.JPG,DJI_0070.JPG",
+      "HORIZON_FROZEN_CAMERAS": "DJI_0066.JPG,DJI_0073.JPG,DJI_0146.JPG,DJI_0147.JPG",
+      "CONTEXT_SUPPORT_TILE_IDS": "tile_10,tile_13,tile_01",
+      "TARGETED_QUALITY_BLOCKERS": "ai_visual_color_shift_defect,ai_visual_geometry_alignment_defect,ai_visual_horizon_continuity_defect,ai_visual_texture_smearing_defect,boundary_no_required_improvement,boundary_v18_median_lpips_regression,horizon_psnr_regression,horizon_ssim_regression,horizon_lpips_regression,horizon_sky_score_regression,near_detail_ssim_regression,leaf_required_paths_missing,splat_vertex_count_below_reference_ratio,splat_vertex_count_below_hard_min",
+      "GLOBAL_SCAFFOLD_SOURCE_DIR": "/opt/ml/input/data/scaffold",
+      "GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT": "true"
+    },
+    "training_config": {
+      "appearance_embed_dim": 64,
+      "bg_sh_degree": 2,
+      "bilateral_processing": false,
+      "cull_alpha_thresh": 0.12,
+      "cull_scale_thresh": 0.35,
+      "enable_alpha_loss": true,
+      "enable_bg_model": true,
+      "enable_robust_mask": true,
+      "floater_pruning_enabled": true,
+      "floater_pruning_max_color_distance": 0.18,
+      "floater_pruning_min_edge_support": 2,
+      "floater_pruning_top_region_ratio": 0.55,
+      "floater_pruning_top_view_fraction": 0.45,
+      "max_iterations": 6000,
+      "model_variant": "splatfacto-w-light",
+      "sh_degree": 1,
+      "training_max_gauss_ratio": 1.35,
+      "training_max_selected_images": 188,
+      "training_stop_split_at": 5200,
+      "scaffold_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-teacher-r3base-r4h-tile00-factor4-v3-20260426201700/output/artifact/model.tar.gz",
+      "global_scaffold_source_dir": "/opt/ml/input/data/scaffold"
+    }
+  },
+  "leaf_artifact_plan": {
+    "required_paths": [
+      "splat.ply",
+      "training_metadata.json",
+      "training_selection.json",
+      "export_manifest.json",
+      "background_manifest.json",
+      "background_skybox.webp",
+      "floater_pruning_summary.json"
+    ]
+  },
+  "planned_cost_estimate": {
+    "estimated_usd": 0.736,
+    "max_estimated_usd": 0.75,
+    "instance_type": "ml.g4dn.xlarge",
+    "runtime_cap_seconds": 3600,
+    "tile_max_iterations": 6000,
+    "max_images_per_tile": 188,
+    "scaffold_artifact_reuse": true
+  },
+  "submitted_jobs": [],
+  "no_full_14tile_training": true,
+  "v18_non_regression_plan": {
+    "required": true,
+    "reference_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review",
+    "thresholds": {
+      "median_psnr_min_delta": -0.25,
+      "median_ssim_min_delta": -0.005,
+      "median_lpips_max_delta": 0.01,
+      "single_camera_psnr_min_delta": -0.75,
+      "single_camera_lpips_max_delta": 0.025,
+      "horizon_sky_score_min_ratio": 0.98
+    }
+  },
+  "visual_qa_plan": {
+    "required": true,
+    "ai_review_required": true,
+    "review_after": "post_leaf_gate_and_merge_review_preflight",
+    "required_assets": [
+      "reference_image",
+      "merged_render",
+      "merged_no_background_render",
+      "diff_heatmap",
+      "side_by_side_panel"
+    ],
+    "gate_command": "python3 scripts/3dgs/evaluate_md1_visual_qa_gate.py --visual-qa-manifest <extracted>/visual_qa_manifest.json --asset-root <extracted> --ai-review-json <ai-review.json>",
+    "blocking_defect_categories": [
+      "geometry_alignment",
+      "horizon_or_sky",
+      "texture_blur_or_smear",
+      "color_or_exposure",
+      "boundary_discontinuity"
+    ],
+    "v18_reference_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review"
+  },
+  "viewer_smoke_plan": {
+    "required": true,
+    "run_after": "visual_qa_ready",
+    "viewer_route": "/md1-viewer",
+    "promotion_blocked_until_passed": true,
+    "checks": [
+      "manifest loads without fallback",
+      "compressed/viewer artifact renders",
+      "no serious browser console errors",
+      "camera interaction stays responsive"
+    ],
+    "command": "node web/scripts/test-md1-production-viewer.mjs <preview-or-local-viewer-url>"
+  },
+  "early_visual_smoke_plan": {
+    "required": true,
+    "abort_on_failure": true,
+    "selected_tile_ids": [
+      "tile_04"
+    ],
+    "checkpoint_steps": [
+      1500,
+      3000,
+      4500,
+      6000
+    ],
+    "checkpoint_s3_uris": {
+      "tile_04": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0-visual-sentinel-v3-density-restored-20260514/checkpoints/md1-r0vissent-v3density-1778786645-tile-04"
+    },
+    "sentinel_cameras": [
+      "DJI_0067.JPG",
+      "DJI_0068.JPG",
+      "DJI_0069.JPG",
+      "DJI_0070.JPG",
+      "DJI_0066.JPG",
+      "DJI_0073.JPG",
+      "DJI_0146.JPG",
+      "DJI_0147.JPG"
+    ],
+    "frozen_camera_buckets": {
+      "boundary": [
+        "DJI_0067.JPG",
+        "DJI_0068.JPG",
+        "DJI_0069.JPG",
+        "DJI_0070.JPG"
+      ],
+      "horizon": [
+        "DJI_0066.JPG",
+        "DJI_0073.JPG",
+        "DJI_0146.JPG",
+        "DJI_0147.JPG"
+      ]
+    },
+    "blocking_defect_categories": [
+      "false_color_or_exposure_shift",
+      "horizon_discontinuity",
+      "geometry_misalignment",
+      "texture_smearing",
+      "gross_density_under_or_overflow"
+    ],
+    "checkpoint_probe_command_template": "aws s3 ls {checkpoint_s3_uri}/ --recursive | grep -E 'step-[0-9]+\\.ckpt|checkpoint_manifest\\.json'",
+    "visual_gate_command_template": "python3 scripts/3dgs/evaluate_md1_visual_qa_gate.py --visual-qa-manifest {bundle_dir}/visual_qa_manifest.json --asset-root {bundle_dir} --ai-review-json {ai_review_json}",
+    "stop_command_template": "aws sagemaker stop-training-job --training-job-name {training_job_name}",
+    "action": "monitor synced checkpoints and stop the leaf proof before full runtime if sentinel renders show blocking defects"
+  },
+  "scaffold_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-teacher-r3base-r4h-tile00-factor4-v3-20260426201700/output/artifact/model.tar.gz"
+}
