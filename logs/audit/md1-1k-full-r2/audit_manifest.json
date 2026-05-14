@@ -16671,5 +16671,20 @@
     ],
     "spend_estimated_usd": 0,
     "next": "Wait for processing idle, rerun readiness, then at most one R0 tile_04 visual-sentinel proof."
+  },
+  "md1_r0_visual_sentinel_r19_active_jobs_20260514": {
+    "timestamp": "2026-05-14T02:07:00Z",
+    "summary": "Exact-head f2c210f is green on CDK Deploy 25835721715. AWS still has source-attributed SFM training md1-sample120-ds1500-r19-1778723750 InProgress/Training (Environment=agent73948216sfmproductionspine, CodeHead=d34c3056b1515d5e15df8ef2e4fdd52d586e0ee6, Validation=md1-sample120-ds1500-r19-quality-canary, MaxRuntime=21600, TrainingTimeInSeconds=644) plus baseline processing md1-baseline-e2e-20260513115645-sfm InProgress. No MD1 compute launched.",
+    "evidence": [
+      "logs/md1-r0-visual-sentinel-exact-head-workflows-r19training-20260514.json",
+      "logs/md1-r0-visual-sentinel-live-training-inprogress-r19-20260514.json",
+      "logs/md1-r0-visual-sentinel-live-processing-inprogress-r19check-20260514.json",
+      "logs/md1-sample120-ds1500-r19-1778723750-active-describe-20260514.json",
+      "logs/md1-sample120-ds1500-r19-1778723750-tags-20260514.json",
+      "logs/md1-baseline-e2e-20260513115645-sfm-active-describe-r19check-20260514.json",
+      "logs/md1-baseline-e2e-20260513115645-sfm-tags-r19check-20260514.json"
+    ],
+    "spend_estimated_usd": 0,
+    "next": "Wait for AWS idle, rerun readiness, then at most one R0 tile_04 visual-sentinel proof."
   }
 }
