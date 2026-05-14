@@ -582,3 +582,31 @@ Produce a development-based MD1 baseline with:
   - Most recent observed activity:
     - `Retriangulation and Global bundle adjustment` at `2026-05-14T11:05:52Z`
     - `HEARTBEAT ... idle=5460s` at `2026-05-14T12:36:54Z` (no error lines observed)
+
+### 2026-05-14T07:39:27-0600
+
+- Git: on `agent-113647-md1-baseline-e2e` @ `750b7e9d` (working tree clean; no code-path changes).
+- AWS identity: `aws sts get-caller-identity` -> Account `975050048887` (region `us-west-2`).
+  - snapshot: `logs/md1-baseline-e2e/aws-sts-20260514T133927Z.json`
+- Step Functions (current run):
+  - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-baseline-e2e-20260514032448` -> `RUNNING`
+  - describe snapshot: `logs/md1-baseline-e2e/stepfunctions-describe-md1-baseline-e2e-20260514032448-20260514T133927Z.json`
+  - history snapshot (reverse): `logs/md1-baseline-e2e/stepfunctions-history-reverse-md1-baseline-e2e-20260514032448-20260514T133927Z.json`
+  - list snapshot (RUNNING): `logs/md1-baseline-e2e/stepfunctions-list-executions-RUNNING-20260514T133927Z.json`
+- SageMaker (current run):
+  - Processing job: `md1-baseline-e2e-20260514032448-sfm` -> `InProgress` (`S3UploadMode=EndOfJob`)
+  - describe snapshot: `logs/md1-baseline-e2e/sagemaker-describe-md1-baseline-e2e-20260514032448-sfm-20260514T133927Z.json`
+  - Output prefix (S3UploadMode=EndOfJob): `s3://spaceport-ml-processing-staging/colmap/md1-baseline-e2e-20260514032448/` -> still empty
+  - S3 listing snapshot: `logs/md1-baseline-e2e/s3api-colmap-md1-baseline-e2e-20260514032448-20260514T133927Z.json` (`KeyCount=0`)
+- SageMaker (active job inventory; do not stop unrelated jobs):
+  - Processing jobs InProgress snapshot: `logs/md1-baseline-e2e/sagemaker-list-processing-InProgress-20260514T133927Z.json`
+  - Training jobs InProgress snapshot: `logs/md1-baseline-e2e/sagemaker-list-training-InProgress-20260514T133927Z.json` (empty)
+- SfM CloudWatch progress (recent ~2h; mapper is alive but only emitting heartbeats):
+  - Stream: `/aws/sagemaker/ProcessingJobs` / `md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134`
+  - Streams snapshot: `logs/md1-baseline-e2e/cloudwatch-describe-log-streams-20260514T133927Z.json`
+  - Tail snapshot: `logs/md1-baseline-e2e/md1-baseline-e2e-20260514032448-sfm-cloudwatch-tail-20260514T133927Z.txt`
+  - Progress excerpt (filtered; safe to commit): `logs/md1-baseline-e2e/sfm-progress-md1-baseline-e2e-20260514032448-20260514T133927Z.txt`
+  - Most recent observed activity in excerpt: `HEARTBEAT ... idle=9181s` at `2026-05-14T13:38:55Z` (no error lines observed).
+- No-spend regression check:
+  - `python3 -m unittest tests.unit.test_sogs_supersplat_bundle` -> `OK`
+  - output: `logs/md1-baseline-e2e/no-spend-unittest-test_sogs_supersplat_bundle-20260514T134020Z.txt`
