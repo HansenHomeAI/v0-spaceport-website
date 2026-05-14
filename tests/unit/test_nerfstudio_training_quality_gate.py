@@ -266,6 +266,53 @@ class NerfstudioTrainingQualityGateTest(unittest.TestCase):
             self.assertLess(thread_index, parser_index)
             self.assertGreater(downscale_index, parser_index)
 
+    def test_training_exposes_splatfacto_quality_knobs_before_parser(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config = root / "container_config.yaml"
+            config.write_text("training:\n  max_iterations: 10\n", encoding="utf-8")
+            env = {
+                "SM_MODEL_DIR": str(root / "model"),
+                "SM_CHANNEL_TRAINING": str(root / "input"),
+                "NS_MAX_GAUSS_RATIO": "16",
+                "NS_DENSIFY_GRAD_THRESH": "0.0005",
+                "NS_CULL_ALPHA_THRESH": "0.05",
+                "NS_STOP_SPLIT_AT": "16384",
+                "NS_NUM_DOWNSCALES": "1",
+                "NS_USE_SCALE_REGULARIZATION": "true",
+            }
+            with mock.patch.dict(os.environ, env, clear=False):
+                trainer = self.training.NerfStudioTrainer(str(config))
+            trainer.config = {
+                "model": {"variant": "splatfacto", "sh_degree": 3, "bilateral_processing": False},
+                "training": {"max_iterations": 10, "log_interval": 5},
+            }
+
+            captured = {}
+
+            def fake_run_logged_command(cmd, *, timeout_seconds, log_prefix, tail_limit=120):
+                captured["cmd"] = cmd
+                return 0, ["done"], False
+
+            with mock.patch.dict(os.environ, env, clear=False):
+                with mock.patch.object(self.training, "run_logged_command", side_effect=fake_run_logged_command):
+                    self.assertTrue(trainer.run_nerfstudio_training())
+
+            cmd = captured["cmd"]
+            parser_index = cmd.index("nerfstudio-data")
+            expected_flags = {
+                "--pipeline.model.max-gauss-ratio": "16",
+                "--pipeline.model.densify-grad-thresh": "0.0005",
+                "--pipeline.model.cull-alpha-thresh": "0.05",
+                "--pipeline.model.stop-split-at": "16384",
+                "--pipeline.model.num-downscales": "1",
+                "--pipeline.model.use-scale-regularization": "True",
+            }
+            for flag, value in expected_flags.items():
+                flag_index = cmd.index(flag)
+                self.assertLess(flag_index, parser_index)
+                self.assertEqual(cmd[flag_index + 1], value)
+
     def test_training_split_fraction_env_override_is_clamped(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

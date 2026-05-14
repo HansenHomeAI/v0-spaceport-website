@@ -145,6 +145,15 @@ def list_render_proof_paths(render_dir: Path) -> list[str]:
     ]
 
 
+def format_cli_value(value: Any) -> str:
+    """Format typed config values for NerfStudio's Tyro CLI."""
+    if isinstance(value, bool):
+        return "True" if value else "False"
+    if isinstance(value, float):
+        return f"{value:g}"
+    return str(value)
+
+
 def build_splat_heldout_render_report(
     raw_ns_eval_path: Path,
     render_dir: Path,
@@ -727,6 +736,13 @@ class NerfStudioTrainer:
         max_thread_workers = self.resolve_optional_positive_int("NS_MAX_THREAD_WORKERS", "datamanager max-thread-workers")
         downscale_factor = self.resolve_optional_positive_int("NS_DOWNSCALE_FACTOR", "nerfstudio-data downscale-factor")
         train_split_fraction = self.resolve_train_split_fraction(training_config)
+        max_gauss_ratio = self.resolve_optional_float(
+            "NS_MAX_GAUSS_RATIO",
+            "model max-gauss-ratio",
+            minimum=0.1,
+        )
+        if max_gauss_ratio is None:
+            max_gauss_ratio = float(model_config.get("max_gauss_ratio", 10.0))
         
         logger.info(f"🎯 Training Configuration (Vincent Woo's methodology):")
         logger.info(f"   Model: {model_variant}")
@@ -758,12 +774,14 @@ class NerfStudioTrainer:
         else:
             logger.info("⚠️  Bilateral guided processing disabled")
         
-        # Memory optimization for A10G GPU (16GB vs Vincent's RTX 4090 24GB)
-        # Using max-gauss-ratio instead of max_num_gaussians (suggested by NerfStudio error)
+        # Memory/quality optimization for A10G GPU (16GB vs Vincent's RTX 4090 24GB).
+        # Keep these knobs externally tunable so quality can be isolated with cheap
+        # canaries before spending on full-scene fanout runs.
         cmd.extend([
-            "--pipeline.model.max-gauss-ratio", "10.0",  # Conservative ratio for A10G
+            "--pipeline.model.max-gauss-ratio", format_cli_value(max_gauss_ratio),
         ])
-        logger.info(f"🖥️  A10G GPU optimization enabled (max-gauss-ratio: 10.0, image cache: {cache_images})")
+        logger.info(f"🖥️  A10G GPU optimization enabled (max-gauss-ratio: {max_gauss_ratio:g}, image cache: {cache_images})")
+        self.append_optional_model_quality_knobs(cmd)
         if max_thread_workers is not None:
             cmd.extend(["--pipeline.datamanager.max-thread-workers", str(max_thread_workers)])
             logger.info(f"🧵 NerfStudio datamanager max-thread-workers: {max_thread_workers}")
@@ -818,6 +836,104 @@ class NerfStudioTrainer:
             logger.warning(f"⚠️  Invalid {label} {raw_value!r}; ignoring")
             return None
         return value
+
+    def resolve_optional_nonnegative_int(self, env_var: str, label: str) -> Optional[int]:
+        """Read an optional non-negative integer training knob from the environment."""
+        raw_value = os.environ.get(env_var)
+        if raw_value in (None, ""):
+            return None
+        try:
+            value = int(raw_value)
+        except ValueError:
+            logger.warning(f"⚠️  Invalid {label} {raw_value!r}; ignoring")
+            return None
+        if value < 0:
+            logger.warning(f"⚠️  Invalid {label} {raw_value!r}; ignoring")
+            return None
+        return value
+
+    def resolve_optional_float(
+        self,
+        env_var: str,
+        label: str,
+        *,
+        minimum: Optional[float] = None,
+        maximum: Optional[float] = None,
+    ) -> Optional[float]:
+        """Read an optional finite float training knob from the environment."""
+        raw_value = os.environ.get(env_var)
+        if raw_value in (None, ""):
+            return None
+        try:
+            value = float(raw_value)
+        except ValueError:
+            logger.warning(f"⚠️  Invalid {label} {raw_value!r}; ignoring")
+            return None
+        if not math.isfinite(value):
+            logger.warning(f"⚠️  Invalid {label} {raw_value!r}; ignoring")
+            return None
+        if minimum is not None and value < minimum:
+            logger.warning(f"⚠️  Invalid {label} {raw_value!r}; expected >= {minimum}; ignoring")
+            return None
+        if maximum is not None and value > maximum:
+            logger.warning(f"⚠️  Invalid {label} {raw_value!r}; expected <= {maximum}; ignoring")
+            return None
+        return value
+
+    def resolve_optional_bool(self, env_var: str, label: str) -> Optional[bool]:
+        """Read an optional boolean training knob from the environment."""
+        raw_value = os.environ.get(env_var)
+        if raw_value in (None, ""):
+            return None
+        normalized = raw_value.lower()
+        if normalized in ("1", "true", "yes", "on"):
+            return True
+        if normalized in ("0", "false", "no", "off"):
+            return False
+        logger.warning(f"⚠️  Invalid {label} {raw_value!r}; ignoring")
+        return None
+
+    def append_optional_model_quality_knobs(self, cmd: list[str]) -> None:
+        """Expose bounded Splatfacto quality/capacity controls for canary isolation."""
+        float_knobs = [
+            ("NS_DENSIFY_GRAD_THRESH", "--pipeline.model.densify-grad-thresh", "model densify-grad-thresh", 0.0, None),
+            ("NS_DENSIFY_SIZE_THRESH", "--pipeline.model.densify-size-thresh", "model densify-size-thresh", 0.0, None),
+            ("NS_CULL_ALPHA_THRESH", "--pipeline.model.cull-alpha-thresh", "model cull-alpha-thresh", 0.0, None),
+            ("NS_CULL_SCALE_THRESH", "--pipeline.model.cull-scale-thresh", "model cull-scale-thresh", 0.0, None),
+            ("NS_CULL_SCREEN_SIZE", "--pipeline.model.cull-screen-size", "model cull-screen-size", 0.0, None),
+            ("NS_SPLIT_SCREEN_SIZE", "--pipeline.model.split-screen-size", "model split-screen-size", 0.0, None),
+            ("NS_SSIM_LAMBDA", "--pipeline.model.ssim-lambda", "model ssim-lambda", 0.0, 1.0),
+        ]
+        int_knobs = [
+            ("NS_STOP_SPLIT_AT", "--pipeline.model.stop-split-at", "model stop-split-at"),
+            ("NS_STOP_SCREEN_SIZE_AT", "--pipeline.model.stop-screen-size-at", "model stop-screen-size-at"),
+            ("NS_RESOLUTION_SCHEDULE", "--pipeline.model.resolution-schedule", "model resolution-schedule"),
+            ("NS_REFINE_EVERY", "--pipeline.model.refine-every", "model refine-every"),
+            ("NS_RESET_ALPHA_EVERY", "--pipeline.model.reset-alpha-every", "model reset-alpha-every"),
+            ("NS_NUM_DOWNSCALES", "--pipeline.model.num-downscales", "model num-downscales"),
+        ]
+        bool_knobs = [
+            ("NS_USE_SCALE_REGULARIZATION", "--pipeline.model.use-scale-regularization", "model use-scale-regularization"),
+            ("NS_USE_ABSGRAD", "--pipeline.model.use-absgrad", "model use-absgrad"),
+        ]
+
+        for env_var, flag, label, minimum, maximum in float_knobs:
+            value = self.resolve_optional_float(env_var, label, minimum=minimum, maximum=maximum)
+            if value is not None:
+                cmd.extend([flag, format_cli_value(value)])
+                logger.info(f"🎚️  {label}: {value:g} ({env_var})")
+
+        for env_var, flag, label in int_knobs:
+            value = self.resolve_optional_nonnegative_int(env_var, label)
+            if value is not None:
+                cmd.extend([flag, format_cli_value(value)])
+                logger.info(f"🎚️  {label}: {value} ({env_var})")
+
+        for env_var, flag, label in bool_knobs:
+            value = self.resolve_optional_bool(env_var, label)
+            if value is not None:
+                cmd.extend([flag, format_cli_value(value)])
+                logger.info(f"🎚️  {label}: {format_cli_value(value)} ({env_var})")
 
     def infer_training_frame_count(self) -> int:
         """Return the converted dataset frame count when transforms.json is available."""
