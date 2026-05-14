@@ -1,6 +1,6 @@
 # MD1 Baseline E2E State
 
-updated: 2026-05-13T23:31:36-0600
+updated: 2026-05-14T03:32:15-0600
 branch: agent-113647-md1-baseline-e2e
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -498,3 +498,27 @@ Produce a development-based MD1 baseline with:
   - Tail snapshot: `logs/md1-baseline-e2e/cloudwatch-tail-md1-baseline-e2e-20260514032448-sfm-20260514T083037Z.log`
   - Progress excerpt (filtered; safe to commit): `logs/md1-baseline-e2e/sfm-progress-md1-baseline-e2e-20260514032448-20260514T083037Z.txt`
   - Most recent observed activity in excerpt: `Retriangulation and Global bundle adjustment` at `2026-05-14T07:37:41Z`, then `HEARTBEAT ... idle=3120s` at `2026-05-14T08:29:44Z` (no error lines observed).
+
+### 2026-05-14T03:32:15-0600
+
+- Git: on `agent-113647-md1-baseline-e2e` (local poll artifacts captured; not pushed).
+- AWS identity: `aws sts get-caller-identity` -> Account `975050048887` (region `us-west-2`).
+  - snapshot: `logs/md1-baseline-e2e/aws-sts-20260514T093215Z.json`
+- Step Functions execution: still `RUNNING` (poll loop still waiting on SfM)
+  - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-baseline-e2e-20260514032448`
+  - describe snapshot: `logs/md1-baseline-e2e/stepfunctions-describe-md1-baseline-e2e-20260514032448-20260514T093215Z.json`
+  - history snapshot (reverse): `logs/md1-baseline-e2e/stepfunctions-history-reverse-md1-baseline-e2e-20260514032448-20260514T093215Z.json`
+  - latest observed states in history: `WaitForSfMCompletion` -> `WaitForSfM` at `2026-05-14T03:32:07-0600`
+- SageMaker (this run):
+  - Processing job: `md1-baseline-e2e-20260514032448-sfm` -> `InProgress` (`S3UploadMode=EndOfJob`)
+  - describe snapshot: `logs/md1-baseline-e2e/sagemaker-describe-md1-baseline-e2e-20260514032448-sfm-20260514T093215Z.json`
+  - Output prefix (S3UploadMode=EndOfJob): `s3://spaceport-ml-processing-staging/colmap/md1-baseline-e2e-20260514032448/` -> still empty
+  - S3 listing snapshot: `logs/md1-baseline-e2e/s3-colmap-md1-baseline-e2e-20260514032448-20260514T093215Z.txt`
+- SageMaker (active job inventory; do not stop unrelated jobs):
+  - Processing jobs InProgress snapshot: `logs/md1-baseline-e2e/sagemaker-list-processing-inprogress-20260514T093215Z.json` (includes unrelated `md1-full-fanout-r23-1778748500-leaf-*`)
+  - Training jobs InProgress snapshot: `logs/md1-baseline-e2e/sagemaker-list-training-inprogress-20260514T093215Z.json` (none)
+- SfM CloudWatch progress (recent ~3h; mapper still alive):
+  - Streams snapshot: `logs/md1-baseline-e2e/cloudwatch-streams-md1-baseline-e2e-20260514032448-sfm-20260514T093215Z.json`
+  - Tail snapshot: `logs/md1-baseline-e2e/cloudwatch-tail-md1-baseline-e2e-20260514032448-sfm-20260514T093215Z.log`
+  - Progress excerpt (filtered; safe to commit): `logs/md1-baseline-e2e/sfm-progress-md1-baseline-e2e-20260514032448-20260514T093215Z.txt`
+  - Most recent observed activity in excerpt: `Registering image` through `num_reg_frames=1195` at `2026-05-14T09:15:20Z`, then `Retriangulation and Global bundle adjustment` at `2026-05-14T09:15:23Z`, then `HEARTBEAT ... idle=1080s` at `2026-05-14T09:33:25Z` (no error lines observed).
