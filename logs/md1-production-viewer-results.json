@@ -10,8 +10,8 @@
         "viewerUrl": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json",
         "lodLevels": 4,
         "chunkFiles": 44,
-        "chunkMetaRequests": 6,
-        "firstFrameMs": 213.19999998807907,
+        "chunkMetaRequests": 5,
+        "firstFrameMs": 474.09999999403954,
         "lodMin": 0,
         "lodMax": 3
       },
@@ -20,11 +20,11 @@
         "height": 960,
         "sampled": 38400,
         "visibleRatio": 1,
-        "brightRatio": 0.8684895833333334,
+        "brightRatio": 0.8684375,
         "darkRatio": 0,
-        "meanLuma": 197.30304230729243,
-        "lumaStdDev": 71.74245602032576,
-        "meanColorSpread": 18.325963541666667
+        "meanLuma": 197.29258139062577,
+        "lumaStdDev": 71.74979979110998,
+        "meanColorSpread": 18.325546875
       },
       "chunkMetaResponses": 6,
       "screenshotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-production-viewer-desktop.png"
@@ -38,8 +38,8 @@
         "viewerUrl": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json",
         "lodLevels": 4,
         "chunkFiles": 44,
-        "chunkMetaRequests": 23,
-        "firstFrameMs": 199.2999999821186,
+        "chunkMetaRequests": 17,
+        "firstFrameMs": 827.7000000178814,
         "lodMin": 2,
         "lodMax": 3
       },
@@ -48,13 +48,13 @@
         "height": 896,
         "sampled": 92736,
         "visibleRatio": 1,
-        "brightRatio": 0.6256038647342995,
+        "brightRatio": 0.6256362146307799,
         "darkRatio": 0,
-        "meanLuma": 142.42421079407512,
-        "lumaStdDev": 78.28953351992128,
-        "meanColorSpread": 11.965299344375431
+        "meanLuma": 142.4227351255106,
+        "lumaStdDev": 78.28992456118938,
+        "meanColorSpread": 11.965223861283643
       },
-      "chunkMetaResponses": 23,
+      "chunkMetaResponses": 17,
       "screenshotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-production-viewer-mobile.png"
     }
   ]

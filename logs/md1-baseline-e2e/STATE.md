@@ -1,6 +1,6 @@
 # MD1 Baseline E2E State
 
-updated: 2026-05-14T08:43:29-0600
+updated: 2026-05-14T08:52:41-0600
 branch: agent-113647-md1-baseline-e2e
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -656,3 +656,18 @@ Produce a development-based MD1 baseline with:
   - local desktop first frame `213.2ms`, mobile first frame `199.3ms`.
   - updated screenshots: `logs/md1-production-viewer-desktop.png`, `logs/md1-production-viewer-mobile.png` now show the MD1 panel only, no global header/footer feedback overlay.
   - one-off Playwright check for `http://127.0.0.1:3032/sfm-output-viewer` -> `{"header":0,"footer":0,"feedback":0,"canvas":1}`.
+
+### 2026-05-14T08:52:41-0600
+
+- Preview deploy after viewer fix:
+  - Pages run `25866557369` -> `success`.
+  - CDK run `25866557372` -> `success`.
+  - Exact preview URLs from the Pages run log:
+    - alias: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+    - hash: `https://42fc5824.v0-spaceport-website-preview2.pages.dev`
+- Deployed-preview viewer verification:
+  - `MD1_VIEWER_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev node scripts/test-md1-production-viewer.mjs` -> passed with standalone chrome assertions.
+  - desktop first frame `474.1ms`, chunk meta requests `5`.
+  - mobile first frame `827.7ms`, chunk meta requests `17`.
+  - screenshots: `logs/md1-production-viewer-desktop.png`, `logs/md1-production-viewer-mobile.png`.
+  - manual visual inspection: screenshots show only the MD1 viewer panel and splat canvas; the previous global header/footer feedback overlay is gone.
