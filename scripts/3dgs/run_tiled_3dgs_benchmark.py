@@ -1430,11 +1430,16 @@ def build_early_visual_smoke_plan(stages: Sequence["BenchmarkStage"]) -> dict[st
     cameras: list[str] = []
     cameras_by_bucket: dict[str, list[str]] = {"boundary": [], "horizon": []}
     selected_tiles: list[str] = []
+    checkpoint_s3_uris: dict[str, str] = {}
     for stage in stages:
         if stage.stage_type != "train":
             continue
-        selected_tiles.append(stage.tile_id or stage.stage_name)
+        tile_label = stage.tile_id or stage.stage_name
+        selected_tiles.append(tile_label)
         env = stage.environment or {}
+        checkpoint_uri = str(stage.checkpoint_uri or env.get("TRAINING_CHECKPOINT_S3_URI") or "").strip()
+        if checkpoint_uri:
+            checkpoint_s3_uris[tile_label] = checkpoint_uri
         try:
             max_iterations = int(env.get("MAX_ITERATIONS") or 0)
         except (TypeError, ValueError):
@@ -1461,6 +1466,7 @@ def build_early_visual_smoke_plan(stages: Sequence["BenchmarkStage"]) -> dict[st
         "abort_on_failure": True,
         "selected_tile_ids": ordered_unique(selected_tiles),
         "checkpoint_steps": sorted(checkpoint_steps),
+        "checkpoint_s3_uris": checkpoint_s3_uris,
         "sentinel_cameras": ordered_unique(cameras),
         "frozen_camera_buckets": {
             bucket: ordered_unique(names)
@@ -1474,6 +1480,16 @@ def build_early_visual_smoke_plan(stages: Sequence["BenchmarkStage"]) -> dict[st
             "texture_smearing",
             "gross_density_under_or_overflow",
         ],
+        "checkpoint_probe_command_template": (
+            "aws s3 ls {checkpoint_s3_uri}/ --recursive | "
+            "grep -E 'step-[0-9]+\\.ckpt|checkpoint_manifest\\.json'"
+        ),
+        "visual_gate_command_template": (
+            "python3 scripts/3dgs/evaluate_md1_visual_qa_gate.py "
+            "--visual-qa-manifest {bundle_dir}/visual_qa_manifest.json "
+            "--asset-root {bundle_dir} --ai-review-json {ai_review_json}"
+        ),
+        "stop_command_template": "aws sagemaker stop-training-job --training-job-name {training_job_name}",
         "action": "monitor synced checkpoints and stop the leaf proof before full runtime if sentinel renders show blocking defects",
     }
 
@@ -1500,6 +1516,14 @@ def validate_submit_guardrails(args: argparse.Namespace, summary: dict) -> None:
         errors.append("early_visual_smoke_plan.abort_on_failure=true is required before submitted training runs")
     if not early_visual_smoke_plan.get("checkpoint_steps") or not early_visual_smoke_plan.get("sentinel_cameras"):
         errors.append("early_visual_smoke_plan must name checkpoint_steps and sentinel_cameras")
+    if not early_visual_smoke_plan.get("checkpoint_s3_uris"):
+        errors.append("early_visual_smoke_plan must name checkpoint_s3_uris for checkpoint probing")
+    if not early_visual_smoke_plan.get("checkpoint_probe_command_template"):
+        errors.append("early_visual_smoke_plan must name checkpoint_probe_command_template")
+    if not early_visual_smoke_plan.get("visual_gate_command_template"):
+        errors.append("early_visual_smoke_plan must name visual_gate_command_template")
+    if not early_visual_smoke_plan.get("stop_command_template"):
+        errors.append("early_visual_smoke_plan must name stop_command_template")
     estimate = (summary.get("cost_estimate") or {}).get("estimated_usd")
     if estimate is not None and max_estimated_usd > 0 and float(estimate) > max_estimated_usd:
         errors.append(f"estimated cost ${float(estimate):.2f} exceeds --max-estimated-usd ${max_estimated_usd:.2f}")

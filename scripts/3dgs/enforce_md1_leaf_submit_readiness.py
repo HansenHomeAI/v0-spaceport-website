@@ -101,12 +101,21 @@ def has_early_visual_smoke_abort_plan(strategy: dict[str, Any]) -> bool:
         return False
     checkpoint_steps = plan.get("checkpoint_steps")
     sentinel_cameras = plan.get("sentinel_cameras") or plan.get("frozen_cameras")
+    checkpoint_s3_uris = plan.get("checkpoint_s3_uris")
     return (
         plan.get("abort_on_failure") is True
         and isinstance(checkpoint_steps, list)
         and bool(checkpoint_steps)
         and isinstance(sentinel_cameras, list)
         and bool(sentinel_cameras)
+        and isinstance(checkpoint_s3_uris, dict)
+        and bool(checkpoint_s3_uris)
+        and isinstance(plan.get("checkpoint_probe_command_template"), str)
+        and bool(str(plan.get("checkpoint_probe_command_template") or "").strip())
+        and isinstance(plan.get("visual_gate_command_template"), str)
+        and bool(str(plan.get("visual_gate_command_template") or "").strip())
+        and isinstance(plan.get("stop_command_template"), str)
+        and bool(str(plan.get("stop_command_template") or "").strip())
     )
 
 

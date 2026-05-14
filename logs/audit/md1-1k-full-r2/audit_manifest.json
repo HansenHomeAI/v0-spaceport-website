@@ -1661,7 +1661,7 @@
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
   "latest_boundary_responsible_tile_plan_status": "boundary primary tile_04/tile_10; horizon primary tile_04/tile_01; tile04 dryrun covers tile01/tile10 context support",
-  "latest_cost_control": "Current path remains no-spend while AWS has active baseline processing. Next paid action, only after AWS idle and leaf-submit readiness rerun on exact green head 4c5b31deba84b93bf11e8ba21aa427ef5d69de0b, is at most one R0 v2 tile_04 leaf-only proof under $0.75/2400s with skip-merge/skip-review and early visual-smoke abort.",
+  "latest_cost_control": "No MD1 compute launched; next paid step remains one bounded R0 v2 tile_04 leaf proof under 0.75/2400s only after exact-head green and AWS idle.",
   "latest_evidence": {
     "merge_preflight_summary": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260512.json",
     "review_retry_cloudwatch_tail": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-cloudwatch-tail-20260512.txt",
@@ -1803,8 +1803,8 @@
     "status": "merge_retry1_guard_ready_no_paid_retry_launched",
     "v18_review_launched": false
   },
-  "latest_no_spend_evidence": "New dry-run logs/md1-r0-visual-sentinel-v2-leaf-dryrun-qualityplans-20260514.json submitted no jobs, estimates $0.4907 under the $0.75 cap, emits one tile_04 post-leaf preflight gate with 96 effective images/3000 iterations, and records visual_qa_plan, viewer_smoke_plan, and early_visual_smoke_plan with 1000/2000/3000 checkpoint steps and boundary/horizon sentinel cameras. Readiness logs/md1-r0-visual-sentinel-v2-leaf-submit-readiness-qualityplans-headfe4b-20260514-1434.json confirms those plans are present and blocks only on processing_jobs_in_progress.",
-  "latest_no_spend_implementation": "Added machine-enforced paid-proof validation-plan guards: leaf-submit readiness and submit guardrails now require visual QA plan, viewer-smoke plan, and early checkpoint visual-smoke abort plan before any paid training proof. Benchmark dry-runs now stamp explicit visual QA, viewer smoke, and checkpoint sentinel plans into the strategy summary.",
+  "latest_no_spend_evidence": "logs/md1-r0-visual-sentinel-v2-leaf-dryrun-executable-smoke-20260514.json and logs/md1-r0-visual-sentinel-v2-leaf-submit-readiness-executable-smoke-head0a8-20260514.json; no jobs submitted; readiness blocks only on active AWS training/processing.",
+  "latest_no_spend_implementation": "Added executable early visual-smoke guards requiring checkpoint S3 probes, visual gate command, and stop command template before paid R0 leaf proofs.",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
     "head": "07c50ac09a7ac88ea218c5784f045154a102917e",
@@ -1948,7 +1948,7 @@
     "remote_merge_plan_json": "logs/md1-r4-quality-preserving-soft-density-leaf-tile10-rollback-bg10-remote-merge-g4dn-plan-dryrun-20260513.json",
     "training_jobs_to_submit": 0
   },
-  "latest_testing": "python3 -m unittest tests.unit.test_enforce_md1_leaf_submit_readiness tests.unit.test_tiled_3dgs_benchmark tests.unit.test_plan_md1_boundary_objective_strategy (135 tests), py_compile for touched 3DGS scripts, and jq empty over new evidence JSONs passed.",
+  "latest_testing": "144 targeted unit tests, py_compile, jq evidence checks, and git diff --check passed for executable early-smoke guard update.",
   "latest_tile04_leaf_reuse_merge_dryrun_status": "density-capped tile_04 leaf passed post-leaf preflight/gate with 984154 splats, 128 images, and filtered scaffold; no-training bg10 tile_10 rollback merge payload dry-run is generated and merge/review gate allows only that next step.",
   "latest_tracked_sagemaker_evidence_spend_before_untracked_stop_usd": 14.8046,
   "latest_training_cost_reduction_status": "Evidence/untracked spend remains about $17.100. Soft-density tile_04 passed leaf and merge structural gates but failed V18 and AI visual QA; no-spend planner now records soft_density_quality_regression and blocks repeating that objective. No full14/LOD/promotion/viewer smoke launched.",
@@ -17289,5 +17289,52 @@
     ],
     "spend_estimated_usd": 0,
     "next": "Commit/push/watch exact head, then wait for AWS processing idle before rerunning readiness and any bounded tile_04 proof."
+  },
+  "md1_r0_visual_sentinel_v2_executable_early_smoke_20260514": {
+    "checked_at": "2026-05-14T14:55:02Z",
+    "head_before_commit": "0a8dfda523c6210fdcc4121783c4ac1a2376c734",
+    "exact_head_workflow": {
+      "name": "CDK Deploy",
+      "run_id": 25866314684,
+      "conclusion": "success"
+    },
+    "decision": "no_spend_guard_update_ready_not_submitted",
+    "implementation": "Paid leaf readiness/submit now requires executable early visual-smoke details: checkpoint_s3_uris, checkpoint_probe_command_template, visual_gate_command_template, and stop_command_template.",
+    "dryrun_json": "logs/md1-r0-visual-sentinel-v2-leaf-dryrun-executable-smoke-20260514.json",
+    "readiness_json": "logs/md1-r0-visual-sentinel-v2-leaf-submit-readiness-executable-smoke-head0a8-20260514.json",
+    "readiness_decision": "leaf_submit_blocked",
+    "readiness_block_reasons": [
+      "training_jobs_in_progress",
+      "processing_jobs_in_progress"
+    ],
+    "estimated_usd": 0.4907,
+    "max_estimated_usd": 0.75,
+    "submitted_jobs": [],
+    "visual_plan_gates": {
+      "visual_qa_plan_present": true,
+      "viewer_smoke_plan_present": true,
+      "early_visual_smoke_abort_plan_present": true,
+      "early_plan_executable_fields": [
+        "checkpoint_s3_uris",
+        "checkpoint_probe_command_template",
+        "visual_gate_command_template",
+        "stop_command_template"
+      ]
+    },
+    "live_aws_evidence": {
+      "training_jobs_json": "logs/md1-r0-visual-sentinel-v2-executable-smoke-live-training-head0a8-20260514.json",
+      "processing_jobs_json": "logs/md1-r0-visual-sentinel-v2-executable-smoke-live-processing-head0a8-20260514.json",
+      "active_training_describe_json": "logs/md1-full2157-ds4-r24-1778769804-active-describe-head0a8-20260514.json",
+      "active_training_tags_json": "logs/md1-full2157-ds4-r24-1778769804-tags-head0a8-20260514.json",
+      "active_processing_describe_json": "logs/md1-baseline-e2e-20260514032448-sfm-active-describe-head0a8-20260514.json",
+      "active_processing_tags_json": "logs/md1-baseline-e2e-20260514032448-sfm-tags-head0a8-20260514.json"
+    },
+    "tests": [
+      "python3 -m unittest tests.unit.test_enforce_md1_leaf_submit_readiness tests.unit.test_tiled_3dgs_benchmark tests.unit.test_plan_md1_boundary_objective_strategy tests.unit.test_evaluate_md1_visual_qa_gate tests.unit.test_3dgs_training_monitor (144 tests)",
+      "python3 -m py_compile scripts/3dgs/enforce_md1_leaf_submit_readiness.py scripts/3dgs/run_tiled_3dgs_benchmark.py scripts/3dgs/evaluate_md1_visual_qa_gate.py scripts/3dgs/monitor_3dgs_training_cost.py",
+      "jq empty over new evidence JSONs",
+      "git diff --check"
+    ],
+    "next": "Commit/push/watch exact head, then wait for AWS idle before rerunning leaf-submit readiness on the executable-smoke dry-run."
   }
 }

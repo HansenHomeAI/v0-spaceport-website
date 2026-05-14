@@ -28,7 +28,11 @@ def strategy() -> dict:
         "early_visual_smoke_plan": {
             "abort_on_failure": True,
             "checkpoint_steps": [1000, 2000],
+            "checkpoint_s3_uris": {"tile_04": "s3://bucket/checkpoints/tile_04"},
             "sentinel_cameras": ["DJI_0068.JPG"],
+            "checkpoint_probe_command_template": "aws s3 ls {checkpoint_s3_uri}/ --recursive",
+            "visual_gate_command_template": "python3 scripts/3dgs/evaluate_md1_visual_qa_gate.py --visual-qa-manifest {bundle_dir}/visual_qa_manifest.json",
+            "stop_command_template": "aws sagemaker stop-training-job --training-job-name {training_job_name}",
         },
         "cost_estimate": {"estimated_usd": 3.333},
         "post_leaf_preflight_gates": [
@@ -178,11 +182,29 @@ class EnforceMd1LeafSubmitReadinessTests(unittest.TestCase):
         candidate["early_visual_smoke_plan"] = {
             "abort_on_failure": False,
             "checkpoint_steps": [1000],
+            "checkpoint_s3_uris": {"tile_04": "s3://bucket/checkpoints/tile_04"},
             "sentinel_cameras": ["DJI_0068.JPG"],
+            "checkpoint_probe_command_template": "aws s3 ls {checkpoint_s3_uri}/ --recursive",
+            "visual_gate_command_template": "python3 scripts/3dgs/evaluate_md1_visual_qa_gate.py --visual-qa-manifest {bundle_dir}/visual_qa_manifest.json",
+            "stop_command_template": "aws sagemaker stop-training-job --training-job-name {training_job_name}",
         }
         summary = allowed_summary(strategy=candidate)
 
         self.assertEqual(summary["decision"], "leaf_submit_blocked")
+        self.assertIn("early_visual_smoke_abort_plan_missing", summary["block_reasons"])
+        self.assertFalse(summary["early_visual_smoke_abort_plan_present"])
+
+    def test_blocks_early_visual_smoke_plan_without_executable_commands(self):
+        candidate = strategy()
+        candidate["early_visual_smoke_plan"] = {
+            "abort_on_failure": True,
+            "checkpoint_steps": [1000],
+            "checkpoint_s3_uris": {"tile_04": "s3://bucket/checkpoints/tile_04"},
+            "sentinel_cameras": ["DJI_0068.JPG"],
+        }
+
+        summary = allowed_summary(strategy=candidate)
+
         self.assertIn("early_visual_smoke_abort_plan_missing", summary["block_reasons"])
         self.assertFalse(summary["early_visual_smoke_abort_plan_present"])
 

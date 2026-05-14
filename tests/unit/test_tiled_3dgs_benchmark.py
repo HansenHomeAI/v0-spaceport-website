@@ -36,7 +36,11 @@ def paid_quality_plans() -> dict:
         "early_visual_smoke_plan": {
             "abort_on_failure": True,
             "checkpoint_steps": [1000, 2000],
+            "checkpoint_s3_uris": {"tile_04": "s3://bucket/checkpoints/tile_04"},
             "sentinel_cameras": ["DJI_0068.JPG"],
+            "checkpoint_probe_command_template": "aws s3 ls {checkpoint_s3_uri}/ --recursive",
+            "visual_gate_command_template": "python3 scripts/3dgs/evaluate_md1_visual_qa_gate.py --visual-qa-manifest {bundle_dir}/visual_qa_manifest.json",
+            "stop_command_template": "aws sagemaker stop-training-job --training-job-name {training_job_name}",
         },
     }
 
@@ -1410,6 +1414,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             environment={
                 "MAX_ITERATIONS": "3000",
                 "TRAINING_STEPS_PER_SAVE": "1000",
+                "TRAINING_CHECKPOINT_S3_URI": "s3://bucket/checkpoints/tile_04",
                 "BOUNDARY_FROZEN_CAMERAS": "DJI_0067.JPG,DJI_0068.JPG",
                 "HORIZON_FROZEN_CAMERAS": "DJI_0073.JPG",
             },
@@ -1421,6 +1426,10 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertTrue(plan["abort_on_failure"])
         self.assertIn("DJI_0068.JPG", plan["sentinel_cameras"])
         self.assertEqual(plan["selected_tile_ids"], ["tile_04"])
+        self.assertEqual(plan["checkpoint_s3_uris"], {"tile_04": "s3://bucket/checkpoints/tile_04"})
+        self.assertIn("checkpoint_probe_command_template", plan)
+        self.assertIn("visual_gate_command_template", plan)
+        self.assertIn("stop_command_template", plan)
 
     def test_validate_submit_guardrails_requires_cost_experiment_and_v18_plan(self):
         args = types.SimpleNamespace(
@@ -1491,6 +1500,39 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertIn("visual_qa_plan", message)
         self.assertIn("viewer_smoke_plan", message)
         self.assertIn("early_visual_smoke_plan", message)
+
+    def test_validate_submit_guardrails_requires_executable_early_visual_smoke_plan(self):
+        args = types.SimpleNamespace(
+            submit=True,
+            max_estimated_usd=2.0,
+            experiment_id="r0-visual-sentinel",
+            v18_review_manifest_s3_uri="s3://bucket/v18-review",
+            baseline_review_manifest_s3_uri="",
+            enable_spot=False,
+            enable_checkpoints=True,
+            checkpoint_s3_prefix="s3://bucket/checkpoints",
+            checkpoint_resume_s3_uri="",
+            spot_restart_proof_passed=False,
+            reuse_tile_cache=False,
+            orchestration_mode="fanout",
+            skip_merge=True,
+            skip_review=True,
+        )
+        summary = paid_quality_plans()
+        summary["early_visual_smoke_plan"] = {
+            "abort_on_failure": True,
+            "checkpoint_steps": [1000],
+            "sentinel_cameras": ["DJI_0068.JPG"],
+        }
+
+        with self.assertRaises(RuntimeError) as raised:
+            benchmark.validate_submit_guardrails(args, {"cost_estimate": {"estimated_usd": 1.0}, **summary})
+
+        message = str(raised.exception)
+        self.assertIn("checkpoint_s3_uris", message)
+        self.assertIn("checkpoint_probe_command_template", message)
+        self.assertIn("visual_gate_command_template", message)
+        self.assertIn("stop_command_template", message)
 
     def test_validate_submit_guardrails_blocks_unbounded_spot_wait(self):
         args = types.SimpleNamespace(
