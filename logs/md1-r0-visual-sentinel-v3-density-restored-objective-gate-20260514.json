@@ -1,0 +1,389 @@
+{
+  "boundary_frozen_cameras": [
+    "DJI_0067.JPG",
+    "DJI_0068.JPG",
+    "DJI_0069.JPG",
+    "DJI_0070.JPG"
+  ],
+  "boundary_improvement_gap": {
+    "actual_delta": {
+      "lpips": 0.030524849891662598,
+      "psnr": 0.8883187974103848,
+      "ssim": 0.03027184307575226
+    },
+    "lpips_regression_observed": true,
+    "passes_psnr_or_ssim_improvement": true,
+    "required_improvement": {
+      "lpips": -0.025,
+      "psnr": 0.5,
+      "ssim": 0.01
+    }
+  },
+  "candidate_objective_gate": {
+    "block_reasons": [],
+    "boundary_camera_ids": [
+      "DJI_0067.JPG",
+      "DJI_0068.JPG",
+      "DJI_0069.JPG",
+      "DJI_0070.JPG"
+    ],
+    "context_support_tile_ids": [
+      "tile_01",
+      "tile_10",
+      "tile_13"
+    ],
+    "covered_tile_ids": [
+      "tile_01",
+      "tile_04",
+      "tile_10",
+      "tile_13"
+    ],
+    "decision": "paid_retry_allowed",
+    "density_control_implementation": {
+      "environment": {
+        "CULL_ALPHA_THRESH": "0.12",
+        "CULL_SCALE_THRESH": "0.35",
+        "TRAINING_MAX_GAUSS_RATIO": "1.35",
+        "TRAINING_STOP_SPLIT_AT": "5200"
+      },
+      "training_config": {
+        "cull_alpha_thresh": 0.12,
+        "cull_scale_thresh": 0.35,
+        "training_max_gauss_ratio": 1.35,
+        "training_stop_split_at": 5200
+      }
+    },
+    "early_visual_smoke_plan_present": true,
+    "estimated_usd": 0.736,
+    "expected_metric_axes": [
+      "boundary.lpips",
+      "boundary.required_improvement",
+      "horizon.lpips",
+      "horizon.psnr",
+      "horizon.sky_score",
+      "horizon.ssim",
+      "visual_qa.color_shift",
+      "visual_qa.geometry_alignment",
+      "visual_qa.horizon_continuity",
+      "visual_qa.texture_smearing"
+    ],
+    "hard_output_cap_below_leaf_min_violations": [],
+    "hardcap_quality_repair_implementation": {
+      "environment": {
+        "BILATERAL_PROCESSING": "false",
+        "FLOATER_PRUNING_MAX_COLOR_DISTANCE": "0.18"
+      },
+      "training_config": {
+        "bilateral_processing": false,
+        "floater_pruning_max_color_distance": 0.18
+      }
+    },
+    "horizon_camera_ids": [
+      "DJI_0066.JPG",
+      "DJI_0073.JPG",
+      "DJI_0146.JPG",
+      "DJI_0147.JPG"
+    ],
+    "leaf_sidecar_export_implementation_present": true,
+    "loss_weighting_implementation": {
+      "environment": {},
+      "training_config": {}
+    },
+    "max_estimated_usd": 0.75,
+    "missing_boundary_frozen_cameras": [],
+    "missing_boundary_metric_axes": [],
+    "missing_horizon_frozen_cameras": [],
+    "missing_horizon_metric_axes": [],
+    "missing_primary_boundary_tile_ids": [],
+    "missing_primary_horizon_tile_ids": [],
+    "missing_targeted_quality_blockers": [],
+    "no_full_14tile_training": true,
+    "objective_changes": [
+      "appearance_consistency",
+      "color_calibration",
+      "color_consistency",
+      "density_restoring_tile04_training_budget",
+      "early_visual_sentinel_smoke_abort",
+      "geometry_alignment_loss",
+      "horizon_appearance_protection",
+      "per_camera_color",
+      "perceptual_color_loss",
+      "photometric_calibration"
+    ],
+    "present": true,
+    "sagemaker_env_value_length_violations": [],
+    "selected_tile_ids": [
+      "tile_04"
+    ],
+    "submitted_jobs": [],
+    "targeted_quality_blockers": [
+      "ai_visual_color_shift_defect",
+      "ai_visual_geometry_alignment_defect",
+      "ai_visual_horizon_continuity_defect",
+      "ai_visual_review_blocking_defects",
+      "ai_visual_review_blocking_view_findings",
+      "ai_visual_review_status_block",
+      "ai_visual_texture_smearing_defect",
+      "boundary_no_required_improvement",
+      "boundary_v18_median_lpips_regression",
+      "boundary_v18_single_camera_lpips_regression",
+      "horizon_lpips_regression",
+      "horizon_psnr_regression",
+      "horizon_sky_score_regression",
+      "horizon_ssim_regression",
+      "horizon_v18_median_lpips_regression",
+      "horizon_v18_median_psnr_regression",
+      "horizon_v18_median_ssim_regression",
+      "horizon_v18_single_camera_lpips_regression",
+      "horizon_v18_single_camera_psnr_regression",
+      "horizon_v18_sky_score_regression",
+      "leaf_required_paths_missing",
+      "near_detail_ssim_regression",
+      "near_detail_v18_median_ssim_regression",
+      "near_detail_v18_single_camera_lpips_regression",
+      "splat_vertex_count_below_hard_min",
+      "splat_vertex_count_below_reference_ratio"
+    ],
+    "underdense_density_restoration_implementation": {
+      "comparisons": [
+        {
+          "candidate": {
+            "max_iterations": 6000.0,
+            "training_max_selected_images": 188.0,
+            "training_stop_split_at": 5200.0
+          },
+          "failed": {
+            "max_iterations": 3000.0,
+            "training_max_selected_images": 96.0,
+            "training_stop_split_at": 2200.0
+          },
+          "improved": {
+            "max_iterations_increased": true,
+            "selected_images_increased": true,
+            "split_stop_delayed": true
+          },
+          "tile_id": "tile_04"
+        }
+      ],
+      "environment": {
+        "MAX_ITERATIONS": "6000",
+        "TRAINING_MAX_SELECTED_IMAGES": "188",
+        "TRAINING_STOP_SPLIT_AT": "5200"
+      },
+      "has_stronger_density_budget": true,
+      "training_config": {
+        "max_iterations": 6000,
+        "training_max_selected_images": 188,
+        "training_stop_split_at": 5200
+      }
+    },
+    "visual_fidelity_implementation": {
+      "environment": {
+        "APPEARANCE_EMBED_DIM": "64",
+        "BG_SH_DEGREE": "2",
+        "BILATERAL_PROCESSING": "false",
+        "ENABLE_ALPHA_LOSS": "true",
+        "ENABLE_BG_MODEL": "true",
+        "ENABLE_ROBUST_MASK": "true",
+        "MODEL_VARIANT": "splatfacto-w-light",
+        "SH_DEGREE": "1"
+      },
+      "training_config": {
+        "appearance_embed_dim": 64,
+        "bg_sh_degree": 2,
+        "bilateral_processing": false,
+        "enable_alpha_loss": true,
+        "enable_bg_model": true,
+        "enable_robust_mask": true,
+        "model_variant": "splatfacto-w-light",
+        "sh_degree": 1
+      }
+    },
+    "warnings": []
+  },
+  "checked_at": "2026-05-14T19:15:05.340759+00:00",
+  "context_support_tile_ids": [
+    "tile_13",
+    "tile_00",
+    "tile_02",
+    "tile_06"
+  ],
+  "current_quality_blockers": [
+    "ai_visual_color_shift_defect",
+    "ai_visual_geometry_alignment_defect",
+    "ai_visual_horizon_continuity_defect",
+    "ai_visual_review_blocking_defects",
+    "ai_visual_review_blocking_view_findings",
+    "ai_visual_review_status_block",
+    "ai_visual_texture_smearing_defect",
+    "boundary_no_required_improvement",
+    "boundary_v18_median_lpips_regression",
+    "boundary_v18_single_camera_lpips_regression",
+    "horizon_lpips_regression",
+    "horizon_psnr_regression",
+    "horizon_sky_score_regression",
+    "horizon_ssim_regression",
+    "horizon_v18_median_lpips_regression",
+    "horizon_v18_median_psnr_regression",
+    "horizon_v18_median_ssim_regression",
+    "horizon_v18_single_camera_lpips_regression",
+    "horizon_v18_single_camera_psnr_regression",
+    "horizon_v18_sky_score_regression",
+    "leaf_required_paths_missing",
+    "near_detail_ssim_regression",
+    "near_detail_v18_median_ssim_regression",
+    "near_detail_v18_single_camera_lpips_regression",
+    "splat_vertex_count_below_hard_min",
+    "splat_vertex_count_below_reference_ratio"
+  ],
+  "failed_hypotheses": [
+    {
+      "ai_visual_defect_blockers": [
+        "ai_visual_geometry_alignment_defect",
+        "ai_visual_horizon_continuity_defect",
+        "ai_visual_texture_smearing_defect",
+        "ai_visual_color_shift_defect"
+      ],
+      "evidence": "The hard-output-cap tile_10 plus visual-fidelity tile_04 bg10 merge passed density and structural preflight, but V18 metrics and AI visual QA blocked it for false color, horizon, near-detail, and perceptual regressions.",
+      "hypothesis": "hard_output_cap_visual_fidelity_quality_regression",
+      "metric_delta_vs_v18": {
+        "boundary": {
+          "lpips": 0.030524849891662598,
+          "psnr": 0.8883187974103848,
+          "ssim": 0.03027184307575226
+        },
+        "horizon": {
+          "lpips": 0.08243861794471741,
+          "psnr": -1.1750026031112348,
+          "ssim": -0.03138488531112671
+        },
+        "near_detail": {
+          "lpips": 0.00043138861656188965,
+          "psnr": 0.4843710435541535,
+          "ssim": -0.017835795879364014
+        }
+      },
+      "promotion_block_reasons": [
+        "near_detail_ssim_regression",
+        "horizon_psnr_regression",
+        "horizon_ssim_regression",
+        "horizon_lpips_regression",
+        "horizon_sky_score_regression"
+      ],
+      "status": "failed",
+      "v18_non_regression_block_reasons": [
+        "near_detail_v18_median_ssim_regression",
+        "boundary_v18_median_lpips_regression",
+        "horizon_v18_median_psnr_regression",
+        "horizon_v18_median_ssim_regression",
+        "horizon_v18_median_lpips_regression",
+        "horizon_v18_sky_score_regression",
+        "near_detail_v18_single_camera_lpips_regression",
+        "boundary_v18_single_camera_lpips_regression",
+        "horizon_v18_single_camera_psnr_regression",
+        "horizon_v18_single_camera_lpips_regression"
+      ],
+      "visual_qa_gate_block_reasons": [
+        "ai_visual_review_blocking_defects",
+        "ai_visual_review_blocking_view_findings",
+        "ai_visual_review_status_block"
+      ]
+    },
+    {
+      "density_control_environment": {
+        "MAX_ITERATIONS": "3000",
+        "MODEL_VARIANT": "splatfacto-w-light",
+        "TRAINING_MAX_GAUSS_RATIO": "1.35",
+        "TRAINING_MAX_SELECTED_IMAGES": "96",
+        "TRAINING_STOP_SPLIT_AT": "2200"
+      },
+      "density_control_training_config": {
+        "max_iterations": 3000,
+        "model_variant": "splatfacto-w-light",
+        "training_max_gauss_ratio": 1.35,
+        "training_max_selected_images": 96,
+        "training_stop_split_at": 2200
+      },
+      "evidence": "The R0 visual-sentinel tile_04 leaf removed the hard output cap and exported required sidecars, but the bounded training budget still produced too few retained splats before any merge/review.",
+      "hard_min_splat_count": 765021,
+      "hypothesis": "visual_sentinel_tile04_budget_underdense_leaf",
+      "leaf_gate_block_reasons": [
+        "leaf_preflight_decision_not_pass",
+        "splat_vertex_count_below_hard_min",
+        "splat_vertex_count_below_reference_ratio"
+      ],
+      "observed_reference_ratio": 0.47968005086392335,
+      "reference_splat_count": 956277,
+      "splat_vertex_count": 458707,
+      "status": "failed",
+      "tile_id": "tile_04"
+    }
+  ],
+  "horizon_frozen_cameras": [
+    "DJI_0066.JPG",
+    "DJI_0073.JPG",
+    "DJI_0146.JPG",
+    "DJI_0147.JPG"
+  ],
+  "horizon_regression_gap": {
+    "actual_delta": {
+      "lpips": 0.08243861794471741,
+      "psnr": -1.1750026031112348,
+      "ssim": -0.03138488531112671
+    },
+    "allowed_regression": {
+      "lpips_max_delta": 0.03,
+      "psnr_min_delta": -0.75,
+      "sky_score_min_ratio": 0.9,
+      "ssim_min_delta": -0.012
+    },
+    "passes_regression_gate": false
+  },
+  "next_no_spend_actions": [
+    "write a concrete candidate objective JSON that names the frozen cameras, primary tiles, metric axis, cost cap, and no-full14 guard",
+    "run this planner against that candidate objective and require candidate_objective_gate.decision=paid_retry_allowed",
+    "only then run leaf-only submit readiness; merge/review spend remains blocked until leaf gates pass"
+  ],
+  "paid_retry_allowed": true,
+  "paid_retry_recommended": true,
+  "primary_boundary_tile_ids": [
+    "tile_04",
+    "tile_10"
+  ],
+  "primary_horizon_tile_ids": [
+    "tile_01",
+    "tile_04"
+  ],
+  "protected_v18_non_regression_status": {},
+  "recommendation": "candidate_objective_can_enter_leaf_only_gate",
+  "required_next_hypothesis": {
+    "expected_metric_axes": [
+      "boundary.lpips",
+      "boundary.required_improvement",
+      "horizon.lpips",
+      "horizon.psnr",
+      "horizon.sky_score",
+      "horizon.ssim",
+      "boundary.psnr",
+      "boundary.ssim"
+    ],
+    "must_change": [
+      "camera/objective weighting during leaf training or selection",
+      "explicit boundary frozen-camera emphasis for DJI_0067.JPG-DJI_0070.JPG",
+      "tile_04/tile_10 boundary context coverage before merge/review"
+    ],
+    "must_not_repeat": [
+      "tile_10 density-only repair",
+      "merge-only protected overlap retention",
+      "frame-repeat-only camera weighting without loss/objective redesign",
+      "hard density-cap/loss-weighting retry that does not explicitly preserve horizon and LPIPS quality",
+      "soft-density/global-SSIM retry without a new appearance, geometry, color, or perceptual objective",
+      "visual-fidelity tile_10 retry without concrete density control after over-dense leaf rejection",
+      "density-controlled visual-fidelity tile_10 retry without a stronger cap/split/culling change after the latest over-dense leaf rejection",
+      "incremental tile_10 split/culling density retry without an exported-output hard cap at or below the post-leaf hard max",
+      "hard-output-cap visual-fidelity retry without a new color, exposure, geometry, or perceptual repair after AI visual QA blocks",
+      "long leaf proofs after visual QA failure unless a cheap early visual-smoke abort plan is present",
+      "full 14-tile training before staged R0/R1/R2/R3 gates"
+    ]
+  }
+}

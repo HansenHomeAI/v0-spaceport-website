@@ -46,6 +46,8 @@ FAILED_DENSITY_CAP_TERMS = (
 )
 QUALITY_PRESERVING_DENSITY_TERMS = (
     "density_preserving",
+    "density_restoring",
+    "density_recovery",
     "soft_density_control",
     "horizon_preserving",
     "quality_preserving",
@@ -150,6 +152,16 @@ DENSITY_CONTROL_CONFIG_KEYS = (
     "density_cap_enabled",
     "max_output_gaussians",
     "density_cap_policy",
+)
+UNDERDENSE_REPAIR_ENV_KEYS = (
+    "MAX_ITERATIONS",
+    "TRAINING_MAX_SELECTED_IMAGES",
+    "TRAINING_STOP_SPLIT_AT",
+)
+UNDERDENSE_REPAIR_CONFIG_KEYS = (
+    "max_iterations",
+    "training_max_selected_images",
+    "training_stop_split_at",
 )
 OVERDENSE_LEAF_REASONS = (
     "splat_vertex_count_above_reference_ratio",
@@ -831,8 +843,21 @@ def extract_failed_hypotheses(attribution: Mapping[str, Any]) -> list[dict[str, 
         evidence = "The previous leaf proof was rejected before merge/review because retained splats fell below the post-leaf density guard."
         tile_id = underdense_record.get("tile_id")
         if tile_id == "tile_04" and "visual_sentinel" in hypothesis_context:
-            hypothesis = "visual_sentinel_tile04_output_cap_underdense_leaf"
-            evidence = "The R0 visual-sentinel tile_04 leaf inherited an output cap that forced retained splats below the tile_04 hard minimum before any merge/review."
+            failed_env = underdense_record.get("density_control_environment")
+            if not isinstance(failed_env, Mapping):
+                failed_env = {}
+            failed_config = underdense_record.get("density_control_training_config")
+            if not isinstance(failed_config, Mapping):
+                failed_config = {}
+            failed_output_cap = float_value(
+                failed_env.get("TRAINING_MAX_OUTPUT_GAUSSIANS") or failed_config.get("max_output_gaussians")
+            )
+            if failed_output_cap is not None:
+                hypothesis = "visual_sentinel_tile04_output_cap_underdense_leaf"
+                evidence = "The R0 visual-sentinel tile_04 leaf inherited an output cap that forced retained splats below the tile_04 hard minimum before any merge/review."
+            else:
+                hypothesis = "visual_sentinel_tile04_budget_underdense_leaf"
+                evidence = "The R0 visual-sentinel tile_04 leaf removed the hard output cap and exported required sidecars, but the bounded training budget still produced too few retained splats before any merge/review."
         failed.append(
             {
                 "hypothesis": hypothesis,
@@ -912,6 +937,88 @@ def underdense_output_cap_failures(failed_hypotheses: Sequence[Mapping[str, Any]
             "visual_sentinel_tile04_output_cap_underdense_leaf",
         )
     ]
+
+
+def visual_sentinel_budget_underdense_failures(
+    failed_hypotheses: Sequence[Mapping[str, Any]]
+) -> list[Mapping[str, Any]]:
+    return [
+        item
+        for item in failed_hypotheses
+        if item.get("hypothesis") == "visual_sentinel_tile04_budget_underdense_leaf"
+    ]
+
+
+def underdense_density_restoration_implementation(
+    strategy: Mapping[str, Any] | None,
+    failed_hypotheses: Sequence[Mapping[str, Any]],
+) -> dict[str, Any]:
+    implementation = objective_implementation(strategy)
+    environment = implementation["environment"]
+    training_config = implementation["training_config"]
+    env_knobs = {key: environment[key] for key in UNDERDENSE_REPAIR_ENV_KEYS if key in environment}
+    config_knobs = {key: training_config[key] for key in UNDERDENSE_REPAIR_CONFIG_KEYS if key in training_config}
+    comparisons: list[dict[str, Any]] = []
+    stronger_budget = False
+    for failure in visual_sentinel_budget_underdense_failures(failed_hypotheses):
+        failed_env = failure.get("density_control_environment")
+        if not isinstance(failed_env, Mapping):
+            failed_env = {}
+        failed_config = failure.get("density_control_training_config")
+        if not isinstance(failed_config, Mapping):
+            failed_config = {}
+        candidate_iterations = float_value(environment.get("MAX_ITERATIONS") or training_config.get("max_iterations"))
+        failed_iterations = float_value(failed_env.get("MAX_ITERATIONS") or failed_config.get("max_iterations"))
+        candidate_images = float_value(
+            environment.get("TRAINING_MAX_SELECTED_IMAGES") or training_config.get("training_max_selected_images")
+        )
+        failed_images = float_value(
+            failed_env.get("TRAINING_MAX_SELECTED_IMAGES") or failed_config.get("training_max_selected_images")
+        )
+        candidate_stop_split = float_value(
+            environment.get("TRAINING_STOP_SPLIT_AT") or training_config.get("training_stop_split_at")
+        )
+        failed_stop_split = float_value(
+            failed_env.get("TRAINING_STOP_SPLIT_AT") or failed_config.get("training_stop_split_at")
+        )
+        improved = {
+            "max_iterations_increased": (
+                candidate_iterations is not None
+                and failed_iterations is not None
+                and candidate_iterations > failed_iterations
+            ),
+            "selected_images_increased": (
+                candidate_images is not None and failed_images is not None and candidate_images > failed_images
+            ),
+            "split_stop_delayed": (
+                candidate_stop_split is not None
+                and failed_stop_split is not None
+                and candidate_stop_split > failed_stop_split
+            ),
+        }
+        stronger_budget = stronger_budget or any(improved.values())
+        comparisons.append(
+            {
+                "tile_id": failure.get("tile_id"),
+                "failed": {
+                    "max_iterations": failed_iterations,
+                    "training_max_selected_images": failed_images,
+                    "training_stop_split_at": failed_stop_split,
+                },
+                "candidate": {
+                    "max_iterations": candidate_iterations,
+                    "training_max_selected_images": candidate_images,
+                    "training_stop_split_at": candidate_stop_split,
+                },
+                "improved": improved,
+            }
+        )
+    return {
+        "environment": env_knobs,
+        "training_config": config_knobs,
+        "has_stronger_density_budget": stronger_budget,
+        "comparisons": comparisons,
+    }
 
 
 def has_underdense_leaf_blocker(blockers: Sequence[str]) -> bool:
@@ -1243,6 +1350,14 @@ def evaluate_candidate_objective(
             block_reasons.append("objective_repeats_impossible_hard_output_cap_below_leaf_min")
     else:
         cap_violations = []
+    underdense_density_restoration = underdense_density_restoration_implementation(
+        candidate_objective, failed_hypotheses
+    )
+    if (
+        visual_sentinel_budget_underdense_failures(failed_hypotheses)
+        and not underdense_density_restoration["has_stronger_density_budget"]
+    ):
+        block_reasons.append("objective_missing_density_restoration_after_visual_sentinel_underdense_leaf")
     normalized_changes = " ".join(changes).lower()
     if (
         has_visual_fidelity_overdense_failed(failed_hypotheses)
@@ -1316,6 +1431,7 @@ def evaluate_candidate_objective(
         "density_control_implementation": density_control_knobs,
         "visual_fidelity_implementation": visual_fidelity_knobs,
         "hardcap_quality_repair_implementation": hardcap_quality_repair_knobs,
+        "underdense_density_restoration_implementation": underdense_density_restoration,
         "leaf_sidecar_export_implementation_present": sidecar_export_present,
         "hard_output_cap_below_leaf_min_violations": cap_violations,
         "sagemaker_env_value_length_violations": env_value_length_violations,

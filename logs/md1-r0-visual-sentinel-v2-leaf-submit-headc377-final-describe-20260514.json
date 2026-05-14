@@ -1,0 +1,165 @@
+{
+    "TrainingJobName": "md1-r0vissent-v2exec-1778783555-tile-04",
+    "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-r0vissent-v2exec-1778783555-tile-04",
+    "ModelArtifacts": {
+        "S3ModelArtifacts": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v2exec-20260514/tiles/tile_04/md1-r0vissent-v2exec-1778783555-tile-04/output/model.tar.gz"
+    },
+    "TrainingJobStatus": "Completed",
+    "SecondaryStatus": "Completed",
+    "AlgorithmSpecification": {
+        "TrainingImage": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent90742618md1geometryconsistency",
+        "TrainingInputMode": "File",
+        "EnableSageMakerMetricsTimeSeries": false
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "InputDataConfig": [
+        {
+            "ChannelName": "training",
+            "DataSource": {
+                "S3DataSource": {
+                    "S3DataType": "S3Prefix",
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap",
+                    "S3DataDistributionType": "FullyReplicated"
+                }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None"
+        },
+        {
+            "ChannelName": "tile-selection",
+            "DataSource": {
+                "S3DataSource": {
+                    "S3DataType": "S3Prefix",
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v2exec-20260514/inputs/tile-selection",
+                    "S3DataDistributionType": "FullyReplicated"
+                }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None"
+        },
+        {
+            "ChannelName": "scaffold",
+            "DataSource": {
+                "S3DataSource": {
+                    "S3DataType": "S3Prefix",
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-teacher-r3base-r4h-tile00-factor4-v3-20260426201700/output/artifact/model.tar.gz",
+                    "S3DataDistributionType": "FullyReplicated"
+                }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None"
+        }
+    ],
+    "OutputDataConfig": {
+        "KmsKeyId": "",
+        "S3OutputPath": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v2exec-20260514/tiles/tile_04",
+        "CompressionType": "GZIP"
+    },
+    "ResourceConfig": {
+        "InstanceType": "ml.g4dn.xlarge",
+        "InstanceCount": 1,
+        "VolumeSizeInGB": 100
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 2400
+    },
+    "CreationTime": "2026-05-14T12:33:12.260000-06:00",
+    "TrainingStartTime": "2026-05-14T12:34:00.079000-06:00",
+    "TrainingEndTime": "2026-05-14T12:55:49.473000-06:00",
+    "LastModifiedTime": "2026-05-14T12:55:49.982000-06:00",
+    "SecondaryStatusTransitions": [
+        {
+            "Status": "Starting",
+            "StartTime": "2026-05-14T12:33:12.260000-06:00",
+            "EndTime": "2026-05-14T12:34:00.079000-06:00",
+            "StatusMessage": "Preparing the instances for training"
+        },
+        {
+            "Status": "Downloading",
+            "StartTime": "2026-05-14T12:34:00.079000-06:00",
+            "EndTime": "2026-05-14T12:39:07.920000-06:00",
+            "StatusMessage": "Downloading the training image"
+        },
+        {
+            "Status": "Training",
+            "StartTime": "2026-05-14T12:39:07.920000-06:00",
+            "EndTime": "2026-05-14T12:53:31.186000-06:00",
+            "StatusMessage": "Training image download completed. Training in progress."
+        },
+        {
+            "Status": "Uploading",
+            "StartTime": "2026-05-14T12:53:31.186000-06:00",
+            "EndTime": "2026-05-14T12:55:49.473000-06:00",
+            "StatusMessage": "Uploading generated training model"
+        },
+        {
+            "Status": "Completed",
+            "StartTime": "2026-05-14T12:55:49.473000-06:00",
+            "EndTime": "2026-05-14T12:55:49.473000-06:00",
+            "StatusMessage": "Training job completed"
+        }
+    ],
+    "EnableNetworkIsolation": false,
+    "EnableInterContainerTrafficEncryption": false,
+    "EnableManagedSpotTraining": false,
+    "CheckpointConfig": {
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0-visual-sentinel-v2-executable-smoke-20260514/checkpoints/md1-r0vissent-v2exec-1778783555-tile-04",
+        "LocalPath": "/opt/ml/checkpoints"
+    },
+    "TrainingTimeInSeconds": 1309,
+    "BillableTimeInSeconds": 1309,
+    "ProfilingStatus": "Disabled",
+    "Environment": {
+        "AWS_DEFAULT_REGION": "us-west-2",
+        "BG_SH_DEGREE": "2",
+        "BILATERAL_PROCESSING": "false",
+        "BOUNDARY_FROZEN_CAMERAS": "DJI_0067.JPG,DJI_0068.JPG,DJI_0069.JPG,DJI_0070.JPG",
+        "COMMERCIAL_LICENSE": "true",
+        "CONTEXT_SUPPORT_TILE_IDS": "tile_10,tile_13,tile_01,tile_00,tile_02,tile_06",
+        "CUDA_HOME": "/usr/local/cuda",
+        "CULL_ALPHA_THRESH": "0.12",
+        "CULL_SCALE_THRESH": "0.35",
+        "ENABLE_ALPHA_LOSS": "true",
+        "ENABLE_BG_MODEL": "true",
+        "ENABLE_ROBUST_MASK": "true",
+        "EXPECTED_METRIC_AXES": "boundary.required_improvement,boundary.psnr,boundary.ssim,boundary.lpips,horizon.psnr,horizon.ssim,horizon.lpips,horizon.sky_score,near_detail.ssim,near_detail.lpips,visual_qa.color_shift,visual_qa.geometry_alignment,visual_qa.horizon_continuity,visual_qa.texture_smearing,leaf.density_min,leaf.required_sidecars",
+        "FLOATER_PRUNING_ENABLED": "true",
+        "FLOATER_PRUNING_MAX_COLOR_DISTANCE": "0.18",
+        "FLOATER_PRUNING_MIN_EDGE_SUPPORT": "2",
+        "FLOATER_PRUNING_TOP_REGION_RATIO": "0.55",
+        "FLOATER_PRUNING_TOP_VIEW_FRACTION": "0.45",
+        "FRAMEWORK": "nerfstudio",
+        "GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT": "true",
+        "GLOBAL_SCAFFOLD_SOURCE_DIR": "/opt/ml/input/data/scaffold",
+        "HORIZON_FROZEN_CAMERAS": "DJI_0066.JPG,DJI_0073.JPG,DJI_0146.JPG,DJI_0147.JPG",
+        "LD_LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+        "LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+        "MAX_ITERATIONS": "3000",
+        "MERGE_MODE": "strict_core",
+        "METHODOLOGY": "spaceport_splatfacto_w_light_skybox",
+        "MODEL_VARIANT": "splatfacto-w-light",
+        "OUTPUT_FORMAT": "ply",
+        "PYTHONUNBUFFERED": "1",
+        "SAGEMAKER_PROGRAM": "train.py",
+        "SH_DEGREE": "1",
+        "SOGS_COMPATIBLE": "true",
+        "TARGETED_QUALITY_BLOCKERS": "ai_visual_color_shift_defect,ai_visual_geometry_alignment_defect,ai_visual_horizon_continuity_defect,ai_visual_texture_smearing_defect,boundary_no_required_improvement,horizon_psnr_regression,horizon_ssim_regression,horizon_lpips_regression,horizon_sky_score_regression,near_detail_ssim_regression,leaf_required_paths_missing,splat_vertex_count_below_reference_ratio,splat_vertex_count_below_hard_min",
+        "TILE_BUDGET_CLASS": "hard",
+        "TILE_ID": "tile_04",
+        "TILE_INPUT_HASH": "b2a27c4363bcc373b8945e7baf8f8a2bd5e4c67a6ed41ef72106c466a3f417dc",
+        "TILE_MANIFEST_PATH": "/opt/ml/input/data/tile-selection/3dgs_tile_manifest.json",
+        "TORCH_CUDA_ARCH_LIST": "8.0 8.6",
+        "TRAINING_CHECKPOINT_DIR": "/opt/ml/checkpoints",
+        "TRAINING_CHECKPOINT_S3_URI": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0-visual-sentinel-v2-executable-smoke-20260514/checkpoints/md1-r0vissent-v2exec-1778783555-tile-04",
+        "TRAINING_ENABLE_CHECKPOINTS": "true",
+        "TRAINING_MAX_GAUSS_RATIO": "1.35",
+        "TRAINING_MAX_SELECTED_IMAGES": "96",
+        "TRAINING_MODE": "leaf_tile",
+        "TRAINING_STEPS_PER_EVAL_ALL_IMAGES": "3000",
+        "TRAINING_STEPS_PER_EVAL_IMAGE": "1000",
+        "TRAINING_STEPS_PER_SAVE": "1000",
+        "TRAINING_STOP_SPLIT_AT": "2200",
+        "TRAINING_TIMEOUT_SECONDS": "2400",
+        "VIEW_BUCKET_MANIFEST_PATH": "/opt/ml/input/data/tile-selection/3dgs_view_buckets.json"
+    }
+}

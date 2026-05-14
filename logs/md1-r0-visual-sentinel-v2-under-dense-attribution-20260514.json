@@ -1,0 +1,172 @@
+{
+  "ai_visual_defect_blockers": [
+    "ai_visual_geometry_alignment_defect",
+    "ai_visual_horizon_continuity_defect",
+    "ai_visual_texture_smearing_defect",
+    "ai_visual_color_shift_defect"
+  ],
+  "candidate": "r0_visual_sentinel_tile04_fixed_leaf_sidecars_no_impossible_cap",
+  "candidate_model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-merge-g4dn-20260513/output/artifact/model.tar.gz",
+  "checked_at": "2026-05-14T03:42:06.575390+00:00",
+  "failed_density_control_environment": {
+    "MAX_ITERATIONS": "3000",
+    "MODEL_VARIANT": "splatfacto-w-light",
+    "TRAINING_MAX_GAUSS_RATIO": "1.35",
+    "TRAINING_MAX_SELECTED_IMAGES": "96",
+    "TRAINING_STOP_SPLIT_AT": "2200"
+  },
+  "failed_density_control_training_config": {
+    "max_iterations": 3000,
+    "model_variant": "splatfacto-w-light",
+    "training_max_gauss_ratio": 1.35,
+    "training_max_selected_images": 96,
+    "training_stop_split_at": 2200
+  },
+  "hard_min_splat_count": 765021,
+  "hard_output_cap_visual_fidelity_minus_v18_bucket_delta": {
+    "boundary": {
+      "lpips": 0.030524849891662598,
+      "psnr": 0.8883187974103848,
+      "ssim": 0.03027184307575226
+    },
+    "horizon": {
+      "lpips": 0.08243861794471741,
+      "psnr": -1.1750026031112348,
+      "ssim": -0.03138488531112671
+    },
+    "near_detail": {
+      "lpips": 0.00043138861656188965,
+      "psnr": 0.4843710435541535,
+      "ssim": -0.017835795879364014
+    }
+  },
+  "hypothesis": "r0_visual_sentinel_v2_tile04_leaf_only_proof",
+  "leaf_artifact_evidence": {
+    "missing": [
+      "export_manifest.json",
+      "background_manifest.json",
+      "background_skybox.webp"
+    ],
+    "present": [
+      "floater_pruning_summary.json",
+      "splat.ply",
+      "training_metadata.json",
+      "training_selection.json"
+    ]
+  },
+  "leaf_gate_block_reasons": [
+    "leaf_preflight_decision_not_pass",
+    "splat_vertex_count_below_reference_ratio",
+    "splat_vertex_count_below_hard_min"
+  ],
+  "merge_preflight": {
+    "block_reasons": [],
+    "decision": "preflight_passed_run_frozen_smoke_review",
+    "dropped_gaussians": 20492,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "retained_gaussians": 1514910,
+    "source_gaussians": 1535402
+  },
+  "next": "No paid retry until candidate removes tile_10 hard cap from tile_04, uses splatfacto-w-light sidecar export, passes objective gate/dry-run/readiness on exact green head with AWS idle.",
+  "observed_reference_ratio": 0.47968005086392335,
+  "paid_steps": {
+    "failed_merge_estimated_usd": 0.0583,
+    "full14_lod_or_promotion_launched": false,
+    "incremental_estimated_usd": 0.2777,
+    "merge_retry1_estimated_usd": 0.0789,
+    "v18_review_estimated_usd": 0.1405
+  },
+  "previous_r0_paid_step": {
+    "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-20260514-fixed/3dgs/tiles/tile_04/md1-r0vissent-fixed-1778727581-tile-04/output/model.tar.gz",
+    "billable_seconds": 858,
+    "estimated_spend_usd": 0.175,
+    "job_name": "md1-r0vissent-fixed-1778727581-tile-04"
+  },
+  "promotion_block_reasons": [
+    "near_detail_ssim_regression",
+    "horizon_psnr_regression",
+    "horizon_ssim_regression",
+    "horizon_lpips_regression",
+    "horizon_sky_score_regression"
+  ],
+  "reference_splat_count": 956277,
+  "review_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-review-v18colmap-r1-20260513/outputs/r4-t04vis-t10cap-bg10-v18colmap-smoke-p24-r1/md1-r1-r4-t04vis-t10cap-bg10-v18colmap-smoke-p24-r1-1778686244/output/model.tar.gz",
+  "splat_vertex_count": 458707,
+  "status": "failed_quality_gate_after_density_and_preflight_passed",
+  "tested_candidate": {
+    "candidate": "hard_output_cap_tile10_plus_visual_fidelity_tile04_bg10",
+    "promotion_block_reasons": [
+      "near_detail_ssim_regression",
+      "horizon_psnr_regression",
+      "horizon_ssim_regression",
+      "horizon_lpips_regression",
+      "horizon_sky_score_regression"
+    ],
+    "v18_non_regression_block_reasons": [
+      "near_detail_v18_median_ssim_regression",
+      "boundary_v18_median_lpips_regression",
+      "horizon_v18_median_psnr_regression",
+      "horizon_v18_median_ssim_regression",
+      "horizon_v18_median_lpips_regression",
+      "horizon_v18_sky_score_regression",
+      "near_detail_v18_single_camera_lpips_regression",
+      "boundary_v18_single_camera_lpips_regression",
+      "horizon_v18_single_camera_psnr_regression",
+      "horizon_v18_single_camera_lpips_regression"
+    ],
+    "visual_qa_block_reasons": [
+      "ai_visual_review_blocking_defects",
+      "ai_visual_review_blocking_view_findings",
+      "ai_visual_review_status_block"
+    ]
+  },
+  "tile_id": "tile_04",
+  "v18_non_regression_block_reasons": [
+    "near_detail_v18_median_ssim_regression",
+    "boundary_v18_median_lpips_regression",
+    "horizon_v18_median_psnr_regression",
+    "horizon_v18_median_ssim_regression",
+    "horizon_v18_median_lpips_regression",
+    "horizon_v18_sky_score_regression",
+    "near_detail_v18_single_camera_lpips_regression",
+    "boundary_v18_single_camera_lpips_regression",
+    "horizon_v18_single_camera_psnr_regression",
+    "horizon_v18_single_camera_lpips_regression"
+  ],
+  "visual_qa_gate_block_reasons": [
+    "ai_visual_review_blocking_defects",
+    "ai_visual_review_blocking_view_findings",
+    "ai_visual_review_status_block"
+  ],
+  "leaf_required_paths_missing": [],
+  "paid_jobs": [
+    {
+      "tile_id": "tile_04",
+      "gate_decision": "merge_review_blocked",
+      "block_reasons": [
+        "leaf_preflight_decision_not_pass",
+        "splat_vertex_count_below_reference_ratio",
+        "splat_vertex_count_below_hard_min"
+      ],
+      "splat_vertex_count": 458707,
+      "reference_splat_count": 956277,
+      "observed_reference_ratio": 0.47968005086392335,
+      "hard_min_splat_count": 765021,
+      "density_control_environment": {
+        "MAX_ITERATIONS": "3000",
+        "MODEL_VARIANT": "splatfacto-w-light",
+        "TRAINING_MAX_GAUSS_RATIO": "1.35",
+        "TRAINING_MAX_SELECTED_IMAGES": "96",
+        "TRAINING_STOP_SPLIT_AT": "2200"
+      },
+      "density_control_training_config": {
+        "max_iterations": 3000,
+        "model_variant": "splatfacto-w-light",
+        "training_max_gauss_ratio": 1.35,
+        "training_max_selected_images": 96,
+        "training_stop_split_at": 2200
+      }
+    }
+  ]
+}

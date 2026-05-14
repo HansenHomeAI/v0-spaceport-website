@@ -1,0 +1,33 @@
+{
+  "checked_at": "2026-05-14T18:57:09.446909+00:00",
+  "preflight_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v2exec-20260514/tiles/tile_04/md1-r0vissent-v2exec-1778783555-tile-04/output/model.tar.gz",
+  "preflight_job_name": "md1-r0vissent-v2exec-1778783555-tile-04",
+  "tile_id": "tile_04",
+  "expected_tile_id": "tile_04",
+  "decision": "merge_review_blocked",
+  "block_reasons": [
+    "leaf_preflight_decision_not_pass",
+    "splat_vertex_count_below_reference_ratio",
+    "splat_vertex_count_below_hard_min"
+  ],
+  "warnings": [],
+  "leaf_preflight_decision": "leaf_preflight_blocked",
+  "expected_leaf_preflight_decision": "leaf_preflight_passed_cache_candidate",
+  "splat_vertex_count": 458707,
+  "hard_max_splat_count": 1290973,
+  "hard_min_splat_count": 765021,
+  "splat_reference_guard": {
+    "enabled": true,
+    "status": "blocked",
+    "reference_splat_count": 956277,
+    "max_reference_splat_ratio": 1.35,
+    "min_reference_splat_ratio": 0.8,
+    "splat_vertex_count": 458707,
+    "observed_reference_ratio": 0.47968005086392335,
+    "block_reason": "splat_vertex_count_below_reference_ratio"
+  },
+  "selected_image_count": 96,
+  "expected_selected_image_count": 96,
+  "filtered_scaffold_required": true,
+  "filtered_scaffold_ok": true
+}
