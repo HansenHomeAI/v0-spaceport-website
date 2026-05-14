@@ -395,7 +395,7 @@ Produce a development-based MD1 baseline with:
 
 ### 2026-05-13T23:20:18-0600
 
-- Git: on `agent-113647-md1-baseline-e2e` @ `d70a57a7` (no working tree changes).
+- Git: on `agent-113647-md1-baseline-e2e` @ `31f5fb37` (poll evidence commit; working tree clean).
 - No-spend static checks:
   - `python3 -m unittest tests.unit.test_sogs_supersplat_bundle` -> `OK`
   - `cd web && npx next lint` -> `0` (warnings only)
