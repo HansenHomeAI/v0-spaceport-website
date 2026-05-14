@@ -1,0 +1,24 @@
+{
+    "Tags": [
+        {
+            "Key": "Benchmark",
+            "Value": "true"
+        },
+        {
+            "Key": "Project",
+            "Value": "Spaceport"
+        },
+        {
+            "Key": "Component",
+            "Value": "3DGS"
+        },
+        {
+            "Key": "Branch",
+            "Value": "agent-90742618-md1-geometry-consistency"
+        },
+        {
+            "Key": "ExperimentId",
+            "Value": "md1-r0-visual-sentinel-20260514-fixed"
+        }
+    ]
+}

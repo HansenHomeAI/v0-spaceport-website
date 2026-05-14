@@ -1619,6 +1619,86 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             },
         )
 
+    def test_validate_submit_guardrails_blocks_sagemaker_env_values_over_512_chars(self):
+        args = types.SimpleNamespace(
+            submit=True,
+            max_estimated_usd=2.0,
+            experiment_id="r0-env-cap",
+            v18_review_manifest_s3_uri="s3://bucket/v18-review",
+            baseline_review_manifest_s3_uri="",
+            enable_spot=False,
+            enable_checkpoints=False,
+            checkpoint_s3_prefix="",
+            checkpoint_resume_s3_uri="",
+            spot_restart_proof_passed=False,
+            reuse_tile_cache=False,
+            orchestration_mode="fanout",
+            skip_merge=True,
+            skip_review=True,
+        )
+
+        with self.assertRaises(RuntimeError) as raised:
+            benchmark.validate_submit_guardrails(
+                args,
+                {
+                    "cost_estimate": {"estimated_usd": 0.25},
+                    "stages": [
+                        {
+                            "stage_type": "train",
+                            "training_mode": "leaf_tile",
+                            "tile_id": "tile_04",
+                            "stage_name": "T0_tile_04",
+                            "environment": {"TARGETED_QUALITY_BLOCKERS": "x" * 513},
+                        }
+                    ],
+                },
+            )
+
+        message = str(raised.exception)
+        self.assertIn("TARGETED_QUALITY_BLOCKERS", message)
+        self.assertIn("SageMaker max 512", message)
+
+    def test_validate_submit_guardrails_blocks_output_cap_below_leaf_hard_min(self):
+        args = types.SimpleNamespace(
+            submit=True,
+            max_estimated_usd=2.0,
+            experiment_id="r0-density-cap",
+            v18_review_manifest_s3_uri="s3://bucket/v18-review",
+            baseline_review_manifest_s3_uri="",
+            enable_spot=False,
+            enable_checkpoints=False,
+            checkpoint_s3_prefix="",
+            checkpoint_resume_s3_uri="",
+            spot_restart_proof_passed=False,
+            reuse_tile_cache=False,
+            orchestration_mode="fanout",
+            skip_merge=True,
+            skip_review=True,
+        )
+
+        with self.assertRaises(RuntimeError) as raised:
+            benchmark.validate_submit_guardrails(
+                args,
+                {
+                    "cost_estimate": {"estimated_usd": 0.25},
+                    "leaf_reference_splat_counts": {"tile_04": 956277},
+                    "leaf_min_reference_splat_ratio": 0.8,
+                    "stages": [
+                        {
+                            "stage_type": "train",
+                            "training_mode": "leaf_tile",
+                            "tile_id": "tile_04",
+                            "stage_name": "T0_tile_04",
+                            "environment": {"TRAINING_MAX_OUTPUT_GAUSSIANS": "511000"},
+                        }
+                    ],
+                },
+            )
+
+        message = str(raised.exception)
+        self.assertIn("hard output cap 511000", message)
+        self.assertIn("post-leaf hard minimum 765021", message)
+
     def test_validate_submit_guardrails_blocks_full_14tile_without_rung_gate(self):
         args = types.SimpleNamespace(
             submit=True,

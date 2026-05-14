@@ -15,7 +15,7 @@ import tempfile
 import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Sequence
+from typing import Any, Dict, Iterable, List, Sequence
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -1302,6 +1302,77 @@ def production_rung_evidence_has_reference(evidence: dict) -> bool:
     return False
 
 
+SAGEMAKER_ENV_VALUE_MAX_LENGTH = 512
+
+
+def sagemaker_env_value_length_violations(summary: dict) -> list[dict[str, Any]]:
+    violations: list[dict[str, Any]] = []
+    for stage in summary.get("stages") or []:
+        if not isinstance(stage, dict):
+            continue
+        environment = stage.get("environment") or {}
+        if not isinstance(environment, dict):
+            continue
+        stage_name = str(stage.get("stage_name") or stage.get("job_name") or "unknown")
+        for key, value in environment.items():
+            value_text = str(value)
+            if len(value_text) > SAGEMAKER_ENV_VALUE_MAX_LENGTH:
+                violations.append(
+                    {
+                        "stage_name": stage_name,
+                        "key": str(key),
+                        "length": len(value_text),
+                        "max_length": SAGEMAKER_ENV_VALUE_MAX_LENGTH,
+                    }
+                )
+    return violations
+
+
+def leaf_density_cap_preflight_violations(summary: dict) -> list[dict[str, Any]]:
+    try:
+        min_ratio = float(summary.get("leaf_min_reference_splat_ratio") or 0.0)
+    except (TypeError, ValueError):
+        min_ratio = 0.0
+    if min_ratio <= 0:
+        return []
+    reference_counts = summary.get("leaf_reference_splat_counts") or {}
+    if not isinstance(reference_counts, dict):
+        return []
+    violations: list[dict[str, Any]] = []
+    for stage in summary.get("stages") or []:
+        if not isinstance(stage, dict):
+            continue
+        if stage.get("stage_type") != "train" or stage.get("training_mode") != "leaf_tile":
+            continue
+        tile_id = str(stage.get("tile_id") or "")
+        if not tile_id or tile_id not in reference_counts:
+            continue
+        environment = stage.get("environment") or {}
+        if not isinstance(environment, dict):
+            continue
+        output_cap_raw = environment.get("TRAINING_MAX_OUTPUT_GAUSSIANS")
+        if output_cap_raw in (None, ""):
+            continue
+        try:
+            output_cap = int(output_cap_raw)
+            reference_count = int(reference_counts[tile_id])
+        except (TypeError, ValueError):
+            continue
+        hard_min = int(reference_count * min_ratio)
+        if output_cap < hard_min:
+            violations.append(
+                {
+                    "stage_name": str(stage.get("stage_name") or stage.get("job_name") or "unknown"),
+                    "tile_id": tile_id,
+                    "training_max_output_gaussians": output_cap,
+                    "reference_splat_count": reference_count,
+                    "min_reference_splat_ratio": min_ratio,
+                    "hard_min_splat_count": hard_min,
+                }
+            )
+    return violations
+
+
 def validate_submit_guardrails(args: argparse.Namespace, summary: dict) -> None:
     if not getattr(args, "submit", False):
         return
@@ -1318,6 +1389,17 @@ def validate_submit_guardrails(args: argparse.Namespace, summary: dict) -> None:
     estimate = (summary.get("cost_estimate") or {}).get("estimated_usd")
     if estimate is not None and max_estimated_usd > 0 and float(estimate) > max_estimated_usd:
         errors.append(f"estimated cost ${float(estimate):.2f} exceeds --max-estimated-usd ${max_estimated_usd:.2f}")
+    for violation in sagemaker_env_value_length_violations(summary):
+        errors.append(
+            f"{violation['stage_name']} environment {violation['key']} is "
+            f"{violation['length']} chars, above SageMaker max {violation['max_length']}"
+        )
+    for violation in leaf_density_cap_preflight_violations(summary):
+        errors.append(
+            f"{violation['stage_name']} hard output cap {violation['training_max_output_gaussians']} "
+            f"is below post-leaf hard minimum {violation['hard_min_splat_count']} for {violation['tile_id']}; "
+            "raise TRAINING_MAX_OUTPUT_GAUSSIANS or lower/remove the min density guard before submit"
+        )
     for stage_estimate in (summary.get("cost_estimate") or {}).get("stage_estimates") or []:
         runtime_risk = str(stage_estimate.get("runtime_risk") or "").strip()
         if runtime_risk:
@@ -3063,6 +3145,16 @@ def main() -> int:
         "v18_review_manifest_s3_uri": args.v18_review_manifest_s3_uri,
         "v18_non_regression_thresholds": DEFAULT_V18_NON_REGRESSION_THRESHOLDS,
         "cost_estimate": cost_estimate,
+        "sagemaker_env_value_length_violations": sagemaker_env_value_length_violations(
+            {"stages": [stage.to_dict() for stage in stages]}
+        ),
+        "leaf_density_cap_preflight_violations": leaf_density_cap_preflight_violations(
+            {
+                "stages": [stage.to_dict() for stage in stages],
+                "leaf_reference_splat_counts": leaf_reference_splat_counts,
+                "leaf_min_reference_splat_ratio": args.leaf_min_reference_splat_ratio or None,
+            }
+        ),
         "manual_hold": (
             {
                 "required": True,

@@ -1,0 +1,42 @@
+{
+  "timestamp": "2026-05-14T03:20:57Z",
+  "proof_job_name": "md1-r0vissent-fixed-1778727581-tile-04",
+  "proof_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-20260514-fixed/3dgs/tiles/tile_04/md1-r0vissent-fixed-1778727581-tile-04/output/model.tar.gz",
+  "billable_seconds": 858,
+  "estimated_spend_usd": 0.175,
+  "decision": "quality_path_blocked_before_merge_review",
+  "primary_blockers": [
+    "hard_output_cap_below_tile04_min_density",
+    "leaf_required_paths_missing"
+  ],
+  "density_evidence": {
+    "tile_id": "tile_04",
+    "reference_splat_count": 956277,
+    "hard_min_splat_count": 765021,
+    "splat_vertex_count": 511000,
+    "observed_reference_ratio": 0.5343639970426979,
+    "block_reason": "splat_vertex_count_below_reference_ratio"
+  },
+  "artifact_evidence": {
+    "present": [
+      "floater_pruning_summary.json",
+      "splat.ply",
+      "training_metadata.json",
+      "training_selection.json"
+    ],
+    "missing": [
+      "export_manifest.json",
+      "background_manifest.json",
+      "background_skybox.webp"
+    ]
+  },
+  "failed_submit_attribution": {
+    "job_created": false,
+    "reason": "SageMaker environment value over 512 characters before the fixed retry shortened TARGETED_QUALITY_BLOCKERS"
+  },
+  "new_no_spend_guardrails": [
+    "run_tiled_3dgs_benchmark now blocks submitted stages with SageMaker env values over 512 characters",
+    "run_tiled_3dgs_benchmark now blocks submitted leaf stages whose TRAINING_MAX_OUTPUT_GAUSSIANS is below the emitted post-leaf hard minimum"
+  ],
+  "next_required_action": "No merge/review/full14/LOD/viewer smoke. Build a new no-spend R0 objective with tile-specific density caps that cannot undercut tile_04 hard_min, and fix or relax the leaf background artifact requirement before any paid retry."
+}

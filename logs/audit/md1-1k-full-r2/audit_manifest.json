@@ -16716,5 +16716,25 @@
     ],
     "spend_estimated_usd": 0,
     "next": "Wait for training idle and processing to remain idle, rerun readiness, then at most one R0 tile_04 visual-sentinel proof."
+  },
+  "md1_r0_visual_sentinel_leaf_proof_blocked_20260514": {
+    "timestamp": "2026-05-14T03:20:57Z",
+    "summary": "Exact-head 58859cd is green on CDK Deploy 25838710025 and AWS was idle before submit. Rerun readiness allowed one bounded R0 tile_04 leaf-only proof. The first submit failed before job creation due a SageMaker env value over 512 chars; the fixed shortened-env proof md1-r0vissent-fixed-1778727581-tile-04 completed in 858 billable seconds/about $0.175 but failed post-leaf preflight/gate: 511000 splats, 0.534x tile_04 reference, below 765021 hard minimum, and missing export/background manifest files. No merge/review/full14/LOD/viewer smoke launched. Added no-spend guards to block env-length and impossible hard-output-cap retries before submit.",
+    "evidence": [
+      "logs/md1-r0-visual-sentinel-exact-head-workflows-idle-head58859-20260514.json",
+      "logs/md1-r0-visual-sentinel-live-training-idle-head58859-20260514.json",
+      "logs/md1-r0-visual-sentinel-live-processing-idle-head58859-20260514.json",
+      "logs/md1-r0-visual-sentinel-leaf-submit-readiness-idle-head58859-20260514.json",
+      "logs/md1-r0-visual-sentinel-leaf-dryrun-head58859-fixed-20260514.json",
+      "logs/md1-r0-visual-sentinel-leaf-submit-readiness-idle-head58859-fixed-20260514.json",
+      "logs/md1-r0-visual-sentinel-leaf-submit-head58859-fixed-20260514.json",
+      "logs/md1-r0-visual-sentinel-20260514-fixed-tile_04-leaf-preflight.json",
+      "logs/md1-r0-visual-sentinel-20260514-fixed-tile_04-leaf-gate.json",
+      "logs/md1-r0vissent-fixed-1778727581-tile-04-completed-describe-20260514.json",
+      "logs/md1-r0vissent-fixed-1778727581-tile-04-tags-20260514.json",
+      "logs/md1-r0-visual-sentinel-fixed-leaf-attribution-20260514.json"
+    ],
+    "spend_estimated_usd": 0.175,
+    "next": "No-spend redesign only: tile_04-specific density cap above hard_min or no cap, env values under 512 chars, and leaf background/export artifact requirement fixed or explicitly relaxed before any paid retry."
   }
 }
