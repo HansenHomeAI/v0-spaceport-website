@@ -255,8 +255,10 @@ def scale_camera_line(line: str, image_max_width: int) -> tuple[str, float]:
         return line, 1.0
 
     scale = image_max_width / width
-    tokens[2] = str(max(1, int(round(width * scale))))
-    tokens[3] = str(max(1, int(round(height * scale))))
+    tokens[2] = str(image_max_width)
+    # Pillow thumbnail floors fractional output dimensions. Match the copied
+    # image size exactly so NerfStudio camera/image assertions stay valid.
+    tokens[3] = str(max(1, int(height * scale)))
 
     indexes = camera_param_scale_indexes(tokens[1])
     params = tokens[4:]

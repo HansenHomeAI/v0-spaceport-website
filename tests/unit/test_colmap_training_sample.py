@@ -117,6 +117,14 @@ class ColmapTrainingSampleTest(unittest.TestCase):
         self.assertEqual(scale, 0.25)
         self.assertEqual(scaled, "1 SIMPLE_RADIAL 1000 562 757.905866444 500 281.25 0.0011838781410337805")
 
+    def test_image_max_width_matches_pillow_fractional_height(self):
+        line = "1 SIMPLE_RADIAL 4000 2250 3031.6234657742921 2000 1125 0.0011838781410337805"
+
+        scaled, scale = sample.scale_camera_line(line, 1500)
+
+        self.assertEqual(scale, 0.375)
+        self.assertEqual(scaled.split()[2:4], ["1500", "843"])
+
     def test_prepare_sample_writes_scaled_cameras_without_images(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
