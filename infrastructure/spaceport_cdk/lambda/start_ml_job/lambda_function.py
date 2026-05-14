@@ -204,14 +204,13 @@ def lambda_handler(event, context):
         # Special handling for 3DGS-only tests with existing SfM data
         existing_colmap_uri = body.get('existingColmapUri')  # Optional: use existing SfM data
         
-        # Default to the Splatfacto-W method exposed by the deployed NerfStudio
-        # plugin. The live container currently registers `splatfacto-w`; using
-        # the unavailable `splatfacto-w-light` causes ns-train to reject the job
-        # before training starts.
+        # MD1 is a generic COLMAP/transforms.json scene with one shared camera
+        # model. Use Splatfacto-W's generic light method; the full `splatfacto-w`
+        # command expects Nerf-W phototourism layout.
         default_hyperparameters = {
             "MAX_ITERATIONS": "30000",
             "TARGET_PSNR": "35.0",
-            "MODEL_VARIANT": "splatfacto-w",
+            "MODEL_VARIANT": "splatfacto-w-light",
             "SH_DEGREE": "3",
             "BILATERAL_PROCESSING": "false",
             "LOG_INTERVAL": "100",

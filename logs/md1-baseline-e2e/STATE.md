@@ -816,3 +816,63 @@ Produce a development-based MD1 baseline with:
   - Commit/push this proven 3DGS fix.
   - Watch the exact-head workflows, including the automatic 3DGS container build triggered by the `infrastructure/containers/3dgs/` changes.
   - After the branch-tagged 3DGS image exists, rerun the smallest continuation only: 3DGS from `s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap/` with `MODEL_VARIANT=splatfacto-w`, then validate compression and the final viewer.
+
+### 2026-05-14T13:23:04-0600
+
+- Git before this ledger update:
+  - Branch/head: `agent-113647-md1-baseline-e2e` @ `d5447720e305d7da6a57b337ea905be15dc2a2b0`.
+  - Working tree: dirty with the new 3DGS retry payload/start artifacts plus the proven 3DGS parser fix.
+- GitHub / image build proof for `d5447720`:
+  - `CDK Deploy` run `25878909869` -> `success`.
+  - `Trigger ML Container Build` run `25878909887` -> `success`.
+  - CodeBuild build `spaceport-ml-containers:2ec3bb87-b6ed-478b-a33c-f3d454a599f3` -> `SUCCEEDED`.
+  - Branch ECR image used by the retry: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent113647md1baselinee2e`.
+- 3DGS retry launched from the validated SfM reference:
+  - Payload: `logs/md1-baseline-e2e/md1-e2e-vsfm-w-202605141905-payload.json`.
+  - Start proof: `logs/md1-baseline-e2e/md1-e2e-vsfm-w-202605141905-start.json`.
+  - Execution ARN: `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-w-202605141905`.
+  - Job id/name: `md1-e2e-vsfm-w-202605141905`.
+  - `pipelineStep`: `3dgs`.
+  - `MODEL_VARIANT`: `splatfacto-w`.
+  - `colmapOutputS3Uri`: `s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap/`.
+  - `gaussianOutputS3Uri`: `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-w-202605141905/`.
+  - `compressedOutputS3Uri`: `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-w-202605141905/`.
+- 3DGS retry result:
+  - Step Functions execution ended `SUCCEEDED` only through the pipeline failure notification path; this is not a successful training/compression completion.
+  - SageMaker training job `md1-e2e-vsfm-w-202605141905-3dgs` -> `Failed`.
+  - Training start/end: `2026-05-14T13:06:50-0600` / `2026-05-14T13:18:03-0600`; billable time `673s`.
+  - Failure reason: `AlgorithmError: , exit code: 1`.
+  - 3DGS output prefix empty: `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-w-202605141905/`.
+  - Compression output prefix empty: `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-w-202605141905/`.
+  - Evidence snapshots:
+    - `logs/md1-baseline-e2e/sagemaker-describe-md1-e2e-vsfm-w-202605141905-3dgs-20260514T192304Z.json`.
+    - `logs/md1-baseline-e2e/stepfunctions-describe-md1-e2e-vsfm-w-202605141905-20260514T192304Z.json`.
+    - `logs/md1-baseline-e2e/stepfunctions-history-reverse-md1-e2e-vsfm-w-202605141905-20260514T192304Z.json`.
+    - `logs/md1-baseline-e2e/s3api-3dgs-md1-e2e-vsfm-w-202605141905-20260514T192304Z.json`.
+    - `logs/md1-baseline-e2e/s3api-compressed-md1-e2e-vsfm-w-202605141905-20260514T192304Z.json`.
+    - `logs/md1-baseline-e2e/3dgs-md1-e2e-vsfm-w-202605141905-failure-filtered-20260514T192304Z.txt`.
+- Failure root cause:
+  - `ns-process-data` succeeded and matched all `2157` images from the validated SfM reference.
+  - `transforms.json` validation succeeded with size `1907101` bytes.
+  - The patched retry used `ns-train splatfacto-w ...` without a dataparser suffix.
+  - The full `splatfacto-w` method selected `splatfactow.nerfw_dataparser.NerfW`, which expects a phototourism/Nerf-W layout at `dense/sparse/cameras.bin`.
+  - Exact error: `FileNotFoundError: [Errno 2] No such file or directory: '/tmp/nerfstudio_training/converted_data/dense/sparse/cameras.bin'`.
+  - Independent source check: upstream `KevinXu02/splatfacto-w` README states full `splatfacto-w` expects Nerf-W/phototourism data and points generic datasets to `splatfacto-w-light`.
+- Patch applied for the proven failure:
+  - Reverted the MD1/default 3DGS method to `splatfacto-w-light`.
+  - Added the explicit `nerfstudio-data --eval-mode fraction --train-split-fraction 0.9` dataparser suffix for `splatfacto-w-light`.
+  - Updated the Dockerfile build gate to verify `ns-train splatfacto-w-light --help` so the next branch image proves the command exists before another paid SageMaker retry.
+  - Kept `splatfacto-w` guarded with a warning because it is unsuitable for the generic one-camera MD1 COLMAP/transforms flow.
+- No-spend verification after the patch:
+  - `python3 -m py_compile infrastructure/spaceport_cdk/lambda/start_ml_job/lambda_function.py infrastructure/containers/3dgs/train_nerfstudio_production.py infrastructure/containers/3dgs/export_splatfacto_w_assets.py infrastructure/containers/3dgs/run_export_quality_pass.py infrastructure/containers/3dgs/sky_quality.py infrastructure/containers/3dgs/test_nerfstudio_pipeline.py` -> passed.
+  - `ruby -e 'require "yaml"; YAML.load_file("infrastructure/containers/3dgs/nerfstudio_config.yaml"); puts "yaml ok"'` -> passed.
+  - `python3 -m unittest tests.unit.test_sogs_supersplat_bundle` -> passed.
+  - `git diff --check` -> passed.
+  - `rg -n "splatfacto-w-light|nerfstudio-data|train-split-fraction" ...` verified the default, Docker build gate, and parser suffix.
+- Active job inventory at this poll:
+  - Processing jobs InProgress: none.
+  - Training jobs InProgress: none.
+- Next step:
+  - Commit/push the proven parser-method fix and retry evidence.
+  - Wait for exact-head `CDK Deploy` and `Trigger ML Container Build`.
+  - Only after the branch image proves `splatfacto-w-light`, rerun the smallest stage: 3DGS from `s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap/`.

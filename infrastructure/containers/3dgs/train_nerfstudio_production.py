@@ -4,7 +4,7 @@ NerfStudio-based 3D Gaussian Splatting Training Script
 ======================================================
 
 Production implementation of Vincent Woo's Sutro Tower methodology.
-Uses NerfStudio with splatfacto-w for high-quality foreground splats
+Uses NerfStudio with splatfacto-w-light for high-quality foreground splats
 plus a lightweight learned background that we bake into the final viewer
 skybox.
 
@@ -101,7 +101,7 @@ class NerfStudioTrainer:
         # Apply Step Functions parameter overrides
         self.apply_step_functions_params()
         
-        logger.info("🚀 NerfStudio Trainer initialized (Spaceport splatfacto-w)")
+        logger.info("🚀 NerfStudio Trainer initialized (Spaceport splatfacto-w-light)")
         logger.info(f"📁 Input directory: {self.input_dir}")
         logger.info(f"📁 Output directory: {self.output_dir}")
         logger.info(f"📁 Temp directory: {self.temp_dir}")
@@ -557,15 +557,15 @@ class NerfStudioTrainer:
             return False
     
     def run_nerfstudio_training(self) -> bool:
-        """Execute NerfStudio training with splatfacto-w and background export support"""
-        logger.info("🔥 Starting NerfStudio training (splatfacto-w)")
+        """Execute NerfStudio training with splatfacto-w-light and background export support"""
+        logger.info("🔥 Starting NerfStudio training (splatfacto-w-light)")
         logger.info("=" * 60)
         
         # Get configuration parameters
         model_config = self.config.get('model', {})
         training_config = self.config.get('training', {})
         
-        model_variant = model_config.get('variant', 'splatfacto-w')
+        model_variant = model_config.get('variant', 'splatfacto-w-light')
         max_iterations = training_config.get('max_iterations', 30000)
         sh_degree = model_config.get('sh_degree', 3)
         bilateral_processing = model_config.get('bilateral_processing', False)
@@ -636,6 +636,19 @@ class NerfStudioTrainer:
         ])
         logger.info("🖥️  A10G GPU optimization enabled (max-gauss-ratio: 10.0)")
         logger.info("🪟 Viewer disabled for headless SageMaker training (--vis tensorboard)")
+
+        if model_variant == "splatfacto-w-light":
+            cmd.extend([
+                "nerfstudio-data",
+                "--eval-mode", "fraction",
+                "--train-split-fraction", str(training_config.get('train_split_fraction', 0.9)),
+            ])
+            logger.info("📄 NerfStudio parser: nerfstudio-data with fraction eval split")
+        elif model_variant == "splatfacto-w":
+            logger.warning(
+                "⚠️  splatfacto-w uses the Nerf-W phototourism dataparser; "
+                "use splatfacto-w-light for generic COLMAP/transforms.json scenes."
+            )
         
         logger.info("🚀 Executing NerfStudio training command:")
         logger.info(f"   {' '.join(cmd)}")
@@ -816,7 +829,7 @@ class NerfStudioTrainer:
             config_file = max(config_files, key=lambda x: x.stat().st_mtime)
         logger.info(f"📄 Using config: {config_file}")
         
-        model_variant = self.config.get('model', {}).get('variant', 'splatfacto-w')
+        model_variant = self.config.get('model', {}).get('variant', 'splatfacto-w-light')
         skybox_config = self.config.get('output', {}).get('background_skybox', {})
         background_selection = self.resolve_background_selection()
 
@@ -890,9 +903,9 @@ class NerfStudioTrainer:
     def generate_training_metadata(self) -> Dict[str, Any]:
         """Generate comprehensive training metadata"""
         metadata = {
-            'training_methodology': 'Spaceport splatfacto-w skybox export',
+            'training_methodology': 'Spaceport splatfacto-w-light skybox export',
             'framework': 'NerfStudio',
-            'model_variant': self.config.get('model', {}).get('variant', 'splatfacto-w'),
+            'model_variant': self.config.get('model', {}).get('variant', 'splatfacto-w-light'),
             'bilateral_guided_processing': self.config.get('model', {}).get('bilateral_processing', False),
             'sh_degree': self.config.get('model', {}).get('sh_degree', 3),
             'enable_bg_model': self.config.get('model', {}).get('enable_bg_model', True),
@@ -973,7 +986,7 @@ class NerfStudioTrainer:
             
             logger.info("=" * 80)
             logger.info("🎉 NERFSTUDIO TRAINING PIPELINE COMPLETED SUCCESSFULLY!")
-            logger.info("✅ splatfacto-w foreground training completed")
+            logger.info("✅ splatfacto-w-light foreground training completed")
             logger.info("✅ SOGS-compatible PLY output generated")
             logger.info("✅ Background skybox baked for the viewer")
             logger.info("✅ Production-ready for PlayCanvas deployment")
@@ -999,7 +1012,7 @@ def main():
     
     try:
         logger.info("🚀 NerfStudio Production Training Started")
-        logger.info("📦 Framework: NerfStudio with splatfacto-w")
+        logger.info("📦 Framework: NerfStudio with splatfacto-w-light")
         logger.info("🎯 Goal: high-quality 3D splats with full sky background coverage")
         
         # Initialize trainer

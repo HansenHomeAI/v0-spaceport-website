@@ -1,0 +1,96 @@
+1:✅ sitecustomize: filtered deprecated CUDA arch flags (TORCH_CUDA_ARCH_LIST=8.0 8.6)
+2:✅ sitecustomize: patched nerfstudio PIL conversion
+5:✅ TORCH_CUDA_ARCH_LIST=8.0 8.6
+6:✅ CUDAARCHS=70;80;86
+7:✅ LD_LIBRARY_PATH=/opt/conda/lib/python3.10/site-packages/cv2/../../lib64:/usr/local/cuda/lib64:/usr/local/cuda/lib
+8:✅ LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib
+9:2026-05-14 19:11:22,657 - INFO - 🚀 NerfStudio Production Training Started
+10:2026-05-14 19:11:22,657 - INFO - 📦 Framework: NerfStudio with splatfacto-w
+17:2026-05-14 19:11:22,667 - INFO - 📝 Override model.variant = splatfacto-w (from MODEL_VARIANT)
+45:2026-05-14 19:11:22,669 - INFO - 🚀 NerfStudio Trainer initialized (Spaceport splatfacto-w)
+48:2026-05-14 19:11:22,669 - INFO - 📁 Temp directory: /tmp/nerfstudio_training
+49:2026-05-14 19:11:22,669 - INFO - 🚀 Starting complete NerfStudio training pipeline
+52:2026-05-14 19:11:22,670 - INFO - 🔍 Validating COLMAP data format for NerfStudio...
+53:2026-05-14 19:11:23,904 - INFO - 📊 COLMAP Data Validation:
+54:2026-05-14 19:11:23,904 - INFO -    Cameras: 1
+55:2026-05-14 19:11:23,904 - INFO -    Images registered: 2157
+57:2026-05-14 19:11:23,904 - INFO -    3D points: 1312804
+92:2026-05-14 19:11:24,841 - INFO - ✅ COLMAP data validation passed - converting to NerfStudio format
+93:2026-05-14 19:11:24,841 - INFO - 🔄 Converting COLMAP data to NerfStudio format...
+94:2026-05-14 19:11:24,842 - INFO - 🔄 Converting COLMAP TXT to BIN (required by ns-process-data)...
+96:2026-05-14 19:11:24,842 - INFO -    BIN output: /tmp/nerfstudio_training/colmap_bin/0
+97:2026-05-14 19:11:24,842 - INFO - 🚀 Converting text to binary: colmap model_converter --input_path /opt/ml/input/data/training/sparse/0 --output_path /tmp/nerfstudio_training/colmap_bin/0 --output_type BIN
+103:2026-05-14 19:11:41,461 - INFO -    ✅ cameras.bin: 64 bytes
+106:2026-05-14 19:11:41,462 - INFO - ✅ COLMAP TXT→BIN conversion completed successfully
+107:2026-05-14 19:11:41,462 - INFO - 🚀 Executing COLMAP conversion command:
+108:2026-05-14 19:11:41,462 - INFO -    ns-process-data images --data /opt/ml/input/data/training/images --output-dir /tmp/nerfstudio_training/converted_data --skip-colmap --colmap-model-path /tmp/nerfstudio_training/colmap_bin/0
+109:2026-05-14 19:17:30,338 - INFO - 📊 ns-process-data STDOUT:
+110:2026-05-14 19:17:30,338 - INFO -    STDOUT: ✅ sitecustomize: filtered deprecated CUDA arch flags (TORCH_CUDA_ARCH_LIST=8.0 8.6)
+111:2026-05-14 19:17:30,338 - INFO -    STDOUT: ✅ sitecustomize: patched nerfstudio PIL conversion
+113:2026-05-14 19:17:30,338 - INFO -    STDOUT: [19:17:29] 🎉 🎉 🎉 All DONE 🎉 🎉 🎉                                                images_to_nerfstudio_dataset.py:135
+114:2026-05-14 19:17:30,338 - INFO -    STDOUT:            Starting with 2157 images                                                 images_to_nerfstudio_dataset.py:138
+115:2026-05-14 19:17:30,338 - INFO -    STDOUT:            Colmap matched 2157 images                                                images_to_nerfstudio_dataset.py:138
+116:2026-05-14 19:17:30,338 - INFO -    STDOUT:            COLMAP found poses for all images, CONGRATS!                              images_to_nerfstudio_dataset.py:138
+117:2026-05-14 19:17:30,338 - INFO - 📊 ns-process-data STDERR:
+119:2026-05-14 19:17:30,338 - INFO - 📁 Updated input directory for validation: /tmp/nerfstudio_training/converted_data
+120:2026-05-14 19:17:30,339 - INFO - 🔍 COMPREHENSIVE transforms.json validation...
+121:2026-05-14 19:17:30,432 - INFO - 📄 transforms.json file size: 1907101 bytes
+163:2026-05-14 19:17:30,435 - INFO - 📊 VALIDATION SUMMARY:
+167:2026-05-14 19:17:30,435 - INFO - ✅ transforms.json validation passed
+169:2026-05-14 19:17:30,436 - INFO - 📁 Final input directory: /tmp/nerfstudio_training/converted_data
+170:2026-05-14 19:17:30,456 - INFO - 🔥 Starting NerfStudio training (splatfacto-w)
+173:2026-05-14 19:17:30,457 - INFO -    Model: splatfacto-w
+186:2026-05-14 19:17:30,457 - INFO -    Dataparser: transforms.json (via ns-process-data conversion)
+190:2026-05-14 19:17:30,458 - INFO - 🚀 Executing NerfStudio training command:
+191:2026-05-14 19:17:30,458 - INFO -    ns-train splatfacto-w --data /tmp/nerfstudio_training/converted_data --output-dir /tmp/nerfstudio_training --vis tensorboard --max_num_iterations 30000 --pipeline.model.sh_degree 3 --logging.steps_per_log 100 --pipeline.model.rasterize_mode classic --pipeline.model.use_scale_regularization True --pipeline.model.cull_alpha_thresh 0.12 --pipeline.model.cull_scale_thresh 0.35 --pipeline.model.enable_bg_model True --pipeline.model.enable_alpha_loss True --pipeline.model.enable_robust_mask True --pipeline.model.bg_sh_degree 8 --pipeline.model.appearance_embed_dim 64 --pipeline.model.never_mask_upper 0.4 --pipeline.model.max-gauss-ratio 10.0
+194:2026-05-14 19:17:30,458 - INFO - 🐍 PYTHONPATH for ns-train: /opt/ml/code:/opt/ml/code:
+195:2026-05-14 19:17:44,854 - ERROR - ❌ NerfStudio training failed:
+196:2026-05-14 19:17:44,855 - ERROR - Exit code: 1
+197:2026-05-14 19:17:44,855 - ERROR - STDOUT: ✅ sitecustomize: filtered deprecated CUDA arch flags (TORCH_CUDA_ARCH_LIST=8.0 8.6)
+198:✅ sitecustomize: patched nerfstudio PIL conversion
+202:    _target=<class 'nerfstudio.engine.trainer.Trainer'>,
+203:    output_dir=PosixPath('/tmp/nerfstudio_training'),
+204:    method_name='splatfacto-w',
+206:    project_name='nerfstudio-project',
+208:    machine=MachineConfig(seed=42, num_devices=1, num_machines=1, machine_rank=0, dist_url='auto', device_type='cuda'),
+214:            _target=<class 'nerfstudio.utils.writer.LocalWriter'>,
+243:        _target=<class 'nerfstudio.pipelines.base_pipeline.VanillaPipeline'>,
+244:        datamanager=SplatfactoWDatamanagerConfig(
+245:            _target=<class 'splatfactow.splatfactow_datamanager.SplatfactoWDatamanager'>,
+246:            data=PosixPath('/tmp/nerfstudio_training/converted_data'),
+250:                _target=<class 'splatfactow.nerfw_dataparser.NerfW'>,
+273:        model=SplatfactoWModelConfig(
+274:            _target=<class 'splatfactow.splatfactow_model.SplatfactoWModel'>,
+305:                _target=<class 'nerfstudio.cameras.camera_optimizers.CameraOptimizer'>,
+343:                _target=<class 'nerfstudio.engine.schedulers.ExponentialDecayScheduler'>,
+360:                _target=<class 'nerfstudio.engine.schedulers.ExponentialDecayScheduler'>,
+407:                _target=<class 'nerfstudio.engine.schedulers.ExponentialDecayScheduler'>,
+424:                _target=<class 'nerfstudio.engine.schedulers.ExponentialDecayScheduler'>,
+441:                _target=<class 'nerfstudio.engine.schedulers.ExponentialDecayScheduler'>,
+458:                _target=<class 'nerfstudio.engine.schedulers.ExponentialDecayScheduler'>,
+475:                _target=<class 'nerfstudio.engine.schedulers.ExponentialDecayScheduler'>,
+492:                _target=<class 'nerfstudio.engine.schedulers.ExponentialDecayScheduler'>,
+509:                _target=<class 'nerfstudio.engine.schedulers.ExponentialDecayScheduler'>,
+526:                _target=<class 'nerfstudio.engine.schedulers.ExponentialDecayScheduler'>,
+536:    data=PosixPath('/tmp/nerfstudio_training/converted_data'),
+538:    relative_model_dir=PosixPath('nerfstudio_models'),
+558:           /tmp/nerfstudio_training/converted_data/splatfacto-w/2026-05-14_191743/config.yml                            
+560:           /tmp/nerfstudio_training/converted_data/splatfacto-w/2026-05-14_191743/nerfstudio_models                     
+561:2026-05-14 19:17:44,855 - ERROR - STDERR: Traceback (most recent call last):
+562:  File "/opt/conda/bin/ns-train", line 8, in <module>
+564:  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/scripts/train.py", line 273, in entrypoint
+566:  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/scripts/train.py", line 258, in main
+568:  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/scripts/train.py", line 190, in launch
+570:  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/scripts/train.py", line 100, in train_loop
+572:  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/engine/trainer.py", line 158, in setup
+574:  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/configs/base_config.py", line 53, in setup
+576:  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/pipelines/base_pipeline.py", line 254, in __init__
+578:  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/configs/base_config.py", line 53, in setup
+580:  File "/opt/conda/lib/python3.10/site-packages/splatfactow/splatfactow_datamanager.py", line 133, in __init__
+582:  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/data/dataparsers/base_dataparser.py", line 165, in get_dataparser_outputs
+584:  File "/opt/conda/lib/python3.10/site-packages/splatfactow/nerfw_dataparser.py", line 100, in _generate_dataparser_outputs
+585:    cams = read_cameras_binary(self.data / "dense/sparse/cameras.bin")
+586:  File "/opt/conda/lib/python3.10/site-packages/nerfstudio/data/utils/colmap_parsing_utils.py", line 134, in read_cameras_binary
+588:FileNotFoundError: [Errno 2] No such file or directory: '/tmp/nerfstudio_training/converted_data/dense/sparse/cameras.bin'
+589:2026-05-14 19:17:44,855 - ERROR - ❌ NerfStudio training failed
+590:2026-05-14 19:17:44,855 - ERROR - ❌ Training pipeline failed

@@ -4,7 +4,7 @@
 
 # Model Configuration
 model:
-  variant: "splatfacto-w"            # Installed Splatfacto-W command with background support
+  variant: "splatfacto-w-light"      # Generic Splatfacto-W command for COLMAP/transforms.json scenes
   sh_degree: 3                       # Foreground SH degree
   bilateral_processing: false        # Not used by Splatfacto-W
   max_num_gaussians: 1500000         # Conservative limit for A10G GPU (16GB VRAM)
@@ -117,7 +117,7 @@ licensing:
   license: "Apache 2.0"
   commercial_use: true
   attribution_required: true
-  methodology: "Spaceport splatfacto-w skybox export"
+  methodology: "Spaceport splatfacto-w-light skybox export"
 
 # Version and Compatibility
 version:

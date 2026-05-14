@@ -188,7 +188,7 @@ class NerfStudioPipelineTest:
         
         # Check Vincent Woo's key parameters
         checks = [
-            (config.get('model', {}).get('variant') == 'splatfacto-w', "Model variant should be splatfacto-w"),
+            (config.get('model', {}).get('variant') == 'splatfacto-w-light', "Model variant should be splatfacto-w-light"),
             (config.get('model', {}).get('sh_degree') == 3, "SH degree should be 3"),
             (config.get('model', {}).get('enable_bg_model') == True, "Background model should be enabled"),
             (config.get('model', {}).get('enable_alpha_loss') == True, "Alpha loss should be enabled"),
