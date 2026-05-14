@@ -96,7 +96,9 @@
       "FLOATER_PRUNING_TOP_VIEW_FRACTION": "0.45",
       "TRAINING_STEPS_PER_SAVE": "1500",
       "BOUNDARY_FROZEN_CAMERAS": "DJI_0067.JPG,DJI_0068.JPG,DJI_0069.JPG,DJI_0070.JPG",
-      "HORIZON_FROZEN_CAMERAS": "DJI_0066.JPG,DJI_0073.JPG,DJI_0146.JPG,DJI_0147.JPG"
+      "HORIZON_FROZEN_CAMERAS": "DJI_0066.JPG,DJI_0073.JPG,DJI_0146.JPG,DJI_0147.JPG",
+      "CONTEXT_SUPPORT_TILE_IDS": "tile_10,tile_13,tile_01",
+      "TARGETED_QUALITY_BLOCKERS": "ai_visual_color_shift_defect,ai_visual_geometry_alignment_defect,ai_visual_horizon_continuity_defect,ai_visual_texture_smearing_defect,boundary_no_required_improvement,boundary_v18_median_lpips_regression,horizon_psnr_regression,horizon_ssim_regression,horizon_lpips_regression,horizon_sky_score_regression,near_detail_ssim_regression,leaf_required_paths_missing,splat_vertex_count_below_reference_ratio,splat_vertex_count_below_hard_min"
     },
     "training_config": {
       "appearance_embed_dim": 64,
@@ -200,7 +202,7 @@
       6000
     ],
     "checkpoint_s3_uris": {
-      "tile_04": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0-visual-sentinel-v3-density-restored-20260514/checkpoints/md1-r0vissent-v3density-1778785946-tile-04"
+      "tile_04": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0-visual-sentinel-v3-density-restored-20260514/checkpoints/md1-r0vissent-v3density-1778786645-tile-04"
     },
     "sentinel_cameras": [
       "DJI_0067.JPG",

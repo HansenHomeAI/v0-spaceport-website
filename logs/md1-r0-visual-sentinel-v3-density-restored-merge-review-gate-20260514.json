@@ -1,8 +1,7 @@
 {
-  "checked_at": "2026-05-14T19:15:15.079708+00:00",
+  "checked_at": "2026-05-14T19:25:53.328758+00:00",
   "decision": "merge_review_blocked",
   "block_reasons": [
-    "post_leaf_gate_missing:tile_04",
     "leaf_gate_summary_missing:tile_04"
   ],
   "required_tile_ids": [
@@ -31,31 +30,21 @@
     "ai_visual_color_shift_defect",
     "ai_visual_geometry_alignment_defect",
     "ai_visual_horizon_continuity_defect",
-    "ai_visual_review_blocking_defects",
-    "ai_visual_review_blocking_view_findings",
-    "ai_visual_review_status_block",
     "ai_visual_texture_smearing_defect",
     "boundary_no_required_improvement",
     "boundary_v18_median_lpips_regression",
-    "boundary_v18_single_camera_lpips_regression",
-    "horizon_lpips_regression",
     "horizon_psnr_regression",
-    "horizon_sky_score_regression",
     "horizon_ssim_regression",
-    "horizon_v18_median_lpips_regression",
-    "horizon_v18_median_psnr_regression",
-    "horizon_v18_median_ssim_regression",
-    "horizon_v18_single_camera_lpips_regression",
-    "horizon_v18_single_camera_psnr_regression",
-    "horizon_v18_sky_score_regression",
-    "leaf_required_paths_missing",
+    "horizon_lpips_regression",
+    "horizon_sky_score_regression",
     "near_detail_ssim_regression",
-    "near_detail_v18_median_ssim_regression",
-    "near_detail_v18_single_camera_lpips_regression",
-    "splat_vertex_count_below_hard_min",
-    "splat_vertex_count_below_reference_ratio"
+    "leaf_required_paths_missing",
+    "splat_vertex_count_below_reference_ratio",
+    "splat_vertex_count_below_hard_min"
   ],
-  "post_leaf_preflight_gate_tile_ids": [],
+  "post_leaf_preflight_gate_tile_ids": [
+    "tile_04"
+  ],
   "leaf_gate_summary_tile_ids": [],
   "passing_prior_or_current_leaf_tile_ids": [],
   "submitted_jobs": [],
