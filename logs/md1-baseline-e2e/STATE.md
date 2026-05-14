@@ -1,6 +1,6 @@
 # MD1 Baseline E2E State
 
-updated: 2026-05-14T08:52:41-0600
+updated: 2026-05-14T09:14:00-0600
 branch: agent-113647-md1-baseline-e2e
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -27,7 +27,7 @@ Produce a development-based MD1 baseline with:
 - Development ML bucket: `spaceport-ml-processing-staging`
 - Active external canary at setup: `md1-sample5-cpu-r8-1778692401`; still `InProgress` with `TrainingTimeInSeconds=1938` at 2026-05-13T11:47:00-06:00.
 - That canary is owned by the separate SFM reality-check lineage (`CODE_HEAD=e0ed962f...`) and must not be stopped or counted as this run.
-- Automation correction: `md1-baseline-e2e-monitor` is now `PAUSED` because it was a standalone `cron` automation with no `target_thread_id`, which caused a new chat card on each run. Do not re-enable this standalone cron unless the user explicitly accepts that behavior; continue from this chat plus this `STATE.md` ledger until a thread-bound heartbeat automation is available.
+- Automation correction: `md1-baseline-e2e-monitor` is now a `heartbeat` automation targeting this thread (`019e2268-9fed-7593-9318-a4e8d1045849`) instead of a standalone `cron`, so follow-up monitor runs should continue here rather than opening new chat cards.
 - Branch preview uses shared staging ML outputs from `SpaceportMLPipelineStagingStack`; Pages output resolution now allows that fallback stack when it is in `UPDATE_ROLLBACK_COMPLETE` but still serving required outputs.
 
 ## Completed In This Branch
@@ -671,3 +671,17 @@ Produce a development-based MD1 baseline with:
   - mobile first frame `827.7ms`, chunk meta requests `17`.
   - screenshots: `logs/md1-production-viewer-desktop.png`, `logs/md1-production-viewer-mobile.png`.
   - manual visual inspection: screenshots show only the MD1 viewer panel and splat canvas; the previous global header/footer feedback overlay is gone.
+
+### 2026-05-14T09:14:00-0600
+
+- Automation correction completed:
+  - `/Users/gabrielhansen/.codex/automations/md1-baseline-e2e-monitor/automation.toml` changed from `kind = "cron"` to `kind = "heartbeat"`.
+  - `status = "ACTIVE"`, `rrule = "FREQ=MINUTELY;INTERVAL=30"`, `target_thread_id = "019e2268-9fed-7593-9318-a4e8d1045849"`.
+  - `codex_app.automation_update` `mode=view` rendered the automation card after the change.
+  - Expected behavior: future automation runs append into this thread instead of making new chat cards.
+- Latest canonical SfM status before this ledger update:
+  - Step Functions execution `execution-md1-baseline-e2e-20260514032448` -> `RUNNING`.
+  - SageMaker processing job `md1-baseline-e2e-20260514032448-sfm` -> `InProgress`.
+  - S3 output prefix still empty (`S3UploadMode=EndOfJob`).
+  - Latest observed heartbeat at 2026-05-14T09:08:08-0600: `elapsed=33399s idle=4800s`.
+  - External active training job observed: `md1-full2157-ds4-r24-1778769804`; do not stop or count as this run.
