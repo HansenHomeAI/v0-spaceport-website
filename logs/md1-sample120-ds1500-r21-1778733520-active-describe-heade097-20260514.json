@@ -1,0 +1,111 @@
+{
+    "TrainingJobName": "md1-sample120-ds1500-r21-1778733520",
+    "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-sample120-ds1500-r21-1778733520",
+    "TrainingJobStatus": "InProgress",
+    "SecondaryStatus": "Training",
+    "AlgorithmSpecification": {
+        "TrainingImage": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent73948216sfmproductionspine",
+        "TrainingInputMode": "File",
+        "EnableSageMakerMetricsTimeSeries": false
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "InputDataConfig": [
+        {
+            "ChannelName": "training",
+            "DataSource": {
+                "S3DataSource": {
+                    "S3DataType": "S3Prefix",
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/merged-trainable-sample120-ds1500-r19/colmap",
+                    "S3DataDistributionType": "FullyReplicated"
+                }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None"
+        }
+    ],
+    "OutputDataConfig": {
+        "KmsKeyId": "",
+        "S3OutputPath": "s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-sample120-ds1500-r21-quality-20260514T043837Z/",
+        "CompressionType": "GZIP"
+    },
+    "ResourceConfig": {
+        "InstanceType": "ml.g5.2xlarge",
+        "InstanceCount": 1,
+        "VolumeSizeInGB": 80
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 28800
+    },
+    "CreationTime": "2026-05-13T22:38:41.123000-06:00",
+    "TrainingStartTime": "2026-05-13T22:39:27.552000-06:00",
+    "LastModifiedTime": "2026-05-13T22:43:29.861000-06:00",
+    "SecondaryStatusTransitions": [
+        {
+            "Status": "Starting",
+            "StartTime": "2026-05-13T22:38:41.123000-06:00",
+            "EndTime": "2026-05-13T22:38:41.538000-06:00",
+            "StatusMessage": "Starting the training job"
+        },
+        {
+            "Status": "Pending",
+            "StartTime": "2026-05-13T22:38:41.538000-06:00",
+            "EndTime": "2026-05-13T22:39:27.552000-06:00",
+            "StatusMessage": "Preparing the instances for training"
+        },
+        {
+            "Status": "Downloading",
+            "StartTime": "2026-05-13T22:39:27.552000-06:00",
+            "EndTime": "2026-05-13T22:43:29.830000-06:00",
+            "StatusMessage": "Downloading the training image"
+        },
+        {
+            "Status": "Training",
+            "StartTime": "2026-05-13T22:43:29.830000-06:00",
+            "StatusMessage": "Training image download completed. Training in progress."
+        }
+    ],
+    "EnableNetworkIsolation": false,
+    "EnableInterContainerTrafficEncryption": false,
+    "EnableManagedSpotTraining": false,
+    "TrainingTimeInSeconds": 1678,
+    "ProfilingStatus": "Disabled",
+    "Environment": {
+        "AWS_DEFAULT_REGION": "us-west-2",
+        "BILATERAL_PROCESSING": "true",
+        "CODE_HEAD": "b97239e69498412f8391a4ba31216bf268f46385",
+        "COMMERCIAL_LICENSE": "true",
+        "CUDA_HOME": "/usr/local/cuda",
+        "ECR_DIGEST": "sha256:45ac356881ad89d88b1a6aa19581c0d86d08b42fcc0b2fafbaba6760243cd964",
+        "FRAMEWORK": "nerfstudio",
+        "LD_LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+        "LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+        "LICENSE": "apache_2_0",
+        "LOG_INTERVAL": "10",
+        "MAX_ITERATIONS": "16384",
+        "MAX_NUM_GAUSSIANS": "500000",
+        "MEMORY_OPTIMIZATION": "true",
+        "METHODOLOGY": "vincent_woo_sutro_tower",
+        "MODEL_VARIANT": "splatfacto",
+        "NS_CACHE_IMAGES": "cpu",
+        "NS_CULL_ALPHA_THRESH": "0.05",
+        "NS_DENSIFY_GRAD_THRESH": "0.0005",
+        "NS_EVAL_TIMEOUT_SEC": "1800",
+        "NS_MAX_GAUSS_RATIO": "16",
+        "NS_MAX_THREAD_WORKERS": "8",
+        "NS_NUM_DOWNSCALES": "1",
+        "NS_STOP_SPLIT_AT": "16384",
+        "NS_TRAIN_SPLIT_FRACTION": "0.8",
+        "NS_USE_SCALE_REGULARIZATION": "true",
+        "OUTPUT_FORMAT": "ply",
+        "PYTHONUNBUFFERED": "1",
+        "QUALITY_EVAL_REQUIRED": "true",
+        "RELAUNCH_REASON": "r20-16k-training-budget-improved-metrics-but-retained-ai-visual-softness-sky-haze-foreground-smear-isolate-splatfacto-gaussian-density-culling-config-before-full-md1-spend",
+        "RUN_HELDOUT_EVAL": "true",
+        "SAGEMAKER_PROGRAM": "train.py",
+        "SH_DEGREE": "3",
+        "SOGS_COMPATIBLE": "true",
+        "TARGET_PSNR": "22.0",
+        "TORCH_CUDA_ARCH_LIST": "8.0 8.6",
+        "VALIDATION_RUN": "md1-sample120-ds1500-r21-model-config-canary"
+    }
+}

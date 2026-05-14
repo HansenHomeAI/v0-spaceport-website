@@ -589,9 +589,9 @@
       ]
     }
   ],
-  "current_branch_head": "6b82e877587c73a85addc27a1b85ca30fd482e03 pushed; exact-head CDK Deploy 25840592303 green",
-  "current_exact_head_gate_status": "exact-head 6b82e877587c73a85addc27a1b85ca30fd482e03 green on CDK Deploy 25840592303",
-  "current_live_compute_status": "AWS not idle: source-attributed SFM training md1-sample120-ds1500-r20-1778727562 InProgress/Training and baseline processing md1-baseline-e2e-20260514032448-sfm InProgress; do not stop jobs owned by other automations.",
+  "current_branch_head": "e09728d094ee68f724b24afb4288e21c78d9d288 pushed; exact-head CDK Deploy 25840813840 green",
+  "current_exact_head_gate_status": "exact-head e09728d094ee68f724b24afb4288e21c78d9d288 green on CDK Deploy 25840813840",
+  "current_live_compute_status": "AWS not idle: source-attributed SFM r20 training md1-sample120-ds1500-r20-1778727562 completed in 3964 billable seconds, but source-attributed SFM r21 training md1-sample120-ds1500-r21-1778733520 is InProgress/Training and baseline processing md1-baseline-e2e-20260514032448-sfm remains InProgress; do not stop jobs owned by other automations.",
   "current_rung": "R0_visual_sentinel_v2_no_spend_ready_waiting_aws_idle",
   "evidence_events": [
     {
@@ -1000,6 +1000,24 @@
       ],
       "spend_estimated_usd": 0,
       "next": "Wait for AWS idle, then rerun leaf-submit readiness for logs/md1-r0-visual-sentinel-v2-leaf-dryrun-20260514.json on exact green head 6b82e877587c73a85addc27a1b85ca30fd482e03 before any paid proof."
+    },
+    {
+      "timestamp": "2026-05-14T05:12:00Z",
+      "event": "md1_r0_visual_sentinel_v2_active_sfm_r21",
+      "summary": "Exact-head e09728d094ee68f724b24afb4288e21c78d9d288 is green on CDK Deploy 25840813840. Source-attributed SFM r20 completed, but new source-attributed SFM r21 training plus baseline SFM processing are active, so no MD1 paid proof was launched.",
+      "evidence": [
+        "logs/md1-r0-visual-sentinel-v2-exact-head-workflows-heade097-20260514.json",
+        "logs/md1-r0-visual-sentinel-v2-live-training-inprogress-heade097-20260514.json",
+        "logs/md1-r0-visual-sentinel-v2-live-processing-inprogress-heade097-20260514.json",
+        "logs/md1-sample120-ds1500-r20-1778727562-completed-describe-heade097-20260514.json",
+        "logs/md1-sample120-ds1500-r20-1778727562-tags-heade097-20260514.json",
+        "logs/md1-sample120-ds1500-r21-1778733520-active-describe-heade097-20260514.json",
+        "logs/md1-sample120-ds1500-r21-1778733520-tags-heade097-20260514.json",
+        "logs/md1-baseline-e2e-20260514032448-sfm-active-describe-heade097-20260514.json",
+        "logs/md1-baseline-e2e-20260514032448-sfm-tags-heade097-20260514.json"
+      ],
+      "spend_estimated_usd": 0,
+      "next": "Wait for AWS training and processing to be idle, then rerun leaf-submit readiness on the R0 v2 dry-run before any bounded tile_04 proof."
     }
   ],
   "exact_head_gate_status": "exact-head b8f3f800c2a88dfcfd5691f308c2d2348cbcc9c9 green on CDK Deploy 25478133157; Deploy CDK Stacks and CDK Diff skipped by scope detection; no ML Container Build appeared for this non-container status commit; previous container-affecting head 6249a280443438790e5f9d11512fe6714c1a0728 remains green on CDK Deploy 25475213765, Trigger ML Container Build 25475213781, and CodeBuild spaceport-ml-containers:ae9b6cea-6c39-4bf8-a885-f0eb5336ee4a",
@@ -1329,7 +1347,7 @@
     "local_status_update_pending_commit": true,
     "ml_container_build": "not_triggered_for_non_container_status_commit"
   },
-  "last_updated": "2026-05-14T03:56:10Z",
+  "last_updated": "2026-05-14T05:12:00Z",
   "latest_bg10_merge_input_materialization_status": {
     "exact_head_workflows_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-exact-head-workflows-current-20260513.json",
     "input_materialization_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-input-materialization-current-20260513.json",
@@ -1536,7 +1554,7 @@
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
   "latest_boundary_responsible_tile_plan_status": "boundary primary tile_04/tile_10; horizon primary tile_04/tile_01; tile04 dryrun covers tile01/tile10 context support",
-  "latest_cost_control": "No paid retry launched. Future paid work is at most one R0 v2 tile_04 leaf-only proof after AWS idle and leaf-submit readiness rerun on exact green head 6b82e877587c73a85addc27a1b85ca30fd482e03.",
+  "latest_cost_control": "No paid retry launched. Future paid work is at most one R0 v2 tile_04 leaf-only proof after AWS idle and leaf-submit readiness rerun on exact green head e09728d094ee68f724b24afb4288e21c78d9d288.",
   "latest_evidence": {
     "merge_preflight_summary": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260512.json",
     "review_retry_cloudwatch_tail": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-cloudwatch-tail-20260512.txt",
@@ -1673,7 +1691,7 @@
     "status": "merge_retry1_guard_ready_no_paid_retry_launched",
     "v18_review_launched": false
   },
-  "latest_no_spend_evidence": "logs/md1-r0-visual-sentinel-v2-objective-gate-20260514.json allowed; logs/md1-r0-visual-sentinel-v2-leaf-dryrun-20260514.json submitted_jobs=[] estimated $0.4907 under $0.75 with no env/density-cap violations; logs/md1-r0-visual-sentinel-v2-merge-review-gate-20260514.json blocks only on missing tile_04 leaf gate; logs/md1-r0-visual-sentinel-v2-exact-head-workflows-head6b82-20260514.json shows exact-head CDK Deploy 25840592303 green.",
+  "latest_no_spend_evidence": "logs/md1-r0-visual-sentinel-v2-objective-gate-20260514.json allowed; logs/md1-r0-visual-sentinel-v2-leaf-dryrun-20260514.json submitted_jobs=[] estimated $0.4907 under $0.75 with no env/density-cap violations; logs/md1-r0-visual-sentinel-v2-merge-review-gate-20260514.json blocks only on missing tile_04 leaf gate; logs/md1-r0-visual-sentinel-v2-exact-head-workflows-heade097-20260514.json shows exact-head CDK Deploy 25840813840 green; logs/md1-r0-visual-sentinel-v2-live-training-inprogress-heade097-20260514.json and logs/md1-r0-visual-sentinel-v2-live-processing-inprogress-heade097-20260514.json show AWS is still non-idle.",
   "latest_no_spend_implementation": "Objective gate now encodes under-dense leaf failures, missing leaf sidecars, SageMaker env value length limits, and impossible hard output caps below a leaf hard minimum. R0 v2 removes tile_04 hard output cap and uses splatfacto-w-light sidecar export.",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
@@ -10221,7 +10239,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Wait for SageMaker training and processing to be idle, then rerun leaf-submit readiness for logs/md1-r0-visual-sentinel-v2-leaf-dryrun-20260514.json on exact green head 6b82e877587c73a85addc27a1b85ca30fd482e03 before any paid proof.",
+  "next_unblocked_step": "Wait for SageMaker training and processing to be idle, then rerun leaf-submit readiness for logs/md1-r0-visual-sentinel-v2-leaf-dryrun-20260514.json on exact green head e09728d094ee68f724b24afb4288e21c78d9d288 before any paid proof.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -16315,7 +16333,7 @@
     "shared_assigned_fallback_pair_count": 2
   },
   "updated": "2026-05-13T17:19:00Z",
-  "updated_at": "2026-05-14T03:56:10Z",
+  "updated_at": "2026-05-14T05:12:00Z",
   "version": "1.0.0",
   "md1_r0_visual_sentinel_readiness_blocked_active_jobs_20260513": {
     "recorded_at": "2026-05-13T18:33:49Z",
