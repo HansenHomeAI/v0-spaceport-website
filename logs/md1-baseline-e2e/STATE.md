@@ -1,6 +1,6 @@
 # MD1 Baseline E2E State
 
-updated: 2026-05-13T18:06:15-06:00
+updated: 2026-05-13T18:14:17-06:00
 branch: agent-113647-md1-baseline-e2e
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -246,9 +246,9 @@ Produce a development-based MD1 baseline with:
   - Training job observed: `md1-sample120-ds1000-r16-1778713144` -> `InProgress` (`Downloading`)
   - snapshot: `logs/md1-baseline-e2e/sagemaker-training-inprogress-20260513T230204Z.json`
 
-### 2026-05-13T18:06:15-06:00
+### 2026-05-13T18:14:17-06:00
 
-- Git: on `agent-113647-md1-baseline-e2e` @ `bb914ab853fed88ca30c1ea3df21f1cf150fce6d` (no new commits; new logs captured locally; web build revalidated).
+- Git: on `agent-113647-md1-baseline-e2e` @ `b6c7ed95` (committed refreshed monitor state; not pushed).
 - No-spend static checks:
   - `python3 -m unittest tests.unit.test_sogs_supersplat_bundle` -> `OK`
   - `cd web && npm run build` -> `success` (warnings only; no failures)
