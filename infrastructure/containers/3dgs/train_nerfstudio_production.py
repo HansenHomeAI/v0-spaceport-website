@@ -735,6 +735,7 @@ class NerfStudioTrainer:
             cache_images = "cpu"
         max_thread_workers = self.resolve_optional_positive_int("NS_MAX_THREAD_WORKERS", "datamanager max-thread-workers")
         downscale_factor = self.resolve_optional_positive_int("NS_DOWNSCALE_FACTOR", "nerfstudio-data downscale-factor")
+        train_timeout_seconds = self.resolve_training_timeout_seconds(training_config)
         train_split_fraction = self.resolve_train_split_fraction(training_config)
         max_gauss_ratio = self.resolve_optional_float(
             "NS_MAX_GAUSS_RATIO",
@@ -801,11 +802,11 @@ class NerfStudioTrainer:
         
         return_code, tail, timed_out = run_logged_command(
             cmd,
-            timeout_seconds=7200,
+            timeout_seconds=train_timeout_seconds,
             log_prefix="NS_TRAIN: ",
         )
         if timed_out:
-            logger.error("❌ Training timeout (2 hours exceeded)")
+            logger.error(f"❌ Training timeout ({train_timeout_seconds}s exceeded)")
             return False
 
         if return_code != 0:
@@ -836,6 +837,19 @@ class NerfStudioTrainer:
             logger.warning(f"⚠️  Invalid {label} {raw_value!r}; ignoring")
             return None
         return value
+
+    def resolve_training_timeout_seconds(self, training_config: dict[str, Any]) -> int:
+        """Resolve the NerfStudio subprocess timeout.
+
+        SageMaker MaxRuntime bounds the paid job, but full-scene MD1 training can
+        legitimately exceed the old two-hour subprocess cap. Keep a conservative
+        default for canaries while allowing production validation jobs to opt in
+        to a longer bounded timeout.
+        """
+        env_timeout = self.resolve_optional_positive_int("NS_TRAIN_TIMEOUT_SEC", "NerfStudio training timeout")
+        if env_timeout is not None:
+            return env_timeout
+        return int(training_config.get("timeout_seconds", 7200))
 
     def resolve_optional_nonnegative_int(self, env_var: str, label: str) -> Optional[int]:
         """Read an optional non-negative integer training knob from the environment."""

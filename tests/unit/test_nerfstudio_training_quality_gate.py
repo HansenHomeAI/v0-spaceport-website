@@ -266,6 +266,35 @@ class NerfstudioTrainingQualityGateTest(unittest.TestCase):
             self.assertLess(thread_index, parser_index)
             self.assertGreater(downscale_index, parser_index)
 
+    def test_training_timeout_env_override_bounds_full_scene_runs(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config = root / "container_config.yaml"
+            config.write_text("training:\n  max_iterations: 10\n", encoding="utf-8")
+            env = {
+                "SM_MODEL_DIR": str(root / "model"),
+                "SM_CHANNEL_TRAINING": str(root / "input"),
+                "NS_TRAIN_TIMEOUT_SEC": "21600",
+            }
+            with mock.patch.dict(os.environ, env, clear=False):
+                trainer = self.training.NerfStudioTrainer(str(config))
+            trainer.config = {
+                "model": {"variant": "splatfacto", "sh_degree": 3, "bilateral_processing": False},
+                "training": {"max_iterations": 10, "log_interval": 5},
+            }
+
+            captured = {}
+
+            def fake_run_logged_command(cmd, *, timeout_seconds, log_prefix, tail_limit=120):
+                captured["timeout_seconds"] = timeout_seconds
+                return 0, ["done"], False
+
+            with mock.patch.dict(os.environ, env, clear=False):
+                with mock.patch.object(self.training, "run_logged_command", side_effect=fake_run_logged_command):
+                    self.assertTrue(trainer.run_nerfstudio_training())
+
+            self.assertEqual(captured["timeout_seconds"], 21600)
+
     def test_training_exposes_splatfacto_quality_knobs_before_parser(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
