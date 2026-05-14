@@ -1,0 +1,10 @@
+snapshot_utc=20260514T010553Z
+snapshot_local=2026-05-13T19:06:42-0600
+git_branch=agent-113647-md1-baseline-e2e
+git_head=3278c1fd
+aws_account=975050048887
+aws_region=us-west-2
+stepfunctions_status=RUNNING
+sfm_status=InProgress
+s3_colmap_summary=Total Objects: 0    Total Size: 0 Bytes 
+cloudwatch_last_line=2026-05-14T01:05:59 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=17317s idle=540s

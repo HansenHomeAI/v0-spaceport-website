@@ -275,3 +275,27 @@ Produce a development-based MD1 baseline with:
   - Most recent observed heartbeat: `HEARTBEAT elapsed=13669s idle=2760s` at `2026-05-14T00:05:11Z` (global BA still running; long idle expected but monitor for excessive stalls)
 - Snapshot:
   - `logs/md1-baseline-e2e/monitor-md1-baseline-e2e-20260513115645-20260514T000358Z.txt`
+
+### 2026-05-13T19:06:42-0600
+
+- Git: on `agent-113647-md1-baseline-e2e` @ `3278c1fd` (local monitor snapshots captured; not pushed).
+- AWS identity: `aws sts get-caller-identity` -> Account `975050048887` (region `us-west-2`).
+- Step Functions execution: still `RUNNING`
+  - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-baseline-e2e-20260513115645`
+  - describe snapshot: `logs/md1-baseline-e2e/stepfunctions-describe-20260514T010553Z.json`
+  - history snapshot (reverse order): `logs/md1-baseline-e2e/stepfunctions-history-reverse-20260514T010553Z.json`
+  - latest observed state: `WaitForSfM` (wait loop continues)
+- SageMaker (this run):
+  - Processing job: `md1-baseline-e2e-20260513115645-sfm` -> `InProgress` (`S3UploadMode=EndOfJob`)
+  - describe snapshot: `logs/md1-baseline-e2e/sagemaker-describe-md1-baseline-e2e-20260513115645-sfm-20260514T010553Z.json`
+  - Output prefix: `s3://spaceport-ml-processing-staging/colmap/md1-baseline-e2e-20260513115645/` -> `Total Objects: 0` (still empty; upload at end of job)
+  - S3 listing snapshot: `logs/md1-baseline-e2e/s3-colmap-md1-baseline-e2e-20260513115645-20260514T010553Z.txt`
+- SageMaker (active job inventory; do not stop unrelated jobs):
+  - processing InProgress snapshot: `logs/md1-baseline-e2e/sagemaker-list-processing-inprogress-20260514T010553Z.json` (includes this run's SfM job)
+  - training InProgress snapshot: `logs/md1-baseline-e2e/sagemaker-list-training-inprogress-20260514T010553Z.json` (empty at this poll)
+- SfM CloudWatch progress:
+  - Stream: `/aws/sagemaker/ProcessingJobs` / `md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048`
+  - Tail: `logs/md1-baseline-e2e/md1-baseline-e2e-20260513115645-sfm-cloudwatch-tail-20260514T010553Z.txt`
+  - Most recent observed heartbeat: `HEARTBEAT elapsed=17317s idle=540s` at `2026-05-14T01:05:59Z` (still in global BA / retriangulation phase)
+- Snapshot:
+  - `logs/md1-baseline-e2e/monitor-md1-baseline-e2e-20260513115645-20260514T010553Z.txt`
