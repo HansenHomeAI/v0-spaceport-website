@@ -589,9 +589,9 @@
       ]
     }
   ],
-  "current_branch_head": "pushed head d3334788d6fe386eebe4681d71a23b562fbc4ff6 is exact-head green on CDK Deploy 25867322742.",
-  "current_exact_head_gate_status": "exact-head d3334788d6fe386eebe4681d71a23b562fbc4ff6 green on CDK Deploy 25867322742.",
-  "current_live_compute_status": "AWS is still not fully idle. Source-attributed non-MD1/SFM-spine 3DGS training md1-full2157-ds4-r24-1778769804 is InProgress/Training with Environment=agent73948216sfmproductionspine, Component=3DGS, CodeHead=03c0d8c130cf4994b97fd2bc8eb98a9a73757221, Validation=md1-full2157-ds4-r24-production-quality, MaxRuntime=43200, and observed TrainingTimeInSeconds=1237 at refresh. Baseline processing md1-baseline-e2e-20260514032448-sfm remains InProgress with Component=SfM/Environment=staging and MaxRuntime=86400. Do not stop jobs from this or other automations; record source attribution only.",
+  "current_branch_head": "pushed head 6976c172671ef78ca88c067870f19f3a457063f1 is exact-head green on CDK Deploy 25867862350.",
+  "current_exact_head_gate_status": "exact-head 6976c172671ef78ca88c067870f19f3a457063f1 green on CDK Deploy 25867862350.",
+  "current_live_compute_status": "AWS is still not fully idle, but SageMaker training is now idle. Source-attributed non-MD1/SFM-spine 3DGS training md1-full2157-ds4-r24-1778769804 completed in 5576 billable seconds with artifact s3://spaceport-ml-processing-staging/manual-validations/md1-full-3dgs-r24-20260514T1430Z/3dgs-full2157-ds4-r24-quality-20260514T1443Z/md1-full2157-ds4-r24-1778769804/output/model.tar.gz. Baseline processing md1-baseline-e2e-20260514032448-sfm remains InProgress with Component=SfM/Environment=staging and MaxRuntime=86400. Do not stop jobs from this or other automations; record source attribution only.",
   "current_rung": "R0_visual_sentinel_v2_quality_plan_guarded_waiting_aws_idle",
   "evidence_events": [
     {
@@ -1133,9 +1133,17 @@
       "cdk_run_id": 25867322742,
       "evidence_key": "md1_r0_visual_sentinel_v2_executable_early_smoke_headd333_live_hold_20260514",
       "submitted_jobs": []
+    },
+    {
+      "ts": "2026-05-14T16:47:38Z",
+      "event": "md1_r0_visual_sentinel_v2_training_idle_processing_active",
+      "head": "6976c172671ef78ca88c067870f19f3a457063f1",
+      "cdk_run_id": 25867862350,
+      "evidence_key": "md1_r0_visual_sentinel_v2_training_idle_processing_active_head6976_20260514",
+      "submitted_jobs": []
     }
   ],
-  "exact_head_gate_status": "exact-head d3334788d6fe386eebe4681d71a23b562fbc4ff6 green on CDK Deploy 25867322742.",
+  "exact_head_gate_status": "exact-head 6976c172671ef78ca88c067870f19f3a457063f1 green on CDK Deploy 25867862350.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
     "buckets": {
@@ -1450,7 +1458,7 @@
     ],
     "view_bucket_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiled_pipeline/inputs/scaffold/3dgs_view_buckets.json"
   },
-  "last_commit": "d3334788d6fe386eebe4681d71a23b562fbc4ff6",
+  "last_commit": "6976c172671ef78ca88c067870f19f3a457063f1",
   "last_exact_head_gates": {
     "cdk_deploy_conclusion": "success",
     "cdk_deploy_run_id": 25478133157,
@@ -1462,7 +1470,7 @@
     "local_status_update_pending_commit": true,
     "ml_container_build": "not_triggered_for_non_container_status_commit"
   },
-  "last_updated": "2026-05-14T15:05:43Z",
+  "last_updated": "2026-05-14T16:47:38Z",
   "latest_bg10_merge_input_materialization_status": {
     "exact_head_workflows_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-exact-head-workflows-current-20260513.json",
     "input_materialization_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-input-materialization-current-20260513.json",
@@ -1669,7 +1677,7 @@
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
   "latest_boundary_responsible_tile_plan_status": "boundary primary tile_04/tile_10; horizon primary tile_04/tile_01; tile04 dryrun covers tile01/tile10 context support",
-  "latest_cost_control": "No MD1 compute launched after head d3334788. Keep no-spend until source-attributed SageMaker training md1-full2157-ds4-r24-1778769804 and baseline processing md1-baseline-e2e-20260514032448-sfm are both idle; then rerun leaf-submit readiness before one bounded $0.75/2400s tile_04 proof.",
+  "latest_cost_control": "No MD1 compute launched after head 6976c172. Keep no-spend until baseline processing md1-baseline-e2e-20260514032448-sfm is idle; then rerun leaf-submit readiness before one bounded $0.75/2400s tile_04 proof.",
   "latest_evidence": {
     "merge_preflight_summary": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260512.json",
     "review_retry_cloudwatch_tail": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-cloudwatch-tail-20260512.txt",
@@ -1683,8 +1691,8 @@
     "current_baseline_processing_describe": "logs/md1-baseline-e2e-20260514032448-sfm-active-describe-head4c5b-20260514-1407.json",
     "current_baseline_processing_tags": "logs/md1-baseline-e2e-20260514032448-sfm-tags-head4c5b-20260514-1407.json"
   },
-  "latest_exact_head_gate": "exact-head d3334788d6fe386eebe4681d71a23b562fbc4ff6 green on CDK Deploy 25867322742.",
-  "latest_exact_head_workflows": "exact-head d3334788d6fe386eebe4681d71a23b562fbc4ff6 green on CDK Deploy 25867322742.",
+  "latest_exact_head_gate": "exact-head 6976c172671ef78ca88c067870f19f3a457063f1 green on CDK Deploy 25867862350.",
+  "latest_exact_head_workflows": "exact-head 6976c172671ef78ca88c067870f19f3a457063f1 green on CDK Deploy 25867862350.",
   "latest_hard_output_cap_visual_fidelity_review_status": {
     "ai_visual_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-ai-visual-review-20260513.json",
     "attribution_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-review-r1-attribution-20260513.json",
@@ -1779,10 +1787,10 @@
     "visual_qa_manifest_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-visual-qa-manifest-20260513.json"
   },
   "latest_leaf_submit_readiness_gate_status": "R0 tile_04 visual-sentinel readiness blocked only by active source-attributed non-MD1 SageMaker training/processing jobs. Exact head green, objective gate allowed, merge/review gate blocked only on missing tile_04 leaf summary, strategy dry-run only, estimated $0.4907 under $0.75.",
-  "latest_live_compute_status": "AWS is still not fully idle. Source-attributed non-MD1/SFM-spine 3DGS training md1-full2157-ds4-r24-1778769804 is InProgress/Training with Environment=agent73948216sfmproductionspine, Component=3DGS, CodeHead=03c0d8c130cf4994b97fd2bc8eb98a9a73757221, Validation=md1-full2157-ds4-r24-production-quality, MaxRuntime=43200, and observed TrainingTimeInSeconds=1237 at refresh. Baseline processing md1-baseline-e2e-20260514032448-sfm remains InProgress with Component=SfM/Environment=staging and MaxRuntime=86400. Do not stop jobs from this or other automations; record source attribution only.",
+  "latest_live_compute_status": "AWS is still not fully idle, but SageMaker training is now idle. Source-attributed non-MD1/SFM-spine 3DGS training md1-full2157-ds4-r24-1778769804 completed in 5576 billable seconds with artifact s3://spaceport-ml-processing-staging/manual-validations/md1-full-3dgs-r24-20260514T1430Z/3dgs-full2157-ds4-r24-quality-20260514T1443Z/md1-full2157-ds4-r24-1778769804/output/model.tar.gz. Baseline processing md1-baseline-e2e-20260514032448-sfm remains InProgress with Component=SfM/Environment=staging and MaxRuntime=86400. Do not stop jobs from this or other automations; record source attribution only.",
   "latest_lod_production_readiness_status": "logs/md1-r4-tile10-rollback-lod-production-readiness-20260506.json reports viewer_ready_quality_blocked; --require-promotion-ready now exits 3 and wrote logs/md1-r4-tile10-rollback-lod-production-readiness-promotion-required-20260506.json, preventing promotion callers from accepting viewer readiness alone.",
   "latest_md1_cost_reduction_status": "soft_density_failed_hypothesis_encoded_no_paid_retry_allowed",
-  "latest_md1_live_compute_status": "AWS is still not fully idle. Source-attributed non-MD1/SFM-spine 3DGS training md1-full2157-ds4-r24-1778769804 is InProgress/Training with Environment=agent73948216sfmproductionspine, Component=3DGS, CodeHead=03c0d8c130cf4994b97fd2bc8eb98a9a73757221, Validation=md1-full2157-ds4-r24-production-quality, MaxRuntime=43200, and observed TrainingTimeInSeconds=1237 at refresh. Baseline processing md1-baseline-e2e-20260514032448-sfm remains InProgress with Component=SfM/Environment=staging and MaxRuntime=86400. Do not stop jobs from this or other automations; record source attribution only.",
+  "latest_md1_live_compute_status": "AWS is still not fully idle, but SageMaker training is now idle. Source-attributed non-MD1/SFM-spine 3DGS training md1-full2157-ds4-r24-1778769804 completed in 5576 billable seconds with artifact s3://spaceport-ml-processing-staging/manual-validations/md1-full-3dgs-r24-20260514T1430Z/3dgs-full2157-ds4-r24-quality-20260514T1443Z/md1-full2157-ds4-r24-1778769804/output/model.tar.gz. Baseline processing md1-baseline-e2e-20260514032448-sfm remains InProgress with Component=SfM/Environment=staging and MaxRuntime=86400. Do not stop jobs from this or other automations; record source attribution only.",
   "latest_no_spend_bg10_merge_review_plan": {
     "aws_idle_after_failure": true,
     "failed_merge_billable_seconds": 285,
@@ -1811,7 +1819,7 @@
     "status": "merge_retry1_guard_ready_no_paid_retry_launched",
     "v18_review_launched": false
   },
-  "latest_no_spend_evidence": "R0 v2 executable-smoke dry-run logs/md1-r0-visual-sentinel-v2-leaf-dryrun-executable-smoke-20260514.json submitted no jobs, estimates $0.4907 under the $0.75 cap, and includes visual_qa_plan, viewer_smoke_plan, checkpoint_s3_uris, checkpoint probe command, visual gate command, and stop command template. Post-push exact-head/live evidence is recorded under headd333 JSON logs; paid proof remains blocked by active AWS jobs only.",
+  "latest_no_spend_evidence": "R0 v2 executable-smoke dry-run logs/md1-r0-visual-sentinel-v2-leaf-dryrun-executable-smoke-20260514.json submitted no jobs, estimates $0.4907 under the $0.75 cap, and includes visual_qa_plan, viewer_smoke_plan, checkpoint_s3_uris, checkpoint probe command, visual gate command, and stop command template. Head6976 live evidence now shows SageMaker training idle and only baseline processing active.",
   "latest_no_spend_implementation": "Added executable early visual-smoke guards requiring checkpoint S3 probes, visual gate command, and stop command template before paid R0 leaf proofs.",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
@@ -10359,7 +10367,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Wait for SageMaker training and processing to be idle, rerun leaf-submit readiness for logs/md1-r0-visual-sentinel-v2-leaf-dryrun-executable-smoke-20260514.json on exact green head d3334788, and only if allowed submit one bounded tile_04 proof.",
+  "next_unblocked_step": "Wait for SageMaker processing to be idle, rerun leaf-submit readiness for logs/md1-r0-visual-sentinel-v2-leaf-dryrun-executable-smoke-20260514.json on exact green head 6976, and only if allowed submit one bounded tile_04 proof.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -16452,8 +16460,8 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-14T15:05:43Z",
-  "updated_at": "2026-05-14T15:05:43Z",
+  "updated": "2026-05-14T16:47:38Z",
+  "updated_at": "2026-05-14T16:47:38Z",
   "version": "1.0.0",
   "md1_r0_visual_sentinel_readiness_blocked_active_jobs_20260513": {
     "recorded_at": "2026-05-13T18:33:49Z",
@@ -17395,5 +17403,49 @@
       "active_processing_tags_json": "logs/md1-baseline-e2e-20260514032448-sfm-tags-headd333-20260514.json"
     },
     "next": "After SageMaker training and processing are idle, rerun leaf-submit readiness on exact green head d3334788 using the executable-smoke dry-run; if allowed submit at most one bounded tile_04 leaf-only proof under $0.75/2400s."
+  },
+  "md1_r0_visual_sentinel_v2_training_idle_processing_active_head6976_20260514": {
+    "checked_at": "2026-05-14T16:47:38Z",
+    "head": "6976c172671ef78ca88c067870f19f3a457063f1",
+    "exact_head_workflow": {
+      "name": "CDK Deploy",
+      "run_id": 25867862350,
+      "conclusion": "success"
+    },
+    "decision": "no_spend_training_idle_processing_active_not_submitted",
+    "reason": "R0 visual-sentinel v2 executable early-smoke proof remains compute-blocked by active baseline processing only.",
+    "dryrun_json": "logs/md1-r0-visual-sentinel-v2-leaf-dryrun-executable-smoke-20260514.json",
+    "submitted_jobs": [],
+    "estimated_usd": 0.4907,
+    "max_estimated_usd": 0.75,
+    "completed_training": {
+      "name": "md1-full2157-ds4-r24-1778769804",
+      "final_status": "Completed",
+      "environment": "agent73948216sfmproductionspine",
+      "component": "3DGS",
+      "code_head": "03c0d8c130cf4994b97fd2bc8eb98a9a73757221",
+      "validation": "md1-full2157-ds4-r24-production-quality",
+      "billable_time_seconds": 5576,
+      "model_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-full-3dgs-r24-20260514T1430Z/3dgs-full2157-ds4-r24-quality-20260514T1443Z/md1-full2157-ds4-r24-1778769804/output/model.tar.gz",
+      "source_attribution": "non-MD1/SFM-spine job; completed without MD1 intervention"
+    },
+    "active_processing": {
+      "name": "md1-baseline-e2e-20260514032448-sfm",
+      "status": "InProgress",
+      "environment": "staging",
+      "component": "SfM",
+      "max_runtime_seconds": 86400,
+      "source_attribution": "baseline processing; do not stop without orphan evidence"
+    },
+    "live_aws_evidence": {
+      "exact_head_workflows_json": "logs/md1-r0-visual-sentinel-v2-training-idle-processing-active-exact-head-workflows-head6976-20260514-1646.json",
+      "training_jobs_json": "logs/md1-r0-visual-sentinel-v2-training-idle-processing-active-live-training-head6976-20260514-1646.json",
+      "processing_jobs_json": "logs/md1-r0-visual-sentinel-v2-training-idle-processing-active-live-processing-head6976-20260514-1646.json",
+      "completed_training_describe_json": "logs/md1-full2157-ds4-r24-1778769804-final-describe-head6976-20260514-1646.json",
+      "completed_training_tags_json": "logs/md1-full2157-ds4-r24-1778769804-tags-head6976-20260514-1646.json",
+      "active_processing_describe_json": "logs/md1-baseline-e2e-20260514032448-sfm-active-describe-head6976-20260514-1646.json",
+      "active_processing_tags_json": "logs/md1-baseline-e2e-20260514032448-sfm-tags-head6976-20260514-1646.json"
+    },
+    "next": "After SageMaker processing is idle, rerun leaf-submit readiness on exact green head 6976 using the executable-smoke dry-run; if allowed submit at most one bounded tile_04 leaf-only proof under $0.75/2400s."
   }
 }
