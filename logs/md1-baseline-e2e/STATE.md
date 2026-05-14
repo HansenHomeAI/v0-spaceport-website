@@ -586,6 +586,8 @@ Produce a development-based MD1 baseline with:
 ### 2026-05-14T07:39:27-0600
 
 - Git: on `agent-113647-md1-baseline-e2e` @ `750b7e9d` (working tree clean; no code-path changes).
+- Follow-up: committed + pushed poll artifacts as `4f85b3ba`.
+  - CI: `CDK Deploy` run `25863420474` -> `success` (no new Pages deploy triggered by this logs-only push).
 - AWS identity: `aws sts get-caller-identity` -> Account `975050048887` (region `us-west-2`).
   - snapshot: `logs/md1-baseline-e2e/aws-sts-20260514T133927Z.json`
 - Step Functions (current run):
