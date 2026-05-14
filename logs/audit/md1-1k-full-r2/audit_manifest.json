@@ -589,9 +589,9 @@
       ]
     }
   ],
-  "current_branch_head": "local head 3afeda39ced9dfedb3ed0b763e6f885a2b52f26e exact-head green on CDK Deploy 25880914152; v4 evidence/code pending commit",
-  "current_exact_head_gate_status": "exact-head 3afeda39ced9dfedb3ed0b763e6f885a2b52f26e green on CDK Deploy 25880914152",
-  "current_live_compute_status": "AWS not idle: source-attributed staging 3DGS md1-e2e-vsfm-light-202605141942-3dgs InProgress/Training; processing idle",
+  "current_branch_head": "pushed head 6aceb6eebce5e9a125a4f26b0984cc19005cdc23 exact-head green on CDK Deploy 25888091701; v4 scaffold-restored candidate remains no-spend gated while AWS training is active",
+  "current_exact_head_gate_status": "exact-head 6aceb6eebce5e9a125a4f26b0984cc19005cdc23 green on CDK Deploy 25888091701",
+  "current_live_compute_status": "AWS not idle: source-attributed staging 3DGS md1-e2e-vsfm-light-202605141942-3dgs InProgress/Training, observed TrainingTimeInSeconds=9885; processing idle",
   "current_rung": "R0_visual_sentinel_v4_scaffold_restored_no_spend_gated_compute_hold",
   "evidence_events": [
     {
@@ -1169,6 +1169,15 @@
       "evidence_key": "md1_r0_visual_sentinel_v3_leaf_submit_ready_head633_20260514",
       "submitted_jobs": [],
       "decision": "leaf_submit_allowed"
+    },
+    {
+      "ts": "2026-05-14T22:26:24Z",
+      "event": "md1_r0_visual_sentinel_v4_training_active_head6ace",
+      "head": "6aceb6eebce5e9a125a4f26b0984cc19005cdc23",
+      "cdk_run_id": 25888091701,
+      "evidence_key": "md1_r0_visual_sentinel_v4_training_active_head6ace_20260514",
+      "submitted_jobs": [],
+      "decision": "compute_hold_no_md1_submit"
     }
   ],
   "exact_head_gate_status": "exact-head 6976c172671ef78ca88c067870f19f3a457063f1 green on CDK Deploy 25867862350.",
@@ -1498,7 +1507,7 @@
     "local_status_update_pending_commit": true,
     "ml_container_build": "not_triggered_for_non_container_status_commit"
   },
-  "last_updated": "2026-05-14T19:26:29Z",
+  "last_updated": "2026-05-14T22:26:24Z",
   "latest_bg10_merge_input_materialization_status": {
     "exact_head_workflows_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-exact-head-workflows-current-20260513.json",
     "input_materialization_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-input-materialization-current-20260513.json",
@@ -3512,9 +3521,9 @@
   },
   "md1_r4_boundary_quality_strategy_20260506": {
     "boundary_actual_delta": {
-      "lpips": 0.000008553266525268555,
-      "psnr": 0.00000909046563180027,
-      "ssim": 0.0000032186508178710938
+      "lpips": 8.553266525268555e-06,
+      "psnr": 9.09046563180027e-06,
+      "ssim": 3.2186508178710938e-06
     },
     "boundary_remaining_gap": {
       "lpips": 0.02500855326652527,
@@ -16489,7 +16498,7 @@
     "shared_assigned_fallback_pair_count": 2
   },
   "updated": "2026-05-14T19:26:29Z",
-  "updated_at": "2026-05-14T19:26:29Z",
+  "updated_at": "2026-05-14T22:26:24Z",
   "version": "1.0.0",
   "md1_r0_visual_sentinel_readiness_blocked_active_jobs_20260513": {
     "recorded_at": "2026-05-13T18:33:49Z",
@@ -17825,5 +17834,37 @@
       "logs/md1-r0-visual-sentinel-v4-active-training-md1-e2e-vsfm-light-202605141942-3dgs-tags-20260514T215552Z.json"
     ],
     "next": "Wait for AWS idle, rerun v4 leaf-submit readiness on exact green head 1140, then submit at most one bounded tile_04 leaf-only proof if allowed. No merge/review/full14/LOD/promotion."
+  },
+  "md1_r0_visual_sentinel_v4_training_active_head6ace_20260514": {
+    "timestamp": "2026-05-14T22:26:24Z",
+    "exact_head": "6aceb6eebce5e9a125a4f26b0984cc19005cdc23",
+    "exact_head_workflow": "CDK Deploy 25888091701 success",
+    "decision": "compute_hold_no_md1_submit",
+    "aws_state": {
+      "training_idle": false,
+      "processing_idle": true,
+      "active_training_job": "md1-e2e-vsfm-light-202605141942-3dgs",
+      "active_training_status": "InProgress/Training",
+      "active_training_instance_type": "ml.g5.2xlarge",
+      "active_training_observed_seconds": 9885,
+      "active_training_max_runtime_seconds": 14400,
+      "source_attribution": "staging 3DGS job tagged Component=3DGS Project=Spaceport Environment=staging; do not stop jobs owned by other automations"
+    },
+    "v4_candidate_status": {
+      "objective_gate": "paid_retry_allowed",
+      "dry_run_submitted_jobs": [],
+      "estimated_usd": 0.736,
+      "max_estimated_usd": 0.75,
+      "merge_review_gate": "blocked_until_tile04_leaf_gate_summary_exists",
+      "next_readiness_condition": "rerun readiness only after AWS training and processing are idle"
+    },
+    "evidence": [
+      "logs/md1-r0-visual-sentinel-v4-exact-head-workflows-head6ace-20260514T222624Z.json",
+      "logs/md1-r0-visual-sentinel-v4-live-training-head6ace-20260514T222624Z.json",
+      "logs/md1-r0-visual-sentinel-v4-live-processing-head6ace-20260514T222624Z.json",
+      "logs/md1-r0-visual-sentinel-v4-active-training-md1-e2e-vsfm-light-202605141942-3dgs-describe-20260514T222624Z.json",
+      "logs/md1-r0-visual-sentinel-v4-active-training-md1-e2e-vsfm-light-202605141942-3dgs-tags-20260514T222624Z.json"
+    ],
+    "next": "Wait for AWS idle, rerun v4 leaf-submit readiness on exact green head 6ace, then submit at most one bounded tile_04 leaf-only proof if allowed. No merge/review/full14/LOD/promotion."
   }
 }
