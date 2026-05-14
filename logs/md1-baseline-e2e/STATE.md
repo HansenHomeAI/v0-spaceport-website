@@ -715,3 +715,27 @@ Produce a development-based MD1 baseline with:
   - Continue conservative polling until SfM either finishes and uploads COLMAP output, or fails with a concrete timeout/error.
   - On SfM success: validate COLMAP S3 contents, then monitor the downstream `3dgs` and compression stages.
   - On SfM failure: capture the exact failure and prefer a bounded continuation from the known validated SfM reference over launching another full SfM job.
+
+### 2026-05-14T11:39:59-0600
+
+- Heartbeat progress check:
+  - Git branch/head clean: `agent-113647-md1-baseline-e2e` @ `eb7b643d315dd9b7faba5ed1f1eb142c1e36a36a`.
+  - AWS identity verified: account `975050048887`.
+  - GitHub workflows remain green; latest exact-head run is `25868226962` / `CDK Deploy` / `success`.
+- Current canonical SfM run:
+  - Step Functions execution: `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-baseline-e2e-20260514032448` -> `RUNNING`.
+  - SageMaker processing job: `md1-baseline-e2e-20260514032448-sfm` -> `InProgress`.
+  - Output prefix remains empty as expected before EndOfJob upload: `s3://spaceport-ml-processing-staging/colmap/md1-baseline-e2e-20260514032448/`.
+  - `COLMAP_MONOLITHIC_MAPPER_TIMEOUT_SECONDS=43200`, `COLMAP_BUNDLE_ADJUSTER_TIMEOUT_SECONDS=43200`, processing max runtime `86400`.
+- Important progress:
+  - Mapper resumed after the earlier heartbeat-only stretch.
+  - Latest CloudWatch tail shows active registrations through `num_reg_frames=1560`.
+  - Latest registration before bundle adjustment: image `#2876` at `2026-05-14T17:32:44Z`.
+  - Then `Retriangulation and Global bundle adjustment` at `2026-05-14T17:32:47Z`.
+  - Latest heartbeat after that activity: `COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=42524s idle=420s`.
+  - This is close to the `43200s` mapper timeout, but the idle timer reset after real registration progress, so the run is still worth monitoring rather than interrupting.
+- Active job inventory:
+  - Processing jobs InProgress: `md1-baseline-e2e-20260514032448-sfm`.
+  - Training jobs InProgress: none at this poll.
+- Next step:
+  - Poll again soon for either mapper completion/S3 EndOfJob upload or a concrete timeout/failure.
