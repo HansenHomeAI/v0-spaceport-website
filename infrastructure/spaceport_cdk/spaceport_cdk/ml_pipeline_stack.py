@@ -837,7 +837,7 @@ class MLPipelineStack(Stack):
                 level=sfn.LogLevel.ALL,
                 include_execution_data=True
             ),
-            timeout=Duration.hours(8)
+            timeout=Duration.hours(24)
         )
 
         # Update start job lambda with Step Function ARN

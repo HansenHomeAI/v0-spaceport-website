@@ -238,6 +238,25 @@ Produce a development-based MD1 baseline with:
   - describe snapshot: `logs/md1-baseline-e2e/sagemaker-describe-md1-baseline-e2e-20260513115645-sfm-20260513T230503Z.json`
   - Output prefix: `s3://spaceport-ml-processing-staging/colmap/md1-baseline-e2e-20260513115645/` -> `Total Objects: 0` (still empty)
   - S3 listing snapshot: `logs/md1-baseline-e2e/s3-colmap-md1-baseline-e2e-20260513115645-20260513T230527Z.txt`
+
+### 2026-05-13T20:08:06-06:00
+
+- Git: on `agent-113647-md1-baseline-e2e` @ `edf0fe0d` (dirty; infra patch pending commit).
+- AWS identity: `aws sts get-caller-identity` -> Account `975050048887` (region `us-west-2`).
+- Step Functions execution: `TIMED_OUT` at `2026-05-13T19:56:49-06:00` (8h execution timeout tripped).
+  - `aws stepfunctions describe-execution ...` snapshot: `logs/md1-baseline-e2e/stepfunctions-describe-20260514T020707Z.json`
+  - history snapshot: `logs/md1-baseline-e2e/stepfunctions-history-reverse-20260514T020707Z.json`
+- SageMaker (this run):
+  - Processing job: `md1-baseline-e2e-20260513115645-sfm` -> `InProgress` (`MaxRuntimeInSeconds=86400`, `S3UploadMode=EndOfJob`)
+  - describe snapshot: `logs/md1-baseline-e2e/sagemaker-describe-md1-baseline-e2e-20260513115645-sfm-20260514T020707Z.json`
+  - Output prefix listing snapshot: `logs/md1-baseline-e2e/s3api-colmap-md1-baseline-e2e-20260513115645-20260514T020707Z.json` (still empty)
+- SageMaker (external; do not stop; not owned by this automation):
+  - Training jobs InProgress snapshot: `logs/md1-baseline-e2e/sagemaker-list-training-inprogress-20260514T020707Z.json`
+  - Processing jobs InProgress snapshot: `logs/md1-baseline-e2e/sagemaker-list-processing-inprogress-20260514T020707Z.json`
+- SfM CloudWatch tail (~last 30m):
+  - `logs/md1-baseline-e2e/md1-baseline-e2e-20260513115645-sfm-cloudwatch-tail-20260514T020718Z.txt`
+  - most recent observed progress: only `HEARTBEAT` lines with `idle` increasing to `4200s` at `2026-05-14T02:06:59Z`
+- Next fix (proven by this run): bump Step Functions `MLPipelineStateMachine` timeout from `8h` -> `24h` in `infrastructure/spaceport_cdk/spaceport_cdk/ml_pipeline_stack.py` (prevents orchestration timeout while SfM is still running).
 - SfM CloudWatch tail (latest):
   - Log stream: `/aws/sagemaker/ProcessingJobs` / `md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048`
   - Tail json: `logs/md1-baseline-e2e/cloudwatch-tail-md1-baseline-e2e-20260513115645-sfm-20260513T230503Z.json`
