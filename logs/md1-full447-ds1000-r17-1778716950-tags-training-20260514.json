@@ -1,0 +1,28 @@
+{
+    "Tags": [
+        {
+            "Key": "Validation",
+            "Value": "md1-full447-ds1000-r17-quality-canary"
+        },
+        {
+            "Key": "Project",
+            "Value": "Spaceport"
+        },
+        {
+            "Key": "Environment",
+            "Value": "agent73948216sfmproductionspine"
+        },
+        {
+            "Key": "Component",
+            "Value": "3DGS"
+        },
+        {
+            "Key": "CodeHead",
+            "Value": "fadf6e35623789c64ed7497ceda09c87376b46e8"
+        },
+        {
+            "Key": "EcrDigest",
+            "Value": "e56a0d0ad6c6eeac2e2966c29360243330ff18a2fd11882d19fdfdd87cc810ac"
+        }
+    ]
+}
