@@ -9,3 +9,4 @@
 [2026-05-14T06:20:02Z] poll sfm -> mapper running (bundle adj started) -> wait/poll again
 [2026-05-14T06:26:22Z] ci -> CDK Deploy 25845353313 success (25e686b1) -> continue sfm polling
 [2026-05-14T07:19:56Z] poll sfm -> mapper still active; StepFunctions RUNNING (WaitForSfMCompletion); S3 colmap empty (EndOfJob) -> next: keep polling
+[2026-05-14T08:29:46Z] poll sfm -> still InProgress; global BA heartbeats (idle=3120s); StepFunctions RUNNING (WaitForSfM); S3 colmap empty (EndOfJob) -> next: keep polling
