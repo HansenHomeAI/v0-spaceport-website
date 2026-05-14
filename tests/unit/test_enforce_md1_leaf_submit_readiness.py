@@ -17,6 +17,19 @@ def strategy() -> dict:
         "selected_tile_ids": ["tile_04", "tile_10"],
         "submitted_jobs": [],
         "v18_review_manifest_s3_uri": "s3://bucket/v18-review",
+        "visual_qa_plan": {
+            "required": True,
+            "ai_review_required": True,
+        },
+        "viewer_smoke_plan": {
+            "required": True,
+            "promotion_blocked_until_passed": True,
+        },
+        "early_visual_smoke_plan": {
+            "abort_on_failure": True,
+            "checkpoint_steps": [1000, 2000],
+            "sentinel_cameras": ["DJI_0068.JPG"],
+        },
         "cost_estimate": {"estimated_usd": 3.333},
         "post_leaf_preflight_gates": [
             {"tile_id": "tile_04"},
@@ -141,6 +154,37 @@ class EnforceMd1LeafSubmitReadinessTests(unittest.TestCase):
 
         self.assertEqual(summary["decision"], "leaf_submit_blocked")
         self.assertIn("v18_review_manifest_missing", summary["block_reasons"])
+
+    def test_blocks_missing_visual_qa_plan(self):
+        candidate = strategy()
+        candidate.pop("visual_qa_plan")
+        summary = allowed_summary(strategy=candidate)
+
+        self.assertEqual(summary["decision"], "leaf_submit_blocked")
+        self.assertIn("visual_qa_plan_missing", summary["block_reasons"])
+        self.assertFalse(summary["visual_qa_plan_present"])
+
+    def test_blocks_missing_viewer_smoke_plan(self):
+        candidate = strategy()
+        candidate.pop("viewer_smoke_plan")
+        summary = allowed_summary(strategy=candidate)
+
+        self.assertEqual(summary["decision"], "leaf_submit_blocked")
+        self.assertIn("viewer_smoke_plan_missing", summary["block_reasons"])
+        self.assertFalse(summary["viewer_smoke_plan_present"])
+
+    def test_blocks_missing_early_visual_smoke_abort_plan(self):
+        candidate = strategy()
+        candidate["early_visual_smoke_plan"] = {
+            "abort_on_failure": False,
+            "checkpoint_steps": [1000],
+            "sentinel_cameras": ["DJI_0068.JPG"],
+        }
+        summary = allowed_summary(strategy=candidate)
+
+        self.assertEqual(summary["decision"], "leaf_submit_blocked")
+        self.assertIn("early_visual_smoke_abort_plan_missing", summary["block_reasons"])
+        self.assertFalse(summary["early_visual_smoke_abort_plan_present"])
 
     def test_blocks_mismatched_v18_review_manifest(self):
         summary = allowed_summary(v18_review_manifest_s3_uri="s3://bucket/other-v18-review")

@@ -1373,6 +1373,111 @@ def leaf_density_cap_preflight_violations(summary: dict) -> list[dict[str, Any]]
     return violations
 
 
+def split_stage_csv(value: Any) -> list[str]:
+    if isinstance(value, list):
+        return ordered_unique(value)
+    if not isinstance(value, str):
+        return []
+    return ordered_unique(part.strip() for part in value.replace(";", ",").split(",") if part.strip())
+
+
+def build_visual_qa_plan(args: argparse.Namespace) -> dict[str, Any]:
+    return {
+        "required": True,
+        "ai_review_required": True,
+        "review_after": "post_leaf_gate_and_merge_review_preflight",
+        "required_assets": [
+            "reference_image",
+            "merged_render",
+            "merged_no_background_render",
+            "diff_heatmap",
+            "side_by_side_panel",
+        ],
+        "gate_command": (
+            "python3 scripts/3dgs/evaluate_md1_visual_qa_gate.py "
+            "--visual-qa-manifest <extracted>/visual_qa_manifest.json "
+            "--asset-root <extracted> --ai-review-json <ai-review.json>"
+        ),
+        "blocking_defect_categories": [
+            "geometry_alignment",
+            "horizon_or_sky",
+            "texture_blur_or_smear",
+            "color_or_exposure",
+            "boundary_discontinuity",
+        ],
+        "v18_reference_manifest_s3_uri": args.v18_review_manifest_s3_uri,
+    }
+
+
+def build_viewer_smoke_plan() -> dict[str, Any]:
+    return {
+        "required": True,
+        "run_after": "visual_qa_ready",
+        "viewer_route": "/md1-viewer",
+        "promotion_blocked_until_passed": True,
+        "checks": [
+            "manifest loads without fallback",
+            "compressed/viewer artifact renders",
+            "no serious browser console errors",
+            "camera interaction stays responsive",
+        ],
+        "command": "node web/scripts/test-md1-production-viewer.mjs <preview-or-local-viewer-url>",
+    }
+
+
+def build_early_visual_smoke_plan(stages: Sequence["BenchmarkStage"]) -> dict[str, Any]:
+    checkpoint_steps: set[int] = set()
+    cameras: list[str] = []
+    cameras_by_bucket: dict[str, list[str]] = {"boundary": [], "horizon": []}
+    selected_tiles: list[str] = []
+    for stage in stages:
+        if stage.stage_type != "train":
+            continue
+        selected_tiles.append(stage.tile_id or stage.stage_name)
+        env = stage.environment or {}
+        try:
+            max_iterations = int(env.get("MAX_ITERATIONS") or 0)
+        except (TypeError, ValueError):
+            max_iterations = 0
+        for key in ("TRAINING_STEPS_PER_SAVE", "TRAINING_STEPS_PER_EVAL_IMAGE", "TRAINING_STEPS_PER_EVAL_ALL_IMAGES"):
+            try:
+                step = int(env.get(key) or 0)
+            except (TypeError, ValueError):
+                step = 0
+            if step <= 0:
+                continue
+            if max_iterations > 0:
+                checkpoint_steps.update(range(step, max_iterations + 1, step))
+            else:
+                checkpoint_steps.add(step)
+        boundary_cameras = split_stage_csv(env.get("BOUNDARY_FROZEN_CAMERAS"))
+        horizon_cameras = split_stage_csv(env.get("HORIZON_FROZEN_CAMERAS"))
+        cameras_by_bucket["boundary"].extend(boundary_cameras)
+        cameras_by_bucket["horizon"].extend(horizon_cameras)
+        cameras.extend(boundary_cameras)
+        cameras.extend(horizon_cameras)
+    return {
+        "required": True,
+        "abort_on_failure": True,
+        "selected_tile_ids": ordered_unique(selected_tiles),
+        "checkpoint_steps": sorted(checkpoint_steps),
+        "sentinel_cameras": ordered_unique(cameras),
+        "frozen_camera_buckets": {
+            bucket: ordered_unique(names)
+            for bucket, names in cameras_by_bucket.items()
+            if names
+        },
+        "blocking_defect_categories": [
+            "false_color_or_exposure_shift",
+            "horizon_discontinuity",
+            "geometry_misalignment",
+            "texture_smearing",
+            "gross_density_under_or_overflow",
+        ],
+        "action": "monitor synced checkpoints and stop the leaf proof before full runtime if sentinel renders show blocking defects",
+    }
+
+
 def validate_submit_guardrails(args: argparse.Namespace, summary: dict) -> None:
     if not getattr(args, "submit", False):
         return
@@ -1386,6 +1491,15 @@ def validate_submit_guardrails(args: argparse.Namespace, summary: dict) -> None:
         errors.append("--experiment-id is required for submitted training runs")
     if not v18_review_manifest_s3_uri:
         errors.append("--v18-review-manifest-s3-uri is required so every paid run has a V18 comparison plan")
+    if not summary.get("visual_qa_plan"):
+        errors.append("visual_qa_plan is required before submitted training runs")
+    if not summary.get("viewer_smoke_plan"):
+        errors.append("viewer_smoke_plan is required before submitted training runs")
+    early_visual_smoke_plan = summary.get("early_visual_smoke_plan") or {}
+    if not isinstance(early_visual_smoke_plan, dict) or early_visual_smoke_plan.get("abort_on_failure") is not True:
+        errors.append("early_visual_smoke_plan.abort_on_failure=true is required before submitted training runs")
+    if not early_visual_smoke_plan.get("checkpoint_steps") or not early_visual_smoke_plan.get("sentinel_cameras"):
+        errors.append("early_visual_smoke_plan must name checkpoint_steps and sentinel_cameras")
     estimate = (summary.get("cost_estimate") or {}).get("estimated_usd")
     if estimate is not None and max_estimated_usd > 0 and float(estimate) > max_estimated_usd:
         errors.append(f"estimated cost ${float(estimate):.2f} exceeds --max-estimated-usd ${max_estimated_usd:.2f}")
@@ -3144,6 +3258,9 @@ def main() -> int:
         "baseline_review_manifest_s3_uri": args.baseline_review_manifest_s3_uri,
         "v18_review_manifest_s3_uri": args.v18_review_manifest_s3_uri,
         "v18_non_regression_thresholds": DEFAULT_V18_NON_REGRESSION_THRESHOLDS,
+        "visual_qa_plan": build_visual_qa_plan(args),
+        "viewer_smoke_plan": build_viewer_smoke_plan(),
+        "early_visual_smoke_plan": build_early_visual_smoke_plan(stages),
         "cost_estimate": cost_estimate,
         "sagemaker_env_value_length_violations": sagemaker_env_value_length_violations(
             {"stages": [stage.to_dict() for stage in stages]}

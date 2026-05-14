@@ -29,6 +29,18 @@ sys.modules[SPEC.name] = benchmark
 SPEC.loader.exec_module(benchmark)
 
 
+def paid_quality_plans() -> dict:
+    return {
+        "visual_qa_plan": {"required": True, "ai_review_required": True},
+        "viewer_smoke_plan": {"required": True, "promotion_blocked_until_passed": True},
+        "early_visual_smoke_plan": {
+            "abort_on_failure": True,
+            "checkpoint_steps": [1000, 2000],
+            "sentinel_cameras": ["DJI_0068.JPG"],
+        },
+    }
+
+
 class Tiled3DGSBenchmarkTests(unittest.TestCase):
     def test_load_json_path_or_s3_reads_local_override(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -1388,6 +1400,28 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
             [["S0_scaffold"], ["T0_tile_00", "T0_tile_01"], ["T0_tile_02"]],
         )
 
+    def test_build_early_visual_smoke_plan_derives_checkpoint_steps_and_cameras(self):
+        stage = benchmark.BenchmarkStage(
+            "T0_tile_04",
+            "train",
+            "leaf_tile",
+            "s3://bucket/tile_04",
+            tile_id="tile_04",
+            environment={
+                "MAX_ITERATIONS": "3000",
+                "TRAINING_STEPS_PER_SAVE": "1000",
+                "BOUNDARY_FROZEN_CAMERAS": "DJI_0067.JPG,DJI_0068.JPG",
+                "HORIZON_FROZEN_CAMERAS": "DJI_0073.JPG",
+            },
+        )
+
+        plan = benchmark.build_early_visual_smoke_plan([stage])
+
+        self.assertEqual(plan["checkpoint_steps"], [1000, 2000, 3000])
+        self.assertTrue(plan["abort_on_failure"])
+        self.assertIn("DJI_0068.JPG", plan["sentinel_cameras"])
+        self.assertEqual(plan["selected_tile_ids"], ["tile_04"])
+
     def test_validate_submit_guardrails_requires_cost_experiment_and_v18_plan(self):
         args = types.SimpleNamespace(
             submit=True,
@@ -1431,6 +1465,32 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         self.assertIn("estimated cost", message)
         self.assertIn("--spot-restart-proof-passed", message)
         self.assertIn("--spot-max-wait-seconds", message)
+
+    def test_validate_submit_guardrails_requires_paid_visual_validation_plans(self):
+        args = types.SimpleNamespace(
+            submit=True,
+            max_estimated_usd=2.0,
+            experiment_id="r0-visual-sentinel",
+            v18_review_manifest_s3_uri="s3://bucket/v18-review",
+            baseline_review_manifest_s3_uri="",
+            enable_spot=False,
+            enable_checkpoints=False,
+            checkpoint_s3_prefix="",
+            checkpoint_resume_s3_uri="",
+            spot_restart_proof_passed=False,
+            reuse_tile_cache=False,
+            orchestration_mode="fanout",
+            skip_merge=True,
+            skip_review=True,
+        )
+
+        with self.assertRaises(RuntimeError) as raised:
+            benchmark.validate_submit_guardrails(args, {"cost_estimate": {"estimated_usd": 1.0}})
+
+        message = str(raised.exception)
+        self.assertIn("visual_qa_plan", message)
+        self.assertIn("viewer_smoke_plan", message)
+        self.assertIn("early_visual_smoke_plan", message)
 
     def test_validate_submit_guardrails_blocks_unbounded_spot_wait(self):
         args = types.SimpleNamespace(
@@ -1612,6 +1672,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         benchmark.validate_submit_guardrails(
             args,
             {
+                **paid_quality_plans(),
                 "cost_estimate": {"estimated_usd": 1.0},
                 "stages": [
                     {"stage_type": "train", "training_mode": "leaf_tile", "tile_id": "tile_10"},
@@ -1870,6 +1931,7 @@ class Tiled3DGSBenchmarkTests(unittest.TestCase):
         benchmark.validate_submit_guardrails(
             args,
             {
+                **paid_quality_plans(),
                 "cost_estimate": {"estimated_usd": 18.0},
                 "selected_tile_ids": [f"tile_{tile_index:02d}" for tile_index in range(14)],
                 "production_rung_gate": {

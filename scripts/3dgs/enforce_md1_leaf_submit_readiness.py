@@ -81,6 +81,35 @@ def quality_gate_decision(quality_gate: dict[str, Any]) -> str | None:
     return None
 
 
+def has_visual_qa_plan(strategy: dict[str, Any]) -> bool:
+    if strategy.get("visual_qa_required") is True:
+        return True
+    return isinstance(strategy.get("visual_qa_plan"), dict) and bool(strategy["visual_qa_plan"])
+
+
+def has_viewer_smoke_plan(strategy: dict[str, Any]) -> bool:
+    if strategy.get("viewer_smoke_required") is True:
+        return True
+    return isinstance(strategy.get("viewer_smoke_plan"), dict) and bool(strategy["viewer_smoke_plan"])
+
+
+def has_early_visual_smoke_abort_plan(strategy: dict[str, Any]) -> bool:
+    plan = strategy.get("early_visual_smoke_plan")
+    if not isinstance(plan, dict):
+        plan = strategy.get("early_checkpoint_visual_qa_plan")
+    if not isinstance(plan, dict) or not plan:
+        return False
+    checkpoint_steps = plan.get("checkpoint_steps")
+    sentinel_cameras = plan.get("sentinel_cameras") or plan.get("frozen_cameras")
+    return (
+        plan.get("abort_on_failure") is True
+        and isinstance(checkpoint_steps, list)
+        and bool(checkpoint_steps)
+        and isinstance(sentinel_cameras, list)
+        and bool(sentinel_cameras)
+    )
+
+
 def env_labels(strategy: dict[str, Any], key: str) -> list[str]:
     labels: list[str] = []
     stages = strategy.get("stages")
@@ -208,6 +237,15 @@ def evaluate_gate(
         block_reasons.append("v18_review_manifest_missing")
     elif strategy_v18_review_manifest != expected_v18_review_manifest:
         block_reasons.append("strategy_v18_review_manifest_mismatch")
+    visual_qa_plan_present = has_visual_qa_plan(strategy)
+    viewer_smoke_plan_present = has_viewer_smoke_plan(strategy)
+    early_visual_smoke_abort_plan_present = has_early_visual_smoke_abort_plan(strategy)
+    if not visual_qa_plan_present:
+        block_reasons.append("visual_qa_plan_missing")
+    if not viewer_smoke_plan_present:
+        block_reasons.append("viewer_smoke_plan_missing")
+    if not early_visual_smoke_abort_plan_present:
+        block_reasons.append("early_visual_smoke_abort_plan_missing")
     if len(selected_tiles) >= 14:
         block_reasons.append("full_14tile_scope_not_allowed")
     if not selected_tiles:
@@ -250,6 +288,9 @@ def evaluate_gate(
         "workflow_conclusion": workflow_conclusion,
         "v18_review_manifest_s3_uri": strategy_v18_review_manifest,
         "expected_v18_review_manifest_s3_uri": expected_v18_review_manifest or None,
+        "visual_qa_plan_present": visual_qa_plan_present,
+        "viewer_smoke_plan_present": viewer_smoke_plan_present,
+        "early_visual_smoke_abort_plan_present": early_visual_smoke_abort_plan_present,
         "training_jobs_in_progress": training_jobs_in_progress,
         "processing_jobs_in_progress": processing_jobs_in_progress,
         "required_tile_ids": required_tile_ids,

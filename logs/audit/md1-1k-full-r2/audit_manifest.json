@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "latest verified head 4c5b31deba84b93bf11e8ba21aa427ef5d69de0b is pushed and exact-head CDK Deploy 25863305474 is green.",
-  "current_exact_head_gate_status": "exact-head 4c5b31deba84b93bf11e8ba21aa427ef5d69de0b green on CDK Deploy 25863305474.",
-  "current_live_compute_status": "AWS is still not fully idle. SageMaker training is idle. Source-attributed SFM bridge md1-full-fanout-r23-bridge-00-03-1778756266 completed with output s3://spaceport-ml-processing-staging/manual-validations/md1-full-fanout-r23-20260514T0855Z/bridges/bridge-00-03/colmap. Only baseline processing md1-baseline-e2e-20260514032448-sfm remains InProgress with Component=SfM/Environment=staging and MaxRuntime=86400. Do not stop jobs from this or other automations; record source attribution only.",
-  "current_rung": "R0_visual_sentinel_v2_no_spend_ready_waiting_aws_idle",
+  "current_branch_head": "latest verified pre-change head fe4ba4e8569d2b56d8685bc27fc533c5f0fdc8dd is pushed and exact-head CDK Deploy 25864838073 is green; this working update adds no-spend paid-proof validation-plan guards and must be pushed/watched before paid proof.",
+  "current_exact_head_gate_status": "exact-head fe4ba4e8569d2b56d8685bc27fc533c5f0fdc8dd green on CDK Deploy 25864838073 before this commit.",
+  "current_live_compute_status": "AWS is still not fully idle. SageMaker training is idle. Only baseline processing md1-baseline-e2e-20260514032448-sfm remains InProgress with Component=SfM/Environment=staging and MaxRuntime=86400. Do not stop jobs from this or other automations; record source attribution only.",
+  "current_rung": "R0_visual_sentinel_v2_quality_plan_guarded_waiting_aws_idle",
   "evidence_events": [
     {
       "billable_seconds": 412,
@@ -1109,6 +1109,22 @@
       ],
       "spend_estimated_usd": 0,
       "next": "Wait for AWS processing to be idle, then rerun leaf-submit readiness on the R0 v2 dry-run before any bounded tile_04 proof."
+    },
+    {
+      "timestamp": "2026-05-14T14:35:41Z",
+      "event": "md1_r0_visual_sentinel_v2_quality_plan_guards",
+      "summary": "Added no-spend machine guards so paid leaf readiness/submit requires visual QA plan, viewer smoke plan, and early checkpoint visual-smoke abort plan. Regenerated R0 v2 dry-run with explicit quality plans; readiness confirms plans present and blocks only on baseline processing still InProgress. No MD1 compute launched.",
+      "evidence": [
+        "logs/md1-r0-visual-sentinel-v2-leaf-dryrun-qualityplans-20260514.json",
+        "logs/md1-r0-visual-sentinel-v2-leaf-submit-readiness-qualityplans-headfe4b-20260514-1434.json",
+        "logs/md1-r0-visual-sentinel-v2-exact-head-workflows-headfe4b-20260514-1434.json",
+        "logs/md1-r0-visual-sentinel-v2-live-training-headfe4b-20260514-1434.json",
+        "logs/md1-r0-visual-sentinel-v2-live-processing-headfe4b-20260514-1434.json",
+        "logs/md1-baseline-e2e-20260514032448-sfm-active-describe-headfe4b-20260514-1434.json",
+        "logs/md1-baseline-e2e-20260514032448-sfm-tags-headfe4b-20260514-1434.json"
+      ],
+      "spend_estimated_usd": 0,
+      "next": "Commit/push/watch exact head, then wait for AWS processing idle before rerunning readiness and any bounded tile_04 proof."
     }
   ],
   "exact_head_gate_status": "exact-head 4c5b31deba84b93bf11e8ba21aa427ef5d69de0b green on CDK Deploy 25863305474.",
@@ -1787,8 +1803,8 @@
     "status": "merge_retry1_guard_ready_no_paid_retry_launched",
     "v18_review_launched": false
   },
-  "latest_no_spend_evidence": "R0 v2 objective gate is allowed at logs/md1-r0-visual-sentinel-v2-objective-gate-20260514.json. Dry-run logs/md1-r0-visual-sentinel-v2-leaf-dryrun-20260514.json submitted no jobs, estimates $0.4907 under the $0.75 cap, emits one tile_04 post-leaf preflight gate with 96 effective images/3000 iterations, has no SageMaker env length violations, no density-cap preflight violations, MODEL_VARIANT=splatfacto-w-light, and no TRAINING_MAX_OUTPUT_GAUSSIANS. Merge/review gate logs/md1-r0-visual-sentinel-v2-merge-review-gate-20260514.json remains blocked only on missing tile_04 leaf gate, as intended before paid proof. Head 4c5b live evidence is in logs/md1-r0-visual-sentinel-v2-exact-head-workflows-head4c5b-20260514-1407.json, logs/md1-r0-visual-sentinel-v2-live-training-head4c5b-20260514-1407.json, logs/md1-r0-visual-sentinel-v2-live-processing-head4c5b-20260514-1407.json, logs/md1-baseline-e2e-20260514032448-sfm-active-describe-head4c5b-20260514-1407.json, and logs/md1-baseline-e2e-20260514032448-sfm-tags-head4c5b-20260514-1407.json.",
-  "latest_no_spend_implementation": "Objective gate now encodes under-dense leaf failures, missing leaf sidecars, SageMaker env value length limits, and impossible hard output caps below a leaf hard minimum. R0 v2 removes tile_04 hard output cap and uses splatfacto-w-light sidecar export.",
+  "latest_no_spend_evidence": "New dry-run logs/md1-r0-visual-sentinel-v2-leaf-dryrun-qualityplans-20260514.json submitted no jobs, estimates $0.4907 under the $0.75 cap, emits one tile_04 post-leaf preflight gate with 96 effective images/3000 iterations, and records visual_qa_plan, viewer_smoke_plan, and early_visual_smoke_plan with 1000/2000/3000 checkpoint steps and boundary/horizon sentinel cameras. Readiness logs/md1-r0-visual-sentinel-v2-leaf-submit-readiness-qualityplans-headfe4b-20260514-1434.json confirms those plans are present and blocks only on processing_jobs_in_progress.",
+  "latest_no_spend_implementation": "Added machine-enforced paid-proof validation-plan guards: leaf-submit readiness and submit guardrails now require visual QA plan, viewer-smoke plan, and early checkpoint visual-smoke abort plan before any paid training proof. Benchmark dry-runs now stamp explicit visual QA, viewer smoke, and checkpoint sentinel plans into the strategy summary.",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
     "head": "07c50ac09a7ac88ea218c5784f045154a102917e",
@@ -1932,7 +1948,7 @@
     "remote_merge_plan_json": "logs/md1-r4-quality-preserving-soft-density-leaf-tile10-rollback-bg10-remote-merge-g4dn-plan-dryrun-20260513.json",
     "training_jobs_to_submit": 0
   },
-  "latest_testing": "Previous R0 v2 targeted tests passed: python3 -m unittest tests.unit.test_plan_md1_boundary_objective_strategy tests.unit.test_tiled_3dgs_benchmark tests.unit.test_enforce_md1_leaf_submit_readiness (130 tests) plus py_compile. Current heartbeat validation passed jq evidence checks, git diff --check, and exact-head CDK Deploy 25863305474.",
+  "latest_testing": "python3 -m unittest tests.unit.test_enforce_md1_leaf_submit_readiness tests.unit.test_tiled_3dgs_benchmark tests.unit.test_plan_md1_boundary_objective_strategy (135 tests), py_compile for touched 3DGS scripts, and jq empty over new evidence JSONs passed.",
   "latest_tile04_leaf_reuse_merge_dryrun_status": "density-capped tile_04 leaf passed post-leaf preflight/gate with 984154 splats, 128 images, and filtered scaffold; no-training bg10 tile_10 rollback merge payload dry-run is generated and merge/review gate allows only that next step.",
   "latest_tracked_sagemaker_evidence_spend_before_untracked_stop_usd": 14.8046,
   "latest_training_cost_reduction_status": "Evidence/untracked spend remains about $17.100. Soft-density tile_04 passed leaf and merge structural gates but failed V18 and AI visual QA; no-spend planner now records soft_density_quality_regression and blocks repeating that objective. No full14/LOD/promotion/viewer smoke launched.",
@@ -3452,9 +3468,9 @@
   },
   "md1_r4_boundary_quality_strategy_20260506": {
     "boundary_actual_delta": {
-      "lpips": 0.000008553266525268555,
-      "psnr": 0.00000909046563180027,
-      "ssim": 0.0000032186508178710938
+      "lpips": 8.553266525268555e-06,
+      "psnr": 9.09046563180027e-06,
+      "ssim": 3.2186508178710938e-06
     },
     "boundary_remaining_gap": {
       "lpips": 0.02500855326652527,
@@ -10335,7 +10351,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Wait for SageMaker processing to be idle, then rerun leaf-submit readiness for logs/md1-r0-visual-sentinel-v2-leaf-dryrun-20260514.json on exact green head 4c5b31deba84b93bf11e8ba21aa427ef5d69de0b before any paid proof.",
+  "next_unblocked_step": "Push/watch this no-spend guard update to exact-head green. Then wait for SageMaker processing to be idle, rerun leaf-submit readiness for logs/md1-r0-visual-sentinel-v2-leaf-dryrun-qualityplans-20260514.json on the new exact green head, and only if allowed submit one bounded tile_04 proof.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -16429,7 +16445,7 @@
     "shared_assigned_fallback_pair_count": 2
   },
   "updated": "2026-05-14T12:06:58Z",
-  "updated_at": "2026-05-14T14:07:01Z",
+  "updated_at": "2026-05-14T14:35:41Z",
   "version": "1.0.0",
   "md1_r0_visual_sentinel_readiness_blocked_active_jobs_20260513": {
     "recorded_at": "2026-05-13T18:33:49Z",
@@ -17257,5 +17273,21 @@
       }
     },
     "next": "Wait for SageMaker processing to be idle, then rerun leaf-submit readiness on the R0 v2 dry-run before any bounded tile_04 proof."
+  },
+  "md1_r0_visual_sentinel_v2_quality_plan_guards_20260514": {
+    "timestamp": "2026-05-14T14:35:41Z",
+    "event": "md1_r0_visual_sentinel_v2_quality_plan_guards",
+    "summary": "Added no-spend machine guards so paid leaf readiness/submit requires visual QA plan, viewer smoke plan, and early checkpoint visual-smoke abort plan. Regenerated R0 v2 dry-run with explicit quality plans; readiness confirms plans present and blocks only on baseline processing still InProgress. No MD1 compute launched.",
+    "evidence": [
+      "logs/md1-r0-visual-sentinel-v2-leaf-dryrun-qualityplans-20260514.json",
+      "logs/md1-r0-visual-sentinel-v2-leaf-submit-readiness-qualityplans-headfe4b-20260514-1434.json",
+      "logs/md1-r0-visual-sentinel-v2-exact-head-workflows-headfe4b-20260514-1434.json",
+      "logs/md1-r0-visual-sentinel-v2-live-training-headfe4b-20260514-1434.json",
+      "logs/md1-r0-visual-sentinel-v2-live-processing-headfe4b-20260514-1434.json",
+      "logs/md1-baseline-e2e-20260514032448-sfm-active-describe-headfe4b-20260514-1434.json",
+      "logs/md1-baseline-e2e-20260514032448-sfm-tags-headfe4b-20260514-1434.json"
+    ],
+    "spend_estimated_usd": 0,
+    "next": "Commit/push/watch exact head, then wait for AWS processing idle before rerunning readiness and any bounded tile_04 proof."
   }
 }
