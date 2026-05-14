@@ -926,3 +926,43 @@ Produce a development-based MD1 baseline with:
   - Continue polling `md1-e2e-vsfm-light-202605141942-3dgs` for terminal status.
   - If it fails, capture the exact log tail and patch only that failure.
   - If it completes, validate `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-light-202605141942/`, then monitor/validate compression and wire the final viewer.
+
+### 2026-05-14T17:15:45-0600
+
+- Canonical `splatfacto-w-light` bg/alpha retry reached pipeline success, but failed the visual quality gate:
+  - Step Functions execution `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-light-202605141942` -> `SUCCEEDED`.
+  - 3DGS training job `md1-e2e-vsfm-light-202605141942-3dgs` -> `Completed`.
+  - Training time/billable time: `11871s` on `ml.g5.2xlarge`.
+  - Model artifact: `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-light-202605141942/md1-e2e-vsfm-light-202605141942-3dgs/output/model.tar.gz`.
+  - Compression job `md1-e2e-vsfm-light-202605141942-compression` -> `Completed`.
+  - Compression output: `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-light-202605141942/`.
+  - Bundle manifest: `https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-light-202605141942/supersplat_bundle/lod-meta.json`.
+  - Compression summary: `45` bundle files, `2748289` bytes, `4` LOD levels, `4` chunk files, source `splat.ply`, compression ratio `2.8474`.
+  - Training metadata reported only `31083` remaining gaussians and `splat.ply` size `7.35 MB`; visual screenshots were skybox-dominant/overexposed rather than an acceptable MD1 baseline.
+  - Evidence:
+    - Full 3DGS log: `logs/md1-baseline-e2e/3dgs-md1-e2e-vsfm-light-202605141942-full-log-20260514T231214Z.txt`.
+    - Viewer smoke results: `logs/md1-production-viewer-results.json`.
+    - Visual gate screenshots: `logs/md1-baseline-e2e/md1-e2e-vsfm-light-202605141942-visual-gate-desktop.png`, `logs/md1-baseline-e2e/md1-e2e-vsfm-light-202605141942-visual-gate-mobile.png`.
+  - Deployed viewer smoke technically passed loading/telemetry against the new bundle:
+    - `MD1_VIEWER_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev MD1_LOD_URL=https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-light-202605141942/supersplat_bundle/lod-meta.json MD1_EXPECT_CHUNK_SUBSTRING=md1-e2e-vsfm-light-202605141942 node scripts/test-md1-production-viewer.mjs` -> passed.
+    - Desktop first frame `794.6ms`, `1/4` chunk meta requests.
+    - Mobile first frame `93.9ms`, `2/4` chunk meta requests.
+- Failure diagnosis and bounded retry:
+  - Did not relaunch full SfM.
+  - Verified no running Step Functions executions and no InProgress SageMaker training/processing jobs before retry.
+  - Root cause candidate is the MD1-specific bg/alpha/robust-mask override on `splatfacto-w-light`; upstream light defaults keep `enable_bg_model`, `enable_alpha_loss`, and `enable_robust_mask` disabled.
+  - Launched one smallest-stage retry from the same validated SfM reference, keeping `splatfacto-w-light` but disabling bg/alpha/robust-mask/floater-pruning and using quality-oriented culling:
+    - Execution ARN: `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-fg-202605142314`.
+    - Job id/name: `md1-e2e-vsfm-fg-202605142314`.
+    - Training job: `md1-e2e-vsfm-fg-202605142314-3dgs`.
+    - Input COLMAP: `s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap/`.
+    - 3DGS output: `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-fg-202605142314/`.
+    - Compression output: `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-fg-202605142314/`.
+    - Payload: `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-payload.json`.
+    - Start proof: `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-start.json`.
+    - Key overrides: `ENABLE_BG_MODEL=false`, `ENABLE_ALPHA_LOSS=false`, `ENABLE_ROBUST_MASK=false`, `FLOATER_PRUNING_ENABLED=false`, `CULL_ALPHA_THRESH=0.005`, `CULL_SCALE_THRESH=0.5`, `USE_SCALE_REGULARIZATION=false`, `NEVER_MASK_UPPER=0.0`.
+  - Initial status: Step Functions `RUNNING`; SageMaker training job `InProgress/Pending` on `ml.g5.2xlarge` with `MaxRuntimeInSeconds=14400`.
+- Next step:
+  - Monitor `md1-e2e-vsfm-fg-202605142314-3dgs`.
+  - If it succeeds, validate gaussian count/file size before compression is accepted as final; then smoke and visually inspect the final viewer.
+  - If it fails, capture exact logs and patch only that proven failure.

@@ -1,17 +1,17 @@
 {
-  "lodUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json",
+  "lodUrl": "https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-light-202605141942/supersplat_bundle/lod-meta.json",
   "results": [
     {
       "scenario": "desktop",
       "metrics": {
         "bundleKind": "lod-streaming",
         "rootFile": "lod-meta.json",
-        "sourceUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json",
-        "viewerUrl": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json",
+        "sourceUrl": "https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-light-202605141942/supersplat_bundle/lod-meta.json",
+        "viewerUrl": "/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-light-202605141942/supersplat_bundle/lod-meta.json",
         "lodLevels": 4,
-        "chunkFiles": 44,
-        "chunkMetaRequests": 5,
-        "firstFrameMs": 474.09999999403954,
+        "chunkFiles": 4,
+        "chunkMetaRequests": 1,
+        "firstFrameMs": 794.5999999642372,
         "lodMin": 0,
         "lodMax": 3
       },
@@ -20,13 +20,13 @@
         "height": 960,
         "sampled": 38400,
         "visibleRatio": 1,
-        "brightRatio": 0.8684375,
+        "brightRatio": 0.868203125,
         "darkRatio": 0,
-        "meanLuma": 197.29258139062577,
-        "lumaStdDev": 71.74979979110998,
-        "meanColorSpread": 18.325546875
+        "meanLuma": 197.22607941145418,
+        "lumaStdDev": 71.7074258865156,
+        "meanColorSpread": 18.192421875
       },
-      "chunkMetaResponses": 6,
+      "chunkMetaResponses": 1,
       "screenshotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-production-viewer-desktop.png"
     },
     {
@@ -34,12 +34,12 @@
       "metrics": {
         "bundleKind": "lod-streaming",
         "rootFile": "lod-meta.json",
-        "sourceUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json",
-        "viewerUrl": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json",
+        "sourceUrl": "https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-light-202605141942/supersplat_bundle/lod-meta.json",
+        "viewerUrl": "/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-light-202605141942/supersplat_bundle/lod-meta.json",
         "lodLevels": 4,
-        "chunkFiles": 44,
-        "chunkMetaRequests": 17,
-        "firstFrameMs": 827.7000000178814,
+        "chunkFiles": 4,
+        "chunkMetaRequests": 2,
+        "firstFrameMs": 93.89999997615814,
         "lodMin": 2,
         "lodMax": 3
       },
@@ -48,13 +48,13 @@
         "height": 896,
         "sampled": 92736,
         "visibleRatio": 1,
-        "brightRatio": 0.6256362146307799,
+        "brightRatio": 0.6252156659765356,
         "darkRatio": 0,
-        "meanLuma": 142.4227351255106,
-        "lumaStdDev": 78.28992456118938,
-        "meanColorSpread": 11.965223861283643
+        "meanLuma": 142.38730290070632,
+        "lumaStdDev": 78.28122061898338,
+        "meanColorSpread": 11.93043693926846
       },
-      "chunkMetaResponses": 17,
+      "chunkMetaResponses": 2,
       "screenshotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-production-viewer-mobile.png"
     }
   ]
