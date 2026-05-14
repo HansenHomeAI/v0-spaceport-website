@@ -1,0 +1,6 @@
+snapshot 20260514T041906Z
+- stepfunctions: RUNNING
+- processing: InProgress
+- sfm progress: processed=825/3076
+- s3 colmap summary:  Total Objects: 0 Total Size: 0 
+- cloudwatch tail txt: logs/md1-baseline-e2e/md1-baseline-e2e-20260514032448-sfm-cloudwatch-tail-20260514T041906Z.txt

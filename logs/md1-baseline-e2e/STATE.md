@@ -365,3 +365,30 @@ Produce a development-based MD1 baseline with:
   - current stage: `SfMProcessingJob` / `WaitForSfM` (`StepFunctions=RUNNING`)
   - SageMaker job: `md1-baseline-e2e-20260514032448-sfm` -> `InProgress` (env includes `COLMAP_*_TIMEOUT_SECONDS=43200`)
   - monitor snapshot: `logs/md1-baseline-e2e/monitor-md1-baseline-e2e-20260514032448-20260514T032552Z.txt`
+
+### 2026-05-13T22:19:26-0600
+
+- Git: still on `agent-113647-md1-baseline-e2e` @ `1c9b3cf2` (no code changes in this poll; new logs only).
+- No-spend static checks:
+  - `python3 -m unittest tests.unit.test_sogs_supersplat_bundle` -> `OK`
+  - `cd web && npx next lint` -> `0` (warnings only)
+  - `cd web && npm run build` -> `success` (warnings only)
+- AWS identity: `aws sts get-caller-identity` -> Account `975050048887` (region `us-west-2`).
+- Step Functions execution: still `RUNNING`
+  - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-baseline-e2e-20260514032448`
+  - describe snapshot: `logs/md1-baseline-e2e/stepfunctions-describe-md1-baseline-e2e-20260514032448-20260514T041906Z.json`
+- SageMaker (this run):
+  - Processing job: `md1-baseline-e2e-20260514032448-sfm` -> `InProgress`
+  - describe snapshot: `logs/md1-baseline-e2e/sagemaker-describe-md1-baseline-e2e-20260514032448-sfm-20260514T041906Z.json`
+  - Output prefix: `s3://spaceport-ml-processing-staging/colmap/md1-baseline-e2e-20260514032448/` -> `Total Objects: 0` (still `S3UploadMode=EndOfJob`)
+  - S3 listing snapshot: `logs/md1-baseline-e2e/s3-colmap-md1-baseline-e2e-20260514032448-20260514T041906Z.txt`
+- SageMaker (active job inventory; do not stop unrelated jobs):
+  - `aws sagemaker list-processing-jobs --status-equals InProgress --query 'ProcessingJobSummaries[].ProcessingJobName'` -> only `md1-baseline-e2e-20260514032448-sfm`
+  - `aws sagemaker list-training-jobs --status-equals InProgress --query 'TrainingJobSummaries[].TrainingJobName'` -> empty
+- SfM CloudWatch progress:
+  - Stream: `/aws/sagemaker/ProcessingJobs` / `md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134`
+  - Tail json: `logs/md1-baseline-e2e/cloudwatch-tail-md1-baseline-e2e-20260514032448-sfm-20260514T041906Z.json`
+  - Tail txt: `logs/md1-baseline-e2e/md1-baseline-e2e-20260514032448-sfm-cloudwatch-tail-20260514T041906Z.txt`
+  - Most recent parsed progress: `processed=825/3076` (feature extraction still underway)
+- Snapshot:
+  - `logs/md1-baseline-e2e/monitor-md1-baseline-e2e-20260514032448-20260514T041906Z.txt`
