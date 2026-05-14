@@ -1,6 +1,6 @@
 # MD1 Baseline E2E State
 
-updated: 2026-05-14T09:14:00-0600
+updated: 2026-05-14T12:47:11-0600
 branch: agent-113647-md1-baseline-e2e
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -779,3 +779,40 @@ Produce a development-based MD1 baseline with:
   - Initial training status: `InProgress`, secondary status `Pending` (waiting for capacity).
 - Next step:
   - Monitor `md1-e2e-vsfm-202605141811-3dgs` until it starts training or fails; then validate 3DGS output and compression handoff.
+
+### 2026-05-14T12:47:11-0600
+
+- Heartbeat check after the 3DGS-only continuation:
+  - Git branch/head before this patch: `agent-113647-md1-baseline-e2e` @ `07f11807654f2ac1887647a6091408a665bee4c9`.
+  - AWS identity: `aws sts get-caller-identity` -> account `975050048887`.
+  - GitHub workflows: latest exact-head run `25877162565` / `CDK Deploy` / `success`; deployed viewer preview remains `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/md1-viewer`.
+- 3DGS-only continuation failed before training iterations:
+  - Step Functions execution `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-202605141811` ended `SUCCEEDED` only through `NotifyError`; this is not a successful pipeline completion.
+  - SageMaker training job `md1-e2e-vsfm-202605141811-3dgs` -> `Failed`.
+  - Training start/end: `2026-05-14T12:12:38-0600` / `2026-05-14T12:23:20-0600`; billable time `642s`.
+  - Failure reason: `AlgorithmError: , exit code: 1`.
+  - 3DGS output prefix is empty despite the SageMaker model-artifact placeholder:
+    - `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-202605141811/`
+  - Compression output prefix is empty:
+    - `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-202605141811/`
+  - Training log stream: `/aws/sagemaker/TrainingJobs` / `md1-e2e-vsfm-202605141811-3dgs/algo-1-1778782357`.
+  - Log evidence from `aws logs get-log-events --log-group-name /aws/sagemaker/TrainingJobs --log-stream-name md1-e2e-vsfm-202605141811-3dgs/algo-1-1778782357 --start-from-head`:
+    - COLMAP validation passed in the 3DGS container: `Cameras: 1`, `Images registered: 2157`, `Image files: 2157`, `3D points: 1312804`.
+    - Failed command: `ns-train splatfacto-w-light --data /tmp/nerfstudio_training/converted_data --output-dir /tmp/nerfstudio_training --max_num_iterations 30000 --pipeline.model.sh_degree 3 --logging.steps_per_log 100 --vis tensorboard --pipeline.datamanager.cache-images cpu --pipeline.model.max-gauss-ratio 10 nerfstudio-data --eval-mode fraction --train-split-fraction 0.9`.
+    - Exact CLI error: `Unrecognized or misplaced options`; the live `ns-train` help listed available subcommands including `splatfacto-w`, but not `splatfacto-w-light`.
+- Patch applied in this branch:
+  - `infrastructure/spaceport_cdk/lambda/start_ml_job/lambda_function.py`: default `MODEL_VARIANT` changed from `splatfacto-w-light` to the deployed plugin command `splatfacto-w`.
+  - `infrastructure/containers/3dgs/nerfstudio_config.yaml`, `Dockerfile`, `train_nerfstudio_production.py`, and `test_nerfstudio_pipeline.py`: aligned defaults/checks/logging with `splatfacto-w` so a future container build does not verify an unavailable command.
+- Local no-spend verification after the patch:
+  - `python3 -m py_compile infrastructure/spaceport_cdk/lambda/start_ml_job/lambda_function.py infrastructure/containers/3dgs/train_nerfstudio_production.py infrastructure/containers/3dgs/export_splatfacto_w_assets.py infrastructure/containers/3dgs/run_export_quality_pass.py infrastructure/containers/3dgs/sky_quality.py infrastructure/containers/3dgs/test_nerfstudio_pipeline.py` -> passed.
+  - `ruby -e 'require "yaml"; YAML.load_file("infrastructure/containers/3dgs/nerfstudio_config.yaml"); puts "yaml ok"'` -> passed.
+  - `python3 -m unittest tests.unit.test_sogs_supersplat_bundle` -> passed.
+  - `git diff --check` -> passed.
+  - `python3 infrastructure/containers/3dgs/test_nerfstudio_pipeline.py infrastructure/containers/3dgs/test_input/data/training` was attempted, but this repo fixture is incomplete (`sparse/0/cameras.txt` missing) and the local Python environment lacks optional container deps (`yaml`, `PIL`); use this as non-blocking local-context evidence only.
+- Active job inventory at this poll:
+  - Processing jobs InProgress: none.
+  - Training jobs InProgress: `md1-r0vissent-v2exec-1778783555-tile-04`; external to this canonical run, leave untouched.
+- Next step:
+  - Commit/push this proven 3DGS fix.
+  - Watch the exact-head workflows, including the automatic 3DGS container build triggered by the `infrastructure/containers/3dgs/` changes.
+  - After the branch-tagged 3DGS image exists, rerun the smallest continuation only: 3DGS from `s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap/` with `MODEL_VARIANT=splatfacto-w`, then validate compression and the final viewer.

@@ -204,12 +204,14 @@ def lambda_handler(event, context):
         # Special handling for 3DGS-only tests with existing SfM data
         existing_colmap_uri = body.get('existingColmapUri')  # Optional: use existing SfM data
         
-        # Default to splatfacto-w-light with the background model enabled so the
-        # pipeline produces a foreground PLY for SOGS plus a lightweight skybox.
+        # Default to the Splatfacto-W method exposed by the deployed NerfStudio
+        # plugin. The live container currently registers `splatfacto-w`; using
+        # the unavailable `splatfacto-w-light` causes ns-train to reject the job
+        # before training starts.
         default_hyperparameters = {
             "MAX_ITERATIONS": "30000",
             "TARGET_PSNR": "35.0",
-            "MODEL_VARIANT": "splatfacto-w-light",
+            "MODEL_VARIANT": "splatfacto-w",
             "SH_DEGREE": "3",
             "BILATERAL_PROCESSING": "false",
             "LOG_INTERVAL": "100",

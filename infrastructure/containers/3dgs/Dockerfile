@@ -55,8 +55,8 @@ ENV CMAKE_BUILD_PARALLEL_LEVEL=1
 RUN pip install --no-cache-dir "pybind11>=2.13.0"
 
 # Install the latest NerfStudio mainline plus the Splatfacto-W plugin.
-# The plugin provides splatfacto-w-light, which adds the learned background
-# model we bake into a lightweight skybox for the final viewer.
+# The plugin exposes the `splatfacto-w` command used by the production
+# training defaults.
 RUN git clone --depth 1 https://github.com/nerfstudio-project/nerfstudio.git /tmp/nerfstudio && \
     pip install --no-cache-dir /tmp/nerfstudio && \
     rm -rf /tmp/nerfstudio
@@ -68,7 +68,7 @@ RUN pip install --no-cache-dir git+https://github.com/KevinXu02/splatfacto-w.git
 RUN python -c "import nerfstudio; print('✅ NerfStudio installed successfully')"
 RUN python -c "import gsplat; print('✅ gsplat backend available (will JIT compile on first use)')"
 RUN ns-install-cli --help > /dev/null && echo "✅ NerfStudio CLI available"
-RUN ns-train splatfacto-w-light --help > /dev/null && echo "✅ splatfacto-w-light CLI available"
+RUN ns-train splatfacto-w --help > /dev/null && echo "✅ splatfacto-w CLI available"
 
 # ---------------------------------------------------------------
 # 2. AWS and Production Dependencies

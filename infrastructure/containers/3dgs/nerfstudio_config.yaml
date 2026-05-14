@@ -4,9 +4,9 @@
 
 # Model Configuration
 model:
-  variant: "splatfacto-w-light"      # Adds the lightweight background model for sky coverage
+  variant: "splatfacto-w"            # Installed Splatfacto-W command with background support
   sh_degree: 3                       # Foreground SH degree
-  bilateral_processing: false        # Not used by splatfacto-w-light
+  bilateral_processing: false        # Not used by Splatfacto-W
   max_num_gaussians: 1500000         # Conservative limit for A10G GPU (16GB VRAM)
   rasterize_mode: "classic"          # Export classic-mode PLYs for SuperSplat compatibility
   use_scale_regularization: true     # Reduces oversized, spiky gaussians
@@ -117,7 +117,7 @@ licensing:
   license: "Apache 2.0"
   commercial_use: true
   attribution_required: true
-  methodology: "Spaceport splatfacto-w-light skybox export"
+  methodology: "Spaceport splatfacto-w skybox export"
 
 # Version and Compatibility
 version:
