@@ -16656,5 +16656,20 @@
     ],
     "spend_estimated_usd": 0,
     "next": "Wait for AWS idle, rerun readiness, then at most one R0 tile_04 visual-sentinel proof."
+  },
+  "md1_r0_visual_sentinel_r17_training_idle_processing_active_20260514": {
+    "timestamp": "2026-05-14T01:06:58Z",
+    "summary": "Exact-head 2faa1eb is green on CDK Deploy 25834734564. SageMaker training is idle; source-attributed SFM r17 md1-full447-ds1000-r17-1778716950 completed in 3180 billable seconds with model artifact s3://spaceport-ml-processing-staging/manual-validations/md1-fanout-reducer-proof-20260512T1803Z/3dgs-full447-ds1000-r17-quality-20260514T000230Z/md1-full447-ds1000-r17-1778716950/output/model.tar.gz. Baseline processing md1-baseline-e2e-20260513115645-sfm remains InProgress. No MD1 compute launched.",
+    "evidence": [
+      "logs/md1-r0-visual-sentinel-exact-head-workflows-r17training-idle-20260514.json",
+      "logs/md1-r0-visual-sentinel-live-training-idle-r17done-20260514.json",
+      "logs/md1-r0-visual-sentinel-live-processing-inprogress-r17done-20260514.json",
+      "logs/md1-full447-ds1000-r17-1778716950-completed-describe-training-20260514.json",
+      "logs/md1-full447-ds1000-r17-1778716950-tags-training-r17done-20260514.json",
+      "logs/md1-baseline-e2e-20260513115645-sfm-active-describe-r17done-20260514.json",
+      "logs/md1-baseline-e2e-20260513115645-sfm-tags-r17done-20260514.json"
+    ],
+    "spend_estimated_usd": 0,
+    "next": "Wait for processing idle, rerun readiness, then at most one R0 tile_04 visual-sentinel proof."
   }
 }
