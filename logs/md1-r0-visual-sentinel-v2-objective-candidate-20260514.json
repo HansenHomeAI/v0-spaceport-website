@@ -1,0 +1,210 @@
+{
+  "boundary_camera_ids": [
+    "DJI_0067.JPG",
+    "DJI_0068.JPG",
+    "DJI_0069.JPG",
+    "DJI_0070.JPG"
+  ],
+  "candidate": "r0_visual_sentinel_v2_tile04_sidecar_export_no_impossible_cap",
+  "context_support_tile_ids": [
+    "tile_10",
+    "tile_13",
+    "tile_01",
+    "tile_00",
+    "tile_02",
+    "tile_06"
+  ],
+  "created_at": "2026-05-14T03:42:06.577190+00:00",
+  "early_visual_smoke_plan": {
+    "abort_on_failure": true,
+    "checkpoint_steps": [
+      1000,
+      3000
+    ],
+    "frozen_cameras": [
+      "DJI_0067.JPG",
+      "DJI_0068.JPG",
+      "DJI_0073.JPG",
+      "DJI_0146.JPG",
+      "DJI_0258.JPG",
+      "DJI_0262.JPG"
+    ],
+    "hard_block_reasons": [
+      "magenta_green_color_cast",
+      "full_frame_diff_saturation",
+      "horizon_band_regression",
+      "near_detail_texture_smearing"
+    ],
+    "intended_cost_saving": "fail at checkpoint before merge/review or long leaf spend",
+    "max_render_scale": 0.35,
+    "required": true
+  },
+  "expected_metric_axes": [
+    "boundary.required_improvement",
+    "boundary.psnr",
+    "boundary.ssim",
+    "boundary.lpips",
+    "horizon.psnr",
+    "horizon.ssim",
+    "horizon.lpips",
+    "horizon.sky_score",
+    "near_detail.ssim",
+    "near_detail.lpips",
+    "visual_qa.color_shift",
+    "visual_qa.geometry_alignment",
+    "visual_qa.horizon_continuity",
+    "visual_qa.texture_smearing",
+    "leaf.density_min",
+    "leaf.required_sidecars"
+  ],
+  "horizon_camera_ids": [
+    "DJI_0066.JPG",
+    "DJI_0073.JPG",
+    "DJI_0146.JPG",
+    "DJI_0147.JPG"
+  ],
+  "leaf_artifact_plan": {
+    "fix": "use splatfacto-w-light exporter for leaf sidecars; do not relax sidecar preflight for cache candidates",
+    "required_paths": [
+      "splat.ply",
+      "training_metadata.json",
+      "training_selection.json",
+      "export_manifest.json",
+      "background_manifest.json",
+      "background_skybox.webp",
+      "floater_pruning_summary.json"
+    ]
+  },
+  "merge_review_blocked_until_leaf_visual_smoke_and_leaf_gate_pass": true,
+  "near_detail_camera_ids": [
+    "DJI_0258.JPG",
+    "DJI_0261.JPG",
+    "DJI_0262.JPG",
+    "DJI_0263.JPG"
+  ],
+  "no_full_14tile_training": true,
+  "objective_changes": [
+    "appearance_consistency",
+    "color_consistency",
+    "color_calibration",
+    "per_camera_color",
+    "photometric_calibration",
+    "perceptual_color_loss",
+    "geometry_alignment_loss",
+    "horizon_appearance_protection",
+    "leaf_sidecar_export_repair",
+    "density_preserving_tile04_no_hard_output_cap",
+    "early_visual_sentinel_smoke_abort"
+  ],
+  "objective_implementation": {
+    "environment": {
+      "APPEARANCE_EMBED_DIM": "64",
+      "BG_SH_DEGREE": "2",
+      "BILATERAL_PROCESSING": "true",
+      "CULL_ALPHA_THRESH": "0.12",
+      "CULL_SCALE_THRESH": "0.35",
+      "ENABLE_ALPHA_LOSS": "true",
+      "ENABLE_BG_MODEL": "true",
+      "ENABLE_ROBUST_MASK": "true",
+      "FLOATER_PRUNING_ENABLED": "true",
+      "FLOATER_PRUNING_MAX_COLOR_DISTANCE": "0.18",
+      "FLOATER_PRUNING_MIN_EDGE_SUPPORT": "2",
+      "FLOATER_PRUNING_TOP_REGION_RATIO": "0.55",
+      "FLOATER_PRUNING_TOP_VIEW_FRACTION": "0.45",
+      "MAX_ITERATIONS": "3000",
+      "MODEL_VARIANT": "splatfacto-w-light",
+      "SH_DEGREE": "1",
+      "TRAINING_MAX_GAUSS_RATIO": "1.35",
+      "TRAINING_MAX_SELECTED_IMAGES": "96",
+      "TRAINING_STEPS_PER_SAVE": "1000",
+      "TRAINING_STOP_SPLIT_AT": "2200"
+    },
+    "source_file": "infrastructure/containers/3dgs/train_nerfstudio_production.py",
+    "training_config": {
+      "appearance_embed_dim": 64,
+      "bg_sh_degree": 2,
+      "bilateral_processing": true,
+      "cull_alpha_thresh": 0.12,
+      "cull_scale_thresh": 0.35,
+      "enable_alpha_loss": true,
+      "enable_bg_model": true,
+      "enable_robust_mask": true,
+      "floater_pruning_enabled": true,
+      "floater_pruning_max_color_distance": 0.18,
+      "floater_pruning_min_edge_support": 2,
+      "floater_pruning_top_region_ratio": 0.55,
+      "floater_pruning_top_view_fraction": 0.45,
+      "max_iterations": 3000,
+      "model_variant": "splatfacto-w-light",
+      "sh_degree": 1,
+      "training_max_gauss_ratio": 1.35,
+      "training_max_selected_images": 96,
+      "training_steps_per_save": 1000,
+      "training_stop_split_at": 2200
+    }
+  },
+  "planned_cost_estimate": {
+    "estimated_usd": 0.4907,
+    "instance_type": "ml.g4dn.xlarge",
+    "max_estimated_usd": 0.75,
+    "max_images_per_tile": 96,
+    "runtime_cap_seconds": 2400,
+    "tile_max_iterations": 3000
+  },
+  "rationale": "Fixes the previous R0 waste path: tile_04 no longer inherits tile_10 511k hard cap, leaf sidecars are produced by splatfacto-w-light, and early visual-smoke remains mandatory before any merge/review.",
+  "rung": "R0_visual_sentinel_before_any_long_leaf_or_merge",
+  "selected_tile_ids": [
+    "tile_04"
+  ],
+  "status": "draft_no_spend_candidate",
+  "submitted_jobs": [],
+  "targeted_quality_blockers": [
+    "ai_visual_color_shift_defect",
+    "ai_visual_geometry_alignment_defect",
+    "ai_visual_horizon_continuity_defect",
+    "ai_visual_review_blocking_defects",
+    "ai_visual_review_blocking_view_findings",
+    "ai_visual_review_status_block",
+    "ai_visual_texture_smearing_defect",
+    "boundary_no_required_improvement",
+    "boundary_v18_median_lpips_regression",
+    "boundary_v18_single_camera_lpips_regression",
+    "horizon_lpips_regression",
+    "horizon_psnr_regression",
+    "horizon_sky_score_regression",
+    "horizon_ssim_regression",
+    "horizon_v18_median_lpips_regression",
+    "horizon_v18_median_psnr_regression",
+    "horizon_v18_median_ssim_regression",
+    "horizon_v18_single_camera_lpips_regression",
+    "horizon_v18_single_camera_psnr_regression",
+    "horizon_v18_sky_score_regression",
+    "leaf_required_paths_missing",
+    "near_detail_ssim_regression",
+    "near_detail_v18_median_ssim_regression",
+    "near_detail_v18_single_camera_lpips_regression",
+    "splat_vertex_count_below_hard_min",
+    "splat_vertex_count_below_reference_ratio"
+  ],
+  "v18_non_regression_plan": {
+    "comparison_reference": "V18 frozen p24 manifest",
+    "minimum_gate": "no near_detail SSIM, boundary LPIPS, or horizon PSNR/SSIM/LPIPS/sky regression",
+    "required": true
+  },
+  "viewer_smoke_plan": {
+    "not_before_v18_and_visual_qa_pass": true,
+    "required_before_promotion": true
+  },
+  "visual_qa_plan": {
+    "ai_visual_review_required": true,
+    "blocking_defects": [
+      "geometry_alignment",
+      "horizon_continuity",
+      "texture_smearing",
+      "color_shift"
+    ],
+    "bundle_required": true,
+    "compare_against_input_frames": true,
+    "required": true
+  }
+}

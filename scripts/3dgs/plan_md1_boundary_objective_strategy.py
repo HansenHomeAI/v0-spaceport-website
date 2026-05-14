@@ -155,6 +155,20 @@ OVERDENSE_LEAF_REASONS = (
     "splat_vertex_count_above_reference_ratio",
     "splat_vertex_count_above_hard_max",
 )
+UNDERDENSE_LEAF_REASONS = (
+    "splat_vertex_count_below_reference_ratio",
+    "splat_vertex_count_below_hard_min",
+)
+LEAF_ARTIFACT_STRUCTURE_REASONS = (
+    "leaf_required_paths_missing",
+)
+LEAF_DENSITY_REASONS = OVERDENSE_LEAF_REASONS + UNDERDENSE_LEAF_REASONS
+LEAF_GATE_REASONS = LEAF_DENSITY_REASONS + LEAF_ARTIFACT_STRUCTURE_REASONS
+REQUIRED_LEAF_SIDECARS = (
+    "export_manifest.json",
+    "background_manifest.json",
+    "background_skybox.webp",
+)
 
 
 def now_iso() -> str:
@@ -354,6 +368,84 @@ def objective_implementation(strategy: Mapping[str, Any] | None) -> dict[str, An
     return {"environment": environment, "training_config": training_config}
 
 
+def stage_environments(strategy: Mapping[str, Any] | None) -> list[dict[str, str]]:
+    if not isinstance(strategy, Mapping):
+        return []
+    environments: list[dict[str, str]] = []
+    direct_environment = strategy.get("environment")
+    if isinstance(direct_environment, Mapping):
+        environments.append({str(key): str(value) for key, value in direct_environment.items()})
+    nested = strategy.get("objective_implementation")
+    if isinstance(nested, Mapping):
+        nested_environment = nested.get("environment")
+        if isinstance(nested_environment, Mapping):
+            environments.append({str(key): str(value) for key, value in nested_environment.items()})
+    stages = strategy.get("stages")
+    if isinstance(stages, list):
+        for stage in stages:
+            if not isinstance(stage, Mapping):
+                continue
+            stage_environment = stage.get("environment")
+            if isinstance(stage_environment, Mapping):
+                environments.append({str(key): str(value) for key, value in stage_environment.items()})
+    return environments
+
+
+def sagemaker_env_value_length_violations(strategy: Mapping[str, Any] | None, *, max_length: int = 512) -> list[dict[str, Any]]:
+    violations: list[dict[str, Any]] = []
+    for index, environment in enumerate(stage_environments(strategy)):
+        for key, value in environment.items():
+            if len(value) > max_length:
+                violations.append({"environment_index": index, "key": key, "length": len(value), "max_length": max_length})
+    return violations
+
+
+def has_leaf_sidecar_export_implementation(strategy: Mapping[str, Any] | None) -> bool:
+    if not isinstance(strategy, Mapping):
+        return False
+    implementation = objective_implementation(strategy)
+    environment = implementation["environment"]
+    training_config = implementation["training_config"]
+    model_variant = str(environment.get("MODEL_VARIANT") or training_config.get("model_variant") or "").lower()
+    if model_variant.startswith("splatfacto-w"):
+        return True
+    artifact_plan = strategy.get("leaf_artifact_plan")
+    if isinstance(artifact_plan, Mapping):
+        required_paths = list_strings(artifact_plan.get("required_paths"))
+        if all(path in required_paths for path in REQUIRED_LEAF_SIDECARS):
+            return True
+        if all(artifact_plan.get(key) is True for key in ("export_manifest", "background_manifest", "background_skybox")):
+            return True
+    return False
+
+
+def hard_output_cap_below_failed_minimums(
+    density_control_knobs: Mapping[str, Any],
+    failed_hypotheses: Sequence[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    env = density_control_knobs.get("environment")
+    if not isinstance(env, Mapping):
+        env = {}
+    config = density_control_knobs.get("training_config")
+    if not isinstance(config, Mapping):
+        config = {}
+    candidate_output_cap = float_value(env.get("TRAINING_MAX_OUTPUT_GAUSSIANS") or config.get("max_output_gaussians"))
+    if candidate_output_cap is None:
+        return []
+    violations: list[dict[str, Any]] = []
+    for failure in underdense_output_cap_failures(failed_hypotheses):
+        hard_min = float_value(failure.get("hard_min_splat_count"))
+        if hard_min is not None and candidate_output_cap < hard_min:
+            violations.append(
+                {
+                    "tile_id": failure.get("tile_id"),
+                    "candidate_output_cap": int(candidate_output_cap),
+                    "hard_min_splat_count": int(hard_min),
+                }
+            )
+    return violations
+
+
 def has_loss_weighting_change(changes: Sequence[str]) -> bool:
     normalized = " ".join(changes).lower()
     return any(term in normalized for term in LOSS_WEIGHTING_TERMS)
@@ -447,15 +539,15 @@ def current_quality_blockers(
     block_reasons = attribution.get("block_reasons")
     if isinstance(block_reasons, Mapping):
         values.extend(list_strings(block_reasons.get("protected")))
-        values.extend(reason for reason in list_strings(block_reasons.get("leaf_gate")) if reason in OVERDENSE_LEAF_REASONS)
-    values.extend(reason for reason in list_strings(attribution.get("leaf_gate_block_reasons")) if reason in OVERDENSE_LEAF_REASONS)
-    values.extend(reason for reason in list_strings(attribution.get("merge_review_block_reasons")) if reason in OVERDENSE_LEAF_REASONS)
+        values.extend(reason for reason in list_strings(block_reasons.get("leaf_gate")) if reason in LEAF_GATE_REASONS)
+    values.extend(reason for reason in list_strings(attribution.get("leaf_gate_block_reasons")) if reason in LEAF_GATE_REASONS)
+    values.extend(reason for reason in list_strings(attribution.get("merge_review_block_reasons")) if reason in LEAF_GATE_REASONS)
     paid_jobs = attribution.get("paid_jobs")
     if isinstance(paid_jobs, list):
         for job in paid_jobs:
             if not isinstance(job, Mapping):
                 continue
-            values.extend(reason for reason in list_strings(job.get("block_reasons")) if reason in OVERDENSE_LEAF_REASONS)
+            values.extend(reason for reason in list_strings(job.get("block_reasons")) if reason in LEAF_GATE_REASONS)
     values.extend(list_strings(attribution.get("visual_qa_gate_block_reasons")))
     values.extend(list_strings(attribution.get("ai_visual_defect_blockers")))
     return sorted_unique(values)
@@ -520,6 +612,73 @@ def overdense_leaf_records(attribution: Mapping[str, Any]) -> list[dict[str, Any
             record.get("splat_vertex_count"),
             record.get("reference_splat_count"),
             record.get("hard_max_splat_count"),
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(record)
+    return deduped
+
+
+def underdense_leaf_records(attribution: Mapping[str, Any]) -> list[dict[str, Any]]:
+    records: list[dict[str, Any]] = []
+    leaf_gate_block_reasons = list_strings(attribution.get("leaf_gate_block_reasons"))
+    block_reasons = attribution.get("block_reasons")
+    failed_density_env = attribution.get("failed_density_control_environment")
+    if not isinstance(failed_density_env, Mapping):
+        failed_density_env = {}
+    failed_density_config = attribution.get("failed_density_control_training_config")
+    if not isinstance(failed_density_config, Mapping):
+        failed_density_config = {}
+    if isinstance(block_reasons, Mapping):
+        leaf_gate_block_reasons.extend(list_strings(block_reasons.get("leaf_gate")))
+    if any(reason in leaf_gate_block_reasons for reason in UNDERDENSE_LEAF_REASONS):
+        records.append(
+            {
+                "tile_id": attribution.get("tile_id"),
+                "leaf_gate_block_reasons": sorted_unique(leaf_gate_block_reasons),
+                "splat_vertex_count": attribution.get("splat_vertex_count"),
+                "reference_splat_count": attribution.get("reference_splat_count"),
+                "observed_reference_ratio": attribution.get("observed_reference_ratio"),
+                "hard_min_splat_count": attribution.get("hard_min_splat_count"),
+                "density_control_environment": dict(failed_density_env),
+                "density_control_training_config": dict(failed_density_config),
+            }
+        )
+    paid_jobs = attribution.get("paid_jobs")
+    if isinstance(paid_jobs, list):
+        for job in paid_jobs:
+            if not isinstance(job, Mapping):
+                continue
+            job_reasons = list_strings(job.get("block_reasons"))
+            if any(reason in job_reasons for reason in UNDERDENSE_LEAF_REASONS):
+                job_density_env = job.get("density_control_environment")
+                if not isinstance(job_density_env, Mapping):
+                    job_density_env = failed_density_env
+                job_density_config = job.get("density_control_training_config")
+                if not isinstance(job_density_config, Mapping):
+                    job_density_config = failed_density_config
+                records.append(
+                    {
+                        "tile_id": job.get("tile_id"),
+                        "leaf_gate_block_reasons": sorted_unique(job_reasons),
+                        "splat_vertex_count": job.get("splat_vertex_count"),
+                        "reference_splat_count": job.get("reference_splat_count"),
+                        "observed_reference_ratio": job.get("observed_reference_ratio"),
+                        "hard_min_splat_count": job.get("hard_min_splat_count"),
+                        "density_control_environment": dict(job_density_env),
+                        "density_control_training_config": dict(job_density_config),
+                    }
+                )
+    deduped: list[dict[str, Any]] = []
+    seen: set[tuple[Any, ...]] = set()
+    for record in records:
+        key = (
+            record.get("tile_id"),
+            tuple(record.get("leaf_gate_block_reasons", [])),
+            record.get("splat_vertex_count"),
+            record.get("reference_splat_count"),
+            record.get("hard_min_splat_count"),
         )
         if key in seen:
             continue
@@ -667,6 +826,28 @@ def extract_failed_hypotheses(attribution: Mapping[str, Any]) -> list[dict[str, 
                 "density_control_training_config": overdense_record.get("density_control_training_config", {}),
             }
         )
+    for underdense_record in underdense_leaf_records(attribution):
+        hypothesis = "leaf_output_cap_underdense_leaf"
+        evidence = "The previous leaf proof was rejected before merge/review because retained splats fell below the post-leaf density guard."
+        tile_id = underdense_record.get("tile_id")
+        if tile_id == "tile_04" and "visual_sentinel" in hypothesis_context:
+            hypothesis = "visual_sentinel_tile04_output_cap_underdense_leaf"
+            evidence = "The R0 visual-sentinel tile_04 leaf inherited an output cap that forced retained splats below the tile_04 hard minimum before any merge/review."
+        failed.append(
+            {
+                "hypothesis": hypothesis,
+                "status": "failed",
+                "evidence": evidence,
+                "tile_id": tile_id,
+                "leaf_gate_block_reasons": underdense_record["leaf_gate_block_reasons"],
+                "splat_vertex_count": underdense_record.get("splat_vertex_count"),
+                "reference_splat_count": underdense_record.get("reference_splat_count"),
+                "observed_reference_ratio": underdense_record.get("observed_reference_ratio"),
+                "hard_min_splat_count": underdense_record.get("hard_min_splat_count"),
+                "density_control_environment": underdense_record.get("density_control_environment", {}),
+                "density_control_training_config": underdense_record.get("density_control_training_config", {}),
+            }
+        )
     return failed
 
 
@@ -719,6 +900,26 @@ def has_soft_density_failed(failed_hypotheses: Sequence[Mapping[str, Any]]) -> b
 
 def has_hardcap_visual_quality_failed(failed_hypotheses: Sequence[Mapping[str, Any]]) -> bool:
     return any(item.get("hypothesis") == "hard_output_cap_visual_fidelity_quality_regression" for item in failed_hypotheses)
+
+
+def underdense_output_cap_failures(failed_hypotheses: Sequence[Mapping[str, Any]]) -> list[Mapping[str, Any]]:
+    return [
+        item
+        for item in failed_hypotheses
+        if item.get("hypothesis")
+        in (
+            "leaf_output_cap_underdense_leaf",
+            "visual_sentinel_tile04_output_cap_underdense_leaf",
+        )
+    ]
+
+
+def has_underdense_leaf_blocker(blockers: Sequence[str]) -> bool:
+    return any(reason in blockers for reason in UNDERDENSE_LEAF_REASONS)
+
+
+def has_leaf_artifact_structure_blocker(blockers: Sequence[str]) -> bool:
+    return any(reason in blockers for reason in LEAF_ARTIFACT_STRUCTURE_REASONS)
 
 
 def repeats_failed_hardcap_visual_without_quality_repair(
@@ -951,6 +1152,9 @@ def evaluate_candidate_objective(
             "density_control_implementation": {"environment": {}, "training_config": {}},
             "visual_fidelity_implementation": {"environment": {}, "training_config": {}},
             "hardcap_quality_repair_implementation": {"environment": {}, "training_config": {}},
+            "leaf_sidecar_export_implementation_present": False,
+            "hard_output_cap_below_leaf_min_violations": [],
+            "sagemaker_env_value_length_violations": [],
             "estimated_usd": None,
             "max_estimated_usd": max_estimated_usd or None,
         }
@@ -1033,6 +1237,12 @@ def evaluate_candidate_objective(
     density_control_knobs = implemented_density_control_knobs(candidate_objective)
     if has_overdense_leaf_blocker(current_blockers) and not any(density_control_knobs.values()):
         block_reasons.append("objective_missing_density_control_after_overdense_leaf")
+    if has_underdense_leaf_blocker(current_blockers):
+        cap_violations = hard_output_cap_below_failed_minimums(density_control_knobs, failed_hypotheses)
+        if cap_violations:
+            block_reasons.append("objective_repeats_impossible_hard_output_cap_below_leaf_min")
+    else:
+        cap_violations = []
     normalized_changes = " ".join(changes).lower()
     if (
         has_visual_fidelity_overdense_failed(failed_hypotheses)
@@ -1055,6 +1265,12 @@ def evaluate_candidate_objective(
     visual_fidelity_knobs = implemented_visual_fidelity_knobs(candidate_objective)
     if has_ai_visual_blocker(current_blockers) and not any(visual_fidelity_knobs.values()):
         block_reasons.append("objective_missing_visual_fidelity_implementation_after_ai_block")
+    sidecar_export_present = has_leaf_sidecar_export_implementation(candidate_objective)
+    if has_leaf_artifact_structure_blocker(current_blockers) and not sidecar_export_present:
+        block_reasons.append("objective_missing_leaf_export_background_sidecar_plan")
+    env_value_length_violations = sagemaker_env_value_length_violations(candidate_objective)
+    if env_value_length_violations:
+        block_reasons.append("objective_has_sagemaker_env_value_over_512_chars")
     if has_soft_density_failed(failed_hypotheses) and not has_v18_comparison_plan(candidate_objective):
         block_reasons.append("objective_missing_v18_non_regression_plan_after_soft_density_failure")
     if has_ai_visual_blocker(current_blockers) and not has_visual_qa_plan(candidate_objective):
@@ -1100,6 +1316,9 @@ def evaluate_candidate_objective(
         "density_control_implementation": density_control_knobs,
         "visual_fidelity_implementation": visual_fidelity_knobs,
         "hardcap_quality_repair_implementation": hardcap_quality_repair_knobs,
+        "leaf_sidecar_export_implementation_present": sidecar_export_present,
+        "hard_output_cap_below_leaf_min_violations": cap_violations,
+        "sagemaker_env_value_length_violations": env_value_length_violations,
         "estimated_usd": cost,
         "max_estimated_usd": max_estimated_usd or None,
         "submitted_jobs": submitted_jobs,

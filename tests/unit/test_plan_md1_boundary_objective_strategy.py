@@ -262,6 +262,31 @@ def hard_output_cap_visual_fidelity_quality_regression_attribution() -> dict:
     return attr
 
 
+def visual_sentinel_tile04_underdense_attribution() -> dict:
+    attr = hard_output_cap_visual_fidelity_quality_regression_attribution()
+    attr["hypothesis"] = "r0_visual_sentinel_tile04_leaf_only_proof"
+    attr["tile_id"] = "tile_04"
+    attr["leaf_gate_block_reasons"] = [
+        "leaf_preflight_decision_not_pass",
+        "leaf_required_paths_missing",
+        "splat_vertex_count_below_reference_ratio",
+        "splat_vertex_count_below_hard_min",
+    ]
+    attr["splat_vertex_count"] = 511_000
+    attr["reference_splat_count"] = 956_277
+    attr["observed_reference_ratio"] = 0.53436
+    attr["hard_min_splat_count"] = 765_021
+    attr["failed_density_control_environment"] = {
+        "TRAINING_MAX_OUTPUT_GAUSSIANS": "511000",
+        "TRAINING_DENSITY_CAP_POLICY": "opacity_topk",
+    }
+    attr["failed_density_control_training_config"] = {
+        "max_output_gaussians": 511000,
+        "density_cap_policy": "opacity_topk",
+    }
+    return attr
+
+
 def hard_output_cap_visual_candidate() -> dict:
     candidate = valid_candidate()
     candidate["selected_tile_ids"] = ["tile_10"]
@@ -1360,6 +1385,110 @@ class PlanMd1BoundaryObjectiveStrategyTests(unittest.TestCase):
         self.assertEqual(gate["block_reasons"], [])
         self.assertEqual(gate["hardcap_quality_repair_implementation"]["environment"]["FLOATER_PRUNING_MAX_COLOR_DISTANCE"], "0.18")
         self.assertTrue(gate["early_visual_smoke_plan_present"])
+
+    def test_records_visual_sentinel_tile04_output_cap_underdense_leaf(self):
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=visual_sentinel_tile04_underdense_attribution(),
+            candidate_objective=None,
+            max_estimated_usd=0.75,
+        )
+
+        hypotheses = {item["hypothesis"] for item in report["failed_hypotheses"]}
+        self.assertIn("visual_sentinel_tile04_output_cap_underdense_leaf", hypotheses)
+        self.assertIn("splat_vertex_count_below_reference_ratio", report["current_quality_blockers"])
+        self.assertIn("leaf_required_paths_missing", report["current_quality_blockers"])
+
+    def test_blocks_visual_sentinel_retry_with_same_impossible_cap_and_missing_sidecars(self):
+        candidate = hard_output_cap_visual_candidate()
+        candidate["selected_tile_ids"] = ["tile_04"]
+        candidate["context_support_tile_ids"] = ["tile_10", "tile_13", "tile_01"]
+        candidate["targeted_quality_blockers"].extend(
+            [
+                "leaf_required_paths_missing",
+                "splat_vertex_count_below_reference_ratio",
+                "splat_vertex_count_below_hard_min",
+            ]
+        )
+        candidate["objective_implementation"]["environment"]["MODEL_VARIANT"] = "splatfacto"
+        candidate["objective_implementation"]["training_config"]["model_variant"] = "splatfacto"
+
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=visual_sentinel_tile04_underdense_attribution(),
+            candidate_objective=candidate,
+            max_estimated_usd=0.75,
+        )
+
+        reasons = report["candidate_objective_gate"]["block_reasons"]
+        self.assertIn("objective_repeats_impossible_hard_output_cap_below_leaf_min", reasons)
+        self.assertIn("objective_missing_leaf_export_background_sidecar_plan", reasons)
+        self.assertFalse(report["paid_retry_allowed"])
+
+    def test_allows_visual_sentinel_retry_when_cap_removed_and_sidecar_export_is_planned(self):
+        candidate = hard_output_cap_visual_candidate()
+        candidate["selected_tile_ids"] = ["tile_04"]
+        candidate["context_support_tile_ids"] = ["tile_10", "tile_13", "tile_01"]
+        candidate["targeted_quality_blockers"].extend(
+            [
+                "leaf_required_paths_missing",
+                "splat_vertex_count_below_reference_ratio",
+                "splat_vertex_count_below_hard_min",
+            ]
+        )
+        candidate["objective_changes"].extend(["color_calibration", "leaf_sidecar_export_repair"])
+        env = candidate["objective_implementation"]["environment"]
+        cfg = candidate["objective_implementation"]["training_config"]
+        env.pop("TRAINING_MAX_OUTPUT_GAUSSIANS", None)
+        cfg.pop("max_output_gaussians", None)
+        env["MODEL_VARIANT"] = "splatfacto-w-light"
+        cfg["model_variant"] = "splatfacto-w-light"
+        env["FLOATER_PRUNING_MAX_COLOR_DISTANCE"] = "0.18"
+        cfg["floater_pruning_max_color_distance"] = 0.18
+        candidate["leaf_artifact_plan"] = {
+            "required_paths": [
+                "splat.ply",
+                "training_metadata.json",
+                "training_selection.json",
+                "export_manifest.json",
+                "background_manifest.json",
+                "background_skybox.webp",
+                "floater_pruning_summary.json",
+            ]
+        }
+        candidate["planned_cost_estimate"] = {"estimated_usd": 0.62}
+
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=visual_sentinel_tile04_underdense_attribution(),
+            candidate_objective=candidate,
+            max_estimated_usd=0.75,
+        )
+
+        gate = report["candidate_objective_gate"]
+        self.assertEqual(gate["decision"], "paid_retry_allowed")
+        self.assertEqual(gate["block_reasons"], [])
+        self.assertTrue(gate["leaf_sidecar_export_implementation_present"])
+        self.assertEqual(gate["hard_output_cap_below_leaf_min_violations"], [])
+
+    def test_blocks_candidate_objective_with_sagemaker_env_value_over_512_chars(self):
+        candidate = valid_candidate()
+        candidate["objective_implementation"]["environment"]["TARGETED_QUALITY_BLOCKERS"] = "x" * 513
+
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=attribution(),
+            candidate_objective=candidate,
+            max_estimated_usd=2.0,
+        )
+
+        gate = report["candidate_objective_gate"]
+        self.assertIn("objective_has_sagemaker_env_value_over_512_chars", gate["block_reasons"])
+        self.assertEqual(gate["sagemaker_env_value_length_violations"][0]["key"], "TARGETED_QUALITY_BLOCKERS")
 
 
 if __name__ == "__main__":
