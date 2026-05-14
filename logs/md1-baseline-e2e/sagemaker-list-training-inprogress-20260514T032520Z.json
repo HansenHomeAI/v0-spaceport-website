@@ -1,0 +1,13 @@
+{
+    "TrainingJobSummaries": [
+        {
+            "TrainingJobName": "md1-sample120-ds1500-r20-1778727562",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-sample120-ds1500-r20-1778727562",
+            "CreationTime": "2026-05-13T21:00:00.557000-06:00",
+            "LastModifiedTime": "2026-05-13T21:05:36.327000-06:00",
+            "TrainingJobStatus": "InProgress",
+            "SecondaryStatus": "Training"
+        }
+    ],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTR5RWMiGUv1OCOTS/m6ztUXZhFVBOhchMWG2IRwycrHjzDLwH0rVRZWlp3ICFIeZJxiJi/6GsBv+AANZmfZRTRqnyGbUcQsb+sq/yUuuMltu0U36ijYgMeQ3vLzyEG4W4Qh2VBbLMq6ndC0QB6+TTPKMzFHZFq4cA7WMIXP5jZ2BAUbyx2rFMHyjG2OECE+MMgvuoibsXKcIQkp9sDR6ECEA64B7/4M4t9ahXyC+JZ8ZvpK4hByLasGLGMhtFfNILE5oXs569SVhGTdjrFSz1fPjR+3LaWPRH03jnYiPUpO4OQiQAjb2OcLpJxeV8ffZnWEk+x7mW6U26giz4ix5L8jZ+1tjZAzxhj/LuVVyGp6/Q2y7clBrsyVNw+gTShdxyHq2pe+YXI0G0aB7xaVrBUsR+pyTZODeCNIle0JB7DVk6NlErcuAVRTlMvIXWQ1eK5Lcc7q4YXib58zGxUnASs8bv6CqZnsqRIzKbWgRBlgVbTbsHIs+cfQ3U8gN4xStyfyuoTOAW7o9yWpvf6nJiLTpHZKQr"
+}

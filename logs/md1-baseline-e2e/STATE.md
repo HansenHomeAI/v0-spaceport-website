@@ -1,6 +1,6 @@
 # MD1 Baseline E2E State
 
-updated: 2026-05-13T21:12:50-0600
+updated: 2026-05-13T21:25:52-0600
 branch: agent-113647-md1-baseline-e2e
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -344,3 +344,24 @@ Produce a development-based MD1 baseline with:
 - Fix queued (proven by this run): raise SfM container timeout environment for future runs:
   - set `COLMAP_MONOLITHIC_MAPPER_TIMEOUT_SECONDS=43200` and `COLMAP_BUNDLE_ADJUSTER_TIMEOUT_SECONDS=43200` on the SfM Processing Job in `infrastructure/spaceport_cdk/spaceport_cdk/ml_pipeline_stack.py`
   - next: commit + push + wait for `CDK Deploy` green, then relaunch a single SfM-only execution (`pipelineStep=sfm`) with a new `jobName`.
+
+### 2026-05-13T21:25:52-0600
+
+- Git: on `agent-113647-md1-baseline-e2e` @ `5b1efa21` (pushed).
+- CI:
+  - `CDK Deploy` run `25839478938` -> `success`
+  - `Deploy Next.js to Cloudflare Pages` run `25839635220` -> `success`
+  - Preview URLs proof: `logs/md1-baseline-e2e/pages-preview-urls-25839635220.txt`
+- Step Functions (workaround; required because CF stack may not be updatable):
+  - Patched definition to include SfM env timeouts:
+    - definition: `logs/md1-baseline-e2e/stepfunctions-definition-SpaceportMLPipeline-staging-20260514T032351Z.json`
+    - update response: `logs/md1-baseline-e2e/stepfunctions-update-state-machine-20260514T032351Z.json`
+    - verification: `logs/md1-baseline-e2e/stepfunctions-describe-state-machine-20260514T032351Z.json` (definition contains both timeout env keys)
+- New canonical MD1 baseline execution launched (single retry after proven SfM timeout):
+  - execution: `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-baseline-e2e-20260514032448`
+  - job id/name: `md1-baseline-e2e-20260514032448`
+  - payload: `logs/md1-baseline-e2e/md1-baseline-e2e-20260514032448-payload.json`
+  - start proof: `logs/md1-baseline-e2e/md1-baseline-e2e-20260514032448-start.json`
+  - current stage: `SfMProcessingJob` / `WaitForSfM` (`StepFunctions=RUNNING`)
+  - SageMaker job: `md1-baseline-e2e-20260514032448-sfm` -> `InProgress` (env includes `COLMAP_*_TIMEOUT_SECONDS=43200`)
+  - monitor snapshot: `logs/md1-baseline-e2e/monitor-md1-baseline-e2e-20260514032448-20260514T032552Z.txt`

@@ -1,0 +1,13 @@
+snapshot_utc=20260514T032552Z
+snapshot_local=2026-05-13T21:25:52-0600
+git_branch=agent-113647-md1-baseline-e2e
+git_head=5b1efa21
+aws_account=975050048887
+aws_region=us-west-2
+execution_arn=arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-baseline-e2e-20260514032448
+stepfunctions_status=RUNNING
+sfm_status=InProgress
+colmap_output=s3://spaceport-ml-processing-staging/colmap/md1-baseline-e2e-20260514032448/
+s3_ls: 
+s3_ls: Total Objects: 0
+s3_ls:    Total Size: 0

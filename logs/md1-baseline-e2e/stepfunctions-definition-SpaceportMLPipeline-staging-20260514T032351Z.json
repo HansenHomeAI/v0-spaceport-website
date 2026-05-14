@@ -1,0 +1,452 @@
+{
+  "StartAt": "PipelineStepChoice",
+  "States": {
+    "CompressionJob": {
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "NotifyError",
+          "ResultPath": "$.error"
+        }
+      ],
+      "Next": "WaitForCompressionCompletion",
+      "Parameters": {
+        "AppSpecification": {
+          "ContainerEntrypoint": [
+            "python3",
+            "compress.py"
+          ],
+          "ImageUri.$": "$.compressorImageUri"
+        },
+        "Environment": {
+          "AWS_DEFAULT_REGION": "us-west-2",
+          "PYTHONUNBUFFERED": "1"
+        },
+        "ProcessingInputs": [
+          {
+            "AppManaged": false,
+            "InputName": "gaussian-model",
+            "S3Input": {
+              "LocalPath": "/opt/ml/processing/input",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File",
+              "S3Uri.$": "$.gaussianOutputS3Uri"
+            }
+          }
+        ],
+        "ProcessingJobName.$": "States.Format('{}-compression', $.jobName)",
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "AppManaged": false,
+              "OutputName": "compressed-model",
+              "S3Output": {
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob",
+                "S3Uri.$": "$.compressedOutputS3Uri"
+              }
+            }
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 50
+          }
+        },
+        "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "Compression"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      },
+      "Resource": "arn:aws:states:::aws-sdk:sagemaker:createProcessingJob",
+      "ResultPath": "$.compressionResult",
+      "Type": "Task"
+    },
+    "GaussianTrainingJob": {
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "NotifyError",
+          "ResultPath": "$.error"
+        }
+      ],
+      "Next": "WaitForGaussianCompletion",
+      "Parameters": {
+        "AlgorithmSpecification": {
+          "TrainingImage.$": "$.gaussianImageUri",
+          "TrainingInputMode": "File"
+        },
+        "Environment": {
+          "APPEARANCE_EMBED_DIM.$": "$.APPEARANCE_EMBED_DIM",
+          "AWS_DEFAULT_REGION": "us-west-2",
+          "BACKGROUND_APPEARANCE_MODE.$": "$.BACKGROUND_APPEARANCE_MODE",
+          "BACKGROUND_SELECTION_MAX_FRAMES.$": "$.BACKGROUND_SELECTION_MAX_FRAMES",
+          "BACKGROUND_SELECTION_STRIDE.$": "$.BACKGROUND_SELECTION_STRIDE",
+          "BACKGROUND_SKYBOX_HEIGHT.$": "$.BACKGROUND_SKYBOX_HEIGHT",
+          "BACKGROUND_SKYBOX_QUALITY.$": "$.BACKGROUND_SKYBOX_QUALITY",
+          "BACKGROUND_SKYBOX_WIDTH.$": "$.BACKGROUND_SKYBOX_WIDTH",
+          "BG_SH_DEGREE.$": "$.BG_SH_DEGREE",
+          "BILATERAL_PROCESSING.$": "$.BILATERAL_PROCESSING",
+          "COMMERCIAL_LICENSE": "true",
+          "CUDA_HOME": "/usr/local/cuda",
+          "CULL_ALPHA_THRESH.$": "$.CULL_ALPHA_THRESH",
+          "CULL_SCALE_THRESH.$": "$.CULL_SCALE_THRESH",
+          "ENABLE_ALPHA_LOSS.$": "$.ENABLE_ALPHA_LOSS",
+          "ENABLE_BG_MODEL.$": "$.ENABLE_BG_MODEL",
+          "ENABLE_ROBUST_MASK.$": "$.ENABLE_ROBUST_MASK",
+          "FLOATER_PRUNING_ENABLED.$": "$.FLOATER_PRUNING_ENABLED",
+          "FLOATER_PRUNING_MAX_COLOR_DISTANCE.$": "$.FLOATER_PRUNING_MAX_COLOR_DISTANCE",
+          "FLOATER_PRUNING_MAX_OPACITY.$": "$.FLOATER_PRUNING_MAX_OPACITY",
+          "FLOATER_PRUNING_MIN_EDGE_SUPPORT.$": "$.FLOATER_PRUNING_MIN_EDGE_SUPPORT",
+          "FLOATER_PRUNING_MIN_SKY_VIEWS.$": "$.FLOATER_PRUNING_MIN_SKY_VIEWS",
+          "FLOATER_PRUNING_MIN_VIEWS.$": "$.FLOATER_PRUNING_MIN_VIEWS",
+          "FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN.$": "$.FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN",
+          "FLOATER_PRUNING_SKY_MIN_LUMINANCE.$": "$.FLOATER_PRUNING_SKY_MIN_LUMINANCE",
+          "FLOATER_PRUNING_SKY_MIN_SATURATION.$": "$.FLOATER_PRUNING_SKY_MIN_SATURATION",
+          "FLOATER_PRUNING_TOP_REGION_RATIO.$": "$.FLOATER_PRUNING_TOP_REGION_RATIO",
+          "FLOATER_PRUNING_TOP_VIEW_FRACTION.$": "$.FLOATER_PRUNING_TOP_VIEW_FRACTION",
+          "FRAMEWORK": "nerfstudio",
+          "LD_LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+          "LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+          "LICENSE": "apache_2_0",
+          "LOG_INTERVAL.$": "$.LOG_INTERVAL",
+          "MAX_ITERATIONS.$": "$.MAX_ITERATIONS",
+          "METHODOLOGY": "spaceport_splatfacto_w_light_skybox",
+          "MODEL_VARIANT.$": "$.MODEL_VARIANT",
+          "NEVER_MASK_UPPER.$": "$.NEVER_MASK_UPPER",
+          "OUTPUT_FORMAT": "ply",
+          "PYTHONUNBUFFERED": "1",
+          "RASTERIZE_MODE.$": "$.RASTERIZE_MODE",
+          "SAGEMAKER_PROGRAM": "train.py",
+          "SH_DEGREE.$": "$.SH_DEGREE",
+          "SOGS_COMPATIBLE": "true",
+          "TARGET_PSNR.$": "$.TARGET_PSNR",
+          "TORCH_CUDA_ARCH_LIST.$": "$.TORCH_CUDA_ARCH_LIST",
+          "TRAINING_TIMEOUT_SECONDS.$": "$.TRAINING_TIMEOUT_SECONDS",
+          "USE_SCALE_REGULARIZATION.$": "$.USE_SCALE_REGULARIZATION"
+        },
+        "InputDataConfig": [
+          {
+            "ChannelName": "training",
+            "DataSource": {
+              "S3DataSource": {
+                "S3DataDistributionType": "FullyReplicated",
+                "S3DataType": "S3Prefix",
+                "S3Uri.$": "$.colmapOutputS3Uri"
+              }
+            }
+          }
+        ],
+        "OutputDataConfig": {
+          "S3OutputPath.$": "$.gaussianOutputS3Uri"
+        },
+        "ResourceConfig": {
+          "InstanceCount": 1,
+          "InstanceType": "ml.g5.2xlarge",
+          "VolumeSizeInGB": 100
+        },
+        "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+        "StoppingCondition": {
+          "MaxRuntimeInSeconds": 14400
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "3DGS"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ],
+        "TrainingJobName.$": "States.Format('{}-3dgs', $.jobName)"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:sagemaker:createTrainingJob",
+      "ResultPath": "$.gaussianResult",
+      "Type": "Task"
+    },
+    "IsCompressionComplete": {
+      "Choices": [
+        {
+          "Next": "NotifyUser",
+          "StringEquals": "Completed",
+          "Variable": "$.compressionStatus.ProcessingJobStatus"
+        },
+        {
+          "Next": "NotifyError",
+          "StringEquals": "Failed",
+          "Variable": "$.compressionStatus.ProcessingJobStatus"
+        }
+      ],
+      "Default": "WaitForCompression",
+      "Type": "Choice"
+    },
+    "IsGaussianComplete": {
+      "Choices": [
+        {
+          "Next": "CompressionJob",
+          "StringEquals": "Completed",
+          "Variable": "$.gaussianStatus.TrainingJobStatus"
+        },
+        {
+          "Next": "NotifyError",
+          "StringEquals": "Failed",
+          "Variable": "$.gaussianStatus.TrainingJobStatus"
+        }
+      ],
+      "Default": "WaitForGaussian",
+      "Type": "Choice"
+    },
+    "IsSfMComplete": {
+      "Choices": [
+        {
+          "Next": "GaussianTrainingJob",
+          "StringEquals": "Completed",
+          "Variable": "$.sfmStatus.ProcessingJobStatus"
+        },
+        {
+          "Next": "NotifyError",
+          "StringEquals": "Failed",
+          "Variable": "$.sfmStatus.ProcessingJobStatus"
+        }
+      ],
+      "Default": "WaitForSfM",
+      "Type": "Choice"
+    },
+    "NotifyError": {
+      "End": true,
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:us-west-2:975050048887:function:Spaceport-MLNotification-staging",
+        "Payload": {
+          "email.$": "$.email",
+          "jobId.$": "$.jobId",
+          "s3Url.$": "$.s3Url",
+          "state.$": "$",
+          "status": "failed"
+        }
+      },
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Retry": [
+        {
+          "BackoffRate": 2,
+          "ErrorEquals": [
+            "Lambda.ClientExecutionTimeoutException",
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6
+        }
+      ],
+      "Type": "Task"
+    },
+    "NotifyUser": {
+      "End": true,
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:us-west-2:975050048887:function:Spaceport-MLNotification-staging",
+        "Payload": {
+          "compressedOutputS3Uri.$": "$.compressedOutputS3Uri",
+          "email.$": "$.email",
+          "jobId.$": "$.jobId",
+          "s3Url.$": "$.s3Url",
+          "status": "completed"
+        }
+      },
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "ResultPath": "$.notificationResult",
+      "Retry": [
+        {
+          "BackoffRate": 2,
+          "ErrorEquals": [
+            "Lambda.ClientExecutionTimeoutException",
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6
+        }
+      ],
+      "Type": "Task"
+    },
+    "PipelineStepChoice": {
+      "Choices": [
+        {
+          "Next": "SfMProcessingJob",
+          "StringEquals": "sfm",
+          "Variable": "$.pipelineStep"
+        },
+        {
+          "Next": "GaussianTrainingJob",
+          "StringEquals": "3dgs",
+          "Variable": "$.pipelineStep"
+        },
+        {
+          "Next": "CompressionJob",
+          "StringEquals": "compression",
+          "Variable": "$.pipelineStep"
+        }
+      ],
+      "Default": "SfMProcessingJob",
+      "Type": "Choice"
+    },
+    "SfMProcessingJob": {
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "NotifyError",
+          "ResultPath": "$.error"
+        }
+      ],
+      "Next": "WaitForSfMCompletion",
+      "Parameters": {
+        "AppSpecification": {
+          "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+          ],
+          "ImageUri.$": "$.sfmImageUri"
+        },
+        "Environment": {
+          "AWS_DEFAULT_REGION": "us-west-2",
+          "COLMAP_BUNDLE_ADJUSTER_TIMEOUT_SECONDS": "43200",
+          "COLMAP_MONOLITHIC_MAPPER_TIMEOUT_SECONDS": "43200",
+          "PYTHONUNBUFFERED": "1"
+        },
+        "ProcessingInputs.$": "$.sfmProcessingInputs",
+        "ProcessingJobName.$": "States.Format('{}-sfm', $.jobName)",
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "AppManaged": false,
+              "OutputName": "colmap-output",
+              "S3Output": {
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob",
+                "S3Uri.$": "$.colmapOutputS3Uri"
+              }
+            }
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 100
+          }
+        },
+        "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "SfM"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      },
+      "Resource": "arn:aws:states:::aws-sdk:sagemaker:createProcessingJob",
+      "ResultPath": "$.sfmResult",
+      "Type": "Task"
+    },
+    "WaitForCompression": {
+      "Next": "WaitForCompressionCompletion",
+      "Seconds": 60,
+      "Type": "Wait"
+    },
+    "WaitForCompressionCompletion": {
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "NotifyError",
+          "ResultPath": "$.error"
+        }
+      ],
+      "Next": "IsCompressionComplete",
+      "Parameters": {
+        "ProcessingJobName.$": "States.Format('{}-compression', $.jobName)"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:sagemaker:describeProcessingJob",
+      "ResultPath": "$.compressionStatus",
+      "Type": "Task"
+    },
+    "WaitForGaussian": {
+      "Next": "WaitForGaussianCompletion",
+      "Seconds": 120,
+      "Type": "Wait"
+    },
+    "WaitForGaussianCompletion": {
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "NotifyError",
+          "ResultPath": "$.error"
+        }
+      ],
+      "Next": "IsGaussianComplete",
+      "Parameters": {
+        "TrainingJobName.$": "States.Format('{}-3dgs', $.jobName)"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:sagemaker:describeTrainingJob",
+      "ResultPath": "$.gaussianStatus",
+      "Type": "Task"
+    },
+    "WaitForSfM": {
+      "Next": "WaitForSfMCompletion",
+      "Seconds": 60,
+      "Type": "Wait"
+    },
+    "WaitForSfMCompletion": {
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "NotifyError",
+          "ResultPath": "$.error"
+        }
+      ],
+      "Next": "IsSfMComplete",
+      "Parameters": {
+        "ProcessingJobName.$": "States.Format('{}-sfm', $.jobName)"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:sagemaker:describeProcessingJob",
+      "ResultPath": "$.sfmStatus",
+      "Type": "Task"
+    }
+  },
+  "TimeoutSeconds": 86400
+}
