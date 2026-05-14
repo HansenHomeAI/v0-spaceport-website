@@ -256,7 +256,13 @@ Produce a development-based MD1 baseline with:
 - SfM CloudWatch tail (~last 30m):
   - `logs/md1-baseline-e2e/md1-baseline-e2e-20260513115645-sfm-cloudwatch-tail-20260514T020718Z.txt`
   - most recent observed progress: only `HEARTBEAT` lines with `idle` increasing to `4200s` at `2026-05-14T02:06:59Z`
-- Next fix (proven by this run): bump Step Functions `MLPipelineStateMachine` timeout from `8h` -> `24h` in `infrastructure/spaceport_cdk/spaceport_cdk/ml_pipeline_stack.py` (prevents orchestration timeout while SfM is still running).
+- Fix (proven by this run): bump Step Functions execution timeout from `8h` -> `24h` (prevents orchestration timeout while SfM is still running).
+  - IaC patch committed: `timeout=Duration.hours(24)` in `infrastructure/spaceport_cdk/spaceport_cdk/ml_pipeline_stack.py` (but CloudFormation `SpaceportMLPipelineStagingStack` is currently `UPDATE_ROLLBACK_COMPLETE`, so CDK deploy does not update this stack).
+  - Live workaround applied (authoritative until the stack can be recovered):
+    - definition patched via `aws stepfunctions update-state-machine ...` to set top-level `TimeoutSeconds=86400`
+    - patched definition: `logs/md1-baseline-e2e/stepfunctions-definition-SpaceportMLPipeline-staging-20260514T021842Z.json`
+    - update response: `logs/md1-baseline-e2e/stepfunctions-update-state-machine-20260514T021901Z.json`
+    - verification: `aws stepfunctions describe-state-machine ... --query definition` now returns `TimeoutSeconds=86400`
 - SfM CloudWatch tail (latest):
   - Log stream: `/aws/sagemaker/ProcessingJobs` / `md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048`
   - Tail json: `logs/md1-baseline-e2e/cloudwatch-tail-md1-baseline-e2e-20260513115645-sfm-20260513T230503Z.json`
