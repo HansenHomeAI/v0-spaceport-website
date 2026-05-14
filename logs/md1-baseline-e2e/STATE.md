@@ -1,6 +1,6 @@
 # MD1 Baseline E2E State
 
-updated: 2026-05-14T17:24:39-0600
+updated: 2026-05-14T17:31:17-0600
 branch: agent-113647-md1-baseline-e2e
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -995,3 +995,18 @@ Produce a development-based MD1 baseline with:
   - Compression output still empty because compression has not started: `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-fg-202605142314/`.
 - Next step:
   - Continue monitoring the same foreground-only 3DGS job. Do not launch another retry while this one is active.
+
+### 2026-05-14T17:31:17-0600
+
+- Foreground retry handoff proof:
+  - Command used to inspect logs:
+    - `aws logs get-log-events --log-group-name /aws/sagemaker/TrainingJobs --log-stream-name md1-e2e-vsfm-fg-202605142314-3dgs/algo-1-1778800595 --start-time 1778801232246 --start-from-head --limit 300 | jq -r '.events[].message' | rg -n "ns-train|Executing|Training command|transforms|ERROR|validation passed|Max iterations|Dataparser|completed"`
+  - `ns-process-data` completed far enough to produce and validate `transforms.json`.
+  - `transforms.json` size: `1907101` bytes.
+  - `transforms.json validation passed`.
+  - The accepted training command is now running:
+    - `ns-train splatfacto-w-light --data /tmp/nerfstudio_training/converted_data --output-dir /tmp/nerfstudio_training --vis tensorboard --max_num_iterations 30000 --pipeline.model.sh_degree 3 --logging.steps_per_log 100 --pipeline.model.rasterize_mode classic --pipeline.model.use_scale_regularization False --pipeline.model.cull_alpha_thresh 0.005 --pipeline.model.cull_scale_thresh 0.5 --pipeline.model.enable_bg_model False --pipeline.model.enable_alpha_loss False --pipeline.model.enable_robust_mask False --pipeline.model.bg_sh_degree 4 --pipeline.model.appearance_embed_dim 24 --pipeline.model.never_mask_upper 0.0 --pipeline.model.max-gauss-ratio 10.0 nerfstudio-data --eval-mode fraction --train-split-fraction 0.9`.
+  - No `ERROR` events were present in the log stream at this check.
+- Current gate:
+  - SageMaker still reports `md1-e2e-vsfm-fg-202605142314-3dgs` as `InProgress` / `Training`.
+  - Because the trainer captures `ns-train` subprocess output, iteration metrics may not stream until the command exits; keep using SageMaker terminal state as the live gate.
