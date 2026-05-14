@@ -1,6 +1,6 @@
 # MD1 Baseline E2E State
 
-updated: 2026-05-13T23:20:18-0600
+updated: 2026-05-13T23:31:36-0600
 branch: agent-113647-md1-baseline-e2e
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -419,3 +419,11 @@ Produce a development-based MD1 baseline with:
   - Streams snapshot: `logs/md1-baseline-e2e/cloudwatch-streams-md1-baseline-e2e-20260514032448-sfm-20260514T051731Z.json`
   - Tail txt: `logs/md1-baseline-e2e/md1-baseline-e2e-20260514032448-sfm-cloudwatch-tail-20260514T051815Z.txt`
   - Most recent parsed progress in that tail: `processed=2691/3076` (feature_extractor) at ~`2026-05-14T05:18:15Z`
+
+### 2026-05-13T23:31:36-0600
+
+- SageMaker (this run):
+  - Processing job: `md1-baseline-e2e-20260514032448-sfm` -> still `InProgress`
+- SfM CloudWatch progress:
+  - `aws logs tail ... --since 15m | rg 'Processed file [' | tail -n 1` -> `Processed file [3025/3076]` at `2026-05-14T05:31:11Z` (feature_extractor; nearing completion)
+  - excerpt: `logs/md1-baseline-e2e/sfm-progress-md1-baseline-e2e-20260514032448-20260514T053130Z.txt`
