@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "pushed head 6976c172671ef78ca88c067870f19f3a457063f1 is exact-head green on CDK Deploy 25867862350.",
-  "current_exact_head_gate_status": "exact-head 6976c172671ef78ca88c067870f19f3a457063f1 green on CDK Deploy 25867862350.",
-  "current_live_compute_status": "AWS is still not fully idle, but SageMaker training is now idle. Source-attributed non-MD1/SFM-spine 3DGS training md1-full2157-ds4-r24-1778769804 completed in 5576 billable seconds with artifact s3://spaceport-ml-processing-staging/manual-validations/md1-full-3dgs-r24-20260514T1430Z/3dgs-full2157-ds4-r24-quality-20260514T1443Z/md1-full2157-ds4-r24-1778769804/output/model.tar.gz. Baseline processing md1-baseline-e2e-20260514032448-sfm remains InProgress with Component=SfM/Environment=staging and MaxRuntime=86400. Do not stop jobs from this or other automations; record source attribution only.",
-  "current_rung": "R0_visual_sentinel_v2_quality_plan_guarded_waiting_aws_idle",
+  "current_branch_head": "pushed head 9cdb7e81a6e498ee3293adae9c431986e147ad21 is exact-head green on CDK Deploy 25873024221.",
+  "current_exact_head_gate_status": "exact-head 9cdb7e81a6e498ee3293adae9c431986e147ad21 green on CDK Deploy 25873024221.",
+  "current_live_compute_status": "AWS is still not fully idle. SageMaker processing is idle after baseline processing md1-baseline-e2e-20260514032448-sfm ended Failed with AlgorithmError exit code 1 at 2026-05-14T17:51:18Z; source tags were Component=SfM, Project=Spaceport, Environment=staging. A source-attributed staging 3DGS training job md1-e2e-vsfm-202605141811-3dgs is InProgress/Training on ml.g5.2xlarge with Component=3DGS, Project=Spaceport, Environment=staging, input s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap/, output s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-202605141811/, MaxRuntime=14400. Do not stop jobs from this or other automations; record source attribution only.",
+  "current_rung": "R0_visual_sentinel_v2_executable_early_smoke_guarded_exact_head_green_waiting_aws_idle",
   "evidence_events": [
     {
       "billable_seconds": 412,
@@ -1677,7 +1677,7 @@
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
   "latest_boundary_responsible_tile_plan_status": "boundary primary tile_04/tile_10; horizon primary tile_04/tile_01; tile04 dryrun covers tile01/tile10 context support",
-  "latest_cost_control": "No MD1 compute launched after head 6976c172. Keep no-spend until baseline processing md1-baseline-e2e-20260514032448-sfm is idle; then rerun leaf-submit readiness before one bounded $0.75/2400s tile_04 proof.",
+  "latest_cost_control": "No MD1 compute launched after head 9cdb7e81. Keep no-spend until SageMaker training and processing are both idle; then rerun leaf-submit readiness before one bounded $0.75/2400s tile_04 proof.",
   "latest_evidence": {
     "merge_preflight_summary": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260512.json",
     "review_retry_cloudwatch_tail": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-cloudwatch-tail-20260512.txt",
@@ -1819,7 +1819,7 @@
     "status": "merge_retry1_guard_ready_no_paid_retry_launched",
     "v18_review_launched": false
   },
-  "latest_no_spend_evidence": "R0 v2 executable-smoke dry-run logs/md1-r0-visual-sentinel-v2-leaf-dryrun-executable-smoke-20260514.json submitted no jobs, estimates $0.4907 under the $0.75 cap, and includes visual_qa_plan, viewer_smoke_plan, checkpoint_s3_uris, checkpoint probe command, visual gate command, and stop command template. Head6976 live evidence now shows SageMaker training idle and only baseline processing active.",
+  "latest_no_spend_evidence": "R0 v2 executable-smoke dry-run logs/md1-r0-visual-sentinel-v2-leaf-dryrun-executable-smoke-20260514.json submitted no jobs, estimates $0.4907 under the $0.75 cap, and includes visual_qa_plan, viewer_smoke_plan, checkpoint_s3_uris, checkpoint probe command, visual gate command, and stop command template. Head9cdb live evidence now shows baseline processing terminal Failed and source-attributed staging 3DGS training active.",
   "latest_no_spend_implementation": "Added executable early visual-smoke guards requiring checkpoint S3 probes, visual gate command, and stop command template before paid R0 leaf proofs.",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
@@ -10367,7 +10367,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Wait for SageMaker processing to be idle, rerun leaf-submit readiness for logs/md1-r0-visual-sentinel-v2-leaf-dryrun-executable-smoke-20260514.json on exact green head 6976, and only if allowed submit one bounded tile_04 proof.",
+  "next_unblocked_step": "Wait for SageMaker training and processing to both be idle, rerun leaf-submit readiness for logs/md1-r0-visual-sentinel-v2-leaf-dryrun-executable-smoke-20260514.json on exact green head 9cdb7e81a6e498ee3293adae9c431986e147ad21, and only if allowed submit one bounded tile_04 proof.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -17447,5 +17447,46 @@
       "active_processing_tags_json": "logs/md1-baseline-e2e-20260514032448-sfm-tags-head6976-20260514-1646.json"
     },
     "next": "After SageMaker processing is idle, rerun leaf-submit readiness on exact green head 6976 using the executable-smoke dry-run; if allowed submit at most one bounded tile_04 leaf-only proof under $0.75/2400s."
+  },
+  "md1_r0_visual_sentinel_v2_processing_failed_training_active_head9cdb_20260514": {
+    "summary": "Exact-head 9cdb7e81 remains green on CDK Deploy 25873024221. Baseline processing md1-baseline-e2e-20260514032448-sfm is terminal Failed with AlgorithmError exit code 1, but source-attributed staging 3DGS training md1-e2e-vsfm-202605141811-3dgs is InProgress/Training, so no MD1 compute was launched.",
+    "decision": "hold_paid_md1_proof",
+    "exact_head": "9cdb7e81a6e498ee3293adae9c431986e147ad21",
+    "exact_head_workflow": "CDK Deploy 25873024221 success",
+    "active_training": {
+      "job_name": "md1-e2e-vsfm-202605141811-3dgs",
+      "status": "InProgress/Training",
+      "instance": "ml.g5.2xlarge",
+      "max_runtime_seconds": 14400,
+      "tags": {
+        "Component": "3DGS",
+        "Project": "Spaceport",
+        "Environment": "staging"
+      },
+      "input_s3": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap/",
+      "output_s3": "s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-202605141811/",
+      "source_attribution": "staging 3DGS E2E job; do not stop without orphan evidence"
+    },
+    "terminal_processing": {
+      "job_name": "md1-baseline-e2e-20260514032448-sfm",
+      "status": "Failed",
+      "failure_reason": "AlgorithmError: , exit code: 1",
+      "end_time": "2026-05-14T17:51:18Z",
+      "tags": {
+        "Component": "SfM",
+        "Project": "Spaceport",
+        "Environment": "staging"
+      }
+    },
+    "evidence": [
+      "logs/md1-r0-visual-sentinel-v2-processing-failed-training-active-exact-head-workflows-head9cdb-20260514-1818.json",
+      "logs/md1-r0-visual-sentinel-v2-processing-failed-training-active-live-training-head9cdb-20260514-1818.json",
+      "logs/md1-r0-visual-sentinel-v2-processing-failed-training-active-live-processing-head9cdb-20260514-1818.json",
+      "logs/md1-e2e-vsfm-202605141811-3dgs-active-describe-head9cdb-20260514-1818.json",
+      "logs/md1-e2e-vsfm-202605141811-3dgs-tags-head9cdb-20260514-1818.json",
+      "logs/md1-baseline-e2e-20260514032448-sfm-failed-describe-head9cdb-20260514-1818.json",
+      "logs/md1-baseline-e2e-20260514032448-sfm-tags-head9cdb-20260514-1818.json"
+    ],
+    "next": "Wait for SageMaker training and processing to both be idle, then rerun leaf-submit readiness on the executable-smoke dry-run before any bounded tile_04 proof."
   }
 }
