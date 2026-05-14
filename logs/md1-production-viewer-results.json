@@ -10,8 +10,8 @@
         "viewerUrl": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json",
         "lodLevels": 4,
         "chunkFiles": 44,
-        "chunkMetaRequests": 2,
-        "firstFrameMs": 90.40000000596046,
+        "chunkMetaRequests": 4,
+        "firstFrameMs": 435.5,
         "lodMin": 0,
         "lodMax": 3
       },
@@ -19,14 +19,14 @@
         "width": 1440,
         "height": 960,
         "sampled": 38400,
-        "visibleRatio": 0.3619791666666667,
-        "brightRatio": 0.31692708333333336,
-        "darkRatio": 0.6374739583333333,
-        "meanLuma": 54.355938604166006,
-        "lumaStdDev": 78.40217763365426,
-        "meanColorSpread": 39.701848958333336
+        "visibleRatio": 1,
+        "brightRatio": 0.957265625,
+        "darkRatio": 0,
+        "meanLuma": 189.9542156874978,
+        "lumaStdDev": 54.38598450571158,
+        "meanColorSpread": 49.87002604166667
       },
-      "chunkMetaResponses": 4,
+      "chunkMetaResponses": 5,
       "screenshotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-production-viewer-desktop.png"
     },
     {
@@ -38,8 +38,8 @@
         "viewerUrl": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json",
         "lodLevels": 4,
         "chunkFiles": 44,
-        "chunkMetaRequests": 6,
-        "firstFrameMs": 130.30000001192093,
+        "chunkMetaRequests": 13,
+        "firstFrameMs": 443,
         "lodMin": 2,
         "lodMax": 3
       },
@@ -54,7 +54,7 @@
         "lumaStdDev": 57.00931815697756,
         "meanColorSpread": 47.63912612146308
       },
-      "chunkMetaResponses": 10,
+      "chunkMetaResponses": 13,
       "screenshotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-production-viewer-mobile.png"
     }
   ]

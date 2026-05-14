@@ -1,0 +1,8 @@
+--- poll @ 2026-05-13T18:05:58-06:00 ---
+InProgress start=2026-05-13T11:57:28.961000-06:00
+RUNNING start=2026-05-13T11:56:49.978000-06:00
+2026-05-14T00:01:11.243000+00:00 md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=13429s idle=2520s
+2026-05-14T00:02:11.731000+00:00 md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=13489s idle=2580s
+2026-05-14T00:03:11.083000+00:00 md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=13549s idle=2640s
+2026-05-14T00:04:11.562000+00:00 md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=13609s idle=2700s
+2026-05-14T00:05:11.004000+00:00 md1-baseline-e2e-20260513115645-sfm/algo-1-1778695048 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=13669s idle=2760s
