@@ -1,0 +1,8 @@
+2026-05-14 08:24:43,718 - INFO - Bundled optimized skybox kloppenheim_06_puresky_equirect.webp into SuperSplat bundle
+.2026-05-14 08:24:43,725 - INFO - Bundled fallback skybox kloppenheim_06_puresky_equirect.png into SuperSplat bundle
+.2026-05-14 08:24:43,732 - WARNING - Bundled skybox asset not found at /var/folders/rl/60hgx6_j38v9r57h3sxmg0sc0000gn/T/tmper4z4pg_/missing.png
+.
+----------------------------------------------------------------------
+Ran 3 tests in 0.021s
+
+OK

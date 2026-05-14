@@ -1,0 +1,180 @@
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:07.216252  4195 incremental_pipeline.cc:527] => Image sees 3999 / 9388 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:10.443387  4195 incremental_pipeline.cc:524] Registering image #2688 (num_reg_frames=1350)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:10.443455  4195 incremental_pipeline.cc:527] => Image sees 3428 / 9289 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:13.775353  4195 incremental_pipeline.cc:524] Registering image #2671 (num_reg_frames=1351)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:13.775413  4195 incremental_pipeline.cc:527] => Image sees 3336 / 6663 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:16.800518  4195 incremental_pipeline.cc:524] Registering image #2668 (num_reg_frames=1352)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:16.800583  4195 incremental_pipeline.cc:527] => Image sees 2733 / 8781 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:19.659483  4195 incremental_pipeline.cc:524] Registering image #2700 (num_reg_frames=1353)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:19.659550  4195 incremental_pipeline.cc:527] => Image sees 2835 / 8668 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:22.887777  4195 incremental_pipeline.cc:524] Registering image #2689 (num_reg_frames=1354)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:22.887838  4195 incremental_pipeline.cc:527] => Image sees 3002 / 8766 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:26.106465  4195 incremental_pipeline.cc:524] Registering image #2704 (num_reg_frames=1355)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:26.106562  4195 incremental_pipeline.cc:527] => Image sees 2489 / 6932 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:29.025740  4195 incremental_pipeline.cc:524] Registering image #2610 (num_reg_frames=1356)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:29.025799  4195 incremental_pipeline.cc:527] => Image sees 1999 / 8105 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:31.853344  4195 incremental_pipeline.cc:524] Registering image #2474 (num_reg_frames=1357)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:31.853399  4195 incremental_pipeline.cc:527] => Image sees 2594 / 10624 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:34.770905  4195 incremental_pipeline.cc:524] Registering image #2859 (num_reg_frames=1358)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:34.770972  4195 incremental_pipeline.cc:527] => Image sees 1787 / 8628 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:37.738875  4195 incremental_pipeline.cc:524] Registering image #2858 (num_reg_frames=1359)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:37.738945  4195 incremental_pipeline.cc:527] => Image sees 3266 / 7855 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:40.822976  4195 incremental_pipeline.cc:524] Registering image #2450 (num_reg_frames=1360)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:40.823038  4195 incremental_pipeline.cc:527] => Image sees 2379 / 8422 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:43.670432  4195 incremental_pipeline.cc:524] Registering image #2860 (num_reg_frames=1361)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:43.670498  4195 incremental_pipeline.cc:527] => Image sees 2643 / 9052 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:46.612253  4195 incremental_pipeline.cc:524] Registering image #2451 (num_reg_frames=1362)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:46.612315  4195 incremental_pipeline.cc:527] => Image sees 2366 / 8012 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:49.461180  4195 incremental_pipeline.cc:524] Registering image #2861 (num_reg_frames=1363)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:49.461264  4195 incremental_pipeline.cc:527] => Image sees 2079 / 6493 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:52.433513  4195 incremental_pipeline.cc:524] Registering image #2431 (num_reg_frames=1364)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:52.433573  4195 incremental_pipeline.cc:527] => Image sees 2245 / 8971 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:55.366074  4195 incremental_pipeline.cc:524] Registering image #2894 (num_reg_frames=1365)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:55.366138  4195 incremental_pipeline.cc:527] => Image sees 2380 / 8246 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:58.238619  4195 incremental_pipeline.cc:524] Registering image #2432 (num_reg_frames=1366)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:44:58.238703  4195 incremental_pipeline.cc:527] => Image sees 2408 / 8664 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:01.061831  4195 incremental_pipeline.cc:524] Registering image #2452 (num_reg_frames=1367)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:01.061893  4195 incremental_pipeline.cc:527] => Image sees 1985 / 6453 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:03.828445  4195 incremental_pipeline.cc:524] Registering image #2862 (num_reg_frames=1368)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:03.828508  4195 incremental_pipeline.cc:527] => Image sees 2268 / 7027 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:06.527410  4195 incremental_pipeline.cc:524] Registering image #2453 (num_reg_frames=1369)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:06.527473  4195 incremental_pipeline.cc:527] => Image sees 2100 / 7058 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:09.352746  4195 incremental_pipeline.cc:524] Registering image #2863 (num_reg_frames=1370)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:09.352806  4195 incremental_pipeline.cc:527] => Image sees 2442 / 7306 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:12.294757  4195 incremental_pipeline.cc:524] Registering image #2454 (num_reg_frames=1371)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:12.294823  4195 incremental_pipeline.cc:527] => Image sees 3191 / 7585 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:15.397673  4195 incremental_pipeline.cc:524] Registering image #2455 (num_reg_frames=1372)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:15.397733  4195 incremental_pipeline.cc:527] => Image sees 4435 / 10216 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:18.605840  4195 incremental_pipeline.cc:524] Registering image #2865 (num_reg_frames=1373)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:18.605901  4195 incremental_pipeline.cc:527] => Image sees 5347 / 10406 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:22.114176  4195 incremental_pipeline.cc:524] Registering image #2864 (num_reg_frames=1374)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:22.114238  4195 incremental_pipeline.cc:527] => Image sees 5186 / 7651 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:25.549088  4195 incremental_pipeline.cc:524] Registering image #2437 (num_reg_frames=1375)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:25.549150  4195 incremental_pipeline.cc:527] => Image sees 2284 / 8768 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:28.416218  4195 incremental_pipeline.cc:524] Registering image #2487 (num_reg_frames=1376)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:28.416307  4195 incremental_pipeline.cc:527] => Image sees 1872 / 5516 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:31.333770  4195 incremental_pipeline.cc:524] Registering image #2483 (num_reg_frames=1377)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:31.333833  4195 incremental_pipeline.cc:527] => Image sees 1822 / 8010 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:34.107573  4195 incremental_pipeline.cc:524] Registering image #2667 (num_reg_frames=1378)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:34.107638  4195 incremental_pipeline.cc:527] => Image sees 1953 / 7973 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:36.786130  4195 incremental_pipeline.cc:524] Registering image #2726 (num_reg_frames=1379)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:36.786192  4195 incremental_pipeline.cc:527] => Image sees 1912 / 8012 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:39.771540  4195 incremental_pipeline.cc:524] Registering image #2727 (num_reg_frames=1380)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:39.771605  4195 incremental_pipeline.cc:527] => Image sees 2293 / 8055 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:42.702966  4195 incremental_pipeline.cc:524] Registering image #2743 (num_reg_frames=1381)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:42.703030  4195 incremental_pipeline.cc:527] => Image sees 2027 / 7993 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:45.625108  4195 incremental_pipeline.cc:524] Registering image #2502 (num_reg_frames=1382)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:45.625172  4195 incremental_pipeline.cc:527] => Image sees 2011 / 9404 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:48.677500  4195 incremental_pipeline.cc:524] Registering image #2895 (num_reg_frames=1383)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:48.677556  4195 incremental_pipeline.cc:527] => Image sees 1811 / 8005 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:51.441915  4195 incremental_pipeline.cc:524] Registering image #2745 (num_reg_frames=1384)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:51.441978  4195 incremental_pipeline.cc:527] => Image sees 1593 / 5565 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:54.333554  4195 incremental_pipeline.cc:524] Registering image #2744 (num_reg_frames=1385)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:54.333611  4195 incremental_pipeline.cc:527] => Image sees 2283 / 6063 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:57.077912  4195 incremental_pipeline.cc:524] Registering image #2717 (num_reg_frames=1386)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:57.077976  4195 incremental_pipeline.cc:527] => Image sees 2066 / 9480 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:59.954278  4195 incremental_pipeline.cc:524] Registering image #2473 (num_reg_frames=1387)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:45:59.954384  4195 incremental_pipeline.cc:527] => Image sees 2551 / 11164 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:02.977246  4195 incremental_pipeline.cc:524] Registering image #2472 (num_reg_frames=1388)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:02.977303  4195 incremental_pipeline.cc:527] => Image sees 2584 / 11414 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:06.090204  4195 incremental_pipeline.cc:524] Registering image #2471 (num_reg_frames=1389)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:06.090261  4195 incremental_pipeline.cc:527] => Image sees 3066 / 11275 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:09.274715  4195 incremental_pipeline.cc:524] Registering image #2470 (num_reg_frames=1390)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:09.274780  4195 incremental_pipeline.cc:527] => Image sees 3063 / 10513 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:12.390751  4195 incremental_pipeline.cc:524] Registering image #2627 (num_reg_frames=1391)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:12.390811  4195 incremental_pipeline.cc:527] => Image sees 1934 / 7642 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:15.269812  4195 incremental_pipeline.cc:524] Registering image #2409 (num_reg_frames=1392)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:15.269869  4195 incremental_pipeline.cc:527] => Image sees 2197 / 8670 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:18.272230  4195 incremental_pipeline.cc:524] Registering image #2591 (num_reg_frames=1393)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:18.272289  4195 incremental_pipeline.cc:527] => Image sees 1590 / 10436 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:20.717069  4195 incremental_pipeline.cc:524] Registering image #2590 (num_reg_frames=1394)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:20.717137  4195 incremental_pipeline.cc:527] => Image sees 2069 / 10497 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:23.266983  4195 incremental_pipeline.cc:524] Registering image #2592 (num_reg_frames=1395)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:23.267042  4195 incremental_pipeline.cc:527] => Image sees 2073 / 9992 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:26.106088  4195 incremental_pipeline.cc:524] Registering image #2589 (num_reg_frames=1396)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:26.106153  4195 incremental_pipeline.cc:527] => Image sees 2232 / 10235 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:29.067061  4195 incremental_pipeline.cc:524] Registering image #2595 (num_reg_frames=1397)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:29.067126  4195 incremental_pipeline.cc:527] => Image sees 1790 / 10059 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:32.172765  4195 incremental_pipeline.cc:524] Registering image #2594 (num_reg_frames=1398)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:32.172858  4195 incremental_pipeline.cc:527] => Image sees 2277 / 10110 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:35.467743  4195 incremental_pipeline.cc:524] Registering image #2593 (num_reg_frames=1399)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:35.467806  4195 incremental_pipeline.cc:527] => Image sees 2537 / 10049 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:38.571748  4195 incremental_pipeline.cc:524] Registering image #2609 (num_reg_frames=1400)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:38.571811  4195 incremental_pipeline.cc:527] => Image sees 2525 / 7976 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:41.586232  4195 incremental_pipeline.cc:524] Registering image #2596 (num_reg_frames=1401)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:41.586297  4195 incremental_pipeline.cc:527] => Image sees 2411 / 9545 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:44.921362  4195 incremental_pipeline.cc:524] Registering image #2588 (num_reg_frames=1402)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:44.921422  4195 incremental_pipeline.cc:527] => Image sees 2715 / 9537 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:48.235405  4195 incremental_pipeline.cc:524] Registering image #2608 (num_reg_frames=1403)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:48.235466  4195 incremental_pipeline.cc:527] => Image sees 2606 / 7625 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:50.821663  4195 incremental_pipeline.cc:524] Registering image #2587 (num_reg_frames=1404)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:50.821725  4195 incremental_pipeline.cc:527] => Image sees 2446 / 8737 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:54.000329  4195 incremental_pipeline.cc:524] Registering image #2699 (num_reg_frames=1405)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:54.000392  4195 incremental_pipeline.cc:527] => Image sees 2172 / 8283 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:56.987177  4195 incremental_pipeline.cc:524] Registering image #2496 (num_reg_frames=1406)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:56.987239  4195 incremental_pipeline.cc:527] => Image sees 1732 / 6720 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:59.824900  4195 incremental_pipeline.cc:524] Registering image #2419 (num_reg_frames=1407)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:46:59.824968  4195 incremental_pipeline.cc:527] => Image sees 2209 / 10281 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:02.915755  4195 incremental_pipeline.cc:524] Registering image #2546 (num_reg_frames=1408)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:02.915834  4195 incremental_pipeline.cc:527] => Image sees 1746 / 6491 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:05.693817  4195 incremental_pipeline.cc:524] Registering image #2469 (num_reg_frames=1409)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:05.693881  4195 incremental_pipeline.cc:527] => Image sees 2130 / 9736 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:08.819080  4195 incremental_pipeline.cc:524] Registering image #2597 (num_reg_frames=1410)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:08.819146  4195 incremental_pipeline.cc:527] => Image sees 1790 / 9086 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:11.904711  4195 incremental_pipeline.cc:524] Registering image #2690 (num_reg_frames=1411)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:11.904776  4195 incremental_pipeline.cc:527] => Image sees 2008 / 7709 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:15.039373  4195 incremental_pipeline.cc:524] Registering image #2659 (num_reg_frames=1412)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:15.039439  4195 incremental_pipeline.cc:527] => Image sees 1972 / 5714 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:17.982616  4195 incremental_pipeline.cc:524] Registering image #2465 (num_reg_frames=1413)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:17.982683  4195 incremental_pipeline.cc:527] => Image sees 1643 / 7326 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:20.757668  4195 incremental_pipeline.cc:524] Registering image #2613 (num_reg_frames=1414)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:20.757727  4195 incremental_pipeline.cc:527] => Image sees 1773 / 7140 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:23.434304  4195 incremental_pipeline.cc:524] Registering image #2645 (num_reg_frames=1415)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:23.434368  4195 incremental_pipeline.cc:527] => Image sees 1855 / 7244 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:26.206713  4195 incremental_pipeline.cc:524] Registering image #2628 (num_reg_frames=1416)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:26.206772  4195 incremental_pipeline.cc:527] => Image sees 1621 / 8608 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:29.128731  4195 incremental_pipeline.cc:524] Registering image #2646 (num_reg_frames=1417)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:29.128790  4195 incremental_pipeline.cc:527] => Image sees 2105 / 8435 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:31.957525  4195 incremental_pipeline.cc:524] Registering image #2647 (num_reg_frames=1418)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:31.957583  4195 incremental_pipeline.cc:527] => Image sees 2674 / 9213 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:34.864553  4195 incremental_pipeline.cc:524] Registering image #2629 (num_reg_frames=1419)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:34.864641  4195 incremental_pipeline.cc:527] => Image sees 2117 / 6686 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:37.839474  4195 incremental_pipeline.cc:524] Registering image #2648 (num_reg_frames=1420)
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:37.839541  4195 incremental_pipeline.cc:527] => Image sees 2967 / 9531 points
+COLMAP[mapper_spatial_sequential_only] I20260514 13:47:40.813762  4195 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=28658s idle=60s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=28718s idle=120s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=28778s idle=180s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=28838s idle=240s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=28898s idle=300s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=28958s idle=360s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=29018s idle=420s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=29078s idle=480s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=29138s idle=540s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=29198s idle=600s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=29258s idle=660s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=29318s idle=720s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=29378s idle=780s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=29438s idle=840s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=29498s idle=900s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=29558s idle=960s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=29618s idle=1020s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=29678s idle=1080s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=29738s idle=1140s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=29798s idle=1200s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=29858s idle=1260s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=29918s idle=1320s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=29978s idle=1380s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=30038s idle=1440s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=30098s idle=1500s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=30158s idle=1560s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=30218s idle=1620s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=30278s idle=1680s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=30338s idle=1740s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=30398s idle=1800s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=30458s idle=1860s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=30518s idle=1920s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=30578s idle=1980s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=30638s idle=2040s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=30698s idle=2100s
+COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=30759s idle=2160s

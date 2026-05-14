@@ -1,6 +1,6 @@
 # MD1 Baseline E2E State
 
-updated: 2026-05-14T06:40:06-0600
+updated: 2026-05-14T08:24:23-0600
 branch: agent-113647-md1-baseline-e2e
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -27,7 +27,7 @@ Produce a development-based MD1 baseline with:
 - Development ML bucket: `spaceport-ml-processing-staging`
 - Active external canary at setup: `md1-sample5-cpu-r8-1778692401`; still `InProgress` with `TrainingTimeInSeconds=1938` at 2026-05-13T11:47:00-06:00.
 - That canary is owned by the separate SFM reality-check lineage (`CODE_HEAD=e0ed962f...`) and must not be stopped or counted as this run.
-- Automation created: `md1-baseline-e2e-monitor` hourly.
+- Automation correction: `md1-baseline-e2e-monitor` is now `PAUSED` because it was a standalone `cron` automation with no `target_thread_id`, which caused a new chat card on each run. Do not re-enable this standalone cron unless the user explicitly accepts that behavior; continue from this chat plus this `STATE.md` ledger until a thread-bound heartbeat automation is available.
 - Branch preview uses shared staging ML outputs from `SpaceportMLPipelineStagingStack`; Pages output resolution now allows that fallback stack when it is in `UPDATE_ROLLBACK_COMPLETE` but still serving required outputs.
 
 ## Completed In This Branch
@@ -612,3 +612,32 @@ Produce a development-based MD1 baseline with:
 - No-spend regression check:
   - `python3 -m unittest tests.unit.test_sogs_supersplat_bundle` -> `OK`
   - output: `logs/md1-baseline-e2e/no-spend-unittest-test_sogs_supersplat_bundle-20260514T134020Z.txt`
+
+### 2026-05-14T08:24:23-0600
+
+- Automation correction:
+  - Paused `/Users/gabrielhansen/.codex/automations/md1-baseline-e2e-monitor/automation.toml`.
+  - Confirmed `status = "PAUSED"` and `kind = "cron"`.
+  - Root cause of new chat cards: the cron automation has no `target_thread_id`; the current thread id is `019e2268-9fed-7593-9318-a4e8d1045849`, but the available automation tool for this session only exposes standalone cron automation fields.
+  - Next automation policy: do not re-enable the standalone cron; use this chat plus `STATE.md`/`logs/agent-loop.log` as the durable resume surface unless a thread-bound heartbeat automation becomes available.
+- Git: on `agent-113647-md1-baseline-e2e` @ `84efb4ed` before this ledger update.
+- Step Functions (current run):
+  - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-baseline-e2e-20260514032448` -> `RUNNING`
+  - describe snapshot: `logs/md1-baseline-e2e/stepfunctions-describe-md1-baseline-e2e-20260514032448-20260514T142423Z.json`
+  - history snapshot (reverse): `logs/md1-baseline-e2e/stepfunctions-history-reverse-md1-baseline-e2e-20260514032448-20260514T142423Z.json`
+- SageMaker (current run):
+  - Processing job: `md1-baseline-e2e-20260514032448-sfm` -> `InProgress`
+  - Output prefix (still empty because `S3UploadMode=EndOfJob`): `s3://spaceport-ml-processing-staging/colmap/md1-baseline-e2e-20260514032448/`
+  - describe snapshot: `logs/md1-baseline-e2e/sagemaker-describe-md1-baseline-e2e-20260514032448-sfm-20260514T142423Z.json`
+  - S3 listing snapshot: `logs/md1-baseline-e2e/s3api-colmap-md1-baseline-e2e-20260514032448-20260514T142423Z.json` (`Contents` absent/empty)
+- SageMaker active inventory:
+  - Processing jobs InProgress: `md1-baseline-e2e-20260514032448-sfm` only.
+  - Training jobs InProgress: none.
+  - snapshots: `logs/md1-baseline-e2e/sagemaker-list-processing-InProgress-20260514T142423Z.json`, `logs/md1-baseline-e2e/sagemaker-list-training-InProgress-20260514T142423Z.json`
+- SfM CloudWatch progress:
+  - Stream: `/aws/sagemaker/ProcessingJobs` / `md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134`
+  - Tail snapshots: `logs/md1-baseline-e2e/md1-baseline-e2e-20260514032448-sfm-cloudwatch-tail-20260514T142423Z.json`, `logs/md1-baseline-e2e/md1-baseline-e2e-20260514032448-sfm-cloudwatch-tail-20260514T142423Z.txt`
+  - Most recent evidence: mapper resumed after the earlier long idle stretch, registered images through `num_reg_frames=1420` at `2026-05-14T13:47:37Z`, then entered `Retriangulation and Global bundle adjustment` at `2026-05-14T13:47:40Z`; latest heartbeat in this tail is `elapsed=30759s idle=2160s` (no error lines observed).
+- No-spend regression check:
+  - `python3 -m unittest tests.unit.test_sogs_supersplat_bundle` -> `OK`
+  - output: `logs/md1-baseline-e2e/no-spend-unittest-test_sogs_supersplat_bundle-20260514T142423Z.txt`
