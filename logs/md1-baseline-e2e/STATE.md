@@ -739,3 +739,43 @@ Produce a development-based MD1 baseline with:
   - Training jobs InProgress: none at this poll.
 - Next step:
   - Poll again soon for either mapper completion/S3 EndOfJob upload or a concrete timeout/failure.
+
+### 2026-05-14T12:11:56-0600
+
+- Canonical SfM retry ended without usable COLMAP output:
+  - Step Functions execution `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-baseline-e2e-20260514032448` ended `SUCCEEDED` only because the pipeline notified failure via `NotifyError`; this is not a successful training pipeline completion.
+  - SageMaker processing job `md1-baseline-e2e-20260514032448-sfm` -> `Failed`.
+  - Processing end time: `2026-05-14T11:51:18-0600`.
+  - SageMaker failure reason: `AlgorithmError: , exit code: 1`.
+  - S3 output prefix contains only `sfm_metadata.json`, not trainable COLMAP sparse output:
+    - `s3://spaceport-ml-processing-staging/colmap/md1-baseline-e2e-20260514032448/sfm_metadata.json`
+  - Metadata failure stage: `mapper_spatial_sequential_only`.
+  - Metadata failure detail: `GPS-first mapper failed: mapper_spatial_sequential_only timed out after 43200s`.
+  - Last useful mapper progress before timeout: `num_reg_frames=1560`, then `Retriangulation and Global bundle adjustment`.
+  - Command evidence:
+    - `aws sagemaker describe-processing-job --processing-job-name md1-baseline-e2e-20260514032448-sfm`
+    - `aws s3 cp s3://spaceport-ml-processing-staging/colmap/md1-baseline-e2e-20260514032448/sfm_metadata.json -`
+    - `aws logs get-log-events --log-group-name /aws/sagemaker/ProcessingJobs --log-stream-name md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 --limit 200 --no-start-from-head`
+- Continuation decision:
+  - Did not relaunch full SfM.
+  - Verified no running Step Functions executions for `SpaceportMLPipeline-staging`, no InProgress SageMaker processing jobs, and no InProgress training jobs before launching a bounded downstream continuation.
+  - Verified existing validated SfM reference has required COLMAP structure:
+    - `s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap/`
+    - sample keys include `database.db`, `images/DJI_0001.JPG`, `sparse/0/cameras.txt`, `sparse/0/images.txt`, `sparse/0/points3D.txt`, `sparse/0/frames.txt`, and `sparse/0/rigs.txt`.
+- New canonical continuation:
+  - Started one 3DGS-only Step Functions execution from the validated SfM reference.
+  - Command:
+    - `aws stepfunctions start-execution --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --name execution-md1-e2e-vsfm-202605141811 --input <3dgs-only input>`
+  - Execution ARN:
+    - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-202605141811`
+  - Job id/name: `md1-e2e-vsfm-202605141811`.
+  - `pipelineStep`: `3dgs`.
+  - `colmapOutputS3Uri`: `s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap/`.
+  - `gaussianOutputS3Uri`: `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-202605141811/`.
+  - `compressedOutputS3Uri`: `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-202605141811/`.
+  - 3DGS SageMaker training job: `md1-e2e-vsfm-202605141811-3dgs`.
+  - Training instance/runtime: `ml.g5.2xlarge`, `MaxRuntimeInSeconds=14400`.
+  - Training image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:latest`.
+  - Initial training status: `InProgress`, secondary status `Pending` (waiting for capacity).
+- Next step:
+  - Monitor `md1-e2e-vsfm-202605141811-3dgs` until it starts training or fails; then validate 3DGS output and compression handoff.
