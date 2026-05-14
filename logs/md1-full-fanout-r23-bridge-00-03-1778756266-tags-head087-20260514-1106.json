@@ -1,0 +1,32 @@
+{
+    "Tags": [
+        {
+            "Key": "Project",
+            "Value": "Spaceport"
+        },
+        {
+            "Key": "ParentFanout",
+            "Value": "r23"
+        },
+        {
+            "Key": "Branch",
+            "Value": "agent-73948216-sfm-production-spine"
+        },
+        {
+            "Key": "FanoutProof",
+            "Value": "true"
+        },
+        {
+            "Key": "Benchmark",
+            "Value": "true"
+        },
+        {
+            "Key": "Component",
+            "Value": "SfM"
+        },
+        {
+            "Key": "BridgeLeaf",
+            "Value": "00-03"
+        }
+    ]
+}
