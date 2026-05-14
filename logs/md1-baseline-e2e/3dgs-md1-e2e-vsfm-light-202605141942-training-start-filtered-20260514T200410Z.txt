@@ -1,0 +1,30 @@
+1:✅ sitecustomize: filtered deprecated CUDA arch flags (TORCH_CUDA_ARCH_LIST=8.0 8.6)
+5:✅ TORCH_CUDA_ARCH_LIST=8.0 8.6
+6:✅ CUDAARCHS=70;80;86
+7:✅ LD_LIBRARY_PATH=/opt/conda/lib/python3.10/site-packages/cv2/../../lib64:/usr/local/cuda/lib64:/usr/local/cuda/lib
+8:✅ LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib
+10:2026-05-14 19:46:05,908 - INFO - 📦 Framework: NerfStudio with splatfacto-w-light
+17:2026-05-14 19:46:05,918 - INFO - 📝 Override model.variant = splatfacto-w-light (from MODEL_VARIANT)
+45:2026-05-14 19:46:05,920 - INFO - 🚀 NerfStudio Trainer initialized (Spaceport splatfacto-w-light)
+53:2026-05-14 19:46:07,115 - INFO - 📊 COLMAP Data Validation:
+54:2026-05-14 19:46:07,115 - INFO -    Cameras: 1
+55:2026-05-14 19:46:07,115 - INFO -    Images registered: 2157
+57:2026-05-14 19:46:07,115 - INFO -    3D points: 1312804
+92:2026-05-14 19:46:08,047 - INFO - ✅ COLMAP data validation passed - converting to NerfStudio format
+94:2026-05-14 19:46:08,048 - INFO - 🔄 Converting COLMAP TXT to BIN (required by ns-process-data)...
+106:2026-05-14 19:46:24,500 - INFO - ✅ COLMAP TXT→BIN conversion completed successfully
+108:2026-05-14 19:46:24,500 - INFO -    ns-process-data images --data /opt/ml/input/data/training/images --output-dir /tmp/nerfstudio_training/converted_data --skip-colmap --colmap-model-path /tmp/nerfstudio_training/colmap_bin/0
+109:2026-05-14 19:52:10,809 - INFO - 📊 ns-process-data STDOUT:
+110:2026-05-14 19:52:10,810 - INFO -    STDOUT: ✅ sitecustomize: filtered deprecated CUDA arch flags (TORCH_CUDA_ARCH_LIST=8.0 8.6)
+113:2026-05-14 19:52:10,810 - INFO -    STDOUT: [19:52:09] 🎉 🎉 🎉 All DONE 🎉 🎉 🎉                                                images_to_nerfstudio_dataset.py:135
+117:2026-05-14 19:52:10,810 - INFO - 📊 ns-process-data STDERR:
+120:2026-05-14 19:52:10,810 - INFO - 🔍 COMPREHENSIVE transforms.json validation...
+121:2026-05-14 19:52:10,927 - INFO - 📄 transforms.json file size: 1907101 bytes
+167:2026-05-14 19:52:10,930 - INFO - ✅ transforms.json validation passed
+170:2026-05-14 19:52:10,957 - INFO - 🔥 Starting NerfStudio training (splatfacto-w-light)
+173:2026-05-14 19:52:10,957 - INFO -    Model: splatfacto-w-light
+186:2026-05-14 19:52:10,958 - INFO -    Dataparser: transforms.json (via ns-process-data conversion)
+190:2026-05-14 19:52:10,958 - INFO - 📄 NerfStudio parser: nerfstudio-data with fraction eval split
+191:2026-05-14 19:52:10,958 - INFO - 🚀 Executing NerfStudio training command:
+192:2026-05-14 19:52:10,958 - INFO -    ns-train splatfacto-w-light --data /tmp/nerfstudio_training/converted_data --output-dir /tmp/nerfstudio_training --vis tensorboard --max_num_iterations 30000 --pipeline.model.sh_degree 3 --logging.steps_per_log 100 --pipeline.model.rasterize_mode classic --pipeline.model.use_scale_regularization True --pipeline.model.cull_alpha_thresh 0.12 --pipeline.model.cull_scale_thresh 0.35 --pipeline.model.enable_bg_model True --pipeline.model.enable_alpha_loss True --pipeline.model.enable_robust_mask True --pipeline.model.bg_sh_degree 8 --pipeline.model.appearance_embed_dim 64 --pipeline.model.never_mask_upper 0.4 --pipeline.model.max-gauss-ratio 10.0 nerfstudio-data --eval-mode fraction --train-split-fraction 0.9
+195:2026-05-14 19:52:10,958 - INFO - 🐍 PYTHONPATH for ns-train: /opt/ml/code:/opt/ml/code:

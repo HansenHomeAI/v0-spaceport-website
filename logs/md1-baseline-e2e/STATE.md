@@ -876,3 +876,53 @@ Produce a development-based MD1 baseline with:
   - Commit/push the proven parser-method fix and retry evidence.
   - Wait for exact-head `CDK Deploy` and `Trigger ML Container Build`.
   - Only after the branch image proves `splatfacto-w-light`, rerun the smallest stage: 3DGS from `s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap/`.
+
+### 2026-05-14T14:04:10-0600
+
+- Git:
+  - Committed and pushed parser-method fix: `638da632f507c7b2f86ffa914101d0a6758bdc25` (`fix: use generic splatfacto-w light parser`).
+  - Branch: `agent-113647-md1-baseline-e2e`.
+- Exact-head workflow gate for `638da632`:
+  - `CDK Deploy` run `25880748077` -> `success`.
+  - `Trigger ML Container Build` run `25880748113` -> `success`.
+  - Run snapshot: `logs/md1-baseline-e2e/gh-runs-agent-113647-md1-baseline-e2e-20260514T194123Z.json`.
+- Branch 3DGS image build:
+  - CodeBuild: `spaceport-ml-containers:ede36622-9ae1-4c5b-a15e-8f60d82a6724` -> `SUCCEEDED`.
+  - Source version: `638da632f507c7b2f86ffa914101d0a6758bdc25`.
+  - Build env: `CONTAINERS_TO_BUILD=3dgs`, `BRANCH_SUFFIX=agent113647md1baselinee2e`.
+  - Snapshot: `logs/md1-baseline-e2e/codebuild-spaceport-ml-containers-ede36622-20260514T194123Z.json`.
+  - Critical no-spend build gate passed inside the Docker build:
+    - `RUN ns-train splatfacto-w-light --help > /dev/null && echo "✅ splatfacto-w-light CLI available"`.
+    - Proof: `logs/md1-baseline-e2e/codebuild-3dgs-light-cli-proof-ede36622-20260514T194123Z.txt`.
+  - ECR branch tag now points to digest `sha256:6b3b2492af7a268cfc5f233e87bdce51c47492ada4c3630f723114ffa464fd0c`.
+  - ECR proof: `logs/md1-baseline-e2e/ecr-spaceport-3dgs-agent113647md1baselinee2e-20260514T194123Z.json`.
+- New canonical 3DGS-only retry launched after branch image proof:
+  - Execution ARN: `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-light-202605141942`.
+  - Job id/name: `md1-e2e-vsfm-light-202605141942`.
+  - SageMaker training job: `md1-e2e-vsfm-light-202605141942-3dgs`.
+  - `pipelineStep`: `3dgs`.
+  - `MODEL_VARIANT`: `splatfacto-w-light`.
+  - 3DGS image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent113647md1baselinee2e`.
+  - Input COLMAP: `s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap/`.
+  - 3DGS output: `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-light-202605141942/`.
+  - Compression output: `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-light-202605141942/`.
+  - Payload: `logs/md1-baseline-e2e/md1-e2e-vsfm-light-202605141942-payload.json`.
+  - Start proof: `logs/md1-baseline-e2e/md1-e2e-vsfm-light-202605141942-start.json`.
+- Latest runtime status:
+  - Step Functions execution is `RUNNING`.
+  - Training job is `InProgress`, secondary status `Training`.
+  - Training started at `2026-05-14T13:41:44-0600`; image download ended and training phase began at `2026-05-14T13:46:01-0600`.
+  - Current log stream: `/aws/sagemaker/TrainingJobs` / `md1-e2e-vsfm-light-202605141942-3dgs/algo-1-1778787704`.
+  - COLMAP validation passed again: `Cameras: 1`, `Images registered: 2157`, `3D points: 1312804`.
+  - `ns-process-data` completed and `transforms.json` validation passed.
+  - Current `ns-train` command was accepted and is running beyond the previous quick parser failures:
+    - `ns-train splatfacto-w-light --data /tmp/nerfstudio_training/converted_data --output-dir /tmp/nerfstudio_training --vis tensorboard --max_num_iterations 30000 ... nerfstudio-data --eval-mode fraction --train-split-fraction 0.9`.
+  - Important caveat: this trainer invocation uses `subprocess.run(..., capture_output=True)`, so NerfStudio iteration logs will appear only after the subprocess exits; SageMaker status is the live progress gate until completion/failure.
+- Active job inventory at launch:
+  - Running Step Functions executions before launch: none.
+  - Processing jobs InProgress: none.
+  - External training job observed: `md1-r0vissent-v3density-1778787389-tile-04`; left untouched.
+- Next step:
+  - Continue polling `md1-e2e-vsfm-light-202605141942-3dgs` for terminal status.
+  - If it fails, capture the exact log tail and patch only that failure.
+  - If it completes, validate `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-light-202605141942/`, then monitor/validate compression and wire the final viewer.
