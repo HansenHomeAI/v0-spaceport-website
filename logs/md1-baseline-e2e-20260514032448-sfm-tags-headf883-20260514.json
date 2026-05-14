@@ -1,0 +1,16 @@
+{
+    "Tags": [
+        {
+            "Key": "Component",
+            "Value": "SfM"
+        },
+        {
+            "Key": "Project",
+            "Value": "Spaceport"
+        },
+        {
+            "Key": "Environment",
+            "Value": "staging"
+        }
+    ]
+}

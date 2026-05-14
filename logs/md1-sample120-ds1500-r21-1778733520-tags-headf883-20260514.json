@@ -1,0 +1,28 @@
+{
+    "Tags": [
+        {
+            "Key": "Validation",
+            "Value": "md1-sample120-ds1500-r21-model-config-canary"
+        },
+        {
+            "Key": "Project",
+            "Value": "Spaceport"
+        },
+        {
+            "Key": "Environment",
+            "Value": "agent73948216sfmproductionspine"
+        },
+        {
+            "Key": "Component",
+            "Value": "3DGS"
+        },
+        {
+            "Key": "CodeHead",
+            "Value": "b97239e69498412f8391a4ba31216bf268f46385"
+        },
+        {
+            "Key": "EcrDigest",
+            "Value": "45ac356881ad89d88b1a6aa19581c0d86d08b42fcc0b2fafbaba6760243cd964"
+        }
+    ]
+}
