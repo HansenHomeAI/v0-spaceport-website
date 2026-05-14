@@ -1,0 +1,57 @@
+{
+    "ProcessingInputs": [
+        {
+            "InputName": "gaussian-model",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-light-202605141942/",
+                "LocalPath": "/opt/ml/processing/input",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated"
+            }
+        }
+    ],
+    "ProcessingOutputConfig": {
+        "Outputs": [
+            {
+                "OutputName": "compressed-model",
+                "S3Output": {
+                    "S3Uri": "s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-light-202605141942/",
+                    "LocalPath": "/opt/ml/processing/output",
+                    "S3UploadMode": "EndOfJob"
+                },
+                "AppManaged": false
+            }
+        ]
+    },
+    "ProcessingJobName": "md1-e2e-vsfm-light-202605141942-compression",
+    "ProcessingResources": {
+        "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 50
+        }
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 86400
+    },
+    "AppSpecification": {
+        "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor:agent113647md1baselinee2e",
+        "ContainerEntrypoint": [
+            "python3",
+            "compress.py"
+        ]
+    },
+    "Environment": {
+        "AWS_DEFAULT_REGION": "us-west-2",
+        "PYTHONUNBUFFERED": "1"
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-e2e-vsfm-light-202605141942-compression",
+    "ProcessingJobStatus": "Completed",
+    "ProcessingEndTime": "2026-05-14T17:08:26.604000-06:00",
+    "ProcessingStartTime": "2026-05-14T17:01:36.838000-06:00",
+    "LastModifiedTime": "2026-05-14T17:10:47.332000-06:00",
+    "CreationTime": "2026-05-14T17:00:45.164000-06:00"
+}
