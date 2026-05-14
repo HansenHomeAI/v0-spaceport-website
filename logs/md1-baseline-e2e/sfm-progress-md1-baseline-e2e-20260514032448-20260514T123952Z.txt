@@ -1,0 +1,253 @@
+# progress excerpt
+# source: logs/md1-baseline-e2e/md1-baseline-e2e-20260514032448-sfm-cloudwatch-tail-12h-20260514T123726Z.txt
+
+39668:2026-05-14T09:58:25.246000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=14841s idle=2580s
+39669:2026-05-14T09:59:25.945000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=14901s idle=2640s
+39670:2026-05-14T10:00:25.641000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=14961s idle=2700s
+39671:2026-05-14T10:01:25.400000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=15021s idle=2760s
+39672:2026-05-14T10:02:25.177000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=15081s idle=2820s
+39673:2026-05-14T10:03:25.645000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=15141s idle=2880s
+39674:2026-05-14T10:04:25.405000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=15201s idle=2940s
+39675:2026-05-14T10:05:26.012000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=15261s idle=3000s
+39676:2026-05-14T10:06:25.657000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=15321s idle=3060s
+39677:2026-05-14T10:07:25.161000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=15381s idle=3120s
+39678:2026-05-14T10:08:25.617000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=15441s idle=3180s
+39679:2026-05-14T10:09:25.381000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=15501s idle=3240s
+39680:2026-05-14T10:10:25.981000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=15561s idle=3300s
+39681:2026-05-14T10:11:25.533000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=15621s idle=3360s
+39682:2026-05-14T10:12:26.014000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=15681s idle=3420s
+39683:2026-05-14T10:13:25.641000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=15742s idle=3480s
+39684:2026-05-14T10:14:26.143000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=15802s idle=3540s
+39685:2026-05-14T10:15:25.793000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=15862s idle=3600s
+39686:2026-05-14T10:16:25.321000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=15922s idle=3660s
+39687:2026-05-14T10:17:25.773000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=15982s idle=3720s
+39688:2026-05-14T10:18:26.241000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=16042s idle=3780s
+39689:2026-05-14T10:19:25.769000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=16102s idle=3840s
+39690:2026-05-14T10:20:25.693000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=16162s idle=3900s
+39691:2026-05-14T10:21:26.320000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=16222s idle=3960s
+39692:2026-05-14T10:22:25.825000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=16282s idle=4020s
+39693:2026-05-14T10:23:25.461000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=16342s idle=4080s
+39694:2026-05-14T10:24:25.901000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=16402s idle=4140s
+39695:2026-05-14T10:25:25.481000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=16462s idle=4200s
+39696:2026-05-14T10:26:25.751000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=16522s idle=4260s
+39697:2026-05-14T10:27:26.205000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=16582s idle=4320s
+39698:2026-05-14T10:28:25.802000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=16642s idle=4380s
+39699:2026-05-14T10:29:25.425000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=16702s idle=4440s
+39700:2026-05-14T10:30:25.961000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=16762s idle=4500s
+39701:2026-05-14T10:31:25.473000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=16822s idle=4560s
+39702:2026-05-14T10:32:25.953000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=16882s idle=4620s
+39703:2026-05-14T10:33:25.451000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=16942s idle=4680s
+39704:2026-05-14T10:34:25.830000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=17002s idle=4740s
+39705:2026-05-14T10:35:25.462000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=17062s idle=4800s
+39706:2026-05-14T10:36:26.197000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=17122s idle=4860s
+39707:2026-05-14T10:37:25.677000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=17182s idle=4920s
+39708:2026-05-14T10:38:25.444000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=17242s idle=4980s
+39709:2026-05-14T10:39:26.157000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=17302s idle=5040s
+39710:2026-05-14T10:40:25.613000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=17362s idle=5100s
+39711:2026-05-14T10:41:26.025000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=17422s idle=5160s
+39712:2026-05-14T10:42:25.509000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=17482s idle=5220s
+39713:2026-05-14T10:43:26.287000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=17542s idle=5280s
+39714:2026-05-14T10:44:25.761000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=17602s idle=5340s
+39715:2026-05-14T10:45:26.210000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=17662s idle=5400s
+39716:2026-05-14T10:46:25.822000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=17722s idle=5460s
+39717:2026-05-14T10:47:25.592000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=17782s idle=5520s
+39718:2026-05-14T10:48:26.156000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=17842s idle=5580s
+39719:2026-05-14T10:49:25.821000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=17902s idle=5640s
+39720:2026-05-14T10:50:26.294000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=17962s idle=5701s
+39721:2026-05-14T10:51:26.021000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=18022s idle=5761s
+39722:2026-05-14T10:52:25.665000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=18082s idle=5821s
+39723:2026-05-14T10:53:26.365000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=18142s idle=5881s
+39724:2026-05-14T10:54:25.915000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=18202s idle=5941s
+39725:2026-05-14T10:55:26.421000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=18262s idle=6001s
+39726:2026-05-14T10:56:25.826000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=18322s idle=6061s
+39727:2026-05-14T10:57:26.373000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=18382s idle=6121s
+39728:2026-05-14T10:58:25.834000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=18442s idle=6181s
+39729:2026-05-14T10:59:26.561000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=18502s idle=6241s
+39730:2026-05-14T11:00:25.994000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=18562s idle=6301s
+39731:2026-05-14T11:01:22.559000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:01:22.135442  4195 incremental_pipeline.cc:524] Registering image #2771 (num_reg_frames=1196)
+39733:2026-05-14T11:01:25.560000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:01:25.027774  4195 incremental_pipeline.cc:524] Registering image #2795 (num_reg_frames=1197)
+39735:2026-05-14T11:01:28.563000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:01:27.873351  4195 incremental_pipeline.cc:524] Registering image #2794 (num_reg_frames=1198)
+39737:2026-05-14T11:01:31.564000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:01:30.797845  4195 incremental_pipeline.cc:524] Registering image #2793 (num_reg_frames=1199)
+39739:2026-05-14T11:01:34.565000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:01:33.936957  4195 incremental_pipeline.cc:524] Registering image #2792 (num_reg_frames=1200)
+39741:2026-05-14T11:01:37.569000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:01:36.906795  4195 incremental_pipeline.cc:524] Registering image #2772 (num_reg_frames=1201)
+39743:2026-05-14T11:01:40.570000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:01:40.030819  4195 incremental_pipeline.cc:524] Registering image #2773 (num_reg_frames=1202)
+39745:2026-05-14T11:01:43.578000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:01:43.192582  4195 incremental_pipeline.cc:524] Registering image #2575 (num_reg_frames=1203)
+39747:2026-05-14T11:01:46.579000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:01:46.259338  4195 incremental_pipeline.cc:524] Registering image #2576 (num_reg_frames=1204)
+39749:2026-05-14T11:01:49.581000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:01:49.439899  4195 incremental_pipeline.cc:524] Registering image #2774 (num_reg_frames=1205)
+39751:2026-05-14T11:01:52.584000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:01:52.420603  4195 incremental_pipeline.cc:524] Registering image #2513 (num_reg_frames=1206)
+39753:2026-05-14T11:01:55.585000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:01:55.433490  4195 incremental_pipeline.cc:524] Registering image #2514 (num_reg_frames=1207)
+39755:2026-05-14T11:01:58.593000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:01:58.428709  4195 incremental_pipeline.cc:524] Registering image #2515 (num_reg_frames=1208)
+39757:2026-05-14T11:02:01.595000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:02:01.156301  4195 incremental_pipeline.cc:524] Registering image #2577 (num_reg_frames=1209)
+39759:2026-05-14T11:02:04.601000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:02:04.228294  4195 incremental_pipeline.cc:524] Registering image #2809 (num_reg_frames=1210)
+39761:2026-05-14T11:02:07.602000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:02:07.069314  4195 incremental_pipeline.cc:524] Registering image #2558 (num_reg_frames=1211)
+39763:2026-05-14T11:02:10.603000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:02:10.297207  4195 incremental_pipeline.cc:524] Registering image #2725 (num_reg_frames=1212)
+39765:2026-05-14T11:02:13.605000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:02:13.002296  4195 incremental_pipeline.cc:524] Registering image #2742 (num_reg_frames=1213)
+39767:2026-05-14T11:02:16.606000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:02:15.807359  4195 incremental_pipeline.cc:524] Registering image #2872 (num_reg_frames=1214)
+39769:2026-05-14T11:02:19.611000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:02:18.673807  4195 incremental_pipeline.cc:524] Registering image #2462 (num_reg_frames=1215)
+39771:2026-05-14T11:02:21.612000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:02:21.530543  4195 incremental_pipeline.cc:524] Registering image #2480 (num_reg_frames=1216)
+39773:2026-05-14T11:02:24.613000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:02:24.132061  4195 incremental_pipeline.cc:524] Registering image #2481 (num_reg_frames=1217)
+39775:2026-05-14T11:02:27.615000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:02:27.015587  4195 incremental_pipeline.cc:524] Registering image #2479 (num_reg_frames=1218)
+39777:2026-05-14T11:02:30.616000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:02:29.775986  4195 incremental_pipeline.cc:524] Registering image #2478 (num_reg_frames=1219)
+39779:2026-05-14T11:02:32.616000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:02:32.570338  4195 incremental_pipeline.cc:524] Registering image #2510 (num_reg_frames=1220)
+39781:2026-05-14T11:02:35.618000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:02:35.302070  4195 incremental_pipeline.cc:524] Registering image #2477 (num_reg_frames=1221)
+39783:2026-05-14T11:02:38.622000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:02:37.967154  4195 incremental_pipeline.cc:524] Registering image #2509 (num_reg_frames=1222)
+39785:2026-05-14T11:02:41.623000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:02:40.856801  4195 incremental_pipeline.cc:524] Registering image #2824 (num_reg_frames=1223)
+39787:2026-05-14T11:02:44.627000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:02:43.685560  4195 incremental_pipeline.cc:524] Registering image #2847 (num_reg_frames=1224)
+39789:2026-05-14T11:02:46.627000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:02:46.236456  4195 incremental_pipeline.cc:524] Registering image #2428 (num_reg_frames=1225)
+39791:2026-05-14T11:02:49.628000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:02:48.891966  4195 incremental_pipeline.cc:524] Registering image #2890 (num_reg_frames=1226)
+39793:2026-05-14T11:02:52.629000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:02:51.709151  4195 incremental_pipeline.cc:524] Registering image #2873 (num_reg_frames=1227)
+39795:2026-05-14T11:02:54.630000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:02:54.565809  4195 incremental_pipeline.cc:524] Registering image #2463 (num_reg_frames=1228)
+39797:2026-05-14T11:02:57.636000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:02:57.479337  4195 incremental_pipeline.cc:524] Registering image #2464 (num_reg_frames=1229)
+39799:2026-05-14T11:03:00.637000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:03:00.188228  4195 incremental_pipeline.cc:524] Registering image #2429 (num_reg_frames=1230)
+39801:2026-05-14T11:03:03.638000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:03:03.108222  4195 incremental_pipeline.cc:524] Registering image #2891 (num_reg_frames=1231)
+39803:2026-05-14T11:03:06.639000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:03:05.953784  4195 incremental_pipeline.cc:524] Registering image #2578 (num_reg_frames=1232)
+39805:2026-05-14T11:03:09.644000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:03:08.865574  4195 incremental_pipeline.cc:524] Registering image #2892 (num_reg_frames=1233)
+39807:2026-05-14T11:03:11.645000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:03:11.578171  4195 incremental_pipeline.cc:524] Registering image #2407 (num_reg_frames=1234)
+39809:2026-05-14T11:03:14.648000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:03:14.386474  4195 incremental_pipeline.cc:524] Registering image #2775 (num_reg_frames=1235)
+39811:2026-05-14T11:03:17.655000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:03:17.291318  4195 incremental_pipeline.cc:524] Registering image #2759 (num_reg_frames=1236)
+39813:2026-05-14T11:03:20.656000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:03:20.168732  4195 incremental_pipeline.cc:524] Registering image #2559 (num_reg_frames=1237)
+39815:2026-05-14T11:03:23.657000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:03:23.187050  4195 incremental_pipeline.cc:524] Registering image #2527 (num_reg_frames=1238)
+39817:2026-05-14T11:03:26.659000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:03:26.046140  4195 incremental_pipeline.cc:524] Registering image #2810 (num_reg_frames=1239)
+39819:2026-05-14T11:03:29.660000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:03:28.776022  4195 incremental_pipeline.cc:524] Registering image #2544 (num_reg_frames=1240)
+39821:2026-05-14T11:03:32.661000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:03:31.769814  4195 incremental_pipeline.cc:524] Registering image #2528 (num_reg_frames=1241)
+39823:2026-05-14T11:03:34.662000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:03:34.570461  4195 incremental_pipeline.cc:524] Registering image #2811 (num_reg_frames=1242)
+39825:2026-05-14T11:03:37.664000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:03:37.195307  4195 incremental_pipeline.cc:524] Registering image #2495 (num_reg_frames=1243)
+39827:2026-05-14T11:03:40.665000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:03:39.839861  4195 incremental_pipeline.cc:524] Registering image #2760 (num_reg_frames=1244)
+39829:2026-05-14T11:03:42.666000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:03:42.542090  4195 incremental_pipeline.cc:524] Registering image #2430 (num_reg_frames=1245)
+39831:2026-05-14T11:03:45.668000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:03:45.381522  4195 incremental_pipeline.cc:524] Registering image #2560 (num_reg_frames=1246)
+39833:2026-05-14T11:03:48.673000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:03:48.310815  4195 incremental_pipeline.cc:524] Registering image #2893 (num_reg_frames=1247)
+39835:2026-05-14T11:03:51.680000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:03:50.995962  4195 incremental_pipeline.cc:524] Registering image #2765 (num_reg_frames=1248)
+39837:2026-05-14T11:03:53.680000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:03:53.499306  4195 incremental_pipeline.cc:524] Registering image #2812 (num_reg_frames=1249)
+39839:2026-05-14T11:03:56.682000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:03:56.011973  4195 incremental_pipeline.cc:524] Registering image #2529 (num_reg_frames=1250)
+39841:2026-05-14T11:03:59.683000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:03:58.728237  4195 incremental_pipeline.cc:524] Registering image #2545 (num_reg_frames=1251)
+39843:2026-05-14T11:04:01.683000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:04:01.621663  4195 incremental_pipeline.cc:524] Registering image #2482 (num_reg_frames=1252)
+39845:2026-05-14T11:04:04.684000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:04:04.287088  4195 incremental_pipeline.cc:524] Registering image #2761 (num_reg_frames=1253)
+39847:2026-05-14T11:04:07.689000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:04:06.914112  4195 incremental_pipeline.cc:524] Registering image #2776 (num_reg_frames=1254)
+39849:2026-05-14T11:04:10.690000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:04:09.694864  4195 incremental_pipeline.cc:524] Registering image #2777 (num_reg_frames=1255)
+39851:2026-05-14T11:04:12.691000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:04:12.407613  4195 incremental_pipeline.cc:524] Registering image #2778 (num_reg_frames=1256)
+39853:2026-05-14T11:04:15.700000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:04:15.014556  4195 incremental_pipeline.cc:524] Registering image #2422 (num_reg_frames=1257)
+39855:2026-05-14T11:04:18.700000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:04:17.927338  4195 incremental_pipeline.cc:524] Registering image #2874 (num_reg_frames=1258)
+39857:2026-05-14T11:04:20.701000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:04:20.626662  4195 incremental_pipeline.cc:524] Registering image #2813 (num_reg_frames=1259)
+39859:2026-05-14T11:04:23.702000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:04:23.198006  4195 incremental_pipeline.cc:524] Registering image #2530 (num_reg_frames=1260)
+39861:2026-05-14T11:04:26.708000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:04:25.950067  4195 incremental_pipeline.cc:524] Registering image #2814 (num_reg_frames=1261)
+39863:2026-05-14T11:04:28.709000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:04:28.557682  4195 incremental_pipeline.cc:524] Registering image #2531 (num_reg_frames=1262)
+39865:2026-05-14T11:04:31.710000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:04:31.203982  4195 incremental_pipeline.cc:524] Registering image #2548 (num_reg_frames=1263)
+39867:2026-05-14T11:04:34.717000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:04:33.979804  4195 incremental_pipeline.cc:524] Registering image #2549 (num_reg_frames=1264)
+39869:2026-05-14T11:04:37.720000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:04:37.000826  4195 incremental_pipeline.cc:524] Registering image #2532 (num_reg_frames=1265)
+39871:2026-05-14T11:04:40.720000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:04:39.856158  4195 incremental_pipeline.cc:524] Registering image #2815 (num_reg_frames=1266)
+39873:2026-05-14T11:04:43.721000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:04:42.785594  4195 incremental_pipeline.cc:524] Registering image #2831 (num_reg_frames=1267)
+39875:2026-05-14T11:04:45.722000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:04:45.615309  4195 incremental_pipeline.cc:524] Registering image #2550 (num_reg_frames=1268)
+39877:2026-05-14T11:04:48.723000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:04:48.677850  4195 incremental_pipeline.cc:524] Registering image #2749 (num_reg_frames=1269)
+39879:2026-05-14T11:04:51.724000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:04:51.676781  4195 incremental_pipeline.cc:524] Registering image #2748 (num_reg_frames=1270)
+39881:2026-05-14T11:04:54.725000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:04:54.644718  4195 incremental_pipeline.cc:524] Registering image #2533 (num_reg_frames=1271)
+39883:2026-05-14T11:04:57.727000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:04:57.655017  4195 incremental_pipeline.cc:524] Registering image #2816 (num_reg_frames=1272)
+39885:2026-05-14T11:05:00.734000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:05:00.692854  4195 incremental_pipeline.cc:524] Registering image #2534 (num_reg_frames=1273)
+39887:2026-05-14T11:05:04.735000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:05:03.827605  4195 incremental_pipeline.cc:524] Registering image #2832 (num_reg_frames=1274)
+39889:2026-05-14T11:05:06.736000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:05:06.639032  4195 incremental_pipeline.cc:524] Registering image #2830 (num_reg_frames=1275)
+39891:2026-05-14T11:05:09.737000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:05:09.505787  4195 incremental_pipeline.cc:524] Registering image #2747 (num_reg_frames=1276)
+39893:2026-05-14T11:05:12.746000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:05:12.714572  4195 incremental_pipeline.cc:524] Registering image #2731 (num_reg_frames=1277)
+39895:2026-05-14T11:05:15.747000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:05:15.735204  4195 incremental_pipeline.cc:524] Registering image #2730 (num_reg_frames=1278)
+39897:2026-05-14T11:05:19.748000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:05:18.880024  4195 incremental_pipeline.cc:524] Registering image #2817 (num_reg_frames=1279)
+39899:2026-05-14T11:05:22.749000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:05:21.857924  4195 incremental_pipeline.cc:524] Registering image #2818 (num_reg_frames=1280)
+39901:2026-05-14T11:05:24.750000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:05:24.624643  4195 incremental_pipeline.cc:524] Registering image #2733 (num_reg_frames=1281)
+39903:2026-05-14T11:05:27.751000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:05:27.412609  4195 incremental_pipeline.cc:524] Registering image #2732 (num_reg_frames=1282)
+39905:2026-05-14T11:05:30.753000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:05:30.517133  4195 incremental_pipeline.cc:524] Registering image #2833 (num_reg_frames=1283)
+39907:2026-05-14T11:05:33.754000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:05:33.185278  4195 incremental_pipeline.cc:524] Registering image #2729 (num_reg_frames=1284)
+39909:2026-05-14T11:05:36.760000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:05:36.227597  4195 incremental_pipeline.cc:524] Registering image #2547 (num_reg_frames=1285)
+39911:2026-05-14T11:05:39.768000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:05:39.231209  4195 incremental_pipeline.cc:524] Registering image #2746 (num_reg_frames=1286)
+39913:2026-05-14T11:05:42.768000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:05:41.944295  4195 incremental_pipeline.cc:524] Registering image #2829 (num_reg_frames=1287)
+39915:2026-05-14T11:05:44.769000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:05:44.534759  4195 incremental_pipeline.cc:524] Registering image #2718 (num_reg_frames=1288)
+39917:2026-05-14T11:05:47.771000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:05:47.094717  4195 incremental_pipeline.cc:524] Registering image #2561 (num_reg_frames=1289)
+39919:2026-05-14T11:05:50.772000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:05:49.930022  4195 incremental_pipeline.cc:524] Registering image #2762 (num_reg_frames=1290)
+39921:2026-05-14T11:05:52.773000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] I20260514 11:05:52.581945  4195 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+39922:2026-05-14T11:06:53.985000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=18950s idle=60s
+39923:2026-05-14T11:07:54.489000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19010s idle=120s
+39924:2026-05-14T11:08:54.183000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19070s idle=180s
+39925:2026-05-14T11:09:53.933000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19130s idle=240s
+39926:2026-05-14T11:10:54.525000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19190s idle=300s
+39927:2026-05-14T11:11:54.159000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19250s idle=360s
+39928:2026-05-14T11:12:54.614000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19310s idle=420s
+39929:2026-05-14T11:13:54.260000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19370s idle=480s
+39930:2026-05-14T11:14:54.677000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19430s idle=540s
+39931:2026-05-14T11:15:54.229000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19490s idle=600s
+39932:2026-05-14T11:16:53.841000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19550s idle=660s
+39933:2026-05-14T11:17:54.411000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19610s idle=720s
+39934:2026-05-14T11:18:54.129000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19670s idle=780s
+39935:2026-05-14T11:19:53.773000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19730s idle=840s
+39936:2026-05-14T11:20:54.340000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19790s idle=900s
+39937:2026-05-14T11:21:53.992000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19850s idle=960s
+39938:2026-05-14T11:22:54.445000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19910s idle=1020s
+39939:2026-05-14T11:23:54.105000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=19970s idle=1080s
+39940:2026-05-14T11:24:54.661000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20030s idle=1140s
+39941:2026-05-14T11:25:54.324000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20090s idle=1200s
+39942:2026-05-14T11:26:53.929000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20150s idle=1260s
+39943:2026-05-14T11:27:54.517000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20210s idle=1320s
+39944:2026-05-14T11:28:54.021000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20270s idle=1380s
+39945:2026-05-14T11:29:54.653000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20330s idle=1440s
+39946:2026-05-14T11:30:54.137000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20390s idle=1500s
+39947:2026-05-14T11:31:54.171000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20450s idle=1560s
+39948:2026-05-14T11:32:54.157000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20510s idle=1620s
+39949:2026-05-14T11:33:54.382000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20570s idle=1680s
+39950:2026-05-14T11:34:53.877000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20630s idle=1740s
+39951:2026-05-14T11:35:54.485000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20690s idle=1800s
+39952:2026-05-14T11:36:54.034000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20750s idle=1860s
+39953:2026-05-14T11:37:54.621000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20810s idle=1920s
+39954:2026-05-14T11:38:54.042000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20870s idle=1980s
+39955:2026-05-14T11:39:54.098000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20930s idle=2040s
+39956:2026-05-14T11:40:54.713000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=20990s idle=2100s
+39957:2026-05-14T11:41:54.349000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21050s idle=2160s
+39958:2026-05-14T11:42:53.947000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21110s idle=2220s
+39959:2026-05-14T11:43:54.713000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21170s idle=2280s
+39960:2026-05-14T11:44:54.227000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21230s idle=2340s
+39961:2026-05-14T11:45:54.425000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21290s idle=2400s
+39962:2026-05-14T11:46:54.133000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21350s idle=2460s
+39963:2026-05-14T11:47:54.798000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21410s idle=2520s
+39964:2026-05-14T11:48:54.370000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21470s idle=2580s
+39965:2026-05-14T11:49:54.174000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21530s idle=2640s
+39966:2026-05-14T11:50:54.267000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21590s idle=2700s
+39967:2026-05-14T11:51:54.757000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21650s idle=2760s
+39968:2026-05-14T11:52:54.369000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21710s idle=2820s
+39969:2026-05-14T11:53:54.149000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21770s idle=2880s
+39970:2026-05-14T11:54:54.665000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21830s idle=2940s
+39971:2026-05-14T11:55:54.089000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21890s idle=3000s
+39972:2026-05-14T11:56:54.789000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=21950s idle=3060s
+39973:2026-05-14T11:57:54.313000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=22010s idle=3120s
+39974:2026-05-14T11:58:54.899000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=22070s idle=3180s
+39975:2026-05-14T11:59:54.482000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=22130s idle=3240s
+39976:2026-05-14T12:00:54.273000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=22190s idle=3300s
+39977:2026-05-14T12:01:54.917000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=22250s idle=3360s
+39978:2026-05-14T12:02:54.619000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=22310s idle=3420s
+39979:2026-05-14T12:03:54.537000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=22370s idle=3480s
+39980:2026-05-14T12:04:55.103000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=22430s idle=3540s
+39981:2026-05-14T12:05:54.777000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=22490s idle=3600s
+39982:2026-05-14T12:06:54.231000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=22551s idle=3660s
+39983:2026-05-14T12:07:54.858000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=22611s idle=3720s
+39984:2026-05-14T12:08:54.737000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=22671s idle=3780s
+39985:2026-05-14T12:09:54.877000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=22731s idle=3840s
+39986:2026-05-14T12:10:54.405000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=22791s idle=3900s
+39987:2026-05-14T12:11:55.064000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=22851s idle=3960s
+39988:2026-05-14T12:12:54.645000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=22911s idle=4020s
+39989:2026-05-14T12:13:55.125000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=22971s idle=4080s
+39990:2026-05-14T12:14:54.677000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=23031s idle=4140s
+39991:2026-05-14T12:15:54.344000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=23091s idle=4200s
+39992:2026-05-14T12:16:54.877000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=23151s idle=4260s
+39993:2026-05-14T12:17:54.485000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=23211s idle=4320s
+39994:2026-05-14T12:18:54.979000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=23271s idle=4380s
+39995:2026-05-14T12:19:55.025000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=23331s idle=4440s
+39996:2026-05-14T12:20:54.592000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=23391s idle=4500s
+39997:2026-05-14T12:21:55.105000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=23451s idle=4560s
+39998:2026-05-14T12:22:54.543000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=23511s idle=4620s
+39999:2026-05-14T12:23:54.817000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=23571s idle=4680s
+40000:2026-05-14T12:24:54.401000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=23631s idle=4740s
+40001:2026-05-14T12:25:55.141000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=23691s idle=4800s
+40002:2026-05-14T12:26:54.739000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=23751s idle=4860s
+40003:2026-05-14T12:27:55.367000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=23811s idle=4920s
+40004:2026-05-14T12:28:54.861000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=23871s idle=4980s
+40005:2026-05-14T12:29:54.711000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=23931s idle=5040s
+40006:2026-05-14T12:30:55.261000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=23991s idle=5100s
+40007:2026-05-14T12:31:54.959000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=24051s idle=5160s
+40008:2026-05-14T12:32:54.717000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=24111s idle=5220s
+40009:2026-05-14T12:33:55.459000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=24171s idle=5280s
+40010:2026-05-14T12:34:55.219000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=24231s idle=5340s
+40011:2026-05-14T12:35:55.044000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=24291s idle=5400s
+40012:2026-05-14T12:36:54.793000+00:00 md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134 COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=24351s idle=5460s

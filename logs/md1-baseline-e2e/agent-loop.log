@@ -12,3 +12,4 @@
 [2026-05-14T08:29:46Z] poll sfm -> still InProgress; global BA heartbeats (idle=3120s); StepFunctions RUNNING (WaitForSfM); S3 colmap empty (EndOfJob) -> next: keep polling
 [2026-05-14T09:32:15Z] poll sfm -> mapper active (Registering image; then global BA); StepFunctions RUNNING (WaitForSfM); S3 colmap empty (EndOfJob); unrelated processing fanout jobs observed -> next: keep polling
 [2026-05-14T04:34:05-0600] poll aws -> sfm InProgress (WaitForSfM) -> next poll after 60-300s
+[2026-05-14T06:41:13-06:00] poll -> sfm in progress (global BA idle) ; prev exec timed out -> next: wait for sfm completion / failure

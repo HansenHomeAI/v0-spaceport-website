@@ -1,0 +1,13 @@
+{
+    "executions": [
+        {
+            "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:manual-whitney-1774502593",
+            "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+            "name": "manual-whitney-1774502593",
+            "status": "FAILED",
+            "startDate": "2026-03-25T23:23:14.561000-06:00",
+            "stopDate": "2026-03-25T23:23:14.626000-06:00",
+            "redriveCount": 0
+        }
+    ]
+}
