@@ -1,0 +1,32 @@
+{
+    "Tags": [
+        {
+            "Key": "Validation",
+            "Value": "md1-full447-ds1000-r22-r21-knobs-canary"
+        },
+        {
+            "Key": "Project",
+            "Value": "Spaceport"
+        },
+        {
+            "Key": "CodeHead",
+            "Value": "387d3e78baabf2d4b0b884dbd87d2b605303f0c8"
+        },
+        {
+            "Key": "TrainingImageSourceHead",
+            "Value": "b97239e69498412f8391a4ba31216bf268f46385"
+        },
+        {
+            "Key": "EcrDigest",
+            "Value": "45ac356881ad89d88b1a6aa19581c0d86d08b42fcc0b2fafbaba6760243cd964"
+        },
+        {
+            "Key": "Environment",
+            "Value": "agent73948216sfmproductionspine"
+        },
+        {
+            "Key": "Component",
+            "Value": "3DGS"
+        }
+    ]
+}
