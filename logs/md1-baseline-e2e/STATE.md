@@ -427,3 +427,25 @@ Produce a development-based MD1 baseline with:
 - SfM CloudWatch progress:
   - `aws logs tail ... --since 15m | rg 'Processed file [' | tail -n 1` -> `Processed file [3025/3076]` at `2026-05-14T05:31:11Z` (feature_extractor; nearing completion)
   - excerpt: `logs/md1-baseline-e2e/sfm-progress-md1-baseline-e2e-20260514032448-20260514T053130Z.txt`
+
+### 2026-05-14T00:20:20-0600
+
+- Git: on `agent-113647-md1-baseline-e2e` @ `62140158` (working tree clean).
+- AWS identity: `aws sts get-caller-identity` -> Account `975050048887` (region `us-west-2`).
+- Step Functions execution: still `RUNNING`
+  - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-baseline-e2e-20260514032448`
+  - describe snapshot: `logs/md1-baseline-e2e/stepfunctions-describe-md1-baseline-e2e-20260514032448-20260514T061906Z.json`
+  - history snapshot (reverse): `logs/md1-baseline-e2e/stepfunctions-history-reverse-md1-baseline-e2e-20260514032448-20260514T061912Z.json`
+- SageMaker (this run):
+  - Processing job: `md1-baseline-e2e-20260514032448-sfm` -> `InProgress`
+  - describe snapshot: `logs/md1-baseline-e2e/sagemaker-describe-md1-baseline-e2e-20260514032448-sfm-20260514T061917Z.json`
+  - Output prefix (S3UploadMode=EndOfJob): `s3://spaceport-ml-processing-staging/colmap/md1-baseline-e2e-20260514032448/` -> still empty
+  - S3 listing snapshot: `logs/md1-baseline-e2e/s3-colmap-md1-baseline-e2e-20260514032448-20260514T061932Z.txt` (empty; `aws s3 ls` returns exit code 1 when prefix has 0 objects)
+- SageMaker (active job inventory; do not stop unrelated jobs):
+  - Processing jobs InProgress snapshot: `logs/md1-baseline-e2e/sagemaker-list-processing-inprogress-20260514T061954Z.json`
+  - Training jobs InProgress snapshot: `logs/md1-baseline-e2e/sagemaker-list-training-inprogress-20260514T061954Z.json` (empty)
+- SfM CloudWatch progress:
+  - Stream: `/aws/sagemaker/ProcessingJobs` / `md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134`
+  - Streams snapshot: `logs/md1-baseline-e2e/cloudwatch-streams-md1-baseline-e2e-20260514032448-sfm-20260514T061954Z.json`
+  - Progress excerpt (filtered; safe to commit): `logs/md1-baseline-e2e/sfm-progress-md1-baseline-e2e-20260514032448-20260514T062120Z.txt`
+  - Most recent observed stage transition: `Retriangulation and Global bundle adjustment` at `2026-05-14T06:18:40Z` (mapper running; feature extraction completed earlier).
