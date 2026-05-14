@@ -16381,8 +16381,8 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-13T17:19:00Z",
-  "updated_at": "2026-05-14T07:35:43Z",
+  "updated": "2026-05-14T10:06:50Z",
+  "updated_at": "2026-05-14T10:06:50Z",
   "version": "1.0.0",
   "md1_r0_visual_sentinel_readiness_blocked_active_jobs_20260513": {
     "recorded_at": "2026-05-13T18:33:49Z",
@@ -17000,6 +17000,41 @@
       "md1-full-fanout-r23-1778748500-leaf-01",
       "md1-full-fanout-r23-1778748500-leaf-03",
       "md1-full-fanout-r23-1778748500-leaf-04",
+      "md1-baseline-e2e-20260514032448-sfm"
+    ],
+    "next": "Wait for SageMaker processing to be idle, then rerun leaf-submit readiness on the R0 v2 dry-run before any bounded tile_04 proof."
+  },
+  "md1_r0_visual_sentinel_v2_fanout_r23_continued_active_20260514": {
+    "timestamp": "2026-05-14T10:06:50Z",
+    "event": "md1_r0_visual_sentinel_v2_fanout_r23_continued_active",
+    "summary": "Exact-head 7eae15cb22d06f6ee43e054cac8152ea561ae32f is green on CDK Deploy 25853153151. SageMaker training is idle. Fanout leaf-01 and leaf-03 have completed, leaf-02 was already complete, but source-attributed SFM fanout leaf-00/04/05/06/07 plus baseline SFM processing remain InProgress, so no MD1 paid proof was launched.",
+    "evidence": [
+      "logs/md1-r0-visual-sentinel-v2-exact-head-workflows-head7eae-20260514-1006.json",
+      "logs/md1-r0-visual-sentinel-v2-live-training-head7eae-20260514-1006.json",
+      "logs/md1-r0-visual-sentinel-v2-live-processing-head7eae-20260514-1006.json",
+      "logs/md1-full-fanout-r23-1778748500-leaf-01-status-describe-head7eae-20260514-1006.json",
+      "logs/md1-full-fanout-r23-1778748500-leaf-03-status-describe-head7eae-20260514-1006.json",
+      "logs/md1-full-fanout-r23-1778748500-leaf-05-active-describe-head7eae-20260514-1006.json",
+      "logs/md1-full-fanout-r23-1778748500-leaf-05-tags-head7eae-20260514-1006.json",
+      "logs/md1-full-fanout-r23-1778748500-leaf-06-active-describe-head7eae-20260514-1006.json",
+      "logs/md1-full-fanout-r23-1778748500-leaf-06-tags-head7eae-20260514-1006.json",
+      "logs/md1-full-fanout-r23-1778748500-leaf-07-active-describe-head7eae-20260514-1006.json",
+      "logs/md1-full-fanout-r23-1778748500-leaf-07-tags-head7eae-20260514-1006.json",
+      "logs/md1-baseline-e2e-20260514032448-sfm-active-describe-head7eae-20260514-1006.json",
+      "logs/md1-baseline-e2e-20260514032448-sfm-tags-head7eae-20260514-1006.json"
+    ],
+    "spend_estimated_usd": 0,
+    "completed_processing_jobs": [
+      "md1-full-fanout-r23-1778748500-leaf-01",
+      "md1-full-fanout-r23-1778748500-leaf-02",
+      "md1-full-fanout-r23-1778748500-leaf-03"
+    ],
+    "active_processing_jobs": [
+      "md1-full-fanout-r23-1778748500-leaf-00",
+      "md1-full-fanout-r23-1778748500-leaf-04",
+      "md1-full-fanout-r23-1778748500-leaf-05",
+      "md1-full-fanout-r23-1778748500-leaf-06",
+      "md1-full-fanout-r23-1778748500-leaf-07",
       "md1-baseline-e2e-20260514032448-sfm"
     ],
     "next": "Wait for SageMaker processing to be idle, then rerun leaf-submit readiness on the R0 v2 dry-run before any bounded tile_04 proof."
