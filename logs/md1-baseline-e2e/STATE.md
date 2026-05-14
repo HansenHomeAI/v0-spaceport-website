@@ -685,3 +685,33 @@ Produce a development-based MD1 baseline with:
   - S3 output prefix still empty (`S3UploadMode=EndOfJob`).
   - Latest observed heartbeat at 2026-05-14T09:08:08-0600: `elapsed=33399s idle=4800s`.
   - External active training job observed: `md1-full2157-ds4-r24-1778769804`; do not stop or count as this run.
+
+### 2026-05-14T09:14:55-0600
+
+- User concern addressed:
+  - Confirmed root cause of new chat cards: the previous `md1-baseline-e2e-monitor` automation was `kind = "cron"` with no thread target.
+  - Current monitor file: `/Users/gabrielhansen/.codex/automations/md1-baseline-e2e-monitor/automation.toml`.
+  - Current monitor state: `kind = "heartbeat"`, `status = "ACTIVE"`, `rrule = "FREQ=MINUTELY;INTERVAL=30"`, `target_thread_id = "019e2268-9fed-7593-9318-a4e8d1045849"`.
+  - Intended behavior: future monitor runs append to the current MD1 thread instead of creating new chat cards.
+- GitHub workflow gate:
+  - Branch: `agent-113647-md1-baseline-e2e`.
+  - Latest head after automation ledger commit: `d3392a47`.
+  - `gh run list --branch agent-113647-md1-baseline-e2e --limit 6` showed latest runs green.
+  - Latest run: `25867928726` / `CDK Deploy` / `success` / `3m52s` / triggered by `chore: record md1 heartbeat automation`.
+  - Prior viewer deploy proof remains green: Pages run `25866557369` and CDK run `25866557372`.
+- Current canonical SfM run:
+  - Step Functions execution: `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-baseline-e2e-20260514032448` -> `RUNNING`.
+  - SageMaker processing job: `md1-baseline-e2e-20260514032448-sfm` -> `InProgress`.
+  - Processing instance: `ml.g4dn.xlarge`, max runtime `86400`.
+  - Runtime env verified: `COLMAP_MONOLITHIC_MAPPER_TIMEOUT_SECONDS=43200`, `COLMAP_BUNDLE_ADJUSTER_TIMEOUT_SECONDS=43200`.
+  - Output prefix: `s3://spaceport-ml-processing-staging/colmap/md1-baseline-e2e-20260514032448/` still empty; expected while running because `S3UploadMode=EndOfJob`.
+  - CloudWatch stream: `/aws/sagemaker/ProcessingJobs` / `md1-baseline-e2e-20260514032448-sfm/algo-1-1778729134`.
+  - Latest observed heartbeat: `COLMAP[mapper_spatial_sequential_only] HEARTBEAT elapsed=33819s idle=5220s`.
+  - No error lines were observed in the latest log tail.
+- Active job inventory:
+  - Processing jobs InProgress: `md1-baseline-e2e-20260514032448-sfm` only.
+  - Training jobs InProgress: `md1-full2157-ds4-r24-1778769804`; external to this canonical run, leave untouched.
+- Next step:
+  - Continue conservative polling until SfM either finishes and uploads COLMAP output, or fails with a concrete timeout/error.
+  - On SfM success: validate COLMAP S3 contents, then monitor the downstream `3dgs` and compression stages.
+  - On SfM failure: capture the exact failure and prefer a bounded continuation from the known validated SfM reference over launching another full SfM job.
