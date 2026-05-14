@@ -16626,5 +16626,20 @@
     ],
     "spend_estimated_usd": 0,
     "next": "Wait for AWS idle, rerun readiness, then at most one R0 tile_04 visual-sentinel proof."
+  },
+  "md1_r0_visual_sentinel_r17_active_jobs_20260514": {
+    "timestamp": "2026-05-14T00:06:56Z",
+    "summary": "Exact-head 456e6fb is green on CDK Deploy 25831774965. AWS still has source-attributed SFM training md1-full447-ds1000-r17-1778716950 InProgress (Environment=agent73948216sfmproductionspine, CodeHead=fadf6e35623789c64ed7497ceda09c87376b46e8, Validation=md1-full447-ds1000-r17-quality-canary, MaxRuntime=28800) plus baseline processing md1-baseline-e2e-20260513115645-sfm InProgress. No MD1 compute launched.",
+    "evidence": [
+      "logs/md1-r0-visual-sentinel-exact-head-workflows-r17hold-20260513.json",
+      "logs/md1-r0-visual-sentinel-live-training-inprogress-r17-20260513.json",
+      "logs/md1-r0-visual-sentinel-live-processing-inprogress-r17check-20260513.json",
+      "logs/md1-full447-ds1000-r17-1778716950-active-describe-20260513.json",
+      "logs/md1-full447-ds1000-r17-1778716950-tags-20260513.json",
+      "logs/md1-baseline-e2e-20260513115645-sfm-active-describe-r17check-20260513.json",
+      "logs/md1-baseline-e2e-20260513115645-sfm-tags-r17check-20260513.json"
+    ],
+    "spend_estimated_usd": 0,
+    "next": "Wait for AWS idle, rerun readiness, then at most one R0 tile_04 visual-sentinel proof."
   }
 }
