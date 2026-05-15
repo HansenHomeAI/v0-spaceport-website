@@ -1,6 +1,6 @@
 # MD1 Baseline E2E State
 
-updated: 2026-05-14T17:31:17-0600
+updated: 2026-05-14T20:40:27-0600
 branch: agent-113647-md1-baseline-e2e
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -1010,3 +1010,58 @@ Produce a development-based MD1 baseline with:
 - Current gate:
   - SageMaker still reports `md1-e2e-vsfm-fg-202605142314-3dgs` as `InProgress` / `Training`.
   - Because the trainer captures `ns-train` subprocess output, iteration metrics may not stream until the command exits; keep using SageMaker terminal state as the live gate.
+
+### 2026-05-14T20:40:27-0600
+
+- Git / CI:
+  - Branch/head: `agent-113647-md1-baseline-e2e` @ `a0e44d75e84d17e0fa6f94f85c4bf3347434dacb`.
+  - Working tree was clean before this ledger update.
+  - Exact-head GitHub workflow: `CDK Deploy` run `25891672328` -> `success`.
+- AWS identity:
+  - `aws sts get-caller-identity` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+- Foreground-only 3DGS retry completed:
+  - Step Functions execution is still `RUNNING` because it has advanced to compression polling:
+    - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-fg-202605142314`.
+  - SageMaker training job `md1-e2e-vsfm-fg-202605142314-3dgs` -> `Completed`.
+  - Training time/billable time: `10749s` on `ml.g5.2xlarge`.
+  - Training start/end: `2026-05-14T17:16:35-0600` / `2026-05-14T20:15:44-0600`.
+  - Model artifact:
+    - `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-fg-202605142314/md1-e2e-vsfm-fg-202605142314-3dgs/output/model.tar.gz`.
+  - S3 listing currently shows the model artifact only:
+    - `aws s3 ls s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-fg-202605142314/ --recursive --summarize`
+    - `Total Objects: 1`, `Total Size: 62840511`.
+  - Training log tail confirms full 30k iterations completed and export succeeded:
+    - Iterations reached `29999 (100.00%)`.
+    - `Training Finished`.
+    - `Model export completed successfully`.
+    - `PLY file: splat.ply (312.4 MB)`.
+    - `file_size_mb: 312.391170501709`.
+    - `enable_bg_model: False`, `enable_alpha_loss: False`, `enable_robust_mask: False`.
+    - `floater_pruning: {'enabled': False, ...}`.
+    - `NERFSTUDIO TRAINING PIPELINE COMPLETED SUCCESSFULLY`.
+- Compression is now active:
+  - Processing job: `md1-e2e-vsfm-fg-202605142314-compression`.
+  - Status: `InProgress`.
+  - Instance/runtime: `ml.g4dn.xlarge`, `MaxRuntimeInSeconds=86400`.
+  - Started: `2026-05-14T20:18:04-0600`.
+  - Input:
+    - `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-fg-202605142314/`.
+  - Output:
+    - `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-fg-202605142314/`.
+  - Processing log stream:
+    - `/aws/sagemaker/ProcessingJobs` / `md1-e2e-vsfm-fg-202605142314-compression/algo-1-1778811483`.
+  - Compression log proof:
+    - `splat-transform v1.10.2`.
+    - Extracted `model.tar.gz`.
+    - Selected PLY source `/opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply`.
+    - Supporting file `training_metadata.json` discovered.
+    - Running `splat-transform -w -g cpu .../splat.ply .../generated_bundle/meta.json`.
+  - Compression S3 output is still empty as expected until job end (`S3UploadMode=EndOfJob`):
+    - `aws s3 ls s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-fg-202605142314/ --recursive --summarize` -> `Total Objects: 0`.
+- Active job inventory:
+  - Running Step Functions executions: only `execution-md1-e2e-vsfm-fg-202605142314`.
+  - InProgress training jobs: none for this run; the 3DGS job is completed.
+  - InProgress processing jobs: `md1-e2e-vsfm-fg-202605142314-compression`.
+- Next step:
+  - Continue monitoring compression. If it completes, validate bundle files/summary, smoke the deployed `/md1-viewer` with the new foreground-only manifest, then visually inspect screenshots before accepting the output.
+  - If compression fails, capture exact processing logs and patch only that proven failure.
