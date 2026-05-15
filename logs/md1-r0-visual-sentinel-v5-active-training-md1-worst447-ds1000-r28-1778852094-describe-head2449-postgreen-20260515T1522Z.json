@@ -1,0 +1,131 @@
+{
+    "TrainingJobName": "md1-worst447-ds1000-r28-1778852094",
+    "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-worst447-ds1000-r28-1778852094",
+    "ModelArtifacts": {
+        "S3ModelArtifacts": "s3://spaceport-ml-processing-staging/manual-validations/md1-full-3dgs-r28-20260515T1334Z/3dgs-worst447-ds1000-r28-quality-20260515T1334Z/md1-worst447-ds1000-r28-1778852094/output/model.tar.gz"
+    },
+    "TrainingJobStatus": "Completed",
+    "SecondaryStatus": "Completed",
+    "AlgorithmSpecification": {
+        "TrainingImage": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent73948216sfmproductionspine",
+        "TrainingInputMode": "File",
+        "EnableSageMakerMetricsTimeSeries": false
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "InputDataConfig": [
+        {
+            "ChannelName": "training",
+            "DataSource": {
+                "S3DataSource": {
+                    "S3DataType": "S3Prefix",
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-full-3dgs-r26-20260515T1003Z/worst447-ds1000-r26/colmap",
+                    "S3DataDistributionType": "FullyReplicated"
+                }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None"
+        }
+    ],
+    "OutputDataConfig": {
+        "KmsKeyId": "",
+        "S3OutputPath": "s3://spaceport-ml-processing-staging/manual-validations/md1-full-3dgs-r28-20260515T1334Z/3dgs-worst447-ds1000-r28-quality-20260515T1334Z/",
+        "CompressionType": "GZIP"
+    },
+    "ResourceConfig": {
+        "InstanceType": "ml.g5.2xlarge",
+        "InstanceCount": 1,
+        "VolumeSizeInGB": 80
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 28800
+    },
+    "CreationTime": "2026-05-15T07:35:49.745000-06:00",
+    "TrainingStartTime": "2026-05-15T07:36:49.513000-06:00",
+    "TrainingEndTime": "2026-05-15T09:12:16.960000-06:00",
+    "LastModifiedTime": "2026-05-15T09:12:17.348000-06:00",
+    "SecondaryStatusTransitions": [
+        {
+            "Status": "Starting",
+            "StartTime": "2026-05-15T07:35:49.745000-06:00",
+            "EndTime": "2026-05-15T07:35:50.238000-06:00",
+            "StatusMessage": "Starting the training job"
+        },
+        {
+            "Status": "Pending",
+            "StartTime": "2026-05-15T07:35:50.238000-06:00",
+            "EndTime": "2026-05-15T07:36:49.513000-06:00",
+            "StatusMessage": "Preparing the instances for training"
+        },
+        {
+            "Status": "Downloading",
+            "StartTime": "2026-05-15T07:36:49.513000-06:00",
+            "EndTime": "2026-05-15T07:40:57.075000-06:00",
+            "StatusMessage": "Downloading the training image"
+        },
+        {
+            "Status": "Training",
+            "StartTime": "2026-05-15T07:40:57.075000-06:00",
+            "EndTime": "2026-05-15T09:11:59.446000-06:00",
+            "StatusMessage": "Training image download completed. Training in progress."
+        },
+        {
+            "Status": "Uploading",
+            "StartTime": "2026-05-15T09:11:59.446000-06:00",
+            "EndTime": "2026-05-15T09:12:16.960000-06:00",
+            "StatusMessage": "Uploading generated training model"
+        },
+        {
+            "Status": "Completed",
+            "StartTime": "2026-05-15T09:12:16.960000-06:00",
+            "EndTime": "2026-05-15T09:12:16.960000-06:00",
+            "StatusMessage": "Training job completed"
+        }
+    ],
+    "EnableNetworkIsolation": false,
+    "EnableInterContainerTrafficEncryption": false,
+    "EnableManagedSpotTraining": false,
+    "TrainingTimeInSeconds": 5727,
+    "BillableTimeInSeconds": 5727,
+    "ProfilingStatus": "Disabled",
+    "Environment": {
+        "AWS_DEFAULT_REGION": "us-west-2",
+        "BILATERAL_PROCESSING": "true",
+        "CODE_HEAD": "03c0d8c130cf4994b97fd2bc8eb98a9a73757221",
+        "COMMERCIAL_LICENSE": "true",
+        "CUDA_HOME": "/usr/local/cuda",
+        "ECR_DIGEST": "sha256:3c566211049aeed9401549075ec2dfe7e266f1a0b66360df580326f348e2ec0c",
+        "FRAMEWORK": "nerfstudio",
+        "LD_LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+        "LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+        "LICENSE": "apache_2_0",
+        "LOG_INTERVAL": "10",
+        "MAX_ITERATIONS": "32768",
+        "MAX_NUM_GAUSSIANS": "500000",
+        "MEMORY_OPTIMIZATION": "true",
+        "METHODOLOGY": "vincent_woo_sutro_tower",
+        "MODEL_VARIANT": "splatfacto",
+        "NS_CACHE_IMAGES": "cpu",
+        "NS_CULL_ALPHA_THRESH": "0.05",
+        "NS_DENSIFY_GRAD_THRESH": "0.0005",
+        "NS_EVAL_TIMEOUT_SEC": "1800",
+        "NS_MAX_GAUSS_RATIO": "16",
+        "NS_MAX_THREAD_WORKERS": "8",
+        "NS_NUM_DOWNSCALES": "1",
+        "NS_STOP_SPLIT_AT": "32768",
+        "NS_TRAIN_SPLIT_FRACTION": "0.8",
+        "NS_TRAIN_TIMEOUT_SEC": "21600",
+        "NS_USE_SCALE_REGULARIZATION": "true",
+        "OUTPUT_FORMAT": "ply",
+        "PYTHONUNBUFFERED": "1",
+        "QUALITY_EVAL_REQUIRED": "true",
+        "RELAUNCH_REASON": "bounded-r28-worst-region-447-ds1000-after-r27-ds1500-regressed; isolates iteration-depth at the best-known r26 resolution before any tiled-full-md1 spend",
+        "RUN_HELDOUT_EVAL": "true",
+        "SAGEMAKER_PROGRAM": "train.py",
+        "SH_DEGREE": "3",
+        "SOGS_COMPATIBLE": "true",
+        "TARGET_PSNR": "22.0",
+        "TORCH_CUDA_ARCH_LIST": "8.0 8.6",
+        "TRAINING_IMAGE_SOURCE_HEAD": "03c0d8c130cf4994b97fd2bc8eb98a9a73757221",
+        "VALIDATION_RUN": "md1-worst447-ds1000-r28-iteration-depth-canary"
+    }
+}
