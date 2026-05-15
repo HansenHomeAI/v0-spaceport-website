@@ -113,6 +113,21 @@ function readIntegerParam(params: URLSearchParams, key: string): number | null {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+function readSkyboxOverride(params: URLSearchParams): string | null | undefined {
+  const raw = params.get("skybox");
+  if (raw == null) {
+    return undefined;
+  }
+  const trimmed = raw.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+  if (["0", "off", "none", "null"].includes(trimmed.toLowerCase())) {
+    return null;
+  }
+  return trimmed;
+}
+
 export default function Md1ProductionViewer() {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const [tab, setTab] = useState<Tab>("splat");
@@ -123,6 +138,7 @@ export default function Md1ProductionViewer() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [resolvedBundle, setResolvedBundle] = useState<ResolvedSogsViewerBundle | null>(null);
   const [streamingOverrides, setStreamingOverrides] = useState<StreamingOverrides>({});
+  const [explicitSkybox, setExplicitSkybox] = useState<string | null | undefined>(undefined);
   const [telemetry, setTelemetry] = useState<ViewerTelemetry>(EMPTY_TELEMETRY);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
 
@@ -200,7 +216,7 @@ export default function Md1ProductionViewer() {
     let cancelled = false;
     setLoadError(null);
     setResolvedBundle(null);
-    void resolveSogsViewerBundle(activeManifestUrl).then((bundle) => {
+    void resolveSogsViewerBundle(activeManifestUrl, explicitSkybox).then((bundle) => {
       if (cancelled) {
         return;
       }
@@ -213,7 +229,7 @@ export default function Md1ProductionViewer() {
     return () => {
       cancelled = true;
     };
-  }, [activeManifestUrl]);
+  }, [activeManifestUrl, explicitSkybox]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -224,6 +240,7 @@ export default function Md1ProductionViewer() {
       lodRangeMin: readIntegerParam(params, "lodMin"),
       lodRangeMax: readIntegerParam(params, "lodMax"),
     });
+    setExplicitSkybox(readSkyboxOverride(params));
     if (override) {
       setManifestUrl(override);
       loadManifest(override);

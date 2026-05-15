@@ -1,6 +1,6 @@
 # MD1 Baseline E2E State
 
-updated: 2026-05-14T20:40:27-0600
+updated: 2026-05-14T23:14:33-0600
 branch: agent-113647-md1-baseline-e2e
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -1065,3 +1065,75 @@ Produce a development-based MD1 baseline with:
 - Next step:
   - Continue monitoring compression. If it completes, validate bundle files/summary, smoke the deployed `/md1-viewer` with the new foreground-only manifest, then visually inspect screenshots before accepting the output.
   - If compression fails, capture exact processing logs and patch only that proven failure.
+
+### 2026-05-14T23:14:33-0600
+
+- Git / CI / AWS verification before action:
+  - Branch/head: `agent-113647-md1-baseline-e2e` @ `98c2c6cfa560ba75dae20772a94dbf8c9a5f18b7`.
+  - `aws sts get-caller-identity` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+  - `aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --status-filter RUNNING` -> `[]`.
+  - `aws sagemaker list-processing-jobs --status-equals InProgress` -> no processing jobs.
+  - `aws sagemaker list-training-jobs --status-equals InProgress` -> one external job only, `md1-r0vissent-v4scaffold-1778819897-tile-04`; left untouched.
+  - Exact-head GitHub workflow: `CDK Deploy` run `25897327078` @ `98c2c6cfa560ba75dae20772a94dbf8c9a5f18b7` -> `success`.
+- Foreground retry terminal state:
+  - Step Functions execution `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-fg-202605142314` -> `SUCCEEDED`, started `2026-05-14T17:15:05-0600`, stopped `2026-05-14T22:32:53-0600`.
+  - 3DGS job `md1-e2e-vsfm-fg-202605142314-3dgs` -> `Completed`; training/billable time `10749s` on `ml.g5.2xlarge`.
+  - Model artifact: `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-fg-202605142314/md1-e2e-vsfm-fg-202605142314-3dgs/output/model.tar.gz`.
+  - Full training log snapshots:
+    - `logs/md1-baseline-e2e/3dgs-md1-e2e-vsfm-fg-202605142314-full-log-20260515T0505Z.json`
+    - `logs/md1-baseline-e2e/3dgs-md1-e2e-vsfm-fg-202605142314-full-log-20260515T0505Z.txt`
+  - Log proof includes `Training Finished`, `Model export completed successfully`, `PLY file: splat.ply (312.4 MB)`, and `enable_bg_model=False`, `enable_alpha_loss=False`, `enable_robust_mask=False`, `floater_pruning.enabled=False`.
+- Compression terminal state:
+  - Processing job `md1-e2e-vsfm-fg-202605142314-compression` -> `Completed` on `ml.g4dn.xlarge`, started `2026-05-14T20:18:04-0600`, ended `2026-05-14T22:29:31-0600`.
+  - Input: `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-fg-202605142314/`.
+  - Output: `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-fg-202605142314/`.
+  - `aws s3 ls s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-fg-202605142314/ --recursive --summarize` -> `Total Objects: 46`, `Total Size: 18052144`.
+  - Downloaded evidence:
+    - `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-sogs_compression_summary.json`
+    - `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-lod-meta.json`
+    - `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-training_metadata.json`
+  - Bundle facts: `lodLevels=4`, `chunkFiles=4`, `lodTreeNodes=2`, `bundleSizeBytes=18050750`, compression ratio `18.1877`, LOD0 count `1320824` gaussians.
+- Deployed viewer smoke:
+  - URL tested:
+    - `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/md1-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.amazonaws.com%2Fcompressed%2Fmd1-e2e-vsfm-fg-202605142314%2Fsupersplat_bundle%2Flod-meta.json`
+  - Command:
+    - `MD1_VIEWER_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev MD1_LOD_URL=https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json MD1_EXPECT_CHUNK_SUBSTRING=md1-e2e-vsfm-fg-202605142314 node scripts/test-md1-production-viewer.mjs`
+  - Technical load gate passed: strict no-header/no-footer/no-feedback assertions, LOD telemetry, chunk requests, and first frame.
+  - Viewer smoke results:
+    - `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-viewer-results.json`
+    - `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-visual-gate-desktop.png`
+    - `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-visual-gate-mobile.png`
+- Visual gate rejected the foreground retry:
+  - Manual screenshots from default/front/side/top/back viewpoints remain skybox-dominant or dark and do not show an acceptable MD1 property baseline:
+    - `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-manual-default-iframe.png`
+    - `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-manual-front-tight.png`
+    - `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-manual-side.png` is represented by right/left side captures:
+      `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-manual-right-side.png`,
+      `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-manual-left-side.png`.
+  - No-spend PLY diagnostics from `/tmp/md1-fg-model/splat.ply`:
+    - `element vertex 1320824`.
+    - `93.77%` of gaussians have `sigmoid(opacity) < 0.01`.
+    - Position duplication is high: `5dp` duplicate fraction `0.9285`, `4dp` duplicate fraction `0.9520`, `3dp` duplicate fraction `0.9912`.
+    - Alpha counts: `>0.02` -> `73565`, `>0.05` -> `54252`, `>0.12` -> `41212`, `>0.5` -> `20634`.
+    - Scatter proof:
+      `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-ply-scatter-alpha002-xy.png`,
+      `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-ply-scatter-alpha002-xz.png`,
+      `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-ply-scatter-alpha002-yz.png`.
+  - Local alpha-filter experiment (`sigmoid(opacity) > 0.02`) produced `73565` gaussians and a compressed bundle, but it did not improve the visible model:
+    - Local smoke result: `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-filter-alpha002-local-viewer-results.json`.
+    - No-sky gate failure log after patching the smoke to inspect the right-side model region:
+      `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-filter-alpha002-nosky-smoke-20260515T0521Z.log`.
+- Proven code issue fixed locally:
+  - The compressor had been inserting the bundled default skybox into every SuperSplat bundle even when the trained export produced no `background_skybox` sidecar. This can make a bad or invisible splat look non-empty in screenshots.
+  - Patched `infrastructure/containers/compressor/compress.py` so `spaceport_bundle.json` uses a trained `background_skybox.*` sidecar when present, writes `"skybox": null` when absent, and only uses the bundled default skybox when `SOGS_BUNDLE_DEFAULT_SKYBOX=1`.
+  - Patched `/md1-viewer` to honor `?skybox=none` and patched `resolveSogsViewerBundle` to preserve `spaceport_bundle.json` with `"skybox": null` instead of falling back to the site default.
+  - Patched `web/scripts/test-md1-production-viewer.mjs` with `MD1_RUN_NO_SKY=1`, using a right-side model-region crop so the control panel cannot satisfy the visual gate.
+- No-spend verification after the patch:
+  - `python3 -m unittest tests.unit.test_sogs_supersplat_bundle` -> `OK`.
+  - `python3 -m py_compile infrastructure/containers/compressor/compress.py` -> passed.
+  - `npm run build` in `web/` -> passed with pre-existing lint warnings only.
+  - `git diff --check` -> passed.
+- Current conclusion:
+  - End-to-end 3DGS and compression handoffs are functioning, but the current MD1 foreground bundle is not accepted visually.
+  - Do not relaunch full SfM.
+  - Next step is to commit/push the skybox/no-sky gate fix, wait for exact-head workflows/container build, then run the smallest downstream retry that can produce a better model from the validated SfM reference. The likely next paid retry should be 3DGS-only with standard NerfStudio `splatfacto` from `s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap/`, because both `splatfacto-w-light` variants have now completed but failed visual acceptance.

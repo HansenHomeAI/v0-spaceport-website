@@ -1,0 +1,89 @@
+{
+  "lodUrl": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+  "results": [
+    {
+      "scenario": "desktop",
+      "metrics": {
+        "bundleKind": "lod-streaming",
+        "rootFile": "lod-meta.json",
+        "sourceUrl": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+        "viewerUrl": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+        "lodLevels": 4,
+        "chunkFiles": 4,
+        "chunkMetaRequests": 1,
+        "firstFrameMs": 39.60000002384186,
+        "lodMin": 0,
+        "lodMax": 3
+      },
+      "visualStats": {
+        "width": 1440,
+        "height": 960,
+        "sampled": 38400,
+        "visibleRatio": 1,
+        "brightRatio": 0.8680208333333334,
+        "darkRatio": 0,
+        "meanLuma": 197.210187359371,
+        "lumaStdDev": 71.72508923908399,
+        "meanColorSpread": 18.196015625
+      },
+      "chunkMetaResponses": 1,
+      "screenshotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-production-viewer-desktop.png"
+    },
+    {
+      "scenario": "mobile",
+      "metrics": {
+        "bundleKind": "lod-streaming",
+        "rootFile": "lod-meta.json",
+        "sourceUrl": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+        "viewerUrl": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+        "lodLevels": 4,
+        "chunkFiles": 4,
+        "chunkMetaRequests": 2,
+        "firstFrameMs": 66.29999995231628,
+        "lodMin": 2,
+        "lodMax": 3
+      },
+      "visualStats": {
+        "width": 414,
+        "height": 896,
+        "sampled": 92736,
+        "visibleRatio": 1,
+        "brightRatio": 0.6251078329882678,
+        "darkRatio": 0,
+        "meanLuma": 142.3898321191328,
+        "lumaStdDev": 78.28583028096453,
+        "meanColorSpread": 11.940066425120772
+      },
+      "chunkMetaResponses": 4,
+      "screenshotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-production-viewer-mobile.png"
+    },
+    {
+      "scenario": "coarse-lod",
+      "metrics": {
+        "bundleKind": "lod-streaming",
+        "rootFile": "lod-meta.json",
+        "sourceUrl": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+        "viewerUrl": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+        "lodLevels": 4,
+        "chunkFiles": 4,
+        "chunkMetaRequests": 2,
+        "firstFrameMs": 63.5,
+        "lodMin": 3,
+        "lodMax": 3
+      },
+      "visualStats": {
+        "width": 1440,
+        "height": 960,
+        "sampled": 38400,
+        "visibleRatio": 1,
+        "brightRatio": 0.8680729166666666,
+        "darkRatio": 0,
+        "meanLuma": 197.21429651041265,
+        "lumaStdDev": 71.72069243510653,
+        "meanColorSpread": 18.1959375
+      },
+      "chunkMetaResponses": 2,
+      "screenshotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-production-viewer-coarse-lod.png"
+    }
+  ]
+}

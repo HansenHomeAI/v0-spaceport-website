@@ -1,0 +1,986 @@
+{
+  "ready": {
+    "testid": "md1-bundle-metrics",
+    "bundleKind": "lod-streaming",
+    "transport": "proxy",
+    "rootFile": "lod-meta.json",
+    "sourceUrl": "https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json",
+    "viewerUrl": "/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json",
+    "lodLevels": "4",
+    "chunkFiles": "4",
+    "loadedNodes": "0",
+    "chunkMetaRequests": "0",
+    "chunkMetaAtFirstFrame": "0",
+    "firstFrameMs": "818.5",
+    "splatBudget": "3000000",
+    "lodMin": "0",
+    "lodMax": "3",
+    "boundsMin": "-1.156553,-1.519617,-0.5702877",
+    "boundsMax": "0.7165855,0.7329016,0.8960439"
+  },
+  "results": [
+    {
+      "name": "default-iframe",
+      "shotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-manual-default-iframe.png",
+      "pose": null,
+      "state": {
+        "metrics": {
+          "loadStartedAt": 50,
+          "rootManifestUrl": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json",
+          "rootManifestType": "lod-meta.json",
+          "firstFrame": {
+            "at": 138.9000000357628,
+            "chunkMetaRequestCount": 0,
+            "totalRequestCount": 4
+          },
+          "events": [
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json",
+              "source": "fetch",
+              "status": 200,
+              "kind": "lod-root",
+              "at": 52.30000001192093
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/supersplat-lod-viewer/settings.json",
+              "source": "fetch",
+              "status": 200,
+              "kind": "other",
+              "at": 64.5
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-root",
+              "at": 117.30000001192093
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/supersplat-lod-viewer/skybox/kloppenheim_06_puresky_equirect.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "other",
+              "at": 130.60000002384186
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/meta.json",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-meta",
+              "at": 567.5
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_u.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 977.9000000357628
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_labels.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1082
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/sh0.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1098.1000000238419
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_l.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1117.5
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/scales.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1254.300000011921
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_centroids.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1269.6000000238419
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/quats.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1315.2000000476837
+            }
+          ],
+          "uniqueChunkMetaUrls": [
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/meta.json"
+          ],
+          "uniqueChunkTextureUrls": [
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_u.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_labels.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/sh0.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_l.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/scales.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_centroids.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/quats.webp"
+          ]
+        },
+        "pose": null,
+        "scripted": false
+      }
+    },
+    {
+      "name": "front-tight",
+      "shotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-manual-front-tight.png",
+      "pose": {
+        "position": [
+          0,
+          0.25,
+          -2.4
+        ],
+        "target": [
+          -0.2,
+          -0.35,
+          0.08
+        ],
+        "fov": 32
+      },
+      "state": {
+        "metrics": {
+          "loadStartedAt": 50,
+          "rootManifestUrl": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json",
+          "rootManifestType": "lod-meta.json",
+          "firstFrame": {
+            "at": 138.9000000357628,
+            "chunkMetaRequestCount": 0,
+            "totalRequestCount": 4
+          },
+          "events": [
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json",
+              "source": "fetch",
+              "status": 200,
+              "kind": "lod-root",
+              "at": 52.30000001192093
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/supersplat-lod-viewer/settings.json",
+              "source": "fetch",
+              "status": 200,
+              "kind": "other",
+              "at": 64.5
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-root",
+              "at": 117.30000001192093
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/supersplat-lod-viewer/skybox/kloppenheim_06_puresky_equirect.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "other",
+              "at": 130.60000002384186
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/meta.json",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-meta",
+              "at": 567.5
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_u.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 977.9000000357628
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_labels.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1082
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/sh0.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1098.1000000238419
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_l.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1117.5
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/scales.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1254.300000011921
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_centroids.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1269.6000000238419
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/quats.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1315.2000000476837
+            }
+          ],
+          "uniqueChunkMetaUrls": [
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/meta.json"
+          ],
+          "uniqueChunkTextureUrls": [
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_u.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_labels.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/sh0.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_l.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/scales.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_centroids.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/quats.webp"
+          ]
+        },
+        "pose": {
+          "position": [
+            0,
+            0.25,
+            -2.4
+          ],
+          "target": [
+            -0.2,
+            -0.35,
+            0.08
+          ],
+          "fov": 32
+        },
+        "scripted": true
+      }
+    },
+    {
+      "name": "front-low",
+      "shotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-manual-front-low.png",
+      "pose": {
+        "position": [
+          0,
+          -0.7,
+          -2.2
+        ],
+        "target": [
+          -0.2,
+          -0.55,
+          0.08
+        ],
+        "fov": 34
+      },
+      "state": {
+        "metrics": {
+          "loadStartedAt": 50,
+          "rootManifestUrl": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json",
+          "rootManifestType": "lod-meta.json",
+          "firstFrame": {
+            "at": 138.9000000357628,
+            "chunkMetaRequestCount": 0,
+            "totalRequestCount": 4
+          },
+          "events": [
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json",
+              "source": "fetch",
+              "status": 200,
+              "kind": "lod-root",
+              "at": 52.30000001192093
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/supersplat-lod-viewer/settings.json",
+              "source": "fetch",
+              "status": 200,
+              "kind": "other",
+              "at": 64.5
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-root",
+              "at": 117.30000001192093
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/supersplat-lod-viewer/skybox/kloppenheim_06_puresky_equirect.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "other",
+              "at": 130.60000002384186
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/meta.json",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-meta",
+              "at": 567.5
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_u.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 977.9000000357628
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_labels.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1082
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/sh0.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1098.1000000238419
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_l.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1117.5
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/scales.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1254.300000011921
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_centroids.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1269.6000000238419
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/quats.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1315.2000000476837
+            }
+          ],
+          "uniqueChunkMetaUrls": [
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/meta.json"
+          ],
+          "uniqueChunkTextureUrls": [
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_u.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_labels.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/sh0.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_l.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/scales.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_centroids.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/quats.webp"
+          ]
+        },
+        "pose": {
+          "position": [
+            0,
+            -0.7,
+            -2.2
+          ],
+          "target": [
+            -0.2,
+            -0.55,
+            0.08
+          ],
+          "fov": 34
+        },
+        "scripted": true
+      }
+    },
+    {
+      "name": "right-side",
+      "shotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-manual-right-side.png",
+      "pose": {
+        "position": [
+          2.2,
+          -0.2,
+          0.25
+        ],
+        "target": [
+          -0.2,
+          -0.45,
+          0.08
+        ],
+        "fov": 34
+      },
+      "state": {
+        "metrics": {
+          "loadStartedAt": 50,
+          "rootManifestUrl": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json",
+          "rootManifestType": "lod-meta.json",
+          "firstFrame": {
+            "at": 138.9000000357628,
+            "chunkMetaRequestCount": 0,
+            "totalRequestCount": 4
+          },
+          "events": [
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json",
+              "source": "fetch",
+              "status": 200,
+              "kind": "lod-root",
+              "at": 52.30000001192093
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/supersplat-lod-viewer/settings.json",
+              "source": "fetch",
+              "status": 200,
+              "kind": "other",
+              "at": 64.5
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-root",
+              "at": 117.30000001192093
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/supersplat-lod-viewer/skybox/kloppenheim_06_puresky_equirect.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "other",
+              "at": 130.60000002384186
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/meta.json",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-meta",
+              "at": 567.5
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_u.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 977.9000000357628
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_labels.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1082
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/sh0.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1098.1000000238419
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_l.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1117.5
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/scales.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1254.300000011921
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_centroids.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1269.6000000238419
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/quats.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1315.2000000476837
+            }
+          ],
+          "uniqueChunkMetaUrls": [
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/meta.json"
+          ],
+          "uniqueChunkTextureUrls": [
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_u.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_labels.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/sh0.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_l.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/scales.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_centroids.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/quats.webp"
+          ]
+        },
+        "pose": {
+          "position": [
+            2.2,
+            -0.2,
+            0.25
+          ],
+          "target": [
+            -0.2,
+            -0.45,
+            0.08
+          ],
+          "fov": 34
+        },
+        "scripted": true
+      }
+    },
+    {
+      "name": "left-side",
+      "shotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-manual-left-side.png",
+      "pose": {
+        "position": [
+          -2.2,
+          -0.2,
+          0.25
+        ],
+        "target": [
+          -0.2,
+          -0.45,
+          0.08
+        ],
+        "fov": 34
+      },
+      "state": {
+        "metrics": {
+          "loadStartedAt": 50,
+          "rootManifestUrl": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json",
+          "rootManifestType": "lod-meta.json",
+          "firstFrame": {
+            "at": 138.9000000357628,
+            "chunkMetaRequestCount": 0,
+            "totalRequestCount": 4
+          },
+          "events": [
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json",
+              "source": "fetch",
+              "status": 200,
+              "kind": "lod-root",
+              "at": 52.30000001192093
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/supersplat-lod-viewer/settings.json",
+              "source": "fetch",
+              "status": 200,
+              "kind": "other",
+              "at": 64.5
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-root",
+              "at": 117.30000001192093
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/supersplat-lod-viewer/skybox/kloppenheim_06_puresky_equirect.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "other",
+              "at": 130.60000002384186
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/meta.json",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-meta",
+              "at": 567.5
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_u.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 977.9000000357628
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_labels.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1082
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/sh0.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1098.1000000238419
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_l.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1117.5
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/scales.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1254.300000011921
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_centroids.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1269.6000000238419
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/quats.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1315.2000000476837
+            }
+          ],
+          "uniqueChunkMetaUrls": [
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/meta.json"
+          ],
+          "uniqueChunkTextureUrls": [
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_u.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_labels.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/sh0.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_l.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/scales.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_centroids.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/quats.webp"
+          ]
+        },
+        "pose": {
+          "position": [
+            -2.2,
+            -0.2,
+            0.25
+          ],
+          "target": [
+            -0.2,
+            -0.45,
+            0.08
+          ],
+          "fov": 34
+        },
+        "scripted": true
+      }
+    },
+    {
+      "name": "top-oblique",
+      "shotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-manual-top-oblique.png",
+      "pose": {
+        "position": [
+          0.25,
+          1.8,
+          -1.7
+        ],
+        "target": [
+          -0.2,
+          -0.35,
+          0.08
+        ],
+        "fov": 40
+      },
+      "state": {
+        "metrics": {
+          "loadStartedAt": 50,
+          "rootManifestUrl": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json",
+          "rootManifestType": "lod-meta.json",
+          "firstFrame": {
+            "at": 138.9000000357628,
+            "chunkMetaRequestCount": 0,
+            "totalRequestCount": 4
+          },
+          "events": [
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json",
+              "source": "fetch",
+              "status": 200,
+              "kind": "lod-root",
+              "at": 52.30000001192093
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/supersplat-lod-viewer/settings.json",
+              "source": "fetch",
+              "status": 200,
+              "kind": "other",
+              "at": 64.5
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-root",
+              "at": 117.30000001192093
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/supersplat-lod-viewer/skybox/kloppenheim_06_puresky_equirect.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "other",
+              "at": 130.60000002384186
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/meta.json",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-meta",
+              "at": 567.5
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_u.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 977.9000000357628
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_labels.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1082
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/sh0.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1098.1000000238419
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_l.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1117.5
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/scales.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1254.300000011921
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_centroids.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1269.6000000238419
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/quats.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1315.2000000476837
+            }
+          ],
+          "uniqueChunkMetaUrls": [
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/meta.json"
+          ],
+          "uniqueChunkTextureUrls": [
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_u.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_labels.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/sh0.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_l.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/scales.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_centroids.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/quats.webp"
+          ]
+        },
+        "pose": {
+          "position": [
+            0.25,
+            1.8,
+            -1.7
+          ],
+          "target": [
+            -0.2,
+            -0.35,
+            0.08
+          ],
+          "fov": 40
+        },
+        "scripted": true
+      }
+    },
+    {
+      "name": "back-oblique",
+      "shotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-manual-back-oblique.png",
+      "pose": {
+        "position": [
+          -0.4,
+          0.1,
+          2.4
+        ],
+        "target": [
+          -0.2,
+          -0.45,
+          0.08
+        ],
+        "fov": 34
+      },
+      "state": {
+        "metrics": {
+          "loadStartedAt": 50,
+          "rootManifestUrl": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json",
+          "rootManifestType": "lod-meta.json",
+          "firstFrame": {
+            "at": 138.9000000357628,
+            "chunkMetaRequestCount": 0,
+            "totalRequestCount": 4
+          },
+          "events": [
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json",
+              "source": "fetch",
+              "status": 200,
+              "kind": "lod-root",
+              "at": 52.30000001192093
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/supersplat-lod-viewer/settings.json",
+              "source": "fetch",
+              "status": 200,
+              "kind": "other",
+              "at": 64.5
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-root",
+              "at": 117.30000001192093
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/supersplat-lod-viewer/skybox/kloppenheim_06_puresky_equirect.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "other",
+              "at": 130.60000002384186
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/meta.json",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-meta",
+              "at": 567.5
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_u.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 977.9000000357628
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_labels.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1082
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/sh0.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1098.1000000238419
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_l.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1117.5
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/scales.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1254.300000011921
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_centroids.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1269.6000000238419
+            },
+            {
+              "url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/quats.webp",
+              "source": "xhr",
+              "status": 200,
+              "kind": "lod-chunk-texture",
+              "at": 1315.2000000476837
+            }
+          ],
+          "uniqueChunkMetaUrls": [
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/meta.json"
+          ],
+          "uniqueChunkTextureUrls": [
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_u.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_labels.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/sh0.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/means_l.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/scales.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/shN_centroids.webp",
+            "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/0_0/quats.webp"
+          ]
+        },
+        "pose": {
+          "position": [
+            -0.4,
+            0.1,
+            2.4
+          ],
+          "target": [
+            -0.2,
+            -0.45,
+            0.08
+          ],
+          "fov": 34
+        },
+        "scripted": true
+      }
+    }
+  ]
+}

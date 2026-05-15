@@ -42,75 +42,70 @@ class SogsSupersplatBundleTests(unittest.TestCase):
 
         self.skybox_source = self.root / "source-skybox.png"
         self.skybox_source.write_bytes(b"png")
+        self.trained_skybox_source = self.root / "background_skybox.png"
+        self.trained_skybox_source.write_bytes(b"trained-png")
 
         self.compressor = compress_module.PlayCanvasSOGSCompressor.__new__(
             compress_module.PlayCanvasSOGSCompressor
         )
         self.compressor.output_dir = str(self.output_dir)
 
-    def test_create_supersplat_bundle_copies_bundle_and_writes_optimized_skybox_manifest(self):
+    def test_create_supersplat_bundle_copies_trained_skybox_sidecar_and_writes_manifest(self):
         results = {
             "compressed_outputs": [
                 {
                     "output_dir": str(self.compressed_dir),
                 }
-            ]
+            ],
+            "supporting_files": [str(self.trained_skybox_source)],
         }
 
-        original_source = compress_module.CONTAINER_SKYBOX_SOURCE
-        compress_module.CONTAINER_SKYBOX_SOURCE = self.skybox_source
-        try:
-            def fake_convert(_source, destination):
-                destination.write_bytes(b"webp")
-                return True
+        def fake_convert(source, destination):
+            self.assertEqual(Path(source), self.trained_skybox_source)
+            destination.write_bytes(b"webp")
+            return True
 
-            with mock.patch.object(
-                compress_module,
-                "_convert_skybox_to_webp",
-                side_effect=fake_convert,
-            ):
-                self.compressor._create_supersplat_bundle(results)
-        finally:
-            compress_module.CONTAINER_SKYBOX_SOURCE = original_source
+        with mock.patch.object(
+            compress_module,
+            "_convert_skybox_to_webp",
+            side_effect=fake_convert,
+        ):
+            self.compressor._create_supersplat_bundle(results)
 
         bundle_dir = self.output_dir / "supersplat_bundle"
         self.assertTrue((bundle_dir / "meta.json").exists())
         self.assertTrue((bundle_dir / "chunk-0.webp").exists())
         self.assertTrue((bundle_dir / "settings.json").exists())
 
-        bundled_skybox = bundle_dir / "skybox" / compress_module.SKYBOX_GENERATED_ASSET_NAME
+        bundled_skybox = bundle_dir / "skybox" / "background_skybox.webp"
         self.assertTrue(bundled_skybox.exists())
         self.assertEqual(bundled_skybox.read_bytes(), b"webp")
 
         manifest = json.loads((bundle_dir / "spaceport_bundle.json").read_text(encoding="utf-8"))
         self.assertEqual(manifest["version"], 1)
         self.assertEqual(manifest["skybox"]["type"], "equirect")
-        self.assertEqual(manifest["skybox"]["path"], compress_module.SKYBOX_BUNDLE_RELATIVE_PATH)
+        self.assertEqual(manifest["skybox"]["path"], "skybox/background_skybox.webp")
 
-    def test_create_supersplat_bundle_falls_back_to_source_skybox_when_conversion_fails(self):
+    def test_create_supersplat_bundle_falls_back_to_trained_skybox_when_conversion_fails(self):
         results = {
             "compressed_outputs": [
                 {
                     "output_dir": str(self.compressed_dir),
                 }
-            ]
+            ],
+            "supporting_files": [str(self.trained_skybox_source)],
         }
 
-        original_source = compress_module.CONTAINER_SKYBOX_SOURCE
-        compress_module.CONTAINER_SKYBOX_SOURCE = self.skybox_source
-        try:
-            with mock.patch.object(compress_module, "_convert_skybox_to_webp", return_value=False):
-                self.compressor._create_supersplat_bundle(results)
-        finally:
-            compress_module.CONTAINER_SKYBOX_SOURCE = original_source
+        with mock.patch.object(compress_module, "_convert_skybox_to_webp", return_value=False):
+            self.compressor._create_supersplat_bundle(results)
 
         bundle_dir = self.output_dir / "supersplat_bundle"
-        bundled_skybox = bundle_dir / "skybox" / compress_module.SKYBOX_SOURCE_ASSET_NAME
+        bundled_skybox = bundle_dir / "skybox" / "background_skybox.png"
         self.assertTrue(bundled_skybox.exists())
-        self.assertEqual(bundled_skybox.read_bytes(), b"png")
+        self.assertEqual(bundled_skybox.read_bytes(), b"trained-png")
 
         manifest = json.loads((bundle_dir / "spaceport_bundle.json").read_text(encoding="utf-8"))
-        self.assertEqual(manifest["skybox"]["path"], compress_module.SKYBOX_SOURCE_BUNDLE_RELATIVE_PATH)
+        self.assertEqual(manifest["skybox"]["path"], "skybox/background_skybox.png")
 
     def test_create_supersplat_bundle_sets_null_skybox_when_asset_missing(self):
         results = {
@@ -132,6 +127,43 @@ class SogsSupersplatBundleTests(unittest.TestCase):
             (self.output_dir / "supersplat_bundle" / "spaceport_bundle.json").read_text(encoding="utf-8")
         )
         self.assertIsNone(manifest["skybox"])
+
+    def test_create_supersplat_bundle_uses_default_skybox_only_when_opted_in(self):
+        results = {
+            "compressed_outputs": [
+                {
+                    "output_dir": str(self.compressed_dir),
+                }
+            ]
+        }
+
+        original_source = compress_module.CONTAINER_SKYBOX_SOURCE
+        original_env = compress_module.os.environ.get("SOGS_BUNDLE_DEFAULT_SKYBOX")
+        compress_module.CONTAINER_SKYBOX_SOURCE = self.skybox_source
+        compress_module.os.environ["SOGS_BUNDLE_DEFAULT_SKYBOX"] = "1"
+        try:
+            def fake_convert(source, destination):
+                self.assertEqual(Path(source), self.skybox_source)
+                destination.write_bytes(b"default-webp")
+                return True
+
+            with mock.patch.object(
+                compress_module,
+                "_convert_skybox_to_webp",
+                side_effect=fake_convert,
+            ):
+                self.compressor._create_supersplat_bundle(results)
+        finally:
+            compress_module.CONTAINER_SKYBOX_SOURCE = original_source
+            if original_env is None:
+                compress_module.os.environ.pop("SOGS_BUNDLE_DEFAULT_SKYBOX", None)
+            else:
+                compress_module.os.environ["SOGS_BUNDLE_DEFAULT_SKYBOX"] = original_env
+
+        manifest = json.loads(
+            (self.output_dir / "supersplat_bundle" / "spaceport_bundle.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(manifest["skybox"]["path"], "skybox/source-skybox.webp")
 
 
 if __name__ == "__main__":

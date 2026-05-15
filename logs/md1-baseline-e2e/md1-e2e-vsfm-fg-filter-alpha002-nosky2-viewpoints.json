@@ -1,0 +1,878 @@
+[
+  {
+    "name": "default",
+    "pos": "0,0.5,-2",
+    "target": "0,0,0",
+    "shot": "/Users/gabrielhansen/MD1-Baseline/logs/md1-baseline-e2e/md1-e2e-vsfm-fg-filter-alpha002-nosky2-default.png",
+    "metrics": {
+      "net": {
+        "loadStartedAt": 94.80000001192093,
+        "rootManifestUrl": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+        "rootManifestType": "lod-meta.json",
+        "firstFrame": {
+          "at": 339.80000001192093,
+          "chunkMetaRequestCount": 0,
+          "totalRequestCount": 3
+        },
+        "events": [
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/spaceport_bundle.json",
+            "source": "fetch",
+            "status": 200,
+            "kind": "other",
+            "at": 111.90000003576279
+          },
+          {
+            "url": "http://127.0.0.1:3031/supersplat-lod-viewer/settings.json",
+            "source": "fetch",
+            "status": 200,
+            "kind": "other",
+            "at": 116.90000003576279
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+            "source": "fetch",
+            "status": 200,
+            "kind": "lod-root",
+            "at": 117.5
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-root",
+            "at": 340.60000002384186
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/meta.json",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-meta",
+            "at": 363.9000000357628
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/scales.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 371.7000000476837
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/means_l.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 372.10000002384186
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/means_u.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 372.7000000476837
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/quats.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 372.9000000357628
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/sh0.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 373.10000002384186
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_labels.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 375.7000000476837
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_centroids.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 376.4000000357628
+          }
+        ],
+        "uniqueChunkMetaUrls": [
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/meta.json"
+        ],
+        "uniqueChunkTextureUrls": [
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/scales.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/means_l.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/means_u.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/quats.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/sh0.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_labels.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_centroids.webp"
+        ]
+      },
+      "hasApp": true,
+      "hasGsplat": true,
+      "gsEnabled": true,
+      "gsPos": "[0, 0, 0]",
+      "children": [
+        {
+          "name": "camera root",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        },
+        {
+          "name": "light",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        },
+        {
+          "name": "splat",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        },
+        {
+          "name": "gsplat",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        }
+      ],
+      "canvas": {
+        "w": 1280,
+        "h": 840
+      }
+    }
+  },
+  {
+    "name": "close",
+    "pos": "0,0.05,-0.15",
+    "target": "0,0,0",
+    "shot": "/Users/gabrielhansen/MD1-Baseline/logs/md1-baseline-e2e/md1-e2e-vsfm-fg-filter-alpha002-nosky2-close.png",
+    "metrics": {
+      "net": {
+        "loadStartedAt": 20.399999976158142,
+        "rootManifestUrl": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+        "rootManifestType": "lod-meta.json",
+        "firstFrame": {
+          "at": 193.79999995231628,
+          "chunkMetaRequestCount": 0,
+          "totalRequestCount": 3
+        },
+        "events": [
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/spaceport_bundle.json",
+            "source": "fetch",
+            "status": 200,
+            "kind": "other",
+            "at": 23.899999976158142
+          },
+          {
+            "url": "http://127.0.0.1:3031/supersplat-lod-viewer/settings.json",
+            "source": "fetch",
+            "status": 200,
+            "kind": "other",
+            "at": 24.799999952316284
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+            "source": "fetch",
+            "status": 200,
+            "kind": "lod-root",
+            "at": 27.399999976158142
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-root",
+            "at": 194.29999995231628
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/meta.json",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-meta",
+            "at": 210.29999995231628
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/means_u.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 215.0999999642372
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/sh0.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 215.69999998807907
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/scales.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 217
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/means_l.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 217.19999998807907
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/quats.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 217.5999999642372
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_labels.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 219.79999995231628
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_centroids.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 221.5999999642372
+          }
+        ],
+        "uniqueChunkMetaUrls": [
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/meta.json"
+        ],
+        "uniqueChunkTextureUrls": [
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/means_u.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/sh0.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/scales.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/means_l.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/quats.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_labels.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_centroids.webp"
+        ]
+      },
+      "hasApp": true,
+      "hasGsplat": true,
+      "gsEnabled": true,
+      "gsPos": "[0, 0, 0]",
+      "children": [
+        {
+          "name": "camera root",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        },
+        {
+          "name": "light",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        },
+        {
+          "name": "splat",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        },
+        {
+          "name": "gsplat",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        }
+      ],
+      "canvas": {
+        "w": 1280,
+        "h": 840
+      }
+    }
+  },
+  {
+    "name": "front-center",
+    "pos": "-0.43,-0.39,-2.2",
+    "target": "-0.43,-0.39,0",
+    "shot": "/Users/gabrielhansen/MD1-Baseline/logs/md1-baseline-e2e/md1-e2e-vsfm-fg-filter-alpha002-nosky2-front-center.png",
+    "metrics": {
+      "net": {
+        "loadStartedAt": 21,
+        "rootManifestUrl": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+        "rootManifestType": "lod-meta.json",
+        "firstFrame": {
+          "at": 205.69999998807907,
+          "chunkMetaRequestCount": 0,
+          "totalRequestCount": 3
+        },
+        "events": [
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/spaceport_bundle.json",
+            "source": "fetch",
+            "status": 200,
+            "kind": "other",
+            "at": 25.5
+          },
+          {
+            "url": "http://127.0.0.1:3031/supersplat-lod-viewer/settings.json",
+            "source": "fetch",
+            "status": 200,
+            "kind": "other",
+            "at": 26.399999976158142
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+            "source": "fetch",
+            "status": 200,
+            "kind": "lod-root",
+            "at": 27.80000001192093
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-root",
+            "at": 206.30000001192093
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/meta.json",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-meta",
+            "at": 223.0999999642372
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/means_l.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 226.80000001192093
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/means_u.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 232.19999998807907
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/scales.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 235.19999998807907
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/quats.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 235.5999999642372
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/sh0.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 236.69999998807907
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_centroids.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 240.5999999642372
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_labels.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 259.69999998807907
+          }
+        ],
+        "uniqueChunkMetaUrls": [
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/meta.json"
+        ],
+        "uniqueChunkTextureUrls": [
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/means_l.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/means_u.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/scales.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/quats.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/sh0.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_centroids.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_labels.webp"
+        ]
+      },
+      "hasApp": true,
+      "hasGsplat": true,
+      "gsEnabled": true,
+      "gsPos": "[0, 0, 0]",
+      "children": [
+        {
+          "name": "camera root",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        },
+        {
+          "name": "light",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        },
+        {
+          "name": "splat",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        },
+        {
+          "name": "gsplat",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        }
+      ],
+      "canvas": {
+        "w": 1280,
+        "h": 840
+      }
+    }
+  },
+  {
+    "name": "side",
+    "pos": "-2,-0.39,0.05",
+    "target": "-0.43,-0.39,0",
+    "shot": "/Users/gabrielhansen/MD1-Baseline/logs/md1-baseline-e2e/md1-e2e-vsfm-fg-filter-alpha002-nosky2-side.png",
+    "metrics": {
+      "net": {
+        "loadStartedAt": 9.899999976158142,
+        "rootManifestUrl": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+        "rootManifestType": "lod-meta.json",
+        "firstFrame": {
+          "at": 215.39999997615814,
+          "chunkMetaRequestCount": 0,
+          "totalRequestCount": 3
+        },
+        "events": [
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/spaceport_bundle.json",
+            "source": "fetch",
+            "status": 200,
+            "kind": "other",
+            "at": 12.399999976158142
+          },
+          {
+            "url": "http://127.0.0.1:3031/supersplat-lod-viewer/settings.json",
+            "source": "fetch",
+            "status": 200,
+            "kind": "other",
+            "at": 13.5
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+            "source": "fetch",
+            "status": 200,
+            "kind": "lod-root",
+            "at": 14.099999964237213
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-root",
+            "at": 216
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/meta.json",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-meta",
+            "at": 234.79999995231628
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/means_u.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 240.0999999642372
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/means_l.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 240.39999997615814
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/scales.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 242.5
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/sh0.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 243
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_labels.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 243.5999999642372
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/quats.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 246.19999998807907
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_centroids.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 254.19999998807907
+          }
+        ],
+        "uniqueChunkMetaUrls": [
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/meta.json"
+        ],
+        "uniqueChunkTextureUrls": [
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/means_u.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/means_l.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/scales.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/sh0.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_labels.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/quats.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_centroids.webp"
+        ]
+      },
+      "hasApp": true,
+      "hasGsplat": true,
+      "gsEnabled": true,
+      "gsPos": "[0, 0, 0]",
+      "children": [
+        {
+          "name": "camera root",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        },
+        {
+          "name": "light",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        },
+        {
+          "name": "splat",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        },
+        {
+          "name": "gsplat",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        }
+      ],
+      "canvas": {
+        "w": 1280,
+        "h": 840
+      }
+    }
+  },
+  {
+    "name": "top",
+    "pos": "-0.43,0.2,2.4",
+    "target": "-0.43,-0.39,0",
+    "shot": "/Users/gabrielhansen/MD1-Baseline/logs/md1-baseline-e2e/md1-e2e-vsfm-fg-filter-alpha002-nosky2-top.png",
+    "metrics": {
+      "net": {
+        "loadStartedAt": 14.199999988079071,
+        "rootManifestUrl": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+        "rootManifestType": "lod-meta.json",
+        "firstFrame": {
+          "at": 217.89999997615814,
+          "chunkMetaRequestCount": 0,
+          "totalRequestCount": 3
+        },
+        "events": [
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/spaceport_bundle.json",
+            "source": "fetch",
+            "status": 200,
+            "kind": "other",
+            "at": 17.69999998807907
+          },
+          {
+            "url": "http://127.0.0.1:3031/supersplat-lod-viewer/settings.json",
+            "source": "fetch",
+            "status": 200,
+            "kind": "other",
+            "at": 18.399999976158142
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+            "source": "fetch",
+            "status": 200,
+            "kind": "lod-root",
+            "at": 26.30000001192093
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-root",
+            "at": 218.5
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/meta.json",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-meta",
+            "at": 236.39999997615814
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/means_l.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 242.19999998807907
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/quats.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 243.39999997615814
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/scales.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 244.10000002384186
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/means_u.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 247.60000002384186
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/sh0.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 247.89999997615814
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_labels.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 248.60000002384186
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_centroids.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 251.10000002384186
+          }
+        ],
+        "uniqueChunkMetaUrls": [
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/meta.json"
+        ],
+        "uniqueChunkTextureUrls": [
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/means_l.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/quats.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/scales.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/means_u.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/sh0.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_labels.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_centroids.webp"
+        ]
+      },
+      "hasApp": true,
+      "hasGsplat": true,
+      "gsEnabled": true,
+      "gsPos": "[0, 0, 0]",
+      "children": [
+        {
+          "name": "camera root",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        },
+        {
+          "name": "light",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        },
+        {
+          "name": "splat",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        },
+        {
+          "name": "gsplat",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        }
+      ],
+      "canvas": {
+        "w": 1280,
+        "h": 840
+      }
+    }
+  },
+  {
+    "name": "inside",
+    "pos": "-0.43,-0.39,-0.2",
+    "target": "-0.43,-0.39,0",
+    "shot": "/Users/gabrielhansen/MD1-Baseline/logs/md1-baseline-e2e/md1-e2e-vsfm-fg-filter-alpha002-nosky2-inside.png",
+    "metrics": {
+      "net": {
+        "loadStartedAt": 16.69999998807907,
+        "rootManifestUrl": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+        "rootManifestType": "lod-meta.json",
+        "firstFrame": {
+          "at": 180.19999998807907,
+          "chunkMetaRequestCount": 0,
+          "totalRequestCount": 3
+        },
+        "events": [
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/spaceport_bundle.json",
+            "source": "fetch",
+            "status": 200,
+            "kind": "other",
+            "at": 19.69999998807907
+          },
+          {
+            "url": "http://127.0.0.1:3031/supersplat-lod-viewer/settings.json",
+            "source": "fetch",
+            "status": 200,
+            "kind": "other",
+            "at": 20.100000023841858
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+            "source": "fetch",
+            "status": 200,
+            "kind": "lod-root",
+            "at": 21.5
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/lod-meta.json",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-root",
+            "at": 180.69999998807907
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/meta.json",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-meta",
+            "at": 197.69999998807907
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/means_u.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 202
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/quats.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 202.69999998807907
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/scales.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 204.39999997615814
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/means_l.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 204.5
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_labels.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 209.30000001192093
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/sh0.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 209.80000001192093
+          },
+          {
+            "url": "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_centroids.webp",
+            "source": "xhr",
+            "status": 200,
+            "kind": "lod-chunk-texture",
+            "at": 212.39999997615814
+          }
+        ],
+        "uniqueChunkMetaUrls": [
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/meta.json"
+        ],
+        "uniqueChunkTextureUrls": [
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/means_u.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/quats.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/scales.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/means_l.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_labels.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/sh0.webp",
+          "http://127.0.0.1:8034/supersplat_bundle/0_0/shN_centroids.webp"
+        ]
+      },
+      "hasApp": true,
+      "hasGsplat": true,
+      "gsEnabled": true,
+      "gsPos": "[0, 0, 0]",
+      "children": [
+        {
+          "name": "camera root",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        },
+        {
+          "name": "light",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        },
+        {
+          "name": "splat",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        },
+        {
+          "name": "gsplat",
+          "enabled": true,
+          "pos": "[0, 0, 0]"
+        }
+      ],
+      "canvas": {
+        "w": 1280,
+        "h": 840
+      }
+    }
+  }
+]

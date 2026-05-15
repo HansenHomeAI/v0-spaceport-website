@@ -30,6 +30,15 @@ const scenarios = [
   { name: "mobile", viewport: { width: 414, height: 896 }, query: "" },
 ];
 
+if (process.env.MD1_RUN_NO_SKY === "1") {
+  scenarios.push({
+    name: "desktop-nosky",
+    viewport: { width: 1440, height: 960 },
+    query: "&skybox=none",
+    requireModelVisible: true,
+  });
+}
+
 if (process.env.MD1_RUN_COARSE_LOD === "1") {
   scenarios.push({ name: "coarse-lod", viewport: { width: 1440, height: 960 }, query: "&lodMin=3&lodMax=3" });
 }
@@ -296,8 +305,21 @@ async function runScenario(scenario) {
     await page.waitForTimeout(scenario.name === "mobile" ? 5000 : 1000);
     const metrics = await readMetrics(page);
     const screenshotPath = path.join(logsDir, `md1-production-viewer-${scenario.name}.png`);
+    const modelScreenshotPath = path.join(logsDir, `md1-production-viewer-${scenario.name}-model.png`);
     await page.screenshot({ path: screenshotPath, fullPage: false });
+    const modelClipX = Math.min(520, Math.max(0, scenario.viewport.width - 1));
+    await page.screenshot({
+      path: modelScreenshotPath,
+      fullPage: false,
+      clip: {
+        x: modelClipX,
+        y: 0,
+        width: Math.max(1, scenario.viewport.width - modelClipX),
+        height: scenario.viewport.height,
+      },
+    });
     const visualStats = await analyzePng(screenshotPath);
+    const modelVisualStats = await analyzePng(modelScreenshotPath);
     await closeScenarioContext(context, page);
 
     const chunkMetaResponses = responses.filter((event) => event.url.endsWith("/meta.json"));
@@ -317,6 +339,10 @@ async function runScenario(scenario) {
     }
     assert(visualStats.visibleRatio > 0.03, `${scenario.name}: screenshot is visually empty`);
     assert(visualStats.lumaStdDev > 6, `${scenario.name}: screenshot has too little visual variation`);
+    if (scenario.requireModelVisible) {
+      assert(modelVisualStats.visibleRatio > 0.03, `${scenario.name}: no-sky model region did not show model pixels`);
+      assert(modelVisualStats.darkRatio < 0.95, `${scenario.name}: no-sky model region is almost entirely dark`);
+    }
 
     if (scenario.name === "coarse-lod") {
       assert(metrics.lodMin === 3 && metrics.lodMax === 3, "coarse-lod: URL LOD override was not applied");
@@ -326,8 +352,10 @@ async function runScenario(scenario) {
       scenario: scenario.name,
       metrics,
       visualStats,
+      modelVisualStats,
       chunkMetaResponses: chunkMetaResponses.length,
       screenshotPath,
+      modelScreenshotPath,
     };
   } finally {
     await closeBrowser(browser);

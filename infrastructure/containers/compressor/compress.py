@@ -40,6 +40,17 @@ SKYBOX_GENERATED_ASSET_NAME = "kloppenheim_06_puresky_equirect.webp"
 SKYBOX_BUNDLE_RELATIVE_PATH = f"skybox/{SKYBOX_GENERATED_ASSET_NAME}"
 SKYBOX_WEBP_QUALITY = 80
 CONTAINER_SKYBOX_SOURCE = Path(__file__).resolve().parent / "assets" / "skybox" / SKYBOX_SOURCE_ASSET_NAME
+SKYBOX_SIDECAR_NAMES = {
+    "background_skybox.webp",
+    "background_skybox.png",
+    "background_skybox.jpg",
+    "background_skybox.jpeg",
+}
+SUPPORTING_MANIFEST_NAMES = {
+    "training_metadata.json",
+    "export_manifest.json",
+    "background_manifest.json",
+}
 
 DEFAULT_LOD_DECIMATION = ("30%", "10%", "3%")
 DEFAULT_LOD_CHUNK_COUNT = 1024
@@ -89,22 +100,50 @@ def _convert_skybox_to_webp(source_path: Path, destination_path: Path) -> bool:
         return False
 
 
-def _bundle_skybox_asset(bundle_dir: Path) -> str | None:
-    if not CONTAINER_SKYBOX_SOURCE.exists():
-        logger.warning("Bundled skybox asset not found at %s", CONTAINER_SKYBOX_SOURCE)
+def _allow_default_skybox() -> bool:
+    return (os.environ.get("SOGS_BUNDLE_DEFAULT_SKYBOX") or "").strip().lower() in {"1", "true", "yes"}
+
+
+def _pick_skybox_support_file(paths: Iterable[Path]) -> Path | None:
+    for path in paths:
+        if path.name.lower() in SKYBOX_SIDECAR_NAMES and path.exists():
+            return path
+    return None
+
+
+def _bundle_skybox_asset(bundle_dir: Path, source_path: Path | None = None) -> str | None:
+    skybox_source = source_path if source_path and source_path.exists() else None
+    if skybox_source is None:
+        if not _allow_default_skybox():
+            logger.info("No trained skybox sidecar found; writing bundle without a skybox")
+            return None
+        if not CONTAINER_SKYBOX_SOURCE.exists():
+            logger.warning("Bundled skybox asset not found at %s", CONTAINER_SKYBOX_SOURCE)
+            return None
+        skybox_source = CONTAINER_SKYBOX_SOURCE
+
+    if not skybox_source.exists():
+        logger.warning("Skybox source not found at %s", skybox_source)
         return None
 
     skybox_dir = bundle_dir / "skybox"
     skybox_dir.mkdir(parents=True, exist_ok=True)
-    generated_destination = skybox_dir / SKYBOX_GENERATED_ASSET_NAME
-    if _convert_skybox_to_webp(CONTAINER_SKYBOX_SOURCE, generated_destination):
-        logger.info("Bundled optimized skybox %s into SuperSplat bundle", SKYBOX_GENERATED_ASSET_NAME)
-        return SKYBOX_BUNDLE_RELATIVE_PATH
 
-    fallback_destination = skybox_dir / SKYBOX_SOURCE_ASSET_NAME
-    shutil.copy2(CONTAINER_SKYBOX_SOURCE, fallback_destination)
-    logger.info("Bundled fallback skybox %s into SuperSplat bundle", SKYBOX_SOURCE_ASSET_NAME)
-    return SKYBOX_SOURCE_BUNDLE_RELATIVE_PATH
+    if skybox_source.suffix.lower() == ".webp":
+        destination = skybox_dir / skybox_source.name
+        shutil.copy2(skybox_source, destination)
+        logger.info("Bundled trained skybox %s into SuperSplat bundle", skybox_source.name)
+        return f"skybox/{destination.name}"
+
+    generated_destination = skybox_dir / f"{skybox_source.stem}.webp"
+    if _convert_skybox_to_webp(skybox_source, generated_destination):
+        logger.info("Bundled optimized skybox %s into SuperSplat bundle", generated_destination.name)
+        return f"skybox/{generated_destination.name}"
+
+    fallback_destination = skybox_dir / skybox_source.name
+    shutil.copy2(skybox_source, fallback_destination)
+    logger.info("Bundled fallback skybox %s into SuperSplat bundle", skybox_source.name)
+    return f"skybox/{fallback_destination.name}"
 
 
 def _count_tree_nodes(node: dict[str, Any] | None) -> int:
@@ -218,7 +257,7 @@ class PlayCanvasSOGSCompressor:
                 continue
             lower_name = path.name.lower()
             lower_path = str(path).lower()
-            if lower_name == "training_metadata.json":
+            if lower_name in SUPPORTING_MANIFEST_NAMES or lower_name in SKYBOX_SIDECAR_NAMES:
                 supporting_files.append(path)
             if path.suffix.lower() == ".lcc":
                 lcc_files.append(path)
@@ -489,7 +528,12 @@ class PlayCanvasSOGSCompressor:
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(path, destination)
 
-        skybox_manifest_path = _bundle_skybox_asset(bundle_dir)
+        supporting_paths = [
+            Path(path)
+            for path in results.get("supporting_files", [])
+            if isinstance(path, str) and path.strip()
+        ]
+        skybox_manifest_path = _bundle_skybox_asset(bundle_dir, _pick_skybox_support_file(supporting_paths))
 
         with open(bundle_dir / "settings.json", "w", encoding="utf-8") as file_obj:
             json.dump(DEFAULT_SOG_SETTINGS, file_obj, indent=2)
@@ -523,6 +567,7 @@ class PlayCanvasSOGSCompressor:
 
         with tempfile.TemporaryDirectory(prefix="sogs-work-") as temp_dir:
             results = self.compress_gaussian_splats([str(source.path)], temp_dir)
+            results["supporting_files"] = [str(path) for path in source.supporting_files]
             self._create_supersplat_bundle(results)
 
         bundle_dir = Path(self.output_dir) / "supersplat_bundle"

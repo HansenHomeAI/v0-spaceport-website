@@ -1,0 +1,55 @@
+{
+  "method": "playcanvas_splat_transform",
+  "version": "splat-transform v1.10.2",
+  "gpu_accelerated": false,
+  "device": "cpu",
+  "lodDecimation": [
+    "30%",
+    "10%",
+    "3%"
+  ],
+  "lodChunkCount": 1024,
+  "lodChunkExtent": 32,
+  "input_files": [
+    "/opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply"
+  ],
+  "bundle_source_dir": "/tmp/sogs-work-tj92ysb8/generated_bundle",
+  "compressed_outputs": [
+    {
+      "input_file": "/opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply",
+      "output_dir": "/tmp/sogs-work-tj92ysb8/generated_bundle",
+      "original_size_mb": 312.391,
+      "compressed_size_mb": 17.176,
+      "compression_ratio": 18.1877
+    }
+  ],
+  "overall_compression_ratio": 18.1877,
+  "bundle_metrics": {
+    "bundleDir": "/opt/ml/processing/output/supersplat_bundle",
+    "fileCount": 45,
+    "bundleSizeBytes": 18050750,
+    "hasMetaJson": true,
+    "hasLodMetaJson": true,
+    "splatCount": null,
+    "lodLevels": 4,
+    "chunkFiles": 4,
+    "lodTreeNodes": 2,
+    "bounds": {
+      "min": [
+        -1.156553,
+        -1.519617,
+        -0.5702877
+      ],
+      "max": [
+        0.7165855,
+        0.7329016,
+        0.8960439
+      ]
+    }
+  },
+  "copied_supporting_files": [
+    "training_metadata.json"
+  ],
+  "source_kind": "ply",
+  "source_path": "/opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply"
+}

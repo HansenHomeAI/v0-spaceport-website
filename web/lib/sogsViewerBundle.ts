@@ -25,7 +25,8 @@ type SpaceportBundleConfig = {
     | {
         path?: string;
         url?: string;
-      };
+      }
+    | null;
 };
 
 export type ResolvedSogsViewerBundle = {
@@ -63,6 +64,11 @@ type ManifestCandidate = {
   sourceBundleRootUrl: URL;
   rootFile: "meta.json" | "lod-meta.json";
 };
+
+type SkyboxConfigResolution =
+  | { kind: "missing" }
+  | { kind: "none" }
+  | { kind: "path"; path: string };
 
 export function getBaseOrigin(): string {
   return typeof window !== "undefined" ? window.location.origin : "https://spcprt.com";
@@ -180,23 +186,30 @@ function transportOptions(url: URL): SogsBundleTransport[] {
   return shouldProxyBundleUrl(url) ? ["proxy", "direct"] : ["direct"];
 }
 
-function readSkyboxPath(config: unknown): string | null {
+function readSkyboxConfig(config: unknown): SkyboxConfigResolution {
   if (!config || typeof config !== "object") {
-    return null;
+    return { kind: "missing" };
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(config, "skybox")) {
+    return { kind: "missing" };
   }
 
   const skybox = (config as SpaceportBundleConfig).skybox;
+  if (skybox == null) {
+    return { kind: "none" };
+  }
   if (typeof skybox === "string" && skybox.trim()) {
-    return skybox.trim();
+    return { kind: "path", path: skybox.trim() };
   }
   if (skybox && typeof skybox === "object") {
     const candidate = skybox.path ?? skybox.url;
     if (typeof candidate === "string" && candidate.trim()) {
-      return candidate.trim();
+      return { kind: "path", path: candidate.trim() };
     }
   }
 
-  return null;
+  return { kind: "missing" };
 }
 
 function countTreeNodes(node: unknown): number {
@@ -408,10 +421,12 @@ export async function resolveSogsViewerBundle(
         );
         if (configUrl) {
           const config = await fetchJson(configUrl);
-          const configuredSkybox = readSkyboxPath(config);
-          if (configuredSkybox) {
+          const configuredSkybox = readSkyboxConfig(config);
+          if (configuredSkybox.kind === "none") {
+            skyboxUrl = null;
+          } else if (configuredSkybox.kind === "path") {
             skyboxUrl =
-              resolveAssetUrlFromSource(candidate.sourceBundleRootUrl, configuredSkybox, transport) ??
+              resolveAssetUrlFromSource(candidate.sourceBundleRootUrl, configuredSkybox.path, transport) ??
               DEFAULT_SOGS_SKYBOX_PATH;
           }
         }
@@ -450,9 +465,12 @@ export async function resolveSogsViewerBundle(
       });
       if (response.ok) {
         const config = (await response.json()) as SpaceportBundleConfig;
-        const configuredSkybox = readSkyboxPath(config);
-        if (configuredSkybox) {
-          const resolvedSkybox = resolveBundleAssetUrl(rawBundleValue, configuredSkybox);
+        const configuredSkybox = readSkyboxConfig(config);
+        if (configuredSkybox.kind === "none") {
+          return { contentUrl, skyboxUrl: null };
+        }
+        if (configuredSkybox.kind === "path") {
+          const resolvedSkybox = resolveBundleAssetUrl(rawBundleValue, configuredSkybox.path);
           if (resolvedSkybox) {
             return { contentUrl, skyboxUrl: resolvedSkybox };
           }
