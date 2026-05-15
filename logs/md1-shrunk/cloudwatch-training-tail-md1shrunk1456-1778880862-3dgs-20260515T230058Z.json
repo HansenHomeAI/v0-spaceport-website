@@ -1,0 +1,256 @@
+{
+    "events": [
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,679 - INFO -       ✅ Image file exists: frame_01455.JPG",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,679 - INFO -       ✅ transform_matrix: 4x4 matrix present",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,679 - INFO -       ✅ transform_matrix has non-zero values",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,679 - INFO -    📋 FRAME 2:",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,679 - INFO -       file_path: images/frame_01454.JPG",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,679 - INFO -       ✅ Image file exists: frame_01454.JPG",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,679 - INFO -       ✅ transform_matrix: 4x4 matrix present",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,679 - INFO -       ✅ transform_matrix has non-zero values",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,679 - INFO -    📋 FRAME 3:",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,679 - INFO -       file_path: images/frame_01453.JPG",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,679 - INFO -       ✅ Image file exists: frame_01453.JPG",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,680 - INFO -       ✅ transform_matrix: 4x4 matrix present",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,680 - INFO -       ✅ transform_matrix has non-zero values",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,680 - INFO -    📋 FRAME 4:",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,680 - INFO -       file_path: images/frame_01452.JPG",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,680 - INFO -       ✅ Image file exists: frame_01452.JPG",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,680 - INFO -       ✅ transform_matrix: 4x4 matrix present",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,680 - INFO -       ✅ transform_matrix has non-zero values",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,680 - INFO - 📊 VALIDATION SUMMARY:",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,680 - INFO -    Total frames: 1456",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,680 - INFO -    Valid frames: 5",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,680 - INFO -    Success rate: 0.3%",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,680 - INFO - ✅ transforms.json validation passed",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,681 - INFO - ✅ COLMAP data converted successfully",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351254,
+            "message": "2026-05-15 21:42:30,681 - INFO - 📁 Final input directory: /tmp/nerfstudio_training/converted_data",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,688 - INFO - 🔥 Starting NerfStudio training (splatfacto-w-light)",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,688 - INFO - ============================================================",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,688 - INFO - 🎯 Training Configuration:",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,688 - INFO -    Model: splatfacto-w-light",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,688 - INFO -    Max iterations: 30000",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,688 - INFO -    SH degree: 3",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,688 - INFO -    Rasterize mode: classic",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,688 - INFO -    Scale regularization: True",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,688 - INFO -    Cull alpha threshold: 0.12",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,688 - INFO -    Cull scale threshold: 0.35",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,688 - INFO -    Background model: True",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,688 - INFO -    Alpha loss: True",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,689 - INFO -    Robust sky masking: True",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,689 - INFO -    Background SH degree: 8",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,689 - INFO -    Appearance embedding dim: 64",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,689 - INFO -    Log interval: 100",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,689 - INFO -    Dataparser: transforms.json (via ns-process-data conversion)",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,689 - INFO - ℹ️  Bilateral guided processing disabled",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,689 - INFO - 🖥️  A10G GPU optimization enabled (max-gauss-ratio: 10.0)",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,689 - INFO - 🪟 Viewer disabled for headless SageMaker training (--vis tensorboard)",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,689 - INFO - 🚀 Executing NerfStudio training command:",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,689 - INFO -    ns-train splatfacto-w-light --data /tmp/nerfstudio_training/converted_data --output-dir /tmp/nerfstudio_training --vis tensorboard --max_num_iterations 30000 --pipeline.model.sh_degree 3 --logging.steps_per_log 100 --pipeline.model.rasterize_mode classic --pipeline.model.use_scale_regularization True --pipeline.model.cull_alpha_thresh 0.12 --pipeline.model.cull_scale_thresh 0.35 --pipeline.model.enable_bg_model True --pipeline.model.enable_alpha_loss True --pipeline.model.enable_robust_mask True --pipeline.model.bg_sh_degree 8 --pipeline.model.appearance_embed_dim 64 --pipeline.model.never_mask_upper 0.4 --pipeline.model.max-gauss-ratio 10.0",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,689 - INFO - ============================================================",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,689 - INFO - ⏱️  Training timeout: 14400 seconds",
+            "ingestionTime": 1778881356649
+        },
+        {
+            "timestamp": 1778881351255,
+            "message": "2026-05-15 21:42:30,689 - INFO - 🐍 PYTHONPATH for ns-train: /opt/ml/code:/opt/ml/code:",
+            "ingestionTime": 1778881356649
+        }
+    ],
+    "nextForwardToken": "f/39670379752755608136662767238780368248904146148671291477/s",
+    "nextBackwardToken": "b/39670379752733307391464236615638832530631497787165311012/s"
+}

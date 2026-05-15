@@ -464,10 +464,22 @@ skybox, compression, artifact handoff, and visual gates.
         - `logs/md1-shrunk/cloudwatch-training-tail-md1shrunk1456-1778880862-3dgs-20260515T225500Z.txt`
       - Training output prefix still empty (expected until EndOfJob export):
         - `logs/md1-shrunk/s3-3dgs-md1shrunk1456-1778880862-20260515T225500Z.txt` -> `Total Objects: 0`, `Total Size: 0`
-   - Current downstream image facts for the post-SfM stage:
-     - `aws ecr describe-images --repository-name spaceport/3dgs --image-ids imageTag=agent113647md1baselinee2e --region us-west-2 --output json > logs/md1-shrunk/ecr-3dgs-agent113647md1baselinee2e-20260515T1758Z.json`
-       - digest `sha256:6b3b2492af7a268cfc5f233e87bdce51c47492ada4c3630f723114ffa464fd0c`
-       - pushed `2026-05-14T13:37:06.875000-0600`
+  - 2026-05-15T17:01:10-0600 push verification (workflows green; 3DGS still running):
+    - branch/head/status:
+      - `git rev-parse HEAD` -> `59025882aa5c6e04c25f6d9bda5ed9c891ee4a43`
+      - `git status --porcelain=v1` -> new untracked poll artifacts under `logs/md1-shrunk/`
+    - GitHub workflow (exact-head):
+      - `CDK Deploy` succeeded for head `59025882...` (run `25945333283`)
+        - `logs/md1-shrunk/gh-run-view-25945333283-20260515T230058Z.json`
+        - `logs/md1-shrunk/gh-run-watch-25945333283-20260515T230058Z.txt`
+      - Pages workflow not triggered by this poll-only push (no `web/trigger-dev-build.txt` bump)
+    - SageMaker 3DGS training still InProgress/Training:
+      - CloudWatch tail still ends at `ns-train ...` command launch (no iteration logs yet):
+        - `logs/md1-shrunk/cloudwatch-training-tail-md1shrunk1456-1778880862-3dgs-20260515T230058Z.txt`
+    - Current downstream image facts for the post-SfM stage:
+      - `aws ecr describe-images --repository-name spaceport/3dgs --image-ids imageTag=agent113647md1baselinee2e --region us-west-2 --output json > logs/md1-shrunk/ecr-3dgs-agent113647md1baselinee2e-20260515T1758Z.json`
+        - digest `sha256:6b3b2492af7a268cfc5f233e87bdce51c47492ada4c3630f723114ffa464fd0c`
+        - pushed `2026-05-14T13:37:06.875000-0600`
      - `aws ecr describe-images --repository-name spaceport/compressor --image-ids imageTag=agent113647md1baselinee2e --region us-west-2 --output json > logs/md1-shrunk/ecr-compressor-agent113647md1baselinee2e-20260515T1758Z.json`
        - digest `sha256:c667899d7e844083e8d50b04329edd3841bbfb26f8876c917ade78be8f27d603`
        - pushed `2026-05-15T03:44:31.581000-0600`
