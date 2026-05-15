@@ -1,0 +1,51 @@
+{
+    "events": [
+        {
+            "timestamp": 1778832875448,
+            "message": "2026-05-15 08:14:33,442 - INFO - Executing: splat-transform --version",
+            "ingestionTime": 1778832881605
+        },
+        {
+            "timestamp": 1778832875448,
+            "message": "2026-05-15 08:14:33,561 - INFO - splat-transform v1.10.2",
+            "ingestionTime": 1778832881605
+        },
+        {
+            "timestamp": 1778832875448,
+            "message": "2026-05-15 08:14:33,561 - INFO - Using splat-transform splat-transform v1.10.2 (device=cpu, lod_decimation=30%,10%,3%, chunk_count=1024K, chunk_extent=32)",
+            "ingestionTime": 1778832881605
+        },
+        {
+            "timestamp": 1778832875448,
+            "message": "2026-05-15 08:14:33,561 - INFO - Starting SuperSplat compression job",
+            "ingestionTime": 1778832881605
+        },
+        {
+            "timestamp": 1778832875448,
+            "message": "2026-05-15 08:14:33,562 - INFO - Extracting archive /opt/ml/processing/input/md1-e2e-vsfm-splatfacto-202605150539-3dgs/output/model.tar.gz -> /opt/ml/processing/input/__extracted_archives/00-model-tar",
+            "ingestionTime": 1778832881605
+        },
+        {
+            "timestamp": 1778832875448,
+            "message": "2026-05-15 08:14:35,309 - INFO - Selected ply source: /opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply",
+            "ingestionTime": 1778832881605
+        },
+        {
+            "timestamp": 1778832875448,
+            "message": "2026-05-15 08:14:35,310 - INFO - Supporting files discovered: ['training_metadata.json']",
+            "ingestionTime": 1778832881605
+        },
+        {
+            "timestamp": 1778832875449,
+            "message": "2026-05-15 08:14:35,310 - INFO - Executing: splat-transform -w -g cpu /opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply /tmp/sogs-work-kjqt837e/generated_bundle/meta.json",
+            "ingestionTime": 1778832881605
+        },
+        {
+            "timestamp": 1778836476339,
+            "message": "2026-05-15 09:14:35,437 - ERROR - Compression job failed: Command '['splat-transform', '-w', '-g', 'cpu', '/opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply', '/tmp/sogs-work-kjqt837e/generated_bundle/meta.json']' timed out after 3600 seconds",
+            "ingestionTime": 1778836481543
+        }
+    ],
+    "nextForwardToken": "f/39669379008688086671625808916637240204277592879981330432/s",
+    "nextBackwardToken": "b/39669298706135407989491709816885185093716137941116452864/s"
+}

@@ -1,0 +1,9 @@
+2026-05-15 08:14:33,442 - INFO - Executing: splat-transform --version
+2026-05-15 08:14:33,561 - INFO - splat-transform v1.10.2
+2026-05-15 08:14:33,561 - INFO - Using splat-transform splat-transform v1.10.2 (device=cpu, lod_decimation=30%,10%,3%, chunk_count=1024K, chunk_extent=32)
+2026-05-15 08:14:33,561 - INFO - Starting SuperSplat compression job
+2026-05-15 08:14:33,562 - INFO - Extracting archive /opt/ml/processing/input/md1-e2e-vsfm-splatfacto-202605150539-3dgs/output/model.tar.gz -> /opt/ml/processing/input/__extracted_archives/00-model-tar
+2026-05-15 08:14:35,309 - INFO - Selected ply source: /opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply
+2026-05-15 08:14:35,310 - INFO - Supporting files discovered: ['training_metadata.json']
+2026-05-15 08:14:35,310 - INFO - Executing: splat-transform -w -g cpu /opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply /tmp/sogs-work-kjqt837e/generated_bundle/meta.json
+2026-05-15 09:14:35,437 - ERROR - Compression job failed: Command '['splat-transform', '-w', '-g', 'cpu', '/opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply', '/tmp/sogs-work-kjqt837e/generated_bundle/meta.json']' timed out after 3600 seconds

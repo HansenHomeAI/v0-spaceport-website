@@ -166,15 +166,25 @@ class PlayCanvasSOGSCompressor:
         self.lod_decimation = self._read_lod_decimation()
         self.lod_chunk_count = int(os.environ.get("SOGS_LOD_CHUNK_COUNT", DEFAULT_LOD_CHUNK_COUNT))
         self.lod_chunk_extent = int(os.environ.get("SOGS_LOD_CHUNK_EXTENT", DEFAULT_LOD_CHUNK_EXTENT))
+        self.transform_timeout_seconds = self._read_positive_int_env("SOGS_TRANSFORM_TIMEOUT_SECONDS", 14400)
+        self.lod_transform_timeout_seconds = self._read_positive_int_env(
+            "SOGS_LOD_TRANSFORM_TIMEOUT_SECONDS",
+            self.transform_timeout_seconds,
+        )
         self.transform_bin = self._resolve_transform_bin()
         self.version = self._get_splat_transform_version()
         logger.info(
-            "Using splat-transform %s (device=%s, lod_decimation=%s, chunk_count=%sK, chunk_extent=%s)",
+            (
+                "Using splat-transform %s (device=%s, lod_decimation=%s, chunk_count=%sK, "
+                "chunk_extent=%s, transform_timeout=%ss, lod_transform_timeout=%ss)"
+            ),
             self.version,
             self.device,
             ",".join(self.lod_decimation),
             self.lod_chunk_count,
             self.lod_chunk_extent,
+            self.transform_timeout_seconds,
+            self.lod_transform_timeout_seconds,
         )
 
     def _resolve_transform_bin(self) -> list[str]:
@@ -189,6 +199,20 @@ class PlayCanvasSOGSCompressor:
             return list(DEFAULT_LOD_DECIMATION)
         values = [value.strip() for value in raw.split(",") if value.strip()]
         return values or list(DEFAULT_LOD_DECIMATION)
+
+    def _read_positive_int_env(self, name: str, default: int) -> int:
+        raw = (os.environ.get(name) or "").strip()
+        if not raw:
+            return default
+        try:
+            value = int(raw)
+        except ValueError:
+            logger.warning("Ignoring invalid %s=%r; using %s", name, raw, default)
+            return default
+        if value <= 0:
+            logger.warning("Ignoring non-positive %s=%r; using %s", name, raw, default)
+            return default
+        return value
 
     def _run_command(
         self,
@@ -360,7 +384,7 @@ class PlayCanvasSOGSCompressor:
             command = [*self.transform_bin, "-w", "-g", self.device, "-O", "0", str(source), str(output)]
         else:
             command = [*self.transform_bin, "-w", "-g", self.device, str(source), str(output)]
-        self._run_command(command)
+        self._run_command(command, timeout=self.transform_timeout_seconds)
 
     def _build_lod_inputs_from_ply(self, source: Path, work_dir: Path) -> list[tuple[int, Path]]:
         work_dir.mkdir(parents=True, exist_ok=True)
@@ -368,7 +392,7 @@ class PlayCanvasSOGSCompressor:
         for level, decimation in enumerate(self.lod_decimation, start=1):
             output = work_dir / f"lod{level}.ply"
             command = [*self.transform_bin, "-w", str(source), "-F", decimation, str(output)]
-            self._run_command(command)
+            self._run_command(command, timeout=self.lod_transform_timeout_seconds)
             lod_inputs.append((level, output))
         return lod_inputs
 
@@ -389,7 +413,7 @@ class PlayCanvasSOGSCompressor:
             str(source),
             str(bundle_dir / "lod-meta.json"),
         ]
-        self._run_command(command, timeout=7200)
+        self._run_command(command, timeout=self.lod_transform_timeout_seconds)
 
     def _build_lod_bundle_from_inputs(self, lod_inputs: Sequence[tuple[int, Path]], bundle_dir: Path) -> None:
         bundle_dir.mkdir(parents=True, exist_ok=True)
@@ -406,7 +430,7 @@ class PlayCanvasSOGSCompressor:
         for level, path in lod_inputs:
             command.extend([str(path), "-l", str(level)])
         command.append(str(bundle_dir / "lod-meta.json"))
-        self._run_command(command, timeout=7200)
+        self._run_command(command, timeout=self.lod_transform_timeout_seconds)
 
     def _collect_bundle_metrics(self, bundle_dir: Path) -> dict[str, Any]:
         metrics: dict[str, Any] = {

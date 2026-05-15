@@ -165,6 +165,57 @@ class SogsSupersplatBundleTests(unittest.TestCase):
         )
         self.assertEqual(manifest["skybox"]["path"], "skybox/source-skybox.webp")
 
+    def test_transform_timeouts_default_to_long_running_md1_safe_values(self):
+        with mock.patch.object(
+            compress_module.PlayCanvasSOGSCompressor,
+            "_get_splat_transform_version",
+            return_value="test-version",
+        ):
+            compressor = compress_module.PlayCanvasSOGSCompressor()
+
+        self.assertEqual(compressor.transform_timeout_seconds, 14400)
+        self.assertEqual(compressor.lod_transform_timeout_seconds, 14400)
+
+    def test_transform_timeouts_can_be_overridden_independently(self):
+        with mock.patch.dict(
+            compress_module.os.environ,
+            {
+                "SOGS_TRANSFORM_TIMEOUT_SECONDS": "1234",
+                "SOGS_LOD_TRANSFORM_TIMEOUT_SECONDS": "5678",
+            },
+        ), mock.patch.object(
+            compress_module.PlayCanvasSOGSCompressor,
+            "_get_splat_transform_version",
+            return_value="test-version",
+        ):
+            compressor = compress_module.PlayCanvasSOGSCompressor()
+
+        self.assertEqual(compressor.transform_timeout_seconds, 1234)
+        self.assertEqual(compressor.lod_transform_timeout_seconds, 5678)
+
+    def test_bundle_builders_use_configured_transform_timeouts(self):
+        source = self.root / "splat.ply"
+        source.write_text("ply\n", encoding="utf-8")
+        bundle_dir = self.root / "bundle"
+        lod_dir = self.root / "lod_inputs"
+
+        self.compressor.transform_bin = ["splat-transform"]
+        self.compressor.device = "cpu"
+        self.compressor.lod_decimation = ["30%"]
+        self.compressor.lod_chunk_count = 1024
+        self.compressor.lod_chunk_extent = 32
+        self.compressor.transform_timeout_seconds = 111
+        self.compressor.lod_transform_timeout_seconds = 222
+
+        with mock.patch.object(self.compressor, "_run_command") as run_command:
+            self.compressor._build_single_bundle(source, bundle_dir)
+            self.compressor._build_lod_inputs_from_ply(source, lod_dir)
+            self.compressor._build_lod_bundle_from_inputs([(0, source)], bundle_dir)
+
+        self.assertEqual(run_command.call_args_list[0].kwargs["timeout"], 111)
+        self.assertEqual(run_command.call_args_list[1].kwargs["timeout"], 222)
+        self.assertEqual(run_command.call_args_list[2].kwargs["timeout"], 222)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1231,3 +1231,295 @@ Produce a development-based MD1 baseline with:
   - Continue monitoring `md1-e2e-vsfm-splatfacto-202605150539-3dgs` through terminal status.
   - If it fails, capture the exact SageMaker/CloudWatch error and patch only that proven issue.
   - If it completes, validate S3 artifact handoff, compression, gaussian count/file size, then smoke and visually gate `/md1-viewer` with no skybox before accepting the baseline.
+
+### 2026-05-15T00:02:39-0600
+
+- Verification before action:
+  - Branch/head: `agent-113647-md1-baseline-e2e` @ `eb166a12832dedafaef9bdc627d174d17bf04f76`.
+  - Local dirty files not staged: top-level generated viewer screenshots/results only (`logs/md1-production-viewer-desktop.png`, `logs/md1-production-viewer-results.json`).
+  - `aws sts get-caller-identity` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+  - Exact-head GitHub workflow: `CDK Deploy` run `25902702055` @ `eb166a12832dedafaef9bdc627d174d17bf04f76` -> `success`.
+- Current active AWS state:
+  - Running Step Functions executions:
+    - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-202605150539`.
+  - InProgress training jobs:
+    - This run: `md1-e2e-vsfm-splatfacto-202605150539-3dgs` -> `InProgress` / `Training`.
+    - External/not owned by this automation: `md1-full2157-ds4-r25-1778823276` -> `InProgress` / `Training`; left untouched.
+  - InProgress processing jobs: none.
+  - 3DGS output prefix is still empty as expected until SageMaker job end:
+    - `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-splatfacto-202605150539/` -> `Total Objects: 0`.
+  - Compression output prefix is still empty because compression has not started:
+    - `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-splatfacto-202605150539/` -> `Total Objects: 0`.
+- SageMaker details:
+  - Training job `md1-e2e-vsfm-splatfacto-202605150539-3dgs` remains `InProgress` / `Training`.
+  - `TrainingStartTime=2026-05-14T23:39:57-0600`.
+  - `TrainingTimeInSeconds=1388` at the poll.
+  - No failure reason.
+- CloudWatch log snapshot:
+  - `logs/md1-baseline-e2e/3dgs-md1-e2e-vsfm-splatfacto-202605150539-cloudwatch-20260515T0602Z.json`.
+  - `logs/md1-baseline-e2e/3dgs-md1-e2e-vsfm-splatfacto-202605150539-cloudwatch-20260515T0602Z.txt`.
+  - New proof since the previous poll:
+    - `transforms.json` validation passed, file size `1907101` bytes.
+    - `ns-train` command accepted and is running:
+      `ns-train splatfacto --data /tmp/nerfstudio_training/converted_data --output-dir /tmp/nerfstudio_training --vis tensorboard --max_num_iterations 30000 --pipeline.model.sh_degree 3 --logging.steps_per_log 100 --pipeline.model.max-gauss-ratio 10.0`.
+    - Training subprocess captures stdout/stderr, so iteration logs may not stream until `ns-train` exits.
+- Next step:
+  - Continue polling SageMaker status as the live gate. If it fails, capture the exact stdout/stderr from the final CloudWatch log and patch the smallest proven issue. If it completes, validate the S3 3DGS artifact and compression handoff before visual acceptance.
+
+### 2026-05-15T00:33:10-0600
+
+- Verification before action:
+  - Branch/head: `agent-113647-md1-baseline-e2e` @ `eb166a12832dedafaef9bdc627d174d17bf04f76`.
+  - Local dirty files not staged: `logs/md1-baseline-e2e/STATE.md`, the 00:02/00:33 poll snapshots, and top-level generated viewer screenshots/results.
+  - `aws sts get-caller-identity` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+  - Exact-head GitHub workflow: `CDK Deploy` run `25902702055` @ `eb166a12832dedafaef9bdc627d174d17bf04f76` -> `success`.
+- Current active AWS state:
+  - Running Step Functions executions:
+    - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-202605150539`.
+  - InProgress training jobs:
+    - This run: `md1-e2e-vsfm-splatfacto-202605150539-3dgs` -> `InProgress` / `Training`.
+    - External/not owned by this automation: `md1-full2157-ds4-r25-1778823276` -> `InProgress` / `Training`; left untouched.
+  - InProgress processing jobs: none.
+  - 3DGS output prefix remains empty as expected until SageMaker job end:
+    - `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-splatfacto-202605150539/` -> `Total Objects: 0`.
+  - Compression output prefix remains empty because compression has not started:
+    - `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-splatfacto-202605150539/` -> `Total Objects: 0`.
+- SageMaker details:
+  - Training job `md1-e2e-vsfm-splatfacto-202605150539-3dgs` remains `InProgress` / `Training`.
+  - `TrainingStartTime=2026-05-14T23:39:57-0600`.
+  - `TrainingTimeInSeconds=3217` at the poll.
+  - No failure reason.
+  - Snapshot:
+    - `logs/md1-baseline-e2e/sagemaker-describe-md1-e2e-vsfm-splatfacto-202605150539-3dgs-20260515T0633Z.json`.
+- Step Functions snapshot:
+  - `logs/md1-baseline-e2e/stepfunctions-describe-md1-e2e-vsfm-splatfacto-202605150539-20260515T0633Z.json`.
+- CloudWatch log snapshot:
+  - `logs/md1-baseline-e2e/3dgs-md1-e2e-vsfm-splatfacto-202605150539-cloudwatch-20260515T0633Z.json`.
+  - `logs/md1-baseline-e2e/3dgs-md1-e2e-vsfm-splatfacto-202605150539-cloudwatch-20260515T0633Z.txt`.
+  - Latest meaningful log line remains the accepted `ns-train splatfacto ... --pipeline.model.max-gauss-ratio 10.0` command at `2026-05-15T05:50:24Z`; no streamed iteration logs yet because the wrapper captures subprocess output.
+- Next step:
+  - Continue polling SageMaker status as the live gate. If it fails, capture final CloudWatch stdout/stderr and patch only the proven issue. If it completes, validate model artifact/S3 handoff, monitor compression, then run the no-sky visual gate before accepting the viewer.
+
+### 2026-05-15T01:33:12-0600
+
+- Verification before action:
+  - Branch/head: `agent-113647-md1-baseline-e2e` @ `eb166a12832dedafaef9bdc627d174d17bf04f76`.
+  - Local dirty files not staged: `logs/md1-baseline-e2e/STATE.md`, prior/current poll snapshots, and top-level generated viewer screenshots/results.
+  - `aws sts get-caller-identity --region us-west-2` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+  - Exact-head GitHub workflow: `CDK Deploy` run `25902702055` @ `eb166a12832dedafaef9bdc627d174d17bf04f76` -> `success`.
+- Current active AWS state:
+  - Running Step Functions executions:
+    - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-202605150539`.
+  - InProgress training jobs:
+    - This run: `md1-e2e-vsfm-splatfacto-202605150539-3dgs` -> `InProgress` / `Training`.
+    - External/not owned by this automation: `md1-full2157-ds4-r25-1778823276` -> `InProgress` / `Training`; left untouched.
+  - InProgress processing jobs: none.
+  - 3DGS output prefix remains empty as expected until SageMaker job end:
+    - `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-splatfacto-202605150539/` -> `Total Objects: 0`.
+  - Compression output prefix remains empty because compression has not started:
+    - `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-splatfacto-202605150539/` -> `Total Objects: 0`.
+- SageMaker details:
+  - Training job `md1-e2e-vsfm-splatfacto-202605150539-3dgs` remains `InProgress` / `Training`.
+  - `TrainingStartTime=2026-05-14T23:39:57-0600`.
+  - `TrainingTimeInSeconds=6866` at the poll.
+  - No failure reason.
+  - Snapshot:
+    - `logs/md1-baseline-e2e/sagemaker-describe-md1-e2e-vsfm-splatfacto-202605150539-3dgs-20260515T0733Z.json`.
+- Step Functions snapshot:
+  - `logs/md1-baseline-e2e/stepfunctions-describe-md1-e2e-vsfm-splatfacto-202605150539-20260515T0733Z.json`.
+- CloudWatch log snapshot:
+  - `logs/md1-baseline-e2e/3dgs-md1-e2e-vsfm-splatfacto-202605150539-cloudwatch-20260515T0733Z.json`.
+  - `logs/md1-baseline-e2e/3dgs-md1-e2e-vsfm-splatfacto-202605150539-cloudwatch-20260515T0733Z.txt`.
+  - Latest meaningful log line remains the accepted `ns-train splatfacto ... --pipeline.model.max-gauss-ratio 10.0` command at `2026-05-15T05:50:24Z`; no streamed iteration logs yet because the wrapper captures subprocess output.
+- S3 listing snapshots:
+  - `logs/md1-baseline-e2e/s3-3dgs-md1-e2e-vsfm-splatfacto-202605150539-20260515T0733Z.txt`.
+  - `logs/md1-baseline-e2e/s3-compressed-md1-e2e-vsfm-splatfacto-202605150539-20260515T0733Z.txt`.
+- Next step:
+  - Continue polling SageMaker status. If it fails or times out near `MaxRuntimeInSeconds=14400`, capture the final CloudWatch stdout/stderr and patch only the proven issue. If it completes, validate model artifact/S3 handoff, monitor compression, then run the no-sky visual gate before accepting the viewer.
+
+### 2026-05-15T02:03:15-0600
+
+- Verification before action:
+  - Branch/head: `agent-113647-md1-baseline-e2e` @ `eb166a12832dedafaef9bdc627d174d17bf04f76`.
+  - Local dirty files not staged: `logs/md1-baseline-e2e/STATE.md`, prior/current poll snapshots, and top-level generated viewer screenshots/results.
+  - `aws sts get-caller-identity --region us-west-2` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+  - Exact-head GitHub workflow: `CDK Deploy` run `25902702055` @ `eb166a12832dedafaef9bdc627d174d17bf04f76` -> `success`.
+- Current active AWS state:
+  - Running Step Functions executions:
+    - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-202605150539`.
+  - InProgress training jobs:
+    - This run: `md1-e2e-vsfm-splatfacto-202605150539-3dgs` -> `InProgress` / `Training`.
+    - External/not owned by this automation: `md1-full2157-ds4-r25-1778823276` -> `InProgress` / `Training`; left untouched.
+  - InProgress processing jobs: none.
+  - 3DGS output prefix remains empty as expected until SageMaker job end:
+    - `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-splatfacto-202605150539/` -> `Total Objects: 0`.
+  - Compression output prefix remains empty because compression has not started:
+    - `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-splatfacto-202605150539/` -> `Total Objects: 0`.
+- SageMaker details:
+  - Training job `md1-e2e-vsfm-splatfacto-202605150539-3dgs` remains `InProgress` / `Training`.
+  - `TrainingStartTime=2026-05-14T23:39:57-0600`.
+  - `TrainingTimeInSeconds=8649` at the poll.
+  - No failure reason.
+  - Snapshot:
+    - `logs/md1-baseline-e2e/sagemaker-describe-md1-e2e-vsfm-splatfacto-202605150539-3dgs-20260515T0803Z.json`.
+- Step Functions snapshot:
+  - `logs/md1-baseline-e2e/stepfunctions-describe-md1-e2e-vsfm-splatfacto-202605150539-20260515T0803Z.json`.
+- CloudWatch log snapshot:
+  - `logs/md1-baseline-e2e/3dgs-md1-e2e-vsfm-splatfacto-202605150539-cloudwatch-20260515T0803Z.json`.
+  - `logs/md1-baseline-e2e/3dgs-md1-e2e-vsfm-splatfacto-202605150539-cloudwatch-20260515T0803Z.txt`.
+  - Latest meaningful log line remains the accepted `ns-train splatfacto ... --pipeline.model.max-gauss-ratio 10.0` command at `2026-05-15T05:50:24Z`; no streamed iteration logs yet because the wrapper captures subprocess output.
+- S3 listing snapshots:
+  - `logs/md1-baseline-e2e/s3-3dgs-md1-e2e-vsfm-splatfacto-202605150539-20260515T0803Z.txt`.
+  - `logs/md1-baseline-e2e/s3-compressed-md1-e2e-vsfm-splatfacto-202605150539-20260515T0803Z.txt`.
+- Next step:
+  - Continue polling SageMaker status. The job has used about 60% of its 14400s runtime budget; if it fails or times out, capture the final CloudWatch stdout/stderr and patch only the proven issue. If it completes, validate model artifact/S3 handoff, monitor compression, then run the no-sky visual gate before accepting the viewer.
+
+### 2026-05-15T02:33:18-0600
+
+- Verification before action:
+  - Branch/head: `agent-113647-md1-baseline-e2e` @ `eb166a12832dedafaef9bdc627d174d17bf04f76`.
+  - Local dirty files not staged: `logs/md1-baseline-e2e/STATE.md`, prior/current poll snapshots, and top-level generated viewer screenshots/results.
+  - `aws sts get-caller-identity --region us-west-2` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+  - Exact-head GitHub workflow: `CDK Deploy` run `25902702055` @ `eb166a12832dedafaef9bdc627d174d17bf04f76` -> `success`.
+- Current active AWS state:
+  - Running Step Functions executions:
+    - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-202605150539`.
+  - InProgress training jobs:
+    - External/not owned by this automation: `md1-full2157-ds4-r25-1778823276` -> `InProgress` / `Training`; left untouched.
+  - InProgress processing jobs:
+    - This run: `md1-e2e-vsfm-splatfacto-202605150539-compression` -> `InProgress`.
+- Standard splatfacto 3DGS terminal state:
+  - Training job `md1-e2e-vsfm-splatfacto-202605150539-3dgs` -> `Completed`.
+  - `TrainingStartTime=2026-05-14T23:39:57-0600`.
+  - `TrainingEndTime=2026-05-15T02:13:20-0600`.
+  - Training/billable time: `9203s` on `ml.g5.2xlarge`.
+  - Model artifact:
+    - `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-splatfacto-202605150539/md1-e2e-vsfm-splatfacto-202605150539-3dgs/output/model.tar.gz`.
+  - 3DGS S3 listing:
+    - `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-splatfacto-202605150539/` -> `Total Objects: 1`, `Total Size: 64488068`.
+  - SageMaker snapshot:
+    - `logs/md1-baseline-e2e/sagemaker-describe-md1-e2e-vsfm-splatfacto-202605150539-3dgs-20260515T0833Z.json`.
+  - Final training log snapshots:
+    - `logs/md1-baseline-e2e/3dgs-md1-e2e-vsfm-splatfacto-202605150539-full-log-20260515T0833Z.json`.
+    - `logs/md1-baseline-e2e/3dgs-md1-e2e-vsfm-splatfacto-202605150539-full-log-20260515T0833Z.txt`.
+    - `logs/md1-baseline-e2e/3dgs-md1-e2e-vsfm-splatfacto-202605150539-final-log-20260515T0833Z.json`.
+    - `logs/md1-baseline-e2e/3dgs-md1-e2e-vsfm-splatfacto-202605150539-final-log-20260515T0833Z.txt`.
+  - Final log proof:
+    - `Training Finished` at 30000 iterations.
+    - `Model export completed successfully`.
+    - PLY file `splat.ply` size `310.3 MB`.
+    - Metadata `model_variant: splatfacto`, `enable_bg_model: False`, `enable_alpha_loss: False`, `enable_robust_mask: False`, `max_iterations: 30000`.
+- Compression is now active:
+  - Processing job: `md1-e2e-vsfm-splatfacto-202605150539-compression`.
+  - Status: `InProgress`.
+  - Instance/runtime: `ml.g4dn.xlarge`, `MaxRuntimeInSeconds=86400`.
+  - Started: `2026-05-15T02:14:08-0600`.
+  - Input:
+    - `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-splatfacto-202605150539/`.
+  - Output:
+    - `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-splatfacto-202605150539/`.
+  - Compression S3 output remains empty as expected until job end (`S3UploadMode=EndOfJob`):
+    - `Total Objects: 0`, `Total Size: 0`.
+  - Processing snapshot:
+    - `logs/md1-baseline-e2e/sagemaker-describe-md1-e2e-vsfm-splatfacto-202605150539-compression-20260515T0833Z.json`.
+  - Processing log stream:
+    - `/aws/sagemaker/ProcessingJobs` / `md1-e2e-vsfm-splatfacto-202605150539-compression/algo-1-1778832848`.
+  - Compression log proof:
+    - `splat-transform v1.10.2`.
+    - Extracted `model.tar.gz`.
+    - Selected PLY source `/opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply`.
+    - Supporting file `training_metadata.json` discovered.
+    - Running `splat-transform -w -g cpu .../splat.ply .../generated_bundle/meta.json`.
+  - Compression log snapshots:
+    - `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-202605150539-log-streams-20260515T0833Z.json`.
+    - `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-202605150539-cloudwatch-20260515T0833Z.json`.
+    - `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-202605150539-cloudwatch-20260515T0833Z.txt`.
+- Step Functions snapshot:
+  - `logs/md1-baseline-e2e/stepfunctions-describe-md1-e2e-vsfm-splatfacto-202605150539-20260515T0833Z.json`.
+- S3 listing snapshots:
+  - `logs/md1-baseline-e2e/s3-3dgs-md1-e2e-vsfm-splatfacto-202605150539-20260515T0833Z.txt`.
+  - `logs/md1-baseline-e2e/s3-compressed-md1-e2e-vsfm-splatfacto-202605150539-20260515T0833Z.txt`.
+- Next step:
+  - Continue monitoring compression. If it completes, validate bundle files/summary, gaussian count/file size, and smoke the deployed `/md1-viewer` with no skybox against the new standard-splatfacto manifest before accepting the baseline. If compression fails, capture exact processing logs and patch only that proven failure.
+
+### 2026-05-15T03:33:23-0600
+
+- Verification before action:
+  - Branch/head: `agent-113647-md1-baseline-e2e` @ `eb166a12832dedafaef9bdc627d174d17bf04f76`.
+  - `aws sts get-caller-identity --region us-west-2` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+  - Exact-head GitHub workflow: `CDK Deploy` run `25902702055` @ `eb166a12832dedafaef9bdc627d174d17bf04f76` -> `success`.
+- Current active AWS state:
+  - Running Step Functions executions: none.
+  - InProgress training jobs: none returned by the poll.
+  - InProgress processing jobs: none returned by the poll.
+- Standard splatfacto compression terminal state:
+  - Step Functions execution:
+    - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-202605150539`.
+    - `describe-execution` shows `status=SUCCEEDED`, but this is the state machine's `NotifyError` path, not a completed pipeline.
+  - Processing job:
+    - `md1-e2e-vsfm-splatfacto-202605150539-compression` -> `Failed`.
+    - `ProcessingStartTime=2026-05-15T02:14:08-0600`.
+    - `ProcessingEndTime=2026-05-15T03:14:48-0600`.
+    - `FailureReason=AlgorithmError: , exit code: 1`.
+  - Exact CloudWatch failure:
+    - `Compression job failed: Command '['splat-transform', '-w', '-g', 'cpu', '/opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply', '/tmp/sogs-work-kjqt837e/generated_bundle/meta.json']' timed out after 3600 seconds`.
+  - Compression output remains empty:
+    - `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-splatfacto-202605150539/` -> `Total Objects: 0`, `Total Size: 0`.
+  - Failure snapshots:
+    - `logs/md1-baseline-e2e/stepfunctions-describe-md1-e2e-vsfm-splatfacto-202605150539-20260515T0933Z.json`.
+    - `logs/md1-baseline-e2e/sagemaker-describe-md1-e2e-vsfm-splatfacto-202605150539-compression-20260515T0933Z.json`.
+    - `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-202605150539-cloudwatch-20260515T0933Z.json`.
+    - `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-202605150539-cloudwatch-20260515T0933Z.txt`.
+    - `logs/md1-baseline-e2e/s3-compressed-md1-e2e-vsfm-splatfacto-202605150539-20260515T0933Z.txt`.
+    - `logs/md1-baseline-e2e/stepfunctions-history-reverse-md1-e2e-vsfm-splatfacto-202605150539-20260515T0933Z.json`.
+- Patch applied for the proven failure:
+  - `infrastructure/containers/compressor/compress.py` now defaults `SOGS_TRANSFORM_TIMEOUT_SECONDS` and `SOGS_LOD_TRANSFORM_TIMEOUT_SECONDS` to `14400`, logs the configured values, and passes them to single-bundle, decimation, and LOD `splat-transform` invocations.
+  - `tests/unit/test_sogs_supersplat_bundle.py` now covers the long-running default, independent env overrides, and command timeout propagation.
+  - The Step Functions compression task does not currently pass arbitrary timeout env vars, so the compressor default was changed instead of relying on payload-only configuration.
+- Local validation:
+  - `python3 -m py_compile infrastructure/containers/compressor/compress.py` -> pass.
+  - `python3 -m unittest tests.unit.test_sogs_supersplat_bundle` -> pass (`Ran 7 tests`).
+  - `git diff --check` -> pass.
+- Next step:
+  - Commit and push the compressor timeout fix, rely on the automatic ML container build from the push, watch exact-head workflows/build evidence, then launch the smallest retry: compression-only from `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-splatfacto-202605150539/` to a fresh compressed prefix.
+
+### 2026-05-15T03:03:20-0600
+
+- Verification before action:
+  - Branch/head: `agent-113647-md1-baseline-e2e` @ `eb166a12832dedafaef9bdc627d174d17bf04f76`.
+  - Local dirty files not staged: `logs/md1-baseline-e2e/STATE.md`, prior/current poll snapshots, and top-level generated viewer screenshots/results.
+  - `aws sts get-caller-identity --region us-west-2` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+  - Exact-head GitHub workflow: `CDK Deploy` run `25902702055` @ `eb166a12832dedafaef9bdc627d174d17bf04f76` -> `success`.
+- Current active AWS state:
+  - Running Step Functions executions:
+    - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-202605150539`.
+  - InProgress training jobs:
+    - External/not owned by this automation: `md1-full2157-ds4-r25-1778823276` -> `InProgress` / `Training`; left untouched.
+  - InProgress processing jobs:
+    - This run: `md1-e2e-vsfm-splatfacto-202605150539-compression` -> `InProgress`.
+- Compression status:
+  - Processing job: `md1-e2e-vsfm-splatfacto-202605150539-compression`.
+  - Status: `InProgress`.
+  - Started: `2026-05-15T02:14:08-0600`; still no `ProcessingEndTime` and no failure reason.
+  - Input remains:
+    - `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-splatfacto-202605150539/`.
+  - Output remains:
+    - `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-splatfacto-202605150539/`.
+  - 3DGS S3 prefix:
+    - `Total Objects: 1`, `Total Size: 64488068`.
+  - Compression S3 output remains empty as expected until job end (`S3UploadMode=EndOfJob`):
+    - `Total Objects: 0`, `Total Size: 0`.
+  - Latest CloudWatch line remains the `splat-transform -w -g cpu .../splat.ply .../generated_bundle/meta.json` invocation; no completion or error line yet.
+- Snapshots:
+  - Step Functions:
+    - `logs/md1-baseline-e2e/stepfunctions-describe-md1-e2e-vsfm-splatfacto-202605150539-20260515T0903Z.json`.
+  - Compression SageMaker:
+    - `logs/md1-baseline-e2e/sagemaker-describe-md1-e2e-vsfm-splatfacto-202605150539-compression-20260515T0903Z.json`.
+  - Compression CloudWatch:
+    - `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-202605150539-cloudwatch-20260515T0903Z.json`.
+    - `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-202605150539-cloudwatch-20260515T0903Z.txt`.
+  - S3 listings:
+    - `logs/md1-baseline-e2e/s3-3dgs-md1-e2e-vsfm-splatfacto-202605150539-20260515T0903Z.txt`.
+    - `logs/md1-baseline-e2e/s3-compressed-md1-e2e-vsfm-splatfacto-202605150539-20260515T0903Z.txt`.
+- Next step:
+  - Continue monitoring compression. If it completes, validate bundle files/summary, gaussian count/file size, and smoke the deployed `/md1-viewer` with no skybox against the new standard-splatfacto manifest before accepting the baseline. If compression fails, capture exact processing logs and patch only that proven failure.
