@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-15T15:21:20-0600
+updated: 2026-05-15T15:35:48-0600
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -331,6 +331,32 @@ skybox, compression, artifact handoff, and visual gates.
          - `logs/md1-shrunk/sagemaker-describe-training-md1-tile03-ds1000-r30-1778869171-20260515T212248Z.json`
      - Next step:
        - Wait for one of the two external `ml.g5.2xlarge` training jobs to finish, then re-run the 3DGS step with the same COLMAP output (do not stop external jobs unless clearly orphaned).
+   - 2026-05-15T15:24:44-0600 GitHub exact-head verification:
+     - branch/head:
+       - `git rev-parse HEAD` -> `f605e655ae27faeb971e6101201042989d82c50e`
+     - `CDK Deploy` succeeded for head `f605e655...` (run `25941967719`):
+       - `logs/md1-shrunk/gh-run-view-25941967719.json`
+       - `logs/md1-shrunk/gh-run-watch-25941967719.txt`
+   - 2026-05-15T15:35:48-0600 3DGS relaunch on branch-preview state machine (quota workaround)
+     - Infra fix landed:
+       - branch/head: `3a747a0d08c2dc8953ae3c61f8248bb7bc4c563d` (`fix: make 3dgs instance type configurable`)
+       - `CDK Deploy` succeeded for head `3a747a0d...` (run `25942170320`):
+         - `logs/md1-shrunk/gh-run-view-25942170320.json`
+         - `logs/md1-shrunk/gh-run-watch-25942170320.txt`
+     - Important: the shared state machine `SpaceportMLPipeline-staging` still has hardcoded `ml.g5.2xlarge`; the updated definition is in the branch-preview state machine:
+       - `SpaceportMLPipeline-br-8abcbd5662`
+     - Active execution (RUNNING):
+       - name: `execution-md1shrunk1456-1778880862`
+       - describe: `logs/md1-shrunk/stepfunctions-describe-execution-md1shrunk1456-1778880862-20260515T213525Z.json`
+       - inputs (pinned):
+         - `GAUSSIAN_INSTANCE_TYPE=ml.g5.4xlarge` (avoid `ml.g5.2xlarge` quota saturation)
+         - `gaussianImageUri=.../spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db`
+         - `compressorImageUri=.../spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab`
+         - `colmapOutputS3Uri=s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/`
+     - Active SageMaker training job (3DGS):
+       - name: `md1shrunk1456-1778880862-3dgs`
+       - describe: `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260515T213545Z.json`
+       - status: `InProgress` on `ml.g5.4xlarge` (SecondaryStatus at snapshot: `Downloading`)
    - Current downstream image facts for the post-SfM stage:
      - `aws ecr describe-images --repository-name spaceport/3dgs --image-ids imageTag=agent113647md1baselinee2e --region us-west-2 --output json > logs/md1-shrunk/ecr-3dgs-agent113647md1baselinee2e-20260515T1758Z.json`
        - digest `sha256:6b3b2492af7a268cfc5f233e87bdce51c47492ada4c3630f723114ffa464fd0c`
