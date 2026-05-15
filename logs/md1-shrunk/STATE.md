@@ -398,6 +398,16 @@ skybox, compression, artifact handoff, and visual gates.
      - Step Functions + SageMaker (no new launches):
        - execution still RUNNING: `logs/md1-shrunk/stepfunctions-describe-execution-br8abc-md1shrunk1456-1778880862-20260515T215406Z.json`
        - training job still InProgress/Training: `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260515T215406Z.json`
+   - 2026-05-15T16:03:25-0600 CI confirmation + 3DGS still running:
+     - branch/head:
+       - `git rev-parse HEAD` -> `4886f1b7ca244f3d4fda0854a6295e19664a9889` (`chore: record md1-shrunk poll evidence`)
+     - GitHub workflow (exact-head):
+       - `CDK Deploy` succeeded for head `4886f1b7...` (run `25943425464`):
+         - `logs/md1-shrunk/gh-run-view-25943425464.json`
+         - `logs/md1-shrunk/gh-run-watch-25943425464.txt`
+     - Step Functions + SageMaker (no new launches; keep monitoring):
+       - execution still RUNNING: `logs/md1-shrunk/stepfunctions-describe-execution-br8abc-md1shrunk1456-1778880862-20260515T220318Z.json`
+       - training job still InProgress/Training: `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260515T220318Z.json`
    - Current downstream image facts for the post-SfM stage:
      - `aws ecr describe-images --repository-name spaceport/3dgs --image-ids imageTag=agent113647md1baselinee2e --region us-west-2 --output json > logs/md1-shrunk/ecr-3dgs-agent113647md1baselinee2e-20260515T1758Z.json`
        - digest `sha256:6b3b2492af7a268cfc5f233e87bdce51c47492ada4c3630f723114ffa464fd0c`
