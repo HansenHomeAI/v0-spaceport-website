@@ -1,0 +1,32 @@
+{
+    "Tags": [
+        {
+            "Key": "Validation",
+            "Value": "md1-tile04-ds1000-r30"
+        },
+        {
+            "Key": "Project",
+            "Value": "Spaceport"
+        },
+        {
+            "Key": "CodeHead",
+            "Value": "03c0d8c130cf4994b97fd2bc8eb98a9a73757221"
+        },
+        {
+            "Key": "TrainingImageSourceHead",
+            "Value": "03c0d8c130cf4994b97fd2bc8eb98a9a73757221"
+        },
+        {
+            "Key": "EcrDigest",
+            "Value": "3c566211049aeed9401549075ec2dfe7e266f1a0b66360df580326f348e2ec0c"
+        },
+        {
+            "Key": "Environment",
+            "Value": "agent73948216sfmproductionspine"
+        },
+        {
+            "Key": "Component",
+            "Value": "3DGS"
+        }
+    ]
+}
