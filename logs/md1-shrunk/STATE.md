@@ -387,6 +387,17 @@ skybox, compression, artifact handoff, and visual gates.
        - stream timestamp check: `logs/md1-shrunk/cloudwatch-training-streams-md1shrunk1456-1778880862-3dgs-20260515T215126Z.json`
      - Training output prefix still empty:
        - `logs/md1-shrunk/s3-3dgs-md1shrunk1456-1778880862-20260515T215101Z.txt` -> `Total Objects: 0`, `Total Size: 0 Bytes`
+   - 2026-05-15T15:58:20-0600 commit/push + CI:
+     - branch/head:
+       - `git rev-parse HEAD` -> `da90b8de9eb22d1c654e5cca7606eb0d8af3e52b` (`chore: poll md1-shrunk 3dgs progress`)
+     - GitHub workflow (exact-head):
+       - run list: `logs/md1-shrunk/gh-run-list-20260515T215749Z.json`
+       - `CDK Deploy` succeeded for head `da90b8de...` (run `25943245056`):
+         - `logs/md1-shrunk/gh-run-view-25943245056.json`
+         - `logs/md1-shrunk/gh-run-watch-25943245056.txt`
+     - Step Functions + SageMaker (no new launches):
+       - execution still RUNNING: `logs/md1-shrunk/stepfunctions-describe-execution-br8abc-md1shrunk1456-1778880862-20260515T215406Z.json`
+       - training job still InProgress/Training: `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260515T215406Z.json`
    - Current downstream image facts for the post-SfM stage:
      - `aws ecr describe-images --repository-name spaceport/3dgs --image-ids imageTag=agent113647md1baselinee2e --region us-west-2 --output json > logs/md1-shrunk/ecr-3dgs-agent113647md1baselinee2e-20260515T1758Z.json`
        - digest `sha256:6b3b2492af7a268cfc5f233e87bdce51c47492ada4c3630f723114ffa464fd0c`
