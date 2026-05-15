@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-15T11:39:00-0600
+updated: 2026-05-15T11:47:16-0600
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -148,6 +148,29 @@ skybox, compression, artifact handoff, and visual gates.
      - `ProcessingJobStatus=InProgress`, `FailureReason=null`
      - GPU feature extraction reached `Processed file [160/1456]`
      - S3 output still empty as expected because output upload is `EndOfJob`.
+   - 2026-05-15T11:47:16-0600 resume verification:
+     - branch/head/status commands:
+       - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+       - `git rev-parse HEAD` -> `e9cbf71c56420ce386b028e7f4af33163ce4dcc2`
+       - `git status --short` -> clean before polling snapshots
+     - AWS identity command:
+       - `aws sts get-caller-identity --output json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+     - Step Functions command:
+       - `aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --status-filter RUNNING --max-results 10 --region us-west-2 --output json` -> no running executions
+     - SageMaker commands:
+       - `aws sagemaker describe-processing-job --processing-job-name md1-shrunk-1456-sfm-1778866088 --region us-west-2 --output json > logs/md1-shrunk/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260515T1747Z.json`
+       - `aws sagemaker list-processing-jobs --status-equals InProgress --sort-by CreationTime --sort-order Descending --max-results 20 --region us-west-2 --output json` -> only `md1-shrunk-1456-sfm-1778866088`
+       - `aws sagemaker list-training-jobs --status-equals InProgress --sort-by CreationTime --sort-order Descending --max-results 20 --region us-west-2 --output json` -> external/not owned `md1-worst447-ds1000-r29-1778860601`, left untouched
+     - GitHub workflow command:
+       - `gh run list --branch agent-113647-md1-baseline-e2e --limit 10 --json databaseId,workflowName,headSha,status,conclusion,createdAt,updatedAt,url` -> exact-head `CDK Deploy` run `25932325504` succeeded for `e9cbf71c56420ce386b028e7f4af33163ce4dcc2`
+     - CloudWatch command:
+       - `aws logs get-log-events --log-group-name /aws/sagemaker/ProcessingJobs --log-stream-name md1-shrunk-1456-sfm-1778866088/algo-1-1778866129 --start-from-head --region us-west-2 --output json > logs/md1-shrunk/cloudwatch-md1-shrunk-1456-sfm-1778866088-20260515T1747Z.json`
+     - S3 output listing command:
+       - `aws s3 ls s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap --recursive --summarize --human-readable --region us-west-2 > logs/md1-shrunk/s3-colmap-md1-shrunk-20260515T1641Z-20260515T1747Z.txt`
+     - latest observed progress:
+       - `ProcessingJobStatus=InProgress`, `FailureReason=null`
+       - GPU feature extraction reached `Processed file [404/1456]`
+       - S3 output: `Total Objects: 0`, `Total Size: 0 Bytes`; expected while `S3UploadMode=EndOfJob`
 2. Gate SfM before 3DGS:
    - output files present
    - registered images close to the 1452 Meadow baseline
