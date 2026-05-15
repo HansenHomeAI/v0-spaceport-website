@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-15T13:10:38-0600
+updated: 2026-05-15T13:15:55-0600
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -238,6 +238,23 @@ skybox, compression, artifact handoff, and visual gates.
      - `CDK Deploy` succeeded for head `6f28df75...`:
        - `logs/md1-shrunk/gh-run-view-25936245460.json`
        - `logs/md1-shrunk/gh-run-watch-25936245460.txt`
+   - 2026-05-15T13:15:55-0600 poll:
+     - branch/head:
+       - `git rev-parse HEAD` -> `01e267a8f21f2cc0bca2862da6a2e68a7c53d0ca`
+     - GitHub workflow (exact-head):
+       - `CDK Deploy` succeeded for head `01e267a8...`:
+         - `logs/md1-shrunk/gh-run-view-25936455479.json`
+         - `logs/md1-shrunk/gh-run-watch-25936455479.txt`
+     - Step Functions snapshot:
+       - `logs/md1-shrunk/stepfunctions-list-state-machines-20260515T191506Z.json`
+     - SageMaker snapshot:
+       - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260515T191506Z.json`
+       - `ProcessingJobStatus=InProgress`, `FailureReason=null`
+     - CloudWatch tail snapshot:
+       - `logs/md1-shrunk/cloudwatch-tail-md1-shrunk-1456-sfm-1778866088-20260515T191506Z.txt`
+       - mapper progress: `chunk_01_mapper_initial model 1 registered 383/383 images and 276594 points`
+     - S3 output listing:
+       - `logs/md1-shrunk/s3-colmap-md1-shrunk-20260515T1641Z-20260515T191506Z.txt` -> still empty as expected with `S3UploadMode=EndOfJob`
    - Current downstream image facts for the post-SfM stage:
      - `aws ecr describe-images --repository-name spaceport/3dgs --image-ids imageTag=agent113647md1baselinee2e --region us-west-2 --output json > logs/md1-shrunk/ecr-3dgs-agent113647md1baselinee2e-20260515T1758Z.json`
        - digest `sha256:6b3b2492af7a268cfc5f233e87bdce51c47492ada4c3630f723114ffa464fd0c`
