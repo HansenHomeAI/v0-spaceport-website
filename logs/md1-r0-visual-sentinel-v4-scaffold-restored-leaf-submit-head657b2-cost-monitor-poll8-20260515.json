@@ -1,0 +1,28 @@
+{
+  "checks": [
+    {
+      "status": "ok",
+      "training_job_name": "md1-r0vissent-v4scaffold-1778819897-tile-04",
+      "training_status": "Completed",
+      "secondary_status": "Completed",
+      "elapsed_seconds": 2147,
+      "latest_log_age_seconds": 1756,
+      "gpu_average_percent": null,
+      "s3_output_object_count": 0,
+      "startup_wait_seconds": 2213,
+      "training_started": true,
+      "secondary_status_message": "Training job completed",
+      "spend": {
+        "instance_type": "ml.g4dn.xlarge",
+        "hourly_rate_usd": 0.736,
+        "billable_seconds": 2147,
+        "billable_hours": 0.5964,
+        "estimated_usd": 0.4389
+      },
+      "block_reasons": [],
+      "warnings": [],
+      "checked_at_epoch": 1778822148,
+      "poll_index": 0
+    }
+  ]
+}

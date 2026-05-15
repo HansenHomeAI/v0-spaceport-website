@@ -1,0 +1,73 @@
+{
+  "checked_at": "2026-05-15T04:34:20.596760+00:00",
+  "decision": "leaf_submit_allowed",
+  "block_reasons": [],
+  "exact_head": "657b21cb7e41dd04e31a1deb36d215f1b8a022b4",
+  "git_head": "657b21cb7e41dd04e31a1deb36d215f1b8a022b4",
+  "workflow_conclusion": "success",
+  "v18_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review",
+  "expected_v18_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review",
+  "visual_qa_plan_present": true,
+  "viewer_smoke_plan_present": true,
+  "early_visual_smoke_abort_plan_present": true,
+  "training_jobs_in_progress": [],
+  "processing_jobs_in_progress": [],
+  "required_tile_ids": [
+    "tile_04"
+  ],
+  "selected_tile_ids": [
+    "tile_04"
+  ],
+  "stage_tile_ids": [
+    "tile_04"
+  ],
+  "prior_leaf_gate_tile_ids": [],
+  "passing_prior_leaf_tile_ids": [],
+  "covered_required_tile_ids": [
+    "tile_04"
+  ],
+  "merge_review_missing_leaf_summary_tile_ids": [
+    "tile_04"
+  ],
+  "required_context_tile_ids": [
+    "tile_10",
+    "tile_13",
+    "tile_01"
+  ],
+  "context_support_tile_ids": [
+    "tile_10",
+    "tile_13",
+    "tile_01"
+  ],
+  "required_targeted_blockers": [
+    "splat_vertex_count_below_reference_ratio",
+    "splat_vertex_count_below_hard_min",
+    "horizon_psnr_regression",
+    "ai_visual_color_shift_defect"
+  ],
+  "targeted_quality_blockers": [
+    "ai_visual_color_shift_defect",
+    "ai_visual_geometry_alignment_defect",
+    "ai_visual_horizon_continuity_defect",
+    "ai_visual_texture_smearing_defect",
+    "boundary_no_required_improvement",
+    "boundary_v18_median_lpips_regression",
+    "horizon_psnr_regression",
+    "horizon_ssim_regression",
+    "horizon_lpips_regression",
+    "horizon_sky_score_regression",
+    "near_detail_ssim_regression",
+    "leaf_required_paths_missing",
+    "splat_vertex_count_below_reference_ratio",
+    "splat_vertex_count_below_hard_min"
+  ],
+  "post_leaf_preflight_gate_tile_ids": [
+    "tile_04"
+  ],
+  "quality_strategy_decision": "paid_retry_allowed",
+  "merge_review_gate_decision": "merge_review_blocked",
+  "estimated_usd": 0.736,
+  "max_estimated_usd": 0.75,
+  "submitted_jobs": [],
+  "next_required_action": "submit leaf-only fanout with --skip-merge/--skip-review and run emitted post_leaf_preflight_gates"
+}

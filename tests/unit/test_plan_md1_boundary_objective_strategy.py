@@ -345,6 +345,41 @@ def visual_sentinel_tile04_density_restored_underdense_attribution() -> dict:
     return attr
 
 
+def visual_sentinel_tile04_scaffold_restored_underdense_attribution() -> dict:
+    attr = visual_sentinel_tile04_density_restored_underdense_attribution()
+    attr["hypothesis"] = "r0_visual_sentinel_v4_tile04_scaffold_restored_leaf_only_proof"
+    attr["leaf_gate_block_reasons"] = [
+        "leaf_preflight_decision_not_pass",
+        "splat_vertex_count_below_reference_ratio",
+        "splat_vertex_count_below_hard_min",
+    ]
+    attr["splat_vertex_count"] = 695_129
+    attr["observed_reference_ratio"] = 0.72691
+    attr["failed_density_control_environment"] = {
+        "MAX_ITERATIONS": "6000",
+        "MODEL_VARIANT": "splatfacto-w-light",
+        "TRAINING_MAX_GAUSS_RATIO": "1.35",
+        "TRAINING_MAX_SELECTED_IMAGES": "188",
+        "TRAINING_STOP_SPLIT_AT": "5200",
+        "CULL_ALPHA_THRESH": "0.12",
+        "CULL_SCALE_THRESH": "0.35",
+        "GLOBAL_SCAFFOLD_SOURCE_DIR": "/opt/ml/input/data/scaffold",
+        "GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT": "true",
+    }
+    attr["failed_density_control_training_config"] = {
+        "max_iterations": 6000,
+        "model_variant": "splatfacto-w-light",
+        "training_max_gauss_ratio": 1.35,
+        "training_max_selected_images": 188,
+        "training_stop_split_at": 5200,
+        "cull_alpha_thresh": 0.12,
+        "cull_scale_thresh": 0.35,
+        "scaffold_artifact_s3_uri": "s3://bucket/scaffold/model.tar.gz",
+        "global_scaffold_source_dir": "/opt/ml/input/data/scaffold",
+    }
+    return attr
+
+
 def hard_output_cap_visual_candidate() -> dict:
     candidate = valid_candidate()
     candidate["selected_tile_ids"] = ["tile_10"]
@@ -1737,6 +1772,131 @@ class PlanMd1BoundaryObjectiveStrategyTests(unittest.TestCase):
         self.assertEqual(gate["decision"], "paid_retry_allowed")
         self.assertEqual(gate["block_reasons"], [])
         self.assertTrue(gate["scaffold_density_restoration_implementation"]["has_scaffold_restoration"])
+
+    def test_records_visual_sentinel_tile04_scaffold_restored_underdense_leaf(self):
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=visual_sentinel_tile04_scaffold_restored_underdense_attribution(),
+            candidate_objective=None,
+            max_estimated_usd=0.75,
+        )
+
+        hypotheses = {item["hypothesis"] for item in report["failed_hypotheses"]}
+        self.assertIn("visual_sentinel_tile04_scaffold_restored_underdense_leaf", hypotheses)
+        self.assertIn("splat_vertex_count_below_hard_min", report["current_quality_blockers"])
+
+    def test_blocks_visual_sentinel_v4_retry_without_stronger_density_after_scaffold_restoration(self):
+        candidate = hard_output_cap_visual_candidate()
+        candidate["selected_tile_ids"] = ["tile_04"]
+        candidate["context_support_tile_ids"] = ["tile_10", "tile_13", "tile_01"]
+        candidate["targeted_quality_blockers"].extend(
+            [
+                "splat_vertex_count_below_reference_ratio",
+                "splat_vertex_count_below_hard_min",
+            ]
+        )
+        env = candidate["objective_implementation"]["environment"]
+        cfg = candidate["objective_implementation"]["training_config"]
+        env.pop("TRAINING_MAX_OUTPUT_GAUSSIANS", None)
+        cfg.pop("max_output_gaussians", None)
+        env["MODEL_VARIANT"] = "splatfacto-w-light"
+        cfg["model_variant"] = "splatfacto-w-light"
+        env["MAX_ITERATIONS"] = "6000"
+        cfg["max_iterations"] = 6000
+        env["TRAINING_MAX_GAUSS_RATIO"] = "1.35"
+        cfg["training_max_gauss_ratio"] = 1.35
+        env["TRAINING_MAX_SELECTED_IMAGES"] = "188"
+        cfg["training_max_selected_images"] = 188
+        env["TRAINING_STOP_SPLIT_AT"] = "5200"
+        cfg["training_stop_split_at"] = 5200
+        env["CULL_ALPHA_THRESH"] = "0.12"
+        cfg["cull_alpha_thresh"] = 0.12
+        env["CULL_SCALE_THRESH"] = "0.35"
+        cfg["cull_scale_thresh"] = 0.35
+        env["GLOBAL_SCAFFOLD_SOURCE_DIR"] = "/opt/ml/input/data/scaffold"
+        env["GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT"] = "true"
+        cfg["scaffold_artifact_s3_uri"] = "s3://bucket/scaffold/model.tar.gz"
+        cfg["global_scaffold_source_dir"] = "/opt/ml/input/data/scaffold"
+        candidate["objective_changes"] = [
+            "appearance_consistency",
+            "color_consistency",
+            "horizon_appearance_protection",
+            "filtered_global_scaffold_initialization",
+            "scaffold_restored_tile04_density_repair",
+        ]
+        candidate["planned_cost_estimate"] = {"estimated_usd": 0.736}
+
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=visual_sentinel_tile04_scaffold_restored_underdense_attribution(),
+            candidate_objective=candidate,
+            max_estimated_usd=0.75,
+        )
+
+        gate = report["candidate_objective_gate"]
+        self.assertIn(
+            "objective_missing_stronger_density_after_scaffold_restored_underdense_leaf",
+            gate["block_reasons"],
+        )
+        self.assertFalse(gate["underdense_density_restoration_implementation"]["has_stronger_density_after_scaffold_restored"])
+        self.assertFalse(report["paid_retry_allowed"])
+
+    def test_allows_visual_sentinel_v4_retry_with_stronger_density_after_scaffold_restoration(self):
+        candidate = hard_output_cap_visual_candidate()
+        candidate["selected_tile_ids"] = ["tile_04"]
+        candidate["context_support_tile_ids"] = ["tile_10", "tile_13", "tile_01"]
+        candidate["targeted_quality_blockers"].extend(
+            [
+                "splat_vertex_count_below_reference_ratio",
+                "splat_vertex_count_below_hard_min",
+            ]
+        )
+        env = candidate["objective_implementation"]["environment"]
+        cfg = candidate["objective_implementation"]["training_config"]
+        env.pop("TRAINING_MAX_OUTPUT_GAUSSIANS", None)
+        cfg.pop("max_output_gaussians", None)
+        env["MODEL_VARIANT"] = "splatfacto-w-light"
+        cfg["model_variant"] = "splatfacto-w-light"
+        env["MAX_ITERATIONS"] = "6000"
+        cfg["max_iterations"] = 6000
+        env["TRAINING_MAX_GAUSS_RATIO"] = "1.35"
+        cfg["training_max_gauss_ratio"] = 1.35
+        env["TRAINING_MAX_SELECTED_IMAGES"] = "188"
+        cfg["training_max_selected_images"] = 188
+        env["TRAINING_STOP_SPLIT_AT"] = "5900"
+        cfg["training_stop_split_at"] = 5900
+        env["CULL_ALPHA_THRESH"] = "0.08"
+        cfg["cull_alpha_thresh"] = 0.08
+        env["CULL_SCALE_THRESH"] = "0.50"
+        cfg["cull_scale_thresh"] = 0.50
+        env["GLOBAL_SCAFFOLD_SOURCE_DIR"] = "/opt/ml/input/data/scaffold"
+        env["GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT"] = "true"
+        cfg["scaffold_artifact_s3_uri"] = "s3://bucket/scaffold/model.tar.gz"
+        cfg["global_scaffold_source_dir"] = "/opt/ml/input/data/scaffold"
+        candidate["objective_changes"] = [
+            "appearance_consistency",
+            "color_consistency",
+            "horizon_appearance_protection",
+            "filtered_global_scaffold_initialization",
+            "scaffold_restored_tile04_density_repair",
+            "stronger_density_after_scaffold_restored_underdense_leaf",
+        ]
+        candidate["planned_cost_estimate"] = {"estimated_usd": 0.736}
+
+        report = planner.plan_boundary_objective_strategy(
+            quality_strategy=quality_strategy(),
+            responsible_tiles=responsible_tiles(),
+            attribution=visual_sentinel_tile04_scaffold_restored_underdense_attribution(),
+            candidate_objective=candidate,
+            max_estimated_usd=0.75,
+        )
+
+        gate = report["candidate_objective_gate"]
+        self.assertEqual(gate["decision"], "paid_retry_allowed")
+        self.assertEqual(gate["block_reasons"], [])
+        self.assertTrue(gate["underdense_density_restoration_implementation"]["has_stronger_density_after_scaffold_restored"])
 
     def test_blocks_candidate_objective_with_sagemaker_env_value_over_512_chars(self):
         candidate = valid_candidate()

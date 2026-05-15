@@ -1,0 +1,53 @@
+{
+  "hypothesis": "r0_visual_sentinel_v4_tile04_scaffold_restored_leaf_only_proof",
+  "status": "failed",
+  "tile_id": "tile_04",
+  "leaf_gate_decision": "merge_review_blocked",
+  "leaf_gate_block_reasons": [
+    "leaf_preflight_decision_not_pass",
+    "splat_vertex_count_below_reference_ratio",
+    "splat_vertex_count_below_hard_min"
+  ],
+  "splat_vertex_count": 695129,
+  "reference_splat_count": 956277,
+  "observed_reference_ratio": 0.7269117630142731,
+  "hard_min_splat_count": 765021,
+  "hard_max_splat_count": 1290973,
+  "model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v4scaffold-20260514/tiles/tile_04/md1-r0vissent-v4scaffold-1778819897-tile-04/output/model.tar.gz",
+  "model_artifact_sha256": "f44c8b8a66da408a919e7928010c3ec06f330d8be0fc2eb11973564f77a36b16",
+  "job_name": "md1-r0vissent-v4scaffold-1778819897-tile-04",
+  "training_time_seconds": 2147,
+  "billable_time_seconds": 2147,
+  "sidecars_present": true,
+  "filtered_scaffold_initialization_present": true,
+  "filtered_scaffold_initialization": {
+    "source_gaussian_count": 1554116,
+    "source_filtered_gaussian_count": 1554116,
+    "inherited_gaussian_count": 1554116,
+    "fallback_used": false,
+    "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud"
+  },
+  "failed_density_control_environment": {
+    "MAX_ITERATIONS": "6000",
+    "MODEL_VARIANT": "splatfacto-w-light",
+    "TRAINING_MAX_GAUSS_RATIO": "1.35",
+    "TRAINING_MAX_SELECTED_IMAGES": "188",
+    "TRAINING_STOP_SPLIT_AT": "5200",
+    "CULL_ALPHA_THRESH": "0.12",
+    "CULL_SCALE_THRESH": "0.35",
+    "GLOBAL_SCAFFOLD_SOURCE_DIR": "/opt/ml/input/data/scaffold",
+    "GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT": "true"
+  },
+  "failed_density_control_training_config": {
+    "max_iterations": 6000,
+    "model_variant": "splatfacto-w-light",
+    "training_max_gauss_ratio": 1.35,
+    "training_max_selected_images": 188,
+    "training_stop_split_at": 5200,
+    "cull_alpha_thresh": 0.12,
+    "cull_scale_thresh": 0.35,
+    "scaffold_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-teacher-r3base-r4h-tile00-factor4-v3-20260426201700/output/artifact/model.tar.gz",
+    "global_scaffold_source_dir": "/opt/ml/input/data/scaffold"
+  },
+  "finding": "R0 v4 restored filtered global scaffold initialization and required sidecars, improving tile_04 to 695129 splats, but it still missed the 765021 hard minimum; another retry must materially relax density retention/split/culling, not repeat scaffold restoration alone."
+}

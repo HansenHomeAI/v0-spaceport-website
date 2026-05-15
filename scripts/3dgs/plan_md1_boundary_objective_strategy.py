@@ -155,13 +155,19 @@ DENSITY_CONTROL_CONFIG_KEYS = (
 )
 UNDERDENSE_REPAIR_ENV_KEYS = (
     "MAX_ITERATIONS",
+    "TRAINING_MAX_GAUSS_RATIO",
     "TRAINING_MAX_SELECTED_IMAGES",
     "TRAINING_STOP_SPLIT_AT",
+    "CULL_ALPHA_THRESH",
+    "CULL_SCALE_THRESH",
 )
 UNDERDENSE_REPAIR_CONFIG_KEYS = (
     "max_iterations",
+    "training_max_gauss_ratio",
     "training_max_selected_images",
     "training_stop_split_at",
+    "cull_alpha_thresh",
+    "cull_scale_thresh",
 )
 SCAFFOLD_REPAIR_ENV_KEYS = (
     "GLOBAL_SCAFFOLD_SOURCE_DIR",
@@ -870,6 +876,9 @@ def extract_failed_hypotheses(attribution: Mapping[str, Any]) -> list[dict[str, 
             elif "filtered_scaffold_initialization_missing" in list_strings(underdense_record.get("leaf_gate_block_reasons")):
                 hypothesis = "visual_sentinel_tile04_density_restored_underdense_leaf"
                 evidence = "The R0 visual-sentinel tile_04 density-restored leaf increased iterations/images but still produced too few retained splats and lacked filtered scaffold initialization."
+            elif has_scaffold_density_restoration_knobs(failed_env, failed_config):
+                hypothesis = "visual_sentinel_tile04_scaffold_restored_underdense_leaf"
+                evidence = "The R0 visual-sentinel tile_04 scaffold-restored leaf restored filtered global scaffold initialization but still produced too few retained splats before any merge/review."
             else:
                 hypothesis = "visual_sentinel_tile04_budget_underdense_leaf"
                 evidence = "The R0 visual-sentinel tile_04 leaf removed the hard output cap and exported required sidecars, but the bounded training budget still produced too few retained splats before any merge/review."
@@ -974,6 +983,32 @@ def visual_sentinel_density_restored_underdense_failures(
     ]
 
 
+def visual_sentinel_scaffold_restored_underdense_failures(
+    failed_hypotheses: Sequence[Mapping[str, Any]]
+) -> list[Mapping[str, Any]]:
+    return [
+        item
+        for item in failed_hypotheses
+        if item.get("hypothesis") == "visual_sentinel_tile04_scaffold_restored_underdense_leaf"
+    ]
+
+
+def has_scaffold_density_restoration_knobs(environment: Mapping[str, Any], training_config: Mapping[str, Any]) -> bool:
+    source_dir = str(environment.get("GLOBAL_SCAFFOLD_SOURCE_DIR") or training_config.get("global_scaffold_source_dir") or "")
+    artifact = str(training_config.get("scaffold_artifact_s3_uri") or "")
+    require_filtered = str(
+        environment.get("GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT")
+        or training_config.get("global_scaffold_require_filtered_init")
+        or ""
+    ).lower() in ("1", "true", "yes")
+    include_scaffold = str(
+        environment.get("TILED_INCLUDE_SCAFFOLD")
+        or training_config.get("tiled_include_scaffold")
+        or ("true" if source_dir or artifact else "")
+    ).lower() in ("1", "true", "yes")
+    return include_scaffold and require_filtered and bool(source_dir or artifact)
+
+
 def underdense_density_restoration_implementation(
     strategy: Mapping[str, Any] | None,
     failed_hypotheses: Sequence[Mapping[str, Any]],
@@ -985,6 +1020,7 @@ def underdense_density_restoration_implementation(
     config_knobs = {key: training_config[key] for key in UNDERDENSE_REPAIR_CONFIG_KEYS if key in training_config}
     comparisons: list[dict[str, Any]] = []
     stronger_budget = False
+    stronger_after_scaffold_restored = False
     for failure in visual_sentinel_budget_underdense_failures(failed_hypotheses):
         failed_env = failure.get("density_control_environment")
         if not isinstance(failed_env, Mapping):
@@ -1025,6 +1061,7 @@ def underdense_density_restoration_implementation(
         comparisons.append(
             {
                 "tile_id": failure.get("tile_id"),
+                "failed_hypothesis": failure.get("hypothesis"),
                 "failed": {
                     "max_iterations": failed_iterations,
                     "training_max_selected_images": failed_images,
@@ -1038,10 +1075,92 @@ def underdense_density_restoration_implementation(
                 "improved": improved,
             }
         )
+    for failure in visual_sentinel_scaffold_restored_underdense_failures(failed_hypotheses):
+        failed_env = failure.get("density_control_environment")
+        if not isinstance(failed_env, Mapping):
+            failed_env = {}
+        failed_config = failure.get("density_control_training_config")
+        if not isinstance(failed_config, Mapping):
+            failed_config = {}
+        candidate_iterations = float_value(environment.get("MAX_ITERATIONS") or training_config.get("max_iterations"))
+        failed_iterations = float_value(failed_env.get("MAX_ITERATIONS") or failed_config.get("max_iterations"))
+        candidate_images = float_value(
+            environment.get("TRAINING_MAX_SELECTED_IMAGES") or training_config.get("training_max_selected_images")
+        )
+        failed_images = float_value(
+            failed_env.get("TRAINING_MAX_SELECTED_IMAGES") or failed_config.get("training_max_selected_images")
+        )
+        candidate_max_ratio = float_value(
+            environment.get("TRAINING_MAX_GAUSS_RATIO") or training_config.get("training_max_gauss_ratio")
+        )
+        failed_max_ratio = float_value(
+            failed_env.get("TRAINING_MAX_GAUSS_RATIO") or failed_config.get("training_max_gauss_ratio")
+        )
+        candidate_stop_split = float_value(
+            environment.get("TRAINING_STOP_SPLIT_AT") or training_config.get("training_stop_split_at")
+        )
+        failed_stop_split = float_value(
+            failed_env.get("TRAINING_STOP_SPLIT_AT") or failed_config.get("training_stop_split_at")
+        )
+        candidate_alpha = float_value(environment.get("CULL_ALPHA_THRESH") or training_config.get("cull_alpha_thresh"))
+        failed_alpha = float_value(failed_env.get("CULL_ALPHA_THRESH") or failed_config.get("cull_alpha_thresh"))
+        candidate_scale = float_value(environment.get("CULL_SCALE_THRESH") or training_config.get("cull_scale_thresh"))
+        failed_scale = float_value(failed_env.get("CULL_SCALE_THRESH") or failed_config.get("cull_scale_thresh"))
+        improved = {
+            "max_iterations_increased": (
+                candidate_iterations is not None
+                and failed_iterations is not None
+                and candidate_iterations > failed_iterations
+            ),
+            "selected_images_increased": (
+                candidate_images is not None and failed_images is not None and candidate_images > failed_images
+            ),
+            "max_gauss_ratio_increased": (
+                candidate_max_ratio is not None
+                and failed_max_ratio is not None
+                and candidate_max_ratio > failed_max_ratio
+            ),
+            "split_stop_delayed": (
+                candidate_stop_split is not None
+                and failed_stop_split is not None
+                and candidate_stop_split > failed_stop_split
+            ),
+            "cull_alpha_relaxed": (
+                candidate_alpha is not None and failed_alpha is not None and candidate_alpha < failed_alpha
+            ),
+            "cull_scale_relaxed": (
+                candidate_scale is not None and failed_scale is not None and candidate_scale > failed_scale
+            ),
+        }
+        stronger_after_scaffold_restored = stronger_after_scaffold_restored or any(improved.values())
+        comparisons.append(
+            {
+                "tile_id": failure.get("tile_id"),
+                "failed_hypothesis": failure.get("hypothesis"),
+                "failed": {
+                    "max_iterations": failed_iterations,
+                    "training_max_selected_images": failed_images,
+                    "training_max_gauss_ratio": failed_max_ratio,
+                    "training_stop_split_at": failed_stop_split,
+                    "cull_alpha_thresh": failed_alpha,
+                    "cull_scale_thresh": failed_scale,
+                },
+                "candidate": {
+                    "max_iterations": candidate_iterations,
+                    "training_max_selected_images": candidate_images,
+                    "training_max_gauss_ratio": candidate_max_ratio,
+                    "training_stop_split_at": candidate_stop_split,
+                    "cull_alpha_thresh": candidate_alpha,
+                    "cull_scale_thresh": candidate_scale,
+                },
+                "improved": improved,
+            }
+        )
     return {
         "environment": env_knobs,
         "training_config": config_knobs,
         "has_stronger_density_budget": stronger_budget,
+        "has_stronger_density_after_scaffold_restored": stronger_after_scaffold_restored,
         "comparisons": comparisons,
     }
 
@@ -1419,6 +1538,11 @@ def evaluate_candidate_objective(
         and not scaffold_density_restoration["has_scaffold_restoration"]
     ):
         block_reasons.append("objective_missing_scaffold_restoration_after_density_restored_underdense_leaf")
+    if (
+        visual_sentinel_scaffold_restored_underdense_failures(failed_hypotheses)
+        and not underdense_density_restoration["has_stronger_density_after_scaffold_restored"]
+    ):
+        block_reasons.append("objective_missing_stronger_density_after_scaffold_restored_underdense_leaf")
     normalized_changes = " ".join(changes).lower()
     if (
         has_visual_fidelity_overdense_failed(failed_hypotheses)
