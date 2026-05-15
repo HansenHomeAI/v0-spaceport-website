@@ -1,0 +1,13 @@
+{
+    "TrainingJobSummaries": [
+        {
+            "TrainingJobName": "md1shrunk1456-1778880862-3dgs",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1shrunk1456-1778880862-3dgs",
+            "CreationTime": "2026-05-15T15:34:24.406000-06:00",
+            "LastModifiedTime": "2026-05-15T15:39:20.025000-06:00",
+            "TrainingJobStatus": "InProgress",
+            "SecondaryStatus": "Training"
+        }
+    ],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTR5ep5w+r5+k7hcMovkCTOZ2liejOQ5k6iw4rvkGPwZ62M/PMKDXIAMqCO+LmORlafvKj9SSJn8Z2YnBmuqAP23aPXiUgiZW69Q7GRert6QOSRk1oetgPLRnpfPmLiw57QOlp9eMOKr34V6rj9PgzPWHj2DrJpNqze3ONDUhRpdrFZHyVo4bnJYkb+NQhPb+14gX3+YrL1tMNbgB0UElerNFtOeRW7TwkYYgRrxDWg70NR8fjzCJj4hZZfUo223VE0LwLqVHDAfKhyUr17CkEPF7/SJdVVAs764mlwQkd6Q3k1SqVNMNdqkOsjbId6KJO9QcZH+H5oAiHH04LhoHVmvkFFiONuncCXoZtpIOsXWtzh/lf08bb7yse7Up4C78TTVUvh46ygO0eVYUxxuLehwtynvTnmUgZTri9VKHMu94GqBfVAtwYq3eG93oo2Do4QKq7fwnFkXDoDxEmknYKcj/rVtCGqSxFGsPxsXx3BybXj1QEnI49XV2qWQI="
+}
