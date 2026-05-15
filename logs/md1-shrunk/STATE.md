@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-15T12:43:40-0600
+updated: 2026-05-15T12:48:15-0600
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -189,14 +189,14 @@ skybox, compression, artifact handoff, and visual gates.
    - 2026-05-15T12:24:56-0600 resume verification:
      - branch/head/status:
        - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
-       - `git rev-parse HEAD` -> `ba28880d7bce8108de7134b9e6e70d5ade016678`
+       - `git rev-parse HEAD` -> `c942e44e8d5fd41168cc12936fb7e61740cc5b05`
        - `git status --porcelain=v1` -> clean
      - AWS identity:
        - `aws sts get-caller-identity` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
      - Step Functions state:
        - `aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --max-results 10 --region us-west-2` -> no InProgress executions
      - GitHub workflow (exact-head):
-       - `gh run list --branch agent-113647-md1-baseline-e2e --limit 20 --json databaseId,workflowName,headSha,status,conclusion,createdAt,updatedAt,url` -> head `ba28880d...` has `CDK Deploy` run `25934397527` succeeded
+       - `gh run list --branch agent-113647-md1-baseline-e2e --limit 20 --json databaseId,workflowName,headSha,status,conclusion,createdAt,updatedAt,url` -> head `c942e44e...` has `CDK Deploy` run `25935254905` succeeded
      - SageMaker snapshot:
        - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260515T1823Z.json`
      - CloudWatch snapshots:
