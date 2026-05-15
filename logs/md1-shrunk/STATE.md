@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-15T15:45:15-0600
+updated: 2026-05-15T17:19:19-0600
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -484,6 +484,31 @@ skybox, compression, artifact handoff, and visual gates.
        - digest `sha256:c667899d7e844083e8d50b04329edd3841bbfb26f8876c917ade78be8f27d603`
        - pushed `2026-05-15T03:44:31.581000-0600`
      - `aws ecr describe-images --repository-name spaceport/sfm --image-ids imageTag=agent113647md1baselinee2e --region us-west-2 --output json` returned `ImageNotFoundException`; the active SfM job is therefore intentionally using the pinned digest recorded above, not a branch SFM tag.
+- 2026-05-15T17:19:19-0600 monitor poll (3DGS still running; CloudWatch stream unchanged):
+  - branch/head/status:
+    - `git rev-parse HEAD` -> `0d27d4512334e8aa16b6385b6ab7509508542d58`
+    - `git status --porcelain=v1` -> new untracked poll artifacts under `logs/md1-shrunk/`
+  - AWS identity:
+    - `aws sts get-caller-identity --output json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - GitHub workflows (exact-head):
+    - run list snapshot: `logs/md1-shrunk/gh-run-list-20260515T231837Z.json`
+    - `CDK Deploy` succeeded for head `0d27d451...` (run `25945475518`):
+      - `logs/md1-shrunk/gh-run-view-25945475518-20260515T231845Z.json`
+      - `logs/md1-shrunk/gh-run-watch-25945475518-20260515T231845Z.txt`
+    - Pages workflow still not triggered (no `web/trigger-dev-build.txt` bump)
+  - Step Functions (branch-preview pipeline):
+    - state machine ARN proof: `logs/md1-shrunk/stepfunctions-state-machine-br8abc-20260515T231633Z.txt`
+    - list executions: `logs/md1-shrunk/stepfunctions-list-executions-br8abc-20260515T231633Z.json`
+    - describe execution: `logs/md1-shrunk/stepfunctions-describe-execution-br8abc-md1shrunk1456-1778880862-20260515T231633Z.json` -> `status=RUNNING`
+    - latest history tail (reverse-order): `logs/md1-shrunk/stepfunctions-history-reverse-tail-br8abc-md1shrunk1456-1778880862-20260515T231814Z.json` -> most recent event `WaitStateEntered` @ `2026-05-15T17:16:34-0600`
+  - SageMaker (3DGS training):
+    - describe: `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260515T231558Z.json` -> `TrainingJobStatus=InProgress`, `SecondaryStatus=Training`, instance `ml.g5.4xlarge`
+    - InProgress list snapshot: `logs/md1-shrunk/sagemaker-list-training-InProgress-20260515T231633Z.json` (includes external `md1-tile04-ds1000-r30-1778869172`; left untouched)
+  - CloudWatch (SageMaker training logs):
+    - stream metadata: `logs/md1-shrunk/cloudwatch-training-streams-md1shrunk1456-1778880862-3dgs-20260515T231726Z.json` -> `lastEventTimestamp=2026-05-15T21:42:31Z` (no new events since `ns-train` launch)
+    - get-log-events tail: `logs/md1-shrunk/cloudwatch-training-getlogevents-md1shrunk1456-1778880862-3dgs-20260515T231558Z.json`
+  - S3 training output prefix (still empty; expected until export):
+    - `logs/md1-shrunk/s3-3dgs-md1shrunk1456-1778880862-20260515T231633Z.txt` -> `Total Objects: 0`, `Total Size: 0`
 2. Gate SfM before 3DGS:
    - output files present
    - registered images close to the 1452 Meadow baseline

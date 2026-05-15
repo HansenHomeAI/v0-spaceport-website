@@ -1,0 +1,1 @@
+executionArn=arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-br-8abcbd5662:execution-md1shrunk1456-1778880862
