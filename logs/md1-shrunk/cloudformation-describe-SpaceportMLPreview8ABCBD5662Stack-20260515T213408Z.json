@@ -1,0 +1,110 @@
+{
+    "Stacks": [
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview8ABCBD5662Stack/863fed70-4f3a-11f1-8609-02caba97073f",
+            "StackName": "SpaceportMLPreview8ABCBD5662Stack",
+            "ChangeSetId": "arn:aws:cloudformation:us-west-2:975050048887:changeSet/cdk-deploy-change-set/1401bc5c-9849-4471-a0af-13a53a650331",
+            "Parameters": [
+                {
+                    "ParameterKey": "BootstrapVersion",
+                    "ParameterValue": "/cdk-bootstrap/hnb659fds/version",
+                    "ResolvedValue": "18"
+                }
+            ],
+            "CreationTime": "2026-05-14T02:13:40.648000+00:00",
+            "LastUpdatedTime": "2026-05-15T21:30:28.396000+00:00",
+            "RollbackConfiguration": {},
+            "StackStatus": "UPDATE_COMPLETE",
+            "DisableRollback": false,
+            "NotificationARNs": [],
+            "Capabilities": [
+                "CAPABILITY_IAM",
+                "CAPABILITY_NAMED_IAM",
+                "CAPABILITY_AUTO_EXPAND"
+            ],
+            "Outputs": [
+                {
+                    "OutputKey": "SpaceportMLApiEndpointD01B3725",
+                    "OutputValue": "https://l9qbitq5v1.execute-api.us-west-2.amazonaws.com/prod/"
+                },
+                {
+                    "OutputKey": "CompressorRepositoryUri",
+                    "OutputValue": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor",
+                    "Description": "Compressor ECR Repository URI"
+                },
+                {
+                    "OutputKey": "EnvironmentName",
+                    "OutputValue": "branch-preview",
+                    "Description": "Deployment environment name"
+                },
+                {
+                    "OutputKey": "GaussianRepositoryUri",
+                    "OutputValue": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs",
+                    "Description": "3DGS ECR Repository URI"
+                },
+                {
+                    "OutputKey": "StepFunctionArn",
+                    "OutputValue": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-8abcbd5662",
+                    "Description": "ML Pipeline Step Function ARN"
+                },
+                {
+                    "OutputKey": "MLPipelineApiUrl",
+                    "OutputValue": "https://l9qbitq5v1.execute-api.us-west-2.amazonaws.com/prod/",
+                    "Description": "ML Pipeline API Gateway URL"
+                },
+                {
+                    "OutputKey": "BranchId",
+                    "OutputValue": "8abcbd5662",
+                    "Description": "Branch preview identifier"
+                },
+                {
+                    "OutputKey": "BranchName",
+                    "OutputValue": "agent-113647-md1-baseline-e2e",
+                    "Description": "Git branch name for this deployment"
+                },
+                {
+                    "OutputKey": "MLBucketName",
+                    "OutputValue": "spaceport-ml-processing-staging",
+                    "Description": "ML Processing S3 Bucket"
+                },
+                {
+                    "OutputKey": "MLApiUrl",
+                    "OutputValue": "https://l9qbitq5v1.execute-api.us-west-2.amazonaws.com/prod/",
+                    "Description": "ML Pipeline API Gateway URL"
+                },
+                {
+                    "OutputKey": "SfMRepositoryUri",
+                    "OutputValue": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm",
+                    "Description": "SfM ECR Repository URI"
+                }
+            ],
+            "RoleARN": "arn:aws:iam::975050048887:role/cdk-hnb659fds-cfn-exec-role-975050048887-us-west-2",
+            "Tags": [
+                {
+                    "Key": "ManagedBy",
+                    "Value": "github-actions"
+                },
+                {
+                    "Key": "SpaceportBranchName",
+                    "Value": "agent-113647-md1-baseline-e2e"
+                },
+                {
+                    "Key": "SpaceportBranchId",
+                    "Value": "8abcbd5662"
+                },
+                {
+                    "Key": "SpaceportSharedAuthStack",
+                    "Value": "SpaceportAuthStagingStack"
+                },
+                {
+                    "Key": "SpaceportDeploymentClass",
+                    "Value": "branch-preview"
+                }
+            ],
+            "EnableTerminationProtection": false,
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        }
+    ]
+}

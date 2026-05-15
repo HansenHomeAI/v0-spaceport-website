@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-15T15:35:48-0600
+updated: 2026-05-15T15:38:12-0600
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -357,6 +357,10 @@ skybox, compression, artifact handoff, and visual gates.
        - name: `md1shrunk1456-1778880862-3dgs`
        - describe: `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260515T213545Z.json`
        - status: `InProgress` on `ml.g5.4xlarge` (SecondaryStatus at snapshot: `Downloading`)
+     - Cost-boundedness note:
+       - A redundant manual 3DGS job was started then immediately stopped to avoid duplicate GPU spend:
+         - launched: `md1shrunk1456-wlight-2605152127-g5xl-3dgs` (`ml.g5.xlarge`)
+         - stop confirmation: `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-wlight-2605152127-g5xl-3dgs-after-stop-20260515T213942Z.json` -> `TrainingJobStatus=Stopping`
    - Current downstream image facts for the post-SfM stage:
      - `aws ecr describe-images --repository-name spaceport/3dgs --image-ids imageTag=agent113647md1baselinee2e --region us-west-2 --output json > logs/md1-shrunk/ecr-3dgs-agent113647md1baselinee2e-20260515T1758Z.json`
        - digest `sha256:6b3b2492af7a268cfc5f233e87bdce51c47492ada4c3630f723114ffa464fd0c`

@@ -1,0 +1,987 @@
+{
+    "StackSummaries": [
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview8ABCBD5662Stack/863fed70-4f3a-11f1-8609-02caba97073f",
+            "StackName": "SpaceportMLPreview8ABCBD5662Stack",
+            "CreationTime": "2026-05-14T02:13:40.648000+00:00",
+            "LastUpdatedTime": "2026-05-15T21:30:28.396000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreviewE2B491C69DStack/b7bc2da0-4571-11f1-a37b-06eea11efebb",
+            "StackName": "SpaceportMLPreviewE2B491C69DStack",
+            "CreationTime": "2026-05-01T15:23:34.435000+00:00",
+            "LastUpdatedTime": "2026-05-01T15:23:40.631000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreviewE2B491C69DStack/86abc0e0-4571-11f1-89c9-0a2b077f2da5",
+            "StackName": "SpaceportPreviewE2B491C69DStack",
+            "CreationTime": "2026-05-01T15:22:12.118000+00:00",
+            "LastUpdatedTime": "2026-05-01T15:22:23.685000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview1FCC870EE1Stack/99912220-441a-11f1-b135-0616e373a13d",
+            "StackName": "SpaceportPreview1FCC870EE1Stack",
+            "CreationTime": "2026-04-29T22:27:26.515000+00:00",
+            "LastUpdatedTime": "2026-04-29T22:27:38.411000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview1FCC870EE1Stack/7136eee0-441a-11f1-9148-0a333d023fd1",
+            "StackName": "SpaceportMLPreview1FCC870EE1Stack",
+            "CreationTime": "2026-04-29T22:26:18.708000+00:00",
+            "LastUpdatedTime": "2026-04-29T22:26:25.317000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview688D73CCBCStack/b7bf3a30-4419-11f1-a175-0256f7517d4d",
+            "StackName": "SpaceportMLPreview688D73CCBCStack",
+            "CreationTime": "2026-04-29T22:21:07.537000+00:00",
+            "LastUpdatedTime": "2026-04-29T22:21:13.408000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview688D73CCBCStack/8b5aa240-4419-11f1-8b51-022f170c591d",
+            "StackName": "SpaceportPreview688D73CCBCStack",
+            "CreationTime": "2026-04-29T22:19:53.053000+00:00",
+            "LastUpdatedTime": "2026-04-29T22:20:04.181000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreviewFB928A4F1CStack/f5c9c850-3a2c-11f1-855b-0a6fd225ae29",
+            "StackName": "SpaceportMLPreviewFB928A4F1CStack",
+            "CreationTime": "2026-04-17T07:13:40.431000+00:00",
+            "LastUpdatedTime": "2026-04-17T07:13:46.921000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreviewFB928A4F1CStack/cfd3c3d0-3a2c-11f1-b1f6-02f3aae003f1",
+            "StackName": "SpaceportPreviewFB928A4F1CStack",
+            "CreationTime": "2026-04-17T07:12:36.838000+00:00",
+            "LastUpdatedTime": "2026-04-17T07:12:43.487000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview85A239485FStack/44df8c40-3a28-11f1-ae5e-06090de1a25b",
+            "StackName": "SpaceportPreview85A239485FStack",
+            "CreationTime": "2026-04-17T06:40:05.754000+00:00",
+            "LastUpdatedTime": "2026-04-17T06:40:17.771000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview85A239485FStack/1f9705d0-3a28-11f1-ab8e-0ada81a5bb1d",
+            "StackName": "SpaceportMLPreview85A239485FStack",
+            "CreationTime": "2026-04-17T06:39:03.074000+00:00",
+            "LastUpdatedTime": "2026-04-17T06:39:09.556000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview52804B744DStack/2192ff80-39bd-11f1-aedf-0a4d0cd533c9",
+            "StackName": "SpaceportPreview52804B744DStack",
+            "CreationTime": "2026-04-16T17:53:10.462000+00:00",
+            "LastUpdatedTime": "2026-04-16T17:53:21.657000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview52804B744DStack/df3cba90-39bc-11f1-b2a2-067a0899cdc7",
+            "StackName": "SpaceportMLPreview52804B744DStack",
+            "CreationTime": "2026-04-16T17:51:18.942000+00:00",
+            "LastUpdatedTime": "2026-04-16T17:51:24.899000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview0D01E63D2EStack/edc3f8b0-39a0-11f1-9920-0624a84210c3",
+            "StackName": "SpaceportPreview0D01E63D2EStack",
+            "CreationTime": "2026-04-16T14:31:17.545000+00:00",
+            "LastUpdatedTime": "2026-04-16T14:31:28.415000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview0D01E63D2EStack/a69ccac0-39a0-11f1-a8ec-065bffd26ebf",
+            "StackName": "SpaceportMLPreview0D01E63D2EStack",
+            "CreationTime": "2026-04-16T14:29:18.064000+00:00",
+            "LastUpdatedTime": "2026-04-16T14:29:23.764000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview3A0B78B344Stack/63cd7e80-394e-11f1-8326-0a20b7d35cd1",
+            "StackName": "SpaceportPreview3A0B78B344Stack",
+            "CreationTime": "2026-04-16T04:40:27.308000+00:00",
+            "LastUpdatedTime": "2026-04-16T04:40:38.864000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview3A0B78B344Stack/1fca25d0-394e-11f1-a813-068ce4339bff",
+            "StackName": "SpaceportMLPreview3A0B78B344Stack",
+            "CreationTime": "2026-04-16T04:38:33.121000+00:00",
+            "LastUpdatedTime": "2026-04-16T04:38:39.334000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview679D519C73Stack/e844baa0-3919-11f1-9833-024124dc95ed",
+            "StackName": "SpaceportPreview679D519C73Stack",
+            "CreationTime": "2026-04-15T22:24:46.240000+00:00",
+            "LastUpdatedTime": "2026-04-15T22:24:57.132000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview679D519C73Stack/a43469a0-3919-11f1-b287-0a94352f231b",
+            "StackName": "SpaceportMLPreview679D519C73Stack",
+            "CreationTime": "2026-04-15T22:22:51.946000+00:00",
+            "LastUpdatedTime": "2026-04-15T22:23:02.829000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview487517C20AStack/f298f8b0-3624-11f1-bc01-02f92cb151b1",
+            "StackName": "SpaceportPreview487517C20AStack",
+            "CreationTime": "2026-04-12T04:06:14.587000+00:00",
+            "LastUpdatedTime": "2026-04-12T04:06:26.056000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview985396B507Stack/5009d420-3624-11f1-b5a5-060b31f557bd",
+            "StackName": "SpaceportPreview985396B507Stack",
+            "CreationTime": "2026-04-12T04:01:41.763000+00:00",
+            "LastUpdatedTime": "2026-04-12T12:03:11.802000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview487517C20AStack/443da810-3624-11f1-8a93-0a4266123701",
+            "StackName": "SpaceportMLPreview487517C20AStack",
+            "CreationTime": "2026-04-12T04:01:21.914000+00:00",
+            "LastUpdatedTime": "2026-04-13T17:37:17.541000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "StackStatusReason": "Update successful. One or more resources could not be deleted.",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview985396B507Stack/94319a30-3623-11f1-bc01-02f92cb151b1",
+            "StackName": "SpaceportMLPreview985396B507Stack",
+            "CreationTime": "2026-04-12T03:56:26.576000+00:00",
+            "LastUpdatedTime": "2026-04-12T03:56:32.988000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreviewC908CE627CStack/a3217dd0-360a-11f1-b22f-022b5d7d4ab5",
+            "StackName": "SpaceportMLPreviewC908CE627CStack",
+            "CreationTime": "2026-04-12T00:57:54.237000+00:00",
+            "LastUpdatedTime": "2026-04-12T00:58:05.789000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview421B38DA81Stack/34aeb860-3608-11f1-83ca-069d88c2d14f",
+            "StackName": "SpaceportPreview421B38DA81Stack",
+            "CreationTime": "2026-04-12T00:40:29.974000+00:00",
+            "LastUpdatedTime": "2026-04-12T00:59:39.500000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview421B38DA81Stack/f3d48c20-3607-11f1-a132-0ad3b399154b",
+            "StackName": "SpaceportMLPreview421B38DA81Stack",
+            "CreationTime": "2026-04-12T00:38:41.134000+00:00",
+            "LastUpdatedTime": "2026-04-12T00:38:47.365000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreviewADA4C6FC3FStack/5dd871a0-35fd-11f1-8e2a-06090de1a25b",
+            "StackName": "SpaceportPreviewADA4C6FC3FStack",
+            "CreationTime": "2026-04-11T23:22:54.564000+00:00",
+            "LastUpdatedTime": "2026-04-11T23:23:06.621000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreviewADA4C6FC3FStack/1ba9b1e0-35fd-11f1-9408-0a35a6eabcfb",
+            "StackName": "SpaceportMLPreviewADA4C6FC3FStack",
+            "CreationTime": "2026-04-11T23:21:03.472000+00:00",
+            "LastUpdatedTime": "2026-04-11T23:21:10.058000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview9F3BBB8F70Stack/4f221130-35ed-11f1-b22f-022b5d7d4ab5",
+            "StackName": "SpaceportPreview9F3BBB8F70Stack",
+            "CreationTime": "2026-04-11T21:27:57.991000+00:00",
+            "LastUpdatedTime": "2026-04-11T21:28:09.087000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview9F3BBB8F70Stack/0d03cc30-35ed-11f1-8430-023f2c6e1a5f",
+            "StackName": "SpaceportMLPreview9F3BBB8F70Stack",
+            "CreationTime": "2026-04-11T21:26:06.990000+00:00",
+            "LastUpdatedTime": "2026-04-11T21:26:12.958000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview6134770281Stack/095b8150-35c4-11f1-bd73-027f56ee6227",
+            "StackName": "SpaceportMLPreview6134770281Stack",
+            "CreationTime": "2026-04-11T16:32:31.460000+00:00",
+            "LastUpdatedTime": "2026-04-11T16:32:42.636000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview6134770281Stack/bad9d950-35c3-11f1-aa76-0a4d0cd533c9",
+            "StackName": "SpaceportPreview6134770281Stack",
+            "CreationTime": "2026-04-11T16:30:19.774000+00:00",
+            "LastUpdatedTime": "2026-04-11T18:11:07.515000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreviewAD3AC98348Stack/4b8feec0-35b6-11f1-82dd-0aee1c835865",
+            "StackName": "SpaceportPreviewAD3AC98348Stack",
+            "CreationTime": "2026-04-11T14:54:09.648000+00:00",
+            "LastUpdatedTime": "2026-04-11T15:10:46.061000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreviewAD3AC98348Stack/05e66020-35b6-11f1-9c77-0a7d17ab5dc5",
+            "StackName": "SpaceportMLPreviewAD3AC98348Stack",
+            "CreationTime": "2026-04-11T14:52:12.702000+00:00",
+            "LastUpdatedTime": "2026-04-11T15:09:49.424000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview91C590205AStack/0ac672b0-3566-11f1-a5af-02b4049705b7",
+            "StackName": "SpaceportPreview91C590205AStack",
+            "CreationTime": "2026-04-11T05:19:41.261000+00:00",
+            "LastUpdatedTime": "2026-04-11T05:45:57.485000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview91C590205AStack/c8e1db50-3565-11f1-b065-0afce23faea1",
+            "StackName": "SpaceportMLPreview91C590205AStack",
+            "CreationTime": "2026-04-11T05:17:50.580000+00:00",
+            "LastUpdatedTime": "2026-04-11T05:44:59.264000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreviewE85AD62606Stack/f00398a0-3433-11f1-8207-06c7de2cb5e9",
+            "StackName": "SpaceportPreviewE85AD62606Stack",
+            "CreationTime": "2026-04-09T16:48:30.291000+00:00",
+            "LastUpdatedTime": "2026-04-09T19:14:27.607000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreviewE85AD62606Stack/ae198300-3433-11f1-bfb3-0660fdcdd5af",
+            "StackName": "SpaceportMLPreviewE85AD62606Stack",
+            "CreationTime": "2026-04-09T16:46:39.664000+00:00",
+            "LastUpdatedTime": "2026-04-10T19:54:12.017000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview0468116023Stack/a2b15050-336c-11f1-b8a4-068a94ed4d9f",
+            "StackName": "SpaceportPreview0468116023Stack",
+            "CreationTime": "2026-04-08T17:01:50.818000+00:00",
+            "LastUpdatedTime": "2026-04-08T19:03:57.107000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview0468116023Stack/5bea1cb0-336c-11f1-bbba-0a16d7f22811",
+            "StackName": "SpaceportMLPreview0468116023Stack",
+            "CreationTime": "2026-04-08T16:59:51.983000+00:00",
+            "LastUpdatedTime": "2026-04-08T16:59:58.687000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreviewE7DE77D9FDStack/ccda4370-3298-11f1-bc33-0a9b69f0ce1b",
+            "StackName": "SpaceportPreviewE7DE77D9FDStack",
+            "CreationTime": "2026-04-07T15:45:28.181000+00:00",
+            "LastUpdatedTime": "2026-04-07T17:10:02.893000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreviewE7DE77D9FDStack/8bd0c9d0-3298-11f1-8016-021b3655920f",
+            "StackName": "SpaceportMLPreviewE7DE77D9FDStack",
+            "CreationTime": "2026-04-07T15:43:38.978000+00:00",
+            "LastUpdatedTime": "2026-04-07T15:43:44.731000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreviewA2A0178E1AStack/bd175f90-3289-11f1-b007-0698206868a5",
+            "StackName": "SpaceportPreviewA2A0178E1AStack",
+            "CreationTime": "2026-04-07T13:57:39.234000+00:00",
+            "LastUpdatedTime": "2026-04-07T15:59:12.651000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreviewA2A0178E1AStack/79097f90-3289-11f1-8aef-06c6fa5aeded",
+            "StackName": "SpaceportMLPreviewA2A0178E1AStack",
+            "CreationTime": "2026-04-07T13:55:45.041000+00:00",
+            "LastUpdatedTime": "2026-04-07T16:13:02.270000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview590BEF09E3Stack/46405f60-3212-11f1-8326-0a20b7d35cd1",
+            "StackName": "SpaceportPreview590BEF09E3Stack",
+            "CreationTime": "2026-04-06T23:42:29.844000+00:00",
+            "LastUpdatedTime": "2026-04-07T00:10:51.988000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview590BEF09E3Stack/02d2b700-3212-11f1-ba41-02a7d29ddd49",
+            "StackName": "SpaceportMLPreview590BEF09E3Stack",
+            "CreationTime": "2026-04-06T23:40:36.563000+00:00",
+            "LastUpdatedTime": "2026-04-07T00:27:27.015000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreviewDDA7BDAD32Stack/a10195f0-2eb5-11f1-ba27-0ab88323a76b",
+            "StackName": "SpaceportMLPreviewDDA7BDAD32Stack",
+            "CreationTime": "2026-04-02T17:01:45.296000+00:00",
+            "LastUpdatedTime": "2026-04-02T17:01:57.342000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview6CD5762FC5Stack/179a0d90-2e1c-11f1-a2c9-0256f7517d4d",
+            "StackName": "SpaceportPreview6CD5762FC5Stack",
+            "CreationTime": "2026-04-01T22:42:41.829000+00:00",
+            "LastUpdatedTime": "2026-04-01T23:45:19.336000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview6CD5762FC5Stack/d5653350-2e1b-11f1-b60a-029a94534a81",
+            "StackName": "SpaceportMLPreview6CD5762FC5Stack",
+            "CreationTime": "2026-04-01T22:40:50.671000+00:00",
+            "LastUpdatedTime": "2026-04-01T22:40:57.201000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview3A5B3005D7Stack/f0df3140-2e01-11f1-8389-02bbf1fc20c5",
+            "StackName": "SpaceportPreview3A5B3005D7Stack",
+            "CreationTime": "2026-04-01T19:35:29.977000+00:00",
+            "LastUpdatedTime": "2026-04-01T20:10:40.949000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview3A5B3005D7Stack/abb559f0-2e01-11f1-abbf-0ab645b2afc7",
+            "StackName": "SpaceportMLPreview3A5B3005D7Stack",
+            "CreationTime": "2026-04-01T19:33:33.824000+00:00",
+            "LastUpdatedTime": "2026-04-04T20:02:09.181000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreviewBBB91CE9A5Stack/a9b83b70-2c82-11f1-8b5f-0a461e6ef801",
+            "StackName": "SpaceportPreviewBBB91CE9A5Stack",
+            "CreationTime": "2026-03-30T21:51:53.311000+00:00",
+            "LastUpdatedTime": "2026-03-30T22:54:36.948000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreviewBBB91CE9A5Stack/64707be0-2c82-11f1-b378-0a30edecd69d",
+            "StackName": "SpaceportMLPreviewBBB91CE9A5Stack",
+            "CreationTime": "2026-03-30T21:49:57.043000+00:00",
+            "LastUpdatedTime": "2026-03-30T21:50:03.501000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreviewE043D7B48DStack/8188e9c0-2c77-11f1-bbb4-0a08729f3717",
+            "StackName": "SpaceportMLPreviewE043D7B48DStack",
+            "CreationTime": "2026-03-30T20:32:01.393000+00:00",
+            "LastUpdatedTime": "2026-03-30T20:32:07.968000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview64F4ABE549Stack/84da2680-2c49-11f1-bc22-02b8da45afcf",
+            "StackName": "SpaceportPreview64F4ABE549Stack",
+            "CreationTime": "2026-03-30T15:02:50.173000+00:00",
+            "LastUpdatedTime": "2026-03-30T15:03:02.347000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview64F4ABE549Stack/426becc0-2c49-11f1-813c-06c9388706a5",
+            "StackName": "SpaceportMLPreview64F4ABE549Stack",
+            "CreationTime": "2026-03-30T15:00:58.660000+00:00",
+            "LastUpdatedTime": "2026-03-30T15:01:05.203000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview647952F8EAStack/cd249430-2c48-11f1-83ed-0a082c96904d",
+            "StackName": "SpaceportMLPreview647952F8EAStack",
+            "CreationTime": "2026-03-30T14:57:42.076000+00:00",
+            "LastUpdatedTime": "2026-03-30T15:15:01.903000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview647952F8EAStack/545db1d0-2c48-11f1-a275-02bee909dc15",
+            "StackName": "SpaceportPreview647952F8EAStack",
+            "CreationTime": "2026-03-30T14:54:19.427000+00:00",
+            "LastUpdatedTime": "2026-03-30T15:36:07.374000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreviewD659DB0A49Stack/0b063a90-2c41-11f1-a4f1-0244329bc02f",
+            "StackName": "SpaceportPreviewD659DB0A49Stack",
+            "CreationTime": "2026-03-30T14:02:09.852000+00:00",
+            "LastUpdatedTime": "2026-03-30T14:24:33.335000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreviewD659DB0A49Stack/c8618780-2c40-11f1-ac38-0a4fcd632e15",
+            "StackName": "SpaceportMLPreviewD659DB0A49Stack",
+            "CreationTime": "2026-03-30T14:00:17.873000+00:00",
+            "LastUpdatedTime": "2026-03-30T14:00:24.153000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview5DDFFEDC6CStack/578951c0-2af4-11f1-a1bc-064c5f095ae5",
+            "StackName": "SpaceportPreview5DDFFEDC6CStack",
+            "CreationTime": "2026-03-28T22:20:35.767000+00:00",
+            "LastUpdatedTime": "2026-03-28T22:20:47.660000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview5DDFFEDC6CStack/1571c380-2af4-11f1-a53b-065a194b18b1",
+            "StackName": "SpaceportMLPreview5DDFFEDC6CStack",
+            "CreationTime": "2026-03-28T22:18:44.812000+00:00",
+            "LastUpdatedTime": "2026-03-28T22:18:51.293000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview45EE130FEFStack/bb31b270-2af0-11f1-a2fa-02a53ab6a471",
+            "StackName": "SpaceportPreview45EE130FEFStack",
+            "CreationTime": "2026-03-28T21:54:45.011000+00:00",
+            "LastUpdatedTime": "2026-03-30T13:22:28.217000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview45EE130FEFStack/7adbaa50-2af0-11f1-b266-0afa6c5cb3a1",
+            "StackName": "SpaceportMLPreview45EE130FEFStack",
+            "CreationTime": "2026-03-28T21:52:56.919000+00:00",
+            "LastUpdatedTime": "2026-03-28T21:53:03.157000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreviewBD4BF3A400Stack/89a08420-2ac8-11f1-bb15-0a376efb4747",
+            "StackName": "SpaceportPreviewBD4BF3A400Stack",
+            "CreationTime": "2026-03-28T17:07:01.999000+00:00",
+            "LastUpdatedTime": "2026-03-28T17:15:45.514000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreviewBD4BF3A400Stack/41ec5870-2ac8-11f1-8840-0ac0fd7fb12d",
+            "StackName": "SpaceportMLPreviewBD4BF3A400Stack",
+            "CreationTime": "2026-03-28T17:05:01.650000+00:00",
+            "LastUpdatedTime": "2026-03-28T17:05:07.914000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreviewAA5EE4AF80Stack/2ea1f9a0-2947-11f1-ae0e-0a9bf67004c3",
+            "StackName": "SpaceportMLPreviewAA5EE4AF80Stack",
+            "CreationTime": "2026-03-26T19:08:32.963000+00:00",
+            "LastUpdatedTime": "2026-03-26T19:58:33.983000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview2EFBF47A4FStack/dc597480-1ce3-11f1-88b6-0a6c3dcf9f13",
+            "StackName": "SpaceportPreview2EFBF47A4FStack",
+            "CreationTime": "2026-03-11T00:47:20.940000+00:00",
+            "LastUpdatedTime": "2026-03-11T00:47:31.977000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview2EFBF47A4FStack/a05f2560-1ce3-11f1-8c21-06a202531dcb",
+            "StackName": "SpaceportMLPreview2EFBF47A4FStack",
+            "CreationTime": "2026-03-11T00:45:40.284000+00:00",
+            "LastUpdatedTime": "2026-03-11T00:45:46.219000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreviewC55E953E52Stack/1ddf5c00-1ce2-11f1-99dc-0abc974d12ff",
+            "StackName": "SpaceportPreviewC55E953E52Stack",
+            "CreationTime": "2026-03-11T00:34:51.828000+00:00",
+            "LastUpdatedTime": "2026-03-11T01:15:39.829000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreviewC55E953E52Stack/e3af6ca0-1ce1-11f1-b324-06c15fb00043",
+            "StackName": "SpaceportMLPreviewC55E953E52Stack",
+            "CreationTime": "2026-03-11T00:33:14.071000+00:00",
+            "LastUpdatedTime": "2026-03-11T00:33:20.306000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview8989F2959FStack/f9c1fa30-1a93-11f1-bdb9-0a75db31c4e7",
+            "StackName": "SpaceportMLPreview8989F2959FStack",
+            "CreationTime": "2026-03-08T02:10:28.158000+00:00",
+            "LastUpdatedTime": "2026-03-08T03:16:45.307000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview8989F2959FStack/b637f030-1a93-11f1-af38-06352868b38d",
+            "StackName": "SpaceportPreview8989F2959FStack",
+            "CreationTime": "2026-03-08T02:08:34.791000+00:00",
+            "LastUpdatedTime": "2026-03-08T02:26:32.071000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview5FF44D7162Stack/84954680-198b-11f1-9e17-0671df5af297",
+            "StackName": "SpaceportPreview5FF44D7162Stack",
+            "CreationTime": "2026-03-06T18:37:24.425000+00:00",
+            "LastUpdatedTime": "2026-03-07T05:26:55.141000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview5FF44D7162Stack/4bcf4760-198b-11f1-8a9e-06e44daf8b69",
+            "StackName": "SpaceportMLPreview5FF44D7162Stack",
+            "CreationTime": "2026-03-06T18:35:49.128000+00:00",
+            "LastUpdatedTime": "2026-03-06T18:35:54.818000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreviewAF4B90CCD2Stack/c9a570c0-198a-11f1-8c34-0a0da20d59c7",
+            "StackName": "SpaceportPreviewAF4B90CCD2Stack",
+            "CreationTime": "2026-03-06T18:32:10.747000+00:00",
+            "LastUpdatedTime": "2026-03-07T01:19:52.268000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreviewAF4B90CCD2Stack/8f1deb80-198a-11f1-a00d-022f8f40487d",
+            "StackName": "SpaceportMLPreviewAF4B90CCD2Stack",
+            "CreationTime": "2026-03-06T18:30:32.478000+00:00",
+            "LastUpdatedTime": "2026-03-06T18:30:38.177000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview98EFE3A22FStack/05f6a990-1977-11f1-b1fd-0682b6fd274d",
+            "StackName": "SpaceportPreview98EFE3A22FStack",
+            "CreationTime": "2026-03-06T16:10:42.165000+00:00",
+            "LastUpdatedTime": "2026-03-11T00:46:13.730000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview98EFE3A22FStack/cce34dc0-1976-11f1-9bab-023a276f1385",
+            "StackName": "SpaceportMLPreview98EFE3A22FStack",
+            "CreationTime": "2026-03-06T16:09:06.266000+00:00",
+            "LastUpdatedTime": "2026-03-06T16:09:12.997000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreviewF9A9943D3BStack/32eb0160-1956-11f1-a6d1-0aa0c2414a9d",
+            "StackName": "SpaceportPreviewF9A9943D3BStack",
+            "CreationTime": "2026-03-06T12:15:44.108000+00:00",
+            "LastUpdatedTime": "2026-03-06T12:27:44.747000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreviewF9A9943D3BStack/f8bc7190-1955-11f1-8219-02237c4e2e3b",
+            "StackName": "SpaceportMLPreviewF9A9943D3BStack",
+            "CreationTime": "2026-03-06T12:14:06.373000+00:00",
+            "LastUpdatedTime": "2026-03-06T12:14:12.530000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreview18DF3F5DAAStack/8b0cb890-1954-11f1-8db2-0ac272e261c3",
+            "StackName": "SpaceportPreview18DF3F5DAAStack",
+            "CreationTime": "2026-03-06T12:03:52.965000+00:00",
+            "LastUpdatedTime": "2026-03-06T12:17:24.931000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreview18DF3F5DAAStack/522fd610-1954-11f1-9982-0617d5098cd5",
+            "StackName": "SpaceportMLPreview18DF3F5DAAStack",
+            "CreationTime": "2026-03-06T12:02:17.507000+00:00",
+            "LastUpdatedTime": "2026-03-06T12:02:23.516000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportPreviewFB273C6C47Stack/845c7e00-17f0-11f1-8222-06e31eb2a24d",
+            "StackName": "SpaceportPreviewFB273C6C47Stack",
+            "CreationTime": "2026-03-04T17:35:20.883000+00:00",
+            "LastUpdatedTime": "2026-03-11T00:47:06.763000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPreviewFB273C6C47Stack/4a526620-17f0-11f1-9529-0a573559418b",
+            "StackName": "SpaceportMLPreviewFB273C6C47Stack",
+            "CreationTime": "2026-03-04T17:33:43.406000+00:00",
+            "LastUpdatedTime": "2026-03-11T00:44:51.917000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStackAgent90547182Phase5Densifyintervalbfc2A7/e6f45d40-1574-11f1-ba0f-06a4c46a5087",
+            "StackName": "SpaceportAuthStagingStackAgent90547182Phase5Densifyintervalbfc2A7",
+            "CreationTime": "2026-03-01T13:45:26.379000+00:00",
+            "LastUpdatedTime": "2026-03-01T13:45:38.841000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportStagingStackAgent90547182Phase5Densifyintervalbfc2A7/d86b6d10-1572-11f1-b6dd-06039e7d575d",
+            "StackName": "SpaceportStagingStackAgent90547182Phase5Densifyintervalbfc2A7",
+            "CreationTime": "2026-03-01T13:30:43.077000+00:00",
+            "LastUpdatedTime": "2026-03-01T13:30:54.953000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPipelineStagingStackAgent90547182Phase5Densifyintervalbfc2A7/a0291ce0-1572-11f1-a633-06de1323861f",
+            "StackName": "SpaceportMLPipelineStagingStackAgent90547182Phase5Densifyintervalbfc2A7",
+            "CreationTime": "2026-03-01T13:29:08.530000+00:00",
+            "LastUpdatedTime": "2026-03-01T13:29:14.965000+00:00",
+            "StackStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/RoadmapInfraStack-roadmap-main/d839ade0-c2a0-11f0-860d-0add6566abbd",
+            "StackName": "RoadmapInfraStack-roadmap-main",
+            "TemplateDescription": "Shared infrastructure for the Roadmap project (managed via CDK).",
+            "CreationTime": "2025-11-16T04:00:52.943000+00:00",
+            "LastUpdatedTime": "2025-11-25T01:28:35.376000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportAuthStagingStack/0b72e860-8206-11f0-bb21-02af4760acfb",
+            "StackName": "SpaceportAuthStagingStack",
+            "CreationTime": "2025-08-25T22:51:32.590000+00:00",
+            "LastUpdatedTime": "2026-05-07T15:21:02.362000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportStagingStack/b98fe260-8204-11f0-a7a3-0a47aa65ef53",
+            "StackName": "SpaceportStagingStack",
+            "CreationTime": "2025-08-25T22:42:05.686000+00:00",
+            "LastUpdatedTime": "2026-03-07T04:03:00.439000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportCrmStack/f90d5a50-6664-11f0-897f-0213cb6e89f7",
+            "StackName": "SpaceportCrmStack",
+            "TemplateDescription": "Spaceport CRM - Luxury CRM application with AWS backend",
+            "CreationTime": "2025-07-21T19:00:31.358000+00:00",
+            "LastUpdatedTime": "2025-12-31T01:27:19.854000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPipelineStack/0a4642b0-3b4e-11f0-a9f8-06c33d291e3b",
+            "StackName": "SpaceportMLPipelineStack",
+            "CreationTime": "2025-05-27T23:09:15.560000+00:00",
+            "LastUpdatedTime": "2025-08-25T19:38:36.265000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportStack/4a264de0-2fd1-11f0-9919-0a6839bd7c2f",
+            "StackName": "SpaceportStack",
+            "CreationTime": "2025-05-13T08:07:19.008000+00:00",
+            "LastUpdatedTime": "2025-08-23T19:22:22.270000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SteepleCo/d993df90-171e-11f0-8d09-0624c0eedabf",
+            "StackName": "SteepleCo",
+            "CreationTime": "2025-04-11T21:49:31.835000+00:00",
+            "LastUpdatedTime": "2025-04-21T22:01:54.762000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/BauhausPosterShopStack/5a4bafd0-14d3-11f0-9d11-02b0a583b6a3",
+            "StackName": "BauhausPosterShopStack",
+            "CreationTime": "2025-04-08T23:44:03.677000+00:00",
+            "LastUpdatedTime": "2025-04-11T21:11:27.674000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/BackendStack/aa65ce10-1352-11f0-8729-02267691e3c1",
+            "StackName": "BackendStack",
+            "CreationTime": "2025-04-07T01:50:21.815000+00:00",
+            "LastUpdatedTime": "2025-04-08T20:03:12.613000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/MyRenderingPipelineStack/607b1cc0-015e-11f0-b00c-0ab6847bbd51",
+            "StackName": "MyRenderingPipelineStack",
+            "CreationTime": "2025-03-15T05:28:50.768000+00:00",
+            "LastUpdatedTime": "2025-03-30T02:11:13.525000+00:00",
+            "StackStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        }
+    ]
+}
