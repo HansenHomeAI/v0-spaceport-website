@@ -589,9 +589,9 @@
       ]
     }
   ],
-  "current_branch_head": "pushed head 8a75d44e48640a5f2590480b73fc28bd1d3ddfe0 exact-head green on CDK Deploy 25921717039; no MD1 compute launched; active SFM-spine r28 training holds further action",
-  "current_exact_head_gate_status": "exact-head 8a75d44e48640a5f2590480b73fc28bd1d3ddfe0 green on CDK Deploy 25921717039",
-  "current_live_compute_status": "AWS not idle: source-attributed SFM-spine 3DGS md1-worst447-ds1000-r28-1778852094 remains InProgress/Training on ml.g5.2xlarge with Environment=agent73948216sfmproductionspine, Component=3DGS, CodeHead=03c0d8c130cf4994b97fd2bc8eb98a9a73757221, Validation=md1-worst447-ds1000-r28, observed TrainingTimeInSeconds=2819, MaxRuntime=28800; processing is idle. No MD1 compute launched. No-spend merge/review planning remains blocked on merge_inputs_not_materialized.",
+  "current_branch_head": "pushed head 2de3ba00a3e60635a12e62801a4cde7ffb7c3f1f exact-head green on CDK Deploy 25923132127; no MD1 compute launched; active SFM-spine r28 training holds further action",
+  "current_exact_head_gate_status": "exact-head 2de3ba00a3e60635a12e62801a4cde7ffb7c3f1f green on CDK Deploy 25923132127",
+  "current_live_compute_status": "AWS not idle: source-attributed SFM-spine 3DGS md1-worst447-ds1000-r28-1778852094 remains InProgress/Training on ml.g5.2xlarge with Environment=agent73948216sfmproductionspine, Component=3DGS, CodeHead=03c0d8c130cf4994b97fd2bc8eb98a9a73757221, Validation=md1-worst447-ds1000-r28, observed TrainingTimeInSeconds=4587, MaxRuntime=28800; processing is idle. No MD1 compute launched. No-spend merge/review planning remains blocked on merge_inputs_not_materialized.",
   "current_rung": "R0_visual_sentinel_v5_merge_review_readiness_planned_training_hold",
   "evidence_events": [
     {
@@ -1399,9 +1399,25 @@
         "logs/md1-r0-visual-sentinel-v5-active-training-md1-worst447-ds1000-r28-1778852094-describe-head8a75-postgreen-20260515T1422Z.json",
         "logs/md1-r0-visual-sentinel-v5-active-training-md1-worst447-ds1000-r28-1778852094-tags-head8a75-postgreen-20260515T1422Z.json"
       ]
+    },
+    {
+      "event": "md1_r0_visual_sentinel_v5_training_hold_head2de3_20260515",
+      "checked_at": "2026-05-15T14:52:27Z",
+      "head": "2de3ba00a3e60635a12e62801a4cde7ffb7c3f1f",
+      "status": "training_hold",
+      "md1_compute_launched": false,
+      "active_training_job": "md1-worst447-ds1000-r28-1778852094",
+      "processing_status": "idle",
+      "evidence": [
+        "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-head2de3-postgreen-20260515T1452Z.json",
+        "logs/md1-r0-visual-sentinel-v5-live-training-head2de3-postgreen-20260515T1452Z.json",
+        "logs/md1-r0-visual-sentinel-v5-live-processing-head2de3-postgreen-20260515T1452Z.json",
+        "logs/md1-r0-visual-sentinel-v5-active-training-md1-worst447-ds1000-r28-1778852094-describe-head2de3-postgreen-20260515T1452Z.json",
+        "logs/md1-r0-visual-sentinel-v5-active-training-md1-worst447-ds1000-r28-1778852094-tags-head2de3-postgreen-20260515T1452Z.json"
+      ]
     }
   ],
-  "exact_head_gate_status": "exact-head 8a75d44e48640a5f2590480b73fc28bd1d3ddfe0 green on CDK Deploy 25921717039",
+  "exact_head_gate_status": "exact-head 2de3ba00a3e60635a12e62801a4cde7ffb7c3f1f green on CDK Deploy 25923132127",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
     "buckets": {
@@ -1716,7 +1732,7 @@
     ],
     "view_bucket_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiled_pipeline/inputs/scaffold/3dgs_view_buckets.json"
   },
-  "last_commit": "8a75d44e48640a5f2590480b73fc28bd1d3ddfe0",
+  "last_commit": "2de3ba00a3e60635a12e62801a4cde7ffb7c3f1f",
   "last_exact_head_gates": {
     "cdk_deploy_conclusion": "success",
     "cdk_deploy_run_id": 25478133157,
@@ -1728,7 +1744,7 @@
     "local_status_update_pending_commit": true,
     "ml_container_build": "not_triggered_for_non_container_status_commit"
   },
-  "last_updated": "2026-05-15T14:22:27Z",
+  "last_updated": "2026-05-15T14:52:27Z",
   "latest_bg10_merge_input_materialization_status": {
     "exact_head_workflows_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-exact-head-workflows-current-20260513.json",
     "input_materialization_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-input-materialization-current-20260513.json",
@@ -1943,16 +1959,16 @@
     "review_retry_s3_objects": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-s3-objects-20260512.txt",
     "review_retry_submit_guard": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18-review-submit-guard-retry-20260512.json",
     "review_retry_summary": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-20260512.json",
-    "current_head_workflow": "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-head8a75-postgreen-20260515T1422Z.json",
-    "current_training_state": "logs/md1-r0-visual-sentinel-v5-live-training-head8a75-postgreen-20260515T1422Z.json",
-    "current_processing_state": "logs/md1-r0-visual-sentinel-v5-live-processing-head8a75-postgreen-20260515T1422Z.json",
+    "current_head_workflow": "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-head2de3-postgreen-20260515T1452Z.json",
+    "current_training_state": "logs/md1-r0-visual-sentinel-v5-live-training-head2de3-postgreen-20260515T1452Z.json",
+    "current_processing_state": "logs/md1-r0-visual-sentinel-v5-live-processing-head2de3-postgreen-20260515T1452Z.json",
     "current_baseline_processing_describe": "logs/md1-baseline-e2e-20260514032448-sfm-active-describe-head4c5b-20260514-1407.json",
     "current_baseline_processing_tags": "logs/md1-baseline-e2e-20260514032448-sfm-tags-head4c5b-20260514-1407.json",
-    "current_active_training_describe": "logs/md1-r0-visual-sentinel-v5-active-training-md1-worst447-ds1000-r28-1778852094-describe-head8a75-postgreen-20260515T1422Z.json",
-    "current_active_training_tags": "logs/md1-r0-visual-sentinel-v5-active-training-md1-worst447-ds1000-r28-1778852094-tags-head8a75-postgreen-20260515T1422Z.json"
+    "current_active_training_describe": "logs/md1-r0-visual-sentinel-v5-active-training-md1-worst447-ds1000-r28-1778852094-describe-head2de3-postgreen-20260515T1452Z.json",
+    "current_active_training_tags": "logs/md1-r0-visual-sentinel-v5-active-training-md1-worst447-ds1000-r28-1778852094-tags-head2de3-postgreen-20260515T1452Z.json"
   },
-  "latest_exact_head_gate": "exact-head 8a75d44e48640a5f2590480b73fc28bd1d3ddfe0 green on CDK Deploy 25921717039",
-  "latest_exact_head_workflows": "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-head8a75-postgreen-20260515T1422Z.json",
+  "latest_exact_head_gate": "exact-head 2de3ba00a3e60635a12e62801a4cde7ffb7c3f1f green on CDK Deploy 25923132127",
+  "latest_exact_head_workflows": "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-head2de3-postgreen-20260515T1452Z.json",
   "latest_hard_output_cap_visual_fidelity_review_status": {
     "ai_visual_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-ai-visual-review-20260513.json",
     "attribution_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-review-r1-attribution-20260513.json",
@@ -2047,10 +2063,10 @@
     "visual_qa_manifest_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-visual-qa-manifest-20260513.json"
   },
   "latest_leaf_submit_readiness_gate_status": "R0 v4 tile_04 visual-sentinel readiness is not rerun while AWS processing is active. Exact head is green, objective gate allows, merge/review gate blocks only on missing tile_04 leaf summary, strategy dry-run submits no jobs and estimates $0.736 under $0.75.",
-  "latest_live_compute_status": "AWS not idle: source-attributed SFM-spine 3DGS md1-worst447-ds1000-r28-1778852094 remains InProgress/Training on ml.g5.2xlarge with Environment=agent73948216sfmproductionspine, Component=3DGS, CodeHead=03c0d8c130cf4994b97fd2bc8eb98a9a73757221, Validation=md1-worst447-ds1000-r28, observed TrainingTimeInSeconds=2819, MaxRuntime=28800; processing is idle. No MD1 compute launched. No-spend merge/review planning remains blocked on merge_inputs_not_materialized.",
+  "latest_live_compute_status": "AWS not idle: source-attributed SFM-spine 3DGS md1-worst447-ds1000-r28-1778852094 remains InProgress/Training on ml.g5.2xlarge with Environment=agent73948216sfmproductionspine, Component=3DGS, CodeHead=03c0d8c130cf4994b97fd2bc8eb98a9a73757221, Validation=md1-worst447-ds1000-r28, observed TrainingTimeInSeconds=4587, MaxRuntime=28800; processing is idle. No MD1 compute launched. No-spend merge/review planning remains blocked on merge_inputs_not_materialized.",
   "latest_lod_production_readiness_status": "logs/md1-r4-tile10-rollback-lod-production-readiness-20260506.json reports viewer_ready_quality_blocked; --require-promotion-ready now exits 3 and wrote logs/md1-r4-tile10-rollback-lod-production-readiness-promotion-required-20260506.json, preventing promotion callers from accepting viewer readiness alone.",
   "latest_md1_cost_reduction_status": "soft_density_failed_hypothesis_encoded_no_paid_retry_allowed",
-  "latest_md1_live_compute_status": "AWS not idle: source-attributed SFM-spine 3DGS md1-worst447-ds1000-r28-1778852094 remains InProgress/Training on ml.g5.2xlarge with Environment=agent73948216sfmproductionspine, Component=3DGS, CodeHead=03c0d8c130cf4994b97fd2bc8eb98a9a73757221, Validation=md1-worst447-ds1000-r28, observed TrainingTimeInSeconds=2819, MaxRuntime=28800; processing is idle. No MD1 compute launched. No-spend merge/review planning remains blocked on merge_inputs_not_materialized.",
+  "latest_md1_live_compute_status": "AWS not idle: source-attributed SFM-spine 3DGS md1-worst447-ds1000-r28-1778852094 remains InProgress/Training on ml.g5.2xlarge with Environment=agent73948216sfmproductionspine, Component=3DGS, CodeHead=03c0d8c130cf4994b97fd2bc8eb98a9a73757221, Validation=md1-worst447-ds1000-r28, observed TrainingTimeInSeconds=4587, MaxRuntime=28800; processing is idle. No MD1 compute launched. No-spend merge/review planning remains blocked on merge_inputs_not_materialized.",
   "latest_no_spend_bg10_merge_review_plan": {
     "aws_idle_after_failure": true,
     "failed_merge_billable_seconds": 285,
@@ -2254,7 +2270,7 @@
     "status": "Stopped",
     "stopped_at": "2026-05-13T00:37:07.837Z"
   },
-  "live_compute_status": "AWS not idle: source-attributed SFM-spine 3DGS md1-worst447-ds1000-r28-1778852094 remains InProgress/Training on ml.g5.2xlarge with Environment=agent73948216sfmproductionspine, Component=3DGS, CodeHead=03c0d8c130cf4994b97fd2bc8eb98a9a73757221, Validation=md1-worst447-ds1000-r28, observed TrainingTimeInSeconds=2819, MaxRuntime=28800; processing is idle. No MD1 compute launched. No-spend merge/review planning remains blocked on merge_inputs_not_materialized.",
+  "live_compute_status": "AWS not idle: source-attributed SFM-spine 3DGS md1-worst447-ds1000-r28-1778852094 remains InProgress/Training on ml.g5.2xlarge with Environment=agent73948216sfmproductionspine, Component=3DGS, CodeHead=03c0d8c130cf4994b97fd2bc8eb98a9a73757221, Validation=md1-worst447-ds1000-r28, observed TrainingTimeInSeconds=4587, MaxRuntime=28800; processing is idle. No MD1 compute launched. No-spend merge/review planning remains blocked on merge_inputs_not_materialized.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
     "canonical_model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
@@ -16721,7 +16737,7 @@
     "shared_assigned_fallback_pair_count": 2
   },
   "updated": "2026-05-15T13:43:00Z",
-  "updated_at": "2026-05-15T14:22:27Z",
+  "updated_at": "2026-05-15T14:52:27Z",
   "version": "1.0.0",
   "md1_r0_visual_sentinel_readiness_blocked_active_jobs_20260513": {
     "recorded_at": "2026-05-13T18:33:49Z",
@@ -18920,7 +18936,7 @@
     ],
     "next": "Wait for AWS training/processing idle, rerun v5 readiness on exact green head, then at most one bounded R0 v5 tile_04 leaf-only proof if allowed. No merge/review/full14/LOD/promotion."
   },
-  "last_event": "md1_r0_visual_sentinel_v5_training_hold_head8a75_20260515",
+  "last_event": "md1_r0_visual_sentinel_v5_training_hold_head2de3_20260515",
   "md1_r0_visual_sentinel_v5_training_hold_head08c_20260515": {
     "checked_at": "2026-05-15T07:53:38Z",
     "head": "08c018df22db9acdbde3ef96e70330f29f568b46",
@@ -19636,6 +19652,25 @@
       "live_processing": "logs/md1-r0-visual-sentinel-v5-live-processing-head8a75-postgreen-20260515T1422Z.json",
       "active_training_describe": "logs/md1-r0-visual-sentinel-v5-active-training-md1-worst447-ds1000-r28-1778852094-describe-head8a75-postgreen-20260515T1422Z.json",
       "active_training_tags": "logs/md1-r0-visual-sentinel-v5-active-training-md1-worst447-ds1000-r28-1778852094-tags-head8a75-postgreen-20260515T1422Z.json"
+    }
+  },
+  "md1_r0_visual_sentinel_v5_training_hold_head2de3_20260515": {
+    "checked_at": "2026-05-15T14:52:27Z",
+    "head": "2de3ba00a3e60635a12e62801a4cde7ffb7c3f1f",
+    "exact_head_cdk_deploy_run_id": 25923132127,
+    "exact_head_cdk_deploy_conclusion": "success",
+    "training_status": "not_idle",
+    "active_training_job": "md1-worst447-ds1000-r28-1778852094",
+    "observed_training_time_seconds": 4587,
+    "processing_status": "idle",
+    "md1_compute_launched": false,
+    "merge_review_planning_status": "complete_no_spend_blocked_on_merge_inputs_not_materialized",
+    "evidence": {
+      "exact_head_workflows": "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-head2de3-postgreen-20260515T1452Z.json",
+      "live_training": "logs/md1-r0-visual-sentinel-v5-live-training-head2de3-postgreen-20260515T1452Z.json",
+      "live_processing": "logs/md1-r0-visual-sentinel-v5-live-processing-head2de3-postgreen-20260515T1452Z.json",
+      "active_training_describe": "logs/md1-r0-visual-sentinel-v5-active-training-md1-worst447-ds1000-r28-1778852094-describe-head2de3-postgreen-20260515T1452Z.json",
+      "active_training_tags": "logs/md1-r0-visual-sentinel-v5-active-training-md1-worst447-ds1000-r28-1778852094-tags-head2de3-postgreen-20260515T1452Z.json"
     }
   }
 }
