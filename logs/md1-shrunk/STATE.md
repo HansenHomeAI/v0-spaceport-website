@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-15T17:29:47-0600
+updated: 2026-05-15T17:34:27-0600
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -534,6 +534,13 @@ skybox, compression, artifact handoff, and visual gates.
       - `logs/md1-shrunk/gh-run-watch-25946189081-20260515T232543Z.txt`
   - Pipeline status reminder:
     - 3DGS still `InProgress/Training` as of `20260515T232428Z` (see prior poll artifacts above)
+- 2026-05-15T17:34:27-0600 CI confirmation (post-state update push):
+  - branch/head:
+    - `git rev-parse HEAD` -> `e1826537669621428a706c658bd36268f4d89e6d` (`chore: confirm md1-shrunk CI green`)
+  - GitHub workflow (exact-head):
+    - `CDK Deploy` succeeded for head `e1826537...` (run `25946330775`):
+      - `logs/md1-shrunk/gh-run-view-25946330775-20260515T233035Z.json`
+      - `logs/md1-shrunk/gh-run-watch-25946330775-20260515T233035Z.txt`
 2. Gate SfM before 3DGS:
    - output files present
    - registered images close to the 1452 Meadow baseline
