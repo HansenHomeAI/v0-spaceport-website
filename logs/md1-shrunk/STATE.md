@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-15T11:47:16-0600
+updated: 2026-05-15T11:58:37-0600
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -171,6 +171,29 @@ skybox, compression, artifact handoff, and visual gates.
        - `ProcessingJobStatus=InProgress`, `FailureReason=null`
        - GPU feature extraction reached `Processed file [404/1456]`
        - S3 output: `Total Objects: 0`, `Total Size: 0 Bytes`; expected while `S3UploadMode=EndOfJob`
+   - 2026-05-15T11:52:55-0600 poll:
+     - SageMaker snapshot: `logs/md1-shrunk/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260515T1752Z.json`
+     - CloudWatch snapshot: `logs/md1-shrunk/cloudwatch-md1-shrunk-1456-sfm-1778866088-20260515T1752Z.json`
+     - S3 output listing: `logs/md1-shrunk/s3-colmap-md1-shrunk-20260515T1641Z-20260515T1752Z.txt`
+     - `ProcessingJobStatus=InProgress`, `FailureReason=null`
+     - GPU feature extraction reached `Processed file [558/1456]`
+     - S3 output still empty as expected until `EndOfJob`.
+   - 2026-05-15T11:58:37-0600 poll:
+     - SageMaker snapshot: `logs/md1-shrunk/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260515T1758Z.json`
+     - CloudWatch paged snapshot: `logs/md1-shrunk/cloudwatch-md1-shrunk-1456-sfm-1778866088-20260515T1758Z.json`
+     - CloudWatch latest tail snapshot: `logs/md1-shrunk/cloudwatch-tail-md1-shrunk-1456-sfm-1778866088-20260515T1758Z.txt`
+     - S3 output listing: `logs/md1-shrunk/s3-colmap-md1-shrunk-20260515T1641Z-20260515T1758Z.txt`
+     - `ProcessingJobStatus=InProgress`, `FailureReason=null`
+     - GPU feature extraction reached `Processed file [730/1456]`
+     - S3 output still empty as expected until `EndOfJob`.
+   - Current downstream image facts for the post-SfM stage:
+     - `aws ecr describe-images --repository-name spaceport/3dgs --image-ids imageTag=agent113647md1baselinee2e --region us-west-2 --output json > logs/md1-shrunk/ecr-3dgs-agent113647md1baselinee2e-20260515T1758Z.json`
+       - digest `sha256:6b3b2492af7a268cfc5f233e87bdce51c47492ada4c3630f723114ffa464fd0c`
+       - pushed `2026-05-14T13:37:06.875000-0600`
+     - `aws ecr describe-images --repository-name spaceport/compressor --image-ids imageTag=agent113647md1baselinee2e --region us-west-2 --output json > logs/md1-shrunk/ecr-compressor-agent113647md1baselinee2e-20260515T1758Z.json`
+       - digest `sha256:c667899d7e844083e8d50b04329edd3841bbfb26f8876c917ade78be8f27d603`
+       - pushed `2026-05-15T03:44:31.581000-0600`
+     - `aws ecr describe-images --repository-name spaceport/sfm --image-ids imageTag=agent113647md1baselinee2e --region us-west-2 --output json` returned `ImageNotFoundException`; the active SfM job is therefore intentionally using the pinned digest recorded above, not a branch SFM tag.
 2. Gate SfM before 3DGS:
    - output files present
    - registered images close to the 1452 Meadow baseline

@@ -1,0 +1,18 @@
+{
+    "imageDetails": [
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/compressor",
+            "imageDigest": "sha256:c667899d7e844083e8d50b04329edd3841bbfb26f8876c917ade78be8f27d603",
+            "imageTags": [
+                "agent113647md1baselinee2e",
+                "latest"
+            ],
+            "imageSizeInBytes": 299054710,
+            "imagePushedAt": "2026-05-15T03:44:31.581000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-05-15T03:46:27.846000-06:00"
+        }
+    ]
+}
