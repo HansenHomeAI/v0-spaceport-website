@@ -408,6 +408,35 @@ skybox, compression, artifact handoff, and visual gates.
      - Step Functions + SageMaker (no new launches; keep monitoring):
        - execution still RUNNING: `logs/md1-shrunk/stepfunctions-describe-execution-br8abc-md1shrunk1456-1778880862-20260515T220318Z.json`
        - training job still InProgress/Training: `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260515T220318Z.json`
+   - 2026-05-15T16:22:04-0600 poll (SfM gated; 3DGS still running):
+     - branch/head/status:
+       - `git rev-parse HEAD` -> `49557d76d28c5d974557f6289588e27bfe135caf`
+       - `git status --porcelain=v1` -> new untracked poll artifacts under `logs/md1-shrunk/`
+     - GitHub workflow (exact-head):
+       - `CDK Deploy` succeeded for head `49557d76...` (run `25943603730`)
+       - note: Pages workflow was not triggered by this poll-only push (no `web/trigger-dev-build.txt` bump)
+     - SfM completion proof (CloudWatch tail includes full summary + output validation):
+       - `logs/md1-shrunk/cloudwatch-processing-tail-md1-shrunk-1456-sfm-1778866088-20260515T221901Z.json`
+       - `Images registered: 1456`, `3D points: 1020913`, `Fallback reason: not_needed`
+     - SfM gate results (Montana facts):
+       - output files present in `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap`
+       - registered images: `1456` (Meadow baseline `1452`)
+       - merged components: `1` (only `sparse/0/` present)
+       - points3D: `1020913` (Montana range ~`940k–1.03M`)
+     - Step Functions snapshot (pipeline no longer RUNNING; latest executions all SUCCEEDED quickly):
+       - `logs/md1-shrunk/stepfunctions-running-SpaceportMLPipeline-staging-20260515T221804Z.json` -> `RUNNING=0`
+       - `logs/md1-shrunk/stepfunctions-list-executions-SpaceportMLPipeline-staging-20260515T221948Z.json`
+     - SageMaker 3DGS training (still InProgress/Training):
+       - describe snapshots:
+         - `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260515T221842Z.json`
+         - `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260515T222202Z.json`
+       - CloudWatch stream/tail (no new events beyond `ns-train` launch yet):
+         - stream: `md1shrunk1456-1778880862-3dgs/algo-1-1778880912`
+         - `logs/md1-shrunk/cloudwatch-training-streams-md1shrunk1456-1778880862-3dgs-20260515T221842Z.json`
+         - `logs/md1-shrunk/cloudwatch-training-tail-md1shrunk1456-1778880862-3dgs-20260515T221825Z.json`
+       - Training output prefix still empty (expected until EndOfJob export):
+         - `logs/md1-shrunk/s3-3dgs-md1shrunk1456-1778880862-20260515T221804Z.txt` -> `Total Objects: 0`, `Total Size: 0`
+         - `logs/md1-shrunk/s3-3dgs-md1shrunk1456-1778880862-20260515T222236Z.txt` -> `Total Objects: 0`, `Total Size: 0`
    - Current downstream image facts for the post-SfM stage:
      - `aws ecr describe-images --repository-name spaceport/3dgs --image-ids imageTag=agent113647md1baselinee2e --region us-west-2 --output json > logs/md1-shrunk/ecr-3dgs-agent113647md1baselinee2e-20260515T1758Z.json`
        - digest `sha256:6b3b2492af7a268cfc5f233e87bdce51c47492ada4c3630f723114ffa464fd0c`
