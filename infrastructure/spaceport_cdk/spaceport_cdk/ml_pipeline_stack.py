@@ -520,7 +520,7 @@ class MLPipelineStack(Stack):
                 },
                 "ResourceConfig": {
                     "InstanceCount": 1,
-                    "InstanceType": "ml.g5.2xlarge",  # A10G GPU with 32GB RAM - supports Vincent Woo's full methodology
+                    "InstanceType": sfn.JsonPath.string_at("$.GAUSSIAN_INSTANCE_TYPE"),
                     "VolumeSizeInGB": 100
                 },
                 "StoppingCondition": {

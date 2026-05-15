@@ -200,6 +200,9 @@ def lambda_handler(event, context):
         
         # Extract hyperparameters from request body (for tuning experiments)
         hyperparameters = body.get('hyperparameters', {})
+        gaussian_instance_type = body.get('gaussianInstanceType')
+        if gaussian_instance_type and "GAUSSIAN_INSTANCE_TYPE" not in hyperparameters:
+            hyperparameters["GAUSSIAN_INSTANCE_TYPE"] = gaussian_instance_type
         
         # Special handling for 3DGS-only tests with existing SfM data
         existing_colmap_uri = body.get('existingColmapUri')  # Optional: use existing SfM data
@@ -242,6 +245,7 @@ def lambda_handler(event, context):
             "FLOATER_PRUNING_MAX_COLOR_DISTANCE": "0.18",
             "FLOATER_PRUNING_MIN_EDGE_SUPPORT": "1",
             "TRAINING_TIMEOUT_SECONDS": "14400",
+            "GAUSSIAN_INSTANCE_TYPE": "ml.g5.2xlarge",
             
             # NerfStudio Framework Configuration
             "FRAMEWORK": "nerfstudio",
