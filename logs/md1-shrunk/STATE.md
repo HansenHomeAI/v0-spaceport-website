@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-15T13:47:36-0600
+updated: 2026-05-15T14:58:06-0600
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -277,6 +277,28 @@ skybox, compression, artifact handoff, and visual gates.
        - observed progress moved into `chunk_04_sequential_matcher` (`Processing image [153/307]`)
      - S3 output listing:
        - `logs/md1-shrunk/s3-colmap-md1-shrunk-20260515T1641Z-20260515T194607Z.txt` -> still empty as expected with `S3UploadMode=EndOfJob`
+       - note: `aws s3 ls ... --summarize` returns exit status `1` when the prefix is empty
+   - 2026-05-15T14:58:06-0600 poll:
+     - branch/head/status:
+       - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+       - `git rev-parse HEAD` -> `a87c305d7bd916dd74389de96e019cc751ec656b`
+       - `git status --porcelain=v1` -> new untracked poll artifacts under `logs/md1-shrunk/`
+     - AWS identity:
+       - `aws sts get-caller-identity` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+     - Step Functions snapshot:
+       - `logs/md1-shrunk/stepfunctions-running-SpaceportMLPipeline-staging-20260515T204603Z.json` -> `RUNNING=0`
+     - GitHub workflow (exact-head):
+       - `CDK Deploy` succeeded for head `a87c305d...` (run `25938096579`):
+         - `logs/md1-shrunk/gh-run-list-20260515T204603Z.json`
+     - SageMaker snapshots:
+       - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260515T204603Z.json` -> `ProcessingJobStatus=InProgress`, `FailureReason=null`
+       - `logs/md1-shrunk/sagemaker-list-processing-InProgress-20260515T204603Z.json` -> only `md1-shrunk-1456-sfm-1778866088`
+       - `logs/md1-shrunk/sagemaker-list-training-InProgress-20260515T204603Z.json` -> external/non-owned: `md1-tile00-ds1000-r30-1778869168`, `md1-tile01-ds1000-r30-1778869169` (left untouched)
+     - CloudWatch tail snapshots (last ~10 minutes per poll):
+       - `logs/md1-shrunk/cloudwatch-tail-md1-shrunk-1456-sfm-1778866088-20260515T204635Z.txt` -> seam model triangulation reached image `#1456` then `Extracting colors`
+       - `logs/md1-shrunk/cloudwatch-tail-md1-shrunk-1456-sfm-1778866088-20260515T205545Z.txt` -> `chunk_model_seam_05_point_triangulator_02` in `Retriangulation and Global bundle adjustment` (still running)
+     - S3 output listings:
+       - `logs/md1-shrunk/s3-colmap-md1-shrunk-20260515T1641Z-20260515T205545Z.txt` -> still empty as expected with `S3UploadMode=EndOfJob`
        - note: `aws s3 ls ... --summarize` returns exit status `1` when the prefix is empty
    - Current downstream image facts for the post-SfM stage:
      - `aws ecr describe-images --repository-name spaceport/3dgs --image-ids imageTag=agent113647md1baselinee2e --region us-west-2 --output json > logs/md1-shrunk/ecr-3dgs-agent113647md1baselinee2e-20260515T1758Z.json`
