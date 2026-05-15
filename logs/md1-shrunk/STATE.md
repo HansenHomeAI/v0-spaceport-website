@@ -368,6 +368,25 @@ skybox, compression, artifact handoff, and visual gates.
        - `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260515T214402Z.json`
      - CloudWatch training tail snapshot:
        - `logs/md1-shrunk/cloudwatch-training-tail-md1shrunk1456-1778880862-3dgs-20260515T214335Z.txt`
+   - 2026-05-15T15:47:02-0600 3DGS progress poll:
+     - Step Functions execution still RUNNING:
+       - `logs/md1-shrunk/stepfunctions-describe-execution-md1shrunk1456-1778880862-20260515T214702Z.json`
+     - SageMaker training job still InProgress (SecondaryStatus: `Training`):
+       - `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260515T214702Z.json`
+     - CloudWatch training tail snapshot shows NerfStudio `ns-train` launched (30k iters):
+       - `logs/md1-shrunk/cloudwatch-training-tail-md1shrunk1456-1778880862-3dgs-20260515T214702Z.txt`
+     - Training output prefix still empty (expected early while training is running):
+       - `logs/md1-shrunk/s3-3dgs-md1shrunk1456-1778880862-20260515T214702Z.txt` -> `Total Objects: 0`, `Total Size: 0 Bytes`
+   - 2026-05-15T15:51:01-0600 3DGS progress poll:
+     - Step Functions execution still RUNNING:
+       - `logs/md1-shrunk/stepfunctions-describe-execution-md1shrunk1456-1778880862-20260515T215101Z.json`
+     - SageMaker training job still InProgress (SecondaryStatus: `Training`):
+       - `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260515T215101Z.json`
+     - CloudWatch training tail snapshot is unchanged (no new training-step logs yet beyond `ns-train` launch):
+       - `logs/md1-shrunk/cloudwatch-training-tail-md1shrunk1456-1778880862-3dgs-20260515T215101Z.txt`
+       - stream timestamp check: `logs/md1-shrunk/cloudwatch-training-streams-md1shrunk1456-1778880862-3dgs-20260515T215126Z.json`
+     - Training output prefix still empty:
+       - `logs/md1-shrunk/s3-3dgs-md1shrunk1456-1778880862-20260515T215101Z.txt` -> `Total Objects: 0`, `Total Size: 0 Bytes`
    - Current downstream image facts for the post-SfM stage:
      - `aws ecr describe-images --repository-name spaceport/3dgs --image-ids imageTag=agent113647md1baselinee2e --region us-west-2 --output json > logs/md1-shrunk/ecr-3dgs-agent113647md1baselinee2e-20260515T1758Z.json`
        - digest `sha256:6b3b2492af7a268cfc5f233e87bdce51c47492ada4c3630f723114ffa464fd0c`
