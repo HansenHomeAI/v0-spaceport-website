@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-15T14:58:06-0600
+updated: 2026-05-15T15:19:19-0600
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -300,6 +300,33 @@ skybox, compression, artifact handoff, and visual gates.
      - S3 output listings:
        - `logs/md1-shrunk/s3-colmap-md1-shrunk-20260515T1641Z-20260515T205545Z.txt` -> still empty as expected with `S3UploadMode=EndOfJob`
        - note: `aws s3 ls ... --summarize` returns exit status `1` when the prefix is empty
+   - 2026-05-15T15:19:19-0600 SfM terminal + 3DGS launch attempt:
+     - SageMaker SfM terminal status:
+       - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260515T211530Z.json` -> `ProcessingJobStatus=Completed`, `FailureReason=null`
+       - CloudWatch completion proof:
+         - `logs/md1-shrunk/cloudwatch-tail-md1-shrunk-1456-sfm-1778866088-20260515T210614Z.txt` includes `🎉 SPACEPORT COLMAP GPU SfM COMPLETED SUCCESSFULLY!`
+     - S3 output listing (post EndOfJob upload):
+       - `logs/md1-shrunk/s3-colmap-md1-shrunk-20260515T1641Z-20260515T210920Z.txt` -> `Total Objects: 1468`, `Total Size: 9915165134`
+       - `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/` present; no other sparse components (`sparse/` only has `0/`)
+     - Montana gates from the uploaded COLMAP TXT:
+       - registered images: `1456` (stream-counted from `sparse/0/images.txt`)
+       - points3D: `1020913` (stream-counted from `sparse/0/points3D.txt`)
+       - merged component count: `1` (`sparse/` only has `0/`)
+     - Pre-launch cost gate:
+       - `logs/md1-shrunk/stepfunctions-running-SpaceportMLPipeline-staging-20260515T211617Z.json` -> `RUNNING=0`
+       - `logs/md1-shrunk/sagemaker-list-processing-InProgress-20260515T211617Z.json` -> `InProgress=0`
+       - `logs/md1-shrunk/sagemaker-list-training-InProgress-20260515T211617Z.json` -> `InProgress=2` (external/not owned)
+     - Downstream (3DGS+compression) start attempt (blocked by quota):
+       - Payload: `logs/md1-shrunk/md1-shrunk-1456-vsfm-w-light-202605152116-payload.json`
+       - Start: `logs/md1-shrunk/md1-shrunk-1456-vsfm-w-light-202605152116-start.json`
+       - Step Functions describe: `logs/md1-shrunk/stepfunctions-describe-md1-shrunk-1456-vsfm-w-light-202605152116-20260515T211724Z.json` -> execution ended immediately after a `SageMaker.ResourceLimitExceededException`
+       - Step Functions history: `logs/md1-shrunk/stepfunctions-history-md1-shrunk-1456-vsfm-w-light-202605152116-20260515T211751Z.json`
+         - failure: `ml.g5.2xlarge for training job usage` limit `2` already fully utilized
+       - Blocking training jobs (ml.g5.2xlarge, not owned by this run):
+         - `logs/md1-shrunk/sagemaker-describe-training-md1-tile02-ds1000-r30-1778869170-20260515T211852Z.json`
+         - `logs/md1-shrunk/sagemaker-describe-training-md1-tile03-ds1000-r30-1778869171-20260515T211852Z.json`
+     - Next step:
+       - Wait for one of the two external `ml.g5.2xlarge` training jobs to finish, then re-run the 3DGS step with the same COLMAP output (do not stop external jobs unless clearly orphaned).
    - Current downstream image facts for the post-SfM stage:
      - `aws ecr describe-images --repository-name spaceport/3dgs --image-ids imageTag=agent113647md1baselinee2e --region us-west-2 --output json > logs/md1-shrunk/ecr-3dgs-agent113647md1baselinee2e-20260515T1758Z.json`
        - digest `sha256:6b3b2492af7a268cfc5f233e87bdce51c47492ada4c3630f723114ffa464fd0c`

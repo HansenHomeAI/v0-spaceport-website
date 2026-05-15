@@ -1,0 +1,49 @@
+2026-05-15T20:55:22.468000Z COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=223s idle=180s
+2026-05-15T20:56:21.742000Z COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=283s idle=240s
+2026-05-15T20:57:22.500000Z COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=343s idle=300s
+2026-05-15T20:58:22.072000Z COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=403s idle=360s
+2026-05-15T20:59:22.303000Z COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=463s idle=420s
+2026-05-15T20:59:49.731000Z COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:59:49.413458 12737 incremental_pipeline.cc:774] Extracting colors
+2026-05-15T21:00:50.748000Z COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=552s idle=60s
+2026-05-15T21:01:50.763000Z COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=612s idle=120s
+2026-05-15T21:01:55.764000Z 2026-05-15 21:01:55,547 - INFO - [chunk_model_seam_05_point_triangulator_02_model_converter_chunk_model_seam_05_point_triangulator_02] colmap model_converter --input_path /tmp/colmap_sfm_bn0hhstb/chunk_model_seam_05_point_triangulator_02 --output_path /tmp/colmap_sfm_bn0hhstb/text_models/chunk_model_seam_05_point_triangulator_02/chunk_model_seam_05_point_triangulator_02 --output_type TXT
+2026-05-15T21:03:42.791000Z MEMORY_PROBE [after_python]:
+2026-05-15T21:03:42.791000Z MemTotal:       16081288 kB
+2026-05-15T21:03:42.791000Z MemFree:         6891188 kB
+2026-05-15T21:03:42.791000Z MemAvailable:   14983984 kB
+               total        used        free      shared  buff/cache   available
+2026-05-15T21:03:42.791000Z Mem:            15Gi       1.0Gi       6.6Gi       1.1Mi       8.0Gi        14Gi
+2026-05-15T21:03:42.791000Z Swap:             0B          0B          0B
+2026-05-15T21:03:42.791000Z ============================================================
+2026-05-15T21:03:42.791000Z 🔍 VALIDATING OUTPUT
+2026-05-15T21:03:42.791000Z ============================================================
+2026-05-15T21:03:42.791000Z ✅ /opt/ml/processing/output/sparse/0/cameras.txt (195 bytes)
+2026-05-15T21:03:42.791000Z ✅ /opt/ml/processing/output/sparse/0/images.txt (605145970 bytes)
+2026-05-15T21:03:42.791000Z ✅ /opt/ml/processing/output/sparse/0/points3D.txt (149267572 bytes)
+2026-05-15T21:03:42.792000Z ✅ /opt/ml/processing/output/images (1456 files)
+2026-05-15T21:03:42.792000Z ✅ /opt/ml/processing/output/database.db (2330189824 bytes)
+2026-05-15T21:03:42.792000Z ✅ /opt/ml/processing/output/sfm_metadata.json (19014 bytes)
+2026-05-15T21:03:44.792000Z ✅ COLMAP format validation passed
+2026-05-15T21:03:44.792000Z ============================================================
+2026-05-15T21:03:44.792000Z 📊 PROCESSING STATISTICS
+2026-05-15T21:03:44.792000Z ============================================================
+2026-05-15T21:03:44.792000Z 📷 Cameras registered: 1
+2026-05-15T21:03:44.792000Z 🖼️ Images registered: 1456
+2026-05-15T21:03:44.792000Z 🖼️ Images copied for 3DGS: 1456
+2026-05-15T21:03:44.792000Z 🎯 3D points: 1020913
+2026-05-15T21:03:44.792000Z ⏱️ Processing time: 12709.05 seconds
+2026-05-15T21:03:44.792000Z 🛰️ GPS priors detected: 1456
+2026-05-15T21:03:44.792000Z 🔗 Matchers: chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher
+2026-05-15T21:03:44.792000Z 🧭 Match profile: P1
+2026-05-15T21:03:44.792000Z ➡️ Sequential matcher enabled: True
+2026-05-15T21:03:44.792000Z ↩️ Fallback reason: not_needed
+2026-05-15T21:03:44.792000Z 🎯 Vocab tree candidates: 40
+2026-05-15T21:03:44.793000Z 📌 SIFT max features: 8192
+2026-05-15T21:03:44.793000Z ============================================================
+2026-05-15T21:03:44.793000Z 🎉 SPACEPORT COLMAP GPU SfM COMPLETED SUCCESSFULLY!
+2026-05-15T21:03:44.793000Z ============================================================
+2026-05-15T21:03:44.793000Z ✅ GPU-accelerated COLMAP SfM completed
+2026-05-15T21:03:44.793000Z 📁 Output files ready for 3D Gaussian Splatting training
+2026-05-15T21:03:44.793000Z 🔗 COLMAP TXT handoff maintained
+2026-05-15T21:03:44.793000Z 📅 Completed at: Fri May 15 21:03:44 UTC 2026
+2026-05-15T21:03:44.793000Z ============================================================

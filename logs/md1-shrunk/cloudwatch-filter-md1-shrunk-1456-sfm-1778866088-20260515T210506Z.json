@@ -1,0 +1,342 @@
+{
+    "events": [
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778878522468,
+            "message": "COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=223s idle=180s",
+            "ingestionTime": 1778878528039,
+            "eventId": "39670316668697500220816919143800379764683586156875284480"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778878581742,
+            "message": "COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=283s idle=240s",
+            "ingestionTime": 1778878589023,
+            "eventId": "39670317990551871118521075308914073489673337423189573632"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778878642500,
+            "message": "COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=343s idle=300s",
+            "ingestionTime": 1778878648368,
+            "eventId": "39670319345500547890844676214084933155607647397040357376"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778878702072,
+            "message": "COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=403s idle=360s",
+            "ingestionTime": 1778878707796,
+            "eventId": "39670320674000540857710958073494596045390262497997619200"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778878762303,
+            "message": "COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=463s idle=420s",
+            "ingestionTime": 1778878769294,
+            "eventId": "39670322017196724910408920585679234171950153650571837440"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778878789731,
+            "message": "COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:59:49.413458 12737 incremental_pipeline.cc:774] Extracting colors",
+            "ingestionTime": 1778878795461,
+            "eventId": "39670322628861564215706852143354820468680271354697744384"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778878850748,
+            "message": "COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=552s idle=60s",
+            "ingestionTime": 1778878856521,
+            "eventId": "39670323989586133994449884444256801836902355285741207552"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778878910763,
+            "message": "COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=612s idle=120s",
+            "ingestionTime": 1778878916582,
+            "eventId": "39670325327965357084265232356131762394571257087343525888"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778878915764,
+            "message": "2026-05-15 21:01:55,547 - INFO - [chunk_model_seam_05_point_triangulator_02_model_converter_chunk_model_seam_05_point_triangulator_02] colmap model_converter --input_path /tmp/colmap_sfm_bn0hhstb/chunk_model_seam_05_point_triangulator_02 --output_path /tmp/colmap_sfm_bn0hhstb/text_models/chunk_model_seam_05_point_triangulator_02/chunk_model_seam_05_point_triangulator_02 --output_type TXT",
+            "ingestionTime": 1778878921606,
+            "eventId": "39670325439491383822116878693025918232545684776199127040"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879022791,
+            "message": "MEMORY_PROBE [after_python]:",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327826273240185253881791938535361863936401145659392"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879022791,
+            "message": "MemTotal:       16081288 kB",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327826273240185253881791938535361863936401145659393"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879022791,
+            "message": "MemFree:         6891188 kB",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327826273240185253881791938535361863936401145659394"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879022791,
+            "message": "MemAvailable:   14983984 kB\n               total        used        free      shared  buff/cache   available",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327826273240185253881791938535361863936401145659395"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879022791,
+            "message": "Mem:            15Gi       1.0Gi       6.6Gi       1.1Mi       8.0Gi        14Gi",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327826273240185253881791938535361863936401145659396"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879022791,
+            "message": "Swap:             0B          0B          0B",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327826273240185253881791938535361863936401145659397"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879022791,
+            "message": "============================================================",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327826273240185253881791938535361863936401145659398"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879022791,
+            "message": "🔍 VALIDATING OUTPUT",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327826273240185253881791938535361863936401145659399"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879022791,
+            "message": "============================================================",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327826273240185253881791938535361863936401145659400"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879022791,
+            "message": "✅ /opt/ml/processing/output/sparse/0/cameras.txt (195 bytes)",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327826273240185253881791938535361863936401145659401"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879022791,
+            "message": "✅ /opt/ml/processing/output/sparse/0/images.txt (605145970 bytes)",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327826273240185253881791938535361863936401145659402"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879022791,
+            "message": "✅ /opt/ml/processing/output/sparse/0/points3D.txt (149267572 bytes)",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327826273240185253881791938535361863936401145659403"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879022792,
+            "message": "✅ /opt/ml/processing/output/images (1456 files)",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327826295540930452412415080071080136584762651639820"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879022792,
+            "message": "✅ /opt/ml/processing/output/database.db (2330189824 bytes)",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327826295540930452412415080071080136584762651639821"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879022792,
+            "message": "✅ /opt/ml/processing/output/sfm_metadata.json (19014 bytes)",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327826295540930452412415080071080136584762651639822"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024792,
+            "message": "✅ COLMAP format validation passed",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870897031327513658698151507625433307774612471823"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024792,
+            "message": "============================================================",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870897031327513658698151507625433307774612471824"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024792,
+            "message": "📊 PROCESSING STATISTICS",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870897031327513658698151507625433307774612471825"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024792,
+            "message": "============================================================",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870897031327513658698151507625433307774612471826"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024792,
+            "message": "📷 Cameras registered: 1",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870897031327513658698151507625433307774612471827"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024792,
+            "message": "🖼️ Images registered: 1456",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870897031327513658698151507625433307774612471828"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024792,
+            "message": "🖼️ Images copied for 3DGS: 1456",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870897031327513658698151507625433307774612471829"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024792,
+            "message": "🎯 3D points: 1020913",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870897031327513658698151507625433307774612471830"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024792,
+            "message": "⏱️ Processing time: 12709.05 seconds",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870897031327513658698151507625433307774612471831"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024792,
+            "message": "🛰️ GPS priors detected: 1456",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870897031327513658698151507625433307774612471832"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024792,
+            "message": "🔗 Matchers: chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870897031327513658698151507625433307774612471833"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024792,
+            "message": "🧭 Match profile: P1",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870897031327513658698151507625433307774612471834"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024792,
+            "message": "➡️ Sequential matcher enabled: True",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870897031327513658698151507625433307774612471835"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024792,
+            "message": "↩️ Fallback reason: not_needed",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870897031327513658698151507625433307774612471836"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024792,
+            "message": "🎯 Vocab tree candidates: 40",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870897031327513658698151507625433307774612471837"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024793,
+            "message": "📌 SIFT max features: 8192",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870919332072712189321293043343705956136118452254"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024793,
+            "message": "============================================================",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870919332072712189321293043343705956136118452255"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024793,
+            "message": "🎉 SPACEPORT COLMAP GPU SfM COMPLETED SUCCESSFULLY!",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870919332072712189321293043343705956136118452256"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024793,
+            "message": "============================================================",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870919332072712189321293043343705956136118452257"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024793,
+            "message": "✅ GPU-accelerated COLMAP SfM completed",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870919332072712189321293043343705956136118452258"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024793,
+            "message": "📁 Output files ready for 3D Gaussian Splatting training",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870919332072712189321293043343705956136118452259"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024793,
+            "message": "🔗 COLMAP TXT handoff maintained",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870919332072712189321293043343705956136118452260"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024793,
+            "message": "📅 Completed at: Fri May 15 21:03:44 UTC 2026",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870919332072712189321293043343705956136118452261"
+        },
+        {
+            "logStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129",
+            "timestamp": 1778879024793,
+            "message": "============================================================",
+            "ingestionTime": 1778879028949,
+            "eventId": "39670327870919332072712189321293043343705956136118452262"
+        }
+    ],
+    "searchedLogStreams": [],
+    "nextToken": "Bxkq6kVGFtq2y_MoigeqscPOdhXVbhiVtLoAmXb5jCrG6ojUk9-jbjKBRlARNS3leYLoyD4bwUgDCm5TCjpOExsfbio7bVM2BERAHBSKcw6NJf-_UNd35kJRIwJy6D4jEeAj552Z7EvBp8W8nYCrGlhTB51nw8todo7GRdJ4A2BIWOhqbvJ_FRDeghyp9ZmzYdKMV3SnqT8sMcBDY3ZA7AjL7UIIxJZW-N3gDRNbPRA_VFsL1ZktXrO08pWECZZmjaEMLkguIKHyC6PSlhc0qp-_anN2G70WK6Eg5b-Bmoriv1u-ppM4SptQOnlw77_4wUCFGozk4IACyWE2RETYbQLtmZXEycEGjiwbUmUu57k"
+}

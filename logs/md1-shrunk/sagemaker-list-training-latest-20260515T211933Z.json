@@ -1,0 +1,93 @@
+{
+    "TrainingJobSummaries": [
+        {
+            "TrainingJobName": "md1-tile03-ds1000-r30-1778869171",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-tile03-ds1000-r30-1778869171",
+            "CreationTime": "2026-05-15T14:54:00.013000-06:00",
+            "LastModifiedTime": "2026-05-15T14:58:53.878000-06:00",
+            "TrainingJobStatus": "InProgress",
+            "SecondaryStatus": "Training"
+        },
+        {
+            "TrainingJobName": "md1-tile02-ds1000-r30-1778869170",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-tile02-ds1000-r30-1778869170",
+            "CreationTime": "2026-05-15T14:53:58.711000-06:00",
+            "LastModifiedTime": "2026-05-15T14:59:06.072000-06:00",
+            "TrainingJobStatus": "InProgress",
+            "SecondaryStatus": "Training"
+        },
+        {
+            "TrainingJobName": "md1-tile01-ds1000-r30-1778869169",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-tile01-ds1000-r30-1778869169",
+            "CreationTime": "2026-05-15T12:47:09.232000-06:00",
+            "TrainingEndTime": "2026-05-15T14:47:09.468000-06:00",
+            "LastModifiedTime": "2026-05-15T14:47:09.753000-06:00",
+            "TrainingJobStatus": "Completed",
+            "SecondaryStatus": "Completed"
+        },
+        {
+            "TrainingJobName": "md1-tile00-ds1000-r30-1778869168",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-tile00-ds1000-r30-1778869168",
+            "CreationTime": "2026-05-15T12:47:08.100000-06:00",
+            "TrainingEndTime": "2026-05-15T14:48:00.064000-06:00",
+            "LastModifiedTime": "2026-05-15T14:48:00.252000-06:00",
+            "TrainingJobStatus": "Completed",
+            "SecondaryStatus": "Completed"
+        },
+        {
+            "TrainingJobName": "md1-worst447-ds1000-r29-1778860601",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-worst447-ds1000-r29-1778860601",
+            "CreationTime": "2026-05-15T09:57:06.210000-06:00",
+            "TrainingEndTime": "2026-05-15T11:58:08.045000-06:00",
+            "LastModifiedTime": "2026-05-15T11:58:08.221000-06:00",
+            "TrainingJobStatus": "Completed",
+            "SecondaryStatus": "Completed"
+        },
+        {
+            "TrainingJobName": "md1-worst447-ds1000-r28-1778852094",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-worst447-ds1000-r28-1778852094",
+            "CreationTime": "2026-05-15T07:35:49.745000-06:00",
+            "TrainingEndTime": "2026-05-15T09:12:16.960000-06:00",
+            "LastModifiedTime": "2026-05-15T09:12:17.348000-06:00",
+            "TrainingJobStatus": "Completed",
+            "SecondaryStatus": "Completed"
+        },
+        {
+            "TrainingJobName": "md1-worst447-ds1500-r27-1778846018",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-worst447-ds1500-r27-1778846018",
+            "CreationTime": "2026-05-15T05:53:39.238000-06:00",
+            "TrainingEndTime": "2026-05-15T07:17:50.112000-06:00",
+            "LastModifiedTime": "2026-05-15T07:17:50.263000-06:00",
+            "TrainingJobStatus": "Completed",
+            "SecondaryStatus": "Completed"
+        },
+        {
+            "TrainingJobName": "md1-worst447-ds1000-r26-1778840348",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-worst447-ds1000-r26-1778840348",
+            "CreationTime": "2026-05-15T04:19:09.445000-06:00",
+            "TrainingEndTime": "2026-05-15T05:30:22.544000-06:00",
+            "LastModifiedTime": "2026-05-15T05:30:22.912000-06:00",
+            "TrainingJobStatus": "Completed",
+            "SecondaryStatus": "Completed"
+        },
+        {
+            "TrainingJobName": "md1-r0vissent-v5relax-1778837840-tile-04",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-r0vissent-v5relax-1778837840-tile-04",
+            "CreationTime": "2026-05-15T03:38:00.767000-06:00",
+            "TrainingEndTime": "2026-05-15T04:17:14.442000-06:00",
+            "LastModifiedTime": "2026-05-15T04:17:14.882000-06:00",
+            "TrainingJobStatus": "Completed",
+            "SecondaryStatus": "Completed"
+        },
+        {
+            "TrainingJobName": "md1-e2e-vsfm-splatfacto-202605150539-3dgs",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-e2e-vsfm-splatfacto-202605150539-3dgs",
+            "CreationTime": "2026-05-14T23:39:08.621000-06:00",
+            "TrainingEndTime": "2026-05-15T02:13:20.128000-06:00",
+            "LastModifiedTime": "2026-05-15T02:13:20.499000-06:00",
+            "TrainingJobStatus": "Completed",
+            "SecondaryStatus": "Completed"
+        }
+    ],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTR5ep5w+r5+k7hcMovkCTOZ2liejOQ5k6iw4rvkGPwZ62M/PMKDXIAMqCO+LmORlafvKj9SSJn8Z2YnBmuqAP23aPXiUgiZW69Q7GRert6QOSRk1oetgPLRnpfPmLiw57QOlp9eMOKr34V6rj9PgzPWHj2DrJpNqSV2ahdkNwy7rCjFcwCwBFAVD+LEBhq7gI3pMHLL0xn/o4BZC195s3IMFCAcgsBXS87fTDkU/orWAOtl8RCLgPQNaclxkg1jMPr+m9BvyI6+a2r4lGsbOPlztiXYTapa/hgFEjj1iRfnayyFiZd9pFAS1OqSm2ZYDyMWiNo7vlGfFz2Qv8xoolsXvmspP++hQhVm5I4bfG+qKDlmhaThX3weVSjF3Ij/GTKcVYlEBKhKAF+JAoyLan8m0xZz2NGSNGenyWDSHrpYkUvw/GKrimZC/dEGCyPm9C4012wdRwwSwrT2ycfzo2t7MSXYXVqeEt"
+}
