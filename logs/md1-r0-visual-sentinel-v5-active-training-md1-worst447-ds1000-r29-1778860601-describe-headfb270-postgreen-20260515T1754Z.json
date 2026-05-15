@@ -1,0 +1,113 @@
+{
+    "TrainingJobName": "md1-worst447-ds1000-r29-1778860601",
+    "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-worst447-ds1000-r29-1778860601",
+    "TrainingJobStatus": "InProgress",
+    "SecondaryStatus": "Training",
+    "AlgorithmSpecification": {
+        "TrainingImage": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent73948216sfmproductionspine",
+        "TrainingInputMode": "File",
+        "EnableSageMakerMetricsTimeSeries": false
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "InputDataConfig": [
+        {
+            "ChannelName": "training",
+            "DataSource": {
+                "S3DataSource": {
+                    "S3DataType": "S3Prefix",
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-full-3dgs-r26-20260515T1003Z/worst447-ds1000-r26/colmap",
+                    "S3DataDistributionType": "FullyReplicated"
+                }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None"
+        }
+    ],
+    "OutputDataConfig": {
+        "KmsKeyId": "",
+        "S3OutputPath": "s3://spaceport-ml-processing-staging/manual-validations/md1-full-3dgs-r29-20260515T1556Z/3dgs-worst447-ds1000-r29-quality-20260515T1556Z/",
+        "CompressionType": "GZIP"
+    },
+    "ResourceConfig": {
+        "InstanceType": "ml.g5.2xlarge",
+        "InstanceCount": 1,
+        "VolumeSizeInGB": 80
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 43200
+    },
+    "CreationTime": "2026-05-15T09:57:06.210000-06:00",
+    "TrainingStartTime": "2026-05-15T09:58:05.508000-06:00",
+    "LastModifiedTime": "2026-05-15T10:02:02.855000-06:00",
+    "SecondaryStatusTransitions": [
+        {
+            "Status": "Starting",
+            "StartTime": "2026-05-15T09:57:06.210000-06:00",
+            "EndTime": "2026-05-15T09:57:06.626000-06:00",
+            "StatusMessage": "Starting the training job"
+        },
+        {
+            "Status": "Pending",
+            "StartTime": "2026-05-15T09:57:06.626000-06:00",
+            "EndTime": "2026-05-15T09:58:05.508000-06:00",
+            "StatusMessage": "Preparing the instances for training"
+        },
+        {
+            "Status": "Downloading",
+            "StartTime": "2026-05-15T09:58:05.508000-06:00",
+            "EndTime": "2026-05-15T10:02:02.813000-06:00",
+            "StatusMessage": "Downloading the training image"
+        },
+        {
+            "Status": "Training",
+            "StartTime": "2026-05-15T10:02:02.813000-06:00",
+            "StatusMessage": "Training image download completed. Training in progress."
+        }
+    ],
+    "EnableNetworkIsolation": false,
+    "EnableInterContainerTrafficEncryption": false,
+    "EnableManagedSpotTraining": false,
+    "TrainingTimeInSeconds": 7048,
+    "ProfilingStatus": "Disabled",
+    "Environment": {
+        "AWS_DEFAULT_REGION": "us-west-2",
+        "BILATERAL_PROCESSING": "true",
+        "CODE_HEAD": "03c0d8c130cf4994b97fd2bc8eb98a9a73757221",
+        "COMMERCIAL_LICENSE": "true",
+        "CUDA_HOME": "/usr/local/cuda",
+        "ECR_DIGEST": "sha256:3c566211049aeed9401549075ec2dfe7e266f1a0b66360df580326f348e2ec0c",
+        "FRAMEWORK": "nerfstudio",
+        "LD_LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+        "LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+        "LICENSE": "apache_2_0",
+        "LOG_INTERVAL": "10",
+        "MAX_ITERATIONS": "49152",
+        "MAX_NUM_GAUSSIANS": "500000",
+        "MEMORY_OPTIMIZATION": "true",
+        "METHODOLOGY": "vincent_woo_sutro_tower",
+        "MODEL_VARIANT": "splatfacto",
+        "NS_CACHE_IMAGES": "cpu",
+        "NS_CULL_ALPHA_THRESH": "0.05",
+        "NS_DENSIFY_GRAD_THRESH": "0.0005",
+        "NS_EVAL_TIMEOUT_SEC": "1800",
+        "NS_MAX_GAUSS_RATIO": "16",
+        "NS_MAX_THREAD_WORKERS": "8",
+        "NS_NUM_DOWNSCALES": "1",
+        "NS_STOP_SPLIT_AT": "49152",
+        "NS_TRAIN_SPLIT_FRACTION": "0.8",
+        "NS_TRAIN_TIMEOUT_SEC": "28800",
+        "NS_USE_SCALE_REGULARIZATION": "true",
+        "OUTPUT_FORMAT": "ply",
+        "PYTHONUNBUFFERED": "1",
+        "QUALITY_EVAL_REQUIRED": "true",
+        "RELAUNCH_REASON": "bounded-r29-worst-region-447-ds1000-after-r28-missed-psnr-by-0.0425; one extra 16k iteration block tests if monotonic iteration-depth gain closes the only deterministic gate before tiled/full-md1 spend",
+        "RUN_HELDOUT_EVAL": "true",
+        "SAGEMAKER_PROGRAM": "train.py",
+        "SH_DEGREE": "3",
+        "SOGS_COMPATIBLE": "true",
+        "TARGET_PSNR": "22.0",
+        "TORCH_CUDA_ARCH_LIST": "8.0 8.6",
+        "TRAINING_IMAGE_SOURCE_HEAD": "03c0d8c130cf4994b97fd2bc8eb98a9a73757221",
+        "VALIDATION_RUN": "md1-worst447-ds1000-r29-iteration-depth-canary"
+    }
+}
