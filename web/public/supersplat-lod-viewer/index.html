@@ -31,7 +31,15 @@
                 }
             };
 
+            const isSkyboxDisabled = (value) => {
+                const normalized = (value ?? '').trim().toLowerCase();
+                return normalized === '0' || normalized === 'off' || normalized === 'none' || normalized === 'null';
+            };
+
             const resolveBundleSkyboxUrl = async (contentUrl, explicitSkyboxUrl) => {
+                if (isSkyboxDisabled(explicitSkyboxUrl)) {
+                    return null;
+                }
                 if (explicitSkyboxUrl) {
                     return explicitSkyboxUrl;
                 }

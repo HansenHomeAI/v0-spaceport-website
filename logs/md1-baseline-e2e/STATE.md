@@ -1,6 +1,6 @@
 # MD1 Baseline E2E State
 
-updated: 2026-05-14T23:14:33-0600
+updated: 2026-05-14T23:27:44-0600
 branch: agent-113647-md1-baseline-e2e
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -1137,3 +1137,29 @@ Produce a development-based MD1 baseline with:
   - End-to-end 3DGS and compression handoffs are functioning, but the current MD1 foreground bundle is not accepted visually.
   - Do not relaunch full SfM.
   - Next step is to commit/push the skybox/no-sky gate fix, wait for exact-head workflows/container build, then run the smallest downstream retry that can produce a better model from the validated SfM reference. The likely next paid retry should be 3DGS-only with standard NerfStudio `splatfacto` from `s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap/`, because both `splatfacto-w-light` variants have now completed but failed visual acceptance.
+
+### 2026-05-14T23:27:44-0600
+
+- Commit/push:
+  - Committed/pushed `2ebbe806381adf1965a6c94c34605b8f41438483` (`fix: gate md1 viewer without default skybox`).
+  - The push initially proved a second viewer issue: the parent `/md1-viewer?skybox=none` suppressed its own resolved skybox param, but the embedded `supersplat-lod-viewer` still loaded `spaceport_bundle.json` and restored the bundle skybox.
+  - Patched `web/public/supersplat-lod-viewer/index.html` so `skybox=none|off|0|null` disables both explicit and bundle-manifest skyboxes.
+  - Patched `Md1ProductionViewer` to pass `skybox=none` through to the iframe when the route has an explicit no-skybox request or the resolved bundle has `skyboxUrl=null`.
+- Exact-head workflow gate for `2ebbe806`:
+  - `CDK Deploy` run `25901641141` -> `success`.
+  - `Trigger ML Container Build` run `25901641155` -> `success`.
+  - `Deploy Next.js to Cloudflare Pages` run `25901641139` -> `success`.
+  - CodeBuild `spaceport-ml-containers:7ee179b6-25a6-4614-8694-e3847dadf172` -> `SUCCEEDED`; source `2ebbe806381adf1965a6c94c34605b8f41438483`; `CONTAINERS_TO_BUILD=compressor`; `BRANCH_SUFFIX=agent113647md1baselinee2e`.
+  - Branch compressor image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor:agent113647md1baselinee2e` -> digest `sha256:dc4f599270807420f42aa859b9e93b9cac539c20acd5f73a47ca346cc3987d41`, pushed `2026-05-14T23:20:50-0600`.
+  - Branch 3DGS image remains the proven `splatfacto-w-light` image digest `sha256:6b3b2492af7a268cfc5f233e87bdce51c47492ada4c3630f723114ffa464fd0c`.
+- No-spend verification after the iframe no-sky patch:
+  - `npm run build` in `web/` -> passed with pre-existing lint warnings only.
+  - `python3 -m unittest tests.unit.test_sogs_supersplat_bundle` -> `OK`.
+  - `python3 -m py_compile infrastructure/containers/compressor/compress.py` -> passed.
+  - `git diff --check` -> passed.
+  - Local no-sky gate against the alpha-filtered foreground bundle now fails for the intended reason, proving the skybox suppression path works and the model itself is not visually acceptable:
+    - `MD1_VIEWER_URL=http://127.0.0.1:3031 MD1_LOD_URL=http://127.0.0.1:8034/supersplat_bundle/lod-meta.json MD1_RUN_NO_SKY=1 node scripts/test-md1-production-viewer.mjs`
+    - Failure log: `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-filter-alpha002-nosky-smoke-20260515T0529Z.log`.
+- Current next step:
+  - Commit/push the iframe no-sky follow-up patch and rerun exact-head workflows.
+  - Then launch the next smallest paid retry from the validated SfM reference, not full SfM. Use 3DGS-only with `MODEL_VARIANT=splatfacto` unless a no-spend preflight finds a concrete blocker in the current branch image/export path.

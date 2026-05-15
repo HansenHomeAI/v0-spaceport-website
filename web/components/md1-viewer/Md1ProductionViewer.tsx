@@ -161,7 +161,9 @@ export default function Md1ProductionViewer() {
       noui: "1",
     });
     params.set("quality", isMobileViewport ? "lq" : "hq");
-    if (resolvedBundle?.skyboxUrl?.trim()) {
+    if (explicitSkybox === null || resolvedBundle?.skyboxUrl === null) {
+      params.set("skybox", "none");
+    } else if (resolvedBundle?.skyboxUrl?.trim()) {
       params.set("skybox", resolvedBundle.skyboxUrl.trim());
     }
     if (configPayload.splatBudget != null) {
@@ -184,7 +186,7 @@ export default function Md1ProductionViewer() {
     params.set("colorUpdateDistanceLodScale", String(configPayload.colorUpdateDistanceLodScale));
     params.set("colorUpdateAngleLodScale", String(configPayload.colorUpdateAngleLodScale));
     return `${VIEWER_BASE}?${params.toString()}`;
-  }, [activeContentUrl, isMobileViewport, resolvedBundle, streamingOverrides]);
+  }, [activeContentUrl, explicitSkybox, isMobileViewport, resolvedBundle, streamingOverrides]);
 
   const sfmSrc = useMemo(() => {
     const params = new URLSearchParams({ url: MD1_V18_SFM_URL });
