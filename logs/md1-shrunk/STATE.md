@@ -423,9 +423,14 @@ skybox, compression, artifact handoff, and visual gates.
        - registered images: `1456` (Meadow baseline `1452`)
        - merged components: `1` (only `sparse/0/` present)
        - points3D: `1020913` (Montana range ~`940k–1.03M`)
-     - Step Functions snapshot (pipeline no longer RUNNING; latest executions all SUCCEEDED quickly):
-       - `logs/md1-shrunk/stepfunctions-running-SpaceportMLPipeline-staging-20260515T221804Z.json` -> `RUNNING=0`
-       - `logs/md1-shrunk/stepfunctions-list-executions-SpaceportMLPipeline-staging-20260515T221948Z.json`
+     - Step Functions snapshot:
+       - staging pipeline (`SpaceportMLPipeline-staging`) currently not RUNNING:
+         - `logs/md1-shrunk/stepfunctions-running-SpaceportMLPipeline-staging-20260515T221804Z.json` -> `RUNNING=0`
+         - `logs/md1-shrunk/stepfunctions-list-executions-SpaceportMLPipeline-staging-20260515T221923Z.json` -> latest page shows recent `SUCCEEDED` executions
+       - branch preview pipeline (`SpaceportMLPipeline-br-8abcbd5662`) still RUNNING:
+         - `logs/md1-shrunk/stepfunctions-list-state-machines-20260515T222817Z.json`
+         - `logs/md1-shrunk/stepfunctions-running-SpaceportMLPipeline-br-8abcbd5662-20260515T222825Z.json` -> `RUNNING=1`
+         - `logs/md1-shrunk/stepfunctions-describe-execution-br-8abcbd5662-md1shrunk1456-1778880862-20260515T222835Z.json`
      - SageMaker 3DGS training (still InProgress/Training):
        - describe snapshots:
          - `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260515T221842Z.json`
