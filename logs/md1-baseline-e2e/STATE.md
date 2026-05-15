@@ -1483,6 +1483,63 @@ Produce a development-based MD1 baseline with:
 - Next step:
   - Commit and push the compressor timeout fix, rely on the automatic ML container build from the push, watch exact-head workflows/build evidence, then launch the smallest retry: compression-only from `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-splatfacto-202605150539/` to a fresh compressed prefix.
 
+### 2026-05-15T03:48:00-0600
+
+- Commit/push after patch:
+  - Commit: `5682b21363c305626706e4b40edcff49a7bd1fb2` (`fix: extend md1 compression transform timeout`).
+  - Push: `git push origin agent-113647-md1-baseline-e2e` -> `eb166a12..5682b213`.
+- Exact-head workflow/build verification:
+  - `gh run watch 25911077932 --exit-status` -> `CDK Deploy` succeeded at head `5682b21363c305626706e4b40edcff49a7bd1fb2`.
+  - `gh run watch 25911077935 --exit-status` -> `Trigger ML Container Build` succeeded at head `5682b21363c305626706e4b40edcff49a7bd1fb2`.
+  - `aws codebuild batch-get-builds --ids spaceport-ml-containers:d4691f87-0684-47fe-a235-3fa7c5c6e98d --region us-west-2`:
+    - Build number `698`.
+    - `sourceVersion=5682b21363c305626706e4b40edcff49a7bd1fb2`.
+    - `buildStatus=SUCCEEDED`.
+    - Build phase `BUILD` duration `189s`.
+  - `aws ecr describe-images --repository-name spaceport/compressor --image-ids imageTag=agent113647md1baselinee2e --region us-west-2`:
+    - Digest `sha256:c667899d7e844083e8d50b04329edd3841bbfb26f8876c917ade78be8f27d603`.
+    - Pushed `2026-05-15T03:44:31.581000-0600`.
+    - Tags: `agent113647md1baselinee2e`, `latest`.
+- Pre-retry cost gate:
+  - `aws stepfunctions list-executions ... --status-filter RUNNING` -> none.
+  - `aws sagemaker list-processing-jobs --status-equals InProgress` -> none.
+  - `aws sagemaker list-training-jobs --status-equals InProgress` -> one external job `md1-r0vissent-v5relax-1778837840-tile-04`; left untouched because it is not owned by this automation.
+- Smallest-stage retry launched:
+  - Job name/id: `md1-e2e-vsfm-splatfacto-cfix-202605150946`.
+  - Pipeline step: `compression`.
+  - Step Functions execution:
+    - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-cfix-202605150946`.
+  - Processing job:
+    - `md1-e2e-vsfm-splatfacto-cfix-202605150946-compression`.
+  - Input:
+    - `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-splatfacto-202605150539/`.
+  - Output:
+    - `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-splatfacto-cfix-202605150946/`.
+  - Image:
+    - `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor:agent113647md1baselinee2e`.
+  - Payload/start proof:
+    - `logs/md1-baseline-e2e/md1-e2e-vsfm-splatfacto-cfix-202605150946-payload.json`.
+    - `logs/md1-baseline-e2e/md1-e2e-vsfm-splatfacto-cfix-202605150946-start.json`.
+- Current retry status:
+  - Step Functions `describe-execution`:
+    - `status=RUNNING`.
+    - Snapshot `logs/md1-baseline-e2e/stepfunctions-describe-md1-e2e-vsfm-splatfacto-cfix-202605150946-20260515T0946Z.json`.
+  - SageMaker processing `describe-processing-job`:
+    - `ProcessingJobStatus=InProgress`.
+    - Snapshot `logs/md1-baseline-e2e/sagemaker-describe-md1-e2e-vsfm-splatfacto-cfix-202605150946-compression-20260515T0946Z.json`.
+    - Poll snapshot `logs/md1-baseline-e2e/sagemaker-describe-md1-e2e-vsfm-splatfacto-cfix-202605150946-compression-20260515T0947Z.json`.
+  - Log stream:
+    - `/aws/sagemaker/ProcessingJobs` / `md1-e2e-vsfm-splatfacto-cfix-202605150946-compression/algo-1-1778838426`.
+    - Log stream snapshot `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-cfix-202605150946-log-streams-20260515T0947Z.json`.
+    - CloudWatch log snapshot `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-cfix-202605150946-cloudwatch-20260515T0948Z.json`.
+    - Text log `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-cfix-202605150946-cloudwatch-20260515T0948Z.txt`.
+  - Critical log proof that the new image is active:
+    - `Using splat-transform splat-transform v1.10.2 (device=cpu, lod_decimation=30%,10%,3%, chunk_count=1024K, chunk_extent=32, transform_timeout=14400s, lod_transform_timeout=14400s)`.
+    - Selected PLY source `/opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply`.
+    - Running `splat-transform -w -g cpu .../splat.ply .../generated_bundle/meta.json`.
+- Next step:
+  - Continue monitoring this compression-only retry. S3 output is expected to remain empty until EndOfJob upload. If it completes, validate the SuperSplat bundle, gaussian count/file size, and deployed no-sky viewer. If it fails, capture exact CloudWatch logs and patch only that proven failure.
+
 ### 2026-05-15T03:03:20-0600
 
 - Verification before action:
