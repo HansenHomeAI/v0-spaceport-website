@@ -1,0 +1,8 @@
+2026-04-01 07:07:58  196 Bytes manual-validations/horsetailfull-p1f9216-1774981801/colmap/sparse/0/cameras.txt
+2026-04-01 07:07:58  218.5 KiB manual-validations/horsetailfull-p1f9216-1774981801/colmap/sparse/0/frames.txt
+2026-04-01 07:07:58  611.7 MiB manual-validations/horsetailfull-p1f9216-1774981801/colmap/sparse/0/images.txt
+2026-04-01 07:07:58  180.5 MiB manual-validations/horsetailfull-p1f9216-1774981801/colmap/sparse/0/points3D.txt
+2026-04-01 07:07:58  218 Bytes manual-validations/horsetailfull-p1f9216-1774981801/colmap/sparse/0/rigs.txt
+
+Total Objects: 5
+   Total Size: 792.5 MiB

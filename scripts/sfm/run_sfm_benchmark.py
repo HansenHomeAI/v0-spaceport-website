@@ -145,6 +145,11 @@ def parse_args() -> argparse.Namespace:
         default="",
         help="Optional local path for the compact benchmark summary JSON.",
     )
+    parser.add_argument(
+        "--payload-json-output",
+        default="",
+        help="Optional local path for the SageMaker create-processing-job payload.",
+    )
     parser.add_argument("--wait", action="store_true", help="Wait for job completion and print metadata")
     parser.add_argument("--poll-seconds", type=int, default=60)
     return parser.parse_args()
@@ -255,6 +260,10 @@ def main() -> int:
         json.dump(payload, handle, indent=2)
         handle.flush()
         payload_path = Path(handle.name)
+    if args.payload_json_output:
+        output_path = Path(args.payload_json_output).expanduser().resolve()
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
     try:
         run_command(

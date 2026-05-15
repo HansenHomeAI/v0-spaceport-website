@@ -1,0 +1,8 @@
+2026-04-10 08:43:44  195 Bytes manual-validations/meadowfullpriorfixv2-nospace-20260410-084326/colmap/sparse/0/cameras.txt
+2026-04-10 08:43:45  231.6 KiB manual-validations/meadowfullpriorfixv2-nospace-20260410-084326/colmap/sparse/0/frames.txt
+2026-04-10 08:43:59  542.9 MiB manual-validations/meadowfullpriorfixv2-nospace-20260410-084326/colmap/sparse/0/images.txt
+2026-04-10 08:43:46  160.6 MiB manual-validations/meadowfullpriorfixv2-nospace-20260410-084326/colmap/sparse/0/points3D.txt
+2026-04-10 08:43:48  218 Bytes manual-validations/meadowfullpriorfixv2-nospace-20260410-084326/colmap/sparse/0/rigs.txt
+
+Total Objects: 5
+   Total Size: 703.8 MiB

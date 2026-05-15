@@ -1,0 +1,8 @@
+2026-04-03 18:42:17  195 Bytes manual-validations/brassfullchunka-1775237679/colmap/sparse/0/cameras.txt
+2026-04-03 18:42:17  205.5 KiB manual-validations/brassfullchunka-1775237679/colmap/sparse/0/frames.txt
+2026-04-03 18:42:17  510.8 MiB manual-validations/brassfullchunka-1775237679/colmap/sparse/0/images.txt
+2026-04-03 18:42:17  166.2 MiB manual-validations/brassfullchunka-1775237679/colmap/sparse/0/points3D.txt
+2026-04-03 18:42:17  218 Bytes manual-validations/brassfullchunka-1775237679/colmap/sparse/0/rigs.txt
+
+Total Objects: 5
+   Total Size: 677.2 MiB

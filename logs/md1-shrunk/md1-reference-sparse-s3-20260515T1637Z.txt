@@ -1,0 +1,8 @@
+2026-04-16 08:58:34  195 Bytes manual-validations/md1p24e752k-1776314974/colmap/sparse/0/cameras.txt
+2026-04-16 08:58:35  344.1 KiB manual-validations/md1p24e752k-1776314974/colmap/sparse/0/frames.txt
+2026-04-16 08:58:35  857.5 MiB manual-validations/md1p24e752k-1776314974/colmap/sparse/0/images.txt
+2026-04-16 08:58:35  192.5 MiB manual-validations/md1p24e752k-1776314974/colmap/sparse/0/points3D.txt
+2026-04-16 08:58:35  218 Bytes manual-validations/md1p24e752k-1776314974/colmap/sparse/0/rigs.txt
+
+Total Objects: 5
+   Total Size: 1.0 GiB

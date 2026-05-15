@@ -1,0 +1,32 @@
+{
+  "created_at": "2026-05-15T16:42:57.513598+00:00",
+  "dataset": "MD1-Shrunk",
+  "selection_strategy": "densest_colmap_camera_center_neighborhood_xy",
+  "source_colmap_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap",
+  "source_images_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap/images",
+  "output_zip_uri": "s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip",
+  "target_count": 1456,
+  "source_registered_images": 2157,
+  "selected_count": 1456,
+  "seed": {
+    "image_id": 1185,
+    "name": "DJI_02567.JPG",
+    "center": [
+      6.789992853975181,
+      5.345396823974604,
+      -13.151607967309783
+    ]
+  },
+  "xy_radius_max": 10.832138295969603,
+  "xy_radius_mean": 7.031740641316656,
+  "bounds": {
+    "min_x": -3.976592408852704,
+    "max_x": 17.593804954883844,
+    "min_y": -2.086624906330513,
+    "max_y": 10.333575066391674,
+    "min_z": -22.56907453764285,
+    "max_z": 9.314872436257126
+  },
+  "first_selected_name": "DJI_01000.JPG",
+  "last_selected_name": "DJI_0999.JPG"
+}
