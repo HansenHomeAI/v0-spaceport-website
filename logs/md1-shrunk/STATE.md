@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-15T17:19:19-0600
+updated: 2026-05-15T17:24:55-0600
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -509,6 +509,22 @@ skybox, compression, artifact handoff, and visual gates.
     - get-log-events tail: `logs/md1-shrunk/cloudwatch-training-getlogevents-md1shrunk1456-1778880862-3dgs-20260515T231558Z.json`
   - S3 training output prefix (still empty; expected until export):
     - `logs/md1-shrunk/s3-3dgs-md1shrunk1456-1778880862-20260515T231633Z.txt` -> `Total Objects: 0`, `Total Size: 0`
+- 2026-05-15T17:24:55-0600 commit/push + CI (workflows green; 3DGS still running):
+  - branch/head:
+    - `git rev-parse HEAD` -> `78e74cd26391cbc8e656960c1df0067f295fbe5c` (`chore: poll md1-shrunk 3dgs state`)
+  - GitHub workflow (exact-head):
+    - `CDK Deploy` succeeded for head `78e74cd2...` (run `25946022661`):
+      - `logs/md1-shrunk/gh-run-view-25946022661-20260515T232023Z.json`
+      - `logs/md1-shrunk/gh-run-watch-25946022661-20260515T232023Z.txt`
+  - Step Functions + SageMaker (no new launches; keep monitoring):
+    - execution still RUNNING: `logs/md1-shrunk/stepfunctions-describe-execution-br8abc-md1shrunk1456-1778880862-20260515T232428Z.json`
+    - latest history tail (reverse-order): `logs/md1-shrunk/stepfunctions-history-reverse-tail-br8abc-md1shrunk1456-1778880862-20260515T232428Z.json`
+    - training job still InProgress/Training: `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260515T232428Z.json`
+    - CloudWatch stream still shows no new events since `2026-05-15T21:42:31Z`:
+      - `logs/md1-shrunk/cloudwatch-training-streams-md1shrunk1456-1778880862-3dgs-20260515T232428Z.json`
+      - `logs/md1-shrunk/cloudwatch-training-getlogevents-md1shrunk1456-1778880862-3dgs-20260515T232428Z.json`
+    - Training output prefix still empty:
+      - `logs/md1-shrunk/s3-3dgs-md1shrunk1456-1778880862-20260515T232428Z.txt` -> `Total Objects: 0`, `Total Size: 0`
 2. Gate SfM before 3DGS:
    - output files present
    - registered images close to the 1452 Meadow baseline
