@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-15T12:24:56-0600
+updated: 2026-05-15T12:43:40-0600
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -189,14 +189,14 @@ skybox, compression, artifact handoff, and visual gates.
    - 2026-05-15T12:24:56-0600 resume verification:
      - branch/head/status:
        - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
-       - `git rev-parse HEAD` -> `0c6dc656bac0f767f307211022198739853f3ba8`
+       - `git rev-parse HEAD` -> `ba28880d7bce8108de7134b9e6e70d5ade016678`
        - `git status --porcelain=v1` -> clean
      - AWS identity:
        - `aws sts get-caller-identity` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
      - Step Functions state:
        - `aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --max-results 10 --region us-west-2` -> no InProgress executions
      - GitHub workflow (exact-head):
-       - `gh run list --branch agent-113647-md1-baseline-e2e --limit 20 --json databaseId,workflowName,headSha,status,conclusion,createdAt,updatedAt,url` -> head `0c6dc656...` has `CDK Deploy` run `25933294548` succeeded
+       - `gh run list --branch agent-113647-md1-baseline-e2e --limit 20 --json databaseId,workflowName,headSha,status,conclusion,createdAt,updatedAt,url` -> head `ba28880d...` has `CDK Deploy` run `25934397527` succeeded
      - SageMaker snapshot:
        - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260515T1823Z.json`
      - CloudWatch snapshots:
@@ -207,6 +207,12 @@ skybox, compression, artifact handoff, and visual gates.
        - `logs/md1-shrunk/s3-colmap-md1-shrunk-20260515T1641Z-20260515T1823Z.txt`
      - latest observed status:
        - `ProcessingJobStatus=InProgress`, `FailureReason=null`
+   - 2026-05-15T12:43:40-0600 poll:
+     - SageMaker snapshot: `logs/md1-shrunk/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260515T1843Z.json`
+     - CloudWatch tail snapshot: `logs/md1-shrunk/cloudwatch-tailonly-md1-shrunk-1456-sfm-1778866088-20260515T1843Z.txt`
+       - mapper progress: `last_num_reg_frames=248` (from `SUMMARY` line)
+     - S3 output listing: `logs/md1-shrunk/s3-colmap-md1-shrunk-20260515T1641Z-20260515T1843Z.txt`
+     - `ProcessingJobStatus=InProgress`, `FailureReason=null`
    - Current downstream image facts for the post-SfM stage:
      - `aws ecr describe-images --repository-name spaceport/3dgs --image-ids imageTag=agent113647md1baselinee2e --region us-west-2 --output json > logs/md1-shrunk/ecr-3dgs-agent113647md1baselinee2e-20260515T1758Z.json`
        - digest `sha256:6b3b2492af7a268cfc5f233e87bdce51c47492ada4c3630f723114ffa464fd0c`
