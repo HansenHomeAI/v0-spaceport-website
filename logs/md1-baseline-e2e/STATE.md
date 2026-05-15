@@ -1,6 +1,6 @@
 # MD1 Baseline E2E State
 
-updated: 2026-05-15T08:01:00-0600
+updated: 2026-05-15T08:15:00-0600
 branch: agent-113647-md1-baseline-e2e
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -1966,3 +1966,35 @@ Produce a development-based MD1 baseline with:
     - Metrics: desktop first frame `1216.3ms`, mobile first frame `1376.8ms`, desktop no-sky first frame `1324.9ms`, `bundleKind=single`, `rootFile=meta.json`, `Full source=1,312,166`.
 - Next step:
   - Commit and push the viewer single-bundle framing fix, watch the exact-head Pages and CDK runs, then run the deployed `/md1-viewer` smoke against the public `meta.json` URL. If deployed smoke passes visually, provide the final URL and screenshots as proof.
+
+### 2026-05-15T08:15:00-0600
+
+- Commit/push:
+  - Commit: `8d8361ab67c65e2e0165b7e400df08d6d36c6fbd` (`fix: frame md1 baseline single bundle viewer`).
+  - Push: `git push origin agent-113647-md1-baseline-e2e` -> `de00f0d7..8d8361ab`.
+- Exact-head workflow verification:
+  - `gh run watch 25922045300 --exit-status` -> `CDK Deploy` succeeded for head `8d8361ab67c65e2e0165b7e400df08d6d36c6fbd`.
+  - `gh run watch 25922045293 --exit-status` -> `Deploy Next.js to Cloudflare Pages` succeeded for head `8d8361ab67c65e2e0165b7e400df08d6d36c6fbd`.
+  - Pages output from run `25922045293`:
+    - Alias: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`.
+    - Hash: `https://9777a8f1.v0-spaceport-website-preview2.pages.dev`.
+- Deployed viewer smoke:
+  - Command:
+    - `MD1_VIEWER_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev MD1_LOD_URL=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-e2e-vsfm-splatfacto-cfix-202605150946/supersplat_bundle/meta.json MD1_EXPECT_ROOT_FILE=meta.json MD1_RUN_NO_SKY=1 node web/scripts/test-md1-production-viewer.mjs`
+  - Result: pass.
+  - Smoke log: `logs/md1-baseline-e2e/md1-e2e-vsfm-splatfacto-cfix-202605150946-deployed-meta-nosky-smoke-20260515T1410Z.log`.
+  - Results: `logs/md1-baseline-e2e/md1-e2e-vsfm-splatfacto-cfix-202605150946-deployed-meta-nosky-results-20260515T1410Z.json`.
+  - Desktop no-sky screenshot: `logs/md1-baseline-e2e/md1-e2e-vsfm-splatfacto-cfix-202605150946-deployed-meta-nosky-desktop-nosky-20260515T1410Z.png`.
+  - Mobile screenshot: `logs/md1-baseline-e2e/md1-e2e-vsfm-splatfacto-cfix-202605150946-deployed-meta-nosky-mobile-20260515T1410Z.png`.
+  - Metrics: desktop first frame `1224.1ms`, mobile first frame `908.1ms`, desktop no-sky first frame `440.5ms`, `bundleKind=single`, `rootFile=meta.json`, `Full source=1,312,166`.
+- Visual gate:
+  - The deployed viewer is functioning and renders the completed MD1 standard splatfacto output without skybox masking.
+  - The current trained baseline is visibly soft/low-detail compared with the existing V18 reference; I am not marking it as production-quality geometry, only as the verified current development-branch baseline render.
+  - Camera sweep screenshots for manual visual inspection:
+    - `logs/md1-baseline-e2e/md1-deployed-camera-auto-20260515T1413Z.png`.
+    - `logs/md1-baseline-e2e/md1-deployed-camera-front-low-20260515T1413Z.png`.
+    - `logs/md1-baseline-e2e/md1-deployed-camera-top-20260515T1413Z.png`.
+- Final verified URL:
+  - `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/md1-viewer?url=https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fmd1-e2e-vsfm-splatfacto-cfix-202605150946%2Fsupersplat_bundle%2Fmeta.json&skybox=none`
+- Remaining known limitation:
+  - The `/lod-meta.json` route for this freshly generated LOD bundle still renders black in the current viewer, while the root single-bundle `meta.json` and chunk `0_0/meta.json` render. The delivered URL intentionally uses the verified root `meta.json` handoff.
