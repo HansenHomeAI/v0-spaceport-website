@@ -442,6 +442,28 @@ skybox, compression, artifact handoff, and visual gates.
        - Training output prefix still empty (expected until EndOfJob export):
          - `logs/md1-shrunk/s3-3dgs-md1shrunk1456-1778880862-20260515T221804Z.txt` -> `Total Objects: 0`, `Total Size: 0`
          - `logs/md1-shrunk/s3-3dgs-md1shrunk1456-1778880862-20260515T222236Z.txt` -> `Total Objects: 0`, `Total Size: 0`
+  - 2026-05-15T16:56:05-0600 poll (3DGS still running; no additional CloudWatch beyond `ns-train` launch yet):
+    - branch/head/status:
+      - `git rev-parse HEAD` -> `29d479f4d04f83f4c2f113e2f7e9c2311f772e35`
+      - `git status --porcelain=v1` -> clean
+    - AWS identity:
+      - `aws sts get-caller-identity` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+    - GitHub workflows (exact-head):
+      - `CDK Deploy` succeeded for head `29d479f4...` (run `25944450001`)
+      - branch has both `CDK Deploy` and `Deploy Next.js to Cloudflare Pages` workflows; no `web/trigger-dev-build.txt` bump in this poll
+    - Step Functions snapshot:
+      - staging pipeline (`SpaceportMLPipeline-staging`) still not RUNNING (see prior poll)
+      - branch preview execution still RUNNING:
+        - `logs/md1-shrunk/stepfunctions-describe-execution-md1shrunk1456-1778880862-20260515T224929Z.json`
+        - `logs/md1-shrunk/stepfunctions-history-md1shrunk1456-1778880862-20260515T224639Z.json` -> latest event `WaitStateEntered`
+    - SageMaker 3DGS training (still InProgress/Training):
+      - stream: `md1shrunk1456-1778880862-3dgs/algo-1-1778880912` (log group `/aws/sagemaker/TrainingJobs`)
+      - describe snapshot:
+        - `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260515T225500Z.json`
+      - CloudWatch tail snapshots (still ends at `ns-train ...` command launch; no iteration logs yet):
+        - `logs/md1-shrunk/cloudwatch-training-tail-md1shrunk1456-1778880862-3dgs-20260515T225500Z.txt`
+      - Training output prefix still empty (expected until EndOfJob export):
+        - `logs/md1-shrunk/s3-3dgs-md1shrunk1456-1778880862-20260515T225500Z.txt` -> `Total Objects: 0`, `Total Size: 0`
    - Current downstream image facts for the post-SfM stage:
      - `aws ecr describe-images --repository-name spaceport/3dgs --image-ids imageTag=agent113647md1baselinee2e --region us-west-2 --output json > logs/md1-shrunk/ecr-3dgs-agent113647md1baselinee2e-20260515T1758Z.json`
        - digest `sha256:6b3b2492af7a268cfc5f233e87bdce51c47492ada4c3630f723114ffa464fd0c`
