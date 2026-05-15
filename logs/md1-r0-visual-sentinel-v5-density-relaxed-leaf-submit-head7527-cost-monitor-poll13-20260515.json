@@ -1,0 +1,28 @@
+{
+  "checks": [
+    {
+      "status": "ok",
+      "training_job_name": "md1-r0vissent-v5relax-1778837840-tile-04",
+      "training_status": "InProgress",
+      "secondary_status": "Uploading",
+      "elapsed_seconds": 2289,
+      "latest_log_age_seconds": 1821,
+      "gpu_average_percent": null,
+      "s3_output_object_count": 7,
+      "startup_wait_seconds": 2330,
+      "training_started": true,
+      "secondary_status_message": "Uploading generated training model",
+      "spend": {
+        "instance_type": "ml.g4dn.xlarge",
+        "hourly_rate_usd": 0.736,
+        "billable_seconds": 2289,
+        "billable_hours": 0.6358,
+        "estimated_usd": 0.468
+      },
+      "block_reasons": [],
+      "warnings": [],
+      "checked_at_epoch": 1778840211,
+      "poll_index": 0
+    }
+  ]
+}

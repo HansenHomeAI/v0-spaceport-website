@@ -1903,7 +1903,7 @@
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
   "latest_boundary_responsible_tile_plan_status": "boundary primary tile_04/tile_10; horizon primary tile_04/tile_01; tile04 dryrun covers tile01/tile10 context support",
-  "latest_cost_control": "No paid MD1 compute is eligible while source-attributed 3DGS training is active. After exact-head green and AWS idle, rerun v5 readiness on head 2584b84526aa05f1302ebd08eceebcd318acab95 using logs/md1-r0-visual-sentinel-v5-density-relaxed-leaf-dryrun-20260515.json; then only one R0 v5 tile_04 leaf-only proof under $0.75/3600s is eligible. No merge/review/full14/LOD/promotion.",
+  "latest_cost_control": "Only one bounded R0 v5 tile_04 leaf-only proof was launched after exact-head green/AWS idle/readiness allowed; it completed in 2313 billable seconds/about $0.473 under the $0.75/3600s cap. No merge/review/full14/LOD/viewer smoke/promotion launched. Further compute is held while source-attributed compression processing is active.",
   "latest_evidence": {
     "merge_preflight_summary": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260512.json",
     "review_retry_cloudwatch_tail": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-cloudwatch-tail-20260512.txt",
@@ -2045,7 +2045,7 @@
     "status": "merge_retry1_guard_ready_no_paid_retry_launched",
     "v18_review_launched": false
   },
-  "latest_no_spend_evidence": "R0 v5 density-relaxed candidate remains no-spend gated: objective gate logs/md1-r0-visual-sentinel-v5-density-relaxed-objective-gate-20260515.json allows; dry-run logs/md1-r0-visual-sentinel-v5-density-relaxed-leaf-dryrun-20260515.json submits no jobs and estimates $0.736 under $0.75; readiness logs/md1-r0-visual-sentinel-v5-density-relaxed-leaf-submit-readiness-headd9bb-20260515.json allowed on exact-green d9bb with AWS idle. Current head2584 is exact-head green but live AWS training is not idle, so readiness must be rerun after training is idle.",
+  "latest_no_spend_evidence": "R0 v5 density-relaxed leaf proof passed post-leaf preflight/gate: logs/md1-r0-visual-sentinel-v5-density-relaxed-20260515-tile_04-leaf-preflight.json and logs/md1-r0-visual-sentinel-v5-density-relaxed-20260515-tile_04-leaf-gate.json show 1071554 splats, 1.121x reference, filtered scaffold, required sidecars, and block_reasons=[].",
   "latest_no_spend_implementation": "Planner now records visual_sentinel_tile04_scaffold_restored_underdense_leaf and blocks another scaffold-restored tile_04 retry unless it materially strengthens density retention after scaffold restoration.",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
@@ -3710,9 +3710,9 @@
   },
   "md1_r4_boundary_quality_strategy_20260506": {
     "boundary_actual_delta": {
-      "lpips": 0.000008553266525268555,
-      "psnr": 0.00000909046563180027,
-      "ssim": 0.0000032186508178710938
+      "lpips": 8.553266525268555e-06,
+      "psnr": 9.09046563180027e-06,
+      "ssim": 3.2186508178710938e-06
     },
     "boundary_remaining_gap": {
       "lpips": 0.02500855326652527,
@@ -10593,7 +10593,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "After AWS training is idle, rerun v5 leaf-submit readiness on exact green head 2584b84526aa05f1302ebd08eceebcd318acab95 using logs/md1-r0-visual-sentinel-v5-density-relaxed-leaf-dryrun-20260515.json; if allowed, submit at most one bounded R0 v5 tile_04 leaf-only proof under $0.75/3600s with skip-merge/skip-review. No merge/review/full14/LOD/promotion.",
+  "next_unblocked_step": "Commit/push R0 v5 leaf-pass evidence, watch exact-head workflows, and hold compute while source-attributed compression is active. After exact-head green and AWS idle, run only no-spend merge/review readiness/planning from the tile_04 leaf gate; do not launch merge/review/full14/LOD/viewer smoke/promotion without a separate allowed gate.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -16686,8 +16686,8 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-15T08:24:04Z",
-  "updated_at": "2026-05-15T09:23:37Z",
+  "updated": "2026-05-15T10:18:51Z",
+  "updated_at": "2026-05-15T10:18:51Z",
   "version": "1.0.0",
   "md1_r0_visual_sentinel_readiness_blocked_active_jobs_20260513": {
     "recorded_at": "2026-05-13T18:33:49Z",
@@ -19072,5 +19072,91 @@
       }
     ],
     "next": "Wait for AWS training idle, rerun v5 readiness on exact green head, then at most one bounded R0 v5 tile_04 leaf-only proof if allowed. No merge/review/full14/LOD/promotion."
+  },
+  "md1_r0_visual_sentinel_v5_leaf_gate_passed_head7527_20260515": {
+    "checked_at": "2026-05-15T10:18:51Z",
+    "head": "7527f1dee72aa7350640066551cc7ae6fb2f61f5",
+    "exact_head_workflow": {
+      "workflow": "CDK Deploy",
+      "run_id": 25910536653,
+      "conclusion": "success"
+    },
+    "decision": "leaf_gate_passed_no_merge_review_launched",
+    "summary": "R0 v5 density-relaxed tile_04 leaf-only proof completed under cap and passed post-leaf preflight/gate; merge/review remains unlaunched by instruction.",
+    "pre_submit_readiness": {
+      "readiness_json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-leaf-submit-readiness-head7527-20260515.json",
+      "decision": "leaf_submit_allowed",
+      "estimated_usd": 0.736,
+      "max_estimated_usd": 0.75,
+      "training_jobs_in_progress": 0,
+      "processing_jobs_in_progress": 0
+    },
+    "v5_leaf": {
+      "job_name": "md1-r0vissent-v5relax-1778837840-tile-04",
+      "artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-20260515/tiles/tile_04/md1-r0vissent-v5relax-1778837840-tile-04/output/model.tar.gz",
+      "billable_time_seconds": 2313,
+      "estimated_cost_usd": 0.4729,
+      "training_max_runtime_seconds": 3600,
+      "instance_type": "ml.g4dn.xlarge",
+      "tile_max_iterations": 6000,
+      "selected_image_count": 188,
+      "model_variant": "splatfacto-w-light",
+      "hard_output_cap_present": false,
+      "scaffold_artifact_reuse": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-teacher-r3base-r4h-tile00-factor4-v3-20260426201700/output/artifact/model.tar.gz",
+      "preflight_decision": "leaf_preflight_passed_cache_candidate",
+      "gate_decision": "merge_review_allowed",
+      "splat_vertex_count": 1071554,
+      "reference_splat_count": 956277,
+      "observed_reference_ratio": 1.1205477074111372,
+      "hard_min_splat_count": 765021,
+      "hard_max_splat_count": 1290973,
+      "block_reasons": [],
+      "filtered_scaffold_initialization_present": true,
+      "sidecars_present": true,
+      "checkpoint_probe_evidence": "logs/md1-r0-visual-sentinel-v5-density-relaxed-leaf-submit-head7527-checkpoint-probe13-20260515.log"
+    },
+    "post_leaf_live_aws": {
+      "training_jobs_in_progress": 0,
+      "processing_jobs_in_progress": 1,
+      "processing_hold_job": "md1-e2e-vsfm-splatfacto-cfix-202605150946-compression",
+      "processing_hold_tags": {
+        "Component": "Compression",
+        "Project": "Spaceport",
+        "Environment": "staging"
+      },
+      "processing_hold_output": "s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-splatfacto-cfix-202605150946/",
+      "processing_hold_max_runtime_seconds": 86400
+    },
+    "evidence": [
+      "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-head7527-postgreen-20260515T093229Z.json",
+      "logs/md1-r0-visual-sentinel-v5-live-training-head7527-postgreen-20260515T093229Z.json",
+      "logs/md1-r0-visual-sentinel-v5-live-processing-head7527-postgreen-20260515T093229Z.json",
+      "logs/md1-r0-visual-sentinel-v5-density-relaxed-leaf-submit-readiness-head7527-20260515.json",
+      "logs/md1-r0-visual-sentinel-v5-density-relaxed-leaf-submit-head7527-wait-20260515.log",
+      "logs/md1-r0-visual-sentinel-v5-density-relaxed-leaf-submit-head7527-wait-20260515.json",
+      "logs/md1-r0-visual-sentinel-v5-density-relaxed-leaf-submit-head7527-describe-final-20260515.json",
+      "logs/md1-r0-visual-sentinel-v5-density-relaxed-leaf-submit-head7527-cost-monitor-poll13-20260515.json",
+      "logs/md1-r0-visual-sentinel-v5-density-relaxed-leaf-submit-head7527-checkpoint-probe13-20260515.log",
+      "logs/md1-r0-visual-sentinel-v5-density-relaxed-20260515-tile_04-leaf-preflight.json",
+      "logs/md1-r0-visual-sentinel-v5-density-relaxed-20260515-tile_04-leaf-gate.json",
+      "logs/md1-r0-visual-sentinel-v5-live-training-head7527-postleaf-20260515T1019Z.json",
+      "logs/md1-r0-visual-sentinel-v5-live-processing-head7527-postleaf-20260515T1019Z.json",
+      "logs/md1-r0-visual-sentinel-v5-active-processing-md1-e2e-vsfm-splatfacto-cfix-202605150946-compression-describe-head7527-postleaf-20260515T1019Z.json",
+      "logs/md1-r0-visual-sentinel-v5-active-processing-md1-e2e-vsfm-splatfacto-cfix-202605150946-compression-tags-head7527-postleaf-20260515T1019Z.json"
+    ],
+    "tests": [
+      "python3 scripts/3dgs/enforce_md1_leaf_submit_readiness.py ... --exact-head 7527... -> decision leaf_submit_allowed",
+      "python3 scripts/3dgs/preflight_leaf_model_artifact.py ... -> decision leaf_preflight_passed_cache_candidate",
+      "python3 scripts/3dgs/enforce_leaf_preflight_gate.py ... -> decision merge_review_allowed"
+    ],
+    "prohibitions_observed": [
+      "no merge",
+      "no review",
+      "no full14",
+      "no LOD",
+      "no viewer smoke",
+      "no promotion"
+    ],
+    "next": "Commit/push evidence and watch exact-head workflows. While source-attributed compression is active, no further compute. After exact-head green and AWS idle, run only no-spend merge/review readiness planning from the passed tile_04 leaf gate; do not launch merge/review/full14/LOD/viewer smoke/promotion without a separate allowed gate."
   }
 }
