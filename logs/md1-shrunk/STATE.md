@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-15T13:15:55-0600
+updated: 2026-05-15T13:47:36-0600
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -247,6 +247,7 @@ skybox, compression, artifact handoff, and visual gates.
          - `logs/md1-shrunk/gh-run-watch-25936455479.txt`
      - Step Functions snapshot:
        - `logs/md1-shrunk/stepfunctions-list-state-machines-20260515T191506Z.json`
+       - `logs/md1-shrunk/stepfunctions-running-SpaceportMLPipeline-staging-20260515T191506Z.json` -> `RUNNING=0`
      - SageMaker snapshot:
        - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260515T191506Z.json`
        - `ProcessingJobStatus=InProgress`, `FailureReason=null`
@@ -255,6 +256,28 @@ skybox, compression, artifact handoff, and visual gates.
        - mapper progress: `chunk_01_mapper_initial model 1 registered 383/383 images and 276594 points`
      - S3 output listing:
        - `logs/md1-shrunk/s3-colmap-md1-shrunk-20260515T1641Z-20260515T191506Z.txt` -> still empty as expected with `S3UploadMode=EndOfJob`
+   - 2026-05-15T13:47:36-0600 poll:
+     - branch/head/status:
+       - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+       - `git rev-parse HEAD` -> `fa0b3d8e1ec48e4b4415aec65577b8b27c9f3d02`
+       - `git status --porcelain=v1` -> `logs/md1-shrunk/STATE.md` modified + new poll artifacts under `logs/md1-shrunk/`
+     - GitHub workflow (exact-head):
+       - `CDK Deploy` succeeded for head `fa0b3d8e...` (run `25936681548`):
+         - `logs/md1-shrunk/gh-run-view-25936681548.json`
+         - `logs/md1-shrunk/gh-run-watch-25936681548.txt`
+       - full branch workflow list snapshot:
+         - `logs/md1-shrunk/gh-run-list-20260515T194506Z.json`
+     - Step Functions snapshot:
+       - `logs/md1-shrunk/stepfunctions-list-executions-20260515T194506Z.json` -> no `RUNNING` executions in the latest page
+     - SageMaker snapshot:
+       - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260515T194607Z.json`
+       - `ProcessingJobStatus=InProgress`, `FailureReason=null`
+     - CloudWatch tail snapshot:
+       - `logs/md1-shrunk/cloudwatch-tail-md1-shrunk-1456-sfm-1778866088-20260515T194607Z.txt`
+       - observed progress moved into `chunk_04_sequential_matcher` (`Processing image [153/307]`)
+     - S3 output listing:
+       - `logs/md1-shrunk/s3-colmap-md1-shrunk-20260515T1641Z-20260515T194607Z.txt` -> still empty as expected with `S3UploadMode=EndOfJob`
+       - note: `aws s3 ls ... --summarize` returns exit status `1` when the prefix is empty
    - Current downstream image facts for the post-SfM stage:
      - `aws ecr describe-images --repository-name spaceport/3dgs --image-ids imageTag=agent113647md1baselinee2e --region us-west-2 --output json > logs/md1-shrunk/ecr-3dgs-agent113647md1baselinee2e-20260515T1758Z.json`
        - digest `sha256:6b3b2492af7a268cfc5f233e87bdce51c47492ada4c3630f723114ffa464fd0c`
