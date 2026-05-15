@@ -47,6 +47,18 @@ type StreamingOverrides = {
   lodRangeMax?: number | null;
 };
 
+type Vector3 = [number, number, number];
+
+type ViewerFrameOverrides = {
+  scenePosition?: Vector3 | null;
+  sceneRotation?: Vector3 | null;
+  sceneScale?: number | null;
+  sceneFov?: number | null;
+  cameraPosition?: Vector3 | null;
+  cameraTarget?: Vector3 | null;
+  cameraFov?: number | null;
+};
+
 type ViewerWindow = Window & {
   __sogsNetworkMetrics?: {
     rootManifestType?: string | null;
@@ -113,6 +125,30 @@ function readIntegerParam(params: URLSearchParams, key: string): number | null {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+function readFloatParam(params: URLSearchParams, key: string): number | null {
+  const raw = params.get(key);
+  if (!raw) {
+    return null;
+  }
+  const parsed = Number.parseFloat(raw);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function readVectorParam(params: URLSearchParams, key: string): Vector3 | null {
+  const raw = params.get(key);
+  if (!raw) {
+    return null;
+  }
+  const parsed = raw.split(",").map((part) => Number.parseFloat(part.trim()));
+  return parsed.length === 3 && parsed.every(Number.isFinite)
+    ? [parsed[0], parsed[1], parsed[2]]
+    : null;
+}
+
+function formatVector(value: Vector3) {
+  return value.map((entry) => Number(entry.toFixed(6))).join(",");
+}
+
 function readSkyboxOverride(params: URLSearchParams): string | null | undefined {
   const raw = params.get("skybox");
   if (raw == null) {
@@ -128,6 +164,30 @@ function readSkyboxOverride(params: URLSearchParams): string | null | undefined 
   return trimmed;
 }
 
+function buildAutoFrame(bounds: ResolvedSogsViewerBundle["summary"]): ViewerFrameOverrides {
+  if (!bounds?.bounds) {
+    return {};
+  }
+
+  const min = bounds.bounds.min;
+  const max = bounds.bounds.max;
+  const center: Vector3 = [
+    (min[0] + max[0]) / 2,
+    (min[1] + max[1]) / 2,
+    (min[2] + max[2]) / 2,
+  ];
+  const span: Vector3 = [max[0] - min[0], max[1] - min[1], max[2] - min[2]];
+  const radius = Math.max(Math.hypot(span[0], span[1], span[2]) / 2, 0.075);
+  const distance = Math.max(radius * 4, 0.3);
+  const height = Math.max(radius * 1.2, 0.08);
+
+  return {
+    cameraPosition: [center[0], center[1] + height, center[2] - distance],
+    cameraTarget: center,
+    cameraFov: 60,
+  };
+}
+
 export default function Md1ProductionViewer() {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const [tab, setTab] = useState<Tab>("splat");
@@ -138,6 +198,7 @@ export default function Md1ProductionViewer() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [resolvedBundle, setResolvedBundle] = useState<ResolvedSogsViewerBundle | null>(null);
   const [streamingOverrides, setStreamingOverrides] = useState<StreamingOverrides>({});
+  const [viewerFrameOverrides, setViewerFrameOverrides] = useState<ViewerFrameOverrides>({});
   const [explicitSkybox, setExplicitSkybox] = useState<string | null | undefined>(undefined);
   const [telemetry, setTelemetry] = useState<ViewerTelemetry>(EMPTY_TELEMETRY);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
@@ -148,6 +209,19 @@ export default function Md1ProductionViewer() {
   );
   const resolvedContentUrl = resolvedBundle?.contentUrl ?? fallbackContentUrl;
   const activeContentUrl = resolvedContentUrl;
+  const isMd1ProductionManifest =
+    activeManifestUrl === MD1_V18_PRODUCTION_LOD_URL ||
+    activeManifestUrl.includes("/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/") ||
+    activeManifestUrl.includes("/md1-r5-v18-production-lod-1777560644/lod-meta.json");
+  const customFrame = useMemo(() => {
+    const automatic = isMd1ProductionManifest ? {} : buildAutoFrame(resolvedBundle?.summary);
+    return {
+      ...automatic,
+      ...Object.fromEntries(
+        Object.entries(viewerFrameOverrides).filter(([, value]) => value != null),
+      ),
+    } as ViewerFrameOverrides;
+  }, [isMd1ProductionManifest, resolvedBundle, viewerFrameOverrides]);
 
   const viewerSrc = useMemo(() => {
     const configPayload = withMd1ViewerOverrides(
@@ -178,6 +252,27 @@ export default function Md1ProductionViewer() {
     if (Array.isArray(configPayload.lodDistances)) {
       params.set("lodDistances", configPayload.lodDistances.join(","));
     }
+    if (customFrame.scenePosition) {
+      params.set("scenePos", formatVector(customFrame.scenePosition));
+    }
+    if (customFrame.sceneRotation) {
+      params.set("sceneRot", formatVector(customFrame.sceneRotation));
+    }
+    if (customFrame.sceneScale != null) {
+      params.set("sceneScale", String(customFrame.sceneScale));
+    }
+    if (customFrame.sceneFov != null) {
+      params.set("sceneFov", String(customFrame.sceneFov));
+    }
+    if (customFrame.cameraPosition) {
+      params.set("camPos", formatVector(customFrame.cameraPosition));
+    }
+    if (customFrame.cameraTarget) {
+      params.set("camTarget", formatVector(customFrame.cameraTarget));
+    }
+    if (customFrame.cameraFov != null) {
+      params.set("camFov", String(customFrame.cameraFov));
+    }
     params.set("lodUnderfillLimit", String(configPayload.lodUnderfillLimit));
     params.set("lodUpdateDistance", String(configPayload.lodUpdateDistance));
     params.set("lodUpdateAngle", String(configPayload.lodUpdateAngle));
@@ -186,7 +281,7 @@ export default function Md1ProductionViewer() {
     params.set("colorUpdateDistanceLodScale", String(configPayload.colorUpdateDistanceLodScale));
     params.set("colorUpdateAngleLodScale", String(configPayload.colorUpdateAngleLodScale));
     return `${VIEWER_BASE}?${params.toString()}`;
-  }, [activeContentUrl, explicitSkybox, isMobileViewport, resolvedBundle, streamingOverrides]);
+  }, [activeContentUrl, customFrame, explicitSkybox, isMobileViewport, resolvedBundle, streamingOverrides]);
 
   const sfmSrc = useMemo(() => {
     const params = new URLSearchParams({ url: MD1_V18_SFM_URL });
@@ -241,6 +336,15 @@ export default function Md1ProductionViewer() {
       splatBudget: readIntegerParam(params, "budget"),
       lodRangeMin: readIntegerParam(params, "lodMin"),
       lodRangeMax: readIntegerParam(params, "lodMax"),
+    });
+    setViewerFrameOverrides({
+      scenePosition: readVectorParam(params, "scenePos"),
+      sceneRotation: readVectorParam(params, "sceneRot"),
+      sceneScale: readFloatParam(params, "sceneScale"),
+      sceneFov: readFloatParam(params, "sceneFov"),
+      cameraPosition: readVectorParam(params, "camPos"),
+      cameraTarget: readVectorParam(params, "camTarget"),
+      cameraFov: readFloatParam(params, "camFov"),
     });
     setExplicitSkybox(readSkyboxOverride(params));
     if (override) {
@@ -356,10 +460,6 @@ export default function Md1ProductionViewer() {
     return () => window.removeEventListener("message", onMessage);
   }, [isMobileViewport, postToViewer, streamingOverrides]);
 
-  const isMd1ProductionManifest =
-    activeManifestUrl === MD1_V18_PRODUCTION_LOD_URL ||
-    activeManifestUrl.includes("/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/") ||
-    activeManifestUrl.includes("/md1-r5-v18-production-lod-1777560644/lod-meta.json");
   const isLodManifest = activeManifestUrl.includes("/lod-meta.json");
   const bundleSummary = resolvedBundle?.summary;
   const effectiveBundleKind = bundleSummary?.bundleKind ?? (isLodManifest ? "lod-streaming" : "");
@@ -369,6 +469,9 @@ export default function Md1ProductionViewer() {
   const effectiveChunkFiles =
     bundleSummary?.chunkFiles ?? (isMd1ProductionManifest ? MD1_V18_COMPRESSION.chunkFiles : null);
   const totalChunks = effectiveChunkFiles ?? null;
+  const effectiveSplatCount = isMd1ProductionManifest
+    ? MD1_V18_LINEAGE.promotedGaussianCount
+    : bundleSummary?.splatCount ?? MD1_V18_LINEAGE.promotedGaussianCount;
 
   return (
     <main className="md1-shell">
@@ -461,7 +564,7 @@ export default function Md1ProductionViewer() {
             loadManifest(manifestUrl);
           }}
         >
-          <label htmlFor="md1-manifest-url">LOD manifest</label>
+          <label htmlFor="md1-manifest-url">Manifest URL</label>
           <div>
             <input
               id="md1-manifest-url"
@@ -496,7 +599,7 @@ export default function Md1ProductionViewer() {
           </div>
           <div>
             <span>Full source</span>
-            <strong>{compactNumber(MD1_V18_LINEAGE.promotedGaussianCount)}</strong>
+            <strong>{compactNumber(effectiveSplatCount)}</strong>
           </div>
           <div>
             <span>Manifest</span>
@@ -511,7 +614,10 @@ export default function Md1ProductionViewer() {
         {loadError ? <p className="md1-error">{loadError}</p> : null}
 
         <p className="md1-note">
-          This route defaults to the true V18 LOD manifest. The every-8th PLY remains only as an inspection fallback:
+          {isMd1ProductionManifest
+            ? "This route defaults to the true V18 LOD manifest."
+            : "Custom validation bundle loaded."}{" "}
+          The every-8th PLY remains only as an inspection fallback:
           <br />
           <a href={MD1_V18_SAMPLED_INSPECTION_URL}>sampled PLY</a>
         </p>

@@ -1,0 +1,1156 @@
+{
+    "events": [
+        {
+            "timestamp": 1778838460857,
+            "message": "2026-05-15 09:47:36,147 - INFO - Executing: splat-transform --version",
+            "ingestionTime": 1778838467037
+        },
+        {
+            "timestamp": 1778838460857,
+            "message": "2026-05-15 09:47:36,291 - INFO - splat-transform v1.10.2",
+            "ingestionTime": 1778838467037
+        },
+        {
+            "timestamp": 1778838460857,
+            "message": "2026-05-15 09:47:36,291 - INFO - Using splat-transform splat-transform v1.10.2 (device=cpu, lod_decimation=30%,10%,3%, chunk_count=1024K, chunk_extent=32, transform_timeout=14400s, lod_transform_timeout=14400s)",
+            "ingestionTime": 1778838467037
+        },
+        {
+            "timestamp": 1778838460857,
+            "message": "2026-05-15 09:47:36,291 - INFO - Starting SuperSplat compression job",
+            "ingestionTime": 1778838467037
+        },
+        {
+            "timestamp": 1778838460857,
+            "message": "2026-05-15 09:47:36,293 - INFO - Extracting archive /opt/ml/processing/input/md1-e2e-vsfm-splatfacto-202605150539-3dgs/output/model.tar.gz -> /opt/ml/processing/input/__extracted_archives/00-model-tar",
+            "ingestionTime": 1778838467037
+        },
+        {
+            "timestamp": 1778838460857,
+            "message": "2026-05-15 09:47:38,146 - INFO - Selected ply source: /opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply",
+            "ingestionTime": 1778838467037
+        },
+        {
+            "timestamp": 1778838460857,
+            "message": "2026-05-15 09:47:38,146 - INFO - Supporting files discovered: ['training_metadata.json']",
+            "ingestionTime": 1778838467037
+        },
+        {
+            "timestamp": 1778838460857,
+            "message": "2026-05-15 09:47:38,147 - INFO - Executing: splat-transform -w -g cpu /opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply /tmp/sogs-work-yalufyvo/generated_bundle/meta.json",
+            "ingestionTime": 1778838467037
+        },
+        {
+            "timestamp": 1778844958639,
+            "message": "2026-05-15 11:35:58,111 - INFO - splat-transform v1.10.2",
+            "ingestionTime": 1778844963812
+        },
+        {
+            "timestamp": 1778844958639,
+            "message": "reading '/opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply'...",
+            "ingestionTime": 1778844963812
+        },
+        {
+            "timestamp": 1778844958639,
+            "message": "Total gaussians loaded: 1312166",
+            "ingestionTime": 1778844963812
+        },
+        {
+            "timestamp": 1778844958639,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/meta.json'...",
+            "ingestionTime": 1778844963812
+        },
+        {
+            "timestamp": 1778844958639,
+            "message": "[1/8] Generating morton order",
+            "ingestionTime": 1778844963812
+        },
+        {
+            "timestamp": 1778844958639,
+            "message": "[2/8] Writing positions",
+            "ingestionTime": 1778844963812
+        },
+        {
+            "timestamp": 1778844958639,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/means_l.webp'...",
+            "ingestionTime": 1778844963812
+        },
+        {
+            "timestamp": 1778844958639,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/means_u.webp'...",
+            "ingestionTime": 1778844963812
+        },
+        {
+            "timestamp": 1778844958639,
+            "message": "[3/8] Writing quaternions",
+            "ingestionTime": 1778844963812
+        },
+        {
+            "timestamp": 1778844958640,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/quats.webp'...",
+            "ingestionTime": 1778844963812
+        },
+        {
+            "timestamp": 1778844958640,
+            "message": "[4/8] Compressing scales",
+            "ingestionTime": 1778844963812
+        },
+        {
+            "timestamp": 1778844958640,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/scales.webp'...",
+            "ingestionTime": 1778844963812
+        },
+        {
+            "timestamp": 1778844958640,
+            "message": "[5/8] Compressing colors",
+            "ingestionTime": 1778844963812
+        },
+        {
+            "timestamp": 1778844958640,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/sh0.webp'...",
+            "ingestionTime": 1778844963812
+        },
+        {
+            "timestamp": 1778844958640,
+            "message": "[6/8] Compressing spherical harmonics",
+            "ingestionTime": 1778844963812
+        },
+        {
+            "timestamp": 1778844958640,
+            "message": "running k-means clustering: dims=45 points=1312166 clusters=65536 iterations=10...",
+            "ingestionTime": 1778844963812
+        },
+        {
+            "timestamp": 1778844958640,
+            "message": "########## (6481.782s)",
+            "ingestionTime": 1778844963812
+        },
+        {
+            "timestamp": 1778844958640,
+            "message": "[7/8] Quantizing spherical harmonics",
+            "ingestionTime": 1778844963812
+        },
+        {
+            "timestamp": 1778844958640,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/shN_centroids.webp'...",
+            "ingestionTime": 1778844963812
+        },
+        {
+            "timestamp": 1778844958640,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/shN_labels.webp'...",
+            "ingestionTime": 1778844963812
+        },
+        {
+            "timestamp": 1778844958640,
+            "message": "[8/8] Finalizing",
+            "ingestionTime": 1778844963812
+        },
+        {
+            "timestamp": 1778844958640,
+            "message": "done in 6499.789827272s",
+            "ingestionTime": 1778844963812
+        },
+        {
+            "timestamp": 1778844958640,
+            "message": "2026-05-15 11:35:58,111 - INFO - Executing: splat-transform -w /opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply -F 30% /tmp/sogs-work-yalufyvo/lod_inputs/lod1.ply",
+            "ingestionTime": 1778844963812
+        },
+        {
+            "timestamp": 1778845072668,
+            "message": "2026-05-15 11:37:51,935 - INFO - splat-transform v1.10.2",
+            "ingestionTime": 1778845077895
+        },
+        {
+            "timestamp": 1778845072668,
+            "message": "reading '/opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply'...",
+            "ingestionTime": 1778845077895
+        },
+        {
+            "timestamp": 1778845072668,
+            "message": "[1/5] Building KD-tree",
+            "ingestionTime": 1778845077895
+        },
+        {
+            "timestamp": 1778845072668,
+            "message": "[2/5] Finding nearest neighbors",
+            "ingestionTime": 1778845077895
+        },
+        {
+            "timestamp": 1778845072668,
+            "message": "########## (43.373s)",
+            "ingestionTime": 1778845077895
+        },
+        {
+            "timestamp": 1778845072668,
+            "message": "[3/5] Computing edge costs",
+            "ingestionTime": 1778845077895
+        },
+        {
+            "timestamp": 1778845072668,
+            "message": "########## (21.441s)",
+            "ingestionTime": 1778845077895
+        },
+        {
+            "timestamp": 1778845072668,
+            "message": "[4/5] Merging splats",
+            "ingestionTime": 1778845077895
+        },
+        {
+            "timestamp": 1778845072668,
+            "message": "########## (6.386s)",
+            "ingestionTime": 1778845077895
+        },
+        {
+            "timestamp": 1778845072668,
+            "message": "[5/5] Finalizing",
+            "ingestionTime": 1778845077895
+        },
+        {
+            "timestamp": 1778845072668,
+            "message": "[1/5] Building KD-tree",
+            "ingestionTime": 1778845077895
+        },
+        {
+            "timestamp": 1778845072668,
+            "message": "[2/5] Finding nearest neighbors",
+            "ingestionTime": 1778845077895
+        },
+        {
+            "timestamp": 1778845072668,
+            "message": "########## (20.557s)",
+            "ingestionTime": 1778845077895
+        },
+        {
+            "timestamp": 1778845072668,
+            "message": "[3/5] Computing edge costs",
+            "ingestionTime": 1778845077895
+        },
+        {
+            "timestamp": 1778845072668,
+            "message": "########## (10.869s)",
+            "ingestionTime": 1778845077895
+        },
+        {
+            "timestamp": 1778845072668,
+            "message": "[4/5] Merging splats",
+            "ingestionTime": 1778845077895
+        },
+        {
+            "timestamp": 1778845072669,
+            "message": "########## (2.917s)",
+            "ingestionTime": 1778845077895
+        },
+        {
+            "timestamp": 1778845072669,
+            "message": "[5/5] Finalizing",
+            "ingestionTime": 1778845077895
+        },
+        {
+            "timestamp": 1778845072669,
+            "message": "Total gaussians loaded: 393650",
+            "ingestionTime": 1778845077895
+        },
+        {
+            "timestamp": 1778845072669,
+            "message": "writing '/tmp/sogs-work-yalufyvo/lod_inputs/lod1.ply'...",
+            "ingestionTime": 1778845077895
+        },
+        {
+            "timestamp": 1778845072669,
+            "message": "done in 113.660840757s",
+            "ingestionTime": 1778845077895
+        },
+        {
+            "timestamp": 1778845072669,
+            "message": "2026-05-15 11:37:51,935 - INFO - Executing: splat-transform -w /opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply -F 10% /tmp/sogs-work-yalufyvo/lod_inputs/lod2.ply",
+            "ingestionTime": 1778845077895
+        },
+        {
+            "timestamp": 1778845212702,
+            "message": "2026-05-15 11:40:12,081 - INFO - splat-transform v1.10.2",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212702,
+            "message": "reading '/opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply'...",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212702,
+            "message": "[1/5] Building KD-tree",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212702,
+            "message": "[2/5] Finding nearest neighbors",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212702,
+            "message": "########## (45.527s)",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212702,
+            "message": "[3/5] Computing edge costs",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212702,
+            "message": "########## (23.248s)",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212702,
+            "message": "[4/5] Merging splats",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212702,
+            "message": "########## (6.378s)",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212702,
+            "message": "[5/5] Finalizing",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212702,
+            "message": "[1/5] Building KD-tree",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212702,
+            "message": "[2/5] Finding nearest neighbors",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212702,
+            "message": "########## (20.525s)",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212702,
+            "message": "[3/5] Computing edge costs",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212702,
+            "message": "########## (11.117s)",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212703,
+            "message": "[4/5] Merging splats",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212703,
+            "message": "########## (3.304s)",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212703,
+            "message": "[5/5] Finalizing",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212703,
+            "message": "[1/5] Building KD-tree",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212703,
+            "message": "[2/5] Finding nearest neighbors",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212703,
+            "message": "########## (8.952s)",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212703,
+            "message": "[3/5] Computing edge costs",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212703,
+            "message": "########## (5.061s)",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212703,
+            "message": "[4/5] Merging splats",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212703,
+            "message": "########## (1.586s)",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212703,
+            "message": "[5/5] Finalizing",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212703,
+            "message": "[1/5] Building KD-tree",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212703,
+            "message": "[2/5] Finding nearest neighbors",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212703,
+            "message": "########## (4.287s)",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212703,
+            "message": "[3/5] Computing edge costs",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212703,
+            "message": "########## (2.052s)",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212703,
+            "message": "[4/5] Merging splats",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212703,
+            "message": "########## (0.506s)",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212703,
+            "message": "[5/5] Finalizing",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212703,
+            "message": "Total gaussians loaded: 131217",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212703,
+            "message": "writing '/tmp/sogs-work-yalufyvo/lod_inputs/lod2.ply'...",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212703,
+            "message": "done in 140.000299501s",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845212703,
+            "message": "2026-05-15 11:40:12,081 - INFO - Executing: splat-transform -w /opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply -F 3% /tmp/sogs-work-yalufyvo/lod_inputs/lod3.ply",
+            "ingestionTime": 1778845217973
+        },
+        {
+            "timestamp": 1778845355738,
+            "message": "2026-05-15 11:42:35,003 - INFO - splat-transform v1.10.2",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355738,
+            "message": "reading '/opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply'...",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355738,
+            "message": "[1/5] Building KD-tree",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355738,
+            "message": "[2/5] Finding nearest neighbors",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355738,
+            "message": "########## (42.990s)",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355738,
+            "message": "[3/5] Computing edge costs",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355738,
+            "message": "########## (23.053s)",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355738,
+            "message": "[4/5] Merging splats",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355738,
+            "message": "########## (6.479s)",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355738,
+            "message": "[5/5] Finalizing",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355738,
+            "message": "[1/5] Building KD-tree",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355738,
+            "message": "[2/5] Finding nearest neighbors",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355738,
+            "message": "########## (20.486s)",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355738,
+            "message": "[3/5] Computing edge costs",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355738,
+            "message": "########## (11.385s)",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355738,
+            "message": "[4/5] Merging splats",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355738,
+            "message": "########## (3.408s)",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355738,
+            "message": "[5/5] Finalizing",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355738,
+            "message": "[1/5] Building KD-tree",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355738,
+            "message": "[2/5] Finding nearest neighbors",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355738,
+            "message": "########## (8.953s)",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355738,
+            "message": "[3/5] Computing edge costs",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355738,
+            "message": "########## (4.944s)",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "[4/5] Merging splats",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "########## (1.673s)",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "[5/5] Finalizing",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "[1/5] Building KD-tree",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "[2/5] Finding nearest neighbors",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "########## (4.346s)",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "[3/5] Computing edge costs",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "########## (2.188s)",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "[4/5] Merging splats",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "########## (0.853s)",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "[5/5] Finalizing",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "[1/5] Building KD-tree",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "[2/5] Finding nearest neighbors",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "########## (2.068s)",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "[3/5] Computing edge costs",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "########## (0.889s)",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "[4/5] Merging splats",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "########## (0.425s)",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "[5/5] Finalizing",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "[1/5] Building KD-tree",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "[2/5] Finding nearest neighbors",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "########## (0.977s)",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "[3/5] Computing edge costs",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "########## (0.370s)",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "[4/5] Merging splats",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "########## (0.093s)",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "[5/5] Finalizing",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "Total gaussians loaded: 39365",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "writing '/tmp/sogs-work-yalufyvo/lod_inputs/lod3.ply'...",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "done in 142.775569473s",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778845355739,
+            "message": "2026-05-15 11:42:35,003 - INFO - Executing: splat-transform -w -g cpu -C 1024 -X 32 /opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply -l 0 /tmp/sogs-work-yalufyvo/lod_inputs/lod1.ply -l 1 /tmp/sogs-work-yalufyvo/lod_inputs/lod2.ply -l 2 /tmp/sogs-work-yalufyvo/lod_inputs/lod3.ply -l 3 /tmp/sogs-work-yalufyvo/generated_bundle/lod-meta.json",
+            "ingestionTime": 1778845361062
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "2026-05-15 13:27:41,130 - INFO - splat-transform v1.10.2",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "reading '/opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "reading '/tmp/sogs-work-yalufyvo/lod_inputs/lod1.ply'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "reading '/tmp/sogs-work-yalufyvo/lod_inputs/lod2.ply'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "reading '/tmp/sogs-work-yalufyvo/lod_inputs/lod3.ply'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "Total gaussians loaded: 1876398",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/lod-meta.json'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "writing /tmp/sogs-work-yalufyvo/generated_bundle/1_0/meta.json...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "[1/8] Generating morton order",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "[2/8] Writing positions",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/1_0/means_l.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/1_0/means_u.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "[3/8] Writing quaternions",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/1_0/quats.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "[4/8] Compressing scales",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/1_0/scales.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "[5/8] Compressing colors",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/1_0/sh0.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "[6/8] Compressing spherical harmonics",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "running k-means clustering: dims=45 points=393650 clusters=65536 iterations=10...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "########## (1041.402s)",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "[7/8] Quantizing spherical harmonics",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/1_0/shN_centroids.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/1_0/shN_labels.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "[8/8] Finalizing",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "writing /tmp/sogs-work-yalufyvo/generated_bundle/0_0/meta.json...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "[1/8] Generating morton order",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "[2/8] Writing positions",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/0_0/means_l.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661214,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/0_0/means_u.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "[3/8] Writing quaternions",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/0_0/quats.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "[4/8] Compressing scales",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/0_0/scales.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "[5/8] Compressing colors",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/0_0/sh0.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "[6/8] Compressing spherical harmonics",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "running k-means clustering: dims=45 points=1312166 clusters=65536 iterations=10...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "########## (4966.099s)",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "[7/8] Quantizing spherical harmonics",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/0_0/shN_centroids.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/0_0/shN_labels.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "[8/8] Finalizing",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "writing /tmp/sogs-work-yalufyvo/generated_bundle/2_0/meta.json...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "[1/8] Generating morton order",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "[2/8] Writing positions",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/2_0/means_l.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/2_0/means_u.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "[3/8] Writing quaternions",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/2_0/quats.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "[4/8] Compressing scales",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/2_0/scales.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "[5/8] Compressing colors",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/2_0/sh0.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "[6/8] Compressing spherical harmonics",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "running k-means clustering: dims=45 points=131217 clusters=65536 iterations=10...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "########## (222.665s)",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "[7/8] Quantizing spherical harmonics",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/2_0/shN_centroids.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/2_0/shN_labels.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661215,
+            "message": "[8/8] Finalizing",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661216,
+            "message": "writing /tmp/sogs-work-yalufyvo/generated_bundle/3_0/meta.json...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661216,
+            "message": "[1/8] Generating morton order",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661216,
+            "message": "[2/8] Writing positions",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661216,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/3_0/means_l.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661216,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/3_0/means_u.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661216,
+            "message": "[3/8] Writing quaternions",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661216,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/3_0/quats.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661216,
+            "message": "[4/8] Compressing scales",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661216,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/3_0/scales.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661216,
+            "message": "[5/8] Compressing colors",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661216,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/3_0/sh0.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661216,
+            "message": "[6/8] Compressing spherical harmonics",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661216,
+            "message": "running k-means clustering: dims=45 points=39365 clusters=32768 iterations=10...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661216,
+            "message": "########## (39.250s)",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661216,
+            "message": "[7/8] Quantizing spherical harmonics",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661216,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/3_0/shN_centroids.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661216,
+            "message": "writing '/tmp/sogs-work-yalufyvo/generated_bundle/3_0/shN_labels.webp'...",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661216,
+            "message": "[8/8] Finalizing",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661216,
+            "message": "done in 6305.960336881s",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661216,
+            "message": "2026-05-15 13:27:41,151 - INFO - No trained skybox sidecar found; writing bundle without a skybox",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661216,
+            "message": "2026-05-15 13:27:41,174 - INFO - Compression complete",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661216,
+            "message": "2026-05-15 13:27:41,174 - INFO - Bundle output: /opt/ml/processing/output/supersplat_bundle",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661217,
+            "message": "2026-05-15 13:27:41,175 - INFO - Bundle metrics: {\n  \"bundleDir\": \"/opt/ml/processing/output/supersplat_bundle\",\n  \"fileCount\": 44,\n  \"bundleSizeBytes\": 23322259,\n  \"hasMetaJson\": true,\n  \"hasLodMetaJson\": true,\n  \"splatCount\": null,\n  \"lodLevels\": 4,\n  \"chunkFiles\": 4,\n  \"lodTreeNodes\": 2,\n  \"bounds\": {\n    \"min\": [\n      -0.0548525,\n      -0.05891666,\n      -0.09158024\n    ],\n    \"max\": [\n      0.07467244,\n      0.05929113,\n      0.04844567\n    ]\n  }",
+            "ingestionTime": 1778851666518
+        },
+        {
+            "timestamp": 1778851661217,
+            "message": "}",
+            "ingestionTime": 1778851666518
+        }
+    ],
+    "nextForwardToken": "f/39669717642783235444917495470760256033166627462354436180/s",
+    "nextBackwardToken": "b/39669423264918346569220986911132953814845947906950955008/s"
+}

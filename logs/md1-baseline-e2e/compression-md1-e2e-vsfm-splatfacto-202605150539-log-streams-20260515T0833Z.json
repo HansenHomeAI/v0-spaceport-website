@@ -1,0 +1,14 @@
+{
+    "logStreams": [
+        {
+            "logStreamName": "md1-e2e-vsfm-splatfacto-202605150539-compression/algo-1-1778832848",
+            "creationTime": 1778832881594,
+            "firstEventTimestamp": 1778832875448,
+            "lastEventTimestamp": 1778832875449,
+            "lastIngestionTime": 1778832881605,
+            "uploadSequenceToken": "49039859672182909519587827411601360509314688947142555036",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:md1-e2e-vsfm-splatfacto-202605150539-compression/algo-1-1778832848",
+            "storedBytes": 0
+        }
+    ]
+}

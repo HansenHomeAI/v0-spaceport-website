@@ -248,6 +248,29 @@ function parseBounds(
   return { min: [min[0], min[1], min[2]], max: [max[0], max[1], max[2]] };
 }
 
+function parseMeansBounds(
+  means: unknown,
+): { min: [number, number, number]; max: [number, number, number] } | null {
+  if (!means || typeof means !== "object") {
+    return null;
+  }
+
+  const mins = (means as { mins?: unknown }).mins;
+  const maxs = (means as { maxs?: unknown }).maxs;
+  if (
+    !Array.isArray(mins) ||
+    !Array.isArray(maxs) ||
+    mins.length !== 3 ||
+    maxs.length !== 3 ||
+    !mins.every((value) => typeof value === "number") ||
+    !maxs.every((value) => typeof value === "number")
+  ) {
+    return null;
+  }
+
+  return { min: [mins[0], mins[1], mins[2]], max: [maxs[0], maxs[1], maxs[2]] };
+}
+
 function summarizeManifest(
   manifest: unknown,
   candidate: ManifestCandidate,
@@ -258,13 +281,15 @@ function summarizeManifest(
     candidate.rootFile === "lod-meta.json" ||
     typeof (manifestObject as { lodLevels?: unknown }).lodLevels === "number";
   const means = manifestObject.means;
-  const splatCount =
+  const splatCountFromShape =
     typeof means === "object" &&
     means &&
     Array.isArray((means as { shape?: unknown }).shape) &&
     typeof ((means as { shape: unknown[] }).shape[0]) === "number"
       ? ((means as { shape: number[] }).shape[0] ?? null)
       : null;
+  const splatCount =
+    typeof manifestObject.count === "number" ? manifestObject.count : splatCountFromShape;
   const filenames = Array.isArray(manifestObject.filenames) ? manifestObject.filenames : [];
   const tree = manifestObject.tree;
 
@@ -280,7 +305,9 @@ function summarizeManifest(
     lodLevels: typeof manifestObject.lodLevels === "number" ? manifestObject.lodLevels : null,
     chunkFiles: isLod ? filenames.length : 0,
     lodTreeNodes: isLod ? countTreeNodes(tree) : 0,
-    bounds: parseBounds(tree && typeof tree === "object" ? (tree as { bound?: unknown }).bound : null),
+    bounds:
+      parseBounds(tree && typeof tree === "object" ? (tree as { bound?: unknown }).bound : null) ??
+      parseMeansBounds(means),
   };
 }
 

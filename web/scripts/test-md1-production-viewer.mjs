@@ -23,6 +23,8 @@ const lodUrl =
   process.env.MD1_LOD_URL ??
   "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json";
 const expectedChunkSubstring = process.env.MD1_EXPECT_CHUNK_SUBSTRING?.trim() || "";
+const expectedRootFile =
+  process.env.MD1_EXPECT_ROOT_FILE?.trim() || (lodUrl.includes("/lod-meta.json") ? "lod-meta.json" : "meta.json");
 const playwrightChannel = process.env.PLAYWRIGHT_CHANNEL?.trim() || "";
 
 const scenarios = [
@@ -216,7 +218,11 @@ async function waitForReady(page, scenarioName) {
   let lastLog = 0;
   while (Date.now() - start < 180000) {
     latest = await readMetrics(page);
-    if (latest.bundleKind === "lod-streaming" && latest.firstFrameMs && latest.firstFrameMs > 0) {
+    if (
+      (latest.bundleKind === "lod-streaming" || latest.bundleKind === "single") &&
+      latest.firstFrameMs &&
+      latest.firstFrameMs > 0
+    ) {
       console.log(
         `MD1 production viewer smoke: ${scenarioName} ready firstFrame=${latest.firstFrameMs.toFixed(1)}ms chunks=${latest.chunkMetaRequests}`,
       );
@@ -232,7 +238,7 @@ async function waitForReady(page, scenarioName) {
     }
     await page.waitForTimeout(1000);
   }
-  throw new Error(`timed out waiting for lod-streaming first frame; latest=${JSON.stringify(latest)}`);
+  throw new Error(`timed out waiting for viewer first frame; latest=${JSON.stringify(latest)}`);
 }
 
 async function waitForChunkTelemetry(page) {
@@ -301,7 +307,9 @@ async function runScenario(scenario) {
         },
       );
     }
-    await waitForChunkTelemetry(page);
+    if (expectedRootFile === "lod-meta.json") {
+      await waitForChunkTelemetry(page);
+    }
     await page.waitForTimeout(scenario.name === "mobile" ? 5000 : 1000);
     const metrics = await readMetrics(page);
     const screenshotPath = path.join(logsDir, `md1-production-viewer-${scenario.name}.png`);
@@ -323,11 +331,15 @@ async function runScenario(scenario) {
     await closeScenarioContext(context, page);
 
     const chunkMetaResponses = responses.filter((event) => event.url.endsWith("/meta.json"));
-    assert(metrics.bundleKind === "lod-streaming", `${scenario.name}: expected lod-streaming, got ${metrics.bundleKind}`);
-    assert(metrics.rootFile === "lod-meta.json", `${scenario.name}: expected lod-meta.json, got ${metrics.rootFile}`);
-    assert(metrics.sourceUrl.includes("lod-meta.json"), `${scenario.name}: source URL should be lod-meta.json`);
-    assert(metrics.chunkFiles && metrics.chunkFiles > 0, `${scenario.name}: manifest should advertise chunk files`);
-    assert(metrics.chunkMetaRequests > 0, `${scenario.name}: viewer should request chunk meta files`);
+    assert(metrics.rootFile === expectedRootFile, `${scenario.name}: expected ${expectedRootFile}, got ${metrics.rootFile}`);
+    assert(metrics.sourceUrl.includes(expectedRootFile), `${scenario.name}: source URL should be ${expectedRootFile}`);
+    if (expectedRootFile === "lod-meta.json") {
+      assert(metrics.bundleKind === "lod-streaming", `${scenario.name}: expected lod-streaming, got ${metrics.bundleKind}`);
+      assert(metrics.chunkFiles && metrics.chunkFiles > 0, `${scenario.name}: manifest should advertise chunk files`);
+      assert(metrics.chunkMetaRequests > 0, `${scenario.name}: viewer should request chunk meta files`);
+    } else {
+      assert(metrics.bundleKind === "single", `${scenario.name}: expected single bundle, got ${metrics.bundleKind}`);
+    }
     assert(metrics.firstFrameMs && metrics.firstFrameMs < 10000, `${scenario.name}: first frame exceeded 10s`);
     if (expectedChunkSubstring) {
       assert(

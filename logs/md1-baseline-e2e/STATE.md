@@ -1,6 +1,6 @@
 # MD1 Baseline E2E State
 
-updated: 2026-05-14T23:27:44-0600
+updated: 2026-05-15T08:01:00-0600
 branch: agent-113647-md1-baseline-e2e
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -1442,6 +1442,267 @@ Produce a development-based MD1 baseline with:
 - Next step:
   - Continue monitoring compression. If it completes, validate bundle files/summary, gaussian count/file size, and smoke the deployed `/md1-viewer` with no skybox against the new standard-splatfacto manifest before accepting the baseline. If compression fails, capture exact processing logs and patch only that proven failure.
 
+### 2026-05-15T06:06:45-0600
+
+- Verification before action:
+  - Branch/head: `agent-113647-md1-baseline-e2e` @ `de00f0d7707a1fa76b1e8b50ebf188531e4bf022`.
+  - Local dirty/untracked files remain poll artifacts and existing viewer smoke outputs; no new code changes.
+  - `aws sts get-caller-identity --output json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+  - Exact-head GitHub workflow: `CDK Deploy` run `25911519106` @ `de00f0d7707a1fa76b1e8b50ebf188531e4bf022` -> `success`.
+- Current active AWS state:
+  - Running Step Functions executions:
+    - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-cfix-202605150946`.
+  - InProgress processing jobs:
+    - This run: `md1-e2e-vsfm-splatfacto-cfix-202605150946-compression` -> `InProgress`.
+  - InProgress training jobs:
+    - External/not owned by this automation: `md1-worst447-ds1500-r27-1778846018` -> `InProgress`; left untouched.
+- Compression-only retry status:
+  - Step Functions execution:
+    - `status=RUNNING`.
+    - Snapshot `logs/md1-baseline-e2e/stepfunctions-describe-md1-e2e-vsfm-splatfacto-cfix-202605150946-20260515T1206Z.json`.
+  - SageMaker processing:
+    - `ProcessingJobName=md1-e2e-vsfm-splatfacto-cfix-202605150946-compression`.
+    - `ProcessingJobStatus=InProgress`.
+    - `ProcessingStartTime=2026-05-15T03:47:07.043000-0600`.
+    - `ProcessingEndTime=null`.
+    - `FailureReason=null`.
+    - `ImageUri=975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor:agent113647md1baselinee2e`.
+    - `InstanceType=ml.g4dn.xlarge`.
+    - Snapshot `logs/md1-baseline-e2e/sagemaker-describe-md1-e2e-vsfm-splatfacto-cfix-202605150946-compression-20260515T1205Z.json`.
+  - Input:
+    - `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-splatfacto-202605150539/`.
+  - Output:
+    - `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-splatfacto-cfix-202605150946/`.
+    - Current S3 listing remains empty as expected until EndOfJob upload: `Total Objects: 0`, `Total Size: 0 Bytes`.
+    - S3 listing snapshot `logs/md1-baseline-e2e/s3-compressed-md1-e2e-vsfm-splatfacto-cfix-202605150946-20260515T1205Z.txt`.
+  - CloudWatch log:
+    - Log stream `/aws/sagemaker/ProcessingJobs` / `md1-e2e-vsfm-splatfacto-cfix-202605150946-compression/algo-1-1778838426`.
+    - Snapshot `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-cfix-202605150946-cloudwatch-20260515T1205Z.json`.
+    - Text `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-cfix-202605150946-cloudwatch-20260515T1205Z.txt`.
+    - Progress changed materially: the first single-bundle `splat-transform -w -g cpu .../splat.ply .../generated_bundle/meta.json` passed the old 3600s timeout barrier, LOD input generation completed through `lod3.ply` (`39365` gaussians loaded, `done in 142.775569473s`), and the job is now running the LOD bundle command:
+      - `splat-transform -w -g cpu -C 1024 -X 32 /opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply -l 0 /tmp/sogs-work-yalufyvo/lod_inputs/lod1.ply -l 1 /tmp/sogs-work-yalufyvo/lod_inputs/lod2.ply -l 2 /tmp/sogs-work-yalufyvo/lod_inputs/lod3.ply -l 3 /tmp/sogs-work-yalufyvo/generated_bundle/lod-meta.json`.
+- Commands run this poll:
+  - `aws sagemaker describe-processing-job --processing-job-name md1-e2e-vsfm-splatfacto-cfix-202605150946-compression --region us-west-2 --output json`.
+  - `aws logs get-log-events --log-group-name /aws/sagemaker/ProcessingJobs --log-stream-name md1-e2e-vsfm-splatfacto-cfix-202605150946-compression/algo-1-1778838426 --region us-west-2 --start-from-head --output json`.
+  - `aws s3 ls s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-splatfacto-cfix-202605150946/ --recursive --summarize --human-readable --region us-west-2`.
+  - `aws stepfunctions describe-execution --execution-arn arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-cfix-202605150946 --region us-west-2 --output json`.
+  - `gh run list --branch agent-113647-md1-baseline-e2e --limit 8 --json databaseId,workflowName,headSha,status,conclusion,createdAt,url`.
+- Next step:
+  - Continue monitoring this compression-only retry. No duplicate SfM, 3DGS, or compression job is warranted. If the LOD transform completes, validate the uploaded bundle, gaussian counts/file sizes, and the deployed no-sky viewer before accepting the MD1 baseline.
+
+### 2026-05-15T07:04:44-0600
+
+- Verification before action:
+  - Branch/head: `agent-113647-md1-baseline-e2e` @ `de00f0d7707a1fa76b1e8b50ebf188531e4bf022`.
+  - Local dirty/untracked files remain poll artifacts and existing viewer smoke outputs; no code changes.
+  - `aws sts get-caller-identity --output json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+  - Exact-head GitHub workflow: `CDK Deploy` run `25911519106` @ `de00f0d7707a1fa76b1e8b50ebf188531e4bf022` -> `success`.
+- Current active AWS state:
+  - Running Step Functions executions:
+    - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-cfix-202605150946`.
+  - InProgress processing jobs:
+    - This run: `md1-e2e-vsfm-splatfacto-cfix-202605150946-compression` -> `InProgress`.
+  - InProgress training jobs:
+    - External/not owned by this automation: `md1-worst447-ds1500-r27-1778846018` -> `InProgress`; left untouched.
+- Compression-only retry status:
+  - Step Functions execution:
+    - `status=RUNNING`.
+    - Snapshot `logs/md1-baseline-e2e/stepfunctions-describe-md1-e2e-vsfm-splatfacto-cfix-202605150946-20260515T1304Z.json`.
+  - SageMaker processing:
+    - `ProcessingJobName=md1-e2e-vsfm-splatfacto-cfix-202605150946-compression`.
+    - `ProcessingJobStatus=InProgress`.
+    - `ProcessingStartTime=2026-05-15T03:47:07.043000-0600`.
+    - `ProcessingEndTime=null`.
+    - `FailureReason=null`.
+    - `ImageUri=975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor:agent113647md1baselinee2e`.
+    - `InstanceType=ml.g4dn.xlarge`.
+    - Snapshot `logs/md1-baseline-e2e/sagemaker-describe-md1-e2e-vsfm-splatfacto-cfix-202605150946-compression-20260515T1304Z.json`.
+  - Input:
+    - `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-splatfacto-202605150539/`.
+  - Output:
+    - `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-splatfacto-cfix-202605150946/`.
+    - Current S3 listing remains empty as expected until EndOfJob upload: `Total Objects: 0`, `Total Size: 0 Bytes`.
+    - S3 listing snapshot `logs/md1-baseline-e2e/s3-compressed-md1-e2e-vsfm-splatfacto-cfix-202605150946-20260515T1304Z.txt`.
+  - CloudWatch log:
+    - Log stream `/aws/sagemaker/ProcessingJobs` / `md1-e2e-vsfm-splatfacto-cfix-202605150946-compression/algo-1-1778838426`.
+    - Snapshot `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-cfix-202605150946-cloudwatch-20260515T1304Z.json`.
+    - Text `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-cfix-202605150946-cloudwatch-20260515T1304Z.txt`.
+    - Latest visible command remains the LOD bundle transform:
+      - `splat-transform -w -g cpu -C 1024 -X 32 /opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply -l 0 /tmp/sogs-work-yalufyvo/lod_inputs/lod1.ply -l 1 /tmp/sogs-work-yalufyvo/lod_inputs/lod2.ply -l 2 /tmp/sogs-work-yalufyvo/lod_inputs/lod3.ply -l 3 /tmp/sogs-work-yalufyvo/generated_bundle/lod-meta.json`.
+    - Important progress still holds: the first single-bundle transform completed in `6499.789827272s`, which proves the 14400s timeout fix crossed the prior 3600s failure point; no OOM, timeout, or failure is visible.
+- Commands run this poll:
+  - `aws sagemaker describe-processing-job --processing-job-name md1-e2e-vsfm-splatfacto-cfix-202605150946-compression --region us-west-2 --output json`.
+  - `aws logs get-log-events --log-group-name /aws/sagemaker/ProcessingJobs --log-stream-name md1-e2e-vsfm-splatfacto-cfix-202605150946-compression/algo-1-1778838426 --region us-west-2 --start-from-head --output json`.
+  - `aws s3 ls s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-splatfacto-cfix-202605150946/ --recursive --summarize --human-readable --region us-west-2`.
+  - `aws stepfunctions describe-execution --execution-arn arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-cfix-202605150946 --region us-west-2 --output json`.
+  - `gh run list --branch agent-113647-md1-baseline-e2e --limit 8 --json databaseId,workflowName,headSha,status,conclusion,createdAt,url`.
+- Next step:
+  - Continue monitoring this compression-only retry. No duplicate SfM, 3DGS, or compression job is warranted. If the LOD transform completes, validate the uploaded bundle, gaussian counts/file sizes, and the deployed no-sky viewer before accepting the MD1 baseline.
+
+### 2026-05-15T04:03:27-0600
+
+- Verification before action:
+  - Branch/head: `agent-113647-md1-baseline-e2e` @ `de00f0d7707a1fa76b1e8b50ebf188531e4bf022`.
+  - Dirty/untracked local files are poll artifacts and existing viewer smoke outputs; no code changes.
+  - `aws sts get-caller-identity --region us-west-2` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+  - Exact-head GitHub workflow: `CDK Deploy` run `25911519106` @ `de00f0d7707a1fa76b1e8b50ebf188531e4bf022` -> `success`.
+- Current active AWS state:
+  - Running Step Functions executions:
+    - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-cfix-202605150946`.
+  - InProgress processing jobs:
+    - This run: `md1-e2e-vsfm-splatfacto-cfix-202605150946-compression` -> `InProgress`.
+  - InProgress training jobs:
+    - External/not owned by this automation: `md1-r0vissent-v5relax-1778837840-tile-04` -> `InProgress` / `Training`; left untouched.
+- Compression-only retry status:
+  - Step Functions execution:
+    - `status=RUNNING`.
+    - Snapshot `logs/md1-baseline-e2e/stepfunctions-describe-md1-e2e-vsfm-splatfacto-cfix-202605150946-20260515T1003Z.json`.
+  - SageMaker processing:
+    - `ProcessingJobName=md1-e2e-vsfm-splatfacto-cfix-202605150946-compression`.
+    - `ProcessingJobStatus=InProgress`.
+    - `ProcessingStartTime=2026-05-15T03:47:07.043000-0600`.
+    - `ProcessingEndTime=null`.
+    - `FailureReason=null`.
+    - `InstanceType=ml.g4dn.xlarge`.
+    - Snapshot `logs/md1-baseline-e2e/sagemaker-describe-md1-e2e-vsfm-splatfacto-cfix-202605150946-compression-20260515T1003Z.json`.
+  - Input:
+    - `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-splatfacto-202605150539/`.
+  - Output:
+    - `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-splatfacto-cfix-202605150946/`.
+    - Current S3 listing: `Total Objects: 0`, `Total Size: 0 Bytes`, expected until EndOfJob upload.
+    - S3 listing snapshot `logs/md1-baseline-e2e/s3-compressed-md1-e2e-vsfm-splatfacto-cfix-202605150946-20260515T1003Z.txt`.
+  - CloudWatch log:
+    - Log stream `/aws/sagemaker/ProcessingJobs` / `md1-e2e-vsfm-splatfacto-cfix-202605150946-compression/algo-1-1778838426`.
+    - Snapshot `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-cfix-202605150946-cloudwatch-20260515T1003Z.json`.
+    - Text `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-cfix-202605150946-cloudwatch-20260515T1003Z.txt`.
+    - Latest line remains the first long-running command: `splat-transform -w -g cpu .../splat.ply .../generated_bundle/meta.json`.
+    - The patched timeout is still proven active in the same log stream: `transform_timeout=14400s, lod_transform_timeout=14400s`.
+- Next step:
+  - Continue waiting; the retry has only been inside the patched 14400s single-bundle transform for about 16 minutes. Do not launch any duplicate compression or training job.
+
+### 2026-05-15T04:33:26-0600
+
+- Verification before action:
+  - Branch/head: `agent-113647-md1-baseline-e2e` @ `de00f0d7707a1fa76b1e8b50ebf188531e4bf022`.
+  - Dirty/untracked local files are poll artifacts and existing viewer smoke outputs; no code changes.
+  - `aws sts get-caller-identity --region us-west-2` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+  - Exact-head GitHub workflow: `CDK Deploy` run `25911519106` @ `de00f0d7707a1fa76b1e8b50ebf188531e4bf022` -> `success`.
+- Current active AWS state:
+  - Running Step Functions executions:
+    - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-cfix-202605150946`.
+  - InProgress processing jobs:
+    - This run: `md1-e2e-vsfm-splatfacto-cfix-202605150946-compression` -> `InProgress`.
+  - InProgress training jobs:
+    - External/not owned by this automation: `md1-worst447-ds1000-r26-1778840348` -> `InProgress` / `Training`; left untouched.
+- Compression-only retry status:
+  - Step Functions execution:
+    - `status=RUNNING`.
+    - Snapshot `logs/md1-baseline-e2e/stepfunctions-describe-md1-e2e-vsfm-splatfacto-cfix-202605150946-20260515T1033Z.json`.
+  - SageMaker processing:
+    - `ProcessingJobName=md1-e2e-vsfm-splatfacto-cfix-202605150946-compression`.
+    - `ProcessingJobStatus=InProgress`.
+    - `ProcessingStartTime=2026-05-15T03:47:07.043000-0600`.
+    - `ProcessingEndTime=null`.
+    - `FailureReason=null`.
+    - `InstanceType=ml.g4dn.xlarge`.
+    - Snapshot `logs/md1-baseline-e2e/sagemaker-describe-md1-e2e-vsfm-splatfacto-cfix-202605150946-compression-20260515T1033Z.json`.
+  - Input:
+    - `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-splatfacto-202605150539/`.
+  - Output:
+    - `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-splatfacto-cfix-202605150946/`.
+    - Current S3 listing remains empty as expected until EndOfJob upload: `Total Objects: 0`, `Total Size: 0 Bytes`.
+    - S3 listing snapshot `logs/md1-baseline-e2e/s3-compressed-md1-e2e-vsfm-splatfacto-cfix-202605150946-20260515T1033Z.txt`.
+  - CloudWatch log:
+    - Log stream `/aws/sagemaker/ProcessingJobs` / `md1-e2e-vsfm-splatfacto-cfix-202605150946-compression/algo-1-1778838426`.
+    - Snapshot `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-cfix-202605150946-cloudwatch-20260515T1033Z.json`.
+    - Text `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-cfix-202605150946-cloudwatch-20260515T1033Z.txt`.
+    - Latest line remains the first long-running command: `splat-transform -w -g cpu .../splat.ply .../generated_bundle/meta.json`.
+    - The patched timeout remains active: `transform_timeout=14400s, lod_transform_timeout=14400s`.
+- Next step:
+  - Continue waiting; the retry has been inside the patched 14400s single-bundle transform for about 46 minutes. Do not launch any duplicate compression or training job.
+
+### 2026-05-15T05:03:38-0600
+
+- Verification before action:
+  - Branch/head: `agent-113647-md1-baseline-e2e` @ `de00f0d7707a1fa76b1e8b50ebf188531e4bf022`.
+  - Dirty/untracked local files are poll artifacts and existing viewer smoke outputs; no code changes.
+  - `aws sts get-caller-identity --region us-west-2` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+  - Exact-head GitHub workflow: `CDK Deploy` run `25911519106` @ `de00f0d7707a1fa76b1e8b50ebf188531e4bf022` -> `success`.
+- Current active AWS state:
+  - Running Step Functions executions:
+    - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-cfix-202605150946`.
+  - InProgress processing jobs:
+    - This run: `md1-e2e-vsfm-splatfacto-cfix-202605150946-compression` -> `InProgress`.
+  - InProgress training jobs:
+    - External/not owned by this automation: `md1-worst447-ds1000-r26-1778840348` -> `InProgress` / `Training`; left untouched.
+- Compression-only retry status:
+  - Step Functions execution:
+    - `status=RUNNING`.
+    - Snapshot `logs/md1-baseline-e2e/stepfunctions-describe-md1-e2e-vsfm-splatfacto-cfix-202605150946-20260515T1103Z.json`.
+  - SageMaker processing:
+    - `ProcessingJobName=md1-e2e-vsfm-splatfacto-cfix-202605150946-compression`.
+    - `ProcessingJobStatus=InProgress`.
+    - `ProcessingStartTime=2026-05-15T03:47:07.043000-0600`.
+    - `ProcessingEndTime=null`.
+    - `FailureReason=null`.
+    - `InstanceType=ml.g4dn.xlarge`.
+    - Snapshot `logs/md1-baseline-e2e/sagemaker-describe-md1-e2e-vsfm-splatfacto-cfix-202605150946-compression-20260515T1103Z.json`.
+  - Input:
+    - `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-splatfacto-202605150539/`.
+  - Output:
+    - `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-splatfacto-cfix-202605150946/`.
+    - Current S3 listing remains empty as expected until EndOfJob upload: `Total Objects: 0`, `Total Size: 0 Bytes`.
+    - S3 listing snapshot `logs/md1-baseline-e2e/s3-compressed-md1-e2e-vsfm-splatfacto-cfix-202605150946-20260515T1103Z.txt`.
+  - CloudWatch log:
+    - Log stream `/aws/sagemaker/ProcessingJobs` / `md1-e2e-vsfm-splatfacto-cfix-202605150946-compression/algo-1-1778838426`.
+    - Snapshot `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-cfix-202605150946-cloudwatch-20260515T1103Z.json`.
+    - Text `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-cfix-202605150946-cloudwatch-20260515T1103Z.txt`.
+    - Latest line remains the first long-running command: `splat-transform -w -g cpu .../splat.ply .../generated_bundle/meta.json`.
+    - The patched timeout remains active: `transform_timeout=14400s, lod_transform_timeout=14400s`.
+- Next step:
+  - Continue waiting; the retry has been inside the patched 14400s single-bundle transform for about 76 minutes. Do not launch any duplicate compression or training job.
+
+### 2026-05-15T05:33:36-0600
+
+- Verification before action:
+  - Branch/head: `agent-113647-md1-baseline-e2e` @ `de00f0d7707a1fa76b1e8b50ebf188531e4bf022`.
+  - Dirty/untracked local files are poll artifacts and existing viewer smoke outputs; no code changes.
+  - `aws sts get-caller-identity --region us-west-2` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+  - Exact-head GitHub workflow: `CDK Deploy` run `25911519106` @ `de00f0d7707a1fa76b1e8b50ebf188531e4bf022` -> `success`.
+- Current active AWS state:
+  - Running Step Functions executions:
+    - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-cfix-202605150946`.
+  - InProgress processing jobs:
+    - This run: `md1-e2e-vsfm-splatfacto-cfix-202605150946-compression` -> `InProgress`.
+  - InProgress training jobs:
+    - None returned by the poll.
+- Compression-only retry status:
+  - Step Functions execution:
+    - `status=RUNNING`.
+    - Snapshot `logs/md1-baseline-e2e/stepfunctions-describe-md1-e2e-vsfm-splatfacto-cfix-202605150946-20260515T1133Z.json`.
+  - SageMaker processing:
+    - `ProcessingJobName=md1-e2e-vsfm-splatfacto-cfix-202605150946-compression`.
+    - `ProcessingJobStatus=InProgress`.
+    - `ProcessingStartTime=2026-05-15T03:47:07.043000-0600`.
+    - `ProcessingEndTime=null`.
+    - `FailureReason=null`.
+    - `InstanceType=ml.g4dn.xlarge`.
+    - Snapshot `logs/md1-baseline-e2e/sagemaker-describe-md1-e2e-vsfm-splatfacto-cfix-202605150946-compression-20260515T1133Z.json`.
+  - Input:
+    - `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-splatfacto-202605150539/`.
+  - Output:
+    - `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-splatfacto-cfix-202605150946/`.
+    - Current S3 listing remains empty as expected until EndOfJob upload: `Total Objects: 0`, `Total Size: 0 Bytes`.
+    - S3 listing snapshot `logs/md1-baseline-e2e/s3-compressed-md1-e2e-vsfm-splatfacto-cfix-202605150946-20260515T1133Z.txt`.
+  - CloudWatch log:
+    - Log stream `/aws/sagemaker/ProcessingJobs` / `md1-e2e-vsfm-splatfacto-cfix-202605150946-compression/algo-1-1778838426`.
+    - Snapshot `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-cfix-202605150946-cloudwatch-20260515T1133Z.json`.
+    - Text `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-cfix-202605150946-cloudwatch-20260515T1133Z.txt`.
+    - Latest line remains the first long-running command: `splat-transform -w -g cpu .../splat.ply .../generated_bundle/meta.json`.
+    - The patched timeout remains active: `transform_timeout=14400s, lod_transform_timeout=14400s`.
+- Next step:
+  - Continue waiting; the retry has been inside the patched 14400s single-bundle transform for about 106 minutes. Do not launch any duplicate compression or training job.
+
 ### 2026-05-15T03:33:23-0600
 
 - Verification before action:
@@ -1540,6 +1801,22 @@ Produce a development-based MD1 baseline with:
 - Next step:
   - Continue monitoring this compression-only retry. S3 output is expected to remain empty until EndOfJob upload. If it completes, validate the SuperSplat bundle, gaussian count/file size, and deployed no-sky viewer. If it fails, capture exact CloudWatch logs and patch only that proven failure.
 
+### 2026-05-15T03:56:00-0600
+
+- Ledger commit/push:
+  - Commit: `de00f0d7707a1fa76b1e8b50ebf188531e4bf022` (`chore: launch md1 compression retry`).
+  - Push: `git push origin agent-113647-md1-baseline-e2e` -> `5682b213..de00f0d7`.
+- Exact-head workflow verification:
+  - `gh run watch 25911519106 --exit-status` -> `CDK Deploy` succeeded for head `de00f0d7707a1fa76b1e8b50ebf188531e4bf022`.
+- Current retry still active at the last status check:
+  - `aws sagemaker describe-processing-job --processing-job-name md1-e2e-vsfm-splatfacto-cfix-202605150946-compression --region us-west-2`:
+    - `ProcessingJobStatus=InProgress`.
+    - `ProcessingStartTime=2026-05-15T03:47:07.043000-0600`.
+    - `ProcessingEndTime=null`.
+    - `FailureReason=null`.
+- Next step:
+  - Keep monitoring compression-only retry `md1-e2e-vsfm-splatfacto-cfix-202605150946-compression`; do not launch more jobs unless it fails or completes and the smallest next stage is clear.
+
 ### 2026-05-15T03:03:20-0600
 
 - Verification before action:
@@ -1580,3 +1857,112 @@ Produce a development-based MD1 baseline with:
     - `logs/md1-baseline-e2e/s3-compressed-md1-e2e-vsfm-splatfacto-202605150539-20260515T0903Z.txt`.
 - Next step:
   - Continue monitoring compression. If it completes, validate bundle files/summary, gaussian count/file size, and smoke the deployed `/md1-viewer` with no skybox against the new standard-splatfacto manifest before accepting the baseline. If compression fails, capture exact processing logs and patch only that proven failure.
+
+### 2026-05-15T06:34:43-0600
+
+- Verification before action:
+  - Branch/head: `agent-113647-md1-baseline-e2e` @ `de00f0d7707a1fa76b1e8b50ebf188531e4bf022`.
+  - Local dirty/untracked files remain poll artifacts and existing viewer smoke outputs; no code changes.
+  - `aws sts get-caller-identity --output json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+  - Exact-head GitHub workflow: `CDK Deploy` run `25911519106` @ `de00f0d7707a1fa76b1e8b50ebf188531e4bf022` -> `success`.
+- Current active AWS state:
+  - Running Step Functions executions:
+    - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-cfix-202605150946`.
+  - InProgress processing jobs:
+    - This run: `md1-e2e-vsfm-splatfacto-cfix-202605150946-compression` -> `InProgress`.
+  - InProgress training jobs:
+    - External/not owned by this automation: `md1-worst447-ds1500-r27-1778846018` -> `InProgress`; left untouched.
+- Compression-only retry status:
+  - Step Functions execution:
+    - `status=RUNNING`.
+    - Snapshot `logs/md1-baseline-e2e/stepfunctions-describe-md1-e2e-vsfm-splatfacto-cfix-202605150946-20260515T1234Z.json`.
+  - SageMaker processing:
+    - `ProcessingJobName=md1-e2e-vsfm-splatfacto-cfix-202605150946-compression`.
+    - `ProcessingJobStatus=InProgress`.
+    - `ProcessingStartTime=2026-05-15T03:47:07.043000-0600`.
+    - `ProcessingEndTime=null`.
+    - `FailureReason=null`.
+    - `ImageUri=975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor:agent113647md1baselinee2e`.
+    - `InstanceType=ml.g4dn.xlarge`.
+    - Snapshot `logs/md1-baseline-e2e/sagemaker-describe-md1-e2e-vsfm-splatfacto-cfix-202605150946-compression-20260515T1234Z.json`.
+  - Input:
+    - `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-splatfacto-202605150539/`.
+  - Output:
+    - `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-splatfacto-cfix-202605150946/`.
+    - Current S3 listing remains empty as expected until EndOfJob upload: `Total Objects: 0`, `Total Size: 0 Bytes`.
+    - S3 listing snapshot `logs/md1-baseline-e2e/s3-compressed-md1-e2e-vsfm-splatfacto-cfix-202605150946-20260515T1234Z.txt`.
+  - CloudWatch log:
+    - Log stream `/aws/sagemaker/ProcessingJobs` / `md1-e2e-vsfm-splatfacto-cfix-202605150946-compression/algo-1-1778838426`.
+    - Snapshot `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-cfix-202605150946-cloudwatch-20260515T1234Z.json`.
+    - Text `logs/md1-baseline-e2e/compression-md1-e2e-vsfm-splatfacto-cfix-202605150946-cloudwatch-20260515T1234Z.txt`.
+    - Latest visible command remains the LOD bundle transform:
+      - `splat-transform -w -g cpu -C 1024 -X 32 /opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply -l 0 /tmp/sogs-work-yalufyvo/lod_inputs/lod1.ply -l 1 /tmp/sogs-work-yalufyvo/lod_inputs/lod2.ply -l 2 /tmp/sogs-work-yalufyvo/lod_inputs/lod3.ply -l 3 /tmp/sogs-work-yalufyvo/generated_bundle/lod-meta.json`.
+    - Prior progress still holds: the first single-bundle transform passed the old 3600s timeout barrier and LOD input generation completed through `lod3.ply`; no OOM, timeout, or failure is visible.
+- Commands run this poll:
+  - `aws sagemaker describe-processing-job --processing-job-name md1-e2e-vsfm-splatfacto-cfix-202605150946-compression --region us-west-2 --output json`.
+  - `aws logs get-log-events --log-group-name /aws/sagemaker/ProcessingJobs --log-stream-name md1-e2e-vsfm-splatfacto-cfix-202605150946-compression/algo-1-1778838426 --region us-west-2 --start-from-head --output json`.
+  - `aws s3 ls s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-splatfacto-cfix-202605150946/ --recursive --summarize --human-readable --region us-west-2`.
+  - `aws stepfunctions describe-execution --execution-arn arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-cfix-202605150946 --region us-west-2 --output json`.
+  - `gh run list --branch agent-113647-md1-baseline-e2e --limit 8 --json databaseId,workflowName,headSha,status,conclusion,createdAt,url`.
+- Next step:
+  - Continue monitoring this compression-only retry. No duplicate SfM, 3DGS, or compression job is warranted. If the LOD transform completes, validate the uploaded bundle, gaussian counts/file sizes, and the deployed no-sky viewer before accepting the MD1 baseline.
+
+### 2026-05-15T08:01:00-0600
+
+- Verification before action:
+  - Branch/head: `agent-113647-md1-baseline-e2e` @ `de00f0d7707a1fa76b1e8b50ebf188531e4bf022`.
+  - `aws sts get-caller-identity --region us-west-2 --output json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+  - Running Step Functions executions: none (`aws stepfunctions list-executions ... --status-filter RUNNING` -> `executions: []`).
+  - SageMaker InProgress processing jobs: none (`logs/md1-baseline-e2e/sagemaker-processing-inprogress-20260515T1401Z.json`).
+  - SageMaker InProgress training jobs: one external job `md1-worst447-ds1000-r28-1778852094`, left untouched (`logs/md1-baseline-e2e/sagemaker-training-inprogress-20260515T1401Z.json`).
+  - Exact-head GitHub workflow still green: `CDK Deploy` run `25911519106` @ `de00f0d7707a1fa76b1e8b50ebf188531e4bf022` -> `success`.
+- Compression-only retry completed successfully:
+  - Step Functions execution:
+    - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-cfix-202605150946`.
+    - `status=SUCCEEDED`, `stopDate=2026-05-15T07:32:15.265000-0600`.
+    - Snapshot: `logs/md1-baseline-e2e/stepfunctions-describe-md1-e2e-vsfm-splatfacto-cfix-202605150946-20260515T1354Z.json`.
+  - SageMaker processing job:
+    - `md1-e2e-vsfm-splatfacto-cfix-202605150946-compression`.
+    - `ProcessingJobStatus=Completed`, `ProcessingStartTime=2026-05-15T03:47:07.043000-0600`, `ProcessingEndTime=2026-05-15T07:27:58.895000-0600`.
+    - Snapshot: `logs/md1-baseline-e2e/sagemaker-describe-md1-e2e-vsfm-splatfacto-cfix-202605150946-compression-20260515T1354Z.json`.
+  - Staging output:
+    - `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-splatfacto-cfix-202605150946/`.
+    - `Total Objects: 45`, `Total Size: 22.2 MiB`.
+    - Listing: `logs/md1-baseline-e2e/s3-compressed-md1-e2e-vsfm-splatfacto-cfix-202605150946-20260515T1354Z.txt`.
+  - Bundle metadata:
+    - `sogs_compression_summary.json`: original `310.344 MB`, compressed `22.24 MB`, compression ratio `13.9543`, `lodLevels=4`, `chunkFiles=4`, `skybox=null`.
+    - Root single bundle `meta.json`: `count=1312166`.
+    - LOD manifest `lod-meta.json`: LOD0 `1,312,166`, LOD1 `393,650`, LOD2 `131,217`, LOD3 `39,365`.
+    - Metadata snapshots:
+      - `logs/md1-baseline-e2e/md1-e2e-vsfm-splatfacto-cfix-202605150946-sogs_compression_summary.json`.
+      - `logs/md1-baseline-e2e/md1-e2e-vsfm-splatfacto-cfix-202605150946-meta.json`.
+      - `logs/md1-baseline-e2e/md1-e2e-vsfm-splatfacto-cfix-202605150946-lod-meta.json`.
+- Public artifact handoff:
+  - Staging objects are SSE-KMS and cannot be fetched anonymously from the staging bucket, so the validated bundle was copied to the public processing bucket with:
+    - `aws s3 sync s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-splatfacto-cfix-202605150946/ s3://spaceport-ml-processing/compressed/md1-e2e-vsfm-splatfacto-cfix-202605150946/ --region us-west-2 --sse AES256`
+  - Public root manifest:
+    - `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-e2e-vsfm-splatfacto-cfix-202605150946/supersplat_bundle/meta.json`.
+  - Public LOD manifest:
+    - `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-e2e-vsfm-splatfacto-cfix-202605150946/supersplat_bundle/lod-meta.json`.
+  - Public `lod-meta.json` GET returned `200`; proof:
+    - `logs/md1-baseline-e2e/public-lod-meta-md1-e2e-vsfm-splatfacto-cfix-202605150946-headers.txt`.
+    - `logs/md1-baseline-e2e/public-lod-meta-md1-e2e-vsfm-splatfacto-cfix-202605150946-body.json`.
+- Visual/debug gate:
+  - The generated LOD root loaded but rendered black in the current route; direct inner-viewer checks showed root `meta.json` and chunk `0_0/meta.json` render visible pixels, so this branch now supports single-bundle validation URLs as the smallest proven viewer handoff.
+  - PLY diagnostics for the standard splatfacto training output are recorded at `logs/md1-baseline-e2e/md1-e2e-vsfm-splatfacto-202605150539-ply-diagnostics-20260515T1342Z.json`.
+  - Viewer patch:
+    - `web/lib/sogsViewerBundle.ts` now extracts single-bundle `means.mins/maxs` bounds and `count`.
+    - `web/components/md1-viewer/Md1ProductionViewer.tsx` now auto-frames non-production custom bundles from manifest bounds and preserves explicit camera/scene query overrides.
+    - `web/scripts/test-md1-production-viewer.mjs` now supports `MD1_EXPECT_ROOT_FILE=meta.json` for single-bundle smoke checks.
+  - Local validation:
+    - `npm run build` -> pass; pre-existing lint warnings only.
+    - `python3 -m unittest tests.unit.test_sogs_supersplat_bundle` -> pass (`Ran 7 tests`).
+    - `git diff --check` -> pass.
+    - `MD1_VIEWER_URL=http://127.0.0.1:3032 MD1_LOD_URL=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-e2e-vsfm-splatfacto-cfix-202605150946/supersplat_bundle/meta.json MD1_EXPECT_ROOT_FILE=meta.json MD1_RUN_NO_SKY=1 node web/scripts/test-md1-production-viewer.mjs` -> pass.
+  - Local no-sky proof:
+    - Smoke log: `logs/md1-baseline-e2e/md1-e2e-vsfm-splatfacto-cfix-202605150946-local-meta-nosky-smoke-20260515T1359Z.log`.
+    - Results: `logs/md1-baseline-e2e/md1-e2e-vsfm-splatfacto-cfix-202605150946-local-meta-nosky-results-20260515T1359Z.json`.
+    - Desktop screenshot: `logs/md1-baseline-e2e/md1-e2e-vsfm-splatfacto-cfix-202605150946-local-meta-nosky-desktop-nosky-20260515T1359Z.png`.
+    - Metrics: desktop first frame `1216.3ms`, mobile first frame `1376.8ms`, desktop no-sky first frame `1324.9ms`, `bundleKind=single`, `rootFile=meta.json`, `Full source=1,312,166`.
+- Next step:
+  - Commit and push the viewer single-bundle framing fix, watch the exact-head Pages and CDK runs, then run the deployed `/md1-viewer` smoke against the public `meta.json` URL. If deployed smoke passes visually, provide the final URL and screenshots as proof.

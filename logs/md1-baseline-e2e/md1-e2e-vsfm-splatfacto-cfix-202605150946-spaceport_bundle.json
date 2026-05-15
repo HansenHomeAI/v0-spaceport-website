@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "skybox": null,
+  "entrypoints": {
+    "default": "lod-meta.json",
+    "fallback": "meta.json"
+  },
+  "streaming": {
+    "enabled": true,
+    "lodLevels": 4,
+    "chunkFiles": 4,
+    "bounds": {
+      "min": [
+        -0.0548525,
+        -0.05891666,
+        -0.09158024
+      ],
+      "max": [
+        0.07467244,
+        0.05929113,
+        0.04844567
+      ]
+    }
+  }
+}

@@ -1,0 +1,8 @@
+2026-05-15 09:47:36,147 - INFO - Executing: splat-transform --version
+2026-05-15 09:47:36,291 - INFO - splat-transform v1.10.2
+2026-05-15 09:47:36,291 - INFO - Using splat-transform splat-transform v1.10.2 (device=cpu, lod_decimation=30%,10%,3%, chunk_count=1024K, chunk_extent=32, transform_timeout=14400s, lod_transform_timeout=14400s)
+2026-05-15 09:47:36,291 - INFO - Starting SuperSplat compression job
+2026-05-15 09:47:36,293 - INFO - Extracting archive /opt/ml/processing/input/md1-e2e-vsfm-splatfacto-202605150539-3dgs/output/model.tar.gz -> /opt/ml/processing/input/__extracted_archives/00-model-tar
+2026-05-15 09:47:38,146 - INFO - Selected ply source: /opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply
+2026-05-15 09:47:38,146 - INFO - Supporting files discovered: ['training_metadata.json']
+2026-05-15 09:47:38,147 - INFO - Executing: splat-transform -w -g cpu /opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply /tmp/sogs-work-yalufyvo/generated_bundle/meta.json

@@ -1,0 +1,65 @@
+2026-05-15 08:08:27,464 - INFO - ✅ NerfStudio training completed successfully
+2026-05-15 08:08:27,464 - INFO - 📊 Training output:
+2026-05-15 08:08:27,465 - INFO -    29500 (98.33%)      46.891 ms            23 s, 445.749 ms     12.65 M              11.18 M               #033[0m
+2026-05-15 08:08:27,465 - INFO -    29600 (98.67%)      53.475 ms            21 s, 390.076 ms     10.62 M              11.17 M               #033[0m
+2026-05-15 08:08:27,465 - INFO -    29700 (99.00%)      48.238 ms            14 s, 471.508 ms     11.89 M              11.02 M               #033[0m
+2026-05-15 08:08:27,465 - INFO -    29800 (99.33%)      50.971 ms            10 s, 194.190 ms     11.43 M              10.80 M               #033[0m
+2026-05-15 08:08:27,465 - INFO -    29900 (99.67%)      49.674 ms            4 s, 967.386 ms      11.50 M              10.48 M               #033[0m
+2026-05-15 08:08:27,465 - INFO -    29999 (100.00%)                                                                                          #033[0m
+2026-05-15 08:08:27,465 - INFO -    ╭───────────────────────────────────────────── 🎉 Training Finished 🎉 ─────────────────────────────────────────────╮
+2026-05-15 08:08:27,465 - INFO -    │                        ╷                                                                                          │
+2026-05-15 08:08:27,465 - INFO -    │   Config File          │ /tmp/nerfstudio_training/converted_data/splatfacto/2026-05-15_055038/config.yml          │
+2026-05-15 08:08:27,465 - INFO -    │   Checkpoint Directory │ /tmp/nerfstudio_training/converted_data/splatfacto/2026-05-15_055038/nerfstudio_models   │
+2026-05-15 08:08:27,465 - INFO -    │                        ╵                                                                                          │
+2026-05-15 08:08:27,465 - INFO -    ╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+2026-05-15 08:08:27,465 - INFO -    Printing profiling stats, from longest to shortest duration in seconds
+2026-05-15 08:08:27,465 - INFO -    VanillaPipeline.get_average_eval_image_metrics: 7.3328
+2026-05-15 08:08:27,465 - INFO -    VanillaPipeline.get_average_image_metrics: 5.8491
+2026-05-15 08:08:27,465 - INFO -    Trainer.train_iteration: 0.2413
+2026-05-15 08:08:27,466 - INFO -    VanillaPipeline.get_train_loss_dict: 0.2302
+2026-05-15 08:08:27,466 - INFO -    VanillaPipeline.get_eval_image_metrics_and_images: 0.0693
+2026-05-15 08:08:27,466 - INFO -    Trainer.eval_iteration: 0.0079
+2026-05-15 08:08:27,466 - INFO - 📦 Exporting trained model artifacts...
+2026-05-15 08:08:27,475 - INFO - 📄 Using config: /tmp/nerfstudio_training/converted_data/splatfacto/2026-05-15_055038/config.yml
+2026-05-15 08:08:44,092 - INFO - 🌤️ Background camera selection:
+2026-05-15 08:08:44,096 - INFO -    Requested mode: auto_camera
+2026-05-15 08:08:44,097 - INFO -    Resolved mode: camera
+2026-05-15 08:08:44,097 - INFO -    Camera index: 30
+2026-05-15 08:08:44,097 - INFO -    Sampled candidates: 32
+2026-05-15 08:08:44,097 - INFO -    Source image: /tmp/nerfstudio_training/converted_data/images/frame_02127.JPG
+2026-05-15 08:08:44,097 - INFO -    Selection score: 0.6149
+2026-05-15 08:08:44,097 - INFO - 🔄 Executing export command:
+2026-05-15 08:08:44,097 - INFO -    ns-export gaussian-splat --load-config /tmp/nerfstudio_training/converted_data/splatfacto/2026-05-15_055038/config.yml --output-dir /opt/ml/model
+2026-05-15 08:12:56,159 - INFO - ✅ Model export completed successfully
+2026-05-15 08:12:56,160 - INFO - 📄 PLY file: splat.ply (310.3 MB)
+2026-05-15 08:12:56,160 - INFO - ✅ SOGS-compatible PLY format ready for compression
+2026-05-15 08:12:56,161 - INFO - 📋 Training metadata generated:
+2026-05-15 08:12:56,161 - INFO -    training_methodology: Spaceport splatfacto-w-light skybox export
+2026-05-15 08:12:56,161 - INFO -    framework: NerfStudio
+2026-05-15 08:12:56,162 - INFO -    model_variant: splatfacto
+2026-05-15 08:12:56,162 - INFO -    bilateral_guided_processing: False
+2026-05-15 08:12:56,162 - INFO -    sh_degree: 3
+2026-05-15 08:12:56,162 - INFO -    enable_bg_model: False
+2026-05-15 08:12:56,162 - INFO -    enable_alpha_loss: False
+2026-05-15 08:12:56,163 - INFO -    enable_robust_mask: False
+2026-05-15 08:12:56,163 - INFO -    max_iterations: 30000
+2026-05-15 08:12:56,163 - INFO -    commercial_license: Apache 2.0
+2026-05-15 08:12:56,163 - INFO -    sogs_compatible: True
+2026-05-15 08:12:56,163 - INFO -    playcanvas_ready: True
+2026-05-15 08:12:56,164 - INFO -    training_completed: True
+2026-05-15 08:12:56,164 - INFO -    timestamp: 1778832776.1610231
+2026-05-15 08:12:56,164 - INFO -    version: 1.0.0
+2026-05-15 08:12:56,164 - INFO -    output_file: splat.ply
+2026-05-15 08:12:56,164 - INFO -    file_size_mb: 310.34351539611816
+2026-05-15 08:12:56,164 - INFO -    background_selection: {'requested_mode': 'auto_camera', 'resolved_mode': 'camera', 'camera_idx': 30, 'image_path': '/tmp/nerfstudio_training/converted_data/images/frame_02127.JPG', 'score': 0.6148859597718186, 'stride': 5, 'max_frames': 32, 'sampled_candidates': 32}
+2026-05-15 08:12:56,165 - INFO -    floater_pruning: {'enabled': False, 'evaluated_gaussians': 0, 'candidate_gaussians': 0, 'removed_gaussians': 0, 'remaining_gaussians': 0, 'sampled_views': 0, 'min_views': 6, 'top_region_ratio': 0.35, 'top_view_fraction': 0.9, 'min_sky_views': 2, 'sky_min_luminance': 0.3, 'sky_min_saturation': 0.08, 'sky_blue_dominance_margin': 0.02, 'max_opacity': 0.75, 'max_color_distance': 0.18, 'min_edge_support': 1, 'patch_size': 9}
+2026-05-15 08:13:00,922 - INFO - 🧹 Temporary files cleaned up
+2026-05-15 08:13:00,923 - INFO - ================================================================================
+2026-05-15 08:13:00,923 - INFO - 🎉 NERFSTUDIO TRAINING PIPELINE COMPLETED SUCCESSFULLY!
+2026-05-15 08:13:00,923 - INFO - ✅ splatfacto-w-light foreground training completed
+2026-05-15 08:13:00,923 - INFO - ✅ SOGS-compatible PLY output generated
+2026-05-15 08:13:00,924 - INFO - ✅ Background skybox baked for the viewer
+2026-05-15 08:13:00,924 - INFO - ✅ Production-ready for PlayCanvas deployment
+2026-05-15 08:13:00,924 - INFO - 📁 Output directory: /opt/ml/model
+2026-05-15 08:13:00,924 - INFO - ================================================================================
+2026-05-15 08:13:00,925 - INFO - ✅ Training pipeline completed successfully

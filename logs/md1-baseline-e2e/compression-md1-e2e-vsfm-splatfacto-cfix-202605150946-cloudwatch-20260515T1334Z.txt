@@ -1,0 +1,251 @@
+2026-05-15 09:47:36,147 - INFO - Executing: splat-transform --version
+2026-05-15 09:47:36,291 - INFO - splat-transform v1.10.2
+2026-05-15 09:47:36,291 - INFO - Using splat-transform splat-transform v1.10.2 (device=cpu, lod_decimation=30%,10%,3%, chunk_count=1024K, chunk_extent=32, transform_timeout=14400s, lod_transform_timeout=14400s)
+2026-05-15 09:47:36,291 - INFO - Starting SuperSplat compression job
+2026-05-15 09:47:36,293 - INFO - Extracting archive /opt/ml/processing/input/md1-e2e-vsfm-splatfacto-202605150539-3dgs/output/model.tar.gz -> /opt/ml/processing/input/__extracted_archives/00-model-tar
+2026-05-15 09:47:38,146 - INFO - Selected ply source: /opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply
+2026-05-15 09:47:38,146 - INFO - Supporting files discovered: ['training_metadata.json']
+2026-05-15 09:47:38,147 - INFO - Executing: splat-transform -w -g cpu /opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply /tmp/sogs-work-yalufyvo/generated_bundle/meta.json
+2026-05-15 11:35:58,111 - INFO - splat-transform v1.10.2
+reading '/opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply'...
+Total gaussians loaded: 1312166
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/meta.json'...
+[1/8] Generating morton order
+[2/8] Writing positions
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/means_l.webp'...
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/means_u.webp'...
+[3/8] Writing quaternions
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/quats.webp'...
+[4/8] Compressing scales
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/scales.webp'...
+[5/8] Compressing colors
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/sh0.webp'...
+[6/8] Compressing spherical harmonics
+running k-means clustering: dims=45 points=1312166 clusters=65536 iterations=10...
+########## (6481.782s)
+[7/8] Quantizing spherical harmonics
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/shN_centroids.webp'...
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/shN_labels.webp'...
+[8/8] Finalizing
+done in 6499.789827272s
+2026-05-15 11:35:58,111 - INFO - Executing: splat-transform -w /opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply -F 30% /tmp/sogs-work-yalufyvo/lod_inputs/lod1.ply
+2026-05-15 11:37:51,935 - INFO - splat-transform v1.10.2
+reading '/opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply'...
+[1/5] Building KD-tree
+[2/5] Finding nearest neighbors
+########## (43.373s)
+[3/5] Computing edge costs
+########## (21.441s)
+[4/5] Merging splats
+########## (6.386s)
+[5/5] Finalizing
+[1/5] Building KD-tree
+[2/5] Finding nearest neighbors
+########## (20.557s)
+[3/5] Computing edge costs
+########## (10.869s)
+[4/5] Merging splats
+########## (2.917s)
+[5/5] Finalizing
+Total gaussians loaded: 393650
+writing '/tmp/sogs-work-yalufyvo/lod_inputs/lod1.ply'...
+done in 113.660840757s
+2026-05-15 11:37:51,935 - INFO - Executing: splat-transform -w /opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply -F 10% /tmp/sogs-work-yalufyvo/lod_inputs/lod2.ply
+2026-05-15 11:40:12,081 - INFO - splat-transform v1.10.2
+reading '/opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply'...
+[1/5] Building KD-tree
+[2/5] Finding nearest neighbors
+########## (45.527s)
+[3/5] Computing edge costs
+########## (23.248s)
+[4/5] Merging splats
+########## (6.378s)
+[5/5] Finalizing
+[1/5] Building KD-tree
+[2/5] Finding nearest neighbors
+########## (20.525s)
+[3/5] Computing edge costs
+########## (11.117s)
+[4/5] Merging splats
+########## (3.304s)
+[5/5] Finalizing
+[1/5] Building KD-tree
+[2/5] Finding nearest neighbors
+########## (8.952s)
+[3/5] Computing edge costs
+########## (5.061s)
+[4/5] Merging splats
+########## (1.586s)
+[5/5] Finalizing
+[1/5] Building KD-tree
+[2/5] Finding nearest neighbors
+########## (4.287s)
+[3/5] Computing edge costs
+########## (2.052s)
+[4/5] Merging splats
+########## (0.506s)
+[5/5] Finalizing
+Total gaussians loaded: 131217
+writing '/tmp/sogs-work-yalufyvo/lod_inputs/lod2.ply'...
+done in 140.000299501s
+2026-05-15 11:40:12,081 - INFO - Executing: splat-transform -w /opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply -F 3% /tmp/sogs-work-yalufyvo/lod_inputs/lod3.ply
+2026-05-15 11:42:35,003 - INFO - splat-transform v1.10.2
+reading '/opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply'...
+[1/5] Building KD-tree
+[2/5] Finding nearest neighbors
+########## (42.990s)
+[3/5] Computing edge costs
+########## (23.053s)
+[4/5] Merging splats
+########## (6.479s)
+[5/5] Finalizing
+[1/5] Building KD-tree
+[2/5] Finding nearest neighbors
+########## (20.486s)
+[3/5] Computing edge costs
+########## (11.385s)
+[4/5] Merging splats
+########## (3.408s)
+[5/5] Finalizing
+[1/5] Building KD-tree
+[2/5] Finding nearest neighbors
+########## (8.953s)
+[3/5] Computing edge costs
+########## (4.944s)
+[4/5] Merging splats
+########## (1.673s)
+[5/5] Finalizing
+[1/5] Building KD-tree
+[2/5] Finding nearest neighbors
+########## (4.346s)
+[3/5] Computing edge costs
+########## (2.188s)
+[4/5] Merging splats
+########## (0.853s)
+[5/5] Finalizing
+[1/5] Building KD-tree
+[2/5] Finding nearest neighbors
+########## (2.068s)
+[3/5] Computing edge costs
+########## (0.889s)
+[4/5] Merging splats
+########## (0.425s)
+[5/5] Finalizing
+[1/5] Building KD-tree
+[2/5] Finding nearest neighbors
+########## (0.977s)
+[3/5] Computing edge costs
+########## (0.370s)
+[4/5] Merging splats
+########## (0.093s)
+[5/5] Finalizing
+Total gaussians loaded: 39365
+writing '/tmp/sogs-work-yalufyvo/lod_inputs/lod3.ply'...
+done in 142.775569473s
+2026-05-15 11:42:35,003 - INFO - Executing: splat-transform -w -g cpu -C 1024 -X 32 /opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply -l 0 /tmp/sogs-work-yalufyvo/lod_inputs/lod1.ply -l 1 /tmp/sogs-work-yalufyvo/lod_inputs/lod2.ply -l 2 /tmp/sogs-work-yalufyvo/lod_inputs/lod3.ply -l 3 /tmp/sogs-work-yalufyvo/generated_bundle/lod-meta.json
+2026-05-15 13:27:41,130 - INFO - splat-transform v1.10.2
+reading '/opt/ml/processing/input/__extracted_archives/00-model-tar/splat.ply'...
+reading '/tmp/sogs-work-yalufyvo/lod_inputs/lod1.ply'...
+reading '/tmp/sogs-work-yalufyvo/lod_inputs/lod2.ply'...
+reading '/tmp/sogs-work-yalufyvo/lod_inputs/lod3.ply'...
+Total gaussians loaded: 1876398
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/lod-meta.json'...
+writing /tmp/sogs-work-yalufyvo/generated_bundle/1_0/meta.json...
+[1/8] Generating morton order
+[2/8] Writing positions
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/1_0/means_l.webp'...
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/1_0/means_u.webp'...
+[3/8] Writing quaternions
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/1_0/quats.webp'...
+[4/8] Compressing scales
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/1_0/scales.webp'...
+[5/8] Compressing colors
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/1_0/sh0.webp'...
+[6/8] Compressing spherical harmonics
+running k-means clustering: dims=45 points=393650 clusters=65536 iterations=10...
+########## (1041.402s)
+[7/8] Quantizing spherical harmonics
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/1_0/shN_centroids.webp'...
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/1_0/shN_labels.webp'...
+[8/8] Finalizing
+writing /tmp/sogs-work-yalufyvo/generated_bundle/0_0/meta.json...
+[1/8] Generating morton order
+[2/8] Writing positions
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/0_0/means_l.webp'...
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/0_0/means_u.webp'...
+[3/8] Writing quaternions
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/0_0/quats.webp'...
+[4/8] Compressing scales
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/0_0/scales.webp'...
+[5/8] Compressing colors
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/0_0/sh0.webp'...
+[6/8] Compressing spherical harmonics
+running k-means clustering: dims=45 points=1312166 clusters=65536 iterations=10...
+########## (4966.099s)
+[7/8] Quantizing spherical harmonics
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/0_0/shN_centroids.webp'...
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/0_0/shN_labels.webp'...
+[8/8] Finalizing
+writing /tmp/sogs-work-yalufyvo/generated_bundle/2_0/meta.json...
+[1/8] Generating morton order
+[2/8] Writing positions
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/2_0/means_l.webp'...
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/2_0/means_u.webp'...
+[3/8] Writing quaternions
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/2_0/quats.webp'...
+[4/8] Compressing scales
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/2_0/scales.webp'...
+[5/8] Compressing colors
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/2_0/sh0.webp'...
+[6/8] Compressing spherical harmonics
+running k-means clustering: dims=45 points=131217 clusters=65536 iterations=10...
+########## (222.665s)
+[7/8] Quantizing spherical harmonics
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/2_0/shN_centroids.webp'...
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/2_0/shN_labels.webp'...
+[8/8] Finalizing
+writing /tmp/sogs-work-yalufyvo/generated_bundle/3_0/meta.json...
+[1/8] Generating morton order
+[2/8] Writing positions
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/3_0/means_l.webp'...
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/3_0/means_u.webp'...
+[3/8] Writing quaternions
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/3_0/quats.webp'...
+[4/8] Compressing scales
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/3_0/scales.webp'...
+[5/8] Compressing colors
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/3_0/sh0.webp'...
+[6/8] Compressing spherical harmonics
+running k-means clustering: dims=45 points=39365 clusters=32768 iterations=10...
+########## (39.250s)
+[7/8] Quantizing spherical harmonics
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/3_0/shN_centroids.webp'...
+writing '/tmp/sogs-work-yalufyvo/generated_bundle/3_0/shN_labels.webp'...
+[8/8] Finalizing
+done in 6305.960336881s
+2026-05-15 13:27:41,151 - INFO - No trained skybox sidecar found; writing bundle without a skybox
+2026-05-15 13:27:41,174 - INFO - Compression complete
+2026-05-15 13:27:41,174 - INFO - Bundle output: /opt/ml/processing/output/supersplat_bundle
+2026-05-15 13:27:41,175 - INFO - Bundle metrics: {
+  "bundleDir": "/opt/ml/processing/output/supersplat_bundle",
+  "fileCount": 44,
+  "bundleSizeBytes": 23322259,
+  "hasMetaJson": true,
+  "hasLodMetaJson": true,
+  "splatCount": null,
+  "lodLevels": 4,
+  "chunkFiles": 4,
+  "lodTreeNodes": 2,
+  "bounds": {
+    "min": [
+      -0.0548525,
+      -0.05891666,
+      -0.09158024
+    ],
+    "max": [
+      0.07467244,
+      0.05929113,
+      0.04844567
+    ]
+  }
+}

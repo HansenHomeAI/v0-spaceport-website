@@ -1,0 +1,7 @@
+MD1 production viewer smoke: desktop
+MD1 production viewer smoke: desktop ready firstFrame=1216.3ms chunks=0
+MD1 production viewer smoke: mobile
+MD1 production viewer smoke: mobile ready firstFrame=1376.8ms chunks=0
+MD1 production viewer smoke: desktop-nosky
+MD1 production viewer smoke: desktop-nosky ready firstFrame=1324.9ms chunks=0
+MD1 production viewer smoke passed: /Users/gabrielhansen/MD1-Baseline/logs/md1-production-viewer-results.json

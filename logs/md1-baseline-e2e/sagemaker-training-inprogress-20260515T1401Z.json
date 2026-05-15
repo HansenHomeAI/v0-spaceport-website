@@ -1,0 +1,12 @@
+{
+    "TrainingJobSummaries": [
+        {
+            "TrainingJobName": "md1-worst447-ds1000-r28-1778852094",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-worst447-ds1000-r28-1778852094",
+            "CreationTime": "2026-05-15T07:35:49.745000-06:00",
+            "LastModifiedTime": "2026-05-15T07:40:57.104000-06:00",
+            "TrainingJobStatus": "InProgress",
+            "SecondaryStatus": "Training"
+        }
+    ]
+}
