@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-15T12:53:21-0600
+updated: 2026-05-15T12:57:21-0600
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -213,6 +213,22 @@ skybox, compression, artifact handoff, and visual gates.
        - mapper progress: `last_num_reg_frames=248` (from `SUMMARY` line)
      - S3 output listing: `logs/md1-shrunk/s3-colmap-md1-shrunk-20260515T1641Z-20260515T1843Z.txt`
      - `ProcessingJobStatus=InProgress`, `FailureReason=null`
+   - 2026-05-15T12:57:21-0600 poll:
+     - branch/head/status:
+       - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+       - `git rev-parse HEAD` -> `b4203b3417a6635740fd70e7eebbeac0e739a0e7`
+       - `git status --porcelain=v1` -> new untracked poll artifacts under `logs/md1-shrunk/`
+     - GitHub workflow (exact-head):
+       - `gh run view 25935663623 --json databaseId,workflowName,headSha,status,conclusion,createdAt,updatedAt,url > logs/md1-shrunk/gh-run-view-25935663623.json` -> `CDK Deploy` succeeded for head `b4203b34...`
+       - `gh run watch 25935663623 --interval 10 --exit-status > logs/md1-shrunk/gh-run-watch-25935663623.txt`
+     - SageMaker snapshot: `logs/md1-shrunk/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260515T185321Z.json`
+     - CloudWatch tail snapshot: `logs/md1-shrunk/cloudwatch-tail-md1-shrunk-1456-sfm-1778866088-20260515T185321Z.txt`
+       - mapper progress: observed `num_reg_frames=172` (from `Registering image ... (num_reg_frames=172)`)
+     - S3 output listing: `logs/md1-shrunk/s3-colmap-md1-shrunk-20260515T1641Z-20260515T185321Z.txt` -> still empty as expected with `S3UploadMode=EndOfJob`
+       - note: `aws s3 ls ... --summarize` returns exit status `1` when the prefix is empty
+     - attempted `SUMMARY` CloudWatch filter produced no hits:
+       - `logs/md1-shrunk/cloudwatch-filter-summary-md1-shrunk-1456-sfm-1778866088-20260515T184933Z.json`
+       - `logs/md1-shrunk/cloudwatch-filter-summary-md1-shrunk-1456-sfm-1778866088-20260515T184957Z.json`
    - Current downstream image facts for the post-SfM stage:
      - `aws ecr describe-images --repository-name spaceport/3dgs --image-ids imageTag=agent113647md1baselinee2e --region us-west-2 --output json > logs/md1-shrunk/ecr-3dgs-agent113647md1baselinee2e-20260515T1758Z.json`
        - digest `sha256:6b3b2492af7a268cfc5f233e87bdce51c47492ada4c3630f723114ffa464fd0c`
