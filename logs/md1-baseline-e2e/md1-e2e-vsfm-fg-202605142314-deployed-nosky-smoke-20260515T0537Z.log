@@ -1,0 +1,17 @@
+MD1 production viewer smoke: desktop
+MD1 production viewer smoke: desktop ready firstFrame=766.7ms chunks=0
+MD1 production viewer smoke: mobile
+MD1 production viewer smoke: mobile ready firstFrame=66.1ms chunks=2
+MD1 production viewer smoke: desktop-nosky
+MD1 production viewer smoke: desktop-nosky ready firstFrame=401.7ms chunks=1
+file:///Users/gabrielhansen/MD1-Baseline/web/scripts/test-md1-production-viewer.mjs:48
+    throw new Error(message);
+          ^
+
+Error: desktop-nosky: no-sky model region did not show model pixels
+    at assert (file:///Users/gabrielhansen/MD1-Baseline/web/scripts/test-md1-production-viewer.mjs:48:11)
+    at runScenario (file:///Users/gabrielhansen/MD1-Baseline/web/scripts/test-md1-production-viewer.mjs:343:7)
+    at async file:///Users/gabrielhansen/MD1-Baseline/web/scripts/test-md1-production-viewer.mjs:368:16
+
+Node.js v22.22.0
+EXIT_STATUS=1

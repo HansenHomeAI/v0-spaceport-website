@@ -1163,3 +1163,71 @@ Produce a development-based MD1 baseline with:
 - Current next step:
   - Commit/push the iframe no-sky follow-up patch and rerun exact-head workflows.
   - Then launch the next smallest paid retry from the validated SfM reference, not full SfM. Use 3DGS-only with `MODEL_VARIANT=splatfacto` unless a no-spend preflight finds a concrete blocker in the current branch image/export path.
+
+### 2026-05-14T23:41:20-0600
+
+- Commit/push:
+  - Committed/pushed `e108490ef7f7422c6edec03a1699940f20b9d9ce` (`fix: pass md1 no-sky gate into lod viewer`).
+  - Exact-head workflow gate for `e108490ef7f7422c6edec03a1699940f20b9d9ce`:
+    - `CDK Deploy` run `25902014533` -> `success`.
+    - `Deploy Next.js to Cloudflare Pages` run `25902014536` -> `success`.
+    - Preview alias: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`.
+    - Hash URL: `https://541dab62.v0-spaceport-website-preview2.pages.dev`.
+- AWS / active job verification before launching another paid stage:
+  - `aws sts get-caller-identity` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+  - `aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --status-filter RUNNING` -> `[]`.
+  - `aws sagemaker list-processing-jobs --status-equals InProgress` -> no processing jobs.
+  - `aws sagemaker list-training-jobs --status-equals InProgress` -> one external job, `md1-full2157-ds4-r25-1778823276`; left untouched.
+  - Branch 3DGS image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent113647md1baselinee2e` -> digest `sha256:6b3b2492af7a268cfc5f233e87bdce51c47492ada4c3630f723114ffa464fd0c`, pushed `2026-05-14T13:37:06-0600`.
+  - Branch compressor image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor:agent113647md1baselinee2e` -> digest `sha256:dc4f599270807420f42aa859b9e93b9cac539c20acd5f73a47ca346cc3987d41`, pushed `2026-05-14T23:20:50-0600`.
+- Deployed no-sky validation:
+  - Command:
+    - `MD1_VIEWER_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev MD1_LOD_URL=https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/md1-e2e-vsfm-fg-202605142314/supersplat_bundle/lod-meta.json MD1_EXPECT_CHUNK_SUBSTRING=md1-e2e-vsfm-fg-202605142314 MD1_RUN_NO_SKY=1 node scripts/test-md1-production-viewer.mjs`
+  - Result: expected failure at the stricter visual gate, proving the deployed iframe no-sky path works and the foreground model remains unacceptable without a skybox:
+    - `desktop-nosky: no-sky model region did not show model pixels`.
+  - Evidence:
+    - `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-deployed-nosky-smoke-20260515T0537Z.log`.
+    - `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-deployed-desktop.png`.
+    - `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-deployed-mobile.png`.
+    - `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-deployed-nosky.png`.
+    - `logs/md1-baseline-e2e/md1-e2e-vsfm-fg-202605142314-deployed-nosky-model.png`.
+- New canonical downstream retry launched; no full SfM was relaunched:
+  - Reason: both `splatfacto-w-light` variants reached 3DGS+compression but failed the no-sky/visual MD1 gate, so the smallest next paid retry is 3DGS-only with standard NerfStudio `splatfacto` from the validated SfM reference.
+  - Payload: `logs/md1-baseline-e2e/md1-e2e-vsfm-splatfacto-202605150539-payload.json`.
+  - Start proof: `logs/md1-baseline-e2e/md1-e2e-vsfm-splatfacto-202605150539-start.json`.
+  - Command:
+    - `aws stepfunctions start-execution --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --name execution-md1-e2e-vsfm-splatfacto-202605150539 --input file://logs/md1-baseline-e2e/md1-e2e-vsfm-splatfacto-202605150539-payload.json --region us-west-2`.
+  - Execution ARN:
+    - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-202605150539`.
+  - Job id/name: `md1-e2e-vsfm-splatfacto-202605150539`.
+  - `MODEL_VARIANT`: `splatfacto`.
+  - COLMAP input:
+    - `s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap/`.
+  - 3DGS output:
+    - `s3://spaceport-ml-processing-staging/3dgs/md1-e2e-vsfm-splatfacto-202605150539/`.
+  - Compression output:
+    - `s3://spaceport-ml-processing-staging/compressed/md1-e2e-vsfm-splatfacto-202605150539/`.
+  - SageMaker training job:
+    - `md1-e2e-vsfm-splatfacto-202605150539-3dgs`.
+    - Initial status: `InProgress` / `Pending` on `ml.g5.2xlarge`, `MaxRuntimeInSeconds=14400`.
+  - Snapshots:
+    - `logs/md1-baseline-e2e/stepfunctions-describe-md1-e2e-vsfm-splatfacto-202605150539-20260515T0540Z.json`.
+    - `logs/md1-baseline-e2e/stepfunctions-history-reverse-md1-e2e-vsfm-splatfacto-202605150539-20260515T0540Z.json`.
+    - `logs/md1-baseline-e2e/sagemaker-describe-md1-e2e-vsfm-splatfacto-202605150539-3dgs-20260515T0540Z.json`.
+- Follow-up poll:
+  - SageMaker training job `md1-e2e-vsfm-splatfacto-202605150539-3dgs` -> `InProgress` / `Training`; `TrainingStartTime=2026-05-14T23:39:57-0600`; no failure reason.
+  - CloudWatch log stream:
+    - `/aws/sagemaker/TrainingJobs` / `md1-e2e-vsfm-splatfacto-202605150539-3dgs/algo-1-1778823597`.
+  - Startup log snapshots:
+    - `logs/md1-baseline-e2e/3dgs-md1-e2e-vsfm-splatfacto-202605150539-training-start-20260515T0547Z.json`.
+    - `logs/md1-baseline-e2e/3dgs-md1-e2e-vsfm-splatfacto-202605150539-training-start-20260515T0547Z.txt`.
+    - `logs/md1-baseline-e2e/3dgs-md1-e2e-vsfm-splatfacto-202605150539-training-start-filtered-20260515T0552Z.txt`.
+  - Log proof so far:
+    - `MODEL_VARIANT=splatfacto` override was applied.
+    - COLMAP validation passed: `Cameras: 1`, `Images registered: 2157`, `Image files: 2157`, `3D points: 1312804`.
+    - COLMAP TXT-to-BIN conversion completed successfully.
+    - The job is still in the conversion/training startup phase; S3 3DGS output remains empty until SageMaker job end.
+- Next step:
+  - Continue monitoring `md1-e2e-vsfm-splatfacto-202605150539-3dgs` through terminal status.
+  - If it fails, capture the exact SageMaker/CloudWatch error and patch only that proven issue.
+  - If it completes, validate S3 artifact handoff, compression, gaussian count/file size, then smoke and visually gate `/md1-viewer` with no skybox before accepting the baseline.
