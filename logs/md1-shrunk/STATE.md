@@ -360,7 +360,7 @@ skybox, compression, artifact handoff, and visual gates.
      - Cost-boundedness note:
        - A redundant manual 3DGS job was started then immediately stopped to avoid duplicate GPU spend:
          - launched: `md1shrunk1456-wlight-2605152127-g5xl-3dgs` (`ml.g5.xlarge`)
-         - stop confirmation: `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-wlight-2605152127-g5xl-3dgs-after-stop-20260515T213942Z.json` -> `TrainingJobStatus=Stopping`
+         - stop confirmation: `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-wlight-2605152127-g5xl-3dgs-poststop2-20260515T214010Z.json` -> `TrainingJobStatus=Stopped`
    - Current downstream image facts for the post-SfM stage:
      - `aws ecr describe-images --repository-name spaceport/3dgs --image-ids imageTag=agent113647md1baselinee2e --region us-west-2 --output json > logs/md1-shrunk/ecr-3dgs-agent113647md1baselinee2e-20260515T1758Z.json`
        - digest `sha256:6b3b2492af7a268cfc5f233e87bdce51c47492ada4c3630f723114ffa464fd0c`
