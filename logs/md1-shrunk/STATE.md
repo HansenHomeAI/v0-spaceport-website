@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-15T13:03:36-0600
+updated: 2026-05-15T13:10:38-0600
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -232,6 +232,12 @@ skybox, compression, artifact handoff, and visual gates.
      - attempted `SUMMARY` CloudWatch filter produced no hits:
        - `logs/md1-shrunk/cloudwatch-filter-summary-md1-shrunk-1456-sfm-1778866088-20260515T184933Z.json`
        - `logs/md1-shrunk/cloudwatch-filter-summary-md1-shrunk-1456-sfm-1778866088-20260515T184957Z.json`
+   - 2026-05-15T13:10:38-0600 GitHub exact-head verification:
+     - branch/head:
+       - `git rev-parse HEAD` -> `6f28df7528a830c540e989cea025d4a61d6521b7`
+     - `CDK Deploy` succeeded for head `6f28df75...`:
+       - `logs/md1-shrunk/gh-run-view-25936245460.json`
+       - `logs/md1-shrunk/gh-run-watch-25936245460.txt`
    - Current downstream image facts for the post-SfM stage:
      - `aws ecr describe-images --repository-name spaceport/3dgs --image-ids imageTag=agent113647md1baselinee2e --region us-west-2 --output json > logs/md1-shrunk/ecr-3dgs-agent113647md1baselinee2e-20260515T1758Z.json`
        - digest `sha256:6b3b2492af7a268cfc5f233e87bdce51c47492ada4c3630f723114ffa464fd0c`
