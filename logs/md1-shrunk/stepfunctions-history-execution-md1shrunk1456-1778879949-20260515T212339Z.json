@@ -1,0 +1,177 @@
+{
+    "events": [
+        {
+            "timestamp": "2026-05-15T15:19:10.781000-06:00",
+            "type": "ExecutionStarted",
+            "id": 1,
+            "previousEventId": 0,
+            "executionStartedEventDetails": {
+                "input": "{\"jobId\":\"4f4bda30-408e-4acc-939f-3019a6d47db5\",\"jobName\":\"md1shrunk1456-1778879949\",\"s3Url\":\"s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip\",\"email\":\"hello@spcprt.com\",\"pipelineStep\":\"3dgs\",\"inputS3Uri\":\"s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip\",\"colmapOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/\",\"gaussianOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778879949/\",\"compressedOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778879949/\",\"sfmImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:05e85850abcfd623e8ec7f3debc70ce2dcd9861548311290db901e0c661d4940\",\"gaussianImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db\",\"compressorImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab\",\"sfmArgs\":[\"--input\",\"/opt/ml/processing/input\",\"--output\",\"/opt/ml/processing/output\"],\"compressionArgs\":[\"--input\",\"/opt/ml/processing/input\",\"--output\",\"/opt/ml/processing/output\"],\"APPEARANCE_EMBED_DIM\":\"64\",\"BACKGROUND_APPEARANCE_MODE\":\"auto_camera\",\"BACKGROUND_SELECTION_MAX_FRAMES\":\"32\",\"BACKGROUND_SELECTION_STRIDE\":\"5\",\"BACKGROUND_SKYBOX_HEIGHT\":\"1024\",\"BACKGROUND_SKYBOX_QUALITY\":\"95\",\"BACKGROUND_SKYBOX_WIDTH\":\"2048\",\"BG_SH_DEGREE\":\"8\",\"BILATERAL_PROCESSING\":\"false\",\"CULL_ALPHA_THRESH\":\"0.12\",\"CULL_SCALE_THRESH\":\"0.35\",\"ENABLE_ALPHA_LOSS\":\"true\",\"ENABLE_BG_MODEL\":\"true\",\"ENABLE_ROBUST_MASK\":\"true\",\"FLOATER_PRUNING_ENABLED\":\"true\",\"FLOATER_PRUNING_MAX_COLOR_DISTANCE\":\"0.18\",\"FLOATER_PRUNING_MAX_OPACITY\":\"0.75\",\"FLOATER_PRUNING_MIN_EDGE_SUPPORT\":\"1\",\"FLOATER_PRUNING_MIN_SKY_VIEWS\":\"2\",\"FLOATER_PRUNING_MIN_VIEWS\":\"6\",\"FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN\":\"0.02\",\"FLOATER_PRUNING_SKY_MIN_LUMINANCE\":\"0.3\",\"FLOATER_PRUNING_SKY_MIN_SATURATION\":\"0.08\",\"FLOATER_PRUNING_TOP_REGION_RATIO\":\"0.35\",\"FLOATER_PRUNING_TOP_VIEW_FRACTION\":\"0.9\",\"LOG_INTERVAL\":\"100\",\"MAX_ITERATIONS\":\"30000\",\"MODEL_VARIANT\":\"splatfacto-w-light\",\"NEVER_MASK_UPPER\":\"0.4\",\"RASTERIZE_MODE\":\"classic\",\"SH_DEGREE\":\"3\",\"TARGET_PSNR\":\"35.0\",\"TORCH_CUDA_ARCH_LIST\":\"8.0 8.6\",\"TRAINING_TIMEOUT_SECONDS\":\"14400\",\"USE_SCALE_REGULARIZATION\":\"true\"}",
+                "inputDetails": {
+                    "truncated": false
+                },
+                "roleArn": "arn:aws:iam::975050048887:role/Spaceport-StepFunctions-Role-staging"
+            }
+        },
+        {
+            "timestamp": "2026-05-15T15:19:10.820000-06:00",
+            "type": "ChoiceStateEntered",
+            "id": 2,
+            "previousEventId": 0,
+            "stateEnteredEventDetails": {
+                "name": "PipelineStepChoice",
+                "input": "{\"jobId\":\"4f4bda30-408e-4acc-939f-3019a6d47db5\",\"jobName\":\"md1shrunk1456-1778879949\",\"s3Url\":\"s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip\",\"email\":\"hello@spcprt.com\",\"pipelineStep\":\"3dgs\",\"inputS3Uri\":\"s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip\",\"colmapOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/\",\"gaussianOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778879949/\",\"compressedOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778879949/\",\"sfmImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:05e85850abcfd623e8ec7f3debc70ce2dcd9861548311290db901e0c661d4940\",\"gaussianImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db\",\"compressorImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab\",\"sfmArgs\":[\"--input\",\"/opt/ml/processing/input\",\"--output\",\"/opt/ml/processing/output\"],\"compressionArgs\":[\"--input\",\"/opt/ml/processing/input\",\"--output\",\"/opt/ml/processing/output\"],\"APPEARANCE_EMBED_DIM\":\"64\",\"BACKGROUND_APPEARANCE_MODE\":\"auto_camera\",\"BACKGROUND_SELECTION_MAX_FRAMES\":\"32\",\"BACKGROUND_SELECTION_STRIDE\":\"5\",\"BACKGROUND_SKYBOX_HEIGHT\":\"1024\",\"BACKGROUND_SKYBOX_QUALITY\":\"95\",\"BACKGROUND_SKYBOX_WIDTH\":\"2048\",\"BG_SH_DEGREE\":\"8\",\"BILATERAL_PROCESSING\":\"false\",\"CULL_ALPHA_THRESH\":\"0.12\",\"CULL_SCALE_THRESH\":\"0.35\",\"ENABLE_ALPHA_LOSS\":\"true\",\"ENABLE_BG_MODEL\":\"true\",\"ENABLE_ROBUST_MASK\":\"true\",\"FLOATER_PRUNING_ENABLED\":\"true\",\"FLOATER_PRUNING_MAX_COLOR_DISTANCE\":\"0.18\",\"FLOATER_PRUNING_MAX_OPACITY\":\"0.75\",\"FLOATER_PRUNING_MIN_EDGE_SUPPORT\":\"1\",\"FLOATER_PRUNING_MIN_SKY_VIEWS\":\"2\",\"FLOATER_PRUNING_MIN_VIEWS\":\"6\",\"FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN\":\"0.02\",\"FLOATER_PRUNING_SKY_MIN_LUMINANCE\":\"0.3\",\"FLOATER_PRUNING_SKY_MIN_SATURATION\":\"0.08\",\"FLOATER_PRUNING_TOP_REGION_RATIO\":\"0.35\",\"FLOATER_PRUNING_TOP_VIEW_FRACTION\":\"0.9\",\"LOG_INTERVAL\":\"100\",\"MAX_ITERATIONS\":\"30000\",\"MODEL_VARIANT\":\"splatfacto-w-light\",\"NEVER_MASK_UPPER\":\"0.4\",\"RASTERIZE_MODE\":\"classic\",\"SH_DEGREE\":\"3\",\"TARGET_PSNR\":\"35.0\",\"TORCH_CUDA_ARCH_LIST\":\"8.0 8.6\",\"TRAINING_TIMEOUT_SECONDS\":\"14400\",\"USE_SCALE_REGULARIZATION\":\"true\"}",
+                "inputDetails": {
+                    "truncated": false
+                }
+            }
+        },
+        {
+            "timestamp": "2026-05-15T15:19:10.820000-06:00",
+            "type": "ChoiceStateExited",
+            "id": 3,
+            "previousEventId": 2,
+            "stateExitedEventDetails": {
+                "name": "PipelineStepChoice",
+                "output": "{\"jobId\":\"4f4bda30-408e-4acc-939f-3019a6d47db5\",\"jobName\":\"md1shrunk1456-1778879949\",\"s3Url\":\"s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip\",\"email\":\"hello@spcprt.com\",\"pipelineStep\":\"3dgs\",\"inputS3Uri\":\"s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip\",\"colmapOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/\",\"gaussianOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778879949/\",\"compressedOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778879949/\",\"sfmImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:05e85850abcfd623e8ec7f3debc70ce2dcd9861548311290db901e0c661d4940\",\"gaussianImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db\",\"compressorImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab\",\"sfmArgs\":[\"--input\",\"/opt/ml/processing/input\",\"--output\",\"/opt/ml/processing/output\"],\"compressionArgs\":[\"--input\",\"/opt/ml/processing/input\",\"--output\",\"/opt/ml/processing/output\"],\"APPEARANCE_EMBED_DIM\":\"64\",\"BACKGROUND_APPEARANCE_MODE\":\"auto_camera\",\"BACKGROUND_SELECTION_MAX_FRAMES\":\"32\",\"BACKGROUND_SELECTION_STRIDE\":\"5\",\"BACKGROUND_SKYBOX_HEIGHT\":\"1024\",\"BACKGROUND_SKYBOX_QUALITY\":\"95\",\"BACKGROUND_SKYBOX_WIDTH\":\"2048\",\"BG_SH_DEGREE\":\"8\",\"BILATERAL_PROCESSING\":\"false\",\"CULL_ALPHA_THRESH\":\"0.12\",\"CULL_SCALE_THRESH\":\"0.35\",\"ENABLE_ALPHA_LOSS\":\"true\",\"ENABLE_BG_MODEL\":\"true\",\"ENABLE_ROBUST_MASK\":\"true\",\"FLOATER_PRUNING_ENABLED\":\"true\",\"FLOATER_PRUNING_MAX_COLOR_DISTANCE\":\"0.18\",\"FLOATER_PRUNING_MAX_OPACITY\":\"0.75\",\"FLOATER_PRUNING_MIN_EDGE_SUPPORT\":\"1\",\"FLOATER_PRUNING_MIN_SKY_VIEWS\":\"2\",\"FLOATER_PRUNING_MIN_VIEWS\":\"6\",\"FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN\":\"0.02\",\"FLOATER_PRUNING_SKY_MIN_LUMINANCE\":\"0.3\",\"FLOATER_PRUNING_SKY_MIN_SATURATION\":\"0.08\",\"FLOATER_PRUNING_TOP_REGION_RATIO\":\"0.35\",\"FLOATER_PRUNING_TOP_VIEW_FRACTION\":\"0.9\",\"LOG_INTERVAL\":\"100\",\"MAX_ITERATIONS\":\"30000\",\"MODEL_VARIANT\":\"splatfacto-w-light\",\"NEVER_MASK_UPPER\":\"0.4\",\"RASTERIZE_MODE\":\"classic\",\"SH_DEGREE\":\"3\",\"TARGET_PSNR\":\"35.0\",\"TORCH_CUDA_ARCH_LIST\":\"8.0 8.6\",\"TRAINING_TIMEOUT_SECONDS\":\"14400\",\"USE_SCALE_REGULARIZATION\":\"true\"}",
+                "outputDetails": {
+                    "truncated": false
+                }
+            }
+        },
+        {
+            "timestamp": "2026-05-15T15:19:10.820000-06:00",
+            "type": "TaskStateEntered",
+            "id": 4,
+            "previousEventId": 3,
+            "stateEnteredEventDetails": {
+                "name": "GaussianTrainingJob",
+                "input": "{\"jobId\":\"4f4bda30-408e-4acc-939f-3019a6d47db5\",\"jobName\":\"md1shrunk1456-1778879949\",\"s3Url\":\"s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip\",\"email\":\"hello@spcprt.com\",\"pipelineStep\":\"3dgs\",\"inputS3Uri\":\"s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip\",\"colmapOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/\",\"gaussianOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778879949/\",\"compressedOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778879949/\",\"sfmImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:05e85850abcfd623e8ec7f3debc70ce2dcd9861548311290db901e0c661d4940\",\"gaussianImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db\",\"compressorImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab\",\"sfmArgs\":[\"--input\",\"/opt/ml/processing/input\",\"--output\",\"/opt/ml/processing/output\"],\"compressionArgs\":[\"--input\",\"/opt/ml/processing/input\",\"--output\",\"/opt/ml/processing/output\"],\"APPEARANCE_EMBED_DIM\":\"64\",\"BACKGROUND_APPEARANCE_MODE\":\"auto_camera\",\"BACKGROUND_SELECTION_MAX_FRAMES\":\"32\",\"BACKGROUND_SELECTION_STRIDE\":\"5\",\"BACKGROUND_SKYBOX_HEIGHT\":\"1024\",\"BACKGROUND_SKYBOX_QUALITY\":\"95\",\"BACKGROUND_SKYBOX_WIDTH\":\"2048\",\"BG_SH_DEGREE\":\"8\",\"BILATERAL_PROCESSING\":\"false\",\"CULL_ALPHA_THRESH\":\"0.12\",\"CULL_SCALE_THRESH\":\"0.35\",\"ENABLE_ALPHA_LOSS\":\"true\",\"ENABLE_BG_MODEL\":\"true\",\"ENABLE_ROBUST_MASK\":\"true\",\"FLOATER_PRUNING_ENABLED\":\"true\",\"FLOATER_PRUNING_MAX_COLOR_DISTANCE\":\"0.18\",\"FLOATER_PRUNING_MAX_OPACITY\":\"0.75\",\"FLOATER_PRUNING_MIN_EDGE_SUPPORT\":\"1\",\"FLOATER_PRUNING_MIN_SKY_VIEWS\":\"2\",\"FLOATER_PRUNING_MIN_VIEWS\":\"6\",\"FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN\":\"0.02\",\"FLOATER_PRUNING_SKY_MIN_LUMINANCE\":\"0.3\",\"FLOATER_PRUNING_SKY_MIN_SATURATION\":\"0.08\",\"FLOATER_PRUNING_TOP_REGION_RATIO\":\"0.35\",\"FLOATER_PRUNING_TOP_VIEW_FRACTION\":\"0.9\",\"LOG_INTERVAL\":\"100\",\"MAX_ITERATIONS\":\"30000\",\"MODEL_VARIANT\":\"splatfacto-w-light\",\"NEVER_MASK_UPPER\":\"0.4\",\"RASTERIZE_MODE\":\"classic\",\"SH_DEGREE\":\"3\",\"TARGET_PSNR\":\"35.0\",\"TORCH_CUDA_ARCH_LIST\":\"8.0 8.6\",\"TRAINING_TIMEOUT_SECONDS\":\"14400\",\"USE_SCALE_REGULARIZATION\":\"true\"}",
+                "inputDetails": {
+                    "truncated": false
+                }
+            }
+        },
+        {
+            "timestamp": "2026-05-15T15:19:10.820000-06:00",
+            "type": "TaskScheduled",
+            "id": 5,
+            "previousEventId": 4,
+            "taskScheduledEventDetails": {
+                "resourceType": "aws-sdk:sagemaker",
+                "resource": "createTrainingJob",
+                "region": "us-west-2",
+                "parameters": "{\"AlgorithmSpecification\":{\"TrainingInputMode\":\"File\",\"TrainingImage\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db\"},\"Environment\":{\"AWS_DEFAULT_REGION\":\"us-west-2\",\"COMMERCIAL_LICENSE\":\"true\",\"CUDA_HOME\":\"/usr/local/cuda\",\"FRAMEWORK\":\"nerfstudio\",\"LD_LIBRARY_PATH\":\"/usr/local/cuda/lib64:/usr/local/cuda/lib\",\"LIBRARY_PATH\":\"/usr/local/cuda/lib64:/usr/local/cuda/lib\",\"LICENSE\":\"apache_2_0\",\"METHODOLOGY\":\"spaceport_splatfacto_w_light_skybox\",\"OUTPUT_FORMAT\":\"ply\",\"PYTHONUNBUFFERED\":\"1\",\"SAGEMAKER_PROGRAM\":\"train.py\",\"SOGS_COMPATIBLE\":\"true\",\"BACKGROUND_SELECTION_MAX_FRAMES\":\"32\",\"FLOATER_PRUNING_SKY_MIN_LUMINANCE\":\"0.3\",\"FLOATER_PRUNING_MIN_EDGE_SUPPORT\":\"1\",\"TORCH_CUDA_ARCH_LIST\":\"8.0 8.6\",\"FLOATER_PRUNING_SKY_MIN_SATURATION\":\"0.08\",\"CULL_ALPHA_THRESH\":\"0.12\",\"BACKGROUND_SKYBOX_QUALITY\":\"95\",\"ENABLE_BG_MODEL\":\"true\",\"ENABLE_ROBUST_MASK\":\"true\",\"APPEARANCE_EMBED_DIM\":\"64\",\"USE_SCALE_REGULARIZATION\":\"true\",\"BACKGROUND_SKYBOX_HEIGHT\":\"1024\",\"BG_SH_DEGREE\":\"8\",\"SH_DEGREE\":\"3\",\"FLOATER_PRUNING_ENABLED\":\"true\",\"BACKGROUND_APPEARANCE_MODE\":\"auto_camera\",\"FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN\":\"0.02\",\"FLOATER_PRUNING_TOP_REGION_RATIO\":\"0.35\",\"MODEL_VARIANT\":\"splatfacto-w-light\",\"TARGET_PSNR\":\"35.0\",\"CULL_SCALE_THRESH\":\"0.35\",\"ENABLE_ALPHA_LOSS\":\"true\",\"FLOATER_PRUNING_TOP_VIEW_FRACTION\":\"0.9\",\"RASTERIZE_MODE\":\"classic\",\"FLOATER_PRUNING_MAX_COLOR_DISTANCE\":\"0.18\",\"NEVER_MASK_UPPER\":\"0.4\",\"FLOATER_PRUNING_MIN_SKY_VIEWS\":\"2\",\"FLOATER_PRUNING_MIN_VIEWS\":\"6\",\"TRAINING_TIMEOUT_SECONDS\":\"14400\",\"BACKGROUND_SELECTION_STRIDE\":\"5\",\"LOG_INTERVAL\":\"100\",\"BACKGROUND_SKYBOX_WIDTH\":\"2048\",\"BILATERAL_PROCESSING\":\"false\",\"MAX_ITERATIONS\":\"30000\",\"FLOATER_PRUNING_MAX_OPACITY\":\"0.75\"},\"InputDataConfig\":[{\"ChannelName\":\"training\",\"DataSource\":{\"S3DataSource\":{\"S3DataDistributionType\":\"FullyReplicated\",\"S3DataType\":\"S3Prefix\",\"S3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/\"}}}],\"OutputDataConfig\":{\"S3OutputPath\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778879949/\"},\"ResourceConfig\":{\"InstanceCount\":1,\"InstanceType\":\"ml.g5.2xlarge\",\"VolumeSizeInGB\":100},\"RoleArn\":\"arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging\",\"StoppingCondition\":{\"MaxRuntimeInSeconds\":14400},\"Tags\":[{\"Key\":\"Project\",\"Value\":\"Spaceport\"},{\"Key\":\"Component\",\"Value\":\"3DGS\"},{\"Key\":\"Environment\",\"Value\":\"staging\"}],\"TrainingJobName\":\"md1shrunk1456-1778879949-3dgs\"}"
+            }
+        },
+        {
+            "timestamp": "2026-05-15T15:19:11.041000-06:00",
+            "type": "TaskStarted",
+            "id": 6,
+            "previousEventId": 5,
+            "taskStartedEventDetails": {
+                "resourceType": "aws-sdk:sagemaker",
+                "resource": "createTrainingJob"
+            }
+        },
+        {
+            "timestamp": "2026-05-15T15:19:11.389000-06:00",
+            "type": "TaskFailed",
+            "id": 7,
+            "previousEventId": 6,
+            "taskFailedEventDetails": {
+                "resourceType": "aws-sdk:sagemaker",
+                "resource": "createTrainingJob",
+                "error": "SageMaker.ResourceLimitExceededException",
+                "cause": "The account-level service limit 'ml.g5.2xlarge for training job usage' is 2 Instances, with current utilization of 2 Instances and a request delta of 1 Instances. Please use AWS Service Quotas to request an increase for this quota. If AWS Service Quotas is not available, contact AWS support to request an increase for this quota. (Service: SageMaker, Status Code: 400, Request ID: 223ac270-d775-4f42-97a4-46aac453deb3) (SDK Attempt Count: 1)"
+            }
+        },
+        {
+            "timestamp": "2026-05-15T15:19:11.411000-06:00",
+            "type": "TaskStateExited",
+            "id": 8,
+            "previousEventId": 7,
+            "stateExitedEventDetails": {
+                "name": "GaussianTrainingJob",
+                "output": "{\"jobId\":\"4f4bda30-408e-4acc-939f-3019a6d47db5\",\"jobName\":\"md1shrunk1456-1778879949\",\"s3Url\":\"s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip\",\"email\":\"hello@spcprt.com\",\"pipelineStep\":\"3dgs\",\"inputS3Uri\":\"s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip\",\"colmapOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/\",\"gaussianOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778879949/\",\"compressedOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778879949/\",\"sfmImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:05e85850abcfd623e8ec7f3debc70ce2dcd9861548311290db901e0c661d4940\",\"gaussianImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db\",\"compressorImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab\",\"sfmArgs\":[\"--input\",\"/opt/ml/processing/input\",\"--output\",\"/opt/ml/processing/output\"],\"compressionArgs\":[\"--input\",\"/opt/ml/processing/input\",\"--output\",\"/opt/ml/processing/output\"],\"APPEARANCE_EMBED_DIM\":\"64\",\"BACKGROUND_APPEARANCE_MODE\":\"auto_camera\",\"BACKGROUND_SELECTION_MAX_FRAMES\":\"32\",\"BACKGROUND_SELECTION_STRIDE\":\"5\",\"BACKGROUND_SKYBOX_HEIGHT\":\"1024\",\"BACKGROUND_SKYBOX_QUALITY\":\"95\",\"BACKGROUND_SKYBOX_WIDTH\":\"2048\",\"BG_SH_DEGREE\":\"8\",\"BILATERAL_PROCESSING\":\"false\",\"CULL_ALPHA_THRESH\":\"0.12\",\"CULL_SCALE_THRESH\":\"0.35\",\"ENABLE_ALPHA_LOSS\":\"true\",\"ENABLE_BG_MODEL\":\"true\",\"ENABLE_ROBUST_MASK\":\"true\",\"FLOATER_PRUNING_ENABLED\":\"true\",\"FLOATER_PRUNING_MAX_COLOR_DISTANCE\":\"0.18\",\"FLOATER_PRUNING_MAX_OPACITY\":\"0.75\",\"FLOATER_PRUNING_MIN_EDGE_SUPPORT\":\"1\",\"FLOATER_PRUNING_MIN_SKY_VIEWS\":\"2\",\"FLOATER_PRUNING_MIN_VIEWS\":\"6\",\"FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN\":\"0.02\",\"FLOATER_PRUNING_SKY_MIN_LUMINANCE\":\"0.3\",\"FLOATER_PRUNING_SKY_MIN_SATURATION\":\"0.08\",\"FLOATER_PRUNING_TOP_REGION_RATIO\":\"0.35\",\"FLOATER_PRUNING_TOP_VIEW_FRACTION\":\"0.9\",\"LOG_INTERVAL\":\"100\",\"MAX_ITERATIONS\":\"30000\",\"MODEL_VARIANT\":\"splatfacto-w-light\",\"NEVER_MASK_UPPER\":\"0.4\",\"RASTERIZE_MODE\":\"classic\",\"SH_DEGREE\":\"3\",\"TARGET_PSNR\":\"35.0\",\"TORCH_CUDA_ARCH_LIST\":\"8.0 8.6\",\"TRAINING_TIMEOUT_SECONDS\":\"14400\",\"USE_SCALE_REGULARIZATION\":\"true\",\"error\":{\"Error\":\"SageMaker.ResourceLimitExceededException\",\"Cause\":\"The account-level service limit 'ml.g5.2xlarge for training job usage' is 2 Instances, with current utilization of 2 Instances and a request delta of 1 Instances. Please use AWS Service Quotas to request an increase for this quota. If AWS Service Quotas is not available, contact AWS support to request an increase for this quota. (Service: SageMaker, Status Code: 400, Request ID: 223ac270-d775-4f42-97a4-46aac453deb3) (SDK Attempt Count: 1)\"}}",
+                "outputDetails": {
+                    "truncated": false
+                }
+            }
+        },
+        {
+            "timestamp": "2026-05-15T15:19:11.411000-06:00",
+            "type": "TaskStateEntered",
+            "id": 9,
+            "previousEventId": 8,
+            "stateEnteredEventDetails": {
+                "name": "NotifyError",
+                "input": "{\"jobId\":\"4f4bda30-408e-4acc-939f-3019a6d47db5\",\"jobName\":\"md1shrunk1456-1778879949\",\"s3Url\":\"s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip\",\"email\":\"hello@spcprt.com\",\"pipelineStep\":\"3dgs\",\"inputS3Uri\":\"s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip\",\"colmapOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/\",\"gaussianOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778879949/\",\"compressedOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778879949/\",\"sfmImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:05e85850abcfd623e8ec7f3debc70ce2dcd9861548311290db901e0c661d4940\",\"gaussianImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db\",\"compressorImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab\",\"sfmArgs\":[\"--input\",\"/opt/ml/processing/input\",\"--output\",\"/opt/ml/processing/output\"],\"compressionArgs\":[\"--input\",\"/opt/ml/processing/input\",\"--output\",\"/opt/ml/processing/output\"],\"APPEARANCE_EMBED_DIM\":\"64\",\"BACKGROUND_APPEARANCE_MODE\":\"auto_camera\",\"BACKGROUND_SELECTION_MAX_FRAMES\":\"32\",\"BACKGROUND_SELECTION_STRIDE\":\"5\",\"BACKGROUND_SKYBOX_HEIGHT\":\"1024\",\"BACKGROUND_SKYBOX_QUALITY\":\"95\",\"BACKGROUND_SKYBOX_WIDTH\":\"2048\",\"BG_SH_DEGREE\":\"8\",\"BILATERAL_PROCESSING\":\"false\",\"CULL_ALPHA_THRESH\":\"0.12\",\"CULL_SCALE_THRESH\":\"0.35\",\"ENABLE_ALPHA_LOSS\":\"true\",\"ENABLE_BG_MODEL\":\"true\",\"ENABLE_ROBUST_MASK\":\"true\",\"FLOATER_PRUNING_ENABLED\":\"true\",\"FLOATER_PRUNING_MAX_COLOR_DISTANCE\":\"0.18\",\"FLOATER_PRUNING_MAX_OPACITY\":\"0.75\",\"FLOATER_PRUNING_MIN_EDGE_SUPPORT\":\"1\",\"FLOATER_PRUNING_MIN_SKY_VIEWS\":\"2\",\"FLOATER_PRUNING_MIN_VIEWS\":\"6\",\"FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN\":\"0.02\",\"FLOATER_PRUNING_SKY_MIN_LUMINANCE\":\"0.3\",\"FLOATER_PRUNING_SKY_MIN_SATURATION\":\"0.08\",\"FLOATER_PRUNING_TOP_REGION_RATIO\":\"0.35\",\"FLOATER_PRUNING_TOP_VIEW_FRACTION\":\"0.9\",\"LOG_INTERVAL\":\"100\",\"MAX_ITERATIONS\":\"30000\",\"MODEL_VARIANT\":\"splatfacto-w-light\",\"NEVER_MASK_UPPER\":\"0.4\",\"RASTERIZE_MODE\":\"classic\",\"SH_DEGREE\":\"3\",\"TARGET_PSNR\":\"35.0\",\"TORCH_CUDA_ARCH_LIST\":\"8.0 8.6\",\"TRAINING_TIMEOUT_SECONDS\":\"14400\",\"USE_SCALE_REGULARIZATION\":\"true\",\"error\":{\"Error\":\"SageMaker.ResourceLimitExceededException\",\"Cause\":\"The account-level service limit 'ml.g5.2xlarge for training job usage' is 2 Instances, with current utilization of 2 Instances and a request delta of 1 Instances. Please use AWS Service Quotas to request an increase for this quota. If AWS Service Quotas is not available, contact AWS support to request an increase for this quota. (Service: SageMaker, Status Code: 400, Request ID: 223ac270-d775-4f42-97a4-46aac453deb3) (SDK Attempt Count: 1)\"}}",
+                "inputDetails": {
+                    "truncated": false
+                }
+            }
+        },
+        {
+            "timestamp": "2026-05-15T15:19:11.411000-06:00",
+            "type": "TaskScheduled",
+            "id": 10,
+            "previousEventId": 9,
+            "taskScheduledEventDetails": {
+                "resourceType": "lambda",
+                "resource": "invoke",
+                "region": "us-west-2",
+                "parameters": "{\"FunctionName\":\"arn:aws:lambda:us-west-2:975050048887:function:Spaceport-MLNotification-staging\",\"Payload\":{\"status\":\"failed\",\"jobId\":\"4f4bda30-408e-4acc-939f-3019a6d47db5\",\"s3Url\":\"s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip\",\"state\":{\"jobId\":\"4f4bda30-408e-4acc-939f-3019a6d47db5\",\"jobName\":\"md1shrunk1456-1778879949\",\"s3Url\":\"s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip\",\"email\":\"hello@spcprt.com\",\"pipelineStep\":\"3dgs\",\"inputS3Uri\":\"s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip\",\"colmapOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/\",\"gaussianOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778879949/\",\"compressedOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778879949/\",\"sfmImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:05e85850abcfd623e8ec7f3debc70ce2dcd9861548311290db901e0c661d4940\",\"gaussianImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db\",\"compressorImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab\",\"sfmArgs\":[\"--input\",\"/opt/ml/processing/input\",\"--output\",\"/opt/ml/processing/output\"],\"compressionArgs\":[\"--input\",\"/opt/ml/processing/input\",\"--output\",\"/opt/ml/processing/output\"],\"APPEARANCE_EMBED_DIM\":\"64\",\"BACKGROUND_APPEARANCE_MODE\":\"auto_camera\",\"BACKGROUND_SELECTION_MAX_FRAMES\":\"32\",\"BACKGROUND_SELECTION_STRIDE\":\"5\",\"BACKGROUND_SKYBOX_HEIGHT\":\"1024\",\"BACKGROUND_SKYBOX_QUALITY\":\"95\",\"BACKGROUND_SKYBOX_WIDTH\":\"2048\",\"BG_SH_DEGREE\":\"8\",\"BILATERAL_PROCESSING\":\"false\",\"CULL_ALPHA_THRESH\":\"0.12\",\"CULL_SCALE_THRESH\":\"0.35\",\"ENABLE_ALPHA_LOSS\":\"true\",\"ENABLE_BG_MODEL\":\"true\",\"ENABLE_ROBUST_MASK\":\"true\",\"FLOATER_PRUNING_ENABLED\":\"true\",\"FLOATER_PRUNING_MAX_COLOR_DISTANCE\":\"0.18\",\"FLOATER_PRUNING_MAX_OPACITY\":\"0.75\",\"FLOATER_PRUNING_MIN_EDGE_SUPPORT\":\"1\",\"FLOATER_PRUNING_MIN_SKY_VIEWS\":\"2\",\"FLOATER_PRUNING_MIN_VIEWS\":\"6\",\"FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN\":\"0.02\",\"FLOATER_PRUNING_SKY_MIN_LUMINANCE\":\"0.3\",\"FLOATER_PRUNING_SKY_MIN_SATURATION\":\"0.08\",\"FLOATER_PRUNING_TOP_REGION_RATIO\":\"0.35\",\"FLOATER_PRUNING_TOP_VIEW_FRACTION\":\"0.9\",\"LOG_INTERVAL\":\"100\",\"MAX_ITERATIONS\":\"30000\",\"MODEL_VARIANT\":\"splatfacto-w-light\",\"NEVER_MASK_UPPER\":\"0.4\",\"RASTERIZE_MODE\":\"classic\",\"SH_DEGREE\":\"3\",\"TARGET_PSNR\":\"35.0\",\"TORCH_CUDA_ARCH_LIST\":\"8.0 8.6\",\"TRAINING_TIMEOUT_SECONDS\":\"14400\",\"USE_SCALE_REGULARIZATION\":\"true\",\"error\":{\"Error\":\"SageMaker.ResourceLimitExceededException\",\"Cause\":\"The account-level service limit 'ml.g5.2xlarge for training job usage' is 2 Instances, with current utilization of 2 Instances and a request delta of 1 Instances. Please use AWS Service Quotas to request an increase for this quota. If AWS Service Quotas is not available, contact AWS support to request an increase for this quota. (Service: SageMaker, Status Code: 400, Request ID: 223ac270-d775-4f42-97a4-46aac453deb3) (SDK Attempt Count: 1)\"}},\"email\":\"hello@spcprt.com\"}}"
+            }
+        },
+        {
+            "timestamp": "2026-05-15T15:19:11.458000-06:00",
+            "type": "TaskStarted",
+            "id": 11,
+            "previousEventId": 10,
+            "taskStartedEventDetails": {
+                "resourceType": "lambda",
+                "resource": "invoke"
+            }
+        },
+        {
+            "timestamp": "2026-05-15T15:19:11.816000-06:00",
+            "type": "TaskSucceeded",
+            "id": 12,
+            "previousEventId": 11,
+            "taskSucceededEventDetails": {
+                "resourceType": "lambda",
+                "resource": "invoke",
+                "output": "{\"ExecutedVersion\":\"$LATEST\",\"Payload\":{\"statusCode\":200,\"body\":\"{\\\"message\\\": \\\"Notification sent successfully\\\", \\\"messageId\\\": \\\"8158c3b4-2257-4f94-a0c2-c2310c4085c9\\\"}\"},\"SdkHttpMetadata\":{\"AllHttpHeaders\":{\"X-Amz-Executed-Version\":[\"$LATEST\"],\"x-amzn-Remapped-Content-Length\":[\"0\"],\"Connection\":[\"keep-alive\"],\"x-amzn-RequestId\":[\"1024b5ef-d384-44bf-9307-feec7dc4defb\"],\"Content-Length\":[\"137\"],\"Date\":[\"Fri, 15 May 2026 21:19:11 GMT\"],\"X-Amzn-Trace-Id\":[\"Root=1-6a078dcf-6ed6615556d22229502289b2;Parent=3c6c15a3ce881476;Sampled=0;Lineage=1:443dfed5:0\"],\"Content-Type\":[\"application/json\"]},\"HttpHeaders\":{\"Connection\":\"keep-alive\",\"Content-Length\":\"137\",\"Content-Type\":\"application/json\",\"Date\":\"Fri, 15 May 2026 21:19:11 GMT\",\"X-Amz-Executed-Version\":\"$LATEST\",\"x-amzn-Remapped-Content-Length\":\"0\",\"x-amzn-RequestId\":\"1024b5ef-d384-44bf-9307-feec7dc4defb\",\"X-Amzn-Trace-Id\":\"Root=1-6a078dcf-6ed6615556d22229502289b2;Parent=3c6c15a3ce881476;Sampled=0;Lineage=1:443dfed5:0\"},\"HttpStatusCode\":200},\"SdkResponseMetadata\":{\"RequestId\":\"1024b5ef-d384-44bf-9307-feec7dc4defb\"},\"StatusCode\":200}",
+                "outputDetails": {
+                    "truncated": false
+                }
+            }
+        },
+        {
+            "timestamp": "2026-05-15T15:19:11.839000-06:00",
+            "type": "TaskStateExited",
+            "id": 13,
+            "previousEventId": 12,
+            "stateExitedEventDetails": {
+                "name": "NotifyError",
+                "output": "{\"ExecutedVersion\":\"$LATEST\",\"Payload\":{\"statusCode\":200,\"body\":\"{\\\"message\\\": \\\"Notification sent successfully\\\", \\\"messageId\\\": \\\"8158c3b4-2257-4f94-a0c2-c2310c4085c9\\\"}\"},\"SdkHttpMetadata\":{\"AllHttpHeaders\":{\"X-Amz-Executed-Version\":[\"$LATEST\"],\"x-amzn-Remapped-Content-Length\":[\"0\"],\"Connection\":[\"keep-alive\"],\"x-amzn-RequestId\":[\"1024b5ef-d384-44bf-9307-feec7dc4defb\"],\"Content-Length\":[\"137\"],\"Date\":[\"Fri, 15 May 2026 21:19:11 GMT\"],\"X-Amzn-Trace-Id\":[\"Root=1-6a078dcf-6ed6615556d22229502289b2;Parent=3c6c15a3ce881476;Sampled=0;Lineage=1:443dfed5:0\"],\"Content-Type\":[\"application/json\"]},\"HttpHeaders\":{\"Connection\":\"keep-alive\",\"Content-Length\":\"137\",\"Content-Type\":\"application/json\",\"Date\":\"Fri, 15 May 2026 21:19:11 GMT\",\"X-Amz-Executed-Version\":\"$LATEST\",\"x-amzn-Remapped-Content-Length\":\"0\",\"x-amzn-RequestId\":\"1024b5ef-d384-44bf-9307-feec7dc4defb\",\"X-Amzn-Trace-Id\":\"Root=1-6a078dcf-6ed6615556d22229502289b2;Parent=3c6c15a3ce881476;Sampled=0;Lineage=1:443dfed5:0\"},\"HttpStatusCode\":200},\"SdkResponseMetadata\":{\"RequestId\":\"1024b5ef-d384-44bf-9307-feec7dc4defb\"},\"StatusCode\":200}",
+                "outputDetails": {
+                    "truncated": false
+                }
+            }
+        },
+        {
+            "timestamp": "2026-05-15T15:19:11.866000-06:00",
+            "type": "ExecutionSucceeded",
+            "id": 14,
+            "previousEventId": 13,
+            "executionSucceededEventDetails": {
+                "output": "{\"ExecutedVersion\":\"$LATEST\",\"Payload\":{\"statusCode\":200,\"body\":\"{\\\"message\\\": \\\"Notification sent successfully\\\", \\\"messageId\\\": \\\"8158c3b4-2257-4f94-a0c2-c2310c4085c9\\\"}\"},\"SdkHttpMetadata\":{\"AllHttpHeaders\":{\"X-Amz-Executed-Version\":[\"$LATEST\"],\"x-amzn-Remapped-Content-Length\":[\"0\"],\"Connection\":[\"keep-alive\"],\"x-amzn-RequestId\":[\"1024b5ef-d384-44bf-9307-feec7dc4defb\"],\"Content-Length\":[\"137\"],\"Date\":[\"Fri, 15 May 2026 21:19:11 GMT\"],\"X-Amzn-Trace-Id\":[\"Root=1-6a078dcf-6ed6615556d22229502289b2;Parent=3c6c15a3ce881476;Sampled=0;Lineage=1:443dfed5:0\"],\"Content-Type\":[\"application/json\"]},\"HttpHeaders\":{\"Connection\":\"keep-alive\",\"Content-Length\":\"137\",\"Content-Type\":\"application/json\",\"Date\":\"Fri, 15 May 2026 21:19:11 GMT\",\"X-Amz-Executed-Version\":\"$LATEST\",\"x-amzn-Remapped-Content-Length\":\"0\",\"x-amzn-RequestId\":\"1024b5ef-d384-44bf-9307-feec7dc4defb\",\"X-Amzn-Trace-Id\":\"Root=1-6a078dcf-6ed6615556d22229502289b2;Parent=3c6c15a3ce881476;Sampled=0;Lineage=1:443dfed5:0\"},\"HttpStatusCode\":200},\"SdkResponseMetadata\":{\"RequestId\":\"1024b5ef-d384-44bf-9307-feec7dc4defb\"},\"StatusCode\":200}",
+                "outputDetails": {
+                    "truncated": false
+                }
+            }
+        }
+    ]
+}

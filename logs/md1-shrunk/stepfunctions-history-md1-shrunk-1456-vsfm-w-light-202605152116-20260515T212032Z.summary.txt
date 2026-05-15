@@ -1,0 +1,5 @@
+FAIL_EVENT	TaskFailed
+  error=SageMaker.ResourceLimitExceededException
+  cause=The account-level service limit 'ml.g5.2xlarge for training job usage' is 2 Instances, with current utilization of 2 Instances and a request delta of 1 Instances. Please use AWS Service Quotas to request an increase for this quota. If AWS Service Quotas is not available, contact AWS support to request an increase for this quota. (Service: SageMaker, Status Code: 400, Request ID: 591a27d9-013a-4240-b05f-4c5ac2d872fa) (SDK Attempt Count: 1)
+  resource=createTrainingJob
+  resourceType=aws-sdk:sagemaker
