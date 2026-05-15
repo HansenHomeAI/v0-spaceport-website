@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-15T11:23:10-0600
+updated: 2026-05-15T11:39:00-0600
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -84,12 +84,21 @@ skybox, compression, artifact handoff, and visual gates.
   - `tests/unit/test_colmap_spatial_subset_zip.py`
 - Added payload persistence support to:
   - `scripts/sfm/run_sfm_benchmark.py --payload-json-output ...`
+- Added explicit role override support to:
+  - `scripts/sfm/run_sfm_benchmark.py --role-arn ...`
+  - reason: the branch preview stack was discoverable but did not expose a
+    resolvable SageMaker execution role; the direct SfM launch now pins the
+    known staging role instead of guessing from CloudFormation.
 
 ## Validation So Far
 
 - `python3 -m py_compile scripts/sfm/prepare_colmap_spatial_subset_zip.py`
 - `python3 -m py_compile scripts/sfm/run_sfm_benchmark.py scripts/sfm/prepare_colmap_spatial_subset_zip.py`
 - `python3 -m unittest tests.unit.test_colmap_spatial_subset_zip tests.unit.test_spatial_heading_benchmark_subset`
+- `git diff --check`
+- Commit/push:
+  - `98556e5595a15a0c2675fbe0753fedf1bbb88fdf` (`chore: prepare md1 shrunk spatial subset`)
+  - exact-head `CDK Deploy` run `25931581976` -> success
 
 ## Data Prep Completed
 
@@ -113,13 +122,32 @@ skybox, compression, artifact handoff, and visual gates.
 
 ## Launch Plan
 
-1. Launch exactly one MD1-Shrunk SfM processing job with chunked SfM settings
+1. Launched exactly one MD1-Shrunk SfM processing job with chunked SfM settings
    matching the largest Montana path:
    - `COLMAP_ENABLE_SPATIAL_CHUNKING=1`
    - `COLMAP_CHUNK_PLANNER=legacy_spatial_heading`
    - `COLMAP_MATCH_PROFILE=P1`
    - source ZIP: `s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip`
    - output: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap`
+   - job: `md1-shrunk-1456-sfm-1778866088`
+   - ARN: `arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-shrunk-1456-sfm-1778866088`
+   - image pinned by digest: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:05e85850abcfd623e8ec7f3debc70ce2dcd9861548311290db901e0c661d4940`
+   - role: `arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging`
+   - payload: `logs/md1-shrunk/md1-shrunk-20260515T1641Z-sfm-payload.json`
+   - start proof: `logs/md1-shrunk/md1-shrunk-20260515T1641Z-sfm-start.json`
+   - first describe snapshot: `logs/md1-shrunk/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260515T1728Z.json`
+   - startup describe snapshot: `logs/md1-shrunk/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260515T1730Z.json`
+   - log stream: `/aws/sagemaker/ProcessingJobs` / `md1-shrunk-1456-sfm-1778866088/algo-1-1778866129`
+   - first CloudWatch snapshot: `logs/md1-shrunk/cloudwatch-md1-shrunk-1456-sfm-1778866088-20260515T1732Z.json`
+   - observed startup: downloaded the `6063352899` byte ZIP, extracted `1456` images, detected GPS/orientation on `1456` images, prepared a `1456` entry image list, and started GPU feature extraction.
+   - latest poll snapshot:
+     - SageMaker: `logs/md1-shrunk/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260515T1738Z.json`
+     - CloudWatch: `logs/md1-shrunk/cloudwatch-md1-shrunk-1456-sfm-1778866088-20260515T1738Z.json`
+     - S3 output listing: `logs/md1-shrunk/s3-colmap-md1-shrunk-20260515T1641Z-20260515T1738Z.txt`
+   - latest observed progress:
+     - `ProcessingJobStatus=InProgress`, `FailureReason=null`
+     - GPU feature extraction reached `Processed file [160/1456]`
+     - S3 output still empty as expected because output upload is `EndOfJob`.
 2. Gate SfM before 3DGS:
    - output files present
    - registered images close to the 1452 Meadow baseline

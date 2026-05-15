@@ -124,6 +124,11 @@ def parse_args() -> argparse.Namespace:
         help="Fully qualified ECR image URI override. Takes precedence over --image-tag.",
     )
     parser.add_argument(
+        "--role-arn",
+        default="",
+        help="SageMaker execution role ARN override. Required when no branch ML stack role is discoverable.",
+    )
+    parser.add_argument(
         "--env",
         action="append",
         default=[],
@@ -184,17 +189,27 @@ def build_summary_row(
 def main() -> int:
     args = parse_args()
     branch_name = args.branch or get_current_branch()
-    stack_name, outputs = find_branch_ml_stack(branch_name)
-    role_arn = get_sagemaker_role_arn(stack_name)
     branch_tag = get_branch_ecr_tag(branch_name) or "latest"
     selected_tag = args.image_tag or branch_tag
-    image_uri = args.image_uri or f"{outputs['SfMRepositoryUri']}:{selected_tag}"
+    stack_name = "manual"
+    outputs: Dict[str, str] = {}
+
+    if args.image_uri and args.output_s3_uri and args.role_arn:
+        role_arn = args.role_arn
+        image_uri = args.image_uri
+    else:
+        stack_name, outputs = find_branch_ml_stack(branch_name)
+        role_arn = args.role_arn or get_sagemaker_role_arn(stack_name)
+        image_uri = args.image_uri or f"{outputs['SfMRepositoryUri']}:{selected_tag}"
 
     timestamp = int(time.time())
     job_name = f"{args.job_prefix}-{timestamp}"
-    output_s3_uri = args.output_s3_uri or (
-        f"s3://{outputs['MLBucketName']}/manual-validations/{job_name}/colmap"
-    )
+    if args.output_s3_uri:
+        output_s3_uri = args.output_s3_uri
+    elif outputs.get("MLBucketName"):
+        output_s3_uri = f"s3://{outputs['MLBucketName']}/manual-validations/{job_name}/colmap"
+    else:
+        raise RuntimeError("--output-s3-uri is required when no branch ML stack output is available")
 
     environment = {
         "AWS_DEFAULT_REGION": "us-west-2",
