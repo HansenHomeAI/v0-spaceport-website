@@ -726,3 +726,13 @@ skybox, compression, artifact handoff, and visual gates.
     - `CDK Deploy` succeeded for head `c87a81b7...` (run `25949052576`):
       - watch: `logs/md1-shrunk/gh-run-watch-25949052576-20260516T012042Z.txt`
       - view: `logs/md1-shrunk/gh-run-view-25949052576-20260516T012042Z.json`
+
+- 2026-05-15T19:30:19-0600 exact-head CI proof (CI-proof commit head):
+  - branch/head:
+    - `git rev-parse HEAD` -> `1d7c7898c95d6fdd8557c4e034f98df414a5449a` (`chore: record md1-shrunk CI proof`)
+  - GitHub workflows (exact-head):
+    - run list: `logs/md1-shrunk/gh-run-list-20260516T013019Z.json`
+    - `CDK Deploy` succeeded for head `1d7c7898...` (run `25949158184`):
+      - watch: `logs/md1-shrunk/gh-run-watch-25949158184-20260516T013019Z.txt`
+      - view: `logs/md1-shrunk/gh-run-view-25949158184-20260516T013019Z.json`
+    - meta: `logs/md1-shrunk/gh-run-meta-20260516T013019Z.txt`
