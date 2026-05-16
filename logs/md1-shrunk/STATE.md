@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-16T04:56:58Z
+updated: 2026-05-16T05:34:51Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -1096,3 +1096,36 @@ skybox, compression, artifact handoff, and visual gates.
       - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25953500379-20260516T050839Z.txt`
       - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25953500379-20260516T051259Z.json`
     - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
+
+- 2026-05-16T05:34:51Z camera-check gate (no new launches; bounded verification only):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `e22a9d723f4709ce41d478812f9238450cefd5f1` (origin matches; new local poll artifacts only)
+  - AWS identity:
+    - `aws sts get-caller-identity` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions (staging):
+    - `aws stepfunctions list-executions --state-machine-arn ... --status-filter RUNNING` -> `RUNNING=0`
+  - SageMaker terminal statuses (expect Completed):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`
+    - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`
+  - SfM Montana-scale gates (from `colmap/sfm_metadata.json` snapshot):
+    - `dataset_image_count=1456`, `images_registered=1456`, `merged_component_count=1`
+    - `points_3d=1103335` (>= Meadow/Incognito `940147`), `timed_out=false`, `quality_check_passed=true`
+    - snapshot: `logs/md1-shrunk/polls/sfm_metadata-20260516T052651Z.json`
+  - 3DGS + compression gates (skybox + export sidecars):
+    - `logs/md1-shrunk/polls/training_metadata-20260516T052651Z.json`
+    - `logs/md1-shrunk/polls/sogs_compression_summary-20260516T052651Z.json`
+    - `logs/md1-shrunk/polls/background_manifest-20260516T052651Z.json`
+    - `logs/md1-shrunk/polls/export_manifest-20260516T052651Z.json`
+  - Side-by-side input-vs-render camera check:
+    - selected COLMAP image id `30` -> `DJI_01029.JPG` (from `colmap/sparse/0/images.txt`)
+    - derived viewer camera pose from COLMAP pose (camera center + forward vector):
+      - `MD1_CAM_POS=1.803916,-1.278733,2.509296`
+      - `MD1_CAM_TARGET=4.318751,-1.515694,4.127768`
+    - render command:
+      - `cd web; MD1_VIEWER_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev MD1_BUNDLE_URL=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json MD1_SKYBOX=background_skybox.webp MD1_CAM_POS=... MD1_CAM_TARGET=... node scripts/render-md1-camera-check.mjs`
+    - outputs:
+      - render: `logs/md1-shrunk/polls/md1-camera-check-dji01029-20260516T053233Z.png`
+      - render log: `logs/md1-shrunk/polls/md1-camera-check-dji01029-20260516T053233Z.txt`
+      - combined side-by-side: `logs/md1-shrunk/polls/md1-input-vs-render-DJI_01029-20260516T053233Z.jpg`
