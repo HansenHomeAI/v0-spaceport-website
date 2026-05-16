@@ -951,3 +951,34 @@ skybox, compression, artifact handoff, and visual gates.
       - view (initial): `logs/md1-shrunk/gh-run-view-25951686568-20260516T033207Z.json`
       - view (post-complete): `logs/md1-shrunk/gh-run-view-25951686568-20260516T033559Z.json`
     - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
+
+- 2026-05-16T03:50:45Z monitor poll (no new launches; terminal state still green):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `4804dc126b807fce225de5419289d4c934658e93` (origin matches; clean)
+  - AWS identity:
+    - `aws sts get-caller-identity --output json > logs/md1-shrunk/aws-sts-get-caller-identity-20260516T034820Z.json` -> account `975050048887`
+  - Step Functions (staging):
+    - `aws stepfunctions list-executions --status-filter RUNNING ... > logs/md1-shrunk/sfn-list-executions-running-20260516T034835Z.json` -> `0` RUNNING
+  - SageMaker (staging, us-west-2):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`:
+      - `logs/md1-shrunk/sagemaker-describe-processing-md1-shrunk-1456-sfm-1778866088-20260516T034926Z.json`
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`:
+      - `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260516T034926Z.json`
+    - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`:
+      - `logs/md1-shrunk/sagemaker-describe-processing-md1shrunk1456-1778880862-compression-20260516T034926Z.json`
+    - list snapshots (no InProgress matches):
+      - `logs/md1-shrunk/sagemaker-list-processing-jobs-20260516T034943Z.json`
+      - `logs/md1-shrunk/sagemaker-list-training-jobs-20260516T034943Z.json`
+  - S3 artifacts (existence + size):
+    - COLMAP (`.../colmap/`): `logs/md1-shrunk/s3-colmap-20260516T035002Z.txt` -> `Total Objects: 1468`, `Total Size: 9.2 GiB`
+    - 3DGS (`.../3dgs/md1shrunk1456-1778880862/`): `logs/md1-shrunk/s3-3dgs-20260516T035002Z.txt` -> `model.tar.gz` `212.0 MiB`
+    - compressed (`.../compressed/md1shrunk1456-1778880862/`): `logs/md1-shrunk/s3-compressed-20260516T035002Z.txt` -> `Total Objects: 22`, `Total Size: 28.7 MiB`
+  - GitHub workflows:
+    - exact-head `CDK Deploy` succeeded for `4804dc12...` (run `25951777522`):
+      - list: `logs/md1-shrunk/gh-run-list-20260516T035124Z.json`
+      - view: `logs/md1-shrunk/gh-run-view-CDK_Deploy-25951777522-20260516T035124Z.json`
+    - latest `Deploy Next.js to Cloudflare Pages` on branch (head `18c6cf6d...`) succeeded (run `25948288202`):
+      - view: `logs/md1-shrunk/gh-run-view-Deploy_Next.js_to_Cloudflare_Pages-25948288202-20260516T035124Z.json`
+      - log: `logs/md1-shrunk/gh-run-log-Deploy_Next.js_to_Cloudflare_Pages-25948288202-20260516T035124Z.txt`
+      - pages liveness: `logs/md1-shrunk/pages-preview-urls-20260516T035153Z.txt` -> hash+alias both `HTTP 200`
