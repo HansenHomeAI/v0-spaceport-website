@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-16T21:50:10Z
+updated: 2026-05-16T23:30:39Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -1610,9 +1610,8 @@ skybox, compression, artifact handoff, and visual gates.
 - 2026-05-16T23:24:44Z poll + extra camera side-by-side checks (bounded; no new ML launches):
   - branch/head/status:
     - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
-    - `git rev-parse HEAD` -> `4b1a6bb4e893b400d49c32dfc8f40cc93f6962a6` (`chore: md1-shrunk monitor 20260516T2240Z`)
-    - `git status --porcelain=v1` -> new poll artifacts under `logs/md1-shrunk/polls/`
-  - AWS identity / active state (most recent poll artifacts):
+    - `git rev-parse HEAD` -> `4b1a6bb4e893b400d49c32dfc8f40cc93f6962a6` (pre-commit)
+  - AWS identity / active state:
     - `logs/md1-shrunk/polls/aws-sts-20260516T231432Z.json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
     - Step Functions RUNNING=0:
       - `logs/md1-shrunk/polls/stepfn-running-20260516T231432Z.json`
@@ -1648,6 +1647,17 @@ skybox, compression, artifact handoff, and visual gates.
       - side-by-side no-sky: `logs/md1-shrunk/polls/side-by-side-nosky-DJI_02500-20260516T232256Z.png`
   - Notes:
     - Cost bounded: no new SageMaker jobs launched; no non-owned jobs stopped.
+
+- 2026-05-16T23:30:02Z exact-head CI (post push):
+  - commit:
+    - `git rev-parse HEAD` -> `aef5bbfa709e38531f8dd3260255c6b99b2b4e53` (`chore: md1-shrunk extra camera checks`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` run `25975741726` `success`:
+      - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25975741726-20260516T232652Z.txt`
+      - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25975741726-20260516T233014Z.json`
+    - Pages deploy not triggered for this exact head (no `web/trigger-dev-build.txt` bump):
+      - latest Pages run remains `25948288202` (head `18c6cf6d...`)
+      - `logs/md1-shrunk/polls/gh-run-list-pages-20260516T233024Z.json`
 
 - 2026-05-16T21:45:36Z commit/push + exact-head CI (monitor poll evidence):
   - commit:
