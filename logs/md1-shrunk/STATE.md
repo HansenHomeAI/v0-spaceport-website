@@ -855,3 +855,13 @@ skybox, compression, artifact handoff, and visual gates.
   - Preview URL liveness check:
     - alias URL (PREVIEW_URL): `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
     - `curl -L` headers snapshot: `logs/md1-shrunk/curl-headers-preview-20260516T024834Z.txt` -> `HTTP/2 200`
+
+- 2026-05-16T02:54:05Z commit/push + exact-head CI (resume verification ledger update):
+  - commit:
+    - `git rev-parse HEAD` -> `912c37f50aec694571dc9cf90d8b3264ff333f10` (`chore: md1-shrunk resume verification`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` succeeded for head `912c37f5...` (run `25950885932`):
+      - list: `logs/md1-shrunk/gh-run-list-912c37f5-20260516T025043Z.json`
+      - watch: `logs/md1-shrunk/gh-run-watch-25950885932-20260516T025050Z.txt`
+      - view: `logs/md1-shrunk/gh-run-view-25950885932-20260516T025050Z.json`
+    - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
