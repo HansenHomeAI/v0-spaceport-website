@@ -656,6 +656,13 @@ skybox, compression, artifact handoff, and visual gates.
       - alias URL (PREVIEW_URL): `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
       - hash URL: `https://2504c8df.v0-spaceport-website-preview2.pages.dev`
 
+- 2026-05-15T18:59:00-0600 exact-head CI (post CI-record commit):
+  - branch/head:
+    - `git rev-parse HEAD` -> `760584f9ddda71286fe3627a384ee26f068c6e2f` (`chore: record md1-shrunk camera compare CI`)
+  - GitHub workflow (exact-head):
+    - `CDK Deploy` succeeded (run `25948493656`):
+      - `logs/md1-shrunk/gh-run-watch-25948493656-20260516T005604Z.txt`
+
 - 2026-05-16T00:49:06Z monitor poll (terminal reconfirm; no new launches):
   - branch/head/status:
     - `git rev-parse HEAD` -> `0c58099081f06dc501f08f8d8e2a396b0d9831f5`
