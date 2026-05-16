@@ -875,3 +875,45 @@ skybox, compression, artifact handoff, and visual gates.
       - watch: `logs/md1-shrunk/gh-run-watch-25950962972-20260516T025457Z.txt`
       - view: `logs/md1-shrunk/gh-run-view-25950962972-20260516T025457Z.json`
     - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
+
+- 2026-05-16T03:20:27Z resume monitor (terminal complete; no new launches):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `cab05e04484c3860c89f886d506624e92b1e3b06`
+    - `git status --porcelain=v1` -> untracked poll artifacts under `logs/md1-shrunk/`
+  - AWS identity:
+    - `aws sts get-caller-identity --output json > logs/md1-shrunk/aws-sts-20260516T031819Z.json`
+  - Step Functions (active state):
+    - staging RUNNING=0:
+      - `aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --status-filter RUNNING --max-results 10 --region us-west-2 --output json > logs/md1-shrunk/stepfunctions-running-SpaceportMLPipeline-staging-20260516T031819Z.json`
+    - branch preview pipeline `SpaceportMLPipeline-br-8abcbd5662`:
+      - state machines: `logs/md1-shrunk/stepfunctions-list-state-machines-20260516T032010Z.json`
+      - RUNNING=0: `logs/md1-shrunk/stepfunctions-running-SpaceportMLPipeline-br-8abcbd5662-20260516T032010Z.json`
+      - SUCCEEDED list includes `execution-md1shrunk1456-1778880862`:
+        - `logs/md1-shrunk/stepfunctions-succeeded-SpaceportMLPipeline-br-8abcbd5662-20260516T032010Z.json`
+        - `logs/md1-shrunk/stepfunctions-describe-execution-md1shrunk1456-1778880862-20260516T032010Z.json` -> `status=SUCCEEDED`
+  - SageMaker terminal statuses (no relaunches):
+    - SfM `md1-shrunk-1456-sfm-1778866088` -> `Completed`:
+      - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260516T031819Z.json`
+    - 3DGS `md1shrunk1456-1778880862-3dgs` -> `Completed`:
+      - `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260516T031819Z.json`
+    - compression `md1shrunk1456-1778880862-compression` (ProcessingJob) -> `Completed`:
+      - `logs/md1-shrunk/sagemaker-describe-md1shrunk1456-1778880862-compression-20260516T031819Z.json`
+    - InProgress processing jobs: `0`:
+      - `logs/md1-shrunk/sagemaker-list-processing-inprogress-20260516T031819Z.json`
+    - InProgress training jobs: `1` (external / not owned by this run; left untouched):
+      - `md1-tile00-split-r32-1778899939`
+      - `logs/md1-shrunk/sagemaker-list-training-inprogress-20260516T031819Z.json`
+  - S3 output presence reconfirm:
+    - COLMAP (`s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap`):
+      - `logs/md1-shrunk/s3-colmap-md1-shrunk-20260515T1641Z-20260516T032027Z.txt` -> `Total Objects: 1468`, `Total Size: 9.2 GiB`
+    - 3DGS (`s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778880862/`):
+      - `logs/md1-shrunk/s3-3dgs-md1shrunk1456-1778880862-20260516T032027Z.txt` -> `model.tar.gz` present (`212.0 MiB`)
+    - compressed (`s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778880862/`):
+      - `logs/md1-shrunk/s3-compressed-md1shrunk1456-1778880862-20260516T032027Z.txt` -> `Total Objects: 22`, `Total Size: 28.7 MiB`
+  - GitHub workflows (exact-head):
+    - `gh run list --branch agent-113647-md1-baseline-e2e --limit 20 --json databaseId,workflowName,headSha,status,conclusion,createdAt,updatedAt,url > logs/md1-shrunk/gh-run-list-cab05e04-20260516T031856Z.json`
+    - `CDK Deploy` succeeded for head `cab05e04...` (run `25951141528`):
+      - view: `logs/md1-shrunk/gh-run-view-25951141528-20260516T031856Z.json`
+      - watch: `logs/md1-shrunk/gh-run-watch-25951141528-20260516T031856Z.txt`
+    - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
