@@ -627,3 +627,20 @@ skybox, compression, artifact handoff, and visual gates.
       - `logs/md1-shrunk/gh-run-log-25947847852-20260516T0034Z.txt`
       - alias URL: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
       - hash URL: `https://c72f2426.v0-spaceport-website-preview2.pages.dev`
+
+- 2026-05-15T18:45:00-0600 input-vs-render camera checks (3 poses; MD1 viewer):
+  - Preview alias URL:
+    - `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+  - Public bundle meta.json:
+    - `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json`
+  - COLMAP pose source:
+    - `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/images.txt`
+    - derived poses file: `logs/md1-shrunk/colmap-camera-poses-20260516T003738Z.txt`
+  - Inputs (downloaded from COLMAP images):
+    - `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/images/`
+    - local: `logs/md1-shrunk/input/`
+  - Renders + side-by-side comparisons (input left, render right):
+    - local renders: `logs/md1-shrunk/camera_checks/render-*.png`
+    - local comparisons: `logs/md1-shrunk/camera_checks/compare-*.png`
+  - Repro command (renders use bundled `background_skybox.webp` via `?skybox=background_skybox.webp`):
+    - `cd web && MD1_VIEWER_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev MD1_BUNDLE_URL=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json MD1_CAM_POS=... MD1_CAM_TARGET=... MD1_SKYBOX=background_skybox.webp MD1_OUT=../logs/md1-shrunk/camera_checks/render-<name>.png node scripts/render-md1-camera-check.mjs`

@@ -26,7 +26,7 @@ const disableSkybox =
   process.env.SOGS_DISABLE_SKYBOX === "yes";
 const skyboxOverride = process.env.SOGS_SKYBOX_OVERRIDE?.trim() || "";
 const expectedSkyboxSubstring =
-  process.env.SOGS_EXPECT_SKYBOX_SUBSTRING?.trim() || "/skybox/kloppenheim_06_puresky_equirect.webp";
+  process.env.SOGS_EXPECT_SKYBOX_SUBSTRING?.trim() || "/supersplat-viewer/skybox/kloppenheim_06_puresky_equirect.png";
 const expectBundledSkybox =
   process.env.SOGS_EXPECT_BUNDLED_SKYBOX === "1" || process.env.SOGS_EXPECT_BUNDLED_SKYBOX === "true";
 
