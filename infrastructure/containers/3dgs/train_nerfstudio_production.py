@@ -26,6 +26,7 @@ import statistics
 import logging
 import argparse
 import subprocess
+from collections import defaultdict
 
 # Import torch and disable compilation backends for SageMaker compatibility
 import torch
@@ -490,6 +491,10 @@ class NerfStudioTrainer:
                     logger.error(f"   Failed to list directory: {e}")
                 return False
             
+            if not self.apply_nerfstudio_split_manifest(transforms_file, self.input_dir):
+                logger.error("❌ NerfStudio split manifest application failed")
+                return False
+
             # CRITICAL FIX: Update input directory to point to converted data BEFORE validation
             # This ensures validation looks in the right place for the converted files
             self.input_dir = converted_dir
@@ -511,6 +516,143 @@ class NerfStudioTrainer:
         except Exception as e:
             logger.error(f"❌ COLMAP conversion failed: {e}")
             return False
+
+    def apply_nerfstudio_split_manifest(self, transforms_file: Path, source_input_dir: Path) -> bool:
+        """Inject explicit NerfStudio split filenames when a split manifest is present."""
+        manifest_path = self.resolve_split_manifest_path(source_input_dir)
+        if manifest_path is None:
+            logger.info("📊 No explicit NerfStudio split manifest found; using parser split policy")
+            return True
+
+        logger.info(f"📊 Applying explicit NerfStudio split manifest: {manifest_path}")
+        try:
+            with open(transforms_file, "r", encoding="utf-8") as handle:
+                transforms = json.load(handle)
+            with open(manifest_path, "r", encoding="utf-8") as handle:
+                manifest = json.load(handle)
+        except Exception as e:
+            logger.error(f"❌ Failed to read split manifest or transforms.json: {e}")
+            return False
+
+        frames = transforms.get("frames")
+        if not isinstance(frames, list) or not frames:
+            logger.error("❌ transforms.json has no frames for split manifest validation")
+            return False
+
+        frame_paths = []
+        basenames: Dict[str, list[str]] = defaultdict(list)
+        for frame in frames:
+            if not isinstance(frame, dict) or "file_path" not in frame:
+                continue
+            normalized = self.normalize_transforms_path(str(frame["file_path"]))
+            frame_paths.append(normalized)
+            basenames[Path(normalized).name].append(normalized)
+        frame_path_set = set(frame_paths)
+        if not frame_path_set:
+            logger.error("❌ transforms.json has no frame file_path entries")
+            return False
+
+        raw_train = manifest.get("train_filenames")
+        raw_eval = manifest.get("eval_filenames") or manifest.get("val_filenames") or manifest.get("test_filenames")
+        if not isinstance(raw_train, list) or not raw_train:
+            logger.error("❌ Split manifest must contain non-empty train_filenames")
+            return False
+        if not isinstance(raw_eval, list) or not raw_eval:
+            logger.error("❌ Split manifest must contain non-empty eval_filenames, val_filenames, or test_filenames")
+            return False
+
+        split_inputs = {
+            "train_filenames": raw_train,
+            "val_filenames": manifest.get("val_filenames") or raw_eval,
+            "test_filenames": manifest.get("test_filenames") or raw_eval,
+        }
+        resolved_splits: Dict[str, list[str]] = {}
+        for split_name, values in split_inputs.items():
+            if not isinstance(values, list) or not values:
+                logger.error(f"❌ Split manifest {split_name} must be a non-empty list")
+                return False
+            resolved = []
+            seen = set()
+            for value in values:
+                match = self.resolve_manifest_frame_path(str(value), frame_path_set, basenames)
+                if match is None:
+                    logger.error(f"❌ Split manifest {split_name} entry not found in transforms frames: {value}")
+                    return False
+                if match not in seen:
+                    resolved.append(match)
+                    seen.add(match)
+            resolved_splits[split_name] = resolved
+
+        train_set = set(resolved_splits["train_filenames"])
+        eval_set = set(resolved_splits["val_filenames"]) | set(resolved_splits["test_filenames"])
+        overlap = sorted(train_set & eval_set)
+        if overlap:
+            logger.error(f"❌ Split manifest train/eval overlap is not allowed: {overlap[:10]}")
+            return False
+
+        transforms.update(resolved_splits)
+        try:
+            with open(transforms_file, "w", encoding="utf-8") as handle:
+                json.dump(transforms, handle, indent=2)
+                handle.write("\n")
+        except Exception as e:
+            logger.error(f"❌ Failed to write transforms.json with split manifest: {e}")
+            return False
+
+        logger.info(
+            "✅ Applied explicit NerfStudio splits: train=%s val=%s test=%s",
+            len(resolved_splits["train_filenames"]),
+            len(resolved_splits["val_filenames"]),
+            len(resolved_splits["test_filenames"]),
+        )
+        return True
+
+    def resolve_split_manifest_path(self, source_input_dir: Path) -> Optional[Path]:
+        """Return the first configured split manifest path that exists."""
+        candidates = []
+        env_value = os.environ.get("NS_SPLIT_MANIFEST")
+        if env_value:
+            env_path = Path(env_value)
+            if not env_path.is_absolute():
+                env_path = source_input_dir / env_path
+            candidates.append(env_path)
+        candidates.extend([
+            source_input_dir / "nerfstudio_split_manifest.json",
+            source_input_dir / "split_manifest.json",
+        ])
+        seen = set()
+        for candidate in candidates:
+            if candidate in seen:
+                continue
+            seen.add(candidate)
+            if candidate.exists():
+                return candidate
+        return None
+
+    def normalize_transforms_path(self, value: str) -> str:
+        """Normalize NerfStudio transforms paths for manifest matching."""
+        return value.replace("\\", "/").lstrip("./")
+
+    def resolve_manifest_frame_path(
+        self,
+        value: str,
+        frame_path_set: set[str],
+        basenames: Dict[str, list[str]],
+    ) -> Optional[str]:
+        """Resolve a manifest filename to the exact transforms.json frame path."""
+        normalized = self.normalize_transforms_path(value)
+        candidates = [normalized]
+        basename = Path(normalized).name
+        if basename:
+            candidates.append(basename)
+            candidates.append(f"images/{basename}")
+        for candidate in candidates:
+            if candidate in frame_path_set:
+                return candidate
+        basename_matches = basenames.get(basename, [])
+        if len(basename_matches) == 1:
+            return basename_matches[0]
+        return None
     
     def convert_colmap_text_to_binary(self, sparse_txt_dir: Path, sparse_bin_dir: Path) -> bool:
         """Convert COLMAP text files (TXT) to binary (BIN) using COLMAP's model_converter."""

@@ -359,6 +359,98 @@ class NerfstudioTrainingQualityGateTest(unittest.TestCase):
                 trainer = self.training.NerfStudioTrainer(str(config))
                 self.assertEqual(trainer.resolve_train_split_fraction({}), 0.95)
 
+    def test_split_manifest_injects_explicit_train_val_test_filenames(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "input"
+            converted = root / "converted"
+            source.mkdir()
+            converted.mkdir()
+            transforms = converted / "transforms.json"
+            transforms.write_text(
+                json.dumps(
+                    {
+                        "frames": [
+                            {"file_path": "images/DJI_0001.JPG"},
+                            {"file_path": "images/DJI_0002.JPG"},
+                            {"file_path": "images/DJI_0003.JPG"},
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (source / "nerfstudio_split_manifest.json").write_text(
+                json.dumps(
+                    {
+                        "train_filenames": ["DJI_0001.JPG", "images/DJI_0002.JPG"],
+                        "val_filenames": ["DJI_0003.JPG"],
+                        "test_filenames": ["DJI_0003.JPG"],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            config = root / "container_config.yaml"
+            config.write_text("training:\n  max_iterations: 10\n", encoding="utf-8")
+            with mock.patch.dict(
+                os.environ,
+                {
+                    "SM_MODEL_DIR": str(root / "model"),
+                    "SM_CHANNEL_TRAINING": str(source),
+                },
+                clear=False,
+            ):
+                trainer = self.training.NerfStudioTrainer(str(config))
+
+            self.assertTrue(trainer.apply_nerfstudio_split_manifest(transforms, source))
+
+            payload = json.loads(transforms.read_text(encoding="utf-8"))
+            self.assertEqual(payload["train_filenames"], ["images/DJI_0001.JPG", "images/DJI_0002.JPG"])
+            self.assertEqual(payload["val_filenames"], ["images/DJI_0003.JPG"])
+            self.assertEqual(payload["test_filenames"], ["images/DJI_0003.JPG"])
+
+    def test_split_manifest_rejects_train_eval_overlap(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "input"
+            converted = root / "converted"
+            source.mkdir()
+            converted.mkdir()
+            transforms = converted / "transforms.json"
+            transforms.write_text(
+                json.dumps(
+                    {
+                        "frames": [
+                            {"file_path": "images/DJI_0001.JPG"},
+                            {"file_path": "images/DJI_0002.JPG"},
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (source / "nerfstudio_split_manifest.json").write_text(
+                json.dumps(
+                    {
+                        "train_filenames": ["DJI_0001.JPG"],
+                        "val_filenames": ["DJI_0001.JPG"],
+                        "test_filenames": ["DJI_0002.JPG"],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            config = root / "container_config.yaml"
+            config.write_text("training:\n  max_iterations: 10\n", encoding="utf-8")
+            with mock.patch.dict(
+                os.environ,
+                {
+                    "SM_MODEL_DIR": str(root / "model"),
+                    "SM_CHANNEL_TRAINING": str(source),
+                },
+                clear=False,
+            ):
+                trainer = self.training.NerfStudioTrainer(str(config))
+
+            self.assertFalse(trainer.apply_nerfstudio_split_manifest(transforms, source))
+
 
 if __name__ == "__main__":
     unittest.main()
