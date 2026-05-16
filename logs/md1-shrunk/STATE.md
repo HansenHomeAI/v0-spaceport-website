@@ -818,3 +818,40 @@ skybox, compression, artifact handoff, and visual gates.
       - watch: `logs/md1-shrunk/gh-run-watch-25950271829-20260516T0613Z.txt`
       - view: `logs/md1-shrunk/gh-run-view-25950271829-20260516T0613Z-final.json`
     - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
+
+- 2026-05-16T02:49:00Z resume verification (no new launches; user-provided head `e9cbf71c...` was stale):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `c6d48e303e649768521871e86613d0dd68ecf4bb`
+    - `git status --porcelain=v1` -> clean
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` succeeded for head `c6d48e30...` (run `25950353090`):
+      - observed via: `gh run list --branch agent-113647-md1-baseline-e2e ...`
+  - AWS identity snapshot:
+    - `logs/md1-shrunk/aws-sts-get-caller-identity-20260516T024620Z.json`
+  - Step Functions:
+    - staging (`SpaceportMLPipeline-staging`) RUNNING executions: `0`
+      - `logs/md1-shrunk/stepfunctions-list-executions-RUNNING-20260516T024620Z.json`
+    - branch preview (`SpaceportMLPipeline-br-8abcbd5662`) RUNNING executions: `0`
+      - `logs/md1-shrunk/stepfunctions-list-executions-RUNNING-br-8abcbd5662-20260516T024806Z.json`
+  - SageMaker terminal status snapshots:
+    - SfM `md1-shrunk-1456-sfm-1778866088` -> `Completed`:
+      - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260516T024708Z.json`
+    - 3DGS `md1shrunk1456-1778880862-3dgs` -> `Completed`:
+      - `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260516T024708Z.json`
+    - compression `md1shrunk1456-1778880862-compression` -> `Completed`:
+      - `logs/md1-shrunk/sagemaker-describe-md1shrunk1456-1778880862-compression-20260516T024708Z.json`
+    - InProgress processing jobs: `0`
+      - `logs/md1-shrunk/sagemaker-list-processing-InProgress-20260516T024708Z.json`
+    - InProgress training jobs: `0`
+      - `logs/md1-shrunk/sagemaker-list-training-InProgress-20260516T024708Z.json`
+  - S3 output presence reconfirm:
+    - COLMAP (`s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap`):
+      - `logs/md1-shrunk/s3-colmap-md1-shrunk-20260515T1641Z-20260516T024806Z.txt` -> `Total Objects: 1468`, `Total Size: 9.2 GiB`
+    - 3DGS (`s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778880862/`):
+      - `logs/md1-shrunk/s3-3dgs-md1shrunk1456-1778880862-20260516T024806Z.txt` -> `model.tar.gz` present
+    - compressed (`s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778880862/`):
+      - `logs/md1-shrunk/s3-compressed-md1shrunk1456-1778880862-20260516T024806Z.txt` -> `Total Objects: 22`, `Total Size: 28.7 MiB`
+  - Preview URL liveness check:
+    - alias URL (PREVIEW_URL): `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+    - `curl -L` headers snapshot: `logs/md1-shrunk/curl-headers-preview-20260516T024834Z.txt` -> `HTTP/2 200`
