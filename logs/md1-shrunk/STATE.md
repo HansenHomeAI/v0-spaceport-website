@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-16T08:02:20Z
+updated: 2026-05-16T21:39:51Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -1569,6 +1569,43 @@ skybox, compression, artifact handoff, and visual gates.
     - exact-head runs: `logs/md1-shrunk/polls/gh-run-head-2b0e55f8086f09ab74f6bbb4a286df2c770ed3be-20260516T180627Z.tsv` -> `CDK Deploy` run `25967956287` `success`
   - Notes:
     - Cost bounded: no new jobs launched; no non-owned jobs stopped.
+
+- 2026-05-16T21:39:51Z monitor poll (no new launches; bundle + preview still healthy):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `b8c9d3099fababdbdfb6650582dc7ed44cd68e7c`
+    - `git status --porcelain=v1` -> new poll artifacts under `logs/md1-shrunk/` only
+  - AWS identity:
+    - `logs/md1-shrunk/aws-sts-20260516T213655Z.json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions:
+    - RUNNING executions under `SpaceportMLPipeline-staging`: `0`
+      - `logs/md1-shrunk/stepfunctions-running-20260516T213655Z.json`
+  - SageMaker:
+    - InProgress processing jobs snapshot:
+      - `logs/md1-shrunk/sagemaker-processing-inprogress-20260516T213655Z.json` (includes external `md1-tile00-lodonly-r38-1778950901`; left untouched)
+    - InProgress training jobs snapshot:
+      - `logs/md1-shrunk/sagemaker-training-inprogress-20260516T213655Z.json` -> `0`
+    - Owned job terminal statuses reconfirm:
+      - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`
+        - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260516T213712Z.json`
+      - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`
+        - `logs/md1-shrunk/sagemaker-describe-md1shrunk1456-1778880862-3dgs-20260516T213712Z.json`
+      - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`
+        - `logs/md1-shrunk/sagemaker-describe-md1shrunk1456-1778880862-compression-20260516T213712Z.json`
+  - Public bundle HTTP health:
+    - meta.json headers: `logs/md1-shrunk/http-head-meta-20260516T213831Z.txt` -> `HTTP 200`
+    - skybox headers: `logs/md1-shrunk/http-head-skybox-20260516T213831Z.txt` -> `HTTP 200`
+  - Preview render smoke (skybox):
+    - command:
+      - `cd web && MD1_VIEWER_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev MD1_BUNDLE_URL=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json MD1_SKYBOX=background_skybox.webp MD1_CAM_POS=1.803916,-1.278733,2.509296 MD1_CAM_TARGET=4.318751,-1.515694,4.127768 MD1_OUT=../logs/md1-shrunk/polls/md1-camera-check-dji01029-rerun-20260516T213831Z.png node scripts/render-md1-camera-check.mjs`
+    - outputs:
+      - screenshot: `logs/md1-shrunk/polls/md1-camera-check-dji01029-rerun-20260516T213831Z.png`
+      - console log: `logs/md1-shrunk/polls/md1-camera-check-dji01029-rerun-20260516T213831Z.txt`
+  - GitHub workflows (exact-head):
+    - run list: `logs/md1-shrunk/gh-run-list-agent-113647-md1-baseline-e2e-20260516T213557Z.json`
+    - exact-head summary: `logs/md1-shrunk/gh-exact-head-summary-agent-113647-md1-baseline-e2e-20260516T213557Z.txt` -> `CDK Deploy` run `25973150154` `success`
+  - Notes:
+    - Cost bounded: no new SageMaker jobs launched; no non-owned jobs stopped.
 
 - 2026-05-16T21:15:30Z exact-head CI (post poll commit):
   - commit:
