@@ -940,3 +940,14 @@ skybox, compression, artifact handoff, and visual gates.
       - view (initial): `logs/md1-shrunk/gh-run-view-25951592648-20260516T032726Z.json`
       - view (post-complete): `logs/md1-shrunk/gh-run-view-25951592648-20260516T033131Z.json`
     - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
+
+- 2026-05-16T03:35:59Z push + exact-head CI (md1-shrunk cdk proof):
+  - commit:
+    - `git rev-parse HEAD` -> `3e8fbceef80e1a0382d5f50c243cddd13f199b48` (`chore: record md1-shrunk cdk proof`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` succeeded for head `3e8fbcee...` (run `25951686568`):
+      - list: `logs/md1-shrunk/gh-run-list-3e8fbceef80e1a0382d5f50c243cddd13f199b48-20260516T033207Z.json`
+      - watch: `logs/md1-shrunk/gh-run-watch-25951686568-20260516T033207Z.txt`
+      - view (initial): `logs/md1-shrunk/gh-run-view-25951686568-20260516T033207Z.json`
+      - view (post-complete): `logs/md1-shrunk/gh-run-view-25951686568-20260516T033559Z.json`
+    - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
