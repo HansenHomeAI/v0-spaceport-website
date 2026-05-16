@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-15T18:36:38-0600
+updated: 2026-05-16T04:56:58Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -1026,3 +1026,46 @@ skybox, compression, artifact handoff, and visual gates.
       - watch: `logs/md1-shrunk/gh-run-watch-25952710604-20260516T042647Z.txt`
       - view: `logs/md1-shrunk/gh-run-view-CDK_Deploy-25952710604-20260516T043044Z.json`
     - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
+
+- 2026-05-16T04:56:58Z monitor poll (no new launches; terminal still green):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `677e5ab6ce617f3f1da099b8fc8c059535047f1b` (origin matches; clean)
+    - git snapshots:
+      - `logs/md1-shrunk/polls/git-branch-20260516T045658Z.txt`
+      - `logs/md1-shrunk/polls/git-head-20260516T045658Z.txt`
+      - `logs/md1-shrunk/polls/git-origin-head-20260516T045658Z.txt`
+      - `logs/md1-shrunk/polls/git-status-20260516T045658Z.txt`
+  - AWS identity:
+    - `logs/md1-shrunk/polls/aws-sts-20260516T045658Z.json`
+  - Step Functions (RUNNING=0 expected):
+    - staging: `logs/md1-shrunk/polls/sfn-running-staging-20260516T045658Z.json`
+    - branch: `logs/md1-shrunk/polls/sfn-running-br-8abcbd5662-20260516T045658Z.json`
+  - SageMaker terminal statuses (expect Completed):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088`:
+      - `logs/md1-shrunk/polls/sagemaker-describe-sfm-20260516T045658Z.json`
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs`:
+      - `logs/md1-shrunk/polls/sagemaker-describe-3dgs-20260516T045658Z.json`
+    - compression (ProcessingJob) `md1shrunk1456-1778880862-compression`:
+      - `logs/md1-shrunk/polls/sagemaker-describe-compression-20260516T045658Z.json`
+    - InProgress lists:
+      - `logs/md1-shrunk/polls/sagemaker-list-processing-InProgress-20260516T045658Z.json`
+      - `logs/md1-shrunk/polls/sagemaker-list-training-InProgress-20260516T045658Z.json`
+  - S3 artifacts (existence + size snapshots):
+    - COLMAP: `logs/md1-shrunk/polls/s3-colmap-20260516T045658Z.txt`
+    - 3DGS: `logs/md1-shrunk/polls/s3-3dgs-20260516T045658Z.txt`
+    - compressed (staging): `logs/md1-shrunk/polls/s3-compressed-staging-20260516T045658Z.txt`
+    - public bundle listing: `logs/md1-shrunk/polls/s3-public-supersplat-20260516T045658Z.txt`
+  - Public bundle (anonymous HTTP 200 reconfirm):
+    - meta.json: `logs/md1-shrunk/polls/http-head-meta-20260516T045658Z.txt`
+    - background_skybox.webp: `logs/md1-shrunk/polls/http-head-skybox-20260516T045658Z.txt`
+  - Deployed preview viewer (Playwright smoke reconfirm):
+    - skybox enabled: `logs/md1-shrunk/polls/playwright-sogs-skybox-20260516T045658Z.txt`
+    - no-sky mode: `logs/md1-shrunk/polls/playwright-sogs-nosky-20260516T045658Z.txt`
+  - GitHub workflows:
+    - exact-head `CDK Deploy` for `677e5ab6...`:
+      - run `25952803565`
+      - `logs/md1-shrunk/polls/gh-run-view-cdk-20260516T045658Z.json`
+      - `logs/md1-shrunk/polls/gh-run-list-20260516T045658Z.json`
+    - latest Pages deploy remains head `18c6cf6d...` (run `25948288202`):
+      - `logs/md1-shrunk/polls/gh-run-view-pages-20260516T045658Z.json`
