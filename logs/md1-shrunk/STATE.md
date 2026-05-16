@@ -929,3 +929,14 @@ skybox, compression, artifact handoff, and visual gates.
       - view (post-complete): `logs/md1-shrunk/gh-run-view-25951494919-20260516T032640Z.json`
     - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
     - note: `gh run watch` includes a GitHub-hosted Node.js 20 deprecation warning; no behavior change required for this MD1-Shrunk run
+
+- 2026-05-16T03:31:31Z commit/push + exact-head CI (STATE/CI proof):
+  - commit:
+    - `git rev-parse HEAD` -> `e5aa4e6340558ff0898cc2bcb3a5481cb780f5db` (`chore: record md1-shrunk ci proof`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` succeeded for head `e5aa4e63...` (run `25951592648`):
+      - list: `logs/md1-shrunk/gh-run-list-e5aa4e6340558ff0898cc2bcb3a5481cb780f5db-20260516T032726Z.json`
+      - watch: `logs/md1-shrunk/gh-run-watch-25951592648-20260516T032726Z.txt`
+      - view (initial): `logs/md1-shrunk/gh-run-view-25951592648-20260516T032726Z.json`
+      - view (post-complete): `logs/md1-shrunk/gh-run-view-25951592648-20260516T033131Z.json`
+    - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
