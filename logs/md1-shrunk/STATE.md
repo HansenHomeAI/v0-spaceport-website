@@ -1746,3 +1746,11 @@ skybox, compression, artifact handoff, and visual gates.
     - `CDK Deploy` succeeded (run `25974295345`):
       - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25974295345-20260516T221217Z.txt`
       - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25974295345-20260516T221217Z.json`
+
+- 2026-05-16T22:16:23Z exact-head CI (post record commit):
+  - commit:
+    - `git rev-parse HEAD` -> `62b8975aed32a9b62327670436951ba336c215cb` (`chore: record md1-shrunk cdk run 25974295345`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` succeeded (run `25974379439`):
+      - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25974379439-20260516T221623Z.txt`
+      - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25974379439-20260516T221623Z.json`
