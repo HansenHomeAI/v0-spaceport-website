@@ -1,0 +1,16 @@
+{
+    "Tags": [
+        {
+            "Key": "sfm-production-confidence",
+            "Value": "r33-tile00-sogs-viewer-canary"
+        },
+        {
+            "Key": "code-head",
+            "Value": "9e251de9f70c207e0190a6710686a0ecb8e6e3eb"
+        },
+        {
+            "Key": "source-training-job",
+            "Value": "md1-tile00-split-r32-1778899939"
+        }
+    ]
+}
