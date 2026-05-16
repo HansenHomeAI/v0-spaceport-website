@@ -756,3 +756,12 @@ skybox, compression, artifact handoff, and visual gates.
     - `logs/md1-shrunk/s3-ls-public-supersplat-20260516T014726Z.txt`
   - COLMAP sparse output reconfirm:
     - `logs/md1-shrunk/s3-ls-colmap-sparse0-20260516T014726Z.txt`
+
+- 2026-05-16T01:52:20Z commit/push + exact-head CI (monitor poll evidence):
+  - commit:
+    - `git rev-parse HEAD` -> `3713a8ca736c33f319abea028f62dd7626856077` (`chore: md1-shrunk monitor poll evidence`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` succeeded for head `3713a8ca...` (run `25949650097`):
+      - watch: `logs/md1-shrunk/gh-run-watch-25949650097-20260516T014830Z.txt`
+      - view: `logs/md1-shrunk/gh-run-view-25949650097-20260516T014830Z.json`
+    - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
