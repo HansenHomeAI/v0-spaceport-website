@@ -1738,3 +1738,11 @@ skybox, compression, artifact handoff, and visual gates.
   - Notes:
     - Correction: commit `6191e603...` records `CDK Deploy` run `25973664131`; commit `aa6aaae0...` records `CDK Deploy` run `25973762615`.
     - Cost bounded: no new SageMaker jobs launched; no non-owned jobs stopped.
+
+- 2026-05-16T22:12:17Z exact-head CI (post poll commit):
+  - commit:
+    - `git rev-parse HEAD` -> `c7abba31bd68a5d7fd1cb9bf03cdc6bb312692e6` (`chore: md1-shrunk poll 20260516T2206Z`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` succeeded (run `25974295345`):
+      - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25974295345-20260516T221217Z.txt`
+      - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25974295345-20260516T221217Z.json`
