@@ -1,0 +1,13 @@
+2026-05-15 15:04:31  195 Bytes manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/cameras.txt
+2026-05-15 15:04:31  231.9 KiB manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/frames.txt
+2026-05-15 15:04:31  577.1 MiB manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/images.txt
+2026-05-15 15:04:31  142.4 MiB manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/points3D.txt
+2026-05-15 15:04:31  218 Bytes manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/rigs.txt
+2026-05-15 15:04:31  195 Bytes manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse_raw/0/cameras.txt
+2026-05-15 15:04:31  231.9 KiB manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse_raw/0/frames.txt
+2026-05-15 15:04:31  578.5 MiB manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse_raw/0/images.txt
+2026-05-15 15:04:31  152.9 MiB manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse_raw/0/points3D.txt
+2026-05-15 15:04:31  218 Bytes manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse_raw/0/rigs.txt
+
+Total Objects: 10
+   Total Size: 1.4 GiB

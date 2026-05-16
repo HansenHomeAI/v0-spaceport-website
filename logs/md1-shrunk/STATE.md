@@ -1859,3 +1859,53 @@ skybox, compression, artifact handoff, and visual gates.
       - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25975861192-20260516T233618Z.json`
     - Pages deploy still not triggered at this head:
       - `logs/md1-shrunk/polls/gh-run-list-pages-latest-20260516T233618Z.json`
+
+- 2026-05-16T23:47:30Z monitor poll (terminal; no active ML runs; bundle + preview still healthy):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `ee256d4a0206ee47f44568835dae85c46b87249f`
+    - `git status --porcelain=v1` -> new poll artifacts under `logs/md1-shrunk/polls/`
+  - AWS identity:
+    - `/opt/homebrew/bin/aws sts get-caller-identity --output json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+      - `logs/md1-shrunk/polls/aws-sts-20260516T234334Z.json`
+  - Step Functions state (active only):
+    - `/opt/homebrew/bin/aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --status-filter RUNNING --max-results 20 --region us-west-2 --output json` -> none RUNNING
+      - `logs/md1-shrunk/polls/stepfn-running-20260516T234334Z.json`
+  - SageMaker state (active only):
+    - `/opt/homebrew/bin/aws sagemaker list-processing-jobs --status-equals InProgress ...` -> none `InProgress`
+      - `logs/md1-shrunk/polls/sagemaker-processing-inprogress-20260516T234334Z.json`
+    - `/opt/homebrew/bin/aws sagemaker list-training-jobs --status-equals InProgress ...` -> none `InProgress`
+      - `logs/md1-shrunk/polls/sagemaker-training-inprogress-20260516T234334Z.json`
+  - Owned job terminal status (for reference):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`, `FailureReason=null`
+      - `logs/md1-shrunk/polls/sagemaker-describe-processing-md1-shrunk-1456-sfm-1778866088-20260516T234334Z.json`
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`
+      - `logs/md1-shrunk/polls/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260516T234334Z.json`
+    - Compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`, `FailureReason=null`
+      - `logs/md1-shrunk/polls/sagemaker-describe-processing-md1shrunk1456-1778880862-compression-20260516T234334Z.json`
+  - CloudWatch (SfM):
+    - log stream metadata:
+      - `/opt/homebrew/bin/aws logs describe-log-streams --log-group-name /aws/sagemaker/ProcessingJobs --log-stream-name-prefix md1-shrunk-1456-sfm-1778866088/ --region us-west-2 --output json`
+      - `logs/md1-shrunk/polls/cloudwatch-describe-streams-md1-shrunk-1456-sfm-1778866088-20260516T234549Z.json` -> `storedBytes=0` (events no longer retrievable via `get-log-events`; rely on earlier captured snapshots already in this repo)
+    - `get-log-events` sanity (returned empty `events: []`):
+      - `logs/md1-shrunk/polls/cloudwatch-last200-md1-shrunk-1456-sfm-1778866088-20260516T234500Z.json`
+  - S3 COLMAP output (SfM):
+    - recursive listing + summary:
+      - `logs/md1-shrunk/polls/s3-colmap-list-20260516T234500Z.txt` -> `Total Objects: 1468`, `Total Size: 9.2 GiB`
+    - sparse listing + summary:
+      - `logs/md1-shrunk/polls/s3-colmap-sparse-list-20260516T234500Z.txt` -> `Total Objects: 10`, `Total Size: 1.4 GiB`
+      - `logs/md1-shrunk/polls/s3-colmap-sparse0-top-20260516T234618Z.txt` -> `cameras.txt`, `frames.txt`, `images.txt`, `points3D.txt`, `rigs.txt`
+    - dense folder check (empty / not present):
+      - `logs/md1-shrunk/polls/s3-colmap-dense-top-20260516T234618Z.txt`
+  - Public bundle + preview HTTP sanity:
+    - meta.json: `logs/md1-shrunk/polls/http-head-meta-20260516T234618Z.txt` -> `HTTP 200`
+    - skybox: `logs/md1-shrunk/polls/http-head-skybox-20260516T234618Z.txt` -> `HTTP 200`
+    - preview alias: `logs/md1-shrunk/polls/http-head-preview-20260516T234618Z.txt` -> `HTTP 200`
+  - GitHub workflows (exact-head):
+    - run list: `logs/md1-shrunk/polls/gh-run-list-20260516T234431Z.json`
+    - exact-head: `CDK Deploy` run `25975963231` `success`:
+      - `logs/md1-shrunk/polls/gh-run-watch-cdk-25975963231-20260516T233830Z.txt`
+      - `logs/md1-shrunk/polls/gh-run-view-cdk-25975963231-20260516T234216Z.json`
+    - Pages deploy not triggered at exact head (no `web/trigger-dev-build.txt` bump); preview alias from prior Pages run still serves `HTTP 200`.
+  - Notes:
+    - Cost bounded: no new SageMaker jobs launched; no non-owned jobs stopped.
