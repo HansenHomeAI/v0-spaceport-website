@@ -1169,7 +1169,7 @@ skybox, compression, artifact handoff, and visual gates.
 - 2026-05-16T05:56:32Z resume verification (no new launches; bounded polling only):
   - branch/head/status snapshots:
     - branch: `logs/md1-shrunk/polls/git-branch-20260516T055632Z.txt`
-    - head: `logs/md1-shrunk/polls/git-head-20260516T055632Z.txt` -> `f3fb08f8f337d00a7ff068b93e32a8bf1c1f4623`
+    - head: `logs/md1-shrunk/polls/git-head-20260516T055632Z.txt` -> `d9e0c6016fbe327b795274f771876d5dca355de1`
     - status: `logs/md1-shrunk/polls/git-status-20260516T055632Z.txt`
   - AWS identity:
     - `logs/md1-shrunk/polls/aws-identity-20260516T055632Z.json` -> account `975050048887`
@@ -1188,7 +1188,7 @@ skybox, compression, artifact handoff, and visual gates.
   - GitHub workflows (branch) snapshot:
     - list: `logs/md1-shrunk/polls/gh-run-list-20260516T055632Z.json`
     - CDK Deploy (exact-head) view:
-      - `logs/md1-shrunk/polls/gh-run-view-cdk-25954291186-20260516T055632Z.json`
+      - `logs/md1-shrunk/polls/gh-run-view-cdk-25954386683-20260516T0602Z.json`
   - Public bundle still anonymous-fetchable (HTTP headers):
     - urls: `logs/md1-shrunk/polls/public-bundle-urls-20260516T055708Z.txt`
     - `curl -I` meta.json: `logs/md1-shrunk/polls/curl-head-meta-20260516T055708Z.txt`
