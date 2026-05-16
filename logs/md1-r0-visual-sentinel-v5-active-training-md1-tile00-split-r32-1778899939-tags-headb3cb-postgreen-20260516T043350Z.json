@@ -1,0 +1,32 @@
+{
+    "Tags": [
+        {
+            "Key": "Validation",
+            "Value": "md1-tile00-support-aware-ds1000-r32"
+        },
+        {
+            "Key": "Project",
+            "Value": "Spaceport"
+        },
+        {
+            "Key": "CodeHead",
+            "Value": "9e251de9f70c207e0190a6710686a0ecb8e6e3eb"
+        },
+        {
+            "Key": "TrainingImageSourceHead",
+            "Value": "9e251de9f70c207e0190a6710686a0ecb8e6e3eb"
+        },
+        {
+            "Key": "EcrDigest",
+            "Value": "5f384927b5fa7739d4240134b0624fdd1ea31f83138efcd7f7c32de56b4286c8"
+        },
+        {
+            "Key": "Environment",
+            "Value": "agent73948216sfmproductionspine"
+        },
+        {
+            "Key": "Component",
+            "Value": "3DGS"
+        }
+    ]
+}
