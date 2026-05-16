@@ -1909,3 +1909,13 @@ skybox, compression, artifact handoff, and visual gates.
     - Pages deploy not triggered at exact head (no `web/trigger-dev-build.txt` bump); preview alias from prior Pages run still serves `HTTP 200`.
   - Notes:
     - Cost bounded: no new SageMaker jobs launched; no non-owned jobs stopped.
+
+- 2026-05-16T23:52:29Z exact-head CI (post poll commit):
+  - commit:
+    - `git rev-parse HEAD` -> `e710ee0cd8ca7917206b11132c9051c43b48453f` (`chore: md1-shrunk monitor 20260516T2347Z`)
+  - GitHub workflows (exact-head):
+    - run list: `logs/md1-shrunk/polls/gh-run-list-post-ci-20260516T235220Z.json`
+    - `CDK Deploy` run `25976152048` `success`:
+      - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25976152048-20260516T234847Z.txt`
+      - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25976152048-20260516T235220Z.json`
+    - Note: workflow emitted a Node.js 20 deprecation annotation (non-fatal; no failures).
