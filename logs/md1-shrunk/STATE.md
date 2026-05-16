@@ -1754,3 +1754,46 @@ skybox, compression, artifact handoff, and visual gates.
     - `CDK Deploy` succeeded (run `25974379439`):
       - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25974379439-20260516T221623Z.txt`
       - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25974379439-20260516T221623Z.json`
+
+- 2026-05-16T22:40:26Z monitor recheck (no new ML runs):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `1bdbb25d3adaed3833f00fb7b712287693cf65fe`
+    - `git status --porcelain=v1` -> new untracked poll artifacts under `logs/md1-shrunk/polls/`
+  - AWS identity:
+    - `aws sts get-caller-identity --output json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+      - `logs/md1-shrunk/polls/aws-identity-20260516T223725Z.json`
+  - Step Functions state (active only):
+    - `aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --status-filter RUNNING --max-results 10 --region us-west-2 --output json` -> none RUNNING
+      - `logs/md1-shrunk/polls/stepfn-running-20260516T223922Z.json`
+  - SageMaker state (active only):
+    - `aws sagemaker list-processing-jobs --status-equals InProgress ...` -> `md1-tile00-lodonly-r38-1778950901` (external/not owned) still `InProgress`; left untouched
+      - `logs/md1-shrunk/polls/sagemaker-list-processing-InProgress-20260516T223922Z.json`
+    - `aws sagemaker list-training-jobs --status-equals InProgress ...` -> none
+      - `logs/md1-shrunk/polls/sagemaker-list-training-InProgress-20260516T223922Z.json`
+  - Owned job terminal status (for reference):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`, `FailureReason=null`
+      - `logs/md1-shrunk/polls/sagemaker-describe-processing-md1-shrunk-1456-sfm-1778866088-20260516T223922Z.json`
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`
+      - `logs/md1-shrunk/polls/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260516T223922Z.json`
+    - Compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`
+      - `logs/md1-shrunk/polls/sagemaker-describe-processing-md1shrunk1456-1778880862-compression-20260516T223922Z.json`
+  - S3 re-list (sanity):
+    - colmap: `logs/md1-shrunk/polls/s3-colmap-20260516T223922Z.txt`
+    - 3dgs: `logs/md1-shrunk/polls/s3-3dgs-20260516T223922Z.txt`
+    - compression: `logs/md1-shrunk/polls/s3-compression-20260516T223922Z.txt`
+  - Public bundle + preview HTTP sanity:
+    - `curl -I -s https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json` -> `HTTP 200`
+      - `logs/md1-shrunk/polls/http-head-meta-20260516T224013Z.txt`
+    - `curl -I -s https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/background_skybox.webp` -> `HTTP 200`
+      - `logs/md1-shrunk/polls/http-head-skybox-20260516T224013Z.txt`
+    - meta snapshot: `logs/md1-shrunk/polls/bundle-meta-20260516T224013Z.json` -> `gaussians=990025`
+    - preview alias: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev` -> `HTTP 200`
+  - GitHub workflows (exact-head):
+    - `gh run list --branch agent-113647-md1-baseline-e2e ...` -> only `CDK Deploy` ran at exact head `1bdbb25d...`
+      - `CDK Deploy` run `25974479167` `success`:
+        - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25974479167-20260516T223829Z.txt`
+        - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25974479167-20260516T223829Z.json`
+    - Pages deploy did not run for this exact head (no trigger-file bump); preview alias from the last Pages run remains valid.
+  - Notes:
+    - Cost bounded: no new SageMaker jobs launched; no non-owned jobs stopped.

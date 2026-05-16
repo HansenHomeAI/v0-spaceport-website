@@ -1,0 +1,166 @@
+{
+    "ProcessingJobSummaries": [
+        {
+            "ProcessingJobName": "md1-tile00-lodonly-r38-1778950901",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-tile00-lodonly-r38-1778950901",
+            "CreationTime": "2026-05-16T11:01:43.853000-06:00",
+            "LastModifiedTime": "2026-05-16T11:04:14.894000-06:00",
+            "ProcessingJobStatus": "InProgress"
+        },
+        {
+            "ProcessingJobName": "md1-sogs-nvgpu-r37-1778950600",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-sogs-nvgpu-r37-1778950600",
+            "CreationTime": "2026-05-16T10:54:02.042000-06:00",
+            "ProcessingEndTime": "2026-05-16T10:55:13.161000-06:00",
+            "LastModifiedTime": "2026-05-16T10:56:33.242000-06:00",
+            "ProcessingJobStatus": "Completed"
+        },
+        {
+            "ProcessingJobName": "md1-sogs-vulkan-r36-1778950260",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-sogs-vulkan-r36-1778950260",
+            "CreationTime": "2026-05-16T10:49:48.161000-06:00",
+            "ProcessingEndTime": "2026-05-16T10:50:59.166000-06:00",
+            "LastModifiedTime": "2026-05-16T10:52:19.262000-06:00",
+            "ProcessingJobStatus": "Completed"
+        },
+        {
+            "ProcessingJobName": "md1-sogs-gpulist-r35-1778949968",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-sogs-gpulist-r35-1778949968",
+            "CreationTime": "2026-05-16T10:46:32.084000-06:00",
+            "ProcessingEndTime": "2026-05-16T10:47:44.303000-06:00",
+            "LastModifiedTime": "2026-05-16T10:49:03.337000-06:00",
+            "ProcessingJobStatus": "Completed"
+        },
+        {
+            "ProcessingJobName": "md1-tile00-sogs-r34-1778914593",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-tile00-sogs-r34-1778914593",
+            "CreationTime": "2026-05-16T00:57:12.042000-06:00",
+            "ProcessingEndTime": "2026-05-16T04:59:23.684000-06:00",
+            "LastModifiedTime": "2026-05-16T05:12:26.317000-06:00",
+            "ProcessingJobStatus": "Failed",
+            "FailureReason": "AlgorithmError: , exit code: 1"
+        },
+        {
+            "ProcessingJobName": "md1-tile00-sogs-r33-1778908626",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-tile00-sogs-r33-1778908626",
+            "CreationTime": "2026-05-15T23:17:38.377000-06:00",
+            "ProcessingEndTime": "2026-05-16T00:24:18.974000-06:00",
+            "LastModifiedTime": "2026-05-16T00:25:15.816000-06:00",
+            "ProcessingJobStatus": "Stopped"
+        },
+        {
+            "ProcessingJobName": "md1shrunk1456-1778880862-compression",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1shrunk1456-1778880862-compression",
+            "CreationTime": "2026-05-15T17:56:39.446000-06:00",
+            "ProcessingEndTime": "2026-05-15T18:08:09.571000-06:00",
+            "LastModifiedTime": "2026-05-15T18:09:11.864000-06:00",
+            "ProcessingJobStatus": "Completed"
+        },
+        {
+            "ProcessingJobName": "md1-shrunk-1456-sfm-1778866088",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-shrunk-1456-sfm-1778866088",
+            "CreationTime": "2026-05-15T11:28:09.932000-06:00",
+            "ProcessingEndTime": "2026-05-15T15:04:36.723000-06:00",
+            "LastModifiedTime": "2026-05-15T15:13:23.757000-06:00",
+            "ProcessingJobStatus": "Completed"
+        },
+        {
+            "ProcessingJobName": "md1-e2e-vsfm-splatfacto-cfix-202605150946-compression",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-e2e-vsfm-splatfacto-cfix-202605150946-compression",
+            "CreationTime": "2026-05-15T03:46:27.270000-06:00",
+            "ProcessingEndTime": "2026-05-15T07:27:58.895000-06:00",
+            "LastModifiedTime": "2026-05-15T07:31:40.918000-06:00",
+            "ProcessingJobStatus": "Completed"
+        },
+        {
+            "ProcessingJobName": "md1-e2e-vsfm-splatfacto-202605150539-compression",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-e2e-vsfm-splatfacto-202605150539-compression",
+            "CreationTime": "2026-05-15T02:13:26.770000-06:00",
+            "ProcessingEndTime": "2026-05-15T03:14:48.762000-06:00",
+            "LastModifiedTime": "2026-05-15T03:16:03.515000-06:00",
+            "ProcessingJobStatus": "Failed",
+            "FailureReason": "AlgorithmError: , exit code: 1"
+        },
+        {
+            "ProcessingJobName": "md1-e2e-vsfm-fg-202605142314-compression",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-e2e-vsfm-fg-202605142314-compression",
+            "CreationTime": "2026-05-14T20:17:24.488000-06:00",
+            "ProcessingEndTime": "2026-05-14T22:29:31.162000-06:00",
+            "LastModifiedTime": "2026-05-14T22:32:37.748000-06:00",
+            "ProcessingJobStatus": "Completed"
+        },
+        {
+            "ProcessingJobName": "md1-e2e-vsfm-light-202605141942-compression",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-e2e-vsfm-light-202605141942-compression",
+            "CreationTime": "2026-05-14T17:00:45.164000-06:00",
+            "ProcessingEndTime": "2026-05-14T17:08:26.604000-06:00",
+            "LastModifiedTime": "2026-05-14T17:10:47.332000-06:00",
+            "ProcessingJobStatus": "Completed"
+        },
+        {
+            "ProcessingJobName": "md1-full-fanout-r23-bridge-00-03-1778756266",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-full-fanout-r23-bridge-00-03-1778756266",
+            "CreationTime": "2026-05-14T04:58:13.823000-06:00",
+            "ProcessingEndTime": "2026-05-14T05:47:17.599000-06:00",
+            "LastModifiedTime": "2026-05-14T05:48:19.468000-06:00",
+            "ProcessingJobStatus": "Completed"
+        },
+        {
+            "ProcessingJobName": "md1-full-fanout-r23-1778748500-leaf-07",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-full-fanout-r23-1778748500-leaf-07",
+            "CreationTime": "2026-05-14T03:53:32.129000-06:00",
+            "ProcessingEndTime": "2026-05-14T04:37:47.987000-06:00",
+            "LastModifiedTime": "2026-05-14T04:38:37.532000-06:00",
+            "ProcessingJobStatus": "Completed"
+        },
+        {
+            "ProcessingJobName": "md1-full-fanout-r23-1778748500-leaf-06",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-full-fanout-r23-1778748500-leaf-06",
+            "CreationTime": "2026-05-14T03:49:59.417000-06:00",
+            "ProcessingEndTime": "2026-05-14T04:38:02.087000-06:00",
+            "LastModifiedTime": "2026-05-14T04:40:05.315000-06:00",
+            "ProcessingJobStatus": "Completed"
+        },
+        {
+            "ProcessingJobName": "md1-full-fanout-r23-1778748500-leaf-05",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-full-fanout-r23-1778748500-leaf-05",
+            "CreationTime": "2026-05-14T03:49:06.744000-06:00",
+            "ProcessingEndTime": "2026-05-14T04:32:06.833000-06:00",
+            "LastModifiedTime": "2026-05-14T04:34:11.910000-06:00",
+            "ProcessingJobStatus": "Completed"
+        },
+        {
+            "ProcessingJobName": "md1-full-fanout-r23-1778748500-leaf-04",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-full-fanout-r23-1778748500-leaf-04",
+            "CreationTime": "2026-05-14T03:02:24.911000-06:00",
+            "ProcessingEndTime": "2026-05-14T04:11:53.627000-06:00",
+            "LastModifiedTime": "2026-05-14T04:12:32.523000-06:00",
+            "ProcessingJobStatus": "Completed"
+        },
+        {
+            "ProcessingJobName": "md1-full-fanout-r23-1778748500-leaf-03",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-full-fanout-r23-1778748500-leaf-03",
+            "CreationTime": "2026-05-14T03:02:23.303000-06:00",
+            "ProcessingEndTime": "2026-05-14T03:46:09.111000-06:00",
+            "LastModifiedTime": "2026-05-14T03:47:28.843000-06:00",
+            "ProcessingJobStatus": "Completed"
+        },
+        {
+            "ProcessingJobName": "md1-full-fanout-r23-1778748500-leaf-02",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-full-fanout-r23-1778748500-leaf-02",
+            "CreationTime": "2026-05-14T03:02:21.911000-06:00",
+            "ProcessingEndTime": "2026-05-14T03:28:15.591000-06:00",
+            "LastModifiedTime": "2026-05-14T03:29:55.301000-06:00",
+            "ProcessingJobStatus": "Completed"
+        },
+        {
+            "ProcessingJobName": "md1-full-fanout-r23-1778748500-leaf-01",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-full-fanout-r23-1778748500-leaf-01",
+            "CreationTime": "2026-05-14T03:02:21.029000-06:00",
+            "ProcessingEndTime": "2026-05-14T03:50:05.420000-06:00",
+            "LastModifiedTime": "2026-05-14T03:52:26.573000-06:00",
+            "ProcessingJobStatus": "Completed"
+        }
+    ],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTR5bTNVa/UGKBIjRoUmC2TNER8ZqKkPbgsfkyhfE1kxrgzp0RUN8r75xgjKsmqwqXkr2Yx7nNFEx98epNPuixJSSp+UWGRIBhoFSlaozDLSkLg2C+2WtJMG6fwLbPZt7vy98iFL827ZKhB9PuLc8X2RPsmP6s4wgq50RG+RxYUbQoVn3v/JHw/LXkSH4h20XDM88cuqTbPtPft/gP43xFIMnuTxCYEyi2+RbZxRAIGIPLW5Gwd7ynmA7X+3ZrWXNxYwaAm69nkQXmXk1TzX4txb0O60m6JvJb744G2aAoQo4DDMorHCXGO1V8r7mVTp8zknALsTFESh6jLZZ30rwXhOjlQoSK55HfHRns9JhhjaDSu6Iz1bXdQHRqUOffSyoTRmA02yUrSjY25CnztN3VQ38eJstmhn0bL3aucZeKeVUkcwKSq39v31da111XZR7ntwu+C/S3zgrYKx4vmYQcgdnAIV3rgas="
+}
