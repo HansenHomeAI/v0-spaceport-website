@@ -20,6 +20,10 @@ const baseUrl = (process.env.SOGS_MIGRATED_URL ?? "http://127.0.0.1:3000").repla
 const bundleUrl =
   process.env.SOGS_BUNDLE_URL ??
   "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json";
+const disableSkybox =
+  process.env.SOGS_DISABLE_SKYBOX === "1" ||
+  process.env.SOGS_DISABLE_SKYBOX === "true" ||
+  process.env.SOGS_DISABLE_SKYBOX === "yes";
 const expectedSkyboxSubstring =
   process.env.SOGS_EXPECT_SKYBOX_SUBSTRING?.trim() || "/skybox/kloppenheim_06_puresky_equirect.webp";
 const expectBundledSkybox =
@@ -157,7 +161,8 @@ function summarizeRenderedPixels(buffer) {
   });
 
   const encoded = encodeURIComponent(bundleUrl);
-  await page.goto(`${baseUrl}/sogs-migrated-viewer?url=${encoded}`, {
+  const skyboxQuery = disableSkybox ? "&skybox=off" : "";
+  await page.goto(`${baseUrl}/sogs-migrated-viewer?url=${encoded}${skyboxQuery}`, {
     waitUntil: "domcontentloaded",
     timeout: 120000,
   });
@@ -200,6 +205,12 @@ function summarizeRenderedPixels(buffer) {
       `expected bundled skybox request containing "${expectedSkyboxSubstring}", got ${JSON.stringify(skyboxResponses)}`,
     );
   }
+  if (disableSkybox) {
+    assert(
+      skyboxResponses.length === 0,
+      `expected no skybox requests when disabled, got ${JSON.stringify(skyboxResponses)}`,
+    );
+  }
 
   await page.getByTestId("sogs-hole-picker").waitFor({ state: "visible", timeout: 10000 });
   await page.getByTestId("focus-scene-center").waitFor({ state: "visible", timeout: 10000 });
@@ -209,7 +220,7 @@ function summarizeRenderedPixels(buffer) {
     timeout: 10000,
   });
 
-  const shot = path.join(logsDir, "sogs-migrated-viewer-smoke.png");
+  const shot = path.join(logsDir, disableSkybox ? "sogs-migrated-viewer-nosky.png" : "sogs-migrated-viewer-smoke.png");
   await page.screenshot({ path: shot, fullPage: true });
   console.log(`Canvas stats: ${JSON.stringify(stats)}`);
   console.log(`Render stats: ${JSON.stringify(renderStats)}`);

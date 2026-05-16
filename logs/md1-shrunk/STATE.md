@@ -558,3 +558,45 @@ skybox, compression, artifact handoff, and visual gates.
    - deployed viewer loads with skybox and no-sky modes
    - side-by-side source-vs-render camera checks pass for representative poses
    - manual camera sweep screenshots show recognizable property geometry
+
+## Terminal status (3DGS + compression)
+
+- 2026-05-15T18:15:00-0600 terminal evidence (no new launches; cost bounded):
+  - branch/head:
+    - `git rev-parse HEAD` -> `898448756a914866188f711a25b1b70144a64902`
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` succeeded for head `89844875...` (run `25946458270`):
+      - `logs/md1-shrunk/gh-run-list-20260515T234743Z.json`
+  - 3DGS training job completed:
+    - `TrainingJobName=md1shrunk1456-1778880862-3dgs`
+    - `TrainingJobStatus=Completed`:
+      - `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260515T235517Z.json`
+    - CloudWatch completion tail (includes `✅ Training pipeline completed successfully`):
+      - `logs/md1-shrunk/cloudwatch-training-getlogevents-md1shrunk1456-1778880862-3dgs-20260515T235517Z.json`
+    - S3 output prefix:
+      - `aws s3 ls s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778880862/ --recursive --summarize --human-readable --region us-west-2`
+      - snapshot: `logs/md1-shrunk/s3-3dgs-md1shrunk1456-1778880862-20260515T235517Z.txt` -> `model.tar.gz` size `212.0 MiB`
+    - Exported model tar contents:
+      - `logs/md1-shrunk/model-tar-list-md1shrunk1456-1778880862-20260515T235548Z.txt`
+      - `logs/md1-shrunk/model-tar-verbose-md1shrunk1456-1778880862-20260515T235623Z.txt` -> `splat.ply` size `245,544,099` bytes + `background_skybox.webp`
+      - PLY header proof (`element vertex 990091`):
+        - `logs/md1-shrunk/splat-ply-header-md1shrunk1456-1778880862-20260515T235702Z.txt`
+  - Step Functions execution completed:
+    - `execution-md1shrunk1456-1778880862` on `SpaceportMLPipeline-br-8abcbd5662` -> `SUCCEEDED`:
+      - `logs/md1-shrunk/stepfunctions-describe-execution-br8abc-md1shrunk1456-1778880862-20260516T001158Z.json`
+  - SOGS compression processing job completed:
+    - `ProcessingJobName=md1shrunk1456-1778880862-compression`
+    - `ProcessingJobStatus=Completed`:
+      - `logs/md1-shrunk/sagemaker-describe-processing-md1shrunk1456-1778880862-compression-20260516T001121Z.json`
+    - CloudWatch progress (extract + `sogs-compress` + output):
+      - `logs/md1-shrunk/cloudwatch-processing-getlogevents-md1shrunk1456-1778880862-compression-20260516T001121Z.json`
+    - S3 compressed output prefix (includes `supersplat_bundle/` with skybox + manifests):
+      - `logs/md1-shrunk/s3-compressed-md1shrunk1456-1778880862-20260516T001121Z.txt` -> `Total Objects: 22`, `Total Size: 28.7 MiB`
+  - Public bundle (anonymous fetch proof via HTTP 200):
+    - S3: `s3://spaceport-ml-processing/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/`
+    - HTTPS (meta.json): `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json`
+    - sync log:
+      - `logs/md1-shrunk/s3-sync-public-supersplat-20260516T001307Z.txt`
+    - curl proof:
+      - `curl -I -s https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json | head -n 20`
+      - `curl -I -s https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/background_skybox.webp | head -n 20`
