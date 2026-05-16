@@ -663,6 +663,13 @@ skybox, compression, artifact handoff, and visual gates.
     - `CDK Deploy` succeeded (run `25948493656`):
       - `logs/md1-shrunk/gh-run-watch-25948493656-20260516T005604Z.txt`
 
+- 2026-05-15T19:01:00-0600 exact-head CI (post CDK-proof commit):
+  - branch/head:
+    - `git rev-parse HEAD` -> `44e719ef81dcb2170cd1e5b06746ad1c29848068` (`chore: record md1-shrunk CDK proof`)
+  - GitHub workflow (exact-head):
+    - `CDK Deploy` succeeded (run `25948604980`):
+      - `logs/md1-shrunk/gh-run-watch-25948604980-20260516T010135Z.txt`
+
 - 2026-05-16T00:49:06Z monitor poll (terminal reconfirm; no new launches):
   - branch/head/status:
     - `git rev-parse HEAD` -> `0c58099081f06dc501f08f8d8e2a396b0d9831f5`
@@ -681,3 +688,10 @@ skybox, compression, artifact handoff, and visual gates.
       - `logs/md1-shrunk/gh-run-view-25948058284-20260516T005027Z.json`
     - latest `Deploy Next.js to Cloudflare Pages` success remains head `74cc5a6a...` (run `25947847852`):
       - `logs/md1-shrunk/gh-run-view-25947847852-20260516T005027Z.json`
+
+- 2026-05-16T01:04:23Z exact-head CI (post CDK-proof commit):
+  - branch/head:
+    - `git rev-parse HEAD` -> `44e719ef81dcb2170cd1e5b06746ad1c29848068` (`chore: record md1-shrunk CDK proof`)
+  - GitHub workflow (exact-head):
+    - `CDK Deploy` succeeded (run `25948604980`, created `2026-05-16T01:00:33Z`):
+      - `logs/md1-shrunk/gh-run-watch-25948604980-20260516T010135Z.txt`
