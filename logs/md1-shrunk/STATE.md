@@ -645,6 +645,17 @@ skybox, compression, artifact handoff, and visual gates.
   - Repro command (renders use bundled `background_skybox.webp` via `?skybox=background_skybox.webp`):
     - `cd web && MD1_VIEWER_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev MD1_BUNDLE_URL=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json MD1_CAM_POS=... MD1_CAM_TARGET=... MD1_SKYBOX=background_skybox.webp MD1_OUT=../logs/md1-shrunk/camera_checks/render-<name>.png node scripts/render-md1-camera-check.mjs`
 
+- 2026-05-15T18:54:00-0600 commit/push + exact-head CI (camera checks harness):
+  - branch/head:
+    - `git rev-parse HEAD` -> `18c6cf6d2701e7d678193da8db630215d593e8f4` (`chore: md1-shrunk camera compare proof`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` succeeded (run `25948288204`):
+      - `logs/md1-shrunk/gh-run-watch-25948288204-20260516T004705Z.txt`
+    - `Deploy Next.js to Cloudflare Pages` succeeded (run `25948288202`):
+      - `logs/md1-shrunk/gh-run-log-25948288202-20260516T005440Z.txt`
+      - alias URL (PREVIEW_URL): `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+      - hash URL: `https://2504c8df.v0-spaceport-website-preview2.pages.dev`
+
 - 2026-05-16T00:49:06Z monitor poll (terminal reconfirm; no new launches):
   - branch/head/status:
     - `git rev-parse HEAD` -> `0c58099081f06dc501f08f8d8e2a396b0d9831f5`
