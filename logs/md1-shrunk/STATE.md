@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-16T05:34:51Z
+updated: 2026-05-16T05:40:02Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -1129,3 +1129,12 @@ skybox, compression, artifact handoff, and visual gates.
       - render: `logs/md1-shrunk/polls/md1-camera-check-dji01029-20260516T053233Z.png`
       - render log: `logs/md1-shrunk/polls/md1-camera-check-dji01029-20260516T053233Z.txt`
       - combined side-by-side: `logs/md1-shrunk/polls/md1-input-vs-render-DJI_01029-20260516T053233Z.jpg`
+
+- 2026-05-16T05:40:02Z commit/push + exact-head CI (camera-check evidence pushed):
+  - commit:
+    - `git rev-parse HEAD` -> `8e1bc11bd9411ad29ee6d63a4ea62181fb2d5651` (`chore: md1-shrunk camera check evidence`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` succeeded (run `25954025100`):
+      - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25954025100-20260516T054002Z.txt`
+      - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25954025100-20260516T054002Z.json`
+    - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
