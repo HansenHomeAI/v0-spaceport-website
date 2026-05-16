@@ -1482,3 +1482,51 @@ skybox, compression, artifact handoff, and visual gates.
   - Notes:
     - User-provided committed head `e9cbf71c...` was stale; as of this poll, HEAD is `d6611027...` and origin matches.
     - Cost bounded: no new jobs launched; no non-owned jobs stopped.
+
+- 2026-05-16T17:06:42Z idle poll (no new launches; terminal reconfirm):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `176bc56ce56082e1305e7017ab660183f051feb4`
+    - `git status --porcelain=v1` -> clean
+    - snapshot: `logs/md1-shrunk/polls/git-snapshot-20260516T170642Z.txt`
+  - AWS identity:
+    - `aws sts get-caller-identity` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+      - `logs/md1-shrunk/polls/aws-sts-20260516T170642Z.json`
+  - Step Functions:
+    - staging (`SpaceportMLPipeline-staging`) RUNNING executions: `0`
+      - `logs/md1-shrunk/polls/stepfunctions-running-staging-20260516T170642Z.json`
+    - branch preview (`SpaceportMLPipeline-br-8abcbd5662`) RUNNING executions: `0`
+      - `logs/md1-shrunk/polls/stepfunctions-running-br-8abcbd5662-20260516T170642Z.json`
+  - SageMaker (owned by MD1-Shrunk run; terminal):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`
+      - `logs/md1-shrunk/polls/sagemaker-describe-sfm-md1-shrunk-1456-sfm-1778866088-20260516T170642Z.json`
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`
+      - `logs/md1-shrunk/polls/sagemaker-describe-3dgs-md1shrunk1456-1778880862-3dgs-20260516T170642Z.json`
+    - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`
+      - `logs/md1-shrunk/polls/sagemaker-describe-compression-md1shrunk1456-1778880862-compression-20260516T170642Z.json`
+  - External activity (left untouched):
+    - InProgress processing jobs snapshot:
+      - `logs/md1-shrunk/polls/sagemaker-processing-inprogress-20260516T170642Z.tsv` (includes `md1-tile00-lodonly-r38-1778950901`)
+    - InProgress training jobs snapshot:
+      - `logs/md1-shrunk/polls/sagemaker-training-inprogress-20260516T170642Z.tsv`
+  - S3 output presence reconfirm:
+    - COLMAP listing: `logs/md1-shrunk/polls/s3-colmap-md1-shrunk-20260515T1641Z-20260516T170642Z.txt` -> `Total Objects: 1468`, `Total Size: 9.2 GiB`
+    - 3DGS listing: `logs/md1-shrunk/polls/s3-3dgs-md1shrunk1456-1778880862-20260516T170642Z.txt` -> `model.tar.gz` present (`212.0 MiB`)
+    - compressed listing: `logs/md1-shrunk/polls/s3-compressed-md1shrunk1456-1778880862-20260516T170642Z.txt` -> `Total Objects: 22`, `Total Size: 28.7 MiB`
+  - HTTPS recheck (anonymous):
+    - preview alias URL: `logs/md1-shrunk/polls/http-head-preview-alias-url-20260516T170642Z.txt`
+    - preview alias headers: `logs/md1-shrunk/polls/http-head-preview-alias-20260516T170642Z.txt` -> `HTTP 200`
+    - preview hash URL: `logs/md1-shrunk/polls/http-head-preview-hash-url-20260516T170642Z.txt`
+    - preview hash headers: `logs/md1-shrunk/polls/http-head-preview-hash-20260516T170642Z.txt` -> `HTTP 200`
+    - public meta.json URL: `logs/md1-shrunk/polls/http-head-meta.json-url-20260516T170642Z.txt`
+    - public meta.json headers: `logs/md1-shrunk/polls/http-head-meta.json-20260516T170642Z.txt` -> `HTTP 200`
+    - public skybox URL: `logs/md1-shrunk/polls/http-head-background_skybox.webp-url-20260516T170642Z.txt`
+    - public skybox headers: `logs/md1-shrunk/polls/http-head-background_skybox.webp-20260516T170642Z.txt` -> `HTTP 200`
+  - GitHub workflows (exact-head):
+    - `gh run list ...` snapshot:
+      - `logs/md1-shrunk/polls/gh-run-list-176bc56ce56082e1305e7017ab660183f051feb4-20260516T170828Z.json`
+    - exact-head `CDK Deploy` run `25957499805` -> `success`:
+      - `logs/md1-shrunk/polls/gh-run-view-cdk-25957499805-20260516T170828Z.json`
+  - Notes:
+    - User-provided committed head `e9cbf71c...` and active SfM status were stale as of `2026-05-16T17:06:42Z`; owned SfM/3DGS/compression are terminal and outputs are present on S3.
+    - Cost bounded: no new jobs launched; no non-owned jobs stopped.
