@@ -451,6 +451,58 @@ class NerfstudioTrainingQualityGateTest(unittest.TestCase):
 
             self.assertFalse(trainer.apply_nerfstudio_split_manifest(transforms, source))
 
+    def test_split_manifest_resolves_ns_process_data_frame_names(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "input"
+            images = source / "images"
+            converted = root / "converted"
+            images.mkdir(parents=True)
+            converted.mkdir()
+            for name in ["DJI_0001.JPG", "DJI_0002.JPG", "DJI_0003.JPG"]:
+                (images / name).write_bytes(b"fake-image")
+            transforms = converted / "transforms.json"
+            transforms.write_text(
+                json.dumps(
+                    {
+                        "frames": [
+                            {"file_path": "./images/frame_00001.JPG"},
+                            {"file_path": "./images/frame_00002.JPG"},
+                            {"file_path": "./images/frame_00003.JPG"},
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (source / "nerfstudio_split_manifest.json").write_text(
+                json.dumps(
+                    {
+                        "train_filenames": ["images/DJI_0001.JPG", "images/DJI_0002.JPG"],
+                        "val_filenames": ["images/DJI_0003.JPG"],
+                        "test_filenames": ["images/DJI_0003.JPG"],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            config = root / "container_config.yaml"
+            config.write_text("training:\n  max_iterations: 10\n", encoding="utf-8")
+            with mock.patch.dict(
+                os.environ,
+                {
+                    "SM_MODEL_DIR": str(root / "model"),
+                    "SM_CHANNEL_TRAINING": str(source),
+                },
+                clear=False,
+            ):
+                trainer = self.training.NerfStudioTrainer(str(config))
+
+            self.assertTrue(trainer.apply_nerfstudio_split_manifest(transforms, source))
+
+            payload = json.loads(transforms.read_text(encoding="utf-8"))
+            self.assertEqual(payload["train_filenames"], ["images/frame_00001.JPG", "images/frame_00002.JPG"])
+            self.assertEqual(payload["val_filenames"], ["images/frame_00003.JPG"])
+            self.assertEqual(payload["test_filenames"], ["images/frame_00003.JPG"])
+
 
 if __name__ == "__main__":
     unittest.main()

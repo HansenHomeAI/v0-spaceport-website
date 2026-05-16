@@ -551,6 +551,7 @@ class NerfStudioTrainer:
         if not frame_path_set:
             logger.error("❌ transforms.json has no frame file_path entries")
             return False
+        original_to_frame_path = self.build_ns_process_data_frame_path_map(source_input_dir, frame_paths)
 
         raw_train = manifest.get("train_filenames")
         raw_eval = manifest.get("eval_filenames") or manifest.get("val_filenames") or manifest.get("test_filenames")
@@ -574,7 +575,12 @@ class NerfStudioTrainer:
             resolved = []
             seen = set()
             for value in values:
-                match = self.resolve_manifest_frame_path(str(value), frame_path_set, basenames)
+                match = self.resolve_manifest_frame_path(
+                    str(value),
+                    frame_path_set,
+                    basenames,
+                    original_to_frame_path,
+                )
                 if match is None:
                     logger.error(f"❌ Split manifest {split_name} entry not found in transforms frames: {value}")
                     return False
@@ -607,6 +613,45 @@ class NerfStudioTrainer:
         )
         return True
 
+    def build_ns_process_data_frame_path_map(
+        self,
+        source_input_dir: Path,
+        frame_paths: list[str],
+    ) -> Dict[str, str]:
+        """Map original input image names to ns-process-data frame names."""
+        images_dir = source_input_dir / "images"
+        if not images_dir.exists():
+            return {}
+
+        allowed_exts = {".jpg", ".jpeg", ".png", ".tif", ".tiff"}
+        original_paths = sorted(
+            path
+            for path in images_dir.glob("**/[!.]*")
+            if path.is_file() and path.suffix.lower() in allowed_exts
+        )
+        sorted_frame_paths = sorted(frame_paths, key=lambda value: Path(value).name)
+        if len(original_paths) != len(sorted_frame_paths):
+            logger.warning(
+                "⚠️  Cannot build original-to-frame split map: source_images=%s transforms_frames=%s",
+                len(original_paths),
+                len(sorted_frame_paths),
+            )
+            return {}
+
+        mapping: Dict[str, str] = {}
+        for original_path, frame_path in zip(original_paths, sorted_frame_paths):
+            rel_to_images = original_path.relative_to(images_dir).as_posix()
+            basename = original_path.name
+            for key in {rel_to_images, basename, f"images/{rel_to_images}", f"images/{basename}"}:
+                mapping[self.normalize_transforms_path(key)] = frame_path
+
+        if mapping:
+            logger.info(
+                "📊 Built ns-process-data original-to-frame split map for %s source images",
+                len(original_paths),
+            )
+        return mapping
+
     def resolve_split_manifest_path(self, source_input_dir: Path) -> Optional[Path]:
         """Return the first configured split manifest path that exists."""
         candidates = []
@@ -638,6 +683,7 @@ class NerfStudioTrainer:
         value: str,
         frame_path_set: set[str],
         basenames: Dict[str, list[str]],
+        original_to_frame_path: Optional[Dict[str, str]] = None,
     ) -> Optional[str]:
         """Resolve a manifest filename to the exact transforms.json frame path."""
         normalized = self.normalize_transforms_path(value)
@@ -652,6 +698,11 @@ class NerfStudioTrainer:
         basename_matches = basenames.get(basename, [])
         if len(basename_matches) == 1:
             return basename_matches[0]
+        if original_to_frame_path:
+            for candidate in candidates:
+                mapped = original_to_frame_path.get(self.normalize_transforms_path(candidate))
+                if mapped in frame_path_set:
+                    return mapped
         return None
     
     def convert_colmap_text_to_binary(self, sparse_txt_dir: Path, sparse_bin_dir: Path) -> bool:
