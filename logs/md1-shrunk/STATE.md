@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-15T17:34:27-0600
+updated: 2026-05-15T18:36:38-0600
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -616,3 +616,14 @@ skybox, compression, artifact handoff, and visual gates.
     - command:
       - `cd web && SOGS_MIGRATED_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev SOGS_BUNDLE_URL=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json SOGS_DISABLE_SKYBOX=1 SOGS_EXPECT_SKYBOX_SUBSTRING=background_skybox.webp node scripts/test-sogs-migrated-viewer.mjs`
     - screenshot: `logs/sogs-migrated-viewer-nosky.png`
+
+- 2026-05-15T18:36:00-0600 pushed validation harness + reconfirmed exact-head CI:
+  - branch/head:
+    - `git rev-parse HEAD` -> `74cc5a6a558f5debb6692139fd0e72f8f3929916`
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` succeeded for head `74cc5a6a...` (run `25947847850`):
+      - `logs/md1-shrunk/gh-run-watch-25947847850-20260516T0029Z.txt`
+    - `Deploy Next.js to Cloudflare Pages` succeeded for head `74cc5a6a...` (run `25947847852`):
+      - `logs/md1-shrunk/gh-run-log-25947847852-20260516T0034Z.txt`
+      - alias URL: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+      - hash URL: `https://c72f2426.v0-spaceport-website-preview2.pages.dev`
