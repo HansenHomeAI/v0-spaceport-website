@@ -1069,3 +1069,12 @@ skybox, compression, artifact handoff, and visual gates.
       - `logs/md1-shrunk/polls/gh-run-list-20260516T045658Z.json`
     - latest Pages deploy remains head `18c6cf6d...` (run `25948288202`):
       - `logs/md1-shrunk/polls/gh-run-view-pages-20260516T045658Z.json`
+
+- 2026-05-16T05:11:40Z commit/push + exact-head CI (poll evidence pushed):
+  - commit:
+    - `git rev-parse HEAD` -> `8f2786fa729c1bbcd098b5e094d624a181e851f3` (`chore: md1-shrunk monitor poll`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` succeeded (run `25953324802`):
+      - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25953324802-20260516T045658Z.txt`
+      - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25953324802-20260516T051140Z.json`
+    - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
