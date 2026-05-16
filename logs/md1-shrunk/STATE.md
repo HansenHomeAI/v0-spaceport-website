@@ -695,3 +695,24 @@ skybox, compression, artifact handoff, and visual gates.
   - GitHub workflow (exact-head):
     - `CDK Deploy` succeeded (run `25948604980`, created `2026-05-16T01:00:33Z`):
       - `logs/md1-shrunk/gh-run-watch-25948604980-20260516T010135Z.txt`
+
+- 2026-05-15T19:15:55-0600 monitor poll (terminal reconfirm; no new launches):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `bd6938cce88ab149f08be3f27d0594f7636d7ae0`
+    - `git status --porcelain=v1` -> new untracked `logs/md1-shrunk/*20260516T011555Z*` artifacts
+    - `git rev-parse origin/agent-113647-md1-baseline-e2e` -> `bd6938cce88ab149f08be3f27d0594f7636d7ae0`
+  - AWS identity:
+    - `logs/md1-shrunk/aws-sts-20260516T011555Z.json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions (active executions):
+    - staging RUNNING: `logs/md1-shrunk/stepfunctions-running-staging-20260516T011555Z.json` -> `RUNNING=0`
+    - branch preview RUNNING: `logs/md1-shrunk/stepfunctions-running-SpaceportMLPipeline-br-8abcbd5662-20260516T011555Z.json` -> `RUNNING=0`
+    - state machine inventory (filtered): `logs/md1-shrunk/stepfunctions-list-state-machines-filtered-20260516T011555Z.json`
+  - SageMaker terminal statuses:
+    - SfM: `logs/md1-shrunk/sagemaker-describe-sfm-md1-shrunk-1456-sfm-1778866088-20260516T011555Z.json` -> `Completed`, `FailureReason=null`
+    - 3DGS: `logs/md1-shrunk/sagemaker-describe-3dgs-md1shrunk1456-1778880862-3dgs-20260516T011555Z.json` -> `Completed`, `FailureReason=null`
+    - compression: `logs/md1-shrunk/sagemaker-describe-compression-md1shrunk1456-1778880862-compression-20260516T011555Z.json` -> `Completed`, `FailureReason=null`
+  - GitHub workflows:
+    - exact-head run list: `logs/md1-shrunk/gh-run-list-20260516T011555Z.json`
+    - head-only summary: `logs/md1-shrunk/gh-run-list-head-20260516T011555Z.json` -> `CDK Deploy` succeeded for head `bd6938cc...` (run `25948732055`)
+    - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)

@@ -1,0 +1,3 @@
+?? logs/md1-shrunk/git-branch-20260516T011555Z.txt
+?? logs/md1-shrunk/git-head-20260516T011555Z.txt
+?? logs/md1-shrunk/git-status-20260516T011555Z.txt
