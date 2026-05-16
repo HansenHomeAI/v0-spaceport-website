@@ -1,0 +1,71 @@
+{
+    "ProcessingInputs": [
+        {
+            "InputName": "model",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-full-3dgs-r32-20260516T0252Z/3dgs-tile00-support-aware-ds1000-r32-quality-20260516T0252Z/md1-tile00-split-r32-1778899939/output/model.tar.gz",
+                "LocalPath": "/opt/ml/processing/input",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated",
+                "S3CompressionType": "None"
+            }
+        },
+        {
+            "InputName": "entrypoint",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-ml-processing/compressed/md1-r32-tile00-splattransform-lod-nosingle-r38-20260516T1701Z/entrypoint/",
+                "LocalPath": "/opt/ml/processing/script",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated",
+                "S3CompressionType": "None"
+            }
+        }
+    ],
+    "ProcessingOutputConfig": {
+        "Outputs": [
+            {
+                "OutputName": "sogs-lodonly-output",
+                "S3Output": {
+                    "S3Uri": "s3://spaceport-ml-processing/compressed/md1-r32-tile00-splattransform-lod-nosingle-r38-20260516T1701Z/",
+                    "LocalPath": "/opt/ml/processing/output",
+                    "S3UploadMode": "EndOfJob"
+                },
+                "AppManaged": false
+            }
+        ]
+    },
+    "ProcessingJobName": "md1-tile00-lodonly-r38-1778950901",
+    "ProcessingResources": {
+        "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.m5.4xlarge",
+            "VolumeSizeInGB": 200
+        }
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 21600
+    },
+    "AppSpecification": {
+        "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:645fd74b9217fc8441f242d8b89aefb36ef9c88192bf006ade3cfeb355bd4de3",
+        "ContainerEntrypoint": [
+            "/bin/bash",
+            "/opt/ml/processing/script/md1_tile00_splat_transform_direct_lod_r38.sh"
+        ]
+    },
+    "Environment": {
+        "SOGS_DEVICE": "cpu",
+        "SOGS_LOD_CHUNK_COUNT": "256",
+        "SOGS_LOD_CHUNK_EXTENT": "32",
+        "SOGS_LOD_DECIMATION": "30%,10%,3%"
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-tile00-lodonly-r38-1778950901",
+    "ProcessingJobStatus": "InProgress",
+    "ProcessingStartTime": "2026-05-16T11:02:23.797000-06:00",
+    "LastModifiedTime": "2026-05-16T11:04:14.894000-06:00",
+    "CreationTime": "2026-05-16T11:01:43.853000-06:00"
+}
