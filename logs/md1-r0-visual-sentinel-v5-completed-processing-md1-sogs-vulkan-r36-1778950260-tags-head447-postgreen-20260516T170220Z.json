@@ -1,0 +1,24 @@
+{
+    "Tags": [
+        {
+            "Key": "source-failure",
+            "Value": "md1-tile00-sogs-r34-1778914593"
+        },
+        {
+            "Key": "source-diagnostic",
+            "Value": "md1-sogs-gpulist-r35-1778949968"
+        },
+        {
+            "Key": "created-at",
+            "Value": "20260516T1651Z"
+        },
+        {
+            "Key": "sfm-production-confidence",
+            "Value": "r36-sogs-vulkan-gpu-list-diagnostic"
+        },
+        {
+            "Key": "code-head",
+            "Value": "9e251de9f70c207e0190a6710686a0ecb8e6e3eb"
+        }
+    ]
+}

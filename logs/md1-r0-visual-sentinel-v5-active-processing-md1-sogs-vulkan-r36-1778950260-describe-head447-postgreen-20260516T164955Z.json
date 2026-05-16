@@ -1,0 +1,41 @@
+{
+    "ProcessingOutputConfig": {
+        "Outputs": [
+            {
+                "OutputName": "diagnostic",
+                "S3Output": {
+                    "S3Uri": "s3://spaceport-ml-processing/compressed/md1-sogs-vulkan-gpu-list-r36-20260516T1651Z/",
+                    "LocalPath": "/opt/ml/processing/output",
+                    "S3UploadMode": "EndOfJob"
+                },
+                "AppManaged": false
+            }
+        ]
+    },
+    "ProcessingJobName": "md1-sogs-vulkan-r36-1778950260",
+    "ProcessingResources": {
+        "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 30
+        }
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 1200
+    },
+    "AppSpecification": {
+        "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:c667899d7e844083e8d50b04329edd3841bbfb26f8876c917ade78be8f27d603",
+        "ContainerEntrypoint": [
+            "bash",
+            "-lc"
+        ],
+        "ContainerArguments": [
+            "set -euxo pipefail; apt-get update; apt-get install -y --no-install-recommends libvulkan1; splat-transform -L; mkdir -p /opt/ml/processing/output; printf r36-vulkan-gpu-list-diagnostic > /opt/ml/processing/output/diagnostic.txt"
+        ]
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/SpaceportMLPipelineStack-SageMakerExecutionRole7843-A4BBnjJAXLs8",
+    "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-sogs-vulkan-r36-1778950260",
+    "ProcessingJobStatus": "InProgress",
+    "LastModifiedTime": "2026-05-16T10:49:48.478000-06:00",
+    "CreationTime": "2026-05-16T10:49:48.161000-06:00"
+}
