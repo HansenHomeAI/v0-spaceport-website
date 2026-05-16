@@ -1,0 +1,6 @@
+ProcessingJobName=md1-shrunk-1456-sfm-1778866088
+ProcessingJobStatus=Completed
+FailureReason=None
+CreationTime=2026-05-15T11:28:09.932000-06:00
+ProcessingEndTime=2026-05-15T15:04:36.723000-06:00
+ExitMessage=None

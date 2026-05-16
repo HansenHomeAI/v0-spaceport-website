@@ -1,0 +1,11 @@
+TrainingJobName=md1shrunk1456-1778880862-3dgs
+TrainingJobStatus=Completed
+FailureReason=None
+TrainingStartTime=2026-05-15T15:35:12.401000-06:00
+TrainingEndTime=2026-05-15T17:55:18.313000-06:00
+---
+ProcessingJobName=md1shrunk1456-1778880862-compression
+ProcessingJobStatus=Completed
+FailureReason=None
+CreationTime=2026-05-15T17:56:39.446000-06:00
+ProcessingEndTime=2026-05-15T18:08:09.571000-06:00
