@@ -1,0 +1,4 @@
+branch=agent-113647-md1-baseline-e2e
+head=2b0e55f8086f09ab74f6bbb4a286df2c770ed3be
+status_porcelain=
+?? logs/md1-shrunk/polls/git-snapshot-20260516T180627Z.txt

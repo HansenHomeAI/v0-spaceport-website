@@ -1530,3 +1530,42 @@ skybox, compression, artifact handoff, and visual gates.
   - Notes:
     - User-provided committed head `e9cbf71c...` and active SfM status were stale as of `2026-05-16T17:06:42Z`; owned SfM/3DGS/compression are terminal and outputs are present on S3.
     - Cost bounded: no new jobs launched; no non-owned jobs stopped.
+
+- 2026-05-16T18:06:27Z idle poll (no new launches; terminal reconfirm + SfM gate snapshot):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `2b0e55f8086f09ab74f6bbb4a286df2c770ed3be`
+    - `git status --porcelain=v1` -> clean
+    - snapshot: `logs/md1-shrunk/polls/git-snapshot-20260516T180627Z.txt`
+  - AWS identity:
+    - `logs/md1-shrunk/polls/aws-sts-20260516T180627Z.json` -> account `975050048887`
+  - Step Functions:
+    - state machines snapshot: `logs/md1-shrunk/polls/stepfunctions-list-state-machines-20260516T180627Z.json`
+    - staging (`SpaceportMLPipeline-staging`) RUNNING executions: `0`
+      - `logs/md1-shrunk/polls/stepfunctions-running-staging-20260516T180627Z.json`
+    - branch preview (`SpaceportMLPipeline-br-8abcbd5662`) RUNNING executions: `0`
+      - `logs/md1-shrunk/polls/stepfunctions-running-br-8abcbd5662-20260516T180627Z.json`
+  - SageMaker (owned by MD1-Shrunk run; terminal):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`
+      - `logs/md1-shrunk/polls/sagemaker-describe-sfm-md1-shrunk-1456-sfm-1778866088-20260516T180627Z.json`
+    - SfM gate snapshot (from `sfm_metadata.json`):
+      - `logs/md1-shrunk/polls/sfm-metadata-summary-20260516T180627Z.json` -> `images_registered=1456`, `merged_component_count=1`, `points_3d=1103335`, `timed_out=false`, `fallback_triggered=false`
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`
+      - `logs/md1-shrunk/polls/sagemaker-describe-3dgs-md1shrunk1456-1778880862-3dgs-20260516T180627Z.json`
+    - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`
+      - `logs/md1-shrunk/polls/sagemaker-describe-compression-md1shrunk1456-1778880862-compression-20260516T180627Z.json`
+  - External activity (left untouched):
+    - processing/training snapshots:
+      - `logs/md1-shrunk/polls/sagemaker-list-processing-20260516T180627Z.json`
+      - `logs/md1-shrunk/polls/sagemaker-list-training-20260516T180627Z.json`
+    - InProgress processing jobs: `logs/md1-shrunk/polls/sagemaker-processing-inprogress-20260516T180627Z.tsv` (includes external `md1-tile00-lodonly-r38-1778950901`)
+    - InProgress training jobs: `logs/md1-shrunk/polls/sagemaker-training-inprogress-20260516T180627Z.tsv`
+  - S3 output presence reconfirm:
+    - COLMAP listing: `logs/md1-shrunk/polls/s3-colmap-md1-shrunk-20260515T1641Z-20260516T180627Z.txt`
+    - 3DGS listing: `logs/md1-shrunk/polls/s3-3dgs-md1shrunk1456-1778880862-20260516T180627Z.txt` -> `model.tar.gz` present
+    - compressed listing: `logs/md1-shrunk/polls/s3-compressed-md1shrunk1456-1778880862-20260516T180627Z.txt` -> supersplat bundle + compressed splat present
+  - GitHub workflows (exact-head):
+    - `logs/md1-shrunk/polls/gh-run-list-2b0e55f8086f09ab74f6bbb4a286df2c770ed3be-20260516T180627Z.json`
+    - exact-head runs: `logs/md1-shrunk/polls/gh-run-head-2b0e55f8086f09ab74f6bbb4a286df2c770ed3be-20260516T180627Z.tsv` -> `CDK Deploy` run `25967956287` `success`
+  - Notes:
+    - Cost bounded: no new jobs launched; no non-owned jobs stopped.

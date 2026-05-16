@@ -1,0 +1,12 @@
+{
+  "dataset_image_count": 1456,
+  "images_registered": 1456,
+  "points_3d": 1103335,
+  "merged_component_count": 1,
+  "processing_time_seconds": 12709.05,
+  "chunk_count": 6,
+  "quality_check_passed": true,
+  "timed_out": false,
+  "fallback_triggered": false,
+  "final_matcher_mode": "spatial_heading_chunked"
+}
