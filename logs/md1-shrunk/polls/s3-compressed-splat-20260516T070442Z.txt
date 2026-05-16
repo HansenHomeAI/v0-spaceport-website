@@ -1,0 +1,11 @@
+2026-05-15 18:08:04    2970154 manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778880862/compressed_splat/means_l.webp
+2026-05-15 18:08:04    1920462 manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778880862/compressed_splat/means_u.webp
+2026-05-15 18:08:04       1422 manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778880862/compressed_splat/meta.json
+2026-05-15 18:08:04    3145622 manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778880862/compressed_splat/quats.webp
+2026-05-15 18:08:04    1828832 manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778880862/compressed_splat/scales.webp
+2026-05-15 18:08:04    2385248 manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778880862/compressed_splat/sh0.webp
+2026-05-15 18:08:04     820614 manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778880862/compressed_splat/shN_centroids.webp
+2026-05-15 18:08:04    1969934 manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778880862/compressed_splat/shN_labels.webp
+
+Total Objects: 8
+   Total Size: 15042288
