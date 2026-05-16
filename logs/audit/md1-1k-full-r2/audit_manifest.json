@@ -589,9 +589,9 @@
       ]
     }
   ],
-  "current_branch_head": "pushed head d2d74ccb03ed21f267af1b28aba1fe461c71c98e exact-head green on CDK Deploy 25945920629; no MD1 compute launched; active staging md1shrunk1456 and SFM-spine tile04 training hold further action while processing is idle",
-  "current_exact_head_gate_status": "exact-head d2d74ccb03ed21f267af1b28aba1fe461c71c98e green on CDK Deploy 25945920629",
-  "current_live_compute_status": "AWS is not idle after exact-head d2d: staging 3DGS training md1shrunk1456-1778880862-3dgs is InProgress/Training on ml.g5.4xlarge with Component=3DGS, Project=Spaceport, Environment=br-8abcbd5662, MaxRuntime=14400, observed TrainingTimeInSeconds=7140; source-attributed SFM-spine 3DGS training md1-tile04-ds1000-r30-1778869172 is InProgress/Training on ml.g5.2xlarge with Environment=agent73948216sfmproductionspine, Component=3DGS, CodeHead=03c0d8c130cf4994b97fd2bc8eb98a9a73757221, TrainingImageSourceHead=03c0d8c130cf4994b97fd2bc8eb98a9a73757221, Validation=md1-tile04-ds1000-r30, MaxRuntime=43200, observed TrainingTimeInSeconds=1255. Processing is idle. No MD1 compute launched. No-spend merge/review planning remains blocked on merge_inputs_not_materialized.",
+  "current_branch_head": "pushed head e8cc8decb0ccf2f5d0dc5491a7b33965ee0278a2 exact-head green on CDK Deploy 25946534494; no MD1 compute launched; active SFM-spine tile04 training and staging md1shrunk1456 compression processing hold further action",
+  "current_exact_head_gate_status": "exact-head e8cc8decb0ccf2f5d0dc5491a7b33965ee0278a2 green on CDK Deploy 25946534494",
+  "current_live_compute_status": "AWS is not idle after exact-head e8cc: source-attributed SFM-spine 3DGS training md1-tile04-ds1000-r30-1778869172 is InProgress/Training on ml.g5.2xlarge with Environment=agent73948216sfmproductionspine, Component=3DGS, CodeHead=03c0d8c130cf4994b97fd2bc8eb98a9a73757221, TrainingImageSourceHead=03c0d8c130cf4994b97fd2bc8eb98a9a73757221, Validation=md1-tile04-ds1000-r30, MaxRuntime=43200, observed TrainingTimeInSeconds=3055. Staging 3DGS training md1shrunk1456-1778880862-3dgs completed in 8406 billable seconds with artifact s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778880862/md1shrunk1456-1778880862-3dgs/output/model.tar.gz, but staging compression processing md1shrunk1456-1778880862-compression is InProgress on ml.g4dn.xlarge with Component=Compression, Project=Spaceport, Environment=br-8abcbd5662, MaxRuntime=86400, output s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778880862/. No MD1 compute launched. No-spend merge/review planning remains blocked on merge_inputs_not_materialized.",
   "current_rung": "R0_visual_sentinel_v5_merge_review_readiness_planned_training_processing_hold",
   "evidence_events": [
     {
@@ -1692,6 +1692,34 @@
         "logs/md1-r0-visual-sentinel-v5-active-training-md1-tile04-ds1000-r30-1778869172-describe-headd2d-postgreen-20260515T233326Z.json",
         "logs/md1-r0-visual-sentinel-v5-active-training-md1-tile04-ds1000-r30-1778869172-tags-headd2d-postgreen-20260515T233326Z.json"
       ]
+    },
+    {
+      "event": "md1_r0_visual_sentinel_v5_training_processing_hold_heade8cc_20260516",
+      "checked_at": "2026-05-16T00:03:24Z",
+      "head": "e8cc8decb0ccf2f5d0dc5491a7b33965ee0278a2",
+      "status": "training_processing_hold",
+      "md1_compute_launched": false,
+      "active_training_jobs": [
+        "md1-tile04-ds1000-r30-1778869172"
+      ],
+      "completed_training_jobs": [
+        "md1shrunk1456-1778880862-3dgs"
+      ],
+      "active_processing_jobs": [
+        "md1shrunk1456-1778880862-compression"
+      ],
+      "processing_jobs_in_progress": 1,
+      "evidence": [
+        "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-heade8cc-postgreen-20260516T000324Z.json",
+        "logs/md1-r0-visual-sentinel-v5-live-training-heade8cc-postgreen-20260516T000324Z.json",
+        "logs/md1-r0-visual-sentinel-v5-live-processing-heade8cc-postgreen-20260516T000324Z.json",
+        "logs/md1-r0-visual-sentinel-v5-active-training-md1-tile04-ds1000-r30-1778869172-describe-heade8cc-postgreen-20260516T000324Z.json",
+        "logs/md1-r0-visual-sentinel-v5-active-training-md1-tile04-ds1000-r30-1778869172-tags-heade8cc-postgreen-20260516T000324Z.json",
+        "logs/md1-r0-visual-sentinel-v5-completed-training-md1shrunk1456-1778880862-3dgs-describe-heade8cc-postgreen-20260516T000324Z.json",
+        "logs/md1-r0-visual-sentinel-v5-completed-training-md1shrunk1456-1778880862-3dgs-tags-heade8cc-postgreen-20260516T000324Z.json",
+        "logs/md1-r0-visual-sentinel-v5-active-processing-md1shrunk1456-1778880862-compression-describe-heade8cc-postgreen-20260516T000324Z.json",
+        "logs/md1-r0-visual-sentinel-v5-active-processing-md1shrunk1456-1778880862-compression-tags-heade8cc-postgreen-20260516T000324Z.json"
+      ]
     }
   ],
   "exact_head_gate_status": "exact-head ccc9cf95c727443c06c8951d56cdbdff70438759 green on CDK Deploy 25941841332",
@@ -2021,7 +2049,7 @@
     "local_status_update_pending_commit": true,
     "ml_container_build": "not_triggered_for_non_container_status_commit"
   },
-  "last_updated": "2026-05-15T23:33:26Z",
+  "last_updated": "2026-05-16T00:03:24Z",
   "latest_bg10_merge_input_materialization_status": {
     "exact_head_workflows_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-exact-head-workflows-current-20260513.json",
     "input_materialization_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-input-materialization-current-20260513.json",
@@ -2228,7 +2256,7 @@
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
   "latest_boundary_responsible_tile_plan_status": "boundary primary tile_04/tile_10; horizon primary tile_04/tile_01; tile04 dryrun covers tile01/tile10 context support",
-  "latest_cost_control": "No further paid MD1 compute has been launched after the one bounded R0 v5 tile_04 proof. Exact-head d2d is green, but AWS is not idle due active staging md1shrunk1456 training and source-attributed SFM-spine tile04 training; processing is idle. No merge/review/full14/LOD/viewer smoke/promotion is eligible. Merge/review submit readiness remains blocked on merge_inputs_not_materialized and any input materialization or paid merge/review requires a separate allowed gate after AWS idle.",
+  "latest_cost_control": "No further paid MD1 compute has been launched after the one bounded R0 v5 tile_04 proof. Exact-head e8cc is green, but AWS is not idle due active source-attributed SFM-spine tile04 training and staging md1shrunk1456 compression processing; staging md1shrunk1456 training completed. No merge/review/full14/LOD/viewer smoke/promotion is eligible. Merge/review submit readiness remains blocked on merge_inputs_not_materialized and any input materialization or paid merge/review requires a separate allowed gate after AWS idle.",
   "latest_evidence": {
     "merge_preflight_summary": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260512.json",
     "review_retry_cloudwatch_tail": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-cloudwatch-tail-20260512.txt",
@@ -2236,9 +2264,9 @@
     "review_retry_s3_objects": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-s3-objects-20260512.txt",
     "review_retry_submit_guard": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18-review-submit-guard-retry-20260512.json",
     "review_retry_summary": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-20260512.json",
-    "current_head_workflow": "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-headd2d-postgreen-20260515T233326Z.json",
-    "current_training_state": "logs/md1-r0-visual-sentinel-v5-live-training-headd2d-postgreen-20260515T233326Z.json",
-    "current_processing_state": "logs/md1-r0-visual-sentinel-v5-live-processing-headd2d-postgreen-20260515T233326Z.json",
+    "current_head_workflow": "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-heade8cc-postgreen-20260516T000324Z.json",
+    "current_training_state": "logs/md1-r0-visual-sentinel-v5-live-training-heade8cc-postgreen-20260516T000324Z.json",
+    "current_processing_state": "logs/md1-r0-visual-sentinel-v5-live-processing-heade8cc-postgreen-20260516T000324Z.json",
     "current_baseline_processing_describe": "logs/md1-baseline-e2e-20260514032448-sfm-active-describe-head4c5b-20260514-1407.json",
     "current_baseline_processing_tags": "logs/md1-baseline-e2e-20260514032448-sfm-tags-head4c5b-20260514-1407.json",
     "current_completed_training_describe": "logs/md1-r0-visual-sentinel-v5-completed-training-md1-worst447-ds1000-r29-1778860601-describe-head563d-postgreen-20260515T1804Z.json",
@@ -2247,11 +2275,15 @@
     "current_active_processing_tags": "logs/md1-r0-visual-sentinel-v5-active-processing-md1-shrunk-1456-sfm-1778866088-tags-head563d-postgreen-20260515T1804Z.json",
     "current_active_training_md1shrunk_describe": "logs/md1-r0-visual-sentinel-v5-active-training-md1shrunk1456-1778880862-3dgs-describe-headd2d-postgreen-20260515T233326Z.json",
     "current_active_training_md1shrunk_tags": "logs/md1-r0-visual-sentinel-v5-active-training-md1shrunk1456-1778880862-3dgs-tags-headd2d-postgreen-20260515T233326Z.json",
-    "current_active_training_tile04_describe": "logs/md1-r0-visual-sentinel-v5-active-training-md1-tile04-ds1000-r30-1778869172-describe-headd2d-postgreen-20260515T233326Z.json",
-    "current_active_training_tile04_tags": "logs/md1-r0-visual-sentinel-v5-active-training-md1-tile04-ds1000-r30-1778869172-tags-headd2d-postgreen-20260515T233326Z.json"
+    "current_active_training_tile04_describe": "logs/md1-r0-visual-sentinel-v5-active-training-md1-tile04-ds1000-r30-1778869172-describe-heade8cc-postgreen-20260516T000324Z.json",
+    "current_active_training_tile04_tags": "logs/md1-r0-visual-sentinel-v5-active-training-md1-tile04-ds1000-r30-1778869172-tags-heade8cc-postgreen-20260516T000324Z.json",
+    "current_completed_training_md1shrunk_describe": "logs/md1-r0-visual-sentinel-v5-completed-training-md1shrunk1456-1778880862-3dgs-describe-heade8cc-postgreen-20260516T000324Z.json",
+    "current_completed_training_md1shrunk_tags": "logs/md1-r0-visual-sentinel-v5-completed-training-md1shrunk1456-1778880862-3dgs-tags-heade8cc-postgreen-20260516T000324Z.json",
+    "current_active_processing_md1shrunk_compression_describe": "logs/md1-r0-visual-sentinel-v5-active-processing-md1shrunk1456-1778880862-compression-describe-heade8cc-postgreen-20260516T000324Z.json",
+    "current_active_processing_md1shrunk_compression_tags": "logs/md1-r0-visual-sentinel-v5-active-processing-md1shrunk1456-1778880862-compression-tags-heade8cc-postgreen-20260516T000324Z.json"
   },
-  "latest_exact_head_gate": "exact-head d2d74ccb03ed21f267af1b28aba1fe461c71c98e green on CDK Deploy 25945920629",
-  "latest_exact_head_workflows": "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-headd2d-postgreen-20260515T233326Z.json",
+  "latest_exact_head_gate": "exact-head e8cc8decb0ccf2f5d0dc5491a7b33965ee0278a2 green on CDK Deploy 25946534494",
+  "latest_exact_head_workflows": "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-heade8cc-postgreen-20260516T000324Z.json",
   "latest_hard_output_cap_visual_fidelity_review_status": {
     "ai_visual_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-ai-visual-review-20260513.json",
     "attribution_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-review-r1-attribution-20260513.json",
@@ -2346,10 +2378,10 @@
     "visual_qa_manifest_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-visual-qa-manifest-20260513.json"
   },
   "latest_leaf_submit_readiness_gate_status": "R0 v4 tile_04 visual-sentinel readiness is not rerun while AWS processing is active. Exact head is green, objective gate allows, merge/review gate blocks only on missing tile_04 leaf summary, strategy dry-run submits no jobs and estimates $0.736 under $0.75.",
-  "latest_live_compute_status": "logs/md1-r0-visual-sentinel-v5-live-training-headd2d-postgreen-20260515T233326Z.json and logs/md1-r0-visual-sentinel-v5-live-processing-headd2d-postgreen-20260515T233326Z.json",
+  "latest_live_compute_status": "logs/md1-r0-visual-sentinel-v5-live-training-heade8cc-postgreen-20260516T000324Z.json and logs/md1-r0-visual-sentinel-v5-live-processing-heade8cc-postgreen-20260516T000324Z.json",
   "latest_lod_production_readiness_status": "logs/md1-r4-tile10-rollback-lod-production-readiness-20260506.json reports viewer_ready_quality_blocked; --require-promotion-ready now exits 3 and wrote logs/md1-r4-tile10-rollback-lod-production-readiness-promotion-required-20260506.json, preventing promotion callers from accepting viewer readiness alone.",
   "latest_md1_cost_reduction_status": "soft_density_failed_hypothesis_encoded_no_paid_retry_allowed",
-  "latest_md1_live_compute_status": "AWS is not idle after exact-head d2d: staging 3DGS training md1shrunk1456-1778880862-3dgs is InProgress/Training on ml.g5.4xlarge with Component=3DGS, Project=Spaceport, Environment=br-8abcbd5662, MaxRuntime=14400, observed TrainingTimeInSeconds=7140; source-attributed SFM-spine 3DGS training md1-tile04-ds1000-r30-1778869172 is InProgress/Training on ml.g5.2xlarge with Environment=agent73948216sfmproductionspine, Component=3DGS, CodeHead=03c0d8c130cf4994b97fd2bc8eb98a9a73757221, TrainingImageSourceHead=03c0d8c130cf4994b97fd2bc8eb98a9a73757221, Validation=md1-tile04-ds1000-r30, MaxRuntime=43200, observed TrainingTimeInSeconds=1255. Processing is idle. No MD1 compute launched. No-spend merge/review planning remains blocked on merge_inputs_not_materialized.",
+  "latest_md1_live_compute_status": "AWS is not idle after exact-head e8cc: source-attributed SFM-spine 3DGS training md1-tile04-ds1000-r30-1778869172 is InProgress/Training on ml.g5.2xlarge with Environment=agent73948216sfmproductionspine, Component=3DGS, CodeHead=03c0d8c130cf4994b97fd2bc8eb98a9a73757221, TrainingImageSourceHead=03c0d8c130cf4994b97fd2bc8eb98a9a73757221, Validation=md1-tile04-ds1000-r30, MaxRuntime=43200, observed TrainingTimeInSeconds=3055. Staging 3DGS training md1shrunk1456-1778880862-3dgs completed in 8406 billable seconds with artifact s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778880862/md1shrunk1456-1778880862-3dgs/output/model.tar.gz, but staging compression processing md1shrunk1456-1778880862-compression is InProgress on ml.g4dn.xlarge with Component=Compression, Project=Spaceport, Environment=br-8abcbd5662, MaxRuntime=86400, output s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778880862/. No MD1 compute launched. No-spend merge/review planning remains blocked on merge_inputs_not_materialized.",
   "latest_no_spend_bg10_merge_review_plan": {
     "aws_idle_after_failure": true,
     "failed_merge_billable_seconds": 285,
@@ -10926,7 +10958,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Keep compute held while md1shrunk1456 or SFM-spine tile04 training is active. After AWS idle, input materialization and rerunning merge/review submit readiness require a separate allowed gate; do not launch merge/review/full14/LOD/viewer smoke/promotion.",
+  "next_unblocked_step": "Keep compute held while SFM-spine tile04 training or md1shrunk1456 compression processing is active. After AWS idle, input materialization and rerunning merge/review submit readiness require a separate allowed gate; do not launch merge/review/full14/LOD/viewer smoke/promotion.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -17019,8 +17051,8 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-15T23:33:26Z",
-  "updated_at": "2026-05-15T23:33:26Z",
+  "updated": "2026-05-16T00:03:24Z",
+  "updated_at": "2026-05-16T00:03:24Z",
   "version": "1.0.0",
   "md1_r0_visual_sentinel_readiness_blocked_active_jobs_20260513": {
     "recorded_at": "2026-05-13T18:33:49Z",
@@ -19219,7 +19251,7 @@
     ],
     "next": "Wait for AWS training/processing idle, rerun v5 readiness on exact green head, then at most one bounded R0 v5 tile_04 leaf-only proof if allowed. No merge/review/full14/LOD/promotion."
   },
-  "last_event": "md1_r0_visual_sentinel_v5_training_hold_headd2d_20260515",
+  "last_event": "md1_r0_visual_sentinel_v5_training_processing_hold_heade8cc_20260516",
   "md1_r0_visual_sentinel_v5_training_hold_head08c_20260515": {
     "checked_at": "2026-05-15T07:53:38Z",
     "head": "08c018df22db9acdbde3ef96e70330f29f568b46",
@@ -21414,5 +21446,91 @@
       "no promotion"
     ],
     "next": "Commit/push training-hold evidence and watch exact-head workflow. Keep compute held while md1shrunk1456 or SFM-spine tile04 training is active; input materialization plus rerun readiness requires a separate allowed gate after AWS idle."
+  },
+  "md1_r0_visual_sentinel_v5_training_processing_hold_heade8cc_20260516": {
+    "checked_at": "2026-05-16T00:03:24Z",
+    "head": "e8cc8decb0ccf2f5d0dc5491a7b33965ee0278a2",
+    "exact_head_workflow": {
+      "workflow": "CDK Deploy",
+      "run_id": 25946534494,
+      "conclusion": "success"
+    },
+    "decision": "compute_hold_active_training_and_processing_after_no_spend_merge_review_planning",
+    "summary": "Exact-head is green. Further action is held because SFM-spine tile04 3DGS training and staging md1shrunk1456 compression processing remain active. No MD1 compute launched.",
+    "live_aws": {
+      "training_jobs_in_progress": 1,
+      "processing_jobs_in_progress": 1,
+      "training_json": "logs/md1-r0-visual-sentinel-v5-live-training-heade8cc-postgreen-20260516T000324Z.json",
+      "processing_json": "logs/md1-r0-visual-sentinel-v5-live-processing-heade8cc-postgreen-20260516T000324Z.json",
+      "active_training": [
+        {
+          "job_name": "md1-tile04-ds1000-r30-1778869172",
+          "status": "InProgress",
+          "secondary_status": "Training",
+          "observed_training_seconds": 3055,
+          "instance_type": "ml.g5.2xlarge",
+          "max_runtime_seconds": 43200,
+          "environment": "agent73948216sfmproductionspine",
+          "component": "3DGS",
+          "project": "Spaceport",
+          "code_head": "03c0d8c130cf4994b97fd2bc8eb98a9a73757221",
+          "training_image_source_head": "03c0d8c130cf4994b97fd2bc8eb98a9a73757221",
+          "validation": "md1-tile04-ds1000-r30",
+          "output_s3": "s3://spaceport-ml-processing-staging/manual-validations/md1-full-3dgs-r30-20260515T1814Z/3dgs-tile04-ds1000-r30-quality-20260515T1814Z/"
+        }
+      ],
+      "completed_training": [
+        {
+          "job_name": "md1shrunk1456-1778880862-3dgs",
+          "status": "Completed",
+          "secondary_status": "Completed",
+          "billable_seconds": 8406,
+          "instance_type": "ml.g5.4xlarge",
+          "environment": "br-8abcbd5662",
+          "component": "3DGS",
+          "project": "Spaceport",
+          "artifact_s3": "s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778880862/md1shrunk1456-1778880862-3dgs/output/model.tar.gz"
+        }
+      ],
+      "active_processing": [
+        {
+          "job_name": "md1shrunk1456-1778880862-compression",
+          "status": "InProgress",
+          "instance_type": "ml.g4dn.xlarge",
+          "max_runtime_seconds": 86400,
+          "environment": "br-8abcbd5662",
+          "component": "Compression",
+          "project": "Spaceport",
+          "output_s3": "s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778880862/"
+        }
+      ]
+    },
+    "merge_review_submit_readiness": {
+      "json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-merge-review-submit-readiness-head9d13-20260515.json",
+      "decision": "merge_review_submit_blocked",
+      "block_reasons": [
+        "merge_inputs_not_materialized"
+      ]
+    },
+    "evidence": [
+      "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-heade8cc-postgreen-20260516T000324Z.json",
+      "logs/md1-r0-visual-sentinel-v5-live-training-heade8cc-postgreen-20260516T000324Z.json",
+      "logs/md1-r0-visual-sentinel-v5-live-processing-heade8cc-postgreen-20260516T000324Z.json",
+      "logs/md1-r0-visual-sentinel-v5-active-training-md1-tile04-ds1000-r30-1778869172-describe-heade8cc-postgreen-20260516T000324Z.json",
+      "logs/md1-r0-visual-sentinel-v5-active-training-md1-tile04-ds1000-r30-1778869172-tags-heade8cc-postgreen-20260516T000324Z.json",
+      "logs/md1-r0-visual-sentinel-v5-completed-training-md1shrunk1456-1778880862-3dgs-describe-heade8cc-postgreen-20260516T000324Z.json",
+      "logs/md1-r0-visual-sentinel-v5-completed-training-md1shrunk1456-1778880862-3dgs-tags-heade8cc-postgreen-20260516T000324Z.json",
+      "logs/md1-r0-visual-sentinel-v5-active-processing-md1shrunk1456-1778880862-compression-describe-heade8cc-postgreen-20260516T000324Z.json",
+      "logs/md1-r0-visual-sentinel-v5-active-processing-md1shrunk1456-1778880862-compression-tags-heade8cc-postgreen-20260516T000324Z.json"
+    ],
+    "prohibitions_observed": [
+      "no merge",
+      "no review",
+      "no full14",
+      "no LOD",
+      "no viewer smoke",
+      "no promotion"
+    ],
+    "next": "Commit/push training/processing-hold evidence and watch exact-head workflow. Keep compute held while SFM-spine tile04 training or md1shrunk1456 compression processing is active; input materialization plus rerun readiness requires a separate allowed gate after AWS idle."
   }
 }
