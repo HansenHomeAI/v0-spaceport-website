@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-16T21:45:36Z
+updated: 2026-05-16T21:50:10Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -1614,6 +1614,14 @@ skybox, compression, artifact handoff, and visual gates.
     - `CDK Deploy` succeeded (run `25973664131`):
       - watch: `logs/md1-shrunk/polls/gh-run-watch-25973664131-20260516T214216Z.txt`
       - view: `logs/md1-shrunk/polls/gh-run-view-25973664131-20260516T214216Z.json`
+
+- 2026-05-16T21:50:10Z exact-head CI (post record commit):
+  - commit:
+    - `git rev-parse HEAD` -> `6191e6039e90fab4908f08f2748ae404f5b68119` (`chore: record md1-shrunk cdk run 25973664131`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` succeeded (run `25973762615`):
+      - watch: `logs/md1-shrunk/polls/gh-run-watch-25973762615-20260516T214614Z.txt`
+      - view: `logs/md1-shrunk/polls/gh-run-view-25973762615-20260516T214614Z.json`
 
 - 2026-05-16T21:15:30Z exact-head CI (post poll commit):
   - commit:
