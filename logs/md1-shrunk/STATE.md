@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-16T05:54:46Z
+updated: 2026-05-16T06:28:46Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -1221,3 +1221,31 @@ skybox, compression, artifact handoff, and visual gates.
       - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25954618549-20260516T0608Z.txt`
       - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25954618549-20260516T061157Z.json`
     - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
+
+- 2026-05-16T06:28:46Z resume verification (no new launches; bounded polling only):
+  - git branch/head:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `31041a85ddfcb09eac1aa2cb94998336b3a1e8b7`
+    - note: earlier referenced head `e9cbf71c56420ce386b028e7f4af33163ce4dcc2` is from `2026-05-15T11:39:32-06:00` (`chore: launch md1 shrunk sfm`)
+  - AWS identity:
+    - `aws sts get-caller-identity` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions (staging):
+    - `logs/md1-shrunk/stepfunctions-running-SpaceportMLPipeline-staging-20260516T0000Z.json` -> `RUNNING_EXECUTIONS=0`
+  - SageMaker terminal status snapshots (expect Completed):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`
+      - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260516T0000Z.json`
+      - `logs/md1-shrunk/sfm_metadata-md1-shrunk-20260516T0006Z.json` -> `images_registered=1456`, `points_3d=1103335`, `quality_check_passed=true`
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`
+      - `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260516T0032Z.json`
+    - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`
+      - `logs/md1-shrunk/sagemaker-describe-processing-md1shrunk1456-1778880862-compression-20260516T0032Z.json`
+  - SageMaker in-flight lists (left untouched):
+    - processing InProgress: `logs/md1-shrunk/sagemaker-list-processing-InProgress-20260516T0032Z.json`
+    - training InProgress: `logs/md1-shrunk/sagemaker-list-training-InProgress-20260516T0032Z.json`
+  - S3 output sanity:
+    - root: `logs/md1-shrunk/s3-ls-md1-shrunk-colmap-root-20260516T0005Z.txt`
+    - sparse: `logs/md1-shrunk/s3-ls-md1-shrunk-colmap-sparse-20260516T0005Z.txt`
+  - GitHub workflows (exact-head):
+    - branch list: `logs/md1-shrunk/gh-run-list-agent-113647-20260516T0028Z.json`
+    - `CDK Deploy` succeeded for `31041a85...` (run `25954699584`)
+    - Pages workflow latest on branch (not at this head): `logs/md1-shrunk/gh-run-list-pages-20260516T0030Z.json`
