@@ -1607,6 +1607,48 @@ skybox, compression, artifact handoff, and visual gates.
   - Notes:
     - Cost bounded: no new SageMaker jobs launched; no non-owned jobs stopped.
 
+- 2026-05-16T23:24:44Z poll + extra camera side-by-side checks (bounded; no new ML launches):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `4b1a6bb4e893b400d49c32dfc8f40cc93f6962a6` (`chore: md1-shrunk monitor 20260516T2240Z`)
+    - `git status --porcelain=v1` -> new poll artifacts under `logs/md1-shrunk/polls/`
+  - AWS identity / active state (most recent poll artifacts):
+    - `logs/md1-shrunk/polls/aws-sts-20260516T231432Z.json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+    - Step Functions RUNNING=0:
+      - `logs/md1-shrunk/polls/stepfn-running-20260516T231432Z.json`
+    - SageMaker InProgress:
+      - external/not owned: `md1-tile00-lodonly-r38-1778950901` still `InProgress`
+        - `logs/md1-shrunk/polls/sagemaker-processing-inprogress-20260516T231432Z.json`
+      - owned jobs remain terminal `Completed`:
+        - SfM: `logs/md1-shrunk/polls/sagemaker-describe-processing-md1-shrunk-1456-sfm-1778866088-20260516T231432Z.json`
+        - 3DGS: `logs/md1-shrunk/polls/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260516T231432Z.json`
+        - compression: `logs/md1-shrunk/polls/sagemaker-describe-processing-md1shrunk1456-1778880862-compression-20260516T231432Z.json`
+  - Bundle gates (public):
+    - 3DGS output present: `logs/md1-shrunk/polls/s3-3dgs-20260516T231556Z.txt` -> `model.tar.gz`
+    - compressed bundle present: `logs/md1-shrunk/polls/s3-compressed-20260516T231556Z.txt` -> `Total Objects: 22`
+    - HTTP heads:
+      - `logs/md1-shrunk/polls/http-head-meta-20260516T231556Z.txt` -> `HTTP 200`
+      - `logs/md1-shrunk/polls/http-head-skybox-20260516T231556Z.txt` -> `HTTP 200`
+    - gaussian-count gate:
+      - `logs/md1-shrunk/polls/bundle-meta-20260516T231704Z.json` -> `gaussians=990025`
+  - Extra side-by-side input-vs-render camera checks (derived from COLMAP pose; camera-center + forward*3m):
+    - pose derivation snapshot:
+      - `logs/md1-shrunk/polls/camera-samples-20260516T231912Z.json`
+    - `DJI_01189.JPG`:
+      - input: `logs/md1-shrunk/polls/input-DJI_01189-20260516T232256Z.JPG`
+      - render skybox: `logs/md1-shrunk/polls/render-skybox-DJI_01189-20260516T232256Z.png`
+      - render no-sky: `logs/md1-shrunk/polls/render-nosky-DJI_01189-20260516T232256Z.png`
+      - side-by-side skybox: `logs/md1-shrunk/polls/side-by-side-skybox-DJI_01189-20260516T232256Z.png`
+      - side-by-side no-sky: `logs/md1-shrunk/polls/side-by-side-nosky-DJI_01189-20260516T232256Z.png`
+    - `DJI_02500.JPG`:
+      - input: `logs/md1-shrunk/polls/input-DJI_02500-20260516T232256Z.JPG`
+      - render skybox: `logs/md1-shrunk/polls/render-skybox-DJI_02500-20260516T232256Z.png`
+      - render no-sky: `logs/md1-shrunk/polls/render-nosky-DJI_02500-20260516T232256Z.png`
+      - side-by-side skybox: `logs/md1-shrunk/polls/side-by-side-skybox-DJI_02500-20260516T232256Z.png`
+      - side-by-side no-sky: `logs/md1-shrunk/polls/side-by-side-nosky-DJI_02500-20260516T232256Z.png`
+  - Notes:
+    - Cost bounded: no new SageMaker jobs launched; no non-owned jobs stopped.
+
 - 2026-05-16T21:45:36Z commit/push + exact-head CI (monitor poll evidence):
   - commit:
     - `git rev-parse HEAD` -> `a2c035871c046bd95c12106719eb1dce26381472` (`chore: md1-shrunk monitor poll 20260516T2139Z`)
