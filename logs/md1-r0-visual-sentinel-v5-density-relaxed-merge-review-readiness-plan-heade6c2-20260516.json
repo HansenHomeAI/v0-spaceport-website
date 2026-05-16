@@ -1,0 +1,93 @@
+{
+  "candidate_label": "md1-r0-visual-sentinel-v5-density-relaxed",
+  "decision": "no_spend_merge_review_readiness_plan_materialized_for_gate",
+  "exact_head_sha": "e6c2cf81f552bfd68859aa862c1b8ee4e94825d2",
+  "generated_at": "2026-05-16T02:35:14Z",
+  "hard_stop_conditions": [
+    "merge_preflight_missing_paths",
+    "merge_preflight_fallback_or_retain_all",
+    "v18_non_regression_blocked",
+    "visual_qa_gate_blocked",
+    "viewer_smoke_blocked",
+    "cost_or_runtime_cap_exceeded"
+  ],
+  "input_materialization": {
+    "artifact_inputs_available": true,
+    "merge_plan_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-merge-20260515/inputs/merge-plan",
+    "merge_plan_uploaded": false,
+    "required": true,
+    "tile_manifest_available": true,
+    "tile_selection_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-20260515/inputs/tile-selection",
+    "view_buckets_available": true
+  },
+  "merge_plan": {
+    "expected_model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-merge-20260515/output/artifact/model.tar.gz",
+    "instance_type": "ml.g4dn.xlarge",
+    "job_name": "md1-r0v5relax-merge-20260515",
+    "max_estimated_usd": 0.5,
+    "max_runtime_seconds": 3600,
+    "merge_plan_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-merge-20260515/inputs/merge-plan",
+    "no_training": true,
+    "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-merge-20260515/output/artifact",
+    "payload_json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-remote-merge-g4dn-payload-dryrun-heade6c2-20260516.json",
+    "processing_payload_json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-remote-merge-g4dn-payload-dryrun-heade6c2-20260516.json",
+    "required": true,
+    "required_post_merge_preflight": {
+      "block_before_review_if_missing_paths_or_fallback_or_retain_all": true,
+      "required": true,
+      "script": "scripts/3dgs/preflight_tiled_merge_disk.py"
+    },
+    "tile_selection_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-20260515/inputs/tile-selection"
+  },
+  "next_unblocked_step": "Upload the local merge_plan.json only after explicit gate approval, rerun readiness on exact green head with AWS idle, then submit at most one bounded no-training merge/preflight only if readiness allows.",
+  "no_full14_lod_or_promotion": true,
+  "no_training_merge_plan": true,
+  "review_plan": {
+    "baseline_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review",
+    "camera_set": "frozen-promotion-p24",
+    "candidate_label": "md1-r0-v5-density-relaxed-v18colmap-smoke-p24",
+    "candidate_model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-merge-20260515/output/artifact/model.tar.gz",
+    "execution_mode": "training",
+    "instance_type": "ml.g4dn.xlarge",
+    "max_estimated_usd": 0.5,
+    "max_runtime_seconds": 1800,
+    "required": true,
+    "submit_only_after_merge_preflight_passes": true,
+    "v18_non_regression_required": true,
+    "v18_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review"
+  },
+  "source_evidence": {
+    "leaf_reuse_summary_json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-leaf-reuse-summary-heade6c2-20260516.json",
+    "live_processing_json": "logs/md1-r0-visual-sentinel-v5-live-processing-heade6c2-postgreen-20260516T023341Z.json",
+    "live_training_json": "logs/md1-r0-visual-sentinel-v5-live-training-heade6c2-postgreen-20260516T023341Z.json",
+    "merge_payload_json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-remote-merge-g4dn-payload-dryrun-heade6c2-20260516.json",
+    "merge_plan_json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-remote-merge-g4dn-plan-dryrun-heade6c2-20260516.json",
+    "merge_review_gate_json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-merge-review-gate-heade6c2-20260516.json",
+    "tile04_leaf_gate_json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-20260515-tile_04-leaf-gate.json",
+    "tile04_leaf_preflight_json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-20260515-tile_04-leaf-preflight.json",
+    "workflows_json": "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-heade6c2-postgreen-20260516T023341Z.json"
+  },
+  "viewer_smoke_plan": {
+    "checks": [
+      "nonblank_canvas",
+      "camera_navigation",
+      "serious_console_errors",
+      "first_frame_timeout",
+      "camera_bucket_spots"
+    ],
+    "no_local_model_weight_bloat": true,
+    "post_review_or_compressed_artifact_required": true,
+    "required": true,
+    "viewer_source": "pipeline viewer against post-merge/review artifact, ideally compressed/SOGS or remote artifact path"
+  },
+  "visual_qa_plan": {
+    "ai_assisted_review_manifest_required": true,
+    "block_on_ai_visual_defects": true,
+    "compare_reference_and_render_panels": true,
+    "evaluate_gate_required": true,
+    "extract_only_visual_assets": true,
+    "extract_script": "scripts/3dgs/extract_md1_visual_qa_bundle.py",
+    "gate_script": "scripts/3dgs/evaluate_md1_visual_qa_gate.py",
+    "required": true
+  }
+}
