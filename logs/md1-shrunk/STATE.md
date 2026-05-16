@@ -1919,3 +1919,13 @@ skybox, compression, artifact handoff, and visual gates.
       - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25976152048-20260516T234847Z.txt`
       - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25976152048-20260516T235220Z.json`
     - Note: workflow emitted a Node.js 20 deprecation annotation (non-fatal; no failures).
+
+- 2026-05-16T23:57:47Z exact-head CI (post record commit):
+  - commit:
+    - `git rev-parse HEAD` -> `057c51db108efd105f4f527cd2097d6232b6151c` (`chore: record md1-shrunk cdk run 25976152048`)
+  - GitHub workflows (exact-head):
+    - run list: `logs/md1-shrunk/polls/gh-run-list-post-ci2-20260516T235738Z.json`
+    - `CDK Deploy` run `25976238312` `success`:
+      - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25976238312-20260516T235332Z.txt`
+      - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25976238312-20260516T235738Z.json`
+    - Note: workflow emitted a Node.js 20 deprecation annotation (non-fatal; no failures).
