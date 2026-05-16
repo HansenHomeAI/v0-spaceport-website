@@ -1569,3 +1569,11 @@ skybox, compression, artifact handoff, and visual gates.
     - exact-head runs: `logs/md1-shrunk/polls/gh-run-head-2b0e55f8086f09ab74f6bbb4a286df2c770ed3be-20260516T180627Z.tsv` -> `CDK Deploy` run `25967956287` `success`
   - Notes:
     - Cost bounded: no new jobs launched; no non-owned jobs stopped.
+
+- 2026-05-16T18:12:22Z exact-head CI (post poll commit):
+  - commit:
+    - `git rev-parse HEAD` -> `a9c0c7d3bb32da411f2ff7ec91d6b1a57f4e47da` (`chore: md1-shrunk idle poll 20260516T180627Z`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` succeeded (run `25969183994`):
+      - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25969183994-20260516T180831Z.txt`
+      - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25969183994-20260516T181222Z.json`
