@@ -1203,3 +1203,12 @@ skybox, compression, artifact handoff, and visual gates.
   - no-sky smoke:
     - log: `logs/md1-shrunk/polls/sogs-viewer-smoke-nosky-20260516T055834Z.txt`
     - screenshot: `logs/md1-shrunk/polls/sogs-viewer-smoke-nosky-20260516T055834Z.png`
+
+- 2026-05-16T06:06:08Z commit/push + exact-head CI (resume verification fixes pushed):
+  - commit:
+    - `git rev-parse HEAD` -> `d68cb64d9ca5451498d29181167a86c0d4be1c15` (`chore: record md1-shrunk cdk run 25954386683`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` succeeded (run `25954503057`):
+      - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25954503057-20260516T060738Z.txt`
+      - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25954503057-20260516T060738Z.json`
+    - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
