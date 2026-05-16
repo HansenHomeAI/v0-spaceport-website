@@ -783,3 +783,28 @@ skybox, compression, artifact handoff, and visual gates.
       - watch: `logs/md1-shrunk/gh-run-watch-25949845121-20260516T015754Z.txt`
       - view: `logs/md1-shrunk/gh-run-view-25949845121-20260516T015754Z.json`
     - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
+
+- 2026-05-16T05:58:00Z exact-head CI (final CI-proof head):
+  - commit:
+    - `git rev-parse HEAD` -> `e27cb3b5edb902c525df083a16f140a57793a832` (`chore: record md1-shrunk final CI proof`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` succeeded for head `e27cb3b5...` (run `25949937019`):
+      - watch: `logs/md1-shrunk/gh-run-watch-25949937019-20260516T0558Z.txt`
+      - view: `logs/md1-shrunk/gh-run-view-25949937019-20260516T0558Z.json`
+    - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
+
+- 2026-05-16T06:05:00Z terminal reconfirm (no new launches):
+  - AWS identity snapshot:
+    - `logs/md1-shrunk/aws-sts-get-caller-identity-20260516T0605Z.json`
+  - Step Functions (branch preview pipeline):
+    - `SpaceportMLPipeline-br-8abcbd5662` RUNNING count: `0`
+      - `logs/md1-shrunk/stepfunctions-running-SpaceportMLPipeline-br-8abcbd5662-20260516T0605Z.json`
+    - SUCCEEDED includes `execution-md1shrunk1456-1778880862`:
+      - `logs/md1-shrunk/stepfunctions-succeeded-SpaceportMLPipeline-br-8abcbd5662-20260516T0605Z.json`
+  - SageMaker terminal status snapshots:
+    - SfM `md1-shrunk-1456-sfm-1778866088` -> `Completed`:
+      - `logs/md1-shrunk/sagemaker-describe-sfm-md1-shrunk-1456-sfm-1778866088-20260516T0605Z.json`
+    - 3DGS `md1shrunk1456-1778880862-3dgs` -> `Completed`:
+      - `logs/md1-shrunk/sagemaker-describe-3dgs-md1shrunk1456-1778880862-3dgs-20260516T0605Z.json`
+    - compression `md1shrunk1456-1778880862-compression` -> `Completed`:
+      - `logs/md1-shrunk/sagemaker-describe-compression-md1shrunk1456-1778880862-compression-20260516T0605Z.json`
