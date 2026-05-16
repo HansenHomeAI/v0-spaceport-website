@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-16T07:37:51Z
+updated: 2026-05-16T07:42:51Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -1379,3 +1379,13 @@ skybox, compression, artifact handoff, and visual gates.
       - `logs/md1-shrunk/polls/gh-run-list-20260516T073333Z.json`
   - Notes:
     - The earlier “active SfM” state from 2026-05-15 is now terminal (`Completed`) and gates pass; no new launches performed in this poll.
+
+- 2026-05-16T07:42:51Z push + exact-head CI:
+  - commit:
+    - `git rev-parse HEAD` -> `e555b41d119602f6cc6209e5de5a75b6e0e161b7` (`chore: md1-shrunk idle poll 20260516T073220Z`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` succeeded (run `25956364292`):
+      - watch: `logs/md1-shrunk/polls/gh-run-watch-25956364292-20260516T073920Z.txt`
+      - view: `logs/md1-shrunk/polls/gh-run-view-25956364292-20260516T073920Z.json`
+      - list snapshot: `logs/md1-shrunk/polls/gh-run-list-postpush-20260516T073920Z.json`
+    - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
