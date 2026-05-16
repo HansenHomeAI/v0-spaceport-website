@@ -1,0 +1,15 @@
+HTTP/1.1 200 OK
+x-amz-id-2: lEawv6jvGS0a5r3LB4H2tqk4gH6VisIlc8ot/RJEZWX5V9bsB+qa7U38vhQysE7gRWwmA84CFMc=
+x-amz-request-id: V02EE9K0207HE304
+Date: Sat, 16 May 2026 22:07:40 GMT
+Last-Modified: Sat, 16 May 2026 00:13:09 GMT
+ETag: "0a80d455f7e49551c7e6032968068bc4"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: .cVTc2Vl._7LK3AakEV4Rz3vGp0oyubF
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1422
+Server: AmazonS3
+
+
+URL=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json

@@ -1687,3 +1687,54 @@ skybox, compression, artifact handoff, and visual gates.
       - `logs/md1-shrunk/gh-run-list-pages-20260516T2038Z.json` -> latest `Deploy Next.js to Cloudflare Pages` run `25948288202` succeeded for head `18c6cf6d...`
   - Notes:
     - Cost bounded: no new jobs launched; no non-owned jobs stopped.
+
+- 2026-05-16T22:06:52Z poll (camera side-by-side proof + exact-head CI):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `aa6aaae04d76fa9a487ee6281e1c49c44e1bca2b` (`chore: record md1-shrunk cdk run 25973762615`)
+    - `git status --porcelain=v1` -> new poll artifacts under `logs/md1-shrunk/polls/` only
+  - AWS identity:
+    - `logs/md1-shrunk/polls/aws-sts-20260516T220652Z.json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions:
+    - RUNNING executions under `SpaceportMLPipeline-staging`: `0`
+      - `logs/md1-shrunk/polls/stepfn-running-20260516T220652Z.json`
+  - SageMaker:
+    - InProgress processing jobs snapshot:
+      - `logs/md1-shrunk/polls/sagemaker-processing-inprogress-20260516T220652Z.json` (includes external `md1-tile00-lodonly-r38-1778950901`; left untouched)
+    - InProgress training jobs snapshot:
+      - `logs/md1-shrunk/polls/sagemaker-training-inprogress-20260516T220652Z.json` -> `0`
+    - Owned job terminal statuses reconfirm:
+      - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`
+        - `logs/md1-shrunk/polls/sagemaker-describe-processing-md1-shrunk-1456-sfm-1778866088-20260516T220652Z.json`
+      - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`
+        - `logs/md1-shrunk/polls/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260516T220652Z.json`
+      - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`
+        - `logs/md1-shrunk/polls/sagemaker-describe-processing-md1shrunk1456-1778880862-compression-20260516T220652Z.json`
+  - SfM gate snapshot (from `sfm_metadata.json` in the output prefix):
+    - `logs/md1-shrunk/polls/sfm_metadata-20260516T220652Z.json` -> `images_registered=1456`, `merged_component_count=1`, `points_3d=1103335`, `quality_check_passed=true`, `timed_out=false`, `fallback_triggered=false`
+  - S3 output presence reconfirm:
+    - COLMAP listing: `logs/md1-shrunk/polls/s3-colmap-md1-shrunk-20260515T1641Z-20260516T220652Z.txt` -> `Total Objects: 1468`, `Total Size: 9.2 GiB`
+    - 3DGS listing: `logs/md1-shrunk/polls/s3-3dgs-md1shrunk1456-1778880862-20260516T220652Z.txt` -> `model.tar.gz` present
+    - compressed listing: `logs/md1-shrunk/polls/s3-compressed-md1-shrunk-20260515T1641Z-1456-1778880862-20260516T220652Z.txt` -> `Total Objects: 13`, `Total Size: 14.4 MiB`
+  - Public bundle health + gates:
+    - meta.json headers: `logs/md1-shrunk/polls/http-head-meta-20260516T220652Z.txt` -> `HTTP 200`
+    - skybox headers: `logs/md1-shrunk/polls/http-head-skybox-20260516T220652Z.txt` -> `HTTP 200`
+    - meta.json snapshot (gaussian count): `logs/md1-shrunk/polls/bundle-meta-20260516T220652Z.json` -> `gaussians=990025` (from `.means.shape[0]`)
+  - Preview URL resolution (deterministic):
+    - Pages run log: `logs/md1-shrunk/polls/gh-run-log-pages-25948288202-20260516T220310Z.txt` -> preview alias `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+  - Camera side-by-side (input vs render):
+    - input: `logs/md1-shrunk/polls/input-DJI_01029-20260516T220652Z.JPG`
+    - render (skybox): `logs/md1-shrunk/polls/render-skybox-DJI_01029-20260516T220652Z.png`
+    - render (no-sky): `logs/md1-shrunk/polls/render-nosky-DJI_01029-20260516T220652Z.png`
+    - side-by-side (skybox): `logs/md1-shrunk/polls/side-by-side-skybox-DJI_01029-20260516T220652Z.png`
+    - side-by-side (no-sky): `logs/md1-shrunk/polls/side-by-side-nosky-DJI_01029-20260516T220652Z.png`
+  - GitHub workflows (exact-head):
+    - run list: `logs/md1-shrunk/polls/gh-run-list-aa6aaae04d76fa9a487ee6281e1c49c44e1bca2b-20260516T220652Z.json`
+    - exact-head: `CDK Deploy` run `25973855907` `success`:
+      - `logs/md1-shrunk/polls/gh-run-head-aa6aaae04d76fa9a487ee6281e1c49c44e1bca2b-20260516T220652Z.tsv`
+      - `logs/md1-shrunk/polls/gh-run-view-cdk-25973855907-20260516T220652Z.json`
+    - Pages deploy runs for branch (latest still older SHA):
+      - `logs/md1-shrunk/polls/gh-run-list-pages-20260516T220120Z.json` -> latest `Deploy Next.js to Cloudflare Pages` run `25948288202` succeeded for head `18c6cf6d...`
+  - Notes:
+    - Correction: commit `6191e603...` records `CDK Deploy` run `25973664131`; commit `aa6aaae0...` records `CDK Deploy` run `25973762615`.
+    - Cost bounded: no new SageMaker jobs launched; no non-owned jobs stopped.
