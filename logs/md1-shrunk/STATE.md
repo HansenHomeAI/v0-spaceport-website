@@ -1212,3 +1212,12 @@ skybox, compression, artifact handoff, and visual gates.
       - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25954503057-20260516T060738Z.txt`
       - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25954503057-20260516T060738Z.json`
     - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
+
+- 2026-05-16T06:11:57Z exact-head CI (post STATE poll commit):
+  - commit:
+    - `git rev-parse HEAD` -> `5ceb9ea0dea01d8a0e4311df3a4c7c76b4909971` (`chore: record md1-shrunk cdk run 25954503057`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` succeeded (run `25954618549`):
+      - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25954618549-20260516T0608Z.txt`
+      - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25954618549-20260516T061157Z.json`
+    - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
