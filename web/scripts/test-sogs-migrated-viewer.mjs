@@ -24,6 +24,7 @@ const disableSkybox =
   process.env.SOGS_DISABLE_SKYBOX === "1" ||
   process.env.SOGS_DISABLE_SKYBOX === "true" ||
   process.env.SOGS_DISABLE_SKYBOX === "yes";
+const skyboxOverride = process.env.SOGS_SKYBOX_OVERRIDE?.trim() || "";
 const expectedSkyboxSubstring =
   process.env.SOGS_EXPECT_SKYBOX_SUBSTRING?.trim() || "/skybox/kloppenheim_06_puresky_equirect.webp";
 const expectBundledSkybox =
@@ -161,7 +162,12 @@ function summarizeRenderedPixels(buffer) {
   });
 
   const encoded = encodeURIComponent(bundleUrl);
-  const skyboxQuery = disableSkybox ? "&skybox=off" : "";
+  let skyboxQuery = "";
+  if (disableSkybox) {
+    skyboxQuery = "&skybox=off";
+  } else if (skyboxOverride) {
+    skyboxQuery = `&skybox=${encodeURIComponent(skyboxOverride)}`;
+  }
   await page.goto(`${baseUrl}/sogs-migrated-viewer?url=${encoded}${skyboxQuery}`, {
     waitUntil: "domcontentloaded",
     timeout: 120000,

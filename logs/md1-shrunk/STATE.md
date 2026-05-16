@@ -600,3 +600,19 @@ skybox, compression, artifact handoff, and visual gates.
     - curl proof:
       - `curl -I -s https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json | head -n 20`
       - `curl -I -s https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/background_skybox.webp | head -n 20`
+
+- 2026-05-15T18:25:00-0600 deployed preview viewer validation (skybox + no-sky):
+  - Pages deployment run `25947588088` succeeded (head `e3a0881f...`):
+    - job log: `logs/md1-shrunk/gh-run-log-25947588088-20260516T0022Z.txt`
+    - alias URL: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+    - hash URL: `https://83be7404.v0-spaceport-website-preview2.pages.dev`
+  - CDK Deploy run `25947588089` succeeded for the same head:
+    - watch: `logs/md1-shrunk/gh-run-watch-25947588089-20260516T0018Z.txt`
+  - Playwright smoke (skybox override = bundled `background_skybox.webp`):
+    - command:
+      - `cd web && SOGS_MIGRATED_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev SOGS_BUNDLE_URL=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json SOGS_EXPECT_BUNDLED_SKYBOX=1 SOGS_EXPECT_SKYBOX_SUBSTRING=background_skybox.webp SOGS_SKYBOX_OVERRIDE=background_skybox.webp node scripts/test-sogs-migrated-viewer.mjs`
+    - screenshot: `logs/sogs-migrated-viewer-smoke.png`
+  - Playwright smoke (no-sky mode):
+    - command:
+      - `cd web && SOGS_MIGRATED_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev SOGS_BUNDLE_URL=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json SOGS_DISABLE_SKYBOX=1 SOGS_EXPECT_SKYBOX_SUBSTRING=background_skybox.webp node scripts/test-sogs-migrated-viewer.mjs`
+    - screenshot: `logs/sogs-migrated-viewer-nosky.png`
