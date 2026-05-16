@@ -1008,3 +1008,12 @@ skybox, compression, artifact handoff, and visual gates.
       - `logs/md1-shrunk/gh-run-list-20260516T042034Z.json`
     - latest `Deploy Next.js to Cloudflare Pages` on branch still succeeded (run `25948288202`; head `18c6cf6d...`):
       - `logs/md1-shrunk/gh-pages-run-list-20260516T042034Z.json`
+
+- 2026-05-16T04:26:16Z commit/push + exact-head CI (poll evidence):
+  - commit:
+    - `git rev-parse HEAD` -> `2617c49695f10b742c1fffb29a855ca1c0e057a7` (`chore: poll md1-shrunk terminal state`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` succeeded for head `2617c496...` (run `25952623537`):
+      - watch: `logs/md1-shrunk/gh-run-watch-25952623537-20260516T042000Z.txt`
+      - view: `logs/md1-shrunk/gh-run-view-CDK_Deploy-25952623537-20260516T042616Z.json`
+    - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
