@@ -1,0 +1,5 @@
+                           PRE images/
+                           PRE sparse/
+                           PRE sparse_raw/
+2026-05-15 15:04:09 2330189824 database.db
+2026-05-15 15:04:31      19014 sfm_metadata.json

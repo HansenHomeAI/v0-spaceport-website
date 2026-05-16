@@ -1,0 +1,80 @@
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.233359 12737 incremental_pipeline.cc:751] Triangulating image #1443 (1442)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.233400 12737 incremental_pipeline.cc:754] => Image sees 4350 / 6588 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.244915 12737 incremental_pipeline.cc:751] Triangulating image #1444 (1443)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.244946 12737 incremental_pipeline.cc:754] => Image sees 6148 / 8516 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.256443 12737 incremental_pipeline.cc:751] Triangulating image #1445 (1444)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.256474 12737 incremental_pipeline.cc:754] => Image sees 4941 / 7450 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.264884 12737 incremental_pipeline.cc:751] Triangulating image #1446 (1445)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.264914 12737 incremental_pipeline.cc:754] => Image sees 4190 / 7129 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.273818 12737 incremental_pipeline.cc:751] Triangulating image #1447 (1446)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.273846 12737 incremental_pipeline.cc:754] => Image sees 3562 / 6846 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.284696 12737 incremental_pipeline.cc:751] Triangulating image #1448 (1447)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.284727 12737 incremental_pipeline.cc:754] => Image sees 3097 / 6221 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.294715 12737 incremental_pipeline.cc:751] Triangulating image #1449 (1448)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.294744 12737 incremental_pipeline.cc:754] => Image sees 4125 / 7182 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.303079 12737 incremental_pipeline.cc:751] Triangulating image #1450 (1449)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.303108 12737 incremental_pipeline.cc:754] => Image sees 5068 / 8100 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.314520 12737 incremental_pipeline.cc:751] Triangulating image #1451 (1450)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.314548 12737 incremental_pipeline.cc:754] => Image sees 5627 / 8978 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.331961 12737 incremental_pipeline.cc:751] Triangulating image #1452 (1451)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.331992 12737 incremental_pipeline.cc:754] => Image sees 5245 / 8306 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.357640 12737 incremental_pipeline.cc:751] Triangulating image #1453 (1452)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.357672 12737 incremental_pipeline.cc:754] => Image sees 5089 / 8818 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.388361 12737 incremental_pipeline.cc:751] Triangulating image #1454 (1453)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.388396 12737 incremental_pipeline.cc:754] => Image sees 2275 / 8482 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.421397 12737 incremental_pipeline.cc:751] Triangulating image #1455 (1454)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.421433 12737 incremental_pipeline.cc:754] => Image sees 4297 / 9242 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.449494 12737 incremental_pipeline.cc:751] Triangulating image #1456 (1455)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.449528 12737 incremental_pipeline.cc:754] => Image sees 4845 / 9333 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.472126 12737 incremental_pipeline.cc:763] Retriangulation and Global bundle adjustment
+COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=103s idle=60s
+COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=163s idle=120s
+COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=223s idle=180s
+COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=283s idle=240s
+COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=343s idle=300s
+COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=403s idle=360s
+COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=463s idle=420s
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:59:49.413458 12737 incremental_pipeline.cc:774] Extracting colors
+COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=552s idle=60s
+COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=612s idle=120s
+2026-05-15 21:01:55,547 - INFO - [chunk_model_seam_05_point_triangulator_02_model_converter_chunk_model_seam_05_point_triangulator_02] colmap model_converter --input_path /tmp/colmap_sfm_bn0hhstb/chunk_model_seam_05_point_triangulator_02 --output_path /tmp/colmap_sfm_bn0hhstb/text_models/chunk_model_seam_05_point_triangulator_02/chunk_model_seam_05_point_triangulator_02 --output_type TXT
+MEMORY_PROBE [after_python]:
+MemTotal:       16081288 kB
+MemFree:         6891188 kB
+MemAvailable:   14983984 kB
+               total        used        free      shared  buff/cache   available
+Mem:            15Gi       1.0Gi       6.6Gi       1.1Mi       8.0Gi        14Gi
+Swap:             0B          0B          0B
+============================================================
+🔍 VALIDATING OUTPUT
+============================================================
+✅ /opt/ml/processing/output/sparse/0/cameras.txt (195 bytes)
+✅ /opt/ml/processing/output/sparse/0/images.txt (605145970 bytes)
+✅ /opt/ml/processing/output/sparse/0/points3D.txt (149267572 bytes)
+✅ /opt/ml/processing/output/images (1456 files)
+✅ /opt/ml/processing/output/database.db (2330189824 bytes)
+✅ /opt/ml/processing/output/sfm_metadata.json (19014 bytes)
+✅ COLMAP format validation passed
+============================================================
+📊 PROCESSING STATISTICS
+============================================================
+📷 Cameras registered: 1
+🖼️ Images registered: 1456
+🖼️ Images copied for 3DGS: 1456
+🎯 3D points: 1020913
+⏱️ Processing time: 12709.05 seconds
+🛰️ GPS priors detected: 1456
+🔗 Matchers: chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher
+🧭 Match profile: P1
+➡️ Sequential matcher enabled: True
+↩️ Fallback reason: not_needed
+🎯 Vocab tree candidates: 40
+📌 SIFT max features: 8192
+============================================================
+🎉 SPACEPORT COLMAP GPU SfM COMPLETED SUCCESSFULLY!
+============================================================
+✅ GPU-accelerated COLMAP SfM completed
+📁 Output files ready for 3D Gaussian Splatting training
+🔗 COLMAP TXT handoff maintained
+📅 Completed at: Fri May 15 21:03:44 UTC 2026
+============================================================

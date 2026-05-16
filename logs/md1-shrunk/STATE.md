@@ -1437,3 +1437,48 @@ skybox, compression, artifact handoff, and visual gates.
       - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25956893360-20260516T080557Z.json`
       - list snapshot: `logs/md1-shrunk/polls/gh-run-list-postpush-20260516T080557Z.json`
     - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
+
+- 2026-05-16T08:35:16Z idle monitor poll (no new launches):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `d661102746f85a4293d031b470896ebfda286acf`
+    - `git status --porcelain=v1` -> clean
+    - snapshot: `logs/md1-shrunk/polls/git-snapshot-20260516T083516Z.txt`
+  - AWS identity:
+    - `aws sts get-caller-identity` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+      - `logs/md1-shrunk/polls/aws-sts-get-caller-identity-20260516T083516Z.json`
+  - Step Functions (staging):
+    - `aws stepfunctions list-executions ... --status-filter RUNNING` -> `0`
+      - `logs/md1-shrunk/polls/stepfn-list-executions-RUNNING-20260516T083516Z.json`
+  - SageMaker (owned by MD1-Shrunk run; terminal):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`
+      - `logs/md1-shrunk/polls/sagemaker-describe-processing-md1-shrunk-1456-sfm-1778866088-20260516T083516Z.json`
+      - CloudWatch completion excerpt: `logs/md1-shrunk/polls/cloudwatch-tail-md1-shrunk-1456-sfm-1778866088-20260516T083516Z.txt`
+    - SfM gates (from S3 `sfm_metadata.json`):
+      - `logs/md1-shrunk/polls/colmap-sfm-metadata-20260516T083516Z.json`
+      - `logs/md1-shrunk/polls/colmap-sfm-gates-20260516T083516Z.json` -> images_registered=1456, merged_component_count=1, points_3d=1103335, timed_out=false
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`
+      - `logs/md1-shrunk/polls/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260516T083516Z.json`
+    - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`
+      - `logs/md1-shrunk/polls/sagemaker-describe-processing-md1shrunk1456-1778880862-compression-20260516T083516Z.json`
+  - External activity (left untouched):
+    - InProgress SageMaker processing/training snapshots:
+      - `logs/md1-shrunk/polls/sagemaker-list-processing-InProgress-20260516T083516Z.json`
+      - `logs/md1-shrunk/polls/sagemaker-list-training-InProgress-20260516T083516Z.json`
+  - S3 listings:
+    - COLMAP root: `logs/md1-shrunk/polls/s3-colmap-root-20260516T083516Z.txt`
+    - COLMAP sparse: `logs/md1-shrunk/polls/s3-colmap-sparse-20260516T083516Z.txt`
+  - HTTPS recheck:
+    - preview alias URL: `logs/md1-shrunk/polls/http-head-preview-alias-url-20260516T083516Z.txt`
+    - preview alias headers: `logs/md1-shrunk/polls/http-head-preview-alias-20260516T083516Z.txt`
+    - public meta.json URL: `logs/md1-shrunk/polls/http-head-public-meta-url-20260516T083516Z.txt`
+    - public meta.json headers: `logs/md1-shrunk/polls/http-head-public-meta-20260516T083516Z.txt`
+    - public skybox URL: `logs/md1-shrunk/polls/http-head-public-skybox-url-20260516T083516Z.txt`
+    - public skybox headers: `logs/md1-shrunk/polls/http-head-public-skybox-20260516T083516Z.txt`
+  - GitHub workflows (exact-head):
+    - `gh run list ...` snapshot: `logs/md1-shrunk/polls/gh-run-list-20260516T083516Z.json`
+    - exact-head runs: `logs/md1-shrunk/polls/gh-run-head-20260516T083516Z.tsv` -> `CDK Deploy` run `25956977033` `success`
+    - `gh run view 25956977033`: `logs/md1-shrunk/polls/gh-run-view-cdk-25956977033-20260516T083516Z.json`
+  - Notes:
+    - User-provided committed head `e9cbf71c...` was stale; as of this poll, HEAD is `d6611027...` and origin matches.
+    - Cost bounded: no new jobs launched; no non-owned jobs stopped.

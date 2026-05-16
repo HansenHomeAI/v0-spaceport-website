@@ -1,0 +1,7 @@
+branch=agent-113647-md1-baseline-e2e
+head=d661102746f85a4293d031b470896ebfda286acf
+commit=d661102746f85a4293d031b470896ebfda286acf
+date=2026-05-16 02:10:08 -0600
+subject=chore: record md1-shrunk cdk run 25956893360
+
+?? logs/md1-shrunk/polls/git-snapshot-20260516T083516Z.txt
