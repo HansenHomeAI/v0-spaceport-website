@@ -1,0 +1,24 @@
+{
+    "Tags": [
+        {
+            "Key": "source-training-job",
+            "Value": "md1-tile00-split-r32-1778899939"
+        },
+        {
+            "Key": "sfm-production-confidence",
+            "Value": "r34-tile00-sogs-timeout-retry"
+        },
+        {
+            "Key": "code-head",
+            "Value": "9e251de9f70c207e0190a6710686a0ecb8e6e3eb"
+        },
+        {
+            "Key": "r33-stop-reason",
+            "Value": "max-runtime-3600-before-splat-transform-finished"
+        },
+        {
+            "Key": "retry-of",
+            "Value": "md1-tile00-sogs-r33-1778908626"
+        }
+    ]
+}

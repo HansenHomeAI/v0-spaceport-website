@@ -1,0 +1,52 @@
+{
+    "ProcessingInputs": [
+        {
+            "InputName": "input",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-full-3dgs-r32-20260516T0252Z/3dgs-tile00-support-aware-ds1000-r32-quality-20260516T0252Z/md1-tile00-split-r32-1778899939/output/model.tar.gz",
+                "LocalPath": "/opt/ml/processing/input",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated"
+            }
+        }
+    ],
+    "ProcessingOutputConfig": {
+        "Outputs": [
+            {
+                "OutputName": "compressed",
+                "S3Output": {
+                    "S3Uri": "s3://spaceport-ml-processing/compressed/md1-r32-tile00-sogs-r34-20260516T0656Z/",
+                    "LocalPath": "/opt/ml/processing/output",
+                    "S3UploadMode": "EndOfJob"
+                },
+                "AppManaged": false
+            }
+        ]
+    },
+    "ProcessingJobName": "md1-tile00-sogs-r34-1778914593",
+    "ProcessingResources": {
+        "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 80
+        }
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 18000
+    },
+    "AppSpecification": {
+        "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor:latest",
+        "ContainerEntrypoint": [
+            "python3",
+            "/opt/ml/code/compress.py"
+        ]
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/SpaceportMLPipelineStack-SageMakerExecutionRole7843-A4BBnjJAXLs8",
+    "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-tile00-sogs-r34-1778914593",
+    "ProcessingJobStatus": "InProgress",
+    "ProcessingStartTime": "2026-05-16T00:57:54.451000-06:00",
+    "LastModifiedTime": "2026-05-16T00:59:43.127000-06:00",
+    "CreationTime": "2026-05-16T00:57:12.042000-06:00"
+}

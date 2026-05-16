@@ -5110,9 +5110,9 @@
   },
   "md1_r4_boundary_quality_strategy_20260506": {
     "boundary_actual_delta": {
-      "lpips": 0.000008553266525268555,
-      "psnr": 0.00000909046563180027,
-      "ssim": 0.0000032186508178710938
+      "lpips": 8.553266525268555e-06,
+      "psnr": 9.09046563180027e-06,
+      "ssim": 3.2186508178710938e-06
     },
     "boundary_remaining_gap": {
       "lpips": 0.02500855326652527,
@@ -23429,5 +23429,71 @@
       "no promotion launched"
     ],
     "next": "Commit/push this headdb607 exact-green processing-hold evidence and watch the resulting exact-head workflow. Do not launch merge/review/full14/LOD/viewer smoke/promotion. After AWS training and processing are fully idle, run only no-spend merge/review readiness/planning from the passed tile_04 leaf gate; input materialization and paid merge/review require a separate allowed gate."
+  },
+  "md1_r0_visual_sentinel_v5_processing_hold_head51b1_20260516": {
+    "event": "md1_r0_visual_sentinel_v5_processing_hold_head51b1_20260516",
+    "checked_at": "2026-05-16T08:04:22Z",
+    "head": "51b1e733813d2fc3115c1af2166f2c7e8ff14ca8",
+    "status": "training_idle_processing_active_after_no_spend_merge_review_planning",
+    "decision": "compute_hold_active_processing_training_idle",
+    "summary": "Exact-head 51b1 is green and training is idle, but further action is held because source-attributed SOGS/compression processing remains active. No MD1 compute launched.",
+    "md1_compute_launched": false,
+    "exact_head_workflow": {
+      "workflow_name": "CDK Deploy",
+      "run_id": 25956345359,
+      "conclusion": "success",
+      "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25956345359"
+    },
+    "live_aws": {
+      "training_jobs_in_progress": 0,
+      "processing_jobs_in_progress": 1,
+      "training_json": "logs/md1-r0-visual-sentinel-v5-live-training-head51b1-postgreen-20260516T080422Z.json",
+      "processing_json": "logs/md1-r0-visual-sentinel-v5-live-processing-head51b1-postgreen-20260516T080422Z.json",
+      "active_processing": [
+        {
+          "job_name": "md1-tile00-sogs-r34-1778914593",
+          "status": "InProgress",
+          "instance_type": "ml.g4dn.xlarge",
+          "instance_count": 1,
+          "volume_size_gb": 80,
+          "max_runtime_seconds": 18000,
+          "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor:latest",
+          "entrypoint": [
+            "python3",
+            "/opt/ml/code/compress.py"
+          ],
+          "sfm_production_confidence": "r34-tile00-sogs-timeout-retry",
+          "code_head": "9e251de9f70c207e0190a6710686a0ecb8e6e3eb",
+          "source_training_job": "md1-tile00-split-r32-1778899939",
+          "retry_of": "md1-tile00-sogs-r33-1778908626",
+          "r33_stop_reason": "max-runtime-3600-before-splat-transform-finished",
+          "output_s3": "s3://spaceport-ml-processing/compressed/md1-r32-tile00-sogs-r34-20260516T0656Z/"
+        }
+      ]
+    },
+    "merge_review_submit_readiness": {
+      "json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-merge-review-submit-readiness-headb83-20260516.json",
+      "decision": "merge_review_submit_blocked",
+      "block_reasons": [
+        "merge_inputs_not_materialized"
+      ],
+      "note": "No head51b1 readiness rerun because live AWS processing was active."
+    },
+    "evidence": [
+      "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-head51b1-postgreen-20260516T080422Z.json",
+      "logs/md1-r0-visual-sentinel-v5-live-training-head51b1-postgreen-20260516T080422Z.json",
+      "logs/md1-r0-visual-sentinel-v5-live-processing-head51b1-postgreen-20260516T080422Z.json",
+      "logs/md1-r0-visual-sentinel-v5-active-processing-md1-tile00-sogs-r34-1778914593-describe-head51b1-postgreen-20260516T080422Z.json",
+      "logs/md1-r0-visual-sentinel-v5-active-processing-md1-tile00-sogs-r34-1778914593-tags-head51b1-postgreen-20260516T080422Z.json"
+    ],
+    "prohibitions_observed": [
+      "no merge launched",
+      "no review launched",
+      "no full14 launched",
+      "no LOD launched",
+      "no viewer smoke launched",
+      "no promotion launched"
+    ],
+    "next": "Commit/push this head51b1 exact-green processing-hold evidence and watch the resulting exact-head workflow. Do not launch merge/review/full14/LOD/viewer smoke/promotion. After AWS training and processing are fully idle, run only no-spend merge/review readiness/planning from the passed tile_04 leaf gate; input materialization and paid merge/review require a separate allowed gate."
   }
 }
