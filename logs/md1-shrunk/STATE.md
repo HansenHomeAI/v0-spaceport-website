@@ -644,3 +644,22 @@ skybox, compression, artifact handoff, and visual gates.
     - local comparisons: `logs/md1-shrunk/camera_checks/compare-*.png`
   - Repro command (renders use bundled `background_skybox.webp` via `?skybox=background_skybox.webp`):
     - `cd web && MD1_VIEWER_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev MD1_BUNDLE_URL=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json MD1_CAM_POS=... MD1_CAM_TARGET=... MD1_SKYBOX=background_skybox.webp MD1_OUT=../logs/md1-shrunk/camera_checks/render-<name>.png node scripts/render-md1-camera-check.mjs`
+
+- 2026-05-16T00:49:06Z monitor poll (terminal reconfirm; no new launches):
+  - branch/head/status:
+    - `git rev-parse HEAD` -> `0c58099081f06dc501f08f8d8e2a396b0d9831f5`
+    - `git status --porcelain=v1` -> untracked `logs/md1-shrunk/` artifacts (17.08 MiB)
+  - AWS identity:
+    - `logs/md1-shrunk/aws-sts-20260516T004906Z.json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions:
+    - staging: `logs/md1-shrunk/stepfunctions-list-executions-SpaceportMLPipeline-staging-20260516T004906Z.json` -> `RUNNING=0`
+    - branch preview: `logs/md1-shrunk/stepfunctions-list-executions-SpaceportMLPipeline-br-8abcbd5662-20260516T004906Z.json` -> `execution-md1shrunk1456-1778880862` `SUCCEEDED`
+  - SageMaker terminal statuses:
+    - SfM: `logs/md1-shrunk/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260516T004906Z.json` -> `Completed`, `FailureReason=null`
+    - 3DGS: `logs/md1-shrunk/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260516T004906Z.json` -> `Completed`, `FailureReason=null`
+    - compression: `logs/md1-shrunk/sagemaker-describe-processing-md1shrunk1456-1778880862-compression-20260516T004906Z.json` -> `Completed`, `FailureReason=null`
+  - GitHub workflows:
+    - exact-head `CDK Deploy` succeeded for head `0c580990...` (run `25948058284`):
+      - `logs/md1-shrunk/gh-run-view-25948058284-20260516T005027Z.json`
+    - latest `Deploy Next.js to Cloudflare Pages` success remains head `74cc5a6a...` (run `25947847852`):
+      - `logs/md1-shrunk/gh-run-view-25947847852-20260516T005027Z.json`

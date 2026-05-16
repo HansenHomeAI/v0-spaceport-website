@@ -1,0 +1,6 @@
+-rw-r--r--  0 root   root    46080 May 15 17:54 background_skybox.webp
+-rw-r--r--  0 root   root 245544099 May 15 17:54 splat.ply
+-rw-r--r--  0 root   root       459 May 15 17:54 floater_pruning_summary.json
+-rw-r--r--  0 root   root      1482 May 15 17:54 training_metadata.json
+-rw-r--r--  0 root   root       950 May 15 17:54 export_manifest.json
+-rw-r--r--  0 root   root       977 May 15 17:54 background_manifest.json

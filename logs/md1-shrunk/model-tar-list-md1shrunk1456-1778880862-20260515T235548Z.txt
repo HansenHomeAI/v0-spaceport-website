@@ -1,0 +1,6 @@
+background_skybox.webp
+splat.ply
+floater_pruning_summary.json
+training_metadata.json
+export_manifest.json
+background_manifest.json

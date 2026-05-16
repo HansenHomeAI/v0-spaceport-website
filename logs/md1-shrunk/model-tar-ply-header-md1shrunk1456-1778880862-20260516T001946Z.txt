@@ -1,0 +1,80 @@
+ply
+format binary_little_endian 1.0
+element vertex 990091
+property float x
+property float y
+property float z
+property float nx
+property float ny
+property float nz
+property float f_dc_0
+property float f_dc_1
+property float f_dc_2
+property float f_rest_0
+property float f_rest_1
+property float f_rest_2
+property float f_rest_3
+property float f_rest_4
+property float f_rest_5
+property float f_rest_6
+property float f_rest_7
+property float f_rest_8
+property float f_rest_9
+property float f_rest_10
+property float f_rest_11
+property float f_rest_12
+property float f_rest_13
+property float f_rest_14
+property float f_rest_15
+property float f_rest_16
+property float f_rest_17
+property float f_rest_18
+property float f_rest_19
+property float f_rest_20
+property float f_rest_21
+property float f_rest_22
+property float f_rest_23
+property float f_rest_24
+property float f_rest_25
+property float f_rest_26
+property float f_rest_27
+property float f_rest_28
+property float f_rest_29
+property float f_rest_30
+property float f_rest_31
+property float f_rest_32
+property float f_rest_33
+property float f_rest_34
+property float f_rest_35
+property float f_rest_36
+property float f_rest_37
+property float f_rest_38
+property float f_rest_39
+property float f_rest_40
+property float f_rest_41
+property float f_rest_42
+property float f_rest_43
+property float f_rest_44
+property float opacity
+property float scale_0
+property float scale_1
+property float scale_2
+property float rot_0
+property float rot_1
+property float rot_2
+property float rot_3
+end_header
+6??%;:E`9=[O==Ip=z}?^!1s6{D:&<P:'1=+=X?X=[XYdVT{g0<${<>N=ya,=/N^Q~T,^<(=9!1@v	?>9c>i{v==flG=<v;B4=O{'3+Ij;==;=\?<L
+jU;Q9=s2Aqq]"&GF?x={<>=(G<nK<OJa 3=<n,=If.<43r@sy1(#?=T.?0?P@D/Y;]/=3==C)L=%<
+;;$;$u=;<6DQ=9>=B/E=c]<==,=|	=>>|=8|9=8<L<R=P{G='z' >\=e9@n18=qbEC7R= t>'>b=8j0f
+`hU
+<=i"H=N?9G>=ZJ1)@3^22;[0/=OqN>}An?.*>=el3+eRFrp=S	=+d<8Sw@q_=sW>?T?<g?r3?S:?2=<%<=r=:<!a;U
+4ii<Yl90=,2/U=;N:?< eJygrPS[<3),:<!;>8(JCk	=i;<-?h$=l Rs]@(H7a.?n0+?(>>,@/^?O,>:WJ?J=j*>5CF`O>bte>p ==E_.?}4<pE*>PM%OQ?^&r=[j>|.=m>L=?#E=vL >tEn1@,S>d?3>b!=T>+?62)l>_:>1D?TKpJ>>)>==LC ':0=;=<CoO`8	Vk=:N=60>x	_e=_<z<*9{h;#jy==>sl=al=<<(K+lK<0x=m@L<^?Uq.?D	r1G'X=f>k<=<y?J<I$=z)n1^=t
+ZJ=7IH> <3:=8dt;7^Y ="$)=1=>v=s	<Th^wS~5=|<E2=UJ!RaRezb?HY?KcQ$?4?X7va`>=*>==AD]F/=3p"4<?===@2?(< =062cI=E 2<=b=7=Ynz?Yw=SQu=7eQJ];=t=<3~8hs>~'ZZ?=Y@@???$G? \?d=<NTF<,0=*L<LG;==u>$=*%\jI7=QP9^G.}'M57=%pCgq;!$>f`;mV=>p;0{vq=:'T@~w IW>|A#>1?D?w!?5@8(eSK==/=R-x4<rumFk$};4W1\<d=zI<`h7|</(\"<,;]:Z=;>8 <;<<)FGWAj=5<N,;t*@3	W>.t?>v7V>2x>`=>=u=E<;c]<V:09]K]d .;U2\<A=q=`;ZP<x<P_x)N|0<|<=p.>^f<K<J&=oM<F	<&]B<+<A]jI8v=I?A?>(93>L!>M>/#=<<oDC#$=w=;ZB:b/+<48=t=BaQu4=<?t407;L[<h<YUR3==6|D('=R<_K|;M+ECq-=icM^3gkZ#Z'? ,?$eD>}#1>=-==
+<9L!0=ZY;Np:G&{z_;CJ=J=<bEKN=lM g;a.8Wo[938d=}9>=o5p
+=v'P<b F<].9B"@<zG>{DY!E3=`=Vd=@=jr30@B;G(=j7<p1<>	={QT=s-*{[,@4"<|==hh<]^=?><8A=7K*[%xu<,xz=^N<JA{r!jlJy=gy?J?&s3WjQ0>q?=w>PM5P,]L`>6X>s]=o>v>w?K=u>R3:^RNX>^y>:5]=V>T):@2_:W>Lf
+8#Mnl>oT>UYq=>s>8q_?i["? c @$E=E`K5=/>5==OJ7-RDT:;=|2Cz=U>=yA=';)84
+8 L;wU=%:=y>9=OE="l<A*Y>T]~=R!=H0|D@[&LVhF&?1Xf(&j>hcB
++R=N}=F<3/{<<yCD2m=/G=1,CX<=w<#MCZv<]yR1AMaRI=V(=>w=F
+v<});<5Aup;t<=m, >P7WSR>	J>p?Q:@$:A?Fv#vD<(>VW==HWPp<!'=".dlv;g
+>4;>=],kO

@@ -1,0 +1,120 @@
+Refreshing run status every 20 seconds. Press Ctrl+C to quit.
+
+* agent-113647-md1-baseline-e2e Deploy Next.js to Cloudflare Pages · 25948288202
+Triggered via push about 4 minutes ago
+
+JOBS
+* deploy (ID 76280892764)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Select target Pages project per branch
+  - Configure AWS credentials (production via OIDC)
+  ✓ Configure AWS credentials (staging via access keys)
+  ✓ Resolve deployment context
+  ✓ Wait for matching CDK Deploy run
+  ✓ Resolve CloudFormation outputs
+  * Setup Node
+  * Install deps (tolerant to peer conflicts in CI)
+  * Inject build-time env (.env) for NEXT_PUBLIC_* per branch
+  * Verify injected env values
+  * Build Next for Cloudflare (SSR)
+  * Debug .vercel/output contents
+  * Upload .vercel/output for diagnostics
+  * Install Wrangler
+  * Ensure Pages runtime flags (compat date + node compat)
+  * Deploy to Cloudflare Pages
+  * Resolve latest deployment URLs (preview alias + hash URL)
+  * Verify preview alias and hash URL with retries
+  * Post Setup Node
+  * Post Configure AWS credentials (staging via access keys)
+  * Post Run actions/checkout@v4
+Refreshing run status every 20 seconds. Press Ctrl+C to quit.
+
+* agent-113647-md1-baseline-e2e Deploy Next.js to Cloudflare Pages · 25948288202
+Triggered via push about 4 minutes ago
+
+JOBS
+* deploy (ID 76280892764)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Select target Pages project per branch
+  - Configure AWS credentials (production via OIDC)
+  ✓ Configure AWS credentials (staging via access keys)
+  ✓ Resolve deployment context
+  ✓ Wait for matching CDK Deploy run
+  ✓ Resolve CloudFormation outputs
+  ✓ Setup Node
+  * Install deps (tolerant to peer conflicts in CI)
+  * Inject build-time env (.env) for NEXT_PUBLIC_* per branch
+  * Verify injected env values
+  * Build Next for Cloudflare (SSR)
+  * Debug .vercel/output contents
+  * Upload .vercel/output for diagnostics
+  * Install Wrangler
+  * Ensure Pages runtime flags (compat date + node compat)
+  * Deploy to Cloudflare Pages
+  * Resolve latest deployment URLs (preview alias + hash URL)
+  * Verify preview alias and hash URL with retries
+  * Post Setup Node
+  * Post Configure AWS credentials (staging via access keys)
+  * Post Run actions/checkout@v4
+Refreshing run status every 20 seconds. Press Ctrl+C to quit.
+
+* agent-113647-md1-baseline-e2e Deploy Next.js to Cloudflare Pages · 25948288202
+Triggered via push about 4 minutes ago
+
+JOBS
+* deploy (ID 76280892764)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Select target Pages project per branch
+  - Configure AWS credentials (production via OIDC)
+  ✓ Configure AWS credentials (staging via access keys)
+  ✓ Resolve deployment context
+  ✓ Wait for matching CDK Deploy run
+  ✓ Resolve CloudFormation outputs
+  ✓ Setup Node
+  * Install deps (tolerant to peer conflicts in CI)
+  * Inject build-time env (.env) for NEXT_PUBLIC_* per branch
+  * Verify injected env values
+  * Build Next for Cloudflare (SSR)
+  * Debug .vercel/output contents
+  * Upload .vercel/output for diagnostics
+  * Install Wrangler
+  * Ensure Pages runtime flags (compat date + node compat)
+  * Deploy to Cloudflare Pages
+  * Resolve latest deployment URLs (preview alias + hash URL)
+  * Verify preview alias and hash URL with retries
+  * Post Setup Node
+  * Post Configure AWS credentials (staging via access keys)
+  * Post Run actions/checkout@v4
+Refreshing run status every 20 seconds. Press Ctrl+C to quit.
+
+* agent-113647-md1-baseline-e2e Deploy Next.js to Cloudflare Pages · 25948288202
+Triggered via push about 5 minutes ago
+
+JOBS
+* deploy (ID 76280892764)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Select target Pages project per branch
+  - Configure AWS credentials (production via OIDC)
+  ✓ Configure AWS credentials (staging via access keys)
+  ✓ Resolve deployment context
+  ✓ Wait for matching CDK Deploy run
+  ✓ Resolve CloudFormation outputs
+  ✓ Setup Node
+  ✓ Install deps (tolerant to peer conflicts in CI)
+  ✓ Inject build-time env (.env) for NEXT_PUBLIC_* per branch
+  ✓ Verify injected env values
+  * Build Next for Cloudflare (SSR)
+  * Debug .vercel/output contents
+  * Upload .vercel/output for diagnostics
+  * Install Wrangler
+  * Ensure Pages runtime flags (compat date + node compat)
+  * Deploy to Cloudflare Pages
+  * Resolve latest deployment URLs (preview alias + hash URL)
+  * Verify preview alias and hash URL with retries
+  * Post Setup Node
+  * Post Configure AWS credentials (staging via access keys)
+  * Post Run actions/checkout@v4

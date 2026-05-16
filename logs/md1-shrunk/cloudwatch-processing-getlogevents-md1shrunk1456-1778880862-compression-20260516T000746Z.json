@@ -1,0 +1,251 @@
+{
+    "events": [
+        {
+            "timestamp": 1778889645674,
+            "message": "2026-05-16 00:00:42,655 - INFO - ✅ GPU available for SOGS compression",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645674,
+            "message": "2026-05-16 00:00:45,112 - INFO - ✅ SOGS CLI tool available",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645674,
+            "message": "2026-05-16 00:00:45,112 - INFO - 🚀 Starting PlayCanvas SOGS compression job",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645674,
+            "message": "2026-05-16 00:00:45,112 - INFO - === GPU Environment Diagnosis ===",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645674,
+            "message": "2026-05-16 00:00:45,112 - INFO - PyTorch version: 2.1.0+cu121",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645674,
+            "message": "2026-05-16 00:00:45,112 - INFO - PyTorch CUDA version: 12.1",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645674,
+            "message": "2026-05-16 00:00:45,112 - INFO - CUDA available: True",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645674,
+            "message": "2026-05-16 00:00:45,127 - INFO - CUDA device count: 1",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645674,
+            "message": "2026-05-16 00:00:45,128 - INFO - Current CUDA device: 0",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645674,
+            "message": "2026-05-16 00:00:45,128 - INFO - Device name: Tesla T4",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645674,
+            "message": "2026-05-16 00:00:45,128 - INFO - Device capability: (7, 5)",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645674,
+            "message": "2026-05-16 00:00:45,182 - INFO - nvidia-smi output:",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645674,
+            "message": "2026-05-16 00:00:45,182 - INFO - Sat May 16 00:00:45 2026       ",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645674,
+            "message": "+-----------------------------------------------------------------------------------------+",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645674,
+            "message": "| NVIDIA-SMI 570.211.01             Driver Version: 570.211.01     CUDA Version: 12.8     |",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645674,
+            "message": "|-----------------------------------------+------------------------+----------------------+",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645674,
+            "message": "| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645674,
+            "message": "| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645674,
+            "message": "|                                         |                        |               MIG M. |",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645674,
+            "message": "|=========================================+========================+======================|",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645675,
+            "message": "|   0  Tesla T4                       On  |   00000000:00:1E.0 Off |                    0 |",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645675,
+            "message": "| N/A   29C    P0             32W /   70W |       3MiB /  15360MiB |      0%      Default |",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645675,
+            "message": "|                                         |                        |                  N/A |",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645675,
+            "message": "+-----------------------------------------+------------------------+----------------------+\n                                                                                         ",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645675,
+            "message": "+-----------------------------------------------------------------------------------------+",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645675,
+            "message": "| Processes:                                                                              |",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645675,
+            "message": "|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645675,
+            "message": "|        ID   ID                                                               Usage      |",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645675,
+            "message": "|=========================================================================================|",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645675,
+            "message": "|  No running processes found                                                             |",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645675,
+            "message": "+-----------------------------------------------------------------------------------------+",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645675,
+            "message": "2026-05-16 00:00:45,184 - INFO - CUDA compiler version:",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645675,
+            "message": "2026-05-16 00:00:45,184 - INFO - nvcc: NVIDIA (R) Cuda compiler driver",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645675,
+            "message": "Copyright (c) 2005-2024 NVIDIA Corporation",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645675,
+            "message": "Built on Thu_Mar_28_02:18:24_PDT_2024",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645675,
+            "message": "Cuda compilation tools, release 12.4, V12.4.131",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645675,
+            "message": "Build cuda_12.4.r12.4/compiler.34097967_0",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645675,
+            "message": "2026-05-16 00:00:45,184 - INFO - CUDA_HOME: /usr/local/cuda",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645676,
+            "message": "2026-05-16 00:00:45,184 - INFO - CUDA_VISIBLE_DEVICES: 0",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645676,
+            "message": "2026-05-16 00:00:45,185 - INFO - NVIDIA_VISIBLE_DEVICES: all",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645676,
+            "message": "2026-05-16 00:00:45,185 - INFO - === End GPU Diagnosis ===",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889645676,
+            "message": "2026-05-16 00:00:45,185 - INFO - Extracting archive: /opt/ml/processing/input/md1shrunk1456-1778880862-3dgs/output/model.tar.gz",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889647676,
+            "message": "2026-05-16 00:00:46,931 - INFO - Found 1 PLY files in archive",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889647676,
+            "message": "2026-05-16 00:00:46,931 - INFO - Found 1 PLY files to compress",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889647676,
+            "message": "2026-05-16 00:00:46,931 - INFO - ✅ PLY file validated for SOGS: /opt/ml/processing/input/extracted/splat.ply",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889647676,
+            "message": "2026-05-16 00:00:46,932 - INFO - 🚀 Starting PlayCanvas SOGS compression on 1 PLY files",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889647676,
+            "message": "2026-05-16 00:00:47,278 - INFO - Processing PLY file 1/1: /opt/ml/processing/input/extracted/splat.ply",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889647676,
+            "message": "2026-05-16 00:00:47,278 - INFO - 🔧 Running SOGS compression: /opt/ml/processing/input/extracted/splat.ply -> /opt/ml/processing/output/compressed_splat",
+            "ingestionTime": 1778889651880
+        },
+        {
+            "timestamp": 1778889647676,
+            "message": "2026-05-16 00:00:47,278 - INFO - Executing: sogs-compress --ply /opt/ml/processing/input/extracted/splat.ply --output-dir /opt/ml/processing/output/compressed_splat",
+            "ingestionTime": 1778889651880
+        }
+    ],
+    "nextForwardToken": "f/39670564769126388875293751790004445140510834467474112560/s",
+    "nextBackwardToken": "b/39670564724480296987835444260649937158668814732501319680/s"
+}
