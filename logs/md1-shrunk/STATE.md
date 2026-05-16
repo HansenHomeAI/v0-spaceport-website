@@ -1427,3 +1427,13 @@ skybox, compression, artifact handoff, and visual gates.
     - latest Pages run (not exact-head) succeeded: run `25948288202` @ `18c6cf6d...`
       - `logs/md1-shrunk/polls/gh-run-latest-pages-20260516T080220Z.tsv`
       - `logs/md1-shrunk/polls/gh-run-list-120-20260516T080220Z.json`
+
+- 2026-05-16T08:05:57Z push + exact-head CI:
+  - commit:
+    - `git rev-parse HEAD` -> `5677c66c4e29133940b4ef20372af89a3ed22e4e` (`chore: md1-shrunk idle poll 20260516T080220Z`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` succeeded (run `25956893360`):
+      - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25956893360-20260516T080557Z.txt`
+      - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25956893360-20260516T080557Z.json`
+      - list snapshot: `logs/md1-shrunk/polls/gh-run-list-postpush-20260516T080557Z.json`
+    - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
