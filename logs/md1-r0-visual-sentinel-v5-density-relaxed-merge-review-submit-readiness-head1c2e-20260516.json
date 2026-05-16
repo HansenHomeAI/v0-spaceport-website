@@ -1,0 +1,43 @@
+{
+  "checked_at": "2026-05-16T01:39:13.817110+00:00",
+  "decision": "merge_review_submit_blocked",
+  "block_reasons": [
+    "merge_inputs_not_materialized"
+  ],
+  "exact_head": "1c2ee4fda91174718de49951545e9bfce3e33824",
+  "git_head": "1c2ee4fda91174718de49951545e9bfce3e33824",
+  "workflow_conclusion": "success",
+  "training_jobs_in_progress": [],
+  "processing_jobs_in_progress": [],
+  "required_tile_ids": [
+    "tile_04"
+  ],
+  "leaf_reuse_summary_tile_ids": [
+    "tile_04"
+  ],
+  "merge_plan_tile_ids": [
+    "tile_04"
+  ],
+  "merge_review_gate_decision": "merge_review_allowed",
+  "payload_input_names": [
+    "merge-plan",
+    "tile-selection",
+    "artifact-00"
+  ],
+  "payload_unsupported_merge_environment": [],
+  "payload_max_runtime_seconds": 3600,
+  "input_materialization": {
+    "artifact_inputs_available": true,
+    "merge_plan_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-merge-20260515/inputs/merge-plan",
+    "merge_plan_uploaded": false,
+    "required": true,
+    "tile_manifest_available": true,
+    "tile_selection_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-20260515/inputs/tile-selection",
+    "view_buckets_available": true
+  },
+  "max_merge_estimated_usd": 0.5,
+  "max_merge_runtime_seconds": 3600,
+  "max_review_estimated_usd": 0.5,
+  "max_review_runtime_seconds": 1800,
+  "next_required_action": "fix every merge/review readiness blocker before any paid merge or review"
+}
