@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-16T07:42:51Z
+updated: 2026-05-16T08:02:20Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -1389,3 +1389,41 @@ skybox, compression, artifact handoff, and visual gates.
       - view: `logs/md1-shrunk/polls/gh-run-view-25956364292-20260516T073920Z.json`
       - list snapshot: `logs/md1-shrunk/polls/gh-run-list-postpush-20260516T073920Z.json`
     - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
+
+- 2026-05-16T08:02:20Z idle monitor poll (no new launches):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `dc981fee2b5e3e098f34793e752ed53be843d816`
+    - `git status --porcelain=v1` -> clean
+  - AWS identity:
+    - `aws sts get-caller-identity` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+      - `logs/md1-shrunk/polls/aws-sts-get-caller-identity-20260516T080220Z.json`
+  - Step Functions (staging):
+    - `aws stepfunctions list-executions ... --status-filter RUNNING` -> `0`
+      - `logs/md1-shrunk/polls/stepfn-list-executions-RUNNING-20260516T080220Z.json`
+  - SageMaker (owned by MD1-Shrunk run; terminal):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`
+      - `logs/md1-shrunk/polls/sagemaker-describe-processing-md1-shrunk-1456-sfm-1778866088-20260516T080220Z.json`
+    - SfM gates (from S3 `sfm_metadata.json`):
+      - `logs/md1-shrunk/polls/colmap-sfm-gates-20260516T080220Z.txt` -> images_registered=1456, merged_component_count=1, points_3d=1103335, timed_out=False
+      - `logs/md1-shrunk/polls/colmap-sfm-metadata-20260516T080220Z.json`
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`
+      - `logs/md1-shrunk/polls/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260516T080220Z.json`
+    - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`
+      - `logs/md1-shrunk/polls/sagemaker-describe-processing-md1shrunk1456-1778880862-compression-20260516T080220Z.json`
+  - External activity (left untouched):
+    - ProcessingJob InProgress: `md1-tile00-sogs-r34-1778914593`
+      - `logs/md1-shrunk/polls/sagemaker-list-processing-InProgress-20260516T080220Z.json`
+  - S3 + public HTTPS recheck:
+    - SfM output listing: `logs/md1-shrunk/polls/s3-colmap-md1-shrunk-20260515T1641Z-20260516T080220Z.txt`
+    - compressed root listing: `logs/md1-shrunk/polls/s3-compressed-root-20260516T080220Z.txt`
+    - compressed supersplat bundle listing: `logs/md1-shrunk/polls/s3-supersplat-bundle-20260516T080220Z.txt`
+    - public meta.json HTTP 200: `logs/md1-shrunk/polls/http-head-public-meta-20260516T080220Z.txt`
+    - public skybox HTTP 200: `logs/md1-shrunk/polls/http-head-public-skybox-20260516T080220Z.txt`
+  - GitHub workflows:
+    - exact-head `CDK Deploy` succeeded: run `25956458592`
+      - `logs/md1-shrunk/polls/gh-run-head-20260516T080220Z.tsv`
+      - `logs/md1-shrunk/polls/gh-run-list-20260516T080220Z.json`
+    - latest Pages run (not exact-head) succeeded: run `25948288202` @ `18c6cf6d...`
+      - `logs/md1-shrunk/polls/gh-run-latest-pages-20260516T080220Z.tsv`
+      - `logs/md1-shrunk/polls/gh-run-list-120-20260516T080220Z.json`
