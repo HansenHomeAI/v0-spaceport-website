@@ -808,3 +808,13 @@ skybox, compression, artifact handoff, and visual gates.
       - `logs/md1-shrunk/sagemaker-describe-3dgs-md1shrunk1456-1778880862-3dgs-20260516T0605Z.json`
     - compression `md1shrunk1456-1778880862-compression` -> `Completed`:
       - `logs/md1-shrunk/sagemaker-describe-compression-md1shrunk1456-1778880862-compression-20260516T0605Z.json`
+
+- 2026-05-16T06:13:00Z exact-head CI (post reconfirm push):
+  - commit:
+    - `git rev-parse HEAD` -> `e70152ac8d08a10e49175b7ae6ffe449fdad62b2` (`chore: md1-shrunk terminal reconfirm`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` succeeded for head `e70152ac...` (run `25950271829`):
+      - list: `logs/md1-shrunk/gh-run-list-e70152ac-20260516T0613Z.json`
+      - watch: `logs/md1-shrunk/gh-run-watch-25950271829-20260516T0613Z.txt`
+      - view: `logs/md1-shrunk/gh-run-view-25950271829-20260516T0613Z-final.json`
+    - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
