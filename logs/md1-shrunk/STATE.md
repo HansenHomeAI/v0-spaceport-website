@@ -1165,3 +1165,41 @@ skybox, compression, artifact handoff, and visual gates.
       - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25954291186-20260516T055446Z.txt`
       - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25954291186-20260516T055446Z.json`
     - note: Pages workflow not triggered at this head (no `web/trigger-dev-build.txt` bump)
+
+- 2026-05-16T05:56:32Z resume verification (no new launches; bounded polling only):
+  - branch/head/status snapshots:
+    - branch: `logs/md1-shrunk/polls/git-branch-20260516T055632Z.txt`
+    - head: `logs/md1-shrunk/polls/git-head-20260516T055632Z.txt` -> `f3fb08f8f337d00a7ff068b93e32a8bf1c1f4623`
+    - status: `logs/md1-shrunk/polls/git-status-20260516T055632Z.txt`
+  - AWS identity:
+    - `logs/md1-shrunk/polls/aws-identity-20260516T055632Z.json` -> account `975050048887`
+  - Step Functions (staging RUNNING=0):
+    - `logs/md1-shrunk/polls/stepfn-running-20260516T055632Z.json`
+  - SageMaker terminal status snapshots:
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`
+      - `logs/md1-shrunk/polls/sagemaker-describe-processing-md1-shrunk-1456-sfm-1778866088-20260516T055632Z.json`
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`
+      - `logs/md1-shrunk/polls/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260516T055632Z.json`
+    - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`
+      - `logs/md1-shrunk/polls/sagemaker-describe-processing-md1shrunk1456-1778880862-compression-20260516T055632Z.json`
+  - SageMaker in-flight lists (left untouched):
+    - processing InProgress: `logs/md1-shrunk/polls/sagemaker-list-processing-inprogress-20260516T055632Z.json` (includes external `md1-tile00-sogs-r33-1778908626`)
+    - training InProgress: `logs/md1-shrunk/polls/sagemaker-list-training-inprogress-20260516T055632Z.json`
+  - GitHub workflows (branch) snapshot:
+    - list: `logs/md1-shrunk/polls/gh-run-list-20260516T055632Z.json`
+    - CDK Deploy (exact-head) view:
+      - `logs/md1-shrunk/polls/gh-run-view-cdk-25954291186-20260516T055632Z.json`
+  - Public bundle still anonymous-fetchable (HTTP headers):
+    - urls: `logs/md1-shrunk/polls/public-bundle-urls-20260516T055708Z.txt`
+    - `curl -I` meta.json: `logs/md1-shrunk/polls/curl-head-meta-20260516T055708Z.txt`
+    - `curl -I` background_skybox.webp: `logs/md1-shrunk/polls/curl-head-skybox-20260516T055708Z.txt`
+
+- 2026-05-16T05:58:34Z deployed preview viewer re-validation (skybox + no-sky):
+  - viewer + bundle:
+    - `logs/md1-shrunk/polls/sogs-viewer-smoke-urls-20260516T055834Z.txt`
+  - skybox smoke:
+    - log: `logs/md1-shrunk/polls/sogs-viewer-smoke-skybox-20260516T055834Z.txt` (HTTP 200 responses for viewer + skybox proxy)
+    - screenshot: `logs/md1-shrunk/polls/sogs-viewer-smoke-skybox-20260516T055834Z.png`
+  - no-sky smoke:
+    - log: `logs/md1-shrunk/polls/sogs-viewer-smoke-nosky-20260516T055834Z.txt`
+    - screenshot: `logs/md1-shrunk/polls/sogs-viewer-smoke-nosky-20260516T055834Z.png`

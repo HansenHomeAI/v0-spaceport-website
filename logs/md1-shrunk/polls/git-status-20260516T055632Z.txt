@@ -1,0 +1,3 @@
+?? logs/md1-shrunk/polls/git-branch-20260516T055632Z.txt
+?? logs/md1-shrunk/polls/git-head-20260516T055632Z.txt
+?? logs/md1-shrunk/polls/git-status-20260516T055632Z.txt
