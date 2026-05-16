@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "pushed head 84b06e3d9b0c134a3e2cd358b36656cadad7c9bd is exact-head green on CDK Deploy 25953548726. This head records head1c8a no-spend merge/review planning evidence; no merge/review/full14/LOD/viewer smoke/promotion launched.",
-  "current_exact_head_gate_status": "exact-head 84b06e3d9b0c134a3e2cd358b36656cadad7c9bd green on CDK Deploy 25953548726.",
-  "current_live_compute_status": "After exact-head 84b green, AWS training is idle but processing is not idle. Source-attributed SOGS/compression processing md1-tile00-sogs-r33-1778908626 is InProgress on ml.g4dn.xlarge with MaxRuntime=3600, image 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor:latest, tags sfm-production-confidence=r33-tile00-sogs-viewer-canary, code-head=9e251de9f70c207e0190a6710686a0ecb8e6e3eb, source-training-job=md1-tile00-split-r32-1778899939, and output s3://spaceport-ml-processing/compressed/md1-r32-tile00-sogs-r33-20260516T0517Z/. No MD1 compute was launched.",
-  "current_rung": "R0_visual_sentinel_v5_processing_hold_head84b_after_no_spend_planning",
+  "current_branch_head": "pushed head df4acda117df9c02d07e88f0f65c05fa9c1e7500 is exact-head green on CDK Deploy 25954114865. This head records head84b processing-hold evidence; no merge/review/full14/LOD/viewer smoke/promotion launched.",
+  "current_exact_head_gate_status": "exact-head df4acda117df9c02d07e88f0f65c05fa9c1e7500 green on CDK Deploy 25954114865.",
+  "current_live_compute_status": "After exact-head df4 green, AWS training is idle but processing is not idle. Source-attributed SOGS/compression processing md1-tile00-sogs-r33-1778908626 remains InProgress on ml.g4dn.xlarge with MaxRuntime=3600, image 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor:latest, tags sfm-production-confidence=r33-tile00-sogs-viewer-canary, code-head=9e251de9f70c207e0190a6710686a0ecb8e6e3eb, source-training-job=md1-tile00-split-r32-1778899939, and output s3://spaceport-ml-processing/compressed/md1-r32-tile00-sogs-r33-20260516T0517Z/. No MD1 compute was launched.",
+  "current_rung": "R0_visual_sentinel_v5_processing_hold_headdf4_after_no_spend_planning",
   "evidence_events": [
     {
       "billable_seconds": 412,
@@ -2463,9 +2463,73 @@
         "no promotion launched"
       ],
       "next": "Commit/push this head84b exact-green processing-hold evidence and watch the resulting exact-head workflow. Keep compute held until AWS training and processing are idle; after idle run only no-spend merge/review readiness/planning from the passed tile_04 leaf gate."
+    },
+    {
+      "event": "md1_r0_visual_sentinel_v5_processing_hold_headdf4_20260516",
+      "checked_at": "2026-05-16T06:04:01Z",
+      "head": "df4acda117df9c02d07e88f0f65c05fa9c1e7500",
+      "status": "training_idle_processing_active_after_no_spend_merge_review_planning",
+      "decision": "compute_hold_active_processing_training_idle",
+      "summary": "Exact-head df4 is green and training is idle, but further action is held because source-attributed SOGS/compression processing remains active. No MD1 compute launched.",
+      "md1_compute_launched": false,
+      "exact_head_workflow": {
+        "workflow_name": "CDK Deploy",
+        "run_id": 25954114865,
+        "conclusion": "success",
+        "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25954114865"
+      },
+      "live_aws": {
+        "training_jobs_in_progress": 0,
+        "processing_jobs_in_progress": 1,
+        "training_json": "logs/md1-r0-visual-sentinel-v5-live-training-headdf4-postgreen-20260516T060401Z.json",
+        "processing_json": "logs/md1-r0-visual-sentinel-v5-live-processing-headdf4-postgreen-20260516T060401Z.json",
+        "active_processing": [
+          {
+            "job_name": "md1-tile00-sogs-r33-1778908626",
+            "status": "InProgress",
+            "instance_type": "ml.g4dn.xlarge",
+            "instance_count": 1,
+            "volume_size_gb": 80,
+            "max_runtime_seconds": 3600,
+            "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor:latest",
+            "entrypoint": [
+              "python3",
+              "/opt/ml/code/compress.py"
+            ],
+            "sfm_production_confidence": "r33-tile00-sogs-viewer-canary",
+            "code_head": "9e251de9f70c207e0190a6710686a0ecb8e6e3eb",
+            "source_training_job": "md1-tile00-split-r32-1778899939",
+            "output_s3": "s3://spaceport-ml-processing/compressed/md1-r32-tile00-sogs-r33-20260516T0517Z/"
+          }
+        ]
+      },
+      "merge_review_submit_readiness": {
+        "json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-merge-review-submit-readiness-head1c8a-20260516.json",
+        "decision": "merge_review_submit_blocked",
+        "block_reasons": [
+          "merge_inputs_not_materialized"
+        ],
+        "note": "No headdf4 readiness rerun because live AWS processing was active."
+      },
+      "evidence": [
+        "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-headdf4-postgreen-20260516T060401Z.json",
+        "logs/md1-r0-visual-sentinel-v5-live-training-headdf4-postgreen-20260516T060401Z.json",
+        "logs/md1-r0-visual-sentinel-v5-live-processing-headdf4-postgreen-20260516T060401Z.json",
+        "logs/md1-r0-visual-sentinel-v5-active-processing-md1-tile00-sogs-r33-1778908626-describe-headdf4-postgreen-20260516T060401Z.json",
+        "logs/md1-r0-visual-sentinel-v5-active-processing-md1-tile00-sogs-r33-1778908626-tags-headdf4-postgreen-20260516T060401Z.json"
+      ],
+      "prohibitions_observed": [
+        "no merge launched",
+        "no review launched",
+        "no full14 launched",
+        "no LOD launched",
+        "no viewer smoke launched",
+        "no promotion launched"
+      ],
+      "next": "Commit/push this headdf4 exact-green processing-hold evidence and watch the resulting exact-head workflow. Keep compute held until AWS training and processing are idle; after idle run only no-spend merge/review readiness/planning from the passed tile_04 leaf gate."
     }
   ],
-  "exact_head_gate_status": "exact-head 84b06e3d9b0c134a3e2cd358b36656cadad7c9bd green on CDK Deploy 25953548726",
+  "exact_head_gate_status": "exact-head df4acda117df9c02d07e88f0f65c05fa9c1e7500 green on CDK Deploy 25954114865",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
     "buckets": {
@@ -2780,11 +2844,11 @@
     ],
     "view_bucket_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiled_pipeline/inputs/scaffold/3dgs_view_buckets.json"
   },
-  "last_commit": "84b06e3d9b0c134a3e2cd358b36656cadad7c9bd",
+  "last_commit": "df4acda117df9c02d07e88f0f65c05fa9c1e7500",
   "last_exact_head_gates": {
-    "head": "84b06e3d9b0c134a3e2cd358b36656cadad7c9bd",
-    "checked_at": "2026-05-16T05:34:02Z",
-    "cdk_deploy_run_id": 25953548726,
+    "head": "df4acda117df9c02d07e88f0f65c05fa9c1e7500",
+    "checked_at": "2026-05-16T06:04:01Z",
+    "cdk_deploy_run_id": 25954114865,
     "cdk_deploy_conclusion": "success",
     "cloudflare_pages": "not_triggered_for_non_web_status_commit",
     "ml_container_build": "not_triggered_for_non_container_status_commit",
@@ -2792,7 +2856,7 @@
     "live_md1_processing_jobs_in_progress": 1,
     "local_status_update_pending_commit": true
   },
-  "last_updated": "2026-05-16T05:34:02Z",
+  "last_updated": "2026-05-16T06:04:01Z",
   "latest_bg10_merge_input_materialization_status": {
     "exact_head_workflows_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-exact-head-workflows-current-20260513.json",
     "input_materialization_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-input-materialization-current-20260513.json",
@@ -2999,7 +3063,7 @@
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
   "latest_boundary_responsible_tile_plan_status": "boundary primary tile_04/tile_10; horizon primary tile_04/tile_01; tile04 dryrun covers tile01/tile10 context support",
-  "latest_cost_control": "No new paid MD1 compute was launched in this update. The latest paid MD1 compute remains the bounded R0 v5 tile_04 leaf-only proof under $0.75/3600s, skip-merge/skip-review, no hard output cap, scaffold artifact reuse, density guard, V18/visual QA/viewer-smoke plans, and executable checkpoint probe plan. No merge/review/full14/LOD/viewer smoke/promotion launched. On exact-head 84b, AWS processing is active, so all further no-spend planning/materialization/readiness and any paid merge/review remain held until AWS training and processing are fully idle and a separate allowed gate permits the next step.",
+  "latest_cost_control": "No new paid MD1 compute was launched in this update. The latest paid MD1 compute remains the bounded R0 v5 tile_04 leaf-only proof under $0.75/3600s, skip-merge/skip-review, no hard output cap, scaffold artifact reuse, density guard, V18/visual QA/viewer-smoke plans, and executable checkpoint probe plan. No merge/review/full14/LOD/viewer smoke/promotion launched. On exact-head df4, AWS processing is active, so all further no-spend planning/materialization/readiness and any paid merge/review remain held until AWS training and processing are fully idle and a separate allowed gate permits the next step.",
   "latest_evidence": {
     "merge_preflight_summary": "logs/md1-r4-density-capped-loss-weighting-leaf-tile10-rollback-bg10-remote-merge-g4dn-preflight-20260512.json",
     "review_retry_cloudwatch_tail": "logs/md1-r4-density-capped-loss-weighting-leaf-bg10-v18colmap-review-retry-cloudwatch-tail-20260512.txt",
@@ -3038,14 +3102,14 @@
     "current_completed_training_tile00_split_tags": "logs/md1-r0-visual-sentinel-v5-completed-training-md1-tile00-split-r32-1778899939-tags-head1c8a-postgreen-20260516T050353Z.json"
   },
   "latest_exact_head_gate": {
-    "head": "84b06e3d9b0c134a3e2cd358b36656cadad7c9bd",
-    "checked_at": "2026-05-16T05:34:02Z",
+    "head": "df4acda117df9c02d07e88f0f65c05fa9c1e7500",
+    "checked_at": "2026-05-16T06:04:01Z",
     "workflow_name": "CDK Deploy",
-    "run_id": 25953548726,
+    "run_id": 25954114865,
     "conclusion": "success",
-    "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25953548726"
+    "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25954114865"
   },
-  "latest_exact_head_workflows": "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-head84b-postgreen-20260516T053402Z.json",
+  "latest_exact_head_workflows": "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-headdf4-postgreen-20260516T060401Z.json",
   "latest_hard_output_cap_visual_fidelity_review_status": {
     "ai_visual_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-ai-visual-review-20260513.json",
     "attribution_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-review-r1-attribution-20260513.json",
@@ -3140,10 +3204,10 @@
     "visual_qa_manifest_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-visual-qa-manifest-20260513.json"
   },
   "latest_leaf_submit_readiness_gate_status": "R0 v4 tile_04 visual-sentinel readiness is not rerun while AWS processing is active. Exact head is green, objective gate allows, merge/review gate blocks only on missing tile_04 leaf summary, strategy dry-run submits no jobs and estimates $0.736 under $0.75.",
-  "latest_live_compute_status": "logs/md1-r0-visual-sentinel-v5-live-training-head84b-postgreen-20260516T053402Z.json and logs/md1-r0-visual-sentinel-v5-live-processing-head84b-postgreen-20260516T053402Z.json",
+  "latest_live_compute_status": "logs/md1-r0-visual-sentinel-v5-live-training-headdf4-postgreen-20260516T060401Z.json and logs/md1-r0-visual-sentinel-v5-live-processing-headdf4-postgreen-20260516T060401Z.json",
   "latest_lod_production_readiness_status": "logs/md1-r4-tile10-rollback-lod-production-readiness-20260506.json reports viewer_ready_quality_blocked; --require-promotion-ready now exits 3 and wrote logs/md1-r4-tile10-rollback-lod-production-readiness-promotion-required-20260506.json, preventing promotion callers from accepting viewer readiness alone.",
   "latest_md1_cost_reduction_status": "soft_density_failed_hypothesis_encoded_no_paid_retry_allowed",
-  "latest_md1_live_compute_status": "After exact-head 84b green, AWS training is idle but processing is not idle. Source-attributed SOGS/compression processing md1-tile00-sogs-r33-1778908626 is InProgress on ml.g4dn.xlarge with MaxRuntime=3600, image 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor:latest, tags sfm-production-confidence=r33-tile00-sogs-viewer-canary, code-head=9e251de9f70c207e0190a6710686a0ecb8e6e3eb, source-training-job=md1-tile00-split-r32-1778899939, and output s3://spaceport-ml-processing/compressed/md1-r32-tile00-sogs-r33-20260516T0517Z/. No MD1 compute was launched.",
+  "latest_md1_live_compute_status": "After exact-head df4 green, AWS training is idle but processing is not idle. Source-attributed SOGS/compression processing md1-tile00-sogs-r33-1778908626 remains InProgress on ml.g4dn.xlarge with MaxRuntime=3600, image 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor:latest, tags sfm-production-confidence=r33-tile00-sogs-viewer-canary, code-head=9e251de9f70c207e0190a6710686a0ecb8e6e3eb, source-training-job=md1-tile00-split-r32-1778899939, and output s3://spaceport-ml-processing/compressed/md1-r32-tile00-sogs-r33-20260516T0517Z/. No MD1 compute was launched.",
   "latest_no_spend_bg10_merge_review_plan": {
     "aws_idle_after_failure": true,
     "failed_merge_billable_seconds": 285,
@@ -3172,7 +3236,7 @@
     "status": "merge_retry1_guard_ready_no_paid_retry_launched",
     "v18_review_launched": false
   },
-  "latest_no_spend_evidence": "R0 v5 density-relaxed objective/dry-run/readiness evidence was realized by one bounded leaf proof. Submit summary logs/md1-r0-visual-sentinel-v5-density-relaxed-leaf-submit-head7527-wait-20260515.json records submitted_jobs=[md1-r0vissent-v5relax-1778837840-tile-04], completed_jobs, visual QA plan, viewer smoke plan, and executable early visual-smoke checkpoint plan. Leaf preflight logs/md1-r0-visual-sentinel-v5-density-relaxed-20260515-tile_04-leaf-preflight.json and gate logs/md1-r0-visual-sentinel-v5-density-relaxed-20260515-tile_04-leaf-gate.json pass with block_reasons=[]. After exact-head 1c8a was green and AWS training/processing were idle, no-spend merge/review planning produced logs/md1-r0-visual-sentinel-v5-density-relaxed-merge-review-gate-head1c8a-20260516.json (decision=merge_review_allowed), logs/md1-r0-visual-sentinel-v5-density-relaxed-leaf-reuse-summary-head1c8a-20260516.json (training_jobs_to_submit=0), logs/md1-r0-visual-sentinel-v5-density-relaxed-remote-merge-g4dn-plan-dryrun-head1c8a-20260516.json, logs/md1-r0-visual-sentinel-v5-density-relaxed-remote-merge-g4dn-payload-dryrun-head1c8a-20260516.json, logs/md1-r0-visual-sentinel-v5-density-relaxed-merge-review-readiness-plan-head1c8a-20260516.json, and logs/md1-r0-visual-sentinel-v5-density-relaxed-merge-review-submit-readiness-head1c8a-20260516.json (blocked only on merge_inputs_not_materialized). On exact-head 84b, no additional merge/review planning was rerun because live AWS processing was active.",
+  "latest_no_spend_evidence": "R0 v5 density-relaxed objective/dry-run/readiness evidence was realized by one bounded leaf proof. Submit summary logs/md1-r0-visual-sentinel-v5-density-relaxed-leaf-submit-head7527-wait-20260515.json records submitted_jobs=[md1-r0vissent-v5relax-1778837840-tile-04], completed_jobs, visual QA plan, viewer smoke plan, and executable early visual-smoke checkpoint plan. Leaf preflight logs/md1-r0-visual-sentinel-v5-density-relaxed-20260515-tile_04-leaf-preflight.json and gate logs/md1-r0-visual-sentinel-v5-density-relaxed-20260515-tile_04-leaf-gate.json pass with block_reasons=[]. After exact-head 1c8a was green and AWS training/processing were idle, no-spend merge/review planning produced logs/md1-r0-visual-sentinel-v5-density-relaxed-merge-review-gate-head1c8a-20260516.json (decision=merge_review_allowed), logs/md1-r0-visual-sentinel-v5-density-relaxed-leaf-reuse-summary-head1c8a-20260516.json (training_jobs_to_submit=0), logs/md1-r0-visual-sentinel-v5-density-relaxed-remote-merge-g4dn-plan-dryrun-head1c8a-20260516.json, logs/md1-r0-visual-sentinel-v5-density-relaxed-remote-merge-g4dn-payload-dryrun-head1c8a-20260516.json, logs/md1-r0-visual-sentinel-v5-density-relaxed-merge-review-readiness-plan-head1c8a-20260516.json, and logs/md1-r0-visual-sentinel-v5-density-relaxed-merge-review-submit-readiness-head1c8a-20260516.json (blocked only on merge_inputs_not_materialized). On exact-head df4, no additional merge/review planning was rerun because live AWS processing was active.",
   "latest_no_spend_implementation": "Planner now records visual_sentinel_tile04_scaffold_restored_underdense_leaf and blocks another scaffold-restored tile_04 retry unless it materially strengthens density retention after scaffold restoration.",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
@@ -3317,7 +3381,7 @@
     "remote_merge_plan_json": "logs/md1-r4-quality-preserving-soft-density-leaf-tile10-rollback-bg10-remote-merge-g4dn-plan-dryrun-20260513.json",
     "training_jobs_to_submit": 0
   },
-  "latest_testing": "Targeted planner/readiness/tiled/merge unit suite passed 153 tests earlier; py_compile passed for plan_md1_boundary_objective_strategy.py, run_tiled_3dgs_benchmark.py, enforce_md1_leaf_submit_readiness.py, and enforce_md1_merge_review_gate.py. This loop verified exact-head 84b is green, recorded live AWS training idle plus active source-attributed processing evidence, and held compute before rerunning no-spend merge/review readiness.",
+  "latest_testing": "Targeted planner/readiness/tiled/merge unit suite passed 153 tests earlier; py_compile passed for plan_md1_boundary_objective_strategy.py, run_tiled_3dgs_benchmark.py, enforce_md1_leaf_submit_readiness.py, and enforce_md1_merge_review_gate.py. This loop verified exact-head df4 is green, recorded live AWS training idle plus active source-attributed processing evidence, and held compute before rerunning no-spend merge/review readiness.",
   "latest_tile04_leaf_reuse_merge_dryrun_status": "density-capped tile_04 leaf passed post-leaf preflight/gate with 984154 splats, 128 images, and filtered scaffold; no-training bg10 tile_10 rollback merge payload dry-run is generated and merge/review gate allows only that next step.",
   "latest_tracked_sagemaker_evidence_spend_before_untracked_stop_usd": 14.8046,
   "latest_training_cost_reduction_status": "Evidence/untracked spend remains about $17.100. Soft-density tile_04 passed leaf and merge structural gates but failed V18 and AI visual QA; no-spend planner now records soft_density_quality_regression and blocks repeating that objective. No full14/LOD/promotion/viewer smoke launched.",
@@ -11720,7 +11784,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Commit/push this head84b exact-green processing-hold evidence and watch the resulting exact-head workflow. Do not launch merge/review/full14/LOD/viewer smoke/promotion. After AWS training and processing are fully idle, run only no-spend merge/review readiness/planning from the passed tile_04 leaf gate; input materialization and paid merge/review require a separate allowed gate.",
+  "next_unblocked_step": "Commit/push this headdf4 exact-green processing-hold evidence and watch the resulting exact-head workflow. Do not launch merge/review/full14/LOD/viewer smoke/promotion. After AWS training and processing are fully idle, run only no-spend merge/review readiness/planning from the passed tile_04 leaf gate; input materialization and paid merge/review require a separate allowed gate.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -17813,8 +17877,8 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-16T05:34:02Z",
-  "updated_at": "2026-05-16T05:34:02Z",
+  "updated": "2026-05-16T06:04:01Z",
+  "updated_at": "2026-05-16T06:04:01Z",
   "version": "1.0.0",
   "md1_r0_visual_sentinel_readiness_blocked_active_jobs_20260513": {
     "recorded_at": "2026-05-13T18:33:49Z",
@@ -20013,7 +20077,7 @@
     ],
     "next": "Wait for AWS training/processing idle, rerun v5 readiness on exact green head, then at most one bounded R0 v5 tile_04 leaf-only proof if allowed. No merge/review/full14/LOD/promotion."
   },
-  "last_event": "md1_r0_visual_sentinel_v5_processing_hold_head84b_20260516",
+  "last_event": "md1_r0_visual_sentinel_v5_processing_hold_headdf4_20260516",
   "md1_r0_visual_sentinel_v5_training_hold_head08c_20260515": {
     "checked_at": "2026-05-15T07:53:38Z",
     "head": "08c018df22db9acdbde3ef96e70330f29f568b46",
@@ -22869,5 +22933,69 @@
       "no promotion launched"
     ],
     "next": "Commit/push this head84b exact-green processing-hold evidence and watch the resulting exact-head workflow. Keep compute held until AWS training and processing are idle; after idle run only no-spend merge/review readiness/planning from the passed tile_04 leaf gate."
+  },
+  "md1_r0_visual_sentinel_v5_processing_hold_headdf4_20260516": {
+    "event": "md1_r0_visual_sentinel_v5_processing_hold_headdf4_20260516",
+    "checked_at": "2026-05-16T06:04:01Z",
+    "head": "df4acda117df9c02d07e88f0f65c05fa9c1e7500",
+    "status": "training_idle_processing_active_after_no_spend_merge_review_planning",
+    "decision": "compute_hold_active_processing_training_idle",
+    "summary": "Exact-head df4 is green and training is idle, but further action is held because source-attributed SOGS/compression processing remains active. No MD1 compute launched.",
+    "md1_compute_launched": false,
+    "exact_head_workflow": {
+      "workflow_name": "CDK Deploy",
+      "run_id": 25954114865,
+      "conclusion": "success",
+      "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25954114865"
+    },
+    "live_aws": {
+      "training_jobs_in_progress": 0,
+      "processing_jobs_in_progress": 1,
+      "training_json": "logs/md1-r0-visual-sentinel-v5-live-training-headdf4-postgreen-20260516T060401Z.json",
+      "processing_json": "logs/md1-r0-visual-sentinel-v5-live-processing-headdf4-postgreen-20260516T060401Z.json",
+      "active_processing": [
+        {
+          "job_name": "md1-tile00-sogs-r33-1778908626",
+          "status": "InProgress",
+          "instance_type": "ml.g4dn.xlarge",
+          "instance_count": 1,
+          "volume_size_gb": 80,
+          "max_runtime_seconds": 3600,
+          "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor:latest",
+          "entrypoint": [
+            "python3",
+            "/opt/ml/code/compress.py"
+          ],
+          "sfm_production_confidence": "r33-tile00-sogs-viewer-canary",
+          "code_head": "9e251de9f70c207e0190a6710686a0ecb8e6e3eb",
+          "source_training_job": "md1-tile00-split-r32-1778899939",
+          "output_s3": "s3://spaceport-ml-processing/compressed/md1-r32-tile00-sogs-r33-20260516T0517Z/"
+        }
+      ]
+    },
+    "merge_review_submit_readiness": {
+      "json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-merge-review-submit-readiness-head1c8a-20260516.json",
+      "decision": "merge_review_submit_blocked",
+      "block_reasons": [
+        "merge_inputs_not_materialized"
+      ],
+      "note": "No headdf4 readiness rerun because live AWS processing was active."
+    },
+    "evidence": [
+      "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-headdf4-postgreen-20260516T060401Z.json",
+      "logs/md1-r0-visual-sentinel-v5-live-training-headdf4-postgreen-20260516T060401Z.json",
+      "logs/md1-r0-visual-sentinel-v5-live-processing-headdf4-postgreen-20260516T060401Z.json",
+      "logs/md1-r0-visual-sentinel-v5-active-processing-md1-tile00-sogs-r33-1778908626-describe-headdf4-postgreen-20260516T060401Z.json",
+      "logs/md1-r0-visual-sentinel-v5-active-processing-md1-tile00-sogs-r33-1778908626-tags-headdf4-postgreen-20260516T060401Z.json"
+    ],
+    "prohibitions_observed": [
+      "no merge launched",
+      "no review launched",
+      "no full14 launched",
+      "no LOD launched",
+      "no viewer smoke launched",
+      "no promotion launched"
+    ],
+    "next": "Commit/push this headdf4 exact-green processing-hold evidence and watch the resulting exact-head workflow. Keep compute held until AWS training and processing are idle; after idle run only no-spend merge/review readiness/planning from the passed tile_04 leaf gate."
   }
 }
