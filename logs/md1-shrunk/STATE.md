@@ -736,3 +736,23 @@ skybox, compression, artifact handoff, and visual gates.
       - watch: `logs/md1-shrunk/gh-run-watch-25949158184-20260516T013019Z.txt`
       - view: `logs/md1-shrunk/gh-run-view-25949158184-20260516T013019Z.json`
     - meta: `logs/md1-shrunk/gh-run-meta-20260516T013019Z.txt`
+
+- 2026-05-16T01:47:26Z monitor poll (terminal reconfirm; no new launches):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `a599257c3d3daba8327eb102b7cb9ae468525ec9`
+    - `git status --porcelain=v1` -> clean
+  - Step Functions:
+    - staging RUNNING: `logs/md1-shrunk/stepfunctions-running-staging-20260516T014726Z.json` -> `RUNNING=0`
+  - SageMaker terminal statuses:
+    - SfM: `logs/md1-shrunk/sagemaker-describe-sfm-md1-shrunk-1456-sfm-1778866088-20260516T014726Z.json` -> `Completed`, `FailureReason=null`
+    - 3DGS: `logs/md1-shrunk/sagemaker-describe-3dgs-md1shrunk1456-1778880862-3dgs-20260516T014726Z.json` -> `Completed`, `FailureReason=null`
+    - compression: `logs/md1-shrunk/sagemaker-describe-compression-md1shrunk1456-1778880862-compression-20260516T014726Z.json` -> `Completed`, `FailureReason=null`
+  - GitHub workflows:
+    - run list: `logs/md1-shrunk/gh-run-list-head-20260516T014726Z.json` -> latest `CDK Deploy` succeeded for head `a599257c...` (run `25949287502`)
+  - Public bundle (anonymous HTTP 200 reconfirm):
+    - `logs/md1-shrunk/http-head-meta-20260516T014726Z.txt`
+    - `logs/md1-shrunk/http-head-skybox-20260516T014726Z.txt`
+    - `logs/md1-shrunk/s3-ls-public-supersplat-20260516T014726Z.txt`
+  - COLMAP sparse output reconfirm:
+    - `logs/md1-shrunk/s3-ls-colmap-sparse0-20260516T014726Z.txt`
