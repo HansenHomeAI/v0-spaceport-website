@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-16T23:30:39Z
+updated: 2026-05-16T23:37:52Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -1607,58 +1607,6 @@ skybox, compression, artifact handoff, and visual gates.
   - Notes:
     - Cost bounded: no new SageMaker jobs launched; no non-owned jobs stopped.
 
-- 2026-05-16T23:24:44Z poll + extra camera side-by-side checks (bounded; no new ML launches):
-  - branch/head/status:
-    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
-    - `git rev-parse HEAD` -> `4b1a6bb4e893b400d49c32dfc8f40cc93f6962a6` (pre-commit)
-  - AWS identity / active state:
-    - `logs/md1-shrunk/polls/aws-sts-20260516T231432Z.json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
-    - Step Functions RUNNING=0:
-      - `logs/md1-shrunk/polls/stepfn-running-20260516T231432Z.json`
-    - SageMaker InProgress:
-      - external/not owned: `md1-tile00-lodonly-r38-1778950901` still `InProgress`
-        - `logs/md1-shrunk/polls/sagemaker-processing-inprogress-20260516T231432Z.json`
-      - owned jobs remain terminal `Completed`:
-        - SfM: `logs/md1-shrunk/polls/sagemaker-describe-processing-md1-shrunk-1456-sfm-1778866088-20260516T231432Z.json`
-        - 3DGS: `logs/md1-shrunk/polls/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260516T231432Z.json`
-        - compression: `logs/md1-shrunk/polls/sagemaker-describe-processing-md1shrunk1456-1778880862-compression-20260516T231432Z.json`
-  - Bundle gates (public):
-    - 3DGS output present: `logs/md1-shrunk/polls/s3-3dgs-20260516T231556Z.txt` -> `model.tar.gz`
-    - compressed bundle present: `logs/md1-shrunk/polls/s3-compressed-20260516T231556Z.txt` -> `Total Objects: 22`
-    - HTTP heads:
-      - `logs/md1-shrunk/polls/http-head-meta-20260516T231556Z.txt` -> `HTTP 200`
-      - `logs/md1-shrunk/polls/http-head-skybox-20260516T231556Z.txt` -> `HTTP 200`
-    - gaussian-count gate:
-      - `logs/md1-shrunk/polls/bundle-meta-20260516T231704Z.json` -> `gaussians=990025`
-  - Extra side-by-side input-vs-render camera checks (derived from COLMAP pose; camera-center + forward*3m):
-    - pose derivation snapshot:
-      - `logs/md1-shrunk/polls/camera-samples-20260516T231912Z.json`
-    - `DJI_01189.JPG`:
-      - input: `logs/md1-shrunk/polls/input-DJI_01189-20260516T232256Z.JPG`
-      - render skybox: `logs/md1-shrunk/polls/render-skybox-DJI_01189-20260516T232256Z.png`
-      - render no-sky: `logs/md1-shrunk/polls/render-nosky-DJI_01189-20260516T232256Z.png`
-      - side-by-side skybox: `logs/md1-shrunk/polls/side-by-side-skybox-DJI_01189-20260516T232256Z.png`
-      - side-by-side no-sky: `logs/md1-shrunk/polls/side-by-side-nosky-DJI_01189-20260516T232256Z.png`
-    - `DJI_02500.JPG`:
-      - input: `logs/md1-shrunk/polls/input-DJI_02500-20260516T232256Z.JPG`
-      - render skybox: `logs/md1-shrunk/polls/render-skybox-DJI_02500-20260516T232256Z.png`
-      - render no-sky: `logs/md1-shrunk/polls/render-nosky-DJI_02500-20260516T232256Z.png`
-      - side-by-side skybox: `logs/md1-shrunk/polls/side-by-side-skybox-DJI_02500-20260516T232256Z.png`
-      - side-by-side no-sky: `logs/md1-shrunk/polls/side-by-side-nosky-DJI_02500-20260516T232256Z.png`
-  - Notes:
-    - Cost bounded: no new SageMaker jobs launched; no non-owned jobs stopped.
-
-- 2026-05-16T23:30:02Z exact-head CI (post push):
-  - commit:
-    - `git rev-parse HEAD` -> `aef5bbfa709e38531f8dd3260255c6b99b2b4e53` (`chore: md1-shrunk extra camera checks`)
-  - GitHub workflows (exact-head):
-    - `CDK Deploy` run `25975741726` `success`:
-      - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25975741726-20260516T232652Z.txt`
-      - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25975741726-20260516T233014Z.json`
-    - Pages deploy not triggered for this exact head (no `web/trigger-dev-build.txt` bump):
-      - latest Pages run remains `25948288202` (head `18c6cf6d...`)
-      - `logs/md1-shrunk/polls/gh-run-list-pages-20260516T233024Z.json`
-
 - 2026-05-16T21:45:36Z commit/push + exact-head CI (monitor poll evidence):
   - commit:
     - `git rev-parse HEAD` -> `a2c035871c046bd95c12106719eb1dce26381472` (`chore: md1-shrunk monitor poll 20260516T2139Z`)
@@ -1849,3 +1797,65 @@ skybox, compression, artifact handoff, and visual gates.
     - Pages deploy did not run for this exact head (no trigger-file bump); preview alias from the last Pages run remains valid.
   - Notes:
     - Cost bounded: no new SageMaker jobs launched; no non-owned jobs stopped.
+
+- 2026-05-16T23:24:44Z poll + extra camera side-by-side checks (bounded; no new ML launches):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `4b1a6bb4e893b400d49c32dfc8f40cc93f6962a6` (pre-commit)
+  - AWS identity / active state:
+    - `logs/md1-shrunk/polls/aws-sts-20260516T231432Z.json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+    - Step Functions RUNNING=0:
+      - `logs/md1-shrunk/polls/stepfn-running-20260516T231432Z.json`
+    - SageMaker InProgress:
+      - external/not owned: `md1-tile00-lodonly-r38-1778950901` still `InProgress`
+        - `logs/md1-shrunk/polls/sagemaker-processing-inprogress-20260516T231432Z.json`
+      - owned jobs remain terminal `Completed`:
+        - SfM: `logs/md1-shrunk/polls/sagemaker-describe-processing-md1-shrunk-1456-sfm-1778866088-20260516T231432Z.json`
+        - 3DGS: `logs/md1-shrunk/polls/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260516T231432Z.json`
+        - compression: `logs/md1-shrunk/polls/sagemaker-describe-processing-md1shrunk1456-1778880862-compression-20260516T231432Z.json`
+  - Bundle gates (public):
+    - 3DGS output present: `logs/md1-shrunk/polls/s3-3dgs-20260516T231556Z.txt` -> `model.tar.gz`
+    - compressed bundle present: `logs/md1-shrunk/polls/s3-compressed-20260516T231556Z.txt` -> `Total Objects: 22`
+    - HTTP heads:
+      - `logs/md1-shrunk/polls/http-head-meta-20260516T231556Z.txt` -> `HTTP 200`
+      - `logs/md1-shrunk/polls/http-head-skybox-20260516T231556Z.txt` -> `HTTP 200`
+    - gaussian-count gate:
+      - `logs/md1-shrunk/polls/bundle-meta-20260516T231704Z.json` -> `gaussians=990025`
+  - Extra side-by-side input-vs-render camera checks (derived from COLMAP pose; camera-center + forward*3m):
+    - pose derivation snapshot:
+      - `logs/md1-shrunk/polls/camera-samples-20260516T231912Z.json`
+    - `DJI_01189.JPG`:
+      - input: `logs/md1-shrunk/polls/input-DJI_01189-20260516T232256Z.JPG`
+      - render skybox: `logs/md1-shrunk/polls/render-skybox-DJI_01189-20260516T232256Z.png`
+      - render no-sky: `logs/md1-shrunk/polls/render-nosky-DJI_01189-20260516T232256Z.png`
+      - side-by-side skybox: `logs/md1-shrunk/polls/side-by-side-skybox-DJI_01189-20260516T232256Z.png`
+      - side-by-side no-sky: `logs/md1-shrunk/polls/side-by-side-nosky-DJI_01189-20260516T232256Z.png`
+    - `DJI_02500.JPG`:
+      - input: `logs/md1-shrunk/polls/input-DJI_02500-20260516T232256Z.JPG`
+      - render skybox: `logs/md1-shrunk/polls/render-skybox-DJI_02500-20260516T232256Z.png`
+      - render no-sky: `logs/md1-shrunk/polls/render-nosky-DJI_02500-20260516T232256Z.png`
+      - side-by-side skybox: `logs/md1-shrunk/polls/side-by-side-skybox-DJI_02500-20260516T232256Z.png`
+      - side-by-side no-sky: `logs/md1-shrunk/polls/side-by-side-nosky-DJI_02500-20260516T232256Z.png`
+  - Notes:
+    - Cost bounded: no new SageMaker jobs launched; no non-owned jobs stopped.
+
+- 2026-05-16T23:30:02Z exact-head CI (post camera-check push):
+  - commit:
+    - `git rev-parse HEAD` -> `aef5bbfa709e38531f8dd3260255c6b99b2b4e53` (`chore: md1-shrunk extra camera checks`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` run `25975741726` `success`:
+      - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25975741726-20260516T232652Z.txt`
+      - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25975741726-20260516T233014Z.json`
+    - Pages deploy not triggered for this exact head (no `web/trigger-dev-build.txt` bump):
+      - latest Pages run remains `25948288202` (head `18c6cf6d...`)
+      - `logs/md1-shrunk/polls/gh-run-list-pages-20260516T233024Z.json`
+
+- 2026-05-16T23:36:01Z exact-head CI (post run-record commit):
+  - commit:
+    - `git rev-parse HEAD` -> `35ba820925b708e6cbf98deceb060550d6731381` (`chore: record md1-shrunk cdk run 25975741726`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` run `25975861192` `success`:
+      - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25975861192-20260516T233258Z.txt`
+      - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25975861192-20260516T233618Z.json`
+    - Pages deploy still not triggered at this head:
+      - `logs/md1-shrunk/polls/gh-run-list-pages-latest-20260516T233618Z.json`
