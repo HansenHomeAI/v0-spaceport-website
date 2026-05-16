@@ -1,0 +1,13 @@
+{
+    "ProcessingJobSummaries": [
+        {
+            "ProcessingJobName": "md1shrunk1456-1778880862-compression",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1shrunk1456-1778880862-compression",
+            "CreationTime": "2026-05-15T17:56:39.446000-06:00",
+            "ProcessingEndTime": "2026-05-15T18:08:09.571000-06:00",
+            "LastModifiedTime": "2026-05-15T18:09:11.864000-06:00",
+            "ProcessingJobStatus": "Completed"
+        }
+    ],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTR5bTNVa/UGKBIjRoUmC2TNER8ZqKkPbgsfkyhfE1kxrgzp0RUN8r75xgjKsmqwqXkr2Yx7nNFEx98epNPuixJSSp+UWGRIBhoFSlaozDLSkLg2C+2WtJMG6fwLbPZt7vy98iFL827ZKhB9PuLc8X2RPsmP6s4wgLKLGaK2nnpylmW1oUCnUUnnU356ZY0O5AadUuVyQh18EZnjWwTBeOR1zv1eW59PRViu0wb5TWs2/r5+O77pABXCOawzUX7PodU5HiPNXeqdkiN7tIQyqH7lv/01UO31p0bA0lB4n6qvOOo6HbhC3nkJ60LpAz2Zvibo4BtH6eFiVe02fK3OCnBoNE85HC5oSIOnLX0Kb2gxPzKrqB3OQ9Ob0wd8R5213X2V+BvOoJDWB2Z47fNtzxRWVyDbS5S4ZEOMSgeSeFfOcpvrh5vImWNQS/QCth74OWnz3JOgqyUpbF5pHRh0swwME6We4q4DYZ+gvvn+JBMMldbQ2JAeix6jqi8IAItpzLUPNWMHgqrEym"
+}

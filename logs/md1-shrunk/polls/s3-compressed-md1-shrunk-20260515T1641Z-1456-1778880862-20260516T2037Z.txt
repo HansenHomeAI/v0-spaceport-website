@@ -1,0 +1,16 @@
+2026-05-15 18:13:09  977 Bytes compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/background_manifest.json
+2026-05-15 18:13:09   45.0 KiB compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/background_skybox.webp
+2026-05-15 18:13:09  950 Bytes compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/export_manifest.json
+2026-05-15 18:13:09    2.8 MiB compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/means_l.webp
+2026-05-15 18:13:09    1.8 MiB compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/means_u.webp
+2026-05-15 18:13:09    1.4 KiB compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json
+2026-05-15 18:13:09    3.0 MiB compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/quats.webp
+2026-05-15 18:13:09    1.7 MiB compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/scales.webp
+2026-05-15 18:13:09  242 Bytes compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/settings.json
+2026-05-15 18:13:09    2.3 MiB compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/sh0.webp
+2026-05-15 18:13:09  801.4 KiB compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/shN_centroids.webp
+2026-05-15 18:13:09    1.9 MiB compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/shN_labels.webp
+2026-05-15 18:13:09    1.4 KiB compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/training_metadata.json
+
+Total Objects: 13
+   Total Size: 14.4 MiB

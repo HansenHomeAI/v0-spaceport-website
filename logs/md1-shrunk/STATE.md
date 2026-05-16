@@ -1585,3 +1585,44 @@ skybox, compression, artifact handoff, and visual gates.
     - `CDK Deploy` succeeded (run `25969258751`):
       - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25969258751-20260516T181301Z.txt`
       - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25969258751-20260516T181721Z.json`
+
+- 2026-05-16T21:10:00Z poll (post-user prompt reconciliation):
+  - Note on stated head:
+    - prompt claimed head `e9cbf71c56420ce386b028e7f4af33163ce4dcc2` (exists in repo), but current branch head is newer.
+  - branch/head/status:
+    - `git rev-parse HEAD` -> `48eba9b370a5ec7e5d76ceaadf67f172eb276fb2` (`chore: record md1-shrunk cdk run 25969258751`)
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+  - AWS identity (note: Codex PATH omits Homebrew bin; use absolute `/opt/homebrew/bin/aws`):
+    - `aws sts get-caller-identity` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions:
+    - RUNNING executions under `SpaceportMLPipeline-staging`: `0`
+      - `logs/md1-shrunk/stepfunctions-running-SpaceportMLPipeline-staging-20260516T2033Z.json`
+  - SageMaker (owned by MD1-Shrunk run; terminal):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`
+      - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260516T2033Z.json`
+    - SfM gate snapshot (from `sfm_metadata.json` in the output prefix):
+      - `logs/md1-shrunk/sfm_metadata-md1-shrunk-20260516T2034Z.json` -> `images_registered=1456`, `merged_component_count=1`, `points_3d=1103335`, `quality_check_passed=true`, `timed_out=false`, `fallback_triggered=false`
+      - sanity: `sparse/0/images.txt` header-line count -> `1456` (streaming count)
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`
+      - `logs/md1-shrunk/polls/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260516T2039Z.json`
+    - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`
+      - `logs/md1-shrunk/polls/sagemaker-describe-processing-md1shrunk1456-1778880862-compression-20260516T2039Z.json`
+  - External activity (left untouched):
+    - InProgress processing jobs snapshot:
+      - `logs/md1-shrunk/sagemaker-list-processing-InProgress-20260516T2036Z.json` (includes external `md1-tile00-lodonly-r38-1778950901`)
+    - InProgress training jobs snapshot:
+      - `logs/md1-shrunk/sagemaker-list-training-InProgress-20260516T2036Z.json` -> `0`
+  - S3 output presence reconfirm:
+    - COLMAP listing: `logs/md1-shrunk/s3-colmap-md1-shrunk-20260515T1641Z-20260516T2033Z.txt` -> `Total Objects: 1468`, `Total Size: 9.2 GiB`
+    - 3DGS listing: `logs/md1-shrunk/polls/s3-3dgs-root-20260516T2037Z.txt` -> `model.tar.gz` present (`212.0 MiB`)
+    - compressed listing: `logs/md1-shrunk/polls/s3-compressed-md1-shrunk-20260515T1641Z-1456-1778880862-20260516T2037Z.txt` -> `Total Objects: 13`, `Total Size: 14.4 MiB`
+    - public access proof:
+      - `logs/md1-shrunk/curl/http-head-meta-20260516T2038Z.txt` -> `200 OK`
+      - `logs/md1-shrunk/curl/http-head-skybox-20260516T2038Z.txt` -> `200 OK`
+  - GitHub workflows (exact-head):
+    - run list: `logs/md1-shrunk/gh-run-list-agent-113647-md1-baseline-e2e-20260516T2035Z.json`
+      - exact-head `CDK Deploy` succeeded (run `25969341559`) for head `48eba9b370a5ec7e5d76ceaadf67f172eb276fb2`
+    - Pages deploy runs for branch (not re-triggered for current head; latest run is older SHA):
+      - `logs/md1-shrunk/gh-run-list-pages-20260516T2038Z.json` -> latest `Deploy Next.js to Cloudflare Pages` run `25948288202` succeeded for head `18c6cf6d...`
+  - Notes:
+    - Cost bounded: no new jobs launched; no non-owned jobs stopped.
