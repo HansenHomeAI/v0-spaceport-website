@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T07:56:08Z
+updated: 2026-05-17T08:18:27Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -2675,3 +2675,51 @@ skybox, compression, artifact handoff, and visual gates.
       - view: `logs/md1-shrunk/polls/20260517T075239Z/gh-run-view-cdk-25985134150.json`
       - run list: `logs/md1-shrunk/polls/20260517T075239Z/gh-run-list-branch.json`
     - Note: `Deploy Next.js to Cloudflare Pages` did not trigger for this commit (logs-only change).
+
+- 2026-05-17T08:14:03Z monitor poll (terminal reconfirm; no new ML launches):
+  - Poll artifacts:
+    - `logs/md1-shrunk/polls/20260517T081403Z/`
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `3f409b561673191df087c876cca239e6d1e10939`
+    - `git status --porcelain=v1` -> clean after commit (new poll artifacts staged for next commit)
+  - AWS identity:
+    - `/opt/homebrew/bin/aws sts get-caller-identity --output json` -> `logs/md1-shrunk/polls/20260517T081403Z/aws-sts.json` (account `975050048887`)
+  - Step Functions (staging):
+    - RUNNING=0:
+      - `/opt/homebrew/bin/aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --status-filter RUNNING ...` -> `logs/md1-shrunk/polls/20260517T081403Z/stepfunctions-list-executions-staging-running.json`
+  - SageMaker (cost bounded):
+    - InProgress processing jobs: `0` -> `logs/md1-shrunk/polls/20260517T081403Z/sagemaker-list-processing-InProgress.json`
+    - InProgress training jobs: `0` -> `logs/md1-shrunk/polls/20260517T081403Z/sagemaker-list-training-InProgress.json`
+    - Owned terminal statuses reconfirm:
+      - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `logs/md1-shrunk/polls/20260517T081403Z/sagemaker-describe-sfm.json` (`Completed`)
+      - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `logs/md1-shrunk/polls/20260517T081403Z/sagemaker-describe-3dgs.json` (`Completed`)
+      - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `logs/md1-shrunk/polls/20260517T081403Z/sagemaker-describe-compression.json` (`Completed`)
+  - S3 output presence reconfirm (owned outputs):
+    - COLMAP: `logs/md1-shrunk/polls/20260517T081403Z/s3-colmap.txt` (`Total Size: 9.2 GiB`)
+    - 3DGS: `logs/md1-shrunk/polls/20260517T081403Z/s3-3dgs.txt` (`model.tar.gz` `212.0 MiB`)
+    - compressed: `logs/md1-shrunk/polls/20260517T081403Z/s3-compressed.txt` (`Total Size: 28.7 MiB`)
+  - Gates (Montana-scale facts; downloaded from owned outputs):
+    - SfM: `logs/md1-shrunk/polls/20260517T081403Z/sfm_metadata.json`
+    - 3DGS bundle sidecar: `logs/md1-shrunk/polls/20260517T081403Z/training_metadata.json`
+    - compression summary: `logs/md1-shrunk/polls/20260517T081403Z/sogs_compression_summary.json`
+    - extracted summary: `logs/md1-shrunk/polls/20260517T081403Z/gates-summary.txt` (images_registered=1456, points_3d=1103335, remaining_gaussians=990091, total_compressed_mb=14.3454…)
+  - Public bundle reachability (anonymous):
+    - meta.json URL: `logs/md1-shrunk/polls/20260517T081403Z/public-meta-url.txt`
+    - skybox URL: `logs/md1-shrunk/polls/20260517T081403Z/public-skybox-url.txt`
+    - meta.json headers: `logs/md1-shrunk/polls/20260517T081403Z/http-head-meta.txt` (`HTTP 200`)
+    - skybox headers: `logs/md1-shrunk/polls/20260517T081403Z/http-head-skybox.txt` (`HTTP 200`)
+  - GitHub workflows + preview URL (deterministic):
+    - run list: `logs/md1-shrunk/polls/20260517T081403Z/gh-run-list-branch.json`
+    - summary: `logs/md1-shrunk/polls/20260517T081403Z/gh-summary.txt`
+      - exact-head `CDK Deploy` run `25985228636` -> `success` (head `3f409b56...`)
+      - latest Pages run `25983995070` -> `success` (head `3bad045c...`; no Pages run triggered by logs-only commit)
+    - CDK watch/view:
+      - `logs/md1-shrunk/polls/20260517T081403Z/gh-run-watch-cdk-25985228636.txt`
+      - `logs/md1-shrunk/polls/20260517T081403Z/gh-run-view-cdk-25985228636.json`
+    - Pages run log + extracted URLs:
+      - `logs/md1-shrunk/polls/20260517T081403Z/gh-pages-run-25983995070-log.txt`
+      - `logs/md1-shrunk/polls/20260517T081403Z/gh-pages-run-25983995070-preview-urls.txt`
+    - preview health URL: `logs/md1-shrunk/polls/20260517T081403Z/preview-health-url.txt` + headers `logs/md1-shrunk/polls/20260517T081403Z/http-head-preview-health.txt`
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
