@@ -2154,3 +2154,39 @@ skybox, compression, artifact handoff, and visual gates.
       - view (start): `logs/md1-shrunk/polls/gh-run-view-cdk-25978413482-20260517T015109Z.json`
       - view (final): `logs/md1-shrunk/polls/gh-run-view-cdk-25978413482-final-20260517T015109Z.json`
     - Pages deploy not triggered at this exact head (no `web/trigger-dev-build.txt` bump).
+
+- 2026-05-17T02:13:38Z poll (terminal reconfirm; no new launches):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `44307079ed298e97c6202232465b35fdb1115940`
+    - `git status --porcelain=v1` -> new untracked poll artifacts under `logs/md1-shrunk/polls/`
+  - AWS identity:
+    - `python3 -m awscli sts get-caller-identity --output json` -> `logs/md1-shrunk/polls/aws-identity-20260517T021338Z.json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions (staging):
+    - `python3 -m awscli stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --max-results 50 --region us-west-2 --output json` -> `logs/md1-shrunk/polls/sfn-executions-20260517T021338Z.json` -> RUNNING `0` in current page
+  - SageMaker:
+    - Owned job terminal statuses reconfirm:
+      - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`
+        - `logs/md1-shrunk/polls/sm-describe-processing-md1-shrunk-1456-sfm-1778866088-20260517T021338Z.json`
+      - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`
+        - `logs/md1-shrunk/polls/sm-describe-training-md1shrunk1456-1778880862-3dgs-20260517T021338Z.json`
+      - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`
+        - `logs/md1-shrunk/polls/sm-describe-processing-md1shrunk1456-1778880862-compression-20260517T021338Z.json`
+    - InProgress processing jobs (external; left untouched):
+      - `python3 -m awscli sagemaker list-processing-jobs --status-equals InProgress --max-results 50 --region us-west-2 --output json` -> `logs/md1-shrunk/polls/sm-processing-inprogress-20260517T021338Z.json` -> `4`
+        - `md1-tile01-h1i1lod-r41-1778982712`
+        - `md1-tile02-h1i1lod-r41-1778982713`
+        - `md1-tile03-h1i1lod-r41-1778982714`
+        - `md1-tile04-h1i1lod-r41-1778982715`
+    - InProgress training jobs:
+      - `python3 -m awscli sagemaker list-training-jobs --status-equals InProgress --max-results 50 --region us-west-2 --output json` -> `logs/md1-shrunk/polls/sm-training-inprogress-20260517T021338Z.json` -> `0`
+  - Public preview + bundle HTTP sanity:
+    - `logs/md1-shrunk/polls/http-head-sanity-20260517T021627Z.txt` -> preview `/health.txt` HTTP 200, bundle `meta.json` HTTP 200, bundle `background_skybox.webp` HTTP 200
+  - GitHub workflows (exact-head):
+    - run list: `logs/md1-shrunk/polls/gh-run-list-20260517T021546Z.json`
+    - `CDK Deploy` run `25978493986` `success` (head `44307079...`):
+      - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25978493986-20260517T021546Z.json`
+      - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25978493986-20260517T021546Z.txt`
+    - Pages deploy not triggered at this exact head (no `web/trigger-dev-build.txt` bump); latest Pages run remains `25977807200` (head `4328f941...`).
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.

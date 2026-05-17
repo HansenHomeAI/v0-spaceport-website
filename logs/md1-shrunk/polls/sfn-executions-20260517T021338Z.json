@@ -1,0 +1,193 @@
+{
+    "executions": [
+        {
+            "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-shrunk-1456-vsfm-w-light-20260515T2127Z-g5xlarge",
+            "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+            "name": "execution-md1-shrunk-1456-vsfm-w-light-20260515T2127Z-g5xlarge",
+            "status": "SUCCEEDED",
+            "startDate": 1778880847.432,
+            "stopDate": 1778880848.501,
+            "redriveCount": 0
+        },
+        {
+            "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-shrunk-1456-vsfm-w-light-g54x-202605152132",
+            "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+            "name": "execution-md1-shrunk-1456-vsfm-w-light-g54x-202605152132",
+            "status": "SUCCEEDED",
+            "startDate": 1778880753.458,
+            "stopDate": 1778880754.551,
+            "redriveCount": 0
+        },
+        {
+            "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1shrunk1456-1778880727",
+            "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+            "name": "execution-md1shrunk1456-1778880727",
+            "status": "SUCCEEDED",
+            "startDate": 1778880729.526,
+            "stopDate": 1778880732.13,
+            "redriveCount": 0
+        },
+        {
+            "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1shrunk1456-1778879949",
+            "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+            "name": "execution-md1shrunk1456-1778879949",
+            "status": "SUCCEEDED",
+            "startDate": 1778879950.781,
+            "stopDate": 1778879951.866,
+            "redriveCount": 0
+        },
+        {
+            "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-shrunk-1456-vsfm-w-light-202605152116",
+            "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+            "name": "execution-md1-shrunk-1456-vsfm-w-light-202605152116",
+            "status": "SUCCEEDED",
+            "startDate": 1778879830.956,
+            "stopDate": 1778879833.509,
+            "redriveCount": 0
+        },
+        {
+            "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-cfix-202605150946",
+            "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+            "name": "execution-md1-e2e-vsfm-splatfacto-cfix-202605150946",
+            "status": "SUCCEEDED",
+            "startDate": 1778838386.925,
+            "stopDate": 1778851935.265,
+            "redriveCount": 0
+        },
+        {
+            "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-202605150539",
+            "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+            "name": "execution-md1-e2e-vsfm-splatfacto-202605150539",
+            "status": "SUCCEEDED",
+            "startDate": 1778823547.904,
+            "stopDate": 1778836602.645,
+            "redriveCount": 0
+        },
+        {
+            "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-fg-202605142314",
+            "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+            "name": "execution-md1-e2e-vsfm-fg-202605142314",
+            "status": "SUCCEEDED",
+            "startDate": 1778800505.145,
+            "stopDate": 1778819573.841,
+            "redriveCount": 0
+        },
+        {
+            "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-light-202605141942",
+            "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+            "name": "execution-md1-e2e-vsfm-light-202605141942",
+            "status": "SUCCEEDED",
+            "startDate": 1778787623.574,
+            "stopDate": 1778800249.702,
+            "redriveCount": 0
+        },
+        {
+            "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-w-202605141905",
+            "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+            "name": "execution-md1-e2e-vsfm-w-202605141905",
+            "status": "SUCCEEDED",
+            "startDate": 1778785546.903,
+            "stopDate": 1778786391.295,
+            "redriveCount": 0
+        },
+        {
+            "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-202605141811",
+            "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+            "name": "execution-md1-e2e-vsfm-202605141811",
+            "status": "SUCCEEDED",
+            "startDate": 1778782298.939,
+            "stopDate": 1778783024.184,
+            "redriveCount": 0
+        },
+        {
+            "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-baseline-e2e-20260514032448",
+            "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+            "name": "execution-md1-baseline-e2e-20260514032448",
+            "status": "SUCCEEDED",
+            "startDate": 1778729096.996,
+            "stopDate": 1778781352.989,
+            "redriveCount": 0
+        },
+        {
+            "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-baseline-e2e-20260513115645",
+            "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+            "name": "execution-md1-baseline-e2e-20260513115645",
+            "status": "TIMED_OUT",
+            "startDate": 1778695009.978,
+            "stopDate": 1778723809.978,
+            "redriveCount": 0
+        },
+        {
+            "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-manual-3dgs-1774642514",
+            "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+            "name": "execution-manual-3dgs-1774642514",
+            "status": "SUCCEEDED",
+            "startDate": 1774642514.225,
+            "stopDate": 1774648951.095,
+            "redriveCount": 0
+        },
+        {
+            "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-manual-3dgs-1774642849",
+            "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+            "name": "execution-manual-3dgs-1774642849",
+            "status": "SUCCEEDED",
+            "startDate": 1774642849.576,
+            "stopDate": 1774642852.101,
+            "redriveCount": 0
+        },
+        {
+            "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:staging-colmap-whitney-3dgs-1774632008-exec",
+            "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+            "name": "staging-colmap-whitney-3dgs-1774632008-exec",
+            "status": "SUCCEEDED",
+            "startDate": 1774632009.959,
+            "stopDate": 1774635380.553,
+            "redriveCount": 0
+        },
+        {
+            "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:staging-colmap-whitney-full-1774555117-exec",
+            "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+            "name": "staging-colmap-whitney-full-1774555117-exec",
+            "status": "TIMED_OUT",
+            "startDate": 1774555118.372,
+            "stopDate": 1774583918.372,
+            "redriveCount": 0
+        },
+        {
+            "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:staging-colmap-subset-1774554423-exec",
+            "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+            "name": "staging-colmap-subset-1774554423-exec",
+            "status": "SUCCEEDED",
+            "startDate": 1774554424.028,
+            "stopDate": 1774557796.319,
+            "redriveCount": 0
+        },
+        {
+            "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:manual-whitney-1774502625-2",
+            "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+            "name": "manual-whitney-1774502625-2",
+            "status": "SUCCEEDED",
+            "startDate": 1774502627.342,
+            "stopDate": 1774503231.776,
+            "redriveCount": 0
+        },
+        {
+            "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:manual-whitney-1774502593",
+            "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+            "name": "manual-whitney-1774502593",
+            "status": "FAILED",
+            "startDate": 1774502594.561,
+            "stopDate": 1774502594.626,
+            "redriveCount": 0
+        },
+        {
+            "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:spintest-20260324-173439-4228",
+            "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+            "name": "spintest-20260324-173439-4228",
+            "status": "SUCCEEDED",
+            "startDate": 1774395280.999,
+            "stopDate": 1774404315.25,
+            "redriveCount": 0
+        }
+    ]
+}

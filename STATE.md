@@ -1,5 +1,5 @@
-reason: executing phase 2 branch sync by merging origin/development into codex/agent-72759001-sync-development-into-ml and validating the integrated branch
-last_step: completed the phase 2 baseline checks, merged origin/development into the phase 2 branch, and started resolving the expected workflow and web content conflicts
-next_unblocked_step: finish conflict resolution, audit the auto-merged infra files for branch-aware naming and R2/payment settings, push the branch, and monitor Pages/CDK/container checks to green
+reason: md1-shrunk e2e monitor (verify terminal jobs + viewer bundle gates)
+last_step: 2026-05-17 verified StepFn RUNNING=0; md1-shrunk SfM/3DGS/compression Completed; preview+bundle HTTP 200; external md1-tile01-04 InProgress left untouched
+next_unblocked_step: none (idle monitor only; see logs/md1-shrunk/STATE.md)
 owner_action_needed: none
-updated: 2026-03-06T02:16:00Z
+updated: 2026-05-17T02:16:33Z

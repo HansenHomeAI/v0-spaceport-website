@@ -1,0 +1,51 @@
+preview=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev
+meta=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json
+sky=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/background_skybox.webp
+---
+# preview health
+HTTP/2 200 
+date: Sun, 17 May 2026 02:16:28 GMT
+content-type: text/plain; charset=utf-8
+access-control-allow-origin: *
+cache-control: public, max-age=0, must-revalidate
+etag: "fd11d8ed860bbecc8b0798f4495a1ed7"
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+x-matched-path: /health.txt
+x-robots-tag: noindex
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=2TjnNdOfoc5IKPjGvrXTp4X0aosBj2XnnyHrCylzMF7LYRc0PSuerFZyIe6NMTikAWxvnmawVimnBTWitPMoQF%2FZbGcVglIVVIqmo8CbgWovpXydeEM30%2Bgo4IVAMB0llFNSlmjt8SCIoT12j7lNFVk1lt30TgzLxSrIyOfPAEw7PnFy0XvpQu0kVLoE5%2BFMVK5Ww%2FbdNQ%3D%3D"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: 9fcf1ec8a82ae888-SLC
+alt-svc: h3=":443"; ma=86400
+
+---
+# bundle meta
+HTTP/1.1 200 OK
+x-amz-id-2: eXneDm8Qo39ICpmq4QayLoLdYjvabezGxfgpM9YV2MxR7SRtcvFXWXqZD0FitGe2fi49765f8Ss=
+x-amz-request-id: Y3S396TQT5T0N363
+Date: Sun, 17 May 2026 02:16:29 GMT
+Last-Modified: Sat, 16 May 2026 00:13:09 GMT
+ETag: "0a80d455f7e49551c7e6032968068bc4"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: .cVTc2Vl._7LK3AakEV4Rz3vGp0oyubF
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1422
+Server: AmazonS3
+
+---
+# bundle skybox
+HTTP/1.1 200 OK
+x-amz-id-2: swvd2jwVNN0PLTZkwcOcdOXtUMa4Kt57en9otFaqFLdBYXD25lHW1MiaSAGEfB/Phrf2E4gDo4A=
+x-amz-request-id: Y3S9HV9XS8KVA63F
+Date: Sun, 17 May 2026 02:16:29 GMT
+Last-Modified: Sat, 16 May 2026 00:13:09 GMT
+ETag: "0ab9a556362c8ced686a5eb29ff2b190"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: 7gY1SZtNF86ESbVDI3msaXP5RKGGOyDB
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 46080
+Server: AmazonS3
+
