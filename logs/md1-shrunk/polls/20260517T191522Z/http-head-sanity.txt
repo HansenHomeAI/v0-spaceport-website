@@ -1,0 +1,66 @@
+alias=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev
+hash=https://aaf9e92e.v0-spaceport-website-preview2.pages.dev
+bundle_meta=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json
+bundle_skybox=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/background_skybox.webp
+--- preview health (alias) ---
+HTTP/2 200 
+date: Sun, 17 May 2026 19:20:46 GMT
+content-type: text/plain; charset=utf-8
+access-control-allow-origin: *
+cache-control: public, max-age=0, must-revalidate
+etag: "fd11d8ed860bbecc8b0798f4495a1ed7"
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+x-matched-path: /health.txt
+x-robots-tag: noindex
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=lk5V3lw%2B5m0zfEbCfjpzVS9kKimDPaZeyi73ek9kHoqu36Vm33HFB9eolgSgT96HnVnZkCDUskQRwgdhA%2BcNWb6LM15xAJOIfHT3ashQjhzKvZvpTuRMRDf22DFYrTK7KHg82W5lrJZGTsV4KwxGY8%2F3rHp4BqQgngRPCUiki2iK%2F%2F31UgdUeBZzXtOTVUWi5EJ2TN0V%2Fg%3D%3D"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: 9fd4fb37bd789940-DEN
+alt-svc: h3=":443"; ma=86400
+
+--- preview health (hash) ---
+HTTP/2 200 
+date: Sun, 17 May 2026 19:20:46 GMT
+content-type: text/plain; charset=utf-8
+access-control-allow-origin: *
+cache-control: public, max-age=0, must-revalidate
+etag: "fd11d8ed860bbecc8b0798f4495a1ed7"
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+x-matched-path: /health.txt
+x-robots-tag: noindex
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=xvI0cLwCTx7KMKVY6RiobNS72COgIwdO6UMnyHTzbFLuBy%2BAfbmG5gaewDlybUWE%2BVZPAZvkRlCJMMWR8eNKyM4AMsQUx9ww4oq6ZNcpgIAd0mV%2BPS%2BwC4EyQ3zSm8URfREviWivX2UKfcffkKdczg0UTPR1t%2FqcuGQ1nG3bCmoX2E8%3D"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: 9fd4fb38a9a036ed-DEN
+alt-svc: h3=":443"; ma=86400
+
+--- bundle meta ---
+HTTP/1.1 200 OK
+x-amz-id-2: qsUuunuTOcvKk9tW2WKw8DPsWKtMWQzhent5a0SeULV0r25uivCQ23l7M8no1InH5D0OKU/d0sU=
+x-amz-request-id: VZX875F18DCZJDNA
+Date: Sun, 17 May 2026 19:20:47 GMT
+Last-Modified: Sat, 16 May 2026 00:13:09 GMT
+ETag: "0a80d455f7e49551c7e6032968068bc4"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: .cVTc2Vl._7LK3AakEV4Rz3vGp0oyubF
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1422
+Server: AmazonS3
+
+--- bundle skybox ---
+HTTP/1.1 200 OK
+x-amz-id-2: PHvZkfRWaSYPWTK8CktfiwxwDLHsHHCYHEDp0wXnQl1J+KQrJxx9BAlbfJMQtl5tDrzLF/dxGPU=
+x-amz-request-id: VZXBYYKCXCKD66AG
+Date: Sun, 17 May 2026 19:20:47 GMT
+Last-Modified: Sat, 16 May 2026 00:13:09 GMT
+ETag: "0ab9a556362c8ced686a5eb29ff2b190"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: 7gY1SZtNF86ESbVDI3msaXP5RKGGOyDB
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 46080
+Server: AmazonS3
+

@@ -1,0 +1,10 @@
+stepfn_running_staging=0
+stepfn_running_br=0
+sfm_status=Completed
+sfm_end=2026-05-15T15:04:36.723000-06:00
+3dgs_status=Completed
+3dgs_end=2026-05-15T17:55:18.313000-06:00
+compress_status=Completed
+compress_end=2026-05-15T18:08:09.571000-06:00
+inprogress_processing_count=0
+inprogress_training_count=0

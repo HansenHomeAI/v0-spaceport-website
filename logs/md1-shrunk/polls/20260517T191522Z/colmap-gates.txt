@@ -1,0 +1,3 @@
+images_registered=1456
+points3D=1103335
+merged_component_count=1

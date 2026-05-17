@@ -1,0 +1,10 @@
+utc=20260517T191522Z
+branch=agent-113647-md1-baseline-e2e
+head=821d373a2ab3fa5321463a1f8c5ac4a5300e2f92
+subject=chore: md1-shrunk post-push GH proof 20260517T184646Z [skip ci]
+status_porcelain=1
+aws=/opt/homebrew/bin/aws
+gh=/opt/homebrew/bin/gh
+aws-cli/2.22.26 Python/3.12.8 Darwin/25.4.0 source/arm64
+gh version 2.68.1 (2025-03-06)
+https://github.com/cli/cli/releases/tag/v2.68.1

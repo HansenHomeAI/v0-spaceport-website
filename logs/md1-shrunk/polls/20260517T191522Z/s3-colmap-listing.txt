@@ -1,0 +1,12 @@
+out_prefix=s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap
+                           PRE images/
+                           PRE sparse/
+                           PRE sparse_raw/
+2026-05-15 15:04:09 2330189824 database.db
+2026-05-15 15:04:31      19014 sfm_metadata.json
+                           PRE 0/
+2026-05-15 15:04:31        195 cameras.txt
+2026-05-15 15:04:31     237484 frames.txt
+2026-05-15 15:04:31  605145970 images.txt
+2026-05-15 15:04:31  149267572 points3D.txt
+2026-05-15 15:04:31        218 rigs.txt

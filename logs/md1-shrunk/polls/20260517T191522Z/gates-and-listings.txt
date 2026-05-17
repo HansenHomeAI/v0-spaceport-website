@@ -1,0 +1,5 @@
+images_registered=1456
+points3D=1103335
+merged_component_count=1
+3dgs_prefix=1:3dgs=s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778880862/
+compress_prefix=2:compress=s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778880862/

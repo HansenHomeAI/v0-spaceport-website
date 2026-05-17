@@ -1,0 +1,4 @@
+alias=200
+hash=200
+meta=200
+skybox=200

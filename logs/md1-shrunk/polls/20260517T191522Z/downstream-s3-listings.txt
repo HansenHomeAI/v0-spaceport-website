@@ -1,0 +1,6 @@
+3dgs_prefix=s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778880862/
+                           PRE md1shrunk1456-1778880862-3dgs/
+compress_prefix=s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778880862/
+                           PRE compressed_splat/
+                           PRE supersplat_bundle/
+2026-05-15 18:08:04       2318 sogs_compression_summary.json
