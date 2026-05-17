@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T14:21:58Z
+updated: 2026-05-17T14:47:06Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -3293,3 +3293,39 @@ skybox, compression, artifact handoff, and visual gates.
         - `logs/md1-shrunk/polls/20260517T141510Z/gh-pages-latest.txt`
   - Note:
     - Pages deploy was not triggered by the poll-only commit (no `web/trigger-dev-build.txt` bump).
+
+- 2026-05-17T14:47:06Z poll (idle monitor; no new ML launches):
+  - Poll artifacts:
+    - SageMaker/StepFn/S3 snapshots: `logs/md1-shrunk/polls/20260517T144442Z/`
+    - GitHub run list snapshot: `logs/md1-shrunk/polls/20260517T144517Z-gh/gh-run-list.json`
+    - Public preview + bundle HTTP sanity: `logs/md1-shrunk/polls/20260517T144633Z-http/`
+  - Branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `539a7fbb...` (`chore: record md1-shrunk cdk run 25993310264 [skip ci]`)
+    - `git status --porcelain=v1` -> clean
+  - AWS identity (region `us-west-2`, via `/opt/homebrew/bin/aws`):
+    - `aws sts get-caller-identity` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions (region `us-west-2`; staging pipeline):
+    - `logs/md1-shrunk/polls/20260517T144442Z/stepfunctions-list-executions.json` -> RUNNING=0 (statuses only `SUCCEEDED`/`FAILED`/`TIMED_OUT`)
+  - SageMaker (region `us-west-2`):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed` (ended `2026-05-15`):
+      - `logs/md1-shrunk/polls/20260517T144442Z/sagemaker-describe-md1-shrunk-1456-sfm-1778866088.json`
+    - InProgress processing jobs: `0`:
+      - `logs/md1-shrunk/polls/20260517T144442Z/sagemaker-list-processing-InProgress.json`
+    - InProgress training jobs: `0`:
+      - `logs/md1-shrunk/polls/20260517T144442Z/sagemaker-list-training-InProgress.json`
+  - S3 output verification (SfM output exists; upload mode `EndOfJob`):
+    - `logs/md1-shrunk/polls/20260517T144442Z/s3-colmap-listing.txt` -> `Total Objects: 1468`, `Total Size: 9.2 GiB`
+  - GitHub Actions (via `/opt/homebrew/bin/gh`):
+    - exact head `539a7fbb...` has `0` runs (commit includes `[skip ci]`)
+    - latest `CDK Deploy` remains `25993310264` -> `success` (head `4b93db00...`)
+    - latest Pages run remains `25983995070` -> `success` (head `3bad045c...`)
+  - Public preview + bundle HTTP sanity (anonymous):
+    - preview alias `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev` -> `HTTP 200`:
+      - `logs/md1-shrunk/polls/20260517T144633Z-http/http-head-preview-alias.txt`
+    - bundle `meta.json` -> `HTTP 200`:
+      - `logs/md1-shrunk/polls/20260517T144633Z-http/http-head-meta.json.txt`
+    - skybox `background_skybox.webp` -> `HTTP 200`:
+      - `logs/md1-shrunk/polls/20260517T144633Z-http/http-head-background_skybox.webp.txt`
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
