@@ -3393,3 +3393,33 @@ skybox, compression, artifact handoff, and visual gates.
     - skybox smoke: `logs/md1-shrunk/polls/20260517T151433Z/playwright-sogs-skybox-post-pages.txt`
     - no-sky smoke: `logs/md1-shrunk/polls/20260517T151433Z/playwright-sogs-nosky-post-pages.txt`
     - camera check screenshot: `logs/md1-shrunk/polls/20260517T151433Z/md1-camera-check-20260517-post-pages.png`
+
+- 2026-05-17T15:44:49Z poll (monitor; no new ML launches):
+  - Poll artifacts: `logs/md1-shrunk/polls/20260517T154449Z/`
+  - Branch/head/status:
+    - `logs/md1-shrunk/polls/20260517T154449Z/git-status.txt` -> head `090914d8...` (`[skip ci]`)
+  - AWS identity (region `us-west-2`):
+    - `logs/md1-shrunk/polls/20260517T154449Z/aws-sts-get-caller-identity.json` -> account `975050048887`
+  - Step Functions (region `us-west-2`):
+    - staging RUNNING=0: `logs/md1-shrunk/polls/20260517T154449Z/stepfunctions-running-staging.json`
+  - SageMaker (region `us-west-2`):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`:
+      - `logs/md1-shrunk/polls/20260517T154449Z/sagemaker-describe-md1-shrunk-1456-sfm-1778866088.json`
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`:
+      - `logs/md1-shrunk/polls/20260517T154449Z/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs.json`
+    - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`:
+      - `logs/md1-shrunk/polls/20260517T154449Z/sagemaker-describe-processing-md1shrunk1456-1778880862-compression.json`
+    - InProgress processing jobs: `logs/md1-shrunk/polls/20260517T154449Z/sagemaker-list-processing-InProgress.json`
+    - InProgress training jobs: `logs/md1-shrunk/polls/20260517T154449Z/sagemaker-list-training-InProgress.json`
+    - status summary: `logs/md1-shrunk/polls/20260517T154449Z/statuses.txt`
+  - S3 output verification:
+    - SfM output exists: `logs/md1-shrunk/polls/20260517T154449Z/s3-ls-colmap.txt`
+    - 3DGS model exists: `logs/md1-shrunk/polls/20260517T154449Z/s3-3dgs-model.txt` (source URI: `logs/md1-shrunk/polls/20260517T154449Z/3dgs-model-uri.txt`)
+    - public compressed bundle exists: `logs/md1-shrunk/polls/20260517T154449Z/s3-compressed-output.txt` (source URI: `logs/md1-shrunk/polls/20260517T154449Z/compressed-output-uri.txt`)
+  - Public preview + bundle HTTP sanity (anonymous):
+    - preview `/health.txt` HTTP headers: `logs/md1-shrunk/polls/20260517T154449Z/http-head-preview-health.txt`
+    - bundle meta.json HTTP headers: `logs/md1-shrunk/polls/20260517T154449Z/http-head-meta.txt`
+    - skybox background_skybox.webp HTTP headers: `logs/md1-shrunk/polls/20260517T154449Z/http-head-skybox.txt`
+    - bundle meta.json snapshot: `logs/md1-shrunk/polls/20260517T154449Z/meta.json` (gaussians: `logs/md1-shrunk/polls/20260517T154449Z/gaussians.txt`)
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
