@@ -1,0 +1,2 @@
+sparse/0: images_registered=1456 points3D=1020913 components=1
+sparse_raw/0: images_registered=1456 points3D=1103335 components=1
