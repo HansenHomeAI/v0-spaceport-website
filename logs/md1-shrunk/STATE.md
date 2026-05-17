@@ -2377,3 +2377,36 @@ skybox, compression, artifact handoff, and visual gates.
     - `~/.local/bin/gh run list --commit $(git rev-parse HEAD) --limit 20 --json ...` -> `logs/md1-shrunk/polls/gh-run-list-head-20260517T041650Z.json`
     - exact head `ded7dd37...` has `0` runs (commit includes `[skip ci]`); latest observed run on branch remains `CDK Deploy` `25980223287` `success` (head `693fbae7...`)
     - branch run list snapshot: `logs/md1-shrunk/polls/gh-run-list-20260517T041650Z.json`
+
+- 2026-05-17T04:46:00Z poll (monitor-only; no new cloud work launched):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `921d31d7d88a80954b4cb4acfd14161e8d5bf871` (`chore: record md1-shrunk post-push gh runs 20260517T0416Z [skip ci]`)
+    - `git status --porcelain=v1` -> untracked new poll artifacts under `logs/md1-shrunk/polls/`
+  - AWS identity:
+    - `/opt/homebrew/bin/aws sts get-caller-identity --output json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions:
+    - `/opt/homebrew/bin/aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --status-filter RUNNING --max-results 10 --region us-west-2 --output json` -> `logs/md1-shrunk/polls/stepfunctions-running-20260517T0444Z.json` -> RUNNING `0`
+  - SageMaker (cost bounded):
+    - InProgress processing jobs:
+      - `/opt/homebrew/bin/aws sagemaker list-processing-jobs --status-equals InProgress --sort-by CreationTime --sort-order Descending --max-results 20 --region us-west-2 --output json` -> `logs/md1-shrunk/polls/sagemaker-list-processing-inprogress-20260517T0444Z.json` -> `0`
+    - Owned job status (terminal Completed):
+      - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `logs/md1-shrunk/polls/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260517T0444Z.json`
+      - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `logs/md1-shrunk/polls/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260517T0445Z.json` (instance `ml.g5.4xlarge`)
+      - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `logs/md1-shrunk/polls/sagemaker-describe-processing-md1shrunk1456-1778880862-compression-20260517T0445Z.json`
+  - SfM gates (Montana scale check):
+    - `sfm_metadata.json` snapshot -> `logs/md1-shrunk/polls/sfm-metadata-20260517T0444Z.json`:
+      - dataset_image_count=`1456`, images_registered=`1456`, merged_component_count=`1`, points_3d=`1103335`, timed_out=`false`, quality_check_passed=`true`
+  - Output listings:
+    - COLMAP output recursive listing -> `logs/md1-shrunk/polls/s3-colmap-md1-shrunk-20260515T1641Z-20260517T0444Z.txt`
+    - 3DGS output (model.tar.gz) -> `logs/md1-shrunk/polls/s3-3dgs-md1shrunk1456-1778880862-20260517T0445Z.txt`
+    - compression outputs (staging) -> `logs/md1-shrunk/polls/s3-compressed-md1shrunk1456-1778880862-20260517T0445Z.txt`
+  - Public bundle HTTP checks:
+    - bundle meta snapshot -> `logs/md1-shrunk/polls/public-meta-20260517T0445Z.json`
+    - HTTP HEAD proof (200 OK):
+      - `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json`
+      - `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/background_skybox.webp`
+      - `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/settings.json`
+  - GitHub workflows:
+    - run list snapshot (branch) -> `logs/md1-shrunk/polls/gh-runs-20260517T0444Z.json`
+    - Pages deploy still last observed at head `4328f941...` (run `25977807200`); exact head includes `[skip ci]` so it has `0` runs.

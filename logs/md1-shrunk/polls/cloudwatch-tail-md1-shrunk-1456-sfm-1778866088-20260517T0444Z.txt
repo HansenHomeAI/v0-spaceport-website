@@ -1,0 +1,15 @@
+COLMAP[feature_extractor] I20260515 17:59:55.076515    92 feature_extraction.cc:283]   Name:            DJI_02560.JPG
+COLMAP[feature_extractor] I20260515 17:59:55.076526    92 feature_extraction.cc:292]   Dimensions:      4000 x 2250
+COLMAP[feature_extractor] I20260515 17:59:55.076536    92 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL
+COLMAP[feature_extractor] I20260515 17:59:55.076546    92 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)
+COLMAP[feature_extractor] I20260515 17:59:55.076560    92 feature_extraction.cc:302]   Features:        8901 (SIFT)
+COLMAP[feature_extractor] I20260515 17:59:55.287557    92 feature_extraction.cc:316]   GPS:             LAT=40.575, LON=-111.401, ALT=2427.545
+COLMAP[feature_extractor] I20260515 17:59:55.287602    92 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000
+COLMAP[feature_extractor] I20260515 17:59:57.222038    92 feature_extraction.cc:280] Processed file [758/1456]
+COLMAP[feature_extractor] I20260515 17:59:57.222083    92 feature_extraction.cc:283]   Name:            DJI_02561.JPG
+COLMAP[feature_extractor] I20260515 17:59:57.222095    92 feature_extraction.cc:292]   Dimensions:      4000 x 2250
+COLMAP[feature_extractor] I20260515 17:59:57.222103    92 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL
+COLMAP[feature_extractor] I20260515 17:59:57.222114    92 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)
+COLMAP[feature_extractor] I20260515 17:59:57.222127    92 feature_extraction.cc:302]   Features:        9799 (SIFT)
+COLMAP[feature_extractor] I20260515 17:59:57.409685    92 feature_extraction.cc:316]   GPS:             LAT=40.575, LON=-111.400, ALT=2426.945
+COLMAP[feature_extractor] I20260515 17:59:57.409730    92 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000
