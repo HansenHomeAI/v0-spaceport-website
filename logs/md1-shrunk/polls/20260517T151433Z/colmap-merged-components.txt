@@ -1,0 +1,2 @@
+# merged_component_dirs
+       1

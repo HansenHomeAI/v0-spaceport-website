@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T14:52:01Z
+updated: 2026-05-17T15:19:57Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -3338,3 +3338,41 @@ skybox, compression, artifact handoff, and visual gates.
       - list snapshot: `logs/md1-shrunk/polls/20260517T144826Z-ci/gh-run-list.json`
       - watch: `logs/md1-shrunk/polls/20260517T144833Z-ci/gh-run-watch-cdk-25994017562.txt`
     - Pages deploy not triggered at this exact head (no `web/trigger-dev-build.txt` bump).
+
+- 2026-05-17T15:19:57Z poll (monitor; no new ML launches):
+  - Poll artifacts: `logs/md1-shrunk/polls/20260517T151433Z/`
+  - Branch/head/status:
+    - `logs/md1-shrunk/polls/20260517T151433Z/git-status.txt` -> head `ab5a796c...` (`[skip ci]`), new poll artifacts staged as untracked
+  - AWS identity (region `us-west-2`):
+    - `logs/md1-shrunk/polls/20260517T151433Z/aws-sts-get-caller-identity.json` -> account `975050048887`
+  - Step Functions (region `us-west-2`):
+    - staging RUNNING=0: `logs/md1-shrunk/polls/20260517T151433Z/stepfunctions-running-staging.json`
+    - branch-preview RUNNING=0: `logs/md1-shrunk/polls/20260517T151433Z/stepfunctions-running-br8abc.json`
+  - SageMaker (region `us-west-2`):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`:
+      - `logs/md1-shrunk/polls/20260517T151433Z/sagemaker-describe-md1-shrunk-1456-sfm-1778866088.json`
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`:
+      - `logs/md1-shrunk/polls/20260517T151433Z/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs.json`
+    - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`:
+      - `logs/md1-shrunk/polls/20260517T151433Z/sagemaker-describe-processing-md1shrunk1456-1778880862-compression.json`
+    - InProgress processing jobs=0: `logs/md1-shrunk/polls/20260517T151433Z/sagemaker-list-processing-InProgress.json`
+    - InProgress training jobs=0: `logs/md1-shrunk/polls/20260517T151433Z/sagemaker-list-training-InProgress.json`
+  - Montana gates (COLMAP sparse/0):
+    - merged_component_count=1 images_registered=1456 points3D=1020913:
+      - `logs/md1-shrunk/polls/20260517T151433Z/colmap-gates-summary.txt`
+  - S3 output verification:
+    - SfM output exists: `logs/md1-shrunk/polls/20260517T151433Z/s3-ls-colmap.txt` -> `Total Objects: 1468`, `Total Size: 9.2 GiB`
+    - 3DGS output exists: `logs/md1-shrunk/polls/20260517T151433Z/s3-3dgs-staging.txt` -> `model.tar.gz` `212.0 MiB`
+    - public compressed bundle exists: `logs/md1-shrunk/polls/20260517T151433Z/s3-compressed-public.txt`
+  - Public preview + bundle HTTP sanity (anonymous):
+    - preview alias HTTP 200: `logs/md1-shrunk/polls/20260517T151433Z/http-head-preview-alias.txt`
+    - bundle meta.json HTTP 200: `logs/md1-shrunk/polls/20260517T151433Z/http-head-meta.txt`
+    - skybox background_skybox.webp HTTP 200: `logs/md1-shrunk/polls/20260517T151433Z/http-head-skybox.txt`
+  - Deployed preview viewer validation (Playwright; skybox + no-sky):
+    - skybox smoke: `logs/md1-shrunk/polls/20260517T151433Z/playwright-sogs-skybox.txt`
+    - no-sky smoke: `logs/md1-shrunk/polls/20260517T151433Z/playwright-sogs-nosky.txt`
+  - Side-by-side input-vs-render camera check (Playwright screenshot):
+    - `logs/md1-shrunk/polls/20260517T151433Z/md1-camera-check-20260517.png`
+    - log: `logs/md1-shrunk/polls/20260517T151433Z/playwright-md1-camera-check.txt`
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
