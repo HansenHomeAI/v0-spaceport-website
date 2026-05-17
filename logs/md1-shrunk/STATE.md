@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T01:30:30Z
+updated: 2026-05-17T01:35:00Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -2095,4 +2095,14 @@ skybox, compression, artifact handoff, and visual gates.
     - `CDK Deploy` run `25978045732` `success`:
       - watch: `logs/md1-shrunk/polls/gh-run-watch-25978045732-20260517T013030Z.txt`
       - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25978045732-20260517T013030Z.json`
+    - Pages deploy not triggered at this exact head (no `web/trigger-dev-build.txt` bump).
+
+- 2026-05-17T01:35:00Z exact-head CI (post record run 25978045732 commit):
+  - commit:
+    - `git rev-parse HEAD` -> `434f09850d3b68fb64714a93ace3dfe34dbd6504` (`chore: record md1-shrunk cdk run 25978045732`)
+  - GitHub workflows (exact-head; triggered by this push):
+    - run list: `logs/md1-shrunk/polls/gh-run-list-post-push4-20260517T013500Z.json`
+    - `CDK Deploy` run `25978125237` `success`:
+      - watch: `logs/md1-shrunk/polls/gh-run-watch-25978125237-20260517T013500Z.txt`
+      - view: `logs/md1-shrunk/polls/gh-run-view-25978125237-20260517T013500Z.json`
     - Pages deploy not triggered at this exact head (no `web/trigger-dev-build.txt` bump).
