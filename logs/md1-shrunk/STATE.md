@@ -3464,3 +3464,10 @@ skybox, compression, artifact handoff, and visual gates.
     - exact-head run list: `logs/md1-shrunk/polls/20260517T161601Z/gh-runs-for-head.json` (expected `[]` because head includes `[skip ci]`)
   - Notes:
     - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
+
+- 2026-05-17T16:18:29Z exact-head GitHub Actions confirmation (post poll push):
+  - head commit:
+    - `git rev-parse HEAD` -> `9febc283...` (`[skip ci]`)
+  - exact-head run count expected `0` (skip-ci head):
+    - `logs/md1-shrunk/polls/20260517T161829Z/gh-runs-for-head.json`
+    - `logs/md1-shrunk/polls/20260517T161829Z/gh-exact-head-run-count.txt`
