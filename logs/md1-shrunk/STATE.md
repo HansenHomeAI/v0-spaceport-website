@@ -2792,3 +2792,13 @@ skybox, compression, artifact handoff, and visual gates.
     - no-sky pose render:
       - log: `logs/md1-shrunk/polls/20260517T085052Z/playwright-md1-camera-check-nosky.txt`
       - screenshot: `logs/md1-shrunk/polls/20260517T085052Z/md1-camera-check-nosky.png`
+
+- 2026-05-17T08:53:39Z post-push confirmation (CI only; no new ML launches):
+  - commit:
+    - `git rev-parse HEAD` -> `7d1b62b417391450eeace2e2a6513b1fd9ba2d6c` (`chore: md1-shrunk poll 20260517T085052Z`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` run `25986385371` -> `success`
+      - watch: `logs/md1-shrunk/polls/20260517T085339Z/gh-run-watch-cdk-25986385371.txt`
+      - view: `logs/md1-shrunk/polls/20260517T085339Z/gh-run-view-cdk-25986385371.json`
+      - run list: `logs/md1-shrunk/polls/20260517T085339Z/gh-run-list-branch.json`
+    - Note: `Deploy Next.js to Cloudflare Pages` did not trigger for this logs-only commit; latest Pages success remains run `25983995070` (head `3bad045c...`).
