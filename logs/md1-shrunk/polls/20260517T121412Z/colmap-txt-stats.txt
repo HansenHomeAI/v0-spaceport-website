@@ -1,0 +1,8 @@
+# Streaming COLMAP TXT stats
+# 2026-05-17T12:17:34Z
+images_txt=s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/images.txt
+points3D_txt=s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/points3D.txt
+images_txt_non_comment_lines=2912
+registered_images_estimate=1456
+registered_images_even_lines=True
+points3D_non_comment_lines=1020913

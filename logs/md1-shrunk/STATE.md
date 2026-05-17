@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T11:18:00Z
+updated: 2026-05-17T12:20:54Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -3050,3 +3050,50 @@ skybox, compression, artifact handoff, and visual gates.
     - evidence:
       - `logs/md1-shrunk/polls/20260517T111428Z/gh-run-list-post-push.json`
       - `logs/md1-shrunk/polls/20260517T111428Z/gh-summary-post-push.txt`
+
+- 2026-05-17T12:14:12Z poll (terminal reconfirm + viewer gates; cost bounded):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `2f5c2b97e3ddb94a0b3f3e0fedf2816ebb4c1097` (`[skip ci]`)
+    - `git status --porcelain=v1` -> clean before creating poll artifacts
+  - Poll artifacts:
+    - `logs/md1-shrunk/polls/20260517T121412Z/`
+  - AWS identity:
+    - `logs/md1-shrunk/polls/20260517T121412Z/aws-identity.json` (account `975050048887`)
+  - Step Functions (region `us-west-2`):
+    - staging pipeline RUNNING executions: `logs/md1-shrunk/polls/20260517T121412Z/stepfunctions-list-executions-staging-running.json` -> RUNNING `0`
+    - state machine inventory: `logs/md1-shrunk/polls/20260517T121412Z/stepfunctions-list-state-machines.json`
+  - SageMaker (region `us-west-2`):
+    - InProgress processing jobs: `0` (`logs/md1-shrunk/polls/20260517T121412Z/sagemaker-list-processing-inprogress.json`)
+    - InProgress training jobs: `0` (`logs/md1-shrunk/polls/20260517T121412Z/sagemaker-list-training-inprogress.json`)
+    - terminal job statuses (all `Completed`):
+      - SfM processing: `logs/md1-shrunk/polls/20260517T121412Z/sagemaker-describe-sfm.json`
+      - 3DGS training: `logs/md1-shrunk/polls/20260517T121412Z/sagemaker-describe-3dgs-training.json`
+      - compression processing: `logs/md1-shrunk/polls/20260517T121412Z/sagemaker-describe-compression.json`
+  - Montana facts gate (COLMAP output):
+    - registered images: `1456` (streamed from `images.txt`): `logs/md1-shrunk/polls/20260517T121412Z/colmap-txt-stats.txt`
+    - points3D: `1020913` (streamed from `points3D.txt`): `logs/md1-shrunk/polls/20260517T121412Z/colmap-txt-stats.txt`
+    - sparse components: `1` (`colmap/sparse/0/` only): `logs/md1-shrunk/polls/20260517T121412Z/colmap-sparse-components-summary.txt`
+  - S3 outputs still present:
+    - COLMAP: `logs/md1-shrunk/polls/20260517T121412Z/s3-colmap.txt`
+    - 3DGS: `logs/md1-shrunk/polls/20260517T121412Z/s3-3dgs.txt`
+    - compressed: `logs/md1-shrunk/polls/20260517T121412Z/s3-compressed.txt`
+  - Public preview + bundle HTTP sanity (anonymous):
+    - preview `/health.txt`: `logs/md1-shrunk/polls/20260517T121412Z/http-head-preview-health.txt` -> HTTP 200
+    - bundle `meta.json`: `logs/md1-shrunk/polls/20260517T121412Z/http-head-meta.txt` -> HTTP 200
+    - bundled skybox: `logs/md1-shrunk/polls/20260517T121412Z/http-head-skybox.txt` -> HTTP 200
+  - Deployed preview viewer gates:
+    - /sogs-migrated-viewer smoke (bundled skybox):
+      - log: `logs/md1-shrunk/polls/20260517T121412Z/sogs-migrated-smoke-skybox.txt`
+      - screenshot: `logs/md1-shrunk/polls/20260517T121412Z/sogs-migrated-viewer-smoke.png`
+    - /sogs-migrated-viewer smoke (no-sky):
+      - log: `logs/md1-shrunk/polls/20260517T121412Z/sogs-migrated-smoke-nosky.txt`
+      - screenshot: `logs/md1-shrunk/polls/20260517T121412Z/sogs-migrated-viewer-nosky.png`
+    - /md1-viewer single-pose screenshots:
+      - skybox: `logs/md1-shrunk/polls/20260517T121412Z/md1-camera-check-skybox.png` (`logs/md1-shrunk/polls/20260517T121412Z/md1-camera-check-skybox.txt`)
+      - no-sky: `logs/md1-shrunk/polls/20260517T121412Z/md1-camera-check-nosky.png` (`logs/md1-shrunk/polls/20260517T121412Z/md1-camera-check-nosky.txt`)
+  - GitHub Actions:
+    - branch run list: `logs/md1-shrunk/polls/20260517T121412Z/gh-run-list-branch.json`
+    - exact head runs: `0` (commit message includes `[skip ci]`): `logs/md1-shrunk/polls/20260517T121412Z/gh-exact-head-run-count.txt`
+    - note: earlier run proof referenced head `e9cbf71c...`; its `CDK Deploy` run still verifies as `success`:
+      - `logs/md1-shrunk/polls/20260517T121412Z/gh-run-view-cdk-25932325504.json`
