@@ -2734,3 +2734,61 @@ skybox, compression, artifact handoff, and visual gates.
       - run list: `logs/md1-shrunk/polls/20260517T082008Z/gh-run-list-branch.json`
       - exact-head summary: `logs/md1-shrunk/polls/20260517T082008Z/gh-summary.txt`
     - Note: `Deploy Next.js to Cloudflare Pages` did not trigger for this logs-only commit.
+
+- 2026-05-17T08:44:46Z monitor poll (terminal reconfirm; no new ML launches):
+  - Poll artifacts:
+    - `logs/md1-shrunk/polls/20260517T084446Z/`
+    - `logs/md1-shrunk/polls/20260517T084516Z/`
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `06312494cf8ec963b88d674ab2cc2605beae07b5` (`chore: record md1-shrunk cdk 25985695259 [skip ci]`)
+    - `git status --porcelain=v1` -> clean (new poll artifacts untracked)
+  - AWS identity:
+    - `/opt/homebrew/bin/aws sts get-caller-identity --output json` -> `logs/md1-shrunk/polls/20260517T084446Z/aws-sts-get-caller-identity.json` (account `975050048887`)
+  - Step Functions (staging):
+    - RUNNING=0:
+      - `/opt/homebrew/bin/aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --status-filter RUNNING ...` -> `logs/md1-shrunk/polls/20260517T084446Z/stepfunctions-list-executions-staging-running.json`
+  - SageMaker (cost bounded):
+    - InProgress processing jobs: `0` -> `logs/md1-shrunk/polls/20260517T084446Z/sagemaker-list-processing-InProgress.json`
+    - InProgress training jobs: `0` -> `logs/md1-shrunk/polls/20260517T084446Z/sagemaker-list-training-InProgress.json`
+    - Owned terminal statuses reconfirm:
+      - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `logs/md1-shrunk/polls/20260517T084446Z/sagemaker-describe-md1-shrunk-1456-sfm-1778866088.json` (`Completed`)
+      - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `logs/md1-shrunk/polls/20260517T084446Z/sagemaker-describe-md1shrunk1456-1778880862-3dgs.json` (`Completed`)
+      - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `logs/md1-shrunk/polls/20260517T084446Z/sagemaker-describe-md1shrunk1456-1778880862-compression.json` (`Completed`)
+  - GitHub workflows (exact-head):
+    - run list: `logs/md1-shrunk/polls/20260517T084516Z/gh-run-list.json`
+    - exact head runs: `0` (commit message includes `[skip ci]`, so no new workflows expected)
+    - latest CDK Deploy on this branch remains `25985695259` `success` (head `21b60fe0...`)
+    - latest Pages run remains `25983995070` `success` (head `3bad045c...`)
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
+
+- 2026-05-17T08:47:43Z public bundle reconfirm (downloaded meta.json + preview health):
+  - Poll artifacts:
+    - `logs/md1-shrunk/polls/20260517T084743Z/`
+  - Public bundle:
+    - `logs/md1-shrunk/polls/20260517T084743Z/public-meta-url.txt` -> downloaded `logs/md1-shrunk/polls/20260517T084743Z/meta.json`
+      - splatCount inferred from `meta.json` shape: `990025`
+    - headers: `logs/md1-shrunk/polls/20260517T084743Z/http-head-meta.txt` (`HTTP 200`)
+  - Preview alias:
+    - health: `logs/md1-shrunk/polls/20260517T084743Z/preview-health-url.txt` + `logs/md1-shrunk/polls/20260517T084743Z/preview-health.txt`
+  - Notes:
+    - No production URLs used; preview only.
+
+- 2026-05-17T08:50:52Z preview viewer revalidation (Playwright; skybox + no-sky):
+  - Poll artifacts:
+    - `logs/md1-shrunk/polls/20260517T085052Z/`
+  - /sogs-migrated-viewer:
+    - bundled skybox smoke:
+      - log: `logs/md1-shrunk/polls/20260517T085052Z/playwright-sogs-migrated-skybox.txt`
+      - screenshot: `logs/md1-shrunk/polls/20260517T085052Z/sogs-migrated-viewer-smoke.png`
+    - no-sky smoke:
+      - log: `logs/md1-shrunk/polls/20260517T085052Z/playwright-sogs-migrated-nosky.txt`
+      - screenshot: `logs/md1-shrunk/polls/20260517T085052Z/sogs-migrated-viewer-nosky.png`
+  - /md1-viewer (single pose; camera check harness):
+    - bundled skybox pose render:
+      - log: `logs/md1-shrunk/polls/20260517T085052Z/playwright-md1-camera-check-skybox.txt`
+      - screenshot: `logs/md1-shrunk/polls/20260517T085052Z/md1-camera-check-skybox.png`
+    - no-sky pose render:
+      - log: `logs/md1-shrunk/polls/20260517T085052Z/playwright-md1-camera-check-nosky.txt`
+      - screenshot: `logs/md1-shrunk/polls/20260517T085052Z/md1-camera-check-nosky.png`
