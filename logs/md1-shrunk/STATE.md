@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T04:16:50Z
+updated: 2026-05-17T05:14:25Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -2417,3 +2417,39 @@ skybox, compression, artifact handoff, and visual gates.
   - GitHub workflows (exact-head):
     - branch run list -> `logs/md1-shrunk/polls/gh-run-list-20260517T0448Z.json` (latest observed run remains `CDK Deploy` `25980223287` `success` head `693fbae7...`)
     - exact head run list -> `logs/md1-shrunk/polls/gh-run-list-head-20260517T0448Z.json` -> `0` runs (commit includes `[skip ci]`)
+
+- 2026-05-17T05:14:25Z monitor poll (terminal; no new cloud work launched):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `6208f0f39544483f73246ea1e9fd2cf245fda8af` (`chore: record md1-shrunk post-push gh runs 20260517T0448Z [skip ci]`)
+    - `git status --porcelain=v1` -> clean
+  - AWS identity:
+    - `/opt/homebrew/bin/aws sts get-caller-identity --output json` -> `logs/md1-shrunk/polls/aws-sts-20260517T051425Z.json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions:
+    - `/opt/homebrew/bin/aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --status-filter RUNNING --max-results 20 --region us-west-2 --output json` -> `logs/md1-shrunk/polls/stepfn-running-staging-20260517T051425Z.json` -> RUNNING `0`
+  - SageMaker (cost bounded):
+    - InProgress processing jobs:
+      - `/opt/homebrew/bin/aws sagemaker list-processing-jobs --status-equals InProgress --sort-by CreationTime --sort-order Descending --max-results 50 --region us-west-2 --output json` -> `logs/md1-shrunk/polls/sm-processing-inprogress-20260517T051425Z.json` -> `0`
+    - InProgress training jobs:
+      - `/opt/homebrew/bin/aws sagemaker list-training-jobs --status-equals InProgress --sort-by CreationTime --sort-order Descending --max-results 50 --region us-west-2 --output json` -> `logs/md1-shrunk/polls/sm-training-inprogress-20260517T051425Z.json` -> `0`
+    - Owned job status (terminal Completed; no reruns):
+      - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `logs/md1-shrunk/polls/sm-describe-md1-shrunk-1456-sfm-1778866088-20260517T051425Z.json`
+      - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `logs/md1-shrunk/polls/sm-describe-md1shrunk1456-1778880862-3dgs-20260517T051425Z.json`
+      - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `logs/md1-shrunk/polls/sm-describe-md1shrunk1456-1778880862-compression-20260517T051425Z.json`
+  - Output listings:
+    - COLMAP output listing -> `logs/md1-shrunk/polls/s3-colmap-20260517T051425Z.txt` -> `Total Objects: 1468`, `Total Size: 9.2 GiB`
+    - 3DGS output listing -> `logs/md1-shrunk/polls/s3-3dgs-20260517T051425Z.txt` -> `model.tar.gz` (`212.0 MiB`)
+    - compression output listing -> `logs/md1-shrunk/polls/s3-compressed-20260517T051425Z.txt` -> `Total Objects: 22`, `Total Size: 28.7 MiB`
+    - public supersplat bundle listing -> `logs/md1-shrunk/polls/s3-public-supersplat_bundle-20260517T051425Z.txt`
+  - Public bundle health (anonymous):
+    - bundle URL -> `logs/md1-shrunk/polls/bundle-meta-url-20260517T051425Z.txt`
+    - HTTP HEAD:
+      - bundle meta -> `logs/md1-shrunk/polls/http-head-bundle-meta-20260517T051425Z.txt` -> `HTTP 200`
+      - bundle skybox -> `logs/md1-shrunk/polls/http-head-bundle-skybox-20260517T051425Z.txt` -> `HTTP 200`
+    - bundle meta snapshot -> `logs/md1-shrunk/polls/bundle-meta-20260517T051425Z.json`
+    - gaussian count -> `logs/md1-shrunk/polls/bundle-gaussians-20260517T051425Z.txt` -> `990025`
+  - GitHub workflows:
+    - branch run list -> `logs/md1-shrunk/polls/gh-run-list-20260517T051425Z.json` (latest observed run remains `CDK Deploy` `25980223287` `success` head `693fbae7...`)
+    - exact head run list -> `logs/md1-shrunk/polls/gh-run-list-head-20260517T051425Z.json` -> `0` runs (commit includes `[skip ci]`)
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
