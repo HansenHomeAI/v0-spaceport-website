@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T00:50:17Z
+updated: 2026-05-17T01:28:25Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -2026,3 +2026,63 @@ skybox, compression, artifact handoff, and visual gates.
       - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25977300236-20260517T005017Z.txt`
       - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25977300236-20260517T005017Z.json`
     - Pages deploy not triggered at this exact head (no `web/trigger-dev-build.txt` bump).
+
+- 2026-05-17T01:14:31Z poll (terminal reconfirm; no new launches):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `74b6281184439798eb8ff8db3f08ed698529bf9d`
+    - `git status --porcelain=v1` -> clean
+  - AWS identity:
+    - `logs/md1-shrunk/aws-sts-20260517T011431Z.json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions (staging):
+    - RUNNING executions under `SpaceportMLPipeline-staging`: `0`
+      - `logs/md1-shrunk/sfn-running-20260517T011431Z.json`
+  - SageMaker:
+    - InProgress processing jobs snapshot:
+      - `logs/md1-shrunk/sm-processing-inprogress-20260517T011431Z.json` (includes external `md1-tile00-h1i1lod-r40-1778978757`; left untouched)
+    - InProgress training jobs snapshot:
+      - `logs/md1-shrunk/sm-training-inprogress-20260517T011431Z.json` -> `0`
+    - Owned job terminal statuses reconfirm:
+      - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`
+        - `logs/md1-shrunk/sm-describe-md1-shrunk-1456-sfm-1778866088-20260517T011431Z.json`
+      - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`
+        - `logs/md1-shrunk/sm-describe-md1shrunk1456-1778880862-3dgs-20260517T011431Z.json`
+      - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`
+        - `logs/md1-shrunk/sm-describe-md1shrunk1456-1778880862-compression-20260517T011431Z.json`
+  - SfM gate snapshot (from `sfm_metadata.json` in the output prefix):
+    - `logs/md1-shrunk/sfm-metadata-20260517T011512Z.json` -> `dataset_image_count=1456`, `images_registered=1456`, `merged_component_count=1`, `points_3d=1103335`, `timed_out=false`
+  - S3 output presence reconfirm:
+    - COLMAP listing: `logs/md1-shrunk/s3-colmap-md1-shrunk-20260515T1641Z-20260517T011431Z.txt` -> `Total Objects: 1468`, `Total Size: 9.2 GiB`
+  - Public bundle HTTP health (anonymous):
+    - `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json` -> `HTTP 200`
+    - `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/background_skybox.webp` -> `HTTP 200`
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
+
+- 2026-05-17T01:28:25Z Pages re-trigger + preview viewer validation (exact-head):
+  - commit/push:
+    - `git rev-parse HEAD` -> `4328f9412db2437d85285d55c71bcda9143cb3ec` (`chore: trigger pages preview for md1-shrunk`)
+    - trigger: appended a new line to `web/trigger-dev-build.txt`
+  - GitHub workflows (exact-head; triggered by the push):
+    - `Deploy Next.js to Cloudflare Pages` run `25977807200` -> `success`
+      - watch: `logs/md1-shrunk/polls/gh-run-watch-pages-25977807200-20260517T012825Z.txt`
+      - run log: `logs/md1-shrunk/gh-pages-log-25977807200-20260517T012506Z.txt`
+      - preview URLs (from that run log):
+        - alias: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+        - hash: `https://8a05d563.v0-spaceport-website-preview2.pages.dev`
+    - `CDK Deploy` run `25977807203` -> `success`
+      - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25977807203-20260517T012825Z.txt`
+      - view: `logs/md1-shrunk/gh-run-25977807203-20260517T012506Z.json`
+  - Camera side-by-side (input vs render) using the exact-head Pages alias URL:
+    - viewer URL proof: `logs/md1-shrunk/polls/pages-preview-urls-20260517T012706Z.txt`
+    - input (from COLMAP output): `logs/md1-shrunk/polls/input-DJI_01029-20260517T012706Z.JPG`
+    - render (skybox): `logs/md1-shrunk/polls/render-skybox-DJI_01029-20260517T012706Z.png`
+    - render (no-sky): `logs/md1-shrunk/polls/render-nosky-DJI_01029-20260517T012706Z.png`
+    - side-by-side (skybox): `logs/md1-shrunk/polls/side-by-side-skybox-DJI_01029-20260517T012706Z.png`
+    - side-by-side (no-sky): `logs/md1-shrunk/polls/side-by-side-nosky-DJI_01029-20260517T012706Z.png`
+  - Public bundle gates reconfirm:
+    - bundle meta headers: `logs/md1-shrunk/polls/http-head-meta-20260517T012732Z.txt` -> `HTTP 200`
+    - skybox headers: `logs/md1-shrunk/polls/http-head-skybox-20260517T012732Z.txt` -> `HTTP 200`
+    - meta snapshot: `logs/md1-shrunk/polls/bundle-meta-20260517T012732Z.json` -> `gaussians=990025` (from `.means.shape[0]`)
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
