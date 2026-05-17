@@ -2946,3 +2946,15 @@ skybox, compression, artifact handoff, and visual gates.
       - watch: `logs/md1-shrunk/polls/20260517T101200Z/gh-run-watch-cdk-25987954545.txt`
   - Notes:
     - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
+
+- 2026-05-17T10:22:26Z post-push CI confirmation (no new ML launches):
+  - commit:
+    - `git rev-parse HEAD` -> `23914085b85bf5a71ed4b7cc6f6d010aced8ea59` (`chore: md1-shrunk poll 20260517T101200Z`)
+  - Poll artifacts:
+    - `logs/md1-shrunk/polls/20260517T101756Z/`
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` run `25988135800` -> `success`:
+      - watch: `logs/md1-shrunk/polls/20260517T101756Z/gh-run-watch-cdk-25988135800.txt`
+      - view: `logs/md1-shrunk/polls/20260517T101756Z/gh-run-view-cdk-25988135800.json`
+      - list: `logs/md1-shrunk/polls/20260517T101756Z/gh-run-list-branch.json`
+    - Note: `Deploy Next.js to Cloudflare Pages` not observed in the latest branch run list (logs-only change set).
