@@ -1,0 +1,1 @@
+colmap_gpu_spatial_heading_chunked images_registered=1456 points_3d=1103335 processing_time_seconds=12709.05
