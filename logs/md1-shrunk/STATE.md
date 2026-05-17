@@ -3731,3 +3731,11 @@ skybox, compression, artifact handoff, and visual gates.
     - comparisons: `logs/md1-shrunk/polls/20260517T194416Z/compare-DJI_01000.png`, `logs/md1-shrunk/polls/20260517T194416Z/compare-DJI_01029.png`, `logs/md1-shrunk/polls/20260517T194416Z/compare-DJI_01030.png`
   - Notes:
     - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
+
+- 2026-05-17T19:59:07Z exact-head GitHub Actions confirmation (post poll push; `[skip ci]` head):
+  - Evidence: `logs/md1-shrunk/polls/20260517T195907Z/`
+  - head commit:
+    - `logs/md1-shrunk/polls/20260517T195907Z/preflight.txt`
+  - exact-head run list expected `[]` (skip-ci head):
+    - `logs/md1-shrunk/polls/20260517T195907Z/gh-runs-for-head.json`
+    - `logs/md1-shrunk/polls/20260517T195907Z/gh-exact-head-run-count.txt`
