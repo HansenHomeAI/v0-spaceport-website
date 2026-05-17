@@ -2618,3 +2618,10 @@ skybox, compression, artifact handoff, and visual gates.
     - skybox HEAD 200 -> `logs/md1-shrunk/polls/20260517T071435Z/http-head-skybox.txt`
   - Notes:
     - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
+
+- 2026-05-17T07:22:05Z post-push confirmation (CI only; no new ML launches):
+  - commit:
+    - `git rev-parse HEAD` -> `40e491a8f4c6da5147db698d246718ec21176f3b` (`chore: md1-shrunk poll 20260517T071435Z`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` run `25984436488` -> `success`
+    - Note: `Deploy Next.js to Cloudflare Pages` did not trigger for this commit (logs-only change).
