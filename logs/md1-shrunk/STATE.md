@@ -3004,3 +3004,14 @@ skybox, compression, artifact handoff, and visual gates.
     - list + summary:
       - `logs/md1-shrunk/polls/20260517T104502Z/gh-run-list.json`
       - `logs/md1-shrunk/polls/20260517T104502Z/gh-summary.txt`
+
+- 2026-05-17T10:50:04Z post-push verification (logs-only; `[skip ci]`):
+  - commit:
+    - `git rev-parse HEAD` -> `509d98c852c0b6cd10ea8f1c577ea0fdbd4a3561` (`chore: md1-shrunk poll 20260517T104502Z [skip ci]`)
+  - Poll artifacts:
+    - `logs/md1-shrunk/polls/20260517T105004Z/`
+  - GitHub Actions:
+    - exact head has `0` runs (commit message includes `[skip ci]`)
+    - evidence:
+      - `logs/md1-shrunk/polls/20260517T105004Z/gh-run-list.json`
+      - `logs/md1-shrunk/polls/20260517T105004Z/gh-summary.txt`
