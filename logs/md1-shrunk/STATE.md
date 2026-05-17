@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T10:27:20Z
+updated: 2026-05-17T11:14:28Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -3015,3 +3015,29 @@ skybox, compression, artifact handoff, and visual gates.
     - evidence:
       - `logs/md1-shrunk/polls/20260517T105004Z/gh-run-list.json`
       - `logs/md1-shrunk/polls/20260517T105004Z/gh-summary.txt`
+
+- 2026-05-17T11:14:28Z poll (no action; cost bounded):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `a324ae142311cf19d1cc1afd337519216ab1f75d`
+  - Poll artifacts:
+    - `logs/md1-shrunk/polls/20260517T111428Z/`
+  - AWS identity:
+    - `logs/md1-shrunk/polls/20260517T111428Z/aws-identity.json` (account `975050048887`)
+  - Step Functions (staging pipeline; region `us-west-2`):
+    - `logs/md1-shrunk/polls/20260517T111428Z/stepfunctions-list-executions-staging-running.json` -> RUNNING `0`
+  - SageMaker state (region `us-west-2`):
+    - InProgress processing jobs: `0`
+    - InProgress training jobs: `0`
+    - terminal job statuses (all `Completed`):
+      - SfM: `logs/md1-shrunk/polls/20260517T111428Z/sagemaker-describe-sfm.json`
+      - 3DGS: `logs/md1-shrunk/polls/20260517T111428Z/sagemaker-describe-3dgs.json`
+      - compression: `logs/md1-shrunk/polls/20260517T111428Z/sagemaker-describe-compression.json`
+  - S3 outputs still present:
+    - COLMAP: `logs/md1-shrunk/polls/20260517T111428Z/s3-colmap.txt`
+    - compressed: `logs/md1-shrunk/polls/20260517T111428Z/s3-compressed.txt`
+  - Public preview + bundle HTTP sanity:
+    - `logs/md1-shrunk/polls/20260517T111428Z/http-check.txt` -> preview `/health.txt` HTTP 200; bundle `meta.json` HTTP 200; bundle `background_skybox.webp` HTTP 200
+  - GitHub Actions (branch snapshot):
+    - `logs/md1-shrunk/polls/20260517T111428Z/gh-run-list.json`
+    - exact head has `0` runs (commit message includes `[skip ci]`; no new workflows expected at `a324ae14...`)

@@ -1,0 +1,6 @@
+## poll 20260517T111428Z
+date_utc=2026-05-17T11:15:55Z
+branch=agent-113647-md1-baseline-e2e
+head=a324ae142311cf19d1cc1afd337519216ab1f75d
+upstream=origin/agent-113647-md1-baseline-e2e
+working_tree=dirty
