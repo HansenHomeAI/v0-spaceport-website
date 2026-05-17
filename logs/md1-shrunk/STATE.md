@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T07:16:23Z
+updated: 2026-05-17T07:45:36Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -2625,3 +2625,34 @@ skybox, compression, artifact handoff, and visual gates.
   - GitHub workflows (exact-head):
     - `CDK Deploy` run `25984436488` -> `success`
     - Note: `Deploy Next.js to Cloudflare Pages` did not trigger for this commit (logs-only change).
+
+- 2026-05-17T07:45:36Z idle poll (no new launches; terminal reconfirm):
+  - Poll artifacts:
+    - `logs/md1-shrunk/polls/20260517T074536Z/`
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `cec8eec78fcea2c178fef52c3db271a2068969b5`
+    - `git status --porcelain=v1` -> new poll artifacts under `logs/md1-shrunk/polls/20260517T074536Z/`
+  - AWS identity:
+    - `/opt/homebrew/bin/aws sts get-caller-identity --output json` -> `logs/md1-shrunk/polls/20260517T074536Z/aws-sts.json` (account `975050048887`)
+  - Step Functions:
+    - staging RUNNING=0:
+      - `/opt/homebrew/bin/aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --status-filter RUNNING --max-results 10 --region us-west-2 --output json` -> `logs/md1-shrunk/polls/20260517T074536Z/stepfunctions-list-executions-staging.json`
+    - branch pipelines RUNNING=0 (enumerated from `stepfunctions-list-state-machines.json`):
+      - `logs/md1-shrunk/polls/20260517T074536Z/stepfunctions-branch-arns.txt`
+      - `logs/md1-shrunk/polls/20260517T074536Z/stepfunctions-list-executions-branch-running.json`
+  - SageMaker (owned jobs terminal; cost bounded):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `logs/md1-shrunk/polls/20260517T074536Z/sagemaker-describe-sfm.json` (`Completed`)
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `logs/md1-shrunk/polls/20260517T074536Z/sagemaker-describe-3dgs.json` (`Completed`)
+    - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `logs/md1-shrunk/polls/20260517T074536Z/sagemaker-describe-compression.json` (`Completed`)
+    - InProgress processing jobs: `0` -> `logs/md1-shrunk/polls/20260517T074536Z/sagemaker-list-processing-InProgress.json`
+    - InProgress training jobs: `0` -> `logs/md1-shrunk/polls/20260517T074536Z/sagemaker-list-training-InProgress.json`
+  - S3 output presence reconfirm (owned outputs):
+    - COLMAP: `logs/md1-shrunk/polls/20260517T074536Z/s3-colmap.txt` (`Total Size: 9.2 GiB`)
+    - 3DGS: `logs/md1-shrunk/polls/20260517T074536Z/s3-3dgs.txt` (`model.tar.gz` `212.0 MiB`)
+    - compressed: `logs/md1-shrunk/polls/20260517T074536Z/s3-compressed.txt` (`Total Size: 28.7 MiB`)
+  - GitHub workflows (exact-head):
+    - `gh run list ...` -> `logs/md1-shrunk/polls/20260517T074536Z/gh-run-list-branch.json`
+    - exact-head runs: `logs/md1-shrunk/polls/20260517T074536Z/gh-runs-for-head.tsv` -> `CDK Deploy` `25984520953` `success` (no Pages run triggered at this logs-only head)
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
