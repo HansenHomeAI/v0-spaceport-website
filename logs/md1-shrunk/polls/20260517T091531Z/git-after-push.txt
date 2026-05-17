@@ -1,6 +1,6 @@
-timestamp_utc=20260517T092031Z
+timestamp_utc=20260517T092118Z
 branch=agent-113647-md1-baseline-e2e
-head=2f203224d8bea79bde5fc9967e6f69b60c00c84d
-2f203224 chore: md1-shrunk poll gh proof 20260517T091531Z [skip ci]
+head=59a7c48508f571e17e664ab1bd90299069cc83d2
+59a7c485 chore: md1-shrunk poll tail 20260517T091531Z [skip ci]
 ## agent-113647-md1-baseline-e2e...origin/agent-113647-md1-baseline-e2e
  M logs/md1-shrunk/polls/20260517T091531Z/git-after-push.txt

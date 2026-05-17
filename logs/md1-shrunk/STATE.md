@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T09:20:31Z
+updated: 2026-05-17T09:21:18Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -226,7 +226,7 @@ skybox, compression, artifact handoff, and visual gates.
 - Branch/head/status:
   - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
   - poll-time `git rev-parse HEAD` -> `6aab7a76c8afe54f9af2f62392b1146ff42e8fd1` (`[skip ci]`)
-  - post-push `git rev-parse HEAD` -> `2f203224d8bea79bde5fc9967e6f69b60c00c84d` (`[skip ci]`)
+  - evidence-capture `git rev-parse HEAD` -> `59a7c48508f571e17e664ab1bd90299069cc83d2` (`[skip ci]`)
   - evidence: `logs/md1-shrunk/polls/20260517T091531Z/git-after-push.txt`
 - AWS identity (via boto3, region `us-west-2`):
   - `Account=975050048887`, `Arn=arn:aws:iam::975050048887:root`
@@ -243,7 +243,7 @@ skybox, compression, artifact handoff, and visual gates.
     - `logs/md1-shrunk/polls/20260517T091531Z/sagemaker-list-processing-jobs-InProgress.json`
     - `logs/md1-shrunk/polls/20260517T091531Z/sagemaker-list-training-jobs-InProgress.json`
 - GitHub Actions (exact head + latest, via `gh`):
-  - exact head `2f203224...` has `0` runs (commit message includes `[skip ci]`)
+  - exact head `59a7c485...` has `0` runs (commit message includes `[skip ci]`)
   - latest `CDK Deploy` run: `25986385371` -> `success` (head `7d1b62b4...`)
   - latest `Pages` run: `25983995070` -> `success` (head `3bad045c...`)
   - evidence:
