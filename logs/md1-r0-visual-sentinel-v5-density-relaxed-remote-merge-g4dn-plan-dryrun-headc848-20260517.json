@@ -1,0 +1,26 @@
+{
+  "artifact_inputs": [
+    {
+      "artifact_input_name": "artifact-00",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-20260515/tiles/tile_04/md1-r0vissent-v5relax-1778837840-tile-04/output/model.tar.gz"
+    }
+  ],
+  "selected_tile_ids": [
+    "tile_04"
+  ],
+  "source_summary_json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-leaf-reuse-summary-headc848-20260517.json",
+  "tiles": [
+    {
+      "artifact_input_name": "artifact-00",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-20260515/tiles/tile_04/md1-r0vissent-v5relax-1778837840-tile-04/output/model.tar.gz",
+      "cache_status": "validated_leaf_reuse",
+      "candidate_members": [
+        "splat.ply"
+      ],
+      "quality_gate_status": "leaf_gate_passed_merge_review_allowed",
+      "stage_name": "T0_tile_04_validated_leaf_reuse",
+      "stage_type": "train",
+      "tile_id": "tile_04"
+    }
+  ]
+}

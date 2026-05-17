@@ -1,0 +1,54 @@
+{
+  "checked_at": "2026-05-17T00:43:55.714977+00:00",
+  "decision": "merge_review_allowed",
+  "block_reasons": [],
+  "required_tile_ids": [
+    "tile_04"
+  ],
+  "selected_tile_ids": [
+    "tile_04"
+  ],
+  "required_context_tile_ids": [
+    "tile_10",
+    "tile_13",
+    "tile_01"
+  ],
+  "context_support_tile_ids": [
+    "tile_10",
+    "tile_13",
+    "tile_01"
+  ],
+  "required_targeted_blockers": [
+    "ai_visual_color_shift_defect",
+    "ai_visual_geometry_alignment_defect",
+    "ai_visual_horizon_continuity_defect",
+    "ai_visual_texture_smearing_defect"
+  ],
+  "targeted_quality_blockers": [
+    "ai_visual_color_shift_defect",
+    "ai_visual_geometry_alignment_defect",
+    "ai_visual_horizon_continuity_defect",
+    "ai_visual_texture_smearing_defect",
+    "boundary_no_required_improvement",
+    "boundary_v18_median_lpips_regression",
+    "horizon_psnr_regression",
+    "horizon_ssim_regression",
+    "horizon_lpips_regression",
+    "horizon_sky_score_regression",
+    "near_detail_ssim_regression",
+    "leaf_required_paths_missing",
+    "splat_vertex_count_below_reference_ratio",
+    "splat_vertex_count_below_hard_min"
+  ],
+  "post_leaf_preflight_gate_tile_ids": [
+    "tile_04"
+  ],
+  "leaf_gate_summary_tile_ids": [
+    "tile_04"
+  ],
+  "passing_prior_or_current_leaf_tile_ids": [
+    "tile_04"
+  ],
+  "submitted_jobs": [],
+  "next_required_action": "merge/review may proceed"
+}
