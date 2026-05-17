@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T10:17:56Z
+updated: 2026-05-17T10:27:20Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -2957,4 +2957,16 @@ skybox, compression, artifact handoff, and visual gates.
       - watch: `logs/md1-shrunk/polls/20260517T101756Z/gh-run-watch-cdk-25988135800.txt`
       - view: `logs/md1-shrunk/polls/20260517T101756Z/gh-run-view-cdk-25988135800.json`
       - list: `logs/md1-shrunk/polls/20260517T101756Z/gh-run-list-branch.json`
+    - Note: `Deploy Next.js to Cloudflare Pages` not observed in the latest branch run list (logs-only change set).
+
+- 2026-05-17T10:27:20Z post-push CI confirmation (exact-head green; no new ML launches):
+  - commit:
+    - `git rev-parse HEAD` -> `0962cfe958355aa85594efefeb73499ab80de241` (`chore: md1-shrunk CI proof 20260517T101756Z`)
+  - Poll artifacts:
+    - `logs/md1-shrunk/polls/20260517T102340Z/`
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` run `25988229244` -> `success`:
+      - watch: `logs/md1-shrunk/polls/20260517T102340Z/gh-run-watch-cdk-25988229244.txt`
+      - view: `logs/md1-shrunk/polls/20260517T102340Z/gh-run-view-cdk-25988229244.json`
+      - list: `logs/md1-shrunk/polls/20260517T102340Z/gh-run-list-branch.json`
     - Note: `Deploy Next.js to Cloudflare Pages` not observed in the latest branch run list (logs-only change set).
