@@ -77693,6 +77693,15 @@ class GSplatAssetLoader extends GSplatAssetLoaderBase {
 				super(), this._urlToAsset = new Map(), this.maxConcurrentLoads = 2, this.maxRetries = 2, this._currentlyLoading = new Set(), this._loadQueue = [], this._retryCount = new Map();
 				this._registry = registry;
 		}
+		_requestRender() {
+				const app = this._registry?._loader?._app || globalThis.document?.querySelector?.('pc-app')?.app;
+				if (app) {
+						app.renderNextFrame = true;
+						globalThis.setTimeout?.(() => {
+								app.renderNextFrame = true;
+						}, 0);
+				}
+		}
 		get isLoading() {
 				return this._currentlyLoading.size > 0 || this._loadQueue.length > 0;
 		}
@@ -77704,6 +77713,7 @@ class GSplatAssetLoader extends GSplatAssetLoaderBase {
 				if (this._loadQueue.includes(url)) {
 						return;
 				}
+				this._requestRender();
 				if (this._currentlyLoading.size < this.maxConcurrentLoads) {
 						this._startLoading(url);
 				} else {
@@ -77733,6 +77743,7 @@ class GSplatAssetLoader extends GSplatAssetLoaderBase {
 				this._currentlyLoading.delete(url);
 				this._retryCount.delete(url);
 				this._processQueue();
+				this._requestRender();
 		}
 		_onAssetLoadError(url, asset, err) {
 				const retryCount = this._retryCount.get(url) || 0;
@@ -77746,6 +77757,7 @@ class GSplatAssetLoader extends GSplatAssetLoaderBase {
 						this._retryCount.delete(url);
 						this._processQueue();
 				}
+				this._requestRender();
 		}
 		_processQueue() {
 				while(this._currentlyLoading.size < this.maxConcurrentLoads && this._loadQueue.length > 0){
@@ -101638,16 +101650,48 @@ class Viewer {
                         });
                     }
                 });
-            }
-            else {
-                // FIXME: unified doesn't have a sorter, need to add a "ready" event for this case
-                // till then screenshots will likely not work correctly.
-                state.readyToRender = true;
-                events.fire('firstFrame');
-                window.firstFrame?.();try{window.parent&&window.parent.postMessage({type:"supersplat:firstFrame"},"*");}catch(e){};
-            }
-        });
-    }
+			}
+			else {
+				let firstUnifiedFrameEmitted = false;
+				const hasRenderableUnifiedSplats = () => {
+						const director = app.renderer?.gsplatDirector;
+						if (!director) return false;
+						for (const cameraData of director.camerasMap.values()){
+								for (const layerData of cameraData.layersMap.values()){
+										const manager = layerData.gsplatManager;
+										const worldState = manager.worldStates.get(manager.sortedVersion);
+										if (worldState?.sortedBefore && worldState.splats.some((splat)=>splat.activeSplats > 0)) {
+												return true;
+										}
+								}
+						}
+						return false;
+				};
+				const emitUnifiedFirstFrame = () => {
+						if (firstUnifiedFrameEmitted) return;
+						firstUnifiedFrameEmitted = true;
+						app.once('frameend', () => {
+								events.fire('firstFrame');
+								window.firstFrame?.();try{window.parent&&window.parent.postMessage({type:"supersplat:firstFrame"},"*");}catch(e){};
+						});
+						app.renderNextFrame = true;
+				};
+				const onUnifiedFrameReady = (_camera, _layer, ready, loading) => {
+						if (ready && hasRenderableUnifiedSplats()) {
+								app.systems.gsplat.off('frame:ready', onUnifiedFrameReady);
+								emitUnifiedFirstFrame();
+						} else if (loading) {
+								app.renderNextFrame = true;
+						}
+				};
+				// Unified LOD loads drawable chunks after lod-meta.json; keep rendering until
+				// a nonzero sorted world state exists before announcing screenshot readiness.
+				state.readyToRender = true;
+				app.systems.gsplat.on('frame:ready', onUnifiedFrameReady);
+				app.renderNextFrame = true;
+			}
+		});
+	}
     // configure camera based on application mode and post process settings
     configureCamera(settings) {
         const { global } = this;

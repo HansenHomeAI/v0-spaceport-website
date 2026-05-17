@@ -1,0 +1,241 @@
+{
+  "cases": [
+    {
+      "active_files": [
+        {
+          "hasResource": false,
+          "idx": 1,
+          "intervals": 16,
+          "lodIndex": 3
+        }
+      ],
+      "active_placements": 0,
+      "asset_loader_currently_loading": [],
+      "asset_loader_is_loading": false,
+      "asset_loader_queue": [],
+      "id": "r40_tile00",
+      "last_world_state_version": 4,
+      "latest_world_state": {
+        "activeSplats": [],
+        "lodIndexes": [],
+        "sortedBefore": true,
+        "splats": 0,
+        "textureSize": 1,
+        "totalUsedPixels": 0,
+        "version": 4
+      },
+      "node_lod_histogram": {
+        "-1": 16
+      },
+      "pending_files": [
+        1
+      ],
+      "prefetch_pending_files": [
+        1,
+        0,
+        2,
+        4,
+        6,
+        7,
+        8,
+        11,
+        3,
+        10
+      ],
+      "ready_after_robust_wait": false,
+      "screenshot_visible": null,
+      "sorted_version": 4
+    },
+    {
+      "active_files": [
+        {
+          "hasResource": false,
+          "idx": 3,
+          "intervals": 22,
+          "lodIndex": 3
+        }
+      ],
+      "active_placements": 0,
+      "asset_loader_currently_loading": [],
+      "asset_loader_is_loading": false,
+      "asset_loader_queue": [],
+      "id": "r41_tile01",
+      "last_world_state_version": 4,
+      "latest_world_state": {
+        "activeSplats": [],
+        "lodIndexes": [],
+        "sortedBefore": true,
+        "splats": 0,
+        "textureSize": 1,
+        "totalUsedPixels": 0,
+        "version": 4
+      },
+      "node_lod_histogram": {
+        "-1": 22
+      },
+      "pending_files": [
+        3
+      ],
+      "prefetch_pending_files": [
+        3,
+        1,
+        2,
+        4,
+        6,
+        7,
+        8,
+        10
+      ],
+      "ready_after_robust_wait": false,
+      "screenshot_visible": null,
+      "sorted_version": 4
+    },
+    {
+      "active_files": [
+        {
+          "hasResource": false,
+          "idx": 3,
+          "intervals": 19,
+          "lodIndex": 3
+        }
+      ],
+      "active_placements": 0,
+      "asset_loader_currently_loading": [],
+      "asset_loader_is_loading": false,
+      "asset_loader_queue": [],
+      "id": "r41_tile02",
+      "last_world_state_version": 4,
+      "latest_world_state": {
+        "activeSplats": [],
+        "lodIndexes": [],
+        "sortedBefore": true,
+        "splats": 0,
+        "textureSize": 1,
+        "totalUsedPixels": 0,
+        "version": 4
+      },
+      "node_lod_histogram": {
+        "-1": 19
+      },
+      "pending_files": [
+        3
+      ],
+      "prefetch_pending_files": [
+        3,
+        2,
+        1,
+        4,
+        6,
+        7,
+        9,
+        10
+      ],
+      "ready_after_robust_wait": false,
+      "screenshot_visible": null,
+      "sorted_version": 4
+    },
+    {
+      "active_files": [
+        {
+          "hasResource": false,
+          "idx": 3,
+          "intervals": 16,
+          "lodIndex": 3
+        }
+      ],
+      "active_placements": 0,
+      "asset_loader_currently_loading": [],
+      "asset_loader_is_loading": false,
+      "asset_loader_queue": [],
+      "id": "r41_tile03",
+      "last_world_state_version": 4,
+      "latest_world_state": {
+        "activeSplats": [],
+        "lodIndexes": [],
+        "sortedBefore": true,
+        "splats": 0,
+        "textureSize": 1,
+        "totalUsedPixels": 0,
+        "version": 4
+      },
+      "node_lod_histogram": {
+        "-1": 16
+      },
+      "pending_files": [
+        3
+      ],
+      "prefetch_pending_files": [
+        3,
+        2,
+        4,
+        6,
+        7,
+        8,
+        1
+      ],
+      "ready_after_robust_wait": false,
+      "screenshot_visible": null,
+      "sorted_version": 4
+    },
+    {
+      "active_files": [
+        {
+          "hasResource": false,
+          "idx": 3,
+          "intervals": 96,
+          "lodIndex": 3
+        }
+      ],
+      "active_placements": 0,
+      "asset_loader_currently_loading": [],
+      "asset_loader_is_loading": false,
+      "asset_loader_queue": [],
+      "id": "r41_tile04",
+      "last_world_state_version": 4,
+      "latest_world_state": {
+        "activeSplats": [],
+        "lodIndexes": [],
+        "sortedBefore": true,
+        "splats": 0,
+        "textureSize": 1,
+        "totalUsedPixels": 0,
+        "version": 4
+      },
+      "node_lod_histogram": {
+        "-1": 96
+      },
+      "pending_files": [
+        3
+      ],
+      "prefetch_pending_files": [
+        3,
+        1,
+        4,
+        2,
+        5,
+        7,
+        6,
+        8,
+        10,
+        11
+      ],
+      "ready_after_robust_wait": false,
+      "screenshot_visible": null,
+      "sorted_version": 4
+    }
+  ],
+  "createdAt": "2026-05-17T03:16Z",
+  "decision": "do_not_promote",
+  "evidence": {
+    "prior_browser_proof": "logs/sfm-production-spine/md1_r41_all_remaining_tiles_browser_proof_20260517T0231Z.json",
+    "prior_direct_visual_impact": "logs/sfm-production-spine/md1_r41_all_remaining_tiles_direct_visual_impact_analysis_20260517T0231Z.json",
+    "prior_failure_isolation": "logs/sfm-production-spine/md1_r41_remaining_tiles_viewer_failure_isolation_next_proof_20260517T0258Z.json",
+    "robust_direct_wait_sorted_worldstate": "logs/sfm-production-spine/md1_r41_robust_direct_wait_sorted_worldstate_20260517T0316Z.json",
+    "viewer_render_instrumentation": "logs/sfm-production-spine/md1_r41_viewer_render_instrumentation_20260517T0302Z.json"
+  },
+  "finding": "firstFrame/viewer-ready/network-200 are insufficient for unified LOD proof; in fresh direct sessions the r40 control and r41 tiles can remain black because the target LOD file stays pending with no resource while the asset loader reports idle and the sorted world state contains zero splats.",
+  "next_no_spend_step": "Instrument or patch the SuperSplat unified LOD loader/readiness path locally so a proof waits for nonzero sorted world state and diagnoses pending file resource promotion before any paid relaunch or all-tile compression claim.",
+  "not_proven": "No paid compression relaunch is justified by this evidence alone, and no all-tile viewer proof can be claimed from partial/ready/network status without visible splats.",
+  "project_final_decision": "not_production_ready_r41_viewer_visual_proof_failed",
+  "scope": "no-spend viewer/render isolation for r41 remaining-tile visible-splat failure"
+}

@@ -1,0 +1,30 @@
+{
+  "command": "cd web && npm run build",
+  "createdAt": "2026-05-17T03:52Z",
+  "exit_code": 0,
+  "local_visual_verification": "logs/sfm-production-spine/md1_r41_local_unified_lod_patch_verification_20260517T0352Z.json",
+  "local_visual_verification_result": {
+    "allFirstFrame": true,
+    "allVisible": true,
+    "firstFrameByCase": {
+      "r40_tile00": true,
+      "r41_tile01": true,
+      "r41_tile02": true,
+      "r41_tile03": true,
+      "r41_tile04": true
+    },
+    "visibleByCase": {
+      "r40_tile00": true,
+      "r41_tile01": true,
+      "r41_tile02": true,
+      "r41_tile03": true,
+      "r41_tile04": true
+    }
+  },
+  "patched_files": [
+    "web/public/supersplat-viewer/index.js",
+    "web/trigger-dev-build.txt"
+  ],
+  "result": "passed_with_existing_warnings",
+  "warnings_summary": "Next.js build completed successfully; warnings were existing Sentry dynamic import, img element, and React hook lint warnings outside the patched SuperSplat public viewer bundle."
+}

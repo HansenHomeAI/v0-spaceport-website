@@ -1,0 +1,2280 @@
+{
+  "createdAt": "2026-05-17T03:52Z",
+  "base": "http://localhost:3000",
+  "purpose": "local no-spend verification of SuperSplat unified LOD firstFrame and render-continuation patch",
+  "patchFiles": [
+    "web/public/supersplat-viewer/index.js",
+    "web/trigger-dev-build.txt"
+  ],
+  "results": [
+    {
+      "id": "r40_tile00",
+      "lodUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/lod-meta.json",
+      "viewerUrl": "http://localhost:3000/supersplat-viewer/index.html?settings=%2Fsupersplat-viewer%2Fsettings.json&content=%2Fapi%2Fsogs-proxy%2Fhttps%3A%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fmd1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z%2Fsupersplat_bundle%2Flod-meta.json&noui&noanim&cb=20260517T0352Z",
+      "firstFrame": true,
+      "diagBeforeF": {
+        "frame": 355,
+        "renderNextFrame": false,
+        "autoRender": false,
+        "firstFrameSeen": true,
+        "hasDirector": true,
+        "assetLoader": {
+          "isLoading": true,
+          "currentlyLoading": [
+            "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_6/meta.json",
+            "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/2_0/meta.json"
+          ],
+          "queue": [
+            "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_2/meta.json"
+          ],
+          "entries": [
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/3_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_1/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_3/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_1/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_4/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_6/meta.json",
+              "loaded": false,
+              "loading": true,
+              "hasResource": false
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/2_0/meta.json",
+              "loaded": false,
+              "loading": true,
+              "hasResource": false
+            }
+          ],
+          "entryCount": 9
+        },
+        "managers": [
+          {
+            "lastWorldStateVersion": 2,
+            "sortedVersion": 2,
+            "sorterJobsInFlight": 0,
+            "workBufferTextureSize": 859,
+            "rendererVisible": true,
+            "rendererInstancingCount": 5752,
+            "states": [
+              {
+                "version": 2,
+                "sortedBefore": true,
+                "splats": 6,
+                "textureSize": 859,
+                "totalUsedPixels": 736163,
+                "activeSplats": [
+                  14647,
+                  159307,
+                  96180,
+                  159655,
+                  159186,
+                  144587
+                ],
+                "lodIndexes": [
+                  3,
+                  0,
+                  1,
+                  0,
+                  0,
+                  1
+                ]
+              }
+            ],
+            "oct": [
+              {
+                "activePlacements": 6,
+                "pending": [
+                  8,
+                  11,
+                  3,
+                  10
+                ],
+                "prefetchPending": [
+                  8,
+                  11,
+                  3,
+                  10
+                ],
+                "nodeLodHistogram": {
+                  "0": 3,
+                  "1": 5,
+                  "3": 3,
+                  "-1": 5
+                },
+                "activeFiles": [
+                  {
+                    "idx": 0,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 1,
+                    "lodIndex": 0
+                  },
+                  {
+                    "idx": 1,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 3,
+                    "lodIndex": 3
+                  },
+                  {
+                    "idx": 2,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 2,
+                    "lodIndex": 1
+                  },
+                  {
+                    "idx": 3,
+                    "hasResource": false,
+                    "intervals": 2,
+                    "lodIndex": 2
+                  },
+                  {
+                    "idx": 4,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 1,
+                    "lodIndex": 0
+                  },
+                  {
+                    "idx": 6,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 1,
+                    "lodIndex": 0
+                  },
+                  {
+                    "idx": 7,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 3,
+                    "lodIndex": 1
+                  },
+                  {
+                    "idx": 8,
+                    "hasResource": false,
+                    "intervals": 1,
+                    "lodIndex": 0
+                  },
+                  {
+                    "idx": 10,
+                    "hasResource": false,
+                    "intervals": 1,
+                    "lodIndex": 1
+                  },
+                  {
+                    "idx": 11,
+                    "hasResource": false,
+                    "intervals": 1,
+                    "lodIndex": 0
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "camera": {
+          "pos": [
+            0,
+            0.5,
+            -2
+          ],
+          "euler": [
+            165.96375653207352,
+            -7.0167096047110005e-15,
+            180
+          ],
+          "fov": 1,
+          "near": 0.002170651105857298,
+          "far": 35.563947718365974
+        }
+      },
+      "diagAfterF": {
+        "frame": 507,
+        "renderNextFrame": false,
+        "autoRender": false,
+        "firstFrameSeen": true,
+        "hasDirector": true,
+        "assetLoader": {
+          "isLoading": false,
+          "currentlyLoading": [],
+          "queue": [],
+          "entries": [
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/3_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_1/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_3/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_1/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_4/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_6/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/2_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_2/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            }
+          ],
+          "entryCount": 10
+        },
+        "managers": [
+          {
+            "lastWorldStateVersion": 4,
+            "sortedVersion": 4,
+            "sorterJobsInFlight": 0,
+            "workBufferTextureSize": 277,
+            "rendererVisible": true,
+            "rendererInstancingCount": 600,
+            "states": [
+              {
+                "version": 4,
+                "sortedBefore": true,
+                "splats": 1,
+                "textureSize": 277,
+                "totalUsedPixels": 76729,
+                "activeSplats": [
+                  76635
+                ],
+                "lodIndexes": [
+                  3
+                ]
+              }
+            ],
+            "oct": [
+              {
+                "activePlacements": 1,
+                "pending": [],
+                "prefetchPending": [
+                  10
+                ],
+                "nodeLodHistogram": {
+                  "3": 16
+                },
+                "activeFiles": [
+                  {
+                    "idx": 1,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 16,
+                    "lodIndex": 3
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "camera": {
+          "pos": [
+            2654,
+            1324.6878662109375,
+            2650.5400390625
+          ],
+          "euler": [
+            -19.471220634490695,
+            44.99999999999999,
+            -1.124495910843664e-15
+          ],
+          "fov": 1,
+          "near": 3943.488113502932,
+          "far": 4012.919991268772
+        }
+      },
+      "screenshot": "../logs/sfm-production-spine/md1_r40_tile00_local_unified_lod_patch_after_f_20260517T0352Z.png",
+      "pixelStats": {
+        "width": 1400,
+        "height": 900,
+        "totalPixels": 1260000,
+        "nonBlackPixels": 344092,
+        "nonBlackFraction": 0.2730888888888889,
+        "nonTransparentPixels": 1260000,
+        "sampledUniqueColors": 17863
+      },
+      "visible": true,
+      "statusCounts": {
+        "200": 82
+      },
+      "responseCount": 82,
+      "failed": [],
+      "consoleMessages": [
+        {
+          "type": "log",
+          "text": "XrNavigation: Enabled methods - teleportation, smooth movement"
+        }
+      ],
+      "responsesTail": [
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_6/quats.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_6/sh0.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_6/shN_labels.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_6/shN_centroids.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/2_0/meta.json",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/2_0/means_u.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/2_0/means_l.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/2_0/quats.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/2_0/shN_centroids.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/2_0/sh0.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/2_0/scales.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/2_0/shN_labels.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_2/meta.json",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_2/means_u.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_2/means_l.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_2/scales.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_2/quats.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_2/sh0.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_2/shN_centroids.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_2/shN_labels.webp",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "id": "r41_tile01",
+      "lodUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/lod-meta.json",
+      "viewerUrl": "http://localhost:3000/supersplat-viewer/index.html?settings=%2Fsupersplat-viewer%2Fsettings.json&content=%2Fapi%2Fsogs-proxy%2Fhttps%3A%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fmd1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z%2Ftile01%2Fsupersplat_bundle%2Flod-meta.json&noui&noanim&cb=20260517T0352Z",
+      "firstFrame": true,
+      "diagBeforeF": {
+        "frame": 308,
+        "renderNextFrame": false,
+        "autoRender": false,
+        "firstFrameSeen": true,
+        "hasDirector": true,
+        "assetLoader": {
+          "isLoading": true,
+          "currentlyLoading": [
+            "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/meta.json"
+          ],
+          "queue": [],
+          "entries": [
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/3_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/2_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_1/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_3/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_1/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/meta.json",
+              "loaded": false,
+              "loading": true,
+              "hasResource": false
+            }
+          ],
+          "entryCount": 8
+        },
+        "managers": [
+          {
+            "lastWorldStateVersion": 2,
+            "sortedVersion": 2,
+            "sorterJobsInFlight": 0,
+            "workBufferTextureSize": 749,
+            "rendererVisible": true,
+            "rendererInstancingCount": 4383,
+            "states": [
+              {
+                "version": 2,
+                "sortedBefore": true,
+                "splats": 6,
+                "textureSize": 749,
+                "totalUsedPixels": 561001,
+                "activeSplats": [
+                  13195,
+                  69186,
+                  98138,
+                  145976,
+                  145160,
+                  87057
+                ],
+                "lodIndexes": [
+                  3,
+                  2,
+                  1,
+                  0,
+                  0,
+                  1
+                ]
+              }
+            ],
+            "oct": [
+              {
+                "activePlacements": 6,
+                "pending": [
+                  8,
+                  10
+                ],
+                "prefetchPending": [
+                  8,
+                  10
+                ],
+                "nodeLodHistogram": {
+                  "0": 2,
+                  "1": 5,
+                  "2": 7,
+                  "3": 6,
+                  "-1": 2
+                },
+                "activeFiles": [
+                  {
+                    "idx": 1,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 7,
+                    "lodIndex": 2
+                  },
+                  {
+                    "idx": 2,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 3,
+                    "lodIndex": 1
+                  },
+                  {
+                    "idx": 3,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 6,
+                    "lodIndex": 3
+                  },
+                  {
+                    "idx": 4,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 1,
+                    "lodIndex": 0
+                  },
+                  {
+                    "idx": 6,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 1,
+                    "lodIndex": 0
+                  },
+                  {
+                    "idx": 7,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 2,
+                    "lodIndex": 1
+                  },
+                  {
+                    "idx": 8,
+                    "hasResource": false,
+                    "intervals": 1,
+                    "lodIndex": 0
+                  },
+                  {
+                    "idx": 10,
+                    "hasResource": false,
+                    "intervals": 1,
+                    "lodIndex": 0
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "camera": {
+          "pos": [
+            0,
+            0.5,
+            -2
+          ],
+          "euler": [
+            165.96375653207352,
+            -7.0167096047110005e-15,
+            180
+          ],
+          "fov": 1,
+          "near": 0.003315211370047014,
+          "far": 54.31642308685028
+        }
+      },
+      "diagAfterF": {
+        "frame": 458,
+        "renderNextFrame": false,
+        "autoRender": false,
+        "firstFrameSeen": true,
+        "hasDirector": true,
+        "assetLoader": {
+          "isLoading": false,
+          "currentlyLoading": [],
+          "queue": [],
+          "entries": [
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/3_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/2_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_1/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_3/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_1/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            }
+          ],
+          "entryCount": 8
+        },
+        "managers": [
+          {
+            "lastWorldStateVersion": 4,
+            "sortedVersion": 4,
+            "sorterJobsInFlight": 0,
+            "workBufferTextureSize": 265,
+            "rendererVisible": true,
+            "rendererInstancingCount": 549,
+            "states": [
+              {
+                "version": 4,
+                "sortedBefore": true,
+                "splats": 1,
+                "textureSize": 265,
+                "totalUsedPixels": 70225,
+                "activeSplats": [
+                  70069
+                ],
+                "lodIndexes": [
+                  3
+                ]
+              }
+            ],
+            "oct": [
+              {
+                "activePlacements": 1,
+                "pending": [],
+                "prefetchPending": [
+                  10
+                ],
+                "nodeLodHistogram": {
+                  "3": 22
+                },
+                "activeFiles": [
+                  {
+                    "idx": 3,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 22,
+                    "lodIndex": 3
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "camera": {
+          "pos": [
+            3884.165283203125,
+            1945.0145263671875,
+            3886.2744140625
+          ],
+          "euler": [
+            -19.471220634490695,
+            44.99999999999999,
+            0
+          ],
+          "fov": 1,
+          "near": 5775.26836868922,
+          "far": 5876.95188234474
+        }
+      },
+      "screenshot": "../logs/sfm-production-spine/md1_r41_tile01_local_unified_lod_patch_after_f_20260517T0352Z.png",
+      "pixelStats": {
+        "width": 1400,
+        "height": 900,
+        "totalPixels": 1260000,
+        "nonBlackPixels": 231905,
+        "nonBlackFraction": 0.1840515873015873,
+        "nonTransparentPixels": 1260000,
+        "sampledUniqueColors": 12558
+      },
+      "visible": true,
+      "statusCounts": {
+        "200": 66
+      },
+      "responseCount": 66,
+      "failed": [],
+      "consoleMessages": [
+        {
+          "type": "log",
+          "text": "XrNavigation: Enabled methods - teleportation, smooth movement"
+        }
+      ],
+      "responsesTail": [
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_1/sh0.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_1/quats.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_1/shN_centroids.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_1/shN_labels.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/meta.json",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/means_u.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/means_l.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/quats.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/scales.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/shN_centroids.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/sh0.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/shN_labels.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/meta.json",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/means_l.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/means_u.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/quats.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/sh0.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/shN_centroids.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/shN_labels.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/scales.webp",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "id": "r41_tile02",
+      "lodUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/lod-meta.json",
+      "viewerUrl": "http://localhost:3000/supersplat-viewer/index.html?settings=%2Fsupersplat-viewer%2Fsettings.json&content=%2Fapi%2Fsogs-proxy%2Fhttps%3A%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fmd1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z%2Ftile02%2Fsupersplat_bundle%2Flod-meta.json&noui&noanim&cb=20260517T0352Z",
+      "firstFrame": true,
+      "diagBeforeF": {
+        "frame": 384,
+        "renderNextFrame": false,
+        "autoRender": false,
+        "firstFrameSeen": true,
+        "hasDirector": true,
+        "assetLoader": {
+          "isLoading": false,
+          "currentlyLoading": [],
+          "queue": [],
+          "entries": [
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/3_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/2_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_1/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_3/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_1/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_6/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            }
+          ],
+          "entryCount": 8
+        },
+        "managers": [
+          {
+            "lastWorldStateVersion": 2,
+            "sortedVersion": 2,
+            "sorterJobsInFlight": 0,
+            "workBufferTextureSize": 823,
+            "rendererVisible": true,
+            "rendererInstancingCount": 5286,
+            "states": [
+              {
+                "version": 2,
+                "sortedBefore": true,
+                "splats": 7,
+                "textureSize": 823,
+                "totalUsedPixels": 676506,
+                "activeSplats": [
+                  9896,
+                  43322,
+                  98721,
+                  145788,
+                  145159,
+                  86749,
+                  143885
+                ],
+                "lodIndexes": [
+                  3,
+                  1,
+                  2,
+                  0,
+                  0,
+                  1,
+                  0
+                ]
+              }
+            ],
+            "oct": [
+              {
+                "activePlacements": 7,
+                "pending": [
+                  10
+                ],
+                "prefetchPending": [
+                  10
+                ],
+                "nodeLodHistogram": {
+                  "0": 3,
+                  "1": 3,
+                  "2": 8,
+                  "3": 4,
+                  "-1": 1
+                },
+                "activeFiles": [
+                  {
+                    "idx": 1,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 8,
+                    "lodIndex": 2
+                  },
+                  {
+                    "idx": 2,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 1,
+                    "lodIndex": 1
+                  },
+                  {
+                    "idx": 3,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 4,
+                    "lodIndex": 3
+                  },
+                  {
+                    "idx": 4,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 1,
+                    "lodIndex": 0
+                  },
+                  {
+                    "idx": 6,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 1,
+                    "lodIndex": 0
+                  },
+                  {
+                    "idx": 7,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 2,
+                    "lodIndex": 1
+                  },
+                  {
+                    "idx": 9,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 1,
+                    "lodIndex": 0
+                  },
+                  {
+                    "idx": 10,
+                    "hasResource": false,
+                    "intervals": 1,
+                    "lodIndex": 0
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "camera": {
+          "pos": [
+            0,
+            0.5,
+            -2
+          ],
+          "euler": [
+            165.96375653207352,
+            -7.0167096047110005e-15,
+            180
+          ],
+          "fov": 1,
+          "near": 0.002621326289127114,
+          "far": 42.947809921058635
+        }
+      },
+      "diagAfterF": {
+        "frame": 535,
+        "renderNextFrame": false,
+        "autoRender": false,
+        "firstFrameSeen": true,
+        "hasDirector": true,
+        "assetLoader": {
+          "isLoading": false,
+          "currentlyLoading": [],
+          "queue": [],
+          "entries": [
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/3_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/2_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_1/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_3/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_1/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_6/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            }
+          ],
+          "entryCount": 8
+        },
+        "managers": [
+          {
+            "lastWorldStateVersion": 4,
+            "sortedVersion": 4,
+            "sorterJobsInFlight": 0,
+            "workBufferTextureSize": 265,
+            "rendererVisible": true,
+            "rendererInstancingCount": 547,
+            "states": [
+              {
+                "version": 4,
+                "sortedBefore": true,
+                "splats": 1,
+                "textureSize": 265,
+                "totalUsedPixels": 69960,
+                "activeSplats": [
+                  69737
+                ],
+                "lodIndexes": [
+                  3
+                ]
+              }
+            ],
+            "oct": [
+              {
+                "activePlacements": 1,
+                "pending": [],
+                "prefetchPending": [],
+                "nodeLodHistogram": {
+                  "3": 19
+                },
+                "activeFiles": [
+                  {
+                    "idx": 3,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 19,
+                    "lodIndex": 3
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "camera": {
+          "pos": [
+            3526.847412109375,
+            1757.7930908203125,
+            3523.46240234375
+          ],
+          "euler": [
+            -19.471220634490695,
+            44.99999999999999,
+            -1.124495910843664e-15
+          ],
+          "fov": 1,
+          "near": 5250.0852306622155,
+          "far": 5342.521993625293
+        }
+      },
+      "screenshot": "../logs/sfm-production-spine/md1_r41_tile02_local_unified_lod_patch_after_f_20260517T0352Z.png",
+      "pixelStats": {
+        "width": 1400,
+        "height": 900,
+        "totalPixels": 1260000,
+        "nonBlackPixels": 219275,
+        "nonBlackFraction": 0.17402777777777778,
+        "nonTransparentPixels": 1260000,
+        "sampledUniqueColors": 12237
+      },
+      "visible": true,
+      "statusCounts": {
+        "200": 66
+      },
+      "responseCount": 66,
+      "failed": [],
+      "consoleMessages": [
+        {
+          "type": "log",
+          "text": "XrNavigation: Enabled methods - teleportation, smooth movement"
+        }
+      ],
+      "responsesTail": [
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_1/scales.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_1/sh0.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_1/shN_centroids.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_1/shN_labels.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/meta.json",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/means_l.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/means_u.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/quats.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/scales.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/sh0.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/shN_centroids.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/shN_labels.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_6/meta.json",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_6/means_u.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_6/means_l.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_6/quats.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_6/scales.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_6/sh0.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_6/shN_centroids.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_6/shN_labels.webp",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "id": "r41_tile03",
+      "lodUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/lod-meta.json",
+      "viewerUrl": "http://localhost:3000/supersplat-viewer/index.html?settings=%2Fsupersplat-viewer%2Fsettings.json&content=%2Fapi%2Fsogs-proxy%2Fhttps%3A%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fmd1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z%2Ftile03%2Fsupersplat_bundle%2Flod-meta.json&noui&noanim&cb=20260517T0352Z",
+      "firstFrame": true,
+      "diagBeforeF": {
+        "frame": 332,
+        "renderNextFrame": false,
+        "autoRender": false,
+        "firstFrameSeen": true,
+        "hasDirector": true,
+        "assetLoader": {
+          "isLoading": false,
+          "currentlyLoading": [],
+          "queue": [],
+          "entries": [
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/3_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/1_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_1/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/1_1/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_3/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            }
+          ],
+          "entryCount": 7
+        },
+        "managers": [
+          {
+            "lastWorldStateVersion": 2,
+            "sortedVersion": 2,
+            "sorterJobsInFlight": 0,
+            "workBufferTextureSize": 880,
+            "rendererVisible": true,
+            "rendererInstancingCount": 6050,
+            "states": [
+              {
+                "version": 2,
+                "sortedBefore": true,
+                "splats": 6,
+                "textureSize": 880,
+                "totalUsedPixels": 774400,
+                "activeSplats": [
+                  16149,
+                  156044,
+                  260957,
+                  78205,
+                  129892,
+                  130393
+                ],
+                "lodIndexes": [
+                  3,
+                  1,
+                  0,
+                  1,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "oct": [
+              {
+                "activePlacements": 6,
+                "pending": [
+                  1
+                ],
+                "prefetchPending": [
+                  1
+                ],
+                "nodeLodHistogram": {
+                  "0": 4,
+                  "1": 6,
+                  "3": 4,
+                  "-1": 2
+                },
+                "activeFiles": [
+                  {
+                    "idx": 1,
+                    "hasResource": false,
+                    "intervals": 2,
+                    "lodIndex": 2
+                  },
+                  {
+                    "idx": 2,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 4,
+                    "lodIndex": 1
+                  },
+                  {
+                    "idx": 3,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 4,
+                    "lodIndex": 3
+                  },
+                  {
+                    "idx": 4,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 2,
+                    "lodIndex": 0
+                  },
+                  {
+                    "idx": 6,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 2,
+                    "lodIndex": 1
+                  },
+                  {
+                    "idx": 7,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 1,
+                    "lodIndex": 0
+                  },
+                  {
+                    "idx": 8,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 1,
+                    "lodIndex": 0
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "camera": {
+          "pos": [
+            0,
+            0.5,
+            -2
+          ],
+          "euler": [
+            165.96375653207352,
+            -7.0167096047110005e-15,
+            180
+          ],
+          "fov": 1,
+          "near": 0.002303419515606365,
+          "far": 37.739225343694685
+        }
+      },
+      "diagAfterF": {
+        "frame": 482,
+        "renderNextFrame": false,
+        "autoRender": false,
+        "firstFrameSeen": true,
+        "hasDirector": true,
+        "assetLoader": {
+          "isLoading": false,
+          "currentlyLoading": [],
+          "queue": [],
+          "entries": [
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/3_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/1_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_1/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/1_1/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_3/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            }
+          ],
+          "entryCount": 7
+        },
+        "managers": [
+          {
+            "lastWorldStateVersion": 4,
+            "sortedVersion": 4,
+            "sorterJobsInFlight": 0,
+            "workBufferTextureSize": 251,
+            "rendererVisible": true,
+            "rendererInstancingCount": 491,
+            "states": [
+              {
+                "version": 4,
+                "sortedBefore": true,
+                "splats": 1,
+                "textureSize": 251,
+                "totalUsedPixels": 62750,
+                "activeSplats": [
+                  62547
+                ],
+                "lodIndexes": [
+                  3
+                ]
+              }
+            ],
+            "oct": [
+              {
+                "activePlacements": 1,
+                "pending": [],
+                "prefetchPending": [],
+                "nodeLodHistogram": {
+                  "3": 16
+                },
+                "activeFiles": [
+                  {
+                    "idx": 3,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 16,
+                    "lodIndex": 3
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "camera": {
+          "pos": [
+            2944.75390625,
+            1473.2332763671875,
+            2944.46923828125
+          ],
+          "euler": [
+            -19.471220634490695,
+            44.99999999999999,
+            -1.124495910843664e-15
+          ],
+          "fov": 1,
+          "near": 4382.827232487709,
+          "far": 4459.994429627952
+        }
+      },
+      "screenshot": "../logs/sfm-production-spine/md1_r41_tile03_local_unified_lod_patch_after_f_20260517T0352Z.png",
+      "pixelStats": {
+        "width": 1400,
+        "height": 900,
+        "totalPixels": 1260000,
+        "nonBlackPixels": 272385,
+        "nonBlackFraction": 0.21617857142857144,
+        "nonTransparentPixels": 1260000,
+        "sampledUniqueColors": 14870
+      },
+      "visible": true,
+      "statusCounts": {
+        "200": 58
+      },
+      "responseCount": 58,
+      "failed": [],
+      "consoleMessages": [
+        {
+          "type": "log",
+          "text": "XrNavigation: Enabled methods - teleportation, smooth movement"
+        }
+      ],
+      "responsesTail": [
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_3/scales.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_3/shN_centroids.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_3/sh0.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_3/shN_labels.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/meta.json",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/means_l.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/means_u.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/quats.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/scales.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/sh0.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/shN_centroids.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/shN_labels.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/meta.json",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/means_l.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/means_u.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/quats.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/scales.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/sh0.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/shN_centroids.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/shN_labels.webp",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "id": "r41_tile04",
+      "lodUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/lod-meta.json",
+      "viewerUrl": "http://localhost:3000/supersplat-viewer/index.html?settings=%2Fsupersplat-viewer%2Fsettings.json&content=%2Fapi%2Fsogs-proxy%2Fhttps%3A%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fmd1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z%2Ftile04%2Fsupersplat_bundle%2Flod-meta.json&noui&noanim&cb=20260517T0352Z",
+      "firstFrame": true,
+      "diagBeforeF": {
+        "frame": 256,
+        "renderNextFrame": false,
+        "autoRender": false,
+        "firstFrameSeen": true,
+        "hasDirector": true,
+        "assetLoader": {
+          "isLoading": true,
+          "currentlyLoading": [
+            "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_1/meta.json",
+            "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_4/meta.json"
+          ],
+          "queue": [
+            "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_2/meta.json",
+            "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_6/meta.json"
+          ],
+          "entries": [
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/3_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/2_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_1/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_2/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_3/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_1/meta.json",
+              "loaded": false,
+              "loading": true,
+              "hasResource": false
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_4/meta.json",
+              "loaded": false,
+              "loading": true,
+              "hasResource": false
+            }
+          ],
+          "entryCount": 8
+        },
+        "managers": [
+          {
+            "lastWorldStateVersion": 2,
+            "sortedVersion": 2,
+            "sorterJobsInFlight": 0,
+            "workBufferTextureSize": 649,
+            "rendererVisible": true,
+            "rendererInstancingCount": 3286,
+            "states": [
+              {
+                "version": 2,
+                "sortedBefore": true,
+                "splats": 5,
+                "textureSize": 649,
+                "totalUsedPixels": 420552,
+                "activeSplats": [
+                  4512,
+                  110178,
+                  159642,
+                  24060,
+                  120833
+                ],
+                "lodIndexes": [
+                  3,
+                  2,
+                  0,
+                  1,
+                  0
+                ]
+              }
+            ],
+            "oct": [
+              {
+                "activePlacements": 5,
+                "pending": [
+                  7,
+                  6,
+                  8,
+                  10,
+                  11
+                ],
+                "prefetchPending": [
+                  7,
+                  6,
+                  8,
+                  10,
+                  11
+                ],
+                "nodeLodHistogram": {
+                  "0": 3,
+                  "1": 3,
+                  "2": 18,
+                  "3": 57,
+                  "-1": 15
+                },
+                "activeFiles": [
+                  {
+                    "idx": 1,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 18,
+                    "lodIndex": 2
+                  },
+                  {
+                    "idx": 2,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 3,
+                    "lodIndex": 1
+                  },
+                  {
+                    "idx": 3,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 57,
+                    "lodIndex": 3
+                  },
+                  {
+                    "idx": 4,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 1,
+                    "lodIndex": 0
+                  },
+                  {
+                    "idx": 5,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 2,
+                    "lodIndex": 0
+                  },
+                  {
+                    "idx": 6,
+                    "hasResource": false,
+                    "intervals": 4,
+                    "lodIndex": 1
+                  },
+                  {
+                    "idx": 7,
+                    "hasResource": false,
+                    "intervals": 3,
+                    "lodIndex": 0
+                  },
+                  {
+                    "idx": 8,
+                    "hasResource": false,
+                    "intervals": 3,
+                    "lodIndex": 0
+                  },
+                  {
+                    "idx": 10,
+                    "hasResource": false,
+                    "intervals": 4,
+                    "lodIndex": 1
+                  },
+                  {
+                    "idx": 11,
+                    "hasResource": false,
+                    "intervals": 1,
+                    "lodIndex": 0
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "camera": {
+          "pos": [
+            0,
+            0.5,
+            -2
+          ],
+          "euler": [
+            165.96375653207352,
+            -7.0167096047110005e-15,
+            180
+          ],
+          "fov": 1,
+          "near": 0.004928167915186738,
+          "far": 80.74310312241951
+        }
+      },
+      "diagAfterF": {
+        "frame": 406,
+        "renderNextFrame": false,
+        "autoRender": false,
+        "firstFrameSeen": true,
+        "hasDirector": true,
+        "assetLoader": {
+          "isLoading": true,
+          "currentlyLoading": [
+            "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_2/meta.json",
+            "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_6/meta.json"
+          ],
+          "queue": [],
+          "entries": [
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/3_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/2_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_1/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_0/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_2/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_3/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_1/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_4/meta.json",
+              "loaded": true,
+              "loading": false,
+              "hasResource": true,
+              "resourceType": "GSplatSogsResource"
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_2/meta.json",
+              "loaded": false,
+              "loading": true,
+              "hasResource": false
+            },
+            {
+              "url": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_6/meta.json",
+              "loaded": false,
+              "loading": true,
+              "hasResource": false
+            }
+          ],
+          "entryCount": 10
+        },
+        "managers": [
+          {
+            "lastWorldStateVersion": 4,
+            "sortedVersion": 4,
+            "sorterJobsInFlight": 0,
+            "workBufferTextureSize": 278,
+            "rendererVisible": true,
+            "rendererInstancingCount": 602,
+            "states": [
+              {
+                "version": 4,
+                "sortedBefore": true,
+                "splats": 1,
+                "textureSize": 278,
+                "totalUsedPixels": 77006,
+                "activeSplats": [
+                  76837
+                ],
+                "lodIndexes": [
+                  3
+                ]
+              }
+            ],
+            "oct": [
+              {
+                "activePlacements": 1,
+                "pending": [],
+                "prefetchPending": [
+                  6,
+                  8,
+                  10,
+                  11
+                ],
+                "nodeLodHistogram": {
+                  "3": 96
+                },
+                "activeFiles": [
+                  {
+                    "idx": 3,
+                    "hasResource": true,
+                    "resourceType": "GSplatSogsResource",
+                    "intervals": 96,
+                    "lodIndex": 3
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "camera": {
+          "pos": [
+            6228.34814453125,
+            3104.575439453125,
+            6221.66845703125
+          ],
+          "euler": [
+            -19.471220634490695,
+            44.99999999999999,
+            -1.124495910843664e-15
+          ],
+          "fov": 1,
+          "near": 9258.670725307846,
+          "far": 9421.685517180187
+        }
+      },
+      "screenshot": "../logs/sfm-production-spine/md1_r41_tile04_local_unified_lod_patch_after_f_20260517T0352Z.png",
+      "pixelStats": {
+        "width": 1400,
+        "height": 900,
+        "totalPixels": 1260000,
+        "nonBlackPixels": 142838,
+        "nonBlackFraction": 0.11336349206349207,
+        "nonTransparentPixels": 1260000,
+        "sampledUniqueColors": 7787
+      },
+      "visible": true,
+      "statusCounts": {
+        "200": 81
+      },
+      "responseCount": 81,
+      "failed": [],
+      "consoleMessages": [
+        {
+          "type": "log",
+          "text": "XrNavigation: Enabled methods - teleportation, smooth movement"
+        }
+      ],
+      "responsesTail": [
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_4/quats.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_4/sh0.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_4/scales.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_4/shN_centroids.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_4/shN_labels.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_2/meta.json",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_2/means_l.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_2/means_u.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_2/quats.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_2/scales.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_2/sh0.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_2/shN_centroids.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_2/shN_labels.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_6/meta.json",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_6/means_u.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_6/means_l.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_6/quats.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_6/scales.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_6/sh0.webp",
+          "status": 200
+        },
+        {
+          "url": "http://localhost:3000/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_6/shN_centroids.webp",
+          "status": 200
+        }
+      ]
+    }
+  ],
+  "allFirstFrame": true,
+  "allVisible": true,
+  "visibleByCase": {
+    "r40_tile00": true,
+    "r41_tile01": true,
+    "r41_tile02": true,
+    "r41_tile03": true,
+    "r41_tile04": true
+  },
+  "firstFrameByCase": {
+    "r40_tile00": true,
+    "r41_tile01": true,
+    "r41_tile02": true,
+    "r41_tile03": true,
+    "r41_tile04": true
+  },
+  "screenshots": {
+    "r40_tile00": "../logs/sfm-production-spine/md1_r40_tile00_local_unified_lod_patch_after_f_20260517T0352Z.png",
+    "r41_tile01": "../logs/sfm-production-spine/md1_r41_tile01_local_unified_lod_patch_after_f_20260517T0352Z.png",
+    "r41_tile02": "../logs/sfm-production-spine/md1_r41_tile02_local_unified_lod_patch_after_f_20260517T0352Z.png",
+    "r41_tile03": "../logs/sfm-production-spine/md1_r41_tile03_local_unified_lod_patch_after_f_20260517T0352Z.png",
+    "r41_tile04": "../logs/sfm-production-spine/md1_r41_tile04_local_unified_lod_patch_after_f_20260517T0352Z.png"
+  }
+}

@@ -39,3 +39,4 @@
 2026-04-15T05:49:30Z trigger preview for sfm runtime base-image fallback and stale-digest build fix
 2026-04-15T10:23:15Z trigger preview for component-aware hierarchy bridge recovery and merge diagnostics
 2026-04-17T00:00:00Z validate shared preview backend/role reuse for IAM quota-safe branch deploys
+2026-05-17T03:32:00Z trigger preview for SuperSplat unified LOD readiness/render continuation proof
