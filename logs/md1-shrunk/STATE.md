@@ -1929,3 +1929,39 @@ skybox, compression, artifact handoff, and visual gates.
       - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25976238312-20260516T235332Z.txt`
       - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25976238312-20260516T235738Z.json`
     - Note: workflow emitted a Node.js 20 deprecation annotation (non-fatal; no failures).
+
+- 2026-05-17T00:16:10Z monitor poll (terminal; owned MD1-shrunk jobs still `Completed`; no new jobs launched):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `db320cc1768eecb0b633a32d9ff81616d799d669`
+    - `git status --porcelain=v1` -> new untracked poll artifacts under `logs/md1-shrunk/polls/`
+  - AWS identity:
+    - `/opt/homebrew/bin/aws sts get-caller-identity --output json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+      - `logs/md1-shrunk/polls/aws-sts-20260517T001333Z.json`
+  - Step Functions state (active only):
+    - `/opt/homebrew/bin/aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --status-filter RUNNING --max-results 20 --region us-west-2 --output json` -> none RUNNING
+      - `logs/md1-shrunk/polls/stepfn-running-20260517T001333Z.json`
+  - SageMaker state (active only):
+    - `/opt/homebrew/bin/aws sagemaker list-processing-jobs --status-equals InProgress --sort-by CreationTime --sort-order Descending --max-results 20 --region us-west-2 --output json` -> 1 `InProgress` job not owned by this MD1-shrunk monitor (`md1-tile00-h0lod-r39-1778976307`); left untouched
+      - `logs/md1-shrunk/polls/sagemaker-processing-inprogress-20260517T001333Z.json`
+    - `/opt/homebrew/bin/aws sagemaker list-training-jobs --status-equals InProgress --sort-by CreationTime --sort-order Descending --max-results 20 --region us-west-2 --output json` -> none `InProgress`
+      - `logs/md1-shrunk/polls/sagemaker-training-inprogress-20260517T001333Z.json`
+  - Owned job terminal status (for reference):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`, `FailureReason=null`
+      - `logs/md1-shrunk/polls/sagemaker-describe-processing-md1-shrunk-1456-sfm-1778866088-20260517T001333Z.json`
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`, `FailureReason=null`
+      - `logs/md1-shrunk/polls/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260517T001333Z.json`
+    - Compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`, `FailureReason=null`
+      - `logs/md1-shrunk/polls/sagemaker-describe-processing-md1shrunk1456-1778880862-compression-20260517T001334Z.json`
+  - Pages preview URL resolution (deterministic from the last Pages run for this branch):
+    - `Deploy Next.js to Cloudflare Pages` run `25948288202` log capture:
+      - `logs/md1-shrunk/polls/gh-run-log-pages-25948288202-20260517T001535Z.txt`
+      - extracted: `logs/md1-shrunk/polls/pages-preview-urls-25948288202-20260517T001548Z.txt` -> `ALIAS_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`, `HASH_URL=https://2504c8df.v0-spaceport-website-preview2.pages.dev`
+  - Public bundle + preview HTTP sanity:
+    - `logs/md1-shrunk/polls/http-head-sanity-20260517T001557Z.txt` -> preview `/health.txt` HTTP 200; bundle `meta.json` HTTP 200; `background_skybox.webp` HTTP 200
+  - GitHub workflows (exact-head):
+    - run list: `logs/md1-shrunk/gh-run-list-20260517T001255Z.json`
+    - `CDK Deploy` run `25976330184` `success` (head `db320cc1...`):
+      - `logs/md1-shrunk/polls/gh-run-view-cdk-25976330184-20260517T001613Z.json`
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
