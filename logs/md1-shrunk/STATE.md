@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T09:21:18Z
+updated: 2026-05-17T09:48:00Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -2836,3 +2836,38 @@ skybox, compression, artifact handoff, and visual gates.
       - view: `logs/md1-shrunk/polls/20260517T085339Z/gh-run-view-cdk-25986385371.json`
       - run list: `logs/md1-shrunk/polls/20260517T085339Z/gh-run-list-branch.json`
     - Note: `Deploy Next.js to Cloudflare Pages` did not trigger for this logs-only commit; latest Pages success remains run `25983995070` (head `3bad045c...`).
+
+- 2026-05-17T09:46:27Z monitor poll (no new cloud work launched; terminal reconfirm):
+  - Poll artifacts:
+    - `logs/md1-shrunk/polls/20260517T094627Z/`
+  - Branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `7ef18e31e223ee5985356d2d12351362cf6ee57b` (`chore: md1-shrunk poll head wording 20260517T091531Z [skip ci]`)
+    - `git status --porcelain=v1` -> clean (new poll artifacts untracked)
+    - Note: prior context claimed head `e9cbf71c...`; that commit exists on-branch but is not the branch tip as of `2026-05-17T09:46:27Z`.
+  - AWS identity (boto3; `us-west-2`):
+    - `logs/md1-shrunk/polls/20260517T094627Z/aws-sts-get-caller-identity.json` -> account `975050048887`
+  - Step Functions (staging; cost bounded):
+    - RUNNING=0:
+      - `logs/md1-shrunk/polls/20260517T094627Z/stepfunctions-running-SpaceportMLPipeline-staging.json`
+  - SageMaker (cost bounded):
+    - InProgress processing jobs: `0`:
+      - `logs/md1-shrunk/polls/20260517T094627Z/sagemaker-list-processing-jobs-InProgress.json`
+    - InProgress training jobs: `0`:
+      - `logs/md1-shrunk/polls/20260517T094627Z/sagemaker-list-training-jobs-InProgress.json`
+    - SfM (ProcessingJob) terminal reconfirm:
+      - `logs/md1-shrunk/polls/20260517T094627Z/sagemaker-describe-processing-job-md1-shrunk-1456-sfm-1778866088.json` -> `Completed`
+  - Output shape reconfirm (S3 listings via boto3; no downloads):
+    - COLMAP output listing (staging):
+      - `logs/md1-shrunk/polls/20260517T094627Z/s3-list-colmap-output.json`
+    - Public supersplat bundle listing:
+      - `logs/md1-shrunk/polls/20260517T094627Z/s3-list-public-supersplat-bundle.json`
+  - Public preview + bundle HTTP sanity (anonymous):
+    - `curl -I` snapshot:
+      - `logs/md1-shrunk/polls/20260517T094627Z/http-head-sanity.txt` (preview `/health.txt` HTTP 200; bundle `meta.json` HTTP 200; bundle `background_skybox.webp` HTTP 200)
+  - GitHub workflows (exact-head; unauthenticated API check):
+    - Because `gh` was not available in this environment, verified via GitHub REST:
+      - run list: `logs/md1-shrunk/polls/20260517T094627Z/github-actions-runs.json`
+      - summary: `logs/md1-shrunk/polls/20260517T094627Z/github-actions-summary.json`
+      - exact head runs for `7ef18e31...`: `0` (commit message includes `[skip ci]`, so no workflows expected)
+      - latest Pages on this branch remains the prior success for head `3bad045c...` (run `25983995070`).

@@ -1,0 +1,4 @@
+{
+  "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+  "runningExecutions": []
+}
