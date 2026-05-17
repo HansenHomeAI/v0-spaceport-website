@@ -1,0 +1,7 @@
+{
+  "component_count": 1,
+  "notes": "component_count inferred from sparse/0 only",
+  "points3D": 1020913,
+  "registered_images": 1456,
+  "s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/"
+}

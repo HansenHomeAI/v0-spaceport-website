@@ -1,0 +1,22 @@
+{
+  "3dgs": {
+    "FailureReason": null,
+    "ResourceConfig": {
+      "InstanceCount": 1,
+      "InstanceType": "ml.g5.4xlarge",
+      "VolumeSizeInGB": 100
+    },
+    "TrainingEndTime": "2026-05-15 17:55:18.313000-06:00",
+    "TrainingJobStatus": "Completed"
+  },
+  "compression": {
+    "FailureReason": null,
+    "ProcessingEndTime": "2026-05-15 18:08:09.571000-06:00",
+    "ProcessingJobStatus": "Completed"
+  },
+  "sfm": {
+    "FailureReason": null,
+    "ProcessingEndTime": "2026-05-15 15:04:36.723000-06:00",
+    "ProcessingJobStatus": "Completed"
+  }
+}

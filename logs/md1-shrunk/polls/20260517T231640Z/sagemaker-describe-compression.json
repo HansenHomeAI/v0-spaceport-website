@@ -1,0 +1,73 @@
+{
+  "AppSpecification": {
+    "ContainerEntrypoint": [
+      "python3",
+      "compress.py"
+    ],
+    "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab"
+  },
+  "CreationTime": "2026-05-15 17:56:39.446000-06:00",
+  "Environment": {
+    "AWS_DEFAULT_REGION": "us-west-2",
+    "PYTHONUNBUFFERED": "1"
+  },
+  "LastModifiedTime": "2026-05-15 18:09:11.864000-06:00",
+  "ProcessingEndTime": "2026-05-15 18:08:09.571000-06:00",
+  "ProcessingInputs": [
+    {
+      "AppManaged": false,
+      "InputName": "gaussian-model",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input",
+        "S3DataDistributionType": "FullyReplicated",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778880862/"
+      }
+    }
+  ],
+  "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1shrunk1456-1778880862-compression",
+  "ProcessingJobName": "md1shrunk1456-1778880862-compression",
+  "ProcessingJobStatus": "Completed",
+  "ProcessingOutputConfig": {
+    "Outputs": [
+      {
+        "AppManaged": false,
+        "OutputName": "compressed-model",
+        "S3Output": {
+          "LocalPath": "/opt/ml/processing/output",
+          "S3UploadMode": "EndOfJob",
+          "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778880862/"
+        }
+      }
+    ]
+  },
+  "ProcessingResources": {
+    "ClusterConfig": {
+      "InstanceCount": 1,
+      "InstanceType": "ml.g4dn.xlarge",
+      "VolumeSizeInGB": 50
+    }
+  },
+  "ProcessingStartTime": "2026-05-15 17:57:18.441000-06:00",
+  "ResponseMetadata": {
+    "HTTPHeaders": {
+      "cache-control": "no-cache, no-store, must-revalidate",
+      "content-length": "1515",
+      "content-security-policy": "frame-ancestors 'none'",
+      "content-type": "application/x-amz-json-1.1",
+      "date": "Sun, 17 May 2026 23:20:39 GMT",
+      "strict-transport-security": "max-age=47304000; includeSubDomains",
+      "x-amzn-requestid": "7d6c0b0f-52e6-4d5f-a15d-8b32fa1e4180",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY"
+    },
+    "HTTPStatusCode": 200,
+    "RequestId": "7d6c0b0f-52e6-4d5f-a15d-8b32fa1e4180",
+    "RetryAttempts": 0
+  },
+  "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+  "StoppingCondition": {
+    "MaxRuntimeInSeconds": 86400
+  }
+}

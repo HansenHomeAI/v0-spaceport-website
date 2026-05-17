@@ -3817,3 +3817,27 @@ skybox, compression, artifact handoff, and visual gates.
   - exact-head run list expected `[]` (skip-ci head):
     - `logs/md1-shrunk/polls/20260517T225056Z/gh-run-list-exact-head.json`
     - `logs/md1-shrunk/polls/20260517T225056Z/gh-exact-head-run-count.txt`
+
+- 2026-05-17T23:16:40Z poll (monitor; no new ML launches; refreshed AWS/StepFn/SageMaker + SfM gates):
+  - Poll artifacts: `logs/md1-shrunk/polls/20260517T231640Z/`
+  - Branch/head/status:
+    - head `faff308d...` (`[skip ci]`)
+    - evidence: `logs/md1-shrunk/polls/20260517T231640Z/preflight.txt`
+  - AWS identity (region `us-west-2`):
+    - evidence: `logs/md1-shrunk/polls/20260517T231640Z/aws-sts.json`
+  - Step Functions (region `us-west-2`):
+    - staging `SpaceportMLPipeline-staging` RUNNING=0: `logs/md1-shrunk/polls/20260517T231640Z/stepfn-running-staging.json`
+    - branch preview `SpaceportMLPipeline-br-8abcbd5662` RUNNING=0 (ARN recorded): `logs/md1-shrunk/polls/20260517T231640Z/stepfunctions-branch-state-machine-arn.txt`, `logs/md1-shrunk/polls/20260517T231640Z/stepfn-running-branch.json`
+  - SageMaker (region `us-west-2`):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`: `logs/md1-shrunk/polls/20260517T231640Z/sagemaker-describe-sfm.json`
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`: `logs/md1-shrunk/polls/20260517T231640Z/sagemaker-describe-3dgs.json`
+    - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`: `logs/md1-shrunk/polls/20260517T231640Z/sagemaker-describe-compression.json`
+    - InProgress processing jobs=0: `logs/md1-shrunk/polls/20260517T231640Z/sagemaker-processing-inprogress.json`
+    - InProgress training jobs=0: `logs/md1-shrunk/polls/20260517T231640Z/sagemaker-training-inprogress.json`
+    - status summary: `logs/md1-shrunk/polls/20260517T231640Z/statuses.json`
+  - SfM gates (Montana scale sanity; from uploaded COLMAP TXT):
+    - registered images `1456`, points3D `1020913`, merged components `1`: `logs/md1-shrunk/polls/20260517T231640Z/colmap-sparse-stats.json`
+  - GitHub Actions (exact-head; `[skip ci]` head):
+    - workflow runs for head expected `[]`: `logs/md1-shrunk/polls/20260517T231640Z/gh-runs-for-head.json`
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
