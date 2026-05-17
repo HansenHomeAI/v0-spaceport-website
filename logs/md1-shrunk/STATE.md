@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T01:49:39Z
+updated: 2026-05-17T01:54:48Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -2143,3 +2143,14 @@ skybox, compression, artifact handoff, and visual gates.
     - Pages deploy not triggered at this exact head (no `web/trigger-dev-build.txt` bump); latest Pages run remains `25977807200` (head `4328f941...`).
   - Notes:
     - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
+
+- 2026-05-17T01:54:48Z exact-head CI (post poll 20260517T0149Z commit):
+  - commit:
+    - `git rev-parse HEAD` -> `c587ebe365093ba86c6a14c441e1e422c5805a1e` (`chore: md1-shrunk poll 20260517T0149Z`)
+  - GitHub workflows (exact-head; triggered by this push):
+    - run list: `logs/md1-shrunk/polls/gh-run-list-post-push-20260517T015101Z.json`
+    - `CDK Deploy` run `25978413482` `success` (head `c587ebe3...`):
+      - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25978413482-20260517T015109Z.txt`
+      - view (start): `logs/md1-shrunk/polls/gh-run-view-cdk-25978413482-20260517T015109Z.json`
+      - view (final): `logs/md1-shrunk/polls/gh-run-view-cdk-25978413482-final-20260517T015109Z.json`
+    - Pages deploy not triggered at this exact head (no `web/trigger-dev-build.txt` bump).
