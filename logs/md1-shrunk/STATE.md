@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T09:54:28Z
+updated: 2026-05-17T10:00:09Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -2882,4 +2882,16 @@ skybox, compression, artifact handoff, and visual gates.
       - watch log: `logs/md1-shrunk/polls/20260517T094916Z/github-run-watch-cdk-25987533412.txt`
       - run snapshots: `logs/md1-shrunk/polls/20260517T094916Z/github-run-cdk-25987533412-*.json`
       - summary: `logs/md1-shrunk/polls/20260517T094916Z/github-actions-summary-post-cdk.json`
+    - Note: `Deploy Next.js to Cloudflare Pages` did not trigger for this logs-only change set; latest Pages success remains run `25983995070` (head `3bad045c...`).
+
+- 2026-05-17T09:59:50Z post-push confirmation (CI only; no new ML launches):
+  - commit:
+    - `git rev-parse HEAD` -> `840e7bbf07787aa587167105ce1c5411c0f8878d` (`chore: md1-shrunk CI proof 20260517T094916Z`)
+  - Poll artifacts:
+    - `logs/md1-shrunk/polls/20260517T095458Z/`
+  - GitHub workflows (exact-head; verified via unauthenticated REST):
+    - `CDK Deploy` run `25987647314` -> `success`
+      - watch log: `logs/md1-shrunk/polls/20260517T095458Z/github-run-watch-cdk-25987647314.txt`
+      - run snapshots: `logs/md1-shrunk/polls/20260517T095458Z/github-run-cdk-25987647314-*.json`
+      - summary: `logs/md1-shrunk/polls/20260517T095458Z/github-actions-summary-post-cdk.json`
     - Note: `Deploy Next.js to Cloudflare Pages` did not trigger for this logs-only change set; latest Pages success remains run `25983995070` (head `3bad045c...`).
