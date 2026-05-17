@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T03:47:12Z
+updated: 2026-05-17T03:48:58Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -2305,8 +2305,8 @@ skybox, compression, artifact handoff, and visual gates.
 - 2026-05-17T03:47:12Z poll (monitor-only; no new cloud work launched):
   - branch/head/status:
     - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
-    - `git rev-parse HEAD` -> `18aab1dd0a6f578c1a0d3780ab87057acd8bd10f` (`chore: record md1-shrunk cdk run 25980223287 [skip ci]`)
-    - `git status --short` -> new poll artifacts under `logs/md1-shrunk/polls/` (staged in next commit)
+    - `git rev-parse HEAD` -> `60ffcfefe466dd93c9fcf5a68c9798895701b94b` (`chore: md1-shrunk poll 20260517T0347Z [skip ci]`)
+    - `git status --short` -> clean
   - AWS identity:
     - `python3 -m awscli sts get-caller-identity --output json` -> `logs/md1-shrunk/polls/aws-sts-20260517T034418Z.json`
   - Step Functions:
@@ -2332,5 +2332,5 @@ skybox, compression, artifact handoff, and visual gates.
   - Public bundle + preview viewer HTTP checks:
     - `curl` status -> `logs/md1-shrunk/polls/http-check-20260517T034612Z.txt` (preview_root=200, bundle_meta=200, bundle_skybox=200)
   - GitHub workflows (exact-head):
-    - `gh run list --branch agent-113647-md1-baseline-e2e ...` -> `logs/md1-shrunk/polls/gh-run-list-20260517T034451Z.json`
-    - exact head `18aab1dd...` has `0` runs (commit includes `[skip ci]`)
+    - `gh run list --branch agent-113647-md1-baseline-e2e ...` -> `logs/md1-shrunk/polls/gh-run-list-20260517T034836Z.json`
+    - exact head `60ffcfef...` has `0` runs (commit includes `[skip ci]`)
