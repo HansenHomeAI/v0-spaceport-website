@@ -1,0 +1,1 @@
+b64aec68 (HEAD -> agent-113647-md1-baseline-e2e, origin/agent-113647-md1-baseline-e2e) chore: md1-shrunk post-push GH proof 20260517T195907Z [skip ci]

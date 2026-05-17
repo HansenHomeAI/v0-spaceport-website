@@ -1,0 +1,2 @@
+registered_images_counted_from_images_txt=1456
+points3D_counted_from_points3D_txt=1020913
