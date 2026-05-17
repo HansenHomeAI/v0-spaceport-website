@@ -2970,3 +2970,37 @@ skybox, compression, artifact handoff, and visual gates.
       - view: `logs/md1-shrunk/polls/20260517T102340Z/gh-run-view-cdk-25988229244.json`
       - list: `logs/md1-shrunk/polls/20260517T102340Z/gh-run-list-branch.json`
     - Note: `Deploy Next.js to Cloudflare Pages` not observed in the latest branch run list (logs-only change set).
+
+- 2026-05-17T10:45:02Z monitor poll (no new ML launches; reconfirm terminal + public reachability):
+  - Poll artifacts:
+    - `logs/md1-shrunk/polls/20260517T104502Z/`
+  - Branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `f143d72bedaf62e889a7f5c0d00aab6a00187d85` (`[skip ci]`)
+    - `git status --porcelain=v1` -> dirty due to new poll artifacts (see `logs/md1-shrunk/polls/20260517T104502Z/git-status.txt`)
+  - AWS identity:
+    - `aws sts get-caller-identity` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+      - evidence: `logs/md1-shrunk/polls/20260517T104502Z/aws-sts-get-caller-identity.json`
+  - Step Functions state (region `us-west-2`):
+    - staging + branch-preview state machines: `RUNNING=0`
+      - evidence:
+        - `logs/md1-shrunk/polls/20260517T104502Z/stepfunctions-list-executions-RUNNING-staging.json`
+        - `logs/md1-shrunk/polls/20260517T104502Z/stepfunctions-list-executions-RUNNING-branch.json`
+  - SageMaker state (region `us-west-2`):
+    - InProgress processing jobs: `0`
+    - InProgress training jobs: `0`
+    - terminal job statuses (all `Completed`):
+      - SfM: `logs/md1-shrunk/polls/20260517T104502Z/sagemaker-describe-sfm-md1-shrunk-1456-sfm-1778866088.json`
+      - 3DGS: `logs/md1-shrunk/polls/20260517T104502Z/sagemaker-describe-3dgs-md1shrunk1456-1778880862-3dgs.json`
+      - compression: `logs/md1-shrunk/polls/20260517T104502Z/sagemaker-describe-compression-md1shrunk1456-1778880862-compression.json`
+    - poll summary: `logs/md1-shrunk/polls/20260517T104502Z/poll-summary.txt`
+  - S3 outputs still present:
+    - COLMAP: `logs/md1-shrunk/polls/20260517T104502Z/s3-colmap-md1-shrunk-20260515T1641Z.txt` -> `Total Objects: 1468`, `Total Size: 9.2 GiB`
+    - 3DGS: `logs/md1-shrunk/polls/20260517T104502Z/s3-3dgs-md1shrunk1456-1778880862.txt` -> `model.tar.gz` present
+    - compressed: `logs/md1-shrunk/polls/20260517T104502Z/s3-compressed-md1shrunk1456-1778880862.txt` -> `Total Objects: 22`, `Total Size: 28.7 MiB`
+  - Public preview + bundle HTTP sanity:
+    - `logs/md1-shrunk/polls/20260517T104502Z/http-head-sanity.txt` -> preview `/health.txt` HTTP 200; bundle `meta.json` HTTP 200; bundle `background_skybox.webp` HTTP 200
+  - GitHub Actions (branch snapshot; exact head has 0 runs due to `[skip ci]`):
+    - list + summary:
+      - `logs/md1-shrunk/polls/20260517T104502Z/gh-run-list.json`
+      - `logs/md1-shrunk/polls/20260517T104502Z/gh-summary.txt`

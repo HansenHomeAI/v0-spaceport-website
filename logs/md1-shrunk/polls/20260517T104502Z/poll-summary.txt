@@ -1,0 +1,8 @@
+aws_account 975050048887 arn arn:aws:iam::975050048887:root
+sagemaker_processing_inprogress 0
+sagemaker_training_inprogress 0
+sfm_status Completed failure None
+3dgs_status Completed secondary Completed
+compression_status Completed failure None
+stepfunctions_running staging 0
+stepfunctions_running branch 0

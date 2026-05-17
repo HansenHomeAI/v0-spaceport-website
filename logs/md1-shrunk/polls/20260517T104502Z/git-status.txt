@@ -1,0 +1,5 @@
+timestamp_utc=20260517T104502Z
+branch=agent-113647-md1-baseline-e2e
+head=f143d72bedaf62e889a7f5c0d00aab6a00187d85
+origin_head=f143d72bedaf62e889a7f5c0d00aab6a00187d85
+dirty=2
