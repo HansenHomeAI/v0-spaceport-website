@@ -1,0 +1,26 @@
+{
+  "TrainingJobName": "md1shrunk1456-1778880862-3dgs",
+  "TrainingJobStatus": "Completed",
+  "FailureReason": null,
+  "TrainingStartTime": "2026-05-15 15:35:12.401000-06:00",
+  "TrainingEndTime": "2026-05-15 17:55:18.313000-06:00",
+  "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+  "AlgorithmSpecification": {
+    "TrainingImage": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db",
+    "TrainingInputMode": "File",
+    "EnableSageMakerMetricsTimeSeries": false
+  },
+  "ResourceConfig": {
+    "InstanceType": "ml.g5.4xlarge",
+    "InstanceCount": 1,
+    "VolumeSizeInGB": 100
+  },
+  "StoppingCondition": {
+    "MaxRuntimeInSeconds": 14400
+  },
+  "OutputDataConfig": {
+    "KmsKeyId": "",
+    "S3OutputPath": "s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778880862/",
+    "CompressionType": "GZIP"
+  }
+}

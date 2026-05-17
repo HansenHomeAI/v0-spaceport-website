@@ -1,0 +1,11 @@
+# git
+branch=agent-113647-md1-baseline-e2e
+head=76c5256f0138baa1c5c0cf7d863f3a486391824c
+## agent-113647-md1-baseline-e2e...origin/agent-113647-md1-baseline-e2e
+?? logs/md1-shrunk/polls/20260517T131453Z/
+?? logs/md1-shrunk/polls/20260517T131515Z/
+?? logs/md1-shrunk/polls/20260517T131549Z/
+porcelain:
+?? logs/md1-shrunk/polls/20260517T131453Z/
+?? logs/md1-shrunk/polls/20260517T131515Z/
+?? logs/md1-shrunk/polls/20260517T131549Z/

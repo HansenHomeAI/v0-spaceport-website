@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T12:56:40Z
+updated: 2026-05-17T13:15:49Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -3149,3 +3149,38 @@ skybox, compression, artifact handoff, and visual gates.
       - `logs/md1-shrunk/polls/20260517T124941Z/gh-run-list-after-c89b30.json`
       - `logs/md1-shrunk/polls/20260517T124941Z/gh-exact-head-run-count-after-c89b30.txt`
       - `logs/md1-shrunk/polls/20260517T124941Z/gh-summary-after-c89b30.json`
+
+- 2026-05-17T13:15:49Z poll (terminal reconfirm + fresh gates; no new ML launches):
+  - Branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `76c5256f0138baa1c5c0cf7d863f3a486391824c` (`chore: md1-shrunk reconcile head proof 20260517T125640Z [skip ci]`)
+    - `git status --porcelain=v1` -> clean
+    - Note: user-provided prior head `e9cbf71c56420ce386b028e7f4af33163ce4dcc2` still exists in history, but is not the current branch HEAD.
+  - Poll artifacts:
+    - `logs/md1-shrunk/polls/20260517T131549Z/`
+    - `logs/md1-shrunk/gates/20260517T131716Z/`
+  - AWS identity (region `us-west-2`, via boto3):
+    - `logs/md1-shrunk/polls/20260517T131549Z/aws-sts-get-caller-identity.json` (account `975050048887`)
+  - Step Functions (region `us-west-2`, via boto3):
+    - RUNNING executions (bounded scan): `logs/md1-shrunk/polls/20260517T131549Z/stepfunctions-running.json` -> running `0`
+  - SageMaker (region `us-west-2`, via boto3):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088`:
+      - describe: `logs/md1-shrunk/polls/20260517T131549Z/sagemaker-describe-processing-job-md1-shrunk-1456-sfm-1778866088.json` (`Completed`)
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs`:
+      - describe: `logs/md1-shrunk/polls/20260517T131549Z/sagemaker-describe-training-job-md1shrunk1456-1778880862-3dgs.json` (`Completed`)
+    - compression (ProcessingJob) `md1shrunk1456-1778880862-compression`:
+      - describe: `logs/md1-shrunk/polls/20260517T131549Z/sagemaker-describe-processing-job-md1shrunk1456-1778880862-compression.json` (`Completed`)
+  - SfM gates (Montana-scale facts; COLMAP output):
+    - output: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap`
+    - `images_file_count=1456`, `images_registered=1456`, `points3D=1020913`, `merged_component_count=1` (only `sparse/0/`):
+      - `logs/md1-shrunk/gates/20260517T131716Z/sfm-output-summary.txt`
+      - `logs/md1-shrunk/gates/20260517T131716Z/sfm-output-summary.json`
+  - GitHub workflows (via `/opt/homebrew/bin/gh`):
+    - branch run list + auth status: `logs/md1-shrunk/polls/20260517T131549Z/gh.json`
+    - explicit head verification (user-provided): `CDK Deploy` run `25932325504` succeeded for head `e9cbf71c...`:
+      - `logs/md1-shrunk/polls/20260517T131549Z/gh.json`
+    - Note: exact current head `76c5256f...` has `0` runs (commit message includes `[skip ci]`).
+  - Public preview + bundle HTTP sanity (anonymous):
+    - `logs/md1-shrunk/polls/20260517T131549Z/http-head-sanity.txt` -> preview `/health.txt` HTTP 200, bundle `meta.json` HTTP 200, skybox HTTP 200
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.

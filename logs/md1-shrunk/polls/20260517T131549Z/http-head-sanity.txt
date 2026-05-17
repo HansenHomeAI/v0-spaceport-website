@@ -1,0 +1,47 @@
+# preview health
+HTTP/2 200 
+date: Sun, 17 May 2026 13:19:36 GMT
+content-type: text/plain; charset=utf-8
+access-control-allow-origin: *
+cache-control: public, max-age=0, must-revalidate
+etag: "fd11d8ed860bbecc8b0798f4495a1ed7"
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+x-matched-path: /health.txt
+x-robots-tag: noindex
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=6aeBebQOU8c0sg0zqxtTNZz3NYqwkAVgh5MNf1cOfgFlbkAN1BisPCo6IZ48wQUf8fX5pRPIIsWc7ykyVQ7RT3VJqD2tT4dv9lYIyFgv7%2Fvv2zB2nIdBECApND5zYG%2BS0pvuZ19DqtwPPq0EfcelNyFBRfmtYSt5jqvADJxDYzDRI%2FcwSNrtD3GmMyqAIKjsjYgcy3rS9g%3D%3D"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: 9fd2ea2cc99f7b25-SLC
+alt-svc: h3=":443"; ma=86400
+
+
+# bundle meta
+HTTP/1.1 200 OK
+x-amz-id-2: D+Za/k3sElaZh6oiP4kwN1H9W1CEJDz/1rYJC2auifn2EqJJxl/ZnQrmLARCgWU5nVKgiSwUiNo=
+x-amz-request-id: 41DCETDPJF3XM0P1
+Date: Sun, 17 May 2026 13:19:37 GMT
+Last-Modified: Sat, 16 May 2026 00:13:09 GMT
+ETag: "0a80d455f7e49551c7e6032968068bc4"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: .cVTc2Vl._7LK3AakEV4Rz3vGp0oyubF
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1422
+Server: AmazonS3
+
+
+# bundle skybox
+HTTP/1.1 200 OK
+x-amz-id-2: bE9Z35swUbIjLHt4mQJVnNfzQC6aCF5VjnmZjxElMC/IRq1VYGk1XFCF7W1hCF17f2c7tfRKaMf0LMsvz1TiRTiCJ+LL2KdM
+x-amz-request-id: 41DECBJ477ZAM6AR
+Date: Sun, 17 May 2026 13:19:37 GMT
+Last-Modified: Sat, 16 May 2026 00:13:09 GMT
+ETag: "0ab9a556362c8ced686a5eb29ff2b190"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: 7gY1SZtNF86ESbVDI3msaXP5RKGGOyDB
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 46080
+Server: AmazonS3
+

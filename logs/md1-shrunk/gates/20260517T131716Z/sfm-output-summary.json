@@ -1,0 +1,23 @@
+{
+  "bucket": "spaceport-ml-processing-staging",
+  "images_file_count": 1456,
+  "model0_bad_image_lines": 0,
+  "model0_cameras_count": 1,
+  "model0_keys": {
+    "cameras_txt": "manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/cameras.txt",
+    "images_txt": "manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/images.txt",
+    "points3D_txt": "manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/points3D.txt"
+  },
+  "model0_points3D_count": 1020913,
+  "model0_registered_images": 1456,
+  "prefix": "manual-validations/md1-shrunk-20260515T1641Z/colmap/",
+  "s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap",
+  "sparse_model_ids": [
+    0
+  ],
+  "top_level_prefixes": [
+    "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/",
+    "manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/",
+    "manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse_raw/"
+  ]
+}

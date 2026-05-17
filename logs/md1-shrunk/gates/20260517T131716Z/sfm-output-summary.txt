@@ -1,0 +1,5 @@
+SfM output: s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap
+images_file_count=1456
+sparse_model_ids=[0]
+model0_registered_images=1456
+model0_points3D_count=1020913
