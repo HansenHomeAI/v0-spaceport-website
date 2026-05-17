@@ -1,9 +1,6 @@
-timestamp_utc=20260517T091952Z
+timestamp_utc=20260517T092031Z
 branch=agent-113647-md1-baseline-e2e
-head=df3678d547679984d44f014f8f71037429be937d
-df3678d5 chore: md1-shrunk poll 20260517T091531Z [skip ci]
+head=2f203224d8bea79bde5fc9967e6f69b60c00c84d
+2f203224 chore: md1-shrunk poll gh proof 20260517T091531Z [skip ci]
 ## agent-113647-md1-baseline-e2e...origin/agent-113647-md1-baseline-e2e
- D logs/md1-shrunk/polls/20260517T091531Z/gh-missing.txt
-?? logs/md1-shrunk/polls/20260517T091531Z/gh-auth-status.txt
-?? logs/md1-shrunk/polls/20260517T091531Z/gh-version.txt
-?? logs/md1-shrunk/polls/20260517T091531Z/git-after-push.txt
+ M logs/md1-shrunk/polls/20260517T091531Z/git-after-push.txt
