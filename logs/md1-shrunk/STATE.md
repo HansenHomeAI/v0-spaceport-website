@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T06:12:21Z
+updated: 2026-05-17T06:17:48Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -2508,3 +2508,33 @@ skybox, compression, artifact handoff, and visual gates.
   - GitHub workflows (exact-head):
     - branch run list -> `logs/md1-shrunk/polls/gh-run-list-branch-postpush-20260517T061215Z.json` (latest observed remains `CDK Deploy` `25980223287` `success` head `693fbae7...`)
     - exact head run list -> `logs/md1-shrunk/polls/gh-run-list-head-postpush-20260517T061215Z.json` -> `0` runs (commit includes `[skip ci]`)
+
+- 2026-05-17T06:17:48Z monitor poll (verify terminal + preview URL; no new cloud work launched):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `7405ea59a2f0f83b69905a3b6a51277ba9ffed2e` (`chore: record md1-shrunk post-push gh runs 20260517T061215Z [skip ci]`)
+    - `git status --porcelain=v1` -> clean except new poll artifacts under `logs/md1-shrunk/polls/`
+  - AWS identity:
+    - `/opt/homebrew/bin/aws sts get-caller-identity --output json` -> `logs/md1-shrunk/polls/aws-sts-20260517T061419Z.json` (account `975050048887`)
+  - Step Functions (staging):
+    - `/opt/homebrew/bin/aws stepfunctions list-executions ... --max-results 10` -> `logs/md1-shrunk/polls/stepfunctions-list-executions-20260517T061419Z.json` (RUNNING=0; recent SUCCEEDED only)
+  - SageMaker (cost bounded):
+    - InProgress processing jobs: `0` -> `logs/md1-shrunk/polls/sagemaker-list-processing-InProgress-20260517T061654Z.json`
+    - InProgress training jobs: `0` -> `logs/md1-shrunk/polls/sagemaker-list-training-InProgress-20260517T061654Z.json`
+    - Owned terminal statuses (no reruns):
+      - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `logs/md1-shrunk/polls/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260517T061419Z.json` (`Completed`)
+      - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `logs/md1-shrunk/polls/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs-20260517T0619Z.json` (`Completed`)
+      - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `logs/md1-shrunk/polls/sagemaker-describe-processing-md1shrunk1456-1778880862-compression-20260517T0619Z.json` (`Completed`)
+  - SfM quality snapshot (Montana gates):
+    - `sfm_metadata.json` -> `logs/md1-shrunk/polls/sfm_metadata-md1-shrunk-20260515T1641Z-20260517T061558Z.json`
+      - `images_registered=1456` (>= Meadow 1452)
+      - `points_3d=1103335` (>= Meadow 940147)
+      - `pipeline=colmap_gpu_spatial_heading_chunked`, `chunk_count=6`, `quality_check_passed=true`
+  - Preview deploy URL (latest successful Pages run):
+    - `Deploy Next.js to Cloudflare Pages` run `25977807200` -> `logs/md1-shrunk/polls/gh-pages-run-25977807200-log.txt`
+    - alias URL: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+  - Public bundle reachability (anonymous):
+    - HTTP 200 HEAD -> `logs/md1-shrunk/polls/http-head-bundle-20260517T061654Z.txt`
+    - meta.json snippet -> `logs/md1-shrunk/polls/meta-head-20260517T061654Z.txt` (gaussian count remains ~990k)
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
