@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T07:45:36Z
+updated: 2026-05-17T07:51:22Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -2656,3 +2656,12 @@ skybox, compression, artifact handoff, and visual gates.
     - exact-head runs: `logs/md1-shrunk/polls/20260517T074536Z/gh-runs-for-head.tsv` -> `CDK Deploy` `25984520953` `success` (no Pages run triggered at this logs-only head)
   - Notes:
     - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
+
+- 2026-05-17T07:51:22Z post-push confirmation (CI only; no new ML launches):
+  - commit:
+    - `git rev-parse HEAD` -> `8bcc1a6b44493f553d6f5e41835bbd82d3fc5e54` (`chore: md1-shrunk poll 20260517T074536Z`)
+  - GitHub workflows (exact-head):
+    - `CDK Deploy` run `25985037939` -> `success`
+      - watch: `logs/md1-shrunk/polls/20260517T074536Z/gh-run-watch-cdk-25985037939.txt`
+      - view: `logs/md1-shrunk/polls/20260517T074536Z/gh-run-view-cdk-25985037939.json`
+    - Note: `Deploy Next.js to Cloudflare Pages` did not trigger for this commit (logs-only change).
