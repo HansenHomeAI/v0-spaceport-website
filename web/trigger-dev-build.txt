@@ -66,3 +66,4 @@
 2026-04-17T00:00:00Z validate shared preview backend/role reuse for IAM quota-safe branch deploys
 2026-05-15T13:54:00Z deploy MD1 baseline single-bundle viewer framing fix
 2026-05-16T00:16:00Z md1-shrunk 1456 bundle: trigger Pages preview for skybox/nosky validation
+2026-05-17T01:17:32Z md1-shrunk: trigger pages preview for bundle validation
