@@ -1,0 +1,4 @@
+images_registered=1456
+points3D_total=1096851
+merged_component_count=1
+processing_time_seconds=12709.05

@@ -3688,3 +3688,46 @@ skybox, compression, artifact handoff, and visual gates.
   - exact-head run list expected `[]` (skip-ci head):
     - `logs/md1-shrunk/polls/20260517T192332Z/gh-runs-for-head.json`
     - `logs/md1-shrunk/polls/20260517T192332Z/gh-exact-head-run-count.txt`
+
+- 2026-05-17T19:44:16Z poll (monitor; no new ML launches; refreshed viewer + camera checks):
+  - Poll artifacts: `logs/md1-shrunk/polls/20260517T194416Z/`
+  - Branch/head/status:
+    - `logs/md1-shrunk/polls/20260517T194416Z/preflight.txt` -> branch `agent-113647-md1-baseline-e2e`, head `7fee6c701e05b2749242fb3eabf0714863bf4d1b` (`[skip ci]`)
+  - AWS identity (region `us-west-2`):
+    - `logs/md1-shrunk/polls/20260517T194416Z/aws-sts.json` -> account `975050048887`
+  - Step Functions (region `us-west-2`):
+    - staging RUNNING=0: `logs/md1-shrunk/polls/20260517T194416Z/stepfn-running-staging.json`
+    - branch preview RUNNING=0: `logs/md1-shrunk/polls/20260517T194416Z/stepfn-running-br-8abcbd5662.json`
+  - SageMaker (region `us-west-2`):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`: `logs/md1-shrunk/polls/20260517T194416Z/sagemaker-describe-sfm.json`
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`: `logs/md1-shrunk/polls/20260517T194416Z/sagemaker-describe-3dgs.json`
+    - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`: `logs/md1-shrunk/polls/20260517T194416Z/sagemaker-describe-compression.json`
+    - InProgress processing jobs=0: `logs/md1-shrunk/polls/20260517T194416Z/sagemaker-processing-inprogress.json`
+    - InProgress training jobs=0: `logs/md1-shrunk/polls/20260517T194416Z/sagemaker-training-inprogress.json`
+    - status summary: `logs/md1-shrunk/polls/20260517T194416Z/statuses.txt`
+  - Cloudflare Pages preview URL (deterministic from deploy run log):
+    - `logs/md1-shrunk/polls/20260517T194416Z/pages-run-id.txt`, `logs/md1-shrunk/polls/20260517T194416Z/pages-preview-url-lines.txt`
+    - alias URL: `logs/md1-shrunk/polls/20260517T194416Z/preview-alias-url.txt`
+  - GitHub Actions (exact-head + latest successful deploy evidence):
+    - exact-head run list expected `[]` (`[skip ci]` head): `logs/md1-shrunk/polls/20260517T194416Z/gh-runs-for-head.json`
+    - latest successful by workflow: `logs/md1-shrunk/polls/20260517T194416Z/gh-run-latest-by-workflow.txt`
+  - Public bundle gates (gaussians + compression sizes + skybox sidecars):
+    - meta.json URL + download: `logs/md1-shrunk/polls/20260517T194416Z/public-meta-url.txt`, `logs/md1-shrunk/polls/20260517T194416Z/meta.json`
+    - gaussians from `meta.json` -> `990025`: `logs/md1-shrunk/polls/20260517T194416Z/gaussians.txt`
+    - compression sidecars: `logs/md1-shrunk/polls/20260517T194416Z/sogs_compression_summary.json`, `logs/md1-shrunk/polls/20260517T194416Z/training_metadata.json`
+    - gate summary: `logs/md1-shrunk/polls/20260517T194416Z/compression-gates.txt`
+  - Public preview + bundle HTTP sanity:
+    - summary: `logs/md1-shrunk/polls/20260517T194416Z/http-head-summary.txt`
+    - preview `/health.txt` headers: `logs/md1-shrunk/polls/20260517T194416Z/http-head-preview-health.txt`
+    - meta.json headers: `logs/md1-shrunk/polls/20260517T194416Z/http-head-meta.txt`
+    - skybox headers: `logs/md1-shrunk/polls/20260517T194416Z/http-head-skybox.txt`
+  - Deployed preview viewer validation (Playwright; skybox + no-sky):
+    - skybox log + screenshot: `logs/md1-shrunk/polls/20260517T194416Z/playwright-sogs-skybox.txt`, `logs/md1-shrunk/polls/20260517T194416Z/sogs-migrated-viewer-smoke.png`
+    - no-sky log + screenshot: `logs/md1-shrunk/polls/20260517T194416Z/playwright-sogs-nosky.txt`, `logs/md1-shrunk/polls/20260517T194416Z/sogs-migrated-viewer-nosky.png`
+  - Side-by-side input-vs-render camera checks (deployed preview):
+    - poses: `logs/md1-shrunk/polls/20260517T194416Z/camera-poses.json`
+    - renders: `logs/md1-shrunk/polls/20260517T194416Z/render-DJI_01000.png`, `logs/md1-shrunk/polls/20260517T194416Z/render-DJI_01029.png`, `logs/md1-shrunk/polls/20260517T194416Z/render-DJI_01030.png`
+    - inputs (from SfM output): `logs/md1-shrunk/polls/20260517T194416Z/input-DJI_01000.JPG`, `logs/md1-shrunk/polls/20260517T194416Z/input-DJI_01029.JPG`, `logs/md1-shrunk/polls/20260517T194416Z/input-DJI_01030.JPG`
+    - comparisons: `logs/md1-shrunk/polls/20260517T194416Z/compare-DJI_01000.png`, `logs/md1-shrunk/polls/20260517T194416Z/compare-DJI_01029.png`, `logs/md1-shrunk/polls/20260517T194416Z/compare-DJI_01030.png`
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.

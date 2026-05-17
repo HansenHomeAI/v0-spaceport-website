@@ -1,0 +1,7 @@
+ply_size_mb=234.16910076141357
+compressed_size_mb=14.345443725585938
+compression_ratio=16.323587143126097
+meta_gaussians=990025
+floater_remaining_gaussians=990091
+skybox_file=background_skybox.webp
+skybox_camera_idx=30

@@ -1,0 +1,6 @@
+account=975050048887 arn=arn:aws:iam::975050048887:root
+stepfn_staging_running=0
+stepfn_br_8abcbd5662_running=0
+sfm_status=Completed end=1778879076.723
+3dgs_status=Completed end=1778889318.313
+compression_status=Completed end=1778890089.571
