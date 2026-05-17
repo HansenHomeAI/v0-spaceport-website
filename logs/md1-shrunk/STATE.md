@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T22:51:01Z
+updated: 2026-05-17T23:50:28Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -3857,3 +3857,6 @@ skybox, compression, artifact handoff, and visual gates.
   - exact-head run list expected `[]` (skip-ci head):
     - `logs/md1-shrunk/polls/20260517T232234Z/gh-runs-for-head.json`
     - `logs/md1-shrunk/polls/20260517T232234Z/gh-exact-head-run-count.txt`
+
+## Monitor Polls
+- 2026-05-17T23:50:28Z: captured fresh AWS/SageMaker/StepFn/S3/GH proofs in logs/md1-shrunk/polls/20260517T234935Z/ (CloudWatch get-log-events returned 0 events for the job stream; see logs/md1-shrunk/polls/20260517T234935Z/cloudwatch-get-log-events.json).

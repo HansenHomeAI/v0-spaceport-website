@@ -1,0 +1,1 @@
+{"training_completed":true,"framework":"NerfStudio","model_variant":"splatfacto-w-light","sh_degree":3,"file_size_mb":234.16910076141357,"enable_bg_model":true,"background_skybox":"background_skybox.webp","background_skybox_size_mb":0.0439453125,"output_file":"splat.ply","version":"1.0.0"}
