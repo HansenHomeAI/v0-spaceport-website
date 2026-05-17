@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T17:17:47Z
+updated: 2026-05-17T17:44:04Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -3541,3 +3541,30 @@ skybox, compression, artifact handoff, and visual gates.
   - exact-head run count expected `0` (skip-ci head):
     - `logs/md1-shrunk/polls/20260517T171747Z/gh-runs-for-head.json`
     - `logs/md1-shrunk/polls/20260517T171747Z/gh-exact-head-run-count.txt`
+
+- 2026-05-17T17:44:04Z poll (monitor; no new ML launches):
+  - Poll artifacts: `logs/md1-shrunk/polls/20260517T174404Z/`
+  - Branch/head/status:
+    - head `a1e25986...` (`[skip ci]`); untracked poll artifacts under `logs/md1-shrunk/polls/20260517T174404Z/`
+    - evidence: `logs/md1-shrunk/polls/20260517T174404Z/preflight.txt`
+  - AWS identity (region `us-west-2`):
+    - account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+    - evidence: `logs/md1-shrunk/polls/20260517T174404Z/preflight.txt`
+  - Step Functions (region `us-west-2`):
+    - staging `SpaceportMLPipeline-staging` RUNNING=0
+    - branch preview `SpaceportMLPipeline-br-8abcbd5662` RUNNING=0
+    - evidence: `logs/md1-shrunk/polls/20260517T174404Z/aws-state.json`
+  - SageMaker (region `us-west-2`):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`
+    - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`
+    - InProgress processing jobs=0; InProgress training jobs=0
+    - evidence: `logs/md1-shrunk/polls/20260517T174404Z/aws-state.json`
+  - GitHub Actions:
+    - exact-head run count expected `0` (skip-ci head): `logs/md1-shrunk/polls/20260517T174404Z/gh-summary.txt`
+    - latest successful Pages run `25994795144` published preview alias + hash URLs:
+      - evidence: `logs/md1-shrunk/polls/20260517T174404Z/preview-urls.txt`
+      - source log: `logs/md1-shrunk/polls/20260517T174404Z/gh-run-view-pages-25994795144.log`
+    - branch run list: `logs/md1-shrunk/polls/20260517T174404Z/gh-run-list.json`
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
