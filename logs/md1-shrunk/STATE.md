@@ -3423,3 +3423,13 @@ skybox, compression, artifact handoff, and visual gates.
     - bundle meta.json snapshot: `logs/md1-shrunk/polls/20260517T154449Z/meta.json` (gaussians: `logs/md1-shrunk/polls/20260517T154449Z/gaussians.txt`)
   - Notes:
     - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
+
+- 2026-05-17T15:49:58Z exact-head CI (post poll push):
+  - poll commit:
+    - `git rev-parse HEAD~1` -> `07f086f3...` (`chore: md1-shrunk monitor poll 20260517T154449Z`)
+  - GitHub workflows (exact-head; triggered by this push):
+    - `CDK Deploy` run `25995408529` `success` (head `07f086f3...`):
+      - list snapshot: `logs/md1-shrunk/polls/20260517T154449Z/gh-run-list-post-push.json`
+      - watch: `logs/md1-shrunk/polls/20260517T154449Z/gh-run-watch-cdk-25995408529.txt`
+      - view: `logs/md1-shrunk/polls/20260517T154449Z/gh-run-view-cdk-25995408529.json`
+    - Pages deploy not triggered at this exact head (no `web/trigger-dev-build.txt` bump).
