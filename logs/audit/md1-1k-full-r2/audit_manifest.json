@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "49e0ad5d4a956e68a531c7b67a2d28cb6a798223 exact-head green on CDK Deploy 25991930290; committed headf80/head570a/headb578/head30d6 no-spend merge/review planning evidence remains current; no merge/review/full14/LOD/viewer smoke/promotion launched.",
-  "current_exact_head_gate_status": "exact-head 49e0ad5d4a956e68a531c7b67a2d28cb6a798223 green on CDK Deploy 25991930290",
+  "current_branch_head": "566837a0893cccd7bbf2081abef9698574ce819a exact-head green on CDK Deploy 25993302521; committed head49e/headf80/head570a/head30d6 no-spend merge/review planning evidence remains current; no merge/review/full14/LOD/viewer smoke/promotion launched.",
+  "current_exact_head_gate_status": "exact-head 566837a0893cccd7bbf2081abef9698574ce819a green on CDK Deploy 25993302521",
   "current_live_compute_status": "After exact-head f80ef545 green, AWS training and processing are idle. No MD1 compute was launched.",
-  "current_rung": "R0_visual_sentinel_v5_postpush_head49e_exact_green_after_aws_idle",
+  "current_rung": "R0_visual_sentinel_v5_postpush_head566_exact_green_after_aws_idle",
   "evidence_events": [
     "md1_r0_visual_sentinel_v5_no_spend_merge_review_planning_head30d6_20260517",
     "md1_r0_visual_sentinel_v5_no_spend_merge_review_planning_head5984_20260517",
@@ -3663,7 +3663,7 @@
       "timestamp": "2026-05-13T12:38:30Z"
     }
   ],
-  "exact_head_gate_status": "exact-head 49e0ad5d4a956e68a531c7b67a2d28cb6a798223 green on CDK Deploy 25991930290",
+  "exact_head_gate_status": "exact-head 566837a0893cccd7bbf2081abef9698574ce819a green on CDK Deploy 25993302521",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
     "buckets": {
@@ -3978,7 +3978,7 @@
     ],
     "view_bucket_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiled_pipeline/inputs/scaffold/3dgs_view_buckets.json"
   },
-  "last_commit": "49e0ad5d4a956e68a531c7b67a2d28cb6a798223",
+  "last_commit": "566837a0893cccd7bbf2081abef9698574ce819a",
   "last_exact_head_gates": [
     {
       "workflow_name": "CDK Deploy",
@@ -3988,7 +3988,7 @@
       "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25979171347"
     }
   ],
-  "last_updated": "2026-05-17T14:13:20Z",
+  "last_updated": "2026-05-17T14:43:20Z",
   "latest_bg10_merge_input_materialization_status": {
     "exact_head_workflows_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-exact-head-workflows-current-20260513.json",
     "input_materialization_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-input-materialization-current-20260513.json",
@@ -4203,12 +4203,12 @@
   ],
   "latest_exact_head_gate": {
     "workflow_name": "CDK Deploy",
-    "run_id": 25991930290,
+    "run_id": 25993302521,
     "conclusion": "success",
-    "head": "49e0ad5d4a956e68a531c7b67a2d28cb6a798223",
-    "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25991930290"
+    "head": "566837a0893cccd7bbf2081abef9698574ce819a",
+    "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25993302521"
   },
-  "latest_exact_head_workflows": "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-head49e-postgreen-20260517T141320Z.json",
+  "latest_exact_head_workflows": "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-head566-postgreen-20260517T144320Z.json",
   "latest_hard_output_cap_visual_fidelity_review_status": {
     "ai_visual_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-ai-visual-review-20260513.json",
     "attribution_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-review-r1-attribution-20260513.json",
@@ -18976,8 +18976,8 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-17T14:13:20Z",
-  "updated_at": "2026-05-17T14:13:20Z",
+  "updated": "2026-05-17T14:43:20Z",
+  "updated_at": "2026-05-17T14:43:20Z",
   "version": "1.0.0",
   "md1_r0_visual_sentinel_readiness_blocked_active_jobs_20260513": {
     "recorded_at": "2026-05-13T18:33:49Z",
@@ -21176,7 +21176,7 @@
     ],
     "next": "Wait for AWS training/processing idle, rerun v5 readiness on exact green head, then at most one bounded R0 v5 tile_04 leaf-only proof if allowed. No merge/review/full14/LOD/promotion."
   },
-  "last_event": "md1_r0_visual_sentinel_v5_postpush_exact_green_head49e_20260517",
+  "last_event": "md1_r0_visual_sentinel_v5_postpush_exact_green_head566_20260517",
   "md1_r0_visual_sentinel_v5_training_hold_head08c_20260515": {
     "checked_at": "2026-05-15T07:53:38Z",
     "head": "08c018df22db9acdbde3ef96e70330f29f568b46",
@@ -24536,10 +24536,10 @@
   },
   "current_exact_head_gate": {
     "workflow_name": "CDK Deploy",
-    "run_id": 25991930290,
+    "run_id": 25993302521,
     "conclusion": "success",
-    "head": "49e0ad5d4a956e68a531c7b67a2d28cb6a798223",
-    "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25991930290"
+    "head": "566837a0893cccd7bbf2081abef9698574ce819a",
+    "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25993302521"
   },
   "md1_r0_visual_sentinel_v5_processing_hold_head447_20260516": {
     "event": "md1_r0_visual_sentinel_v5_processing_hold_head447_20260516",
@@ -25930,8 +25930,8 @@
   "latest_live_aws": {
     "training_jobs_in_progress": 0,
     "processing_jobs_in_progress": 0,
-    "training_json": "logs/md1-r0-visual-sentinel-v5-live-training-head49e-postgreen-20260517T141320Z.json",
-    "processing_json": "logs/md1-r0-visual-sentinel-v5-live-processing-head49e-postgreen-20260517T141320Z.json"
+    "training_json": "logs/md1-r0-visual-sentinel-v5-live-training-head566-postgreen-20260517T144320Z.json",
+    "processing_json": "logs/md1-r0-visual-sentinel-v5-live-processing-head566-postgreen-20260517T144320Z.json"
   },
   "md1_r0_visual_sentinel_v5_no_spend_merge_review_planning_head7149_20260517": {
     "event": "md1_r0_visual_sentinel_v5_no_spend_merge_review_planning_head7149_20260517",
@@ -27338,5 +27338,57 @@
       "no promotion launched"
     ],
     "next": "Commit/push this postpush head49e exact-head/AWS-idle ledger evidence and watch the resulting exact-head workflow. Do not launch merge/review/full14/LOD/viewer smoke/promotion. Input materialization and paid merge/review require a separate allowed gate."
+  },
+  "md1_r0_visual_sentinel_v5_postpush_exact_green_head566_20260517": {
+    "event": "md1_r0_visual_sentinel_v5_postpush_exact_green_head566_20260517",
+    "checked_at": "2026-05-17T14:43:20Z",
+    "head": "566837a0893cccd7bbf2081abef9698574ce819a",
+    "status": "postpush_exact_head_green_aws_idle",
+    "decision": "postpush_evidence_recorded_no_compute_launched",
+    "summary": "Pushed evidence head 566837a is exact-head green on CDK Deploy 25993302521 and AWS training/processing are idle. This records postpush verification for the committed head49e/head30d6 no-spend merge/review planning evidence; no planning rerun or MD1 compute launched.",
+    "md1_compute_launched": false,
+    "exact_head_workflow": {
+      "workflow_name": "CDK Deploy",
+      "run_id": 25993302521,
+      "conclusion": "success",
+      "head": "566837a0893cccd7bbf2081abef9698574ce819a",
+      "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25993302521"
+    },
+    "live_aws": {
+      "training_jobs_in_progress": 0,
+      "processing_jobs_in_progress": 0,
+      "training_json": "logs/md1-r0-visual-sentinel-v5-live-training-head566-postgreen-20260517T144320Z.json",
+      "processing_json": "logs/md1-r0-visual-sentinel-v5-live-processing-head566-postgreen-20260517T144320Z.json"
+    },
+    "no_spend_merge_review_planning": {
+      "merge_review_gate_json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-merge-review-gate-head30d6-20260517.json",
+      "merge_review_gate_decision": "merge_review_allowed",
+      "leaf_reuse_summary_json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-leaf-reuse-summary-head30d6-20260517.json",
+      "training_jobs_to_submit": 0,
+      "merge_plan_json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-remote-merge-g4dn-plan-dryrun-head30d6-20260517.json",
+      "payload_json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-remote-merge-g4dn-payload-dryrun-head30d6-20260517.json",
+      "readiness_plan_json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-merge-review-readiness-plan-head30d6-20260517.json",
+      "submit_readiness_json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-merge-review-submit-readiness-head30d6-20260517.json",
+      "submit_readiness_decision": "merge_review_submit_blocked",
+      "block_reasons": [
+        "merge_inputs_not_materialized"
+      ]
+    },
+    "evidence": [
+      "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-head566-postgreen-20260517T144320Z.json",
+      "logs/md1-r0-visual-sentinel-v5-live-training-head566-postgreen-20260517T144320Z.json",
+      "logs/md1-r0-visual-sentinel-v5-live-processing-head566-postgreen-20260517T144320Z.json"
+    ],
+    "prohibitions_observed": [
+      "no planning rerun launched",
+      "no MD1 compute launched",
+      "no merge launched",
+      "no review launched",
+      "no full14 launched",
+      "no LOD launched",
+      "no viewer smoke launched",
+      "no promotion launched"
+    ],
+    "next": "Commit/push this postpush head566 exact-head/AWS-idle ledger evidence and watch the resulting exact-head workflow. Do not launch merge/review/full14/LOD/viewer smoke/promotion. Input materialization and paid merge/review require a separate allowed gate."
   }
 }
