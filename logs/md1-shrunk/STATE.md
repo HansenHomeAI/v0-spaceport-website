@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T03:31:29Z
+updated: 2026-05-17T03:47:12Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -2301,3 +2301,36 @@ skybox, compression, artifact handoff, and visual gates.
       - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25980223287-20260517T033000Z.txt`
       - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25980223287-20260517T033102Z.json`
     - Pages deploy not triggered at this exact head (no `web/trigger-dev-build.txt` bump).
+
+- 2026-05-17T03:47:12Z poll (monitor-only; no new cloud work launched):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `18aab1dd0a6f578c1a0d3780ab87057acd8bd10f` (`chore: record md1-shrunk cdk run 25980223287 [skip ci]`)
+    - `git status --short` -> new poll artifacts under `logs/md1-shrunk/polls/` (staged in next commit)
+  - AWS identity:
+    - `python3 -m awscli sts get-caller-identity --output json` -> `logs/md1-shrunk/polls/aws-sts-20260517T034418Z.json`
+  - Step Functions:
+    - `python3 -m awscli stepfunctions list-executions ... --status-filter RUNNING` -> `logs/md1-shrunk/polls/stepfn-running-20260517T034418Z.json` (`executions=[]`)
+  - SageMaker (cost bounded):
+    - `python3 -m awscli sagemaker list-processing-jobs --status-equals InProgress ...` -> `logs/md1-shrunk/polls/sm-list-processing-inprogress-20260517T034418Z.json` (`0`)
+    - `python3 -m awscli sagemaker list-training-jobs --status-equals InProgress ...` -> `logs/md1-shrunk/polls/sm-list-training-inprogress-20260517T034418Z.json` (`0`)
+    - Owned job status (terminal Completed):
+      - `md1-shrunk-1456-sfm-1778866088` -> `logs/md1-shrunk/polls/sm-describe-md1-shrunk-1456-sfm-1778866088-20260517T034418Z.json`
+      - `md1shrunk1456-1778880862-3dgs` -> `logs/md1-shrunk/polls/sm-describe-md1shrunk1456-1778880862-3dgs-20260517T034418Z.json`
+      - `md1shrunk1456-1778880862-compression` -> `logs/md1-shrunk/polls/sm-describe-md1shrunk1456-1778880862-compression-20260517T034418Z.json`
+  - SfM gates (Montana scale check):
+    - `python3 -m awscli s3 ls s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/` -> `logs/md1-shrunk/polls/s3-ls-colmap-root-20260517T034505Z.txt`
+    - `sfm_metadata.json` snapshot -> `logs/md1-shrunk/polls/sfm_metadata-20260517T034512Z.json`:
+      - dataset_image_count=`1456`, images_registered=`1456`, merged_component_count=`1`, points_3d=`1103335`, timed_out=`false`
+  - 3DGS+compression gates (no relaunch):
+    - 3DGS output artifact present:
+      - `python3 -m awscli s3 ls .../3dgs/.../output/` -> `logs/md1-shrunk/polls/s3-ls-3dgs-output-20260517T034642Z.txt` (model.tar.gz `222246750` bytes)
+    - compressed supersplat bundle listing -> `logs/md1-shrunk/polls/s3-ls-supersplat_bundle-20260517T034527Z.txt`
+    - compressed bundle metadata snapshots:
+      - `logs/md1-shrunk/polls/meta-20260517T034540Z.json` (gaussians=`990025`)
+      - `logs/md1-shrunk/polls/training_metadata-20260517T034540Z.json` (model_variant=`splatfacto-w-light`, file_size_mb=`234.17`, background_skybox_size_mb=`0.04`)
+  - Public bundle + preview viewer HTTP checks:
+    - `curl` status -> `logs/md1-shrunk/polls/http-check-20260517T034612Z.txt` (preview_root=200, bundle_meta=200, bundle_skybox=200)
+  - GitHub workflows (exact-head):
+    - `gh run list --branch agent-113647-md1-baseline-e2e ...` -> `logs/md1-shrunk/polls/gh-run-list-20260517T034451Z.json`
+    - exact head `18aab1dd...` has `0` runs (commit includes `[skip ci]`)
