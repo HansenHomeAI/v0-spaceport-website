@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T15:19:57Z
+updated: 2026-05-17T15:30:33Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -3376,3 +3376,20 @@ skybox, compression, artifact handoff, and visual gates.
     - log: `logs/md1-shrunk/polls/20260517T151433Z/playwright-md1-camera-check.txt`
   - Notes:
     - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
+
+- 2026-05-17T15:30:33Z exact-head CI + Pages preview URL (post poll push):
+  - poll commit:
+    - `git rev-parse HEAD~1` -> `3743c32d...` (`chore: md1-shrunk monitor poll 20260517T151433Z`)
+  - GitHub workflows (exact-head; triggered by this push):
+    - `CDK Deploy` run `25994795154` `success` (head `3743c32d...`):
+      - watch: `logs/md1-shrunk/polls/20260517T151433Z/gh-run-watch-cdk-25994795154.txt`
+      - view: `logs/md1-shrunk/polls/20260517T151433Z/gh-run-view-cdk-25994795154.json`
+    - `Deploy Next.js to Cloudflare Pages` run `25994795144` `success` (head `3743c32d...`):
+      - watch: `logs/md1-shrunk/polls/20260517T151433Z/gh-run-watch-pages-25994795144.txt`
+      - view: `logs/md1-shrunk/polls/20260517T151433Z/gh-run-view-pages-25994795144.json`
+      - log: `logs/md1-shrunk/polls/20260517T151433Z/gh-run-log-pages-25994795144.txt`
+      - extracted preview URLs: `logs/md1-shrunk/polls/20260517T151433Z/pages-preview-urls-25994795144.txt`
+  - Deployed preview viewer re-validation (post Pages deploy; skybox + no-sky):
+    - skybox smoke: `logs/md1-shrunk/polls/20260517T151433Z/playwright-sogs-skybox-post-pages.txt`
+    - no-sky smoke: `logs/md1-shrunk/polls/20260517T151433Z/playwright-sogs-nosky-post-pages.txt`
+    - camera check screenshot: `logs/md1-shrunk/polls/20260517T151433Z/md1-camera-check-20260517-post-pages.png`
