@@ -1,0 +1,51 @@
+# 20260517T041523Z
+preview=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev
+bundle=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle
+
+== preview /health.txt ==
+HTTP/2 200 
+date: Sun, 17 May 2026 04:15:23 GMT
+content-type: text/plain; charset=utf-8
+access-control-allow-origin: *
+cache-control: public, max-age=0, must-revalidate
+etag: "fd11d8ed860bbecc8b0798f4495a1ed7"
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+x-matched-path: /health.txt
+x-robots-tag: noindex
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=d0kfRSzgPJ%2FaVOOgqVh2F94SbafpzcHhDpLeZzruAqAFmUyR2euB1jjH1GuNi6sIvvG2KrZ73FosYyvPMcGty57rU%2FdiDmCuZHH8b7IhB2CfDdsDxcT%2FaiKmYFd8s34qIxpbDsewjJyU0tlMgro2jj6Q7hZN9Em6ToYmF%2FWzS7w4pbPSGDSQPZjL7fX7rNeh6Ckh2kFNzg%3D%3D"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: 9fcfccfa9fd4e736-DEN
+alt-svc: h3=":443"; ma=86400
+
+
+== bundle meta ==
+HTTP/1.1 200 OK
+x-amz-id-2: bDqN0kUnQykXDRUtKEL/nbW96BDT+4AAmlHSuGd5D+Om0FJncK5Dqn20d525Y4CYZSpUnO5xjSlGsCa/lks0e/KGqkZA+UWFFz2ItAnj8OI=
+x-amz-request-id: QE5H95N3CWM1846E
+Date: Sun, 17 May 2026 04:15:24 GMT
+Last-Modified: Sat, 16 May 2026 00:13:09 GMT
+ETag: "0a80d455f7e49551c7e6032968068bc4"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: .cVTc2Vl._7LK3AakEV4Rz3vGp0oyubF
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1422
+Server: AmazonS3
+
+
+== bundle skybox ==
+HTTP/1.1 200 OK
+x-amz-id-2: /7al8SLitg1GS7i5hEUZap9AxFWfg6knHhYtPxJqHXWgjeQjvZEGe6tAlhzDid6BPKz0F0da9Sk=
+x-amz-request-id: QE5Q84HB9ZQA5JH5
+Date: Sun, 17 May 2026 04:15:24 GMT
+Last-Modified: Sat, 16 May 2026 00:13:09 GMT
+ETag: "0ab9a556362c8ced686a5eb29ff2b190"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: 7gY1SZtNF86ESbVDI3msaXP5RKGGOyDB
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 46080
+Server: AmazonS3
+

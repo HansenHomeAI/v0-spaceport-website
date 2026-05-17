@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T03:50:58Z
+updated: 2026-05-17T04:15:23Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -2341,3 +2341,31 @@ skybox, compression, artifact handoff, and visual gates.
   - GitHub workflows (exact-head):
     - `gh run list --branch agent-113647-md1-baseline-e2e ...` -> `logs/md1-shrunk/polls/gh-run-list-20260517T034956Z.json`
     - exact head `91326155...` has `0` runs (commit includes `[skip ci]`); latest observed run on branch remains `CDK Deploy` `25980223287` `success` (head `693fbae7...`)
+
+- 2026-05-17T04:15:23Z monitor poll (verify all terminal; no new cloud work launched):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `32d70864985f8a05122c4cf01c4d9d56d0e91f5c` (`chore: bump md1-shrunk state timestamps 20260517T0351Z [skip ci]`)
+    - `git status --porcelain=v1` -> new untracked poll artifacts under `logs/md1-shrunk/polls/`
+  - AWS identity:
+    - `python3 -m awscli sts get-caller-identity --region us-west-2 --output json` -> `logs/md1-shrunk/polls/aws-sts-20260517T041445Z.json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions:
+    - `python3 -m awscli stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --status-filter RUNNING --max-results 20 --region us-west-2 --output json` -> `logs/md1-shrunk/polls/stepfn-running-20260517T041445Z.json` -> RUNNING `0`
+  - SageMaker (cost bounded):
+    - InProgress processing jobs:
+      - `python3 -m awscli sagemaker list-processing-jobs --status-equals InProgress --sort-by CreationTime --sort-order Descending --max-results 50 --region us-west-2 --output json` -> `logs/md1-shrunk/polls/sm-processing-inprogress-20260517T041445Z.json` -> `0`
+    - InProgress training jobs:
+      - `python3 -m awscli sagemaker list-training-jobs --status-equals InProgress --sort-by CreationTime --sort-order Descending --max-results 50 --region us-west-2 --output json` -> `logs/md1-shrunk/polls/sm-training-inprogress-20260517T041445Z.json` -> `0`
+    - Owned job status (terminal Completed):
+      - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `logs/md1-shrunk/polls/sm-describe-md1-shrunk-1456-sfm-1778866088-20260517T041445Z.json`
+      - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `logs/md1-shrunk/polls/sm-describe-md1shrunk1456-1778880862-3dgs-20260517T041445Z.json`
+      - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `logs/md1-shrunk/polls/sm-describe-md1shrunk1456-1778880862-compression-20260517T041445Z.json`
+  - Public bundle + preview viewer HTTP checks:
+    - HTTP HEAD snapshot: `logs/md1-shrunk/polls/http-head-sanity-20260517T041523Z.txt` -> preview `/health.txt` HTTP 200; bundle `meta.json` HTTP 200; bundle `background_skybox.webp` HTTP 200
+    - bundle `meta.json` snapshot: `logs/md1-shrunk/polls/bundle-meta-20260517T041523Z.json`
+    - gaussian count snapshot: `logs/md1-shrunk/polls/bundle-gaussians-20260517T041523Z.json` -> `gaussians=990025`
+  - GitHub workflows (exact-head):
+    - run list (branch): `logs/md1-shrunk/polls/gh-run-list-20260517T041445Z.json` -> latest observed run on branch remains `CDK Deploy` `25980223287` `success` (head `693fbae7...`)
+    - run list (exact head): `logs/md1-shrunk/polls/gh-run-list-head-20260517T041446Z.json` -> exact head `32d70864...` has `0` runs (commit includes `[skip ci]`)
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
