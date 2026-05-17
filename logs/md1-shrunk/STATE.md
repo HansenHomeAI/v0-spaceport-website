@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T17:47:50Z
+updated: 2026-05-17T18:17:32Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -3575,3 +3575,40 @@ skybox, compression, artifact handoff, and visual gates.
     - `logs/md1-shrunk/polls/20260517T174750Z/postpush-gh-exact-head.json` -> head `9f8c20b6...` (`[skip ci]`)
   - exact-head run list expected `[]` (skip-ci head):
     - `logs/md1-shrunk/polls/20260517T174750Z/gh-runs-for-head.json`
+
+- 2026-05-17T18:14:49Z poll (monitor; no new ML launches):
+  - Poll artifacts: `logs/md1-shrunk/polls/20260517T181449Z/`
+  - Branch/head/status:
+    - head `4aa7fa72...` (`[skip ci]`); new poll artifacts under `logs/md1-shrunk/polls/20260517T181449Z/`
+    - evidence: `logs/md1-shrunk/polls/20260517T181449Z/git-status.txt`
+  - AWS identity (region `us-west-2`):
+    - account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+    - evidence: `logs/md1-shrunk/polls/20260517T181449Z/aws-sts.json`
+  - Step Functions (region `us-west-2`):
+    - staging `SpaceportMLPipeline-staging` RUNNING=0: `logs/md1-shrunk/polls/20260517T181449Z/stepfn-running-staging.json`
+    - branch preview `SpaceportMLPipeline-br-8abcbd5662` RUNNING=0: `logs/md1-shrunk/polls/20260517T181449Z/stepfn-running-br-8abcbd5662.json`
+  - SageMaker (region `us-west-2`):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`: `logs/md1-shrunk/polls/20260517T181449Z/sagemaker-describe-sfm.json`
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`: `logs/md1-shrunk/polls/20260517T181449Z/sagemaker-describe-3dgs.json`
+    - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`: `logs/md1-shrunk/polls/20260517T181449Z/sagemaker-describe-compression.json`
+    - InProgress processing jobs=0: `logs/md1-shrunk/polls/20260517T181449Z/sagemaker-processing-inprogress.json`
+    - InProgress training jobs=0: `logs/md1-shrunk/polls/20260517T181449Z/sagemaker-training-inprogress.json`
+  - GitHub Actions:
+    - exact-head run list expected `[]` (skip-ci head): `logs/md1-shrunk/polls/20260517T181449Z/gh-run-list-head.txt`
+    - branch run list (JSON): `logs/md1-shrunk/polls/20260517T181449Z/gh-run-list.json`
+    - latest by workflow (shows latest CDK Deploy + Pages): `logs/md1-shrunk/polls/20260517T181449Z/gh-run-latest-by-workflow.txt`
+    - deterministic Pages preview URLs from run `25994795144` log:
+      - source: `logs/md1-shrunk/polls/20260517T181449Z/gh-pages-run-25994795144.log`
+      - extracted: `logs/md1-shrunk/polls/20260517T181449Z/pages-preview-urls.env`
+  - Public bundle (anonymous fetch proof via HTTP 200):
+    - viewer /health.txt (alias): `logs/md1-shrunk/polls/20260517T181449Z/curl-health-alias.txt`
+    - viewer /health.txt (hash): `logs/md1-shrunk/polls/20260517T181449Z/curl-health-hash.txt`
+    - bundle meta.json: `logs/md1-shrunk/polls/20260517T181449Z/curl-meta.txt`
+    - bundled skybox: `logs/md1-shrunk/polls/20260517T181449Z/curl-skybox.txt`
+  - Deployed preview viewer validation (Playwright):
+    - skybox mode log: `logs/md1-shrunk/polls/20260517T181449Z/playwright-sogs-skybox.txt`
+    - skybox mode screenshot: `logs/md1-shrunk/polls/20260517T181449Z/sogs-viewer-smoke-skybox.png`
+    - no-sky mode log: `logs/md1-shrunk/polls/20260517T181449Z/playwright-sogs-nosky.txt`
+    - no-sky mode screenshot: `logs/md1-shrunk/polls/20260517T181449Z/sogs-viewer-smoke-nosky.png`
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
