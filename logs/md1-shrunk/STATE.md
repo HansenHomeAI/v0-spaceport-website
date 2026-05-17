@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T06:19:04Z
+updated: 2026-05-17T06:52:17Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -2545,3 +2545,47 @@ skybox, compression, artifact handoff, and visual gates.
   - GitHub workflows (exact-head):
     - branch run list -> `logs/md1-shrunk/polls/gh-run-list-branch-postpush-20260517T061904Z.json` (latest observed still `Deploy Next.js to Cloudflare Pages` `25977807200` + `CDK Deploy` `25977807203` for head `4328f941...`)
     - exact head run list -> `logs/md1-shrunk/polls/gh-run-list-head-postpush-20260517T061904Z.json` -> `0` runs (commit includes `[skip ci]`)
+
+- 2026-05-17T06:52:17Z monitor poll (terminal reconfirm + viewer validation; no new ML launches):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `cc87aca7ef7b884206cc3169425dfb94036965d1` (`chore: record md1-shrunk post-push gh runs 20260517T061904Z [skip ci]`)
+    - `git status --porcelain=v1` -> clean
+  - AWS identity / Step Functions / SageMaker (staging):
+    - `/opt/homebrew/bin/aws sts get-caller-identity` -> `logs/md1-shrunk/polls/20260517T064446Z/aws-sts-20260517T064446Z.json` (account `975050048887`)
+    - `/opt/homebrew/bin/aws stepfunctions list-executions ... SpaceportMLPipeline-staging` -> `logs/md1-shrunk/polls/20260517T064446Z/stepfunctions-list-executions-20260517T064446Z.json` (RUNNING=0)
+    - owned terminal statuses reconfirm:
+      - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `logs/md1-shrunk/polls/20260517T064446Z/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260517T064446Z.json` (`Completed`)
+      - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `logs/md1-shrunk/polls/20260517T064446Z/sagemaker-describe-md1shrunk1456-1778880862-3dgs-20260517T064446Z.json` (`Completed`)
+      - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `logs/md1-shrunk/polls/20260517T064446Z/sagemaker-describe-md1shrunk1456-1778880862-compression-20260517T064446Z.json` (`Completed`)
+    - InProgress processing/training counts: `0/0` -> `logs/md1-shrunk/polls/20260517T064446Z/sagemaker-list-processing-inprogress-20260517T064446Z.json`, `logs/md1-shrunk/polls/20260517T064446Z/sagemaker-list-training-inprogress-20260517T064446Z.json`
+  - SfM gates (Montana-scale facts):
+    - `sfm_metadata.json` -> `logs/md1-shrunk/polls/20260517T064503Z/sfm_metadata-20260517T064503Z.json`
+      - `images_registered=1456`, `points_3d=1103335`, `merged_component_count=1`, `quality_check_passed=true`
+  - 3DGS/compression gates:
+    - training metadata + compression summary snapshots:
+      - `logs/md1-shrunk/polls/20260517T064827Z/training_metadata-20260517T064827Z.json` -> `remaining_gaussians=990091`, `file_size_mb=234.169...`, `background_skybox=background_skybox.webp`
+      - `logs/md1-shrunk/polls/20260517T064827Z/sogs_compression_summary-20260517T064827Z.json` -> `compressed_size_mb=14.345...`
+    - public bundle reachability (anonymous):
+      - meta.json HEAD 200 -> `logs/md1-shrunk/polls/20260517T064836Z/curl-head-meta-20260517T064836Z.txt`
+      - skybox HEAD 200 -> `logs/md1-shrunk/polls/20260517T064836Z/curl-head-skybox-20260517T064836Z.txt`
+  - GitHub workflows + preview URL (deterministic from Pages run log):
+    - Pages run list: `logs/md1-shrunk/polls/20260517T064605Z/gh-pages-run-list-20260517T064605Z.json` (latest run `25977807200` success for head `4328f941...`)
+    - CDK run list: `logs/md1-shrunk/polls/20260517T064605Z/gh-cdk-run-list-20260517T064605Z.json`
+    - Pages run log + extracted URLs:
+      - `logs/md1-shrunk/polls/20260517T064909Z/gh-run-25977807200-log-20260517T064909Z.txt`
+      - alias URL: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+      - extraction: `logs/md1-shrunk/polls/20260517T064909Z/gh-run-25977807200-preview-urls-20260517T064909Z.txt`
+    - Note: no exact-head GH workflow runs for `cc87aca7...` (commit includes `[skip ci]`).
+  - Viewer validation (preview alias; skybox + no-sky):
+    - command (skybox override):
+      - `SOGS_SKYBOX_OVERRIDE=background_skybox.webp SOGS_EXPECT_BUNDLED_SKYBOX=1 node web/scripts/test-sogs-migrated-viewer.mjs`
+    - command (no-sky):
+      - `SOGS_DISABLE_SKYBOX=1 node web/scripts/test-sogs-migrated-viewer.mjs`
+    - stdout + screenshots:
+      - `logs/md1-shrunk/polls/20260517T065217Z/viewer-skybox-stdout-20260517T065217Z.txt`
+      - `logs/md1-shrunk/polls/20260517T065217Z/viewer-nosky-stdout-20260517T065217Z.txt`
+      - `logs/md1-shrunk/polls/20260517T065217Z/sogs-migrated-viewer-skybox-20260517T065217Z.png`
+      - `logs/md1-shrunk/polls/20260517T065217Z/sogs-migrated-viewer-nosky-20260517T065217Z.png`
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
