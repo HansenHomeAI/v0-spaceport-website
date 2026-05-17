@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T13:59:20Z
+updated: 2026-05-17T14:15:10Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -3247,3 +3247,35 @@ skybox, compression, artifact handoff, and visual gates.
     - Pages deploy not triggered by the poll-only push (no `web/trigger-dev-build.txt` bump).
   - Note:
     - current branch head includes `[skip ci]`, so exact-head workflow count may be `0` until the next non-skip push.
+
+- 2026-05-17T14:15:10Z poll (idle monitor; no new ML launches):
+  - Poll artifacts:
+    - `logs/md1-shrunk/polls/20260517T141510Z/`
+  - Branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `bba04a6f...` (`[skip ci]`)
+  - AWS identity (region `us-west-2`, via `/opt/homebrew/bin/aws`):
+    - `logs/md1-shrunk/polls/20260517T141510Z/aws-sts-get-caller-identity.json` (account `975050048887`)
+  - Step Functions (region `us-west-2`):
+    - staging RUNNING=0: `logs/md1-shrunk/polls/20260517T141510Z/stepfunctions-running-staging.json`
+    - branch preview RUNNING=0: `logs/md1-shrunk/polls/20260517T141510Z/stepfunctions-running-branch.json`
+  - SageMaker (region `us-west-2`):
+    - SfM `md1-shrunk-1456-sfm-1778866088` -> `Completed`:
+      - `logs/md1-shrunk/polls/20260517T141510Z/sagemaker-describe-processing-job-md1-shrunk-1456-sfm-1778866088.json`
+    - 3DGS `md1shrunk1456-1778880862-3dgs` -> `Completed`:
+      - `logs/md1-shrunk/polls/20260517T141510Z/sagemaker-describe-training-job-md1shrunk1456-1778880862-3dgs.json`
+    - compression `md1shrunk1456-1778880862-compression` -> `Completed`:
+      - `logs/md1-shrunk/polls/20260517T141510Z/sagemaker-describe-processing-job-md1shrunk1456-1778880862-compression.json`
+    - InProgress processing jobs: `0`:
+      - `logs/md1-shrunk/polls/20260517T141510Z/sagemaker-list-processing-jobs-inprogress.json`
+    - InProgress training jobs: `0`:
+      - `logs/md1-shrunk/polls/20260517T141510Z/sagemaker-list-training-jobs-inprogress.json`
+  - GitHub Actions (via `/opt/homebrew/bin/gh`):
+    - run list snapshot: `logs/md1-shrunk/polls/20260517T141510Z/gh-run-list.json`
+    - exact current head run count: `0` (commit includes `[skip ci]`):
+      - `logs/md1-shrunk/polls/20260517T141510Z/gh-exact-head-run-count.txt`
+    - latest `CDK Deploy` remains `25992784995` (head `4ca9e362...`) -> `success`
+  - Public preview + bundle HTTP sanity (anonymous):
+    - `logs/md1-shrunk/polls/20260517T141510Z/http-head-sanity.txt` -> preview `/health.txt` HTTP 200, bundle `meta.json` HTTP 200, skybox HTTP 200
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.

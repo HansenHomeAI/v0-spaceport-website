@@ -1,0 +1,5 @@
+== git ==
+branch=agent-113647-md1-baseline-e2e
+head=bba04a6f69b479f2126f3cd5a4d6706519066c22
+status_clean=no
+?? logs/md1-shrunk/polls/20260517T141510Z/
