@@ -1,0 +1,75 @@
+{
+    "ProcessingInputs": [
+        {
+            "InputName": "model",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-full-3dgs-r30-20260515T1814Z/3dgs-tile03-ds1000-r30-quality-20260515T1814Z/md1-tile03-ds1000-r30-1778869171/output/model.tar.gz",
+                "LocalPath": "/opt/ml/processing/input",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated",
+                "S3CompressionType": "None"
+            }
+        },
+        {
+            "InputName": "entrypoint",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-ml-processing/compressed/md1-r30r32-tiled-h1-i1-lod-r41-20260517T0151Z/tile03/entrypoint/",
+                "LocalPath": "/opt/ml/processing/script",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated",
+                "S3CompressionType": "None"
+            }
+        }
+    ],
+    "ProcessingOutputConfig": {
+        "Outputs": [
+            {
+                "OutputName": "sogs-h1-i1-lod-output",
+                "S3Output": {
+                    "S3Uri": "s3://spaceport-ml-processing/compressed/md1-r30r32-tiled-h1-i1-lod-r41-20260517T0151Z/tile03/",
+                    "LocalPath": "/opt/ml/processing/output",
+                    "S3UploadMode": "EndOfJob"
+                },
+                "AppManaged": false
+            }
+        ]
+    },
+    "ProcessingJobName": "md1-tile03-h1i1lod-r41-1778982714",
+    "ProcessingResources": {
+        "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.m5.4xlarge",
+            "VolumeSizeInGB": 200
+        }
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 14400
+    },
+    "AppSpecification": {
+        "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:645fd74b9217fc8441f242d8b89aefb36ef9c88192bf006ade3cfeb355bd4de3",
+        "ContainerEntrypoint": [
+            "/bin/bash",
+            "/opt/ml/processing/script/md1_tiled_splat_transform_h1_i1_lod_r41_20260517T0151Z.sh"
+        ]
+    },
+    "Environment": {
+        "MD1_SOURCE_JOB": "md1-tile03-ds1000-r30-1778869171",
+        "MD1_TILE_ID": "tile03",
+        "SOGS_DEVICE": "cpu",
+        "SOGS_FILTER_HARMONICS": "1",
+        "SOGS_KMEANS_ITERATIONS": "1",
+        "SOGS_LOD_CHUNK_COUNT": "256",
+        "SOGS_LOD_CHUNK_EXTENT": "32",
+        "SOGS_LOD_DECIMATION": "30%,10%,3%"
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-tile03-h1i1lod-r41-1778982714",
+    "ProcessingJobStatus": "InProgress",
+    "ProcessingStartTime": "2026-05-16T19:54:57.534000-06:00",
+    "LastModifiedTime": "2026-05-16T19:56:51.487000-06:00",
+    "CreationTime": "2026-05-16T19:54:20.399000-06:00"
+}

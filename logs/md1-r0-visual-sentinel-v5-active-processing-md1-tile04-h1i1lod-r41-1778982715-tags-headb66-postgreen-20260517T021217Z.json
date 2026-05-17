@@ -1,0 +1,20 @@
+{
+    "Tags": [
+        {
+            "Key": "tile",
+            "Value": "tile04"
+        },
+        {
+            "Key": "source-training-job",
+            "Value": "md1-tile04-ds1000-r30-1778869172"
+        },
+        {
+            "Key": "sfm-production-confidence",
+            "Value": "r41-tiled-h1-i1-lod-sogs"
+        },
+        {
+            "Key": "code-head",
+            "Value": "9e251de9f70c207e0190a6710686a0ecb8e6e3eb"
+        }
+    ]
+}
