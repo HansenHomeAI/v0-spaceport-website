@@ -3680,3 +3680,11 @@ skybox, compression, artifact handoff, and visual gates.
     - raw headers: `logs/md1-shrunk/polls/20260517T191522Z/http-head-sanity.txt`
   - Notes:
     - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
+
+- 2026-05-17T19:23:32Z exact-head GitHub Actions confirmation (post poll push; `[skip ci]` head):
+  - Evidence: `logs/md1-shrunk/polls/20260517T192332Z/`
+  - head commit:
+    - `logs/md1-shrunk/polls/20260517T192332Z/postpush-head.txt` -> head `5748e2cd...` (`[skip ci]`)
+  - exact-head run list expected `[]` (skip-ci head):
+    - `logs/md1-shrunk/polls/20260517T192332Z/gh-runs-for-head.json`
+    - `logs/md1-shrunk/polls/20260517T192332Z/gh-exact-head-run-count.txt`
