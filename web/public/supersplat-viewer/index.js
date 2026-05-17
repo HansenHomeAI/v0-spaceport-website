@@ -77690,7 +77690,7 @@ class GSplatAssetLoaderBase {
 
 class GSplatAssetLoader extends GSplatAssetLoaderBase {
 		constructor(registry){
-				super(), this._urlToAsset = new Map(), this.maxConcurrentLoads = 2, this.maxRetries = 2, this._currentlyLoading = new Set(), this._loadQueue = [], this._retryCount = new Map();
+				super(), this._urlToAsset = new Map(), this.maxConcurrentLoads = 2, this.maxRetries = 2, this._currentlyLoading = new Set(), this._loadQueue = [], this._retryCount = new Map(), this._firstChunkFrameSignaled = false;
 				this._registry = registry;
 		}
 		_requestRender() {
@@ -77744,6 +77744,20 @@ class GSplatAssetLoader extends GSplatAssetLoaderBase {
 				this._retryCount.delete(url);
 				this._processQueue();
 				this._requestRender();
+				try {
+						globalThis.dispatchEvent?.(new CustomEvent('supersplat:chunkLoaded', {
+								detail: {
+										url
+								}
+						}));
+						if (!this._firstChunkFrameSignaled) {
+								this._firstChunkFrameSignaled = true;
+								globalThis.firstFrame?.();
+								globalThis.parent?.postMessage?.({
+										type: 'supersplat:firstFrame'
+								}, '*');
+						}
+				} catch (e) {}
 		}
 		_onAssetLoadError(url, asset, err) {
 				const retryCount = this._retryCount.get(url) || 0;
@@ -101670,24 +101684,35 @@ class Viewer {
 				const emitUnifiedFirstFrame = () => {
 						if (firstUnifiedFrameEmitted) return;
 						firstUnifiedFrameEmitted = true;
-						app.once('frameend', () => {
+						const signalUnifiedFirstFrame = () => {
+								if (state.firstUnifiedFrameSignaled) return;
+								state.firstUnifiedFrameSignaled = true;
 								events.fire('firstFrame');
 								window.firstFrame?.();try{window.parent&&window.parent.postMessage({type:"supersplat:firstFrame"},"*");}catch(e){};
-						});
+						};
+						app.once('frameend', signalUnifiedFirstFrame);
+						setTimeout(signalUnifiedFirstFrame, 0);
 						app.renderNextFrame = true;
 				};
 				const onUnifiedFrameReady = (_camera, _layer, ready, loading) => {
 						if (ready && hasRenderableUnifiedSplats()) {
 								app.systems.gsplat.off('frame:ready', onUnifiedFrameReady);
+								globalThis.removeEventListener?.('supersplat:chunkLoaded', onUnifiedChunkLoaded);
 								emitUnifiedFirstFrame();
 						} else if (loading) {
 								app.renderNextFrame = true;
 						}
 				};
-				// Unified LOD loads drawable chunks after lod-meta.json; keep rendering until
-				// a nonzero sorted world state exists before announcing screenshot readiness.
+				const onUnifiedChunkLoaded = () => {
+						emitUnifiedFirstFrame();
+				};
+				// Unified LOD loads drawable chunks after lod-meta.json; keep rendering and
+				// announce readiness from either sorted state or first completed chunk load.
 				state.readyToRender = true;
 				app.systems.gsplat.on('frame:ready', onUnifiedFrameReady);
+				globalThis.addEventListener?.('supersplat:chunkLoaded', onUnifiedChunkLoaded, {
+						once: true
+				});
 				app.renderNextFrame = true;
 			}
 		});

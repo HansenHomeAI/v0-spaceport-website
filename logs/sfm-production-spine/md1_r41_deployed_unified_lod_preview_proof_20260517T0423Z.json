@@ -1,0 +1,1772 @@
+{
+  "generatedAt": "2026-05-17T04:23:42.145Z",
+  "stamp": "20260517T0423Z",
+  "head": "82abaa5b4b5e7b105904d8ea7cf01cd52bd6ae03",
+  "previewUrl": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev",
+  "previousIncompleteProof": "logs/sfm-production-spine/md1_r41_deployed_unified_lod_preview_proof_20260517T0418Z.json",
+  "ci": {
+    "pagesRun": 25980745841,
+    "cdkRun": 25980745835,
+    "pagesConclusion": "success",
+    "cdkConclusion": "success"
+  },
+  "cases": [
+    {
+      "id": "r40_tile00",
+      "tile": "tile00",
+      "lodUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/lod-meta.json",
+      "viewerUrl": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.html?settings=%2Fsupersplat-viewer%2Fsettings.json&content=%2Fapi%2Fsogs-proxy%2Fhttps%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fmd1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z%2Fsupersplat_bundle%2Flod-meta.json&cb=20260517T0423Z-r40_tile00&noui=&noanim=",
+      "firstFrame": true,
+      "waitError": null,
+      "visible": true,
+      "screenshot": "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/md1_r40_tile00_deployed_unified_lod_after_f_20260517T0423Z.png",
+      "pixelStats": {
+        "width": 1400,
+        "height": 900,
+        "totalPixels": 1260000,
+        "nonBlackPixels": 339167,
+        "nonBlackFraction": 0.26918,
+        "brightPixels": 319031,
+        "brightFraction": 0.253199,
+        "sampledUniqueColors": 5025
+      },
+      "network": {
+        "statusCounts": {
+          "200": 71
+        },
+        "targetStatusCounts": {
+          "200": 67
+        },
+        "failedRequests": [],
+        "targetFailedRequests": [],
+        "targetNon200": [],
+        "responseCount": 71,
+        "targetResponseCount": 67,
+        "responsesTail": [
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_1/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_1/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_1/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_1/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_1/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_1/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_1/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_1/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_4/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_4/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_4/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_4/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_4/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_4/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_4/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_4/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_6/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_6/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_6/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_6/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_6/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_6/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_6/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_6/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/2_0/meta.json",
+            "status": 200,
+            "target": true
+          }
+        ]
+      },
+      "consoleErrors": [],
+      "diag": {
+        "firstFrameSeen": true,
+        "firstFrameError": null,
+        "readyState": "complete",
+        "canvas": [
+          {
+            "width": 1400,
+            "height": 900,
+            "clientWidth": 1400,
+            "clientHeight": 900
+          }
+        ],
+        "bodyText": " "
+      }
+    },
+    {
+      "id": "r41_tile01",
+      "tile": "tile01",
+      "lodUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/lod-meta.json",
+      "viewerUrl": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.html?settings=%2Fsupersplat-viewer%2Fsettings.json&content=%2Fapi%2Fsogs-proxy%2Fhttps%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fmd1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z%2Ftile01%2Fsupersplat_bundle%2Flod-meta.json&cb=20260517T0423Z-r41_tile01&noui=&noanim=",
+      "firstFrame": true,
+      "waitError": null,
+      "visible": true,
+      "screenshot": "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/md1_r41_tile01_deployed_unified_lod_after_f_20260517T0423Z.png",
+      "pixelStats": {
+        "width": 1400,
+        "height": 900,
+        "totalPixels": 1260000,
+        "nonBlackPixels": 228090,
+        "nonBlackFraction": 0.181024,
+        "brightPixels": 212575,
+        "brightFraction": 0.16871,
+        "sampledUniqueColors": 3432
+      },
+      "network": {
+        "statusCounts": {
+          "200": 70
+        },
+        "targetStatusCounts": {
+          "200": 66
+        },
+        "failedRequests": [],
+        "targetFailedRequests": [],
+        "targetNon200": [],
+        "responseCount": 70,
+        "targetResponseCount": 66,
+        "responsesTail": [
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_3/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_1/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_1/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_1/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_1/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_1/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_1/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_1/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_1/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/shN_labels.webp",
+            "status": 200,
+            "target": true
+          }
+        ]
+      },
+      "consoleErrors": [],
+      "diag": {
+        "firstFrameSeen": true,
+        "firstFrameError": null,
+        "readyState": "complete",
+        "canvas": [
+          {
+            "width": 1400,
+            "height": 900,
+            "clientWidth": 1400,
+            "clientHeight": 900
+          }
+        ],
+        "bodyText": " "
+      }
+    },
+    {
+      "id": "r41_tile02",
+      "tile": "tile02",
+      "lodUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/lod-meta.json",
+      "viewerUrl": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.html?settings=%2Fsupersplat-viewer%2Fsettings.json&content=%2Fapi%2Fsogs-proxy%2Fhttps%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fmd1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z%2Ftile02%2Fsupersplat_bundle%2Flod-meta.json&cb=20260517T0423Z-r41_tile02&noui=&noanim=",
+      "firstFrame": true,
+      "waitError": null,
+      "visible": true,
+      "screenshot": "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/md1_r41_tile02_deployed_unified_lod_after_f_20260517T0423Z.png",
+      "pixelStats": {
+        "width": 1400,
+        "height": 900,
+        "totalPixels": 1260000,
+        "nonBlackPixels": 215547,
+        "nonBlackFraction": 0.171069,
+        "brightPixels": 200762,
+        "brightFraction": 0.159335,
+        "sampledUniqueColors": 3349
+      },
+      "network": {
+        "statusCounts": {
+          "200": 70
+        },
+        "targetStatusCounts": {
+          "200": 66
+        },
+        "failedRequests": [],
+        "targetFailedRequests": [],
+        "targetNon200": [],
+        "responseCount": 70,
+        "targetResponseCount": 66,
+        "responsesTail": [
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_3/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_1/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_1/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_1/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_1/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_1/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_1/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_1/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_1/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_6/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_6/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_6/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_6/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_6/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_6/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_6/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_6/shN_labels.webp",
+            "status": 200,
+            "target": true
+          }
+        ]
+      },
+      "consoleErrors": [],
+      "diag": {
+        "firstFrameSeen": true,
+        "firstFrameError": null,
+        "readyState": "complete",
+        "canvas": [
+          {
+            "width": 1400,
+            "height": 900,
+            "clientWidth": 1400,
+            "clientHeight": 900
+          }
+        ],
+        "bodyText": " "
+      }
+    },
+    {
+      "id": "r41_tile03",
+      "tile": "tile03",
+      "lodUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/lod-meta.json",
+      "viewerUrl": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.html?settings=%2Fsupersplat-viewer%2Fsettings.json&content=%2Fapi%2Fsogs-proxy%2Fhttps%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fmd1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z%2Ftile03%2Fsupersplat_bundle%2Flod-meta.json&cb=20260517T0423Z-r41_tile03&noui=&noanim=",
+      "firstFrame": false,
+      "waitError": "TimeoutError: page.waitForFunction: Timeout 240000ms exceeded.",
+      "visible": false,
+      "screenshot": "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/md1_r41_tile03_deployed_unified_lod_after_f_20260517T0423Z.png",
+      "pixelStats": {
+        "width": 1400,
+        "height": 900,
+        "totalPixels": 1260000,
+        "nonBlackPixels": 268961,
+        "nonBlackFraction": 0.213461,
+        "brightPixels": 254875,
+        "brightFraction": 0.202282,
+        "sampledUniqueColors": 4079
+      },
+      "network": {
+        "statusCounts": {
+          "200": 62
+        },
+        "targetStatusCounts": {
+          "200": 58
+        },
+        "failedRequests": [],
+        "targetFailedRequests": [],
+        "targetNon200": [],
+        "responseCount": 62,
+        "targetResponseCount": 58,
+        "responsesTail": [
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/1_1/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_3/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_3/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_3/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_3/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_3/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_3/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_3/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_3/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/shN_labels.webp",
+            "status": 200,
+            "target": true
+          }
+        ]
+      },
+      "consoleErrors": [],
+      "diag": {
+        "firstFrameSeen": true,
+        "firstFrameError": null,
+        "readyState": "complete",
+        "canvas": [
+          {
+            "width": 1400,
+            "height": 900,
+            "clientWidth": 1400,
+            "clientHeight": 900
+          }
+        ],
+        "bodyText": " "
+      }
+    },
+    {
+      "id": "r41_tile04",
+      "tile": "tile04",
+      "lodUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/lod-meta.json",
+      "viewerUrl": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.html?settings=%2Fsupersplat-viewer%2Fsettings.json&content=%2Fapi%2Fsogs-proxy%2Fhttps%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fmd1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z%2Ftile04%2Fsupersplat_bundle%2Flod-meta.json&cb=20260517T0423Z-r41_tile04&noui=&noanim=",
+      "firstFrame": true,
+      "waitError": null,
+      "visible": true,
+      "screenshot": "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/md1_r41_tile04_deployed_unified_lod_after_f_20260517T0423Z.png",
+      "pixelStats": {
+        "width": 1400,
+        "height": 900,
+        "totalPixels": 1260000,
+        "nonBlackPixels": 139277,
+        "nonBlackFraction": 0.110537,
+        "brightPixels": 125224,
+        "brightFraction": 0.099384,
+        "sampledUniqueColors": 2140
+      },
+      "network": {
+        "statusCounts": {
+          "200": 86
+        },
+        "targetStatusCounts": {
+          "200": 82
+        },
+        "failedRequests": [],
+        "targetFailedRequests": [],
+        "targetNon200": [],
+        "responseCount": 86,
+        "targetResponseCount": 82,
+        "responsesTail": [
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_4/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_4/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_1/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_1/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_1/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_1/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_1/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_1/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_1/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_2/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_2/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_2/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_2/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_2/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_2/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_2/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/1_2/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_6/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_6/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_6/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_6/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_6/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_6/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_6/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/0_6/shN_labels.webp",
+            "status": 200,
+            "target": true
+          }
+        ]
+      },
+      "consoleErrors": [],
+      "diag": {
+        "firstFrameSeen": true,
+        "firstFrameError": null,
+        "readyState": "complete",
+        "canvas": [
+          {
+            "width": 1400,
+            "height": 900,
+            "clientWidth": 1400,
+            "clientHeight": 900
+          }
+        ],
+        "bodyText": " "
+      }
+    }
+  ],
+  "sogsViewerCases": [
+    {
+      "id": "r40_tile00",
+      "tile": "tile00",
+      "lodUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/lod-meta.json",
+      "sogsViewerUrl": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/sogs-viewer?cb=20260517T0423Z-r40_tile00",
+      "loaded": true,
+      "loadError": null,
+      "screenshot": "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/md1_r40_tile00_deployed_sogs_viewer_20260517T0423Z.png",
+      "bodyText": "Pricing\nExplore\nCreate\n\nVIEWER READY · SOURCE: SPACEPORT-ML-PROCESSING.S3.AMAZONAWS.COM/COMPRESSED/MD1-R32-TILE00-H1-I1-LOD-R40-PUBLIC-20260517T0132Z/SUPERSPLAT_BUNDLE/LOD-META.JSON\n\nSOGS Viewer\nS3 BUNDLE URL\nLoad\n\nExpecting a public HTTPS S3 directory that contains the SuperSplat bundle files (e.g. meta.json, means_l.webp, shN_centroids.webp).\n\nQuick samples (spaceport buckets auto-route through the proxy to bypass CORS; keep the local mirror handy if you need an offline fallback):\n\nS3 proxy · sogs-test-1763664401\nLocal mirror · sogs-test-1763664401\n\nSOGS bundle loaded in the embedded viewer.\n\nSend Feedback\n\n© 2026 Spaceport · Terms of Service",
+      "network": {
+        "statusCounts": {
+          "200": 90,
+          "304": 1
+        },
+        "targetStatusCounts": {
+          "200": 82
+        },
+        "failedRequests": [
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.html?settings=%2Fsupersplat-viewer%2Fsettings.json&content=%2Fapi%2Fsogs-proxy%2Fhttps%3A%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fsogs-test-1763664401%2Fsupersplat_bundle%2Fmeta.json",
+            "failure": "net::ERR_ABORTED",
+            "target": false
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.js",
+            "failure": "net::ERR_ABORTED",
+            "target": false
+          },
+          {
+            "url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json",
+            "failure": "net::ERR_ABORTED",
+            "target": false
+          }
+        ],
+        "targetFailedRequests": [],
+        "targetNon200": [],
+        "responseCount": 91,
+        "targetResponseCount": 82,
+        "responsesTail": [
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_4/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_6/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_6/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_6/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_6/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_6/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_6/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_6/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/0_6/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_2/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/2_0/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_2/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_2/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_2/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_2/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_2/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_2/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/1_2/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/2_0/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/2_0/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/2_0/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/2_0/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/2_0/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/2_0/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r32-tile00-h1-i1-lod-r40-public-20260517T0132Z/supersplat_bundle/2_0/shN_labels.webp",
+            "status": 200,
+            "target": true
+          }
+        ]
+      },
+      "consoleErrors": []
+    },
+    {
+      "id": "r41_tile01",
+      "tile": "tile01",
+      "lodUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/lod-meta.json",
+      "sogsViewerUrl": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/sogs-viewer?cb=20260517T0423Z-r41_tile01",
+      "loaded": false,
+      "loadError": "TimeoutError: page.waitForFunction: Timeout 300000ms exceeded.",
+      "screenshot": "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/md1_r41_tile01_deployed_sogs_viewer_20260517T0423Z.png",
+      "bodyText": "Pricing\nExplore\nCreate\n\nLOADING VIEWER · SOURCE: SPACEPORT-ML-PROCESSING.S3.AMAZONAWS.COM/COMPRESSED/MD1-R30R32-TILED-H1-I1-LOD-R41-PUBLIC-20260517T0231Z/TILE01/SUPERSPLAT_BUNDLE/LOD-META.JSON\n\nSOGS Viewer\nS3 BUNDLE URL\nLoading…\n\nExpecting a public HTTPS S3 directory that contains the SuperSplat bundle files (e.g. meta.json, means_l.webp, shN_centroids.webp).\n\nQuick samples (spaceport buckets auto-route through the proxy to bypass CORS; keep the local mirror handy if you need an offline fallback):\n\nS3 proxy · sogs-test-1763664401\nLocal mirror · sogs-test-1763664401\n\nLoading viewer…\n\nSend Feedback\n\n© 2026 Spaceport · Terms of Service",
+      "network": {
+        "statusCounts": {
+          "200": 75,
+          "304": 2
+        },
+        "targetStatusCounts": {
+          "200": 66
+        },
+        "failedRequests": [
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.js",
+            "failure": "net::ERR_ABORTED",
+            "target": false
+          },
+          {
+            "url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json",
+            "failure": "net::ERR_ABORTED",
+            "target": false
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.js",
+            "failure": "net::ERR_ABORTED",
+            "target": false
+          }
+        ],
+        "targetFailedRequests": [],
+        "targetNon200": [],
+        "responseCount": 77,
+        "targetResponseCount": 66,
+        "responsesTail": [
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_3/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_1/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_1/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_1/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_1/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_1/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_1/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_1/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/1_1/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_6/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile01/supersplat_bundle/0_4/shN_labels.webp",
+            "status": 200,
+            "target": true
+          }
+        ]
+      },
+      "consoleErrors": []
+    },
+    {
+      "id": "r41_tile02",
+      "tile": "tile02",
+      "lodUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/lod-meta.json",
+      "sogsViewerUrl": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/sogs-viewer?cb=20260517T0423Z-r41_tile02",
+      "loaded": true,
+      "loadError": null,
+      "screenshot": "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/md1_r41_tile02_deployed_sogs_viewer_20260517T0423Z.png",
+      "bodyText": "Pricing\nExplore\nCreate\n\nVIEWER READY · SOURCE: SPACEPORT-ML-PROCESSING.S3.AMAZONAWS.COM/COMPRESSED/MD1-R30R32-TILED-H1-I1-LOD-R41-PUBLIC-20260517T0231Z/TILE02/SUPERSPLAT_BUNDLE/LOD-META.JSON\n\nSOGS Viewer\nS3 BUNDLE URL\nLoad\n\nExpecting a public HTTPS S3 directory that contains the SuperSplat bundle files (e.g. meta.json, means_l.webp, shN_centroids.webp).\n\nQuick samples (spaceport buckets auto-route through the proxy to bypass CORS; keep the local mirror handy if you need an offline fallback):\n\nS3 proxy · sogs-test-1763664401\nLocal mirror · sogs-test-1763664401\n\nSOGS bundle loaded in the embedded viewer.\n\nSend Feedback\n\n© 2026 Spaceport · Terms of Service",
+      "network": {
+        "statusCounts": {
+          "200": 65,
+          "304": 1
+        },
+        "targetStatusCounts": {
+          "200": 58
+        },
+        "failedRequests": [
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.html?settings=%2Fsupersplat-viewer%2Fsettings.json&content=%2Fapi%2Fsogs-proxy%2Fhttps%3A%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fsogs-test-1763664401%2Fsupersplat_bundle%2Fmeta.json",
+            "failure": "net::ERR_ABORTED",
+            "target": false
+          },
+          {
+            "url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json",
+            "failure": "net::ERR_ABORTED",
+            "target": false
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.js",
+            "failure": "net::ERR_ABORTED",
+            "target": false
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/settings.json",
+            "failure": "net::ERR_ABORTED",
+            "target": false
+          }
+        ],
+        "targetFailedRequests": [],
+        "targetNon200": [],
+        "responseCount": 66,
+        "targetResponseCount": 58,
+        "responsesTail": [
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_1/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_3/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_3/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_3/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_3/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_3/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_3/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_3/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_3/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_1/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_1/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_1/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_1/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_1/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_1/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_1/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/1_1/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile02/supersplat_bundle/0_5/shN_labels.webp",
+            "status": 200,
+            "target": true
+          }
+        ]
+      },
+      "consoleErrors": []
+    },
+    {
+      "id": "r41_tile03",
+      "tile": "tile03",
+      "lodUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/lod-meta.json",
+      "sogsViewerUrl": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/sogs-viewer?cb=20260517T0423Z-r41_tile03",
+      "loaded": true,
+      "loadError": null,
+      "screenshot": "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/md1_r41_tile03_deployed_sogs_viewer_20260517T0423Z.png",
+      "bodyText": "Pricing\nExplore\nCreate\n\nVIEWER READY · SOURCE: SPACEPORT-ML-PROCESSING.S3.AMAZONAWS.COM/COMPRESSED/MD1-R30R32-TILED-H1-I1-LOD-R41-PUBLIC-20260517T0231Z/TILE03/SUPERSPLAT_BUNDLE/LOD-META.JSON\n\nSOGS Viewer\nS3 BUNDLE URL\nLoad\n\nExpecting a public HTTPS S3 directory that contains the SuperSplat bundle files (e.g. meta.json, means_l.webp, shN_centroids.webp).\n\nQuick samples (spaceport buckets auto-route through the proxy to bypass CORS; keep the local mirror handy if you need an offline fallback):\n\nS3 proxy · sogs-test-1763664401\nLocal mirror · sogs-test-1763664401\n\nSOGS bundle loaded in the embedded viewer.\n\nSend Feedback\n\n© 2026 Spaceport · Terms of Service",
+      "network": {
+        "statusCounts": {
+          "200": 65
+        },
+        "targetStatusCounts": {
+          "200": 58
+        },
+        "failedRequests": [
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.html?settings=%2Fsupersplat-viewer%2Fsettings.json&content=%2Fapi%2Fsogs-proxy%2Fhttps%3A%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fsogs-test-1763664401%2Fsupersplat_bundle%2Fmeta.json",
+            "failure": "net::ERR_ABORTED",
+            "target": false
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.js",
+            "failure": "net::ERR_ABORTED",
+            "target": false
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.css",
+            "failure": "net::ERR_ABORTED",
+            "target": false
+          }
+        ],
+        "targetFailedRequests": [],
+        "targetNon200": [],
+        "responseCount": 65,
+        "targetResponseCount": 58,
+        "responsesTail": [
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/1_1/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_3/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_3/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_3/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_3/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_3/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_3/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_3/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_3/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/0_4/shN_labels.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/meta.json",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/means_l.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/means_u.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/quats.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/scales.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/sh0.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/shN_centroids.webp",
+            "status": 200,
+            "target": true
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile03/supersplat_bundle/2_0/shN_labels.webp",
+            "status": 200,
+            "target": true
+          }
+        ]
+      },
+      "consoleErrors": []
+    },
+    {
+      "id": "r41_tile04",
+      "tile": "tile04",
+      "lodUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z/tile04/supersplat_bundle/lod-meta.json",
+      "sogsViewerUrl": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/sogs-viewer?cb=20260517T0423Z-r41_tile04",
+      "loaded": true,
+      "loadError": null,
+      "screenshot": "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/md1_r41_tile04_deployed_sogs_viewer_20260517T0423Z.png",
+      "bodyText": "Pricing\nExplore\nCreate\n\nVIEWER READY · SOURCE: SPACEPORT-ML-PROCESSING.S3.AMAZONAWS.COM/COMPRESSED/SOGS-TEST-1763664401/SUPERSPLAT_BUNDLE/META.JSON\n\nSOGS Viewer\nS3 BUNDLE URL\nLoad\n\nExpecting a public HTTPS S3 directory that contains the SuperSplat bundle files (e.g. meta.json, means_l.webp, shN_centroids.webp).\n\nQuick samples (spaceport buckets auto-route through the proxy to bypass CORS; keep the local mirror handy if you need an offline fallback):\n\nS3 proxy · sogs-test-1763664401\nLocal mirror · sogs-test-1763664401\n\nSOGS bundle loaded in the embedded viewer.\n\nSend Feedback\n\n© 2026 Spaceport · Terms of Service",
+      "network": {
+        "statusCounts": {
+          "200": 16,
+          "304": 1
+        },
+        "targetStatusCounts": {},
+        "failedRequests": [
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.html?settings=%2Fsupersplat-viewer%2Fsettings.json&content=%2Fapi%2Fsogs-proxy%2Fhttps%3A%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fsogs-test-1763664401%2Fsupersplat_bundle%2Fmeta.json",
+            "failure": "net::ERR_ABORTED",
+            "target": false
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.js",
+            "failure": "net::ERR_ABORTED",
+            "target": false
+          },
+          {
+            "url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json",
+            "failure": "net::ERR_ABORTED",
+            "target": false
+          }
+        ],
+        "targetFailedRequests": [],
+        "targetNon200": [],
+        "responseCount": 17,
+        "targetResponseCount": 0,
+        "responsesTail": [
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/sogs-viewer?cb=20260517T0423Z-r41_tile04",
+            "status": 200,
+            "target": false
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/_next/static/chunks/app/sogs-viewer/page-148e70bcc96bb5fb.js",
+            "status": 200,
+            "target": false
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.html?settings=%2Fsupersplat-viewer%2Fsettings.json&content=https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fsogs-test-1763664401%2Fsupersplat_bundle%2Fmeta.json",
+            "status": 200,
+            "target": false
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.css",
+            "status": 200,
+            "target": false
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/settings.json",
+            "status": 200,
+            "target": false
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.html?settings=%2Fsupersplat-viewer%2Fsettings.json&content=%2Fapi%2Fsogs-proxy%2Fhttps%3A%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fsogs-test-1763664401%2Fsupersplat_bundle%2Fmeta.json",
+            "status": 200,
+            "target": false
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.css",
+            "status": 304,
+            "target": false
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/settings.json",
+            "status": 200,
+            "target": false
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json",
+            "status": 200,
+            "target": false
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.js",
+            "status": 200,
+            "target": false
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/shN_centroids.webp",
+            "status": 200,
+            "target": false
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/means_u.webp",
+            "status": 200,
+            "target": false
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/sh0.webp",
+            "status": 200,
+            "target": false
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/shN_labels.webp",
+            "status": 200,
+            "target": false
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/scales.webp",
+            "status": 200,
+            "target": false
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/quats.webp",
+            "status": 200,
+            "target": false
+          },
+          {
+            "url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/means_l.webp",
+            "status": 200,
+            "target": false
+          }
+        ]
+      },
+      "consoleErrors": []
+    }
+  ],
+  "summary": {
+    "allDirectFirstFrame": false,
+    "allDirectVisible": false,
+    "allSogsViewerLoaded": false,
+    "allTargetNetworkClean": true,
+    "directNonBlackFractions": {
+      "r40_tile00": 0.26918,
+      "r41_tile01": 0.181024,
+      "r41_tile02": 0.171069,
+      "r41_tile03": 0.213461,
+      "r41_tile04": 0.110537
+    },
+    "directStatus": {
+      "r40_tile00": {
+        "firstFrame": true,
+        "visible": true,
+        "nonBlackFraction": 0.26918,
+        "targetFailedRequests": 0,
+        "targetNon200": 0
+      },
+      "r41_tile01": {
+        "firstFrame": true,
+        "visible": true,
+        "nonBlackFraction": 0.181024,
+        "targetFailedRequests": 0,
+        "targetNon200": 0
+      },
+      "r41_tile02": {
+        "firstFrame": true,
+        "visible": true,
+        "nonBlackFraction": 0.171069,
+        "targetFailedRequests": 0,
+        "targetNon200": 0
+      },
+      "r41_tile03": {
+        "firstFrame": false,
+        "visible": false,
+        "nonBlackFraction": 0.213461,
+        "targetFailedRequests": 0,
+        "targetNon200": 0
+      },
+      "r41_tile04": {
+        "firstFrame": true,
+        "visible": true,
+        "nonBlackFraction": 0.110537,
+        "targetFailedRequests": 0,
+        "targetNon200": 0
+      }
+    },
+    "sogsViewerStatus": {
+      "r40_tile00": {
+        "loaded": true,
+        "targetFailedRequests": 0,
+        "targetNon200": 0
+      },
+      "r41_tile01": {
+        "loaded": false,
+        "targetFailedRequests": 0,
+        "targetNon200": 0
+      },
+      "r41_tile02": {
+        "loaded": true,
+        "targetFailedRequests": 0,
+        "targetNon200": 0
+      },
+      "r41_tile03": {
+        "loaded": true,
+        "targetFailedRequests": 0,
+        "targetNon200": 0
+      },
+      "r41_tile04": {
+        "loaded": true,
+        "targetFailedRequests": 0,
+        "targetNon200": 0
+      }
+    },
+    "decision": "do_not_promote_deployed_preview_failure"
+  }
+}

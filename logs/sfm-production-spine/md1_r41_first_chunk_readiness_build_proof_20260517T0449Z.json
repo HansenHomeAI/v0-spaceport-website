@@ -1,0 +1,7 @@
+{
+  "generatedAt": "2026-05-17T04:49Z",
+  "command": "cd web && npm run build",
+  "exitCode": 0,
+  "result": "pass_with_existing_warnings",
+  "note": "Next build completed successfully after first-chunk readiness patch; warnings are pre-existing lint/img/hook warnings."
+}

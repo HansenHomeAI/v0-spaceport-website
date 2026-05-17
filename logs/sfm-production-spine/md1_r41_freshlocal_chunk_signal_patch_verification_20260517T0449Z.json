@@ -1,0 +1,185 @@
+{
+  "generatedAt": "2026-05-17T04:49:53.428Z",
+  "results": [
+    {
+      "mode": "direct",
+      "firstFrame": true,
+      "waitError": null,
+      "diag": {
+        "href": "http://127.0.0.1:3000/supersplat-viewer/index.html?settings=%2Fsupersplat-viewer%2Fsettings.json&content=%2Fapi%2Fsogs-proxy%2Fhttps%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fmd1-r30r32-tiled-h1-i1-lod-r41-public-20260517T0231Z%2Ftile01%2Fsupersplat_bundle%2Flod-meta.json&cb=20260517T0449Z-direct&noui=&noanim=",
+        "firstFrameSeen": true,
+        "chunkSignal": true,
+        "bodyText": " ",
+        "canvas": [
+          {
+            "w": 1400,
+            "h": 900,
+            "cw": 1400,
+            "ch": 900
+          }
+        ]
+      },
+      "pixels": {
+        "width": 1400,
+        "height": 900,
+        "nonBlackFraction": 0.181024,
+        "sampledUniqueColors": 3432
+      },
+      "visible": true,
+      "shot": "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/md1_r41_tile01_freshlocal_chunk_signal_direct_20260517T0449Z.png",
+      "consoleMsgs": [
+        {
+          "type": "log",
+          "text": "XrNavigation: Enabled methods - teleportation, smooth movement"
+        },
+        {
+          "type": "error",
+          "text": "Cannot set new property on target"
+        },
+        {
+          "type": "error",
+          "text": "Cannot set new property on target"
+        },
+        {
+          "type": "error",
+          "text": "Cannot set new property on target"
+        },
+        {
+          "type": "error",
+          "text": "Cannot set new property on target"
+        },
+        {
+          "type": "error",
+          "text": "Cannot set new property on target"
+        },
+        {
+          "type": "error",
+          "text": "Cannot set new property on target"
+        },
+        {
+          "type": "error",
+          "text": "Cannot set new property on target"
+        },
+        {
+          "type": "error",
+          "text": "Cannot set new property on target"
+        },
+        {
+          "type": "error",
+          "text": "Cannot set new property on target"
+        },
+        {
+          "type": "error",
+          "text": "Cannot set new property on target"
+        },
+        {
+          "type": "error",
+          "text": "Cannot set new property on target"
+        },
+        {
+          "type": "error",
+          "text": "Cannot set new property on target"
+        },
+        {
+          "type": "error",
+          "text": "Cannot set new property on target"
+        },
+        {
+          "type": "error",
+          "text": "Cannot set new property on target"
+        },
+        {
+          "type": "error",
+          "text": "Cannot set new property on target"
+        },
+        {
+          "type": "error",
+          "text": "Cannot set new property on target"
+        },
+        {
+          "type": "error",
+          "text": "Cannot set new property on target"
+        },
+        {
+          "type": "error",
+          "text": "Cannot set new property on target"
+        },
+        {
+          "type": "error",
+          "text": "Cannot set new property on target"
+        }
+      ],
+      "failed": []
+    },
+    {
+      "mode": "sogs-viewer",
+      "loaded": true,
+      "loadError": null,
+      "bodyText": "Pricing\nExplore\nCreate\n\nVIEWER READY · SOURCE: SPACEPORT-ML-PROCESSING.S3.AMAZONAWS.COM/COMPRESSED/SOGS-TEST-1763664401/SUPERSPLAT_BUNDLE/META.JSON\n\nSOGS Viewer\nS3 BUNDLE URL\nLoad\n\nExpecting a public HTTPS S3 directory that contains the SuperSplat bundle files (e.g. meta.json, means_l.webp, shN_centroids.webp).\n\nQuick samples (spaceport buckets auto-route through the proxy to bypass CORS; keep the local mirror handy if you need an offline fallback):\n\nS3 proxy · sogs-test-1763664401\nLocal mirror · sogs-test-1763664401\n\nSOGS bundle loaded in the embedded viewer.\n\nSend Feedback\n\n© 2026 Spaceport · Terms of Service",
+      "shot": "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/md1_r41_tile01_freshlocal_chunk_signal_sogs_20260517T0449Z.png",
+      "consoleMsgs": [
+        {
+          "type": "log",
+          "text": "XrNavigation: Enabled methods - teleportation, smooth movement"
+        },
+        {
+          "type": "info",
+          "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+        },
+        {
+          "type": "log",
+          "text": "XrNavigation: Enabled methods - teleportation, smooth movement"
+        },
+        {
+          "type": "info",
+          "text": "[sogs-viewer] first frame event received"
+        }
+      ],
+      "failed": [
+        {
+          "url": "http://127.0.0.1:3000/supersplat-viewer/index.js",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://127.0.0.1:3000/_next/static/chunks/main-app.js?v=1778993387361",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/quats.webp",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/shN_labels.webp",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/sh0.webp",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/means_l.webp",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/scales.webp",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/shN_centroids.webp",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/means_u.webp",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "allPass": true
+  }
+}
