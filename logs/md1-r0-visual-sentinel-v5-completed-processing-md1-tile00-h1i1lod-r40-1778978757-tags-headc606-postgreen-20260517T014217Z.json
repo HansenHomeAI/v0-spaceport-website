@@ -1,0 +1,20 @@
+{
+    "Tags": [
+        {
+            "Key": "source-training-job",
+            "Value": "md1-tile00-split-r32-1778899939"
+        },
+        {
+            "Key": "sfm-production-confidence",
+            "Value": "r40-tile00-h1-i1-lod-sogs"
+        },
+        {
+            "Key": "code-head",
+            "Value": "9e251de9f70c207e0190a6710686a0ecb8e6e3eb"
+        },
+        {
+            "Key": "source-failures",
+            "Value": "md1-tile00-lodonly-r38-1778950901-md1-tile00-h0lod-r39-1778976307"
+        }
+    ]
+}
