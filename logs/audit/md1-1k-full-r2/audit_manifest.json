@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "c848121dcf5339bbd8fc70f6691733cb1c374d29 exact-head green on CDK Deploy 25976904849; AWS idle no-spend merge/review planning recorded; no merge/review/full14/LOD/viewer smoke/promotion launched.",
-  "current_exact_head_gate_status": "exact-head c848121dcf5339bbd8fc70f6691733cb1c374d29 green on CDK Deploy 25976904849.",
-  "current_live_compute_status": "AWS training and processing are idle after exact-head c848 green. No MD1 compute was launched.",
-  "current_rung": "R0_visual_sentinel_v5_no_spend_merge_review_planning_headc848_after_aws_idle",
+  "current_branch_head": "0cf9a1de4453939d344861b9adb6fc1efe8d210e exact-head green on CDK Deploy 25977280325; training idle but source-attributed SOGS/H1 I1 LOD processing active; no MD1 compute launched by this automation.",
+  "current_exact_head_gate_status": "exact-head 0cf9a1de4453939d344861b9adb6fc1efe8d210e green on CDK Deploy 25977280325.",
+  "current_live_compute_status": "AWS training is idle but processing is active on md1-tile00-h1i1lod-r40-1778978757 after exact-head 0cf9 green. No MD1 compute was launched by this automation.",
+  "current_rung": "R0_visual_sentinel_v5_processing_hold_head0cf9_after_no_spend_merge_review_planning",
   "evidence_events": [
     {
       "billable_seconds": 412,
@@ -3644,9 +3644,10 @@
       "next": "Commit/push this head0542 exact-green processing-hold evidence and watch the resulting exact-head workflow. Keep compute held until AWS training and processing are idle; after idle run only no-spend merge/review readiness/planning from the passed tile_04 leaf gate."
     },
     "md1_r0_visual_sentinel_v5_no_spend_merge_review_planning_head5984_20260517",
-    "md1_r0_visual_sentinel_v5_no_spend_merge_review_planning_headc848_20260517"
+    "md1_r0_visual_sentinel_v5_no_spend_merge_review_planning_headc848_20260517",
+    "md1_r0_visual_sentinel_v5_processing_hold_head0cf9_20260517"
   ],
-  "exact_head_gate_status": "exact-head c848121dcf5339bbd8fc70f6691733cb1c374d29 green on CDK Deploy 25976904849.",
+  "exact_head_gate_status": "exact-head 0cf9a1de4453939d344861b9adb6fc1efe8d210e green on CDK Deploy 25977280325.",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
   "frozen_camera_sets": {
     "buckets": {
@@ -3961,16 +3962,16 @@
     ],
     "view_bucket_manifest": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted/tiled_pipeline/inputs/scaffold/3dgs_view_buckets.json"
   },
-  "last_commit": "c848121dcf5339bbd8fc70f6691733cb1c374d29",
+  "last_commit": "0cf9a1de4453939d344861b9adb6fc1efe8d210e",
   "last_exact_head_gates": [
     {
       "workflow_name": "CDK Deploy",
-      "run_id": 25976904849,
+      "run_id": 25977280325,
       "conclusion": "success",
-      "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25976904849"
+      "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25977280325"
     }
   ],
-  "last_updated": "2026-05-17T00:42:17Z",
+  "last_updated": "2026-05-17T01:12:17Z",
   "latest_bg10_merge_input_materialization_status": {
     "exact_head_workflows_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-exact-head-workflows-current-20260513.json",
     "input_materialization_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-input-materialization-current-20260513.json",
@@ -4177,29 +4178,25 @@
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
   "latest_boundary_responsible_tile_plan_status": "boundary primary tile_04/tile_10; horizon primary tile_04/tile_01; tile04 dryrun covers tile01/tile10 context support",
-  "latest_cost_control": "No paid MD1 compute launched. No merge/review/full14/LOD/viewer smoke/promotion launched. Input materialization and paid merge/review require a separate allowed gate.",
+  "latest_cost_control": "No paid MD1 compute launched by this automation. No merge/review/full14/LOD/viewer smoke/promotion launched. Wait for AWS idle before any no-spend merge/review readiness/planning rerun; input materialization and paid merge/review require a separate allowed gate.",
   "latest_evidence": [
-    "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-headc848-postgreen-20260517T004217Z.json",
-    "logs/md1-r0-visual-sentinel-v5-live-training-headc848-postgreen-20260517T004217Z.json",
-    "logs/md1-r0-visual-sentinel-v5-live-processing-headc848-postgreen-20260517T004217Z.json",
-    "logs/md1-r0-visual-sentinel-v5-density-relaxed-leaf-reuse-summary-headc848-20260517.json",
-    "logs/md1-r0-visual-sentinel-v5-density-relaxed-merge-review-gate-headc848-20260517.json",
-    "logs/md1-r0-visual-sentinel-v5-density-relaxed-remote-merge-g4dn-plan-dryrun-headc848-20260517.json",
-    "logs/md1-r0-visual-sentinel-v5-density-relaxed-remote-merge-g4dn-payload-dryrun-headc848-20260517.json",
-    "logs/md1-r0-visual-sentinel-v5-density-relaxed-merge-review-readiness-plan-headc848-20260517.json",
-    "logs/md1-r0-visual-sentinel-v5-density-relaxed-merge-review-submit-readiness-headc848-20260517.json"
+    "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-head0cf9-postgreen-20260517T011217Z.json",
+    "logs/md1-r0-visual-sentinel-v5-live-training-head0cf9-postgreen-20260517T011217Z.json",
+    "logs/md1-r0-visual-sentinel-v5-live-processing-head0cf9-postgreen-20260517T011217Z.json",
+    "logs/md1-r0-visual-sentinel-v5-active-processing-md1-tile00-h1i1lod-r40-1778978757-describe-head0cf9-postgreen-20260517T011217Z.json",
+    "logs/md1-r0-visual-sentinel-v5-active-processing-md1-tile00-h1i1lod-r40-1778978757-tags-head0cf9-postgreen-20260517T011217Z.json"
   ],
   "latest_exact_head_gate": {
     "workflow_name": "CDK Deploy",
-    "run_id": 25976904849,
+    "run_id": 25977280325,
     "conclusion": "success",
-    "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25976904849"
+    "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25977280325"
   },
   "latest_exact_head_workflows": {
-    "json": "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-headc848-postgreen-20260517T004217Z.json",
-    "run_id": 25976904849,
+    "json": "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-head0cf9-postgreen-20260517T011217Z.json",
+    "run_id": 25977280325,
     "conclusion": "success",
-    "head": "c848121dcf5339bbd8fc70f6691733cb1c374d29"
+    "head": "0cf9a1de4453939d344861b9adb6fc1efe8d210e"
   },
   "latest_hard_output_cap_visual_fidelity_review_status": {
     "ai_visual_review_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-v18colmap-review-r1-ai-visual-review-20260513.json",
@@ -4297,17 +4294,79 @@
   "latest_leaf_submit_readiness_gate_status": "R0 v4 tile_04 visual-sentinel readiness is not rerun while AWS processing is active. Exact head is green, objective gate allows, merge/review gate blocks only on missing tile_04 leaf summary, strategy dry-run submits no jobs and estimates $0.736 under $0.75.",
   "latest_live_compute_status": {
     "training_jobs_in_progress": 0,
-    "processing_jobs_in_progress": 0,
-    "training_json": "logs/md1-r0-visual-sentinel-v5-live-training-headc848-postgreen-20260517T004217Z.json",
-    "processing_json": "logs/md1-r0-visual-sentinel-v5-live-processing-headc848-postgreen-20260517T004217Z.json"
+    "processing_jobs_in_progress": 1,
+    "training_json": "logs/md1-r0-visual-sentinel-v5-live-training-head0cf9-postgreen-20260517T011217Z.json",
+    "processing_json": "logs/md1-r0-visual-sentinel-v5-live-processing-head0cf9-postgreen-20260517T011217Z.json",
+    "active_processing": [
+      {
+        "job_name": "md1-tile00-h1i1lod-r40-1778978757",
+        "status": "InProgress",
+        "creation_time": "2026-05-16T18:46:02.313000-06:00",
+        "start_time": "2026-05-16T18:46:39.548000-06:00",
+        "instance_type": "ml.m5.4xlarge",
+        "instance_count": 1,
+        "volume_size_gb": 200,
+        "max_runtime_seconds": 14400,
+        "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:645fd74b9217fc8441f242d8b89aefb36ef9c88192bf006ade3cfeb355bd4de3",
+        "entrypoint": [
+          "/bin/bash",
+          "/opt/ml/processing/script/md1_tile00_splat_transform_h1_i1_lod_r40_20260517T0038Z.sh"
+        ],
+        "sfm_production_confidence": "r40-tile00-h1-i1-lod-sogs",
+        "code_head": "9e251de9f70c207e0190a6710686a0ecb8e6e3eb",
+        "source_training_job": "md1-tile00-split-r32-1778899939",
+        "source_failures": "md1-tile00-lodonly-r38-1778950901-md1-tile00-h0lod-r39-1778976307",
+        "environment": {
+          "SOGS_DEVICE": "cpu",
+          "SOGS_FILTER_HARMONICS": "1",
+          "SOGS_KMEANS_ITERATIONS": "1",
+          "SOGS_LOD_CHUNK_COUNT": "256",
+          "SOGS_LOD_CHUNK_EXTENT": "32",
+          "SOGS_LOD_DECIMATION": "30%,10%,3%"
+        },
+        "input_model_s3": "s3://spaceport-ml-processing-staging/manual-validations/md1-full-3dgs-r32-20260516T0252Z/3dgs-tile00-support-aware-ds1000-r32-quality-20260516T0252Z/md1-tile00-split-r32-1778899939/output/model.tar.gz",
+        "output_s3": "s3://spaceport-ml-processing/compressed/md1-r32-tile00-h1-i1-lod-r40-20260517T0038Z/"
+      }
+    ]
   },
   "latest_lod_production_readiness_status": "logs/md1-r4-tile10-rollback-lod-production-readiness-20260506.json reports viewer_ready_quality_blocked; --require-promotion-ready now exits 3 and wrote logs/md1-r4-tile10-rollback-lod-production-readiness-promotion-required-20260506.json, preventing promotion callers from accepting viewer readiness alone.",
   "latest_md1_cost_reduction_status": "soft_density_failed_hypothesis_encoded_no_paid_retry_allowed",
   "latest_md1_live_compute_status": {
     "training_jobs_in_progress": 0,
-    "processing_jobs_in_progress": 0,
-    "training_json": "logs/md1-r0-visual-sentinel-v5-live-training-headc848-postgreen-20260517T004217Z.json",
-    "processing_json": "logs/md1-r0-visual-sentinel-v5-live-processing-headc848-postgreen-20260517T004217Z.json"
+    "processing_jobs_in_progress": 1,
+    "training_json": "logs/md1-r0-visual-sentinel-v5-live-training-head0cf9-postgreen-20260517T011217Z.json",
+    "processing_json": "logs/md1-r0-visual-sentinel-v5-live-processing-head0cf9-postgreen-20260517T011217Z.json",
+    "active_processing": [
+      {
+        "job_name": "md1-tile00-h1i1lod-r40-1778978757",
+        "status": "InProgress",
+        "creation_time": "2026-05-16T18:46:02.313000-06:00",
+        "start_time": "2026-05-16T18:46:39.548000-06:00",
+        "instance_type": "ml.m5.4xlarge",
+        "instance_count": 1,
+        "volume_size_gb": 200,
+        "max_runtime_seconds": 14400,
+        "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:645fd74b9217fc8441f242d8b89aefb36ef9c88192bf006ade3cfeb355bd4de3",
+        "entrypoint": [
+          "/bin/bash",
+          "/opt/ml/processing/script/md1_tile00_splat_transform_h1_i1_lod_r40_20260517T0038Z.sh"
+        ],
+        "sfm_production_confidence": "r40-tile00-h1-i1-lod-sogs",
+        "code_head": "9e251de9f70c207e0190a6710686a0ecb8e6e3eb",
+        "source_training_job": "md1-tile00-split-r32-1778899939",
+        "source_failures": "md1-tile00-lodonly-r38-1778950901-md1-tile00-h0lod-r39-1778976307",
+        "environment": {
+          "SOGS_DEVICE": "cpu",
+          "SOGS_FILTER_HARMONICS": "1",
+          "SOGS_KMEANS_ITERATIONS": "1",
+          "SOGS_LOD_CHUNK_COUNT": "256",
+          "SOGS_LOD_CHUNK_EXTENT": "32",
+          "SOGS_LOD_DECIMATION": "30%,10%,3%"
+        },
+        "input_model_s3": "s3://spaceport-ml-processing-staging/manual-validations/md1-full-3dgs-r32-20260516T0252Z/3dgs-tile00-support-aware-ds1000-r32-quality-20260516T0252Z/md1-tile00-split-r32-1778899939/output/model.tar.gz",
+        "output_s3": "s3://spaceport-ml-processing/compressed/md1-r32-tile00-h1-i1-lod-r40-20260517T0038Z/"
+      }
+    ]
   },
   "latest_no_spend_bg10_merge_review_plan": {
     "aws_idle_after_failure": true,
@@ -4482,7 +4541,7 @@
     "remote_merge_plan_json": "logs/md1-r4-quality-preserving-soft-density-leaf-tile10-rollback-bg10-remote-merge-g4dn-plan-dryrun-20260513.json",
     "training_jobs_to_submit": 0
   },
-  "latest_testing": "Exact-head c848 CDK Deploy 25976904849 completed green; AWS training/processing idle; no-spend merge/review submit readiness blocked only on merge_inputs_not_materialized.",
+  "latest_testing": "Exact-head 0cf9 CDK Deploy 25977280325 completed green; AWS training idle; AWS processing active on md1-tile00-h1i1lod-r40-1778978757; no-spend merge/review submit readiness remains blocked only on merge_inputs_not_materialized.",
   "latest_tile04_leaf_reuse_merge_dryrun_status": "R0 v5 density-relaxed tile_04 leaf passed post-leaf preflight/gate. On exact-head b83 and AWS idle, no-spend merge/review planning was rerun: merge_review_allowed, training_jobs_to_submit=0, local merge plan/payload dry-run generated, and submit readiness remains blocked only on merge_inputs_not_materialized.",
   "latest_tracked_sagemaker_evidence_spend_before_untracked_stop_usd": 14.8046,
   "latest_training_cost_reduction_status": "Evidence/untracked spend remains about $17.100. Soft-density tile_04 passed leaf and merge structural gates but failed V18 and AI visual QA; no-spend planner now records soft_density_quality_regression and blocks repeating that objective. No full14/LOD/promotion/viewer smoke launched.",
@@ -4512,7 +4571,7 @@
     "status": "Stopped",
     "stopped_at": "2026-05-13T00:37:07.837Z"
   },
-  "live_compute_status": "AWS training and processing are idle after exact-head c848 green. No MD1 compute was launched.",
+  "live_compute_status": "AWS training is idle but processing is active on md1-tile00-h1i1lod-r40-1778978757 after exact-head 0cf9 green. No MD1 compute was launched by this automation.",
   "manifest_inputs_refreshed_at": "2026-04-24T23:44:22.417695+00:00",
   "manifest_inputs_source": {
     "canonical_model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
@@ -12885,7 +12944,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Commit/push this headc848 no-spend planning evidence and watch the resulting exact-head workflow. Do not launch merge/review/full14/LOD/viewer smoke/promotion. Input materialization and paid merge/review require a separate allowed gate.",
+  "next_unblocked_step": "Commit/push this head0cf9 exact-green processing-hold evidence and watch the resulting exact-head workflow. Keep compute held until AWS training and processing are idle; after idle run only no-spend merge/review readiness/planning from the passed tile_04 leaf gate.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -18978,8 +19037,8 @@
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-17T00:42:17Z",
-  "updated_at": "2026-05-17T00:42:17Z",
+  "updated": "2026-05-17T01:12:17Z",
+  "updated_at": "2026-05-17T01:12:17Z",
   "version": "1.0.0",
   "md1_r0_visual_sentinel_readiness_blocked_active_jobs_20260513": {
     "recorded_at": "2026-05-13T18:33:49Z",
@@ -21178,7 +21237,7 @@
     ],
     "next": "Wait for AWS training/processing idle, rerun v5 readiness on exact green head, then at most one bounded R0 v5 tile_04 leaf-only proof if allowed. No merge/review/full14/LOD/promotion."
   },
-  "last_event": "md1_r0_visual_sentinel_v5_no_spend_merge_review_planning_headc848_20260517",
+  "last_event": "md1_r0_visual_sentinel_v5_processing_hold_head0cf9_20260517",
   "md1_r0_visual_sentinel_v5_training_hold_head08c_20260515": {
     "checked_at": "2026-05-15T07:53:38Z",
     "head": "08c018df22db9acdbde3ef96e70330f29f568b46",
@@ -24538,9 +24597,9 @@
   },
   "current_exact_head_gate": {
     "workflow_name": "CDK Deploy",
-    "run_id": 25976904849,
+    "run_id": 25977280325,
     "conclusion": "success",
-    "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25976904849"
+    "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25977280325"
   },
   "md1_r0_visual_sentinel_v5_processing_hold_head447_20260516": {
     "event": "md1_r0_visual_sentinel_v5_processing_hold_head447_20260516",
@@ -25501,5 +25560,81 @@
       "no promotion launched"
     ],
     "next": "Commit/push this headc848 no-spend planning evidence and watch the resulting exact-head workflow. Do not launch merge/review/full14/LOD/viewer smoke/promotion. Input materialization and paid merge/review require a separate allowed gate."
+  },
+  "md1_r0_visual_sentinel_v5_processing_hold_head0cf9_20260517": {
+    "event": "md1_r0_visual_sentinel_v5_processing_hold_head0cf9_20260517",
+    "checked_at": "2026-05-17T01:12:17Z",
+    "head": "0cf9a1de4453939d344861b9adb6fc1efe8d210e",
+    "status": "training_idle_processing_active_after_no_spend_merge_review_planning",
+    "decision": "compute_hold_active_processing_training_idle",
+    "summary": "Exact-head 0cf9 is green and training is idle, but further action is held because source-attributed SOGS/H1 I1 LOD processing remains active. No MD1 compute launched by this automation.",
+    "md1_compute_launched": false,
+    "exact_head_workflow": {
+      "workflow_name": "CDK Deploy",
+      "run_id": 25977280325,
+      "conclusion": "success",
+      "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25977280325"
+    },
+    "live_aws": {
+      "training_jobs_in_progress": 0,
+      "processing_jobs_in_progress": 1,
+      "training_json": "logs/md1-r0-visual-sentinel-v5-live-training-head0cf9-postgreen-20260517T011217Z.json",
+      "processing_json": "logs/md1-r0-visual-sentinel-v5-live-processing-head0cf9-postgreen-20260517T011217Z.json",
+      "active_processing": [
+        {
+          "job_name": "md1-tile00-h1i1lod-r40-1778978757",
+          "status": "InProgress",
+          "creation_time": "2026-05-16T18:46:02.313000-06:00",
+          "start_time": "2026-05-16T18:46:39.548000-06:00",
+          "instance_type": "ml.m5.4xlarge",
+          "instance_count": 1,
+          "volume_size_gb": 200,
+          "max_runtime_seconds": 14400,
+          "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:645fd74b9217fc8441f242d8b89aefb36ef9c88192bf006ade3cfeb355bd4de3",
+          "entrypoint": [
+            "/bin/bash",
+            "/opt/ml/processing/script/md1_tile00_splat_transform_h1_i1_lod_r40_20260517T0038Z.sh"
+          ],
+          "sfm_production_confidence": "r40-tile00-h1-i1-lod-sogs",
+          "code_head": "9e251de9f70c207e0190a6710686a0ecb8e6e3eb",
+          "source_training_job": "md1-tile00-split-r32-1778899939",
+          "source_failures": "md1-tile00-lodonly-r38-1778950901-md1-tile00-h0lod-r39-1778976307",
+          "environment": {
+            "SOGS_DEVICE": "cpu",
+            "SOGS_FILTER_HARMONICS": "1",
+            "SOGS_KMEANS_ITERATIONS": "1",
+            "SOGS_LOD_CHUNK_COUNT": "256",
+            "SOGS_LOD_CHUNK_EXTENT": "32",
+            "SOGS_LOD_DECIMATION": "30%,10%,3%"
+          },
+          "input_model_s3": "s3://spaceport-ml-processing-staging/manual-validations/md1-full-3dgs-r32-20260516T0252Z/3dgs-tile00-support-aware-ds1000-r32-quality-20260516T0252Z/md1-tile00-split-r32-1778899939/output/model.tar.gz",
+          "output_s3": "s3://spaceport-ml-processing/compressed/md1-r32-tile00-h1-i1-lod-r40-20260517T0038Z/"
+        }
+      ]
+    },
+    "merge_review_submit_readiness": {
+      "json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-merge-review-submit-readiness-headc848-20260517.json",
+      "decision": "merge_review_submit_blocked",
+      "block_reasons": [
+        "merge_inputs_not_materialized"
+      ],
+      "note": "No head0cf9 readiness rerun because live AWS processing was active."
+    },
+    "evidence": [
+      "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-head0cf9-postgreen-20260517T011217Z.json",
+      "logs/md1-r0-visual-sentinel-v5-live-training-head0cf9-postgreen-20260517T011217Z.json",
+      "logs/md1-r0-visual-sentinel-v5-live-processing-head0cf9-postgreen-20260517T011217Z.json",
+      "logs/md1-r0-visual-sentinel-v5-active-processing-md1-tile00-h1i1lod-r40-1778978757-describe-head0cf9-postgreen-20260517T011217Z.json",
+      "logs/md1-r0-visual-sentinel-v5-active-processing-md1-tile00-h1i1lod-r40-1778978757-tags-head0cf9-postgreen-20260517T011217Z.json"
+    ],
+    "prohibitions_observed": [
+      "no merge launched by this automation",
+      "no review launched by this automation",
+      "no full14 launched by this automation",
+      "no LOD launched by this automation",
+      "no viewer smoke launched by this automation",
+      "no promotion launched by this automation"
+    ],
+    "next": "Commit/push this head0cf9 exact-green processing-hold evidence and watch the resulting exact-head workflow. Keep compute held until AWS training and processing are idle; after idle run only no-spend merge/review readiness/planning from the passed tile_04 leaf gate."
   }
 }
