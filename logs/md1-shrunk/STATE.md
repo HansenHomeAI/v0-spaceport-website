@@ -2410,3 +2410,10 @@ skybox, compression, artifact handoff, and visual gates.
   - GitHub workflows:
     - run list snapshot (branch) -> `logs/md1-shrunk/polls/gh-runs-20260517T0444Z.json`
     - Pages deploy still last observed at head `4328f941...` (run `25977807200`); exact head includes `[skip ci]` so it has `0` runs.
+
+- 2026-05-17T04:48:00Z post-push confirmation:
+  - commit:
+    - `git rev-parse HEAD` -> `4cc4361f165a58eecf53ca963fc3c991c8d9898c` (`chore: md1-shrunk monitor poll 20260517T0446Z [skip ci]`)
+  - GitHub workflows (exact-head):
+    - branch run list -> `logs/md1-shrunk/polls/gh-run-list-20260517T0448Z.json` (latest observed run remains `CDK Deploy` `25980223287` `success` head `693fbae7...`)
+    - exact head run list -> `logs/md1-shrunk/polls/gh-run-list-head-20260517T0448Z.json` -> `0` runs (commit includes `[skip ci]`)
