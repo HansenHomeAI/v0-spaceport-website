@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T08:24:25Z
+updated: 2026-05-17T09:15:31Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -218,6 +218,36 @@ skybox, compression, artifact handoff, and visual gates.
        - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
        - `git rev-parse HEAD` -> `7df1a21171774e2bbc04a4824fd2ed5eb0f45543`
        - `git status --porcelain=v1` -> new untracked poll artifacts under `logs/md1-shrunk/`
+
+## 2026-05-17T09:15:31Z poll (monitor)
+
+- Poll artifacts:
+  - `logs/md1-shrunk/polls/20260517T091531Z/`
+- Branch/head/status:
+  - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+  - `git rev-parse HEAD` -> `6aab7a76c8afe54f9af2f62392b1146ff42e8fd1` (`[skip ci]`)
+  - `git status --porcelain=v1` -> clean
+- AWS identity (via boto3, region `us-west-2`):
+  - `Account=975050048887`, `Arn=arn:aws:iam::975050048887:root`
+  - evidence: `logs/md1-shrunk/polls/20260517T091531Z/aws-sts-get-caller-identity.json`
+- Step Functions state (via boto3, region `us-west-2`):
+  - md1-matched RUNNING executions: `0`
+  - evidence: `logs/md1-shrunk/polls/20260517T091531Z/stepfunctions-md1-running-executions.json`
+- SageMaker state (via boto3, region `us-west-2`):
+  - `md1-shrunk-1456-sfm-1778866088` -> `ProcessingJobStatus=Completed`, `FailureReason=null`
+  - InProgress processing jobs: `0`
+  - InProgress training jobs: `0`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260517T091531Z/sagemaker-describe-processing-job-md1-shrunk-1456-sfm-1778866088.json`
+    - `logs/md1-shrunk/polls/20260517T091531Z/sagemaker-list-processing-jobs-InProgress.json`
+    - `logs/md1-shrunk/polls/20260517T091531Z/sagemaker-list-training-jobs-InProgress.json`
+- GitHub Actions (exact head + latest, via `gh`):
+  - exact head `6aab7a76...` has `0` runs (commit message includes `[skip ci]`)
+  - latest `CDK Deploy` run: `25986385371` -> `success` (head `7d1b62b4...`)
+  - latest `Pages` run: `25983995070` -> `success` (head `3bad045c...`)
+  - evidence:
+    - `logs/md1-shrunk/polls/20260517T091531Z/gh-run-list.json`
+    - `logs/md1-shrunk/polls/20260517T091531Z/gh-summary.json`
      - GitHub workflow (exact-head):
        - `gh run view 25935887777 --json databaseId,workflowName,headSha,status,conclusion,createdAt,updatedAt,url > logs/md1-shrunk/gh-run-view-25935887777.json` -> `CDK Deploy` succeeded for head `7df1a211...`
        - `gh run watch 25935887777 --interval 10 --exit-status > logs/md1-shrunk/gh-run-watch-25935887777.txt`

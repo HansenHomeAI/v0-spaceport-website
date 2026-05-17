@@ -1,0 +1,6 @@
+timestamp_utc=20260517T091531Z
+branch=agent-113647-md1-baseline-e2e
+head=6aab7a76c8afe54f9af2f62392b1146ff42e8fd1
+6aab7a76 chore: record md1-shrunk cdk 25986385371 [skip ci]
+## agent-113647-md1-baseline-e2e...origin/agent-113647-md1-baseline-e2e
+?? logs/md1-shrunk/polls/20260517T091531Z/

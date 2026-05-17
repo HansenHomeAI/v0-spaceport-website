@@ -1,0 +1,6 @@
+{
+  "boto3_session_region": "us-west-2",
+  "effective_region": "us-west-2",
+  "env_AWS_DEFAULT_REGION": null,
+  "env_AWS_REGION": null
+}

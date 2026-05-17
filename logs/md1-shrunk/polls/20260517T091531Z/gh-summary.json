@@ -1,0 +1,24 @@
+{
+  "current_head": "6aab7a76c8afe54f9af2f62392b1146ff42e8fd1",
+  "latest_cdk": {
+    "conclusion": "success",
+    "createdAt": "2026-05-17T08:53:30Z",
+    "databaseId": 25986385371,
+    "headSha": "7d1b62b417391450eeace2e2a6513b1fd9ba2d6c",
+    "status": "completed",
+    "updatedAt": "2026-05-17T08:57:17Z",
+    "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25986385371",
+    "workflowName": "CDK Deploy"
+  },
+  "latest_pages": {
+    "conclusion": "success",
+    "createdAt": "2026-05-17T06:54:46Z",
+    "databaseId": 25983995070,
+    "headSha": "3bad045c2ed2051efe162a44632645d4c80b9d90",
+    "status": "completed",
+    "updatedAt": "2026-05-17T07:02:07Z",
+    "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/25983995070",
+    "workflowName": "Deploy Next.js to Cloudflare Pages"
+  },
+  "runs_for_current_head": []
+}
