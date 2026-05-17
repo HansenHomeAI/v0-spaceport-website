@@ -1,0 +1,7 @@
+stepfunctions_running=0
+processing_inprogress=0
+training_inprogress=0
+sfm_status=Completed
+3dgs_status=Completed
+compression_status=Completed
+gh_runs_for_head=0

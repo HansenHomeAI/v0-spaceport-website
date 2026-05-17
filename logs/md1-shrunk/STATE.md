@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T16:47:57Z
+updated: 2026-05-17T17:16:04Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -3502,5 +3502,34 @@ skybox, compression, artifact handoff, and visual gates.
     - skybox background_skybox.webp HTTP headers: `logs/md1-shrunk/polls/20260517T164757Z/curl-head-skybox-20260517T164700Z.txt`
   - GitHub Actions:
     - exact-head run list: `logs/md1-shrunk/polls/20260517T164757Z/gh-runs-for-head.json` (expected `[]` because head includes `[skip ci]`)
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
+
+- 2026-05-17T17:16:04Z poll (monitor; no new ML launches):
+  - Poll artifacts: `logs/md1-shrunk/polls/20260517T171604Z/`
+  - Branch/head/status:
+    - `logs/md1-shrunk/polls/20260517T171604Z/git-status.txt` -> head `ab8efe15...` (`[skip ci]`)
+  - AWS identity (region `us-west-2`):
+    - `logs/md1-shrunk/polls/20260517T171604Z/aws-sts-get-caller-identity.json` -> account `975050048887`
+  - Step Functions (region `us-west-2`):
+    - staging RUNNING=0: `logs/md1-shrunk/polls/20260517T171604Z/stepfunctions-running-staging.json`
+  - SageMaker (region `us-west-2`):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`:
+      - `logs/md1-shrunk/polls/20260517T171604Z/sagemaker-describe-md1-shrunk-1456-sfm-1778866088.json`
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`:
+      - `logs/md1-shrunk/polls/20260517T171604Z/sagemaker-describe-training-md1shrunk1456-1778880862-3dgs.json`
+    - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`:
+      - `logs/md1-shrunk/polls/20260517T171604Z/sagemaker-describe-processing-md1shrunk1456-1778880862-compression.json`
+    - InProgress processing jobs=0: `logs/md1-shrunk/polls/20260517T171604Z/sagemaker-list-processing-InProgress.json`
+    - InProgress training jobs=0: `logs/md1-shrunk/polls/20260517T171604Z/sagemaker-list-training-InProgress.json`
+    - status summary: `logs/md1-shrunk/polls/20260517T171604Z/statuses.txt`
+  - S3 output verification:
+    - SfM output listing: `logs/md1-shrunk/polls/20260517T171604Z/s3-ls-colmap.txt`
+  - Public bundle HTTP sanity (anonymous; from recorded meta URL):
+    - bundle meta URL: `logs/md1-shrunk/polls/20260517T171604Z/compressed-output-meta-url.txt`
+    - bundle meta.json headers + snapshot: `logs/md1-shrunk/polls/20260517T171604Z/http-head-meta.txt`, `logs/md1-shrunk/polls/20260517T171604Z/meta.json`
+    - skybox URL + headers: `logs/md1-shrunk/polls/20260517T171604Z/public-skybox-url.txt`, `logs/md1-shrunk/polls/20260517T171604Z/http-head-skybox.txt`
+  - GitHub Actions:
+    - exact-head run list: `logs/md1-shrunk/polls/20260517T171604Z/gh-runs-for-head.json` (expected `[]` because head includes `[skip ci]`)
   - Notes:
     - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
