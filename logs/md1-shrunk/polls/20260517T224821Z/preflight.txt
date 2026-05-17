@@ -1,0 +1,5 @@
+ts_utc=20260517T224821Z
+branch=agent-113647-md1-baseline-e2e
+head=0f2fb2afbec85d19f3635f5ac21c0a016e308cee
+head_oneline=0f2fb2af chore: md1-shrunk post-push GH proof 20260517T222455Z [skip ci]
+status_porcelain=1 lines

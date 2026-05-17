@@ -1,0 +1,7 @@
+SfM ProcessingJobStatus=Completed
+3DGS TrainingJobStatus=Completed
+Compression ProcessingJobStatus=Completed
+InProgress processing jobs=0
+InProgress training jobs=0
+StepFn staging RUNNING=0
+StepFn branch RUNNING=0

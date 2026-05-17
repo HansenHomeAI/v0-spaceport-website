@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T22:24:55Z
+updated: 2026-05-17T22:49:48Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -3783,3 +3783,29 @@ skybox, compression, artifact handoff, and visual gates.
   - exact-head run list expected `[]` (skip-ci head):
     - `logs/md1-shrunk/polls/20260517T222455Z/gh-run-list-exact-head.json`
     - `logs/md1-shrunk/polls/20260517T222455Z/gh-exact-head-run-count.txt`
+
+- 2026-05-17T22:48:21Z poll (monitor; no new ML launches; refreshed AWS/StepFn/GH + HTTP sanity):
+  - Poll artifacts: `logs/md1-shrunk/polls/20260517T224821Z/`
+  - Branch/head/status:
+    - head: `0f2fb2afbec85d19f3635f5ac21c0a016e308cee` (`[skip ci]`)
+    - evidence: `logs/md1-shrunk/polls/20260517T224821Z/git-head-oneline.txt`, `logs/md1-shrunk/polls/20260517T224821Z/git-status-porcelain.txt`
+  - AWS identity (region `us-west-2`):
+    - `logs/md1-shrunk/polls/20260517T224821Z/aws-sts-get-caller-identity.json` -> account `975050048887`
+  - Step Functions (region `us-west-2`):
+    - staging RUNNING=0: `logs/md1-shrunk/polls/20260517T224821Z/stepfunctions-staging-running.json`
+    - branch preview RUNNING=0 (ARN recorded): `logs/md1-shrunk/polls/20260517T224821Z/stepfunctions-branch-state-machine-arn.txt`, `logs/md1-shrunk/polls/20260517T224821Z/stepfunctions-branch-running.json`
+  - SageMaker (region `us-west-2`):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`: `logs/md1-shrunk/polls/20260517T224821Z/sagemaker-describe-processing-job-md1-shrunk-1456-sfm-1778866088.json`
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`: `logs/md1-shrunk/polls/20260517T224821Z/sagemaker-describe-training-job-md1shrunk1456-1778880862-3dgs.json`
+    - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`: `logs/md1-shrunk/polls/20260517T224821Z/sagemaker-describe-processing-job-md1shrunk1456-1778880862-compression.json`
+    - InProgress processing jobs=0: `logs/md1-shrunk/polls/20260517T224821Z/sagemaker-list-processing-jobs-InProgress.json`
+    - InProgress training jobs=0: `logs/md1-shrunk/polls/20260517T224821Z/sagemaker-list-training-jobs-InProgress.json`
+    - status summary: `logs/md1-shrunk/polls/20260517T224821Z/statuses.txt`
+  - GitHub Actions:
+    - exact-head run list expected `[]` (`[skip ci]` head): `logs/md1-shrunk/polls/20260517T224821Z/gh-run-list-exact-head.json`
+    - user-mentioned head `e9cbf71` CDK Deploy success (run `25932325504`): `logs/md1-shrunk/polls/20260517T224821Z/gh-run-25932325504.json`
+  - Public HTTP sanity:
+    - preview `/health.txt` headers: `logs/md1-shrunk/polls/20260517T224821Z/curl-preview-health.headers`
+    - public `meta.json` HEAD: `logs/md1-shrunk/polls/20260517T224821Z/curl-public-meta.head`
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
