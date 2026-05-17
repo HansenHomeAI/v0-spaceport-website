@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T12:22:27Z
+updated: 2026-05-17T12:52:17Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -3106,3 +3106,26 @@ skybox, compression, artifact handoff, and visual gates.
     - evidence:
       - `logs/md1-shrunk/polls/20260517T121412Z/gh-run-list-post-push.json`
       - `logs/md1-shrunk/polls/20260517T121412Z/gh-summary-post-push.txt`
+
+- 2026-05-17T12:49:41Z poll (terminal reconfirm; cost bounded; no action):
+  - branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `86a7195deafa5fc226daab3d9d5bca7e0102557e` (`[skip ci]`)
+  - Poll artifacts:
+    - `logs/md1-shrunk/polls/20260517T124941Z/`
+    - summary: `logs/md1-shrunk/polls/20260517T124941Z/poll-summary.txt`
+  - AWS identity:
+    - `logs/md1-shrunk/polls/20260517T124941Z/aws-identity.json` (account `975050048887`)
+  - Step Functions (region `us-west-2`):
+    - staging pipeline RUNNING executions: `logs/md1-shrunk/polls/20260517T124941Z/stepfunctions-list-executions-staging-running.json` -> RUNNING `0`
+  - SageMaker (region `us-west-2`):
+    - SfM processing describe: `logs/md1-shrunk/polls/20260517T124941Z/sagemaker-describe-sfm.json` -> `ProcessingJobStatus=Completed`
+    - CloudWatch tail (SfM): `logs/md1-shrunk/polls/20260517T124941Z/cloudwatch-tail-sfm.txt` (no OOM/timeout signatures observed)
+  - Montana facts gate (COLMAP output):
+    - registered images: `1456`, points3D: `1020913`: `logs/md1-shrunk/polls/20260517T124941Z/colmap-txt-stats.txt`
+    - sparse components: `1` (`colmap/sparse/0/` only): `logs/md1-shrunk/polls/20260517T124941Z/colmap-sparse-components-summary.txt`
+  - S3 outputs still present:
+    - COLMAP listing: `logs/md1-shrunk/polls/20260517T124941Z/s3-colmap.txt`
+  - GitHub Actions (public REST; `gh` CLI unavailable on this host):
+    - branch run list: `logs/md1-shrunk/polls/20260517T124941Z/gh-run-list-branch.json`
+    - exact head runs: `0` (`[skip ci]`): `logs/md1-shrunk/polls/20260517T124941Z/gh-exact-head-run-count.txt`

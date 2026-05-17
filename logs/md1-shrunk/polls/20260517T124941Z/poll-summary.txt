@@ -1,0 +1,8 @@
+head_sha	86a7195deafa5fc226daab3d9d5bca7e0102557e
+aws_account	975050048887
+stepfunctions_running	0
+sfm_status	Completed
+registered_images	1456
+points3D	1020913
+sparse_components	1
+gh_exact_head_runs	0
