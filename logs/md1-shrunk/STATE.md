@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T18:44:49Z
+updated: 2026-05-17T18:46:46Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -3643,3 +3643,11 @@ skybox, compression, artifact handoff, and visual gates.
     - branch run list (JSON): `logs/md1-shrunk/polls/20260517T184449Z/gh-run-list.json`
   - Notes:
     - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
+
+- 2026-05-17T18:46:46Z exact-head GitHub Actions confirmation (post poll push; `[skip ci]` head):
+  - Evidence: `logs/md1-shrunk/polls/20260517T184646Z/`
+  - head commit:
+    - `logs/md1-shrunk/polls/20260517T184646Z/postpush-head.txt` -> head `f001ec08...` (`[skip ci]`)
+  - exact-head run list expected `[]` (skip-ci head):
+    - `logs/md1-shrunk/polls/20260517T184646Z/gh-runs-for-head.json`
+    - `logs/md1-shrunk/polls/20260517T184646Z/gh-exact-head-run-count.txt`
