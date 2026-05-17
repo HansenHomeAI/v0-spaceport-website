@@ -2200,3 +2200,13 @@ skybox, compression, artifact handoff, and visual gates.
       - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25978941737-20260517T022208Z.txt`
       - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25978941737-20260517T022208Z.json`
     - Pages deploy not triggered at this exact head (no `web/trigger-dev-build.txt` bump).
+
+- 2026-05-17T02:26:43Z exact-head CI (post record md1-shrunk cdk run 25978941737 commit):
+  - commit:
+    - `git rev-parse HEAD` -> `6f305d50b79195f807e4decdbc9f1b93a1d7e269` (`chore: record md1-shrunk cdk run 25978941737`)
+  - GitHub workflows (exact-head; triggered by this push):
+    - run list: `logs/md1-shrunk/polls/gh-run-list-post-push2-20260517T022643Z.json`
+    - `CDK Deploy` run `25979033472` `success` (head `6f305d50...`):
+      - watch: `logs/md1-shrunk/polls/gh-run-watch-cdk-25979033472-20260517T022643Z.txt`
+      - view: `logs/md1-shrunk/polls/gh-run-view-cdk-25979033472-20260517T022643Z.json`
+    - Pages deploy not triggered at this exact head (no `web/trigger-dev-build.txt` bump).
