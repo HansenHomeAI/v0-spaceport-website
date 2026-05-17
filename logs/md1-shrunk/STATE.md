@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-17T09:48:00Z
+updated: 2026-05-17T09:54:28Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -2871,3 +2871,15 @@ skybox, compression, artifact handoff, and visual gates.
       - summary: `logs/md1-shrunk/polls/20260517T094627Z/github-actions-summary.json`
       - exact head runs for `7ef18e31...`: `0` (commit message includes `[skip ci]`, so no workflows expected)
       - latest Pages on this branch remains the prior success for head `3bad045c...` (run `25983995070`).
+
+- 2026-05-17T09:54:10Z post-push confirmation (CI only; no new ML launches):
+  - commit:
+    - `git rev-parse HEAD` -> `252854d764a4de56cd99cd5cba93c22ea14376e7` (`chore: md1-shrunk poll 20260517T094627Z`)
+  - Poll artifacts:
+    - `logs/md1-shrunk/polls/20260517T094916Z/`
+  - GitHub workflows (exact-head; verified via unauthenticated REST):
+    - `CDK Deploy` run `25987533412` -> `success`
+      - watch log: `logs/md1-shrunk/polls/20260517T094916Z/github-run-watch-cdk-25987533412.txt`
+      - run snapshots: `logs/md1-shrunk/polls/20260517T094916Z/github-run-cdk-25987533412-*.json`
+      - summary: `logs/md1-shrunk/polls/20260517T094916Z/github-actions-summary-post-cdk.json`
+    - Note: `Deploy Next.js to Cloudflare Pages` did not trigger for this logs-only change set; latest Pages success remains run `25983995070` (head `3bad045c...`).
