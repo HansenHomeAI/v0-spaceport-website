@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T07:00:54Z
+updated: 2026-05-18T08:18:04Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -4681,3 +4681,47 @@ skybox, compression, artifact handoff, and visual gates.
     - evidence:
       - `logs/md1-shrunk/polls/20260518T075029Z-postpush/gh-run-list.json`
       - `logs/md1-shrunk/polls/20260518T075029Z-postpush/gh-exact-head-run-count.txt`
+
+- 2026-05-18T08:18:04Z monitor poll (no new ML launches; reconfirm terminal ML + CI + bundle reachability):
+  - Evidence: `logs/md1-shrunk/polls/20260518T081804Z-monitor/`
+  - Branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `b5dda8a582f51962796a8e67d495aabce7dbaa59` (`[skip ci]`)
+    - `git status --porcelain=v1` -> clean (poll artifacts are untracked before commit)
+    - evidence: `logs/md1-shrunk/polls/20260518T081804Z-monitor/git.txt`
+  - AWS identity (`/opt/homebrew/bin/aws`, region `us-west-2`):
+    - evidence: `logs/md1-shrunk/polls/20260518T081804Z-monitor/aws-sts-get-caller-identity.json`
+  - Step Functions (RUNNING executions; `/opt/homebrew/bin/aws`):
+    - `SpaceportMLPipeline-staging` RUNNING: `0`
+    - `SpaceportMLPipeline-br-8abcbd5662` RUNNING: `0`
+    - evidence:
+      - `logs/md1-shrunk/polls/20260518T081804Z-monitor/stepfunctions-list-executions-staging-RUNNING.json`
+      - `logs/md1-shrunk/polls/20260518T081804Z-monitor/stepfunctions-list-executions-br-8abcbd5662-RUNNING.json`
+  - SageMaker (staging us-west-2; `/opt/homebrew/bin/aws`):
+    - SfM ProcessingJob `md1-shrunk-1456-sfm-1778866088` -> `Completed`, `FailureReason=null`
+    - 3DGS TrainingJob `md1shrunk1456-1778880862-3dgs` -> `Completed`, `FailureReason=null`
+    - Compression ProcessingJob `md1shrunk1456-1778880862-compression` -> `Completed`, `FailureReason=null`
+    - InProgress processing jobs: `0`
+    - InProgress training jobs: `0`
+    - evidence:
+      - `logs/md1-shrunk/polls/20260518T081804Z-monitor/sagemaker-describe-md1-shrunk-1456-sfm-1778866088.json`
+      - `logs/md1-shrunk/polls/20260518T081804Z-monitor/sagemaker-describe-md1shrunk1456-1778880862-3dgs.json`
+      - `logs/md1-shrunk/polls/20260518T081804Z-monitor/sagemaker-describe-md1shrunk1456-1778880862-compression.json`
+      - `logs/md1-shrunk/polls/20260518T081804Z-monitor/sagemaker-list-processing-jobs-InProgress.json`
+      - `logs/md1-shrunk/polls/20260518T081804Z-monitor/sagemaker-list-training-jobs-InProgress.json`
+  - S3 COLMAP output still present (bounded listing; first page only):
+    - `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/`
+    - evidence: `logs/md1-shrunk/polls/20260518T081804Z-monitor/s3-colmap-list-objects-v2-firstpage.json`
+  - Public bundle reachability (anonymous):
+    - `HEAD https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json` -> `HTTP 200`
+    - evidence:
+      - `logs/md1-shrunk/polls/20260518T081804Z-monitor/http-head-bundle-meta.txt`
+      - `logs/md1-shrunk/polls/20260518T081804Z-monitor/s3-head-public-meta.json`
+  - GitHub Actions (exact head + latest; via `/opt/homebrew/bin/gh`):
+    - exact-head workflow runs for `b5dda8a5...`: `0` (expected; `[skip ci]`)
+    - latest non-skip-ci successes:
+      - `CDK Deploy` run `26015823873` -> `success` (head `049c70ba...`)
+      - `Deploy Next.js to Cloudflare Pages` run `26015823853` -> `success` (head `049c70ba...`)
+    - evidence:
+      - `logs/md1-shrunk/polls/20260518T081804Z-monitor/gh-run-list.json`
+      - `logs/md1-shrunk/polls/20260518T081804Z-monitor/gh-run-count.txt`

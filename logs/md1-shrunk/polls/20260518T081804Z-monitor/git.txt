@@ -1,0 +1,8 @@
+timestamp_utc=20260518T081804Z
+branch=agent-113647-md1-baseline-e2e
+head=b5dda8a582f51962796a8e67d495aabce7dbaa59
+status_lines=4
+?? logs/md1-shrunk/cloudwatch-tail-md1-shrunk-1456-sfm-1778866088-20260518T0000Z.txt
+?? logs/md1-shrunk/polls/20260518T081804Z-monitor/
+?? logs/md1-shrunk/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260518T0000Z.json
+?? logs/md1-shrunk/sfm-metadata-md1-shrunk-20260515T1641Z.json
