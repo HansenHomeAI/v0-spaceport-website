@@ -1,0 +1,4 @@
+PREVIEW_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev
+BUNDLE_META=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json
+SKYBOX_URL=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/background_skybox.webp
+HEAD=40394409096fba23f069499645e421dab8e4ef34

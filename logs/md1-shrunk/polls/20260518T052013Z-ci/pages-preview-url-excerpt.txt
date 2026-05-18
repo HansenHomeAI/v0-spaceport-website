@@ -1,0 +1,15 @@
+1371:deploy	Ensure Pages runtime flags (compat date + node compat)	2026-05-18T05:26:15.5893559Z     "subdomain": "v0-spaceport-website-preview2.pages.dev",
+1373:deploy	Ensure Pages runtime flags (compat date + node compat)	2026-05-18T05:26:15.5894285Z       "v0-spaceport-website-preview2.pages.dev"
+1465:deploy	Ensure Pages runtime flags (compat date + node compat)	2026-05-18T05:26:15.5923981Z       "url": "https://b234e229.v0-spaceport-website-preview2.pages.dev",
+1577:deploy	Ensure Pages runtime flags (compat date + node compat)	2026-05-18T05:26:15.5949034Z         "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev"
+1589:deploy	Ensure Pages runtime flags (compat date + node compat)	2026-05-18T05:26:15.5952153Z       "url": "https://9c9b7dbe.v0-spaceport-website-preview2.pages.dev",
+1838:deploy	Deploy to Cloudflare Pages	2026-05-18T05:26:26.0093929Z ✨ Deployment complete! Take a peek over at https://0aab3a2c.v0-spaceport-website-preview2.pages.dev
+1839:deploy	Deploy to Cloudflare Pages	2026-05-18T05:26:26.0095745Z ✨ Deployment alias URL: https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev
+1894:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-18T05:26:26.9534670Z Resolved: HASH=https://0aab3a2c.v0-spaceport-website-preview2.pages.dev ALIAS=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev
+1953:deploy	Verify preview alias and hash URL with retries	2026-05-18T05:26:26.9631404Z   HASH_URL: https://0aab3a2c.v0-spaceport-website-preview2.pages.dev
+1954:deploy	Verify preview alias and hash URL with retries	2026-05-18T05:26:26.9632147Z   ALIAS_URL: https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev
+1956:deploy	Verify preview alias and hash URL with retries	2026-05-18T05:26:26.9683882Z Checking URLs:  https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev https://0aab3a2c.v0-spaceport-website-preview2.pages.dev
+1957:deploy	Verify preview alias and hash URL with retries	2026-05-18T05:26:26.9685508Z Probing https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev ...
+1959:deploy	Verify preview alias and hash URL with retries	2026-05-18T05:26:27.3066538Z OK https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/health.txt
+1960:deploy	Verify preview alias and hash URL with retries	2026-05-18T05:26:27.3067507Z Probing https://0aab3a2c.v0-spaceport-website-preview2.pages.dev ...
+1962:deploy	Verify preview alias and hash URL with retries	2026-05-18T05:26:27.6190755Z OK https://0aab3a2c.v0-spaceport-website-preview2.pages.dev/health.txt
