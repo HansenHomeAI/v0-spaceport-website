@@ -1,0 +1,73 @@
+{
+  "bucket": "spaceport-ml-processing",
+  "count": 13,
+  "objects": [
+    {
+      "Key": "compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/background_manifest.json",
+      "LastModified": "2026-05-16T00:13:09+00:00",
+      "Size": 977
+    },
+    {
+      "Key": "compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/background_skybox.webp",
+      "LastModified": "2026-05-16T00:13:09+00:00",
+      "Size": 46080
+    },
+    {
+      "Key": "compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/export_manifest.json",
+      "LastModified": "2026-05-16T00:13:09+00:00",
+      "Size": 950
+    },
+    {
+      "Key": "compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/means_l.webp",
+      "LastModified": "2026-05-16T00:13:09+00:00",
+      "Size": 2970154
+    },
+    {
+      "Key": "compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/means_u.webp",
+      "LastModified": "2026-05-16T00:13:09+00:00",
+      "Size": 1920462
+    },
+    {
+      "Key": "compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json",
+      "LastModified": "2026-05-16T00:13:09+00:00",
+      "Size": 1422
+    },
+    {
+      "Key": "compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/quats.webp",
+      "LastModified": "2026-05-16T00:13:09+00:00",
+      "Size": 3145622
+    },
+    {
+      "Key": "compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/scales.webp",
+      "LastModified": "2026-05-16T00:13:09+00:00",
+      "Size": 1828832
+    },
+    {
+      "Key": "compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/settings.json",
+      "LastModified": "2026-05-16T00:13:09+00:00",
+      "Size": 242
+    },
+    {
+      "Key": "compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/sh0.webp",
+      "LastModified": "2026-05-16T00:13:09+00:00",
+      "Size": 2385248
+    },
+    {
+      "Key": "compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/shN_centroids.webp",
+      "LastModified": "2026-05-16T00:13:09+00:00",
+      "Size": 820614
+    },
+    {
+      "Key": "compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/shN_labels.webp",
+      "LastModified": "2026-05-16T00:13:09+00:00",
+      "Size": 1969934
+    },
+    {
+      "Key": "compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/training_metadata.json",
+      "LastModified": "2026-05-16T00:13:09+00:00",
+      "Size": 1482
+    }
+  ],
+  "prefix": "compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/",
+  "totalBytes": 15092019
+}

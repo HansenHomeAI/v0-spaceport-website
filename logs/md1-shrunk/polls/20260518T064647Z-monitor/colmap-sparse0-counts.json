@@ -1,0 +1,13 @@
+{
+  "bucket": "spaceport-ml-processing-staging",
+  "files": {
+    "cameras.txt": "logs/md1-shrunk/polls/20260518T064647Z-monitor/cameras.txt",
+    "frames.txt": "logs/md1-shrunk/polls/20260518T064647Z-monitor/frames.txt",
+    "images.txt": "logs/md1-shrunk/polls/20260518T064647Z-monitor/images.txt",
+    "points3D.txt": "logs/md1-shrunk/polls/20260518T064647Z-monitor/points3D.txt",
+    "rigs.txt": "logs/md1-shrunk/polls/20260518T064647Z-monitor/rigs.txt"
+  },
+  "points3D_estimate": 1020913,
+  "prefix": "manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/",
+  "registered_images_estimate": 1456
+}

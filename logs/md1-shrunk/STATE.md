@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T04:49:30Z
+updated: 2026-05-18T06:56:40Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -4516,3 +4516,65 @@ skybox, compression, artifact handoff, and visual gates.
     - evidence:
       - `logs/md1-shrunk/polls/20260518T062010Z-postpush/gh-run-list.json`
       - `logs/md1-shrunk/polls/20260518T062010Z-postpush/gh-summary.json`
+
+- 2026-05-18T06:56:40Z monitor poll (terminal reconfirm + viewer/camera rerun):
+  - Evidence: `logs/md1-shrunk/polls/20260518T064647Z-monitor/`
+  - Branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `b6dc45b27b65cea3c174894417d47a47b19ebc36` (`[skip ci]`)
+    - `git status --porcelain=v1` -> clean
+  - GitHub Actions (exact head + latest):
+    - exact-head workflow runs for `b6dc45b2...`: `0` (expected; `[skip ci]`)
+    - user-provided head `e9cbf71c...` was stale but `CDK Deploy` run `25932325504` succeeded:
+      - `logs/md1-shrunk/polls/20260518T064647Z-monitor/gh-run-view-25932325504.json`
+    - latest non-skip-ci head in run list remains `049c70ba...` with Pages+CDK `success`:
+      - `logs/md1-shrunk/polls/20260518T064647Z-monitor/gh-summary.json`
+    - preview alias (from Pages log of run `26015823853`):
+      - `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+      - evidence:
+        - `logs/md1-shrunk/polls/20260518T064647Z-monitor/preview-alias-url.txt`
+        - `logs/md1-shrunk/polls/20260518T064647Z-monitor/gh-run-log-pages-26015823853.txt`
+  - AWS identity (boto3, region `us-west-2`):
+    - `Account=975050048887`, `Arn=arn:aws:iam::975050048887:root`
+    - evidence: `logs/md1-shrunk/polls/20260518T064647Z-monitor/aws-sts-get-caller-identity.json`
+  - Step Functions (RUNNING executions; boto3):
+    - `SpaceportMLPipeline-staging`: `0`
+    - `SpaceportMLPipeline-br-8abcbd5662`: `0`
+    - evidence: `logs/md1-shrunk/polls/20260518T064647Z-monitor/stepfunctions-running-executions.json`
+  - SageMaker terminal (boto3):
+    - SfM ProcessingJob `md1-shrunk-1456-sfm-1778866088` -> `Completed`, `FailureReason=null`
+    - 3DGS TrainingJob `md1shrunk1456-1778880862-3dgs` -> `Completed`, `FailureReason=null`
+    - Compression ProcessingJob `md1shrunk1456-1778880862-compression` -> `Completed`, `FailureReason=null`
+    - InProgress processing jobs: `0`
+    - InProgress training jobs: `0`
+    - evidence: `logs/md1-shrunk/polls/20260518T064647Z-monitor/aws-terminal-summary.json`
+  - COLMAP gates (Montana-scale sanity):
+    - registered images (from `colmap/sparse/0/images.txt`): `1456` (Meadow target `1452`)
+    - points3D (from `colmap/sparse/0/points3D.txt`): `1020913` (Meadow `940147`)
+    - merged components: `1` (`sparse/0/` only)
+    - evidence:
+      - `logs/md1-shrunk/polls/20260518T064647Z-monitor/colmap-gate-summary.json`
+      - `logs/md1-shrunk/polls/20260518T064647Z-monitor/images.txt.headers.txt`
+      - `logs/md1-shrunk/polls/20260518T064647Z-monitor/points3D.txt.head.txt`
+  - 3DGS gates (model.tar.gz contents):
+    - `splat.ply element vertex 990091` + bundled `background_skybox.webp` present
+    - evidence: `logs/md1-shrunk/polls/20260518T064647Z-monitor/3dgs-model-tar-inspect.json`
+  - Public supersplat bundle (presence + anonymous fetch):
+    - prefix: `s3://spaceport-ml-processing/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/`
+    - `curl -I` meta.json -> `HTTP/1.1 200 OK`:
+      - `logs/md1-shrunk/polls/20260518T064647Z-monitor/curl-head-public-meta.txt`
+    - bundle inventory + skybox sidecar proof:
+      - `logs/md1-shrunk/polls/20260518T064647Z-monitor/s3-list-compressed-public.json`
+      - `logs/md1-shrunk/polls/20260518T064647Z-monitor/public-background_manifest.json` (references `background_skybox.webp`)
+  - Preview viewer validation (Playwright; current preview alias):
+    - `/sogs-migrated-viewer` smoke (bundled skybox override): `logs/md1-shrunk/polls/20260518T064647Z-monitor/sogs-migrated-viewer-smoke.png`
+    - `/sogs-migrated-viewer` no-sky mode: `logs/md1-shrunk/polls/20260518T064647Z-monitor/sogs-migrated-viewer-nosky.png`
+    - evidence:
+      - `logs/md1-shrunk/polls/20260518T064647Z-monitor/playwright-sogs-migrated-skybox.txt`
+      - `logs/md1-shrunk/polls/20260518T064647Z-monitor/playwright-sogs-migrated-nosky.txt`
+  - Input-vs-render camera check (DJI_01029; input left, render right):
+    - input (from COLMAP output): `logs/md1-shrunk/polls/20260518T064647Z-monitor/input-DJI_01029.JPG`
+    - render (skybox): `logs/md1-shrunk/polls/20260518T064647Z-monitor/render-skybox-DJI_01029.png`
+    - render (no-sky): `logs/md1-shrunk/polls/20260518T064647Z-monitor/render-nosky-DJI_01029.png`
+    - side-by-side (skybox): `logs/md1-shrunk/polls/20260518T064647Z-monitor/side-by-side-skybox-DJI_01029.png`
+    - side-by-side (no-sky): `logs/md1-shrunk/polls/20260518T064647Z-monitor/side-by-side-nosky-DJI_01029.png`

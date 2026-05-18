@@ -1,0 +1,34 @@
+{
+  "background_manifest_keys": [
+    "appearance_mode",
+    "asset",
+    "bg_sh_degree",
+    "camera_idx",
+    "floater_pruning",
+    "height",
+    "selection",
+    "version",
+    "width"
+  ],
+  "background_manifest_values_with_skybox": [
+    "background_skybox.webp",
+    "min_sky_views",
+    "sky_min_luminance",
+    "sky_min_saturation",
+    "sky_blue_dominance_margin"
+  ],
+  "settings_keys": [
+    "background",
+    "camera"
+  ],
+  "settings_skybox_fields": {
+    "background": {
+      "color": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  }
+}

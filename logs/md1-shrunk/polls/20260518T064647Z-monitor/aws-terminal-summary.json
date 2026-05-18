@@ -1,0 +1,95 @@
+{
+  "aws_identity": {
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root",
+    "ResponseMetadata": {
+      "HTTPHeaders": {
+        "content-length": "387",
+        "content-type": "text/xml",
+        "date": "Mon, 18 May 2026 06:48:09 GMT",
+        "x-amz-sts-extended-request-id": "MTp1cy13ZXN0LTI6UzoxNzc5MDg2ODg5MzkxOlI6cEdwNUhUQnE=",
+        "x-amzn-requestid": "7165b16e-2898-4a33-8d63-5008d0781f20"
+      },
+      "HTTPStatusCode": 200,
+      "RequestId": "7165b16e-2898-4a33-8d63-5008d0781f20",
+      "RetryAttempts": 0
+    },
+    "UserId": "975050048887"
+  },
+  "sagemaker": {
+    "3dgs_training": {
+      "end": "2026-05-15T17:55:18.313000-06:00",
+      "failure": null,
+      "ok": true,
+      "start": "2026-05-15T15:35:12.401000-06:00",
+      "status": "Completed",
+      "trainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1shrunk1456-1778880862-3dgs"
+    },
+    "compression_processing": {
+      "end": "2026-05-15T18:08:09.571000-06:00",
+      "failure": null,
+      "ok": true,
+      "processingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1shrunk1456-1778880862-compression",
+      "start": "2026-05-15T17:57:18.441000-06:00",
+      "status": "Completed"
+    },
+    "inprogress_processing_count": 0,
+    "inprogress_training_count": 0,
+    "sfm_processing": {
+      "end": "2026-05-15T15:04:36.723000-06:00",
+      "failure": null,
+      "ok": true,
+      "processingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-shrunk-1456-sfm-1778866088",
+      "start": "2026-05-15T11:28:49.432000-06:00",
+      "status": "Completed"
+    }
+  },
+  "stepfunctions_running_counts": {
+    "SpaceportMLPipeline-br-0468116023": 0,
+    "SpaceportMLPipeline-br-0d01e63d2e": 0,
+    "SpaceportMLPipeline-br-18df3f5daa": 0,
+    "SpaceportMLPipeline-br-1fcc870ee1": 0,
+    "SpaceportMLPipeline-br-2efbf47a4f": 0,
+    "SpaceportMLPipeline-br-3a0b78b344": 0,
+    "SpaceportMLPipeline-br-3a5b3005d7": 0,
+    "SpaceportMLPipeline-br-421b38da81": 0,
+    "SpaceportMLPipeline-br-45ee130fef": 0,
+    "SpaceportMLPipeline-br-487517c20a": 0,
+    "SpaceportMLPipeline-br-52804b744d": 0,
+    "SpaceportMLPipeline-br-590bef09e3": 0,
+    "SpaceportMLPipeline-br-5ddffedc6c": 0,
+    "SpaceportMLPipeline-br-5ff44d7162": 0,
+    "SpaceportMLPipeline-br-6134770281": 0,
+    "SpaceportMLPipeline-br-647952f8ea": 0,
+    "SpaceportMLPipeline-br-64f4abe549": 0,
+    "SpaceportMLPipeline-br-679d519c73": 0,
+    "SpaceportMLPipeline-br-688d73ccbc": 0,
+    "SpaceportMLPipeline-br-6cd5762fc5": 0,
+    "SpaceportMLPipeline-br-85a239485f": 0,
+    "SpaceportMLPipeline-br-8989f2959f": 0,
+    "SpaceportMLPipeline-br-8abcbd5662": 0,
+    "SpaceportMLPipeline-br-91c590205a": 0,
+    "SpaceportMLPipeline-br-985396b507": 0,
+    "SpaceportMLPipeline-br-98efe3a22f": 0,
+    "SpaceportMLPipeline-br-9f3bbb8f70": 0,
+    "SpaceportMLPipeline-br-a2a0178e1a": 0,
+    "SpaceportMLPipeline-br-aa5ee4af80": 0,
+    "SpaceportMLPipeline-br-ad3ac98348": 0,
+    "SpaceportMLPipeline-br-ada4c6fc3f": 0,
+    "SpaceportMLPipeline-br-af4b90ccd2": 0,
+    "SpaceportMLPipeline-br-bbb91ce9a5": 0,
+    "SpaceportMLPipeline-br-bd4bf3a400": 0,
+    "SpaceportMLPipeline-br-c55e953e52": 0,
+    "SpaceportMLPipeline-br-c908ce627c": 0,
+    "SpaceportMLPipeline-br-d659db0a49": 0,
+    "SpaceportMLPipeline-br-dda7bdad32": 0,
+    "SpaceportMLPipeline-br-e043d7b48d": 0,
+    "SpaceportMLPipeline-br-e2b491c69d": 0,
+    "SpaceportMLPipeline-br-e7de77d9fd": 0,
+    "SpaceportMLPipeline-br-e85ad62606": 0,
+    "SpaceportMLPipeline-br-f9a9943d3b": 0,
+    "SpaceportMLPipeline-br-fb273c6c47": 0,
+    "SpaceportMLPipeline-br-fb928a4f1c": 0,
+    "SpaceportMLPipeline-staging": 0
+  }
+}

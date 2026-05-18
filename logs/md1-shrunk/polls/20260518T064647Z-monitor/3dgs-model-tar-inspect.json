@@ -1,0 +1,65 @@
+{
+  "bucket": "spaceport-ml-processing-staging",
+  "key": "manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778880862/md1shrunk1456-1778880862-3dgs/output/model.tar.gz",
+  "local_path": "logs/md1-shrunk/polls/20260518T064647Z-monitor/model.tar.gz",
+  "members": [
+    {
+      "name": "background_skybox.webp",
+      "size": 46080
+    },
+    {
+      "name": "splat.ply",
+      "size": 245544099
+    },
+    {
+      "name": "floater_pruning_summary.json",
+      "size": 459
+    },
+    {
+      "name": "training_metadata.json",
+      "size": 1482
+    },
+    {
+      "name": "export_manifest.json",
+      "size": 950
+    },
+    {
+      "name": "background_manifest.json",
+      "size": 977
+    }
+  ],
+  "skybox_present": true,
+  "splat_ply_header_first_lines": [
+    "ply",
+    "format binary_little_endian 1.0",
+    "element vertex 990091",
+    "property float x",
+    "property float y",
+    "property float z",
+    "property float nx",
+    "property float ny",
+    "property float nz",
+    "property float f_dc_0",
+    "property float f_dc_1",
+    "property float f_dc_2",
+    "property float f_rest_0",
+    "property float f_rest_1",
+    "property float f_rest_2",
+    "property float f_rest_3",
+    "property float f_rest_4",
+    "property float f_rest_5",
+    "property float f_rest_6",
+    "property float f_rest_7",
+    "property float f_rest_8",
+    "property float f_rest_9",
+    "property float f_rest_10",
+    "property float f_rest_11",
+    "property float f_rest_12",
+    "property float f_rest_13",
+    "property float f_rest_14",
+    "property float f_rest_15",
+    "property float f_rest_16",
+    "property float f_rest_17"
+  ],
+  "splat_ply_vertex_count": 990091
+}
