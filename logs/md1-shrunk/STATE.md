@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T00:53:25Z
+updated: 2026-05-18T01:47:09Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -3992,3 +3992,29 @@ skybox, compression, artifact handoff, and visual gates.
   - exact-head run list expected `[]` (skip-ci head):
     - `logs/md1-shrunk/polls/20260518T012521Z-postpush/gh-run-list-exact-head.json`
     - `logs/md1-shrunk/polls/20260518T012521Z-postpush/gh-exact-head-run-count.txt`
+
+- 2026-05-18T01:47:09Z poll (monitor; no new ML launches; reconfirm terminal statuses + public bundle still healthy):
+  - Evidence: `logs/md1-shrunk/polls/20260518T014709Z/`
+  - Branch/head/status:
+    - `logs/md1-shrunk/polls/20260518T014709Z/git.txt` -> head `ccfadb61...` (`[skip ci]`), branch `agent-113647-md1-baseline-e2e`, status clean
+  - AWS identity (region `us-west-2`):
+    - `logs/md1-shrunk/polls/20260518T014709Z/aws-sts-get-caller-identity.json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions (region `us-west-2`):
+    - state machine inventory: `logs/md1-shrunk/polls/20260518T014709Z/stepfunctions-list-state-machines.json`
+    - `SpaceportMLPipeline-staging` RUNNING execution count: `logs/md1-shrunk/polls/20260518T014709Z/stepfunctions-spaceport-ml-pipeline-staging-running.txt` -> `0`
+  - SageMaker terminal statuses (region `us-west-2`):
+    - SfM `md1-shrunk-1456-sfm-1778866088` -> `Completed`: `logs/md1-shrunk/polls/20260518T014709Z/sagemaker-describe-md1-shrunk-1456-sfm-1778866088.json`
+    - InProgress processing jobs=0: `logs/md1-shrunk/polls/20260518T014709Z/sagemaker-list-processing-jobs-inprogress.json`
+    - InProgress training jobs=0: `logs/md1-shrunk/polls/20260518T014709Z/sagemaker-list-training-jobs-inprogress.json`
+  - GitHub Actions:
+    - branch run list: `logs/md1-shrunk/polls/20260518T014709Z/gh-run-list.json`
+    - exact-head run count expected `0` (`[skip ci]` head): `logs/md1-shrunk/polls/20260518T014709Z/gh-run-list.json` (headSha filter)
+    - latest successful `CDK Deploy` (non-skip ancestor): `logs/md1-shrunk/polls/20260518T014709Z/gh-latest-success-cdk.txt`
+    - latest successful Pages deploy (non-skip ancestor): `logs/md1-shrunk/polls/20260518T014709Z/gh-latest-success-pages.txt`
+    - anchor proof (user-referenced): `logs/md1-shrunk/polls/20260518T014709Z/gh-run-25932325504.json` -> `CDK Deploy` success for head `e9cbf71c...` (2026-05-15)
+  - Public bundle HTTP sanity:
+    - public bundle `meta.json` cached copy: `logs/md1-shrunk/polls/20260518T014709Z/http-public-meta.json`
+    - gaussian count from `meta.json` (`means.shape[0]`) -> `990025`: `logs/md1-shrunk/polls/20260518T014709Z/http-public-meta.json`
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
+    - CLI note: use `/opt/homebrew/bin/aws` and `/opt/homebrew/bin/gh` in this environment (PATH missing homebrew bin).
