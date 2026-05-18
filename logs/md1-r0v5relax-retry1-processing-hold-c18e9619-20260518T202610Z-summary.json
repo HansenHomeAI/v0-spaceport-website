@@ -1,0 +1,37 @@
+{
+  "timestamp_utc": "20260518T202610Z",
+  "head": "c18e9619c27884e7626f625e954439db8e9f0bc9",
+  "cdk_run": {
+    "conclusion": "success",
+    "createdAt": "2026-05-18T20:18:11Z",
+    "databaseId": 26058064008,
+    "event": "push",
+    "headSha": "c18e9619c27884e7626f625e954439db8e9f0bc9",
+    "name": "CDK Deploy",
+    "status": "completed",
+    "updatedAt": "2026-05-18T20:22:30Z",
+    "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26058064008"
+  },
+  "decision": "merge_retry_blocked_processing",
+  "processing_jobs_in_progress": [
+    {
+      "ProcessingJobName": "md1-shrunk-prodspine-sfm-1779128752",
+      "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-shrunk-prodspine-sfm-1779128752",
+      "CreationTime": "2026-05-18T12:25:52.855000-06:00",
+      "LastModifiedTime": "2026-05-18T12:28:24.200000-06:00",
+      "ProcessingJobStatus": "InProgress"
+    },
+    {
+      "ProcessingJobName": "cvhr-mtc-20260518T1729Z-sfm",
+      "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/cvhr-mtc-20260518T1729Z-sfm",
+      "CreationTime": "2026-05-18T11:29:49.660000-06:00",
+      "LastModifiedTime": "2026-05-18T11:32:20.712000-06:00",
+      "ProcessingJobStatus": "InProgress"
+    }
+  ],
+  "training_jobs_in_progress": [],
+  "active_codebuilds": [],
+  "running_stepfunctions": [],
+  "paid_compute_launched": false,
+  "next_required_action": "wait for all SageMaker processing idle, then rerun duplicate/AWS/readiness/budget checks against latest head before paid retry"
+}

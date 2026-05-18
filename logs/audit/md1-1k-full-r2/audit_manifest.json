@@ -28072,5 +28072,30 @@
     "corrected_payload_has_background_source_tile_id": false,
     "paid_compute_launched": false,
     "next_required_action": "wait for all processing idle and rerun all presubmit checks before paid retry"
+  },
+  "md1_r0v5relax_retry1_processing_hold_c18e9619_20260518": {
+    "status": "processing_hold_no_paid_compute",
+    "summary": "Exact-head c18e9619 is green and CodeBuild/training/Step Functions are idle, but retry1 paid merge remains blocked by active SageMaker processing: md1-shrunk-prodspine-sfm-1779128752 and cvhr-mtc-20260518T1729Z-sfm. No paid retry/review/full14/LOD submitted.",
+    "head": "c18e9619c27884e7626f625e954439db8e9f0bc9",
+    "exact_head_cdk_run": 26058064008,
+    "processing_blockers": [
+      "md1-shrunk-prodspine-sfm-1779128752",
+      "cvhr-mtc-20260518T1729Z-sfm"
+    ],
+    "presubmit_summary_json": "logs/md1-r0v5relax-retry1-processing-hold-c18e9619-20260518T202610Z-summary.json",
+    "processing_inprogress_json": "logs/md1-r0v5relax-retry1-processing-hold-c18e9619-20260518T202610Z-processing-inprogress.json",
+    "processing_inprogress_listed_json": "logs/md1-r0v5relax-retry1-processing-hold-c18e9619-20260518T202610Z-processing-inprogress-listed.json",
+    "training_inprogress_json": "logs/md1-r0v5relax-retry1-processing-hold-c18e9619-20260518T202610Z-training-inprogress.json",
+    "stepfunctions_running_json": "logs/md1-r0v5relax-retry1-processing-hold-c18e9619-20260518T202610Z-stepfunctions-running.json",
+    "codebuild_recent_json": "logs/md1-r0v5relax-retry1-processing-hold-c18e9619-20260518T202610Z-codebuild-recent.json",
+    "exact_head_cdk_run_json": "logs/md1-r0v5relax-retry1-processing-hold-c18e9619-20260518T202610Z-cdk-run.json",
+    "md1_shrunk_describe_json": "logs/md1-r0v5relax-retry1-processing-hold-c18e9619-20260518T202610Z-md1-shrunk-prodspine-sfm-1779128752-describe.json",
+    "md1_shrunk_tags_json": "logs/md1-r0v5relax-retry1-processing-hold-c18e9619-20260518T202610Z-md1-shrunk-prodspine-sfm-1779128752-tags.json",
+    "cvhr_describe_json": "logs/md1-r0v5relax-retry1-processing-hold-c18e9619-20260518T202610Z-cvhr-mtc-20260518T1729Z-sfm-describe.json",
+    "cvhr_tags_json": "logs/md1-r0v5relax-retry1-processing-hold-c18e9619-20260518T202610Z-cvhr-mtc-20260518T1729Z-sfm-tags.json",
+    "corrected_payload_json": "logs/md1-r0v5relax-merge-corrected-payload-8fdaa86f-20260518T170629Z.json",
+    "corrected_payload_has_background_source_tile_id": false,
+    "paid_compute_launched": false,
+    "next_required_action": "wait for all processing idle and rerun all presubmit checks before paid retry"
   }
 }
