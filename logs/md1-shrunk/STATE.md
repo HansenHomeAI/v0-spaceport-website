@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T18:41:16Z
+updated: 2026-05-18T18:52:20Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -5972,3 +5972,50 @@ skybox, compression, artifact handoff, and visual gates.
 - Automation:
   - `md1-shrunk-e2e-monitor-2` is active and updated to monitor only canonical job `md1-shrunk-prodspine-sfm-1779128752` while it is `InProgress`.
   - no duplicate SfM/3DGS/compression launches should occur before this canonical job reaches a terminal state.
+
+## 2026-05-18T18:48:20Z resume verification + poll
+
+- Branch/head/status:
+  - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+  - `git rev-parse HEAD` -> `b9664255e04f8227d66d46a703491ef803c9c17b`
+  - `git rev-parse @{upstream}` -> `b9664255e04f8227d66d46a703491ef803c9c17b`
+- Tooling note:
+  - this Codex shell PATH does not include Homebrew by default; use `PATH="/opt/homebrew/bin:$PATH"` for `aws` + `gh`.
+- AWS identity:
+  - `PATH="/opt/homebrew/bin:$PATH" aws sts get-caller-identity --output json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+  - evidence: `logs/md1-shrunk/aws-identity-20260518T1848Z.json`
+- Step Functions:
+  - `PATH="/opt/homebrew/bin:$PATH" aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --status-filter RUNNING --max-results 10 --region us-west-2 --output json` -> none running.
+  - evidence: `logs/md1-shrunk/stepfunctions-running-20260518T1848Z.json`
+- SageMaker InProgress processing jobs:
+  - canonical/owned: `md1-shrunk-prodspine-sfm-1779128752`
+  - external/not owned: `cvhr-mtc-20260518T1729Z-sfm`; left untouched.
+  - evidence: `logs/md1-shrunk/sagemaker-list-processing-inprogress-20260518T1848Z.json`
+- Canonical SfM poll:
+  - `ProcessingJobStatus=InProgress`, `FailureReason=null`
+  - observed progress: GPU feature extraction reached at least `Processed file [468/1456]`.
+  - S3 output remains empty as expected until `S3UploadMode=EndOfJob`.
+  - evidence:
+    - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260518T1848Z.json`
+    - `logs/md1-shrunk/cloudwatch-md1-shrunk-prodspine-sfm-1779128752-20260518T1848Z.json`
+    - `logs/md1-shrunk/s3-colmap-md1-shrunk-prodspine-sfm-20260518T1826Z-20260518T1848Z.txt`
+    - `logs/md1-shrunk/logstreams-md1-shrunk-prodspine-sfm-1779128752-20260518T1849Z.json`
+- Duplicate full SfM guard:
+  - duplicate job `md1-shrunk-prodspine-sfm-1779128842` remains `Stopped`; do not restart it.
+  - evidence: `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128842-20260518T1852Z.json`
+- GitHub Actions:
+  - current head commit message is `[skip ci]`, so there are no exact-head workflows for `b9664255e04f8227d66d46a703491ef803c9c17b`.
+  - last meaningful non-skipped head remains `1900964d7d3601733e6cb9d587a3128717749336` with `CDK Deploy` run `26052859100` -> success.
+  - evidence: `logs/md1-shrunk/gh-runs-agent-113647-20260518T1848Z.json` and `logs/md1-shrunk/gh-runs-exact-head-1900964d-20260518T1841Z.json`
+
+## 2026-05-18T18:51:32Z canonical full SfM poll (incremental CloudWatch)
+
+- Canonical SfM status:
+  - job: `md1-shrunk-prodspine-sfm-1779128752`
+  - `ProcessingJobStatus=InProgress`, `FailureReason=null`
+  - observed progress: GPU feature extraction reached at least `Processed file [552/1456]`.
+  - S3 output remains empty as expected until `S3UploadMode=EndOfJob`.
+  - evidence:
+    - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260518T1851Z.json`
+    - `logs/md1-shrunk/cloudwatch-md1-shrunk-prodspine-sfm-1779128752-20260518T1851Z.json`
+    - `logs/md1-shrunk/s3-colmap-md1-shrunk-prodspine-sfm-20260518T1826Z-20260518T1851Z.txt`
