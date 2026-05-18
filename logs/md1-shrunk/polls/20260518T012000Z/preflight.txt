@@ -1,0 +1,4 @@
+ts=20260518T012000Z
+branch=agent-113647-md1-baseline-e2e
+head=6654dda68f6ca3e72939390d0cb284f57c016506
+6654dda6 chore: md1-shrunk postpush exact-head proof 20260518T005313Z [skip ci]

@@ -3949,3 +3949,38 @@ skybox, compression, artifact handoff, and visual gates.
   - exact-head run list expected `[]` (skip-ci head):
     - `logs/md1-shrunk/polls/20260518T005313Z-postpush/gh-run-list-exact-head.json`
     - `logs/md1-shrunk/polls/20260518T005313Z-postpush/gh-exact-head-run-count.txt`
+
+- 2026-05-18T01:20:00Z poll (monitor; no new ML launches; reconfirm terminal statuses + preview/bundle still healthy):
+  - Evidence: `logs/md1-shrunk/polls/20260518T012000Z/`
+  - Branch/head/status:
+    - `logs/md1-shrunk/polls/20260518T012000Z/preflight.txt` -> head `6654dda6...` (`[skip ci]`), branch `agent-113647-md1-baseline-e2e`
+    - `logs/md1-shrunk/polls/20260518T012000Z/git-status-porcelain.txt` -> clean
+  - AWS identity (region `us-west-2`):
+    - `logs/md1-shrunk/polls/20260518T012000Z/aws-sts.json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions (region `us-west-2`):
+    - state machine inventory: `logs/md1-shrunk/polls/20260518T012000Z/stepfunctions-state-machines.json`
+    - all `SpaceportMLPipeline*` RUNNING execution lists are empty: `logs/md1-shrunk/polls/20260518T012000Z/stepfunctions-running-*.json`
+  - SageMaker terminal statuses (region `us-west-2`):
+    - SfM `md1-shrunk-1456-sfm-1778866088` -> `Completed`: `logs/md1-shrunk/polls/20260518T012000Z/sagemaker-describe-sfm.json`
+    - 3DGS `md1shrunk1456-1778880862-3dgs` -> `Completed`: `logs/md1-shrunk/polls/20260518T012000Z/sagemaker-describe-3dgs.json`
+    - compression `md1shrunk1456-1778880862-compression` -> `Completed`: `logs/md1-shrunk/polls/20260518T012000Z/sagemaker-describe-compression.json`
+    - InProgress processing jobs=0: `logs/md1-shrunk/polls/20260518T012000Z/sagemaker-list-processing-InProgress.json`
+    - InProgress training jobs=0: `logs/md1-shrunk/polls/20260518T012000Z/sagemaker-list-training-InProgress.json`
+  - SfM gates (Montana scale sanity):
+    - metadata `images_registered=1456`, `merged_component_count=1`, `points_3d=1103335`, `quality_check_passed=true`: `logs/md1-shrunk/polls/20260518T012000Z/sfm_metadata.json`
+    - sparse component proof (`sparse/0` only): `logs/md1-shrunk/polls/20260518T012000Z/s3-colmap-sparse-ls.txt`, `logs/md1-shrunk/polls/20260518T012000Z/s3-colmap-sparse0-ls.txt`
+  - GitHub Actions:
+    - branch run list: `logs/md1-shrunk/polls/20260518T012000Z/gh-run-list-branch.json`
+    - exact-head run list expected `[]` (`[skip ci]` head): `logs/md1-shrunk/polls/20260518T012000Z/gh-run-list-exact-head.json`
+    - exact-head run count: `logs/md1-shrunk/polls/20260518T012000Z/gh-exact-head-run-count.txt`
+  - Public bundle + preview HTTP sanity:
+    - preview alias URL: `logs/md1-shrunk/polls/20260518T012000Z/preview-alias-url.txt`
+    - bundle URL: `logs/md1-shrunk/polls/20260518T012000Z/bundle-url.txt`
+    - preview `/health.txt` headers: `logs/md1-shrunk/polls/20260518T012000Z/http-preview-health.headers.txt`
+    - public bundle `meta.json` headers: `logs/md1-shrunk/polls/20260518T012000Z/http-public-meta.headers.txt`
+    - public bundle `meta.json` cached copy: `logs/md1-shrunk/polls/20260518T012000Z/public-meta.json`
+    - gaussian count from `meta.json` (`means.shape[0]`) -> `990025`: `logs/md1-shrunk/polls/20260518T012000Z/public-meta-gaussian-count.txt`
+    - public `meta.json` S3 API head: `logs/md1-shrunk/polls/20260518T012000Z/s3api-head-public-meta.json`
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
+    - CLI note: use `/opt/homebrew/bin/aws` and `/opt/homebrew/bin/gh` in this environment (PATH missing homebrew bin).
