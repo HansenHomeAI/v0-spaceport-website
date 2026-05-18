@@ -5928,15 +5928,17 @@ skybox, compression, artifact handoff, and visual gates.
   - immutable planner manifest: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-planner3-20260518T1819Z/colmap/chunk_planner_manifest.json`
   - start proof: `logs/md1-shrunk/md1-shrunk-prodspine-sfm-20260518T1826Z-start.json`
   - payload: `logs/md1-shrunk/md1-shrunk-prodspine-sfm-20260518T1826Z-payload.json`
-  - latest status at `2026-05-18T18:31Z`: `ProcessingJobStatus=InProgress`, `FailureReason=null`
+  - latest status at `2026-05-18T18:36Z`: `ProcessingJobStatus=InProgress`, `FailureReason=null`
   - log stream: `/aws/sagemaker/ProcessingJobs` / `md1-shrunk-prodspine-sfm-1779128752/algo-1-1779128795`
-  - observed progress: extracted `1456` images, loaded GPS/orientation priors, and GPU feature extraction reached at least `Processed file [36/1456]`.
+  - observed progress: extracted `1456` images, loaded GPS/orientation priors, and GPU feature extraction reached at least `Processed file [160/1456]`.
   - S3 output still empty, expected until `S3UploadMode=EndOfJob`.
   - evidence:
     - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260518T1828Z.json`
     - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260518T1831Z.json`
+    - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260518T1836Z.json`
     - `logs/md1-shrunk/logstreams-md1-shrunk-prodspine-sfm-1779128752-20260518T1831Z.json`
     - `logs/md1-shrunk/cloudwatch-md1-shrunk-prodspine-sfm-1779128752-20260518T1831Z.json`
+    - `logs/md1-shrunk/cloudwatch-md1-shrunk-prodspine-sfm-1779128752-20260518T1836Z.json`
     - `logs/md1-shrunk/s3-colmap-md1-shrunk-prodspine-sfm-20260518T1826Z-20260518T1831Z.txt`
 - Duplicate launch guard:
   - a scheduled monitor overlapped this live run and created duplicate full SfM job `md1-shrunk-prodspine-sfm-1779128842`.
