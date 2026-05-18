@@ -1,0 +1,20 @@
+{
+    "Tags": [
+        {
+            "Key": "Project",
+            "Value": "Spaceport"
+        },
+        {
+            "Key": "Component",
+            "Value": "SfM"
+        },
+        {
+            "Key": "Dataset",
+            "Value": "CV-HR"
+        },
+        {
+            "Key": "Profile",
+            "Value": "montana-time-capsule"
+        }
+    ]
+}
