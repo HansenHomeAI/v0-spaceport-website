@@ -411,3 +411,56 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/heartbeat-sagemaker-list-cvhr-all-20260518T212146Z.json`
   - `logs/montana-time-capsule/heartbeat-logstreams-cvhr-secondary-20260518t2113z-sfm-20260518T212146Z.json`
 - Next unblocked step: continue monitoring canonical `cvhr-mtc-20260518T1729Z-sfm` to terminal. If it completes, run the guarded `--launch` once to start pinned Montana 3DGS. Also keep recording the non-canonical `cvhr-secondary-20260518t2113z-sfm`; do not stop it unless it is clearly proven orphaned.
+
+## 2026-05-18T21:40Z Heartbeat Monitor Pass
+
+- Branch/head/status command:
+  - `git branch --show-current && git rev-parse HEAD && git status --short --branch`
+  - Result: branch `agent-40136728-montana-time-capsule`, head `4e64f2256d4288c221b801dffba95c24b740cc50`, clean before this heartbeat pass.
+- AWS identity command:
+  - `AWS_PAGER= aws sts get-caller-identity --output json`
+  - Result: account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+- Canonical CV-HR SfM status command:
+  - `AWS_PAGER= aws sagemaker describe-processing-job --region us-west-2 --processing-job-name cvhr-mtc-20260518T1729Z-sfm`
+  - Result: `ProcessingJobStatus=InProgress`; no `FailureReason` or `ExitMessage`; pinned SfM image remains `sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811`.
+- CV-HR job sweep command:
+  - `AWS_PAGER= aws sagemaker list-processing-jobs --region us-west-2 --name-contains cvhr --max-results 50`
+  - Result: two CV-HR SfM jobs remain active:
+    - canonical `cvhr-mtc-20260518T1729Z-sfm` (`InProgress`)
+    - non-canonical `cvhr-secondary-20260518t2113z-sfm` (`InProgress`, owner branch env `agent-73910482-cvhr-parallel-splat`)
+- S3 output command:
+  - `AWS_PAGER= aws s3 ls s3://spaceport-ml-processing-staging/manual-validations/cvhr-mtc-20260518T1729Z/colmap/ --recursive --human-readable --summarize`
+  - Result: canonical SfM output still `Total Objects: 0`, expected until SageMaker `EndOfJob` upload.
+- GitHub exact-head workflow command:
+  - `gh run list --branch agent-40136728-montana-time-capsule --limit 50 --json databaseId,headSha,workflowName,status,conclusion,createdAt,updatedAt,url | jq --arg sha "$(git rev-parse HEAD)" '[.[] | select(.headSha==$sha)]'`
+  - Result: `[]` for logs-only `[skip ci]` head `4e64f2256d4288c221b801dffba95c24b740cc50`. Last meaningful non-skip `CDK Deploy` remains green on head `1b264bc2ac6be3bf34ca06582895f7f750e9a442`, run `26049509375`.
+- Canonical CloudWatch command:
+  - `AWS_PAGER= aws logs get-log-events --region us-west-2 --log-group-name /aws/sagemaker/ProcessingJobs --log-stream-name cvhr-mtc-20260518T1729Z-sfm/algo-1-1779125429 --limit 60 --output text`
+  - Result: no new canonical log after `COLMAP[vocab_tree_builder] ... Building index for visual words...` at `2026-05-18T19:43:03Z`; log stream last event timestamp remains `1779133383674`. SageMaker still reports `InProgress`, with no visible OOM, timeout, or failure.
+- Non-canonical CV-HR observation:
+  - `cvhr-secondary-20260518t2113z-sfm` now has log stream `cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231`.
+  - Tail showed active feature extraction through `Processed file [428/1710]` at `2026-05-18T21:41:03Z`.
+  - Action taken: none. It appears owned by branch `agent-73910482-cvhr-parallel-splat` and is not clearly orphaned.
+- Active SageMaker processing sweep:
+  - `AWS_PAGER= aws sagemaker list-processing-jobs --region us-west-2 --status-equals InProgress --max-results 50`
+  - Result includes three active processing jobs:
+    - `cvhr-secondary-20260518t2113z-sfm`
+    - `md1-shrunk-prodspine-sfm-1779128752`
+    - `cvhr-mtc-20260518T1729Z-sfm`
+- Guarded advance command:
+  - `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip --launch`
+  - Result: runner returned `status=sfm_running`, `sfm_status=InProgress`, `last_action=sfm_running`, `updated_at=2026-05-18T21:41:31Z`; no 3DGS launched early.
+- Evidence files:
+  - `logs/montana-time-capsule/heartbeat-sagemaker-describe-cvhr-mtc-20260518T1729Z-sfm-20260518T214042Z.json`
+  - `logs/montana-time-capsule/heartbeat-sagemaker-list-cvhr-all-20260518T214042Z.json`
+  - `logs/montana-time-capsule/heartbeat-s3-colmap-cvhr-mtc-20260518T1729Z-20260518T214042Z.txt`
+  - `logs/montana-time-capsule/heartbeat-gh-run-list-agent-40136728-20260518T214042Z.json`
+  - `logs/montana-time-capsule/heartbeat-gh-run-list-exact-head-20260518T214042Z.json`
+  - `logs/montana-time-capsule/heartbeat-logstreams-cvhr-mtc-20260518T1729Z-sfm-20260518T214107Z.json`
+  - `logs/montana-time-capsule/heartbeat-cloudwatch-tail-cvhr-mtc-20260518T1729Z-sfm-20260518T214107Z.log`
+  - `logs/montana-time-capsule/heartbeat-sagemaker-describe-cvhr-secondary-20260518t2113z-sfm-20260518T214107Z.json`
+  - `logs/montana-time-capsule/heartbeat-logstreams-cvhr-secondary-20260518t2113z-sfm-20260518T214107Z.json`
+  - `logs/montana-time-capsule/heartbeat-cloudwatch-tail-cvhr-secondary-20260518t2113z-sfm-20260518T214120Z.log`
+  - `logs/montana-time-capsule/heartbeat-sagemaker-list-all-inprogress-20260518T214120Z.json`
+  - `logs/montana-time-capsule/heartbeat-launch-20260518T214130Z.log`
+- Next unblocked step: continue monitoring canonical `cvhr-mtc-20260518T1729Z-sfm` to terminal. If it completes, run the guarded `--launch` once to start pinned Montana 3DGS. Keep recording the non-canonical secondary job but do not stop it unless clearly proven orphaned.
