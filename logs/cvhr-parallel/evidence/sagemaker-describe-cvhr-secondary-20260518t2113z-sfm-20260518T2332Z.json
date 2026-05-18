@@ -1,0 +1,64 @@
+{
+    "ProcessingInputs": [
+        {
+            "InputName": "sfm-input",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+                "LocalPath": "/opt/ml/processing/input",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated",
+                "S3CompressionType": "None"
+            }
+        }
+    ],
+    "ProcessingOutputConfig": {
+        "Outputs": [
+            {
+                "OutputName": "colmap-output",
+                "S3Output": {
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-secondary-20260518t2113z/colmap",
+                    "LocalPath": "/opt/ml/processing/output",
+                    "S3UploadMode": "EndOfJob"
+                },
+                "AppManaged": false
+            }
+        ]
+    },
+    "ProcessingJobName": "cvhr-secondary-20260518t2113z-sfm",
+    "ProcessingResources": {
+        "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 100
+        }
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 86400
+    },
+    "AppSpecification": {
+        "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811",
+        "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+        ]
+    },
+    "Environment": {
+        "AWS_DEFAULT_REGION": "us-west-2",
+        "COLMAP_CHUNK_MIN_CORE_REGISTERED_RATIO": "0.90",
+        "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+        "PYTHONUNBUFFERED": "1",
+        "SFM_BENCHMARK_SUBSET_STRATEGY": "cv_hr_full_1710_montana_time_capsule",
+        "SFM_BRANCH_NAME": "agent-73910482-cvhr-parallel-splat",
+        "SFM_GIT_HEAD": "0b60d8bf9e7e4355bd46001dcd61387b327a8e5a",
+        "SFM_INPUT_URI": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+        "SFM_JOB_NAME": "cvhr-secondary-20260518t2113z-sfm",
+        "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-secondary-20260518t2113z/colmap"
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/cvhr-secondary-20260518t2113z-sfm",
+    "ProcessingJobStatus": "InProgress",
+    "ProcessingStartTime": "2026-05-18T15:20:32.428000-06:00",
+    "LastModifiedTime": "2026-05-18T15:22:23.268000-06:00",
+    "CreationTime": "2026-05-18T15:19:51.886000-06:00"
+}
