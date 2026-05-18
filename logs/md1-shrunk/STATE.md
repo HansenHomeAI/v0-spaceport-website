@@ -4404,3 +4404,62 @@ skybox, compression, artifact handoff, and visual gates.
   - Camera checks (MD1 viewer; same pose; skybox vs no-sky):
     - skybox: `logs/md1-shrunk/polls/20260518T054255Z-viewer-postpages/md1-camera-check-skybox.png` (`logs/md1-shrunk/polls/20260518T054255Z-viewer-postpages/playwright-md1-camera-check-skybox.txt`)
     - no-sky: `logs/md1-shrunk/polls/20260518T054255Z-viewer-postpages/md1-camera-check-nosky.png` (`logs/md1-shrunk/polls/20260518T054255Z-viewer-postpages/playwright-md1-camera-check-nosky.txt`)
+
+- 2026-05-18T05:56:32Z poll (resume; no new ML launches; re-verify terminal ML + exact-head Pages/CDK + viewer):
+  - Evidence: `logs/md1-shrunk/polls/20260518T054653Z-resume/`
+  - Local branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `049c70baf003e3a1e816f729c514d6b491665a76`
+    - `git status --porcelain=v1` -> clean except new poll dir
+  - AWS (staging us-west-2) identity + active state (captured via boto3 because `aws` CLI is not on PATH in this environment):
+    - STS:
+      - account: `975050048887`
+      - arn: `arn:aws:iam::975050048887:root`
+      - snapshot: `logs/md1-shrunk/polls/20260518T054653Z-resume/aws-sts-get-caller-identity.json`
+    - Step Functions:
+      - RUNNING executions under `SpaceportMLPipeline-staging`: `0`
+      - snapshot: `logs/md1-shrunk/polls/20260518T054653Z-resume/stepfunctions-running.json`
+    - SageMaker:
+      - SfM ProcessingJob `md1-shrunk-1456-sfm-1778866088`: `Completed` (FailureReason null)
+      - 3DGS TrainingJob `md1shrunk1456-1778880862-3dgs`: `Completed` (FailureReason null)
+      - compression ProcessingJob `md1shrunk1456-1778880862-compression`: `Completed` (FailureReason null)
+      - InProgress processing jobs: `0`
+      - InProgress training jobs: `0`
+      - snapshots:
+        - `logs/md1-shrunk/polls/20260518T054653Z-resume/sagemaker-describe-md1-shrunk-1456-sfm-1778866088.json`
+        - `logs/md1-shrunk/polls/20260518T054653Z-resume/sagemaker-describe-md1shrunk1456-1778880862-3dgs.json`
+        - `logs/md1-shrunk/polls/20260518T054653Z-resume/sagemaker-describe-md1shrunk1456-1778880862-compression.json`
+        - `logs/md1-shrunk/polls/20260518T054653Z-resume/sagemaker-list-processing-jobs-inprogress.json`
+        - `logs/md1-shrunk/polls/20260518T054653Z-resume/sagemaker-list-training-jobs-inprogress.json`
+  - SfM Montana-scale gate (from `sfm_metadata.json` in staged COLMAP output):
+    - images_registered: `1456` (target Meadow/Incognito registered was `1452`)
+    - merged_component_count: `1`
+    - points_3d: `1103335` (Meadow/Incognito points3D `940147`)
+    - quality_check_passed: `true`
+    - timed_out: `false`
+    - fallback_triggered: `false`
+    - snapshots:
+      - `logs/md1-shrunk/polls/20260518T054653Z-resume/sfm_metadata.json`
+      - `logs/md1-shrunk/polls/20260518T054653Z-resume/sfm_metadata-summary.json`
+  - Public bundle still anonymous-fetchable:
+    - `curl -I` meta.json -> HTTP 200: `logs/md1-shrunk/polls/20260518T054653Z-resume/curl-head-meta.txt`
+    - `curl -I` background_skybox.webp -> HTTP 200: `logs/md1-shrunk/polls/20260518T054653Z-resume/curl-head-skybox.txt`
+  - GitHub workflows (exact-head) for `049c70ba...`:
+    - `CDK Deploy` run `26015823873` -> `success`:
+      - run view: `logs/md1-shrunk/polls/20260518T054653Z-resume/gh-run-view-26015823873.json`
+    - `Deploy Next.js to Cloudflare Pages` run `26015823853` -> `success`:
+      - preview alias URL: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+      - preview URL excerpt: `logs/md1-shrunk/polls/20260518T054653Z-resume/gh-run-26015823853-preview-url-lines.txt`
+      - run view: `logs/md1-shrunk/polls/20260518T054653Z-resume/gh-run-view-26015823853.json`
+  - Deployed preview viewer re-validation (skybox + no-sky) + input-vs-render camera side-by-side:
+    - Playwright skybox: `logs/md1-shrunk/polls/20260518T054653Z-resume/playwright-skybox.txt` -> OK
+    - Playwright no-sky: `logs/md1-shrunk/polls/20260518T054653Z-resume/playwright-no-sky.txt` -> OK
+    - smoke screenshots:
+      - skybox: `logs/md1-shrunk/polls/20260518T054653Z-resume/sogs-migrated-viewer-skybox.png`
+      - no-sky: `logs/md1-shrunk/polls/20260518T054653Z-resume/sogs-migrated-viewer-nosky.png`
+    - DJI_01029 input-vs-render (input left; render right):
+      - input: `logs/md1-shrunk/polls/20260518T054653Z-resume/input-DJI_01029.JPG`
+      - render skybox: `logs/md1-shrunk/polls/20260518T054653Z-resume/render-skybox-DJI_01029.png`
+      - render no-sky: `logs/md1-shrunk/polls/20260518T054653Z-resume/render-nosky-DJI_01029.png`
+      - side-by-side skybox: `logs/md1-shrunk/polls/20260518T054653Z-resume/side-by-side-skybox-DJI_01029.jpg`
+      - side-by-side no-sky: `logs/md1-shrunk/polls/20260518T054653Z-resume/side-by-side-nosky-DJI_01029.jpg`
