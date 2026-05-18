@@ -140,3 +140,26 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
 - Branch workflow evidence: `logs/montana-time-capsule/gh-run-list-agent-40136728-20260518T181809Z.json`
 - Exact-head workflow evidence: `logs/montana-time-capsule/gh-run-list-exact-head-20260518T181809Z.json`
 - Next unblocked step: keep polling SfM until `Completed`, then run `--launch` exactly once to advance to 3DGS.
+
+## 2026-05-18T18:33Z Monitor Pass
+
+- Branch/head/status command:
+  - `git rev-parse --abbrev-ref HEAD && git rev-parse HEAD && git status --short --branch`
+  - Result: branch `agent-40136728-montana-time-capsule`, head `1281188169eed19054fcb6ae370c9e102e28b560`, status clean before this pass.
+- AWS identity command: `/opt/homebrew/bin/aws sts get-caller-identity`
+  - Result: account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+- SageMaker status command: `/opt/homebrew/bin/aws sagemaker describe-processing-job --processing-job-name cvhr-mtc-20260518T1729Z-sfm`
+  - Result: `ProcessingJobStatus=InProgress` for `cvhr-mtc-20260518T1729Z-sfm`; pinned SfM image unchanged (`sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811`).
+- Duplicate-job guard command: `/opt/homebrew/bin/aws sagemaker list-processing-jobs --name-contains cvhr-mtc-20260518T1729Z --max-results 20`
+  - Result: one matching processing job (`cvhr-mtc-20260518T1729Z-sfm`, `InProgress`); no duplicate jobs launched.
+- Advance-one-stage command: `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip --launch`
+  - Result: state held at `status=sfm_running`, `sfm_status=InProgress`, `last_action=sfm_running`; runner did not launch 3DGS early.
+- CloudWatch proof command: `/opt/homebrew/bin/aws logs tail /aws/sagemaker/ProcessingJobs --since 20m --log-stream-name-prefix cvhr-mtc-20260518T1729Z-sfm --format short`
+  - Result: live SfM feature extraction progressed through `Processed file [1522/1710]` at `2026-05-18T18:33:44Z`.
+- Evidence files:
+  - `logs/montana-time-capsule/aws-sts-20260518T183327Z.json`
+  - `logs/montana-time-capsule/sagemaker-describe-cvhr-mtc-20260518T1729Z-sfm-20260518T183327Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-cvhr-mtc-20260518T1729Z-20260518T183327Z.json`
+  - `logs/montana-time-capsule/launch-20260518T183334Z.log`
+  - `logs/montana-time-capsule/cloudwatch-tail-cvhr-mtc-20260518T1729Z-sfm-20260518T183346Z.log`
+- Next unblocked step: continue polling until `cvhr-mtc-20260518T1729Z-sfm` reaches `Completed`, then run the same `--launch` command exactly once to launch 3DGS with the pinned Montana 3DGS image.
