@@ -49,3 +49,5 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
 - SfM image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811`
 - SfM instance: `ml.g4dn.xlarge`, volume `100` GB, max runtime `86400` seconds.
 - SfM env: `COLMAP_ENABLE_SPATIAL_CHUNKING=1`, `COLMAP_CHUNK_MIN_CORE_REGISTERED_RATIO=0.90`.
+- Log stream: `cvhr-mtc-20260518T1729Z-sfm/algo-1-1779125429`
+- First live log proof: COLMAP feature extraction accepted the archive and was processing `4000 x 2250` images with GPS/gravity metadata; latest sampled progress at `2026-05-18T17:37Z` was `Processed file [56/1710]`.
