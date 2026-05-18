@@ -1,6 +1,6 @@
 # CV-HR Parallel Splat Ledger
 
-updated: 2026-05-18T21:14:00Z
+updated: 2026-05-18T21:20:00Z
 branch: agent-73910482-cvhr-parallel-splat
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 
@@ -51,4 +51,29 @@ as read-only context.
   - `logs/cvhr-parallel/evidence/stepfunctions-running-prelaunch-20260518T2114Z.json`
   - `logs/cvhr-parallel/evidence/cvhr-archive-head-20260518T2114Z.json`
   - `logs/cvhr-parallel/evidence/gh-runs-prepush-20260518T2114Z.json`
-- No secondary SageMaker job has been launched yet.
+
+## 2026-05-18T21:20Z Secondary SfM Launch
+
+- Commit/push before launch:
+  - commit: `0b60d8bf9e7e4355bd46001dcd61387b327a8e5a`
+  - exact-head `CDK Deploy` run `26060892234` succeeded.
+  - evidence: `logs/cvhr-parallel/evidence/gh-runs-exact-head-0b60d8bf-20260518T2120Z.json`
+- Launch command:
+  - `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip --run-id cvhr-secondary-20260518t2113z --state-file logs/cvhr-parallel/cv-hr-state.json --launch`
+- Secondary SfM job:
+  - name: `cvhr-secondary-20260518t2113z-sfm`
+  - ARN: `arn:aws:sagemaker:us-west-2:975050048887:processing-job/cvhr-secondary-20260518t2113z-sfm`
+  - startup status: `InProgress`
+  - output: `s3://spaceport-ml-processing-staging/manual-validations/cvhr-secondary-20260518t2113z/colmap`
+  - image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811`
+  - `SFM_GIT_HEAD`: `0b60d8bf9e7e4355bd46001dcd61387b327a8e5a`
+- Startup evidence:
+  - `logs/cvhr-parallel/evidence/sagemaker-describe-cvhr-secondary-20260518t2113z-sfm-20260518T2120Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-list-cvhr-secondary-20260518t2113z-20260518T2120Z.json`
+  - `logs/cvhr-parallel/evidence/s3-colmap-cvhr-secondary-20260518t2113z-20260518T2120Z.txt`
+  - `logs/cvhr-parallel/evidence/logstreams-cvhr-secondary-20260518t2113z-sfm-20260518T2120Z.json`
+- S3 output remains empty, expected before `S3UploadMode=EndOfJob`.
+- Heartbeat automation:
+  - id: `cv-hr-parallel-splat-monitor`
+  - kind: thread heartbeat
+  - cadence: every 20 minutes

@@ -1,2 +1,3 @@
 [2026-05-18T21:12:26Z] create branch/worktree -> cherry-picked CV-HR runner tooling -> patch runner for isolated parallel run id
 [2026-05-18T21:14:00Z] local checks + archive validation -> upload_ready for cvhr-secondary-20260518t2113z -> commit/push before launch
+[2026-05-18T21:20:00Z] exact-head CDK green -> launched cvhr-secondary-20260518t2113z-sfm -> heartbeat monitor created
