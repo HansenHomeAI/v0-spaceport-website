@@ -6118,3 +6118,67 @@ skybox, compression, artifact handoff, and visual gates.
   - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260518T1936Z.json`
   - `logs/md1-shrunk/cloudwatch-recent-md1-shrunk-prodspine-sfm-1779128752-20260518T1936Z.json`
   - `logs/md1-shrunk/s3-colmap-md1-shrunk-prodspine-sfm-20260518T1826Z-20260518T1936Z.txt`
+
+## 2026-05-18T19:53Z in-chat canonical SfM chunk 0 recovery poll
+
+- Accountability mode:
+  - user requested the MD1-Shrunk automation run in this chat.
+  - scheduled automation `md1-shrunk-e2e-monitor-2` remains `PAUSED`; this thread owns the active monitor loop.
+- Verification before action:
+  - branch: `agent-113647-md1-baseline-e2e`
+  - head: `03f6f5688cc18ee7d78947fac59d9b6128639898`
+  - AWS identity: account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions `SpaceportMLPipeline-staging` RUNNING executions: `0`
+  - InProgress training jobs: `0`
+  - InProgress processing jobs:
+    - canonical/owned: `md1-shrunk-prodspine-sfm-1779128752`
+    - external/not owned: `cvhr-mtc-20260518T1729Z-sfm`; left untouched.
+  - GitHub Actions:
+    - current head is a logs-only `[skip ci]` commit, so no exact-head workflows are expected.
+    - last meaningful non-skipped head remains `1900964d7d3601733e6cb9d587a3128717749336` with `CDK Deploy` run `26052859100` -> success.
+- Canonical SfM status:
+  - job: `md1-shrunk-prodspine-sfm-1779128752`
+  - `ProcessingJobStatus=InProgress`, `FailureReason=null`
+  - input: `s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip`
+  - output: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-sfm-20260518T1826Z/colmap`
+  - image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:c96dca6f3b0850855eac576e8a27371dfca408e24364d79f7e35b23425cc7950`
+  - S3 output remains empty as expected until `S3UploadMode=EndOfJob`.
+- Latest observed progress:
+  - 19:42Z poll showed `chunk_00_mapper_initial` continuing from `num_reg_frames=86` to at least `num_reg_frames=167`.
+  - 19:53Z poll showed `chunk_00_mapper_initial` completed its initial pass:
+    - model 0: `171/220` images registered, `100175` points.
+    - model 1: `43/220` images registered, `25779` points.
+  - Chunk 0 selected the `171/220` model and triggered targeted boundary recovery because core coverage was `77.73%`.
+  - Recovery expanded chunk 0 from `220` to `221` images, prepared the recovery DB, and started `chunk_00_recovery_matches_importer`.
+  - no OOM, timeout, SageMaker failure, or Step Functions failure is visible.
+- Evidence:
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260518T1942Z.json`
+  - `logs/md1-shrunk/cloudwatch-recent-md1-shrunk-prodspine-sfm-1779128752-20260518T1942Z.json`
+  - `logs/md1-shrunk/s3-colmap-md1-shrunk-prodspine-sfm-20260518T1826Z-20260518T1942Z.txt`
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260518T1947Z.json`
+  - `logs/md1-shrunk/cloudwatch-recent-md1-shrunk-prodspine-sfm-1779128752-20260518T1947Z.json`
+  - `logs/md1-shrunk/s3-colmap-md1-shrunk-prodspine-sfm-20260518T1826Z-20260518T1947Z.txt`
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260518T1953Z.json`
+  - `logs/md1-shrunk/cloudwatch-recent-md1-shrunk-prodspine-sfm-1779128752-20260518T1953Z.json`
+  - `logs/md1-shrunk/s3-colmap-md1-shrunk-prodspine-sfm-20260518T1826Z-20260518T1953Z.txt`
+- Next concrete steps:
+  1. Continue monitoring canonical SfM `md1-shrunk-prodspine-sfm-1779128752` through recovery and all remaining chunks.
+  2. If SfM fails, capture exact SageMaker describe, CloudWatch, and S3 evidence before patching.
+  3. If SfM succeeds, validate trainable COLMAP output before launching exactly one 3DGS+compression continuation with the proven skybox-enabled 3DGS and compressor images.
+
+## 2026-05-18T19:56Z canonical SfM recovery progress
+
+- Canonical SfM status:
+  - job: `md1-shrunk-prodspine-sfm-1779128752`
+  - `ProcessingJobStatus=InProgress`, `FailureReason=null`
+  - S3 output remains empty as expected until `S3UploadMode=EndOfJob`.
+- Active recovery progress:
+  - `chunk_00_recovery_matches_importer` completed enough to start `chunk_00_mapper_recovery`.
+  - latest visible recovery mapper registration reached `num_reg_frames=51`.
+  - no OOM, timeout, SageMaker failure, or Step Functions failure is visible.
+- Evidence:
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260518T1956Z.json`
+  - `logs/md1-shrunk/cloudwatch-recent-md1-shrunk-prodspine-sfm-1779128752-20260518T1956Z.json`
+  - `logs/md1-shrunk/s3-colmap-md1-shrunk-prodspine-sfm-20260518T1826Z-20260518T1956Z.txt`
+  - `logs/md1-shrunk/stepfunctions-running-20260518T1956Z.json`
+  - `logs/md1-shrunk/gh-runs-agent-113647-20260518T1956Z.json`
