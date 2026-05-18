@@ -163,3 +163,20 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/launch-20260518T183334Z.log`
   - `logs/montana-time-capsule/cloudwatch-tail-cvhr-mtc-20260518T1729Z-sfm-20260518T183346Z.log`
 - Next unblocked step: continue polling until `cvhr-mtc-20260518T1729Z-sfm` reaches `Completed`, then run the same `--launch` command exactly once to launch 3DGS with the pinned Montana 3DGS image.
+
+## 2026-05-18T18:34Z Ledger Commit + Push
+
+- Commit: `ec78016b85165431f7487738ff00f39f5479aa56`
+- Commit message: `chore: record montana sfm monitor pass [skip ci]`
+- Push command: `git push origin agent-40136728-montana-time-capsule`
+- Push result: branch updated on origin (`12811881..ec78016b`).
+- Exact-head workflow check command:
+  - `/opt/homebrew/bin/gh run list --branch agent-40136728-montana-time-capsule --limit 50 --json databaseId,headSha,workflowName,status,conclusion,createdAt,updatedAt,url | jq --arg sha "$(git rev-parse HEAD)" '[.[] | select(.headSha==$sha)]'`
+  - Result: `[]` (no exact-head workflows, expected for `[skip ci]` ledger-only commit).
+- Branch workflow evidence (latest on branch):
+  - `logs/montana-time-capsule/gh-run-list-agent-40136728-20260518T183450Z.json`
+- Exact-head workflow evidence:
+  - `logs/montana-time-capsule/gh-run-list-exact-head-20260518T183450Z.json`
+- Last meaningful non-skip workflow proof retained:
+  - `CDK Deploy` success on head `1b264bc2ac6be3bf34ca06582895f7f750e9a442` run `26049509375`.
+- Next unblocked step: continue polling SfM job `cvhr-mtc-20260518T1729Z-sfm` until `Completed`; immediately run the same `--launch` command once to advance to pinned Montana 3DGS.
