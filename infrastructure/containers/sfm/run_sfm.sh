@@ -77,10 +77,10 @@ PYTHON_EXIT_CODE=$?
 log_mem "after_python"
 [ "$PYTHON_EXIT_CODE" -eq 0 ] || error_exit "COLMAP processing failed with exit code: $PYTHON_EXIT_CODE"
 
-if [ "${SFM_CAPABILITY_SNAPSHOT_ONLY:-0}" = "1" ] || [ "${SFM_PLANNER_SNAPSHOT_ONLY:-0}" = "1" ]; then
+if [ "${SFM_CAPABILITY_SNAPSHOT_ONLY:-0}" = "1" ] || [ "${SFM_PLANNER_SNAPSHOT_ONLY:-0}" = "1" ] || [ "${SFM_PLANNER_REPORT_ONLY:-0}" = "1" ]; then
     echo ""
     echo "============================================================"
-    echo "📦 SNAPSHOT ARTIFACTS"
+    echo "📦 SNAPSHOT / PLANNER ARTIFACTS"
     echo "============================================================"
     find "$OUTPUT_DIR" -maxdepth 3 -type f | sort || true
     python3 - <<'PY'
@@ -92,8 +92,10 @@ if metadata_path.exists():
     print(json.dumps({
         "capability_snapshot_only": metadata.get("capability_snapshot_only"),
         "planner_snapshot_only": metadata.get("planner_snapshot_only"),
+        "planner_report_only": metadata.get("planner_report_only"),
         "chunk_planner": metadata.get("chunk_planner"),
         "chunk_matcher_strategy": metadata.get("chunk_matcher_strategy"),
+        "planner_static_report": metadata.get("planner_static_report"),
         "probe_subsets": metadata.get("probe_subsets"),
         "colmap_capabilities": metadata.get("colmap_capabilities"),
     }, indent=2))

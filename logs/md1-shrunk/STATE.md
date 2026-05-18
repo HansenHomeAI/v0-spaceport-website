@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T17:25:35Z
+updated: 2026-05-18T17:52:39Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -5804,3 +5804,71 @@ skybox, compression, artifact handoff, and visual gates.
   - evidence:
     - `logs/md1-shrunk/polls/20260518T172535Z-postpush/gh-run-list.json`
     - `logs/md1-shrunk/polls/20260518T172535Z-postpush/gh-exact-head-count.txt`
+
+## 2026-05-18T17:52:39Z production-spine planner retry wrapper failure
+
+- Branch/head/status verified:
+  - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+  - `git rev-parse HEAD` -> `a24d3603537db9c28b9cdc50f4fc48db0bcadc27`
+  - untracked evidence files existed from the fixed-image build and planner retry; no unrelated code changes were present before this wrapper patch.
+- AWS identity:
+  - `/opt/homebrew/bin/aws sts get-caller-identity --output json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+- GitHub workflows for `a24d3603537db9c28b9cdc50f4fc48db0bcadc27`:
+  - `CDK Deploy` run `26049408781` -> success
+  - `Trigger ML Container Build` run `26049408789` -> success
+  - evidence: `logs/md1-shrunk/gh-runs-exact-head-a24d3603-20260518T1746Z.json`
+- Fixed branch SfM image:
+  - CodeBuild: `spaceport-ml-containers:531ba12a-75a3-42bf-b742-9351ed274d47`, build `702`
+  - sourceVersion: `a24d3603537db9c28b9cdc50f4fc48db0bcadc27`
+  - status: `SUCCEEDED`
+  - ECR image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:15a4aab2297ca7f9ffaae19504edcd029e05498476ff56c3702aea13ee39ef40`
+  - pushed: `2026-05-18T11:44:49.801000-06:00`
+  - evidence:
+    - `logs/md1-shrunk/codebuild-sfm-702-20260518T1746Z.json`
+    - `logs/md1-shrunk/ecr-sfm-agent113647md1baselinee2e-20260518T1746Z.json`
+- Active cloud state before action:
+  - Step Functions `SpaceportMLPipeline-staging` RUNNING executions: `0`
+  - InProgress SageMaker processing jobs:
+    - owned: `md1-shrunk-prodspine-plan2-1779126370`
+    - external/not owned: `cvhr-mtc-20260518T1729Z-sfm`; left untouched.
+  - InProgress SageMaker training jobs: `0`
+- Fixed-image planner-only preflight command:
+  - `PATH="/opt/homebrew/bin:$PATH" python3 scripts/sfm/run_sfm_benchmark.py --input-s3-uri s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip --output-s3-uri s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-planner2-20260518T1747Z/colmap --job-prefix md1-shrunk-prodspine-plan2 --instance-type ml.g4dn.xlarge --volume-size-gb 100 --image-uri 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:15a4aab2297ca7f9ffaae19504edcd029e05498476ff56c3702aea13ee39ef40 --role-arn arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging --mode chunked --subset-strategy md1_shrunk_prodspine_1456_planner --env COLMAP_CHUNK_PLANNER=footprint_graph_v1 --env COLMAP_MATCH_PROFILE=P1 --planner-report-only --payload-json-output logs/md1-shrunk/md1-shrunk-prodspine-planner2-20260518T1747Z-payload.json`
+  - job: `md1-shrunk-prodspine-plan2-1779126370`
+  - ARN: `arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-shrunk-prodspine-plan2-1779126370`
+  - output: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-planner2-20260518T1747Z/colmap`
+  - start proof: `logs/md1-shrunk/md1-shrunk-prodspine-planner2-20260518T1747Z-start.json`
+  - payload: `logs/md1-shrunk/md1-shrunk-prodspine-planner2-20260518T1747Z-payload.json`
+- Planner retry result:
+  - `ProcessingJobStatus=Failed`
+  - `FailureReason=AlgorithmError: , exit code: 1`
+  - `ProcessingStartTime=2026-05-18T11:46:52.553000-06:00`
+  - `ProcessingEndTime=2026-05-18T11:50:52.769000-06:00`
+  - log stream: `/aws/sagemaker/ProcessingJobs` / `md1-shrunk-prodspine-plan2-1779126370/algo-1-1779126411`
+  - evidence:
+    - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-plan2-1779126370-20260518T1749Z.json`
+    - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-plan2-1779126370-20260518T1751Z.json`
+    - `logs/md1-shrunk/logstreams-md1-shrunk-prodspine-plan2-1779126370-20260518T1751Z.json`
+    - `logs/md1-shrunk/cloudwatch-md1-shrunk-prodspine-plan2-1779126370-20260518T1751Z.json`
+    - `logs/md1-shrunk/s3-colmap-md1-shrunk-prodspine-planner2-20260518T1747Z-20260518T1751Z.txt`
+- Hard failure details:
+  - the fixed image contains COLMAP and starts correctly.
+  - the container extracted `1456` images, detected GPS/orientation priors on `1456` images, and wrote planner/report artifacts.
+  - S3 uploaded `chunk_planner_manifest.json`, `planner_static_report.json`, `reducer_metadata.json`, and `sfm_metadata.json`.
+  - failure came from `run_sfm.sh` full-output validation demanding `sparse/0/cameras.txt`, `images.txt`, `points3D.txt`, `images/`, and `database.db` even though this was explicitly `SFM_PLANNER_REPORT_ONLY=1`.
+- Fix applied:
+  - `infrastructure/containers/sfm/run_sfm.sh` now treats `SFM_PLANNER_REPORT_ONLY=1` as a successful snapshot/planner artifact path and exits before full COLMAP output validation.
+- Validation commands:
+  - `python3 -m py_compile infrastructure/containers/sfm/run_colmap_sfm.py scripts/sfm/run_sfm_benchmark.py`
+  - `python3 -m unittest tests.unit.test_sfm_fanout_contract tests.unit.test_sfm_fanout_reducer tests.unit.test_sfm_reducer_canary tests.unit.test_colmap_spatial_subset_zip tests.unit.test_sfm_quality_eval tests.unit.test_sfm_visual_quality`
+  - `git diff --check`
+- Validation result:
+  - py_compile passed.
+  - unittest passed: `Ran 18 tests in 0.017s`, `OK (skipped=6)`.
+  - diff check passed.
+- Next concrete steps:
+  1. Commit/push the planner-wrapper fix.
+  2. Watch exact-head `CDK Deploy` and `Trigger ML Container Build`.
+  3. Verify the new branch SfM ECR digest.
+  4. Rerun the planner-only preflight once.
+  5. Launch full MD1-Shrunk production-spine SfM only after the planner-only preflight exits successfully.

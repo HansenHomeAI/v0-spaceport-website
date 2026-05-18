@@ -1,0 +1,75 @@
+{
+  "ProcessingJobName": "md1-shrunk-prodspine-plan2-1779126370",
+  "AppSpecification": {
+    "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:15a4aab2297ca7f9ffaae19504edcd029e05498476ff56c3702aea13ee39ef40",
+    "ContainerEntrypoint": [
+      "/opt/ml/code/run_sfm.sh"
+    ]
+  },
+  "ProcessingResources": {
+    "ClusterConfig": {
+      "InstanceCount": 1,
+      "InstanceType": "ml.g4dn.xlarge",
+      "VolumeSizeInGB": 100
+    }
+  },
+  "ProcessingInputs": [
+    {
+      "InputName": "sfm-input",
+      "S3Input": {
+        "S3Uri": "s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip",
+        "LocalPath": "/opt/ml/processing/input",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3DataDistributionType": "FullyReplicated",
+        "S3CompressionType": "None"
+      }
+    }
+  ],
+  "ProcessingOutputConfig": {
+    "Outputs": [
+      {
+        "OutputName": "colmap-output",
+        "AppManaged": false,
+        "S3Output": {
+          "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-planner2-20260518T1747Z/colmap",
+          "LocalPath": "/opt/ml/processing/output",
+          "S3UploadMode": "EndOfJob"
+        }
+      }
+    ]
+  },
+  "Environment": {
+    "AWS_DEFAULT_REGION": "us-west-2",
+    "PYTHONUNBUFFERED": "1",
+    "SFM_BENCHMARK_SUBSET_STRATEGY": "md1_shrunk_prodspine_1456_planner",
+    "SFM_BRANCH_NAME": "agent-113647-md1-baseline-e2e",
+    "SFM_GIT_HEAD": "a24d3603537db9c28b9cdc50f4fc48db0bcadc27",
+    "SFM_INPUT_URI": "s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip",
+    "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-planner2-20260518T1747Z/colmap",
+    "SFM_JOB_NAME": "md1-shrunk-prodspine-plan2-1779126370",
+    "COLMAP_CHUNK_PLANNER": "footprint_graph_v1",
+    "COLMAP_MATCH_PROFILE": "P1",
+    "SFM_PLANNER_REPORT_ONLY": "1",
+    "COLMAP_ENABLE_SPATIAL_CHUNKING": "1"
+  },
+  "Tags": [
+    {
+      "Key": "Project",
+      "Value": "Spaceport"
+    },
+    {
+      "Key": "Component",
+      "Value": "SfM"
+    },
+    {
+      "Key": "Benchmark",
+      "Value": "true"
+    },
+    {
+      "Key": "Branch",
+      "Value": "agent-113647-md1-baseline-e2e"
+    }
+  ],
+  "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging"
+}

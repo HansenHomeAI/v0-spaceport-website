@@ -1,0 +1,7 @@
+2026-05-18 11:50:47  422.1 KiB manual-validations/md1-shrunk-prodspine-planner2-20260518T1747Z/colmap/chunk_planner_manifest.json
+2026-05-18 11:50:47  566 Bytes manual-validations/md1-shrunk-prodspine-planner2-20260518T1747Z/colmap/planner_static_report.json
+2026-05-18 11:50:47  677 Bytes manual-validations/md1-shrunk-prodspine-planner2-20260518T1747Z/colmap/reducer_metadata.json
+2026-05-18 11:50:47    7.7 KiB manual-validations/md1-shrunk-prodspine-planner2-20260518T1747Z/colmap/sfm_metadata.json
+
+Total Objects: 4
+   Total Size: 430.9 KiB
