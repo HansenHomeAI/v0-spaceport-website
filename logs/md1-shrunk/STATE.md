@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T02:26:20Z
+updated: 2026-05-18T02:40:52Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -4087,3 +4087,24 @@ skybox, compression, artifact handoff, and visual gates.
       - `logs/md1-shrunk/polls/20260518T022147Z/compare-skybox-DJI_0970.jpg`, `logs/md1-shrunk/polls/20260518T022147Z/compare-nosky-DJI_0970.jpg`
   - Notes:
     - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
+
+- 2026-05-18T02:28:03Z post-push CI confirmation (STATE update commit; Pages not triggered by logs-only diff):
+  - Evidence: `logs/md1-shrunk/polls/20260518T022803Z-postpush/`
+  - head commit:
+    - `logs/md1-shrunk/polls/20260518T022803Z-postpush/head.txt` -> head `e6a3b1f2...`
+  - GitHub Actions (exact-head):
+    - run list: `logs/md1-shrunk/polls/20260518T022803Z-postpush/gh-run-list-exact-head.json` (CDK only)
+    - `CDK Deploy` run `26010277892` -> success: `logs/md1-shrunk/polls/20260518T022803Z-postpush/gh-run-watch-cdk-26010277892.txt`
+  - Notes:
+    - `Deploy Next.js to Cloudflare Pages` did not trigger for this logs-only commit; follow-up commit bumped `web/trigger-dev-build.txt`.
+
+- 2026-05-18T02:32:17Z post-push CI confirmation (Pages trigger commit; CDK + Pages both green):
+  - Evidence: `logs/md1-shrunk/polls/20260518T023217Z-postpush/`
+  - head commit:
+    - `logs/md1-shrunk/polls/20260518T023217Z-postpush/head.txt` -> head `10a35028...`
+  - GitHub Actions (exact-head):
+    - run list: `logs/md1-shrunk/polls/20260518T023217Z-postpush/gh-run-list-exact-head.json`
+    - `CDK Deploy` run `26010398363` -> success: `logs/md1-shrunk/polls/20260518T023217Z-postpush/gh-run-watch-cdk-26010398363.txt`
+    - `Deploy Next.js to Cloudflare Pages` run `26010398341` -> success: `logs/md1-shrunk/polls/20260518T023217Z-postpush/gh-run-watch-pages-26010398341.txt`
+    - Pages run log (resolved preview hash URL + stable alias URL):
+      - `logs/md1-shrunk/polls/20260518T023217Z-postpush/gh-run-pages-26010398341.log.txt`
