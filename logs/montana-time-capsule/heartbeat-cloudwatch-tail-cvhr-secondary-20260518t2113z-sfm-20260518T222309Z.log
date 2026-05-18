@@ -1,0 +1,41 @@
+b/39676214123757319943792090427875047823593862616056922128/s	f/39676214355885776715297346713407140182944873365134573599/s
+EVENTS	1779142981365	COLMAP[feature_extractor] I20260518 22:22:53.394199    82 feature_extraction.cc:280] Processed file [1513/1710]	1779142973499
+EVENTS	1779142981365	COLMAP[feature_extractor] I20260518 22:22:53.394250    82 feature_extraction.cc:283]   Name:            DJI_01513.JPG	1779142973499
+EVENTS	1779142981365	COLMAP[feature_extractor] I20260518 22:22:53.394263    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250	1779142973499
+EVENTS	1779142981365	COLMAP[feature_extractor] I20260518 22:22:53.394273    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL	1779142973499
+EVENTS	1779142981365	COLMAP[feature_extractor] I20260518 22:22:53.394285    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)	1779142973499
+EVENTS	1779142981365	COLMAP[feature_extractor] I20260518 22:22:53.394300    82 feature_extraction.cc:302]   Features:        8515 (SIFT)	1779142973499
+EVENTS	1779142981365	COLMAP[feature_extractor] I20260518 22:22:53.587411    82 feature_extraction.cc:316]   GPS:             LAT=40.521, LON=-111.894, ALT=1500.399	1779142974503
+EVENTS	1779142981365	COLMAP[feature_extractor] I20260518 22:22:53.587466    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000	1779142974503
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:22:56.684021    82 feature_extraction.cc:280] Processed file [1514/1710]	1779142979360
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:22:56.684075    82 feature_extraction.cc:283]   Name:            DJI_01514.JPG	1779142979360
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:22:56.684087    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250	1779142979360
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:22:56.684099    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL	1779142979360
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:22:56.684110    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)	1779142979360
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:22:56.684125    82 feature_extraction.cc:302]   Features:        8597 (SIFT)	1779142979360
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:22:56.927316    82 feature_extraction.cc:316]   GPS:             LAT=40.520, LON=-111.894, ALT=1500.699	1779142979360
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:22:56.927599    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000	1779142979360
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:22:59.359728    82 feature_extraction.cc:280] Processed file [1515/1710]	1779142979360
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:22:59.359787    82 feature_extraction.cc:283]   Name:            DJI_01515.JPG	1779142979360
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:22:59.359799    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250	1779142981131
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:22:59.359810    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL	1779142981131
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:22:59.359822    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)	1779142981131
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:22:59.359838    82 feature_extraction.cc:302]   Features:        8632 (SIFT)	1779142981131
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:22:59.526376    82 feature_extraction.cc:316]   GPS:             LAT=40.520, LON=-111.894, ALT=1500.699	1779142981131
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:22:59.526429    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000	1779142981131
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:23:02.470170    82 feature_extraction.cc:280] Processed file [1516/1710]	1779142983907
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:23:02.470224    82 feature_extraction.cc:283]   Name:            DJI_01516.JPG	1779142983907
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:23:02.470237    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250	1779142983907
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:23:02.470247    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL	1779142983907
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:23:02.470294    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)	1779142983907
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:23:02.470310    82 feature_extraction.cc:302]   Features:        8668 (SIFT)	1779142983907
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:23:02.749428    82 feature_extraction.cc:316]   GPS:             LAT=40.520, LON=-111.893, ALT=1500.899	1779142983907
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:23:02.749482    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000	1779142983907
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:23:02.759087    82 feature_extraction.cc:280] Processed file [1517/1710]	1779142983907
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:23:02.771389    82 feature_extraction.cc:283]   Name:            DJI_01517.JPG	1779142983907
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:23:02.771661    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250	1779142983907
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:23:02.771848    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL	1779142983907
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:23:02.772019    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)	1779142983907
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:23:02.772199    82 feature_extraction.cc:302]   Features:        8790 (SIFT)	1779142983908
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:23:03.071285    82 feature_extraction.cc:316]   GPS:             LAT=40.520, LON=-111.893, ALT=1500.999	1779142983908
+EVENTS	1779142985738	COLMAP[feature_extractor] I20260518 22:23:03.071331    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000	1779142983908
