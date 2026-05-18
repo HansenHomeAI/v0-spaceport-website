@@ -5418,3 +5418,14 @@ skybox, compression, artifact handoff, and visual gates.
   - evidence:
     - `logs/md1-shrunk/polls/20260518T144638Z-monitor/gh-runs.json`
     - `logs/md1-shrunk/polls/20260518T144638Z-monitor/gh-summary.txt`
+
+## 2026-05-18T14:49:33Z post-push confirmation (monitor)
+
+- Poll artifacts:
+  - `logs/md1-shrunk/polls/20260518T144933Z-postpush/`
+- Branch/head:
+  - `git rev-parse HEAD` -> `d8a11ceb17de248b6f836d66b935efac08d4d2bd` (`[skip ci]`)
+  - evidence: `logs/md1-shrunk/polls/20260518T144933Z-postpush/summary.txt`
+- GitHub Actions (exact head):
+  - exact-head workflow runs: `0` (expected; `[skip ci]`)
+  - evidence: `logs/md1-shrunk/polls/20260518T144933Z-postpush/gh-runs.json`

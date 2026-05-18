@@ -1,0 +1,23 @@
+git_head=d8a11ceb17de248b6f836d66b935efac08d4d2bd
+git_subject=chore: md1-shrunk monitor poll 20260518T144638Z [skip ci]
+--- gh runs (branch) ---
+completed	success	chore: record md1-shrunk postpages gates	CDK Deploy	agent-113647-md1-baseline-e2e	push	26015823873	3m54s	2026-05-18T05:44:18Z
+completed	success	chore: record md1-shrunk postpages gates	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26015823853	7m38s	2026-05-18T05:44:18Z
+completed	success	chore: retrigger Pages for md1-shrunk monitor	CDK Deploy	agent-113647-md1-baseline-e2e	push	26015520234	3m30s	2026-05-18T05:34:49Z
+completed	success	chore: retrigger Pages for md1-shrunk monitor	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26015520241	7m5s	2026-05-18T05:34:49Z
+completed	success	chore: record md1-shrunk exact-head preview gates	CDK Deploy	agent-113647-md1-baseline-e2e	push	26015356265	3m36s	2026-05-18T05:30:03Z
+completed	success	chore: trigger exact-head CI for md1-shrunk monitor	CDK Deploy	agent-113647-md1-baseline-e2e	push	26015026488	3m36s	2026-05-18T05:19:50Z
+completed	success	chore: trigger exact-head CI for md1-shrunk monitor	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26015026477	6m40s	2026-05-18T05:19:50Z
+completed	success	chore: trigger dev build for md1-shrunk poll	CDK Deploy	agent-113647-md1-baseline-e2e	push	26010398363	3m56s	2026-05-18T02:32:11Z
+completed	success	chore: trigger dev build for md1-shrunk poll	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26010398341	7m41s	2026-05-18T02:32:11Z
+completed	success	chore: md1-shrunk monitor poll 20260518T022147Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	26010277892	3m53s	2026-05-18T02:27:56Z
+completed	success	chore: md1-shrunk monitor poll 20260517T154449Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25995408529	3m47s	2026-05-17T15:47:30Z
+completed	success	chore: md1-shrunk monitor poll 20260517T151433Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25994795154	3m49s	2026-05-17T15:21:50Z
+completed	success	chore: md1-shrunk monitor poll 20260517T151433Z	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	25994795144	7m35s	2026-05-17T15:21:50Z
+completed	success	chore: md1-shrunk monitor poll 20260517T144442Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25994017562	3m25s	2026-05-17T14:48:19Z
+completed	success	chore: md1-shrunk monitor poll 20260517T141510Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25993310264	3m42s	2026-05-17T14:17:31Z
+completed	success	chore: md1-shrunk monitor poll 20260517T135148Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25992784995	3m55s	2026-05-17T13:54:26Z
+completed	success	chore: md1-shrunk monitor poll 20260517T131549Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25992041635	3m39s	2026-05-17T13:21:33Z
+completed	success	chore: md1-shrunk CI proof 20260517T101756Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25988229244	3m39s	2026-05-17T10:23:33Z
+completed	success	chore: md1-shrunk poll 20260517T101200Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25988135800	3m39s	2026-05-17T10:19:04Z
+completed	success	chore: md1-shrunk CI proof 20260517T100309Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25987954545	3m37s	2026-05-17T10:09:50Z
