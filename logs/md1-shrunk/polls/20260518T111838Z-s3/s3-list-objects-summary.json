@@ -1,0 +1,7 @@
+{
+  "bucket": "spaceport-ml-processing-staging",
+  "prefix": "manual-validations/md1-shrunk-20260515T1641Z/colmap/",
+  "pages": 2,
+  "object_count": 1468,
+  "total_size_bytes": 9915165134
+}

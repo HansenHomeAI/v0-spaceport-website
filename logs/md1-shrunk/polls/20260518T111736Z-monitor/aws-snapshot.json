@@ -1,0 +1,151 @@
+{
+  "sts": {
+    "UserId": "975050048887",
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root",
+    "ResponseMetadata": {
+      "RequestId": "00619079-2f15-476b-9df7-bd99d3dac008",
+      "HTTPStatusCode": 200,
+      "HTTPHeaders": {
+        "x-amzn-requestid": "00619079-2f15-476b-9df7-bd99d3dac008",
+        "x-amz-sts-extended-request-id": "MTp1cy13ZXN0LTI6UzoxNzc5MTAzMDU3MDMxOlI6ZW5MOWVCNG4=",
+        "content-type": "text/xml",
+        "content-length": "387",
+        "date": "Mon, 18 May 2026 11:17:37 GMT"
+      },
+      "RetryAttempts": 0
+    }
+  },
+  "sagemaker_describe_processing_job": {
+    "ProcessingInputs": [
+      {
+        "InputName": "sfm-input",
+        "AppManaged": false,
+        "S3Input": {
+          "S3Uri": "s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip",
+          "LocalPath": "/opt/ml/processing/input",
+          "S3DataType": "S3Prefix",
+          "S3InputMode": "File",
+          "S3DataDistributionType": "FullyReplicated",
+          "S3CompressionType": "None"
+        }
+      }
+    ],
+    "ProcessingOutputConfig": {
+      "Outputs": [
+        {
+          "OutputName": "colmap-output",
+          "S3Output": {
+            "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap",
+            "LocalPath": "/opt/ml/processing/output",
+            "S3UploadMode": "EndOfJob"
+          },
+          "AppManaged": false
+        }
+      ]
+    },
+    "ProcessingJobName": "md1-shrunk-1456-sfm-1778866088",
+    "ProcessingResources": {
+      "ClusterConfig": {
+        "InstanceCount": 1,
+        "InstanceType": "ml.g4dn.xlarge",
+        "VolumeSizeInGB": 100
+      }
+    },
+    "StoppingCondition": {
+      "MaxRuntimeInSeconds": 86400
+    },
+    "AppSpecification": {
+      "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:05e85850abcfd623e8ec7f3debc70ce2dcd9861548311290db901e0c661d4940",
+      "ContainerEntrypoint": [
+        "/opt/ml/code/run_sfm.sh"
+      ]
+    },
+    "Environment": {
+      "AWS_DEFAULT_REGION": "us-west-2",
+      "COLMAP_CHUNK_PLANNER": "legacy_spatial_heading",
+      "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+      "COLMAP_MATCH_PROFILE": "P1",
+      "PYTHONUNBUFFERED": "1",
+      "SFM_BENCHMARK_SUBSET_STRATEGY": "densest_colmap_camera_center_neighborhood_xy_1456_matches_meadow"
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-shrunk-1456-sfm-1778866088",
+    "ProcessingJobStatus": "Completed",
+    "ProcessingEndTime": "2026-05-15 15:04:36.723000-06:00",
+    "ProcessingStartTime": "2026-05-15 11:28:49.432000-06:00",
+    "LastModifiedTime": "2026-05-15 15:13:23.757000-06:00",
+    "CreationTime": "2026-05-15 11:28:09.932000-06:00",
+    "ResponseMetadata": {
+      "RequestId": "e076da77-b6ca-431b-9aa2-7ca7dcaf0d8d",
+      "HTTPStatusCode": 200,
+      "HTTPHeaders": {
+        "x-amzn-requestid": "e076da77-b6ca-431b-9aa2-7ca7dcaf0d8d",
+        "strict-transport-security": "max-age=47304000; includeSubDomains",
+        "x-frame-options": "DENY",
+        "content-security-policy": "frame-ancestors 'none'",
+        "cache-control": "no-cache, no-store, must-revalidate",
+        "x-content-type-options": "nosniff",
+        "content-type": "application/x-amz-json-1.1",
+        "content-length": "1652",
+        "date": "Mon, 18 May 2026 11:17:37 GMT"
+      },
+      "RetryAttempts": 0
+    }
+  },
+  "sagemaker_list_processing_jobs_inprogress": {
+    "ProcessingJobSummaries": [],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTR5izcCZjc7K/qrSQuoX2b7KNVINZAqZwsy3LjZJg0NxPAg89RmtBgl9LSDSd2vukbBHliRcZLrMg/hSo2K6wtzE9PLnTmJmp5vpdlbyusxutW/nefSWdltn6Sqivmk6WoS9deJricYFdpT3hJo4OG/yIUit9B5BkkkpN4pTwaHDUo6ZdC1hsB3ffkXy2PfscWE8gygiYsqIv5y88yIF85dNCtthPTH4dPYi/XkPGV56qLLxfRsaOPqKuBFvM1ccO9wTty/kCwGA0uCZmkX5+28c0qOFfgFM3Lx1uurZp1X++UQ1q60ikZczsWV+0GPRTKIBsWM7rcMHn/Uveg4+Fl2bxB5US2pg6UYnc1SQkbasdqNqLKh4qO9QB86Tj1l3m6vrJ9G3/i70QbrNQVSGtlgLYJiq9powVqspPPxth98RAliLMCBKF2Ljw4/WbolzeVz4RrCT++8wfT30ULi2pDDrirufSTm1IiwELzVRtA35ktNjqSZ9AodrHtstMq2lOzNaLozeI",
+    "ResponseMetadata": {
+      "RequestId": "039cbd6e-af4b-4f21-9b4f-7fb02be7bc86",
+      "HTTPStatusCode": 200,
+      "HTTPHeaders": {
+        "x-amzn-requestid": "039cbd6e-af4b-4f21-9b4f-7fb02be7bc86",
+        "strict-transport-security": "max-age=47304000; includeSubDomains",
+        "x-frame-options": "DENY",
+        "content-security-policy": "frame-ancestors 'none'",
+        "cache-control": "no-cache, no-store, must-revalidate",
+        "x-content-type-options": "nosniff",
+        "content-type": "application/x-amz-json-1.1",
+        "content-length": "632",
+        "date": "Mon, 18 May 2026 11:17:37 GMT"
+      },
+      "RetryAttempts": 0
+    }
+  },
+  "sagemaker_list_training_jobs_inprogress": {
+    "TrainingJobSummaries": [],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTR5izcCZjc7K/qrSQuoX2b7KNVINZAqZwsy3LjZJg0NxPAg89RmtBgl9LSDSd2vukbBHliRcZLrMg/hSo2K6wtzE9PLnTmJmp5vpdlbyusxutW/nefSWdltn6Sqivmk6WoS9deJricYFdpT3hJo4OG/yIUit9B5BkkkpN4pTwaHDUo6ZdC1hsB3ffkXy2PfscWE8gygiYsqIv5y88yIF85dNCtthPTH4dPYi/XkPGV56qLLxfRsaOPqKuBFvM1ccO9wTty/kCwGA0uCZmkX5+28c0qOFfgFM3Lx1uurZp1X++UQ1q60ikZczsWV+0GPRTKIBsWM7rcMHn/Uveg4+Fl2bwuYg65iJG9/lf+Ch16prsVKO9gExpvwuH047zNb3KmPF9gYn8/X7adyCiL5qbZ5Id6M/zFc+8luKODDCXlv8v9ZUPnu3pgXgCnskHSi734zfEeimfitDIbwuVdWv7wcx2utLphumxxz1cYO3N+P0mqAHzadP5RhaQQ6Rv+hYS9Do=",
+    "ResponseMetadata": {
+      "RequestId": "fefe2782-739b-4624-88f8-3e9495276cb9",
+      "HTTPStatusCode": 200,
+      "HTTPHeaders": {
+        "x-amzn-requestid": "fefe2782-739b-4624-88f8-3e9495276cb9",
+        "strict-transport-security": "max-age=47304000; includeSubDomains",
+        "x-frame-options": "DENY",
+        "content-security-policy": "frame-ancestors 'none'",
+        "cache-control": "no-cache, no-store, must-revalidate",
+        "x-content-type-options": "nosniff",
+        "content-type": "application/x-amz-json-1.1",
+        "content-length": "626",
+        "date": "Mon, 18 May 2026 11:17:37 GMT"
+      },
+      "RetryAttempts": 0
+    }
+  },
+  "stepfunctions_list_executions_running": {
+    "executions": [],
+    "ResponseMetadata": {
+      "RequestId": "8aa75597-7cd7-4633-a91d-5f26064c6013",
+      "HTTPStatusCode": 200,
+      "HTTPHeaders": {
+        "x-amzn-requestid": "8aa75597-7cd7-4633-a91d-5f26064c6013",
+        "date": "Mon, 18 May 2026 11:17:37 GMT",
+        "content-type": "application/x-amz-json-1.0",
+        "content-length": "17",
+        "connection": "keep-alive"
+      },
+      "RetryAttempts": 0
+    }
+  }
+}

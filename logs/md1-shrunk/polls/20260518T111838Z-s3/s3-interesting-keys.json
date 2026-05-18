@@ -1,0 +1,15 @@
+{
+  "found": [
+    "manual-validations/md1-shrunk-20260515T1641Z/colmap/sfm_metadata.json",
+    "manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/images.txt",
+    "manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/points3D.txt",
+    "manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/cameras.txt"
+  ],
+  "requested": [
+    "manual-validations/md1-shrunk-20260515T1641Z/colmap/sfm_metadata.json",
+    "manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/sfm_metadata.json",
+    "manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/images.txt",
+    "manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/points3D.txt",
+    "manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/cameras.txt"
+  ]
+}

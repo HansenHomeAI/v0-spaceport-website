@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T09:21:49Z
+updated: 2026-05-18T11:21:53Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -5019,3 +5019,39 @@ skybox, compression, artifact handoff, and visual gates.
 - GitHub Actions (exact head):
   - exact-head workflow runs: `0` (expected; `[skip ci]`)
   - evidence: `logs/md1-shrunk/polls/20260518T105244Z-postpush/github-actions-runs-head-summary.json`
+
+## 2026-05-18T11:21:53Z monitor poll (boto3 + GitHub REST; no `aws`/`gh` CLIs)
+
+- Branch/head/status:
+  - `git rev-parse HEAD` -> `097a0f4bb5a1db994d08460696b7b443f8e9b4f1` (`[skip ci]`)
+  - `git status --porcelain=v1` -> clean
+- AWS identity + active state:
+  - account: `975050048887` (via `boto3 sts.get_caller_identity`)
+  - Step Functions RUNNING executions:
+    - `SpaceportMLPipeline-staging` -> `0`
+  - SageMaker InProgress:
+    - processing jobs: `0`
+    - training jobs: `0`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T111736Z-monitor/aws-snapshot.json`
+    - `logs/md1-shrunk/polls/20260518T112016Z-stepfunctions/stepfunctions-describe-execution-md1shrunk1456-1778880862.json` -> `status=SUCCEEDED`
+- SfM terminal + Montana gates PASS:
+  - job: `md1-shrunk-1456-sfm-1778866088` -> `Completed`
+  - output: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap`
+  - gates (from `sfm_metadata.json`): `images_registered=1456`, `merged_component_count=1`, `points_3d=1103335`, `quality_check_passed=true`, `timed_out=false`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T111736Z-monitor/aws-snapshot.json`
+    - `logs/md1-shrunk/polls/20260518T111838Z-s3/s3-list-objects-summary.json`
+    - `logs/md1-shrunk/polls/20260518T111838Z-s3/sfm_metadata.json`
+    - `logs/md1-shrunk/polls/20260518T111838Z-s3/colmap-gates-summary.json`
+- CloudWatch (processing):
+  - stream exists: `md1-shrunk-1456-sfm-1778866088/algo-1-1778866129`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T112118Z-cloudwatch-streams/cloudwatch-describe-log-streams.json`
+    - `logs/md1-shrunk/polls/20260518T112141Z-cloudwatch-events/cloudwatch-get-log-events-head.json` (head sample)
+- GitHub Actions proof (exact head from user prompt):
+  - run `25932325504` (`CDK Deploy`) -> `success` for `e9cbf71c56420ce386b028e7f4af33163ce4dcc2`
+  - evidence: `logs/md1-shrunk/polls/20260518T111915Z-github/github-actions-run-25932325504.json`
+- GitHub Actions for current head:
+  - `head_sha=097a0f4bb5a1db994d08460696b7b443f8e9b4f1` -> `0` runs (expected; `[skip ci]`)
+  - evidence: `logs/md1-shrunk/polls/20260518T112027Z-github-head/github-actions-runs-097a0f4bb5a1db994d08460696b7b443f8e9b4f1.json`
