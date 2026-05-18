@@ -74,3 +74,16 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/cloudwatch-tail-cvhr-mtc-20260518T1729Z-sfm-20260518T1756Z.log`
   - `logs/montana-time-capsule/launch-20260518T1755Z.log`
 - Next unblocked step: wait for `cvhr-mtc-20260518T1729Z-sfm` to complete, then rerun `--launch` once to advance exactly one stage (3DGS launch).
+
+## 2026-05-18T18:00Z Ledger Commit + Push
+
+- Commit: `dfd66f0591b45bf2881c72ea27b098edcf828a0a`
+- Commit message: `chore: record cv-hr montana sfm monitor evidence [skip ci]`
+- Push command: `git push origin agent-40136728-montana-time-capsule`
+- Push result: branch updated on origin (`31c5765c..dfd66f05`).
+- Exact-head workflow check command:
+  - `/opt/homebrew/bin/gh run list --branch agent-40136728-montana-time-capsule --limit 50 --json databaseId,headSha,workflowName,status,conclusion,createdAt,updatedAt,url | jq --arg sha "$(git rev-parse HEAD)" '[.[] | select(.headSha==$sha)]'`
+  - Result: `[]` (no exact-head workflows, expected for `[skip ci]` ledger-only commit).
+- Branch workflow evidence (latest on branch): `logs/montana-time-capsule/gh-run-list-agent-40136728-20260518T1800Z.json`
+- Exact-head workflow evidence: `logs/montana-time-capsule/gh-run-list-exact-head-20260518T1800Z.json`
+- Next unblocked step: continue polling SfM `cvhr-mtc-20260518T1729Z-sfm`; when it reaches `Completed`, run `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip --launch` exactly once to launch 3DGS.
