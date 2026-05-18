@@ -1,10 +1,10 @@
 {
   "budget_id": "md1-production-ready-3dgs-cost-reduction",
   "branch": "agent-90742618-md1-geometry-consistency",
-  "head": "43512232ea2165698b2887091fe99e1b0ecf96d6",
+  "head": "b8c1b9c1370f64cebe4462a8a82e4ef29b2533f3",
   "currency": "USD",
   "starting_remaining_after_tile04": 14.0,
-  "remaining_reserved_or_available": 14.0,
+  "remaining_reserved_or_available": 13.5,
   "stage_caps": {
     "sentinel_merge": 0.5,
     "sentinel_review": 0.75,
@@ -15,12 +15,24 @@
     "reserve": 0.0,
     "total": 14.0
   },
-  "reservations": [],
+  "reservations": [
+    {
+      "stage": "sentinel_merge",
+      "cap_usd": 0.5,
+      "status": "reserved_before_submit",
+      "lock_dir": "logs/locks/sentinel_merge-md1-r0v5relax-merge-20260515-b8c1b9c1.lock",
+      "job_name": "md1-r0v5relax-merge-20260515",
+      "output_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-merge-20260515/output/artifact",
+      "payload_sha256": "d1ebd2acc1a3bb12be636aeb6c07a1afd3450b81b631e1220fcdf5c41c994686",
+      "reserved_at_utc": "20260518T164028Z"
+    }
+  ],
   "debits": [],
   "pricing_basis": {
     "ml.g4dn.xlarge_usd_per_hour": 1.0,
     "source": "conservative fallback until current AWS pricing is fetched"
   },
-  "last_updated_utc": "2026-05-18T16:27:33Z",
-  "latest_live_state_evidence": "logs/md1-r0v5-prod-handoff-live-state-43512232-20260518T162733Z-summary.json"
+  "last_updated_utc": "20260518T164028Z",
+  "latest_live_state_evidence": "logs/md1-r0v5-prod-premerge-live-state-b8c1b9c1-20260518T163736Z-summary.json",
+  "notes": "budget lock refreshed to current git HEAD after exact-head CDK Deploy 26046506709 succeeded; pre-refresh 43512232 evidence remains preserved separately"
 }

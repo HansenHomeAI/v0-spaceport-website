@@ -1,0 +1,14 @@
+{
+  "lock_id": "sentinel_merge-md1-r0v5relax-merge-20260515-b8c1b9c1",
+  "hostname": "Mac",
+  "pid": 43589,
+  "branch": "agent-90742618-md1-geometry-consistency",
+  "head": "b8c1b9c1370f64cebe4462a8a82e4ef29b2533f3",
+  "payload_sha256": "d1ebd2acc1a3bb12be636aeb6c07a1afd3450b81b631e1220fcdf5c41c994686",
+  "output_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-merge-20260515/output/artifact",
+  "job_name": "md1-r0v5relax-merge-20260515",
+  "stage": "sentinel_merge",
+  "stage_cap_usd": 0.50,
+  "timestamp_utc": "20260518T164028Z",
+  "status": "reserved_before_submit"
+}

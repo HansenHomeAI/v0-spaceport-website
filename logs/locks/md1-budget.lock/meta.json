@@ -4,11 +4,11 @@
   "hostname": "Mac",
   "pid": 38140,
   "branch": "agent-90742618-md1-geometry-consistency",
-  "head": "43512232ea2165698b2887091fe99e1b0ecf96d6",
+  "head": "b8c1b9c1370f64cebe4462a8a82e4ef29b2533f3",
   "payload_sha256": null,
   "output_prefix": null,
   "job_name": null,
   "stage_cap_usd": 14.0,
-  "timestamp_utc": "2026-05-18T16:27:33Z",
-  "status": "initialized_no_reservation"
+  "timestamp_utc": "20260518T163736Z",
+  "status": "refreshed_to_current_head_no_reservation"
 }

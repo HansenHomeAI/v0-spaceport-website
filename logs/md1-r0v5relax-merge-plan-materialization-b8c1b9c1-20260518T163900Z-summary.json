@@ -1,0 +1,36 @@
+{
+  "status": "uploaded_new_object",
+  "local": "logs/md1-r0-visual-sentinel-v5-density-relaxed-remote-merge-g4dn-plan-dryrun-head30d6-20260517.json",
+  "local_sha256": "3fc34de8a0c9962cb863827c1529080fcdb44704b01d601f5ce649e4f15071af",
+  "s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-merge-20260515/inputs/merge-plan/merge_plan.json",
+  "merge_head": {
+    "AcceptRanges": "bytes",
+    "LastModified": "2026-05-18T16:39:03+00:00",
+    "ContentLength": 998,
+    "ETag": "\"3e35b620d116b3f93e6c04b492a89023\"",
+    "VersionId": "WDE9KS8tQpaH82i48Ty6vnAkUAmekXoM",
+    "ContentType": "application/json",
+    "ServerSideEncryption": "AES256",
+    "Metadata": {}
+  },
+  "tile_manifest_head": {
+    "AcceptRanges": "bytes",
+    "LastModified": "2026-05-15T09:37:59+00:00",
+    "ContentLength": 307033,
+    "ETag": "\"a053e8efc7819ffab94107cef402a8b3\"",
+    "VersionId": "_opkEBTP3LZ6HnGtWWwTGL6wC_i7UcCG",
+    "ContentType": "application/json",
+    "ServerSideEncryption": "AES256",
+    "Metadata": {}
+  },
+  "view_buckets_head": {
+    "AcceptRanges": "bytes",
+    "LastModified": "2026-05-15T09:38:00+00:00",
+    "ContentLength": 21094,
+    "ETag": "\"8f687cae12cc994fafce66a95bcb39e2\"",
+    "VersionId": "Pc2a554LDaV7HwuXE887iP9NSVsWxEyW",
+    "ContentType": "application/json",
+    "ServerSideEncryption": "AES256",
+    "Metadata": {}
+  }
+}
