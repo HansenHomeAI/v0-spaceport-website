@@ -1,0 +1,5 @@
+2026-05-15 15:04:31        195 manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/cameras.txt
+2026-05-15 15:04:31     237484 manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/frames.txt
+2026-05-15 15:04:31  605145970 manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/images.txt
+2026-05-15 15:04:31  149267572 manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/points3D.txt
+2026-05-15 15:04:31        218 manual-validations/md1-shrunk-20260515T1641Z/colmap/sparse/0/rigs.txt

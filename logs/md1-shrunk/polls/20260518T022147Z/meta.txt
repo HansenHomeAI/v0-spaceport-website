@@ -1,0 +1,5 @@
+timestamp_utc=20260518T022147Z
+branch=agent-113647-md1-baseline-e2e
+head=4e03727627f1f06741799ac3f763d314849fc0e4
+preview_alias=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev
+bundle_meta=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json

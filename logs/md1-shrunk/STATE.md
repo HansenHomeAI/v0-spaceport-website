@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T01:52:52Z
+updated: 2026-05-18T02:26:20Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -4036,3 +4036,54 @@ skybox, compression, artifact handoff, and visual gates.
   - exact-head run list expected `[]` (skip-ci head):
     - `logs/md1-shrunk/polls/20260518T015242Z-postpush/gh-run-list-exact-head.json`
     - `logs/md1-shrunk/polls/20260518T015242Z-postpush/gh-exact-head-run-count.txt`
+
+- 2026-05-18T02:16:59Z poll (monitor; verify branch/head, AWS + GitHub; SfM already terminal):
+  - Evidence: `logs/md1-shrunk/polls/20260518T021659Z/`
+  - Branch/head:
+    - `logs/md1-shrunk/polls/20260518T021659Z/meta.txt` -> branch `agent-113647-md1-baseline-e2e`, head `4e037276...` (`[skip ci]`), status clean
+  - AWS identity (region `us-west-2`):
+    - `logs/md1-shrunk/polls/20260518T021659Z/aws-sts-get-caller-identity.json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions (region `us-west-2`):
+    - staging RUNNING executions: `logs/md1-shrunk/polls/20260518T021659Z/stepfunctions-running-executions.json` -> `0`
+  - SageMaker (region `us-west-2`):
+    - SfM `md1-shrunk-1456-sfm-1778866088` -> `Completed`: `logs/md1-shrunk/polls/20260518T021659Z/sagemaker-describe-md1-shrunk-1456-sfm-1778866088.json`
+    - InProgress processing jobs=0: `logs/md1-shrunk/polls/20260518T021659Z/sagemaker-list-processing-jobs-inprogress.json`
+    - InProgress training jobs=0: `logs/md1-shrunk/polls/20260518T021659Z/sagemaker-list-training-jobs-inprogress.json`
+  - S3 output:
+    - SfM output listing: `logs/md1-shrunk/polls/20260518T021659Z/s3-colmap-output-listing.txt` (non-empty; `database.db` + `sparse/0/*`)
+  - GitHub Actions:
+    - branch run list (Pages + CDK): `logs/md1-shrunk/polls/20260518T021659Z/gh-runs-branch.json`
+    - `CDK Deploy` anchor (user-referenced) is historical and still green (head `e9cbf71c...`): `logs/md1-shrunk/polls/20260518T021659Z/gh-runs-e9cb.json`
+  - Notes:
+    - CLI note: use `/opt/homebrew/bin/aws` and `/opt/homebrew/bin/gh` in this environment (PATH missing homebrew bin).
+
+- 2026-05-18T02:18:47Z Pages preview URL extraction (deterministic; run `25994795144`):
+  - Evidence: `logs/md1-shrunk/polls/20260518T021847Z/`
+  - Pages run log (includes resolved alias + hash URLs):
+    - `logs/md1-shrunk/polls/20260518T021847Z/gh-run-pages-log.txt`
+  - Preview alias URL (use for validation):
+    - `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+
+- 2026-05-18T02:21:47Z deployed preview viewer re-validation (skybox + no-sky) + input-vs-render camera checks:
+  - Evidence: `logs/md1-shrunk/polls/20260518T022147Z/`
+  - SageMaker terminal statuses (region `us-west-2`):
+    - SfM `md1-shrunk-1456-sfm-1778866088` -> `Completed`: `logs/md1-shrunk/polls/20260518T022147Z/sagemaker-describe-sfm.json` (end `2026-05-15T15:04:36-06:00`)
+    - 3DGS `md1shrunk1456-1778880862-3dgs` -> `Completed`: `logs/md1-shrunk/polls/20260518T022147Z/sagemaker-describe-3dgs.json`
+    - compression `md1shrunk1456-1778880862-compression` -> `Completed`: `logs/md1-shrunk/polls/20260518T022147Z/sagemaker-describe-compression.json`
+  - Public bundle + preview HTTP sanity:
+    - preview `/health.txt`: `logs/md1-shrunk/polls/20260518T022147Z/http-head-preview-health.txt`
+    - bundle `meta.json` headers: `logs/md1-shrunk/polls/20260518T022147Z/http-head-meta.json.txt`
+    - bundled skybox headers: `logs/md1-shrunk/polls/20260518T022147Z/http-head-background_skybox.webp.txt`
+  - Playwright smoke (migrated viewer):
+    - skybox: `logs/md1-shrunk/polls/20260518T022147Z/playwright-sogs-skybox.txt`
+    - no-sky: `logs/md1-shrunk/polls/20260518T022147Z/playwright-sogs-nosky.txt`
+    - screenshots: `logs/md1-shrunk/polls/20260518T022147Z/sogs-migrated-viewer-smoke.png`, `logs/md1-shrunk/polls/20260518T022147Z/sogs-migrated-viewer-nosky.png`
+  - Input-vs-render camera side-by-side (input left; render right; derived from COLMAP pose list):
+    - pose list: `logs/md1-shrunk/colmap-camera-poses-20260516T003738Z.txt`
+    - renders: `logs/md1-shrunk/polls/20260518T022147Z/render-skybox-DJI_01000.png`, `logs/md1-shrunk/polls/20260518T022147Z/render-nosky-DJI_01000.png`, `logs/md1-shrunk/polls/20260518T022147Z/render-skybox-DJI_01030.png`, `logs/md1-shrunk/polls/20260518T022147Z/render-nosky-DJI_01030.png`, `logs/md1-shrunk/polls/20260518T022147Z/render-skybox-DJI_0970.png`, `logs/md1-shrunk/polls/20260518T022147Z/render-nosky-DJI_0970.png`
+    - comparisons (downsized to keep commits <5MB per file):
+      - `logs/md1-shrunk/polls/20260518T022147Z/compare-skybox-DJI_01000.jpg`, `logs/md1-shrunk/polls/20260518T022147Z/compare-nosky-DJI_01000.jpg`
+      - `logs/md1-shrunk/polls/20260518T022147Z/compare-skybox-DJI_01030.jpg`, `logs/md1-shrunk/polls/20260518T022147Z/compare-nosky-DJI_01030.jpg`
+      - `logs/md1-shrunk/polls/20260518T022147Z/compare-skybox-DJI_0970.jpg`, `logs/md1-shrunk/polls/20260518T022147Z/compare-nosky-DJI_0970.jpg`
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
