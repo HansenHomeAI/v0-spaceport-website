@@ -1,0 +1,26 @@
+{
+  "timestamp_utc": "20260518T171230Z",
+  "head": "1ea78942e2c4d4895372bff111867dc2b8b975d0",
+  "exact_head_cdk": {
+    "conclusion": "success",
+    "createdAt": "2026-05-18T17:07:39Z",
+    "databaseId": 26048383682,
+    "event": "push",
+    "headSha": "1ea78942e2c4d4895372bff111867dc2b8b975d0",
+    "name": "CDK Deploy",
+    "status": "completed",
+    "updatedAt": "2026-05-18T17:11:57Z",
+    "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26048383682",
+    "workflowName": "CDK Deploy"
+  },
+  "job_name": "md1-r0v5relax-merge-retry1-8fdaa86f-20260518T170629Z",
+  "materialization_status": "uploaded_new_object",
+  "local_merge_plan_json": "logs/md1-r0v5relax-merge-corrected-plan-8fdaa86f-20260518T170629Z.json",
+  "payload_json": "logs/md1-r0v5relax-merge-corrected-payload-8fdaa86f-20260518T170629Z.json",
+  "merge_plan_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/inputs/merge-plan/merge_plan.json",
+  "local_sha256": "3fc34de8a0c9962cb863827c1529080fcdb44704b01d601f5ce649e4f15071af",
+  "active_training_jobs": [],
+  "active_processing_jobs": [],
+  "retry_job_preexisting": false,
+  "paid_compute_launched": false
+}

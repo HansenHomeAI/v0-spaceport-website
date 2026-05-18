@@ -1,0 +1,9 @@
+{
+  "timestamp_utc": "20260518T171409Z",
+  "head": "1ea78942e2c4d4895372bff111867dc2b8b975d0",
+  "readiness_json": "logs/md1-r0v5relax-merge-retry1-submit-readiness-1ea78942-20260518T171250Z.json",
+  "blocker": "spaceport-ml-containers CodeBuild active during immediate presubmit check",
+  "codebuild_json": "logs/md1-r0v5relax-merge-retry1-codebuild-block-1ea78942-20260518T171409Z.json",
+  "paid_compute_launched": false,
+  "next_required_action": "wait for CodeBuild idle, then rerun duplicate/AWS/readiness checks before any paid submit"
+}
