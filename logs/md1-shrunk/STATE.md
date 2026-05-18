@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T08:54:24Z
+updated: 2026-05-18T09:20:12Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -275,6 +275,44 @@ skybox, compression, artifact handoff, and visual gates.
   - processing_time_seconds: `12709.05` (≈ 3.53h)
   - evidence: `logs/md1-shrunk/polls/20260518T085106Z/sfm_metadata.json`
   - extracted: `logs/md1-shrunk/polls/20260518T085106Z/colmap-metrics.json`
+
+## 2026-05-18T09:19:00Z poll (monitor; reconfirm terminal + public URLs)
+
+- Poll artifacts:
+  - `logs/md1-shrunk/polls/20260518T091900Z/`
+- Branch/head/status:
+  - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+  - `git rev-parse HEAD` -> `204e7b6794c8ae3505c390361b48c345bfdbc103` (`[skip ci]`)
+  - evidence: `logs/md1-shrunk/polls/20260518T091900Z/git.txt`
+- GitHub workflows (GitHub REST API via git credential helper; `gh` not present on this machine):
+  - exact-head workflows: none for `204e7b67...` (skip-ci)
+  - provided exact-head CDK proof: `e9cbf71c...` -> `CDK Deploy` run `25932325504` `success`
+  - evidence:
+    - branch runs list: `logs/md1-shrunk/polls/20260518T091900Z/github-actions-runs.json`
+    - head-sha filter (provided head): `logs/md1-shrunk/polls/20260518T091900Z/github-actions-runs-e9cb.json`
+    - head-sha filter (current head): `logs/md1-shrunk/polls/20260518T091900Z/github-actions-runs-204e.json`
+- AWS identity + active state (via boto3; `aws` CLI not present on this machine):
+  - identity: account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions `SpaceportMLPipeline-staging` RUNNING executions: `0`
+  - SageMaker InProgress processing jobs: `0`
+  - SageMaker InProgress training jobs: `0`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T091900Z/aws-sts-get-caller-identity.json`
+    - `logs/md1-shrunk/polls/20260518T091900Z/stepfunctions-running-executions.json`
+    - `logs/md1-shrunk/polls/20260518T091900Z/sagemaker-list-processing-jobs-InProgress.json`
+    - `logs/md1-shrunk/polls/20260518T091900Z/sagemaker-list-training-jobs-InProgress.json`
+- SageMaker SfM terminal state:
+  - `md1-shrunk-1456-sfm-1778866088` -> `ProcessingJobStatus=Completed`, `FailureReason=null`
+  - evidence: `logs/md1-shrunk/polls/20260518T091900Z/sagemaker-describe-md1-shrunk-1456-sfm-1778866088.json`
+- SfM output S3 present:
+  - `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap`
+  - evidence: `logs/md1-shrunk/polls/20260518T091900Z/s3-colmap-summary.json`
+  - `sfm_metadata.json` snapshot: `logs/md1-shrunk/polls/20260518T091900Z/sfm_metadata.json`
+- Public URL liveness (no auth required):
+  - preview alias URL: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev` -> `HTTP 200`
+  - bundle meta.json: `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json` -> `HTTP 200`
+  - skybox asset: `.../background_skybox.webp` -> `HTTP 200`
+  - evidence: `logs/md1-shrunk/polls/20260518T091900Z/http-headers.txt`
 
 ### 2026-05-18 duplicate downstream launch (aborted; cost bounded)
 
