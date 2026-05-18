@@ -1,0 +1,5 @@
+# poll started 2026-05-18T07:16:53Z
+branch=agent-113647-md1-baseline-e2e
+head=a830b2bb304f8d880e96fe86fef23b7101546899
+head_oneline=a830b2bb chore: md1-shrunk postpush proof 20260518T070032Z [skip ci]
+status_porcelain=1 lines

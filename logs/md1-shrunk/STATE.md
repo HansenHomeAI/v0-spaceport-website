@@ -4586,3 +4586,36 @@ skybox, compression, artifact handoff, and visual gates.
     - exact-head workflow runs: `0` (expected; `[skip ci]`)
     - last non-skip-ci Pages/CDK success remains at `049c70ba...`:
       - `logs/md1-shrunk/polls/20260518T070032Z-postpush/gh-summary.json`
+
+- 2026-05-18T07:16:31Z monitor poll (no new ML launches; reconfirm terminal ML + CI state):
+  - Evidence: `logs/md1-shrunk/polls/20260518T071631Z-monitor/`
+  - Branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `a830b2bb304f8d880e96fe86fef23b7101546899` (`[skip ci]`)
+    - `git status --porcelain=v1` -> clean
+  - AWS identity (`/opt/homebrew/bin/aws`, region `us-west-2`):
+    - evidence: `logs/md1-shrunk/polls/20260518T071631Z-monitor/aws-sts-get-caller-identity.json`
+  - Step Functions (RUNNING executions; `/opt/homebrew/bin/aws`):
+    - `SpaceportMLPipeline-staging` RUNNING: `0`
+    - `SpaceportMLPipeline-br-8abcbd5662` RUNNING: `0`
+    - evidence:
+      - `logs/md1-shrunk/polls/20260518T071631Z-monitor/stepfunctions-list-executions-staging-RUNNING.json`
+      - `logs/md1-shrunk/polls/20260518T071631Z-monitor/stepfunctions-list-executions-br-8abcbd5662-RUNNING.json`
+  - SageMaker (staging us-west-2; `/opt/homebrew/bin/aws`):
+    - SfM ProcessingJob `md1-shrunk-1456-sfm-1778866088` -> `Completed`, `FailureReason=null`
+    - 3DGS TrainingJob `md1shrunk1456-1778880862-3dgs` -> `Completed`, `FailureReason=null`
+    - Compression ProcessingJob `md1shrunk1456-1778880862-compression` -> `Completed`, `FailureReason=null`
+    - InProgress processing jobs: `0`
+    - InProgress training jobs: `0`
+    - evidence:
+      - `logs/md1-shrunk/polls/20260518T071631Z-monitor/sagemaker-describe-md1-shrunk-1456-sfm-1778866088.json`
+      - `logs/md1-shrunk/polls/20260518T071631Z-monitor/sagemaker-describe-md1shrunk1456-1778880862-3dgs.json`
+      - `logs/md1-shrunk/polls/20260518T071631Z-monitor/sagemaker-describe-md1shrunk1456-1778880862-compression.json`
+      - `logs/md1-shrunk/polls/20260518T071631Z-monitor/sagemaker-list-processing-jobs-InProgress.json`
+      - `logs/md1-shrunk/polls/20260518T071631Z-monitor/sagemaker-list-training-jobs-InProgress.json`
+  - S3 output still present (bounded listing; first page only):
+    - `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/`
+    - evidence: `logs/md1-shrunk/polls/20260518T071631Z-monitor/s3-colmap-list-objects-v2-firstpage.json`
+  - GitHub Actions:
+    - exact-head workflow runs for `a830b2bb...`: `0` (expected; `[skip ci]`)
+    - evidence: `logs/md1-shrunk/polls/20260518T071631Z-monitor/gh-run-list.json`
