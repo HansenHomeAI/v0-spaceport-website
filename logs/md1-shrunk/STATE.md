@@ -275,6 +275,20 @@ skybox, compression, artifact handoff, and visual gates.
   - processing_time_seconds: `12709.05` (≈ 3.53h)
   - evidence: `logs/md1-shrunk/polls/20260518T085106Z/sfm_metadata.json`
   - extracted: `logs/md1-shrunk/polls/20260518T085106Z/colmap-metrics.json`
+
+### 2026-05-18 duplicate downstream launch (aborted; cost bounded)
+
+- Background: MD1-Shrunk already has completed 3DGS+compression + viewer gates recorded later in this ledger (job family `md1shrunk1456-1778880862`), so no new downstream launch was needed.
+- Duplicate 3DGS+compression execution was started and immediately aborted:
+  - Step Functions execution:
+    - `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:md1-shrunk-1456-3dgs-20260518-085235`
+    - `aws stepfunctions stop-execution ...` -> `ABORTED`
+    - evidence: `logs/md1-shrunk/executions/md1-shrunk-1456-3dgs-20260518-085235/stop-execution.json`
+    - evidence: `logs/md1-shrunk/executions/md1-shrunk-1456-3dgs-20260518-085235/describe-execution-after-stop.json`
+  - SageMaker training job:
+    - `md1-shrunk-1456-20260518-085235-3dgs` -> `Stopped`
+    - `aws sagemaker stop-training-job ...`
+    - evidence: `logs/md1-shrunk/executions/md1-shrunk-1456-3dgs-20260518-085235/stop-training-job.json`
   - evidence:
     - `logs/md1-shrunk/polls/20260517T091531Z/sagemaker-describe-processing-job-md1-shrunk-1456-sfm-1778866088.json`
     - `logs/md1-shrunk/polls/20260517T091531Z/sagemaker-list-processing-jobs-InProgress.json`
