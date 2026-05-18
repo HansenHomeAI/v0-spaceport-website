@@ -1,0 +1,4 @@
+# poll 20260518T044629Z
+branch=agent-113647-md1-baseline-e2e
+head=f71516cd731ae078acc588371e0019aac6ac17d7
+status_clean=no

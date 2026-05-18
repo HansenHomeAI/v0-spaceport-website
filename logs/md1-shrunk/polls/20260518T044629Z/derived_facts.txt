@@ -1,0 +1,6 @@
+aws_account 975050048887
+aws_arn arn:aws:iam::975050048887:root
+stepfn_running 0
+sfm_status Completed
+3dgs_status Completed
+compression_status Completed

@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T02:40:52Z
+updated: 2026-05-18T04:46:29Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -4286,3 +4286,22 @@ skybox, compression, artifact handoff, and visual gates.
     - count: `logs/md1-shrunk/polls/20260518T042134Z-postpush/gh-exact-head-run-count.txt`
   - last known successful CI runs on branch (for preview URL continuity):
     - `logs/md1-shrunk/polls/20260518T042134Z-postpush/latest-success.txt`
+
+- 2026-05-18T04:46:29Z poll (monitor; reconfirm terminal ML status + no active InProgress jobs):
+  - Evidence: `logs/md1-shrunk/polls/20260518T044629Z/`
+  - Branch/head/status:
+    - `logs/md1-shrunk/polls/20260518T044629Z/git.txt` -> branch `agent-113647-md1-baseline-e2e`, head `f71516cd...` (`[skip ci]`), status dirty (new poll artifacts)
+  - AWS identity + pipeline state (region `us-west-2`):
+    - `/opt/homebrew/bin/aws sts get-caller-identity --region us-west-2 --output json` -> `logs/md1-shrunk/polls/20260518T044629Z/aws-sts-get-caller-identity.json`
+    - `/opt/homebrew/bin/aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --status-filter RUNNING --max-results 10 --region us-west-2 --output json` -> `logs/md1-shrunk/polls/20260518T044629Z/stepfunctions-running-staging.json` (`RUNNING=0`)
+  - SageMaker terminal status (region `us-west-2`):
+    - SfM `md1-shrunk-1456-sfm-1778866088` -> `Completed`: `logs/md1-shrunk/polls/20260518T044629Z/sagemaker-describe-sfm.json`
+    - 3DGS `md1shrunk1456-1778880862-3dgs` -> `Completed`: `logs/md1-shrunk/polls/20260518T044629Z/sagemaker-describe-3dgs.json`
+    - compression `md1shrunk1456-1778880862-compression` -> `Completed`: `logs/md1-shrunk/polls/20260518T044629Z/sagemaker-describe-compression.json`
+    - InProgress processing jobs: `logs/md1-shrunk/polls/20260518T044629Z/sagemaker-list-processing-InProgress.json` -> `0`
+    - InProgress training jobs: `logs/md1-shrunk/polls/20260518T044629Z/sagemaker-list-training-InProgress.json` -> `0`
+  - GitHub Actions (exact-head; `[skip ci]` head):
+    - `/opt/homebrew/bin/gh run list --branch agent-113647-md1-baseline-e2e --limit 30 --json databaseId,workflowName,headSha,status,conclusion,createdAt,updatedAt,url` -> `logs/md1-shrunk/polls/20260518T044629Z/gh-run-list.json` (no runs match head `f71516cd...`)
+    - derived summary: `logs/md1-shrunk/polls/20260518T044629Z/gh_derived.txt`
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
