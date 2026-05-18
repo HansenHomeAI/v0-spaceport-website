@@ -4221,3 +4221,10 @@ skybox, compression, artifact handoff, and visual gates.
     - gaussian count (from `meta.json means.shape[0]`): `logs/md1-shrunk/polls/20260518T035026Z/gaussian_count.txt` -> `990025`
   - GitHub Actions (exact-head; `[skip ci]` head):
     - commit workflow runs (PR-triggered filter): `logs/md1-shrunk/polls/20260518T035026Z/github-commit-workflow-runs-008e2524.json` -> `[]`
+
+- 2026-05-18T03:53:16Z exact-head GitHub Actions confirmation (post poll commit/push; `[skip ci]` head):
+  - Evidence: `logs/md1-shrunk/polls/20260518T035316Z-postpush/`
+  - head commit:
+    - `logs/md1-shrunk/polls/20260518T035316Z-postpush/head.txt` -> head `45a2d94b...` (`[skip ci]`)
+  - exact-head run list expected `[]` (skip-ci head; PR-run filter):
+    - `logs/md1-shrunk/polls/20260518T035316Z-postpush/github-commit-workflow-runs-45a2d94b.json`
