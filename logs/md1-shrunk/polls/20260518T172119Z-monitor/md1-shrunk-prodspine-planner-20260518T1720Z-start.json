@@ -1,0 +1,15 @@
+{
+    "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-shrunk-prodspine-plan-1779124846"
+}
+{
+  "branch": "agent-113647-md1-baseline-e2e",
+  "stack_name": "manual",
+  "job_name": "md1-shrunk-prodspine-plan-1779124846",
+  "mode": "chunked",
+  "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:19704ca7bc16c65ec3c102650a83772826da843e30bf3939d85b39cbfa7f0869",
+  "selected_tag": "",
+  "input_s3_uri": "s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip",
+  "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-planner-20260518T1720Z/colmap",
+  "instance_type": "ml.g4dn.xlarge",
+  "role_arn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging"
+}

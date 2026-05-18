@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T16:49:01Z
+updated: 2026-05-18T17:22:55Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -5698,3 +5698,44 @@ skybox, compression, artifact handoff, and visual gates.
   3. Verify the branch SfM ECR tag/digest for `agent113647md1baselinee2e`.
   4. Launch exactly one new MD1-Shrunk SfM run from `s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip` using the integrated production-spine SfM image.
   5. Continue to 3DGS, skybox, compression, public bundle reachability, deployed viewer, and side-by-side visual gates only after SfM passes.
+
+## 2026-05-18T17:21:19Z poll (monitor; post-integration CI + viewer)
+
+- Poll artifacts:
+  - `logs/md1-shrunk/polls/20260518T172119Z-monitor/`
+- Branch/head/status:
+  - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+  - `git rev-parse HEAD` -> `414560c5818ed5d5173936697924de4ac5cb2c7f`
+  - `git status --porcelain=v1` -> clean
+  - evidence: `logs/md1-shrunk/polls/20260518T172119Z-monitor/git-branch-head-status.txt`
+- GitHub Actions (exact head):
+  - exact-head `CDK Deploy` run `26048241011` succeeded for `414560c5...`.
+  - exact-head `Deploy Next.js to Cloudflare Pages` run `26048240968` succeeded for `414560c5...`.
+  - exact-head `Trigger ML Container Build` run `26048240967` succeeded for `414560c5...`.
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T172119Z-monitor/gh-run-list.json`
+    - `logs/md1-shrunk/polls/20260518T172119Z-monitor/gh-exact-head-summary.txt`
+- AWS identity (region `us-west-2`):
+  - account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+  - evidence: `logs/md1-shrunk/polls/20260518T172119Z-monitor/aws-sts-get-caller-identity.json`
+- Step Functions active executions (region `us-west-2`):
+  - `SpaceportMLPipeline-staging` RUNNING: `0`
+  - evidence: `logs/md1-shrunk/polls/20260518T172119Z-monitor/stepfunctions-running-spaceportml.json`
+- SageMaker active jobs (region `us-west-2`):
+  - InProgress processing jobs: `0`
+  - InProgress training jobs: `0`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T172119Z-monitor/sagemaker-list-processing-jobs-InProgress.json`
+    - `logs/md1-shrunk/polls/20260518T172119Z-monitor/sagemaker-list-training-jobs-InProgress.json`
+- SfM job terminal state (reconfirmed):
+  - `md1-shrunk-1456-sfm-1778866088` -> `ProcessingJobStatus=Completed`, `FailureReason=null`
+  - evidence: `logs/md1-shrunk/polls/20260518T172119Z-monitor/sagemaker-describe-md1-shrunk-1456-sfm-1778866088.json`
+- Public URL reachability (anonymous `HTTP 200`):
+  - preview alias headers: `logs/md1-shrunk/polls/20260518T172119Z-monitor/http-preview-alias-headers.txt`
+  - bundle meta.json headers: `logs/md1-shrunk/polls/20260518T172119Z-monitor/http-meta-headers.txt`
+  - skybox headers: `logs/md1-shrunk/polls/20260518T172119Z-monitor/http-skybox-headers.txt`
+- Deployed preview viewer validation (skybox + no-sky, Playwright/Chromium):
+  - skybox stdout: `logs/md1-shrunk/polls/20260518T172119Z-monitor/sogs-smoke-stdout.txt`
+  - skybox screenshot: `logs/md1-shrunk/polls/20260518T172119Z-monitor/sogs-migrated-viewer-smoke.png`
+  - no-sky stdout: `logs/md1-shrunk/polls/20260518T172119Z-monitor/sogs-nosky-stdout.txt`
+  - no-sky screenshot: `logs/md1-shrunk/polls/20260518T172119Z-monitor/sogs-migrated-viewer-nosky.png`
