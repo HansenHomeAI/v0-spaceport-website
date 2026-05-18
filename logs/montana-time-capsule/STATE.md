@@ -35,3 +35,17 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
 4. On a SageMaker failure, capture describe output, CloudWatch logs, S3 listings, and exact failure reason before patching.
 5. Patch only a proven blocker and rerun the smallest failed stage.
 6. Final acceptance requires the compressed bundle to load in the viewer with skybox and no-sky modes, plus visual quality evidence.
+
+## 2026-05-18T17:29Z SfM Launch
+
+- Archive validated by ZIP central-directory range reads: `1710` image entries, first `DJI_00001.JPG`, last `DJI_01710.JPG`.
+- Command: `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip --launch`
+- Run id: `cvhr-mtc-20260518T1729Z`
+- SfM job: `cvhr-mtc-20260518T1729Z-sfm`
+- SfM ARN: `arn:aws:sagemaker:us-west-2:975050048887:processing-job/cvhr-mtc-20260518T1729Z-sfm`
+- SfM status at launch verification: `InProgress`
+- SfM input: `s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip`
+- SfM output: `s3://spaceport-ml-processing-staging/manual-validations/cvhr-mtc-20260518T1729Z/colmap`
+- SfM image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811`
+- SfM instance: `ml.g4dn.xlarge`, volume `100` GB, max runtime `86400` seconds.
+- SfM env: `COLMAP_ENABLE_SPATIAL_CHUNKING=1`, `COLMAP_CHUNK_MIN_CORE_REGISTERED_RATIO=0.90`.
