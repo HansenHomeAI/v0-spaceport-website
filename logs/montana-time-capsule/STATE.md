@@ -180,3 +180,24 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
 - Last meaningful non-skip workflow proof retained:
   - `CDK Deploy` success on head `1b264bc2ac6be3bf34ca06582895f7f750e9a442` run `26049509375`.
 - Next unblocked step: continue polling SfM job `cvhr-mtc-20260518T1729Z-sfm` until `Completed`; immediately run the same `--launch` command once to advance to pinned Montana 3DGS.
+
+## 2026-05-18T18:35Z-18:47Z Timed Poll Pass
+
+- Timed polling command:
+  - `for i in 1..6; do aws sagemaker describe-processing-job --processing-job-name cvhr-mtc-20260518T1729Z-sfm --query ProcessingJobStatus --output text; sleep 120; done`
+  - Evidence: `logs/montana-time-capsule/sfm-poll-20260518T183539Z.log`
+  - Result: all six polls returned `InProgress` at `18:35:39Z`, `18:37:40Z`, `18:39:41Z`, `18:41:42Z`, `18:43:43Z`, `18:45:44Z`.
+- Post-poll duplicate guard command: `/opt/homebrew/bin/aws sagemaker list-processing-jobs --name-contains cvhr-mtc-20260518T1729Z --max-results 20`
+  - Result: only one matching processing job remains (`cvhr-mtc-20260518T1729Z-sfm`, `InProgress`).
+- Post-poll advance-one-stage command: `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip --launch`
+  - Result: runner held at `status=sfm_running`; no 3DGS job launched early.
+- Post-poll describe confirmation command: `/opt/homebrew/bin/aws sagemaker describe-processing-job --processing-job-name cvhr-mtc-20260518T1729Z-sfm`
+  - Result: `ProcessingJobStatus=InProgress` as of `2026-05-18T18:48Z`.
+- Evidence files:
+  - `logs/montana-time-capsule/sagemaker-describe-cvhr-mtc-20260518T1729Z-sfm-20260518T183516Z-postpush.json`
+  - `logs/montana-time-capsule/sagemaker-list-cvhr-mtc-20260518T1729Z-20260518T183516Z-postpush.json`
+  - `logs/montana-time-capsule/sagemaker-list-cvhr-mtc-20260518T1729Z-20260518T184753Z-postpoll.json`
+  - `logs/montana-time-capsule/launch-20260518T184753Z-postpoll.log`
+  - `logs/montana-time-capsule/sagemaker-describe-cvhr-mtc-20260518T1729Z-sfm-20260518T184808Z-postpoll.json`
+  - `logs/montana-time-capsule/sfm-poll-20260518T183539Z.log`
+- Next unblocked step: keep polling `cvhr-mtc-20260518T1729Z-sfm` to completion; run the same `--launch` command once immediately after completion to launch pinned Montana 3DGS.
