@@ -4137,3 +4137,47 @@ skybox, compression, artifact handoff, and visual gates.
   - exact-head run list expected `[]` (skip-ci head):
     - `logs/md1-shrunk/polls/20260518T024849Z-postpush/gh-run-list-exact-head.json`
     - `logs/md1-shrunk/polls/20260518T024849Z-postpush/gh-exact-head-run-count.txt`
+
+- 2026-05-18T03:17:17Z poll (viewer re-validation; no new ML launches):
+  - Evidence: `logs/md1-shrunk/polls/20260518T031717Z/`
+  - Branch/head/status:
+    - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+    - `git rev-parse HEAD` -> `9c1364be954017540119f7f41ef93b36e901e894` (`[skip ci]`)
+    - `git status --porcelain=v1` -> new poll artifacts under `logs/md1-shrunk/polls/20260518T031717Z/` only
+  - AWS identity:
+    - `logs/md1-shrunk/polls/20260518T031717Z/aws-sts.json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions (region `us-west-2`):
+    - staging RUNNING executions: `logs/md1-shrunk/polls/20260518T031717Z/stepfn-running.json` -> `0`
+  - SageMaker (region `us-west-2`):
+    - InProgress processing jobs=0: `logs/md1-shrunk/polls/20260518T031717Z/sagemaker-processing-inprogress.json`
+    - InProgress training jobs=0: `logs/md1-shrunk/polls/20260518T031717Z/sagemaker-training-inprogress.json`
+    - Owned job terminal statuses reconfirm:
+      - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`: `logs/md1-shrunk/polls/20260518T031717Z/sagemaker-describe-sfm.json`
+      - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`: `logs/md1-shrunk/polls/20260518T031717Z/sagemaker-describe-3dgs.json`
+      - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`: `logs/md1-shrunk/polls/20260518T031717Z/sagemaker-describe-compression.json`
+  - SfM Montana-scale gate snapshot (from output `sfm_metadata.json`):
+    - `logs/md1-shrunk/polls/20260518T031717Z/sfm_metadata.json` -> `images_registered=1456`, `merged_component_count=1`, `points_3d=1103335`, `quality_check_passed=true`, `timed_out=false`, `fallback_triggered=false`
+  - S3 output presence reconfirm:
+    - COLMAP listing: `logs/md1-shrunk/polls/20260518T031717Z/s3-colmap.txt` -> `Total Objects: 1468`, `Total Size: 9.2 GiB`
+    - 3DGS listing: `logs/md1-shrunk/polls/20260518T031717Z/s3-3dgs.txt` -> `model.tar.gz` present
+    - compressed listing: `logs/md1-shrunk/polls/20260518T031717Z/s3-compressed.txt` -> `Total Objects: 13`, `Total Size: 14.4 MiB`
+  - Public bundle (anonymous fetch gates):
+    - meta.json headers: `logs/md1-shrunk/polls/20260518T031717Z/http-head-meta.txt` -> `HTTP 200`
+    - skybox headers: `logs/md1-shrunk/polls/20260518T031717Z/http-head-skybox.txt` -> `HTTP 200`
+    - meta.json snapshot: `logs/md1-shrunk/polls/20260518T031717Z/meta.json`
+    - gaussian count: `logs/md1-shrunk/polls/20260518T031717Z/gaussian_count.txt` -> `990025`
+  - GitHub Actions:
+    - branch run list: `logs/md1-shrunk/polls/20260518T031717Z/gh-run-list.json`
+    - exact-head run count expected `0` (`[skip ci]` head): `logs/md1-shrunk/polls/20260518T031717Z/gh-run-head.txt`
+  - Preview URL resolution (deterministic, no guessing):
+    - Pages run `26010398341` deploy log: `logs/md1-shrunk/polls/20260518T031717Z/gh-run-26010398341-pages.log`
+    - extracted URLs: `logs/md1-shrunk/polls/20260518T031717Z/pages-preview-urls-26010398341.txt` -> `ALIAS=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`, `HASH=https://b234e229.v0-spaceport-website-preview2.pages.dev`
+  - Deployed preview viewer validation (Playwright; skybox + no-sky):
+    - skybox smoke log + screenshot: `logs/md1-shrunk/polls/20260518T031717Z/playwright-sogs-skybox.txt`, `logs/md1-shrunk/polls/20260518T031717Z/sogs-migrated-viewer-skybox.png`
+    - no-sky smoke log + screenshot: `logs/md1-shrunk/polls/20260518T031717Z/playwright-sogs-nosky.txt`, `logs/md1-shrunk/polls/20260518T031717Z/sogs-migrated-viewer-nosky.png`
+  - Input-vs-render camera side-by-side (input left; render right; derived from the gated COLMAP pose list):
+    - input: `logs/md1-shrunk/polls/20260518T031717Z/input-DJI_01029.JPG`
+    - render skybox: `logs/md1-shrunk/polls/20260518T031717Z/render-skybox-DJI_01029.png`
+    - render no-sky: `logs/md1-shrunk/polls/20260518T031717Z/render-nosky-DJI_01029.png`
+    - side-by-side skybox: `logs/md1-shrunk/polls/20260518T031717Z/side-by-side-skybox-DJI_01029.png`
+    - side-by-side no-sky: `logs/md1-shrunk/polls/20260518T031717Z/side-by-side-nosky-DJI_01029.png`
