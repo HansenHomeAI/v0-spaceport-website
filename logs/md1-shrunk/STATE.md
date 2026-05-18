@@ -4463,3 +4463,10 @@ skybox, compression, artifact handoff, and visual gates.
       - render no-sky: `logs/md1-shrunk/polls/20260518T054653Z-resume/render-nosky-DJI_01029.png`
       - side-by-side skybox: `logs/md1-shrunk/polls/20260518T054653Z-resume/side-by-side-skybox-DJI_01029.jpg`
       - side-by-side no-sky: `logs/md1-shrunk/polls/20260518T054653Z-resume/side-by-side-nosky-DJI_01029.jpg`
+
+- 2026-05-18T05:59:14Z postpush proof (exact-head GitHub workflows; `[skip ci]` head):
+  - Evidence: `logs/md1-shrunk/polls/20260518T055914Z-postpush/`
+  - `git rev-parse HEAD` -> `0c655319fc0504541f448facd198fa0647e7b745` (`[skip ci]`)
+  - GitHub Actions:
+    - exact-head workflow runs: `0` (expected because this push only touched `logs/` + `STATE.md` with `[skip ci]`)
+    - last non-skip-ci exact-head Pages/CDK success remains at `049c70ba...` (see `logs/md1-shrunk/polls/20260518T054653Z-resume/`)
