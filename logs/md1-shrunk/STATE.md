@@ -4228,3 +4228,49 @@ skybox, compression, artifact handoff, and visual gates.
     - `logs/md1-shrunk/polls/20260518T035316Z-postpush/head.txt` -> head `45a2d94b...` (`[skip ci]`)
   - exact-head run list expected `[]` (skip-ci head; PR-run filter):
     - `logs/md1-shrunk/polls/20260518T035316Z-postpush/github-commit-workflow-runs-45a2d94b.json`
+
+- 2026-05-18T04:17:06Z poll (monitor; reconfirm terminal ML status; no new ML launches):
+  - Evidence: `logs/md1-shrunk/polls/20260518T041706Z/`
+  - Branch/head/status:
+    - `logs/md1-shrunk/polls/20260518T041706Z/git.txt` -> branch `agent-113647-md1-baseline-e2e`, head `4caf99c8...` (`[skip ci]`), status clean
+  - AWS identity (region `us-west-2`):
+    - `logs/md1-shrunk/polls/20260518T041706Z/aws-sts.json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - SageMaker (region `us-west-2`):
+    - SfM `md1-shrunk-1456-sfm-1778866088` -> `Completed`: `logs/md1-shrunk/polls/20260518T041706Z/sagemaker-describe-md1-shrunk-1456-sfm-1778866088.json`
+    - 3DGS `md1shrunk1456-1778880862-3dgs` -> `Completed`: `logs/md1-shrunk/polls/20260518T041706Z/sagemaker-describe-md1shrunk1456-1778880862-3dgs.json`
+    - compression `md1shrunk1456-1778880862-compression` -> `Completed`: `logs/md1-shrunk/polls/20260518T041706Z/sagemaker-describe-md1shrunk1456-1778880862-compression.json`
+  - Step Functions (region `us-west-2`):
+    - staging RUNNING executions: `logs/md1-shrunk/polls/20260518T041706Z/stepfunctions-running.json` -> `0`
+  - SfM Montana-scale gate snapshot (from output `sfm_metadata.json`):
+    - `logs/md1-shrunk/polls/20260518T041706Z/sfm_metadata.json` -> `images_registered=1456`, `merged_component_count=1`, `points_3d=1103335`, `quality_check_passed=true`, `timed_out=false`, `fallback_triggered=false`
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
+
+- 2026-05-18T04:18:04Z poll (monitor; reconfirm public bundle + preview URL resolution; no new ML launches):
+  - Evidence: `logs/md1-shrunk/polls/20260518T041804Z-verify/`
+  - Branch/head/status:
+    - `logs/md1-shrunk/polls/20260518T041804Z-verify/git.txt` -> branch `agent-113647-md1-baseline-e2e`, head `4caf99c8...` (`[skip ci]`), status clean
+  - Public bundle gates (anonymous fetch):
+    - bundle `meta.json` headers: `logs/md1-shrunk/polls/20260518T041804Z-verify/http-head-meta.json.txt` -> `HTTP 200`
+    - bundled skybox headers: `logs/md1-shrunk/polls/20260518T041804Z-verify/http-head-background_skybox.webp.txt` -> `HTTP 200`
+    - gaussian count (from `meta.json means.shape[0]`): `logs/md1-shrunk/polls/20260518T041804Z-verify/gaussian_count.txt` -> `990025`
+  - Preview sanity:
+    - preview URL (from prior Pages run): `logs/md1-shrunk/polls/20260518T041804Z-verify/preview_url_from_state.txt` -> `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+    - preview `/health.txt`: `logs/md1-shrunk/polls/20260518T041804Z-verify/http-head-preview-health.txt` -> `HTTP 200`
+  - GitHub Actions (deterministic preview URL resolution from the last successful Pages run job log):
+    - Pages job log excerpt includes `Resolved: HASH=... ALIAS=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`: `logs/md1-shrunk/polls/20260518T041804Z-verify/gh-job-76449748807.log.txt`
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
+
+- 2026-05-18T04:19:22Z viewer re-verify (monitor; skybox + no-sky; plus camera render):
+  - Evidence: `logs/md1-shrunk/polls/20260518T041922Z-viewer/`
+  - Branch/head/status:
+    - `logs/md1-shrunk/polls/20260518T041922Z-viewer/git.txt` -> branch `agent-113647-md1-baseline-e2e`, head `4caf99c8...` (`[skip ci]`), status clean
+  - Playwright smoke (migrated viewer):
+    - skybox log: `logs/md1-shrunk/polls/20260518T041922Z-viewer/playwright-sogs-skybox.txt` -> OK (screenshots overwritten: `logs/sogs-migrated-viewer-smoke.png`)
+    - no-sky log: `logs/md1-shrunk/polls/20260518T041922Z-viewer/playwright-sogs-nosky.txt` -> OK (screenshots overwritten: `logs/sogs-migrated-viewer-nosky.png`)
+  - Camera check (render-only quick gate):
+    - render: `logs/md1-shrunk/polls/20260518T041922Z-viewer/md1-camera-check.png`
+    - log: `logs/md1-shrunk/polls/20260518T041922Z-viewer/md1-camera-check.log.txt`
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
