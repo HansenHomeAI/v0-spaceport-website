@@ -3984,3 +3984,11 @@ skybox, compression, artifact handoff, and visual gates.
   - Notes:
     - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
     - CLI note: use `/opt/homebrew/bin/aws` and `/opt/homebrew/bin/gh` in this environment (PATH missing homebrew bin).
+
+- 2026-05-18T01:25:21Z exact-head GitHub Actions confirmation (post poll commit/push; `[skip ci]` head):
+  - Evidence: `logs/md1-shrunk/polls/20260518T012521Z-postpush/`
+  - head commit:
+    - `logs/md1-shrunk/polls/20260518T012521Z-postpush/head.txt` -> head `df440baf...` (`[skip ci]`)
+  - exact-head run list expected `[]` (skip-ci head):
+    - `logs/md1-shrunk/polls/20260518T012521Z-postpush/gh-run-list-exact-head.json`
+    - `logs/md1-shrunk/polls/20260518T012521Z-postpush/gh-exact-head-run-count.txt`
