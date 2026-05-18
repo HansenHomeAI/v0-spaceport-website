@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T09:20:12Z
+updated: 2026-05-18T09:21:49Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -313,6 +313,17 @@ skybox, compression, artifact handoff, and visual gates.
   - bundle meta.json: `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json` -> `HTTP 200`
   - skybox asset: `.../background_skybox.webp` -> `HTTP 200`
   - evidence: `logs/md1-shrunk/polls/20260518T091900Z/http-headers.txt`
+
+## 2026-05-18T09:21:26Z post-push confirmation (monitor)
+
+- Poll artifacts:
+  - `logs/md1-shrunk/polls/20260518T092126Z-postpush/`
+- Branch/head/status:
+  - `git rev-parse HEAD` -> `be2a17b784c087a4f0cfcdd471e0bc93e2f5b8de` (`[skip ci]`)
+  - evidence: `logs/md1-shrunk/polls/20260518T092126Z-postpush/git.txt`
+- GitHub Actions (exact head):
+  - exact-head workflow runs: `0` (skip-ci poll commit)
+  - evidence: `logs/md1-shrunk/polls/20260518T092126Z-postpush/github-actions-runs-head.json`
 
 ### 2026-05-18 duplicate downstream launch (aborted; cost bounded)
 
