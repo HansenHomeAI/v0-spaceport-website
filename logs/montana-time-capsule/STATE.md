@@ -237,3 +237,26 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/cloudwatch-tail-cvhr-mtc-20260518T1729Z-sfm-20260518T191356Z.log`
   - `logs/montana-time-capsule/launch-20260518T191356Z.log`
 - Next unblocked step: keep polling SfM until `Completed`; run the same `--launch` command exactly once immediately after completion to launch pinned Montana 3DGS.
+
+## 2026-05-18T19:14Z Ledger Commit + Push
+
+- Commit: `8370c2ec35e3186bc7509664b2bbbcca283779ce`
+- Commit message: `chore: record montana sfm monitor pass [skip ci]`
+- Push command: `git push origin agent-40136728-montana-time-capsule`
+- Push result: branch updated on origin (`4260fd94..8370c2ec`).
+- Exact-head workflow check command:
+  - `/opt/homebrew/bin/gh run list --branch agent-40136728-montana-time-capsule --limit 50 --json databaseId,headSha,workflowName,status,conclusion,createdAt,updatedAt,url`
+  - Exact-head selection result for `8370c2ec35e3186bc7509664b2bbbcca283779ce`: `[]` (expected for `[skip ci]` logs-only commit).
+- Branch workflow evidence: `logs/montana-time-capsule/gh-run-list-agent-40136728-20260518T191457Z.json`
+- Exact-head workflow evidence: `logs/montana-time-capsule/gh-run-list-exact-head-20260518T191457Z.json`
+
+## 2026-05-18T19:15Z Post-Push Monitor Pass
+
+- SageMaker status command: `/opt/homebrew/bin/aws sagemaker describe-processing-job --processing-job-name cvhr-mtc-20260518T1729Z-sfm`
+  - Result: `ProcessingJobStatus=InProgress`.
+- Advance-one-stage command: `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip --launch`
+  - Result: state remained `status=sfm_running`, `sfm_status=InProgress`; no duplicate/new stage launched.
+- Evidence files:
+  - `logs/montana-time-capsule/sagemaker-describe-cvhr-mtc-20260518T1729Z-sfm-20260518T191513Z-postpush.json`
+  - `logs/montana-time-capsule/launch-20260518T191519Z-postpush.log`
+- Next unblocked step: continue 60-300s polling until SfM completes; run one guarded `--launch` immediately after completion to start pinned Montana 3DGS.
