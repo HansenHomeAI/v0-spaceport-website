@@ -31,7 +31,7 @@ class SfmQualityEvalTest(unittest.TestCase):
             )
             (sparse / "points3D.txt").write_text(
                 "# header\n"
-                "1 0 0 0 255 0 0 0.5 1 0 2 0\n"
+                "1 0 0 0 255 0 0 0.5 1 0 2 0 1 1\n"
                 "2 1 0 0 0 255 0 1.0 1 1 2 1 1 2\n",
                 encoding="utf-8",
             )
@@ -202,7 +202,7 @@ class SfmQualityEvalTest(unittest.TestCase):
                 encoding="utf-8",
             )
             (sparse / "points3D.txt").write_text(
-                "1 0 0 0 255 0 0 0.5 1 0 2 0\n"
+                "1 0 0 0 255 0 0 0.5 1 0 2 0 1 1\n"
                 "2 1 0 0 0 255 0 1.0 1 1 2 1 1 2\n",
                 encoding="utf-8",
             )
@@ -383,6 +383,44 @@ class SfmQualityEvalTest(unittest.TestCase):
         self.assertEqual(gates["heldout_panel_diagnostics"], "warning")
         self.assertEqual(report["panel_diagnostics"]["warning_defect_count"], 1)
         self.assertEqual(report["decision"], "needs_more_proof")
+
+    def test_double_surface_geometry_gate_fails_layered_sparse_output(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            sparse = root / "sparse" / "0"
+            sparse.mkdir(parents=True)
+            (sparse / "images.txt").write_text(
+                "1 1 0 0 0 0 0 0 1 A.JPG\n0 0 -1\n"
+                "2 1 0 0 0 1 0 0 1 B.JPG\n0 0 -1\n",
+                encoding="utf-8",
+            )
+            point_lines = []
+            for index in range(20):
+                z = 0.0 if index < 10 else 8.0
+                x = (index % 5) * 0.05
+                y = (index // 5) * 0.05
+                point_lines.append(
+                    f"{index + 1} {x:.3f} {y:.3f} {z:.3f} 255 255 255 0.5 1 0 2 0 1 1"
+                )
+            (sparse / "points3D.txt").write_text("\n".join(point_lines) + "\n", encoding="utf-8")
+
+            report = quality_eval.build_report(
+                SimpleNamespace(
+                    sparse_dir=str(sparse),
+                    viewer_api_json="",
+                    sfm_metadata="",
+                    reducer_metadata="",
+                    expected_images=0,
+                    min_registered_ratio=0.0,
+                    min_points=1,
+                    max_reprojection_error_p95=8.0,
+                    output=str(root / "report.json"),
+                )
+            )
+
+        gates = {gate["gate"]: gate["status"] for gate in report["gates"]}
+        self.assertEqual(gates["double_surface_geometry"], "fail")
+        self.assertGreater(report["sparse_points"]["double_surface"]["flagged_cell_count"], 0)
 
 
 if __name__ == "__main__":

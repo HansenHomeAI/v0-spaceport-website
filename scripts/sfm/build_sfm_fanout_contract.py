@@ -33,6 +33,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--instance-type", default="ml.g4dn.xlarge")
     parser.add_argument("--volume-size-gb", type=int, default=120)
+    parser.add_argument("--max-concurrency", type=int, default=0)
+    parser.add_argument("--max-attempts-per-leaf", type=int, default=2)
     parser.add_argument("--summary-json-output", required=True)
     return parser.parse_args()
 
@@ -59,6 +61,7 @@ def build_leaf_job(
     index = int(chunk["index"])
     job_name = f"{args.job_prefix}-leaf-{index:02d}"
     output_uri = f"{output_base}/leaves/leaf-{index:02d}/colmap"
+    planner = str(getattr(args, "planner", "") or chunk.get("planner") or "").strip()
     environment = {
         "AWS_DEFAULT_REGION": "us-west-2",
         "PYTHONUNBUFFERED": "1",
@@ -69,7 +72,7 @@ def build_leaf_job(
         "SFM_JOB_NAME": job_name,
         "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
         "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
-        "COLMAP_CHUNK_PLANNER": "footprint_graph_v1",
+        "COLMAP_CHUNK_PLANNER": planner or "footprint_graph_v1",
         "COLMAP_ONLY_CHUNK_INDEXES": str(index),
         "COLMAP_LEAF_TARGET_IMAGES": "200",
         "COLMAP_LEAF_HARD_CAP": "320",
@@ -141,12 +144,19 @@ def build_contract(args: argparse.Namespace) -> dict[str, Any]:
     manifest = load_manifest(manifest_path)
     output_base = normalize_s3_prefix(args.output_s3_uri)
     chunks = sorted(manifest["chunks"], key=lambda item: int(item["index"]))
+    for chunk in chunks:
+        chunk["planner"] = manifest.get("planner")
     leaf_jobs = [build_leaf_job(args=args, chunk=chunk, output_base=output_base) for chunk in chunks]
     indexes = [job["chunk_index"] for job in leaf_jobs]
     expected_indexes = list(range(len(chunks)))
     core_names = [name for chunk in chunks for name in (chunk.get("core_names") or [])]
     leaf_names = [name for chunk in chunks for name in (chunk.get("image_names") or [])]
     duplicate_core_count = len(core_names) - len(set(core_names))
+    planner = manifest.get("planner", "footprint_graph_v1")
+    max_concurrency = int(getattr(args, "max_concurrency", 0) or len(leaf_jobs))
+    visibility_manifest = manifest.get("visibility_cell_manifest") or {}
+    visibility_cells = visibility_manifest.get("cells", []) if isinstance(visibility_manifest, dict) else []
+    chunk_jurisdictions = manifest.get("chunk_jurisdictions") or {}
 
     gaps: list[str] = []
     warnings: list[str] = []
@@ -156,6 +166,13 @@ def build_contract(args: argparse.Namespace) -> dict[str, Any]:
         warnings.append("core image ownership has duplicate images; reducer must de-duplicate overlap")
     if not args.planner_manifest_uri:
         gaps.append("immutable planner manifest must be uploaded to S3 before launching leaves")
+    if planner == "visibility_cell_v1":
+        if len(manifest.get("primary_cell_id_by_image") or {}) != len(set(core_names)):
+            gaps.append("visibility_cell_v1 requires exactly one primary cell owner for every core image")
+        if len(chunk_jurisdictions) != len(chunks):
+            gaps.append("visibility_cell_v1 requires jurisdiction bounds for every leaf chunk")
+        if not visibility_cells:
+            gaps.append("visibility_cell_v1 requires a non-empty visibility cell manifest")
 
     return {
         "status": "dry_run_contract_ready" if not gaps else "dry_run_contract_needs_fix",
@@ -168,8 +185,22 @@ def build_contract(args: argparse.Namespace) -> dict[str, Any]:
         "planner_manifest_uri": args.planner_manifest_uri,
         "planner": manifest.get("planner"),
         "pipeline_mode": manifest.get("pipeline_mode", "distributed_chunked_v1"),
+        "max_concurrency": max_concurrency,
+        "retry_policy": {
+            "max_attempts_per_leaf": int(getattr(args, "max_attempts_per_leaf", 2)),
+            "rerun_scope": "failed_leaf_or_smallest_bridge_only",
+            "duplicate_full_md1_launch_allowed": False,
+        },
         "chunk_count": len(chunks),
         "leaf_job_count": len(leaf_jobs),
+        "visibility_cell_contract": {
+            "enabled": planner == "visibility_cell_v1",
+            "cell_count": len(visibility_cells) if isinstance(visibility_cells, list) else 0,
+            "seam_overlap_percent": manifest.get("seam_overlap_percent"),
+            "primary_cell_id_by_image_count": len(manifest.get("primary_cell_id_by_image") or {}),
+            "overlap_cell_id_by_image_count": len(manifest.get("overlap_cell_ids_by_image") or {}),
+            "chunk_jurisdiction_count": len(chunk_jurisdictions),
+        },
         "coverage": {
             "selected_chunk_indexes": indexes,
             "expected_chunk_indexes": expected_indexes,
@@ -187,15 +218,21 @@ def build_contract(args: argparse.Namespace) -> dict[str, Any]:
             "required_leaf_artifacts": [
                 "chunk_planner_manifest.json",
                 "leaf_metadata.json",
+                "sfm_metadata.json",
                 "sparse/0/cameras.txt",
                 "sparse/0/images.txt",
                 "sparse/0/points3D.txt",
+                "sparse_raw/0/cameras.txt",
+                "sparse_raw/0/images.txt",
+                "sparse_raw/0/points3D.txt",
             ],
             "promotion_gates": [
                 "all leaf jobs Completed",
                 "failed_leaf_count == 0 after bounded retries",
                 "merged_component_count == expected_component_count",
                 "standard sparse/0 exists",
+                "visibility_cell_v1 jurisdiction coverage exists when enabled",
+                "no weak seam has <10 shared registered images without targeted seam proof",
                 "registration and speed gates compare against md1p24e752k-1776314974",
             ],
         },

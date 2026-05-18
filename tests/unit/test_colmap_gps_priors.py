@@ -23,6 +23,31 @@ SPEC.loader.exec_module(run_colmap_sfm)
 
 
 class ColmapGpsPriorTests(unittest.TestCase):
+    def make_visibility_exif_record(
+        self,
+        file_name: str,
+        *,
+        x: float,
+        y: float,
+        capture_time_s: float,
+        heading_deg: float = 0.0,
+        pitch_deg: float = -58.0,
+    ) -> dict[str, object]:
+        return {
+            "file_name": file_name,
+            "local_x_m": x,
+            "local_y_m": y,
+            "local_z_m": 80.0,
+            "effective_altitude_m": 80.0,
+            "heading_deg": heading_deg,
+            "pitch_deg": pitch_deg,
+            "capture_time_s": capture_time_s,
+            "focal_length_mm": 4.5,
+            "focal_length_35mm_mm": 24.0,
+            "image_width_px": 4000,
+            "image_height_px": 3000,
+        }
+
     def test_distributed_chunked_mode_uses_mature_chunked_defaults(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
             os.environ,
@@ -35,6 +60,61 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(pipeline.pipeline_mode, "distributed_chunked_v1")
             self.assertTrue(pipeline.enable_spatial_chunking)
             self.assertEqual(pipeline.chunk_planner, "footprint_graph_v1")
+
+    def test_visibility_cell_planner_builds_primary_overlap_and_jurisdictions(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {
+                "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+                "COLMAP_CHUNK_PLANNER": "visibility_cell_v1",
+                "COLMAP_CHUNK_MIN_IMAGES": "3",
+                "COLMAP_LEAF_TARGET_IMAGES": "4",
+                "COLMAP_LEAF_HARD_CAP": "8",
+                "COLMAP_VISIBILITY_CELL_MIN_SCORE": "0.0",
+                "COLMAP_VISIBILITY_CELL_MAX_OVERLAP_CELLS": "3",
+                "COLMAP_VISIBILITY_CELL_OVERLAP_RATIO": "0.15",
+            },
+            clear=True,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            names = [f"IMG_{index:03d}.JPG" for index in range(16)]
+            pipeline.capture_ordered_names = names
+            pipeline.exif_records = {
+                name: self.make_visibility_exif_record(
+                    name,
+                    x=(index % 4) * 32.0,
+                    y=(index // 4) * 32.0,
+                    capture_time_s=float(index),
+                    heading_deg=45.0 if index % 2 else 0.0,
+                    pitch_deg=-60.0 if index % 3 else -8.0,
+                )
+                for index, name in enumerate(names)
+            }
+            pipeline.dataset_image_count = len(names)
+            pipeline.gps_image_count = len(names)
+            pipeline.orientation_prior_count = len(names)
+            pipeline.colmap_capabilities["supports_matches_importer"] = True
+            pipeline.image_list_path.write_text("\n".join(names) + "\n", encoding="utf-8")
+
+            chunks = pipeline.build_chunk_plans()
+            manifest = pipeline.write_chunk_planner_manifest(include_archives=False)
+            report = pipeline.build_planner_static_report(chunks)
+
+        core_owners = [name for chunk in chunks for name in chunk.core_names]
+        self.assertEqual(pipeline.chunk_planner, "visibility_cell_v1")
+        self.assertTrue(pipeline.uses_graph_chunk_planner())
+        self.assertGreater(len(chunks), 1)
+        self.assertEqual(sorted(core_owners), sorted(names))
+        self.assertEqual(len(core_owners), len(set(core_owners)))
+        self.assertGreater(sum(len(chunk.overlap_names) for chunk in chunks), 0)
+        self.assertEqual(manifest["planner"], "visibility_cell_v1")
+        self.assertIn("visibility_cell_manifest", manifest)
+        self.assertEqual(len(manifest["primary_cell_id_by_image"]), len(names))
+        self.assertEqual(len(manifest["chunk_jurisdictions"]), len(chunks))
+        self.assertTrue(all(chunk["jurisdiction_bounds"] for chunk in manifest["chunks"]))
+        self.assertEqual(report["visibility_cell_summary"]["seam_overlap_percent"], 15.0)
+        self.assertEqual(report["expected_output_kind"], "single_merged_model")
 
     def test_unset_pipeline_mode_keeps_legacy_defaults(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(os.environ, {}, clear=True):

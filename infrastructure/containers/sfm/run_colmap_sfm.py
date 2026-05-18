@@ -52,6 +52,7 @@ MATCH_PROFILES = {
 FEATURE_OPTION_FAMILIES = ("FeatureExtraction", "SiftExtraction")
 MATCHING_OPTION_FAMILIES = ("FeatureMatching", "SiftMatching")
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png"}
+GRAPH_CHUNK_PLANNERS = {"footprint_graph_v1", "visibility_cell_v1"}
 
 
 @dataclass
@@ -80,6 +81,22 @@ class ChunkPlan:
     overlap_group_indices: List[int] = field(default_factory=list)
     segment_indices: List[int] = field(default_factory=list)
     source_chunk_indexes: List[int] = field(default_factory=list)
+
+
+@dataclass
+class VisibilityCell:
+    index: int
+    cell_id: str
+    cell_type: str
+    bounds: Dict[str, float]
+    jurisdiction_bounds: Dict[str, float]
+    core_names: List[str]
+    overlap_names: List[str]
+    adjacency: List[int] = field(default_factory=list)
+
+    @property
+    def image_names(self) -> List[str]:
+        return sorted(set(self.core_names).union(self.overlap_names))
 
 
 @dataclass
@@ -579,10 +596,11 @@ class ColmapPipeline:
             os.environ.get("COLMAP_CHUNK_PLANNER", default_chunk_planner).strip().lower()
             or default_chunk_planner
         )
-        if self.chunk_planner not in {"legacy_spatial_heading", "footprint_graph_v1"}:
+        if self.chunk_planner not in {"legacy_spatial_heading", *GRAPH_CHUNK_PLANNERS}:
             raise RuntimeError(
                 "Unsupported COLMAP_CHUNK_PLANNER="
-                f"{self.chunk_planner}; expected one of legacy_spatial_heading, footprint_graph_v1"
+                f"{self.chunk_planner}; expected one of legacy_spatial_heading, "
+                "footprint_graph_v1, visibility_cell_v1"
             )
         self.force_gps_first = os.environ.get("COLMAP_FORCE_GPS_FIRST", "1") != "0"
         requested_match_profile = os.environ.get("COLMAP_MATCH_PROFILE", "P1").strip().upper() or "P1"
@@ -740,6 +758,21 @@ class ColmapPipeline:
         )
         self.filtered_sparse_absurd_outlier_floor = float(
             os.environ.get("COLMAP_FILTERED_SPARSE_ABSURD_OUTLIER_FLOOR", "1000.0")
+        )
+        self.visibility_cell_overlap_ratio = float(
+            os.environ.get("COLMAP_VISIBILITY_CELL_OVERLAP_RATIO", "0.15")
+        )
+        self.visibility_cell_max_overlap_cells = int(
+            os.environ.get("COLMAP_VISIBILITY_CELL_MAX_OVERLAP_CELLS", "4")
+        )
+        self.visibility_cell_min_score = float(
+            os.environ.get("COLMAP_VISIBILITY_CELL_MIN_SCORE", "0.08")
+        )
+        self.visibility_cell_enable_horizon = (
+            os.environ.get("COLMAP_VISIBILITY_CELL_ENABLE_HORIZON", "1") != "0"
+        )
+        self.visibility_point_jurisdiction_enabled = (
+            os.environ.get("COLMAP_VISIBILITY_POINT_JURISDICTION", "1") != "0"
         )
         self.graph_xy_neighbor_limit = int(os.environ.get("COLMAP_GRAPH_XY_NEIGHBOR_LIMIT", "60"))
         self.graph_xyz_neighbor_limit = int(os.environ.get("COLMAP_GRAPH_XYZ_NEIGHBOR_LIMIT", "20"))
@@ -930,6 +963,13 @@ class ColmapPipeline:
         self.chunk_centroids: Dict[int, tuple[float, float]] = {}
         self.chunk_plans_by_index: Dict[int, ChunkPlan] = {}
         self.chunk_cross_edge_counts: Dict[Tuple[int, int], int] = {}
+        self.visibility_cells: List[VisibilityCell] = []
+        self.visibility_cell_manifest: dict[str, object] = {}
+        self.visibility_cell_by_index: Dict[int, VisibilityCell] = {}
+        self.primary_cell_id_by_image: Dict[str, int] = {}
+        self.overlap_cell_ids_by_image: Dict[str, List[int]] = {}
+        self.image_visibility_scores: Dict[str, Dict[str, float]] = {}
+        self.chunk_jurisdictions: Dict[int, dict[str, object]] = {}
         self.probe_subsets: Dict[str, List[str]] = {}
         self.merge_node_records: List[MergeNodeRecord] = []
         self.merge_component_recovery_records: List[dict[str, object]] = []
@@ -944,6 +984,9 @@ class ColmapPipeline:
         if timeout_seconds is None or timeout_seconds <= 0:
             return None
         return timeout_seconds
+
+    def uses_graph_chunk_planner(self) -> bool:
+        return self.chunk_planner in GRAPH_CHUNK_PLANNERS
 
     def mapper_timeout_seconds_for_stage(self, stage: str) -> float | None:
         if not stage.startswith("chunk_"):
@@ -1013,7 +1056,7 @@ class ColmapPipeline:
             self.failed_chunk_core_registered_ratio = round(core_registered_ratio, 4)
 
     def write_failure_metadata(self) -> None:
-        if self.chunk_planner == "footprint_graph_v1" and self.exif_records:
+        if self.uses_graph_chunk_planner() and self.exif_records:
             self.write_chunk_planner_manifest(include_archives=False)
             if self.pipeline_mode == "distributed_chunked_v1" or self.planner_report_only:
                 try:
@@ -1361,7 +1404,34 @@ class ColmapPipeline:
         self.chunk_overlap_image_count = sum(len(chunk_plan.overlap_names) for chunk_plan in chunk_plans)
         self.chunk_group_count = int(manifest.get("chunk_group_count") or self.chunk_group_count or 0)
         self.chunk_segment_count = int(manifest.get("chunk_segment_count") or self.chunk_segment_count or 0)
-        self.chunk_graph_probe_manifest = manifest.get("footprint_graph_manifest") or {}
+        self.visibility_cell_manifest = manifest.get("visibility_cell_manifest") or {}
+        self.primary_cell_id_by_image = {
+            str(image_name): int(cell_index)
+            for image_name, cell_index in (manifest.get("primary_cell_id_by_image") or {}).items()
+        }
+        self.overlap_cell_ids_by_image = {
+            str(image_name): [int(index) for index in indexes]
+            for image_name, indexes in (manifest.get("overlap_cell_ids_by_image") or {}).items()
+            if isinstance(indexes, list)
+        }
+        self.image_visibility_scores = {
+            str(image_name): {
+                str(cell_id): float(score)
+                for cell_id, score in scores.items()
+            }
+            for image_name, scores in (manifest.get("image_visibility_scores") or {}).items()
+            if isinstance(scores, dict)
+        }
+        self.chunk_jurisdictions = {
+            int(chunk_index): jurisdiction
+            for chunk_index, jurisdiction in (manifest.get("chunk_jurisdictions") or {}).items()
+            if isinstance(jurisdiction, dict)
+        }
+        self.chunk_graph_probe_manifest = (
+            manifest.get("visibility_cell_manifest")
+            or manifest.get("footprint_graph_manifest")
+            or {}
+        )
         logger.info(
             "Loaded %s/%s chunk plans from immutable planner manifest %s",
             len(chunk_plans),
@@ -2643,12 +2713,12 @@ class ColmapPipeline:
         )
 
     def active_leaf_target_images(self) -> int:
-        if self.chunk_planner == "footprint_graph_v1":
+        if self.uses_graph_chunk_planner():
             return max(self.leaf_target_images, self.chunk_min_images)
         return self.chunk_target_images
 
     def active_leaf_hard_cap_images(self) -> int:
-        if self.chunk_planner == "footprint_graph_v1":
+        if self.uses_graph_chunk_planner():
             return max(self.leaf_hard_cap_images, self.active_leaf_target_images())
         return self.chunk_hard_max_images
 
@@ -3255,7 +3325,7 @@ class ColmapPipeline:
         frontier_pair_cap: int | None = None,
         extra_pairs: Sequence[tuple[str, str]] | None = None,
     ) -> None:
-        if self.chunk_planner == "footprint_graph_v1":
+        if self.uses_graph_chunk_planner():
             if self.colmap_capabilities.get("supports_matches_importer"):
                 pair_list_path = self.write_chunk_match_list(
                     chunk_plan,
@@ -3302,7 +3372,7 @@ class ColmapPipeline:
         chunk_plan: ChunkPlan,
         stage_prefix: str,
     ) -> None:
-        if self.chunk_planner == "footprint_graph_v1":
+        if self.uses_graph_chunk_planner():
             self.run_chunk_matchers(
                 chunk_plan,
                 chunk_database_path=chunk_database_path,
@@ -4329,6 +4399,402 @@ class ColmapPipeline:
                 image_membership_count[image_name] += 1
         return spillover_chunks
 
+    def bounds_from_xy(
+        self,
+        points: Sequence[tuple[float, float]],
+        *,
+        padding_m: float = 0.0,
+    ) -> Dict[str, float]:
+        if not points:
+            return {"min_x": 0.0, "max_x": 0.0, "min_y": 0.0, "max_y": 0.0}
+        xs = [point[0] for point in points]
+        ys = [point[1] for point in points]
+        return {
+            "min_x": round(min(xs) - padding_m, 3),
+            "max_x": round(max(xs) + padding_m, 3),
+            "min_y": round(min(ys) - padding_m, 3),
+            "max_y": round(max(ys) + padding_m, 3),
+        }
+
+    def expand_bounds(self, bounds: Dict[str, float], padding_m: float) -> Dict[str, float]:
+        return {
+            "min_x": round(float(bounds["min_x"]) - padding_m, 3),
+            "max_x": round(float(bounds["max_x"]) + padding_m, 3),
+            "min_y": round(float(bounds["min_y"]) - padding_m, 3),
+            "max_y": round(float(bounds["max_y"]) + padding_m, 3),
+        }
+
+    def bounds_intersect(self, first: Dict[str, float], second: Dict[str, float]) -> bool:
+        return not (
+            float(first["max_x"]) < float(second["min_x"])
+            or float(first["min_x"]) > float(second["max_x"])
+            or float(first["max_y"]) < float(second["min_y"])
+            or float(first["min_y"]) > float(second["max_y"])
+        )
+
+    def point_inside_bounds(self, x: float, y: float, bounds: Dict[str, float]) -> bool:
+        return (
+            float(bounds["min_x"]) <= x <= float(bounds["max_x"])
+            and float(bounds["min_y"]) <= y <= float(bounds["max_y"])
+        )
+
+    def visibility_projection_for_name(
+        self,
+        image_name: str,
+    ) -> tuple[tuple[float, float], float]:
+        geometry = self.build_view_geometries()[image_name]
+        return self.footprint_circle_for_geometry(geometry, depth_factor=1.0)
+
+    def circle_rectangle_visibility_score(
+        self,
+        *,
+        center: tuple[float, float],
+        radius_m: float,
+        bounds: Dict[str, float],
+    ) -> float:
+        x, y = center
+        clamped_x = min(max(x, float(bounds["min_x"])), float(bounds["max_x"]))
+        clamped_y = min(max(y, float(bounds["min_y"])), float(bounds["max_y"]))
+        distance_m = math.hypot(x - clamped_x, y - clamped_y)
+        if distance_m > radius_m:
+            return 0.0
+        if self.point_inside_bounds(x, y, bounds):
+            return 1.0
+        return round(max(0.0, 1.0 - distance_m / max(radius_m, 1.0)), 6)
+
+    def split_visibility_core_groups(
+        self,
+        *,
+        core_names: Sequence[str],
+        projections: Dict[str, tuple[tuple[float, float], float]],
+        hard_cap: int,
+    ) -> List[List[str]]:
+        if len(core_names) <= hard_cap:
+            return [self.sorted_capture_names(core_names)]
+        points = [projections[name][0] for name in core_names]
+        bounds = self.bounds_from_xy(points)
+        split_axis = 0 if (bounds["max_x"] - bounds["min_x"]) >= (bounds["max_y"] - bounds["min_y"]) else 1
+        ordered = sorted(core_names, key=lambda name: (projections[name][0][split_axis], self.capture_ordered_names.index(name)))
+        group_count = max(math.ceil(len(ordered) / max(hard_cap, 1)), 1)
+        group_size = max(math.ceil(len(ordered) / group_count), 1)
+        return [
+            self.sorted_capture_names(ordered[index : index + group_size])
+            for index in range(0, len(ordered), group_size)
+        ]
+
+    def build_visibility_grid_cells(
+        self,
+        names: Sequence[str],
+        projections: Dict[str, tuple[tuple[float, float], float]],
+    ) -> List[VisibilityCell]:
+        target_images = max(self.active_leaf_target_images(), 1)
+        hard_cap = max(self.active_leaf_hard_cap_images(), target_images)
+        target_cell_count = max(math.ceil(len(names) / target_images), 1)
+        centers = [projections[name][0] for name in names]
+        radii = [projections[name][1] for name in names]
+        median_radius = statistics.median(radii) if radii else 1.0
+        global_bounds = self.bounds_from_xy(centers, padding_m=max(median_radius * 0.15, 1.0))
+        span_x = max(global_bounds["max_x"] - global_bounds["min_x"], 1.0)
+        span_y = max(global_bounds["max_y"] - global_bounds["min_y"], 1.0)
+        aspect = max(min(span_x / span_y, 8.0), 0.125)
+        column_count = max(math.ceil(math.sqrt(target_cell_count * aspect)), 1)
+        row_count = max(math.ceil(target_cell_count / column_count), 1)
+        cell_width = span_x / column_count
+        cell_height = span_y / row_count
+
+        core_names_by_cell: Dict[tuple[int, int], List[str]] = defaultdict(list)
+        for image_name in names:
+            center_x, center_y = projections[image_name][0]
+            column = min(max(int((center_x - global_bounds["min_x"]) / max(cell_width, 1e-6)), 0), column_count - 1)
+            row = min(max(int((center_y - global_bounds["min_y"]) / max(cell_height, 1e-6)), 0), row_count - 1)
+            core_names_by_cell[(column, row)].append(image_name)
+
+        cells: List[VisibilityCell] = []
+        for (column, row), core_names in sorted(core_names_by_cell.items(), key=lambda item: (item[0][1], item[0][0])):
+            base_bounds = {
+                "min_x": round(global_bounds["min_x"] + column * cell_width, 3),
+                "max_x": round(global_bounds["min_x"] + (column + 1) * cell_width, 3),
+                "min_y": round(global_bounds["min_y"] + row * cell_height, 3),
+                "max_y": round(global_bounds["min_y"] + (row + 1) * cell_height, 3),
+            }
+            for core_group in self.split_visibility_core_groups(
+                core_names=core_names,
+                projections=projections,
+                hard_cap=hard_cap,
+            ):
+                points = [projections[name][0] for name in core_group]
+                group_bounds = (
+                    self.bounds_from_xy(points, padding_m=max(min(cell_width, cell_height) * 0.05, 1.0))
+                    if len(core_group) != len(core_names)
+                    else base_bounds
+                )
+                seam_buffer = max(
+                    min(group_bounds["max_x"] - group_bounds["min_x"], group_bounds["max_y"] - group_bounds["min_y"])
+                    * self.visibility_cell_overlap_ratio,
+                    1.0,
+                )
+                cells.append(
+                    VisibilityCell(
+                        index=len(cells),
+                        cell_id=f"cell-{len(cells):03d}",
+                        cell_type="interior",
+                        bounds=group_bounds,
+                        jurisdiction_bounds=self.expand_bounds(group_bounds, seam_buffer),
+                        core_names=self.sorted_capture_names(core_group),
+                        overlap_names=[],
+                    )
+                )
+        return cells
+
+    def add_visibility_overlap(
+        self,
+        *,
+        cell: VisibilityCell,
+        image_name: str,
+        membership_count: Dict[str, int],
+    ) -> bool:
+        if image_name in cell.core_names or image_name in cell.overlap_names:
+            return False
+        if len(cell.image_names) >= self.active_leaf_hard_cap_images():
+            return False
+        if membership_count[image_name] >= self.visibility_cell_max_overlap_cells + 1:
+            return False
+        cell.overlap_names.append(image_name)
+        cell.overlap_names = self.sorted_capture_names(cell.overlap_names)
+        membership_count[image_name] += 1
+        return True
+
+    def build_visibility_cell_chunks(self) -> List[ChunkPlan]:
+        self.visibility_cells = []
+        self.visibility_cell_manifest = {}
+        self.visibility_cell_by_index = {}
+        self.primary_cell_id_by_image = {}
+        self.overlap_cell_ids_by_image = {}
+        self.image_visibility_scores = {}
+        self.chunk_jurisdictions = {}
+        self.build_single_image_groups()
+        geometries = self.build_view_geometries()
+        self.build_candidate_graph()
+        names = [name for name in self.capture_ordered_names if name in geometries]
+        if not names:
+            return []
+        projections = {
+            name: self.visibility_projection_for_name(name)
+            for name in names
+        }
+        cells = self.build_visibility_grid_cells(names, projections)
+        if not cells:
+            return []
+
+        membership_count: Dict[str, int] = defaultdict(int)
+        for cell in cells:
+            for image_name in cell.core_names:
+                self.primary_cell_id_by_image[image_name] = cell.index
+                membership_count[image_name] += 1
+
+        for first in cells:
+            for second in cells:
+                if first.index >= second.index:
+                    continue
+                if self.bounds_intersect(first.jurisdiction_bounds, second.bounds) or self.bounds_intersect(second.jurisdiction_bounds, first.bounds):
+                    first.adjacency.append(second.index)
+                    second.adjacency.append(first.index)
+
+        for image_name, (center, radius_m) in projections.items():
+            primary_cell_index = self.primary_cell_id_by_image[image_name]
+            ranked_scores: List[tuple[float, int]] = []
+            score_payload: Dict[str, float] = {}
+            for cell in cells:
+                score = self.circle_rectangle_visibility_score(
+                    center=center,
+                    radius_m=radius_m,
+                    bounds=cell.jurisdiction_bounds,
+                )
+                if cell.index == primary_cell_index:
+                    score = max(score, 1.0)
+                if cell.index in cells[primary_cell_index].adjacency:
+                    score = max(score, score * 1.15)
+                if score > 0.0:
+                    score_payload[str(cell.index)] = round(score, 6)
+                if cell.index != primary_cell_index and score >= self.visibility_cell_min_score:
+                    ranked_scores.append((score, cell.index))
+            self.image_visibility_scores[image_name] = score_payload
+            for _, cell_index in sorted(ranked_scores, key=lambda item: (-item[0], item[1]))[
+                : self.visibility_cell_max_overlap_cells
+            ]:
+                self.add_visibility_overlap(
+                    cell=cells[cell_index],
+                    image_name=image_name,
+                    membership_count=membership_count,
+                )
+
+        target_shared = max(10, min(self.chunk_overlap_anchor_count, 24))
+        for first in cells:
+            for second_index in first.adjacency:
+                if first.index >= second_index:
+                    continue
+                second = cells[second_index]
+                shared_count = len(set(first.image_names).intersection(second.image_names))
+                if shared_count >= target_shared:
+                    continue
+                candidates: List[tuple[float, int, str]] = []
+                for image_name in first.core_names:
+                    score = self.circle_rectangle_visibility_score(
+                        center=projections[image_name][0],
+                        radius_m=projections[image_name][1],
+                        bounds=second.jurisdiction_bounds,
+                    )
+                    candidates.append((score, second.index, image_name))
+                for image_name in second.core_names:
+                    score = self.circle_rectangle_visibility_score(
+                        center=projections[image_name][0],
+                        radius_m=projections[image_name][1],
+                        bounds=first.jurisdiction_bounds,
+                    )
+                    candidates.append((score, first.index, image_name))
+                for _, target_index, image_name in sorted(candidates, key=lambda item: (-item[0], item[2])):
+                    shared_count = len(set(first.image_names).intersection(second.image_names))
+                    if shared_count >= target_shared:
+                        break
+                    self.add_visibility_overlap(
+                        cell=cells[target_index],
+                        image_name=image_name,
+                        membership_count=membership_count,
+                    )
+
+        sorted_cells = sorted(
+            cells,
+            key=lambda cell: (cell.bounds["min_x"], cell.bounds["min_y"], cell.index),
+        )
+        old_to_new = {cell.index: index for index, cell in enumerate(sorted_cells)}
+        reindexed_cells: List[VisibilityCell] = []
+        for new_index, cell in enumerate(sorted_cells):
+            reindexed_cells.append(
+                VisibilityCell(
+                    index=new_index,
+                    cell_id=f"cell-{new_index:03d}",
+                    cell_type=cell.cell_type,
+                    bounds=cell.bounds,
+                    jurisdiction_bounds=cell.jurisdiction_bounds,
+                    core_names=cell.core_names,
+                    overlap_names=cell.overlap_names,
+                    adjacency=sorted(
+                        old_to_new[neighbor_index]
+                        for neighbor_index in cell.adjacency
+                        if neighbor_index in old_to_new
+                    ),
+                )
+            )
+
+        self.visibility_cells = reindexed_cells
+        self.visibility_cell_by_index = {cell.index: cell for cell in reindexed_cells}
+        self.primary_cell_id_by_image = {
+            image_name: old_to_new[cell_index]
+            for image_name, cell_index in self.primary_cell_id_by_image.items()
+            if cell_index in old_to_new
+        }
+        self.image_visibility_scores = {
+            image_name: {
+                f"cell-{old_to_new[int(cell_index)]:03d}": score
+                for cell_index, score in scores.items()
+                if int(cell_index) in old_to_new
+            }
+            for image_name, scores in self.image_visibility_scores.items()
+        }
+        self.overlap_cell_ids_by_image = defaultdict(list)
+        for cell in reindexed_cells:
+            for image_name in cell.overlap_names:
+                self.overlap_cell_ids_by_image[image_name].append(cell.index)
+        self.overlap_cell_ids_by_image = {
+            image_name: sorted(indexes)
+            for image_name, indexes in self.overlap_cell_ids_by_image.items()
+        }
+
+        chunk_plans: List[ChunkPlan] = []
+        for cell in reindexed_cells:
+            image_names = self.sorted_capture_names(set(cell.core_names).union(cell.overlap_names))
+            chunk_plans.append(
+                ChunkPlan(
+                    index=cell.index,
+                    core_names=cell.core_names,
+                    image_names=image_names,
+                    overlap_names=cell.overlap_names,
+                    core_group_indices=[
+                        self.image_group_indices[name] for name in cell.core_names if name in self.image_group_indices
+                    ],
+                    group_indices=[
+                        self.image_group_indices[name] for name in image_names if name in self.image_group_indices
+                    ],
+                    overlap_group_indices=[
+                        self.image_group_indices[name] for name in cell.overlap_names if name in self.image_group_indices
+                    ],
+                    segment_indices=[],
+                    source_chunk_indexes=[cell.index],
+                )
+            )
+            self.chunk_centroids[cell.index] = self.chunk_plan_centroid_xy(chunk_plans[-1])
+            self.chunk_jurisdictions[cell.index] = {
+                "cell_id": cell.cell_id,
+                "cell_type": cell.cell_type,
+                "bounds": cell.bounds,
+                "jurisdiction_bounds": cell.jurisdiction_bounds,
+            }
+
+        self.chunk_cross_edge_counts = {}
+        for cell in reindexed_cells:
+            for neighbor_index in cell.adjacency:
+                if cell.index < neighbor_index:
+                    pair_key = (cell.index, neighbor_index)
+                    self.chunk_cross_edge_counts[pair_key] = self.cross_chunk_edge_count(
+                        chunk_plans[cell.index].image_names,
+                        chunk_plans[neighbor_index].image_names,
+                    ) + self.cross_chunk_edge_count(
+                        chunk_plans[neighbor_index].image_names,
+                        chunk_plans[cell.index].image_names,
+                    )
+
+        horizon_context_names = [
+            name
+            for name in names
+            if self.visibility_cell_enable_horizon
+            and geometries[name].is_shallow_view
+            and membership_count[name] < self.visibility_cell_max_overlap_cells + 1
+        ]
+        self.visibility_cell_manifest = {
+            "planner": "visibility_cell_v1",
+            "seam_overlap_percent": round(self.visibility_cell_overlap_ratio * 100.0, 3),
+            "cell_count": len(reindexed_cells),
+            "primary_cell_id_by_image": self.primary_cell_id_by_image,
+            "overlap_cell_ids_by_image": self.overlap_cell_ids_by_image,
+            "image_visibility_scores": self.image_visibility_scores,
+            "cell_adjacency": {
+                str(cell.index): cell.adjacency for cell in reindexed_cells
+            },
+            "chunk_jurisdictions": self.chunk_jurisdictions,
+            "horizon_context_images": self.sorted_capture_names(horizon_context_names),
+            "cells": [
+                {
+                    "index": cell.index,
+                    "cell_id": cell.cell_id,
+                    "cell_type": cell.cell_type,
+                    "bounds": cell.bounds,
+                    "jurisdiction_bounds": cell.jurisdiction_bounds,
+                    "core_names": cell.core_names,
+                    "overlap_names": cell.overlap_names,
+                    "image_names": self.sorted_capture_names(set(cell.core_names).union(cell.overlap_names)),
+                    "adjacency": cell.adjacency,
+                }
+                for cell in reindexed_cells
+            ],
+        }
+        self.chunk_graph_probe_manifest = self.visibility_cell_manifest
+        self.chunk_sizes = [len(chunk_plan.image_names) for chunk_plan in chunk_plans]
+        self.chunk_overlap_image_count = sum(len(chunk_plan.overlap_names) for chunk_plan in chunk_plans)
+        self.chunk_plans_by_index = {chunk_plan.index: chunk_plan for chunk_plan in chunk_plans}
+        self.probe_subsets = self.select_probe_subsets(chunk_plans)
+        self.ladder_subsets = self.select_ladder_subsets(chunk_plans)
+        return chunk_plans
+
     def build_footprint_graph_chunks(self) -> List[ChunkPlan]:
         self.build_single_image_groups()
         self.build_view_geometries()
@@ -4521,7 +4987,7 @@ class ColmapPipeline:
                         overlap_assignments=overlap_assignments,
                         image_membership_count=image_membership_count,
                     )
-        if self.chunk_planner == "footprint_graph_v1":
+        if self.uses_graph_chunk_planner():
             self.ensure_chunk_overlap_connectivity(
                 core_chunks=core_chunks,
                 overlap_assignments=overlap_assignments,
@@ -4793,10 +5259,12 @@ class ColmapPipeline:
         manifest_chunk_plans = self.chunk_plans_from_input_manifest()
         if manifest_chunk_plans is not None:
             return manifest_chunk_plans
-        if self.chunk_planner == "footprint_graph_v1":
+        if self.uses_graph_chunk_planner():
             self.chunk_matcher_strategy = (
                 "pair_list" if self.colmap_capabilities.get("supports_matches_importer") else "exhaustive"
             )
+            if self.chunk_planner == "visibility_cell_v1":
+                return self.build_visibility_cell_chunks()
             return self.build_footprint_graph_chunks()
         self.chunk_matcher_strategy = "spatial_sequential"
         return self.build_spatial_heading_chunks()
@@ -4976,6 +5444,28 @@ class ColmapPipeline:
             "estimated_leaf_jobs": len(chunk_plans),
             "expected_output_kind": expected_output_kind,
         }
+        if self.chunk_planner == "visibility_cell_v1":
+            shared_counts = []
+            for first_position, first_plan in enumerate(chunk_plans):
+                first_names = set(first_plan.image_names)
+                for second_plan in chunk_plans[first_position + 1 :]:
+                    second_names = set(second_plan.image_names)
+                    shared = len(first_names.intersection(second_names))
+                    if shared:
+                        shared_counts.append(shared)
+            report["visibility_cell_summary"] = {
+                "cell_count": len(self.visibility_cells) or len(chunk_plans),
+                "seam_overlap_percent": round(self.visibility_cell_overlap_ratio * 100.0, 3),
+                "owned_image_count": len(self.primary_cell_id_by_image),
+                "overlap_image_count": len(self.overlap_cell_ids_by_image),
+                "min_shared_images": min(shared_counts) if shared_counts else 0,
+                "cell_adjacency": {
+                    str(cell.index): cell.adjacency for cell in self.visibility_cells
+                },
+                "horizon_context_image_count": len(
+                    (self.visibility_cell_manifest or {}).get("horizon_context_images") or []
+                ),
+            }
         self.planner_static_report = report
         return report
 
@@ -5138,10 +5628,7 @@ class ColmapPipeline:
         return self.planner_snapshot_only
 
     def write_chunk_planner_manifest(self, *, include_archives: bool | None = None) -> dict[str, object]:
-        if self.chunk_planner == "footprint_graph_v1":
-            chunk_plans = self.build_chunk_plans()
-        else:
-            chunk_plans = self.build_chunk_plans()
+        chunk_plans = self.build_chunk_plans()
         self.chunk_plans = list(chunk_plans)
         self.chunk_plans_by_index = {chunk_plan.index: chunk_plan for chunk_plan in chunk_plans}
         manifest = {
@@ -5163,18 +5650,32 @@ class ColmapPipeline:
             "probe_subset_details": self.probe_subset_details,
             "ladder_subsets": self.ladder_subsets,
             "ladder_subset_details": self.ladder_subset_details,
+            "seam_overlap_percent": round(self.visibility_cell_overlap_ratio * 100.0, 3)
+            if self.chunk_planner == "visibility_cell_v1"
+            else None,
+            "primary_cell_id_by_image": self.primary_cell_id_by_image,
+            "overlap_cell_ids_by_image": self.overlap_cell_ids_by_image,
+            "image_visibility_scores": self.image_visibility_scores,
+            "chunk_jurisdictions": self.chunk_jurisdictions,
             "chunks": [
                 {
                     "index": chunk_plan.index,
                     "core_names": chunk_plan.core_names,
                     "overlap_names": chunk_plan.overlap_names,
                     "image_names": chunk_plan.image_names,
+                    "cell_id": self.chunk_jurisdictions.get(chunk_plan.index, {}).get("cell_id"),
+                    "cell_type": self.chunk_jurisdictions.get(chunk_plan.index, {}).get("cell_type"),
+                    "cell_bounds": self.chunk_jurisdictions.get(chunk_plan.index, {}).get("bounds"),
+                    "jurisdiction_bounds": self.chunk_jurisdictions.get(chunk_plan.index, {}).get("jurisdiction_bounds"),
                 }
                 for chunk_plan in chunk_plans
             ],
         }
-        if self.chunk_graph_probe_manifest:
+        if self.chunk_planner == "visibility_cell_v1" and self.visibility_cell_manifest:
+            manifest["visibility_cell_manifest"] = self.visibility_cell_manifest
+        elif self.chunk_graph_probe_manifest:
             manifest["footprint_graph_manifest"] = self.chunk_graph_probe_manifest
+        manifest = {key: value for key, value in manifest.items() if value is not None}
         with open(self.output_dir / "chunk_planner_manifest.json", "w", encoding="utf-8") as handle:
             json.dump(manifest, handle, indent=2)
         if include_archives is None:
@@ -5687,7 +6188,7 @@ class ColmapPipeline:
         chunk_plan: ChunkPlan,
         missing_core_names: Sequence[str],
     ) -> ChunkPlan:
-        if self.chunk_planner == "footprint_graph_v1":
+        if self.uses_graph_chunk_planner():
             retry_names = set(chunk_plan.image_names)
             candidate_names: List[tuple[float, str]] = []
             for missing_name in missing_core_names:
@@ -5757,7 +6258,7 @@ class ColmapPipeline:
         *,
         index: int,
     ) -> ChunkPlan:
-        if self.chunk_planner == "footprint_graph_v1":
+        if self.uses_graph_chunk_planner():
             merged_core_names = sorted(
                 set(first_chunk_plan.core_names).union(second_chunk_plan.core_names),
                 key=lambda name: self.capture_ordered_names.index(name),
@@ -6434,7 +6935,7 @@ class ColmapPipeline:
             )
             if (
                 self.parent_merge_mode == "seam_only_v1"
-                and self.chunk_planner == "footprint_graph_v1"
+                and self.uses_graph_chunk_planner()
                 and seam_only_initial_seed_enabled
                 and initial_model.images_registered > 0
                 and (
@@ -6627,7 +7128,7 @@ class ColmapPipeline:
                 return recovered_model
             if (
                 self.parent_merge_mode == "seam_only_v1"
-                and self.chunk_planner == "footprint_graph_v1"
+                and self.uses_graph_chunk_planner()
                 and recovered_model.images_registered > 0
             ):
                 logger.info(
@@ -7024,7 +7525,7 @@ class ColmapPipeline:
                 )
                 if (
                     self.parent_merge_mode == "seam_only_v1"
-                    and self.chunk_planner == "footprint_graph_v1"
+                    and self.uses_graph_chunk_planner()
                     and len(components) > 1
                     and bridge_recovery_attempts_remaining > 0
                 ):
@@ -7889,9 +8390,11 @@ class ColmapPipeline:
             self.pipeline_name = "colmap_gpu_distributed_chunked_v1"
         elif self.chunk_planner == "footprint_graph_v1":
             self.pipeline_name = "colmap_gpu_footprint_graph_chunked"
+        elif self.chunk_planner == "visibility_cell_v1":
+            self.pipeline_name = "colmap_gpu_visibility_cell_chunked"
         else:
             self.pipeline_name = "colmap_gpu_spatial_heading_chunked"
-        if self.chunk_planner == "footprint_graph_v1":
+        if self.uses_graph_chunk_planner():
             self.enable_sequential_matcher = False
         self.chunk_plans = self.build_chunk_plans()
         self.chunk_plans_by_index = {chunk_plan.index: chunk_plan for chunk_plan in self.chunk_plans}
@@ -7940,7 +8443,7 @@ class ColmapPipeline:
                         (
                             (
                                 -self.cross_chunk_edge_count(previous_chunk_plan.image_names, chunk_plan.image_names)
-                                if self.chunk_planner == "footprint_graph_v1"
+                                if self.uses_graph_chunk_planner()
                                 else self.chunk_unit_boundary_score(
                                     previous_chunk_plan.core_group_indices,
                                     chunk_plan.core_group_indices,
@@ -7956,7 +8459,7 @@ class ColmapPipeline:
                         (
                             (
                                 -self.cross_chunk_edge_count(chunk_plan.image_names, next_chunk_plan.image_names)
-                                if self.chunk_planner == "footprint_graph_v1"
+                                if self.uses_graph_chunk_planner()
                                 else self.chunk_unit_boundary_score(
                                     chunk_plan.core_group_indices,
                                     next_chunk_plan.core_group_indices,
@@ -8073,11 +8576,11 @@ class ColmapPipeline:
                 else "distributed_chunked_v1"
             )
         else:
-            if self.chunk_planner == "footprint_graph_v1":
+            if self.uses_graph_chunk_planner():
                 self.final_matcher_mode = (
-                    "footprint_graph_chunked_subset"
+                    f"{self.chunk_planner.replace('_v1', '')}_chunked_subset"
                     if self.only_chunk_indexes
-                    else "footprint_graph_chunked"
+                    else f"{self.chunk_planner.replace('_v1', '')}_chunked"
                 )
             else:
                 self.final_matcher_mode = (
@@ -8108,12 +8611,63 @@ class ColmapPipeline:
             "spatial_heading_chunked_subset",
             "footprint_graph_chunked",
             "footprint_graph_chunked_subset",
+            "visibility_cell_chunked",
+            "visibility_cell_chunked_subset",
         }:
             return round(self.chunk_mapper_seconds, 2)
         mapper_timings = [
             value for key, value in self.timings.items() if key.startswith("mapper_") and key.endswith("_seconds")
         ]
         return round(max(mapper_timings), 2) if mapper_timings else 0.0
+
+    def point_track_image_names(
+        self,
+        point_parts: Sequence[str],
+        *,
+        image_id_to_name: Dict[int, str],
+    ) -> List[str]:
+        names: List[str] = []
+        for index in range(8, len(point_parts) - 1, 2):
+            try:
+                image_id = int(point_parts[index])
+            except ValueError:
+                continue
+            image_name = image_id_to_name.get(image_id)
+            if image_name:
+                names.append(image_name)
+        return names
+
+    def point_passes_visibility_jurisdiction(
+        self,
+        point_parts: Sequence[str],
+        *,
+        image_id_to_name: Dict[int, str],
+    ) -> tuple[bool, str]:
+        if (
+            self.chunk_planner != "visibility_cell_v1"
+            or not self.visibility_point_jurisdiction_enabled
+            or not self.primary_cell_id_by_image
+            or not self.chunk_jurisdictions
+        ):
+            return True, "not_applicable"
+        if len(point_parts) < 4:
+            return True, "malformed_passthrough"
+        x = float(point_parts[1])
+        y = float(point_parts[2])
+        track_names = self.point_track_image_names(point_parts, image_id_to_name=image_id_to_name)
+        cell_votes: Dict[int, int] = defaultdict(int)
+        for image_name in track_names:
+            if image_name in self.primary_cell_id_by_image:
+                cell_votes[int(self.primary_cell_id_by_image[image_name])] += 1
+        if not cell_votes:
+            return True, "no_visibility_owner"
+        ranked_cells = sorted(cell_votes.items(), key=lambda item: (-item[1], item[0]))
+        for cell_index, _ in ranked_cells:
+            jurisdiction = self.chunk_jurisdictions.get(cell_index) or {}
+            bounds = jurisdiction.get("jurisdiction_bounds") or jurisdiction.get("bounds")
+            if isinstance(bounds, dict) and self.point_inside_bounds(x, y, bounds):
+                return True, "inside_owner_jurisdiction"
+        return False, f"outside_owner_jurisdiction:{ranked_cells[0][0]}"
 
     def write_filtered_sparse_model(self, *, source_text_dir: Path, output_dir: Path) -> dict[str, object]:
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -8141,6 +8695,7 @@ class ColmapPipeline:
         core_point_count = 0
         far_context_point_count = 0
         absurd_outlier_count = 0
+        jurisdiction_rejected_count = 0
         weak_far_context_rejected_count = 0
         kept_lines: List[str] = []
         for line in points_lines:
@@ -8151,6 +8706,13 @@ class ColmapPipeline:
             track_len = point_track_length(parts)
             if max_abs_coordinate > outlier_limit:
                 absurd_outlier_count += 1
+                continue
+            jurisdiction_passed, _ = self.point_passes_visibility_jurisdiction(
+                parts,
+                image_id_to_name=image_id_to_name,
+            )
+            if not jurisdiction_passed:
+                jurisdiction_rejected_count += 1
                 continue
             if (
                 track_len >= self.filtered_sparse_core_min_track_len
@@ -8203,6 +8765,11 @@ class ColmapPipeline:
             "far_context_points_3d": far_context_point_count,
             "weak_far_context_points_rejected": weak_far_context_rejected_count,
             "absurd_outlier_points_removed": absurd_outlier_count,
+            "jurisdiction_points_rejected": jurisdiction_rejected_count,
+            "visibility_point_jurisdiction_enabled": (
+                self.chunk_planner == "visibility_cell_v1"
+                and self.visibility_point_jurisdiction_enabled
+            ),
             "outlier_limit": round(outlier_limit, 3),
             "core_min_track_len": self.filtered_sparse_core_min_track_len,
             "core_max_reproj_error": self.filtered_sparse_core_max_reproj_error,
@@ -8280,6 +8847,11 @@ class ColmapPipeline:
             "chunk_merge_seconds": round(self.chunk_merge_seconds, 2),
             "chunk_merge_proof": self.chunk_merge_proof,
             "chunk_merge_summary": self.chunk_merge_summary,
+            "visibility_cell_manifest": self.visibility_cell_manifest
+            if self.chunk_planner == "visibility_cell_v1"
+            else {},
+            "visibility_cell_count": len(self.visibility_cells),
+            "visibility_point_jurisdiction_enabled": self.visibility_point_jurisdiction_enabled,
             "parent_merge_mode": self.parent_merge_mode,
             "hierarchy_mode": self.hierarchy_mode,
             "seam_frontier_mode": self.seam_frontier_mode,
@@ -8381,7 +8953,7 @@ class ColmapPipeline:
             and best_model.images_registered > 0
             and best_model.cameras_registered > 0
         )
-        if self.chunk_planner == "footprint_graph_v1":
+        if self.uses_graph_chunk_planner():
             self.write_chunk_planner_manifest(include_archives=False)
             if self.pipeline_mode == "distributed_chunked_v1":
                 self.write_planner_static_report()

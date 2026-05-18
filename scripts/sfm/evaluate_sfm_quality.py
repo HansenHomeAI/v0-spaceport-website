@@ -62,6 +62,7 @@ def parse_points3d(points_path: Path) -> dict[str, Any]:
             coords.append((float(parts[1]), float(parts[2]), float(parts[3])))
             errors.append(float(parts[7]))
             track_lengths.append(max((len(parts) - 8) // 2, 0))
+    double_surface = double_surface_stats(coords, errors, track_lengths)
     return {
         "source": str(points_path),
         "exact_point_count": len(errors),
@@ -74,6 +75,76 @@ def parse_points3d(points_path: Path) -> dict[str, Any]:
         if errors
         else None,
         "bounds": bounds(coords),
+        "double_surface": double_surface,
+    }
+
+
+def double_surface_stats(
+    coords: list[tuple[float, float, float]],
+    errors: list[float],
+    track_lengths: list[int],
+) -> dict[str, Any]:
+    if len(coords) < 16:
+        return {
+            "occupied_cell_count": 0,
+            "flagged_cell_count": 0,
+            "flagged_cell_ratio": 0.0,
+            "max_mode_separation": 0.0,
+            "examples": [],
+        }
+    model_bounds = bounds(coords)
+    span_x = float(model_bounds.get("x", {}).get("span") or 1.0)
+    span_y = float(model_bounds.get("y", {}).get("span") or 1.0)
+    cell_size = max(max(span_x, span_y) / 48.0, 1.0)
+    min_x = float(model_bounds["x"]["min"])
+    min_y = float(model_bounds["y"]["min"])
+    cells: dict[tuple[int, int], list[tuple[float, float, int]]] = {}
+    for (x, y, z), error, track_length in zip(coords, errors, track_lengths):
+        key = (int((x - min_x) / cell_size), int((y - min_y) / cell_size))
+        cells.setdefault(key, []).append((z, error, track_length))
+    flagged: list[dict[str, Any]] = []
+    max_mode_separation = 0.0
+    for key, values in cells.items():
+        if len(values) < 8:
+            continue
+        ordered = sorted(value[0] for value in values)
+        gaps = [
+            (ordered[index + 1] - ordered[index], index)
+            for index in range(len(ordered) - 1)
+        ]
+        if not gaps:
+            continue
+        largest_gap, split_index = max(gaps, key=lambda item: item[0])
+        lower_count = split_index + 1
+        upper_count = len(ordered) - lower_count
+        min_mode_count = max(3, int(len(ordered) * 0.2))
+        local_span = ordered[-1] - ordered[0]
+        tolerance = max(1.5, local_span * 0.35)
+        if largest_gap <= tolerance or lower_count < min_mode_count or upper_count < min_mode_count:
+            continue
+        max_mode_separation = max(max_mode_separation, largest_gap)
+        high_error_count = sum(1 for _, error, _ in values if error > 5.0)
+        short_track_count = sum(1 for _, _, track_length in values if track_length <= 2)
+        flagged.append(
+            {
+                "cell": [key[0], key[1]],
+                "point_count": len(values),
+                "mode_separation": round(largest_gap, 4),
+                "z_min": round(ordered[0], 4),
+                "z_max": round(ordered[-1], 4),
+                "high_error_ratio": round(high_error_count / len(values), 4),
+                "short_track_ratio": round(short_track_count / len(values), 4),
+            }
+        )
+    occupied = sum(1 for values in cells.values() if len(values) >= 8)
+    flagged_ratio = round(len(flagged) / occupied, 4) if occupied else 0.0
+    return {
+        "occupied_cell_count": occupied,
+        "flagged_cell_count": len(flagged),
+        "flagged_cell_ratio": flagged_ratio,
+        "max_mode_separation": round(max_mode_separation, 4),
+        "cell_size": round(cell_size, 4),
+        "examples": sorted(flagged, key=lambda item: (-item["mode_separation"], item["cell"]))[:20],
     }
 
 
@@ -526,7 +597,7 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
     add_gate(
         gates,
         "seam_overlap",
-        "warning" if weak_nodes else "pass",
+        "fail" if weak_nodes else "pass",
         f"{len(weak_nodes)} merge nodes have <10 shared registered images",
     )
     error_p95 = (
@@ -546,6 +617,39 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
         "pass" if up_y_median is None or float(up_y_median) > 0.0 else "fail",
         f"median camera up.y={up_y_median}",
     )
+    low_track_ratio = sparse_points.get("low_track_ratio")
+    high_error_ratio = sparse_points.get("high_error_ratio")
+    error_p99 = (sparse_points.get("reprojection_error") or {}).get("p99")
+    sparse_cleanliness_failures: list[str] = []
+    if sparse_points:
+        if error_p95 is None or float(error_p95) > arg_value(args, "max_sparse_reprojection_error_p95", 2.5):
+            sparse_cleanliness_failures.append(f"p95={error_p95}")
+        if error_p99 is None or float(error_p99) > arg_value(args, "max_sparse_reprojection_error_p99", 5.0):
+            sparse_cleanliness_failures.append(f"p99={error_p99}")
+        if low_track_ratio is None or float(low_track_ratio) > arg_value(args, "max_sparse_low_track_ratio", 0.08):
+            sparse_cleanliness_failures.append(f"low_track_ratio={low_track_ratio}")
+        if high_error_ratio is None or float(high_error_ratio) > arg_value(args, "max_sparse_high_error_ratio", 0.01):
+            sparse_cleanliness_failures.append(f"high_error_ratio={high_error_ratio}")
+        add_gate(
+            gates,
+            "sparse_cleanliness",
+            "fail" if sparse_cleanliness_failures else "pass",
+            f"failures={sparse_cleanliness_failures}",
+        )
+    else:
+        add_gate(gates, "sparse_cleanliness", "warning", "exact sparse points3D.txt not parsed")
+    double_surface = sparse_points.get("double_surface") or {}
+    if double_surface:
+        flagged_ratio = float(double_surface.get("flagged_cell_ratio") or 0.0)
+        max_allowed = arg_value(args, "max_double_surface_cell_ratio", 0.02)
+        add_gate(
+            gates,
+            "double_surface_geometry",
+            "fail" if flagged_ratio > max_allowed else "pass",
+            f"flagged_cell_ratio={flagged_ratio}, max={max_allowed}, flagged={double_surface.get('flagged_cell_count')}",
+        )
+    else:
+        add_gate(gates, "double_surface_geometry", "warning", "not enough exact sparse points for grid diagnostic")
     add_heldout_render_gate(gates, heldout_render, args)
     add_ai_visual_gate(gates, ai_visual_review, args)
     add_panel_diagnostics_gate(gates, panel_diagnostics, args)
@@ -602,6 +706,11 @@ def main() -> int:
     parser.add_argument("--min-registered-ratio", type=float, default=0.98)
     parser.add_argument("--min-points", type=int, default=1000)
     parser.add_argument("--max-reprojection-error-p95", type=float, default=8.0)
+    parser.add_argument("--max-sparse-reprojection-error-p95", type=float, default=2.5)
+    parser.add_argument("--max-sparse-reprojection-error-p99", type=float, default=5.0)
+    parser.add_argument("--max-sparse-low-track-ratio", type=float, default=0.08)
+    parser.add_argument("--max-sparse-high-error-ratio", type=float, default=0.01)
+    parser.add_argument("--max-double-surface-cell-ratio", type=float, default=0.02)
     parser.add_argument("--min-heldout-render-count", type=int, default=8)
     parser.add_argument("--min-heldout-success-ratio", type=float, default=0.95)
     parser.add_argument("--min-heldout-psnr-median", type=float, default=22.0)
