@@ -94,3 +94,13 @@ Montana time capsule run, without touching or advancing the existing
 - No duplicate secondary CV-HR jobs were launched.
 - Existing `cvhr-mtc-20260518T1729Z-sfm` and other external jobs were left untouched.
 - Details and evidence are recorded in `logs/cvhr-parallel/STATE.md`.
+
+## 2026-05-18T22:52Z Heartbeat Poll
+
+- Secondary SfM job `cvhr-secondary-20260518t2113z-sfm` remains `InProgress`.
+- Feature extraction completed before this poll; COLMAP mapper is active.
+- Latest CloudWatch mapper progress: `chunk_01_mapper_initial` reached `num_reg_frames=117`.
+- S3 output remains empty, expected before `S3UploadMode=EndOfJob`.
+- No duplicate secondary CV-HR jobs were launched.
+- Existing `cvhr-mtc-20260518T1729Z-sfm` and other external jobs were left untouched.
+- Details and evidence are recorded in `logs/cvhr-parallel/STATE.md`.
