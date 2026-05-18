@@ -1,0 +1,2 @@
+f5e8dec0557f5b8ce6206579d5a04d9993a99d2c
+f5e8dec0 (HEAD -> agent-113647-md1-baseline-e2e, origin/agent-113647-md1-baseline-e2e) chore: md1-shrunk exact-head gh proof 20260518T002034Z [skip ci]

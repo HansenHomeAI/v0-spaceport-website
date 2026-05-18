@@ -3903,3 +3903,11 @@ skybox, compression, artifact handoff, and visual gates.
   - exact-head run list expected `[]` (skip-ci head):
     - `logs/md1-shrunk/polls/20260518T002034Z/gh-runs-for-head.json`
     - `logs/md1-shrunk/polls/20260518T002034Z/gh-exact-head-run-count.txt`
+
+- 2026-05-18T00:21:27Z exact-head GitHub Actions confirmation (follow-up; `[skip ci]` head):
+  - Evidence: logs/md1-shrunk/polls/20260518T002127Z/
+  - head commit:
+    - `logs/md1-shrunk/polls/20260518T002127Z/postpush-head.txt` -> head `f5e8dec0...` (`[skip ci]`)
+  - exact-head run list expected `[]` (skip-ci head):
+    - `logs/md1-shrunk/polls/20260518T002127Z/gh-runs-for-head.json`
+    - `logs/md1-shrunk/polls/20260518T002127Z/gh-exact-head-run-count.txt`
