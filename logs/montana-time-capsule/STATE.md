@@ -11,7 +11,9 @@
 - Idempotent state: `logs/montana-time-capsule/cv-hr-state.json`
 - Dataset: `CV-HR`
 - Required upload: one CV-HR zip with exactly `1710` image files.
-- Upload search bucket: `s3://spaceport-uploads/`
+- Upload search bucket: `s3://spaceport-uploads-staging/`
+- Current archive: `s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip`
+- Current archive proof: `1710` images, `6,931,098,350` bytes, ETag `3a18e20f13027204f59bd6f1df77b983-827`, VersionId `FwGuzoiTEKNT8SodLXu7Zrkg_b96qhOx`.
 - Output bucket: `s3://spaceport-ml-processing-staging/`
 
 ## Default Time Capsule Stack
