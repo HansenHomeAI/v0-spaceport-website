@@ -1,0 +1,4 @@
+branch=agent-113647-md1-baseline-e2e
+head=154d31aae624d86a1ceb281ec07c377928bee89c
+status_porcelain:
+?? logs/md1-shrunk/polls/20260518T044930Z-postpush/
