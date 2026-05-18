@@ -201,3 +201,16 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/sagemaker-describe-cvhr-mtc-20260518T1729Z-sfm-20260518T184808Z-postpoll.json`
   - `logs/montana-time-capsule/sfm-poll-20260518T183539Z.log`
 - Next unblocked step: keep polling `cvhr-mtc-20260518T1729Z-sfm` to completion; run the same `--launch` command once immediately after completion to launch pinned Montana 3DGS.
+
+## 2026-05-18T18:49Z Ledger Commit + Push
+
+- Commit: `4cd3ed8be671d9f1b6796375c5df67ac9250722d`
+- Commit message: `chore: record montana timed sfm poll [skip ci]`
+- Push command: `git push origin agent-40136728-montana-time-capsule`
+- Push result: branch updated on origin (`6a87d029..4cd3ed8b`).
+- Exact-head workflow check:
+  - Branch workflows: `logs/montana-time-capsule/gh-run-list-agent-40136728-20260518T184900Z.json`
+  - Exact-head workflows: `logs/montana-time-capsule/gh-run-list-exact-head-20260518T184900Z.json`
+  - Exact-head result: `[]` (expected for `[skip ci]` logs-only commit).
+- Current stage gate status: SfM job `cvhr-mtc-20260518T1729Z-sfm` still `InProgress`; no duplicate job exists; 3DGS not launched yet.
+- Next unblocked step: continue polling until SfM `Completed`, then run `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip --launch` exactly once to launch pinned Montana 3DGS.
