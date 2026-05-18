@@ -1,0 +1,29 @@
+{
+    "Quota": {
+        "ServiceCode": "sagemaker",
+        "ServiceName": "Amazon SageMaker",
+        "QuotaArn": "arn:aws:servicequotas:us-west-2:975050048887:sagemaker/L-2F1EB012",
+        "QuotaCode": "L-2F1EB012",
+        "QuotaName": "ml.g4dn.xlarge for processing job usage",
+        "Value": 6.0,
+        "Unit": "None",
+        "Adjustable": true,
+        "GlobalQuota": false,
+        "UsageMetric": {
+            "MetricNamespace": "AWS/Usage",
+            "MetricName": "ResourceCount",
+            "MetricDimensions": {
+                "Class": "None",
+                "Resource": "processing-job/ml.g4dn.xlarge",
+                "Service": "SageMaker",
+                "Type": "Resource"
+            },
+            "MetricStatisticRecommendation": "Maximum"
+        },
+        "Period": {
+            "PeriodValue": 1,
+            "PeriodUnit": "HOUR"
+        },
+        "QuotaAppliedAtLevel": "ACCOUNT"
+    }
+}
