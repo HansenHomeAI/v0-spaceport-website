@@ -1,0 +1,3 @@
+HEAD=619694568d3c78fff8167f5eb5f427e0c74e1cc9
+BRANCH=agent-113647-md1-baseline-e2e
+61969456 chore: md1-shrunk monitor poll 20260518T074700Z [skip ci]

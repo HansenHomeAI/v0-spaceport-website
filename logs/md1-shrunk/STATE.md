@@ -4672,3 +4672,12 @@ skybox, compression, artifact handoff, and visual gates.
     - evidence:
       - `logs/md1-shrunk/polls/20260518T074700Z-monitor/gh-run-list.json`
       - `logs/md1-shrunk/polls/20260518T074700Z-monitor/gh-summary.txt`
+
+- 2026-05-18T07:50:29Z postpush proof (exact-head GitHub workflows; `[skip ci]` head):
+  - Evidence: `logs/md1-shrunk/polls/20260518T075029Z-postpush/`
+  - `git rev-parse HEAD` -> `6196945684ec2a0b498753d2ab50f3c06f56ed47` (`[skip ci]`)
+  - GitHub Actions:
+    - exact-head workflow runs: `0` (expected; `[skip ci]`)
+    - evidence:
+      - `logs/md1-shrunk/polls/20260518T075029Z-postpush/gh-run-list.json`
+      - `logs/md1-shrunk/polls/20260518T075029Z-postpush/gh-exact-head-run-count.txt`
