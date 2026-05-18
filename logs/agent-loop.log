@@ -11,3 +11,4 @@
 [2026-05-18T22:48Z] md1-shrunk: canonical sfm 1779128752 InProgress (seam 07 image registrator reached 780-image context, converting model) -> next: poll
 [2026-05-18T22:54Z] md1-shrunk: canonical sfm 1779128752 InProgress (seam 07 model 779 images/602491 points; merge 08 failed both orders, awaiting pipeline fallback) -> next: poll
 [2026-05-18T23:00Z] md1-shrunk: canonical sfm 1779128752 InProgress (merge 08 failed both orders; component bridge 08_00_02 fallback triangulating, latest image #1327) -> next: poll
+[2026-05-18T23:04Z] md1-shrunk: canonical sfm 1779128752 InProgress (component bridge 08_00_02 triangulated 502-image bridge, merge 08 still failed both orders; no terminal failure yet) -> next: poll
