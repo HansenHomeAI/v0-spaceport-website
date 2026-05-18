@@ -71,3 +71,4 @@
 2026-05-17T15:19:57Z md1-shrunk: monitor poll 20260517T151433Z (revalidate skybox/nosky + camera check)
 20260518T023201Z md1-shrunk monitor poll
 2026-05-18T05:18:16Z md1-shrunk monitor: trigger fresh Pages+CDK exact-head (remove [skip ci] drift)
+2026-05-18T05:30:42Z md1-shrunk monitor: trigger Pages build for state-only commit (keep exact-head preview current)

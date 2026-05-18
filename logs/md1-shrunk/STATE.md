@@ -4364,3 +4364,15 @@ skybox, compression, artifact handoff, and visual gates.
   - Camera checks (MD1 viewer; same pose; skybox vs no-sky):
     - skybox: `logs/md1-shrunk/polls/20260518T052812Z-viewer/md1-camera-check-skybox.png` (`logs/md1-shrunk/polls/20260518T052812Z-viewer/playwright-md1-camera-check-skybox.txt`)
     - no-sky: `logs/md1-shrunk/polls/20260518T052812Z-viewer/md1-camera-check-nosky.png` (`logs/md1-shrunk/polls/20260518T052812Z-viewer/playwright-md1-camera-check-nosky.txt`)
+
+- 2026-05-18T05:30:42Z CI (exact-head; CDK-only because logs-only push; prep Pages trigger):
+  - Evidence: `logs/md1-shrunk/polls/20260518T053042Z-ci-d200/`
+  - Trigger commit:
+    - `git rev-parse HEAD` -> `da200517fb6b4e5ee184e484bd02e3b6eb3e468e` (`chore: record md1-shrunk exact-head preview gates`)
+  - GitHub Actions (exact-head):
+    - CDK Deploy run `26015356265` -> `success`:
+      - prewatch: `logs/md1-shrunk/polls/20260518T053042Z-ci-d200/gh-run-view-cdk-prewatch.json`
+      - watch: `logs/md1-shrunk/polls/20260518T053042Z-ci-d200/gh-run-watch-cdk-26015356265.txt`
+      - postwatch: `logs/md1-shrunk/polls/20260518T053042Z-ci-d200/gh-run-view-cdk-postwatch.json`
+  - Note:
+    - No Pages run triggered because this push only touched `logs/` + `STATE.md`; next step is a `web/trigger-dev-build.txt` bump to re-run Pages on exact head.
