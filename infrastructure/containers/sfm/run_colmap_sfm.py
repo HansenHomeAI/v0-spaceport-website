@@ -5446,6 +5446,10 @@ class ColmapPipeline:
         }
         if self.chunk_planner == "visibility_cell_v1":
             shared_counts = []
+            adjacent_seam_shared_images = []
+            weak_adjacent_seams = []
+            min_required_adjacent_shared_images = 10
+            plans_by_index = {chunk_plan.index: chunk_plan for chunk_plan in chunk_plans}
             for first_position, first_plan in enumerate(chunk_plans):
                 first_names = set(first_plan.image_names)
                 for second_plan in chunk_plans[first_position + 1 :]:
@@ -5453,12 +5457,39 @@ class ColmapPipeline:
                     shared = len(first_names.intersection(second_names))
                     if shared:
                         shared_counts.append(shared)
+            for cell in self.visibility_cells:
+                first_plan = plans_by_index.get(cell.index)
+                if first_plan is None:
+                    continue
+                first_names = set(first_plan.image_names)
+                for neighbor_index in cell.adjacency:
+                    if cell.index >= neighbor_index:
+                        continue
+                    second_plan = plans_by_index.get(neighbor_index)
+                    if second_plan is None:
+                        continue
+                    shared = len(first_names.intersection(second_plan.image_names))
+                    seam_record = {
+                        "first_chunk_index": cell.index,
+                        "second_chunk_index": neighbor_index,
+                        "shared_image_count": shared,
+                    }
+                    adjacent_seam_shared_images.append(seam_record)
+                    if shared < min_required_adjacent_shared_images:
+                        weak_adjacent_seams.append(seam_record)
             report["visibility_cell_summary"] = {
                 "cell_count": len(self.visibility_cells) or len(chunk_plans),
                 "seam_overlap_percent": round(self.visibility_cell_overlap_ratio * 100.0, 3),
                 "owned_image_count": len(self.primary_cell_id_by_image),
                 "overlap_image_count": len(self.overlap_cell_ids_by_image),
                 "min_shared_images": min(shared_counts) if shared_counts else 0,
+                "min_required_adjacent_shared_images": min_required_adjacent_shared_images,
+                "min_adjacent_shared_images": min(
+                    (record["shared_image_count"] for record in adjacent_seam_shared_images),
+                    default=0,
+                ),
+                "weak_adjacent_seams_under_10": weak_adjacent_seams,
+                "adjacent_seam_shared_images": adjacent_seam_shared_images,
                 "cell_adjacency": {
                     str(cell.index): cell.adjacency for cell in self.visibility_cells
                 },

@@ -157,6 +157,41 @@ def build_contract(args: argparse.Namespace) -> dict[str, Any]:
     visibility_manifest = manifest.get("visibility_cell_manifest") or {}
     visibility_cells = visibility_manifest.get("cells", []) if isinstance(visibility_manifest, dict) else []
     chunk_jurisdictions = manifest.get("chunk_jurisdictions") or {}
+    visibility_weak_adjacent_seams: list[dict[str, int]] = []
+    visibility_adjacent_seams: list[dict[str, int]] = []
+    if planner == "visibility_cell_v1" and isinstance(visibility_cells, list):
+        cell_images: dict[int, set[str]] = {}
+        cell_adjacency: dict[int, set[int]] = {}
+        for raw_cell in visibility_cells:
+            if not isinstance(raw_cell, dict):
+                continue
+            try:
+                cell_index = int(raw_cell.get("index"))
+            except (TypeError, ValueError):
+                continue
+            cell_images[cell_index] = {
+                str(name)
+                for name in (raw_cell.get("image_names") or [])
+                if str(name).strip()
+            }
+            cell_adjacency[cell_index] = {
+                int(index)
+                for index in (raw_cell.get("adjacency") or [])
+                if str(index).strip()
+            }
+        for first_index, neighbors in sorted(cell_adjacency.items()):
+            for second_index in sorted(neighbors):
+                if first_index >= second_index:
+                    continue
+                shared_count = len(cell_images.get(first_index, set()).intersection(cell_images.get(second_index, set())))
+                seam = {
+                    "first_chunk_index": first_index,
+                    "second_chunk_index": second_index,
+                    "shared_image_count": shared_count,
+                }
+                visibility_adjacent_seams.append(seam)
+                if shared_count < 10:
+                    visibility_weak_adjacent_seams.append(seam)
 
     gaps: list[str] = []
     warnings: list[str] = []
@@ -173,6 +208,10 @@ def build_contract(args: argparse.Namespace) -> dict[str, Any]:
             gaps.append("visibility_cell_v1 requires jurisdiction bounds for every leaf chunk")
         if not visibility_cells:
             gaps.append("visibility_cell_v1 requires a non-empty visibility cell manifest")
+        if visibility_weak_adjacent_seams:
+            gaps.append(
+                "visibility_cell_v1 adjacent seams must have at least 10 shared images or an explicit targeted seam proof"
+            )
 
     return {
         "status": "dry_run_contract_ready" if not gaps else "dry_run_contract_needs_fix",
@@ -200,6 +239,13 @@ def build_contract(args: argparse.Namespace) -> dict[str, Any]:
             "primary_cell_id_by_image_count": len(manifest.get("primary_cell_id_by_image") or {}),
             "overlap_cell_id_by_image_count": len(manifest.get("overlap_cell_ids_by_image") or {}),
             "chunk_jurisdiction_count": len(chunk_jurisdictions),
+            "min_required_adjacent_shared_images": 10,
+            "min_adjacent_shared_images": min(
+                (seam["shared_image_count"] for seam in visibility_adjacent_seams),
+                default=0,
+            ),
+            "weak_adjacent_seams_under_10": visibility_weak_adjacent_seams,
+            "adjacent_seam_shared_images": visibility_adjacent_seams,
         },
         "coverage": {
             "selected_chunk_indexes": indexes,
