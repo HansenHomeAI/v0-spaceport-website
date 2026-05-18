@@ -1,0 +1,17 @@
+curl -I https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/health.txt
+HTTP/2 200 
+date: Mon, 18 May 2026 13:19:10 GMT
+content-type: text/plain; charset=utf-8
+access-control-allow-origin: *
+cache-control: public, max-age=0, must-revalidate
+etag: "fd11d8ed860bbecc8b0798f4495a1ed7"
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+x-matched-path: /health.txt
+x-robots-tag: noindex
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=%2B1dlleklAEfdIX8Ozqq4FHvZs30xlEG3rLVOzhxsS4HLFVHFa4sHbjmdiL7b9sP31qB1ac0A1BF%2Fw1QYUOUOakAj0boAKTVYIDaJNUaxKTCQ9OuzoQWqoaIJoP%2FzHRUimteTU40W09AA%2F6JJibxgljdHXoK6uaLRPntbHmzNDcZUkwaqcMDwK%2BrZa55TJUajyQIncQ5q7A%3D%3D"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: 9fdb26ea9efb13ed-SLC
+alt-svc: h3=":443"; ma=86400
+

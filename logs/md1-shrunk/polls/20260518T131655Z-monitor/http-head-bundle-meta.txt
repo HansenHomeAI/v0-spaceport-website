@@ -1,0 +1,14 @@
+curl -I https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json
+HTTP/1.1 200 OK
+x-amz-id-2: HXoW1s4hCP++0tLQyZ8BeL4xUU7vPwdZKoT3hGZTkBnV3RkhEeGbXafXZi0IBHvPW7dXiTHeF7knILr9Q5c1hadQ5ztgOIKI
+x-amz-request-id: YZNWRS4CCJG9EVV1
+Date: Mon, 18 May 2026 13:19:12 GMT
+Last-Modified: Sat, 16 May 2026 00:13:09 GMT
+ETag: "0a80d455f7e49551c7e6032968068bc4"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: .cVTc2Vl._7LK3AakEV4Rz3vGp0oyubF
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1422
+Server: AmazonS3
+

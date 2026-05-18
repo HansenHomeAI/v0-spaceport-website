@@ -1,0 +1,681 @@
+{
+  "region": "us-west-2",
+  "sagemaker": {
+    "processing_inprogress": [],
+    "sfm_processing_job": {
+      "AppSpecification": {
+        "ContainerEntrypoint": [
+          "/opt/ml/code/run_sfm.sh"
+        ],
+        "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:05e85850abcfd623e8ec7f3debc70ce2dcd9861548311290db901e0c661d4940"
+      },
+      "CreationTime": "2026-05-15 11:28:09.932000-06:00",
+      "Environment": {
+        "AWS_DEFAULT_REGION": "us-west-2",
+        "COLMAP_CHUNK_PLANNER": "legacy_spatial_heading",
+        "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+        "COLMAP_MATCH_PROFILE": "P1",
+        "PYTHONUNBUFFERED": "1",
+        "SFM_BENCHMARK_SUBSET_STRATEGY": "densest_colmap_camera_center_neighborhood_xy_1456_matches_meadow"
+      },
+      "LastModifiedTime": "2026-05-15 15:13:23.757000-06:00",
+      "ProcessingEndTime": "2026-05-15 15:04:36.723000-06:00",
+      "ProcessingInputs": [
+        {
+          "AppManaged": false,
+          "InputName": "sfm-input",
+          "S3Input": {
+            "LocalPath": "/opt/ml/processing/input",
+            "S3CompressionType": "None",
+            "S3DataDistributionType": "FullyReplicated",
+            "S3DataType": "S3Prefix",
+            "S3InputMode": "File",
+            "S3Uri": "s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip"
+          }
+        }
+      ],
+      "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-shrunk-1456-sfm-1778866088",
+      "ProcessingJobName": "md1-shrunk-1456-sfm-1778866088",
+      "ProcessingJobStatus": "Completed",
+      "ProcessingOutputConfig": {
+        "Outputs": [
+          {
+            "AppManaged": false,
+            "OutputName": "colmap-output",
+            "S3Output": {
+              "LocalPath": "/opt/ml/processing/output",
+              "S3UploadMode": "EndOfJob",
+              "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap"
+            }
+          }
+        ]
+      },
+      "ProcessingResources": {
+        "ClusterConfig": {
+          "InstanceCount": 1,
+          "InstanceType": "ml.g4dn.xlarge",
+          "VolumeSizeInGB": 100
+        }
+      },
+      "ProcessingStartTime": "2026-05-15 11:28:49.432000-06:00",
+      "ResponseMetadata": {
+        "HTTPHeaders": {
+          "cache-control": "no-cache, no-store, must-revalidate",
+          "content-length": "1652",
+          "content-security-policy": "frame-ancestors 'none'",
+          "content-type": "application/x-amz-json-1.1",
+          "date": "Mon, 18 May 2026 13:18:40 GMT",
+          "strict-transport-security": "max-age=47304000; includeSubDomains",
+          "x-amzn-requestid": "ee1964aa-80bd-4c20-9f33-eb0a53fcc1b1",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "HTTPStatusCode": 200,
+        "RequestId": "ee1964aa-80bd-4c20-9f33-eb0a53fcc1b1",
+        "RetryAttempts": 0
+      },
+      "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+      "StoppingCondition": {
+        "MaxRuntimeInSeconds": 86400
+      }
+    },
+    "training_inprogress": []
+  },
+  "stepfunctions": {
+    "running_by_state_machine": {
+      "SpaceportMLPipeline": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline"
+      },
+      "SpaceportMLPipeline-agent90547182phase5densifyintervabfc2a7": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-agent90547182phase5densifyintervabfc2a7"
+      },
+      "SpaceportMLPipeline-br-0468116023": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-0468116023"
+      },
+      "SpaceportMLPipeline-br-0d01e63d2e": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-0d01e63d2e"
+      },
+      "SpaceportMLPipeline-br-18df3f5daa": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-18df3f5daa"
+      },
+      "SpaceportMLPipeline-br-1fcc870ee1": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-1fcc870ee1"
+      },
+      "SpaceportMLPipeline-br-2efbf47a4f": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-2efbf47a4f"
+      },
+      "SpaceportMLPipeline-br-3a0b78b344": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-3a0b78b344"
+      },
+      "SpaceportMLPipeline-br-3a5b3005d7": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-3a5b3005d7"
+      },
+      "SpaceportMLPipeline-br-421b38da81": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-421b38da81"
+      },
+      "SpaceportMLPipeline-br-45ee130fef": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-45ee130fef"
+      },
+      "SpaceportMLPipeline-br-487517c20a": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-487517c20a"
+      },
+      "SpaceportMLPipeline-br-52804b744d": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-52804b744d"
+      },
+      "SpaceportMLPipeline-br-590bef09e3": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-590bef09e3"
+      },
+      "SpaceportMLPipeline-br-5ddffedc6c": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-5ddffedc6c"
+      },
+      "SpaceportMLPipeline-br-5ff44d7162": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-5ff44d7162"
+      },
+      "SpaceportMLPipeline-br-6134770281": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-6134770281"
+      },
+      "SpaceportMLPipeline-br-647952f8ea": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-647952f8ea"
+      },
+      "SpaceportMLPipeline-br-64f4abe549": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-64f4abe549"
+      },
+      "SpaceportMLPipeline-br-679d519c73": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-679d519c73"
+      },
+      "SpaceportMLPipeline-br-688d73ccbc": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-688d73ccbc"
+      },
+      "SpaceportMLPipeline-br-6cd5762fc5": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-6cd5762fc5"
+      },
+      "SpaceportMLPipeline-br-85a239485f": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-85a239485f"
+      },
+      "SpaceportMLPipeline-br-8989f2959f": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-8989f2959f"
+      },
+      "SpaceportMLPipeline-br-8abcbd5662": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-8abcbd5662"
+      },
+      "SpaceportMLPipeline-br-91c590205a": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-91c590205a"
+      },
+      "SpaceportMLPipeline-br-985396b507": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-985396b507"
+      },
+      "SpaceportMLPipeline-br-98efe3a22f": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-98efe3a22f"
+      },
+      "SpaceportMLPipeline-br-9f3bbb8f70": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-9f3bbb8f70"
+      },
+      "SpaceportMLPipeline-br-a2a0178e1a": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-a2a0178e1a"
+      },
+      "SpaceportMLPipeline-br-aa5ee4af80": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-aa5ee4af80"
+      },
+      "SpaceportMLPipeline-br-ad3ac98348": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-ad3ac98348"
+      },
+      "SpaceportMLPipeline-br-ada4c6fc3f": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-ada4c6fc3f"
+      },
+      "SpaceportMLPipeline-br-af4b90ccd2": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-af4b90ccd2"
+      },
+      "SpaceportMLPipeline-br-bbb91ce9a5": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-bbb91ce9a5"
+      },
+      "SpaceportMLPipeline-br-bd4bf3a400": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-bd4bf3a400"
+      },
+      "SpaceportMLPipeline-br-c55e953e52": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-c55e953e52"
+      },
+      "SpaceportMLPipeline-br-c908ce627c": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-c908ce627c"
+      },
+      "SpaceportMLPipeline-br-d659db0a49": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-d659db0a49"
+      },
+      "SpaceportMLPipeline-br-dda7bdad32": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-dda7bdad32"
+      },
+      "SpaceportMLPipeline-br-e043d7b48d": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-e043d7b48d"
+      },
+      "SpaceportMLPipeline-br-e2b491c69d": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-e2b491c69d"
+      },
+      "SpaceportMLPipeline-br-e7de77d9fd": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-e7de77d9fd"
+      },
+      "SpaceportMLPipeline-br-e85ad62606": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-e85ad62606"
+      },
+      "SpaceportMLPipeline-br-f9a9943d3b": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-f9a9943d3b"
+      },
+      "SpaceportMLPipeline-br-fb273c6c47": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-fb273c6c47"
+      },
+      "SpaceportMLPipeline-br-fb928a4f1c": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-fb928a4f1c"
+      },
+      "SpaceportMLPipeline-staging": {
+        "executions": [],
+        "running_count": 0,
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging"
+      }
+    },
+    "running_total": 0,
+    "spaceport_state_machines": [
+      {
+        "creationDate": "2025-05-27 17:10:22.080000-06:00",
+        "name": "SpaceportMLPipeline",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-03-01 06:30:18.301000-07:00",
+        "name": "SpaceportMLPipeline-agent90547182phase5densifyintervabfc2a7",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-agent90547182phase5densifyintervabfc2a7",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-08 11:01:01.894000-06:00",
+        "name": "SpaceportMLPipeline-br-0468116023",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-0468116023",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-16 08:30:26.750000-06:00",
+        "name": "SpaceportMLPipeline-br-0d01e63d2e",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-0d01e63d2e",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-03-06 05:03:26.614000-07:00",
+        "name": "SpaceportMLPipeline-br-18df3f5daa",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-18df3f5daa",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-29 16:26:41.274000-06:00",
+        "name": "SpaceportMLPipeline-br-1fcc870ee1",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-1fcc870ee1",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-03-10 18:46:48.868000-06:00",
+        "name": "SpaceportMLPipeline-br-2efbf47a4f",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-2efbf47a4f",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-15 22:39:42.273000-06:00",
+        "name": "SpaceportMLPipeline-br-3a0b78b344",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-3a0b78b344",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-01 13:34:43.941000-06:00",
+        "name": "SpaceportMLPipeline-br-3a5b3005d7",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-3a5b3005d7",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-11 18:39:49.706000-06:00",
+        "name": "SpaceportMLPipeline-br-421b38da81",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-421b38da81",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-03-28 15:54:05.035000-06:00",
+        "name": "SpaceportMLPipeline-br-45ee130fef",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-45ee130fef",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-11 22:05:31.409000-06:00",
+        "name": "SpaceportMLPipeline-br-487517c20a",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-487517c20a",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-16 11:52:28.308000-06:00",
+        "name": "SpaceportMLPipeline-br-52804b744d",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-52804b744d",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-06 17:41:45.190000-06:00",
+        "name": "SpaceportMLPipeline-br-590bef09e3",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-590bef09e3",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-03-28 16:19:53.703000-06:00",
+        "name": "SpaceportMLPipeline-br-5ddffedc6c",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-5ddffedc6c",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-03-06 11:36:58.196000-07:00",
+        "name": "SpaceportMLPipeline-br-5ff44d7162",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-5ff44d7162",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-11 10:33:44.741000-06:00",
+        "name": "SpaceportMLPipeline-br-6134770281",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-6134770281",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-03-30 09:01:36.043000-06:00",
+        "name": "SpaceportMLPipeline-br-647952f8ea",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-647952f8ea",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-03-30 09:02:08.311000-06:00",
+        "name": "SpaceportMLPipeline-br-64f4abe549",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-64f4abe549",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-15 16:24:06.044000-06:00",
+        "name": "SpaceportMLPipeline-br-679d519c73",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-679d519c73",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-29 16:21:29.142000-06:00",
+        "name": "SpaceportMLPipeline-br-688d73ccbc",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-688d73ccbc",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-01 16:41:59.968000-06:00",
+        "name": "SpaceportMLPipeline-br-6cd5762fc5",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-6cd5762fc5",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-17 00:39:24.855000-06:00",
+        "name": "SpaceportMLPipeline-br-85a239485f",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-85a239485f",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-03-07 19:11:37.084000-07:00",
+        "name": "SpaceportMLPipeline-br-8989f2959f",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-8989f2959f",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-05-13 20:14:07.678000-06:00",
+        "name": "SpaceportMLPipeline-br-8abcbd5662",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-8abcbd5662",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-10 23:18:59.265000-06:00",
+        "name": "SpaceportMLPipeline-br-91c590205a",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-91c590205a",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-11 21:57:34.445000-06:00",
+        "name": "SpaceportMLPipeline-br-985396b507",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-985396b507",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-03-06 09:10:15.608000-07:00",
+        "name": "SpaceportMLPipeline-br-98efe3a22f",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-98efe3a22f",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-11 15:27:15.260000-06:00",
+        "name": "SpaceportMLPipeline-br-9f3bbb8f70",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-9f3bbb8f70",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-07 07:56:53.710000-06:00",
+        "name": "SpaceportMLPipeline-br-a2a0178e1a",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-a2a0178e1a",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-03-26 13:09:41.868000-06:00",
+        "name": "SpaceportMLPipeline-br-aa5ee4af80",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-aa5ee4af80",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-11 08:53:26.869000-06:00",
+        "name": "SpaceportMLPipeline-br-ad3ac98348",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-ad3ac98348",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-11 17:22:12.236000-06:00",
+        "name": "SpaceportMLPipeline-br-ada4c6fc3f",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-ada4c6fc3f",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-03-06 11:31:41.382000-07:00",
+        "name": "SpaceportMLPipeline-br-af4b90ccd2",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-af4b90ccd2",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-03-30 15:51:06.592000-06:00",
+        "name": "SpaceportMLPipeline-br-bbb91ce9a5",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-bbb91ce9a5",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-03-28 11:06:10.753000-06:00",
+        "name": "SpaceportMLPipeline-br-bd4bf3a400",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-bd4bf3a400",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-03-10 18:34:23.254000-06:00",
+        "name": "SpaceportMLPipeline-br-c55e953e52",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-c55e953e52",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-11 19:02:03.415000-06:00",
+        "name": "SpaceportMLPipeline-br-c908ce627c",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-c908ce627c",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-03-30 08:01:27.703000-06:00",
+        "name": "SpaceportMLPipeline-br-d659db0a49",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-d659db0a49",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-02 11:06:27.658000-06:00",
+        "name": "SpaceportMLPipeline-br-dda7bdad32",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-dda7bdad32",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-03-30 14:33:11.139000-06:00",
+        "name": "SpaceportMLPipeline-br-e043d7b48d",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-e043d7b48d",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-05-01 09:23:55.792000-06:00",
+        "name": "SpaceportMLPipeline-br-e2b491c69d",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-e2b491c69d",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-07 09:44:47.765000-06:00",
+        "name": "SpaceportMLPipeline-br-e7de77d9fd",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-e7de77d9fd",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-09 10:47:48.344000-06:00",
+        "name": "SpaceportMLPipeline-br-e85ad62606",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-e85ad62606",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-03-06 05:15:15.469000-07:00",
+        "name": "SpaceportMLPipeline-br-f9a9943d3b",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-f9a9943d3b",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-03-04 10:34:52.630000-07:00",
+        "name": "SpaceportMLPipeline-br-fb273c6c47",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-fb273c6c47",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-04-17 01:14:01.747000-06:00",
+        "name": "SpaceportMLPipeline-br-fb928a4f1c",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-fb928a4f1c",
+        "type": "STANDARD"
+      },
+      {
+        "creationDate": "2026-03-06 05:22:12.357000-07:00",
+        "name": "SpaceportMLPipeline-staging",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+        "type": "STANDARD"
+      }
+    ]
+  },
+  "stepfunctions_key_execution": {
+    "SpaceportMLPipeline-br-8abcbd5662": {
+      "describe": {
+        "ResponseMetadata": {
+          "HTTPHeaders": {
+            "connection": "keep-alive",
+            "content-length": "14065",
+            "content-type": "application/x-amz-json-1.0",
+            "date": "Mon, 18 May 2026 13:18:39 GMT",
+            "x-amzn-requestid": "6fa3458d-cd65-43bb-bf96-7ee2dc93424e"
+          },
+          "HTTPStatusCode": 200,
+          "RequestId": "6fa3458d-cd65-43bb-bf96-7ee2dc93424e",
+          "RetryAttempts": 0
+        },
+        "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-br-8abcbd5662:execution-md1shrunk1456-1778880862",
+        "input": "{\"jobId\":\"e7a75fd1-5b41-4b05-aeb6-3d2c3da1afbb\",\"jobName\":\"md1shrunk1456-1778880862\",\"s3Url\":\"s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip\",\"email\":\"hello@spcprt.com\",\"pipelineStep\":\"3dgs\",\"inputS3Uri\":\"s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip\",\"colmapOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/\",\"gaussianOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778880862/\",\"compressedOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778880862/\",\"sfmImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:05e85850abcfd623e8ec7f3debc70ce2dcd9861548311290db901e0c661d4940\",\"gaussianImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db\",\"compressorImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab\",\"sfmArgs\":[\"--input\",\"/opt/ml/processing/input\",\"--output\",\"/opt/ml/processing/output\"],\"compressionArgs\":[\"--input\",\"/opt/ml/processing/input\",\"--output\",\"/opt/ml/processing/output\"],\"APPEARANCE_EMBED_DIM\":\"64\",\"BACKGROUND_APPEARANCE_MODE\":\"auto_camera\",\"BACKGROUND_SELECTION_MAX_FRAMES\":\"32\",\"BACKGROUND_SELECTION_STRIDE\":\"5\",\"BACKGROUND_SKYBOX_HEIGHT\":\"1024\",\"BACKGROUND_SKYBOX_QUALITY\":\"95\",\"BACKGROUND_SKYBOX_WIDTH\":\"2048\",\"BG_SH_DEGREE\":\"8\",\"BILATERAL_PROCESSING\":\"false\",\"CULL_ALPHA_THRESH\":\"0.12\",\"CULL_SCALE_THRESH\":\"0.35\",\"ENABLE_ALPHA_LOSS\":\"true\",\"ENABLE_BG_MODEL\":\"true\",\"ENABLE_ROBUST_MASK\":\"true\",\"FLOATER_PRUNING_ENABLED\":\"true\",\"FLOATER_PRUNING_MAX_COLOR_DISTANCE\":\"0.18\",\"FLOATER_PRUNING_MAX_OPACITY\":\"0.75\",\"FLOATER_PRUNING_MIN_EDGE_SUPPORT\":\"1\",\"FLOATER_PRUNING_MIN_SKY_VIEWS\":\"2\",\"FLOATER_PRUNING_MIN_VIEWS\":\"6\",\"FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN\":\"0.02\",\"FLOATER_PRUNING_SKY_MIN_LUMINANCE\":\"0.3\",\"FLOATER_PRUNING_SKY_MIN_SATURATION\":\"0.08\",\"FLOATER_PRUNING_TOP_REGION_RATIO\":\"0.35\",\"FLOATER_PRUNING_TOP_VIEW_FRACTION\":\"0.9\",\"LOG_INTERVAL\":\"100\",\"MAX_ITERATIONS\":\"30000\",\"MODEL_VARIANT\":\"splatfacto-w-light\",\"NEVER_MASK_UPPER\":\"0.4\",\"RASTERIZE_MODE\":\"classic\",\"SH_DEGREE\":\"3\",\"TARGET_PSNR\":\"35.0\",\"TORCH_CUDA_ARCH_LIST\":\"8.0 8.6\",\"TRAINING_TIMEOUT_SECONDS\":\"14400\",\"USE_SCALE_REGULARIZATION\":\"true\",\"GAUSSIAN_INSTANCE_TYPE\":\"ml.g5.4xlarge\"}",
+        "inputDetails": {
+          "included": true
+        },
+        "name": "execution-md1shrunk1456-1778880862",
+        "output": "{\"jobId\":\"e7a75fd1-5b41-4b05-aeb6-3d2c3da1afbb\",\"jobName\":\"md1shrunk1456-1778880862\",\"s3Url\":\"s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip\",\"email\":\"hello@spcprt.com\",\"pipelineStep\":\"3dgs\",\"inputS3Uri\":\"s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip\",\"colmapOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/\",\"gaussianOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778880862/\",\"compressedOutputS3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778880862/\",\"sfmImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:05e85850abcfd623e8ec7f3debc70ce2dcd9861548311290db901e0c661d4940\",\"gaussianImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db\",\"compressorImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab\",\"sfmArgs\":[\"--input\",\"/opt/ml/processing/input\",\"--output\",\"/opt/ml/processing/output\"],\"compressionArgs\":[\"--input\",\"/opt/ml/processing/input\",\"--output\",\"/opt/ml/processing/output\"],\"APPEARANCE_EMBED_DIM\":\"64\",\"BACKGROUND_APPEARANCE_MODE\":\"auto_camera\",\"BACKGROUND_SELECTION_MAX_FRAMES\":\"32\",\"BACKGROUND_SELECTION_STRIDE\":\"5\",\"BACKGROUND_SKYBOX_HEIGHT\":\"1024\",\"BACKGROUND_SKYBOX_QUALITY\":\"95\",\"BACKGROUND_SKYBOX_WIDTH\":\"2048\",\"BG_SH_DEGREE\":\"8\",\"BILATERAL_PROCESSING\":\"false\",\"CULL_ALPHA_THRESH\":\"0.12\",\"CULL_SCALE_THRESH\":\"0.35\",\"ENABLE_ALPHA_LOSS\":\"true\",\"ENABLE_BG_MODEL\":\"true\",\"ENABLE_ROBUST_MASK\":\"true\",\"FLOATER_PRUNING_ENABLED\":\"true\",\"FLOATER_PRUNING_MAX_COLOR_DISTANCE\":\"0.18\",\"FLOATER_PRUNING_MAX_OPACITY\":\"0.75\",\"FLOATER_PRUNING_MIN_EDGE_SUPPORT\":\"1\",\"FLOATER_PRUNING_MIN_SKY_VIEWS\":\"2\",\"FLOATER_PRUNING_MIN_VIEWS\":\"6\",\"FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN\":\"0.02\",\"FLOATER_PRUNING_SKY_MIN_LUMINANCE\":\"0.3\",\"FLOATER_PRUNING_SKY_MIN_SATURATION\":\"0.08\",\"FLOATER_PRUNING_TOP_REGION_RATIO\":\"0.35\",\"FLOATER_PRUNING_TOP_VIEW_FRACTION\":\"0.9\",\"LOG_INTERVAL\":\"100\",\"MAX_ITERATIONS\":\"30000\",\"MODEL_VARIANT\":\"splatfacto-w-light\",\"NEVER_MASK_UPPER\":\"0.4\",\"RASTERIZE_MODE\":\"classic\",\"SH_DEGREE\":\"3\",\"TARGET_PSNR\":\"35.0\",\"TORCH_CUDA_ARCH_LIST\":\"8.0 8.6\",\"TRAINING_TIMEOUT_SECONDS\":\"14400\",\"USE_SCALE_REGULARIZATION\":\"true\",\"GAUSSIAN_INSTANCE_TYPE\":\"ml.g5.4xlarge\",\"gaussianResult\":{\"TrainingJobArn\":\"arn:aws:sagemaker:us-west-2:975050048887:training-job/md1shrunk1456-1778880862-3dgs\"},\"gaussianStatus\":{\"AlgorithmSpecification\":{\"EnableSageMakerMetricsTimeSeries\":false,\"TrainingImage\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db\",\"TrainingInputMode\":\"File\"},\"BillableTimeInSeconds\":8406,\"CreationTime\":\"2026-05-15T21:34:24.406Z\",\"EnableInterContainerTrafficEncryption\":false,\"EnableManagedSpotTraining\":false,\"EnableNetworkIsolation\":false,\"Environment\":{\"APPEARANCE_EMBED_DIM\":\"64\",\"AWS_DEFAULT_REGION\":\"us-west-2\",\"BACKGROUND_APPEARANCE_MODE\":\"auto_camera\",\"BACKGROUND_SELECTION_MAX_FRAMES\":\"32\",\"BACKGROUND_SELECTION_STRIDE\":\"5\",\"BACKGROUND_SKYBOX_HEIGHT\":\"1024\",\"BACKGROUND_SKYBOX_QUALITY\":\"95\",\"BACKGROUND_SKYBOX_WIDTH\":\"2048\",\"BG_SH_DEGREE\":\"8\",\"BILATERAL_PROCESSING\":\"false\",\"COMMERCIAL_LICENSE\":\"true\",\"CUDA_HOME\":\"/usr/local/cuda\",\"CULL_ALPHA_THRESH\":\"0.12\",\"CULL_SCALE_THRESH\":\"0.35\",\"ENABLE_ALPHA_LOSS\":\"true\",\"ENABLE_BG_MODEL\":\"true\",\"ENABLE_ROBUST_MASK\":\"true\",\"FLOATER_PRUNING_ENABLED\":\"true\",\"FLOATER_PRUNING_MAX_COLOR_DISTANCE\":\"0.18\",\"FLOATER_PRUNING_MAX_OPACITY\":\"0.75\",\"FLOATER_PRUNING_MIN_EDGE_SUPPORT\":\"1\",\"FLOATER_PRUNING_MIN_SKY_VIEWS\":\"2\",\"FLOATER_PRUNING_MIN_VIEWS\":\"6\",\"FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN\":\"0.02\",\"FLOATER_PRUNING_SKY_MIN_LUMINANCE\":\"0.3\",\"FLOATER_PRUNING_SKY_MIN_SATURATION\":\"0.08\",\"FLOATER_PRUNING_TOP_REGION_RATIO\":\"0.35\",\"FLOATER_PRUNING_TOP_VIEW_FRACTION\":\"0.9\",\"FRAMEWORK\":\"nerfstudio\",\"LD_LIBRARY_PATH\":\"/usr/local/cuda/lib64:/usr/local/cuda/lib\",\"LIBRARY_PATH\":\"/usr/local/cuda/lib64:/usr/local/cuda/lib\",\"LICENSE\":\"apache_2_0\",\"LOG_INTERVAL\":\"100\",\"MAX_ITERATIONS\":\"30000\",\"METHODOLOGY\":\"spaceport_splatfacto_w_light_skybox\",\"MODEL_VARIANT\":\"splatfacto-w-light\",\"NEVER_MASK_UPPER\":\"0.4\",\"OUTPUT_FORMAT\":\"ply\",\"PYTHONUNBUFFERED\":\"1\",\"RASTERIZE_MODE\":\"classic\",\"SAGEMAKER_PROGRAM\":\"train.py\",\"SH_DEGREE\":\"3\",\"SOGS_COMPATIBLE\":\"true\",\"TARGET_PSNR\":\"35.0\",\"TORCH_CUDA_ARCH_LIST\":\"8.0 8.6\",\"TRAINING_TIMEOUT_SECONDS\":\"14400\",\"USE_SCALE_REGULARIZATION\":\"true\"},\"InputDataConfig\":[{\"ChannelName\":\"training\",\"CompressionType\":\"None\",\"DataSource\":{\"S3DataSource\":{\"S3DataDistributionType\":\"FullyReplicated\",\"S3DataType\":\"S3Prefix\",\"S3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/\"}},\"RecordWrapperType\":\"None\"}],\"LastModifiedTime\":\"2026-05-15T23:55:18.772Z\",\"ModelArtifacts\":{\"S3ModelArtifacts\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778880862/md1shrunk1456-1778880862-3dgs/output/model.tar.gz\"},\"OutputDataConfig\":{\"CompressionType\":\"GZIP\",\"KmsKeyId\":\"\",\"S3OutputPath\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778880862/\"},\"ProfilingStatus\":\"Disabled\",\"ResourceConfig\":{\"InstanceCount\":1,\"InstanceType\":\"ml.g5.4xlarge\",\"VolumeSizeInGB\":100},\"RoleArn\":\"arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging\",\"SecondaryStatus\":\"Completed\",\"SecondaryStatusTransitions\":[{\"EndTime\":\"2026-05-15T21:34:25.086Z\",\"StartTime\":\"2026-05-15T21:34:24.406Z\",\"Status\":\"Starting\",\"StatusMessage\":\"Starting the training job\"},{\"EndTime\":\"2026-05-15T21:35:12.401Z\",\"StartTime\":\"2026-05-15T21:34:25.086Z\",\"Status\":\"Pending\",\"StatusMessage\":\"Preparing the instances for training\"},{\"EndTime\":\"2026-05-15T21:39:19.974Z\",\"StartTime\":\"2026-05-15T21:35:12.401Z\",\"Status\":\"Downloading\",\"StatusMessage\":\"Downloading the training image\"},{\"EndTime\":\"2026-05-15T23:55:05.777Z\",\"StartTime\":\"2026-05-15T21:39:19.974Z\",\"Status\":\"Training\",\"StatusMessage\":\"Training image download completed. Training in progress.\"},{\"EndTime\":\"2026-05-15T23:55:18.313Z\",\"StartTime\":\"2026-05-15T23:55:05.777Z\",\"Status\":\"Uploading\",\"StatusMessage\":\"Uploading generated training model\"},{\"EndTime\":\"2026-05-15T23:55:18.313Z\",\"StartTime\":\"2026-05-15T23:55:18.313Z\",\"Status\":\"Completed\",\"StatusMessage\":\"Training job completed\"}],\"StoppingCondition\":{\"MaxRuntimeInSeconds\":14400},\"TrainingEndTime\":\"2026-05-15T23:55:18.313Z\",\"TrainingJobArn\":\"arn:aws:sagemaker:us-west-2:975050048887:training-job/md1shrunk1456-1778880862-3dgs\",\"TrainingJobName\":\"md1shrunk1456-1778880862-3dgs\",\"TrainingJobStatus\":\"Completed\",\"TrainingStartTime\":\"2026-05-15T21:35:12.401Z\",\"TrainingTimeInSeconds\":8406},\"compressionResult\":{\"ProcessingJobArn\":\"arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1shrunk1456-1778880862-compression\"},\"compressionStatus\":{\"AppSpecification\":{\"ContainerEntrypoint\":[\"python3\",\"compress.py\"],\"ImageUri\":\"975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab\"},\"CreationTime\":\"2026-05-15T23:56:39.446Z\",\"Environment\":{\"AWS_DEFAULT_REGION\":\"us-west-2\",\"PYTHONUNBUFFERED\":\"1\"},\"LastModifiedTime\":\"2026-05-16T00:09:11.864Z\",\"ProcessingEndTime\":\"2026-05-16T00:08:09.571Z\",\"ProcessingInputs\":[{\"AppManaged\":false,\"InputName\":\"gaussian-model\",\"S3Input\":{\"LocalPath\":\"/opt/ml/processing/input\",\"S3DataDistributionType\":\"FullyReplicated\",\"S3DataType\":\"S3Prefix\",\"S3InputMode\":\"File\",\"S3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778880862/\"}}],\"ProcessingJobArn\":\"arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1shrunk1456-1778880862-compression\",\"ProcessingJobName\":\"md1shrunk1456-1778880862-compression\",\"ProcessingJobStatus\":\"Completed\",\"ProcessingOutputConfig\":{\"Outputs\":[{\"AppManaged\":false,\"OutputName\":\"compressed-model\",\"S3Output\":{\"LocalPath\":\"/opt/ml/processing/output\",\"S3UploadMode\":\"EndOfJob\",\"S3Uri\":\"s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778880862/\"}}]},\"ProcessingResources\":{\"ClusterConfig\":{\"InstanceCount\":1,\"InstanceType\":\"ml.g4dn.xlarge\",\"VolumeSizeInGB\":50}},\"ProcessingStartTime\":\"2026-05-15T23:57:18.441Z\",\"RoleArn\":\"arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging\",\"StoppingCondition\":{\"MaxRuntimeInSeconds\":86400}},\"notificationResult\":{\"ExecutedVersion\":\"$LATEST\",\"Payload\":{\"statusCode\":200,\"body\":\"{\\\"message\\\": \\\"Notification sent successfully\\\", \\\"messageId\\\": \\\"a7c6ba4e-a6fa-4eec-8902-926a0d423a29\\\"}\"},\"SdkHttpMetadata\":{\"AllHttpHeaders\":{\"X-Amz-Executed-Version\":[\"$LATEST\"],\"x-amzn-Remapped-Content-Length\":[\"0\"],\"Connection\":[\"keep-alive\"],\"x-amzn-RequestId\":[\"612ba0bd-4d79-422b-8724-338959b5e3a2\"],\"Content-Length\":[\"137\"],\"Date\":[\"Sat, 16 May 2026 00:09:44 GMT\"],\"X-Amzn-Trace-Id\":[\"Root=1-6a07b5c6-67ea769640f4d16b6c3a3968;Parent=29cb74bfbb221f9e;Sampled=0;Lineage=1:2adf39cb:0\"],\"Content-Type\":[\"application/json\"]},\"HttpHeaders\":{\"Connection\":\"keep-alive\",\"Content-Length\":\"137\",\"Content-Type\":\"application/json\",\"Date\":\"Sat, 16 May 2026 00:09:44 GMT\",\"X-Amz-Executed-Version\":\"$LATEST\",\"x-amzn-Remapped-Content-Length\":\"0\",\"x-amzn-RequestId\":\"612ba0bd-4d79-422b-8724-338959b5e3a2\",\"X-Amzn-Trace-Id\":\"Root=1-6a07b5c6-67ea769640f4d16b6c3a3968;Parent=29cb74bfbb221f9e;Sampled=0;Lineage=1:2adf39cb:0\"},\"HttpStatusCode\":200},\"SdkResponseMetadata\":{\"RequestId\":\"612ba0bd-4d79-422b-8724-338959b5e3a2\"},\"StatusCode\":200}}",
+        "outputDetails": {
+          "included": true
+        },
+        "redriveCount": 0,
+        "redriveStatus": "NOT_REDRIVABLE",
+        "redriveStatusReason": "Execution is SUCCEEDED and cannot be redriven",
+        "startDate": "2026-05-15 15:34:23.795000-06:00",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-8abcbd5662",
+        "status": "SUCCEEDED",
+        "stopDate": "2026-05-15 18:09:44.189000-06:00"
+      },
+      "target": {
+        "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-br-8abcbd5662:execution-md1shrunk1456-1778880862",
+        "name": "execution-md1shrunk1456-1778880862",
+        "redriveCount": 0,
+        "startDate": "2026-05-15 15:34:23.795000-06:00",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-8abcbd5662",
+        "status": "SUCCEEDED",
+        "stopDate": "2026-05-15 18:09:44.189000-06:00"
+      }
+    }
+  },
+  "sts": {
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root",
+    "ResponseMetadata": {
+      "HTTPHeaders": {
+        "content-length": "387",
+        "content-type": "text/xml",
+        "date": "Mon, 18 May 2026 13:18:35 GMT",
+        "x-amz-sts-extended-request-id": "MTp1cy13ZXN0LTI6UzoxNzc5MTEwMzE1NjAwOlI6MWs2Tm1tdkc=",
+        "x-amzn-requestid": "d5561a86-c50b-444a-b46c-ef9f7c77d425"
+      },
+      "HTTPStatusCode": 200,
+      "RequestId": "d5561a86-c50b-444a-b46c-ef9f7c77d425",
+      "RetryAttempts": 0
+    },
+    "UserId": "975050048887"
+  },
+  "timestamp_utc": "2026-05-18T13:18:35Z"
+}
