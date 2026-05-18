@@ -12,7 +12,7 @@
   "input_image_count": 1710,
   "input_s3_uri": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
   "input_size_bytes": 6931098350,
-  "last_action": "launched_sfm",
+  "last_action": "sfm_running",
   "last_images": [
     "DJI_01706.JPG",
     "DJI_01707.JPG",
@@ -114,7 +114,8 @@
       }
     ]
   },
-  "status": "sfm_started",
-  "updated_at": "2026-05-18T17:29:49Z",
+  "sfm_status": "InProgress",
+  "status": "sfm_running",
+  "updated_at": "2026-05-18T17:55:00Z",
   "zip_entries": 1710
 }

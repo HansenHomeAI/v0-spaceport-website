@@ -51,3 +51,26 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
 - SfM env: `COLMAP_ENABLE_SPATIAL_CHUNKING=1`, `COLMAP_CHUNK_MIN_CORE_REGISTERED_RATIO=0.90`.
 - Log stream: `cvhr-mtc-20260518T1729Z-sfm/algo-1-1779125429`
 - First live log proof: COLMAP feature extraction accepted the archive and was processing `4000 x 2250` images with GPS/gravity metadata; latest sampled progress at `2026-05-18T17:37Z` was `Processed file [56/1710]`.
+
+## 2026-05-18T17:56Z Monitor Pass
+
+- Branch/head/status command:
+  - `git rev-parse --abbrev-ref HEAD && git rev-parse HEAD && git status --short --branch`
+  - Result: branch `agent-40136728-montana-time-capsule`, head `31c5765c6227eaa6483f7e66758e9815c0d69ee1`, status clean (`## agent-40136728-montana-time-capsule...origin/agent-40136728-montana-time-capsule`).
+- AWS identity command: `/opt/homebrew/bin/aws sts get-caller-identity`
+  - Result: account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+- SageMaker status command: `/opt/homebrew/bin/aws sagemaker describe-processing-job --processing-job-name cvhr-mtc-20260518T1729Z-sfm`
+  - Result: `ProcessingJobStatus=InProgress` for job `cvhr-mtc-20260518T1729Z-sfm` using pinned SfM image `sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811`.
+- CloudWatch stream command: `/opt/homebrew/bin/aws logs tail /aws/sagemaker/ProcessingJobs --since 20m --log-stream-name-prefix cvhr-mtc-20260518T1729Z-sfm --format short`
+  - Result: live COLMAP feature extraction progress observed through `Processed file [491/1710]`.
+- Duplicate-job guard command: `/opt/homebrew/bin/aws sagemaker list-processing-jobs --name-contains cvhr-mtc-20260518T1729Z --max-results 10`
+  - Result: only one matching processing job exists: `cvhr-mtc-20260518T1729Z-sfm` (`InProgress`).
+- Advance-one-stage command: `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip --launch`
+  - Result: state now reports `last_action=sfm_running`, `status=sfm_running`, `sfm_status=InProgress`; no new stage launched and no duplicate job created.
+- Evidence files:
+  - `logs/montana-time-capsule/aws-sts-20260518T1756Z.json`
+  - `logs/montana-time-capsule/sagemaker-describe-cvhr-mtc-20260518T1729Z-sfm-20260518T1756Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-cvhr-mtc-20260518T1729Z-20260518T1756Z.json`
+  - `logs/montana-time-capsule/cloudwatch-tail-cvhr-mtc-20260518T1729Z-sfm-20260518T1756Z.log`
+  - `logs/montana-time-capsule/launch-20260518T1755Z.log`
+- Next unblocked step: wait for `cvhr-mtc-20260518T1729Z-sfm` to complete, then rerun `--launch` once to advance exactly one stage (3DGS launch).
