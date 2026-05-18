@@ -5429,3 +5429,14 @@ skybox, compression, artifact handoff, and visual gates.
 - GitHub Actions (exact head):
   - exact-head workflow runs: `0` (expected; `[skip ci]`)
   - evidence: `logs/md1-shrunk/polls/20260518T144933Z-postpush/gh-runs.json`
+
+## 2026-05-18T14:50:23Z monitor poll (terminal re-verify 3DGS + compression)
+
+- Poll artifacts:
+  - `logs/md1-shrunk/polls/20260518T145023Z-monitor2/`
+- 3DGS terminal:
+  - training: `md1shrunk1456-1778880862-3dgs` -> `Completed`
+  - evidence: `logs/md1-shrunk/polls/20260518T145023Z-monitor2/sagemaker-describe-3dgs.json`
+- Compression terminal:
+  - processing: `md1shrunk1456-1778880862-compression` -> `Completed`
+  - evidence: `logs/md1-shrunk/polls/20260518T145023Z-monitor2/sagemaker-describe-compression.json`
