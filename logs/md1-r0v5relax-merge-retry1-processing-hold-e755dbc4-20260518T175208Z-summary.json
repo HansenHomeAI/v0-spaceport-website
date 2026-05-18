@@ -1,0 +1,45 @@
+{
+  "active_codebuilds": [],
+  "active_processing_jobs": [
+    {
+      "CreationTime": "2026-05-18T11:29:49.660000-06:00",
+      "LastModifiedTime": "2026-05-18T11:32:20.712000-06:00",
+      "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/cvhr-mtc-20260518T1729Z-sfm",
+      "ProcessingJobName": "cvhr-mtc-20260518T1729Z-sfm",
+      "ProcessingJobStatus": "InProgress"
+    }
+  ],
+  "active_training_jobs": [],
+  "all_presubmit_passed": false,
+  "cdk_run": {
+    "conclusion": "success",
+    "createdAt": "2026-05-18T17:33:08Z",
+    "databaseId": 26049681054,
+    "headSha": "e755dbc4f066fc554acee8ffaf8ef69a5eb63591",
+    "name": "CDK Deploy",
+    "status": "completed",
+    "updatedAt": "2026-05-18T17:37:22Z",
+    "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26049681054"
+  },
+  "evidence_prefix": "logs/md1-r0v5relax-merge-retry1-processing-hold-e755dbc4-20260518T175208Z",
+  "head": "e755dbc4f066fc554acee8ffaf8ef69a5eb63591",
+  "job_name": "md1-r0v5relax-merge-retry1-8fdaa86f-20260518T170629Z",
+  "next_required_action": "wait for processing idle and rerun all checks before paid retry",
+  "paid_compute_launched": false,
+  "payload_json": "logs/md1-r0v5relax-merge-corrected-payload-8fdaa86f-20260518T170629Z.json",
+  "preconditions": {
+    "codebuild_idle": true,
+    "duplicate_job_absent": true,
+    "exact_head_cdk_success": true,
+    "payload_suffixed_no_background_source": true,
+    "processing_idle": false,
+    "readiness_allowed": false,
+    "readiness_rc": 2,
+    "stepfunctions_idle": true,
+    "training_idle": true
+  },
+  "readiness_json": "logs/md1-r0v5relax-merge-retry1-processing-hold-e755dbc4-20260518T175208Z-submit-readiness.json",
+  "readiness_plan_json": "logs/md1-r0v5relax-merge-retry1-processing-hold-e755dbc4-20260518T175208Z-readiness-plan.json",
+  "running_stepfunctions": [],
+  "timestamp_utc": "20260518T175208Z"
+}

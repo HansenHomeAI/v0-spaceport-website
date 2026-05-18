@@ -1,0 +1,322 @@
+[
+    {
+        "id": "spaceport-ml-containers:531ba12a-75a3-42bf-b742-9351ed274d47",
+        "buildNumber": 702,
+        "buildStatus": "SUCCEEDED",
+        "currentPhase": "COMPLETED",
+        "sourceVersion": "a24d3603537db9c28b9cdc50f4fc48db0bcadc27",
+        "resolvedSourceVersion": "a24d3603537db9c28b9cdc50f4fc48db0bcadc27",
+        "startTime": "2026-05-18T11:28:24.528000-06:00",
+        "endTime": "2026-05-18T11:44:55.587000-06:00",
+        "env": [
+            {
+                "name": "BUILD_BASE_ONLY",
+                "value": "0",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "CONTAINERS_TO_BUILD",
+                "value": "sfm",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "CONTAINERS_TO_IMPORT",
+                "value": "",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "BRANCH_SUFFIX",
+                "value": "agent113647md1baselinee2e",
+                "type": "PLAINTEXT"
+            }
+        ]
+    },
+    {
+        "id": "spaceport-ml-containers:e2ac4bd6-5627-49fa-8007-1d57c634cb01",
+        "buildNumber": 701,
+        "buildStatus": "SUCCEEDED",
+        "currentPhase": "COMPLETED",
+        "sourceVersion": "414560c5818ed5d5173936697924de4ac5cb2c7f",
+        "resolvedSourceVersion": "414560c5818ed5d5173936697924de4ac5cb2c7f",
+        "startTime": "2026-05-18T11:05:28.257000-06:00",
+        "endTime": "2026-05-18T11:18:24.606000-06:00",
+        "env": [
+            {
+                "name": "BUILD_BASE_ONLY",
+                "value": "0",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "CONTAINERS_TO_BUILD",
+                "value": "sfm",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "CONTAINERS_TO_IMPORT",
+                "value": "",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "BRANCH_SUFFIX",
+                "value": "agent113647md1baselinee2e",
+                "type": "PLAINTEXT"
+            }
+        ]
+    },
+    {
+        "id": "spaceport-ml-containers:7d8db46a-66d5-44fc-9316-1b7aa767dfbc",
+        "buildNumber": 700,
+        "buildStatus": "SUCCEEDED",
+        "currentPhase": "COMPLETED",
+        "sourceVersion": "9e251de9f70c207e0190a6710686a0ecb8e6e3eb",
+        "resolvedSourceVersion": "9e251de9f70c207e0190a6710686a0ecb8e6e3eb",
+        "startTime": "2026-05-15T20:39:05.228000-06:00",
+        "endTime": "2026-05-15T20:48:50.887000-06:00",
+        "env": [
+            {
+                "name": "BUILD_BASE_ONLY",
+                "value": "0",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "BRANCH_SUFFIX",
+                "value": "agent73948216sfmproductionspine",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "CONTAINERS_TO_IMPORT",
+                "value": "",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "CONTAINERS_TO_BUILD",
+                "value": "3dgs",
+                "type": "PLAINTEXT"
+            }
+        ]
+    },
+    {
+        "id": "spaceport-ml-containers:f2c51eac-e42c-46e9-a7a8-21349b3df38e",
+        "buildNumber": 699,
+        "buildStatus": "SUCCEEDED",
+        "currentPhase": "COMPLETED",
+        "sourceVersion": "ecf6dbd732208d249783a723d7fa0734d41424f7",
+        "resolvedSourceVersion": "ecf6dbd732208d249783a723d7fa0734d41424f7",
+        "startTime": "2026-05-15T20:05:20.190000-06:00",
+        "endTime": "2026-05-15T20:19:56.597000-06:00",
+        "env": [
+            {
+                "name": "BUILD_BASE_ONLY",
+                "value": "0",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "BRANCH_SUFFIX",
+                "value": "agent73948216sfmproductionspine",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "CONTAINERS_TO_IMPORT",
+                "value": "",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "CONTAINERS_TO_BUILD",
+                "value": "3dgs",
+                "type": "PLAINTEXT"
+            }
+        ]
+    },
+    {
+        "id": "spaceport-ml-containers:d4691f87-0684-47fe-a235-3fa7c5c6e98d",
+        "buildNumber": 698,
+        "buildStatus": "SUCCEEDED",
+        "currentPhase": "COMPLETED",
+        "sourceVersion": "5682b21363c305626706e4b40edcff49a7bd1fb2",
+        "resolvedSourceVersion": "5682b21363c305626706e4b40edcff49a7bd1fb2",
+        "startTime": "2026-05-15T03:40:25.899000-06:00",
+        "endTime": "2026-05-15T03:44:33.822000-06:00",
+        "env": [
+            {
+                "name": "BUILD_BASE_ONLY",
+                "value": "0",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "CONTAINERS_TO_IMPORT",
+                "value": "",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "BRANCH_SUFFIX",
+                "value": "agent113647md1baselinee2e",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "CONTAINERS_TO_BUILD",
+                "value": "compressor",
+                "type": "PLAINTEXT"
+            }
+        ]
+    },
+    {
+        "id": "spaceport-ml-containers:7ee179b6-25a6-4614-8694-e3847dadf172",
+        "buildNumber": 697,
+        "buildStatus": "SUCCEEDED",
+        "currentPhase": "COMPLETED",
+        "sourceVersion": "2ebbe806381adf1965a6c94c34605b8f41438483",
+        "resolvedSourceVersion": "2ebbe806381adf1965a6c94c34605b8f41438483",
+        "startTime": "2026-05-14T23:16:48.232000-06:00",
+        "endTime": "2026-05-14T23:20:53.106000-06:00",
+        "env": [
+            {
+                "name": "BUILD_BASE_ONLY",
+                "value": "0",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "CONTAINERS_TO_IMPORT",
+                "value": "",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "BRANCH_SUFFIX",
+                "value": "agent113647md1baselinee2e",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "CONTAINERS_TO_BUILD",
+                "value": "compressor",
+                "type": "PLAINTEXT"
+            }
+        ]
+    },
+    {
+        "id": "spaceport-ml-containers:ede36622-9ae1-4c5b-a15e-8f60d82a6724",
+        "buildNumber": 696,
+        "buildStatus": "SUCCEEDED",
+        "currentPhase": "COMPLETED",
+        "sourceVersion": "638da632f507c7b2f86ffa914101d0a6758bdc25",
+        "resolvedSourceVersion": "638da632f507c7b2f86ffa914101d0a6758bdc25",
+        "startTime": "2026-05-14T13:26:04.386000-06:00",
+        "endTime": "2026-05-14T13:37:12.988000-06:00",
+        "env": [
+            {
+                "name": "BUILD_BASE_ONLY",
+                "value": "0",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "CONTAINERS_TO_IMPORT",
+                "value": "",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "CONTAINERS_TO_BUILD",
+                "value": "3dgs",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "BRANCH_SUFFIX",
+                "value": "agent113647md1baselinee2e",
+                "type": "PLAINTEXT"
+            }
+        ]
+    },
+    {
+        "id": "spaceport-ml-containers:2ec3bb87-b6ed-478b-a33c-f3d454a599f3",
+        "buildNumber": 695,
+        "buildStatus": "SUCCEEDED",
+        "currentPhase": "COMPLETED",
+        "sourceVersion": "d5447720e305d7da6a57b337ea905be15dc2a2b0",
+        "resolvedSourceVersion": "d5447720e305d7da6a57b337ea905be15dc2a2b0",
+        "startTime": "2026-05-14T12:49:25.875000-06:00",
+        "endTime": "2026-05-14T13:04:43.404000-06:00",
+        "env": [
+            {
+                "name": "BUILD_BASE_ONLY",
+                "value": "0",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "CONTAINERS_TO_IMPORT",
+                "value": "",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "CONTAINERS_TO_BUILD",
+                "value": "3dgs",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "BRANCH_SUFFIX",
+                "value": "agent113647md1baselinee2e",
+                "type": "PLAINTEXT"
+            }
+        ]
+    },
+    {
+        "id": "spaceport-ml-containers:cf615ccc-017c-4dae-8c05-63bb4f553270",
+        "buildNumber": 694,
+        "buildStatus": "SUCCEEDED",
+        "currentPhase": "COMPLETED",
+        "sourceVersion": "03c0d8c130cf4994b97fd2bc8eb98a9a73757221",
+        "resolvedSourceVersion": "03c0d8c130cf4994b97fd2bc8eb98a9a73757221",
+        "startTime": "2026-05-14T08:29:39.751000-06:00",
+        "endTime": "2026-05-14T08:40:12.121000-06:00",
+        "env": [
+            {
+                "name": "BUILD_BASE_ONLY",
+                "value": "0",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "BRANCH_SUFFIX",
+                "value": "agent73948216sfmproductionspine",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "CONTAINERS_TO_IMPORT",
+                "value": "",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "CONTAINERS_TO_BUILD",
+                "value": "3dgs",
+                "type": "PLAINTEXT"
+            }
+        ]
+    },
+    {
+        "id": "spaceport-ml-containers:f281c2cf-1af0-42cc-ab44-ebde3b43475e",
+        "buildNumber": 693,
+        "buildStatus": "SUCCEEDED",
+        "currentPhase": "COMPLETED",
+        "sourceVersion": "b97239e69498412f8391a4ba31216bf268f46385",
+        "resolvedSourceVersion": "b97239e69498412f8391a4ba31216bf268f46385",
+        "startTime": "2026-05-13T22:25:10.843000-06:00",
+        "endTime": "2026-05-13T22:35:17.104000-06:00",
+        "env": [
+            {
+                "name": "BUILD_BASE_ONLY",
+                "value": "0",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "BRANCH_SUFFIX",
+                "value": "agent73948216sfmproductionspine",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "CONTAINERS_TO_IMPORT",
+                "value": "",
+                "type": "PLAINTEXT"
+            },
+            {
+                "name": "CONTAINERS_TO_BUILD",
+                "value": "3dgs",
+                "type": "PLAINTEXT"
+            }
+        ]
+    }
+]
