@@ -1,0 +1,44 @@
+{
+  "timestamp_utc": "20260518T172836Z",
+  "head": "8253fcf0cc1ba7503729c85461a7c08557a01e3a",
+  "job_name": "md1-r0v5relax-merge-retry1-8fdaa86f-20260518T170629Z",
+  "payload_json": "logs/md1-r0v5relax-merge-corrected-payload-8fdaa86f-20260518T170629Z.json",
+  "readiness_json": "logs/md1-r0v5relax-merge-retry1-final-submit-readiness-8253fcf0-20260518T172836Z.json",
+  "evidence_prefix": "logs/md1-r0v5relax-merge-retry1-presubmit-live-state-8253fcf0-20260518T172836Z",
+  "cdk_run": {
+    "conclusion": "success",
+    "createdAt": "2026-05-18T17:23:39Z",
+    "databaseId": 26049199770,
+    "event": "push",
+    "headSha": "8253fcf0cc1ba7503729c85461a7c08557a01e3a",
+    "name": "CDK Deploy",
+    "status": "completed",
+    "updatedAt": "2026-05-18T17:27:56Z",
+    "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26049199770",
+    "workflowName": "CDK Deploy"
+  },
+  "active_training_jobs": [],
+  "active_processing_jobs": [],
+  "running_stepfunctions": [],
+  "active_codebuilds": [
+    {
+      "id": "spaceport-ml-containers:531ba12a-75a3-42bf-b742-9351ed274d47",
+      "buildNumber": 702,
+      "buildStatus": "IN_PROGRESS",
+      "currentPhase": "PRE_BUILD",
+      "sourceVersion": "a24d3603537db9c28b9cdc50f4fc48db0bcadc27",
+      "resolvedSourceVersion": "a24d3603537db9c28b9cdc50f4fc48db0bcadc27",
+      "startTime": "2026-05-18T11:28:24.528000-06:00",
+      "endTime": null
+    }
+  ],
+  "preconditions": {
+    "exact_head_cdk_success": true,
+    "training_idle": true,
+    "processing_idle": true,
+    "stepfunctions_idle": true,
+    "codebuild_idle": false,
+    "duplicate_job_absent": true,
+    "payload_suffixed_no_background_source": true
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "candidate_label": "md1-r0-visual-sentinel-v5-density-relaxed",
+  "decision": "no_spend_merge_review_readiness_plan_materialized_for_gate",
+  "exact_head_sha": "8253fcf0cc1ba7503729c85461a7c08557a01e3a",
+  "generated_at": "20260518T172836Z",
+  "hard_stop_conditions": [
+    "merge_preflight_missing_paths",
+    "merge_preflight_fallback_or_retain_all",
+    "v18_non_regression_blocked",
+    "visual_qa_gate_blocked",
+    "viewer_smoke_blocked",
+    "cost_or_runtime_cap_exceeded"
+  ],
+  "input_materialization": {
+    "artifact_inputs_available": true,
+    "merge_plan_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/inputs/merge-plan",
+    "merge_plan_uploaded": true,
+    "required": true,
+    "tile_manifest_available": true,
+    "tile_selection_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-20260515/inputs/tile-selection",
+    "view_buckets_available": true,
+    "materialization_evidence_json": "logs/md1-r0v5relax-merge-retry1-materialization-1ea78942-20260518T171230Z-summary.json"
+  },
+  "merge_plan": {
+    "expected_model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/model.tar.gz",
+    "instance_type": "ml.g4dn.xlarge",
+    "job_name": "md1-r0v5relax-merge-retry1-8fdaa86f-20260518T170629Z",
+    "max_estimated_usd": 0.5,
+    "max_runtime_seconds": 3600,
+    "merge_plan_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/inputs/merge-plan",
+    "no_training": true,
+    "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact",
+    "payload_json": "logs/md1-r0v5relax-merge-corrected-payload-8fdaa86f-20260518T170629Z.json",
+    "processing_payload_json": "logs/md1-r0v5relax-merge-corrected-payload-8fdaa86f-20260518T170629Z.json",
+    "required": true,
+    "required_post_merge_preflight": {
+      "block_before_review_if_missing_paths_or_fallback_or_retain_all": true,
+      "required": true,
+      "script": "scripts/3dgs/preflight_tiled_merge_disk.py"
+    },
+    "tile_selection_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-20260515/inputs/tile-selection"
+  },
+  "next_unblocked_step": "Final presubmit readiness regenerated after exact-head 8253fcf0 CI success and AWS idle.",
+  "no_full14_lod_or_promotion": true,
+  "no_training_merge_plan": true,
+  "review_plan": {
+    "baseline_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review",
+    "camera_set": "frozen-promotion-p24",
+    "candidate_label": "md1-r0-v5-density-relaxed-v18colmap-smoke-p24",
+    "candidate_model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-merge-20260515/output/artifact/model.tar.gz",
+    "execution_mode": "training",
+    "instance_type": "ml.g4dn.xlarge",
+    "max_estimated_usd": 0.5,
+    "max_runtime_seconds": 1800,
+    "required": true,
+    "submit_only_after_merge_preflight_passes": true,
+    "v18_non_regression_required": true,
+    "v18_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review"
+  },
+  "source_evidence": {
+    "workflows_json": "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-head30d6-postgreen-20260517T024218Z.json",
+    "live_training_json": "logs/md1-r0-visual-sentinel-v5-live-training-head30d6-postgreen-20260517T024218Z.json",
+    "live_processing_json": "logs/md1-r0-visual-sentinel-v5-live-processing-head30d6-postgreen-20260517T024218Z.json",
+    "prior_completed_processing_describe_jsons": [
+      "logs/md1-r0-visual-sentinel-v5-completed-processing-md1-tile04-h1i1lod-r41-1778982715-describe-head7149-postgreen-20260517T022432Z.json",
+      "logs/md1-r0-visual-sentinel-v5-completed-processing-md1-tile03-h1i1lod-r41-1778982714-describe-head7149-postgreen-20260517T022432Z.json",
+      "logs/md1-r0-visual-sentinel-v5-completed-processing-md1-tile02-h1i1lod-r41-1778982713-describe-head7149-postgreen-20260517T022432Z.json",
+      "logs/md1-r0-visual-sentinel-v5-completed-processing-md1-tile01-h1i1lod-r41-1778982712-describe-head7149-postgreen-20260517T022432Z.json"
+    ],
+    "prior_completed_processing_tags_jsons": [
+      "logs/md1-r0-visual-sentinel-v5-completed-processing-md1-tile04-h1i1lod-r41-1778982715-tags-head7149-postgreen-20260517T022432Z.json",
+      "logs/md1-r0-visual-sentinel-v5-completed-processing-md1-tile03-h1i1lod-r41-1778982714-tags-head7149-postgreen-20260517T022432Z.json",
+      "logs/md1-r0-visual-sentinel-v5-completed-processing-md1-tile02-h1i1lod-r41-1778982713-tags-head7149-postgreen-20260517T022432Z.json",
+      "logs/md1-r0-visual-sentinel-v5-completed-processing-md1-tile01-h1i1lod-r41-1778982712-tags-head7149-postgreen-20260517T022432Z.json"
+    ],
+    "tile04_leaf_preflight_json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-20260515-tile_04-leaf-preflight.json",
+    "tile04_leaf_gate_json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-20260515-tile_04-leaf-gate.json",
+    "leaf_reuse_summary_json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-leaf-reuse-summary-head30d6-20260517.json",
+    "merge_review_gate_json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-merge-review-gate-head30d6-20260517.json",
+    "merge_plan_json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-remote-merge-g4dn-plan-dryrun-head30d6-20260517.json",
+    "merge_payload_json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-remote-merge-g4dn-payload-dryrun-head30d6-20260517.json",
+    "corrected_merge_plan_json": "logs/md1-r0v5relax-merge-corrected-plan-8fdaa86f-20260518T170629Z.json",
+    "corrected_merge_payload_json": "logs/md1-r0v5relax-merge-corrected-payload-8fdaa86f-20260518T170629Z.json",
+    "failure_root_cause_json": "logs/md1-r0v5relax-merge-20260515-failure-root-cause-20260518T170026Z.json",
+    "materialization_json": "logs/md1-r0v5relax-merge-retry1-materialization-1ea78942-20260518T171230Z-summary.json"
+  },
+  "viewer_smoke_plan": {
+    "checks": [
+      "nonblank_canvas",
+      "camera_navigation",
+      "serious_console_errors",
+      "first_frame_timeout",
+      "camera_bucket_spots"
+    ],
+    "no_local_model_weight_bloat": true,
+    "post_review_or_compressed_artifact_required": true,
+    "required": true,
+    "viewer_source": "pipeline viewer against post-merge/review artifact, ideally compressed/SOGS or remote artifact path"
+  },
+  "visual_qa_plan": {
+    "ai_assisted_review_manifest_required": true,
+    "block_on_ai_visual_defects": true,
+    "compare_reference_and_render_panels": true,
+    "evaluate_gate_required": true,
+    "extract_only_visual_assets": true,
+    "extract_script": "scripts/3dgs/extract_md1_visual_qa_bundle.py",
+    "gate_script": "scripts/3dgs/evaluate_md1_visual_qa_gate.py",
+    "required": true
+  }
+}
