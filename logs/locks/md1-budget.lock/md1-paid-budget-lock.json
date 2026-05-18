@@ -1,0 +1,26 @@
+{
+  "budget_id": "md1-production-ready-3dgs-cost-reduction",
+  "branch": "agent-90742618-md1-geometry-consistency",
+  "head": "43512232ea2165698b2887091fe99e1b0ecf96d6",
+  "currency": "USD",
+  "starting_remaining_after_tile04": 14.0,
+  "remaining_reserved_or_available": 14.0,
+  "stage_caps": {
+    "sentinel_merge": 0.5,
+    "sentinel_review": 0.75,
+    "full14_training": 10.5,
+    "full14_merge": 0.75,
+    "full14_review": 0.75,
+    "lod": 0.75,
+    "reserve": 0.0,
+    "total": 14.0
+  },
+  "reservations": [],
+  "debits": [],
+  "pricing_basis": {
+    "ml.g4dn.xlarge_usd_per_hour": 1.0,
+    "source": "conservative fallback until current AWS pricing is fetched"
+  },
+  "last_updated_utc": "2026-05-18T16:27:33Z",
+  "latest_live_state_evidence": "logs/md1-r0v5-prod-handoff-live-state-43512232-20260518T162733Z-summary.json"
+}
