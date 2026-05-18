@@ -6281,3 +6281,33 @@ skybox, compression, artifact handoff, and visual gates.
   - `logs/md1-shrunk/sagemaker-list-processing-inprogress-20260518T2014Z.json`
   - `logs/md1-shrunk/sagemaker-list-training-inprogress-20260518T2014Z.json`
   - `logs/md1-shrunk/gh-runs-agent-113647-20260518T2014Z.json`
+
+## 2026-05-18T20:21Z canonical SfM chunk 2 mapper progress
+
+- Verification before poll:
+  - branch: `agent-113647-md1-baseline-e2e`
+  - head: `704c79bddc8c1bff2f3fabe2505755d01541637d`
+  - AWS identity captured for account `975050048887`.
+  - Step Functions `SpaceportMLPipeline-staging` RUNNING executions: `0`.
+  - InProgress training jobs: `0`.
+  - InProgress processing jobs still include canonical `md1-shrunk-prodspine-sfm-1779128752` plus external `cvhr-mtc-20260518T1729Z-sfm`; the external job remains untouched.
+  - current head is a logs-only `[skip ci]` commit; latest meaningful non-skipped workflow proof remains `CDK Deploy` run `26052859100` for `1900964d7d3601733e6cb9d587a3128717749336`.
+- Canonical SfM status:
+  - job: `md1-shrunk-prodspine-sfm-1779128752`
+  - `ProcessingJobStatus=InProgress`, `FailureReason=null`
+  - S3 output remains empty as expected until `S3UploadMode=EndOfJob`.
+- Chunk progress:
+  - `chunk_02_mapper_initial` continues registering frames.
+  - latest visible registration reached `num_reg_frames=191`.
+  - no OOM, timeout, SageMaker failure, or Step Functions failure is visible.
+- Evidence:
+  - `logs/md1-shrunk/git-status-20260518T2021Z.txt`
+  - `logs/md1-shrunk/git-head-20260518T2021Z.txt`
+  - `logs/md1-shrunk/aws-identity-20260518T2021Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260518T2021Z.json`
+  - `logs/md1-shrunk/cloudwatch-recent-md1-shrunk-prodspine-sfm-1779128752-20260518T2021Z.json`
+  - `logs/md1-shrunk/s3-colmap-md1-shrunk-prodspine-sfm-20260518T1826Z-20260518T2021Z.txt`
+  - `logs/md1-shrunk/stepfunctions-running-20260518T2021Z.json`
+  - `logs/md1-shrunk/sagemaker-list-processing-inprogress-20260518T2021Z.json`
+  - `logs/md1-shrunk/sagemaker-list-training-inprogress-20260518T2021Z.json`
+  - `logs/md1-shrunk/gh-runs-agent-113647-20260518T2021Z.json`
