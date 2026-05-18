@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T18:33:28Z
+updated: 2026-05-18T18:41:16Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -5949,3 +5949,26 @@ skybox, compression, artifact handoff, and visual gates.
   1. Monitor canonical SfM `md1-shrunk-prodspine-sfm-1779128752` only.
   2. If it fails, capture exact SageMaker describe, CloudWatch, and S3 evidence before patching.
   3. If it succeeds, validate trainable COLMAP output, then proceed to 3DGS, skybox, compression, public bundle reachability, deployed viewer skybox/no-sky, and side-by-side input-vs-render checks.
+
+## 2026-05-18T18:41:16Z canonical full SfM poll
+
+- Launch-ledger commit/push:
+  - commit: `1900964d7d3601733e6cb9d587a3128717749336` (`chore: launch md1 shrunk production spine sfm`)
+  - push: `git push origin agent-113647-md1-baseline-e2e`
+  - exact-head `CDK Deploy` run `26052859100` -> success
+  - evidence: `logs/md1-shrunk/gh-runs-exact-head-1900964d-20260518T1841Z.json`
+- Canonical SfM status:
+  - job: `md1-shrunk-prodspine-sfm-1779128752`
+  - `ProcessingJobStatus=InProgress`
+  - `FailureReason=null`
+  - `ProcessingStartTime=2026-05-18T12:26:35.551000-06:00`
+  - log stream: `/aws/sagemaker/ProcessingJobs` / `md1-shrunk-prodspine-sfm-1779128752/algo-1-1779128795`
+  - latest observed progress: GPU feature extraction reached `Processed file [274/1456]`.
+  - S3 output remains empty as expected until `S3UploadMode=EndOfJob`.
+  - evidence:
+    - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260518T1840Z.json`
+    - `logs/md1-shrunk/cloudwatch-md1-shrunk-prodspine-sfm-1779128752-20260518T1840Z.json`
+    - `logs/md1-shrunk/s3-colmap-md1-shrunk-prodspine-sfm-20260518T1826Z-20260518T1840Z.txt`
+- Automation:
+  - `md1-shrunk-e2e-monitor-2` is active and updated to monitor only canonical job `md1-shrunk-prodspine-sfm-1779128752` while it is `InProgress`.
+  - no duplicate SfM/3DGS/compression launches should occur before this canonical job reaches a terminal state.
