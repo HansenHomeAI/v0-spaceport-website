@@ -29,7 +29,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 ACCOUNT_ID = "975050048887"
 REGION = "us-west-2"
 ML_BUCKET = "spaceport-ml-processing-staging"
-UPLOAD_BUCKET = "spaceport-uploads"
+UPLOAD_BUCKET = "spaceport-uploads-staging"
 SAGEMAKER_ROLE_ARN = f"arn:aws:iam::{ACCOUNT_ID}:role/Spaceport-SageMaker-Role-staging"
 
 MONTANA_3DGS_IMAGE = (

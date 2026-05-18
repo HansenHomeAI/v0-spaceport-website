@@ -24,7 +24,7 @@ python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --launch
 
 The command is idempotent through `logs/montana-time-capsule/cv-hr-state.json`:
 
-1. Search `s3://spaceport-uploads/` for a CV-HR zip.
+1. Search `s3://spaceport-uploads-staging/` for a CV-HR zip.
 2. Read only the ZIP central directory and require exactly `1710` image files.
 3. Launch SfM with the pinned Montana profile.
 4. On later runs, advance from completed SfM to 3DGS, then compression.
