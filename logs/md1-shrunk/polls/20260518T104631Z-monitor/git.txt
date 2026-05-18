@@ -1,0 +1,4 @@
+branch=agent-113647-md1-baseline-e2e
+head=6ee55fae8498d56f5b0e6faaa83fd8998e215e9b
+status_porcelain=1 files
+?? logs/md1-shrunk/polls/20260518T104631Z-monitor/

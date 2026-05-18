@@ -1,0 +1,46 @@
+{
+  "aws": {
+    "downstream_execution": {
+      "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-br-8abcbd5662:execution-md1shrunk1456-1778880862",
+      "status": "SUCCEEDED",
+      "stopDate": "2026-05-15 18:09:44.189000-06:00"
+    },
+    "identity": {
+      "Account": "975050048887",
+      "Arn": "arn:aws:iam::975050048887:root",
+      "ResponseMetadata": {
+        "HTTPHeaders": {
+          "content-length": "387",
+          "content-type": "text/xml",
+          "date": "Mon, 18 May 2026 10:48:02 GMT",
+          "x-amz-sts-extended-request-id": "MTp1cy13ZXN0LTI6UzoxNzc5MTAxMjgyMTMyOlI6azBxMkhzSFk=",
+          "x-amzn-requestid": "6b2ed684-9efc-46d6-bef8-a78b9028d07d"
+        },
+        "HTTPStatusCode": 200,
+        "RequestId": "6b2ed684-9efc-46d6-bef8-a78b9028d07d",
+        "RetryAttempts": 0
+      },
+      "UserId": "975050048887"
+    },
+    "processing_inprogress_count": 0,
+    "sfm_metadata_gates": {
+      "images_registered": 1456,
+      "merged_component_count": 1,
+      "points_3d": 1103335,
+      "quality_check_passed": true,
+      "timed_out": false
+    },
+    "sfm_processing_status": {
+      "FailureReason": null,
+      "ProcessingJobName": "md1-shrunk-1456-sfm-1778866088",
+      "ProcessingJobStatus": "Completed"
+    },
+    "stepfunctions_running_count_staging": 0,
+    "stepfunctions_running_state_machines_all": 0,
+    "training_inprogress_count": 0
+  },
+  "aws_region": "us-west-2",
+  "boto3_available": true,
+  "notes": [],
+  "timestamp_utc": "2026-05-18T10:48:01.677908Z"
+}

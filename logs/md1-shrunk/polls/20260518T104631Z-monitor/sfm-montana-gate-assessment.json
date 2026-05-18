@@ -1,0 +1,23 @@
+{
+  "checks": {
+    "no_timeout": true,
+    "points3d_comparable_or_higher": true,
+    "quality_check_passed": true,
+    "registered_images_close_to_meadow": true,
+    "single_merged_component": true
+  },
+  "md1_shrunk_gates": {
+    "images_registered": 1456,
+    "merged_component_count": 1,
+    "points_3d": 1103335,
+    "quality_check_passed": true,
+    "timed_out": false
+  },
+  "meadow_reference": {
+    "image_files": 1456,
+    "images_registered": 1452,
+    "merged_component_count": 1,
+    "points3D": 940147
+  },
+  "overall_pass": true
+}

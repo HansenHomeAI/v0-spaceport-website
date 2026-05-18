@@ -1,0 +1,117 @@
+{
+  "ResponseMetadata": {
+    "HTTPHeaders": {
+      "content-length": "4249",
+      "content-type": "application/x-amz-json-1.1",
+      "date": "Mon, 18 May 2026 10:50:25 GMT",
+      "x-amzn-requestid": "495e3247-c91e-40f9-bf74-0103d87203bf"
+    },
+    "HTTPStatusCode": 200,
+    "RequestId": "495e3247-c91e-40f9-bf74-0103d87203bf",
+    "RetryAttempts": 0
+  },
+  "events": [
+    {
+      "ingestionTime": 1778866322512,
+      "message": "============================================================",
+      "timestamp": 1778866316461
+    },
+    {
+      "ingestionTime": 1778866322512,
+      "message": "\ud83d\ude80 SPACEPORT COLMAP GPU SfM PROCESSING",
+      "timestamp": 1778866316461
+    },
+    {
+      "ingestionTime": 1778866322512,
+      "message": "============================================================",
+      "timestamp": 1778866316461
+    },
+    {
+      "ingestionTime": 1778866322512,
+      "message": "\ud83d\udcc5 Started at: Fri May 15 17:31:52 UTC 2026",
+      "timestamp": 1778866316461
+    },
+    {
+      "ingestionTime": 1778866322512,
+      "message": "\ud83d\udd27 Pipeline: COLMAP mapper with GPU SIFT + spatial/sequential/vocab matching",
+      "timestamp": 1778866316461
+    },
+    {
+      "ingestionTime": 1778866322512,
+      "message": "\ud83d\udccd GPS Priors: image EXIF metadata",
+      "timestamp": 1778866316461
+    },
+    {
+      "ingestionTime": 1778866322512,
+      "message": "\ud83c\udfaf Output: COLMAP TXT export for 3DGS",
+      "timestamp": 1778866316461
+    },
+    {
+      "ingestionTime": 1778866322512,
+      "message": "============================================================",
+      "timestamp": 1778866316461
+    },
+    {
+      "ingestionTime": 1778866322512,
+      "message": "\ud83d\udd0d Verifying environment...",
+      "timestamp": 1778866316461
+    },
+    {
+      "ingestionTime": 1778866322512,
+      "message": "Python 3.12.3",
+      "timestamp": 1778866316461
+    },
+    {
+      "ingestionTime": 1778866322512,
+      "message": "\ud83d\udce6 COLMAP version: unavailable via 'colmap version'",
+      "timestamp": 1778866316461
+    },
+    {
+      "ingestionTime": 1778866322512,
+      "message": "Fri May 15 17:31:52 2026       ",
+      "timestamp": 1778866316461
+    },
+    {
+      "ingestionTime": 1778866322512,
+      "message": "+-----------------------------------------------------------------------------------------+",
+      "timestamp": 1778866316461
+    },
+    {
+      "ingestionTime": 1778866322512,
+      "message": "| NVIDIA-SMI 570.211.01             Driver Version: 570.211.01     CUDA Version: 12.9     |",
+      "timestamp": 1778866316461
+    },
+    {
+      "ingestionTime": 1778866322512,
+      "message": "|-----------------------------------------+------------------------+----------------------+",
+      "timestamp": 1778866316461
+    },
+    {
+      "ingestionTime": 1778866322512,
+      "message": "| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |",
+      "timestamp": 1778866316462
+    },
+    {
+      "ingestionTime": 1778866322512,
+      "message": "| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |",
+      "timestamp": 1778866316462
+    },
+    {
+      "ingestionTime": 1778866322512,
+      "message": "|                                         |                        |               MIG M. |",
+      "timestamp": 1778866316462
+    },
+    {
+      "ingestionTime": 1778866322512,
+      "message": "|=========================================+========================+======================|",
+      "timestamp": 1778866316462
+    },
+    {
+      "ingestionTime": 1778866322512,
+      "message": "|   0  Tesla T4                       On  |   00000000:00:1E.0 Off |                    0 |",
+      "timestamp": 1778866316462
+    }
+  ],
+  "nextBackwardToken": "b/39670044465645501739641124441255695805151820779105681408/s",
+  "nextForwardToken": "f/39670044465667802484839655064397231523424469140611661843/s"
+}

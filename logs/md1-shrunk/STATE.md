@@ -4949,3 +4949,62 @@ skybox, compression, artifact handoff, and visual gates.
   - exact-head workflow runs: `0` (expected; `[skip ci]`)
   - evidence:
     - `logs/md1-shrunk/polls/20260518T102415Z-postpush/github-actions-runs-head.json`
+
+## 2026-05-18T10:51:28Z poll (monitor; no new launches)
+
+- Poll artifacts:
+  - `logs/md1-shrunk/polls/20260518T104631Z-monitor/`
+- Branch/head/status:
+  - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+  - `git rev-parse HEAD` -> `6ee55fae8498d56f5b0e6faaa83fd8998e215e9b`
+  - `git status --porcelain=v1` -> clean
+  - evidence: `logs/md1-shrunk/polls/20260518T104631Z-monitor/git.txt`
+- GitHub Actions (exact head + last known green deploys; REST API via curl since `gh` is not installed):
+  - provided exact-head `CDK Deploy` proof:
+    - run `25932325504` (`CDK Deploy`) -> `success`, head `e9cbf71c56420ce386b028e7f4af33163ce4dcc2`
+    - evidence: `logs/md1-shrunk/polls/20260518T104631Z-monitor/github-actions-run-25932325504.json`
+  - current head workflow runs: `0` (expected; monitor commits use `[skip ci]`)
+  - latest green pair (Pages + CDK) observed on branch:
+    - head `049c70baf003e3a1e816f729c514d6b491665a76` -> Pages run `26015823853` + CDK run `26015823873` (both `success`)
+    - evidence: `logs/md1-shrunk/polls/20260518T104631Z-monitor/github-actions-proof.json`
+  - note: a Pages run for head `e9cbf71c...` was not found in the Pages-workflow run list for this branch (may be older than retained branch workflow history for that workflow).
+    - evidence: `logs/md1-shrunk/polls/20260518T104631Z-monitor/github-actions-pages-workflow-find-e9cbf.json`
+- AWS identity + active state (via boto3; us-west-2; `aws` CLI is not installed):
+  - identity: account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions RUNNING (staging): `0`
+  - Step Functions RUNNING (all SpaceportMLPipeline* state machines): `0`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T104631Z-monitor/aws-sts-get-caller-identity.json`
+    - `logs/md1-shrunk/polls/20260518T104631Z-monitor/stepfunctions-running-executions-staging.json`
+    - `logs/md1-shrunk/polls/20260518T104631Z-monitor/stepfunctions-running-executions-all.json`
+- SageMaker state (staging us-west-2; via boto3):
+  - SfM ProcessingJob `md1-shrunk-1456-sfm-1778866088` -> `Completed`, `FailureReason=null`
+  - InProgress processing jobs: `0`
+  - InProgress training jobs: `0`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T104631Z-monitor/sagemaker-describe-processing-md1-shrunk-1456-sfm-1778866088.json`
+    - `logs/md1-shrunk/polls/20260518T104631Z-monitor/sagemaker-list-processing-jobs-InProgress.json`
+    - `logs/md1-shrunk/polls/20260518T104631Z-monitor/sagemaker-list-training-jobs-InProgress.json`
+- SfM output S3 present + Montana gates pass:
+  - COLMAP output: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/`
+  - gates (from `sfm_metadata.json`): `images_registered=1456`, `merged_component_count=1`, `points_3d=1103335`, `timed_out=false`, `quality_check_passed=true`
+  - overall Montana gate assessment: `PASS`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T104631Z-monitor/s3-colmap-summary.json`
+    - `logs/md1-shrunk/polls/20260518T104631Z-monitor/sfm_metadata.json`
+    - `logs/md1-shrunk/polls/20260518T104631Z-monitor/colmap-metrics.json`
+    - `logs/md1-shrunk/polls/20260518T104631Z-monitor/sfm-montana-gate-assessment.json`
+    - `logs/md1-shrunk/polls/20260518T104631Z-monitor/cloudwatch-processing-tail.txt`
+- Downstream pipeline terminal (re-verified; no new launches):
+  - Step Functions execution `execution-md1shrunk1456-1778880862` -> `SUCCEEDED`
+  - evidence: `logs/md1-shrunk/polls/20260518T104631Z-monitor/stepfunctions-describe-execution-md1shrunk1456-1778880862.json`
+- Public reachability (anonymous; bundle + preview):
+  - preview alias: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+  - preview `/health.txt` -> `HTTP 200`
+  - bundle `meta.json` -> `HTTP 200`
+  - bundle `background_skybox.webp` -> `HTTP 200`
+  - gaussian count (from `meta.json means.shape[0]`): `990025`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T104631Z-monitor/http-head-sanity.txt`
+    - `logs/md1-shrunk/polls/20260518T104631Z-monitor/bundle-meta.json`
+    - `logs/md1-shrunk/polls/20260518T104631Z-monitor/gaussian_count.txt`
