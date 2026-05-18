@@ -1,0 +1,50 @@
+1778878461864	COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=163s idle=120s
+1778878522468	COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=223s idle=180s
+1778878581742	COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=283s idle=240s
+1778878642500	COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=343s idle=300s
+1778878702072	COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=403s idle=360s
+1778878762303	COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=463s idle=420s
+1778878789731	COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:59:49.413458 12737 incremental_pipeline.cc:774] Extracting colors
+1778878850748	COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=552s idle=60s
+1778878910763	COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=612s idle=120s
+1778878915764	2026-05-15 21:01:55,547 - INFO - [chunk_model_seam_05_point_triangulator_02_model_converter_chunk_model_seam_05_point_triangulator_02] colmap model_converter --input_path /tmp/colmap_sfm_bn0hhstb/chunk_model_seam_05_point_triangulator_02 --output_path /tmp/colmap_sfm_bn0hhstb/text_models/chunk_model_seam_05_point_triangulator_02/chunk_model_seam_05_point_triangulator_02 --output_type TXT
+1778879022791	MEMORY_PROBE [after_python]:
+1778879022791	MemTotal:       16081288 kB
+1778879022791	MemFree:         6891188 kB
+1778879022791	MemAvailable:   14983984 kB
+               total        used        free      shared  buff/cache   available
+1778879022791	Mem:            15Gi       1.0Gi       6.6Gi       1.1Mi       8.0Gi        14Gi
+1778879022791	Swap:             0B          0B          0B
+1778879022791	============================================================
+1778879022791	🔍 VALIDATING OUTPUT
+1778879022791	============================================================
+1778879022791	✅ /opt/ml/processing/output/sparse/0/cameras.txt (195 bytes)
+1778879022791	✅ /opt/ml/processing/output/sparse/0/images.txt (605145970 bytes)
+1778879022791	✅ /opt/ml/processing/output/sparse/0/points3D.txt (149267572 bytes)
+1778879022792	✅ /opt/ml/processing/output/images (1456 files)
+1778879022792	✅ /opt/ml/processing/output/database.db (2330189824 bytes)
+1778879022792	✅ /opt/ml/processing/output/sfm_metadata.json (19014 bytes)
+1778879024792	✅ COLMAP format validation passed
+1778879024792	============================================================
+1778879024792	📊 PROCESSING STATISTICS
+1778879024792	============================================================
+1778879024792	📷 Cameras registered: 1
+1778879024792	🖼️ Images registered: 1456
+1778879024792	🖼️ Images copied for 3DGS: 1456
+1778879024792	🎯 3D points: 1020913
+1778879024792	⏱️ Processing time: 12709.05 seconds
+1778879024792	🛰️ GPS priors detected: 1456
+1778879024792	🔗 Matchers: chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher
+1778879024792	🧭 Match profile: P1
+1778879024792	➡️ Sequential matcher enabled: True
+1778879024792	↩️ Fallback reason: not_needed
+1778879024792	🎯 Vocab tree candidates: 40
+1778879024793	📌 SIFT max features: 8192
+1778879024793	============================================================
+1778879024793	🎉 SPACEPORT COLMAP GPU SfM COMPLETED SUCCESSFULLY!
+1778879024793	============================================================
+1778879024793	✅ GPU-accelerated COLMAP SfM completed
+1778879024793	📁 Output files ready for 3D Gaussian Splatting training
+1778879024793	🔗 COLMAP TXT handoff maintained
+1778879024793	📅 Completed at: Fri May 15 21:03:44 UTC 2026
+1778879024793	============================================================

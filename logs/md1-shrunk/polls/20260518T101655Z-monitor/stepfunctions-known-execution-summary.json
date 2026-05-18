@@ -1,0 +1,10 @@
+[
+  {
+    "stateMachineName": "SpaceportMLPipeline-br-8abcbd5662",
+    "status": "SUCCEEDED",
+    "name": "execution-md1shrunk1456-1778880862",
+    "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-br-8abcbd5662:execution-md1shrunk1456-1778880862",
+    "startDate": "2026-05-15 15:34:23.795000-06:00",
+    "stopDate": "2026-05-15 18:09:44.189000-06:00"
+  }
+]

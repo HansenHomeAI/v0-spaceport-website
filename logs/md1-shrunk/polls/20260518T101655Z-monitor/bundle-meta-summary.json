@@ -1,0 +1,9 @@
+{
+  "top_level_keys": [
+    "means",
+    "quats",
+    "scales",
+    "sh0",
+    "shN"
+  ]
+}

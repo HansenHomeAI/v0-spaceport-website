@@ -4890,3 +4890,49 @@ skybox, compression, artifact handoff, and visual gates.
   - evidence:
     - `logs/md1-shrunk/polls/20260518T095147Z-postpush/github-actions-runs-head.json`
     - `logs/md1-shrunk/polls/20260518T095147Z-postpush/github-actions-runs-branch.json`
+
+## 2026-05-18T10:16:55Z poll (monitor; re-verify terminal state; no new launches)
+
+- Poll artifacts:
+  - `logs/md1-shrunk/polls/20260518T101655Z-monitor/`
+- Branch/head/status:
+  - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+  - `git rev-parse HEAD` -> `bae68039f2c2b49bd74412553bba4d2c4cb7ea51` (`[skip ci]`)
+  - `git status --porcelain=v1` -> clean
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T101655Z-monitor/git-branch.txt`
+    - `logs/md1-shrunk/polls/20260518T101655Z-monitor/git-head.txt`
+    - `logs/md1-shrunk/polls/20260518T101655Z-monitor/git-status.txt`
+- GitHub Actions (exact head; no `gh` here; REST unauthenticated):
+  - provided exact-head `CDK Deploy` proof:
+    - run `25932325504` -> `success`, head `e9cbf71c56420ce386b028e7f4af33163ce4dcc2`
+  - current head (`bae68039...`) workflow runs: `0` (expected; `[skip ci]`)
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T101655Z-monitor/github-actions.json`
+- AWS identity + active state (via boto3; us-west-2):
+  - identity: account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions RUNNING (SpaceportMLPipeline*): `0`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T101655Z-monitor/aws.json`
+    - `logs/md1-shrunk/polls/20260518T101655Z-monitor/stepfunctions-known-execution-summary.json`
+- SageMaker state (staging; via boto3):
+  - SfM ProcessingJob `md1-shrunk-1456-sfm-1778866088` -> `Completed`, `FailureReason=null`
+  - InProgress processing jobs: `0`
+  - InProgress training jobs: `0`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T101655Z-monitor/aws.json`
+    - `logs/md1-shrunk/polls/20260518T101655Z-monitor/cloudwatch-processing-tail.txt`
+- SfM Montana gates (from `sfm_metadata.json` in COLMAP output):
+  - `images_registered=1456`, `merged_component_count=1`, `points_3d=1103335`, `timed_out=false`, `quality_check_passed=true`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T101655Z-monitor/sfm_metadata.json`
+    - `logs/md1-shrunk/polls/20260518T101655Z-monitor/colmap-metrics.json`
+- Public reachability (anonymous; bundle + preview):
+  - preview alias: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+  - preview `/health.txt` -> `HTTP 200`
+  - bundle `meta.json` -> `HTTP 200`
+  - bundle `background_skybox.webp` -> `HTTP 200`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T101655Z-monitor/http-head-sanity.txt`
+    - `logs/md1-shrunk/polls/20260518T101655Z-monitor/bundle-meta.json`
+    - `logs/md1-shrunk/polls/20260518T101655Z-monitor/bundle-meta-summary.json`
