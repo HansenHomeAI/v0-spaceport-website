@@ -1,0 +1,25 @@
+{
+  "executions": [
+    {
+      "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-br-8abcbd5662:execution-md1shrunk1456-1778880862",
+      "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-8abcbd5662",
+      "name": "execution-md1shrunk1456-1778880862",
+      "status": "SUCCEEDED",
+      "startDate": "2026-05-15 15:34:23.795000-06:00",
+      "stopDate": "2026-05-15 18:09:44.189000-06:00",
+      "redriveCount": 0
+    }
+  ],
+  "ResponseMetadata": {
+    "RequestId": "e1174029-f7a4-4935-8849-ac21858f6af0",
+    "HTTPStatusCode": 200,
+    "HTTPHeaders": {
+      "x-amzn-requestid": "e1174029-f7a4-4935-8849-ac21858f6af0",
+      "date": "Mon, 18 May 2026 09:49:36 GMT",
+      "content-type": "application/x-amz-json-1.0",
+      "content-length": "396",
+      "connection": "keep-alive"
+    },
+    "RetryAttempts": 0
+  }
+}

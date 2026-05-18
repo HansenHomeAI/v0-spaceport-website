@@ -4825,3 +4825,55 @@ skybox, compression, artifact handoff, and visual gates.
     - evidence:
       - `logs/md1-shrunk/polls/20260518T081804Z-monitor/gh-run-list.json`
       - `logs/md1-shrunk/polls/20260518T081804Z-monitor/gh-run-count.txt`
+
+## 2026-05-18T09:47:16Z poll (monitor; re-verify terminal state)
+
+- Poll artifacts:
+  - `logs/md1-shrunk/polls/20260518T094716Z-monitor/`
+- Branch/head/status:
+  - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+  - `git rev-parse HEAD` -> `e59b5cba6a120dd79da3addf7e8dfe7308d5608e` (`[skip ci]`)
+  - `git status --porcelain=v1` -> clean
+  - evidence: `logs/md1-shrunk/polls/20260518T094716Z-monitor/git.txt`
+- GitHub Actions (exact head; `gh` not present on this machine):
+  - provided exact-head `CDK Deploy` proof:
+    - run `25932325504` (`CDK Deploy`) -> `success`, head `e9cbf71c...`
+    - evidence:
+      - `logs/md1-shrunk/polls/20260518T094716Z-monitor/github-actions-run-25932325504-summary.json`
+      - `logs/md1-shrunk/polls/20260518T094716Z-monitor/github-actions-run-25932325504.json`
+  - branch runs snapshot (REST list):
+    - `logs/md1-shrunk/polls/20260518T094716Z-monitor/github-actions-runs-branch.json`
+- AWS identity + active state (via boto3; `aws` CLI not present on this machine):
+  - identity: account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions RUNNING (staging): `0`
+  - Step Functions RUNNING (all SpaceportMLPipeline* state machines): `0`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T094716Z-monitor/aws-sts-get-caller-identity.json`
+    - `logs/md1-shrunk/polls/20260518T094716Z-monitor/stepfunctions-running-executions-staging.json`
+    - `logs/md1-shrunk/polls/20260518T094716Z-monitor/stepfunctions-running-executions-all.json`
+- SageMaker state (staging us-west-2; via boto3):
+  - SfM ProcessingJob `md1-shrunk-1456-sfm-1778866088` -> `Completed`, `FailureReason=null`
+  - InProgress processing jobs: `0`
+  - InProgress training jobs: `0`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T094716Z-monitor/sagemaker-processing-summary.json`
+    - `logs/md1-shrunk/polls/20260518T094716Z-monitor/sagemaker-describe-processing-md1-shrunk-1456-sfm-1778866088.json`
+    - `logs/md1-shrunk/polls/20260518T094716Z-monitor/sagemaker-list-processing-jobs-InProgress.json`
+    - `logs/md1-shrunk/polls/20260518T094716Z-monitor/sagemaker-list-training-jobs-InProgress.json`
+- SfM output S3 present + Montana metrics unchanged:
+  - COLMAP output: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/`
+  - metrics (from `sfm_metadata.json`): `images_registered=1456`, `merged_component_count=1`, `points_3d=1103335`, `timed_out=false`, `quality_check_passed=true`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T094716Z-monitor/s3-colmap-summary.json`
+    - `logs/md1-shrunk/polls/20260518T094716Z-monitor/sfm_metadata.json`
+    - `logs/md1-shrunk/polls/20260518T094716Z-monitor/colmap-metrics.json`
+    - `logs/md1-shrunk/polls/20260518T094716Z-monitor/cloudwatch-processing-tail.txt`
+- Downstream pipeline terminal (re-verified; no new launches):
+  - Step Functions execution `execution-md1shrunk1456-1778880862` -> `SUCCEEDED`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T094716Z-monitor/stepfunctions-describe-execution-md1shrunk1456-1778880862.json`
+- Public reachability (anonymous):
+  - preview `/health.txt` -> `HTTP 200`
+  - bundle `meta.json` -> `HTTP 200`
+  - bundle `background_skybox.webp` -> `HTTP 200`
+  - evidence: `logs/md1-shrunk/polls/20260518T094716Z-monitor/http-head-sanity.txt`

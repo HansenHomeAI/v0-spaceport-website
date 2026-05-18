@@ -1,0 +1,17 @@
+{
+  "ProcessingJobName": "md1-shrunk-1456-sfm-1778866088",
+  "ProcessingJobStatus": "Completed",
+  "FailureReason": null,
+  "CreationTime": "2026-05-15 11:28:09.932000-06:00",
+  "ProcessingStartTime": "2026-05-15 11:28:49.432000-06:00",
+  "ProcessingEndTime": "2026-05-15 15:04:36.723000-06:00",
+  "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:05e85850abcfd623e8ec7f3debc70ce2dcd9861548311290db901e0c661d4940",
+  "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+  "OutputS3Uris": [
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap"
+  ],
+  "CloudWatch": {
+    "LogGroupName": "/aws/sagemaker/ProcessingJobs",
+    "LogStreamName": "md1-shrunk-1456-sfm-1778866088/algo-1-1778866129"
+  }
+}

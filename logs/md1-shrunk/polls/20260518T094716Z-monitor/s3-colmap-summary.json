@@ -1,0 +1,258 @@
+{
+  "bucket": "spaceport-ml-processing-staging",
+  "prefix": "manual-validations/md1-shrunk-20260515T1641Z/colmap/",
+  "total_objects": 1468,
+  "total_size_bytes": 9915165134,
+  "sample_first_50": [
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/database.db",
+      "Size": 2330189824,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01000.JPG",
+      "Size": 4127336,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01001.JPG",
+      "Size": 4083132,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01002.JPG",
+      "Size": 4129708,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01003.JPG",
+      "Size": 4158464,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01004.JPG",
+      "Size": 4311854,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01005.JPG",
+      "Size": 4342570,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01006.JPG",
+      "Size": 4332739,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01007.JPG",
+      "Size": 4066242,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01008.JPG",
+      "Size": 4103135,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01009.JPG",
+      "Size": 4135922,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01010.JPG",
+      "Size": 4171518,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01011.JPG",
+      "Size": 4246496,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01012.JPG",
+      "Size": 4119518,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01013.JPG",
+      "Size": 4103278,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01014.JPG",
+      "Size": 4137133,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01015.JPG",
+      "Size": 4143013,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01016.JPG",
+      "Size": 4125616,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01017.JPG",
+      "Size": 4164154,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01018.JPG",
+      "Size": 4141360,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01019.JPG",
+      "Size": 4113987,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01020.JPG",
+      "Size": 4285853,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01021.JPG",
+      "Size": 4324398,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01022.JPG",
+      "Size": 4127923,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01023.JPG",
+      "Size": 4128014,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01024.JPG",
+      "Size": 4118973,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01025.JPG",
+      "Size": 4096206,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01026.JPG",
+      "Size": 4035014,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01027.JPG",
+      "Size": 4043081,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01028.JPG",
+      "Size": 4250332,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01029.JPG",
+      "Size": 4103519,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01030.JPG",
+      "Size": 4151503,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01031.JPG",
+      "Size": 4138766,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01032.JPG",
+      "Size": 4216680,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01033.JPG",
+      "Size": 4298342,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01034.JPG",
+      "Size": 4247096,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01035.JPG",
+      "Size": 4229621,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01036.JPG",
+      "Size": 4240856,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01037.JPG",
+      "Size": 4169887,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01038.JPG",
+      "Size": 4125444,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01039.JPG",
+      "Size": 4141180,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01040.JPG",
+      "Size": 4086734,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01041.JPG",
+      "Size": 4268225,
+      "LastModified": "2026-05-15 21:04:09+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01042.JPG",
+      "Size": 4175760,
+      "LastModified": "2026-05-15 21:04:10+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01043.JPG",
+      "Size": 4048759,
+      "LastModified": "2026-05-15 21:04:10+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01044.JPG",
+      "Size": 4259642,
+      "LastModified": "2026-05-15 21:04:10+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01045.JPG",
+      "Size": 4156762,
+      "LastModified": "2026-05-15 21:04:10+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01046.JPG",
+      "Size": 4104611,
+      "LastModified": "2026-05-15 21:04:10+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01047.JPG",
+      "Size": 4164034,
+      "LastModified": "2026-05-15 21:04:10+00:00"
+    },
+    {
+      "Key": "manual-validations/md1-shrunk-20260515T1641Z/colmap/images/DJI_01048.JPG",
+      "Size": 4175717,
+      "LastModified": "2026-05-15 21:04:10+00:00"
+    }
+  ]
+}
