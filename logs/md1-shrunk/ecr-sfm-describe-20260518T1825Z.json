@@ -1,0 +1,854 @@
+{
+    "imageDetails": [
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:79121fb435d617bdbeec02ffea3dbbc9f1edcc2af2bda2312801a3ab370d8e7a",
+            "imageSizeInBytes": 1532,
+            "imagePushedAt": "2026-03-26T16:17:56.950000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.oci.image.config.v1+json"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:c24fbac2c28948006228b647d17dc73e51b4d9ec2e685aa7bdf5a18eab57588d",
+            "imageSizeInBytes": 706787786,
+            "imagePushedAt": "2026-05-18T11:34:59.300000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-05-18T11:35:00.633000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:e5d4f137c39e3b0b3579e22a711b6e584701c34f88ee2ebc70ea5e3cb69d4a90",
+            "imageSizeInBytes": 1768,
+            "imagePushedAt": "2026-04-15T16:37:20.379000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.oci.image.config.v1+json",
+            "lastRecordedPullTime": "2026-04-15T22:35:39.470000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:3df2f171f8af2b8e8e2d8eb81438aba2b8dc716d7c5b284f7c0bc6df7b598c12",
+            "imageSizeInBytes": 3170692567,
+            "imagePushedAt": "2026-04-16T22:32:28.432000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.oci.image.config.v1+json",
+            "lastRecordedPullTime": "2026-04-17T14:16:59.200000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:cf6b96f705a4275c9b718d96a0b03487007f42647a9304c307cf0daf6d296a21",
+            "imageSizeInBytes": 1762,
+            "imagePushedAt": "2026-04-15T10:38:45.605000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.oci.image.config.v1+json",
+            "lastRecordedPullTime": "2026-04-15T16:30:56.716000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:523e1b50f25129ef8909396988eba64196a349c41a80a9f2cefd8ee12f7cce67",
+            "imageSizeInBytes": 3168898296,
+            "imagePushedAt": "2026-04-23T13:46:40.833000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.buildkit.cacheconfig.v0",
+            "lastRecordedPullTime": "2026-05-18T11:08:11.418000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:15a4aab2297ca7f9ffaae19504edcd029e05498476ff56c3702aea13ee39ef40",
+            "imageSizeInBytes": 3170895032,
+            "imagePushedAt": "2026-05-18T11:44:49.801000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-05-18T11:46:11.849000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:2d8593b941092e1363498068a7ee9e2a5aeecc1a341155e4bf4e37f3a216e3cd",
+            "imageSizeInBytes": 1763,
+            "imagePushedAt": "2026-04-29T16:21:17.764000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.oci.image.config.v1+json",
+            "lastRecordedPullTime": "2026-04-29T16:21:18.272000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:83f1a192291c3a8f0fcc061999c68e7932cdaf247c421f7aee0e722ee7d37034",
+            "imageSizeInBytes": 3154349170,
+            "imagePushedAt": "2026-04-11T15:27:19.086000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.oci.image.config.v1+json",
+            "lastRecordedPullTime": "2026-04-11T15:27:19.835000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:319d2e995ad0b682a96cddcb8bba909f4b01f34ad411ac3dd2cada79b100229a",
+            "imageSizeInBytes": 706852232,
+            "imagePushedAt": "2026-05-07T10:51:49.734000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-05-18T11:08:11.632000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:e6b0c1278c9f741c95460489ef7e2adcf144820caaf5266f87575127f6d6a30e",
+            "imageSizeInBytes": 1762,
+            "imagePushedAt": "2026-05-07T10:58:18.211000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.oci.image.config.v1+json",
+            "lastRecordedPullTime": "2026-05-18T11:13:19.566000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:93d2f6c6dd087f2097957b5b87ee04998a5659b0e7552c04c9681835e2e54641",
+            "imageSizeInBytes": 709264251,
+            "imagePushedAt": "2026-05-18T11:16:51.497000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.buildkit.cacheconfig.v0",
+            "lastRecordedPullTime": "2026-05-18T11:30:04.739000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:c8c1aadaf8a5a6270a5e2cd318d7311383b855669e40e8a4d801233604a9a286",
+            "imageSizeInBytes": 3170695261,
+            "imagePushedAt": "2026-04-15T10:38:45.394000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.oci.image.config.v1+json",
+            "lastRecordedPullTime": "2026-04-15T16:24:24.229000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:58252243269a230c294c895cea8482999fe489395beaf6b1a8433d5e9b88bc20",
+            "imageSizeInBytes": 1766,
+            "imagePushedAt": "2026-04-16T22:32:28.626000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.oci.image.config.v1+json",
+            "lastRecordedPullTime": "2026-04-17T14:35:56.356000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:1c6f29839878bc0a6ee91e1fbce0902de84a7b068167df09e1e85b6f7349641b",
+            "imageSizeInBytes": 1768,
+            "imagePushedAt": "2026-04-15T22:41:54.259000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.oci.image.config.v1+json",
+            "lastRecordedPullTime": "2026-04-16T08:26:11.160000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:cce012ff5fb91e84b22eb7f30b45c3a5c22f386f39cc68df5a1606eb7d7d7e01",
+            "imageSizeInBytes": 1844,
+            "imagePushedAt": "2026-04-10T21:26:43.287000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.oci.image.config.v1+json",
+            "lastRecordedPullTime": "2026-04-10T21:26:43.790000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:6060fb44a8ef520e8559f0c492a109a7b801dd5828d91aaa38959d9d53559cc5",
+            "imageSizeInBytes": 3170693216,
+            "imagePushedAt": "2026-04-16T08:38:51.273000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.oci.image.config.v1+json",
+            "lastRecordedPullTime": "2026-04-16T22:17:24.069000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:0a8346f043d8b2d59d5de9df9aef36a367282fbdf625418c08ae004d1bb96883",
+            "imageSizeInBytes": 1765,
+            "imagePushedAt": "2026-04-16T08:38:51.472000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.oci.image.config.v1+json",
+            "lastRecordedPullTime": "2026-04-16T22:23:52.179000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:7be4485d83a23aa02e63bbb0ef3c15e131317dd4529347fcab8d526101c44be2",
+            "imageSizeInBytes": 3170777550,
+            "imagePushedAt": "2026-04-29T16:21:17.585000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.oci.image.config.v1+json",
+            "lastRecordedPullTime": "2026-04-29T16:21:18.217000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:cb3a3e6faa5105da380ad12966cebcbfe0de4065626e624642fa63e75fc06563",
+            "imageSizeInBytes": 3170694770,
+            "imagePushedAt": "2026-04-15T16:37:20.161000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.oci.image.config.v1+json",
+            "lastRecordedPullTime": "2026-04-16T08:13:02.473000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:f96178fee59fe8b1c232375d7dc358162dbd0ffe21331330bc85a9043a26636f",
+            "imageSizeInBytes": 3154356441,
+            "imagePushedAt": "2026-04-10T21:26:43.039000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.oci.image.config.v1+json",
+            "lastRecordedPullTime": "2026-04-11T10:21:54.032000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:9d3d37246c866329518d79c7db0db722c8f227337bec89ec3fb0ab1194ce5d30",
+            "imageSizeInBytes": 6352156610,
+            "imagePushedAt": "2026-05-18T11:41:27.386000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.buildkit.cacheconfig.v0",
+            "lastRecordedPullTime": "2026-05-18T11:57:22.122000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:c387a5b714f496ca86b370b11520e5a5b82d3bc131549eac52aef59f2d9b3fbc",
+            "imageSizeInBytes": 706787321,
+            "imagePushedAt": "2026-05-18T11:13:18.733000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-05-18T11:13:19.412000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:75cfaf47db6fb0af63d625c42e6499a4d582c5348b07962d06147e713c5ed8d9",
+            "imageSizeInBytes": 3170798783,
+            "imagePushedAt": "2026-05-07T10:58:17.995000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.oci.image.config.v1+json",
+            "lastRecordedPullTime": "2026-05-18T11:06:36.733000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:789b45de4f886f8db38fd43c4f091e5f77d551fe9995690dc1b2d98925b6b276",
+            "imageSizeInBytes": 3170692778,
+            "imagePushedAt": "2026-04-15T22:41:54.061000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.oci.image.config.v1+json",
+            "lastRecordedPullTime": "2026-04-16T08:19:36.732000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:19704ca7bc16c65ec3c102650a83772826da843e30bf3939d85b39cbfa7f0869",
+            "imageSizeInBytes": 709266708,
+            "imagePushedAt": "2026-05-18T11:18:18.196000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-05-18T11:20:49.115000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:c1892fddd76722a1327a755950ba8efbe1bfbd8895981dcf67981d1944f00156",
+            "imageSizeInBytes": 4821599559,
+            "imagePushedAt": "2026-03-26T16:17:56.680000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.oci.image.config.v1+json"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:c436ec0b02be38dd07a2730076b72f55250d9a34288236f9a5be89d815d641e3",
+            "imageSizeInBytes": 1835,
+            "imagePushedAt": "2026-04-11T15:27:19.350000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.oci.image.config.v1+json",
+            "lastRecordedPullTime": "2026-04-11T15:27:19.892000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:9ce5401bb8d384176ce460014ea57bf48b43aa68fea89481d4ddc1f3a4e1d5b0",
+            "imageTags": [
+                "base-42232d080ac91949"
+            ],
+            "imageSizeInBytes": 5571307522,
+            "imagePushedAt": "2026-04-17T19:34:35.906000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-04-17T19:34:37.122000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:3cc80e2c5794db386576666c147fc6bf439bc1c06fd4ecd27f83fc836b4e44e7",
+            "imageTags": [
+                "agent84261357sfmstockhierarchicalbenchmark"
+            ],
+            "imageSizeInBytes": 3168916274,
+            "imagePushedAt": "2026-04-23T13:46:42.084000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-04-29T16:08:59.278000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:bdc72bdfb7fa13c7250ba9c2db156ad6c34a95c9cde6b8ae5a9db33fc7ce756c",
+            "imageTags": [
+                "agent53821974md1geometryconsistency"
+            ],
+            "imageSizeInBytes": 3168919165,
+            "imagePushedAt": "2026-04-23T13:22:28.015000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-04-23T13:24:09.753000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:f696dcfece0a0e2cac26141743a561d37bfd0c46cda63b0dc8511e5916c712af",
+            "imageTags": [
+                "codexagent72759003syncdevelopmentintomain",
+                "fixsogsproxyquerystring",
+                "codexagent20260304boundaryfitux",
+                "codexagent72759002syncmlintodevelopment",
+                "agent74621839exploreautolistings"
+            ],
+            "imageSizeInBytes": 999009149,
+            "imagePushedAt": "2026-03-05T19:03:28.083000-07:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-03-07T19:04:17.219000-07:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:57233366590d0d645463c30766452f457d2440b7e6e61a88c8e1746cecaece42",
+            "imageTags": [
+                "agent61827304sfmprooffrontier"
+            ],
+            "imageSizeInBytes": 3168923222,
+            "imagePushedAt": "2026-04-20T21:55:44.017000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-04-23T11:31:57.248000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:91cdf4ae2e5e4760f2a3b40da1e6fe361817a408a665081170e234425c0b395d",
+            "imageTags": [
+                "20260210-050933"
+            ],
+            "imageSizeInBytes": 999012298,
+            "imagePushedAt": "2026-02-09T22:11:05.758000-07:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-02-09T22:27:53.940000-07:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:9774b2a18a79e0e1f03328a0d38a3742c08bc4da8ee163ed615c8fe67135db82",
+            "imageTags": [
+                "agent49231687litchiconnectionfix"
+            ],
+            "imageSizeInBytes": 999008256,
+            "imagePushedAt": "2026-03-10T18:37:19.092000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-03-10T18:48:17.996000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:c1a0a4a7ac0fc70160d6659a3a3dd623a95779cf2f4c9413ce7b4c89e8badb10",
+            "imageTags": [
+                "agent90742618md1geometryconsistency"
+            ],
+            "imageSizeInBytes": 3168919580,
+            "imagePushedAt": "2026-04-23T13:26:56.381000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-04-23T13:38:32.750000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:8f55d306d4635fb0a97aa36093ef152833ff0a7eb56a89e9737752bf8a0679ab",
+            "imageTags": [
+                "agent94827160colmapbuildverify"
+            ],
+            "imageSizeInBytes": 9452279348,
+            "imagePushedAt": "2026-03-26T17:06:20.268000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-03-26T17:25:51.758000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:673cda49d9129d5b679b2eecc1ce060ec85319a1e7ed8b3fd10777ba74dbfcc3",
+            "imageTags": [
+                "codexagent58264173sotaimplementation"
+            ],
+            "imageSizeInBytes": 999015083,
+            "imagePushedAt": "2026-03-08T03:23:57.273000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-03-10T18:29:48.312000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:33b3a027aee28dd4ab0da17641f73a7ade381f4df8ad963dbf5ea76e9981e5db",
+            "imageTags": [
+                "agent18472635colmapbuilddeploy"
+            ],
+            "imageSizeInBytes": 9452281271,
+            "imagePushedAt": "2026-03-26T15:25:26.513000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-03-26T15:27:01.520000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:95eb401338f43ee9b3e7d8aba6f1cff3024d4b7622cb22ab4bbba4a3d3db44ef",
+            "imageTags": [
+                "20251119-183925"
+            ],
+            "imageSizeInBytes": 998635713,
+            "imagePushedAt": "2025-11-19T12:22:08.177000-07:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-02-09T22:10:10.682000-07:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:f252f724f840d7f5a0836c77469aabb50c0aa5ce7e4926e54fbc6f3c13adabe8",
+            "imageTags": [
+                "codexagent72759000containerqueuesafeguard"
+            ],
+            "imageSizeInBytes": 999008229,
+            "imagePushedAt": "2026-03-05T18:17:02.205000-07:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-03-05T18:56:22.918000-07:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:10c82671a381779b533d5e793f4b13484ecec70e0efef4e3d66689ed9e5b8e35",
+            "imageTags": [
+                "agent39274108sfmproductionspine"
+            ],
+            "imageSizeInBytes": 3170777550,
+            "imagePushedAt": "2026-04-29T16:21:17.985000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.index.v1+json",
+            "lastRecordedPullTime": "2026-04-29T16:22:42.507000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:0f8f5deaf0429be42a78ef1731f53d5182bbb61c30f628dac13d1ea32735fe0b",
+            "imageTags": [
+                "agent51827463investigatebuildroutes"
+            ],
+            "imageSizeInBytes": 3168858188,
+            "imagePushedAt": "2026-03-30T07:58:48.337000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-03-30T08:14:23.477000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:9d7b3ae44f142a577016b11b5729c48e80e427994bb620c452a22926ca1465aa",
+            "imageTags": [
+                "agent26032611replacesfmcolmapgpu"
+            ],
+            "imageSizeInBytes": 4821599559,
+            "imagePushedAt": "2026-03-26T16:17:57.182000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.index.v1+json"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:1fc1db92bd162e10308ef8872b1c6eeb0b72720fa0ab7347a356524e65160ccd",
+            "imageTags": [
+                "cache",
+                "20260210-063830"
+            ],
+            "imageSizeInBytes": 999012370,
+            "imagePushedAt": "2026-02-09T23:39:53.644000-07:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-02-13T10:37:04.124000-07:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811",
+            "imageTags": [
+                "agent27491836sfmspatialchunking"
+            ],
+            "imageSizeInBytes": 3169275894,
+            "imagePushedAt": "2026-04-02T15:37:08.834000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-05-18T11:29:50.238000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:abc47512a75d7fe32e7a3dde452a878161903eb41759367b85c48b38ede3f1d7",
+            "imageTags": [
+                "agent27844112sfmmerge11bridgeseedfix"
+            ],
+            "imageSizeInBytes": 3170694770,
+            "imagePushedAt": "2026-04-15T16:37:20.591000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.index.v1+json",
+            "lastRecordedPullTime": "2026-04-16T08:12:16.802000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:859ee6c1bd5f4e7ecc9be4b69ba112d6f465870413a79cba832799f3378ebeff",
+            "imageTags": [
+                "agent00008778replacesfmcolmap"
+            ],
+            "imageSizeInBytes": 3168858239,
+            "imagePushedAt": "2026-03-26T14:45:03.832000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-03-28T10:56:29.809000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:9052b92ec60de81c05d6dc9a5a41cde194afbc63d23439448610c2c4bd1e2c19",
+            "imageTags": [
+                "agent10040721triggersfmexifrebuild",
+                "agent52419073phase5gaussratio",
+                "agent70931462phase5scaleregularization",
+                "agent90547182phase5densifyinterval",
+                "agent96742051phase5shdegree",
+                "agent18364289phase5gausscap"
+            ],
+            "imageSizeInBytes": 999012658,
+            "imagePushedAt": "2026-02-13T10:44:23.206000-07:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-03-05T18:09:38.485000-07:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:5d03bd2481de8bdcab5e93cf7b969bf1dcafc1a8d336b2eafa8cb77b51e08c38",
+            "imageTags": [
+                "agent84210391canyonvistaparity"
+            ],
+            "imageSizeInBytes": 3168858294,
+            "imagePushedAt": "2026-03-30T14:31:54.992000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-03-30T14:53:37.454000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:734715a5835ca5047918e1907fe3addaee01f7a3fd0cd2f9e6ebe695e8c8623d",
+            "imageTags": [
+                "agent31492042promotegpspriorssfm"
+            ],
+            "imageSizeInBytes": 3168866169,
+            "imagePushedAt": "2026-04-13T10:38:25.342000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-04-13T10:39:46.355000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:bdb5a96884e876355bb1e7e8a0e7119dc7fd52f3e86d8be6db9673e8e1588756",
+            "imageTags": [
+                "agent86041273sfmseamonlycost"
+            ],
+            "imageSizeInBytes": 3154349170,
+            "imagePushedAt": "2026-04-11T15:27:19.610000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.index.v1+json",
+            "lastRecordedPullTime": "2026-04-11T15:28:46.569000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:b1b73550d31f7956c7d24a770db471980b94edd31223488eb9c844ce9955ca62",
+            "imageTags": [
+                "agent59210477colmapbuildverify"
+            ],
+            "imageSizeInBytes": 222148657,
+            "imagePushedAt": "2026-03-26T15:17:57.735000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-03-26T15:18:39.479000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:05e85850abcfd623e8ec7f3debc70ce2dcd9861548311290db901e0c661d4940",
+            "imageTags": [
+                "agent73948216sfmproductionspine"
+            ],
+            "imageSizeInBytes": 3170798783,
+            "imagePushedAt": "2026-05-07T10:58:18.458000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.index.v1+json",
+            "lastRecordedPullTime": "2026-05-18T09:50:39.039000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:d4bb9034c37ffb138c91c737ddc6572135b8a9c4e168e510129ed0bfe4b75c3b",
+            "imageTags": [
+                "agent70148362investigatesfmrecovery"
+            ],
+            "imageSizeInBytes": 3154356441,
+            "imagePushedAt": "2026-04-10T21:26:43.504000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.index.v1+json",
+            "lastRecordedPullTime": "2026-04-11T10:21:53.928000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:d37902c9e99b8769d45f8b9052ed47ce87de7e50097d69d03ba9fccdea4a34b3",
+            "imageTags": [
+                "agent39418949sfmglobalmapperbenchmark"
+            ],
+            "imageSizeInBytes": 7510168079,
+            "imagePushedAt": "2026-04-18T19:10:27.625000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-04-20T08:54:47.779000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:7ca345eb7948d9801a2a834d66e642b9f86e8a1b0012655c4235e1faadfdcf72",
+            "imageTags": [
+                "base-38518b31cf9ffaf2"
+            ],
+            "imageSizeInBytes": 7488511028,
+            "imagePushedAt": "2026-04-18T19:08:58.135000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-04-20T08:56:56.772000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:ed49e80c1ba68fd7370795197a4cd00b3aea096f07d4ccf16e464702154101af",
+            "imageTags": [
+                "agent28461573sfmhybridhierarchy"
+            ],
+            "imageSizeInBytes": 3168921914,
+            "imagePushedAt": "2026-04-20T10:43:30.360000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-04-20T21:48:04.402000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:54b1d1784d31943f0eb3201977e63581c69f88df27386e6da7b3191b0ca4108c",
+            "imageTags": [
+                "agent27888319sfmseedpreserveretry"
+            ],
+            "imageSizeInBytes": 3170693216,
+            "imagePushedAt": "2026-04-16T08:38:51.683000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.index.v1+json",
+            "lastRecordedPullTime": "2026-04-16T22:17:23.967000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:258d17682825cb41a0d913beb17218619599b19039ef437129ced92380ef5758",
+            "imageTags": [
+                "agent74298163pipelinehardening"
+            ],
+            "imageSizeInBytes": 999175234,
+            "imagePushedAt": "2026-03-25T16:59:57.964000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-03-26T08:51:30.719000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:3f7907fff71b9b949a3a5ec977fb6d76d9292d00ee980dbd2510e7145bea97e9",
+            "imageTags": [
+                "agent83427165sogsbundleskybox"
+            ],
+            "imageSizeInBytes": 3168857784,
+            "imagePushedAt": "2026-03-30T09:41:11.039000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-03-30T09:42:34.407000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:18d50452baeb8a8374276b3cd8b948d92116119db6337fa5d4d15bc01c08f34b",
+            "imageTags": [
+                "buildcache"
+            ],
+            "imageSizeInBytes": 6352158348,
+            "imagePushedAt": "2026-05-18T12:10:16.623000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.manifest.v1+json",
+            "artifactMediaType": "application/vnd.buildkit.cacheconfig.v0"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:ffd9b73c09fd2bf0090338c7e6f7fd69ed00a5438c769958f68bfc79d3bc70ad",
+            "imageTags": [
+                "agent31459027sfmfinalbridgefallback"
+            ],
+            "imageSizeInBytes": 3170692567,
+            "imagePushedAt": "2026-04-16T22:32:28.904000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.index.v1+json",
+            "lastRecordedPullTime": "2026-04-17T09:19:19.761000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:d5fe49c382326caa65784e05c0c0ebd7019b2be3b27904eb4222421be6f8f8c5",
+            "imageTags": [
+                "agent27461583sfmhierarchyscale"
+            ],
+            "imageSizeInBytes": 3170695261,
+            "imagePushedAt": "2026-04-15T10:38:45.837000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.index.v1+json",
+            "lastRecordedPullTime": "2026-04-15T16:24:24.143000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:a45f9b00e0a8c1bcc42155145b707cbac0f7b41210b1a20686c638d97ec26d82",
+            "imageTags": [
+                "codexsegmented3dgslandscape",
+                "codexagent26030402previewbackendisolation",
+                "codexagentflighttimeoptimization"
+            ],
+            "imageSizeInBytes": 999009176,
+            "imagePushedAt": "2026-03-10T18:55:07.298000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-03-24T16:42:53.884000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:c96dca6f3b0850855eac576e8a27371dfca408e24364d79f7e35b23425cc7950",
+            "imageTags": [
+                "latest",
+                "agent113647md1baselinee2e"
+            ],
+            "imageSizeInBytes": 3170895708,
+            "imagePushedAt": "2026-05-18T12:13:45.187000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:1ade8f642afcdfb2f2b5e54e6e5ff157e0fc1f507b92e477ca15de8cb99ba272",
+            "imageTags": [
+                "agent30377461sfmseedartifactpreserve"
+            ],
+            "imageSizeInBytes": 3170692778,
+            "imagePushedAt": "2026-04-15T22:41:54.556000-06:00",
+            "imageManifestMediaType": "application/vnd.oci.image.index.v1+json",
+            "lastRecordedPullTime": "2026-04-16T08:19:36.636000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:de16944a68a608c04500e6c3c6e1f740266e6ae24b16a78226b59477c0af653b",
+            "imageTags": [
+                "agent86420157replacesfmcolmap"
+            ],
+            "imageSizeInBytes": 5117258860,
+            "imagePushedAt": "2026-03-28T11:20:56.194000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-03-28T13:36:29.621000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:beee01d14429c51046b32dac1820b62263ac9d740a9a7cb0add97843e6a5c14b",
+            "imageTags": [
+                "agent86580563hierarchicalsplatmergeplan"
+            ],
+            "imageSizeInBytes": 3168918510,
+            "imagePushedAt": "2026-04-13T16:01:51.842000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-04-14T00:20:55.466000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:ce5d65f3dbba8d8ef15a64147464dba11f100218790f7a483aeb4dc08d733cb1",
+            "imageTags": [
+                "base"
+            ],
+            "imageSizeInBytes": 706787281,
+            "imagePushedAt": "2026-05-18T12:02:28.802000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-05-18T12:02:30.060000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:a7e2553455ad8ca7988256f4b0d38395e1770b2522532c41c6f535fc8a49f157",
+            "imageTags": [
+                "agent94836271sfmgpspriors"
+            ],
+            "imageSizeInBytes": 3168906555,
+            "imagePushedAt": "2026-03-30T15:42:45.886000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-04-01T16:31:54.690000-06:00"
+        },
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:318e4479d326c8623e414193fd0b6998d6a404630f6d356069d71cab22a36d3c",
+            "imageTags": [
+                "agent68423157sfmcolmaphybrid"
+            ],
+            "imageSizeInBytes": 568526729,
+            "imagePushedAt": "2026-03-24T18:19:06.225000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "lastRecordedPullTime": "2026-03-26T08:55:32.432000-06:00"
+        }
+    ]
+}

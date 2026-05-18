@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T17:52:39Z
+updated: 2026-05-18T18:33:28Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -5872,3 +5872,78 @@ skybox, compression, artifact handoff, and visual gates.
   3. Verify the new branch SfM ECR digest.
   4. Rerun the planner-only preflight once.
   5. Launch full MD1-Shrunk production-spine SfM only after the planner-only preflight exits successfully.
+
+## 2026-05-18T18:33:28Z production-spine planner pass and canonical full SfM launch
+
+- Commit/push:
+  - commit: `df57b678c025ed39fe27b7500d3e7a301b74b603` (`fix: allow sfm planner report completion`)
+  - push: `git push origin agent-113647-md1-baseline-e2e`
+- Exact-head workflows for `df57b678c025ed39fe27b7500d3e7a301b74b603`:
+  - `CDK Deploy` run `26050765145` -> success
+  - `Trigger ML Container Build` run `26050769102` -> success
+  - evidence: `logs/md1-shrunk/gh-runs-exact-head-df57b678-20260518T1818Z.json`
+- Branch SfM container build:
+  - CodeBuild: `spaceport-ml-containers:063b2f62-140d-4da2-9c60-3397899616cb`, build `703`
+  - sourceVersion: `df57b678c025ed39fe27b7500d3e7a301b74b603`
+  - status: `SUCCEEDED`
+  - ECR image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:c96dca6f3b0850855eac576e8a27371dfca408e24364d79f7e35b23425cc7950`
+  - pushed: `2026-05-18T12:13:45.187000-06:00`
+  - evidence:
+    - `logs/md1-shrunk/codebuild-sfm-703-20260518T1818Z.json`
+    - `logs/md1-shrunk/ecr-sfm-agent113647md1baselinee2e-20260518T1818Z.json`
+- Active cloud guard before full launch:
+  - Step Functions `SpaceportMLPipeline-staging` RUNNING executions: `0`
+  - InProgress SageMaker training jobs: `0`
+  - InProgress SageMaker processing jobs:
+    - external/not owned: `cvhr-mtc-20260518T1729Z-sfm`; left untouched.
+- Successful planner-only preflight:
+  - command: `PATH="/opt/homebrew/bin:$PATH" python3 scripts/sfm/run_sfm_benchmark.py --input-s3-uri s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip --output-s3-uri s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-planner3-20260518T1819Z/colmap --job-prefix md1-shrunk-prodspine-plan3 --instance-type ml.g4dn.xlarge --volume-size-gb 100 --image-uri 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:c96dca6f3b0850855eac576e8a27371dfca408e24364d79f7e35b23425cc7950 --role-arn arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging --mode chunked --subset-strategy md1_shrunk_prodspine_1456_planner --env COLMAP_CHUNK_PLANNER=footprint_graph_v1 --env COLMAP_MATCH_PROFILE=P1 --planner-report-only --payload-json-output logs/md1-shrunk/md1-shrunk-prodspine-planner3-20260518T1819Z-payload.json`
+  - job: `md1-shrunk-prodspine-plan3-1779128360`
+  - output: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-planner3-20260518T1819Z/colmap`
+  - status: `Completed`
+  - log stream: `/aws/sagemaker/ProcessingJobs` / `md1-shrunk-prodspine-plan3-1779128360/algo-1-1779128403`
+  - planner manifest: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-planner3-20260518T1819Z/colmap/chunk_planner_manifest.json`
+  - planner report:
+    - `dataset_image_count=1456`
+    - `gps_coverage_ratio=1.0`
+    - `orientation_coverage_ratio=1.0`
+    - `connected_component_count=1`
+    - `chunk_count=8`
+    - `chunk_sizes=[220,220,220,220,220,220,220,220]`
+    - `orphan_image_count=0`
+    - `risky_bridges=[]`
+  - evidence:
+    - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-plan3-1779128360-20260518T1824Z.json`
+    - `logs/md1-shrunk/cloudwatch-md1-shrunk-prodspine-plan3-1779128360-20260518T1824Z.json`
+    - `logs/md1-shrunk/s3-colmap-md1-shrunk-prodspine-planner3-20260518T1819Z-20260518T1824Z.txt`
+    - `logs/md1-shrunk/md1-shrunk-prodspine-planner3-20260518T1819Z-planner_static_report.json`
+    - `logs/md1-shrunk/md1-shrunk-prodspine-planner3-20260518T1819Z-sfm_metadata.json`
+- Canonical full SfM launched:
+  - command: `PATH="/opt/homebrew/bin:$PATH" python3 scripts/sfm/run_sfm_benchmark.py --input-s3-uri s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip --output-s3-uri s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-sfm-20260518T1826Z/colmap --job-prefix md1-shrunk-prodspine-sfm --instance-type ml.g4dn.xlarge --volume-size-gb 100 --image-uri 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:c96dca6f3b0850855eac576e8a27371dfca408e24364d79f7e35b23425cc7950 --role-arn arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging --mode chunked --subset-strategy md1_shrunk_prodspine_1456_full --env COLMAP_CHUNK_PLANNER=footprint_graph_v1 --env COLMAP_MATCH_PROFILE=P1 --env COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI=s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-planner3-20260518T1819Z/colmap/chunk_planner_manifest.json --payload-json-output logs/md1-shrunk/md1-shrunk-prodspine-sfm-20260518T1826Z-payload.json`
+  - job: `md1-shrunk-prodspine-sfm-1779128752`
+  - ARN: `arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-shrunk-prodspine-sfm-1779128752`
+  - input: `s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip`
+  - output: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-sfm-20260518T1826Z/colmap`
+  - image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:c96dca6f3b0850855eac576e8a27371dfca408e24364d79f7e35b23425cc7950`
+  - immutable planner manifest: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-planner3-20260518T1819Z/colmap/chunk_planner_manifest.json`
+  - start proof: `logs/md1-shrunk/md1-shrunk-prodspine-sfm-20260518T1826Z-start.json`
+  - payload: `logs/md1-shrunk/md1-shrunk-prodspine-sfm-20260518T1826Z-payload.json`
+  - latest status at `2026-05-18T18:31Z`: `ProcessingJobStatus=InProgress`, `FailureReason=null`
+  - log stream: `/aws/sagemaker/ProcessingJobs` / `md1-shrunk-prodspine-sfm-1779128752/algo-1-1779128795`
+  - observed progress: extracted `1456` images, loaded GPS/orientation priors, and GPU feature extraction reached at least `Processed file [36/1456]`.
+  - S3 output still empty, expected until `S3UploadMode=EndOfJob`.
+  - evidence:
+    - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260518T1828Z.json`
+    - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260518T1831Z.json`
+    - `logs/md1-shrunk/logstreams-md1-shrunk-prodspine-sfm-1779128752-20260518T1831Z.json`
+    - `logs/md1-shrunk/cloudwatch-md1-shrunk-prodspine-sfm-1779128752-20260518T1831Z.json`
+    - `logs/md1-shrunk/s3-colmap-md1-shrunk-prodspine-sfm-20260518T1826Z-20260518T1831Z.txt`
+- Duplicate launch guard:
+  - a scheduled monitor overlapped this live run and created duplicate full SfM job `md1-shrunk-prodspine-sfm-1779128842`.
+  - duplicate status: `Stopped`, with start `2026-05-18T12:28:05.998000-06:00` and end `2026-05-18T12:29:57.591000-06:00`.
+  - canonical full SfM remains `md1-shrunk-prodspine-sfm-1779128752`.
+  - automation `md1-shrunk-e2e-monitor-2` was updated to monitor only the canonical job while it is `InProgress` and not launch any duplicate SfM/3DGS/compression jobs.
+- Next concrete steps:
+  1. Monitor canonical SfM `md1-shrunk-prodspine-sfm-1779128752` only.
+  2. If it fails, capture exact SageMaker describe, CloudWatch, and S3 evidence before patching.
+  3. If it succeeds, validate trainable COLMAP output, then proceed to 3DGS, skybox, compression, public bundle reachability, deployed viewer skybox/no-sky, and side-by-side input-vs-render checks.

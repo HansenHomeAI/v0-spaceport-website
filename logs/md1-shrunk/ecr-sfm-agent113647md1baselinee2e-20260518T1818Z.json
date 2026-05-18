@@ -1,0 +1,17 @@
+{
+    "imageDetails": [
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/sfm",
+            "imageDigest": "sha256:c96dca6f3b0850855eac576e8a27371dfca408e24364d79f7e35b23425cc7950",
+            "imageTags": [
+                "latest",
+                "agent113647md1baselinee2e"
+            ],
+            "imageSizeInBytes": 3170895708,
+            "imagePushedAt": "2026-05-18T12:13:45.187000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json"
+        }
+    ]
+}

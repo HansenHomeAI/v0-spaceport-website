@@ -1,0 +1,401 @@
+{
+    "events": [
+        {
+            "timestamp": 1779126583896,
+            "message": "============================================================",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583896,
+            "message": "🚀 SPACEPORT COLMAP GPU SfM PROCESSING",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583896,
+            "message": "============================================================",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583896,
+            "message": "📅 Started at: Mon May 18 17:49:43 UTC 2026",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583896,
+            "message": "🔧 Pipeline: COLMAP mapper with GPU SIFT + spatial/sequential/vocab matching",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583896,
+            "message": "📍 GPS Priors: image EXIF metadata",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583896,
+            "message": "🎯 Output: COLMAP TXT export for 3DGS",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583896,
+            "message": "============================================================",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583896,
+            "message": "🔍 Verifying environment...",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583896,
+            "message": "Python 3.12.3",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583896,
+            "message": "📦 COLMAP version: unavailable via 'colmap version'",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583896,
+            "message": "Mon May 18 17:49:43 2026       ",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583896,
+            "message": "+-----------------------------------------------------------------------------------------+",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583896,
+            "message": "| NVIDIA-SMI 570.211.01             Driver Version: 570.211.01     CUDA Version: 12.9     |",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583896,
+            "message": "|-----------------------------------------+------------------------+----------------------+",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583896,
+            "message": "| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583896,
+            "message": "| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583896,
+            "message": "|                                         |                        |               MIG M. |",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583896,
+            "message": "|=========================================+========================+======================|",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583896,
+            "message": "|   0  Tesla T4                       On  |   00000000:00:1E.0 Off |                    0 |",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583896,
+            "message": "| N/A   28C    P8             11W /   70W |       0MiB /  15360MiB |      0%      Default |",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583896,
+            "message": "|                                         |                        |                  N/A |",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583896,
+            "message": "+-----------------------------------------+------------------------+----------------------+\n                                                                                         ",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "+-----------------------------------------------------------------------------------------+",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "| Processes:                                                                              |",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "|        ID   ID                                                               Usage      |",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "|=========================================================================================|",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "|  No running processes found                                                             |",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "+-----------------------------------------------------------------------------------------+",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "✅ Environment verification completed",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "MEMORY_PROBE [startup]:",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "MemTotal:       16081288 kB",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "MemFree:         1635932 kB",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "MemAvailable:   14964276 kB\n               total        used        free      shared  buff/cache   available",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "Mem:            15Gi       1.1Gi       1.6Gi       1.1Mi        13Gi        14Gi",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "Swap:             0B          0B          0B",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "📁 Input directory: /opt/ml/processing/input",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "📁 Output directory: /opt/ml/processing/output",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "🔍 Input directory contents:",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "total 5921256",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "drwxr-xr-x 2 root root       4096 May 18 17:47 .",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "drwxr-xr-x 4 root root       4096 May 18 17:35 ..",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "-rw-r--r-- 1 root root 6063352899 May 18 17:49 md1-shrunk-20260515T1641Z-1456-images.zip",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "📦 ZIP files found: 1",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "============================================================",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "🚀 LAUNCHING COLMAP GPU PROCESSOR",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "============================================================",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "MEMORY_PROBE [before_python]:",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583897,
+            "message": "MemTotal:       16081288 kB",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583898,
+            "message": "MemFree:         1635852 kB",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583898,
+            "message": "MemAvailable:   14964196 kB\n               total        used        free      shared  buff/cache   available",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583898,
+            "message": "Mem:            15Gi       1.1Gi       1.6Gi       1.1Mi        13Gi        14Gi",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126583898,
+            "message": "Swap:             0B          0B          0B",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126584898,
+            "message": "MEMORY_PROBE [startup]:",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126584898,
+            "message": "MemTotal:       16081288 kB",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126584898,
+            "message": "MemFree:         1609404 kB",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126584898,
+            "message": "MemAvailable:   14937780 kB",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126584898,
+            "message": "2026-05-18 17:49:44,145 - INFO - Extracting archive /opt/ml/processing/input/md1-shrunk-20260515T1641Z-1456-images.zip",
+            "ingestionTime": 1779126590453
+        },
+        {
+            "timestamp": 1779126605903,
+            "message": "2026-05-18 17:50:05,095 - INFO - Extracted 1456 images",
+            "ingestionTime": 1779126611665
+        },
+        {
+            "timestamp": 1779126617906,
+            "message": "2026-05-18 17:50:17,150 - INFO - Detected GPS EXIF priors on 1456 images; orientation priors present on 1456 images (heading_source=flight_yaw dispersion=179.98deg, pitch_source=flight_pitch dispersion=50.90deg)",
+            "ingestionTime": 1779126623718
+        },
+        {
+            "timestamp": 1779126626908,
+            "message": "2026-05-18 17:50:26,123 - INFO - Prepared image list with 1456 entries ordered by capture time then filename",
+            "ingestionTime": 1779126632764
+        },
+        {
+            "timestamp": 1779126633910,
+            "message": "MEMORY_PROBE [after_python]:",
+            "ingestionTime": 1779126639815
+        },
+        {
+            "timestamp": 1779126633910,
+            "message": "MemTotal:       16081288 kB",
+            "ingestionTime": 1779126639815
+        },
+        {
+            "timestamp": 1779126633910,
+            "message": "MemFree:         9544404 kB",
+            "ingestionTime": 1779126639815
+        },
+        {
+            "timestamp": 1779126633910,
+            "message": "MemAvailable:   14967912 kB\n               total        used        free      shared  buff/cache   available",
+            "ingestionTime": 1779126639815
+        },
+        {
+            "timestamp": 1779126633910,
+            "message": "Mem:            15Gi       1.1Gi       9.1Gi       1.1Mi       5.5Gi        14Gi",
+            "ingestionTime": 1779126639815
+        },
+        {
+            "timestamp": 1779126633910,
+            "message": "Swap:             0B          0B          0B",
+            "ingestionTime": 1779126639815
+        },
+        {
+            "timestamp": 1779126633911,
+            "message": "============================================================",
+            "ingestionTime": 1779126639815
+        },
+        {
+            "timestamp": 1779126633911,
+            "message": "🔍 VALIDATING OUTPUT",
+            "ingestionTime": 1779126639815
+        },
+        {
+            "timestamp": 1779126633911,
+            "message": "============================================================",
+            "ingestionTime": 1779126639815
+        },
+        {
+            "timestamp": 1779126633911,
+            "message": "❌ MISSING: /opt/ml/processing/output/sparse/0/cameras.txt",
+            "ingestionTime": 1779126639815
+        },
+        {
+            "timestamp": 1779126633911,
+            "message": "❌ MISSING: /opt/ml/processing/output/sparse/0/images.txt",
+            "ingestionTime": 1779126639815
+        },
+        {
+            "timestamp": 1779126633911,
+            "message": "❌ MISSING: /opt/ml/processing/output/sparse/0/points3D.txt",
+            "ingestionTime": 1779126639815
+        },
+        {
+            "timestamp": 1779126633911,
+            "message": "❌ MISSING: /opt/ml/processing/output/images",
+            "ingestionTime": 1779126639815
+        },
+        {
+            "timestamp": 1779126633911,
+            "message": "❌ MISSING: /opt/ml/processing/output/database.db",
+            "ingestionTime": 1779126639815
+        },
+        {
+            "timestamp": 1779126633911,
+            "message": "✅ /opt/ml/processing/output/sfm_metadata.json (7835 bytes)",
+            "ingestionTime": 1779126639815
+        },
+        {
+            "timestamp": 1779126633911,
+            "message": "❌ ERROR: Some required output files are missing",
+            "ingestionTime": 1779126639815
+        },
+        {
+            "timestamp": 1779126633911,
+            "message": "❌ Pipeline failed at: Mon May 18 17:50:33 UTC 2026",
+            "ingestionTime": 1779126639815
+        }
+    ],
+    "nextForwardToken": "f/39675849738768682975204554712829205995442014150056149008/s",
+    "nextBackwardToken": "b/39675848623396911870695438229245177688850402124720046080/s"
+}

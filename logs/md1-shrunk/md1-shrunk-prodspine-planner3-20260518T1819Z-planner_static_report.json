@@ -1,0 +1,29 @@
+{
+  "dataset_image_count": 1456,
+  "gps_coverage_ratio": 1.0,
+  "orientation_coverage_ratio": 1.0,
+  "selected_orientation_source": "exif",
+  "candidate_pair_counts": {
+    "spatial": 49366,
+    "sequence": 11612,
+    "footprint": 10845,
+    "retrieval": 0
+  },
+  "verified_pair_count": 0,
+  "connected_component_count": 1,
+  "chunk_count": 8,
+  "chunk_sizes": [
+    220,
+    220,
+    220,
+    220,
+    220,
+    220,
+    220,
+    220
+  ],
+  "orphan_image_count": 0,
+  "risky_bridges": [],
+  "estimated_leaf_jobs": 8,
+  "expected_output_kind": "single_merged_model"
+}
