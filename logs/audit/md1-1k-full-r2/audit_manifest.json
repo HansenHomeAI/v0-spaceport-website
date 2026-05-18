@@ -28039,5 +28039,38 @@
     "cvhr_describe_json": "logs/md1-r0v5relax-retry1-processing-hold-905ef202-20260518T194324Z-cvhr-mtc-20260518T1729Z-sfm-describe.json",
     "paid_compute_launched": false,
     "next_required_action": "wait for all processing idle and rerun all presubmit checks before paid retry"
+  },
+  "md1_r0v5relax_retry1_processing_hold_fe33a52d_20260518": {
+    "status": "processing_hold_no_paid_compute",
+    "summary": "Exact-head fe33a52d is green and CodeBuild/training/Step Functions are idle, but retry1 paid merge remains blocked by active SageMaker processing: md1-shrunk-prodspine-sfm-1779128752 and cvhr-mtc-20260518T1729Z-sfm. Previously active md1-viscell-plan-v1-1779133371 is terminal Failed with AlgorithmError exit code 1. No paid retry/review/full14/LOD submitted.",
+    "head": "fe33a52d8a72b48cbe8f06d7490ee8986cd00350",
+    "exact_head_cdk_run": 26056461459,
+    "processing_blockers": [
+      "md1-shrunk-prodspine-sfm-1779128752",
+      "cvhr-mtc-20260518T1729Z-sfm"
+    ],
+    "terminal_source_jobs": [
+      {
+        "job": "md1-viscell-plan-v1-1779133371",
+        "status": "Failed",
+        "failure_reason": "AlgorithmError: , exit code: 1",
+        "describe_json": "logs/md1-r0v5relax-retry1-processing-hold-fe33a52d-20260518T201329Z-md1-viscell-plan-v1-1779133371-describe.json",
+        "tags_json": "logs/md1-r0v5relax-retry1-processing-hold-fe33a52d-20260518T201329Z-md1-viscell-plan-v1-1779133371-tags.json"
+      }
+    ],
+    "presubmit_summary_json": "logs/md1-r0v5relax-retry1-processing-hold-fe33a52d-20260518T201329Z-summary.json",
+    "processing_inprogress_json": "logs/md1-r0v5relax-retry1-processing-hold-fe33a52d-20260518T201329Z-processing-inprogress.json",
+    "training_inprogress_json": "logs/md1-r0v5relax-retry1-processing-hold-fe33a52d-20260518T201329Z-training-inprogress.json",
+    "stepfunctions_running_json": "logs/md1-r0v5relax-retry1-processing-hold-fe33a52d-20260518T201329Z-stepfunctions-running.json",
+    "codebuild_recent_json": "logs/md1-r0v5relax-retry1-processing-hold-fe33a52d-20260518T201329Z-codebuild-recent.json",
+    "exact_head_cdk_run_json": "logs/md1-r0v5relax-retry1-processing-hold-fe33a52d-20260518T201329Z-cdk-run.json",
+    "md1_shrunk_describe_json": "logs/md1-r0v5relax-retry1-processing-hold-fe33a52d-20260518T201329Z-md1-shrunk-prodspine-sfm-1779128752-describe.json",
+    "md1_shrunk_tags_json": "logs/md1-r0v5relax-retry1-processing-hold-fe33a52d-20260518T201329Z-md1-shrunk-prodspine-sfm-1779128752-tags.json",
+    "cvhr_describe_json": "logs/md1-r0v5relax-retry1-processing-hold-fe33a52d-20260518T201329Z-cvhr-mtc-20260518T1729Z-sfm-describe.json",
+    "cvhr_tags_json": "logs/md1-r0v5relax-retry1-processing-hold-fe33a52d-20260518T201329Z-cvhr-mtc-20260518T1729Z-sfm-tags.json",
+    "corrected_payload_json": "logs/md1-r0v5relax-merge-corrected-payload-8fdaa86f-20260518T170629Z.json",
+    "corrected_payload_has_background_source_tile_id": false,
+    "paid_compute_launched": false,
+    "next_required_action": "wait for all processing idle and rerun all presubmit checks before paid retry"
   }
 }
