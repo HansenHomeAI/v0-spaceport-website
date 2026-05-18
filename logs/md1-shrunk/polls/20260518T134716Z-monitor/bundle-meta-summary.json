@@ -1,0 +1,25 @@
+{
+  "gaussian_count_from_means_shape0": 990025,
+  "means_shape": [
+    990025,
+    3
+  ],
+  "meta_url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json",
+  "quats_shape": [
+    990025,
+    4
+  ],
+  "scales_shape": [
+    990025,
+    3
+  ],
+  "sh0_shape": [
+    990025,
+    1,
+    4
+  ],
+  "shN_shape": [
+    990025,
+    45
+  ]
+}

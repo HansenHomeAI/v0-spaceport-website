@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T13:20:41Z
+updated: 2026-05-18T13:47:16Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -5291,3 +5291,38 @@ skybox, compression, artifact handoff, and visual gates.
 - GitHub Actions proof (user prompt head):
   - run `25932325504` (`CDK Deploy`) -> `success` for `e9cbf71c56420ce386b028e7f4af33163ce4dcc2`
   - evidence: `logs/md1-shrunk/polls/20260518T132041Z-postpush/github-actions-postpush.json`
+
+## 2026-05-18T13:47:16Z monitor poll (boto3 + GitHub connector; no new launches)
+
+- Poll artifacts:
+  - `logs/md1-shrunk/polls/20260518T134716Z-monitor/`
+- Branch/head/status:
+  - `git rev-parse HEAD` -> `0d9ce947a09cf5a24c061b2a59e7c9a00f2dfde5` (`[skip ci]`)
+  - `git status --porcelain=v1` -> clean
+  - evidence: `logs/md1-shrunk/polls/20260518T134716Z-monitor/local-git.json`
+- AWS identity + active state (boto3):
+  - Step Functions RUNNING executions across `SpaceportMLPipeline-*`: `0`
+  - SageMaker InProgress:
+    - processing jobs: `0`
+    - training jobs: `0`
+  - SfM processing job: `md1-shrunk-1456-sfm-1778866088` -> `Completed`
+  - evidence: `logs/md1-shrunk/polls/20260518T134716Z-monitor/aws-boto3-snapshot.json`
+- Downstream Step Functions terminal:
+  - execution: `execution-md1shrunk1456-1778880862` -> `SUCCEEDED`
+  - evidence: `logs/md1-shrunk/polls/20260518T134716Z-monitor/stepfunctions-describe-execution-md1shrunk1456-1778880862.json`
+- GitHub Actions (connector re-verify; still green):
+  - `CDK Deploy` run `25932325504` -> `deploy` job `success`
+  - `Deploy Next.js to Cloudflare Pages` run `25948288202` -> `deploy` job `success`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T134716Z-monitor/github-workflow-jobs-25932325504.json`
+    - `logs/md1-shrunk/polls/20260518T134716Z-monitor/github-workflow-jobs-25948288202.json`
+- Public reachability (anonymous; preview + bundle):
+  - preview `/health.txt` -> `HTTP 200`
+  - bundle `meta.json` -> `HTTP 200`
+  - bundle `background_skybox.webp` -> `HTTP 200`
+  - bundle meta gaussian count (from `means.shape[0]`): `990025`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T134716Z-monitor/http-head-preview-health.txt`
+    - `logs/md1-shrunk/polls/20260518T134716Z-monitor/http-head-bundle-meta.txt`
+    - `logs/md1-shrunk/polls/20260518T134716Z-monitor/http-head-bundle-skybox.txt`
+    - `logs/md1-shrunk/polls/20260518T134716Z-monitor/bundle-meta-summary.json`
