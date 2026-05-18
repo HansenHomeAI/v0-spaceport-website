@@ -1,0 +1,40 @@
+EVENTS	1779132953296	COLMAP[chunk_03_mapper_initial] I20260518 19:35:46.584559  7100 incremental_pipeline.cc:527] => Image sees 81 / 6728 points	1779132947523
+EVENTS	1779132953296	COLMAP[chunk_03_mapper_initial] I20260518 19:35:46.590551  7100 incremental_pipeline.cc:550] => Could not register, trying another image.	1779132947523
+EVENTS	1779132953296	COLMAP[chunk_03_mapper_initial] I20260518 19:35:46.590584  7100 incremental_pipeline.cc:524] Registering image #748 (num_reg_frames=142)	1779132947523
+EVENTS	1779132953296	COLMAP[chunk_03_mapper_initial] I20260518 19:35:46.590596  7100 incremental_pipeline.cc:527] => Image sees 57 / 4935 points	1779132947523
+EVENTS	1779132953296	COLMAP[chunk_03_mapper_initial] I20260518 19:35:46.595257  7100 incremental_pipeline.cc:550] => Could not register, trying another image.	1779132947523
+EVENTS	1779132953296	COLMAP[chunk_03_mapper_initial] I20260518 19:35:46.595320  7100 incremental_pipeline.cc:524] Registering image #180 (num_reg_frames=142)	1779132947523
+EVENTS	1779132953296	COLMAP[chunk_03_mapper_initial] I20260518 19:35:46.595340  7100 incremental_pipeline.cc:527] => Image sees 667 / 7796 points	1779132947523
+EVENTS	1779132953296	COLMAP[chunk_03_mapper_initial] I20260518 19:35:46.595350  7100 incremental_pipeline.cc:533] Registering image with structure-less fallback	1779132947523
+EVENTS	1779132953296	COLMAP[chunk_03_mapper_initial] I20260518 19:35:46.595362  7100 incremental_pipeline.cc:535] => Image sees 3770 / 19791 correspondences	1779132947523
+EVENTS	1779132953296	COLMAP[chunk_03_mapper_initial] I20260518 19:35:48.516198  7100 incremental_pipeline.cc:524] Registering image #181 (num_reg_frames=143)	1779132948524
+EVENTS	1779132953296	COLMAP[chunk_03_mapper_initial] I20260518 19:35:48.516255  7100 incremental_pipeline.cc:527] => Image sees 2022 / 7989 points	1779132948524
+EVENTS	1779132953296	COLMAP[chunk_03_mapper_initial] I20260518 19:35:49.509877  7100 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779132949524
+EVENTS	1779133061366	COLMAP[chunk_03_mapper_initial] I20260518 19:37:35.183718  7100 incremental_pipeline.cc:524] Registering image #182 (num_reg_frames=144)	1779133055551
+EVENTS	1779133061366	COLMAP[chunk_03_mapper_initial] I20260518 19:37:35.183794  7100 incremental_pipeline.cc:527] => Image sees 3237 / 7135 points	1779133055552
+EVENTS	1779133061366	COLMAP[chunk_03_mapper_initial] I20260518 19:37:36.194538  7100 incremental_pipeline.cc:524] Registering image #179 (num_reg_frames=145)	1779133056552
+EVENTS	1779133061366	COLMAP[chunk_03_mapper_initial] I20260518 19:37:36.194597  7100 incremental_pipeline.cc:527] => Image sees 2576 / 6501 points	1779133056552
+EVENTS	1779133061366	COLMAP[chunk_03_mapper_initial] I20260518 19:37:38.196022  7100 incremental_pipeline.cc:524] Registering image #178 (num_reg_frames=146)	1779133058553
+EVENTS	1779133061366	COLMAP[chunk_03_mapper_initial] I20260518 19:37:38.196075  7100 incremental_pipeline.cc:527] => Image sees 2020 / 7336 points	1779133058553
+EVENTS	1779133061366	COLMAP[chunk_03_mapper_initial] I20260518 19:37:39.385411  7100 incremental_pipeline.cc:524] Registering image #177 (num_reg_frames=147)	1779133059553
+EVENTS	1779133061366	COLMAP[chunk_03_mapper_initial] I20260518 19:37:39.385464  7100 incremental_pipeline.cc:527] => Image sees 2895 / 6550 points	1779133059553
+EVENTS	1779133066387	COLMAP[chunk_03_mapper_initial] I20260518 19:37:40.450876  7100 incremental_pipeline.cc:524] Registering image #166 (num_reg_frames=148)	1779133060553
+EVENTS	1779133066387	COLMAP[chunk_03_mapper_initial] I20260518 19:37:40.450930  7100 incremental_pipeline.cc:527] => Image sees 2770 / 4847 points	1779133060553
+EVENTS	1779133066387	COLMAP[chunk_03_mapper_initial] I20260518 19:37:41.234434  7100 incremental_pipeline.cc:524] Registering image #165 (num_reg_frames=149)	1779133061554
+EVENTS	1779133066387	COLMAP[chunk_03_mapper_initial] I20260518 19:37:41.234489  7100 incremental_pipeline.cc:527] => Image sees 3354 / 5342 points	1779133061554
+EVENTS	1779133066387	COLMAP[chunk_03_mapper_initial] I20260518 19:37:42.074066  7100 incremental_pipeline.cc:524] Registering image #733 (num_reg_frames=150)	1779133062554
+EVENTS	1779133066387	COLMAP[chunk_03_mapper_initial] I20260518 19:37:42.074122  7100 incremental_pipeline.cc:527] => Image sees 81 / 6728 points	1779133062554
+EVENTS	1779133066387	COLMAP[chunk_03_mapper_initial] I20260518 19:37:42.080245  7100 incremental_pipeline.cc:550] => Could not register, trying another image.	1779133062554
+EVENTS	1779133066387	COLMAP[chunk_03_mapper_initial] I20260518 19:37:42.080276  7100 incremental_pipeline.cc:524] Registering image #748 (num_reg_frames=150)	1779133062554
+EVENTS	1779133066387	COLMAP[chunk_03_mapper_initial] I20260518 19:37:42.080286  7100 incremental_pipeline.cc:527] => Image sees 57 / 4935 points	1779133062554
+EVENTS	1779133066387	COLMAP[chunk_03_mapper_initial] I20260518 19:37:42.084970  7100 incremental_pipeline.cc:550] => Could not register, trying another image.	1779133062554
+EVENTS	1779133066387	COLMAP[chunk_03_mapper_initial] I20260518 19:37:42.085019  7100 incremental_pipeline.cc:524] Registering image #733 (num_reg_frames=150)	1779133062554
+EVENTS	1779133066387	COLMAP[chunk_03_mapper_initial] I20260518 19:37:42.085031  7100 incremental_pipeline.cc:527] => Image sees 81 / 6728 points	1779133062554
+EVENTS	1779133066387	COLMAP[chunk_03_mapper_initial] I20260518 19:37:42.085041  7100 incremental_pipeline.cc:533] Registering image with structure-less fallback	1779133062555
+EVENTS	1779133066387	COLMAP[chunk_03_mapper_initial] I20260518 19:37:42.085055  7100 incremental_pipeline.cc:535] => Image sees 129 / 20827 correspondences	1779133062555
+EVENTS	1779133066387	COLMAP[chunk_03_mapper_initial] I20260518 19:37:43.970534  7100 incremental_pipeline.cc:524] Registering image #748 (num_reg_frames=151)	1779133064555
+EVENTS	1779133066387	COLMAP[chunk_03_mapper_initial] I20260518 19:37:43.970590  7100 incremental_pipeline.cc:527] => Image sees 57 / 4935 points	1779133064555
+EVENTS	1779133066387	COLMAP[chunk_03_mapper_initial] I20260518 19:37:43.970599  7100 incremental_pipeline.cc:533] Registering image with structure-less fallback	1779133064555
+EVENTS	1779133066387	COLMAP[chunk_03_mapper_initial] I20260518 19:37:43.970607  7100 incremental_pipeline.cc:535] => Image sees 87 / 12345 correspondences	1779133064555
+EVENTS	1779133066387	COLMAP[chunk_03_mapper_initial] I20260518 19:37:43.971216  7100 incremental_pipeline.cc:550] => Could not register, trying another image.	1779133064555
+EVENTS	1779133066387	COLMAP[chunk_03_mapper_initial] I20260518 19:37:43.971238  7100 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779133064555

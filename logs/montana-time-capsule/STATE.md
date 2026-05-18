@@ -313,3 +313,49 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - Result: `[]` (expected for logs-only `[skip ci]` commit).
 - Stage gate unchanged: `cvhr-mtc-20260518T1729Z-sfm` remains `InProgress` with no duplicate jobs.
 - Next unblocked step: continue polling SfM to `Completed`, then run one guarded `--launch` to advance exactly one stage into pinned Montana 3DGS.
+
+## 2026-05-18T21:04Z Active-Thread Monitor Pass
+
+- Automation binding:
+  - Active heartbeat automation: `montana-twin-cv-hr-monitor`
+  - Cadence: `FREQ=MINUTELY;INTERVAL=20`
+  - Target thread: `019e3bf1-e2d1-7453-b4cd-4383b888b1b3`
+  - Old detached cron `cv-hr-montana-time-capsule-monitor` is paused.
+- Branch/head/status command:
+  - `git branch --show-current && git rev-parse HEAD && git status --short --branch`
+  - Result: branch `agent-40136728-montana-time-capsule`, head `d384615d003f71bdc6c324c3bb1a9295b9812880`; dirty only from newly captured monitor evidence under `logs/montana-time-capsule/`.
+- AWS identity command: `AWS_PAGER= aws sts get-caller-identity --output json`
+  - Result: account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+- SageMaker status command:
+  - `AWS_PAGER= aws sagemaker describe-processing-job --region us-west-2 --processing-job-name cvhr-mtc-20260518T1729Z-sfm`
+  - Result: `ProcessingJobStatus=InProgress`, `FailureReason=null`, `ExitMessage=null`; pinned SfM image unchanged (`sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811`).
+- Duplicate-job guard command:
+  - `AWS_PAGER= aws sagemaker list-processing-jobs --region us-west-2 --name-contains cvhr-mtc-20260518T1729Z --max-results 20`
+  - Result: exactly one matching CV-HR processing job, `cvhr-mtc-20260518T1729Z-sfm`, still `InProgress`; no duplicate CV-HR job exists.
+- Other active SageMaker processing jobs observed and left untouched:
+  - `md1-viscell-leaf-08-1779136078`
+  - `md1-viscell-leaf-01-1779136049`
+  - `md1-shrunk-prodspine-sfm-1779128752`
+  - `cvhr-mtc-20260518T1729Z-sfm`
+- CloudWatch proof command:
+  - `AWS_PAGER= aws logs get-log-events --region us-west-2 --log-group-name /aws/sagemaker/ProcessingJobs --log-stream-name cvhr-mtc-20260518T1729Z-sfm/algo-1-1779125429 --limit 80 --output text`
+  - Result: latest log event remains `COLMAP[vocab_tree_builder] ... Building index for visual words...` at `2026-05-18T19:43:03Z` after loading `1904336` descriptors. No OOM, timeout, or SageMaker failure is visible.
+- S3 output command:
+  - `AWS_PAGER= aws s3 ls s3://spaceport-ml-processing-staging/manual-validations/cvhr-mtc-20260518T1729Z/colmap/ --recursive --human-readable --summarize`
+  - Result: `Total Objects: 0`, expected while SageMaker output upload mode is `EndOfJob`.
+- Guarded advance command:
+  - `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip --launch`
+  - Result: runner returned `status=sfm_running`, `sfm_status=InProgress`, `last_action=sfm_running`; no 3DGS launched early.
+- GitHub workflow command:
+  - `gh run list --branch agent-40136728-montana-time-capsule --limit 50 --json databaseId,headSha,workflowName,status,conclusion,createdAt,updatedAt,url | jq --arg sha "$(git rev-parse HEAD)" '[.[] | select(.headSha==$sha)]'`
+  - Result for current logs-only head `d384615d003f71bdc6c324c3bb1a9295b9812880`: `[]` (expected for `[skip ci]` commits). Last meaningful non-skip `CDK Deploy` remains green on head `1b264bc2ac6be3bf34ca06582895f7f750e9a442`, run `26049509375`.
+- Evidence files:
+  - `logs/montana-time-capsule/manual-sagemaker-describe-cvhr-mtc-20260518T1729Z-sfm-20260518T210332Z.json`
+  - `logs/montana-time-capsule/manual-sagemaker-list-cvhr-mtc-20260518T1729Z-20260518T210332Z.json`
+  - `logs/montana-time-capsule/manual-logstreams-cvhr-mtc-20260518T1729Z-sfm-20260518T210333Z.json`
+  - `logs/montana-time-capsule/manual-cloudwatch-tail-cvhr-mtc-20260518T1729Z-sfm-20260518T210344Z.log`
+  - `logs/montana-time-capsule/manual-s3-colmap-cvhr-mtc-20260518T1729Z-20260518T210333Z.txt`
+  - `logs/montana-time-capsule/manual-launch-20260518T210445Z.log`
+  - `logs/montana-time-capsule/manual-gh-run-list-agent-40136728-20260518T210437Z-exactcheck.json`
+  - `logs/montana-time-capsule/manual-gh-run-list-exact-head-20260518T210437Z.json`
+- Next unblocked step: let SfM continue until terminal. If it reaches `Completed`, run the guarded `--launch` command once to start pinned Montana 3DGS. If it reaches `Failed` or `Stopped`, capture exact SageMaker describe, CloudWatch, and S3 evidence before any patch or retry.
