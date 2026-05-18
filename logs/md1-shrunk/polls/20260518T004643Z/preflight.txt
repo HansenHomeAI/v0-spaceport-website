@@ -1,0 +1,10 @@
+# preflight
+Mon May 18 00:46:43 UTC 2026
+pwd=/Users/gabrielhansen/MD1-Baseline
+head=0f9e96870d6acd98aa9158b96fbcf5505ee061d7
+branch=agent-113647-md1-baseline-e2e
+
+aws=
+gh=
+aws_hb=/opt/homebrew/bin/aws
+gh_hb=/opt/homebrew/bin/gh
