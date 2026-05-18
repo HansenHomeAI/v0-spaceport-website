@@ -3860,3 +3860,38 @@ skybox, compression, artifact handoff, and visual gates.
 
 ## Monitor Polls
 - 2026-05-17T23:50:28Z: captured fresh AWS/SageMaker/StepFn/S3/GH proofs in logs/md1-shrunk/polls/20260517T234935Z/ (CloudWatch get-log-events returned 0 events for the job stream; see logs/md1-shrunk/polls/20260517T234935Z/cloudwatch-get-log-events.json).
+- 2026-05-18T00:16:05Z: terminal reconfirm (monitor-only; no new ML launches)
+  - Evidence: logs/md1-shrunk/polls/20260518T001605Z/
+  - Branch/head/status:
+    - `agent-113647-md1-baseline-e2e` @ `37eee2dc57e5143fb57213508035a463ce7f5640` (`[skip ci]`)
+  - AWS identity (region `us-west-2`):
+    - `logs/md1-shrunk/polls/20260518T001605Z/aws-sts.json`
+  - Step Functions (region `us-west-2`):
+    - staging `SpaceportMLPipeline-staging` RUNNING=0:
+      - `logs/md1-shrunk/polls/20260518T001605Z/stepfunctions-list-executions-staging-running.json`
+  - SageMaker (region `us-west-2`):
+    - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`:
+      - `logs/md1-shrunk/polls/20260518T001605Z/sagemaker-describe-md1-shrunk-1456-sfm-1778866088.json`
+    - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`:
+      - `logs/md1-shrunk/polls/20260518T001605Z/sagemaker-describe-md1shrunk1456-1778880862-3dgs.json`
+    - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`:
+      - `logs/md1-shrunk/polls/20260518T001605Z/sagemaker-describe-md1shrunk1456-1778880862-compression.json`
+    - InProgress processing jobs=0:
+      - `logs/md1-shrunk/polls/20260518T001605Z/sagemaker-list-processing-InProgress.json`
+    - InProgress training jobs=0:
+      - `logs/md1-shrunk/polls/20260518T001605Z/sagemaker-list-training-InProgress.json`
+  - GitHub Actions (branch run list):
+    - `logs/md1-shrunk/polls/20260518T001605Z/gh-run-list.json`
+    - user-anchored CDK Deploy proof for `e9cbf71c...`:
+      - `logs/md1-shrunk/polls/20260518T001605Z/gh-run-25932325504.json`
+    - Pages preview alias URL evidence (from Pages deploy run `25994795144` log):
+      - `logs/md1-shrunk/polls/20260518T001605Z/gh-run-25994795144-log.txt` -> `ALIAS=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+  - Public bundle reachability:
+    - meta.json HTTP 200 + gaussian_count=990025:
+      - `logs/md1-shrunk/polls/20260518T001605Z/http-public-meta.json`
+      - `logs/md1-shrunk/polls/20260518T001605Z/http-public-meta.headers.txt`
+    - skybox HTTP 200:
+      - `logs/md1-shrunk/polls/20260518T001605Z/http-public-skybox.headers.txt`
+  - Notes:
+    - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
+    - CLI note: use `/opt/homebrew/bin/aws` and `/opt/homebrew/bin/gh` in this environment (PATH missing homebrew bin).
