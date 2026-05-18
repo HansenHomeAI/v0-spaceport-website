@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T11:23:11Z
+updated: 2026-05-18T11:47:08Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -5069,3 +5069,39 @@ skybox, compression, artifact handoff, and visual gates.
 - GitHub Actions proof (user prompt head):
   - run `25932325504` (`CDK Deploy`) -> `success` for `e9cbf71c56420ce386b028e7f4af33163ce4dcc2`
   - evidence: `logs/md1-shrunk/polls/20260518T112311Z-postpush/github-actions-run-25932325504.json`
+
+## 2026-05-18T11:47:08Z monitor poll (boto3 + GitHub REST; no new launches)
+
+- Poll artifacts:
+  - `logs/md1-shrunk/polls/20260518T114708Z-monitor/`
+- Branch/head/status:
+  - `git rev-parse HEAD` -> `d5f3ea0a6a9f8d8de76ec637646603d96453a80d` (`[skip ci]`)
+  - `git status --porcelain=v1` -> clean
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T114708Z-monitor/git-head.txt`
+    - `logs/md1-shrunk/polls/20260518T114708Z-monitor/git-status.txt`
+- AWS identity + active state:
+  - account: `975050048887`, ARN: `arn:aws:iam::975050048887:root`
+  - Step Functions RUNNING executions (`SpaceportMLPipeline-staging`): `0`
+  - SageMaker InProgress:
+    - processing jobs: `0`
+    - training jobs: `0`
+  - evidence: `logs/md1-shrunk/polls/20260518T114708Z-monitor/aws-snapshot.json`
+- SfM terminal (re-verified):
+  - job: `md1-shrunk-1456-sfm-1778866088` -> `Completed`
+  - output: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T114708Z-monitor/aws-snapshot.json`
+    - `logs/md1-shrunk/polls/20260518T114708Z-monitor/s3-colmap-summary.json`
+    - `logs/md1-shrunk/polls/20260518T114708Z-monitor/sfm_metadata.json`
+- GitHub Actions proof (user prompt exact head):
+  - run `25932325504` (`CDK Deploy`) -> `success` for `e9cbf71c56420ce386b028e7f4af33163ce4dcc2`
+  - evidence: `logs/md1-shrunk/polls/20260518T114708Z-monitor/github-actions-run-25932325504.json`
+- GitHub Actions for current head:
+  - head_sha `d5f3ea0a6a9f8d8de76ec637646603d96453a80d` -> `0` runs (expected; `[skip ci]`)
+  - evidence: `logs/md1-shrunk/polls/20260518T114708Z-monitor/github-actions-runs-d5f3ea0a6a9f8d8de76ec637646603d96453a80d.json`
+- Public reachability (anonymous; preview + bundle):
+  - preview `/health.txt` -> `HTTP 200`
+  - bundle `meta.json` -> `HTTP 200`
+  - bundle `background_skybox.webp` -> `HTTP 200`
+  - evidence: `logs/md1-shrunk/polls/20260518T114708Z-monitor/http-head-sanity.txt`
