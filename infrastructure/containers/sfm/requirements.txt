@@ -1,1 +1,1 @@
-# No additional Python packages are required for the COLMAP runtime.
+boto3>=1.34.0,<2

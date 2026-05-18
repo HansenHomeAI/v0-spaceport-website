@@ -5641,3 +5641,60 @@ skybox, compression, artifact handoff, and visual gates.
 - Public URL reachability (anonymous `HTTP 200`):
   - preview alias headers: `logs/md1-shrunk/polls/20260518T164711Z-monitor/http-preview-alias-headers.txt`
   - bundle meta.json headers: `logs/md1-shrunk/polls/20260518T164711Z-monitor/http-meta-headers.txt`
+
+## 2026-05-18T17:03:43Z production-spine integration (prelaunch)
+
+- Branch/head/status before integration commit:
+  - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+  - `git rev-parse HEAD` -> `e8a48cbfbc8387c2c6e1dc2468764ccb1677c9b4`
+  - `git status --short` -> production-spine SfM files staged/modified, no active runtime jobs.
+- AWS identity:
+  - `/opt/homebrew/bin/aws sts get-caller-identity --output json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+- Active cloud state:
+  - `/opt/homebrew/bin/aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --status-filter RUNNING --region us-west-2 --output json` -> `[]`
+  - no new MD1-Shrunk job launched yet from this section.
+- GitHub workflow state:
+  - `/opt/homebrew/bin/gh run list --branch agent-113647-md1-baseline-e2e --limit 20 --json databaseId,workflowName,displayTitle,headSha,status,conclusion,createdAt,url`
+  - latest exact meaningful head before this integration remains `049c70baf003e3a1e816f729c514d6b491665a76`, with `CDK Deploy` run `26015823873` success and `Deploy Next.js to Cloudflare Pages` run `26015823853` success.
+- Source integrated:
+  - `origin/agent-73948216-sfm-production-spine@aa2de93abf6da476de21272bb682c78ec1f91353` (`fix: signal unified LOD readiness from chunks`)
+- Direct merge note:
+  - attempted `git merge --no-ff --no-commit origin/agent-73948216-sfm-production-spine`
+  - aborted with `git merge --abort` because the feature branch carried broad conflicts/log/web surfaces beyond the MD1-Shrunk runtime need.
+  - proceeded with surgical SfM runtime/test integration to preserve this branch's MD1-Shrunk dataset builder, Montana-profile 3DGS/skybox work, compressor timeout fix, viewer/no-sky/Y-axis fixes, and prior proven output evidence.
+- Files integrated from production-spine:
+  - `infrastructure/containers/sfm/Dockerfile`
+  - `infrastructure/containers/sfm/requirements.txt`
+  - `infrastructure/containers/sfm/run_colmap_sfm.py`
+  - `infrastructure/containers/sfm/run_sfm.sh`
+  - `scripts/sfm/build_sfm_fanout_contract.py`
+  - `scripts/sfm/diagnose_heldout_panels.py`
+  - `scripts/sfm/evaluate_sfm_quality.py`
+  - `scripts/sfm/evaluate_visual_quality.py`
+  - `scripts/sfm/normalize_nerfstudio_eval.py`
+  - `scripts/sfm/prepare_colmap_training_sample.py`
+  - `scripts/sfm/prepare_md1_probe_subsets.py`
+  - `scripts/sfm/prepare_prior_chunk_subset.py`
+  - `scripts/sfm/prepare_sequential_benchmark_subset.py`
+  - `scripts/sfm/run_phase1_md1_probe_validation.py`
+  - `scripts/sfm/run_phase2_md1_hierarchy_validation.py`
+  - `scripts/sfm/run_sfm_fanout_reducer.py`
+  - `scripts/sfm/run_sfm_reducer_canary.py`
+  - unit tests for fanout, reducer, visual quality, quality eval, heldout diagnostics, normalizer, and subset helpers.
+- Local branch-specific launcher reconciliation:
+  - `scripts/sfm/run_sfm_benchmark.py` now preserves the current branch's `--role-arn` and `--payload-json-output` support while adding production-spine branch/head env, planner/report-only flags, `COLMAP_ONLY_CHUNK_INDEXES`, and production-spine metadata summary fields.
+- Validation commands:
+  - `python3 -m py_compile infrastructure/containers/sfm/run_colmap_sfm.py scripts/sfm/run_sfm_benchmark.py scripts/sfm/build_sfm_fanout_contract.py scripts/sfm/run_sfm_fanout_reducer.py scripts/sfm/run_sfm_reducer_canary.py scripts/sfm/evaluate_sfm_quality.py scripts/sfm/evaluate_visual_quality.py scripts/sfm/diagnose_heldout_panels.py tests/unit/test_sfm_fanout_reducer.py tests/unit/test_sfm_reducer_canary.py tests/unit/test_sfm_visual_quality.py`
+  - `python3 -m unittest tests.unit.test_sfm_fanout_contract tests.unit.test_sfm_fanout_reducer tests.unit.test_sfm_reducer_canary tests.unit.test_colmap_spatial_subset_zip tests.unit.test_sfm_quality_eval tests.unit.test_sfm_visual_quality`
+  - `git diff --check && git diff --cached --check`
+- Validation result:
+  - py_compile passed.
+  - unittest passed: `Ran 18 tests in 0.014s`, `OK (skipped=6)`.
+  - skips are local-environment skips for tests requiring `numpy`; they remain importable and will run in environments with `numpy`.
+  - diff checks passed.
+- Next concrete steps:
+  1. Commit/push this integration with a fresh Pages trigger.
+  2. Watch exact-head `CDK Deploy`, `Deploy Next.js to Cloudflare Pages`, and automatic ML container build workflows.
+  3. Verify the branch SfM ECR tag/digest for `agent113647md1baselinee2e`.
+  4. Launch exactly one new MD1-Shrunk SfM run from `s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip` using the integrated production-spine SfM image.
+  5. Continue to 3DGS, skybox, compression, public bundle reachability, deployed viewer, and side-by-side visual gates only after SfM passes.
