@@ -4506,3 +4506,13 @@ skybox, compression, artifact handoff, and visual gates.
     - evidence:
       - `logs/md1-shrunk/polls/20260518T061756Z-monitor/gh-run-list.json`
       - `logs/md1-shrunk/polls/20260518T061756Z-monitor/gh-summary.json`
+
+- 2026-05-18T06:20:10Z postpush proof (exact-head GitHub workflows; `[skip ci]` head):
+  - Evidence: `logs/md1-shrunk/polls/20260518T062010Z-postpush/`
+  - `git rev-parse HEAD` -> `1d091ea2f51a53c0ea7653bb1488972cc8730d48` (`[skip ci]`)
+  - GitHub Actions:
+    - exact-head workflow runs: `0` (expected; poll-only `[skip ci]` push)
+    - last non-skip-ci Pages/CDK success remains at `049c70ba...` (see `logs/md1-shrunk/polls/20260518T054653Z-resume/`)
+    - evidence:
+      - `logs/md1-shrunk/polls/20260518T062010Z-postpush/gh-run-list.json`
+      - `logs/md1-shrunk/polls/20260518T062010Z-postpush/gh-summary.json`
