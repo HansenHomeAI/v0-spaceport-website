@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T15:57:14Z
+updated: 2026-05-18T16:16:42Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -5551,3 +5551,35 @@ skybox, compression, artifact handoff, and visual gates.
   - note: the poll directory captured the previous head `c8043eec...` right before committing the poll evidence itself.
 - GitHub Actions (exact head):
   - exact-head workflow runs: `0` (expected; `[skip ci]`)
+
+## 2026-05-18T16:16:42Z poll (monitor; reconfirm idle + public URLs)
+
+- Poll artifacts:
+  - `logs/md1-shrunk/polls/20260518T161642Z-resume/`
+- Branch/head/status:
+  - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+  - `git rev-parse HEAD` -> `7c2bed4feee3315dab4d6fbde1b26612a995aa2e` (`[skip ci]`)
+  - `git status --porcelain=v1` -> clean
+- AWS identity (region `us-west-2`):
+  - account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - evidence: `logs/md1-shrunk/polls/20260518T161642Z-resume/aws-sts-get-caller-identity.json`
+- Step Functions active executions (region `us-west-2`):
+  - `SpaceportMLPipeline*` RUNNING: `0`
+  - evidence: `logs/md1-shrunk/polls/20260518T161642Z-resume/stepfunctions-running-spaceportml.json`
+- SageMaker active jobs (region `us-west-2`):
+  - InProgress processing jobs: `0`
+  - InProgress training jobs: `0`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T161642Z-resume/sagemaker-list-processing-jobs-InProgress.json`
+    - `logs/md1-shrunk/polls/20260518T161642Z-resume/sagemaker-list-training-jobs-InProgress.json`
+- SfM job terminal state:
+  - `md1-shrunk-1456-sfm-1778866088` -> `ProcessingJobStatus=Completed` (ended `2026-05-15T15:04:36-06:00`)
+  - evidence: `logs/md1-shrunk/polls/20260518T161642Z-resume/sagemaker-describe-md1-shrunk-1456-sfm-1778866088.json`
+- Public URLs (anonymous `HTTP 200`):
+  - preview alias: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+  - bundle meta.json: `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/meta.json`
+  - skybox: `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/background_skybox.webp`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T161642Z-resume/http-preview-alias-headers.txt`
+    - `logs/md1-shrunk/polls/20260518T161642Z-resume/http-meta-headers.txt`
+    - `logs/md1-shrunk/polls/20260518T161642Z-resume/http-skybox-headers.txt`
