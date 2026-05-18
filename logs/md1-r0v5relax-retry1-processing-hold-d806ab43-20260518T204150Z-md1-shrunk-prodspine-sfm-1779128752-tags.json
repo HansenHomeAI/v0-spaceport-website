@@ -1,0 +1,20 @@
+{
+  "Tags": [
+    {
+      "Key": "Benchmark",
+      "Value": "true"
+    },
+    {
+      "Key": "Project",
+      "Value": "Spaceport"
+    },
+    {
+      "Key": "Component",
+      "Value": "SfM"
+    },
+    {
+      "Key": "Branch",
+      "Value": "agent-113647-md1-baseline-e2e"
+    }
+  ]
+}
