@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T23:29:00Z
+updated: 2026-05-18T23:36:00Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -7300,3 +7300,36 @@ skybox, compression, artifact handoff, and visual gates.
   - `logs/md1-shrunk/sagemaker-list-processing-inprogress-20260518T2329Z.json`
   - `logs/md1-shrunk/sagemaker-list-training-inprogress-20260518T2329Z.json`
   - `logs/md1-shrunk/gh-runs-agent-113647-20260518T2329Z.json`
+
+## 2026-05-18T23:36Z in-chat automation poll
+
+- Verification before poll:
+  - branch: `agent-113647-md1-baseline-e2e`
+  - head: `299081d87df08af92ba12e4230d7215acbcc51c8`
+  - AWS identity captured for account `975050048887`.
+  - Step Functions `SpaceportMLPipeline-staging` RUNNING executions: `0`.
+  - InProgress training jobs: `0`.
+  - InProgress processing jobs include canonical `md1-shrunk-prodspine-sfm-1779128752` plus external `cvhr-secondary-20260518t2113z-sfm`, `cvhr-mtc-20260518T1729Z-sfm`, `md1-viscell-full-l03-1779145861`, and `md1-viscell-full-l04-1779146968`; external jobs remain untouched.
+  - current head is a logs-only `[skip ci]` commit; latest meaningful non-skipped workflow proof remains `CDK Deploy` run `26052859100` for `1900964d7d3601733e6cb9d587a3128717749336`.
+- Canonical SfM status:
+  - job: `md1-shrunk-prodspine-sfm-1779128752`
+  - `ProcessingJobStatus=InProgress`, `FailureReason=null`
+  - S3 output remains empty as expected until `S3UploadMode=EndOfJob`.
+- Finalization progress:
+  - `chunk_model_seam_09_point_triangulator_02` completed, extracted colors, and converted its text model.
+  - `chunk_model_merger_10` merged reconstruction 1 (`779` images, `602491` points) with reconstruction 2 (`659` images, `519409` points).
+  - Merge 10 succeeded with `1432` images and `1118057` points.
+  - The run prepared a seam database by pruning global features down to `1456` images.
+  - Latest visible stage is `chunk_model_seam_10_matches_importer`, processing match block `2/7`.
+  - no OOM, timeout, SageMaker failure, or Step Functions failure is visible.
+- Evidence:
+  - `logs/md1-shrunk/git-status-20260518T2336Z.txt`
+  - `logs/md1-shrunk/git-head-20260518T2336Z.txt`
+  - `logs/md1-shrunk/aws-identity-20260518T2336Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260518T2336Z.json`
+  - `logs/md1-shrunk/cloudwatch-recent-md1-shrunk-prodspine-sfm-1779128752-20260518T2336Z.json`
+  - `logs/md1-shrunk/s3-colmap-md1-shrunk-prodspine-sfm-20260518T1826Z-20260518T2336Z.txt`
+  - `logs/md1-shrunk/stepfunctions-running-20260518T2336Z.json`
+  - `logs/md1-shrunk/sagemaker-list-processing-inprogress-20260518T2336Z.json`
+  - `logs/md1-shrunk/sagemaker-list-training-inprogress-20260518T2336Z.json`
+  - `logs/md1-shrunk/gh-runs-agent-113647-20260518T2336Z.json`
