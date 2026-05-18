@@ -4181,3 +4181,11 @@ skybox, compression, artifact handoff, and visual gates.
     - render no-sky: `logs/md1-shrunk/polls/20260518T031717Z/render-nosky-DJI_01029.png`
     - side-by-side skybox: `logs/md1-shrunk/polls/20260518T031717Z/side-by-side-skybox-DJI_01029.png`
     - side-by-side no-sky: `logs/md1-shrunk/polls/20260518T031717Z/side-by-side-nosky-DJI_01029.png`
+
+- 2026-05-18T03:23:33Z exact-head GitHub Actions confirmation (post poll commit/push; `[skip ci]` head):
+  - Evidence: `logs/md1-shrunk/polls/20260518T032333Z-postpush/`
+  - head commit:
+    - `logs/md1-shrunk/polls/20260518T032333Z-postpush/head.txt` -> head `d4e605ca...` (`[skip ci]`)
+  - exact-head run list expected `[]` (skip-ci head):
+    - `logs/md1-shrunk/polls/20260518T032333Z-postpush/gh-run-list-exact-head.json`
+    - `logs/md1-shrunk/polls/20260518T032333Z-postpush/gh-exact-head-run-count.txt`
