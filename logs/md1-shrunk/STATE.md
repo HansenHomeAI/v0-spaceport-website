@@ -4877,3 +4877,16 @@ skybox, compression, artifact handoff, and visual gates.
   - bundle `meta.json` -> `HTTP 200`
   - bundle `background_skybox.webp` -> `HTTP 200`
   - evidence: `logs/md1-shrunk/polls/20260518T094716Z-monitor/http-head-sanity.txt`
+
+## 2026-05-18T09:51:47Z post-push confirmation (monitor)
+
+- Poll artifacts:
+  - `logs/md1-shrunk/polls/20260518T095147Z-postpush/`
+- Branch/head/status:
+  - `git rev-parse HEAD` -> `0ec88c32841021e7728a93d6503f938944bd9f23` (`[skip ci]`)
+  - evidence: `logs/md1-shrunk/polls/20260518T095147Z-postpush/git.txt`
+- GitHub Actions (exact head):
+  - exact-head workflow runs for `0ec88c32...`: `0` (expected; `[skip ci]`)
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T095147Z-postpush/github-actions-runs-head.json`
+    - `logs/md1-shrunk/polls/20260518T095147Z-postpush/github-actions-runs-branch.json`
