@@ -1,0 +1,4 @@
+ts=20260518T051816Z
+branch=agent-113647-md1-baseline-e2e
+head=3e70a0da993d10b83c3c9628ad49e43dba126cf1
+status_porcelain=1

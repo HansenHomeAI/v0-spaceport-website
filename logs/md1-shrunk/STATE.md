@@ -4315,3 +4315,24 @@ skybox, compression, artifact handoff, and visual gates.
     - count: `logs/md1-shrunk/polls/20260518T044930Z-postpush/gh-exact-head-run-count.txt`
   - last known successful CI runs on branch (for preview URL continuity):
     - `logs/md1-shrunk/polls/20260518T044930Z-postpush/latest-success.txt`
+
+- 2026-05-18T05:18:16Z poll (monitor; reconfirm terminal ML status; prep fresh exact-head CI run):
+  - Evidence: `logs/md1-shrunk/polls/20260518T051816Z/`
+  - Branch/head/status:
+    - head `3e70a0da...` (`chore: md1-shrunk postpush proof 20260518T044930Z [skip ci]`), status clean:
+      - `logs/md1-shrunk/polls/20260518T051816Z/meta.txt`
+      - `logs/md1-shrunk/polls/20260518T051816Z/git-head.txt`
+      - `logs/md1-shrunk/polls/20260518T051816Z/git-status.txt`
+  - AWS identity + pipeline state (region `us-west-2`):
+    - `/opt/homebrew/bin/aws sts get-caller-identity --region us-west-2 --output json` -> `logs/md1-shrunk/polls/20260518T051816Z/aws-sts.json`
+    - `/opt/homebrew/bin/aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --status-filter RUNNING --max-results 20 --region us-west-2 --output json` -> `logs/md1-shrunk/polls/20260518T051816Z/stepfn-running.json` (`RUNNING=0`)
+  - SageMaker terminal status (region `us-west-2`):
+    - SfM `md1-shrunk-1456-sfm-1778866088` -> `Completed`: `logs/md1-shrunk/polls/20260518T051816Z/sagemaker-describe-sfm.json`
+    - 3DGS `md1shrunk1456-1778880862-3dgs` -> `Completed`: `logs/md1-shrunk/polls/20260518T051816Z/sagemaker-describe-3dgs.json`
+    - compression `md1shrunk1456-1778880862-compression` -> `Completed`: `logs/md1-shrunk/polls/20260518T051816Z/sagemaker-describe-compression.json`
+    - InProgress processing jobs: `logs/md1-shrunk/polls/20260518T051816Z/sagemaker-processing-inprogress.json` -> `0`
+    - InProgress training jobs: `logs/md1-shrunk/polls/20260518T051816Z/sagemaker-training-inprogress.json` -> `0`
+  - S3 COLMAP output reconfirm:
+    - `/opt/homebrew/bin/aws s3 ls s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/ --recursive --summarize --region us-west-2` -> `logs/md1-shrunk/polls/20260518T051816Z/s3-colmap-listing.txt`
+  - GitHub Actions (branch history has successful runs, but head is `[skip ci]` so exact-head runs expected empty):
+    - `/opt/homebrew/bin/gh run list --branch agent-113647-md1-baseline-e2e --limit 50 --json ...` -> `logs/md1-shrunk/polls/20260518T051816Z/gh-run-list.json`
