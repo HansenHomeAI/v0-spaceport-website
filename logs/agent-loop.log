@@ -17,3 +17,4 @@
 [2026-05-18T23:23Z] md1-shrunk: canonical sfm 1779128752 InProgress (seam 09 point triangulator reached image #1456/657, global BA heartbeat) -> next: poll
 [2026-05-18T23:29Z] md1-shrunk: canonical sfm 1779128752 InProgress (seam 09 retry 02 reached image #1456/658, global BA heartbeat) -> next: poll
 [2026-05-18T23:36Z] md1-shrunk: canonical sfm 1779128752 InProgress (merge 10 succeeded: 1432 images/1118057 points; seam 10 matching block 2/7) -> next: poll
+[2026-05-18T23:42Z] md1-shrunk: canonical sfm 1779128752 InProgress (seam 10 point triangulator reached image #1456/1455, global BA heartbeat) -> next: poll
