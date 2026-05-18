@@ -260,3 +260,33 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/sagemaker-describe-cvhr-mtc-20260518T1729Z-sfm-20260518T191513Z-postpush.json`
   - `logs/montana-time-capsule/launch-20260518T191519Z-postpush.log`
 - Next unblocked step: continue 60-300s polling until SfM completes; run one guarded `--launch` immediately after completion to start pinned Montana 3DGS.
+
+## 2026-05-18T19:53Z Extended Timed Poll Pass
+
+- Branch/head/status command:
+  - `git rev-parse --abbrev-ref HEAD && git rev-parse HEAD && git status --short --branch`
+  - Result before this pass: branch `agent-40136728-montana-time-capsule`, head `4260fd94b3b19b61196b10a987043f315326930c`, dirty only from newly captured monitor evidence under `logs/montana-time-capsule/`.
+- AWS identity command: `/opt/homebrew/bin/aws sts get-caller-identity`
+  - Result: account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+- SageMaker status command: `/opt/homebrew/bin/aws sagemaker describe-processing-job --processing-job-name cvhr-mtc-20260518T1729Z-sfm`
+  - Result: `ProcessingJobStatus=InProgress` for `cvhr-mtc-20260518T1729Z-sfm`; pinned SfM image still `sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811`.
+- Duplicate-job guard command: `/opt/homebrew/bin/aws sagemaker list-processing-jobs --name-contains cvhr-mtc-20260518T1729Z --max-results 20`
+  - Result: one matching processing job only (`cvhr-mtc-20260518T1729Z-sfm`, `InProgress`); no duplicate CV-HR jobs launched.
+- CloudWatch progress proof command: `/opt/homebrew/bin/aws logs tail /aws/sagemaker/ProcessingJobs --since 20m --log-stream-name-prefix cvhr-mtc-20260518T1729Z-sfm --format short`
+  - Result: feature extraction reached `Processed file [1710/1710]` during this pass, then job remained `InProgress` while later SfM steps continued.
+- Advance-one-stage command: `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip --launch`
+  - Result: `status=sfm_running`, `sfm_status=InProgress`; guard held and 3DGS was not launched early.
+- Timed terminal-poll loop command:
+  - `for i in 1..20; do aws sagemaker describe-processing-job --processing-job-name cvhr-mtc-20260518T1729Z-sfm --query ProcessingJobStatus --output text; sleep 120; done`
+  - Result: all 20 polls from `2026-05-18T18:54:42Z` to `2026-05-18T19:33:02Z` returned `InProgress`.
+- Evidence files:
+  - `logs/montana-time-capsule/git-status-20260518T185343Z.txt`
+  - `logs/montana-time-capsule/aws-sts-20260518T185343Z.json`
+  - `logs/montana-time-capsule/sagemaker-describe-cvhr-mtc-20260518T1729Z-sfm-20260518T185343Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-cvhr-mtc-20260518T1729Z-20260518T185343Z.json`
+  - `logs/montana-time-capsule/cloudwatch-tail-cvhr-mtc-20260518T1729Z-sfm-20260518T185343Z.log`
+  - `logs/montana-time-capsule/launch-20260518T185343Z.log`
+  - `logs/montana-time-capsule/sfm-terminal-poll-20260518T185442Z.log`
+  - `logs/montana-time-capsule/sagemaker-describe-cvhr-mtc-20260518T1729Z-sfm-20260518T193503Z-postpoll.json`
+  - `logs/montana-time-capsule/sagemaker-list-cvhr-mtc-20260518T1729Z-20260518T193503Z-postpoll.json`
+- Next unblocked step: continue polling until SfM `Completed`; immediately run one guarded `--launch` command to advance exactly one stage into pinned Montana 3DGS.
