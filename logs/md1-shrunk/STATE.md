@@ -4108,3 +4108,24 @@ skybox, compression, artifact handoff, and visual gates.
     - `Deploy Next.js to Cloudflare Pages` run `26010398341` -> success: `logs/md1-shrunk/polls/20260518T023217Z-postpush/gh-run-watch-pages-26010398341.txt`
     - Pages run log (resolved preview hash URL + stable alias URL):
       - `logs/md1-shrunk/polls/20260518T023217Z-postpush/gh-run-pages-26010398341.log.txt`
+
+- 2026-05-18T02:47:21Z poll (monitor; verify local+AWS+GitHub; no new ML launches):
+  - Evidence: `logs/md1-shrunk/polls/20260518T024721Z/`
+  - Branch/head/status:
+    - `logs/md1-shrunk/polls/20260518T024721Z/git.txt` -> head `212e3d54...` (`[skip ci]`), branch `agent-113647-md1-baseline-e2e`, status clean
+    - note: user-referenced head `e9cbf71c...` is historical; `CDK Deploy` success still visible: `logs/md1-shrunk/polls/20260518T024721Z/gh-runs-e9cb.json`
+  - AWS identity (region `us-west-2`):
+    - `logs/md1-shrunk/polls/20260518T024721Z/aws-sts-get-caller-identity.json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions (region `us-west-2`):
+    - staging RUNNING executions: `logs/md1-shrunk/polls/20260518T024721Z/stepfunctions-running-executions.json` -> `0`
+  - SageMaker (region `us-west-2`):
+    - SfM `md1-shrunk-1456-sfm-1778866088` -> `Completed`: `logs/md1-shrunk/polls/20260518T024721Z/sagemaker-describe-md1-shrunk-1456-sfm-1778866088.json`
+    - InProgress processing jobs=0: `logs/md1-shrunk/polls/20260518T024721Z/sagemaker-list-processing-jobs-inprogress.json`
+    - InProgress training jobs=0: `logs/md1-shrunk/polls/20260518T024721Z/sagemaker-list-training-jobs-inprogress.json`
+    - SfM output listing non-empty: `logs/md1-shrunk/polls/20260518T024721Z/s3-colmap-output-listing.txt` (`Total Objects: 1468`, `Total Size: 9.2 GiB`)
+  - GitHub Actions:
+    - branch run list: `logs/md1-shrunk/polls/20260518T024721Z/gh-runs-branch.json`
+    - exact-head run count expected `0` (`[skip ci]` head): `logs/md1-shrunk/polls/20260518T024721Z/gh-exact-head-run-count.txt`
+  - SfM Montana-scale facts (from output `sfm_metadata.json`):
+    - local cached metadata: `logs/md1-shrunk/sfm_metadata-md1-shrunk-20260515T1641Z.json`
+    - `images_registered=1456` (Meadow was `1452`), `merged_component_count=1`, `points_3d=1103335`, `timed_out=false`, `processing_time_seconds=12709.05`

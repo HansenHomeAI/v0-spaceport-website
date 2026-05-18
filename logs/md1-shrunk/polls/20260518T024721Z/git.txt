@@ -1,0 +1,5 @@
+branch=agent-113647-md1-baseline-e2e
+head=212e3d54da462f2fcbd226d7e60240d074307599
+subject=chore: record md1-shrunk postpush CI proof 20260518T023217Z [skip ci]
+## agent-113647-md1-baseline-e2e...origin/agent-113647-md1-baseline-e2e
+?? logs/md1-shrunk/polls/20260518T024721Z/
