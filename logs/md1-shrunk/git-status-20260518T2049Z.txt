@@ -1,0 +1,12 @@
+## agent-113647-md1-baseline-e2e...origin/agent-113647-md1-baseline-e2e
+?? logs/md1-shrunk/aws-identity-20260518T2046Z.json
+?? logs/md1-shrunk/cloudwatch-recent-md1-shrunk-prodspine-sfm-1779128752-20260518T2046Z.json
+?? logs/md1-shrunk/gh-runs-agent-113647-20260518T2046Z.json
+?? logs/md1-shrunk/git-head-20260518T2046Z.txt
+?? logs/md1-shrunk/git-status-20260518T2046Z.txt
+?? logs/md1-shrunk/git-status-20260518T2049Z.txt
+?? logs/md1-shrunk/s3-colmap-md1-shrunk-prodspine-sfm-20260518T1826Z-20260518T2046Z.txt
+?? logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260518T2046Z.json
+?? logs/md1-shrunk/sagemaker-list-processing-inprogress-20260518T2046Z.json
+?? logs/md1-shrunk/sagemaker-list-training-inprogress-20260518T2046Z.json
+?? logs/md1-shrunk/stepfunctions-running-20260518T2046Z.json
