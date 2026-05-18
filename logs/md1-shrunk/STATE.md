@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T08:18:04Z
+updated: 2026-05-18T08:51:06Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -238,6 +238,43 @@ skybox, compression, artifact handoff, and visual gates.
   - `md1-shrunk-1456-sfm-1778866088` -> `ProcessingJobStatus=Completed`, `FailureReason=null`
   - InProgress processing jobs: `0`
   - InProgress training jobs: `0`
+
+## 2026-05-18T08:51:06Z poll (monitor)
+
+- Poll artifacts:
+  - `logs/md1-shrunk/polls/20260518T085106Z/`
+- Branch/head/status:
+  - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+  - `git rev-parse HEAD` -> `24a55f5aae0918f08ec07c0a6c373b38e2eb6dc2` (`[skip ci]`)
+  - evidence: `logs/md1-shrunk/polls/20260518T085106Z/git.txt`
+- GitHub workflows (branch `agent-113647-md1-baseline-e2e`, via `gh run list`):
+  - exact-head workflows: none for `24a55f5a...` (skip-ci)
+  - last non-skip Pages + CDK success observed in list: head `049c70baf003e3a1e816f729c514d6b491665a76`
+  - prior exact-head CDK success for provided head: `e9cbf71c56420ce386b028e7f4af33163ce4dcc2` -> run `25932325504` (success)
+- AWS identity (region `us-west-2`):
+  - `Account=975050048887`, `Arn=arn:aws:iam::975050048887:root`
+  - evidence: `logs/md1-shrunk/polls/20260518T085106Z/aws-sts-get-caller-identity.json`
+- Step Functions state:
+  - `SpaceportMLPipeline-staging` RUNNING executions: `0`
+  - evidence: `logs/md1-shrunk/polls/20260518T085106Z/stepfunctions-running-executions.json`
+- SageMaker SfM job terminal state:
+  - `md1-shrunk-1456-sfm-1778866088` -> `ProcessingJobStatus=Completed`, `FailureReason=null`
+  - evidence: `logs/md1-shrunk/polls/20260518T085106Z/sagemaker-describe-md1-shrunk-1456-sfm-1778866088.json`
+  - CloudWatch tail: `logs/md1-shrunk/polls/20260518T085106Z/cloudwatch-tail-md1-shrunk-1456-sfm-1778866088.txt`
+- SfM output S3 (upload mode `EndOfJob` confirmed now present):
+  - `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap`
+  - evidence: `logs/md1-shrunk/polls/20260518T085106Z/s3-colmap-root.txt`
+  - evidence: `logs/md1-shrunk/polls/20260518T085106Z/s3-colmap-sparse-0.txt`
+- Montana gates (from `sfm_metadata.json`):
+  - dataset_image_count: `1456`
+  - images_registered: `1456` (Meadow/Incognito ref `1452`)
+  - merged_component_count: `1`
+  - points_3d: `1103335` (Meadow/Incognito ref `940147`)
+  - quality_check_passed: `true`
+  - timed_out: `false`
+  - processing_time_seconds: `12709.05` (≈ 3.53h)
+  - evidence: `logs/md1-shrunk/polls/20260518T085106Z/sfm_metadata.json`
+  - extracted: `logs/md1-shrunk/polls/20260518T085106Z/colmap-metrics.json`
   - evidence:
     - `logs/md1-shrunk/polls/20260517T091531Z/sagemaker-describe-processing-job-md1-shrunk-1456-sfm-1778866088.json`
     - `logs/md1-shrunk/polls/20260517T091531Z/sagemaker-list-processing-jobs-InProgress.json`

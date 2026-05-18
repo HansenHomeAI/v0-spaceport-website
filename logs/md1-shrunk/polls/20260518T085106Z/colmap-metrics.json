@@ -1,0 +1,19 @@
+{
+  "pipeline": "colmap_gpu_spatial_heading_chunked",
+  "processing_time_seconds": 12709.05,
+  "dataset_image_count": 1456,
+  "images_registered": 1456,
+  "merged_component_count": 1,
+  "points_3d": 1103335,
+  "quality_check_passed": true,
+  "timed_out": false,
+  "chunk_count": 6,
+  "chunk_sizes": [
+    249,
+    383,
+    173,
+    207,
+    307,
+    179
+  ]
+}

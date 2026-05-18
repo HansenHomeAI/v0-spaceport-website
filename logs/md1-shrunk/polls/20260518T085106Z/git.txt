@@ -1,0 +1,10 @@
+branch=agent-113647-md1-baseline-e2e
+head=24a55f5aae0918f08ec07c0a6c373b38e2eb6dc2
+status_porcelain_lines=3
+?? logs/md1-shrunk/polls/20260518T000000Z-scratch-describe.json
+?? logs/md1-shrunk/polls/20260518T085044Z/
+?? logs/md1-shrunk/polls/20260518T085106Z/
+--- last commit ---
+24a55f5aae0918f08ec07c0a6c373b38e2eb6dc2 chore: md1-shrunk monitor poll 20260518T081804Z [skip ci]
+2026-05-18 02:20:46 -0600
+Gabriel Hansen
