@@ -3,3 +3,4 @@
 [2026-05-18T18:52:58Z] md1-shrunk: canonical sfm 1779128752 InProgress (feature_extractor 552/1456) -> next: poll
 [2026-05-18T22:03Z] md1-shrunk: canonical sfm 1779128752 InProgress (final seam triangulator 02 reached image #1407, global BA active) -> next: poll
 [2026-05-18T22:10Z] md1-shrunk: canonical sfm 1779128752 InProgress (final seam triangulator 04 reached image #1407, extracting colors) -> next: poll
+[2026-05-18T22:16Z] md1-shrunk: canonical sfm 1779128752 InProgress (seam 04 retry image registrator converting 399-image model) -> next: poll
