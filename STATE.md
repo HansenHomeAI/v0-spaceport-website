@@ -67,3 +67,12 @@ Montana time capsule run, without touching or advancing the existing
   - id: `cv-hr-parallel-splat-monitor`
   - cadence: every 20 minutes
   - target: this thread
+
+## 2026-05-18T21:44Z Heartbeat Poll
+
+- Secondary SfM job `cvhr-secondary-20260518t2113z-sfm` remains `InProgress`.
+- Latest CloudWatch progress reached feature extraction `Processed file [508/1710]`.
+- S3 output remains empty, expected before `S3UploadMode=EndOfJob`.
+- No duplicate secondary CV-HR jobs were launched.
+- Existing `cvhr-mtc-20260518T1729Z-sfm` and other external jobs were left untouched.
+- Details and evidence are recorded in `logs/cvhr-parallel/STATE.md`.
