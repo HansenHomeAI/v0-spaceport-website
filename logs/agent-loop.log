@@ -2,3 +2,4 @@
 [2026-05-18T18:38:06Z] md1-shrunk: plan3 planner Completed; canonical sfm 1779128752 InProgress (feature_extractor 160/1456) -> next: poll
 [2026-05-18T18:52:58Z] md1-shrunk: canonical sfm 1779128752 InProgress (feature_extractor 552/1456) -> next: poll
 [2026-05-18T22:03Z] md1-shrunk: canonical sfm 1779128752 InProgress (final seam triangulator 02 reached image #1407, global BA active) -> next: poll
+[2026-05-18T22:10Z] md1-shrunk: canonical sfm 1779128752 InProgress (final seam triangulator 04 reached image #1407, extracting colors) -> next: poll

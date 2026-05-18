@@ -6856,3 +6856,34 @@ skybox, compression, artifact handoff, and visual gates.
   - `logs/md1-shrunk/stepfunctions-running-20260518T2203Z.json`
   - `logs/md1-shrunk/sagemaker-list-processing-inprogress-20260518T2203Z.json`
   - `logs/md1-shrunk/sagemaker-list-training-inprogress-20260518T2203Z.json`
+
+## 2026-05-18T22:10Z in-chat automation poll
+
+- Verification before poll:
+  - branch: `agent-113647-md1-baseline-e2e`
+  - head: `775ae59770a9be4d1637ff8c4f3d67d7ec032dc9`
+  - AWS identity captured for account `975050048887`.
+  - Step Functions `SpaceportMLPipeline-staging` RUNNING executions: `0`.
+  - InProgress training jobs: `0`.
+  - InProgress processing jobs include canonical `md1-shrunk-prodspine-sfm-1779128752` plus external `cvhr-secondary-20260518t2113z-sfm`, `cvhr-mtc-20260518T1729Z-sfm`, `md1-viscell-full-l01-1779141986`, and `md1-viscell-full-l00-1779141981`; external jobs remain untouched.
+  - current head is a logs-only `[skip ci]` commit; latest meaningful non-skipped workflow proof remains `CDK Deploy` run `26052859100` for `1900964d7d3601733e6cb9d587a3128717749336`.
+- Canonical SfM status:
+  - job: `md1-shrunk-prodspine-sfm-1779128752`
+  - `ProcessingJobStatus=InProgress`, `FailureReason=null`
+  - S3 output remains empty as expected until `S3UploadMode=EndOfJob`.
+- Finalization progress:
+  - Final seam assembly progressed to `chunk_model_seam_04_point_triangulator_01`.
+  - Visible triangulation reached image `#1407 (391)`.
+  - Latest visible stage is `Extracting colors` after retriangulation/global bundle adjustment.
+  - no OOM, timeout, SageMaker failure, or Step Functions failure is visible.
+- Evidence:
+  - `logs/md1-shrunk/git-status-20260518T2210Z.txt`
+  - `logs/md1-shrunk/git-head-20260518T2210Z.txt`
+  - `logs/md1-shrunk/aws-identity-20260518T2210Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260518T2210Z.json`
+  - `logs/md1-shrunk/cloudwatch-recent-md1-shrunk-prodspine-sfm-1779128752-20260518T2210Z.json`
+  - `logs/md1-shrunk/s3-colmap-md1-shrunk-prodspine-sfm-20260518T1826Z-20260518T2210Z.txt`
+  - `logs/md1-shrunk/stepfunctions-running-20260518T2210Z.json`
+  - `logs/md1-shrunk/sagemaker-list-processing-inprogress-20260518T2210Z.json`
+  - `logs/md1-shrunk/sagemaker-list-training-inprogress-20260518T2210Z.json`
+  - `logs/md1-shrunk/gh-runs-agent-113647-20260518T2210Z.json`
