@@ -114,3 +114,40 @@ as read-only context.
   - `logs/cvhr-parallel/evidence/logstreams-cvhr-secondary-20260518t2113z-sfm-20260518T2143Z.json`
   - `logs/cvhr-parallel/evidence/cloudwatch-tail-cvhr-secondary-20260518t2113z-sfm-20260518T2143Z.log`
   - `logs/cvhr-parallel/evidence/runner-status-20260518T2144Z.json`
+
+## 2026-05-18T22:04Z Heartbeat Poll
+
+- Branch/head/status:
+  - branch: `agent-73910482-cvhr-parallel-splat`
+  - head: `ec38a0f4a6cc5f9a73b69610bb64e993058fc256` (`[skip ci]` ledger commit)
+  - status before this poll: clean
+  - last meaningful exact-head workflow remains `CDK Deploy` run `26060892234` for code head `0b60d8bf9e7e4355bd46001dcd61387b327a8e5a`, conclusion `success`
+- AWS identity:
+  - account: `975050048887`
+  - ARN: `arn:aws:iam::975050048887:root`
+- Active SageMaker / Step Functions:
+  - secondary SfM: `cvhr-secondary-20260518t2113z-sfm` -> `InProgress`
+  - external processing jobs observed and left untouched: `md1-shrunk-prodspine-sfm-1779128752`, `cvhr-mtc-20260518T1729Z-sfm`
+  - in-progress training jobs: `0`
+  - running `SpaceportMLPipeline-staging` Step Functions executions: `0`
+- Secondary SfM progress:
+  - CloudWatch stream: `cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231`
+  - latest observed feature extraction: `Processed file [1024/1710]`
+  - images are `4000 x 2250` with GPS/gravity metadata and SIFT features
+  - no SageMaker failure, OOM, or timeout visible
+- S3 output:
+  - `s3://spaceport-ml-processing-staging/manual-validations/cvhr-secondary-20260518t2113z/colmap`
+  - `Total Objects: 0`, expected before `S3UploadMode=EndOfJob`
+- State update:
+  - `logs/cvhr-parallel/cv-hr-state.json` still reports `status=sfm_running`, `sfm_status=InProgress`, `last_action=sfm_running`
+- Evidence:
+  - `logs/cvhr-parallel/evidence/aws-sts-20260518T2203Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-describe-cvhr-secondary-20260518t2113z-sfm-20260518T2203Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-processing-inprogress-20260518T2203Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-training-inprogress-20260518T2203Z.json`
+  - `logs/cvhr-parallel/evidence/stepfunctions-running-20260518T2203Z.json`
+  - `logs/cvhr-parallel/evidence/s3-colmap-cvhr-secondary-20260518t2113z-20260518T2203Z.txt`
+  - `logs/cvhr-parallel/evidence/gh-runs-agent-73910482-20260518T2203Z.json`
+  - `logs/cvhr-parallel/evidence/logstreams-cvhr-secondary-20260518t2113z-sfm-20260518T2203Z.json`
+  - `logs/cvhr-parallel/evidence/cloudwatch-tail-cvhr-secondary-20260518t2113z-sfm-20260518T2203Z.log`
+  - `logs/cvhr-parallel/evidence/runner-status-20260518T2203Z.json`
