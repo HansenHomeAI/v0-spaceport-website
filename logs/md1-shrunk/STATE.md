@@ -5008,3 +5008,14 @@ skybox, compression, artifact handoff, and visual gates.
     - `logs/md1-shrunk/polls/20260518T104631Z-monitor/http-head-sanity.txt`
     - `logs/md1-shrunk/polls/20260518T104631Z-monitor/bundle-meta.json`
     - `logs/md1-shrunk/polls/20260518T104631Z-monitor/gaussian_count.txt`
+
+## 2026-05-18T10:52:44Z post-push confirmation (monitor)
+
+- Poll artifacts:
+  - `logs/md1-shrunk/polls/20260518T105244Z-postpush/`
+- Branch/head:
+  - `git rev-parse HEAD` -> `abc9524641de77cb6a77b892ce9277588c74fd39` (`[skip ci]`)
+  - evidence: `logs/md1-shrunk/polls/20260518T105244Z-postpush/git-head.txt`
+- GitHub Actions (exact head):
+  - exact-head workflow runs: `0` (expected; `[skip ci]`)
+  - evidence: `logs/md1-shrunk/polls/20260518T105244Z-postpush/github-actions-runs-head-summary.json`
