@@ -218,6 +218,110 @@ def transform_point(parts: list[str], transform: SimilarityTransform) -> list[st
     return [parts[0], *[format_float(value) for value in transformed], *parts[4:]]
 
 
+def point_coords(points_path: Path) -> list[tuple[float, float, float]]:
+    coords: list[tuple[float, float, float]] = []
+    for line in non_comment_lines(points_path):
+        parts = line.split()
+        if len(parts) >= 4:
+            coords.append((float(parts[1]), float(parts[2]), float(parts[3])))
+    return coords
+
+
+def transformed_point_coords(points_path: Path, transform: SimilarityTransform) -> list[tuple[float, float, float]]:
+    coords: list[tuple[float, float, float]] = []
+    for line in non_comment_lines(points_path):
+        parts = line.split()
+        if len(parts) < 4:
+            continue
+        point = np.array([float(parts[1]), float(parts[2]), float(parts[3])], dtype=float)
+        transformed = transform.scale * transform.rotation @ point + transform.translation
+        coords.append((float(transformed[0]), float(transformed[1]), float(transformed[2])))
+    return coords
+
+
+def percentile(values: list[float], q: float) -> float | None:
+    if not values:
+        return None
+    ordered = sorted(values)
+    index = min(max(math.ceil(q * len(ordered)) - 1, 0), len(ordered) - 1)
+    return float(ordered[index])
+
+
+def cross_leaf_surface_overlap_stats(
+    existing_points: list[tuple[float, float, float]],
+    incoming_points: list[tuple[float, float, float]],
+    *,
+    min_points_per_side: int = 6,
+) -> dict[str, object]:
+    if not existing_points or not incoming_points:
+        return {
+            "overlap_cell_count": 0,
+            "flagged_overlap_cell_count": 0,
+            "flagged_overlap_cell_ratio": 0.0,
+            "median_abs_z_gap_m": None,
+            "p95_abs_z_gap_m": None,
+            "max_abs_z_gap_m": None,
+            "examples": [],
+        }
+    combined = existing_points + incoming_points
+    xs = [point[0] for point in combined]
+    ys = [point[1] for point in combined]
+    span = max(max(xs) - min(xs), max(ys) - min(ys), 1.0)
+    cell_size = max(span / 80.0, 2.0)
+    min_x = min(xs)
+    min_y = min(ys)
+
+    def group(points: list[tuple[float, float, float]]) -> dict[tuple[int, int], list[float]]:
+        cells: dict[tuple[int, int], list[float]] = {}
+        for x, y, z in points:
+            key = (int((x - min_x) / cell_size), int((y - min_y) / cell_size))
+            cells.setdefault(key, []).append(z)
+        return cells
+
+    existing_cells = group(existing_points)
+    incoming_cells = group(incoming_points)
+    z_gaps: list[float] = []
+    flagged: list[dict[str, object]] = []
+    for key in sorted(set(existing_cells).intersection(incoming_cells)):
+        left = existing_cells[key]
+        right = incoming_cells[key]
+        if len(left) < min_points_per_side or len(right) < min_points_per_side:
+            continue
+        left_median = float(np.median(left))
+        right_median = float(np.median(right))
+        gap = abs(left_median - right_median)
+        z_gaps.append(gap)
+        left_span = max(left) - min(left)
+        right_span = max(right) - min(right)
+        tolerance = max(1.5, 0.35 * max(left_span, right_span, cell_size))
+        if gap <= tolerance:
+            continue
+        flagged.append(
+            {
+                "cell": [key[0], key[1]],
+                "existing_count": len(left),
+                "incoming_count": len(right),
+                "median_z_gap_m": round(gap, 4),
+                "existing_z_median": round(left_median, 4),
+                "incoming_z_median": round(right_median, 4),
+                "tolerance_m": round(tolerance, 4),
+            }
+        )
+    overlap_count = len(z_gaps)
+    flagged_ratio = round(len(flagged) / overlap_count, 4) if overlap_count else 0.0
+    return {
+        "overlap_cell_count": overlap_count,
+        "flagged_overlap_cell_count": len(flagged),
+        "flagged_overlap_cell_ratio": flagged_ratio,
+        "median_abs_z_gap_m": round(float(np.median(z_gaps)), 4) if z_gaps else None,
+        "p95_abs_z_gap_m": round(percentile(z_gaps, 0.95), 4) if z_gaps else None,
+        "max_abs_z_gap_m": round(max(z_gaps), 4) if z_gaps else None,
+        "cell_size_m": round(cell_size, 4),
+        "min_points_per_side": min_points_per_side,
+        "examples": sorted(flagged, key=lambda item: (-float(item["median_z_gap_m"]), item["cell"]))[:20],
+    }
+
+
 def transform_image_parts(parts: list[str], transform: SimilarityTransform) -> list[str]:
     old_rotation = qvec_to_rotmat(float(value) for value in parts[1:5])
     old_center = camera_center(parts)
@@ -246,6 +350,7 @@ def write_pose_aligned_merge(
     output_dir.mkdir(parents=True, exist_ok=True)
     anchor_pairs = image_record_pairs(anchor / "images.txt")
     anchor_by_name = {parts[9]: (parts, points_line) for parts, points_line in anchor_pairs}
+    merged_surface_points = point_coords(anchor / "points3D.txt")
     emitted_names = set(anchor_by_name)
     transforms: list[dict[str, object]] = []
     additional_image_lines: list[tuple[list[str], str, dict[int, int]]] = []
@@ -281,6 +386,8 @@ def write_pose_aligned_merge(
         source = np.array([camera_center(leaf_by_name[name][0]) for name in shared_names], dtype=float)
         target = np.array([camera_center(anchor_by_name[name][0]) for name in shared_names], dtype=float)
         transform = estimate_similarity(source, target)
+        leaf_surface_points = transformed_point_coords(leaf_dir / "points3D.txt", transform)
+        surface_overlap = cross_leaf_surface_overlap_stats(merged_surface_points, leaf_surface_points)
         residuals = sorted(transform.residuals)
         point_map: dict[int, int] = {}
         leaf_image_id_to_name = image_id_to_name(leaf_dir / "images.txt")
@@ -332,9 +439,11 @@ def write_pose_aligned_merge(
                     "p95": round(residuals[min(math.ceil(0.95 * len(residuals)) - 1, len(residuals) - 1)], 4),
                     "max": round(residuals[-1], 4),
                 },
+                "surface_overlap": surface_overlap,
                 "new_points_kept": len(point_map),
             }
         )
+        merged_surface_points.extend(leaf_surface_points)
 
     shutil.copy2(anchor / "cameras.txt", output_dir / "cameras.txt")
     if (anchor / "rigs.txt").exists():

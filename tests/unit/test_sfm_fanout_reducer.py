@@ -18,7 +18,7 @@ SPEC.loader.exec_module(fanout_reducer)
 
 
 class SfmFanoutReducerTest(unittest.TestCase):
-    def test_materialize_leaf_sparse_prefers_sparse_raw(self):
+    def test_materialize_leaf_sparse_prefers_filtered_sparse(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             leaf = root / "leaf"
@@ -33,8 +33,8 @@ class SfmFanoutReducerTest(unittest.TestCase):
 
             materialized, report = fanout_reducer.materialize_leaf_sparse(str(leaf), root / "downloaded")
 
-            self.assertEqual((materialized / "cameras.txt").read_text(encoding="utf-8"), "# raw\n")
-            self.assertEqual(report["source"], str(sparse_raw))
+            self.assertEqual((materialized / "cameras.txt").read_text(encoding="utf-8"), "# filtered\n")
+            self.assertEqual(report["source"], str(sparse))
 
     def test_write_standard_output_package_writes_sparse_and_metadata(self):
         with tempfile.TemporaryDirectory() as tmp:

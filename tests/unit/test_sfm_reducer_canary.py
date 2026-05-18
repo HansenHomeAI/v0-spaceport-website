@@ -105,6 +105,26 @@ class SfmReducerCanaryTest(unittest.TestCase):
         self.assertNotIn("10 0 0 1", points)
         self.assertIn("1 1 1 0 0 0 0 0 0 1 1 7 1", frames)
 
+    def test_cross_leaf_surface_overlap_passes_aligned_cells(self):
+        existing = [(float(index % 3) * 0.2, float(index // 3) * 0.2, 10.0 + index * 0.01) for index in range(9)]
+        incoming = [(float(index % 3) * 0.2, float(index // 3) * 0.2, 10.15 + index * 0.01) for index in range(9)]
+
+        stats = reducer_canary.cross_leaf_surface_overlap_stats(existing, incoming)
+
+        self.assertEqual(stats["overlap_cell_count"], 1)
+        self.assertEqual(stats["flagged_overlap_cell_count"], 0)
+        self.assertEqual(stats["flagged_overlap_cell_ratio"], 0.0)
+
+    def test_cross_leaf_surface_overlap_flags_layered_cells(self):
+        existing = [(float(index % 3) * 0.2, float(index // 3) * 0.2, 10.0 + index * 0.01) for index in range(9)]
+        incoming = [(float(index % 3) * 0.2, float(index // 3) * 0.2, 17.0 + index * 0.01) for index in range(9)]
+
+        stats = reducer_canary.cross_leaf_surface_overlap_stats(existing, incoming)
+
+        self.assertEqual(stats["overlap_cell_count"], 1)
+        self.assertEqual(stats["flagged_overlap_cell_count"], 1)
+        self.assertGreater(stats["flagged_overlap_cell_ratio"], 0.0)
+
 
 if __name__ == "__main__":
     unittest.main()

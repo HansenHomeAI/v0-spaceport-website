@@ -329,6 +329,20 @@ def merge_stats(sfm_metadata: dict[str, Any], reducer_metadata: dict[str, Any]) 
     if reducer_metadata.get("artifact_kind") in {"sfm_reducer_canary_report", "sfm_fanout_reducer_report"}:
         transforms = (reducer_metadata.get("fallback") or {}).get("transforms") or []
         shared_counts = [int(item.get("shared_registered_images") or 0) for item in transforms]
+        surface_overlaps = [
+            item.get("surface_overlap")
+            for item in transforms
+            if isinstance(item.get("surface_overlap"), dict)
+        ]
+        overlap_cells = [int(item.get("overlap_cell_count") or 0) for item in surface_overlaps]
+        flagged_cells = [int(item.get("flagged_overlap_cell_count") or 0) for item in surface_overlaps]
+        z_gap_p95 = [
+            float(item["p95_abs_z_gap_m"])
+            for item in surface_overlaps
+            if item.get("p95_abs_z_gap_m") is not None
+        ]
+        total_overlap_cells = sum(overlap_cells)
+        total_flagged_cells = sum(flagged_cells)
         leaf_count = int(reducer_metadata.get("leaf_count") or 0)
         passed = reducer_metadata.get("decision") == "pass"
         blockers = reducer_metadata.get("promotion_blockers") or reducer_metadata.get("blockers") or []
@@ -344,6 +358,25 @@ def merge_stats(sfm_metadata: dict[str, Any], reducer_metadata: dict[str, Any]) 
             "merge_node_count": len(transforms),
             "shared_registered_images": summarize(shared_counts),
             "cross_edge_count": summarize([]),
+            "cross_leaf_surface_overlap": {
+                "node_count": len(surface_overlaps),
+                "overlap_cell_count": total_overlap_cells,
+                "flagged_overlap_cell_count": total_flagged_cells,
+                "flagged_overlap_cell_ratio": round(total_flagged_cells / total_overlap_cells, 4)
+                if total_overlap_cells
+                else None,
+                "overlap_cell_count_by_node": summarize(overlap_cells),
+                "flagged_overlap_cell_count_by_node": summarize(flagged_cells),
+                "p95_abs_z_gap_m_by_node": summarize(z_gap_p95),
+                "examples": [
+                    {
+                        "leaf_index": transform.get("leaf_index"),
+                        **example,
+                    }
+                    for transform in transforms
+                    for example in ((transform.get("surface_overlap") or {}).get("examples") or [])[:5]
+                ][:20],
+            },
             "weak_merge_nodes": [
                 {
                     "sequence": item.get("leaf_index"),
@@ -642,11 +675,37 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
     if double_surface:
         flagged_ratio = float(double_surface.get("flagged_cell_ratio") or 0.0)
         max_allowed = arg_value(args, "max_double_surface_cell_ratio", 0.02)
+        cross_leaf_surface = merge.get("cross_leaf_surface_overlap") or {}
+        cross_leaf_ratio = cross_leaf_surface.get("flagged_overlap_cell_ratio")
+        cross_leaf_overlap_cells = int(cross_leaf_surface.get("overlap_cell_count") or 0)
+        cross_leaf_node_count = int(cross_leaf_surface.get("node_count") or 0)
+        cross_leaf_surface_passed = (
+            cross_leaf_node_count > 0
+            and cross_leaf_ratio is not None
+            and cross_leaf_overlap_cells > 0
+            and float(cross_leaf_ratio) <= max_allowed
+        )
+        if cross_leaf_node_count > 0 and (cross_leaf_ratio is None or cross_leaf_overlap_cells <= 0):
+            add_gate(
+                gates,
+                "cross_leaf_surface_overlap",
+                "warning",
+                f"overlap_cell_count={cross_leaf_overlap_cells}, flagged_overlap_cell_ratio={cross_leaf_ratio}",
+            )
+        elif cross_leaf_node_count > 0:
+            add_gate(
+                gates,
+                "cross_leaf_surface_overlap",
+                "fail" if float(cross_leaf_ratio) > max_allowed else "pass",
+                f"flagged_overlap_cell_ratio={cross_leaf_ratio}, max={max_allowed}, overlap_cells={cross_leaf_overlap_cells}",
+            )
         add_gate(
             gates,
             "double_surface_geometry",
-            "fail" if flagged_ratio > max_allowed else "pass",
-            f"flagged_cell_ratio={flagged_ratio}, max={max_allowed}, flagged={double_surface.get('flagged_cell_count')}",
+            "warning" if flagged_ratio > max_allowed and cross_leaf_surface_passed else "fail"
+            if flagged_ratio > max_allowed
+            else "pass",
+            f"flagged_cell_ratio={flagged_ratio}, max={max_allowed}, flagged={double_surface.get('flagged_cell_count')}, cross_leaf_authoritative={cross_leaf_surface_passed}",
         )
     else:
         add_gate(gates, "double_surface_geometry", "warning", "not enough exact sparse points for grid diagnostic")

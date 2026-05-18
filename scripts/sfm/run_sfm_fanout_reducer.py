@@ -67,7 +67,7 @@ def run_cli(command: list[str]) -> dict[str, object]:
 
 
 def existing_sparse_dir(root: Path) -> Path:
-    for relative in ("sparse_raw/0", "sparse/0", "."):
+    for relative in ("sparse/0", "sparse_raw/0", "."):
         candidate = root / relative
         if all((candidate / file_name).exists() for file_name in ("cameras.txt", "images.txt", "points3D.txt")):
             return candidate
@@ -84,7 +84,7 @@ def copy_sparse_dir(source: Path, target: Path) -> None:
 
 def download_sparse_from_s3(leaf_uri: str, target: Path) -> dict[str, object]:
     commands: list[dict[str, object]] = []
-    for sparse_kind in ("sparse_raw/0", "sparse/0"):
+    for sparse_kind in ("sparse/0", "sparse_raw/0"):
         target_kind = target / sparse_kind
         target_kind.mkdir(parents=True, exist_ok=True)
         copied_required = True
