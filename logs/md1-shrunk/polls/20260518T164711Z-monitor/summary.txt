@@ -1,0 +1,5 @@
+poll_dir=logs/md1-shrunk/polls/20260518T164711Z-monitor
+timestamp_utc=20260518T164711Z
+branch=agent-113647-md1-baseline-e2e
+head=d42a463985320464f46279fb8013636b6e544568
+porcelain_lines=2

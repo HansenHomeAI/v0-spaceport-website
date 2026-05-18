@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T16:22:12Z
+updated: 2026-05-18T16:49:01Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -5609,3 +5609,35 @@ skybox, compression, artifact handoff, and visual gates.
   - evidence:
     - `logs/md1-shrunk/polls/20260518T162212Z-postpush/gh-run-list.json`
     - `logs/md1-shrunk/polls/20260518T162212Z-postpush/gh-exact-head-count.txt`
+
+## 2026-05-18T16:47:11Z poll (monitor; idle + URL reachability)
+
+- Poll artifacts:
+  - `logs/md1-shrunk/polls/20260518T164711Z-monitor/`
+- Branch/head/status:
+  - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+  - `git rev-parse HEAD` -> `d42a463985320464f46279fb8013636b6e544568` (`[skip ci]`)
+  - `git status --porcelain=v1` -> clean
+- AWS identity (region `us-west-2`):
+  - account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - evidence: `logs/md1-shrunk/polls/20260518T164711Z-monitor/aws-sts-get-caller-identity.json`
+- Step Functions active executions (region `us-west-2`):
+  - `SpaceportMLPipeline*` RUNNING: `0`
+  - evidence: `logs/md1-shrunk/polls/20260518T164711Z-monitor/stepfunctions-running-spaceportml.json`
+- SageMaker active jobs (region `us-west-2`):
+  - InProgress processing jobs: `0`
+  - InProgress training jobs: `0`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T164711Z-monitor/sagemaker-list-processing-jobs-InProgress.json`
+    - `logs/md1-shrunk/polls/20260518T164711Z-monitor/sagemaker-list-training-jobs-InProgress.json`
+- SfM job terminal state (reconfirmed):
+  - `md1-shrunk-1456-sfm-1778866088` -> `ProcessingJobStatus=Completed`, `FailureReason=null`
+  - evidence: `logs/md1-shrunk/polls/20260518T164711Z-monitor/sagemaker-describe-md1-shrunk-1456-sfm-1778866088.json`
+- GitHub Actions (exact head):
+  - exact-head workflow runs: `0` (expected; `[skip ci]`)
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T164711Z-monitor/gh-run-list.json`
+    - `logs/md1-shrunk/polls/20260518T164711Z-monitor/gh-exact-head-count.txt`
+- Public URL reachability (anonymous `HTTP 200`):
+  - preview alias headers: `logs/md1-shrunk/polls/20260518T164711Z-monitor/http-preview-alias-headers.txt`
+  - bundle meta.json headers: `logs/md1-shrunk/polls/20260518T164711Z-monitor/http-meta-headers.txt`
