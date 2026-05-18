@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T14:22:11Z
+updated: 2026-05-18T14:24:17Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -5377,3 +5377,14 @@ skybox, compression, artifact handoff, and visual gates.
   - evidence:
     - `logs/md1-shrunk/polls/20260518T141655Z-monitor/http-preview.headers.txt`
     - `logs/md1-shrunk/polls/20260518T141655Z-monitor/http-public-meta.headers.txt`
+
+## 2026-05-18T14:23:58Z post-push confirmation (monitor)
+
+- Poll artifacts:
+  - `logs/md1-shrunk/polls/20260518T142358Z-postpush/`
+- Branch/head:
+  - `git rev-parse HEAD` -> `abc73e3e682c1fb43834fe91c3b5d2f97a511c52` (`[skip ci]`)
+  - evidence: `logs/md1-shrunk/polls/20260518T142358Z-postpush/git-head.txt`
+- GitHub Actions (exact head):
+  - exact-head workflow runs: `0` (expected; `[skip ci]`)
+  - evidence: `logs/md1-shrunk/polls/20260518T142358Z-postpush/gh-runs.json`
