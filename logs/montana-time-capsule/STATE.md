@@ -127,3 +127,16 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/cloudwatch-tail-cvhr-mtc-20260518T1729Z-sfm-20260518T181722Z.log`
   - `logs/montana-time-capsule/launch-20260518T181722Z.log`
 - Next unblocked step: continue polling until SfM reaches `Completed`, then run `--launch` once to start 3DGS.
+
+## 2026-05-18T18:18Z Ledger Commit + Push
+
+- Commit: `483efaeb3c05d1f8647da38f73e98584d43b0807`
+- Commit message: `chore: record cv-hr montana monitor poll [skip ci]`
+- Push command: `git push origin agent-40136728-montana-time-capsule`
+- Push result: branch updated on origin (`eed8727c..483efaeb`).
+- Exact-head workflow check command:
+  - `/opt/homebrew/bin/gh run list --branch agent-40136728-montana-time-capsule --limit 50 --json databaseId,headSha,workflowName,status,conclusion,createdAt,updatedAt,url`
+  - Exact-head selection result for `483efaeb3c05d1f8647da38f73e98584d43b0807`: `[]` (no exact-head workflows, expected for `[skip ci]`).
+- Branch workflow evidence: `logs/montana-time-capsule/gh-run-list-agent-40136728-20260518T181809Z.json`
+- Exact-head workflow evidence: `logs/montana-time-capsule/gh-run-list-exact-head-20260518T181809Z.json`
+- Next unblocked step: keep polling SfM until `Completed`, then run `--launch` exactly once to advance to 3DGS.
