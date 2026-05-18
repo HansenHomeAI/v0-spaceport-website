@@ -4129,3 +4129,11 @@ skybox, compression, artifact handoff, and visual gates.
   - SfM Montana-scale facts (from output `sfm_metadata.json`):
     - local cached metadata: `logs/md1-shrunk/sfm_metadata-md1-shrunk-20260515T1641Z.json`
     - `images_registered=1456` (Meadow was `1452`), `merged_component_count=1`, `points_3d=1103335`, `timed_out=false`, `processing_time_seconds=12709.05`
+
+- 2026-05-18T02:48:49Z exact-head GitHub Actions confirmation (post poll commit/push; `[skip ci]` head):
+  - Evidence: `logs/md1-shrunk/polls/20260518T024849Z-postpush/`
+  - head commit:
+    - `logs/md1-shrunk/polls/20260518T024849Z-postpush/head.txt` -> head `bb8809d0...` (`[skip ci]`)
+  - exact-head run list expected `[]` (skip-ci head):
+    - `logs/md1-shrunk/polls/20260518T024849Z-postpush/gh-run-list-exact-head.json`
+    - `logs/md1-shrunk/polls/20260518T024849Z-postpush/gh-exact-head-run-count.txt`
