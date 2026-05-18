@@ -6028,3 +6028,77 @@ skybox, compression, artifact handoff, and visual gates.
 - GitHub Actions:
   - exact-head workflows for `837cd3605bd012d9eeb62251319ee61b4dff3140`: none because this is a logs/ledger-only `[skip ci]` commit.
   - evidence: `logs/md1-shrunk/gh-runs-agent-113647-20260518T1854Z.json`
+
+## 2026-05-18T19:19Z in-chat accountability poll
+
+- User requested the monitor run in this chat instead of continuing separate automation turns.
+- Automation state:
+  - file: `/Users/gabrielhansen/.codex/automations/md1-shrunk-e2e-monitor-2/automation.toml`
+  - `status = "PAUSED"`
+  - prompt says not to run unless reactivated and to leave canonical job ownership unchanged.
+- Branch/head/status:
+  - `git status --short --branch` -> `## agent-113647-md1-baseline-e2e...origin/agent-113647-md1-baseline-e2e`
+  - `git rev-parse HEAD` -> `05e21c5511eac218cc3e4e3884be19218e6f53b7`
+  - current head is logs-only `[skip ci]`.
+- AWS identity:
+  - `PATH="/opt/homebrew/bin:$PATH" aws sts get-caller-identity --output json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+- GitHub Actions:
+  - branch workflow list confirms last meaningful non-skipped head `1900964d7d3601733e6cb9d587a3128717749336` has `CDK Deploy` run `26052859100` -> success.
+  - current exact head `05e21c5511eac218cc3e4e3884be19218e6f53b7` has no workflow run because it is `[skip ci]`.
+- Step Functions:
+  - `SpaceportMLPipeline-staging` RUNNING executions: `0`.
+- SageMaker:
+  - InProgress processing jobs:
+    - canonical/owned: `md1-shrunk-prodspine-sfm-1779128752`
+    - external/not owned: `cvhr-mtc-20260518T1729Z-sfm`; left untouched.
+  - InProgress training jobs: `0`.
+- Canonical SfM poll:
+  - job: `md1-shrunk-prodspine-sfm-1779128752`
+  - `ProcessingJobStatus=InProgress`, `FailureReason=null`
+  - image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:c96dca6f3b0850855eac576e8a27371dfca408e24364d79f7e35b23425cc7950`
+  - input: `s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip`
+  - output: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-sfm-20260518T1826Z/colmap`
+  - observed progress: GPU feature extraction reached at least `Processed file [884/1456]`.
+  - S3 output remains empty as expected until `S3UploadMode=EndOfJob`.
+  - evidence:
+    - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260518T1918Z.json`
+    - `logs/md1-shrunk/cloudwatch-md1-shrunk-prodspine-sfm-1779128752-20260518T1918Z.json`
+    - `logs/md1-shrunk/s3-colmap-md1-shrunk-prodspine-sfm-20260518T1826Z-20260518T1919Z.txt`
+- Next concrete steps:
+  1. Continue monitoring canonical SfM `md1-shrunk-prodspine-sfm-1779128752` in this chat.
+  2. If SfM fails, capture exact SageMaker describe, CloudWatch, and S3 evidence before patching.
+  3. If SfM succeeds, validate trainable COLMAP output, then run 3DGS, skybox, compression, public bundle reachability, deployed viewer skybox/no-sky, and side-by-side input-vs-render checks.
+
+## 2026-05-18T19:29Z canonical SfM chunk-mapping progress
+
+- Canonical SfM status:
+  - job: `md1-shrunk-prodspine-sfm-1779128752`
+  - `ProcessingJobStatus=InProgress`, `FailureReason=null`
+  - InProgress processing jobs remain:
+    - canonical/owned: `md1-shrunk-prodspine-sfm-1779128752`
+    - external/not owned: `cvhr-mtc-20260518T1729Z-sfm`; left untouched.
+  - S3 output remains empty as expected until `S3UploadMode=EndOfJob`.
+- Important progress:
+  - recent-window CloudWatch shows feature extraction completed: `Processed file [1456/1456]`, elapsed `56.099` minutes.
+  - pose priors confirmed: `1456/1456` GPS-tagged images, coverage `100.00%`, source `feature_extractor`.
+  - immutable planner manifest loaded from `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-planner3-20260518T1819Z/colmap/chunk_planner_manifest.json`.
+  - global COLMAP database normalization completed.
+  - chunk 0 database prepared for `220` images.
+  - `chunk_00_matches_importer` added `714` verified image pairs.
+  - `chunk_00_mapper_initial` started and reached at least `num_reg_frames=17` before the latest poll tail.
+- Evidence:
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260518T1929Z.json`
+  - `logs/md1-shrunk/cloudwatch-recent-md1-shrunk-prodspine-sfm-1779128752-20260518T1929Z.json`
+  - `logs/md1-shrunk/s3-colmap-md1-shrunk-prodspine-sfm-20260518T1826Z-20260518T1929Z.txt`
+  - `logs/md1-shrunk/logstreams-md1-shrunk-prodspine-sfm-1779128752-20260518T1925Z.json`
+- Downstream container pins ready for use after SfM success:
+  - proven skybox-enabled 3DGS image from the prior MD1-Shrunk successful downstream run: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db`
+    - ECR tag: `agent53108255splatfactowlightskybox`
+    - pushed: `2026-04-04T23:38:25.773000-06:00`
+  - proven compressor image from the same run: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab`
+    - ECR tags: `agent53108255splatfactowlightskybox`, `agent70148362investigatesfmrecovery`
+    - pushed: `2026-04-01T14:03:58.377000-06:00`
+- Next concrete steps:
+  1. Continue monitoring SfM through all 8 chunks and final merged COLMAP output.
+  2. On SfM success, validate `sparse/0/{cameras,images,points3D}.txt`, `database.db`, images, `sfm_metadata.json`, registered-image count, and points count before launching 3DGS.
+  3. Launch exactly one 3DGS+compression continuation using the production-spine COLMAP output and the proven skybox-enabled 3DGS/compressor digests above.

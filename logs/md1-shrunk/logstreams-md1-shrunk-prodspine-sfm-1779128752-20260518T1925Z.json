@@ -1,0 +1,14 @@
+{
+    "logStreams": [
+        {
+            "logStreamName": "md1-shrunk-prodspine-sfm-1779128752/algo-1-1779128795",
+            "creationTime": 1779128979210,
+            "firstEventTimestamp": 1779128973290,
+            "lastEventTimestamp": 1779131334413,
+            "lastIngestionTime": 1779131336634,
+            "uploadSequenceToken": "49039859672579624299617442084233758250007762181669079756",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:md1-shrunk-prodspine-sfm-1779128752/algo-1-1779128795",
+            "storedBytes": 0
+        }
+    ]
+}
