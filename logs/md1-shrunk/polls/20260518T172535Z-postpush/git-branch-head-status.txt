@@ -1,0 +1,4 @@
+branch=agent-113647-md1-baseline-e2e
+head=178f11713ec86b7e6e4701467ea154562c558b07
+msg=chore: md1-shrunk monitor poll 20260518T172119Z [skip ci]
+status=1 lines
