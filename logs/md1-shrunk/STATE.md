@@ -4376,3 +4376,31 @@ skybox, compression, artifact handoff, and visual gates.
       - postwatch: `logs/md1-shrunk/polls/20260518T053042Z-ci-d200/gh-run-view-cdk-postwatch.json`
   - Note:
     - No Pages run triggered because this push only touched `logs/` + `STATE.md`; next step is a `web/trigger-dev-build.txt` bump to re-run Pages on exact head.
+
+- 2026-05-18T05:34:57Z CI (exact-head; Pages + CDK Deploy; preview URL resolution):
+  - Evidence: `logs/md1-shrunk/polls/20260518T053457Z-ci-pages/`
+  - Trigger commit:
+    - `git rev-parse HEAD` -> `9c2b6a073346b068a6c8cc7e13f7a2cbfa26455c` (`chore: retrigger Pages for md1-shrunk monitor`)
+  - GitHub Actions (exact-head):
+    - Pages run `26015520241` -> `success`:
+      - watch: `logs/md1-shrunk/polls/20260518T053457Z-ci-pages/gh-run-watch-pages-26015520241.txt`
+      - run view: `logs/md1-shrunk/polls/20260518T053457Z-ci-pages/gh-run-view-pages-26015520241.json`
+      - log excerpt with preview URLs:
+        - `logs/md1-shrunk/polls/20260518T053457Z-ci-pages/pages-preview-url-excerpt.txt`
+        - alias: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+        - hash: `https://1ecce19d.v0-spaceport-website-preview2.pages.dev`
+    - CDK Deploy run `26015520234` -> `success`:
+      - watch: `logs/md1-shrunk/polls/20260518T053457Z-ci-pages/gh-run-watch-cdk-26015520234.txt`
+      - run view: `logs/md1-shrunk/polls/20260518T053457Z-ci-pages/gh-run-view-cdk-26015520234.json`
+
+- 2026-05-18T05:42:55Z viewer re-verify (post exact-head Pages deploy; skybox + no-sky + camera checks):
+  - Evidence: `logs/md1-shrunk/polls/20260518T054255Z-viewer-postpages/`
+  - Anonymous bundle fetch gates:
+    - meta.json headers: `logs/md1-shrunk/polls/20260518T054255Z-viewer-postpages/http-head-meta.txt` -> `HTTP 200`
+    - skybox headers: `logs/md1-shrunk/polls/20260518T054255Z-viewer-postpages/http-head-skybox.txt` -> `HTTP 200`
+  - Playwright smoke (sogs-migrated-viewer):
+    - skybox: `logs/md1-shrunk/polls/20260518T054255Z-viewer-postpages/playwright-sogs-skybox.txt` -> OK (screenshot overwritten: `logs/sogs-migrated-viewer-smoke.png`)
+    - no-sky: `logs/md1-shrunk/polls/20260518T054255Z-viewer-postpages/playwright-sogs-nosky.txt` -> OK (screenshot overwritten: `logs/sogs-migrated-viewer-nosky.png`)
+  - Camera checks (MD1 viewer; same pose; skybox vs no-sky):
+    - skybox: `logs/md1-shrunk/polls/20260518T054255Z-viewer-postpages/md1-camera-check-skybox.png` (`logs/md1-shrunk/polls/20260518T054255Z-viewer-postpages/playwright-md1-camera-check-skybox.txt`)
+    - no-sky: `logs/md1-shrunk/polls/20260518T054255Z-viewer-postpages/md1-camera-check-nosky.png` (`logs/md1-shrunk/polls/20260518T054255Z-viewer-postpages/playwright-md1-camera-check-nosky.txt`)

@@ -72,3 +72,4 @@
 20260518T023201Z md1-shrunk monitor poll
 2026-05-18T05:18:16Z md1-shrunk monitor: trigger fresh Pages+CDK exact-head (remove [skip ci] drift)
 2026-05-18T05:30:42Z md1-shrunk monitor: trigger Pages build for state-only commit (keep exact-head preview current)
+2026-05-18T05:42:55Z md1-shrunk monitor: record pages+cdk+viewer evidence (trigger new exact-head Pages)
