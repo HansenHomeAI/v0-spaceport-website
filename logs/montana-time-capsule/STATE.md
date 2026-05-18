@@ -304,3 +304,12 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
 - Exact-head workflow evidence: `logs/montana-time-capsule/gh-run-list-exact-head-20260518T193645Z.json`
 - Last meaningful non-skip workflow proof retained: `CDK Deploy` success on head `1b264bc2ac6be3bf34ca06582895f7f750e9a442` run `26049509375`.
 - Next unblocked step: continue polling SfM `cvhr-mtc-20260518T1729Z-sfm`; run one guarded `--launch` immediately when SfM reaches `Completed` to launch pinned Montana 3DGS.
+
+## 2026-05-18T19:39Z Post-Ledger Exact-Head Check
+
+- Latest branch head after evidence commit: `f482381bce501a07881b91c61da602bd06dc5d61`.
+- Exact-head workflow check command:
+  - `/opt/homebrew/bin/gh run list --branch agent-40136728-montana-time-capsule --limit 50 --json databaseId,headSha,workflowName,status,conclusion,createdAt,updatedAt,url | jq --arg sha "$(git rev-parse HEAD)" '[.[] | select(.headSha==$sha)]'`
+  - Result: `[]` (expected for logs-only `[skip ci]` commit).
+- Stage gate unchanged: `cvhr-mtc-20260518T1729Z-sfm` remains `InProgress` with no duplicate jobs.
+- Next unblocked step: continue polling SfM to `Completed`, then run one guarded `--launch` to advance exactly one stage into pinned Montana 3DGS.
