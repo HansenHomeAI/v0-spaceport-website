@@ -1,0 +1,40 @@
+{
+  "active_codebuilds": [],
+  "cdk_run": {
+    "conclusion": "success",
+    "headSha": "905ef20202fb23e451d6f77bed01d67af0607cc4",
+    "name": "CDK Deploy",
+    "status": "completed",
+    "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26050819478"
+  },
+  "decision": "merge_retry_blocked_processing",
+  "head": "905ef20202fb23e451d6f77bed01d67af0607cc4",
+  "next_required_action": "wait for SageMaker processing idle, then rerun all gates against latest head before paid retry",
+  "paid_compute_launched": false,
+  "processing_jobs_in_progress": [
+    {
+      "CreationTime": "2026-05-18T13:42:52.318000-06:00",
+      "LastModifiedTime": "2026-05-18T13:42:52.739000-06:00",
+      "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-viscell-plan-v1-1779133371",
+      "ProcessingJobName": "md1-viscell-plan-v1-1779133371",
+      "ProcessingJobStatus": "InProgress"
+    },
+    {
+      "CreationTime": "2026-05-18T12:25:52.855000-06:00",
+      "LastModifiedTime": "2026-05-18T12:28:24.200000-06:00",
+      "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-shrunk-prodspine-sfm-1779128752",
+      "ProcessingJobName": "md1-shrunk-prodspine-sfm-1779128752",
+      "ProcessingJobStatus": "InProgress"
+    },
+    {
+      "CreationTime": "2026-05-18T11:29:49.660000-06:00",
+      "LastModifiedTime": "2026-05-18T11:32:20.712000-06:00",
+      "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/cvhr-mtc-20260518T1729Z-sfm",
+      "ProcessingJobName": "cvhr-mtc-20260518T1729Z-sfm",
+      "ProcessingJobStatus": "InProgress"
+    }
+  ],
+  "running_stepfunctions": [],
+  "timestamp_utc": "20260518T194324Z",
+  "training_jobs_in_progress": []
+}
