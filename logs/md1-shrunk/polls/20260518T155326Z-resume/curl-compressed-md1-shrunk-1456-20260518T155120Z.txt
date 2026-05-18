@@ -1,0 +1,30 @@
+meta.json
+HTTP/1.1 200 OK
+x-amz-id-2: 8BgnwRupe8yWxNfkfdoi1IIl1t+h2/pVaK/DBItAKlYcw5fXueKEy1Fg51oLro4ZQEkKYaoFfB0=
+x-amz-request-id: 6S2Z6MJRFDDBD7G5
+Date: Mon, 18 May 2026 15:51:21 GMT
+Last-Modified: Sat, 16 May 2026 00:13:09 GMT
+ETag: "0a80d455f7e49551c7e6032968068bc4"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: .cVTc2Vl._7LK3AakEV4Rz3vGp0oyubF
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1422
+Server: AmazonS3
+
+
+background_skybox.webp
+HTTP/1.1 200 OK
+x-amz-id-2: G5i7UrD78o7xyGRphRmeQax4B+4rsVMQDxK+qaQmTmCJRhE6En0nEOb+L4AQSvVSxnrsAgVDK9A=
+x-amz-request-id: 6S2HH0XF1ZD5P8FR
+Date: Mon, 18 May 2026 15:51:21 GMT
+Last-Modified: Sat, 16 May 2026 00:13:09 GMT
+ETag: "0ab9a556362c8ced686a5eb29ff2b190"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: 7gY1SZtNF86ESbVDI3msaXP5RKGGOyDB
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 46080
+Server: AmazonS3
+
+

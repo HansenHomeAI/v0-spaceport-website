@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T15:28:46Z
+updated: 2026-05-18T15:53:36Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -4947,6 +4947,43 @@ skybox, compression, artifact handoff, and visual gates.
     - `logs/md1-shrunk/polls/20260518T102415Z-postpush/git-head.txt`
 - GitHub Actions (exact head):
   - exact-head workflow runs: `0` (expected; `[skip ci]`)
+
+## 2026-05-18T15:53:55Z resume poll (SfM terminal + viewer re-verify; no new ML launches)
+
+- Poll artifacts:
+  - `logs/md1-shrunk/polls/20260518T155326Z-resume/`
+- Branch/head/status:
+  - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+  - `git rev-parse HEAD` -> `00a76e2ada8ccdf8366855ca5ca87b7b1cbe3c09` (`[skip ci]`)
+  - evidence: `logs/md1-shrunk/polls/20260518T155326Z-resume/summary.txt`
+- AWS identity + active state (region `us-west-2`):
+  - `Account=975050048887`, `Arn=arn:aws:iam::975050048887:root`
+  - Step Functions RUNNING executions under `SpaceportMLPipeline-staging`: `0`
+  - SageMaker InProgress jobs: `0` processing, `0` training
+- SfM terminal (job from user prompt; this is now historical, not active):
+  - `ProcessingJobName=md1-shrunk-1456-sfm-1778866088` -> `Completed`
+  - start/end: `2026-05-15T11:28:49-0600` → `2026-05-15T15:04:36-0600`
+  - evidence: `logs/md1-shrunk/polls/20260518T155326Z-resume/sagemaker-describe-md1-shrunk-1456-sfm-1778866088-20260518T154929Z.json`
+  - CloudWatch: `logs/md1-shrunk/polls/20260518T155326Z-resume/cloudwatch-tail-md1-shrunk-1456-sfm-1778866088-20260518T154929Z.txt`
+  - output listing: `logs/md1-shrunk/polls/20260518T155326Z-resume/s3-colmap-md1-shrunk-20260515T1641Z-20260518T154929Z.txt`
+- SfM Montana-scale gates (from `sfm_metadata.json` written by the job):
+  - output: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap`
+  - dataset_image_count: `1456`
+  - registered images: `1456` (100%)
+  - merged_component_count: `1`
+  - points_3d: `1103335`
+  - timed_out: `False`
+  - processing_time_seconds: `12709.05`
+  - evidence: `logs/md1-shrunk/polls/20260518T155326Z-resume/sfm-metadata-md1-shrunk-20260515T1641Z-20260518T155000Z.json`
+- Public compressed bundle fetch (anonymous):
+  - meta.json: `HTTP 200`
+  - skybox asset: `HTTP 200`
+  - evidence: `logs/md1-shrunk/polls/20260518T155326Z-resume/curl-compressed-md1-shrunk-1456-20260518T155120Z.txt`
+- Deployed preview viewer re-verify (skybox + no-sky):
+  - resolved Pages alias URL from run `26015823853`: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+  - skybox smoke log: `logs/md1-shrunk/polls/20260518T155326Z-resume/sogs-viewer-skybox-20260518T155145Z.txt`
+  - no-sky smoke log: `logs/md1-shrunk/polls/20260518T155326Z-resume/sogs-viewer-nosky-20260518T155145Z.txt`
+  - screenshots: `logs/md1-shrunk/polls/20260518T155326Z-resume/20260518T155237Z-viewer-smoke/`
   - evidence:
     - `logs/md1-shrunk/polls/20260518T102415Z-postpush/github-actions-runs-head.json`
 
