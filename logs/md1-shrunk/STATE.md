@@ -7076,3 +7076,36 @@ skybox, compression, artifact handoff, and visual gates.
   - `logs/md1-shrunk/sagemaker-list-processing-inprogress-20260518T2248Z.json`
   - `logs/md1-shrunk/sagemaker-list-training-inprogress-20260518T2248Z.json`
   - `logs/md1-shrunk/gh-runs-agent-113647-20260518T2248Z.json`
+
+## 2026-05-18T22:54Z in-chat automation poll
+
+- Verification before poll:
+  - branch: `agent-113647-md1-baseline-e2e`
+  - head: `e675e69a9590e42f1600b1dea8c90c0d3d81d9a3`
+  - AWS identity captured for account `975050048887`.
+  - Step Functions `SpaceportMLPipeline-staging` RUNNING executions: `0`.
+  - InProgress training jobs: `0`.
+  - InProgress processing jobs include canonical `md1-shrunk-prodspine-sfm-1779128752` plus external `cvhr-secondary-20260518t2113z-sfm`, `cvhr-mtc-20260518T1729Z-sfm`, `md1-viscell-full-l01-1779141986`, and `md1-viscell-full-l02-1779143476`; external jobs remain untouched.
+  - current head is a logs-only `[skip ci]` commit; latest meaningful non-skipped workflow proof remains `CDK Deploy` run `26052859100` for `1900964d7d3601733e6cb9d587a3128717749336`.
+- Canonical SfM status:
+  - job: `md1-shrunk-prodspine-sfm-1779128752`
+  - `ProcessingJobStatus=InProgress`, `FailureReason=null`
+  - S3 output remains empty as expected until `S3UploadMode=EndOfJob`.
+- Finalization progress:
+  - `chunk_model_seam_07_point_triangulator_02` completed visible triangulation, reached image `#1434 (778)`, extracted colors, and converted its model.
+  - seam 07 point triangulator model context: `779` images, `602491` points.
+  - `chunk_model_merger_08` attempted to merge chunk 02 (`220` images, `134606` points) with seam 07 (`779` images, `602491` points).
+  - Merge attempt 1 failed; swapped-order attempt 2 also failed.
+  - SageMaker job remains `InProgress`; this is an in-run merge failure/warning, not a terminal job failure yet.
+  - no OOM, timeout, SageMaker failure, or Step Functions failure is visible.
+- Evidence:
+  - `logs/md1-shrunk/git-status-20260518T2254Z.txt`
+  - `logs/md1-shrunk/git-head-20260518T2254Z.txt`
+  - `logs/md1-shrunk/aws-identity-20260518T2254Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260518T2254Z.json`
+  - `logs/md1-shrunk/cloudwatch-recent-md1-shrunk-prodspine-sfm-1779128752-20260518T2254Z.json`
+  - `logs/md1-shrunk/s3-colmap-md1-shrunk-prodspine-sfm-20260518T1826Z-20260518T2254Z.txt`
+  - `logs/md1-shrunk/stepfunctions-running-20260518T2254Z.json`
+  - `logs/md1-shrunk/sagemaker-list-processing-inprogress-20260518T2254Z.json`
+  - `logs/md1-shrunk/sagemaker-list-training-inprogress-20260518T2254Z.json`
+  - `logs/md1-shrunk/gh-runs-agent-113647-20260518T2254Z.json`
