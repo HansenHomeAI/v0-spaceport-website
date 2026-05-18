@@ -591,8 +591,8 @@
   ],
   "current_branch_head": "branch agent-90742618-md1-geometry-consistency at pushed commit b8c1b9c1370f64cebe4462a8a82e4ef29b2533f3; lock/evidence refreshed to this current HEAD before paid submit",
   "current_exact_head_gate_status": "exact-head 8fdaa86f38fd78b6f466aeddc95d46844e558b06 green on CDK Deploy 26048085622",
-  "current_live_compute_status": "Retry1 readiness is allowed, but immediate presubmit check saw active spaceport-ml-containers CodeBuild; no paid retry submitted",
-  "current_rung": "MD1_cost_reduction_retry1_no_spend_ready_presubmit_blocked_by_codebuild",
+  "current_live_compute_status": "Exact-head b539bda8 CI and CodeBuild are green/idle, but fresh readiness is blocked by active SageMaker processing md1-shrunk-prodspine-plan-1779124846. No paid retry submitted.",
+  "current_rung": "MD1_cost_reduction_retry1_presubmit_blocked_by_processing",
   "evidence_events": [
     "md1_r0_visual_sentinel_v5_no_spend_merge_review_planning_head30d6_20260517",
     "md1_r0_visual_sentinel_v5_no_spend_merge_review_planning_head5984_20260517",
@@ -3721,6 +3721,14 @@
       "block_json": "logs/md1-r0v5relax-merge-retry1-presubmit-blocked-1ea78942-20260518T171409Z.json",
       "paid_compute_launched": false,
       "blocker": "spaceport-ml-containers CodeBuild active"
+    },
+    {
+      "event": "md1-r0v5relax-retry1-presubmit-blocked-processing",
+      "timestamp_utc": "20260518T172310Z",
+      "head": "b539bda8c6534fab2021cba2b49918c2245f485f",
+      "block_json": "logs/md1-r0v5relax-merge-retry1-presubmit-blocked-processing-b539bda8-20260518T172310Z.json",
+      "paid_compute_launched": false,
+      "blocker": "processing_jobs_in_progress"
     }
   ],
   "exact_head_gate_status": "exact-head b8c1b9c1370f64cebe4462a8a82e4ef29b2533f3 green on CDK Deploy 26046506709",
@@ -4048,7 +4056,7 @@
       "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26000210566"
     }
   ],
-  "last_updated": "20260518T171430Z",
+  "last_updated": "20260518T172310Z",
   "latest_bg10_merge_input_materialization_status": {
     "exact_head_workflows_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-exact-head-workflows-current-20260513.json",
     "input_materialization_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-input-materialization-current-20260513.json",
@@ -12944,7 +12952,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Wait for CodeBuild idle, then rerun duplicate/AWS/readiness checks before any paid submit. Do not reuse failed job name md1-r0v5relax-merge-20260515.",
+  "next_unblocked_step": "Wait for SageMaker processing idle, then rerun exact-head/AWS/CodeBuild/duplicate/readiness/budget checks before any paid submit.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -21237,7 +21245,7 @@
     ],
     "next": "Wait for AWS training/processing idle, rerun v5 readiness on exact green head, then at most one bounded R0 v5 tile_04 leaf-only proof if allowed. No merge/review/full14/LOD/promotion."
   },
-  "last_event": "md1-r0v5relax-retry1-presubmit-blocked-codebuild",
+  "last_event": "md1-r0v5relax-retry1-presubmit-blocked-processing",
   "md1_r0_visual_sentinel_v5_training_hold_head08c_20260515": {
     "checked_at": "2026-05-15T07:53:38Z",
     "head": "08c018df22db9acdbde3ef96e70330f29f568b46",

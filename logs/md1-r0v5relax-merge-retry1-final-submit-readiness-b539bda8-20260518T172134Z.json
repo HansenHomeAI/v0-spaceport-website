@@ -1,0 +1,52 @@
+{
+  "checked_at": "2026-05-18T17:22:41.852329+00:00",
+  "decision": "merge_review_submit_blocked",
+  "block_reasons": [
+    "processing_jobs_in_progress"
+  ],
+  "exact_head": "b539bda8c6534fab2021cba2b49918c2245f485f",
+  "git_head": "b539bda8c6534fab2021cba2b49918c2245f485f",
+  "workflow_conclusion": "success",
+  "training_jobs_in_progress": [],
+  "processing_jobs_in_progress": [
+    {
+      "ProcessingJobName": "md1-shrunk-prodspine-plan-1779124846",
+      "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-shrunk-prodspine-plan-1779124846",
+      "CreationTime": "2026-05-18T11:20:48.547000-06:00",
+      "LastModifiedTime": "2026-05-18T11:20:48.858000-06:00",
+      "ProcessingJobStatus": "InProgress"
+    }
+  ],
+  "required_tile_ids": [
+    "tile_04"
+  ],
+  "leaf_reuse_summary_tile_ids": [
+    "tile_04"
+  ],
+  "merge_plan_tile_ids": [
+    "tile_04"
+  ],
+  "merge_review_gate_decision": "merge_review_allowed",
+  "payload_input_names": [
+    "merge-plan",
+    "tile-selection",
+    "artifact-00"
+  ],
+  "payload_unsupported_merge_environment": [],
+  "payload_max_runtime_seconds": 3600,
+  "input_materialization": {
+    "artifact_inputs_available": true,
+    "merge_plan_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/inputs/merge-plan",
+    "merge_plan_uploaded": true,
+    "required": true,
+    "tile_manifest_available": true,
+    "tile_selection_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-20260515/inputs/tile-selection",
+    "view_buckets_available": true,
+    "materialization_evidence_json": "logs/md1-r0v5relax-merge-retry1-materialization-1ea78942-20260518T171230Z-summary.json"
+  },
+  "max_merge_estimated_usd": 0.5,
+  "max_merge_runtime_seconds": 3600,
+  "max_review_estimated_usd": 0.75,
+  "max_review_runtime_seconds": 3600,
+  "next_required_action": "fix every merge/review readiness blocker before any paid merge or review"
+}

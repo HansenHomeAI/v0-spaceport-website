@@ -1,0 +1,11 @@
+{
+  "timestamp_utc": "20260518T172310Z",
+  "head": "b539bda8c6534fab2021cba2b49918c2245f485f",
+  "blocker": "processing_jobs_in_progress",
+  "active_processing_jobs_json": "logs/md1-r0v5relax-merge-retry1-presubmit-live-state-b539bda8-20260518T172134Z-processing-inprogress.json",
+  "active_training_jobs_json": "logs/md1-r0v5relax-merge-retry1-presubmit-live-state-b539bda8-20260518T172134Z-training-inprogress.json",
+  "cdk_run_json": "logs/md1-r0v5relax-merge-retry1-presubmit-live-state-b539bda8-20260518T172134Z-cdk-run.json",
+  "readiness_json": "logs/md1-r0v5relax-merge-retry1-final-submit-readiness-b539bda8-20260518T172134Z.json",
+  "paid_compute_launched": false,
+  "next_required_action": "wait for SageMaker processing idle, then rerun exact-head/AWS/CodeBuild/duplicate/readiness/budget checks before any paid submit"
+}
