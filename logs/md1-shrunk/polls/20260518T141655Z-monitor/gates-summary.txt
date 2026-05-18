@@ -1,0 +1,11 @@
+images_registered=1456
+merged_component_count=1
+points_3d=1103335
+timed_out=False
+processing_time_seconds=12709.05
+gaussians=990025
+remaining_gaussians=None
+ply_size_mb=234.16910076141357
+background_skybox=background_skybox.webp
+total_compressed_mb=14.345443725585938
+overall_compression_ratio=16.323587143126097

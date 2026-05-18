@@ -1,0 +1,4 @@
+branch=agent-113647-md1-baseline-e2e
+head=8483a2c7d2f9d6711380ba4901fb950692d012a2
+?? logs/md1-shrunk/polls/20260518T141631Z-monitor/
+?? logs/md1-shrunk/polls/20260518T141655Z-monitor/

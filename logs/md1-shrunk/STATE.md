@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T13:47:16Z
+updated: 2026-05-18T14:22:11Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -5326,3 +5326,54 @@ skybox, compression, artifact handoff, and visual gates.
     - `logs/md1-shrunk/polls/20260518T134716Z-monitor/http-head-bundle-meta.txt`
     - `logs/md1-shrunk/polls/20260518T134716Z-monitor/http-head-bundle-skybox.txt`
     - `logs/md1-shrunk/polls/20260518T134716Z-monitor/bundle-meta-summary.json`
+
+## 2026-05-18T14:16:55Z monitor poll (awscli + gh; no new launches)
+
+- Poll artifacts:
+  - `logs/md1-shrunk/polls/20260518T141655Z-monitor/`
+- Branch/head/status:
+  - `git rev-parse HEAD` -> `8483a2c7d2f9d6711380ba4901fb950692d012a2` (`[skip ci]`)
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T141655Z-monitor/git-status.txt`
+    - `logs/md1-shrunk/polls/20260518T141655Z-monitor/git-log-1.txt`
+- AWS identity + active state:
+  - `aws sts get-caller-identity` -> account `975050048887`
+  - Step Functions RUNNING executions under `SpaceportMLPipeline-staging`: `0`
+  - SageMaker InProgress:
+    - processing jobs: `0`
+    - training jobs: `0`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T141655Z-monitor/aws-sts.json`
+    - `logs/md1-shrunk/polls/20260518T141655Z-monitor/stepfn-running.json`
+    - `logs/md1-shrunk/polls/20260518T141655Z-monitor/sagemaker-processing-inprogress.json`
+    - `logs/md1-shrunk/polls/20260518T141655Z-monitor/sagemaker-training-inprogress.json`
+- SfM terminal (re-verified):
+  - job: `md1-shrunk-1456-sfm-1778866088` -> `Completed`
+  - gates (from `sfm_metadata.json`): `images_registered=1456`, `merged_component_count=1`, `points_3d=1103335`, `timed_out=false`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T141655Z-monitor/sagemaker-describe-sfm.json`
+    - `logs/md1-shrunk/polls/20260518T141655Z-monitor/sfm_metadata.json`
+    - `logs/md1-shrunk/polls/20260518T141655Z-monitor/s3-colmap-summary.txt`
+    - `logs/md1-shrunk/polls/20260518T141655Z-monitor/gates-summary.txt`
+- 3DGS + compression terminal (re-verified):
+  - training: `md1shrunk1456-1778880862-3dgs` -> `Completed`
+  - processing: `md1shrunk1456-1778880862-compression` -> `Completed`
+  - bundle meta gaussian count (from `means.shape[0]`): `990025`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T141655Z-monitor/sagemaker-describe-3dgs.json`
+    - `logs/md1-shrunk/polls/20260518T141655Z-monitor/s3-3dgs-summary.txt`
+    - `logs/md1-shrunk/polls/20260518T141655Z-monitor/sagemaker-describe-compression.json`
+    - `logs/md1-shrunk/polls/20260518T141655Z-monitor/s3-md1-shrunk-manual-validations-summary.txt`
+    - `logs/md1-shrunk/polls/20260518T141655Z-monitor/http-public-meta.json`
+    - `logs/md1-shrunk/polls/20260518T141655Z-monitor/gaussian_count.txt`
+- GitHub Actions (branch runs; plus user prompt exact-head proof):
+  - run `25932325504` (`CDK Deploy`) -> `success` for `e9cbf71c56420ce386b028e7f4af33163ce4dcc2`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T141655Z-monitor/gh-runs.json`
+    - `logs/md1-shrunk/polls/20260518T141655Z-monitor/gh-run-25932325504.json`
+- Public reachability (anonymous; preview + bundle):
+  - preview alias URL -> `HTTP 200`: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+  - bundle `meta.json` -> `HTTP 200`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T141655Z-monitor/http-preview.headers.txt`
+    - `logs/md1-shrunk/polls/20260518T141655Z-monitor/http-public-meta.headers.txt`
