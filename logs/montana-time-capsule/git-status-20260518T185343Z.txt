@@ -1,0 +1,7 @@
+timestamp_utc=20260518T185343Z
+branch=agent-40136728-montana-time-capsule
+head=4260fd94b3b19b61196b10a987043f315326930c
+status_short<<EOF
+## agent-40136728-montana-time-capsule...origin/agent-40136728-montana-time-capsule
+?? logs/montana-time-capsule/git-status-20260518T185343Z.txt
+EOF

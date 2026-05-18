@@ -214,3 +214,26 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - Exact-head result: `[]` (expected for `[skip ci]` logs-only commit).
 - Current stage gate status: SfM job `cvhr-mtc-20260518T1729Z-sfm` still `InProgress`; no duplicate job exists; 3DGS not launched yet.
 - Next unblocked step: continue polling until SfM `Completed`, then run `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip --launch` exactly once to launch pinned Montana 3DGS.
+
+## 2026-05-18T19:13Z Monitor Pass
+
+- Branch/head/status command:
+  - `git rev-parse --abbrev-ref HEAD && git rev-parse HEAD && git status --short --branch`
+  - Result before this pass: branch `agent-40136728-montana-time-capsule`, head `4260fd94b3b19b61196b10a987043f315326930c`, dirty only from new monitor evidence/state updates under `logs/montana-time-capsule/`.
+- AWS identity command: `/opt/homebrew/bin/aws sts get-caller-identity`
+  - Result: account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+- SageMaker status command: `/opt/homebrew/bin/aws sagemaker describe-processing-job --processing-job-name cvhr-mtc-20260518T1729Z-sfm`
+  - Result: `ProcessingJobStatus=InProgress` for `cvhr-mtc-20260518T1729Z-sfm`; pinned SfM image unchanged (`sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811`).
+- Duplicate-job guard command: `/opt/homebrew/bin/aws sagemaker list-processing-jobs --name-contains cvhr-mtc-20260518T1729Z --max-results 20`
+  - Result: still one matching processing job (`cvhr-mtc-20260518T1729Z-sfm`, `InProgress`); no duplicate jobs launched.
+- CloudWatch stream command: `/opt/homebrew/bin/aws logs tail /aws/sagemaker/ProcessingJobs --since 25m --log-stream-name-prefix cvhr-mtc-20260518T1729Z-sfm --format short`
+  - Result: live SfM progress continued into chunked COLMAP steps (`chunk_00_mapper_initial` registration/BA and `chunk_02_sequential_matcher` processing through `image [134/186]`).
+- Advance-one-stage command: `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip --launch`
+  - Result: runner remained at `status=sfm_running`, `sfm_status=InProgress`; no 3DGS launched early.
+- Evidence files:
+  - `logs/montana-time-capsule/aws-sts-20260518T191341Z.json`
+  - `logs/montana-time-capsule/sagemaker-describe-cvhr-mtc-20260518T1729Z-sfm-20260518T191341Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-cvhr-mtc-20260518T1729Z-20260518T191341Z.json`
+  - `logs/montana-time-capsule/cloudwatch-tail-cvhr-mtc-20260518T1729Z-sfm-20260518T191356Z.log`
+  - `logs/montana-time-capsule/launch-20260518T191356Z.log`
+- Next unblocked step: keep polling SfM until `Completed`; run the same `--launch` command exactly once immediately after completion to launch pinned Montana 3DGS.
