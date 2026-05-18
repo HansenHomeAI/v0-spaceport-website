@@ -1,0 +1,61 @@
+b/39676000084996031130621372295238368505128751259563196421/s	f/39676000263513496444859010549301492071720390974592450600/s
+EVENTS	1779133380384	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:55.510823  8388 pairing.cc:631] Processing image [164/188]	1779133375669
+EVENTS	1779133380384	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:56.114845  8388 feature_matching.cc:217] in 0.604s	1779133376670
+EVENTS	1779133380384	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:56.114902  8388 pairing.cc:631] Processing image [165/188]	1779133376670
+EVENTS	1779133380384	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:56.452955  8388 feature_matching.cc:217] in 0.338s	1779133376670
+EVENTS	1779133380384	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:56.453011  8388 pairing.cc:631] Processing image [166/188]	1779133376670
+EVENTS	1779133380384	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:56.824681  8388 feature_matching.cc:217] in 0.372s	1779133377670
+EVENTS	1779133380384	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:56.824738  8388 pairing.cc:631] Processing image [167/188]	1779133377670
+EVENTS	1779133380384	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:57.184242  8388 feature_matching.cc:217] in 0.360s	1779133377670
+EVENTS	1779133380384	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:57.184298  8388 pairing.cc:631] Processing image [168/188]	1779133377670
+EVENTS	1779133380384	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:57.617102  8388 feature_matching.cc:217] in 0.433s	1779133377670
+EVENTS	1779133380384	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:57.617158  8388 pairing.cc:631] Processing image [169/188]	1779133377671
+EVENTS	1779133380384	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:58.053365  8388 feature_matching.cc:217] in 0.436s	1779133378671
+EVENTS	1779133380384	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:58.053424  8388 pairing.cc:631] Processing image [170/188]	1779133378671
+EVENTS	1779133380384	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:58.449357  8388 feature_matching.cc:217] in 0.396s	1779133378671
+EVENTS	1779133380384	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:58.449415  8388 pairing.cc:631] Processing image [171/188]	1779133378671
+EVENTS	1779133380384	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:58.506968  8388 feature_matching.cc:217] in 0.058s	1779133378671
+EVENTS	1779133380384	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:58.507020  8388 pairing.cc:631] Processing image [172/188]	1779133378671
+EVENTS	1779133380384	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:58.584528  8388 feature_matching.cc:217] in 0.078s	1779133378671
+EVENTS	1779133380384	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:58.584587  8388 pairing.cc:631] Processing image [173/188]	1779133378671
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:58.938943  8388 feature_matching.cc:217] in 0.354s	1779133379672
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:58.939000  8388 pairing.cc:631] Processing image [174/188]	1779133379672
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:59.167089  8388 feature_matching.cc:217] in 0.228s	1779133379672
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:59.167145  8388 pairing.cc:631] Processing image [175/188]	1779133379672
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:59.518407  8388 feature_matching.cc:217] in 0.351s	1779133379672
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:59.518464  8388 pairing.cc:631] Processing image [176/188]	1779133379672
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:59.870613  8388 feature_matching.cc:217] in 0.352s	1779133380672
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:59.870664  8388 pairing.cc:631] Processing image [177/188]	1779133380672
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:00.219106  8388 feature_matching.cc:217] in 0.348s	1779133380672
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:00.219162  8388 pairing.cc:631] Processing image [178/188]	1779133380672
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:00.355602  8388 feature_matching.cc:217] in 0.136s	1779133380672
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:00.355656  8388 pairing.cc:631] Processing image [179/188]	1779133380672
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:00.477358  8388 feature_matching.cc:217] in 0.122s	1779133380672
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:00.477418  8388 pairing.cc:631] Processing image [180/188]	1779133380673
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:00.506271  8388 feature_matching.cc:217] in 0.029s	1779133380673
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:00.506320  8388 pairing.cc:631] Processing image [181/188]	1779133380673
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:00.934780  8388 feature_matching.cc:217] in 0.428s	1779133381673
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:00.934832  8388 pairing.cc:631] Processing image [182/188]	1779133381673
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.509573  8388 feature_matching.cc:217] in 0.575s	1779133381673
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.509621  8388 pairing.cc:631] Processing image [183/188]	1779133381673
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.579879  8388 feature_matching.cc:217] in 0.070s	1779133381673
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.579941  8388 pairing.cc:631] Processing image [184/188]	1779133381673
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.653960  8388 feature_matching.cc:217] in 0.074s	1779133381673
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.654011  8388 pairing.cc:631] Processing image [185/188]	1779133381673
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.934916  8388 feature_matching.cc:217] in 0.281s	1779133382674
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.934994  8388 pairing.cc:631] Processing image [186/188]	1779133382674
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.965960  8388 feature_matching.cc:217] in 0.031s	1779133382674
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.966014  8388 pairing.cc:631] Processing image [187/188]	1779133382674
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.966246  8388 feature_matching.cc:217] in 0.000s	1779133382674
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.966269  8388 pairing.cc:631] Processing image [188/188]	1779133382674
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:02.039955  8388 feature_matching.cc:217] in 0.074s	1779133382674
+EVENTS	1779133385405	COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:02.040001  8388 timer.cc:90] Elapsed time: 1.186 [minutes]	1779133382674
+EVENTS	1779133385405	2026-05-18 19:43:02,116 - INFO - chunk_03_spatial_matcher_recovery added 673 verified image pairs	1779133382674
+EVENTS	1779133385405	2026-05-18 19:43:02,123 - INFO - Building a FAISS-compatible vocab tree with 8192 visual words from up to 100000 descriptors	1779133382674
+EVENTS	1779133385405	2026-05-18 19:43:02,123 - INFO - [vocab_tree_builder] colmap vocab_tree_builder --database_path /tmp/colmap_sfm_rcnmny4o/chunk_03/database.db --vocab_tree_path /tmp/colmap_sfm_rcnmny4o/vocab_tree_faiss.bin --num_visual_words 8192 --max_num_images 40	1779133382674
+EVENTS	1779133385405	COLMAP[vocab_tree_builder] E20260518 19:43:02.277236  8430 base_option_manager.cc:264] Failed to parse options - unrecognised option '--max_num_images'.	1779133382674
+EVENTS	1779133385405	2026-05-18 19:43:02,291 - WARNING - vocab_tree_builder rejected --max_num_images; retrying with older COLMAP-compatible flags	1779133382674
+EVENTS	1779133385405	2026-05-18 19:43:02,291 - INFO - [vocab_tree_builder] colmap vocab_tree_builder --database_path /tmp/colmap_sfm_rcnmny4o/chunk_03/database.db --vocab_tree_path /tmp/colmap_sfm_rcnmny4o/vocab_tree_faiss.bin --num_visual_words 8192	1779133382674
+EVENTS	1779133385405	COLMAP[vocab_tree_builder] I20260518 19:43:02.443851  8438 vocab_tree.cc:85] Loading descriptors...	1779133382674
+EVENTS	1779133385405	COLMAP[vocab_tree_builder] I20260518 19:43:03.309763  8438 vocab_tree.cc:88] => Loaded a total of 1904336 descriptors	1779133383674
+EVENTS	1779133385405	COLMAP[vocab_tree_builder] I20260518 19:43:03.309823  8438 vocab_tree.cc:94] Building index for visual words...	1779133383674
