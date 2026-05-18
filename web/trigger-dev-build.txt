@@ -69,3 +69,4 @@
 2026-05-17T01:17:32Z md1-shrunk: trigger pages preview for bundle validation
 2026-05-17T06:52:17Z md1-shrunk: viewer validation + poll artifacts
 2026-05-17T15:19:57Z md1-shrunk: monitor poll 20260517T151433Z (revalidate skybox/nosky + camera check)
+20260518T023201Z md1-shrunk monitor poll
