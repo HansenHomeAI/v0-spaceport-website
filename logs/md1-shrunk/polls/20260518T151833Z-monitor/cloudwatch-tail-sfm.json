@@ -1,0 +1,16 @@
+{
+  "ResponseMetadata": {
+    "HTTPHeaders": {
+      "content-length": "178",
+      "content-type": "application/x-amz-json-1.1",
+      "date": "Mon, 18 May 2026 15:18:36 GMT",
+      "x-amzn-requestid": "cae0e60b-cb5d-4b5b-b831-dd88f22be032"
+    },
+    "HTTPStatusCode": 200,
+    "RequestId": "cae0e60b-cb5d-4b5b-b831-dd88f22be032",
+    "RetryAttempts": 0
+  },
+  "events": [],
+  "nextBackwardToken": "b/39670327870930482443160921844795671197394280117602058239/s",
+  "nextForwardToken": "f/39675806949972058629170610946745273522710808905247621120/s"
+}

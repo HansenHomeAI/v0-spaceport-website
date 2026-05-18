@@ -1,0 +1,45 @@
+{
+  "colmap_points3D_from_points3D_txt": 1020913,
+  "colmap_registered_images_from_images_txt": 1456,
+  "colmap_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/",
+  "colmap_sparse_dirs": [
+    "0"
+  ],
+  "identity": {
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root",
+    "ResponseMetadata": {
+      "HTTPHeaders": {
+        "content-length": "387",
+        "content-type": "text/xml",
+        "date": "Mon, 18 May 2026 15:18:34 GMT",
+        "x-amz-sts-extended-request-id": "MTp1cy13ZXN0LTI6UzoxNzc5MTE3NTE0MjU3OlI6Ylk3TnhZenM=",
+        "x-amzn-requestid": "6efcebc1-9f1e-4e7c-b1e8-67e59d097a96"
+      },
+      "HTTPStatusCode": 200,
+      "RequestId": "6efcebc1-9f1e-4e7c-b1e8-67e59d097a96",
+      "RetryAttempts": 0
+    },
+    "UserId": "975050048887"
+  },
+  "notes": "registered_images/points3D are only set when text model files exist",
+  "region": "us-west-2",
+  "sagemaker": {
+    "3dgs": {
+      "failure": null,
+      "name": "md1shrunk1456-1778880862-3dgs",
+      "status": "Completed"
+    },
+    "compression": {
+      "failure": null,
+      "name": "md1shrunk1456-1778880862-compression",
+      "status": "Completed"
+    },
+    "sfm": {
+      "failure": null,
+      "name": "md1-shrunk-1456-sfm-1778866088",
+      "status": "Completed"
+    }
+  },
+  "stepfunctions_running_count": 0
+}

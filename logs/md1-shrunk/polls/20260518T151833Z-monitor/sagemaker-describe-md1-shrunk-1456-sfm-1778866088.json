@@ -1,0 +1,77 @@
+{
+  "AppSpecification": {
+    "ContainerEntrypoint": [
+      "/opt/ml/code/run_sfm.sh"
+    ],
+    "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:05e85850abcfd623e8ec7f3debc70ce2dcd9861548311290db901e0c661d4940"
+  },
+  "CreationTime": "2026-05-15 11:28:09.932000-06:00",
+  "Environment": {
+    "AWS_DEFAULT_REGION": "us-west-2",
+    "COLMAP_CHUNK_PLANNER": "legacy_spatial_heading",
+    "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+    "COLMAP_MATCH_PROFILE": "P1",
+    "PYTHONUNBUFFERED": "1",
+    "SFM_BENCHMARK_SUBSET_STRATEGY": "densest_colmap_camera_center_neighborhood_xy_1456_matches_meadow"
+  },
+  "LastModifiedTime": "2026-05-15 15:13:23.757000-06:00",
+  "ProcessingEndTime": "2026-05-15 15:04:36.723000-06:00",
+  "ProcessingInputs": [
+    {
+      "AppManaged": false,
+      "InputName": "sfm-input",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input",
+        "S3CompressionType": "None",
+        "S3DataDistributionType": "FullyReplicated",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip"
+      }
+    }
+  ],
+  "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-shrunk-1456-sfm-1778866088",
+  "ProcessingJobName": "md1-shrunk-1456-sfm-1778866088",
+  "ProcessingJobStatus": "Completed",
+  "ProcessingOutputConfig": {
+    "Outputs": [
+      {
+        "AppManaged": false,
+        "OutputName": "colmap-output",
+        "S3Output": {
+          "LocalPath": "/opt/ml/processing/output",
+          "S3UploadMode": "EndOfJob",
+          "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap"
+        }
+      }
+    ]
+  },
+  "ProcessingResources": {
+    "ClusterConfig": {
+      "InstanceCount": 1,
+      "InstanceType": "ml.g4dn.xlarge",
+      "VolumeSizeInGB": 100
+    }
+  },
+  "ProcessingStartTime": "2026-05-15 11:28:49.432000-06:00",
+  "ResponseMetadata": {
+    "HTTPHeaders": {
+      "cache-control": "no-cache, no-store, must-revalidate",
+      "content-length": "1652",
+      "content-security-policy": "frame-ancestors 'none'",
+      "content-type": "application/x-amz-json-1.1",
+      "date": "Mon, 18 May 2026 15:18:34 GMT",
+      "strict-transport-security": "max-age=47304000; includeSubDomains",
+      "x-amzn-requestid": "4561a74f-d9bd-4e9b-8aae-1ee383fd2f8c",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY"
+    },
+    "HTTPStatusCode": 200,
+    "RequestId": "4561a74f-d9bd-4e9b-8aae-1ee383fd2f8c",
+    "RetryAttempts": 0
+  },
+  "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+  "StoppingCondition": {
+    "MaxRuntimeInSeconds": 86400
+  }
+}

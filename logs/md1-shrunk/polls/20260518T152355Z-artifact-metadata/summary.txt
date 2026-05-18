@@ -1,0 +1,6 @@
+[2026-05-18T15:24Z] Bundle metadata gates (downloaded JSON)
+
+- gaussians (meta.json means.shape[0]): 990025
+- original PLY size (training_metadata.json file_size_mb): 234.1691 MB
+- compressed size (sogs_compression_summary.json compressed_size_mb): 14.3454 MB
+- skybox sidecars present: background_skybox.webp + background_manifest.json + export_manifest.json

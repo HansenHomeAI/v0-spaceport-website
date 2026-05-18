@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T14:24:17Z
+updated: 2026-05-18T15:26:47Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -5451,3 +5451,36 @@ skybox, compression, artifact handoff, and visual gates.
 - GitHub Actions (exact head):
   - exact-head workflow runs: `0` (expected; `[skip ci]`)
   - evidence: `logs/md1-shrunk/polls/20260518T145059Z-postpush/gh-runs.json`
+
+## 2026-05-18T15:18:34Z monitor poll (terminal reconfirm + Montana gates)
+
+- Poll artifacts:
+  - `logs/md1-shrunk/polls/20260518T151833Z-monitor/`
+  - `logs/md1-shrunk/polls/20260518T152233Z-ci2/`
+  - `logs/md1-shrunk/polls/20260518T152343Z-artifacts/`
+  - `logs/md1-shrunk/polls/20260518T152355Z-artifact-metadata/`
+- Branch/head:
+  - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+  - `git rev-parse HEAD` -> `2553fed29b70f1e1715966701ee44e99d6941d64` (`[skip ci]`)
+- AWS identity + active state (region `us-west-2`):
+  - `Account=975050048887`, `Arn=arn:aws:iam::975050048887:root`
+  - Step Functions RUNNING executions under `SpaceportMLPipeline-staging`: `0`
+  - SageMaker terminal:
+    - processing `md1-shrunk-1456-sfm-1778866088` -> `Completed`
+    - training `md1shrunk1456-1778880862-3dgs` -> `Completed`
+    - processing `md1shrunk1456-1778880862-compression` -> `Completed`
+- SfM Montana-scale gates (from COLMAP text model under output S3):
+  - output: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap`
+  - sparse dirs: `["0"]` (single model dir)
+  - registered images (`images.txt` entries): `1456`
+  - points3D (`points3D.txt` entries): `1020913`
+- 3DGS + compression artifact gates:
+  - 3DGS model: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778880862/`
+  - compressed bundle: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778880862/`
+  - gaussians: `990025` (from `supersplat_bundle/meta.json` means.shape[0])
+  - original PLY size: `234.1691 MB` (from `supersplat_bundle/training_metadata.json` file_size_mb)
+  - compressed size: `14.3454 MB` (from `sogs_compression_summary.json` compressed_size_mb)
+  - skybox sidecars present: `background_skybox.webp` + manifests under `supersplat_bundle/`
+- GitHub Actions (PATH note: use `/opt/homebrew/bin/gh` in Codex):
+  - user-prompt proof: run `25932325504` (`CDK Deploy`) -> `success` for `e9cbf71c56420ce386b028e7f4af33163ce4dcc2`
+  - current exact-head run count: `0` (expected; `[skip ci]`)

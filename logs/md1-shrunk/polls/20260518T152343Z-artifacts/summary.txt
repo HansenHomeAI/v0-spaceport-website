@@ -1,0 +1,10 @@
+[2026-05-18T15:23Z] S3 artifact listings
+
+3DGS:
+- s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/3dgs/md1shrunk1456-1778880862/
+- model.tar.gz present (see s3-3dgs-listing.txt)
+
+Compression outputs:
+- s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/compressed/md1shrunk1456-1778880862/
+- supersplat_bundle/* includes meta.json, settings.json, training_metadata.json, background_skybox.webp, manifests
+- sogs_compression_summary.json present

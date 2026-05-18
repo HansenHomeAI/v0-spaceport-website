@@ -1,0 +1,107 @@
+{
+  "ResponseMetadata": {
+    "HTTPHeaders": {
+      "connection": "keep-alive",
+      "content-length": "4334",
+      "content-type": "application/x-amz-json-1.0",
+      "date": "Mon, 18 May 2026 15:18:34 GMT",
+      "x-amzn-requestid": "f87f7e55-2743-4fe7-98f9-72fb55e4ad2f"
+    },
+    "HTTPStatusCode": 200,
+    "RequestId": "f87f7e55-2743-4fe7-98f9-72fb55e4ad2f",
+    "RetryAttempts": 0
+  },
+  "executions": [
+    {
+      "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:md1-shrunk-1456-3dgs-20260518-085235",
+      "name": "md1-shrunk-1456-3dgs-20260518-085235",
+      "redriveCount": 0,
+      "startDate": "2026-05-18 02:52:48.058000-06:00",
+      "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+      "status": "ABORTED",
+      "stopDate": "2026-05-18 02:54:17.146000-06:00"
+    },
+    {
+      "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-shrunk-1456-vsfm-w-light-20260515T2127Z-g5xlarge",
+      "name": "execution-md1-shrunk-1456-vsfm-w-light-20260515T2127Z-g5xlarge",
+      "redriveCount": 0,
+      "startDate": "2026-05-15 15:34:07.432000-06:00",
+      "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+      "status": "SUCCEEDED",
+      "stopDate": "2026-05-15 15:34:08.501000-06:00"
+    },
+    {
+      "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-shrunk-1456-vsfm-w-light-g54x-202605152132",
+      "name": "execution-md1-shrunk-1456-vsfm-w-light-g54x-202605152132",
+      "redriveCount": 0,
+      "startDate": "2026-05-15 15:32:33.458000-06:00",
+      "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+      "status": "SUCCEEDED",
+      "stopDate": "2026-05-15 15:32:34.551000-06:00"
+    },
+    {
+      "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1shrunk1456-1778880727",
+      "name": "execution-md1shrunk1456-1778880727",
+      "redriveCount": 0,
+      "startDate": "2026-05-15 15:32:09.526000-06:00",
+      "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+      "status": "SUCCEEDED",
+      "stopDate": "2026-05-15 15:32:12.130000-06:00"
+    },
+    {
+      "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1shrunk1456-1778879949",
+      "name": "execution-md1shrunk1456-1778879949",
+      "redriveCount": 0,
+      "startDate": "2026-05-15 15:19:10.781000-06:00",
+      "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+      "status": "SUCCEEDED",
+      "stopDate": "2026-05-15 15:19:11.866000-06:00"
+    },
+    {
+      "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-shrunk-1456-vsfm-w-light-202605152116",
+      "name": "execution-md1-shrunk-1456-vsfm-w-light-202605152116",
+      "redriveCount": 0,
+      "startDate": "2026-05-15 15:17:10.956000-06:00",
+      "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+      "status": "SUCCEEDED",
+      "stopDate": "2026-05-15 15:17:13.509000-06:00"
+    },
+    {
+      "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-cfix-202605150946",
+      "name": "execution-md1-e2e-vsfm-splatfacto-cfix-202605150946",
+      "redriveCount": 0,
+      "startDate": "2026-05-15 03:46:26.925000-06:00",
+      "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+      "status": "SUCCEEDED",
+      "stopDate": "2026-05-15 07:32:15.265000-06:00"
+    },
+    {
+      "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-splatfacto-202605150539",
+      "name": "execution-md1-e2e-vsfm-splatfacto-202605150539",
+      "redriveCount": 0,
+      "startDate": "2026-05-14 23:39:07.904000-06:00",
+      "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+      "status": "SUCCEEDED",
+      "stopDate": "2026-05-15 03:16:42.645000-06:00"
+    },
+    {
+      "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-fg-202605142314",
+      "name": "execution-md1-e2e-vsfm-fg-202605142314",
+      "redriveCount": 0,
+      "startDate": "2026-05-14 17:15:05.145000-06:00",
+      "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+      "status": "SUCCEEDED",
+      "stopDate": "2026-05-14 22:32:53.841000-06:00"
+    },
+    {
+      "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-staging:execution-md1-e2e-vsfm-light-202605141942",
+      "name": "execution-md1-e2e-vsfm-light-202605141942",
+      "redriveCount": 0,
+      "startDate": "2026-05-14 13:40:23.574000-06:00",
+      "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+      "status": "SUCCEEDED",
+      "stopDate": "2026-05-14 17:10:49.702000-06:00"
+    }
+  ],
+  "nextToken": "AAAAKgAAAAIAAAAAAAAAARTTW2TKaWITsuk3Fkas3cmTl67nTlt2H5ZPYFY/fMbdlGRS1QOvUOs2Lu7RjQcW8n6hD5qYZKg57cdT8lGgsUMVk6Mfl/9OPxuLHB7tYjg4CRxZzavPGGdHs5g2Df/Ub4YrzxwHoy+dFoWhto15a7O3VpF7jqbjInkiiAezPLzBda7I6JrNll70OUG5eQitwLQBEt6cx/DUiyyDtdU+TkWnbuy7R4Hru7VRhgspe31qzYi7r7qHTDS4/HvCHYKgJumysiKcvyEAvAO8ZnvGu/AHlKrgH1cOY3RG+OdP30KnQoKLa8+FYuUxhhNYNQSIeB29PTbSueW+1Tj0seoxYGdAsOOYlYxWJn8zprwCxGj6VsS3fkc2Z/uLnDiEtiAbDQ=="
+}

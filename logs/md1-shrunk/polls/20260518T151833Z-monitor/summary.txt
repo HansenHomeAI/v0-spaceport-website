@@ -1,0 +1,21 @@
+[2026-05-18T15:18Z] monitor re-verify (boto3; region us-west-2)
+
+Branch/head:
+- agent-113647-md1-baseline-e2e @ 2553fed29b70f1e1715966701ee44e99d6941d64 ([skip ci])
+
+AWS identity:
+- Account=975050048887 Arn=arn:aws:iam::975050048887:root
+
+Step Functions:
+- SpaceportMLPipeline-staging RUNNING executions = 0
+
+SageMaker (terminal):
+- Processing md1-shrunk-1456-sfm-1778866088: Completed (image sfm@sha256:05e85850...) instance ml.g4dn.xlarge
+- Training md1shrunk1456-1778880862-3dgs: Completed (image 3dgs@sha256:482c1789...) instance ml.g5.4xlarge
+- Processing md1shrunk1456-1778880862-compression: Completed (image compressor@sha256:a0784727...) instance ml.g4dn.xlarge
+
+COLMAP output + Montana-scale gates:
+- s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap/
+- sparse dirs: [0] (single model)
+- registered images (images.txt): 1456
+- points3D (points3D.txt): 1020913

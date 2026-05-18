@@ -1,0 +1,5 @@
+[2026-05-18T15:22Z] GitHub Actions proof (via /opt/homebrew/bin/gh)
+
+- gh run list --branch agent-113647-md1-baseline-e2e --limit 250 -> gh-run-list-250.json
+- Verified user-prompt proof: run 25932325504 (CDK Deploy) -> success for head e9cbf71c56420ce386b028e7f4af33163ce4dcc2 (createdAt 2026-05-15T17:39:36Z)
+- Current head is [skip ci], so exact-head run count is expected to be 0.
