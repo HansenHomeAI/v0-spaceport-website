@@ -590,9 +590,9 @@
     }
   ],
   "current_branch_head": "branch agent-90742618-md1-geometry-consistency at pushed commit b8c1b9c1370f64cebe4462a8a82e4ef29b2533f3; lock/evidence refreshed to this current HEAD before paid submit",
-  "current_exact_head_gate_status": "exact-head b8c1b9c1370f64cebe4462a8a82e4ef29b2533f3 green on CDK Deploy 26046506709",
+  "current_exact_head_gate_status": "exact-head 8fdaa86f38fd78b6f466aeddc95d46844e558b06 green on CDK Deploy 26048085622",
   "current_live_compute_status": "Owned processing job md1-r0v5relax-merge-20260515 terminal Failed after 270.979 seconds; no retry/review/full14/LOD launched",
-  "current_rung": "MD1_cost_reduction_sentinel_merge_failed_root_cause_captured",
+  "current_rung": "MD1_cost_reduction_corrected_merge_no_spend_ready_blocked_on_materialization",
   "evidence_events": [
     "md1_r0_visual_sentinel_v5_no_spend_merge_review_planning_head30d6_20260517",
     "md1_r0_visual_sentinel_v5_no_spend_merge_review_planning_head5984_20260517",
@@ -3698,6 +3698,21 @@
       "remaining_budget_usd": 13.924728,
       "no_retry_launched": true,
       "no_review_full14_lod_launched": true
+    },
+    {
+      "event": "md1-r0v5relax-corrected-no-spend-merge-regeneration",
+      "timestamp_utc": "20260518T170657Z",
+      "head": "8fdaa86f38fd78b6f466aeddc95d46844e558b06",
+      "cdk_run": 26048085622,
+      "corrected_merge_plan_json": "logs/md1-r0v5relax-merge-corrected-plan-8fdaa86f-20260518T170629Z.json",
+      "corrected_payload_json": "logs/md1-r0v5relax-merge-corrected-payload-8fdaa86f-20260518T170629Z.json",
+      "readiness_json": "logs/md1-r0v5relax-merge-corrected-submit-readiness-8fdaa86f-20260518T170629Z.json",
+      "summary_json": "logs/md1-r0v5relax-merge-corrected-no-spend-summary-8fdaa86f-20260518T170629Z.json",
+      "paid_compute_launched": false,
+      "readiness_decision": "merge_review_submit_blocked",
+      "block_reasons": [
+        "merge_inputs_not_materialized"
+      ]
     }
   ],
   "exact_head_gate_status": "exact-head b8c1b9c1370f64cebe4462a8a82e4ef29b2533f3 green on CDK Deploy 26046506709",
@@ -4025,7 +4040,7 @@
       "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26000210566"
     }
   ],
-  "last_updated": "20260518T170057Z",
+  "last_updated": "20260518T170657Z",
   "latest_bg10_merge_input_materialization_status": {
     "exact_head_workflows_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-exact-head-workflows-current-20260513.json",
     "input_materialization_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-input-materialization-current-20260513.json",
@@ -4373,7 +4388,7 @@
     "status": "merge_retry1_guard_ready_no_paid_retry_launched",
     "v18_review_launched": false
   },
-  "latest_no_spend_evidence": "Failure root cause captured: payload BACKGROUND_SOURCE_TILE_ID=tile_10 but merge plan contained only tile_04. Planner patched to reject absent background source tiles before payload submit.",
+  "latest_no_spend_evidence": "Corrected suffixed merge plan/payload regenerated with no BACKGROUND_SOURCE_TILE_ID and no paid submit. Readiness is intentionally blocked on merge_inputs_not_materialized until a future materialization/duplicate/AWS check cycle.",
   "latest_no_spend_implementation": "Planner now records visual_sentinel_tile04_scaffold_restored_underdense_leaf and blocks another scaffold-restored tile_04 retry unless it materially strengthens density retention after scaffold restoration.",
   "latest_pages_gate": {
     "cdk_run_id": 25107437774,
@@ -4518,7 +4533,7 @@
     "remote_merge_plan_json": "logs/md1-r4-quality-preserving-soft-density-leaf-tile10-rollback-bg10-remote-merge-g4dn-plan-dryrun-20260513.json",
     "training_jobs_to_submit": 0
   },
-  "latest_testing": "python3 -m unittest tests.unit.test_tiled_merge_processing_planner passed after adding absent-background-source guard",
+  "latest_testing": "python3 -m unittest tests.unit.test_tiled_merge_processing_planner passed; corrected payload has no BACKGROUND_SOURCE_TILE_ID",
   "latest_tile04_leaf_reuse_merge_dryrun_status": "R0 v5 density-relaxed tile_04 leaf passed post-leaf preflight/gate. On exact-head b83 and AWS idle, no-spend merge/review planning was rerun: merge_review_allowed, training_jobs_to_submit=0, local merge plan/payload dry-run generated, and submit readiness remains blocked only on merge_inputs_not_materialized.",
   "latest_tracked_sagemaker_evidence_spend_before_untracked_stop_usd": 14.8046,
   "latest_training_cost_reduction_status": "Evidence/untracked spend remains about $17.100. Soft-density tile_04 passed leaf and merge structural gates but failed V18 and AI visual QA; no-spend planner now records soft_density_quality_regression and blocks repeating that objective. No full14/LOD/promotion/viewer smoke launched.",
@@ -12921,7 +12936,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Commit/push terminal failure evidence, budget debit/release, and planner guard; watch exact-head CI if triggered; only then regenerate no-spend merge readiness for a new suffixed rerun if still desired",
+  "next_unblocked_step": "Commit/push corrected no-spend merge plan/payload/readiness. Do not submit retry until merge plan is materialized to the suffixed prefix, duplicate/AWS checks are clean, and readiness rerun returns allowed.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -21214,7 +21229,7 @@
     ],
     "next": "Wait for AWS training/processing idle, rerun v5 readiness on exact green head, then at most one bounded R0 v5 tile_04 leaf-only proof if allowed. No merge/review/full14/LOD/promotion."
   },
-  "last_event": "md1-r0v5relax-merge-failed-background-source-root-cause",
+  "last_event": "md1-r0v5relax-corrected-no-spend-merge-regeneration",
   "md1_r0_visual_sentinel_v5_training_hold_head08c_20260515": {
     "checked_at": "2026-05-15T07:53:38Z",
     "head": "08c018df22db9acdbde3ef96e70330f29f568b46",

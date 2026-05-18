@@ -1,0 +1,13 @@
+{
+  "timestamp_utc": "20260518T170629Z",
+  "head": "8fdaa86f38fd78b6f466aeddc95d46844e558b06",
+  "exact_head_cdk_run": 26048085622,
+  "action": "no_spend_corrected_suffixed_merge_regeneration",
+  "merge_root_s3": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z",
+  "merge_plan_json": "logs/md1-r0v5relax-merge-corrected-plan-8fdaa86f-20260518T170629Z.json",
+  "payload_json": "logs/md1-r0v5relax-merge-corrected-payload-8fdaa86f-20260518T170629Z.json",
+  "readiness_plan_json": "logs/md1-r0v5relax-merge-corrected-readiness-plan-8fdaa86f-20260518T170629Z.json",
+  "readiness_summary_json": "logs/md1-r0v5relax-merge-corrected-submit-readiness-8fdaa86f-20260518T170629Z.json",
+  "paid_compute_launched": false,
+  "retry_submit_allowed": false
+}
