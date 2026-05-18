@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T11:50:18Z
+updated: 2026-05-18T12:17:03Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -5116,3 +5116,48 @@ skybox, compression, artifact handoff, and visual gates.
 - GitHub Actions (exact head):
   - exact-head workflow runs: `0` (expected; `[skip ci]`)
   - evidence: `logs/md1-shrunk/polls/20260518T115018Z-postpush/github-actions-runs-head-summary.json`
+
+## 2026-05-18T12:17:03Z monitor poll (boto3 + GitHub REST; no new launches)
+
+- Poll artifacts:
+  - `logs/md1-shrunk/polls/20260518T121703Z-monitor/`
+- Branch/head/status:
+  - `git rev-parse HEAD` -> `d9cfad939cf8ddd9c76ce2784cd06be9b6cb2c1d` (`[skip ci]`)
+  - `git status --porcelain=v1` -> clean
+- AWS identity + active state:
+  - account: `975050048887`, ARN: `arn:aws:iam::975050048887:root`
+  - Step Functions RUNNING executions (`SpaceportMLPipeline-staging`): `0`
+  - SageMaker InProgress:
+    - processing jobs: `0`
+    - training jobs: `0`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T121703Z-monitor/sts-get-caller-identity.json`
+    - `logs/md1-shrunk/polls/20260518T121703Z-monitor/stepfunctions-running-staging.json`
+    - `logs/md1-shrunk/polls/20260518T121703Z-monitor/sagemaker-list-processing-inprogress.json`
+    - `logs/md1-shrunk/polls/20260518T121703Z-monitor/sagemaker-list-training-inprogress.json`
+- SfM terminal (re-verified):
+  - job: `md1-shrunk-1456-sfm-1778866088` -> `Completed`
+  - output: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap`
+  - gates (from `sfm_metadata.json`): `images_registered=1456`, `merged_component_count=1`, `points_3d=1103335`, `quality_check_passed=true`, `timed_out=false`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T121703Z-monitor/sagemaker-describe-md1-shrunk-1456-sfm-1778866088.json`
+    - `logs/md1-shrunk/polls/20260518T121703Z-monitor/s3-sfm-metadata-probe.json`
+    - `logs/md1-shrunk/polls/20260518T121703Z-monitor/s3-list-colmap-output-pages.json`
+- CloudWatch tail (processing job):
+  - evidence: `logs/md1-shrunk/polls/20260518T121703Z-monitor/cloudwatch-tail-processing-job.json`
+- GitHub Actions proof (exact head from user prompt):
+  - run `25932325504` (`CDK Deploy`) -> `success` for `e9cbf71c56420ce386b028e7f4af33163ce4dcc2`
+  - evidence: `logs/md1-shrunk/polls/20260518T121703Z-monitor/github-actions-run-25932325504.json`
+- GitHub Actions (Pages workflow; most recent on this branch):
+  - run `26015823853` (`Deploy Next.js to Cloudflare Pages`) -> `success` for `049c70baf003e3a1e816f729c514d6b491665a76`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T121703Z-monitor/github-pages-workflow-runs.json`
+    - `logs/md1-shrunk/polls/20260518T121703Z-monitor/github-actions-run-26015823853.json`
+- GitHub Actions for current head:
+  - `head_sha=d9cfad939cf8ddd9c76ce2784cd06be9b6cb2c1d` -> `0` runs (expected; `[skip ci]`)
+  - evidence: `logs/md1-shrunk/polls/20260518T121703Z-monitor/github-actions-exact-head-summary.json`
+- Public reachability (anonymous; preview + bundle):
+  - preview `/health.txt` -> `HTTP 200`
+  - bundle `meta.json` -> `HTTP 200`
+  - bundle `background_skybox.webp` -> `HTTP 200`
+  - evidence: `logs/md1-shrunk/polls/20260518T121703Z-monitor/http-head-sanity.txt`
