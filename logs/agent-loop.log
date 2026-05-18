@@ -13,3 +13,4 @@
 [2026-05-18T23:00Z] md1-shrunk: canonical sfm 1779128752 InProgress (merge 08 failed both orders; component bridge 08_00_02 fallback triangulating, latest image #1327) -> next: poll
 [2026-05-18T23:04Z] md1-shrunk: canonical sfm 1779128752 InProgress (component bridge 08_00_02 triangulated 502-image bridge, merge 08 still failed both orders; no terminal failure yet) -> next: poll
 [2026-05-18T23:10Z] md1-shrunk: canonical sfm 1779128752 InProgress (advanced to seam 08 point triangulator, reached image #1456/560, global BA heartbeat) -> next: poll
+[2026-05-18T23:17Z] md1-shrunk: canonical sfm 1779128752 InProgress (seam 08 retry 02 completed; merge 09 succeeded with 640 images/516033 points) -> next: poll
