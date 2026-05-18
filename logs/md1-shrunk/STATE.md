@@ -5388,3 +5388,33 @@ skybox, compression, artifact handoff, and visual gates.
 - GitHub Actions (exact head):
   - exact-head workflow runs: `0` (expected; `[skip ci]`)
   - evidence: `logs/md1-shrunk/polls/20260518T142358Z-postpush/gh-runs.json`
+
+## 2026-05-18T14:46:38Z monitor poll (awscli + gh; no new launches)
+
+- Poll artifacts:
+  - `logs/md1-shrunk/polls/20260518T144638Z-monitor/`
+- Branch/head/status:
+  - `git rev-parse HEAD` -> `7508a92a671824e2a6bb01fa25df7842347ac17f` (`[skip ci]`)
+  - note: local PATH in Codex does not include `/opt/homebrew/bin`; this poll uses `/opt/homebrew/bin/aws` and `/opt/homebrew/bin/gh` explicitly.
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T144638Z-monitor/summary.txt`
+- AWS identity + active state:
+  - `aws sts get-caller-identity` -> account `975050048887`
+  - Step Functions RUNNING executions under `SpaceportMLPipeline-staging`: `0`
+  - SageMaker InProgress:
+    - processing jobs: `0`
+    - training jobs: `0`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T144638Z-monitor/aws-sts.json`
+    - `logs/md1-shrunk/polls/20260518T144638Z-monitor/stepfn-running.json`
+- SfM terminal (re-verified):
+  - job: `md1-shrunk-1456-sfm-1778866088` -> `Completed`
+  - output: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T144638Z-monitor/sagemaker-describe-sfm.json`
+- GitHub Actions (branch runs + user-prompt exact-head proof):
+  - branch workflow list captured
+  - run `25932325504` (`CDK Deploy`) -> `success` for `e9cbf71c56420ce386b028e7f4af33163ce4dcc2`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T144638Z-monitor/gh-runs.json`
+    - `logs/md1-shrunk/polls/20260518T144638Z-monitor/gh-summary.txt`
