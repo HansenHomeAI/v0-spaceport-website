@@ -1,0 +1,144 @@
+{
+  "utc_now": "2026-05-18T12:51:34.653952+00:00",
+  "RUNNING": [],
+  "SUCCEEDED": [
+    {
+      "name": "execution-md1-shrunk-1456-vsfm-w-light-20260515T2127Z-g5xlarge",
+      "status": "SUCCEEDED",
+      "startDate": "2026-05-15 15:34:07.432000-06:00",
+      "stopDate": "2026-05-15 15:34:08.501000-06:00"
+    },
+    {
+      "name": "execution-md1-shrunk-1456-vsfm-w-light-g54x-202605152132",
+      "status": "SUCCEEDED",
+      "startDate": "2026-05-15 15:32:33.458000-06:00",
+      "stopDate": "2026-05-15 15:32:34.551000-06:00"
+    },
+    {
+      "name": "execution-md1shrunk1456-1778880727",
+      "status": "SUCCEEDED",
+      "startDate": "2026-05-15 15:32:09.526000-06:00",
+      "stopDate": "2026-05-15 15:32:12.130000-06:00"
+    },
+    {
+      "name": "execution-md1shrunk1456-1778879949",
+      "status": "SUCCEEDED",
+      "startDate": "2026-05-15 15:19:10.781000-06:00",
+      "stopDate": "2026-05-15 15:19:11.866000-06:00"
+    },
+    {
+      "name": "execution-md1-shrunk-1456-vsfm-w-light-202605152116",
+      "status": "SUCCEEDED",
+      "startDate": "2026-05-15 15:17:10.956000-06:00",
+      "stopDate": "2026-05-15 15:17:13.509000-06:00"
+    },
+    {
+      "name": "execution-md1-e2e-vsfm-splatfacto-cfix-202605150946",
+      "status": "SUCCEEDED",
+      "startDate": "2026-05-15 03:46:26.925000-06:00",
+      "stopDate": "2026-05-15 07:32:15.265000-06:00"
+    },
+    {
+      "name": "execution-md1-e2e-vsfm-splatfacto-202605150539",
+      "status": "SUCCEEDED",
+      "startDate": "2026-05-14 23:39:07.904000-06:00",
+      "stopDate": "2026-05-15 03:16:42.645000-06:00"
+    },
+    {
+      "name": "execution-md1-e2e-vsfm-fg-202605142314",
+      "status": "SUCCEEDED",
+      "startDate": "2026-05-14 17:15:05.145000-06:00",
+      "stopDate": "2026-05-14 22:32:53.841000-06:00"
+    },
+    {
+      "name": "execution-md1-e2e-vsfm-light-202605141942",
+      "status": "SUCCEEDED",
+      "startDate": "2026-05-14 13:40:23.574000-06:00",
+      "stopDate": "2026-05-14 17:10:49.702000-06:00"
+    },
+    {
+      "name": "execution-md1-e2e-vsfm-w-202605141905",
+      "status": "SUCCEEDED",
+      "startDate": "2026-05-14 13:05:46.903000-06:00",
+      "stopDate": "2026-05-14 13:19:51.295000-06:00"
+    },
+    {
+      "name": "execution-md1-e2e-vsfm-202605141811",
+      "status": "SUCCEEDED",
+      "startDate": "2026-05-14 12:11:38.939000-06:00",
+      "stopDate": "2026-05-14 12:23:44.184000-06:00"
+    },
+    {
+      "name": "execution-md1-baseline-e2e-20260514032448",
+      "status": "SUCCEEDED",
+      "startDate": "2026-05-13 21:24:56.996000-06:00",
+      "stopDate": "2026-05-14 11:55:52.989000-06:00"
+    },
+    {
+      "name": "execution-manual-3dgs-1774642514",
+      "status": "SUCCEEDED",
+      "startDate": "2026-03-27 14:15:14.225000-06:00",
+      "stopDate": "2026-03-27 16:02:31.095000-06:00"
+    },
+    {
+      "name": "execution-manual-3dgs-1774642849",
+      "status": "SUCCEEDED",
+      "startDate": "2026-03-27 14:20:49.576000-06:00",
+      "stopDate": "2026-03-27 14:20:52.101000-06:00"
+    },
+    {
+      "name": "staging-colmap-whitney-3dgs-1774632008-exec",
+      "status": "SUCCEEDED",
+      "startDate": "2026-03-27 11:20:09.959000-06:00",
+      "stopDate": "2026-03-27 12:16:20.553000-06:00"
+    },
+    {
+      "name": "staging-colmap-subset-1774554423-exec",
+      "status": "SUCCEEDED",
+      "startDate": "2026-03-26 13:47:04.028000-06:00",
+      "stopDate": "2026-03-26 14:43:16.319000-06:00"
+    },
+    {
+      "name": "manual-whitney-1774502625-2",
+      "status": "SUCCEEDED",
+      "startDate": "2026-03-25 23:23:47.342000-06:00",
+      "stopDate": "2026-03-25 23:33:51.776000-06:00"
+    },
+    {
+      "name": "spintest-20260324-173439-4228",
+      "status": "SUCCEEDED",
+      "startDate": "2026-03-24 17:34:40.999000-06:00",
+      "stopDate": "2026-03-24 20:05:15.250000-06:00"
+    }
+  ],
+  "FAILED": [
+    {
+      "name": "manual-whitney-1774502593",
+      "status": "FAILED",
+      "startDate": "2026-03-25 23:23:14.561000-06:00",
+      "stopDate": "2026-03-25 23:23:14.626000-06:00"
+    }
+  ],
+  "ABORTED": [
+    {
+      "name": "md1-shrunk-1456-3dgs-20260518-085235",
+      "status": "ABORTED",
+      "startDate": "2026-05-18 02:52:48.058000-06:00",
+      "stopDate": "2026-05-18 02:54:17.146000-06:00"
+    }
+  ],
+  "TIMED_OUT": [
+    {
+      "name": "execution-md1-baseline-e2e-20260513115645",
+      "status": "TIMED_OUT",
+      "startDate": "2026-05-13 11:56:49.978000-06:00",
+      "stopDate": "2026-05-13 19:56:49.978000-06:00"
+    },
+    {
+      "name": "staging-colmap-whitney-full-1774555117-exec",
+      "status": "TIMED_OUT",
+      "startDate": "2026-03-26 13:58:38.372000-06:00",
+      "stopDate": "2026-03-26 21:58:38.372000-06:00"
+    }
+  ]
+}

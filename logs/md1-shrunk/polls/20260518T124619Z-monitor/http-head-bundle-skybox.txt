@@ -1,0 +1,14 @@
+curl -sS -I https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-20260515T1641Z-1456-1778880862/supersplat_bundle/background_skybox.webp
+HTTP/1.1 200 OK
+x-amz-id-2: qsmJCfFqQGN5u84MPkxPqHjoQkNu1djp1ZnNF3kPAke6gZ1svwyT3BMFkTOajTok+a7dh8eLNMc=
+x-amz-request-id: Y7V2SDYK7NE0SABB
+Date: Mon, 18 May 2026 12:50:50 GMT
+Last-Modified: Sat, 16 May 2026 00:13:09 GMT
+ETag: "0ab9a556362c8ced686a5eb29ff2b190"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: 7gY1SZtNF86ESbVDI3msaXP5RKGGOyDB
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 46080
+Server: AmazonS3
+

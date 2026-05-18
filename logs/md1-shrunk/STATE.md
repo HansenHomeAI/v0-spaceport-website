@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T12:20:46Z
+updated: 2026-05-18T12:52:25Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -5172,3 +5172,49 @@ skybox, compression, artifact handoff, and visual gates.
 - GitHub Actions (exact head):
   - exact-head workflow runs: `0` (expected; `[skip ci]`)
   - evidence: `logs/md1-shrunk/polls/20260518T122046Z-postpush/github-actions-runs-head-summary.json`
+
+## 2026-05-18T12:46:19Z monitor poll (boto3 + GitHub REST; no new launches)
+
+- Poll artifacts:
+  - `logs/md1-shrunk/polls/20260518T124619Z-monitor/`
+- Branch/head/status:
+  - `git rev-parse HEAD` -> `f56316722ab72f8096538bd3cecd8633115c671e` (`[skip ci]`)
+  - `git status --porcelain=v1` -> clean
+  - evidence: `logs/md1-shrunk/polls/20260518T124619Z-monitor/local-git.txt`
+- AWS identity + active state:
+  - account: `975050048887`, ARN: `arn:aws:iam::975050048887:root`
+  - Step Functions RUNNING executions:
+    - `SpaceportMLPipeline-staging`: `0`
+    - all `SpaceportMLPipeline-*` state machines: `0`
+  - SageMaker InProgress:
+    - processing jobs: `0`
+    - training jobs: `0`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T124619Z-monitor/aws-boto3-snapshot.json`
+    - `logs/md1-shrunk/polls/20260518T124619Z-monitor/stepfunctions-spaceport-snapshot.json`
+- SfM terminal (re-verified):
+  - job: `md1-shrunk-1456-sfm-1778866088` -> `Completed`
+  - output: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-20260515T1641Z/colmap`
+  - gates (from `sfm_metadata.json`): `images_registered=1456`, `merged_component_count=1`, `points_3d=1103335`, `quality_check_passed=true`, `timed_out=false`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T124619Z-monitor/aws-boto3-snapshot.json`
+    - `logs/md1-shrunk/polls/20260518T124619Z-monitor/sfm-metadata-snapshot.json`
+- Downstream Step Functions (branch state machine):
+  - state machine: `SpaceportMLPipeline-br-8abcbd5662`
+  - execution: `execution-md1shrunk1456-1778880862` -> `SUCCEEDED`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T124619Z-monitor/stepfunctions-spaceport-snapshot.json`
+- GitHub Actions proof (exact head from user prompt):
+  - run `25932325504` (`CDK Deploy`) -> `success` for `e9cbf71c56420ce386b028e7f4af33163ce4dcc2`
+  - evidence: `logs/md1-shrunk/polls/20260518T124619Z-monitor/github-actions-snapshot.json`
+- GitHub Actions for current head:
+  - `head_sha=f56316722ab72f8096538bd3cecd8633115c671e` -> `0` runs (expected; `[skip ci]`)
+  - evidence: `logs/md1-shrunk/polls/20260518T124619Z-monitor/github-actions-snapshot.json`
+- Public reachability (anonymous; preview + bundle):
+  - preview `/health.txt` -> `HTTP 200`
+  - bundle `meta.json` -> `HTTP 200`
+  - bundle `background_skybox.webp` -> `HTTP 200`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260518T124619Z-monitor/http-head-preview-health.txt`
+    - `logs/md1-shrunk/polls/20260518T124619Z-monitor/http-head-bundle-meta.txt`
+    - `logs/md1-shrunk/polls/20260518T124619Z-monitor/http-head-bundle-skybox.txt`
