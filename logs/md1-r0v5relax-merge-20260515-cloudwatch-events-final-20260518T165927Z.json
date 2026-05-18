@@ -1,0 +1,26 @@
+{
+    "events": [
+        {
+            "timestamp": 1779123262961,
+            "message": "✅ sitecustomize: filtered deprecated CUDA arch flags (TORCH_CUDA_ARCH_LIST=7.0;8.0;8.6+PTX)",
+            "ingestionTime": 1779123269146
+        },
+        {
+            "timestamp": 1779123262961,
+            "message": "✅ sitecustomize: patched nerfstudio PIL conversion",
+            "ingestionTime": 1779123269146
+        },
+        {
+            "timestamp": 1779123265962,
+            "message": "Traceback (most recent call last):\n  File \"/opt/ml/code/run_tiled_merge_packaging.py\", line 286, in <module>\n    raise SystemExit(main())\n  File \"/opt/ml/code/run_tiled_merge_packaging.py\", line 255, in main\n    merge_report = merge_tile_outputs(\n  File \"/opt/ml/code/tile_pipeline.py\", line 1975, in merge_tile_outputs\n    background_asset = copy_best_background_skybox(\n  File \"/opt/ml/code/tile_pipeline.py\", line 1573, in copy_best_background_skybox\n    raise RuntimeError(",
+            "ingestionTime": 1779123269146
+        },
+        {
+            "timestamp": 1779123265962,
+            "message": "RuntimeError: Requested background source tile tile_10 has no background_skybox.webp; available tiles: ['tile_04']",
+            "ingestionTime": 1779123269146
+        }
+    ],
+    "nextForwardToken": "f/39675774630996192329190871725859841882460420573572169731/s",
+    "nextBackwardToken": "b/39675774564071655988400471678111151346242687694124941312/s"
+}

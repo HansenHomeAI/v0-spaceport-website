@@ -3,12 +3,18 @@
   "hostname": "Mac",
   "pid": 43589,
   "branch": "agent-90742618-md1-geometry-consistency",
-  "head": "b8c1b9c1370f64cebe4462a8a82e4ef29b2533f3",
+  "head": "c40c156fcdeed96036744e22000d51343bc07bcf",
   "payload_sha256": "d1ebd2acc1a3bb12be636aeb6c07a1afd3450b81b631e1220fcdf5c41c994686",
   "output_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-merge-20260515/output/artifact",
   "job_name": "md1-r0v5relax-merge-20260515",
   "stage": "sentinel_merge",
   "stage_cap_usd": 0.50,
-  "timestamp_utc": "20260518T164028Z",
-  "status": "reserved_before_submit"
+  "timestamp_utc": "20260518T170026Z",
+  "status": "failed_debited",
+  "presubmit_evidence_json": "logs/md1-r0v5relax-merge-presubmit-live-state-c40c156f-20260518T164839Z-summary.json",
+  "terminal_status": "Failed",
+  "final_describe_json": "logs/md1-r0v5relax-merge-20260515-final-describe-20260518T165927Z.json",
+  "cloudwatch_events_json": "logs/md1-r0v5relax-merge-20260515-cloudwatch-events-final-20260518T165927Z.json",
+  "debited_usd": 0.075272,
+  "failure_root_cause": "BACKGROUND_SOURCE_TILE_ID tile_10 absent from single-tile tile_04 merge plan"
 }

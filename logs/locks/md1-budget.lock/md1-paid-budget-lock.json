@@ -1,10 +1,10 @@
 {
   "budget_id": "md1-production-ready-3dgs-cost-reduction",
   "branch": "agent-90742618-md1-geometry-consistency",
-  "head": "b8c1b9c1370f64cebe4462a8a82e4ef29b2533f3",
+  "head": "c40c156fcdeed96036744e22000d51343bc07bcf",
   "currency": "USD",
   "starting_remaining_after_tile04": 14.0,
-  "remaining_reserved_or_available": 13.5,
+  "remaining_reserved_or_available": 13.924728,
   "stage_caps": {
     "sentinel_merge": 0.5,
     "sentinel_review": 0.75,
@@ -19,20 +19,42 @@
     {
       "stage": "sentinel_merge",
       "cap_usd": 0.5,
-      "status": "reserved_before_submit",
+      "status": "failed_debited",
       "lock_dir": "logs/locks/sentinel_merge-md1-r0v5relax-merge-20260515-b8c1b9c1.lock",
       "job_name": "md1-r0v5relax-merge-20260515",
       "output_prefix": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-merge-20260515/output/artifact",
       "payload_sha256": "d1ebd2acc1a3bb12be636aeb6c07a1afd3450b81b631e1220fcdf5c41c994686",
-      "reserved_at_utc": "20260518T164028Z"
+      "reserved_at_utc": "20260518T164028Z",
+      "submit_head": "c40c156fcdeed96036744e22000d51343bc07bcf",
+      "presubmit_evidence_json": "logs/md1-r0v5relax-merge-presubmit-live-state-c40c156f-20260518T164839Z-summary.json",
+      "submit_started_at_utc": "20260518T164839Z",
+      "submitted_at_utc": "20260518T164839Z",
+      "terminal_status": "Failed",
+      "final_describe_json": "logs/md1-r0v5relax-merge-20260515-final-describe-20260518T165927Z.json",
+      "cloudwatch_events_json": "logs/md1-r0v5relax-merge-20260515-cloudwatch-events-final-20260518T165927Z.json",
+      "output_s3_listing": "logs/md1-r0v5relax-merge-20260515-output-s3-list-20260518T165927Z.txt",
+      "runtime_seconds": 270.979,
+      "debited_usd": 0.075272,
+      "terminal_at_utc": "20260518T170026Z"
     }
   ],
-  "debits": [],
+  "debits": [
+    {
+      "stage": "sentinel_merge",
+      "job_name": "md1-r0v5relax-merge-20260515",
+      "terminal_status": "Failed",
+      "runtime_seconds": 270.979,
+      "debited_usd": 0.075272,
+      "pricing_basis": "conservative ml.g4dn.xlarge $1.00/hr",
+      "debited_at_utc": "20260518T170026Z",
+      "final_describe_json": "logs/md1-r0v5relax-merge-20260515-final-describe-20260518T165927Z.json"
+    }
+  ],
   "pricing_basis": {
     "ml.g4dn.xlarge_usd_per_hour": 1.0,
     "source": "conservative fallback until current AWS pricing is fetched"
   },
-  "last_updated_utc": "20260518T164028Z",
-  "latest_live_state_evidence": "logs/md1-r0v5-prod-premerge-live-state-b8c1b9c1-20260518T163736Z-summary.json",
-  "notes": "budget lock refreshed to current git HEAD after exact-head CDK Deploy 26046506709 succeeded; pre-refresh 43512232 evidence remains preserved separately"
+  "last_updated_utc": "20260518T170026Z",
+  "latest_live_state_evidence": "logs/md1-r0v5relax-merge-presubmit-live-state-c40c156f-20260518T164839Z-summary.json",
+  "notes": "sentinel merge failed before preflight/review; debited conservative actual runtime and released unused reservation; no retry/review/full14/LOD launched"
 }

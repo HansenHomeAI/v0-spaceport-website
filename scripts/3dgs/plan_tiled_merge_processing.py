@@ -185,6 +185,19 @@ def create_tiled_merge_processing_payload(
     }
 
 
+def validate_background_source_tile_id(merge_plan: dict, background_source_tile_id: str) -> None:
+    source_tile = background_source_tile_id.strip()
+    if not source_tile:
+        return
+    selected_tile_ids = {str(tile_id) for tile_id in merge_plan.get("selected_tile_ids", [])}
+    if source_tile not in selected_tile_ids:
+        available = ", ".join(sorted(selected_tile_ids)) or "<none>"
+        raise RuntimeError(
+            "background source tile must be included in the merge plan before remote merge submit; "
+            f"requested {source_tile!r}, available tiles: {available}"
+        )
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--summary-json", required=True)
@@ -226,6 +239,7 @@ def main() -> int:
         missing = [name for name, value in required.items() if not str(value or "").strip()]
         if missing:
             raise RuntimeError(f"Missing required payload fields: {', '.join(missing)}")
+        validate_background_source_tile_id(merge_plan, args.background_source_tile_id)
         payload = create_tiled_merge_processing_payload(
             branch_name=args.branch or str(summary.get("branch") or ""),
             job_name=args.job_name,

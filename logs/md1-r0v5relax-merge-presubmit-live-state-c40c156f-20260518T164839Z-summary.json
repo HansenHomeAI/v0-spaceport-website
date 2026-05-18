@@ -1,0 +1,49 @@
+{
+  "timestamp_utc": "20260518T164839Z",
+  "branch": "agent-90742618-md1-geometry-consistency",
+  "head": "c40c156fcdeed96036744e22000d51343bc07bcf",
+  "head_short": "c40c156f",
+  "job_name": "md1-r0v5relax-merge-20260515",
+  "aws_identity": {
+    "UserId": "975050048887",
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root"
+  },
+  "cdk_run": {
+    "conclusion": "success",
+    "createdAt": "2026-05-18T16:43:22Z",
+    "databaseId": 26047126148,
+    "event": "push",
+    "headSha": "c40c156fcdeed96036744e22000d51343bc07bcf",
+    "name": "CDK Deploy",
+    "status": "completed",
+    "updatedAt": "2026-05-18T16:47:45Z",
+    "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26047126148",
+    "workflowName": "CDK Deploy"
+  },
+  "exact_head_workflows": [
+    {
+      "conclusion": "success",
+      "createdAt": "2026-05-18T16:43:22Z",
+      "databaseId": 26047126148,
+      "event": "push",
+      "headSha": "c40c156fcdeed96036744e22000d51343bc07bcf",
+      "name": "CDK Deploy",
+      "status": "completed",
+      "updatedAt": "2026-05-18T16:47:45Z",
+      "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26047126148",
+      "workflowName": "CDK Deploy"
+    }
+  ],
+  "active_training_jobs": [],
+  "active_processing_jobs": [],
+  "running_relevant_stepfunctions": [],
+  "active_codebuilds": [],
+  "paid_submit_allowed_preconditions": {
+    "exact_head_cdk_success": true,
+    "sagemaker_training_idle": true,
+    "sagemaker_processing_idle": true,
+    "relevant_stepfunctions_idle": true,
+    "codebuild_no_active": true
+  }
+}

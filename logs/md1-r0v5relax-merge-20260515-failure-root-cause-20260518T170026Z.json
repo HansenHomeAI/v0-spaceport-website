@@ -1,0 +1,18 @@
+{
+  "timestamp_utc": "20260518T170026Z",
+  "job_name": "md1-r0v5relax-merge-20260515",
+  "terminal_status": "Failed",
+  "failure_reason": "AlgorithmError: , exit code: 1",
+  "proven_blocker": "Payload set BACKGROUND_SOURCE_TILE_ID=tile_10 while merge plan contained only tile_04; CloudWatch raised RuntimeError Requested background source tile tile_10 has no background_skybox.webp; available tiles: [tile_04].",
+  "no_retry_launched": true,
+  "no_review_full14_lod_launched": true,
+  "final_describe_json": "logs/md1-r0v5relax-merge-20260515-final-describe-20260518T165927Z.json",
+  "tags_json": "logs/md1-r0v5relax-merge-20260515-final-tags-20260518T165927Z.json",
+  "cloudwatch_streams_json": "logs/md1-r0v5relax-merge-20260515-cloudwatch-streams-final-20260518T165927Z.json",
+  "cloudwatch_events_json": "logs/md1-r0v5relax-merge-20260515-cloudwatch-events-final-20260518T165927Z.json",
+  "output_s3_listing": "logs/md1-r0v5relax-merge-20260515-output-s3-list-20260518T165927Z.txt",
+  "runtime_seconds": 270.979,
+  "conservative_usd_per_hour": 1.0,
+  "debited_usd": 0.075272,
+  "remaining_budget_usd": 13.924728
+}

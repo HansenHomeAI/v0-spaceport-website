@@ -1,0 +1,14 @@
+{
+    "logStreams": [
+        {
+            "logStreamName": "md1-r0v5relax-merge-20260515/algo-1-1779123009",
+            "creationTime": 1779123269135,
+            "firstEventTimestamp": 1779123262961,
+            "lastEventTimestamp": 1779123265962,
+            "lastIngestionTime": 1779123269146,
+            "uploadSequenceToken": "49039859672568900768712180847342837332954821765201989409",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:md1-r0v5relax-merge-20260515/algo-1-1779123009",
+            "storedBytes": 0
+        }
+    ]
+}

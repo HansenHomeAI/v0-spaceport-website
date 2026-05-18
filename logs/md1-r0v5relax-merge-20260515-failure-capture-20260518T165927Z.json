@@ -1,0 +1,9 @@
+{
+  "timestamp_utc": "20260518T165927Z",
+  "job_name": "md1-r0v5relax-merge-20260515",
+  "final_describe_json": "logs/md1-r0v5relax-merge-20260515-final-describe-20260518T165927Z.json",
+  "tags_json": "logs/md1-r0v5relax-merge-20260515-final-tags-20260518T165927Z.json",
+  "output_s3_listing": "logs/md1-r0v5relax-merge-20260515-output-s3-list-20260518T165927Z.txt",
+  "cloudwatch_streams_json": "logs/md1-r0v5relax-merge-20260515-cloudwatch-streams-final-20260518T165927Z.json",
+  "cloudwatch_events_json": "logs/md1-r0v5relax-merge-20260515-cloudwatch-events-final-20260518T165927Z.json"
+}

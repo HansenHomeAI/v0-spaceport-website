@@ -113,6 +113,14 @@ class TiledMergeProcessingPlannerTests(unittest.TestCase):
 
         self.assertIn("unsupported --merge-protected-overlap-mode", str(context.exception))
 
+    def test_validate_background_source_tile_id_blocks_absent_tile(self):
+        merge_plan = {"selected_tile_ids": ["tile_04"]}
+
+        with self.assertRaises(RuntimeError) as context:
+            planner.validate_background_source_tile_id(merge_plan, "tile_10")
+
+        self.assertIn("requested 'tile_10', available tiles: tile_04", str(context.exception))
+
     def test_packager_resets_output_mount_contents_without_removing_mount(self):
         with tempfile.TemporaryDirectory() as tmp:
             output_root = Path(tmp) / "artifact"
