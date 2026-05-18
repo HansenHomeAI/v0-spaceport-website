@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-18T01:50:25Z
+updated: 2026-05-18T01:52:15Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -4004,6 +4004,8 @@ skybox, compression, artifact handoff, and visual gates.
     - `SpaceportMLPipeline-staging` RUNNING execution count: `logs/md1-shrunk/polls/20260518T014709Z/stepfunctions-spaceport-ml-pipeline-staging-running.txt` -> `0`
   - SageMaker terminal statuses (region `us-west-2`):
     - SfM `md1-shrunk-1456-sfm-1778866088` -> `Completed`: `logs/md1-shrunk/polls/20260518T014709Z/sagemaker-describe-md1-shrunk-1456-sfm-1778866088.json`
+    - 3DGS `md1shrunk1456-1778880862-3dgs` -> `Completed`: `logs/md1-shrunk/polls/20260518T014709Z/sagemaker-describe-md1shrunk1456-1778880862-3dgs.json`
+    - compression `md1shrunk1456-1778880862-compression` -> `Completed`: `logs/md1-shrunk/polls/20260518T014709Z/sagemaker-describe-md1shrunk1456-1778880862-compression.json`
     - InProgress processing jobs=0: `logs/md1-shrunk/polls/20260518T014709Z/sagemaker-list-processing-jobs-inprogress.json`
     - InProgress training jobs=0: `logs/md1-shrunk/polls/20260518T014709Z/sagemaker-list-training-jobs-inprogress.json`
   - GitHub Actions:
