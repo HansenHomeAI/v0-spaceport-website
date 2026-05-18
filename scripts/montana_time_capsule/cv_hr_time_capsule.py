@@ -14,6 +14,7 @@ import io
 import json
 import os
 import re
+import shutil
 import struct
 import subprocess
 import sys
@@ -31,6 +32,10 @@ REGION = "us-west-2"
 ML_BUCKET = "spaceport-ml-processing-staging"
 UPLOAD_BUCKET = "spaceport-uploads-staging"
 SAGEMAKER_ROLE_ARN = f"arn:aws:iam::{ACCOUNT_ID}:role/Spaceport-SageMaker-Role-staging"
+AWS_CLI = (
+    shutil.which("aws")
+    or next((path for path in ("/opt/homebrew/bin/aws", "/usr/local/bin/aws") if Path(path).exists()), "aws")
+)
 
 MONTANA_3DGS_IMAGE = (
     f"{ACCOUNT_ID}.dkr.ecr.{REGION}.amazonaws.com/spaceport/3dgs"
@@ -185,7 +190,7 @@ class AwsCliClient:
     def run_json(self, args: list[str]) -> dict[str, Any]:
         env = {**os.environ, "AWS_PAGER": ""}
         result = subprocess.run(
-            ["aws", *args, "--region", self.region_name, "--output", "json"],
+            [AWS_CLI, *args, "--region", self.region_name, "--output", "json"],
             check=True,
             capture_output=True,
             text=True,
@@ -252,6 +257,12 @@ def utc_now() -> str:
 
 def run_id_now() -> str:
     return datetime.now(timezone.utc).strftime("cvhr-mtc-%Y%m%dT%H%MZ")
+
+
+def validate_run_id(value: str) -> str:
+    if not re.fullmatch(r"[a-z0-9][a-z0-9-]{2,62}", value):
+        raise ValueError("--run-id must be 3-63 chars of lowercase letters, digits, or hyphens")
+    return value
 
 
 def git_value(*args: str) -> str:
@@ -720,6 +731,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-scan-objects", type=int, default=5000)
     parser.add_argument("--expected-image-count", type=int, default=1710)
     parser.add_argument("--profile", choices=sorted(PROFILES), default="brass-chunked")
+    parser.add_argument(
+        "--run-id",
+        default=os.environ.get("CV_HR_RUN_ID", ""),
+        help="Explicit run id for isolated parallel jobs and S3 prefixes.",
+    )
     parser.add_argument("--state-file", default="logs/montana-time-capsule/cv-hr-state.json")
     parser.add_argument("--region", default=REGION)
     parser.add_argument("--role-arn", default=SAGEMAKER_ROLE_ARN)
@@ -741,6 +757,12 @@ def main() -> int:
     profile = PROFILES[args.profile]
     s3 = aws_client("s3", region_name=args.region)
     state = load_state(state_path)
+    requested_run_id = validate_run_id(args.run_id) if args.run_id else ""
+    if requested_run_id and state.get("run_id") and state["run_id"] != requested_run_id:
+        raise ValueError(
+            f"state file already belongs to run_id={state['run_id']}; "
+            f"refusing to use requested run_id={requested_run_id}"
+        )
 
     if not state.get("input_s3_uri"):
         upload = find_ready_upload(args, s3)
@@ -758,7 +780,7 @@ def main() -> int:
             return 0
         state = {
             "status": "upload_ready",
-            "run_id": run_id_now(),
+            "run_id": requested_run_id or run_id_now(),
             "dataset": "CV-HR",
             "profile": profile.name,
             "profile_note": profile.note,

@@ -1,0 +1,12 @@
+{
+    "AcceptRanges": "bytes",
+    "LastModified": "2026-05-18T17:09:28+00:00",
+    "ContentLength": 6931098350,
+    "ETag": "\"3a18e20f13027204f59bd6f1df77b983-827\"",
+    "VersionId": "FwGuzoiTEKNT8SodLXu7Zrkg_b96qhOx",
+    "ContentType": "application/zip",
+    "ServerSideEncryption": "AES256",
+    "Metadata": {
+        "source": "cv-hr"
+    }
+}

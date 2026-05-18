@@ -67,3 +67,13 @@ class MontanaTimeCapsuleTests(unittest.TestCase):
 
         self.assertEqual(saved["status"], "waiting")
         self.assertTrue(saved["updated_at"].endswith("Z"))
+
+    def test_validate_run_id_accepts_isolated_parallel_name(self):
+        self.assertEqual(
+            mtc.validate_run_id("cvhr-secondary-20260518t2115z"),
+            "cvhr-secondary-20260518t2115z",
+        )
+
+    def test_validate_run_id_rejects_unsafe_name(self):
+        with self.assertRaises(ValueError):
+            mtc.validate_run_id("cvhr_secondary_20260518T2115Z")

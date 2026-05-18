@@ -33,3 +33,8 @@ The command is idempotent through `logs/montana-time-capsule/cv-hr-state.json`:
 Use `--profile horsetail-gps` for the exact Horsetail SfM fallback. The
 `meadow-tag-only` profile is intentionally not exact because the historical
 SageMaker job recorded only a mutable tag.
+
+For intentionally parallel CV-HR runs, pass a unique lowercase `--run-id` and a
+separate `--state-file`. The run id is used in every SageMaker job name and S3
+output prefix, so separate state files keep concurrent workers from advancing
+each other's jobs.
