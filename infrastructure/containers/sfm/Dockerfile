@@ -1,9 +1,6 @@
-# Default to the published SfM runtime tag because it contains the CUDA-enabled
-# COLMAP installation. deploy.sh overrides BASE_IMAGE with an explicit digest in
-# branch builds; this default only needs to stay runnable for ad-hoc/local
-# builds and should not break when an older digest ages out of ECR.
-ARG BASE_IMAGE=975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:latest
-FROM ${BASE_IMAGE} AS runtime
+# Official CUDA-enabled COLMAP runtime, pinned to a dated tag so rebuilds stay
+# reproducible and never depend on the mutable spaceport/sfm:latest tag.
+FROM colmap/colmap:20260318.6455 AS runtime
 
 # Leave the vocab tree URL empty by default so COLMAP 4 can use its own
 # FAISS-compatible runtime tree path; the runtime script still accepts an

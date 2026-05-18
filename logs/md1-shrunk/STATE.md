@@ -5699,6 +5699,58 @@ skybox, compression, artifact handoff, and visual gates.
   4. Launch exactly one new MD1-Shrunk SfM run from `s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip` using the integrated production-spine SfM image.
   5. Continue to 3DGS, skybox, compression, public bundle reachability, deployed viewer, and side-by-side visual gates only after SfM passes.
 
+## 2026-05-18T17:26:23Z production-spine image preflight failure and fix
+
+- Integration commit/push:
+  - commit: `414560c5818ed5d5173936697924de4ac5cb2c7f` (`feat: integrate sfm production spine for md1 shrunk`)
+  - push: `git push origin agent-113647-md1-baseline-e2e`
+- Exact-head workflows for `414560c5818ed5d5173936697924de4ac5cb2c7f`:
+  - `CDK Deploy` run `26048241011` -> success
+  - `Deploy Next.js to Cloudflare Pages` run `26048240968` -> success
+  - `Trigger ML Container Build` run `26048240967` -> success
+  - evidence:
+    - `logs/md1-shrunk/gh-runs-exact-head-414560c5-20260518T1719Z.json`
+    - `logs/md1-shrunk/pages-run-26048240968-log-20260518T1719Z.txt`
+    - preview alias: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+    - hash URL: `https://66d620a7.v0-spaceport-website-preview2.pages.dev`
+- Branch SfM container build:
+  - CodeBuild: `spaceport-ml-containers:e2ac4bd6-5627-49fa-8007-1d57c634cb01`, build `701`
+  - sourceVersion: `414560c5818ed5d5173936697924de4ac5cb2c7f`
+  - status: `SUCCEEDED`
+  - ECR image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:19704ca7bc16c65ec3c102650a83772826da843e30bf3939d85b39cbfa7f0869`
+  - tag: `agent113647md1baselinee2e`
+  - pushed: `2026-05-18T11:18:18.196000-06:00`
+  - evidence:
+    - `logs/md1-shrunk/codebuild-sfm-701-20260518T1719Z.json`
+    - `logs/md1-shrunk/ecr-sfm-agent113647md1baselinee2e-20260518T1719Z.json`
+- Cost-bounded preflight launched before the full SfM rerun:
+  - purpose: verify the integrated branch SfM image can start and run planner/report-only logic before spending on a full MD1-Shrunk SfM job.
+  - command: `PATH="/opt/homebrew/bin:$PATH" python3 scripts/sfm/run_sfm_benchmark.py --input-s3-uri s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip --output-s3-uri s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-planner-20260518T1720Z/colmap --job-prefix md1-shrunk-prodspine-plan --instance-type ml.g4dn.xlarge --volume-size-gb 100 --image-uri 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:19704ca7bc16c65ec3c102650a83772826da843e30bf3939d85b39cbfa7f0869 --role-arn arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging --mode chunked --subset-strategy md1_shrunk_prodspine_1456_planner --env COLMAP_CHUNK_PLANNER=footprint_graph_v1 --env COLMAP_MATCH_PROFILE=P1 --planner-report-only --payload-json-output logs/md1-shrunk/md1-shrunk-prodspine-planner-20260518T1720Z-payload.json`
+  - job: `md1-shrunk-prodspine-plan-1779124846`
+  - ARN: `arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-shrunk-prodspine-plan-1779124846`
+  - output: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-planner-20260518T1720Z/colmap`
+  - start proof: `logs/md1-shrunk/md1-shrunk-prodspine-planner-20260518T1720Z-start.json`
+  - payload: `logs/md1-shrunk/md1-shrunk-prodspine-planner-20260518T1720Z-payload.json`
+- Preflight failed before any full SfM work:
+  - `ProcessingJobStatus=Failed`
+  - `FailureReason=AlgorithmError: , exit code: 1`
+  - log stream: `/aws/sagemaker/ProcessingJobs` / `md1-shrunk-prodspine-plan-1779124846/algo-1-1779124894`
+  - exact CloudWatch error: `ERROR: COLMAP not available`
+  - evidence:
+    - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-plan-1779124846-20260518T1726Z.json`
+    - `logs/md1-shrunk/cloudwatch-md1-shrunk-prodspine-plan-1779124846-20260518T1727Z.json`
+- Proven blocker:
+  - the integrated production-spine Dockerfile inherited from mutable `spaceport/sfm:latest` and then exported from `scratch`; this produced a branch image without `colmap` on `PATH`.
+  - this failure was caught by the planner-only preflight, so no duplicate full MD1-Shrunk SfM job was launched.
+- Fix applied:
+  - `infrastructure/containers/sfm/Dockerfile` now uses the pinned CUDA COLMAP runtime base `colmap/colmap:20260318.6455 AS runtime`, matching the development/Montana-capable container family and removing dependency on mutable `spaceport/sfm:latest`.
+- Next concrete steps:
+  1. Validate the Dockerfile patch locally with compile/unit/diff checks.
+  2. Commit/push the fix.
+  3. Watch exact-head workflows and the new SfM container build.
+  4. Verify the new ECR digest.
+  5. Rerun planner-only preflight once, then launch the full MD1-Shrunk SfM only if that preflight passes.
+
 ## 2026-05-18T17:21:19Z poll (monitor; post-integration CI + viewer)
 
 - Poll artifacts:
