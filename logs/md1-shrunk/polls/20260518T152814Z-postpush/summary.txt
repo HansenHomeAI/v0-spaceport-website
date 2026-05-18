@@ -1,0 +1,3 @@
+[postpush] branch=agent-113647-md1-baseline-e2e head=c8043eecfa3eb58943bc58bc6fc192afb8f294e5
+- exact-head runs: 0 (expected 0; [skip ci])
+- run list saved: logs/md1-shrunk/polls/20260518T152814Z-postpush/gh-run-list.json
