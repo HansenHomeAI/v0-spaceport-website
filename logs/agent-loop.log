@@ -3,3 +3,4 @@
 [2026-05-18T21:20:00Z] exact-head CDK green -> launched cvhr-secondary-20260518t2113z-sfm -> heartbeat monitor created
 [2026-05-18T21:44:00Z] heartbeat poll -> SfM InProgress, feature extraction 508/1710, S3 empty as expected -> continue monitoring
 [2026-05-18T22:04:00Z] heartbeat poll -> SfM InProgress, feature extraction 1024/1710, S3 empty as expected -> continue monitoring
+[2026-05-18T22:25:00Z] heartbeat poll -> SfM InProgress, feature extraction 1570/1710, S3 empty as expected -> continue monitoring
