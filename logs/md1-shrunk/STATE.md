@@ -4274,3 +4274,15 @@ skybox, compression, artifact handoff, and visual gates.
     - log: `logs/md1-shrunk/polls/20260518T041922Z-viewer/md1-camera-check.log.txt`
   - Notes:
     - Cost bounded: no new SageMaker/StepFn work launched; no non-owned jobs stopped.
+
+- 2026-05-18T04:21:34Z exact-head GitHub Actions confirmation (post monitor commit/push; `[skip ci]` head):
+  - Evidence: `logs/md1-shrunk/polls/20260518T042134Z-postpush/`
+  - Branch/head/status:
+    - `logs/md1-shrunk/polls/20260518T042134Z-postpush/git.txt` -> branch `agent-113647-md1-baseline-e2e`, head `e99dc39b...` (`[skip ci]`), status clean
+  - head commit:
+    - `logs/md1-shrunk/polls/20260518T042134Z-postpush/head.txt` -> head `e99dc39b...` (`[skip ci]`)
+  - exact-head run list expected `[]` (skip-ci head):
+    - run list: `logs/md1-shrunk/polls/20260518T042134Z-postpush/gh-run-list.json`
+    - count: `logs/md1-shrunk/polls/20260518T042134Z-postpush/gh-exact-head-run-count.txt`
+  - last known successful CI runs on branch (for preview URL continuity):
+    - `logs/md1-shrunk/polls/20260518T042134Z-postpush/latest-success.txt`
