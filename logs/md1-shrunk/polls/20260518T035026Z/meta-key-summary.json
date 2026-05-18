@@ -1,0 +1,10 @@
+{
+  "keys": [
+    "means",
+    "quats",
+    "scales",
+    "sh0",
+    "shN"
+  ],
+  "gaussian_count_candidates": []
+}

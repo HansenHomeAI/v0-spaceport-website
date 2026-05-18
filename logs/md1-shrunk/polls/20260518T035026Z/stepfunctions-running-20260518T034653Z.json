@@ -1,0 +1,15 @@
+{
+  "ResponseMetadata": {
+    "HTTPHeaders": {
+      "connection": "keep-alive",
+      "content-length": "17",
+      "content-type": "application/x-amz-json-1.0",
+      "date": "Mon, 18 May 2026 03:46:54 GMT",
+      "x-amzn-requestid": "b2b0aa1e-c15a-4471-a600-d3bfb5876078"
+    },
+    "HTTPStatusCode": 200,
+    "RequestId": "b2b0aa1e-c15a-4471-a600-d3bfb5876078",
+    "RetryAttempts": 0
+  },
+  "executions": []
+}

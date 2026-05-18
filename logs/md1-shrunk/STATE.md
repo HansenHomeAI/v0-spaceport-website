@@ -4189,3 +4189,35 @@ skybox, compression, artifact handoff, and visual gates.
   - exact-head run list expected `[]` (skip-ci head):
     - `logs/md1-shrunk/polls/20260518T032333Z-postpush/gh-run-list-exact-head.json`
     - `logs/md1-shrunk/polls/20260518T032333Z-postpush/gh-exact-head-run-count.txt`
+
+- 2026-05-18T03:50:26Z poll (SfM terminal confirmed; no new ML launches):
+  - Evidence: `logs/md1-shrunk/polls/20260518T035026Z/`
+  - Branch/head/status:
+    - `logs/md1-shrunk/polls/20260518T035026Z/git-branch.txt` -> `agent-113647-md1-baseline-e2e`
+    - `logs/md1-shrunk/polls/20260518T035026Z/git-head.txt` -> head `008e2524...` (`[skip ci]`)
+    - `logs/md1-shrunk/polls/20260518T035026Z/git-status-short.txt` -> local-only poll artifacts under `logs/md1-shrunk/polls/20260518T035026Z/`
+  - AWS identity:
+    - `logs/md1-shrunk/polls/20260518T035026Z/aws-sts.json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+  - Step Functions (region `us-west-2`):
+    - staging RUNNING executions: `logs/md1-shrunk/polls/20260518T035026Z/stepfn-running.json` -> `0`
+  - SageMaker (region `us-west-2`):
+    - InProgress processing jobs=0: `logs/md1-shrunk/polls/20260518T035026Z/sagemaker-processing-inprogress.json`
+    - InProgress training jobs=0: `logs/md1-shrunk/polls/20260518T035026Z/sagemaker-training-inprogress.json`
+    - Owned job terminal statuses reconfirm:
+      - SfM (ProcessingJob) `md1-shrunk-1456-sfm-1778866088` -> `Completed`: `logs/md1-shrunk/polls/20260518T035026Z/sagemaker-describe-sfm.json`
+      - 3DGS (TrainingJob) `md1shrunk1456-1778880862-3dgs` -> `Completed`: `logs/md1-shrunk/polls/20260518T035026Z/sagemaker-describe-3dgs.json`
+      - compression (ProcessingJob) `md1shrunk1456-1778880862-compression` -> `Completed`: `logs/md1-shrunk/polls/20260518T035026Z/sagemaker-describe-compression.json`
+  - SfM Montana-scale gate snapshot (from output `sfm_metadata.json`):
+    - `logs/md1-shrunk/polls/20260518T035026Z/sfm_metadata_summary.json` -> `images_registered=1456`, `merged_component_count=1`, `points_3d=1103335`, `quality_check_passed=true`, `timed_out=false`, `fallback_triggered=false`
+  - CloudWatch terminal excerpt (SfM completion banner + stats):
+    - `logs/md1-shrunk/polls/20260518T035026Z/cloudwatch-paged-tail-md1-shrunk-1456-sfm-1778866088-20260518T034854Z.txt` -> includes `Images registered: 1456`, `3D points: 1020913`, `Processing time: 12709.05 seconds`, and `COMPLETED SUCCESSFULLY!`
+  - S3 COLMAP output presence reconfirm:
+    - `logs/md1-shrunk/polls/20260518T035026Z/s3-listing-md1-shrunk-colmap-20260518T034714Z.txt` -> `TOTAL_OBJECTS 1468`, `TOTAL_SIZE_BYTES 9915165134`
+    - `logs/md1-shrunk/polls/20260518T035026Z/s3-listing-md1-shrunk-colmap-20260518T034714Z.txt` -> only `sparse/0/*` (merged component count 1)
+  - Public bundle gates (anonymous fetch):
+    - meta.json headers: `logs/md1-shrunk/polls/20260518T035026Z/http-head-meta.txt` -> `HTTP/2 200`
+    - skybox headers: `logs/md1-shrunk/polls/20260518T035026Z/http-head-skybox.txt` -> `HTTP/2 200`
+    - meta.json snapshot: `logs/md1-shrunk/polls/20260518T035026Z/meta.json`
+    - gaussian count (from `meta.json means.shape[0]`): `logs/md1-shrunk/polls/20260518T035026Z/gaussian_count.txt` -> `990025`
+  - GitHub Actions (exact-head; `[skip ci]` head):
+    - commit workflow runs (PR-triggered filter): `logs/md1-shrunk/polls/20260518T035026Z/github-commit-workflow-runs-008e2524.json` -> `[]`

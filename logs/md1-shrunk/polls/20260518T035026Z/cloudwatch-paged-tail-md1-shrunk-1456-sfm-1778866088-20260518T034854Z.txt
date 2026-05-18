@@ -1,0 +1,801 @@
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.231665 12737 incremental_pipeline.cc:754] => Image sees 3006 / 9686 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.313391 12737 incremental_pipeline.cc:751] Triangulating image #1083 (1082)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.313436 12737 incremental_pipeline.cc:754] => Image sees 2936 / 9132 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.388581 12737 incremental_pipeline.cc:751] Triangulating image #1084 (1083)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.388622 12737 incremental_pipeline.cc:754] => Image sees 3092 / 8584 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.444401 12737 incremental_pipeline.cc:751] Triangulating image #1085 (1084)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.444442 12737 incremental_pipeline.cc:754] => Image sees 2662 / 6168 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.467566 12737 incremental_pipeline.cc:751] Triangulating image #1086 (1085)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.467602 12737 incremental_pipeline.cc:754] => Image sees 1904 / 5672 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.480713 12737 incremental_pipeline.cc:751] Triangulating image #1087 (1086)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.480747 12737 incremental_pipeline.cc:754] => Image sees 1833 / 5562 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.490221 12737 incremental_pipeline.cc:751] Triangulating image #1088 (1087)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.490252 12737 incremental_pipeline.cc:754] => Image sees 2540 / 6378 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.499893 12737 incremental_pipeline.cc:751] Triangulating image #1089 (1088)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.499922 12737 incremental_pipeline.cc:754] => Image sees 2505 / 6245 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.509356 12737 incremental_pipeline.cc:751] Triangulating image #1090 (1089)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.509382 12737 incremental_pipeline.cc:754] => Image sees 2626 / 6159 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.518944 12737 incremental_pipeline.cc:751] Triangulating image #1091 (1090)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.518970 12737 incremental_pipeline.cc:754] => Image sees 1856 / 6456 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.525935 12737 incremental_pipeline.cc:751] Triangulating image #1092 (1091)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.525962 12737 incremental_pipeline.cc:754] => Image sees 988 / 4467 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.530449 12737 incremental_pipeline.cc:751] Triangulating image #1093 (1092)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.530476 12737 incremental_pipeline.cc:754] => Image sees 2410 / 6993 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.555183 12737 incremental_pipeline.cc:751] Triangulating image #1094 (1093)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.555212 12737 incremental_pipeline.cc:754] => Image sees 2595 / 7942 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.580565 12737 incremental_pipeline.cc:751] Triangulating image #1095 (1094)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.580595 12737 incremental_pipeline.cc:754] => Image sees 2805 / 7253 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.606128 12737 incremental_pipeline.cc:751] Triangulating image #1096 (1095)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.606156 12737 incremental_pipeline.cc:754] => Image sees 2548 / 6343 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.628633 12737 incremental_pipeline.cc:751] Triangulating image #1097 (1096)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.628660 12737 incremental_pipeline.cc:754] => Image sees 2091 / 5110 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.648248 12737 incremental_pipeline.cc:751] Triangulating image #1098 (1097)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.648276 12737 incremental_pipeline.cc:754] => Image sees 2117 / 5434 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.664716 12737 incremental_pipeline.cc:751] Triangulating image #1099 (1098)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.664744 12737 incremental_pipeline.cc:754] => Image sees 2880 / 7097 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.678229 12737 incremental_pipeline.cc:751] Triangulating image #1100 (1099)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.678256 12737 incremental_pipeline.cc:754] => Image sees 3074 / 5881 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.689877 12737 incremental_pipeline.cc:751] Triangulating image #1101 (1100)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.689903 12737 incremental_pipeline.cc:754] => Image sees 3137 / 5926 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.696166 12737 incremental_pipeline.cc:751] Triangulating image #1102 (1101)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.696193 12737 incremental_pipeline.cc:754] => Image sees 3313 / 5925 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.702126 12737 incremental_pipeline.cc:751] Triangulating image #1103 (1102)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.702153 12737 incremental_pipeline.cc:754] => Image sees 3491 / 5729 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.711793 12737 incremental_pipeline.cc:751] Triangulating image #1104 (1103)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.711820 12737 incremental_pipeline.cc:754] => Image sees 3648 / 8450 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.748601 12737 incremental_pipeline.cc:751] Triangulating image #1105 (1104)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.748631 12737 incremental_pipeline.cc:754] => Image sees 2981 / 6983 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.794904 12737 incremental_pipeline.cc:751] Triangulating image #1106 (1105)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.794934 12737 incremental_pipeline.cc:754] => Image sees 3720 / 10173 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.865944 12737 incremental_pipeline.cc:751] Triangulating image #1107 (1106)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.865978 12737 incremental_pipeline.cc:754] => Image sees 4114 / 10768 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.936846 12737 incremental_pipeline.cc:751] Triangulating image #1108 (1107)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:11.936882 12737 incremental_pipeline.cc:754] => Image sees 4145 / 10204 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.004859 12737 incremental_pipeline.cc:751] Triangulating image #1109 (1108)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.004897 12737 incremental_pipeline.cc:754] => Image sees 3309 / 6747 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.046495 12737 incremental_pipeline.cc:751] Triangulating image #1110 (1109)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.046554 12737 incremental_pipeline.cc:754] => Image sees 4227 / 9391 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.103966 12737 incremental_pipeline.cc:751] Triangulating image #1111 (1110)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.104002 12737 incremental_pipeline.cc:754] => Image sees 2733 / 9319 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.152760 12737 incremental_pipeline.cc:751] Triangulating image #1112 (1111)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.152805 12737 incremental_pipeline.cc:754] => Image sees 3630 / 8620 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.177546 12737 incremental_pipeline.cc:751] Triangulating image #1113 (1112)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.177578 12737 incremental_pipeline.cc:754] => Image sees 3741 / 8098 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.204978 12737 incremental_pipeline.cc:751] Triangulating image #1114 (1113)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.205008 12737 incremental_pipeline.cc:754] => Image sees 4192 / 7939 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.229348 12737 incremental_pipeline.cc:751] Triangulating image #1115 (1114)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.229377 12737 incremental_pipeline.cc:754] => Image sees 3941 / 7604 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.257759 12737 incremental_pipeline.cc:751] Triangulating image #1116 (1115)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.257787 12737 incremental_pipeline.cc:754] => Image sees 3519 / 6965 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.290664 12737 incremental_pipeline.cc:751] Triangulating image #1117 (1116)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.290705 12737 incremental_pipeline.cc:754] => Image sees 3632 / 6476 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.304255 12737 incremental_pipeline.cc:751] Triangulating image #1118 (1117)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.304286 12737 incremental_pipeline.cc:754] => Image sees 3971 / 7007 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.310616 12737 incremental_pipeline.cc:751] Triangulating image #1119 (1118)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.310643 12737 incremental_pipeline.cc:754] => Image sees 4559 / 9064 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.331871 12737 incremental_pipeline.cc:751] Triangulating image #1120 (1119)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.331902 12737 incremental_pipeline.cc:754] => Image sees 4136 / 7628 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.339202 12737 incremental_pipeline.cc:751] Triangulating image #1121 (1120)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.339231 12737 incremental_pipeline.cc:754] => Image sees 4401 / 9276 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.374230 12737 incremental_pipeline.cc:751] Triangulating image #1122 (1121)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.374269 12737 incremental_pipeline.cc:754] => Image sees 3816 / 8683 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.422298 12737 incremental_pipeline.cc:751] Triangulating image #1123 (1122)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.422331 12737 incremental_pipeline.cc:754] => Image sees 5486 / 10753 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.499796 12737 incremental_pipeline.cc:751] Triangulating image #1124 (1123)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.499840 12737 incremental_pipeline.cc:754] => Image sees 5141 / 10599 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.576825 12737 incremental_pipeline.cc:751] Triangulating image #1125 (1124)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.576869 12737 incremental_pipeline.cc:754] => Image sees 4850 / 10161 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.649344 12737 incremental_pipeline.cc:751] Triangulating image #1126 (1125)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.649386 12737 incremental_pipeline.cc:754] => Image sees 4705 / 9760 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.714195 12737 incremental_pipeline.cc:751] Triangulating image #1127 (1126)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.714234 12737 incremental_pipeline.cc:754] => Image sees 4159 / 9503 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.771407 12737 incremental_pipeline.cc:751] Triangulating image #1128 (1127)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.771445 12737 incremental_pipeline.cc:754] => Image sees 3785 / 10046 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.856175 12737 incremental_pipeline.cc:751] Triangulating image #1129 (1128)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.856212 12737 incremental_pipeline.cc:754] => Image sees 3257 / 9129 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.905846 12737 incremental_pipeline.cc:751] Triangulating image #1130 (1129)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.905889 12737 incremental_pipeline.cc:754] => Image sees 1853 / 6099 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.946728 12737 incremental_pipeline.cc:751] Triangulating image #1131 (1130)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.946775 12737 incremental_pipeline.cc:754] => Image sees 1479 / 8330 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.996064 12737 incremental_pipeline.cc:751] Triangulating image #1132 (1131)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:12.996145 12737 incremental_pipeline.cc:754] => Image sees 5812 / 8613 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.028102 12737 incremental_pipeline.cc:751] Triangulating image #1133 (1132)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.028152 12737 incremental_pipeline.cc:754] => Image sees 5407 / 8450 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.067164 12737 incremental_pipeline.cc:751] Triangulating image #1134 (1133)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.067214 12737 incremental_pipeline.cc:754] => Image sees 4296 / 7775 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.105209 12737 incremental_pipeline.cc:751] Triangulating image #1135 (1134)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.105266 12737 incremental_pipeline.cc:754] => Image sees 4342 / 7878 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.135114 12737 incremental_pipeline.cc:751] Triangulating image #1136 (1135)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.135165 12737 incremental_pipeline.cc:754] => Image sees 4953 / 8638 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.168612 12737 incremental_pipeline.cc:751] Triangulating image #1137 (1136)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.168658 12737 incremental_pipeline.cc:754] => Image sees 3506 / 5980 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.177264 12737 incremental_pipeline.cc:751] Triangulating image #1138 (1137)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.177300 12737 incremental_pipeline.cc:754] => Image sees 3200 / 5710 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.185431 12737 incremental_pipeline.cc:751] Triangulating image #1139 (1138)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.185463 12737 incremental_pipeline.cc:754] => Image sees 5496 / 8982 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.208163 12737 incremental_pipeline.cc:751] Triangulating image #1140 (1139)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.208196 12737 incremental_pipeline.cc:754] => Image sees 4616 / 7333 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.218077 12737 incremental_pipeline.cc:751] Triangulating image #1141 (1140)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.218108 12737 incremental_pipeline.cc:754] => Image sees 5304 / 8805 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.243170 12737 incremental_pipeline.cc:751] Triangulating image #1142 (1141)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.243202 12737 incremental_pipeline.cc:754] => Image sees 5591 / 8756 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.260196 12737 incremental_pipeline.cc:751] Triangulating image #1143 (1142)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.260226 12737 incremental_pipeline.cc:754] => Image sees 5545 / 9271 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.315366 12737 incremental_pipeline.cc:751] Triangulating image #1144 (1143)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.315395 12737 incremental_pipeline.cc:754] => Image sees 5987 / 9009 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.349829 12737 incremental_pipeline.cc:751] Triangulating image #1145 (1144)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.349858 12737 incremental_pipeline.cc:754] => Image sees 4092 / 6562 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.393839 12737 incremental_pipeline.cc:751] Triangulating image #1146 (1145)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.393867 12737 incremental_pipeline.cc:754] => Image sees 5839 / 9470 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.451285 12737 incremental_pipeline.cc:751] Triangulating image #1147 (1146)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.451314 12737 incremental_pipeline.cc:754] => Image sees 5897 / 9500 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.508580 12737 incremental_pipeline.cc:751] Triangulating image #1148 (1147)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.508610 12737 incremental_pipeline.cc:754] => Image sees 5708 / 9101 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.556545 12737 incremental_pipeline.cc:751] Triangulating image #1149 (1148)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.556572 12737 incremental_pipeline.cc:754] => Image sees 5428 / 8468 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.591930 12737 incremental_pipeline.cc:751] Triangulating image #1150 (1149)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.591960 12737 incremental_pipeline.cc:754] => Image sees 5187 / 7850 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.615553 12737 incremental_pipeline.cc:751] Triangulating image #1151 (1150)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.615581 12737 incremental_pipeline.cc:754] => Image sees 5676 / 8353 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.632992 12737 incremental_pipeline.cc:751] Triangulating image #1152 (1151)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.633020 12737 incremental_pipeline.cc:754] => Image sees 5442 / 8475 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.653165 12737 incremental_pipeline.cc:751] Triangulating image #1153 (1152)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.653194 12737 incremental_pipeline.cc:754] => Image sees 5292 / 8226 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.671821 12737 incremental_pipeline.cc:751] Triangulating image #1154 (1153)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.671850 12737 incremental_pipeline.cc:754] => Image sees 4714 / 6490 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.683871 12737 incremental_pipeline.cc:751] Triangulating image #1155 (1154)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.683900 12737 incremental_pipeline.cc:754] => Image sees 5339 / 7086 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.695672 12737 incremental_pipeline.cc:751] Triangulating image #1156 (1155)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.695699 12737 incremental_pipeline.cc:754] => Image sees 5770 / 7604 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.714978 12737 incremental_pipeline.cc:751] Triangulating image #1157 (1156)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.715006 12737 incremental_pipeline.cc:754] => Image sees 7213 / 10273 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.744899 12737 incremental_pipeline.cc:751] Triangulating image #1158 (1157)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.744927 12737 incremental_pipeline.cc:754] => Image sees 6692 / 10735 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.793305 12737 incremental_pipeline.cc:751] Triangulating image #1159 (1158)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.793334 12737 incremental_pipeline.cc:754] => Image sees 5097 / 9351 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.864127 12737 incremental_pipeline.cc:751] Triangulating image #1160 (1159)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.864157 12737 incremental_pipeline.cc:754] => Image sees 6167 / 10517 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.936591 12737 incremental_pipeline.cc:751] Triangulating image #1161 (1160)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.936620 12737 incremental_pipeline.cc:754] => Image sees 6502 / 9827 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.983938 12737 incremental_pipeline.cc:751] Triangulating image #1162 (1161)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:13.983966 12737 incremental_pipeline.cc:754] => Image sees 6672 / 9398 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.012173 12737 incremental_pipeline.cc:751] Triangulating image #1163 (1162)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.012203 12737 incremental_pipeline.cc:754] => Image sees 7108 / 9457 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.036203 12737 incremental_pipeline.cc:751] Triangulating image #1164 (1163)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.036233 12737 incremental_pipeline.cc:754] => Image sees 6273 / 8979 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.072118 12737 incremental_pipeline.cc:751] Triangulating image #1165 (1164)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.072149 12737 incremental_pipeline.cc:754] => Image sees 5389 / 8656 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.104799 12737 incremental_pipeline.cc:751] Triangulating image #1166 (1165)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.104826 12737 incremental_pipeline.cc:754] => Image sees 4366 / 7893 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.122311 12737 incremental_pipeline.cc:751] Triangulating image #1167 (1166)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.122339 12737 incremental_pipeline.cc:754] => Image sees 2698 / 7232 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.143601 12737 incremental_pipeline.cc:751] Triangulating image #1168 (1167)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.143630 12737 incremental_pipeline.cc:754] => Image sees 2393 / 6684 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.155437 12737 incremental_pipeline.cc:751] Triangulating image #1169 (1168)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.155465 12737 incremental_pipeline.cc:754] => Image sees 3447 / 5786 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.161890 12737 incremental_pipeline.cc:751] Triangulating image #1170 (1169)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.161918 12737 incremental_pipeline.cc:754] => Image sees 3607 / 6485 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.194025 12737 incremental_pipeline.cc:751] Triangulating image #1171 (1170)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.194060 12737 incremental_pipeline.cc:754] => Image sees 4499 / 9471 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.261402 12737 incremental_pipeline.cc:751] Triangulating image #1172 (1171)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.261435 12737 incremental_pipeline.cc:754] => Image sees 4384 / 10493 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.354233 12737 incremental_pipeline.cc:751] Triangulating image #1173 (1172)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.354269 12737 incremental_pipeline.cc:754] => Image sees 4407 / 11283 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.453871 12737 incremental_pipeline.cc:751] Triangulating image #1174 (1173)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.453904 12737 incremental_pipeline.cc:754] => Image sees 4286 / 11373 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.552536 12737 incremental_pipeline.cc:751] Triangulating image #1175 (1174)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.552569 12737 incremental_pipeline.cc:754] => Image sees 4056 / 11004 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.653092 12737 incremental_pipeline.cc:751] Triangulating image #1176 (1175)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.653124 12737 incremental_pipeline.cc:754] => Image sees 4381 / 10463 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.740621 12737 incremental_pipeline.cc:751] Triangulating image #1177 (1176)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.740654 12737 incremental_pipeline.cc:754] => Image sees 4098 / 9547 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.800139 12737 incremental_pipeline.cc:751] Triangulating image #1178 (1177)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.800170 12737 incremental_pipeline.cc:754] => Image sees 4061 / 9424 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.852758 12737 incremental_pipeline.cc:751] Triangulating image #1179 (1178)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.852799 12737 incremental_pipeline.cc:754] => Image sees 4509 / 9072 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.885622 12737 incremental_pipeline.cc:751] Triangulating image #1180 (1179)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.885653 12737 incremental_pipeline.cc:754] => Image sees 4887 / 8568 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.906180 12737 incremental_pipeline.cc:751] Triangulating image #1181 (1180)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.906208 12737 incremental_pipeline.cc:754] => Image sees 4993 / 7976 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.918743 12737 incremental_pipeline.cc:751] Triangulating image #1182 (1181)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.918771 12737 incremental_pipeline.cc:754] => Image sees 5270 / 8054 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.927711 12737 incremental_pipeline.cc:751] Triangulating image #1183 (1182)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.927739 12737 incremental_pipeline.cc:754] => Image sees 5248 / 7857 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.937400 12737 incremental_pipeline.cc:751] Triangulating image #1184 (1183)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.937429 12737 incremental_pipeline.cc:754] => Image sees 4758 / 8087 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.948240 12737 incremental_pipeline.cc:751] Triangulating image #1185 (1184)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.948267 12737 incremental_pipeline.cc:754] => Image sees 4019 / 7994 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.962618 12737 incremental_pipeline.cc:751] Triangulating image #1186 (1185)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.962646 12737 incremental_pipeline.cc:754] => Image sees 3713 / 8365 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.975773 12737 incremental_pipeline.cc:751] Triangulating image #1187 (1186)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.975801 12737 incremental_pipeline.cc:754] => Image sees 3299 / 7887 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.984973 12737 incremental_pipeline.cc:751] Triangulating image #1188 (1187)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.985000 12737 incremental_pipeline.cc:754] => Image sees 2796 / 5193 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.989209 12737 incremental_pipeline.cc:751] Triangulating image #1189 (1188)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.989236 12737 incremental_pipeline.cc:754] => Image sees 3068 / 5576 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.997474 12737 incremental_pipeline.cc:751] Triangulating image #1190 (1189)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:14.997501 12737 incremental_pipeline.cc:754] => Image sees 4916 / 7643 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.010601 12737 incremental_pipeline.cc:751] Triangulating image #1191 (1190)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.010629 12737 incremental_pipeline.cc:754] => Image sees 5416 / 8572 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.029659 12737 incremental_pipeline.cc:751] Triangulating image #1192 (1191)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.029687 12737 incremental_pipeline.cc:754] => Image sees 5546 / 8795 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.046335 12737 incremental_pipeline.cc:751] Triangulating image #1193 (1192)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.046362 12737 incremental_pipeline.cc:754] => Image sees 6071 / 8478 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.059885 12737 incremental_pipeline.cc:751] Triangulating image #1194 (1193)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.059914 12737 incremental_pipeline.cc:754] => Image sees 6642 / 8472 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.068478 12737 incremental_pipeline.cc:751] Triangulating image #1195 (1194)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.068506 12737 incremental_pipeline.cc:754] => Image sees 6405 / 8856 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.082723 12737 incremental_pipeline.cc:751] Triangulating image #1196 (1195)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.082751 12737 incremental_pipeline.cc:754] => Image sees 5963 / 8750 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.098042 12737 incremental_pipeline.cc:751] Triangulating image #1197 (1196)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.098070 12737 incremental_pipeline.cc:754] => Image sees 4924 / 7689 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.110378 12737 incremental_pipeline.cc:751] Triangulating image #1198 (1197)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.110404 12737 incremental_pipeline.cc:754] => Image sees 3181 / 6875 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.120791 12737 incremental_pipeline.cc:751] Triangulating image #1199 (1198)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.120817 12737 incremental_pipeline.cc:754] => Image sees 2483 / 6690 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.130234 12737 incremental_pipeline.cc:751] Triangulating image #1200 (1199)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.130260 12737 incremental_pipeline.cc:754] => Image sees 2387 / 5360 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.137302 12737 incremental_pipeline.cc:751] Triangulating image #1201 (1200)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.137328 12737 incremental_pipeline.cc:754] => Image sees 3103 / 6422 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.142930 12737 incremental_pipeline.cc:751] Triangulating image #1202 (1201)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.142957 12737 incremental_pipeline.cc:754] => Image sees 3894 / 6948 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.150158 12737 incremental_pipeline.cc:751] Triangulating image #1203 (1202)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.150185 12737 incremental_pipeline.cc:754] => Image sees 3594 / 6440 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.179522 12737 incremental_pipeline.cc:751] Triangulating image #1204 (1203)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.179553 12737 incremental_pipeline.cc:754] => Image sees 4310 / 9129 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.228032 12737 incremental_pipeline.cc:751] Triangulating image #1205 (1204)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.228082 12737 incremental_pipeline.cc:754] => Image sees 4338 / 9309 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.287667 12737 incremental_pipeline.cc:751] Triangulating image #1206 (1205)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.287727 12737 incremental_pipeline.cc:754] => Image sees 4535 / 9743 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.351296 12737 incremental_pipeline.cc:751] Triangulating image #1207 (1206)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.351356 12737 incremental_pipeline.cc:754] => Image sees 4636 / 9709 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.418689 12737 incremental_pipeline.cc:751] Triangulating image #1208 (1207)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.418740 12737 incremental_pipeline.cc:754] => Image sees 4811 / 9209 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.473902 12737 incremental_pipeline.cc:751] Triangulating image #1209 (1208)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.473950 12737 incremental_pipeline.cc:754] => Image sees 3820 / 6246 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.503504 12737 incremental_pipeline.cc:751] Triangulating image #1210 (1209)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.503554 12737 incremental_pipeline.cc:754] => Image sees 5393 / 8878 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.526707 12737 incremental_pipeline.cc:751] Triangulating image #1211 (1210)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.526753 12737 incremental_pipeline.cc:754] => Image sees 4698 / 8861 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.544564 12737 incremental_pipeline.cc:751] Triangulating image #1212 (1211)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.544607 12737 incremental_pipeline.cc:754] => Image sees 5572 / 8340 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.555759 12737 incremental_pipeline.cc:751] Triangulating image #1213 (1212)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.555796 12737 incremental_pipeline.cc:754] => Image sees 5542 / 8040 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.567555 12737 incremental_pipeline.cc:751] Triangulating image #1214 (1213)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.567588 12737 incremental_pipeline.cc:754] => Image sees 6743 / 8762 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.579137 12737 incremental_pipeline.cc:751] Triangulating image #1215 (1214)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.579172 12737 incremental_pipeline.cc:754] => Image sees 5965 / 7670 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.590313 12737 incremental_pipeline.cc:751] Triangulating image #1216 (1215)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.590345 12737 incremental_pipeline.cc:754] => Image sees 5635 / 7507 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.599550 12737 incremental_pipeline.cc:751] Triangulating image #1217 (1216)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.599582 12737 incremental_pipeline.cc:754] => Image sees 5479 / 7609 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.609735 12737 incremental_pipeline.cc:751] Triangulating image #1218 (1217)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.609766 12737 incremental_pipeline.cc:754] => Image sees 5898 / 8394 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.619323 12737 incremental_pipeline.cc:751] Triangulating image #1219 (1218)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.619374 12737 incremental_pipeline.cc:754] => Image sees 5195 / 6886 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.625912 12737 incremental_pipeline.cc:751] Triangulating image #1220 (1219)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.625939 12737 incremental_pipeline.cc:754] => Image sees 5539 / 6733 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.630192 12737 incremental_pipeline.cc:751] Triangulating image #1221 (1220)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.630221 12737 incremental_pipeline.cc:754] => Image sees 6588 / 8935 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.637514 12737 incremental_pipeline.cc:751] Triangulating image #1222 (1221)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.637542 12737 incremental_pipeline.cc:754] => Image sees 6883 / 9249 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.647061 12737 incremental_pipeline.cc:751] Triangulating image #1223 (1222)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.647089 12737 incremental_pipeline.cc:754] => Image sees 5638 / 7990 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.659339 12737 incremental_pipeline.cc:751] Triangulating image #1224 (1223)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.659368 12737 incremental_pipeline.cc:754] => Image sees 1739 / 8470 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.700778 12737 incremental_pipeline.cc:751] Triangulating image #1225 (1224)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.700812 12737 incremental_pipeline.cc:754] => Image sees 1870 / 8627 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.745261 12737 incremental_pipeline.cc:751] Triangulating image #1226 (1225)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.745293 12737 incremental_pipeline.cc:754] => Image sees 2420 / 8362 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.788995 12737 incremental_pipeline.cc:751] Triangulating image #1227 (1226)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.789024 12737 incremental_pipeline.cc:754] => Image sees 3609 / 8281 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.821108 12737 incremental_pipeline.cc:751] Triangulating image #1228 (1227)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.821138 12737 incremental_pipeline.cc:754] => Image sees 4719 / 8236 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.843097 12737 incremental_pipeline.cc:751] Triangulating image #1229 (1228)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.843127 12737 incremental_pipeline.cc:754] => Image sees 5326 / 8311 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.858455 12737 incremental_pipeline.cc:751] Triangulating image #1230 (1229)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.858484 12737 incremental_pipeline.cc:754] => Image sees 5515 / 8694 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.873111 12737 incremental_pipeline.cc:751] Triangulating image #1231 (1230)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.873138 12737 incremental_pipeline.cc:754] => Image sees 5590 / 8747 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.886752 12737 incremental_pipeline.cc:751] Triangulating image #1232 (1231)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.886781 12737 incremental_pipeline.cc:754] => Image sees 5729 / 8498 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.898375 12737 incremental_pipeline.cc:751] Triangulating image #1233 (1232)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.898402 12737 incremental_pipeline.cc:754] => Image sees 4487 / 6339 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.904585 12737 incremental_pipeline.cc:751] Triangulating image #1234 (1233)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.904613 12737 incremental_pipeline.cc:754] => Image sees 5273 / 6719 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.908471 12737 incremental_pipeline.cc:751] Triangulating image #1235 (1234)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.908499 12737 incremental_pipeline.cc:754] => Image sees 5632 / 7196 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.911250 12737 incremental_pipeline.cc:751] Triangulating image #1236 (1235)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.911279 12737 incremental_pipeline.cc:754] => Image sees 5261 / 7135 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.917747 12737 incremental_pipeline.cc:751] Triangulating image #1237 (1236)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.917773 12737 incremental_pipeline.cc:754] => Image sees 4011 / 6782 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.937597 12737 incremental_pipeline.cc:751] Triangulating image #1238 (1237)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.937623 12737 incremental_pipeline.cc:754] => Image sees 3517 / 6652 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.967888 12737 incremental_pipeline.cc:751] Triangulating image #1239 (1238)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:15.967916 12737 incremental_pipeline.cc:754] => Image sees 2775 / 7950 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.024262 12737 incremental_pipeline.cc:751] Triangulating image #1240 (1239)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.024292 12737 incremental_pipeline.cc:754] => Image sees 2358 / 8458 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.090723 12737 incremental_pipeline.cc:751] Triangulating image #1241 (1240)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.090802 12737 incremental_pipeline.cc:754] => Image sees 2768 / 9349 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.158324 12737 incremental_pipeline.cc:751] Triangulating image #1242 (1241)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.158370 12737 incremental_pipeline.cc:754] => Image sees 3117 / 9899 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.219609 12737 incremental_pipeline.cc:751] Triangulating image #1243 (1242)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.219646 12737 incremental_pipeline.cc:754] => Image sees 3115 / 10028 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.272176 12737 incremental_pipeline.cc:751] Triangulating image #1244 (1243)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.272219 12737 incremental_pipeline.cc:754] => Image sees 3176 / 9756 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.315932 12737 incremental_pipeline.cc:751] Triangulating image #1245 (1244)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.315981 12737 incremental_pipeline.cc:754] => Image sees 2353 / 8020 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.333361 12737 incremental_pipeline.cc:751] Triangulating image #1246 (1245)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.333405 12737 incremental_pipeline.cc:754] => Image sees 1567 / 7569 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.342180 12737 incremental_pipeline.cc:751] Triangulating image #1247 (1246)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.342212 12737 incremental_pipeline.cc:754] => Image sees 1177 / 4991 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.348459 12737 incremental_pipeline.cc:751] Triangulating image #1248 (1247)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.348495 12737 incremental_pipeline.cc:754] => Image sees 806 / 1084 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.350250 12737 incremental_pipeline.cc:751] Triangulating image #1249 (1248)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.350278 12737 incremental_pipeline.cc:754] => Image sees 4488 / 5913 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.357168 12737 incremental_pipeline.cc:751] Triangulating image #1250 (1249)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.357197 12737 incremental_pipeline.cc:754] => Image sees 4949 / 6882 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.367543 12737 incremental_pipeline.cc:751] Triangulating image #1251 (1250)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.367573 12737 incremental_pipeline.cc:754] => Image sees 3293 / 7062 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.401059 12737 incremental_pipeline.cc:751] Triangulating image #1252 (1251)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.401096 12737 incremental_pipeline.cc:754] => Image sees 5727 / 8822 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.416683 12737 incremental_pipeline.cc:751] Triangulating image #1253 (1252)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.416718 12737 incremental_pipeline.cc:754] => Image sees 4580 / 6844 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.434494 12737 incremental_pipeline.cc:751] Triangulating image #1254 (1253)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.434526 12737 incremental_pipeline.cc:754] => Image sees 4968 / 6861 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.444880 12737 incremental_pipeline.cc:751] Triangulating image #1255 (1254)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.444907 12737 incremental_pipeline.cc:754] => Image sees 5260 / 6837 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.449540 12737 incremental_pipeline.cc:751] Triangulating image #1256 (1255)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.449568 12737 incremental_pipeline.cc:754] => Image sees 5530 / 6942 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.452368 12737 incremental_pipeline.cc:751] Triangulating image #1257 (1256)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.452397 12737 incremental_pipeline.cc:754] => Image sees 6209 / 7821 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.455019 12737 incremental_pipeline.cc:751] Triangulating image #1258 (1257)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.455049 12737 incremental_pipeline.cc:754] => Image sees 6516 / 8533 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.457217 12737 incremental_pipeline.cc:751] Triangulating image #1259 (1258)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.457242 12737 incremental_pipeline.cc:754] => Image sees 5884 / 8128 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.463820 12737 incremental_pipeline.cc:751] Triangulating image #1260 (1259)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.463846 12737 incremental_pipeline.cc:754] => Image sees 6822 / 8968 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.466260 12737 incremental_pipeline.cc:751] Triangulating image #1261 (1260)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.466289 12737 incremental_pipeline.cc:754] => Image sees 4870 / 7741 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.473085 12737 incremental_pipeline.cc:751] Triangulating image #1262 (1261)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.473112 12737 incremental_pipeline.cc:754] => Image sees 3856 / 6822 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.480435 12737 incremental_pipeline.cc:751] Triangulating image #1263 (1262)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.480463 12737 incremental_pipeline.cc:754] => Image sees 3088 / 7066 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.489866 12737 incremental_pipeline.cc:751] Triangulating image #1264 (1263)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.489895 12737 incremental_pipeline.cc:754] => Image sees 3139 / 7425 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.498446 12737 incremental_pipeline.cc:751] Triangulating image #1265 (1264)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.498473 12737 incremental_pipeline.cc:754] => Image sees 3201 / 7084 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.506752 12737 incremental_pipeline.cc:751] Triangulating image #1266 (1265)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.506783 12737 incremental_pipeline.cc:754] => Image sees 4963 / 6536 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.511242 12737 incremental_pipeline.cc:751] Triangulating image #1267 (1266)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.511270 12737 incremental_pipeline.cc:754] => Image sees 4627 / 6594 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.516094 12737 incremental_pipeline.cc:751] Triangulating image #1268 (1267)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.516124 12737 incremental_pipeline.cc:754] => Image sees 5395 / 6976 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.522281 12737 incremental_pipeline.cc:751] Triangulating image #1269 (1268)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.522310 12737 incremental_pipeline.cc:754] => Image sees 7494 / 9331 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.529163 12737 incremental_pipeline.cc:751] Triangulating image #1270 (1269)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.529191 12737 incremental_pipeline.cc:754] => Image sees 8363 / 10632 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.535698 12737 incremental_pipeline.cc:751] Triangulating image #1271 (1270)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.535728 12737 incremental_pipeline.cc:754] => Image sees 8376 / 10792 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.542321 12737 incremental_pipeline.cc:751] Triangulating image #1272 (1271)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.542351 12737 incremental_pipeline.cc:754] => Image sees 7672 / 9371 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.547345 12737 incremental_pipeline.cc:751] Triangulating image #1273 (1272)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.547374 12737 incremental_pipeline.cc:754] => Image sees 7351 / 8475 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.550391 12737 incremental_pipeline.cc:751] Triangulating image #1274 (1273)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.550419 12737 incremental_pipeline.cc:754] => Image sees 6044 / 6985 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.552736 12737 incremental_pipeline.cc:751] Triangulating image #1275 (1274)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.552779 12737 incremental_pipeline.cc:754] => Image sees 6745 / 7991 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.555302 12737 incremental_pipeline.cc:751] Triangulating image #1276 (1275)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.555331 12737 incremental_pipeline.cc:754] => Image sees 7330 / 8703 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.557984 12737 incremental_pipeline.cc:751] Triangulating image #1277 (1276)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.558012 12737 incremental_pipeline.cc:754] => Image sees 6933 / 8623 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.561564 12737 incremental_pipeline.cc:751] Triangulating image #1278 (1277)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.561590 12737 incremental_pipeline.cc:754] => Image sees 6481 / 8742 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.566033 12737 incremental_pipeline.cc:751] Triangulating image #1279 (1278)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.566059 12737 incremental_pipeline.cc:754] => Image sees 4560 / 6464 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.570430 12737 incremental_pipeline.cc:751] Triangulating image #1280 (1279)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.570459 12737 incremental_pipeline.cc:754] => Image sees 2196 / 4887 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.573132 12737 incremental_pipeline.cc:751] Triangulating image #1281 (1280)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.573158 12737 incremental_pipeline.cc:754] => Image sees 3047 / 6477 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.577874 12737 incremental_pipeline.cc:751] Triangulating image #1282 (1281)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.577901 12737 incremental_pipeline.cc:754] => Image sees 3651 / 6352 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.585883 12737 incremental_pipeline.cc:751] Triangulating image #1283 (1282)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.585911 12737 incremental_pipeline.cc:754] => Image sees 3860 / 6412 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.596405 12737 incremental_pipeline.cc:751] Triangulating image #1284 (1283)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.596436 12737 incremental_pipeline.cc:754] => Image sees 5829 / 8228 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.604948 12737 incremental_pipeline.cc:751] Triangulating image #1285 (1284)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.604974 12737 incremental_pipeline.cc:754] => Image sees 5879 / 8222 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.612293 12737 incremental_pipeline.cc:751] Triangulating image #1286 (1285)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.612321 12737 incremental_pipeline.cc:754] => Image sees 4375 / 7985 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.620692 12737 incremental_pipeline.cc:751] Triangulating image #1287 (1286)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.620721 12737 incremental_pipeline.cc:754] => Image sees 3508 / 7383 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.629029 12737 incremental_pipeline.cc:751] Triangulating image #1288 (1287)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.629057 12737 incremental_pipeline.cc:754] => Image sees 3532 / 7214 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.635936 12737 incremental_pipeline.cc:751] Triangulating image #1289 (1288)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.635963 12737 incremental_pipeline.cc:754] => Image sees 3468 / 6949 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.642043 12737 incremental_pipeline.cc:751] Triangulating image #1290 (1289)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.642071 12737 incremental_pipeline.cc:754] => Image sees 3215 / 5732 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.646921 12737 incremental_pipeline.cc:751] Triangulating image #1291 (1290)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.646950 12737 incremental_pipeline.cc:754] => Image sees 3687 / 6350 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.653613 12737 incremental_pipeline.cc:751] Triangulating image #1292 (1291)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.653641 12737 incremental_pipeline.cc:754] => Image sees 3365 / 6495 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.658129 12737 incremental_pipeline.cc:751] Triangulating image #1293 (1292)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.658155 12737 incremental_pipeline.cc:754] => Image sees 2653 / 6218 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.662981 12737 incremental_pipeline.cc:751] Triangulating image #1294 (1293)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.663007 12737 incremental_pipeline.cc:754] => Image sees 2760 / 5722 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.668041 12737 incremental_pipeline.cc:751] Triangulating image #1295 (1294)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.668068 12737 incremental_pipeline.cc:754] => Image sees 3788 / 7778 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.678514 12737 incremental_pipeline.cc:751] Triangulating image #1296 (1295)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.678542 12737 incremental_pipeline.cc:754] => Image sees 4729 / 9247 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.702046 12737 incremental_pipeline.cc:751] Triangulating image #1297 (1296)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.702075 12737 incremental_pipeline.cc:754] => Image sees 3812 / 7216 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.735673 12737 incremental_pipeline.cc:751] Triangulating image #1298 (1297)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.735702 12737 incremental_pipeline.cc:754] => Image sees 5630 / 9765 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.774780 12737 incremental_pipeline.cc:751] Triangulating image #1299 (1298)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.774811 12737 incremental_pipeline.cc:754] => Image sees 6298 / 10036 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.819340 12737 incremental_pipeline.cc:751] Triangulating image #1300 (1299)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.819373 12737 incremental_pipeline.cc:754] => Image sees 6775 / 10797 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.871155 12737 incremental_pipeline.cc:751] Triangulating image #1301 (1300)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.871193 12737 incremental_pipeline.cc:754] => Image sees 6935 / 10723 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.918486 12737 incremental_pipeline.cc:751] Triangulating image #1302 (1301)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.918521 12737 incremental_pipeline.cc:754] => Image sees 6796 / 10581 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.964501 12737 incremental_pipeline.cc:751] Triangulating image #1303 (1302)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:16.964540 12737 incremental_pipeline.cc:754] => Image sees 6832 / 10288 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.004535 12737 incremental_pipeline.cc:751] Triangulating image #1304 (1303)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.004571 12737 incremental_pipeline.cc:754] => Image sees 6374 / 9383 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.029316 12737 incremental_pipeline.cc:751] Triangulating image #1305 (1304)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.029353 12737 incremental_pipeline.cc:754] => Image sees 5434 / 8687 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.047118 12737 incremental_pipeline.cc:751] Triangulating image #1306 (1305)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.047176 12737 incremental_pipeline.cc:754] => Image sees 4481 / 7817 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.058390 12737 incremental_pipeline.cc:751] Triangulating image #1307 (1306)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.058420 12737 incremental_pipeline.cc:754] => Image sees 5312 / 8606 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.069816 12737 incremental_pipeline.cc:751] Triangulating image #1308 (1307)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.069844 12737 incremental_pipeline.cc:754] => Image sees 5752 / 9046 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.084059 12737 incremental_pipeline.cc:751] Triangulating image #1309 (1308)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.084087 12737 incremental_pipeline.cc:754] => Image sees 4680 / 6468 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.093926 12737 incremental_pipeline.cc:751] Triangulating image #1310 (1309)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.093954 12737 incremental_pipeline.cc:754] => Image sees 5254 / 6985 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.101120 12737 incremental_pipeline.cc:751] Triangulating image #1311 (1310)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.101148 12737 incremental_pipeline.cc:754] => Image sees 5779 / 7337 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.109169 12737 incremental_pipeline.cc:751] Triangulating image #1312 (1311)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.109196 12737 incremental_pipeline.cc:754] => Image sees 5909 / 7697 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.128019 12737 incremental_pipeline.cc:751] Triangulating image #1313 (1312)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.128048 12737 incremental_pipeline.cc:754] => Image sees 7186 / 10412 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.155689 12737 incremental_pipeline.cc:751] Triangulating image #1314 (1313)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.155718 12737 incremental_pipeline.cc:754] => Image sees 6340 / 10428 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.198550 12737 incremental_pipeline.cc:751] Triangulating image #1315 (1314)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.198580 12737 incremental_pipeline.cc:754] => Image sees 6039 / 9767 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.239146 12737 incremental_pipeline.cc:751] Triangulating image #1316 (1315)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.239176 12737 incremental_pipeline.cc:754] => Image sees 6636 / 10624 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.281011 12737 incremental_pipeline.cc:751] Triangulating image #1317 (1316)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.281042 12737 incremental_pipeline.cc:754] => Image sees 6732 / 9882 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.312117 12737 incremental_pipeline.cc:751] Triangulating image #1318 (1317)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.312165 12737 incremental_pipeline.cc:754] => Image sees 7187 / 9933 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.332297 12737 incremental_pipeline.cc:751] Triangulating image #1319 (1318)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.332340 12737 incremental_pipeline.cc:754] => Image sees 7478 / 9556 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.348639 12737 incremental_pipeline.cc:751] Triangulating image #1320 (1319)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.348681 12737 incremental_pipeline.cc:754] => Image sees 6354 / 8646 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.364822 12737 incremental_pipeline.cc:751] Triangulating image #1321 (1320)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.364858 12737 incremental_pipeline.cc:754] => Image sees 5251 / 8291 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.382176 12737 incremental_pipeline.cc:751] Triangulating image #1322 (1321)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.382207 12737 incremental_pipeline.cc:754] => Image sees 1854 / 7116 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.397320 12737 incremental_pipeline.cc:751] Triangulating image #1323 (1322)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.397348 12737 incremental_pipeline.cc:754] => Image sees 2027 / 6772 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.413009 12737 incremental_pipeline.cc:751] Triangulating image #1324 (1323)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.413039 12737 incremental_pipeline.cc:754] => Image sees 3703 / 7697 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.432466 12737 incremental_pipeline.cc:751] Triangulating image #1325 (1324)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.432495 12737 incremental_pipeline.cc:754] => Image sees 4962 / 8716 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.459019 12737 incremental_pipeline.cc:751] Triangulating image #1326 (1325)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.459056 12737 incremental_pipeline.cc:754] => Image sees 5509 / 9560 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.495344 12737 incremental_pipeline.cc:751] Triangulating image #1327 (1326)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.495390 12737 incremental_pipeline.cc:754] => Image sees 5939 / 9841 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.538546 12737 incremental_pipeline.cc:751] Triangulating image #1328 (1327)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.538625 12737 incremental_pipeline.cc:754] => Image sees 4868 / 7610 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.578348 12737 incremental_pipeline.cc:751] Triangulating image #1329 (1328)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.578390 12737 incremental_pipeline.cc:754] => Image sees 5037 / 7818 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.618935 12737 incremental_pipeline.cc:751] Triangulating image #1330 (1329)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.618978 12737 incremental_pipeline.cc:754] => Image sees 4976 / 7590 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.655556 12737 incremental_pipeline.cc:751] Triangulating image #1331 (1330)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.655603 12737 incremental_pipeline.cc:754] => Image sees 4296 / 6789 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.682934 12737 incremental_pipeline.cc:751] Triangulating image #1332 (1331)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.682979 12737 incremental_pipeline.cc:754] => Image sees 3796 / 6826 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.707034 12737 incremental_pipeline.cc:751] Triangulating image #1333 (1332)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.707075 12737 incremental_pipeline.cc:754] => Image sees 4206 / 7970 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.728981 12737 incremental_pipeline.cc:751] Triangulating image #1334 (1333)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.729020 12737 incremental_pipeline.cc:754] => Image sees 2767 / 6128 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.748023 12737 incremental_pipeline.cc:751] Triangulating image #1335 (1334)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.748059 12737 incremental_pipeline.cc:754] => Image sees 2967 / 8839 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.771944 12737 incremental_pipeline.cc:751] Triangulating image #1336 (1335)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.771982 12737 incremental_pipeline.cc:754] => Image sees 5770 / 8266 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.785194 12737 incremental_pipeline.cc:751] Triangulating image #1337 (1336)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.785229 12737 incremental_pipeline.cc:754] => Image sees 6399 / 8562 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.801821 12737 incremental_pipeline.cc:751] Triangulating image #1338 (1337)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.801854 12737 incremental_pipeline.cc:754] => Image sees 5715 / 8243 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.820271 12737 incremental_pipeline.cc:751] Triangulating image #1339 (1338)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.820305 12737 incremental_pipeline.cc:754] => Image sees 5794 / 8431 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.845546 12737 incremental_pipeline.cc:751] Triangulating image #1340 (1339)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.845580 12737 incremental_pipeline.cc:754] => Image sees 5264 / 8718 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.876240 12737 incremental_pipeline.cc:751] Triangulating image #1341 (1340)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.876276 12737 incremental_pipeline.cc:754] => Image sees 5170 / 8827 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.907711 12737 incremental_pipeline.cc:751] Triangulating image #1342 (1341)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.907745 12737 incremental_pipeline.cc:754] => Image sees 5079 / 8333 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.934303 12737 incremental_pipeline.cc:751] Triangulating image #1343 (1342)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.934340 12737 incremental_pipeline.cc:754] => Image sees 4673 / 7960 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.952997 12737 incremental_pipeline.cc:751] Triangulating image #1344 (1343)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.953028 12737 incremental_pipeline.cc:754] => Image sees 4488 / 7992 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.964123 12737 incremental_pipeline.cc:751] Triangulating image #1345 (1344)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.964154 12737 incremental_pipeline.cc:754] => Image sees 3910 / 7995 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.976150 12737 incremental_pipeline.cc:751] Triangulating image #1346 (1345)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.976181 12737 incremental_pipeline.cc:754] => Image sees 4554 / 8495 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.990253 12737 incremental_pipeline.cc:751] Triangulating image #1347 (1346)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:17.990284 12737 incremental_pipeline.cc:754] => Image sees 5375 / 8713 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.003123 12737 incremental_pipeline.cc:751] Triangulating image #1348 (1347)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.003152 12737 incremental_pipeline.cc:754] => Image sees 5853 / 8972 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.020542 12737 incremental_pipeline.cc:751] Triangulating image #1349 (1348)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.020574 12737 incremental_pipeline.cc:754] => Image sees 5112 / 7982 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.035065 12737 incremental_pipeline.cc:751] Triangulating image #1350 (1349)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.035096 12737 incremental_pipeline.cc:754] => Image sees 5707 / 8624 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.047394 12737 incremental_pipeline.cc:751] Triangulating image #1351 (1350)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.047426 12737 incremental_pipeline.cc:754] => Image sees 6195 / 9167 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.060551 12737 incremental_pipeline.cc:751] Triangulating image #1352 (1351)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.060581 12737 incremental_pipeline.cc:754] => Image sees 5508 / 8465 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.071563 12737 incremental_pipeline.cc:751] Triangulating image #1353 (1352)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.071593 12737 incremental_pipeline.cc:754] => Image sees 3183 / 5941 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.083973 12737 incremental_pipeline.cc:751] Triangulating image #1354 (1353)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.084003 12737 incremental_pipeline.cc:754] => Image sees 4230 / 7705 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.102291 12737 incremental_pipeline.cc:751] Triangulating image #1355 (1354)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.102321 12737 incremental_pipeline.cc:754] => Image sees 3555 / 7813 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.127121 12737 incremental_pipeline.cc:751] Triangulating image #1356 (1355)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.127152 12737 incremental_pipeline.cc:754] => Image sees 3768 / 7991 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.150360 12737 incremental_pipeline.cc:751] Triangulating image #1357 (1356)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.150391 12737 incremental_pipeline.cc:754] => Image sees 3795 / 7629 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.170264 12737 incremental_pipeline.cc:751] Triangulating image #1358 (1357)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.170295 12737 incremental_pipeline.cc:754] => Image sees 3255 / 5533 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.178071 12737 incremental_pipeline.cc:751] Triangulating image #1359 (1358)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.178099 12737 incremental_pipeline.cc:754] => Image sees 3995 / 7166 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.185882 12737 incremental_pipeline.cc:751] Triangulating image #1360 (1359)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.185910 12737 incremental_pipeline.cc:754] => Image sees 4954 / 8272 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.200711 12737 incremental_pipeline.cc:751] Triangulating image #1361 (1360)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.200744 12737 incremental_pipeline.cc:754] => Image sees 4504 / 6930 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.224560 12737 incremental_pipeline.cc:751] Triangulating image #1362 (1361)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.224592 12737 incremental_pipeline.cc:754] => Image sees 5680 / 9590 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.271910 12737 incremental_pipeline.cc:751] Triangulating image #1363 (1362)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.271950 12737 incremental_pipeline.cc:754] => Image sees 6191 / 10920 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.347570 12737 incremental_pipeline.cc:751] Triangulating image #1364 (1363)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.347615 12737 incremental_pipeline.cc:754] => Image sees 6565 / 10950 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.414314 12737 incremental_pipeline.cc:751] Triangulating image #1365 (1364)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.414359 12737 incremental_pipeline.cc:754] => Image sees 6793 / 11391 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.487607 12737 incremental_pipeline.cc:751] Triangulating image #1366 (1365)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.487651 12737 incremental_pipeline.cc:754] => Image sees 6574 / 11194 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.546882 12737 incremental_pipeline.cc:751] Triangulating image #1367 (1366)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.546928 12737 incremental_pipeline.cc:754] => Image sees 5861 / 10181 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.596803 12737 incremental_pipeline.cc:751] Triangulating image #1368 (1367)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.596848 12737 incremental_pipeline.cc:754] => Image sees 3588 / 6664 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.627347 12737 incremental_pipeline.cc:751] Triangulating image #1369 (1368)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.627394 12737 incremental_pipeline.cc:754] => Image sees 3724 / 9206 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.667047 12737 incremental_pipeline.cc:751] Triangulating image #1370 (1369)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.667088 12737 incremental_pipeline.cc:754] => Image sees 3565 / 8829 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.692456 12737 incremental_pipeline.cc:751] Triangulating image #1371 (1370)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.692497 12737 incremental_pipeline.cc:754] => Image sees 3035 / 8620 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.738246 12737 incremental_pipeline.cc:751] Triangulating image #1372 (1371)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.738286 12737 incremental_pipeline.cc:754] => Image sees 2335 / 8010 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.772717 12737 incremental_pipeline.cc:751] Triangulating image #1373 (1372)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.772756 12737 incremental_pipeline.cc:754] => Image sees 2013 / 7618 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.806752 12737 incremental_pipeline.cc:751] Triangulating image #1374 (1373)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.806787 12737 incremental_pipeline.cc:754] => Image sees 1707 / 6167 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.834628 12737 incremental_pipeline.cc:751] Triangulating image #1375 (1374)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.834667 12737 incremental_pipeline.cc:754] => Image sees 2118 / 6878 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.857203 12737 incremental_pipeline.cc:751] Triangulating image #1376 (1375)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.857234 12737 incremental_pipeline.cc:754] => Image sees 1540 / 6368 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.871093 12737 incremental_pipeline.cc:751] Triangulating image #1377 (1376)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.871132 12737 incremental_pipeline.cc:754] => Image sees 1926 / 4925 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.881156 12737 incremental_pipeline.cc:751] Triangulating image #1378 (1377)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.881187 12737 incremental_pipeline.cc:754] => Image sees 2392 / 5896 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.899647 12737 incremental_pipeline.cc:751] Triangulating image #1379 (1378)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.899678 12737 incremental_pipeline.cc:754] => Image sees 3202 / 7445 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.918220 12737 incremental_pipeline.cc:751] Triangulating image #1380 (1379)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.918251 12737 incremental_pipeline.cc:754] => Image sees 4199 / 8013 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.932610 12737 incremental_pipeline.cc:751] Triangulating image #1381 (1380)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.932639 12737 incremental_pipeline.cc:754] => Image sees 3935 / 7996 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.943946 12737 incremental_pipeline.cc:751] Triangulating image #1382 (1381)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.943979 12737 incremental_pipeline.cc:754] => Image sees 3283 / 7259 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.954403 12737 incremental_pipeline.cc:751] Triangulating image #1383 (1382)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.954433 12737 incremental_pipeline.cc:754] => Image sees 2691 / 6467 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.961980 12737 incremental_pipeline.cc:751] Triangulating image #1384 (1383)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.962008 12737 incremental_pipeline.cc:754] => Image sees 2890 / 5960 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.968349 12737 incremental_pipeline.cc:751] Triangulating image #1385 (1384)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.968379 12737 incremental_pipeline.cc:754] => Image sees 4089 / 6605 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.973452 12737 incremental_pipeline.cc:751] Triangulating image #1386 (1385)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.973480 12737 incremental_pipeline.cc:754] => Image sees 4727 / 7950 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.980427 12737 incremental_pipeline.cc:751] Triangulating image #1387 (1386)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.980458 12737 incremental_pipeline.cc:754] => Image sees 5373 / 8540 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.992458 12737 incremental_pipeline.cc:751] Triangulating image #1388 (1387)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.992489 12737 incremental_pipeline.cc:754] => Image sees 2744 / 6714 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.999825 12737 incremental_pipeline.cc:751] Triangulating image #1389 (1388)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:18.999852 12737 incremental_pipeline.cc:754] => Image sees 2043 / 5815 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.009636 12737 incremental_pipeline.cc:751] Triangulating image #1390 (1389)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.009677 12737 incremental_pipeline.cc:754] => Image sees 1795 / 5532 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.015266 12737 incremental_pipeline.cc:751] Triangulating image #1391 (1390)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.015300 12737 incremental_pipeline.cc:754] => Image sees 1350 / 4474 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.018227 12737 incremental_pipeline.cc:751] Triangulating image #1392 (1391)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.018260 12737 incremental_pipeline.cc:754] => Image sees 3834 / 6682 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.031582 12737 incremental_pipeline.cc:751] Triangulating image #1393 (1392)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.031618 12737 incremental_pipeline.cc:754] => Image sees 3658 / 7128 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.042425 12737 incremental_pipeline.cc:751] Triangulating image #1394 (1393)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.042454 12737 incremental_pipeline.cc:754] => Image sees 4223 / 8074 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.056725 12737 incremental_pipeline.cc:751] Triangulating image #1395 (1394)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.056754 12737 incremental_pipeline.cc:754] => Image sees 4031 / 7803 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.071722 12737 incremental_pipeline.cc:751] Triangulating image #1396 (1395)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.071753 12737 incremental_pipeline.cc:754] => Image sees 2629 / 5931 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.086040 12737 incremental_pipeline.cc:751] Triangulating image #1397 (1396)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.086071 12737 incremental_pipeline.cc:754] => Image sees 3415 / 6774 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.101471 12737 incremental_pipeline.cc:751] Triangulating image #1398 (1397)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.101501 12737 incremental_pipeline.cc:754] => Image sees 3673 / 6452 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.112668 12737 incremental_pipeline.cc:751] Triangulating image #1399 (1398)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.112697 12737 incremental_pipeline.cc:754] => Image sees 5237 / 8339 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.124519 12737 incremental_pipeline.cc:751] Triangulating image #1400 (1399)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.124549 12737 incremental_pipeline.cc:754] => Image sees 5752 / 8763 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.136437 12737 incremental_pipeline.cc:751] Triangulating image #1401 (1400)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.136466 12737 incremental_pipeline.cc:754] => Image sees 4693 / 7205 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.144868 12737 incremental_pipeline.cc:751] Triangulating image #1402 (1401)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.144896 12737 incremental_pipeline.cc:754] => Image sees 1536 / 5287 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.148672 12737 incremental_pipeline.cc:751] Triangulating image #1403 (1402)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.148699 12737 incremental_pipeline.cc:754] => Image sees 1636 / 6209 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.154452 12737 incremental_pipeline.cc:751] Triangulating image #1404 (1403)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.154477 12737 incremental_pipeline.cc:754] => Image sees 2069 / 5425 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.161212 12737 incremental_pipeline.cc:751] Triangulating image #1405 (1404)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.161238 12737 incremental_pipeline.cc:754] => Image sees 1511 / 5578 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.166853 12737 incremental_pipeline.cc:751] Triangulating image #1406 (1405)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.166879 12737 incremental_pipeline.cc:754] => Image sees 1345 / 4527 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.170758 12737 incremental_pipeline.cc:751] Triangulating image #1407 (1406)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.170782 12737 incremental_pipeline.cc:754] => Image sees 4274 / 6221 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.177925 12737 incremental_pipeline.cc:751] Triangulating image #1408 (1407)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.177953 12737 incremental_pipeline.cc:754] => Image sees 5933 / 8201 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.189807 12737 incremental_pipeline.cc:751] Triangulating image #1409 (1408)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.189836 12737 incremental_pipeline.cc:754] => Image sees 5451 / 8264 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.201665 12737 incremental_pipeline.cc:751] Triangulating image #1410 (1409)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.201694 12737 incremental_pipeline.cc:754] => Image sees 5446 / 8399 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.216068 12737 incremental_pipeline.cc:751] Triangulating image #1411 (1410)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.216095 12737 incremental_pipeline.cc:754] => Image sees 4366 / 7625 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.227576 12737 incremental_pipeline.cc:751] Triangulating image #1412 (1411)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.227605 12737 incremental_pipeline.cc:754] => Image sees 3463 / 6677 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.239027 12737 incremental_pipeline.cc:751] Triangulating image #1413 (1412)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.239058 12737 incremental_pipeline.cc:754] => Image sees 3332 / 6391 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.257920 12737 incremental_pipeline.cc:751] Triangulating image #1414 (1413)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.257947 12737 incremental_pipeline.cc:754] => Image sees 4347 / 7502 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.278086 12737 incremental_pipeline.cc:751] Triangulating image #1415 (1414)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.278143 12737 incremental_pipeline.cc:754] => Image sees 4972 / 8248 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.304967 12737 incremental_pipeline.cc:751] Triangulating image #1416 (1415)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.304997 12737 incremental_pipeline.cc:754] => Image sees 6214 / 8961 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.329876 12737 incremental_pipeline.cc:751] Triangulating image #1417 (1416)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.329909 12737 incremental_pipeline.cc:754] => Image sees 6708 / 9168 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.353906 12737 incremental_pipeline.cc:751] Triangulating image #1418 (1417)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.353937 12737 incremental_pipeline.cc:754] => Image sees 6990 / 9798 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.377365 12737 incremental_pipeline.cc:751] Triangulating image #1419 (1418)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.377398 12737 incremental_pipeline.cc:754] => Image sees 6267 / 8758 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.398151 12737 incremental_pipeline.cc:751] Triangulating image #1420 (1419)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.398185 12737 incremental_pipeline.cc:754] => Image sees 6270 / 8872 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.420434 12737 incremental_pipeline.cc:751] Triangulating image #1421 (1420)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.420471 12737 incremental_pipeline.cc:754] => Image sees 5972 / 9121 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.439601 12737 incremental_pipeline.cc:751] Triangulating image #1422 (1421)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.439642 12737 incremental_pipeline.cc:754] => Image sees 6015 / 9596 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.455062 12737 incremental_pipeline.cc:751] Triangulating image #1423 (1422)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.455094 12737 incremental_pipeline.cc:754] => Image sees 5771 / 9278 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.471758 12737 incremental_pipeline.cc:751] Triangulating image #1424 (1423)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.471797 12737 incremental_pipeline.cc:754] => Image sees 6340 / 9361 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.496783 12737 incremental_pipeline.cc:751] Triangulating image #1425 (1424)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.496824 12737 incremental_pipeline.cc:754] => Image sees 5665 / 8546 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.514516 12737 incremental_pipeline.cc:751] Triangulating image #1426 (1425)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.514557 12737 incremental_pipeline.cc:754] => Image sees 4244 / 6938 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.526563 12737 incremental_pipeline.cc:751] Triangulating image #1427 (1426)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.526599 12737 incremental_pipeline.cc:754] => Image sees 3105 / 6749 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.535382 12737 incremental_pipeline.cc:751] Triangulating image #1428 (1427)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.535414 12737 incremental_pipeline.cc:754] => Image sees 2068 / 6354 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.544098 12737 incremental_pipeline.cc:751] Triangulating image #1429 (1428)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.544129 12737 incremental_pipeline.cc:754] => Image sees 1890 / 6100 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.555442 12737 incremental_pipeline.cc:751] Triangulating image #1430 (1429)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.555473 12737 incremental_pipeline.cc:754] => Image sees 2240 / 6709 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.575302 12737 incremental_pipeline.cc:751] Triangulating image #1431 (1430)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.575336 12737 incremental_pipeline.cc:754] => Image sees 2621 / 7257 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.613562 12737 incremental_pipeline.cc:751] Triangulating image #1432 (1431)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.613596 12737 incremental_pipeline.cc:754] => Image sees 3555 / 8237 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.672036 12737 incremental_pipeline.cc:751] Triangulating image #1433 (1432)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.672072 12737 incremental_pipeline.cc:754] => Image sees 3801 / 8052 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.739476 12737 incremental_pipeline.cc:751] Triangulating image #1434 (1433)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.739514 12737 incremental_pipeline.cc:754] => Image sees 3976 / 8508 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.816234 12737 incremental_pipeline.cc:751] Triangulating image #1435 (1434)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.816273 12737 incremental_pipeline.cc:754] => Image sees 4036 / 8346 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.889385 12737 incremental_pipeline.cc:751] Triangulating image #1436 (1435)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.889426 12737 incremental_pipeline.cc:754] => Image sees 4264 / 8748 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.966343 12737 incremental_pipeline.cc:751] Triangulating image #1437 (1436)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:19.966428 12737 incremental_pipeline.cc:754] => Image sees 4584 / 8745 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.035184 12737 incremental_pipeline.cc:751] Triangulating image #1438 (1437)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.035245 12737 incremental_pipeline.cc:754] => Image sees 3969 / 8135 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.095950 12737 incremental_pipeline.cc:751] Triangulating image #1439 (1438)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.096002 12737 incremental_pipeline.cc:754] => Image sees 3514 / 8415 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.146776 12737 incremental_pipeline.cc:751] Triangulating image #1440 (1439)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.146826 12737 incremental_pipeline.cc:754] => Image sees 2914 / 9166 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.186103 12737 incremental_pipeline.cc:751] Triangulating image #1441 (1440)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.186148 12737 incremental_pipeline.cc:754] => Image sees 2650 / 8673 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.214095 12737 incremental_pipeline.cc:751] Triangulating image #1442 (1441)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.214136 12737 incremental_pipeline.cc:754] => Image sees 2808 / 6515 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.233359 12737 incremental_pipeline.cc:751] Triangulating image #1443 (1442)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.233400 12737 incremental_pipeline.cc:754] => Image sees 4350 / 6588 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.244915 12737 incremental_pipeline.cc:751] Triangulating image #1444 (1443)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.244946 12737 incremental_pipeline.cc:754] => Image sees 6148 / 8516 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.256443 12737 incremental_pipeline.cc:751] Triangulating image #1445 (1444)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.256474 12737 incremental_pipeline.cc:754] => Image sees 4941 / 7450 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.264884 12737 incremental_pipeline.cc:751] Triangulating image #1446 (1445)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.264914 12737 incremental_pipeline.cc:754] => Image sees 4190 / 7129 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.273818 12737 incremental_pipeline.cc:751] Triangulating image #1447 (1446)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.273846 12737 incremental_pipeline.cc:754] => Image sees 3562 / 6846 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.284696 12737 incremental_pipeline.cc:751] Triangulating image #1448 (1447)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.284727 12737 incremental_pipeline.cc:754] => Image sees 3097 / 6221 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.294715 12737 incremental_pipeline.cc:751] Triangulating image #1449 (1448)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.294744 12737 incremental_pipeline.cc:754] => Image sees 4125 / 7182 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.303079 12737 incremental_pipeline.cc:751] Triangulating image #1450 (1449)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.303108 12737 incremental_pipeline.cc:754] => Image sees 5068 / 8100 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.314520 12737 incremental_pipeline.cc:751] Triangulating image #1451 (1450)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.314548 12737 incremental_pipeline.cc:754] => Image sees 5627 / 8978 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.331961 12737 incremental_pipeline.cc:751] Triangulating image #1452 (1451)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.331992 12737 incremental_pipeline.cc:754] => Image sees 5245 / 8306 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.357640 12737 incremental_pipeline.cc:751] Triangulating image #1453 (1452)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.357672 12737 incremental_pipeline.cc:754] => Image sees 5089 / 8818 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.388361 12737 incremental_pipeline.cc:751] Triangulating image #1454 (1453)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.388396 12737 incremental_pipeline.cc:754] => Image sees 2275 / 8482 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.421397 12737 incremental_pipeline.cc:751] Triangulating image #1455 (1454)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.421433 12737 incremental_pipeline.cc:754] => Image sees 4297 / 9242 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.449494 12737 incremental_pipeline.cc:751] Triangulating image #1456 (1455)
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.449528 12737 incremental_pipeline.cc:754] => Image sees 4845 / 9333 points
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:52:20.472126 12737 incremental_pipeline.cc:763] Retriangulation and Global bundle adjustment
+COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=103s idle=60s
+COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=163s idle=120s
+COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=223s idle=180s
+COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=283s idle=240s
+COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=343s idle=300s
+COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=403s idle=360s
+COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=463s idle=420s
+COLMAP[chunk_model_seam_05_point_triangulator_02] I20260515 20:59:49.413458 12737 incremental_pipeline.cc:774] Extracting colors
+COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=552s idle=60s
+COLMAP[chunk_model_seam_05_point_triangulator_02] HEARTBEAT elapsed=612s idle=120s
+2026-05-15 21:01:55,547 - INFO - [chunk_model_seam_05_point_triangulator_02_model_converter_chunk_model_seam_05_point_triangulator_02] colmap model_converter --input_path /tmp/colmap_sfm_bn0hhstb/chunk_model_seam_05_point_triangulator_02 --output_path /tmp/colmap_sfm_bn0hhstb/text_models/chunk_model_seam_05_point_triangulator_02/chunk_model_seam_05_point_triangulator_02 --output_type TXT
+MEMORY_PROBE [after_python]:
+MemTotal:       16081288 kB
+MemFree:         6891188 kB
+MemAvailable:   14983984 kB
+               total        used        free      shared  buff/cache   available
+Mem:            15Gi       1.0Gi       6.6Gi       1.1Mi       8.0Gi        14Gi
+Swap:             0B          0B          0B
+============================================================
+🔍 VALIDATING OUTPUT
+============================================================
+✅ /opt/ml/processing/output/sparse/0/cameras.txt (195 bytes)
+✅ /opt/ml/processing/output/sparse/0/images.txt (605145970 bytes)
+✅ /opt/ml/processing/output/sparse/0/points3D.txt (149267572 bytes)
+✅ /opt/ml/processing/output/images (1456 files)
+✅ /opt/ml/processing/output/database.db (2330189824 bytes)
+✅ /opt/ml/processing/output/sfm_metadata.json (19014 bytes)
+✅ COLMAP format validation passed
+============================================================
+📊 PROCESSING STATISTICS
+============================================================
+📷 Cameras registered: 1
+🖼️ Images registered: 1456
+🖼️ Images copied for 3DGS: 1456
+🎯 3D points: 1020913
+⏱️ Processing time: 12709.05 seconds
+🛰️ GPS priors detected: 1456
+🔗 Matchers: chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher
+🧭 Match profile: P1
+➡️ Sequential matcher enabled: True
+↩️ Fallback reason: not_needed
+🎯 Vocab tree candidates: 40
+📌 SIFT max features: 8192
+============================================================
+🎉 SPACEPORT COLMAP GPU SfM COMPLETED SUCCESSFULLY!
+============================================================
+✅ GPU-accelerated COLMAP SfM completed
+📁 Output files ready for 3D Gaussian Splatting training
+🔗 COLMAP TXT handoff maintained
+📅 Completed at: Fri May 15 21:03:44 UTC 2026
+============================================================
