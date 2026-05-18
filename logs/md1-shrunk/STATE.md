@@ -6102,3 +6102,19 @@ skybox, compression, artifact handoff, and visual gates.
   1. Continue monitoring SfM through all 8 chunks and final merged COLMAP output.
   2. On SfM success, validate `sparse/0/{cameras,images,points3D}.txt`, `database.db`, images, `sfm_metadata.json`, registered-image count, and points count before launching 3DGS.
   3. Launch exactly one 3DGS+compression continuation using the production-spine COLMAP output and the proven skybox-enabled 3DGS/compressor digests above.
+
+## 2026-05-18T19:36Z canonical SfM chunk 0 mapper progress
+
+- Canonical SfM status:
+  - job: `md1-shrunk-prodspine-sfm-1779128752`
+  - `ProcessingJobStatus=InProgress`, `FailureReason=null`
+  - Step Functions `SpaceportMLPipeline-staging` RUNNING executions: `0`.
+  - S3 output remains empty as expected until `S3UploadMode=EndOfJob`.
+- Latest observed progress:
+  - `chunk_00_mapper_initial` continues registering frames.
+  - latest visible registration: `num_reg_frames=87`.
+  - no OOM, timeout, mapper exception, or SageMaker failure is visible.
+- Evidence:
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260518T1936Z.json`
+  - `logs/md1-shrunk/cloudwatch-recent-md1-shrunk-prodspine-sfm-1779128752-20260518T1936Z.json`
+  - `logs/md1-shrunk/s3-colmap-md1-shrunk-prodspine-sfm-20260518T1826Z-20260518T1936Z.txt`
