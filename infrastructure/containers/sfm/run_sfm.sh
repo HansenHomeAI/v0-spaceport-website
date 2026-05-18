@@ -77,11 +77,30 @@ PYTHON_EXIT_CODE=$?
 log_mem "after_python"
 [ "$PYTHON_EXIT_CODE" -eq 0 ] || error_exit "COLMAP processing failed with exit code: $PYTHON_EXIT_CODE"
 
-if [ "${SFM_CAPABILITY_SNAPSHOT_ONLY:-0}" = "1" ] || [ "${SFM_PLANNER_SNAPSHOT_ONLY:-0}" = "1" ]; then
+if [ "${SFM_CAPABILITY_SNAPSHOT_ONLY:-0}" = "1" ] || [ "${SFM_PLANNER_SNAPSHOT_ONLY:-0}" = "1" ] || [ "${SFM_PLANNER_REPORT_ONLY:-0}" = "1" ]; then
     echo ""
     echo "============================================================"
     echo "📦 SNAPSHOT ARTIFACTS"
     echo "============================================================"
+    SNAPSHOT_REQUIRED_FILES=("$OUTPUT_DIR/sfm_metadata.json")
+    if [ "${SFM_PLANNER_SNAPSHOT_ONLY:-0}" = "1" ] || [ "${SFM_PLANNER_REPORT_ONLY:-0}" = "1" ]; then
+        SNAPSHOT_REQUIRED_FILES+=("$OUTPUT_DIR/chunk_planner_manifest.json")
+    fi
+    if [ "${SFM_PLANNER_REPORT_ONLY:-0}" = "1" ]; then
+        SNAPSHOT_REQUIRED_FILES+=("$OUTPUT_DIR/planner_static_report.json")
+        SNAPSHOT_REQUIRED_FILES+=("$OUTPUT_DIR/reducer_metadata.json")
+    fi
+    SNAPSHOT_FILES_PRESENT=true
+    for file in "${SNAPSHOT_REQUIRED_FILES[@]}"; do
+        if [ -f "$file" ]; then
+            SIZE=$(stat -c%s "$file" 2>/dev/null || echo "0")
+            echo "✅ $file ($SIZE bytes)"
+        else
+            echo "❌ MISSING: $file"
+            SNAPSHOT_FILES_PRESENT=false
+        fi
+    done
+    [ "$SNAPSHOT_FILES_PRESENT" = true ] || error_exit "Some required snapshot output files are missing"
     find "$OUTPUT_DIR" -maxdepth 3 -type f | sort || true
     python3 - <<'PY'
 import json
@@ -89,11 +108,20 @@ from pathlib import Path
 metadata_path = Path("/opt/ml/processing/output/sfm_metadata.json")
 if metadata_path.exists():
     metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    planner_report = metadata.get("planner_static_report") or {}
+    visibility_summary = planner_report.get("visibility_cell_summary") or {}
     print(json.dumps({
         "capability_snapshot_only": metadata.get("capability_snapshot_only"),
         "planner_snapshot_only": metadata.get("planner_snapshot_only"),
+        "planner_report_only": metadata.get("planner_report_only"),
         "chunk_planner": metadata.get("chunk_planner"),
+        "chunk_count": metadata.get("chunk_count"),
+        "dataset_image_count": metadata.get("dataset_image_count"),
         "chunk_matcher_strategy": metadata.get("chunk_matcher_strategy"),
+        "expected_output_kind": planner_report.get("expected_output_kind"),
+        "orphan_image_count": planner_report.get("orphan_image_count"),
+        "min_adjacent_shared_images": visibility_summary.get("min_adjacent_shared_images"),
+        "weak_adjacent_seams_under_10": visibility_summary.get("weak_adjacent_seams_under_10"),
         "probe_subsets": metadata.get("probe_subsets"),
         "colmap_capabilities": metadata.get("colmap_capabilities"),
     }, indent=2))
