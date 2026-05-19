@@ -1,0 +1,145 @@
+{
+  "builds": [
+    {
+      "id": "spaceport-ml-containers:04906e4b-fd21-4cca-a1bf-3c457be5e98f",
+      "arn": "arn:aws:codebuild:us-west-2:975050048887:build/spaceport-ml-containers:04906e4b-fd21-4cca-a1bf-3c457be5e98f",
+      "buildNumber": 707,
+      "startTime": "2026-05-18T19:25:31.712000-06:00",
+      "currentPhase": "BUILD",
+      "buildStatus": "IN_PROGRESS",
+      "sourceVersion": "60fcec4fe28e3ee73e4c44aa5eebcf4ade543c54",
+      "resolvedSourceVersion": "60fcec4fe28e3ee73e4c44aa5eebcf4ade543c54",
+      "projectName": "spaceport-ml-containers",
+      "phases": [
+        {
+          "phaseType": "SUBMITTED",
+          "phaseStatus": "SUCCEEDED",
+          "startTime": "2026-05-18T19:25:31.712000-06:00",
+          "endTime": "2026-05-18T19:25:31.906000-06:00",
+          "durationInSeconds": 0
+        },
+        {
+          "phaseType": "QUEUED",
+          "phaseStatus": "SUCCEEDED",
+          "startTime": "2026-05-18T19:25:31.906000-06:00",
+          "endTime": "2026-05-18T19:25:32.545000-06:00",
+          "durationInSeconds": 0
+        },
+        {
+          "phaseType": "PROVISIONING",
+          "phaseStatus": "SUCCEEDED",
+          "startTime": "2026-05-18T19:25:32.545000-06:00",
+          "endTime": "2026-05-18T19:25:40.089000-06:00",
+          "durationInSeconds": 7,
+          "contexts": [
+            {
+              "statusCode": "",
+              "message": ""
+            }
+          ]
+        },
+        {
+          "phaseType": "DOWNLOAD_SOURCE",
+          "phaseStatus": "SUCCEEDED",
+          "startTime": "2026-05-18T19:25:40.089000-06:00",
+          "endTime": "2026-05-18T19:25:54.471000-06:00",
+          "durationInSeconds": 14,
+          "contexts": [
+            {
+              "statusCode": "",
+              "message": ""
+            }
+          ]
+        },
+        {
+          "phaseType": "INSTALL",
+          "phaseStatus": "SUCCEEDED",
+          "startTime": "2026-05-18T19:25:54.471000-06:00",
+          "endTime": "2026-05-18T19:26:18.809000-06:00",
+          "durationInSeconds": 24,
+          "contexts": [
+            {
+              "statusCode": "",
+              "message": ""
+            }
+          ]
+        },
+        {
+          "phaseType": "PRE_BUILD",
+          "phaseStatus": "SUCCEEDED",
+          "startTime": "2026-05-18T19:26:18.809000-06:00",
+          "endTime": "2026-05-18T19:26:28.527000-06:00",
+          "durationInSeconds": 9,
+          "contexts": [
+            {
+              "statusCode": "",
+              "message": ""
+            }
+          ]
+        },
+        {
+          "phaseType": "BUILD",
+          "startTime": "2026-05-18T19:26:28.527000-06:00"
+        }
+      ],
+      "source": {
+        "type": "GITHUB",
+        "location": "https://github.com/HansenHomeAI/v0-spaceport-website.git",
+        "gitCloneDepth": 5,
+        "buildspec": "buildspec.yml",
+        "reportBuildStatus": true,
+        "insecureSsl": false
+      },
+      "secondarySources": [],
+      "secondarySourceVersions": [],
+      "artifacts": {
+        "location": ""
+      },
+      "cache": {
+        "type": "S3",
+        "location": "spaceport-build-cache/codebuild-cache"
+      },
+      "environment": {
+        "type": "LINUX_CONTAINER",
+        "image": "aws/codebuild/standard:7.0",
+        "computeType": "BUILD_GENERAL1_LARGE",
+        "environmentVariables": [
+          {
+            "name": "BUILD_BASE_ONLY",
+            "value": "0",
+            "type": "PLAINTEXT"
+          },
+          {
+            "name": "CONTAINERS_TO_BUILD",
+            "value": "sfm",
+            "type": "PLAINTEXT"
+          },
+          {
+            "name": "BRANCH_SUFFIX",
+            "value": "agent73948216sfmproductionspine",
+            "type": "PLAINTEXT"
+          },
+          {
+            "name": "CONTAINERS_TO_IMPORT",
+            "value": "",
+            "type": "PLAINTEXT"
+          }
+        ],
+        "privilegedMode": true,
+        "imagePullCredentialsType": "CODEBUILD"
+      },
+      "serviceRole": "arn:aws:iam::975050048887:role/CodeBuildServiceRole",
+      "logs": {
+        "groupName": "/aws/codebuild/spaceport-ml-containers",
+        "streamName": "04906e4b-fd21-4cca-a1bf-3c457be5e98f",
+        "deepLink": "https://console.aws.amazon.com/cloudwatch/home?region=us-west-2#logsV2:log-groups/log-group/$252Faws$252Fcodebuild$252Fspaceport-ml-containers/log-events/04906e4b-fd21-4cca-a1bf-3c457be5e98f",
+        "cloudWatchLogsArn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/codebuild/spaceport-ml-containers:log-stream:04906e4b-fd21-4cca-a1bf-3c457be5e98f"
+      },
+      "timeoutInMinutes": 120,
+      "queuedTimeoutInMinutes": 30,
+      "buildComplete": false,
+      "initiator": "root",
+      "encryptionKey": "arn:aws:kms:us-west-2:975050048887:alias/aws/s3"
+    }
+  ]
+}
