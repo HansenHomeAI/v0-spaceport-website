@@ -7995,3 +7995,8 @@ skybox, compression, artifact handoff, and visual gates.
     - `scripts/sfm/run_md1_shrunk_camera_suite.py` now resolves relative `--out-dir` under repo root so Node render/panel outputs land in the intended `logs/` tree (prevents accidental `web/logs/...` spills)
   - oneshot suite (DJI_02500 repro; relative out-dir) now succeeds and warns with `horizon_black_band`:
     - `logs/md1-shrunk/polls/20260519T061445Z-camera-suite-oneshot/suite-summary.json`
+  - commit/push:
+    - `fix: harden md1-shrunk horizon camera gates` -> `74483c2b89c704486f597ae9913b4deabc3a8428`
+    - `chore: trigger pages deploy` -> `365aeaa0d03bff83d1d1f8c2e8f5c2d2dcf0d78d`
+  - exact-head CI proof (CDK + Pages both success):
+    - `logs/md1-shrunk/polls/20260519T062328Z-ci/ci-watch.txt`
