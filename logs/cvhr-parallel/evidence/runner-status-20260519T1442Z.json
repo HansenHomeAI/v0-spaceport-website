@@ -1,0 +1,28 @@
+{
+  "direct_describe_is_authoritative": true,
+  "failure_reason": null,
+  "inprogress_processing_jobs": [],
+  "inprogress_training_jobs": [],
+  "latest_cloudwatch_line": "2026-05-19T14:43:05.254000+00:00 COLMAP[chunk_03_mapper_recovery] I20260519 14:43:04.262955  2577 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+  "latest_cloudwatch_timestamp": "2026-05-19T14:43:05.254000+00:00",
+  "latest_workflows": [
+    {
+      "conclusion": "success",
+      "createdAt": "2026-05-18T21:15:08Z",
+      "databaseId": 26060892234,
+      "headSha": "0b60d8bf9e7e4355bd46001dcd61387b327a8e5a",
+      "status": "completed",
+      "workflowName": "CDK Deploy"
+    }
+  ],
+  "log_streams": [
+    "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231"
+  ],
+  "processing_end_time": "None",
+  "processing_job": "cvhr-secondary-20260518t2113z-sfm",
+  "processing_start_time": "2026-05-18T15:20:32.428000-06:00",
+  "processing_status": "InProgress",
+  "running_stepfunctions": [],
+  "secondary_s3_total_objects_zero": true,
+  "timestamp": "2026-05-19T14:42:00Z"
+}
