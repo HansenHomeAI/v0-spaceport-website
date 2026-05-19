@@ -1,0 +1,97 @@
+timestamp_utc=20260519T200846Z
+branch=agent-113647-md1-baseline-e2e
+head=60dc72937984bee1113abe7ddcc1f5d3c1f6599b
+
+## git status
+?? logs/md1-shrunk/polls/20260519T200846Z-preflight/
+
+## aws sts get-caller-identity
+{
+    "UserId": "975050048887",
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root"
+}
+
+## stepfunctions RUNNING executions (br-8abcbd5662)
+RUNNING 0
+
+## stepfunctions RUNNING executions (staging)
+RUNNING 0
+
+## stepfunctions execution status (known)
+{
+  "status": "SUCCEEDED",
+  "startDate": "2026-05-18T18:28:13.202000-06:00",
+  "stopDate": "2026-05-18T21:03:39.663000-06:00"
+}
+
+## sagemaker InProgress (processing)
+count 2
+
+## sagemaker InProgress (training)
+count 4
+cvhr-secondary-20260518t2113z-3dgs InProgress 2026-05-19T13:58:33.853000-06:00
+md1-r0v5full14-f2923-1779209514-tile-09 InProgress 2026-05-19T13:46:32.945000-06:00
+md1-r0v5full14-f2923-1779209514-tile-08 InProgress 2026-05-19T13:46:31.622000-06:00
+cvhr-mtc-secondary-20260518t2113z-3dgs InProgress 2026-05-19T13:28:06.767000-06:00
+
+## public bundle meta.json HEAD
+HTTP/1.1 200 OK
+x-amz-id-2: AUgArSO1LSof6UByAmimWwrJkzO1Ci+l7lETQHTfypdIgA4A3jMfrIOfDUQNN70MXf9x+P1SyFA=
+x-amz-request-id: 62J0Y2R8P04CYM9P
+Date: Tue, 19 May 2026 20:09:25 GMT
+Last-Modified: Tue, 19 May 2026 03:14:11 GMT
+ETag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: lwCX4ptdSjx.9.5LMjn4a8Ervrln8HMA
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1421
+Server: AmazonS3
+
+
+HTTP/2 200 
+content-type: application/json
+content-length: 1421
+date: Tue, 19 May 2026 14:24:08 GMT
+last-modified: Tue, 19 May 2026 06:37:13 GMT
+etag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+cache-control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: vUW1wpcXNiVbn3gf6_kSkXCXdN6e83vX
+accept-ranges: bytes
+server: AmazonS3
+x-cache: Hit from cloudfront
+via: 1.1 95e2e548ecff1502954633698b0e9d82.cloudfront.net (CloudFront)
+x-amz-cf-pop: LAX53-P6
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: iWOhAakxSt7JeAe2mfYK-_IpsV2HAf8EYhtZo3Ldxm59rfs57aCdgQ==
+age: 20717
+vary: Origin
+
+
+## local dev ports
+port 3000 LISTEN
+port 4173 closed
+port 5173 closed
+port 8787 closed
+port 8788 closed
+port 8080 closed
+port 8000 closed
+
+## gh runs (recent)
+completed	success	feat: harden md1-shrunk camera suite baselines	CDK Deploy	agent-113647-md1-baseline-e2e	push	26111270602	3m56s	2026-05-19T16:38:50Z
+completed	success	feat: harden md1-shrunk camera suite baselines	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26111270702	7m46s	2026-05-19T16:38:50Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26109660239	7m48s	2026-05-19T16:09:14Z
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26109660240	4m12s	2026-05-19T16:09:14Z
+completed	success	fix: calibrate md1-shrunk camera-suite edge retention gate	CDK Deploy	agent-113647-md1-baseline-e2e	push	26109384090	4m13s	2026-05-19T16:04:19Z
+completed	success	fix: lighten md1 nosky background for camera gates	CDK Deploy	agent-113647-md1-baseline-e2e	push	26107587599	3m54s	2026-05-19T15:32:55Z
+completed	success	fix: lighten md1 nosky background for camera gates	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26107587902	7m35s	2026-05-19T15:32:55Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26106566140	7m23s	2026-05-19T15:15:28Z
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26106566149	3m32s	2026-05-19T15:15:28Z
+completed	success	feat: add md1-shrunk camera suite html report	CDK Deploy	agent-113647-md1-baseline-e2e	push	26106278926	4m9s	2026-05-19T15:10:35Z
+completed	success	chore: record md1-shrunk CI proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	26104689980	3m52s	2026-05-19T14:43:59Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26104135660	7m58s	2026-05-19T14:34:20Z
+
+## gh runs (exact head count)
+count 0
