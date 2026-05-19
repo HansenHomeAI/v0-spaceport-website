@@ -1,0 +1,1 @@
+python3 -m unittest tests.unit.test_sfm_heldout_panel_diagnostics -v
