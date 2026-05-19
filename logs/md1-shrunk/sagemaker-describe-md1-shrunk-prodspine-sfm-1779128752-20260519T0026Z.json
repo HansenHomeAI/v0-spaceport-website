@@ -1,0 +1,67 @@
+{
+    "ProcessingInputs": [
+        {
+            "InputName": "sfm-input",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip",
+                "LocalPath": "/opt/ml/processing/input",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated",
+                "S3CompressionType": "None"
+            }
+        }
+    ],
+    "ProcessingOutputConfig": {
+        "Outputs": [
+            {
+                "OutputName": "colmap-output",
+                "S3Output": {
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-sfm-20260518T1826Z/colmap",
+                    "LocalPath": "/opt/ml/processing/output",
+                    "S3UploadMode": "EndOfJob"
+                },
+                "AppManaged": false
+            }
+        ]
+    },
+    "ProcessingJobName": "md1-shrunk-prodspine-sfm-1779128752",
+    "ProcessingResources": {
+        "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 100
+        }
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 86400
+    },
+    "AppSpecification": {
+        "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:c96dca6f3b0850855eac576e8a27371dfca408e24364d79f7e35b23425cc7950",
+        "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+        ]
+    },
+    "Environment": {
+        "AWS_DEFAULT_REGION": "us-west-2",
+        "COLMAP_CHUNK_PLANNER": "footprint_graph_v1",
+        "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+        "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI": "s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-planner3-20260518T1819Z/colmap/chunk_planner_manifest.json",
+        "COLMAP_MATCH_PROFILE": "P1",
+        "PYTHONUNBUFFERED": "1",
+        "SFM_BENCHMARK_SUBSET_STRATEGY": "md1_shrunk_prodspine_1456_full",
+        "SFM_BRANCH_NAME": "agent-113647-md1-baseline-e2e",
+        "SFM_GIT_HEAD": "df57b678c025ed39fe27b7500d3e7a301b74b603",
+        "SFM_INPUT_URI": "s3://spaceport-uploads/md1-shrunk-20260515T1641Z-1456-images.zip",
+        "SFM_JOB_NAME": "md1-shrunk-prodspine-sfm-1779128752",
+        "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-sfm-20260518T1826Z/colmap"
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-shrunk-prodspine-sfm-1779128752",
+    "ProcessingJobStatus": "Completed",
+    "ProcessingEndTime": "2026-05-18T18:05:24.597000-06:00",
+    "ProcessingStartTime": "2026-05-18T12:26:35.551000-06:00",
+    "LastModifiedTime": "2026-05-18T18:26:08.616000-06:00",
+    "CreationTime": "2026-05-18T12:25:52.855000-06:00"
+}

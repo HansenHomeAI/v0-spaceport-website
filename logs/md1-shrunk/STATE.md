@@ -7573,3 +7573,45 @@ skybox, compression, artifact handoff, and visual gates.
   - `logs/md1-shrunk/stepfunctions-state-machines-md1-pipeline-20260519T0014Z.json`
   - `logs/md1-shrunk/ecr-3dgs-digest-482c1789-20260519T0014Z.json`
   - `logs/md1-shrunk/ecr-compressor-digest-a0784727-20260519T0014Z.json`
+
+## 2026-05-19T00:28Z in-chat downstream launch
+
+- Verification before launch:
+  - branch: `agent-113647-md1-baseline-e2e`
+  - latest pushed ledger head before launch: `e55b944a`
+  - canonical SfM job `md1-shrunk-prodspine-sfm-1779128752` reached `ProcessingJobStatus=Completed`, `FailureReason=null` at `20260519T0026Z`.
+  - Step Functions RUNNING executions on both `SpaceportMLPipeline-br-8abcbd5662` and `SpaceportMLPipeline-staging`: `0`.
+  - InProgress training jobs before launch: `0`.
+  - InProgress processing jobs before launch were external only: `md1-viscell-full-l06-1779150311`, `md1-viscell-full-l05-1779147527`, `cvhr-secondary-20260518t2113z-sfm`, and `cvhr-mtc-20260518T1729Z-sfm`; external jobs remain untouched.
+  - GitHub meaningful workflow proof unchanged: `CDK Deploy` run `26052859100` succeeded for `1900964d7d3601733e6cb9d587a3128717749336`; current ledger commits use `[skip ci]`.
+- Launched exactly one downstream 3DGS+compression continuation:
+  - Step Functions execution: `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-br-8abcbd5662:execution-md1-shrunk-prodspine-wlight-202605190027`
+  - state machine: `arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-8abcbd5662`
+  - startDate: `2026-05-18T18:28:13.202000-06:00`
+  - jobName: `md1-shrunk-prodspine-wlight-202605190027`
+  - pipelineStep: `3dgs`
+  - training job: `md1-shrunk-prodspine-wlight-202605190027-3dgs`
+  - initial training status: `InProgress`, secondary status `Pending`
+  - training image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db`
+  - instance: `ml.g5.4xlarge`, volume `100 GiB`, max runtime `14400s`
+  - input COLMAP: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-sfm-20260518T1826Z/colmap/`
+  - 3DGS output: `s3://spaceport-ml-processing-staging/3dgs/md1-shrunk-prodspine-wlight-202605190027/`
+  - compression output: `s3://spaceport-ml-processing-staging/compressed/md1-shrunk-prodspine-wlight-202605190027/`
+  - compressor image in payload: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab`
+  - intended skybox/training env in payload: `MODEL_VARIANT=splatfacto-w-light`, `ENABLE_BG_MODEL=true`, `ENABLE_ALPHA_LOSS=true`, `ENABLE_ROBUST_MASK=true`, `FLOATER_PRUNING_ENABLED=true`, `BACKGROUND_APPEARANCE_MODE=auto_camera`, `BACKGROUND_SKYBOX_WIDTH=2048`, `BACKGROUND_SKYBOX_HEIGHT=1024`, `MAX_ITERATIONS=30000`, `TRAINING_TIMEOUT_SECONDS=14400`.
+- Next:
+  - Monitor training startup logs until COLMAP validation, transforms generation, skybox-aware `ns-train`, iteration completion, model export, then compression, public bundle reachability, deployed viewer smoke, skybox/no-sky viewer gates, and side-by-side input-vs-render quality checks.
+- Evidence:
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260519T0024Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260519T0026Z.json`
+  - `logs/md1-shrunk/sagemaker-list-training-inprogress-20260519T0026Z.json`
+  - `logs/md1-shrunk/sagemaker-list-processing-inprogress-20260519T0026Z.json`
+  - `logs/md1-shrunk/stepfunctions-running-br8abcbd5662-20260519T0026Z.json`
+  - `logs/md1-shrunk/stepfunctions-running-staging-20260519T0026Z.json`
+  - `logs/md1-shrunk/gh-runs-agent-113647-20260519T0026Z.json`
+  - `logs/md1-shrunk/md1-shrunk-prodspine-wlight-202605190027-payload.json`
+  - `logs/md1-shrunk/md1-shrunk-prodspine-wlight-202605190027-start-request.json`
+  - `logs/md1-shrunk/md1-shrunk-prodspine-wlight-202605190027-start.json`
+  - `logs/md1-shrunk/stepfunctions-describe-execution-md1-shrunk-prodspine-wlight-202605190027-20260519T0028Z.json`
+  - `logs/md1-shrunk/stepfunctions-history-reverse-tail-md1-shrunk-prodspine-wlight-202605190027-20260519T0028Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0028Z.json`
