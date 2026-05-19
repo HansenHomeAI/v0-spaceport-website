@@ -1,0 +1,1406 @@
+{
+    "events": [
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "============================================================",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479104"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "🚀 SPACEPORT COLMAP GPU SfM PROCESSING",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479105"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "============================================================",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479106"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "📅 Started at: Mon May 18 21:23:39 UTC 2026",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479107"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "🔧 Pipeline: COLMAP mapper with GPU SIFT + spatial/sequential/vocab matching",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479108"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "📍 GPS Priors: image EXIF metadata",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479109"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "🎯 Output: COLMAP TXT export for 3DGS",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479110"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "============================================================",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479111"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "🔍 Verifying environment...",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479112"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "Python 3.12.3",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479113"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "📦 COLMAP version: unavailable via 'colmap version'",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479114"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "Mon May 18 21:23:40 2026       ",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479115"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "+-----------------------------------------------------------------------------------------+",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479116"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "| NVIDIA-SMI 570.211.01             Driver Version: 570.211.01     CUDA Version: 12.9     |",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479117"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "|-----------------------------------------+------------------------+----------------------+",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479118"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479119"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479120"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "|                                         |                        |               MIG M. |",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479121"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "|=========================================+========================+======================|",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479122"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "|   0  Tesla T4                       On  |   00000000:00:1E.0 Off |                    0 |",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479123"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "| N/A   25C    P8              9W /   70W |       0MiB /  15360MiB |      0%      Default |",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479124"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "|                                         |                        |                  N/A |",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479125"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "+-----------------------------------------+------------------------+----------------------+\n                                                                                         ",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479126"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "+-----------------------------------------------------------------------------------------+",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479127"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420540,
+            "message": "| Processes:                                                                              |",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890123960117627819803268607973407571273522479128"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459545"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "|        ID   ID                                                               Usage      |",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459546"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "|=========================================================================================|",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459547"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "|  No running processes found                                                             |",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459548"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "+-----------------------------------------------------------------------------------------+",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459549"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "✅ Environment verification completed",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459550"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "MEMORY_PROBE [startup]:",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459551"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "MemTotal:       16081288 kB",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459552"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "MemFree:          868484 kB",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459553"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "MemAvailable:   14956300 kB\n               total        used        free      shared  buff/cache   available",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459554"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "Mem:            15Gi       1.1Gi       847Mi       1.1Mi        13Gi        14Gi",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459555"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "Swap:             0B          0B          0B",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459556"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "📁 Input directory: /opt/ml/processing/input",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459557"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "📁 Output directory: /opt/ml/processing/output",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459558"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "🔍 Input directory contents:",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459559"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "total 6768664",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459560"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "drwxr-xr-x 2 root root       4096 May 18 21:20 .",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459561"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "drwxr-xr-x 1 root root       4096 Mar 30 20:31 ..",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459562"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "-rw-r--r-- 1 root root 6931098350 May 18 21:23 1779123600000-cvhr-Archive.zip",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459563"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "📦 ZIP files found: 1",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459564"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "============================================================",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459565"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "🚀 LAUNCHING COLMAP GPU PROCESSOR",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459566"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "============================================================",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459567"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "MEMORY_PROBE [before_python]:",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459568"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "MemTotal:       16081288 kB",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459569"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "MemFree:          866804 kB",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459570"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "MemAvailable:   14955404 kB\n               total        used        free      shared  buff/cache   available",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459571"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "Mem:            15Gi       1.1Gi       846Mi       1.1Mi        13Gi        14Gi",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459572"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "Swap:             0B          0B          0B",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459573"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "MEMORY_PROBE [startup]:",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459574"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "MemTotal:       16081288 kB",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459575"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "MemFree:          855504 kB",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459576"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "MemAvailable:   14944060 kB",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459577"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139420541,
+            "message": "2026-05-18 21:23:40,409 - INFO - Extracting archive /opt/ml/processing/input/1779123600000-cvhr-Archive.zip",
+            "ingestionTime": 1779139426968,
+            "eventId": "39676134890146260862826350426410143691680219635028459578"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139446547,
+            "message": "2026-05-18 21:24:06,022 - INFO - Extracted 1710 images",
+            "ingestionTime": 1779139452179,
+            "eventId": "39676135470099440495813735875666152233505256265897738240"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139460551,
+            "message": "2026-05-18 21:24:19,573 - INFO - Detected GPS EXIF priors on 1710 images; orientation priors present on 1710 images",
+            "ingestionTime": 1779139466224,
+            "eventId": "39676135782399076256036582366711700026584319210712137728"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139470553,
+            "message": "2026-05-18 21:24:30,452 - INFO - Prepared image list with 1710 entries ordered by capture time then filename",
+            "ingestionTime": 1779139479626,
+            "eventId": "39676136005451129731739875044553856737012328798676975616"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139470553,
+            "message": "2026-05-18 21:24:30,452 - INFO - [feature_extractor] colmap feature_extractor --database_path /tmp/colmap_sfm_gefg0_n4/database.db --image_path /tmp/colmap_sfm_gefg0_n4/images --ImageReader.single_camera 1 --ImageReader.camera_model SIMPLE_RADIAL --FeatureExtraction.use_gpu 1 --SiftExtraction.max_num_features 8192",
+            "ingestionTime": 1779139479626,
+            "eventId": "39676136005451129731739875044553856737012328798676975617"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139471555,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:30.697450    76 feature_extraction.cc:502] === Feature extraction ===",
+            "ingestionTime": 1779139479626,
+            "eventId": "39676136027796476420667559432372646446205987027669352450"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139471555,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:30.698287    81 sift.cc:754] Creating SIFT GPU feature extractor",
+            "ingestionTime": 1779139479626,
+            "eventId": "39676136027796476420667559432372646446205987027669352451"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139480483,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:39.758808    82 feature_extraction.cc:280] Processed file [1/1710]",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136226897529553148962853097725056710889548142739456"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139480483,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:39.758859    82 feature_extraction.cc:283]   Name:            DJI_00001.JPG",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136226897529553148962853097725056710889548142739457"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139480483,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:39.758872    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136226897529553148962853097725056710889548142739458"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139480483,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:39.758883    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136226897529553148962853097725056710889548142739459"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139480483,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:39.758894    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136226897529553148962853097725056710889548142739460"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139480483,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:39.758910    82 feature_extraction.cc:302]   Features:        9251 (SIFT)",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136226897529553148962853097725056710889548142739461"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139480483,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:39.771255    82 feature_extraction.cc:316]   GPS:             LAT=40.521, LON=-111.893, ALT=1425.351",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136226897529553148962853097725056710889548142739462"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139480483,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:39.771294    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136226897529553148962853097725056710889548142739463"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139480483,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:40.232990    82 feature_extraction.cc:280] Processed file [2/1710]",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136226897529553148962853097725056710889548142739464"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139480483,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:40.233037    82 feature_extraction.cc:283]   Name:            DJI_00002.JPG",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136226897529553148962853097725056710889548142739465"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139480483,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:40.233049    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136226897529553148962853097725056710889548142739466"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139480483,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:40.233060    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136226897529553148962853097725056710889548142739467"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139480484,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:40.233072    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136226919830298347493476239260774983537909648719884"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139480484,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:40.233088    82 feature_extraction.cc:302]   Features:        9053 (SIFT)",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136226919830298347493476239260774983537909648719885"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139480484,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:40.437331    82 feature_extraction.cc:316]   GPS:             LAT=40.521, LON=-111.893, ALT=1426.251",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136226919830298347493476239260774983537909648719886"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139480484,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:40.437391    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136226919830298347493476239260774983537909648719887"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139481627,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:40.733809    82 feature_extraction.cc:280] Processed file [3/1710]",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136252409582060267995727014586760620615110984335376"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139481627,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:40.733860    82 feature_extraction.cc:283]   Name:            DJI_00003.JPG",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136252409582060267995727014586760620615110984335377"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139481627,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:40.733872    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136252409582060267995727014586760620615110984335378"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139481627,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:40.733883    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136252409582060267995727014586760620615110984335379"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139481627,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:40.733896    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136252409582060267995727014586760620615110984335380"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139481627,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:40.733911    82 feature_extraction.cc:302]   Features:        10406 (SIFT)",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136252409582060267995727014586760620615110984335381"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139481627,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:40.961923    82 feature_extraction.cc:316]   GPS:             LAT=40.521, LON=-111.894, ALT=1427.551",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136252409582060267995727014586760620615110984335382"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139481627,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:40.961977    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136252409582060267995727014586760620615110984335383"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139481627,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:41.111040    82 feature_extraction.cc:280] Processed file [4/1710]",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136252409582060267995727014586760620615110984335384"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139481627,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:41.111094    82 feature_extraction.cc:283]   Name:            DJI_00004.JPG",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136252409582060267995727014586760620615110984335385"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139481627,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:41.111107    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136252409582060267995727014586760620615110984335386"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139481627,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:41.111119    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136252409582060267995727014586760620615110984335387"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139481627,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:41.111129    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136252409582060267995727014586760620615110984335388"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139481628,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:41.111145    82 feature_extraction.cc:302]   Features:        12291 (SIFT)",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136252431882805466526350156122478893263472490315805"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139481628,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:41.357795    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.893, ALT=1419.151",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136252431882805466526350156122478893263472490315806"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139481628,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:41.357848    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1779139490457,
+            "eventId": "39676136252431882805466526350156122478893263472490315807"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139489134,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:48.943398    82 feature_extraction.cc:280] Processed file [5/1710]",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136419821276265637383657179594405873782939215462400"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139489134,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:48.943450    82 feature_extraction.cc:283]   Name:            DJI_00005.JPG",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136419821276265637383657179594405873782939215462401"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139489134,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:48.943462    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136419821276265637383657179594405873782939215462402"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139489134,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:48.943473    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136419821276265637383657179594405873782939215462403"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139489134,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:48.943485    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136419821276265637383657179594405873782939215462404"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139489134,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:48.943500    82 feature_extraction.cc:302]   Features:        8936 (SIFT)",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136419821276265637383657179594405873782939215462405"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139490134,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:49.133841    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.893, ALT=1418.851",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136442122021464168006798715312678522144445195878406"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139490134,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:49.133901    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136442122021464168006798715312678522144445195878407"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139490134,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:49.533771    82 feature_extraction.cc:280] Processed file [6/1710]",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136442122021464168006798715312678522144445195878408"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139490134,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:49.533823    82 feature_extraction.cc:283]   Name:            DJI_00006.JPG",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136442122021464168006798715312678522144445195878409"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139490134,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:49.533864    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136442122021464168006798715312678522144445195878410"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139490135,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:49.533874    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136442144322209366537421856848396794792806701858827"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139490135,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:49.533885    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136442144322209366537421856848396794792806701858828"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139490135,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:49.533900    82 feature_extraction.cc:302]   Features:        8924 (SIFT)",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136442144322209366537421856848396794792806701858829"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139490135,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:49.741858    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.893, ALT=1418.651",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136442144322209366537421856848396794792806701858830"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139490135,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:49.741906    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136442144322209366537421856848396794792806701858831"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139490135,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:49.863461    82 feature_extraction.cc:280] Processed file [7/1710]",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136442144322209366537421856848396794792806701858832"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139490135,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:49.863510    82 feature_extraction.cc:283]   Name:            DJI_00007.JPG",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136442144322209366537421856848396794792806701858833"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139490135,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:49.863521    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136442144322209366537421856848396794792806701858834"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139490135,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:49.863533    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136442144322209366537421856848396794792806701858835"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139490135,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:49.863543    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136442144322209366537421856848396794792806701858836"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139490135,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:49.863559    82 feature_extraction.cc:302]   Features:        12861 (SIFT)",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136442144322209366537421856848396794792806701858837"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139490135,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:50.126345    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.893, ALT=1418.951",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136442144322209366537421856848396794792806701858838"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139490135,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:50.126398    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136442144322209366537421856848396794792806701858839"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139491140,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:50.335402    82 feature_extraction.cc:280] Processed file [8/1710]",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136464556571133889813679100245260806396120212176920"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139491140,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:50.335457    82 feature_extraction.cc:283]   Name:            DJI_00008.JPG",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136464556571133889813679100245260806396120212176921"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139491140,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:50.335469    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136464556571133889813679100245260806396120212176922"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139491140,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:50.335479    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136464556571133889813679100245260806396120212176923"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139491140,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:50.335489    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136464556571133889813679100245260806396120212176924"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139491140,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:50.335502    82 feature_extraction.cc:302]   Features:        13395 (SIFT)",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136464556571133889813679100245260806396120212176925"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139491140,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:50.474499    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.893, ALT=1419.551",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136464556571133889813679100245260806396120212176926"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139491140,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:50.474563    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1779139495963,
+            "eventId": "39676136464556571133889813679100245260806396120212176927"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139498607,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:58.148792    82 feature_extraction.cc:280] Processed file [9/1710]",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136631076235531317976691320356956222597686322987008"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139498607,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:58.148847    82 feature_extraction.cc:283]   Name:            DJI_00009.JPG",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136631076235531317976691320356956222597686322987009"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139498607,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:58.148859    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136631076235531317976691320356956222597686322987010"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139498607,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:58.148870    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136631076235531317976691320356956222597686322987011"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139498607,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:58.148881    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136631076235531317976691320356956222597686322987012"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139498607,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:58.148897    82 feature_extraction.cc:302]   Features:        12983 (SIFT)",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136631076235531317976691320356956222597686322987013"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139498607,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:58.466344    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.893, ALT=1419.651",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136631076235531317976691320356956222597686322987014"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139498607,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:58.466405    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136631076235531317976691320356956222597686322987015"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139499615,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:58.608001    82 feature_extraction.cc:280] Processed file [10/1710]",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136653555386691436844817988360975052146084351246344"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139499615,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:58.608057    82 feature_extraction.cc:283]   Name:            DJI_00010.JPG",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136653555386691436844817988360975052146084351246345"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139499615,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:58.608068    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136653555386691436844817988360975052146084351246346"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139499615,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:58.608079    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136653555386691436844817988360975052146084351246347"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139499615,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:58.608090    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136653555386691436844817988360975052146084351246348"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139499615,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:58.608105    82 feature_extraction.cc:302]   Features:        14184 (SIFT)",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136653555386691436844817988360975052146084351246349"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139499615,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:58.852269    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.893, ALT=1419.951",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136653555386691436844817988360975052146084351246350"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139499615,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:58.852325    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136653555386691436844817988360975052146084351246351"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139499615,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:59.267170    82 feature_extraction.cc:280] Processed file [11/1710]",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136653555386691436844817988360975052146084351246352"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139499615,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:59.267230    82 feature_extraction.cc:283]   Name:            DJI_00011.JPG",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136653555386691436844817988360975052146084351246353"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139499615,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:59.267242    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136653555386691436844817988360975052146084351246354"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139499615,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:59.267253    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136653555386691436844817988360975052146084351246355"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139499615,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:59.267264    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136653555386691436844817988360975052146084351246356"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139499616,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:59.267306    82 feature_extraction.cc:302]   Features:        12889 (SIFT)",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136653577687436635375441129896693324794445857226773"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139499616,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:59.468678    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.893, ALT=1418.851",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136653577687436635375441129896693324794445857226774"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139499616,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:59.468729    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136653577687436635375441129896693324794445857226775"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139499616,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:59.611395    82 feature_extraction.cc:280] Processed file [12/1710]",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136653577687436635375441129896693324794445857226776"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139499616,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:59.611451    82 feature_extraction.cc:283]   Name:            DJI_00012.JPG",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136653577687436635375441129896693324794445857226777"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139499616,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:59.611465    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136653577687436635375441129896693324794445857226778"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139499616,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:59.611478    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136653577687436635375441129896693324794445857226779"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139499616,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:59.611490    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136653577687436635375441129896693324794445857226780"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139499616,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:59.611507    82 feature_extraction.cc:302]   Features:        12262 (SIFT)",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136653577687436635375441129896693324794445857226781"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139500647,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:59.831758    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.893, ALT=1419.151",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136676569755736320447900053222232425255158523035678"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139500647,
+            "message": "COLMAP[feature_extractor] I20260518 21:24:59.831815    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1779139507852,
+            "eventId": "39676136676569755736320447900053222232425255158523035679"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139507837,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:07.471400    82 feature_extraction.cc:280] Processed file [13/1710]",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136836912113713755628299858853941814880256836829184"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139507837,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:07.471477    82 feature_extraction.cc:283]   Name:            DJI_00013.JPG",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136836912113713755628299858853941814880256836829185"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139507837,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:07.471490    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136836912113713755628299858853941814880256836829186"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139507837,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:07.471501    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136836912113713755628299858853941814880256836829187"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139507837,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:07.471513    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136836912113713755628299858853941814880256836829188"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139507837,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:07.471529    82 feature_extraction.cc:302]   Features:        12290 (SIFT)",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136836912113713755628299858853941814880256836829189"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139507837,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:07.822690    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.893, ALT=1419.051",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136836912113713755628299858853941814880256836829190"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139507837,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:07.822744    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136836912113713755628299858853941814880256836829191"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139508987,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:08.034402    82 feature_extraction.cc:280] Processed file [14/1710]",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136862557970692065844912624929955360495988714307592"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139508987,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:08.034462    82 feature_extraction.cc:283]   Name:            DJI_00014.JPG",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136862557970692065844912624929955360495988714307593"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139508987,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:08.034476    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136862557970692065844912624929955360495988714307594"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139508987,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:08.034490    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136862557970692065844912624929955360495988714307595"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139508987,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:08.034502    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136862557970692065844912624929955360495988714307596"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139508987,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:08.034518    82 feature_extraction.cc:302]   Features:        11782 (SIFT)",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136862557970692065844912624929955360495988714307597"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139508987,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:08.298064    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.893, ALT=1418.951",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136862557970692065844912624929955360495988714307598"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139508987,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:08.298127    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136862557970692065844912624929955360495988714307599"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139508987,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:08.630724    82 feature_extraction.cc:280] Processed file [15/1710]",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136862557970692065844912624929955360495988714307600"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139508987,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:08.630780    82 feature_extraction.cc:283]   Name:            DJI_00015.JPG",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136862557970692065844912624929955360495988714307601"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139508987,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:08.630792    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136862557970692065844912624929955360495988714307602"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139508988,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:08.630803    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136862580271437264375535766465673633144350220288019"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139508988,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:08.630815    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136862580271437264375535766465673633144350220288020"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139508988,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:08.630831    82 feature_extraction.cc:302]   Features:        10957 (SIFT)",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136862580271437264375535766465673633144350220288021"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139508988,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:08.859344    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.892, ALT=1418.951",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136862580271437264375535766465673633144350220288022"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139508988,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:08.859413    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136862580271437264375535766465673633144350220288023"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139508988,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:08.908938    82 feature_extraction.cc:280] Processed file [16/1710]",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136862580271437264375535766465673633144350220288024"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139508988,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:08.908989    82 feature_extraction.cc:283]   Name:            DJI_00016.JPG",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136862580271437264375535766465673633144350220288025"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139508988,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:08.909003    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136862580271437264375535766465673633144350220288026"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139508988,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:08.909013    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136862580271437264375535766465673633144350220288027"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139508988,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:08.909024    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136862580271437264375535766465673633144350220288028"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139508988,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:08.909039    82 feature_extraction.cc:302]   Features:        12147 (SIFT)",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136862580271437264375535766465673633144350220288029"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139510171,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:09.231729    82 feature_extraction.cc:316]   GPS:             LAT=40.521, LON=-111.892, ALT=1418.751",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136888962053007126102712203220390176156011795120158"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139510171,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:09.231777    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000",
+            "ingestionTime": 1779139517914,
+            "eventId": "39676136888962053007126102712203220390176156011795120159"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139518236,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:16.827629    82 feature_extraction.cc:280] Processed file [17/1710]",
+            "ingestionTime": 1779139527365,
+            "eventId": "39676137068817563033275578360114587057270557668104208384"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139518236,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:16.827683    82 feature_extraction.cc:283]   Name:            DJI_00017.JPG",
+            "ingestionTime": 1779139527365,
+            "eventId": "39676137068817563033275578360114587057270557668104208385"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139518236,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:16.827697    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250",
+            "ingestionTime": 1779139527365,
+            "eventId": "39676137068817563033275578360114587057270557668104208386"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139518236,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:16.827706    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL",
+            "ingestionTime": 1779139527365,
+            "eventId": "39676137068817563033275578360114587057270557668104208387"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139518236,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:16.827718    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)",
+            "ingestionTime": 1779139527365,
+            "eventId": "39676137068817563033275578360114587057270557668104208388"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139518236,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:16.827733    82 feature_extraction.cc:302]   Features:        10711 (SIFT)",
+            "ingestionTime": 1779139527365,
+            "eventId": "39676137068817563033275578360114587057270557668104208389"
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231",
+            "timestamp": 1779139518236,
+            "message": "COLMAP[feature_extractor] I20260518 21:25:16.969112    82 feature_extraction.cc:316]   GPS:             LAT=40.521, LON=-111.892, ALT=1418.851",
+            "ingestionTime": 1779139527365,
+            "eventId": "39676137068817563033275578360114587057270557668104208390"
+        }
+    ],
+    "searchedLogStreams": [],
+    "nextToken": "Bxkq6kVGFtq2y_MoigeqscPOdhXVbhiVtLoAmXb5jCq1cez8XrHxfGiCJgFI2bAt5ywCRfBPo54CjhDTUaKwft7iedkfK9kIv54SVua23gw9sr7dc55uOPiwKt7FTHsF98GqRszAFMDtC_Ptgv9IG_ysq1_cRRRLd2jDAMXQvpS7rD55x-hgUSTd3XN9mY3mksOn7OpEIhKqKfAMu3uQREZRWi0pNcukk8z_aqNLydYZUNd7AgCdxwYJB2LF9rXEZlWr8E9vFy-qJlbuOWQ5jMjoiHbMUmH_TmAab5AoNZ_WYR8HxyaMU4Lf_JUGQ4515dxyw7FcAJsGxuoJRi5jS3JyJDOsdQReWFbdkZZ3pH8"
+}

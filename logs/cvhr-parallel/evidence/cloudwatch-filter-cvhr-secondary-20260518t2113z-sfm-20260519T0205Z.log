@@ -1,0 +1,202 @@
+2026-05-18T21:23:40.540000+00:00 ============================================================
+2026-05-18T21:23:40.540000+00:00 🚀 SPACEPORT COLMAP GPU SfM PROCESSING
+2026-05-18T21:23:40.540000+00:00 ============================================================
+2026-05-18T21:23:40.540000+00:00 📅 Started at: Mon May 18 21:23:39 UTC 2026
+2026-05-18T21:23:40.540000+00:00 🔧 Pipeline: COLMAP mapper with GPU SIFT + spatial/sequential/vocab matching
+2026-05-18T21:23:40.540000+00:00 📍 GPS Priors: image EXIF metadata
+2026-05-18T21:23:40.540000+00:00 🎯 Output: COLMAP TXT export for 3DGS
+2026-05-18T21:23:40.540000+00:00 ============================================================
+2026-05-18T21:23:40.540000+00:00 🔍 Verifying environment...
+2026-05-18T21:23:40.540000+00:00 Python 3.12.3
+2026-05-18T21:23:40.540000+00:00 📦 COLMAP version: unavailable via 'colmap version'
+2026-05-18T21:23:40.540000+00:00 Mon May 18 21:23:40 2026
+2026-05-18T21:23:40.540000+00:00 +-----------------------------------------------------------------------------------------+
+2026-05-18T21:23:40.540000+00:00 | NVIDIA-SMI 570.211.01             Driver Version: 570.211.01     CUDA Version: 12.9     |
+2026-05-18T21:23:40.540000+00:00 |-----------------------------------------+------------------------+----------------------+
+2026-05-18T21:23:40.540000+00:00 | GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+2026-05-18T21:23:40.540000+00:00 | Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+2026-05-18T21:23:40.540000+00:00 |                                         |                        |               MIG M. |
+2026-05-18T21:23:40.540000+00:00 |=========================================+========================+======================|
+2026-05-18T21:23:40.540000+00:00 |   0  Tesla T4                       On  |   00000000:00:1E.0 Off |                    0 |
+2026-05-18T21:23:40.540000+00:00 | N/A   25C    P8              9W /   70W |       0MiB /  15360MiB |      0%      Default |
+2026-05-18T21:23:40.540000+00:00 |                                         |                        |                  N/A |
+2026-05-18T21:23:40.540000+00:00 +-----------------------------------------+------------------------+----------------------+
+2026-05-18T21:23:40.540000+00:00 +-----------------------------------------------------------------------------------------+
+2026-05-18T21:23:40.540000+00:00 | Processes:                                                                              |
+2026-05-18T21:23:40.541000+00:00 |  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+2026-05-18T21:23:40.541000+00:00 |        ID   ID                                                               Usage      |
+2026-05-18T21:23:40.541000+00:00 |=========================================================================================|
+2026-05-18T21:23:40.541000+00:00 |  No running processes found                                                             |
+2026-05-18T21:23:40.541000+00:00 +-----------------------------------------------------------------------------------------+
+2026-05-18T21:23:40.541000+00:00 ✅ Environment verification completed
+2026-05-18T21:23:40.541000+00:00 MEMORY_PROBE [startup]:
+2026-05-18T21:23:40.541000+00:00 MemTotal:       16081288 kB
+2026-05-18T21:23:40.541000+00:00 MemFree:          868484 kB
+2026-05-18T21:23:40.541000+00:00 MemAvailable:   14956300 kB
+               total        used        free      shared  buff/cache   available
+2026-05-18T21:23:40.541000+00:00 Mem:            15Gi       1.1Gi       847Mi       1.1Mi        13Gi        14Gi
+2026-05-18T21:23:40.541000+00:00 Swap:             0B          0B          0B
+2026-05-18T21:23:40.541000+00:00 📁 Input directory: /opt/ml/processing/input
+2026-05-18T21:23:40.541000+00:00 📁 Output directory: /opt/ml/processing/output
+2026-05-18T21:23:40.541000+00:00 🔍 Input directory contents:
+2026-05-18T21:23:40.541000+00:00 total 6768664
+2026-05-18T21:23:40.541000+00:00 drwxr-xr-x 2 root root       4096 May 18 21:20 .
+2026-05-18T21:23:40.541000+00:00 drwxr-xr-x 1 root root       4096 Mar 30 20:31 ..
+2026-05-18T21:23:40.541000+00:00 -rw-r--r-- 1 root root 6931098350 May 18 21:23 1779123600000-cvhr-Archive.zip
+2026-05-18T21:23:40.541000+00:00 📦 ZIP files found: 1
+2026-05-18T21:23:40.541000+00:00 ============================================================
+2026-05-18T21:23:40.541000+00:00 🚀 LAUNCHING COLMAP GPU PROCESSOR
+2026-05-18T21:23:40.541000+00:00 ============================================================
+2026-05-18T21:23:40.541000+00:00 MEMORY_PROBE [before_python]:
+2026-05-18T21:23:40.541000+00:00 MemTotal:       16081288 kB
+2026-05-18T21:23:40.541000+00:00 MemFree:          866804 kB
+2026-05-18T21:23:40.541000+00:00 MemAvailable:   14955404 kB
+               total        used        free      shared  buff/cache   available
+2026-05-18T21:23:40.541000+00:00 Mem:            15Gi       1.1Gi       846Mi       1.1Mi        13Gi        14Gi
+2026-05-18T21:23:40.541000+00:00 Swap:             0B          0B          0B
+2026-05-18T21:23:40.541000+00:00 MEMORY_PROBE [startup]:
+2026-05-18T21:23:40.541000+00:00 MemTotal:       16081288 kB
+2026-05-18T21:23:40.541000+00:00 MemFree:          855504 kB
+2026-05-18T21:23:40.541000+00:00 MemAvailable:   14944060 kB
+2026-05-18T21:23:40.541000+00:00 2026-05-18 21:23:40,409 - INFO - Extracting archive /opt/ml/processing/input/1779123600000-cvhr-Archive.zip
+2026-05-18T21:24:06.547000+00:00 2026-05-18 21:24:06,022 - INFO - Extracted 1710 images
+2026-05-18T21:24:20.551000+00:00 2026-05-18 21:24:19,573 - INFO - Detected GPS EXIF priors on 1710 images; orientation priors present on 1710 images
+2026-05-18T21:24:30.553000+00:00 2026-05-18 21:24:30,452 - INFO - Prepared image list with 1710 entries ordered by capture time then filename
+2026-05-18T21:24:30.553000+00:00 2026-05-18 21:24:30,452 - INFO - [feature_extractor] colmap feature_extractor --database_path /tmp/colmap_sfm_gefg0_n4/database.db --image_path /tmp/colmap_sfm_gefg0_n4/images --ImageReader.single_camera 1 --ImageReader.camera_model SIMPLE_RADIAL --FeatureExtraction.use_gpu 1 --SiftExtraction.max_num_features 8192
+2026-05-18T21:24:31.555000+00:00 COLMAP[feature_extractor] I20260518 21:24:30.697450    76 feature_extraction.cc:502] === Feature extraction ===
+2026-05-18T21:24:31.555000+00:00 COLMAP[feature_extractor] I20260518 21:24:30.698287    81 sift.cc:754] Creating SIFT GPU feature extractor
+2026-05-18T21:24:40.483000+00:00 COLMAP[feature_extractor] I20260518 21:24:39.758808    82 feature_extraction.cc:280] Processed file [1/1710]
+2026-05-18T21:24:40.483000+00:00 COLMAP[feature_extractor] I20260518 21:24:39.758859    82 feature_extraction.cc:283]   Name:            DJI_00001.JPG
+2026-05-18T21:24:40.483000+00:00 COLMAP[feature_extractor] I20260518 21:24:39.758872    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250
+2026-05-18T21:24:40.483000+00:00 COLMAP[feature_extractor] I20260518 21:24:39.758883    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL
+2026-05-18T21:24:40.483000+00:00 COLMAP[feature_extractor] I20260518 21:24:39.758894    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)
+2026-05-18T21:24:40.483000+00:00 COLMAP[feature_extractor] I20260518 21:24:39.758910    82 feature_extraction.cc:302]   Features:        9251 (SIFT)
+2026-05-18T21:24:40.483000+00:00 COLMAP[feature_extractor] I20260518 21:24:39.771255    82 feature_extraction.cc:316]   GPS:             LAT=40.521, LON=-111.893, ALT=1425.351
+2026-05-18T21:24:40.483000+00:00 COLMAP[feature_extractor] I20260518 21:24:39.771294    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000
+2026-05-18T21:24:40.483000+00:00 COLMAP[feature_extractor] I20260518 21:24:40.232990    82 feature_extraction.cc:280] Processed file [2/1710]
+2026-05-18T21:24:40.483000+00:00 COLMAP[feature_extractor] I20260518 21:24:40.233037    82 feature_extraction.cc:283]   Name:            DJI_00002.JPG
+2026-05-18T21:24:40.483000+00:00 COLMAP[feature_extractor] I20260518 21:24:40.233049    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250
+2026-05-18T21:24:40.483000+00:00 COLMAP[feature_extractor] I20260518 21:24:40.233060    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL
+2026-05-18T21:24:40.484000+00:00 COLMAP[feature_extractor] I20260518 21:24:40.233072    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)
+2026-05-18T21:24:40.484000+00:00 COLMAP[feature_extractor] I20260518 21:24:40.233088    82 feature_extraction.cc:302]   Features:        9053 (SIFT)
+2026-05-18T21:24:40.484000+00:00 COLMAP[feature_extractor] I20260518 21:24:40.437331    82 feature_extraction.cc:316]   GPS:             LAT=40.521, LON=-111.893, ALT=1426.251
+2026-05-18T21:24:40.484000+00:00 COLMAP[feature_extractor] I20260518 21:24:40.437391    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000
+2026-05-18T21:24:41.627000+00:00 COLMAP[feature_extractor] I20260518 21:24:40.733809    82 feature_extraction.cc:280] Processed file [3/1710]
+2026-05-18T21:24:41.627000+00:00 COLMAP[feature_extractor] I20260518 21:24:40.733860    82 feature_extraction.cc:283]   Name:            DJI_00003.JPG
+2026-05-18T21:24:41.627000+00:00 COLMAP[feature_extractor] I20260518 21:24:40.733872    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250
+2026-05-18T21:24:41.627000+00:00 COLMAP[feature_extractor] I20260518 21:24:40.733883    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL
+2026-05-18T21:24:41.627000+00:00 COLMAP[feature_extractor] I20260518 21:24:40.733896    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)
+2026-05-18T21:24:41.627000+00:00 COLMAP[feature_extractor] I20260518 21:24:40.733911    82 feature_extraction.cc:302]   Features:        10406 (SIFT)
+2026-05-18T21:24:41.627000+00:00 COLMAP[feature_extractor] I20260518 21:24:40.961923    82 feature_extraction.cc:316]   GPS:             LAT=40.521, LON=-111.894, ALT=1427.551
+2026-05-18T21:24:41.627000+00:00 COLMAP[feature_extractor] I20260518 21:24:40.961977    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000
+2026-05-18T21:24:41.627000+00:00 COLMAP[feature_extractor] I20260518 21:24:41.111040    82 feature_extraction.cc:280] Processed file [4/1710]
+2026-05-18T21:24:41.627000+00:00 COLMAP[feature_extractor] I20260518 21:24:41.111094    82 feature_extraction.cc:283]   Name:            DJI_00004.JPG
+2026-05-18T21:24:41.627000+00:00 COLMAP[feature_extractor] I20260518 21:24:41.111107    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250
+2026-05-18T21:24:41.627000+00:00 COLMAP[feature_extractor] I20260518 21:24:41.111119    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL
+2026-05-18T21:24:41.627000+00:00 COLMAP[feature_extractor] I20260518 21:24:41.111129    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)
+2026-05-18T21:24:41.628000+00:00 COLMAP[feature_extractor] I20260518 21:24:41.111145    82 feature_extraction.cc:302]   Features:        12291 (SIFT)
+2026-05-18T21:24:41.628000+00:00 COLMAP[feature_extractor] I20260518 21:24:41.357795    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.893, ALT=1419.151
+2026-05-18T21:24:41.628000+00:00 COLMAP[feature_extractor] I20260518 21:24:41.357848    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000
+2026-05-18T21:24:49.134000+00:00 COLMAP[feature_extractor] I20260518 21:24:48.943398    82 feature_extraction.cc:280] Processed file [5/1710]
+2026-05-18T21:24:49.134000+00:00 COLMAP[feature_extractor] I20260518 21:24:48.943450    82 feature_extraction.cc:283]   Name:            DJI_00005.JPG
+2026-05-18T21:24:49.134000+00:00 COLMAP[feature_extractor] I20260518 21:24:48.943462    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250
+2026-05-18T21:24:49.134000+00:00 COLMAP[feature_extractor] I20260518 21:24:48.943473    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL
+2026-05-18T21:24:49.134000+00:00 COLMAP[feature_extractor] I20260518 21:24:48.943485    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)
+2026-05-18T21:24:49.134000+00:00 COLMAP[feature_extractor] I20260518 21:24:48.943500    82 feature_extraction.cc:302]   Features:        8936 (SIFT)
+2026-05-18T21:24:50.134000+00:00 COLMAP[feature_extractor] I20260518 21:24:49.133841    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.893, ALT=1418.851
+2026-05-18T21:24:50.134000+00:00 COLMAP[feature_extractor] I20260518 21:24:49.133901    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000
+2026-05-18T21:24:50.134000+00:00 COLMAP[feature_extractor] I20260518 21:24:49.533771    82 feature_extraction.cc:280] Processed file [6/1710]
+2026-05-18T21:24:50.134000+00:00 COLMAP[feature_extractor] I20260518 21:24:49.533823    82 feature_extraction.cc:283]   Name:            DJI_00006.JPG
+2026-05-18T21:24:50.134000+00:00 COLMAP[feature_extractor] I20260518 21:24:49.533864    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250
+2026-05-18T21:24:50.135000+00:00 COLMAP[feature_extractor] I20260518 21:24:49.533874    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL
+2026-05-18T21:24:50.135000+00:00 COLMAP[feature_extractor] I20260518 21:24:49.533885    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)
+2026-05-18T21:24:50.135000+00:00 COLMAP[feature_extractor] I20260518 21:24:49.533900    82 feature_extraction.cc:302]   Features:        8924 (SIFT)
+2026-05-18T21:24:50.135000+00:00 COLMAP[feature_extractor] I20260518 21:24:49.741858    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.893, ALT=1418.651
+2026-05-18T21:24:50.135000+00:00 COLMAP[feature_extractor] I20260518 21:24:49.741906    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000
+2026-05-18T21:24:50.135000+00:00 COLMAP[feature_extractor] I20260518 21:24:49.863461    82 feature_extraction.cc:280] Processed file [7/1710]
+2026-05-18T21:24:50.135000+00:00 COLMAP[feature_extractor] I20260518 21:24:49.863510    82 feature_extraction.cc:283]   Name:            DJI_00007.JPG
+2026-05-18T21:24:50.135000+00:00 COLMAP[feature_extractor] I20260518 21:24:49.863521    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250
+2026-05-18T21:24:50.135000+00:00 COLMAP[feature_extractor] I20260518 21:24:49.863533    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL
+2026-05-18T21:24:50.135000+00:00 COLMAP[feature_extractor] I20260518 21:24:49.863543    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)
+2026-05-18T21:24:50.135000+00:00 COLMAP[feature_extractor] I20260518 21:24:49.863559    82 feature_extraction.cc:302]   Features:        12861 (SIFT)
+2026-05-18T21:24:50.135000+00:00 COLMAP[feature_extractor] I20260518 21:24:50.126345    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.893, ALT=1418.951
+2026-05-18T21:24:50.135000+00:00 COLMAP[feature_extractor] I20260518 21:24:50.126398    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000
+2026-05-18T21:24:51.140000+00:00 COLMAP[feature_extractor] I20260518 21:24:50.335402    82 feature_extraction.cc:280] Processed file [8/1710]
+2026-05-18T21:24:51.140000+00:00 COLMAP[feature_extractor] I20260518 21:24:50.335457    82 feature_extraction.cc:283]   Name:            DJI_00008.JPG
+2026-05-18T21:24:51.140000+00:00 COLMAP[feature_extractor] I20260518 21:24:50.335469    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250
+2026-05-18T21:24:51.140000+00:00 COLMAP[feature_extractor] I20260518 21:24:50.335479    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL
+2026-05-18T21:24:51.140000+00:00 COLMAP[feature_extractor] I20260518 21:24:50.335489    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)
+2026-05-18T21:24:51.140000+00:00 COLMAP[feature_extractor] I20260518 21:24:50.335502    82 feature_extraction.cc:302]   Features:        13395 (SIFT)
+2026-05-18T21:24:51.140000+00:00 COLMAP[feature_extractor] I20260518 21:24:50.474499    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.893, ALT=1419.551
+2026-05-18T21:24:51.140000+00:00 COLMAP[feature_extractor] I20260518 21:24:50.474563    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000
+2026-05-18T21:24:58.607000+00:00 COLMAP[feature_extractor] I20260518 21:24:58.148792    82 feature_extraction.cc:280] Processed file [9/1710]
+2026-05-18T21:24:58.607000+00:00 COLMAP[feature_extractor] I20260518 21:24:58.148847    82 feature_extraction.cc:283]   Name:            DJI_00009.JPG
+2026-05-18T21:24:58.607000+00:00 COLMAP[feature_extractor] I20260518 21:24:58.148859    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250
+2026-05-18T21:24:58.607000+00:00 COLMAP[feature_extractor] I20260518 21:24:58.148870    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL
+2026-05-18T21:24:58.607000+00:00 COLMAP[feature_extractor] I20260518 21:24:58.148881    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)
+2026-05-18T21:24:58.607000+00:00 COLMAP[feature_extractor] I20260518 21:24:58.148897    82 feature_extraction.cc:302]   Features:        12983 (SIFT)
+2026-05-18T21:24:58.607000+00:00 COLMAP[feature_extractor] I20260518 21:24:58.466344    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.893, ALT=1419.651
+2026-05-18T21:24:58.607000+00:00 COLMAP[feature_extractor] I20260518 21:24:58.466405    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000
+2026-05-18T21:24:59.615000+00:00 COLMAP[feature_extractor] I20260518 21:24:58.608001    82 feature_extraction.cc:280] Processed file [10/1710]
+2026-05-18T21:24:59.615000+00:00 COLMAP[feature_extractor] I20260518 21:24:58.608057    82 feature_extraction.cc:283]   Name:            DJI_00010.JPG
+2026-05-18T21:24:59.615000+00:00 COLMAP[feature_extractor] I20260518 21:24:58.608068    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250
+2026-05-18T21:24:59.615000+00:00 COLMAP[feature_extractor] I20260518 21:24:58.608079    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL
+2026-05-18T21:24:59.615000+00:00 COLMAP[feature_extractor] I20260518 21:24:58.608090    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)
+2026-05-18T21:24:59.615000+00:00 COLMAP[feature_extractor] I20260518 21:24:58.608105    82 feature_extraction.cc:302]   Features:        14184 (SIFT)
+2026-05-18T21:24:59.615000+00:00 COLMAP[feature_extractor] I20260518 21:24:58.852269    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.893, ALT=1419.951
+2026-05-18T21:24:59.615000+00:00 COLMAP[feature_extractor] I20260518 21:24:58.852325    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000
+2026-05-18T21:24:59.615000+00:00 COLMAP[feature_extractor] I20260518 21:24:59.267170    82 feature_extraction.cc:280] Processed file [11/1710]
+2026-05-18T21:24:59.615000+00:00 COLMAP[feature_extractor] I20260518 21:24:59.267230    82 feature_extraction.cc:283]   Name:            DJI_00011.JPG
+2026-05-18T21:24:59.615000+00:00 COLMAP[feature_extractor] I20260518 21:24:59.267242    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250
+2026-05-18T21:24:59.615000+00:00 COLMAP[feature_extractor] I20260518 21:24:59.267253    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL
+2026-05-18T21:24:59.615000+00:00 COLMAP[feature_extractor] I20260518 21:24:59.267264    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)
+2026-05-18T21:24:59.616000+00:00 COLMAP[feature_extractor] I20260518 21:24:59.267306    82 feature_extraction.cc:302]   Features:        12889 (SIFT)
+2026-05-18T21:24:59.616000+00:00 COLMAP[feature_extractor] I20260518 21:24:59.468678    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.893, ALT=1418.851
+2026-05-18T21:24:59.616000+00:00 COLMAP[feature_extractor] I20260518 21:24:59.468729    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000
+2026-05-18T21:24:59.616000+00:00 COLMAP[feature_extractor] I20260518 21:24:59.611395    82 feature_extraction.cc:280] Processed file [12/1710]
+2026-05-18T21:24:59.616000+00:00 COLMAP[feature_extractor] I20260518 21:24:59.611451    82 feature_extraction.cc:283]   Name:            DJI_00012.JPG
+2026-05-18T21:24:59.616000+00:00 COLMAP[feature_extractor] I20260518 21:24:59.611465    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250
+2026-05-18T21:24:59.616000+00:00 COLMAP[feature_extractor] I20260518 21:24:59.611478    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL
+2026-05-18T21:24:59.616000+00:00 COLMAP[feature_extractor] I20260518 21:24:59.611490    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)
+2026-05-18T21:24:59.616000+00:00 COLMAP[feature_extractor] I20260518 21:24:59.611507    82 feature_extraction.cc:302]   Features:        12262 (SIFT)
+2026-05-18T21:25:00.647000+00:00 COLMAP[feature_extractor] I20260518 21:24:59.831758    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.893, ALT=1419.151
+2026-05-18T21:25:00.647000+00:00 COLMAP[feature_extractor] I20260518 21:24:59.831815    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000
+2026-05-18T21:25:07.837000+00:00 COLMAP[feature_extractor] I20260518 21:25:07.471400    82 feature_extraction.cc:280] Processed file [13/1710]
+2026-05-18T21:25:07.837000+00:00 COLMAP[feature_extractor] I20260518 21:25:07.471477    82 feature_extraction.cc:283]   Name:            DJI_00013.JPG
+2026-05-18T21:25:07.837000+00:00 COLMAP[feature_extractor] I20260518 21:25:07.471490    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250
+2026-05-18T21:25:07.837000+00:00 COLMAP[feature_extractor] I20260518 21:25:07.471501    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL
+2026-05-18T21:25:07.837000+00:00 COLMAP[feature_extractor] I20260518 21:25:07.471513    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)
+2026-05-18T21:25:07.837000+00:00 COLMAP[feature_extractor] I20260518 21:25:07.471529    82 feature_extraction.cc:302]   Features:        12290 (SIFT)
+2026-05-18T21:25:07.837000+00:00 COLMAP[feature_extractor] I20260518 21:25:07.822690    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.893, ALT=1419.051
+2026-05-18T21:25:07.837000+00:00 COLMAP[feature_extractor] I20260518 21:25:07.822744    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000
+2026-05-18T21:25:08.987000+00:00 COLMAP[feature_extractor] I20260518 21:25:08.034402    82 feature_extraction.cc:280] Processed file [14/1710]
+2026-05-18T21:25:08.987000+00:00 COLMAP[feature_extractor] I20260518 21:25:08.034462    82 feature_extraction.cc:283]   Name:            DJI_00014.JPG
+2026-05-18T21:25:08.987000+00:00 COLMAP[feature_extractor] I20260518 21:25:08.034476    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250
+2026-05-18T21:25:08.987000+00:00 COLMAP[feature_extractor] I20260518 21:25:08.034490    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL
+2026-05-18T21:25:08.987000+00:00 COLMAP[feature_extractor] I20260518 21:25:08.034502    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)
+2026-05-18T21:25:08.987000+00:00 COLMAP[feature_extractor] I20260518 21:25:08.034518    82 feature_extraction.cc:302]   Features:        11782 (SIFT)
+2026-05-18T21:25:08.987000+00:00 COLMAP[feature_extractor] I20260518 21:25:08.298064    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.893, ALT=1418.951
+2026-05-18T21:25:08.987000+00:00 COLMAP[feature_extractor] I20260518 21:25:08.298127    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000
+2026-05-18T21:25:08.987000+00:00 COLMAP[feature_extractor] I20260518 21:25:08.630724    82 feature_extraction.cc:280] Processed file [15/1710]
+2026-05-18T21:25:08.987000+00:00 COLMAP[feature_extractor] I20260518 21:25:08.630780    82 feature_extraction.cc:283]   Name:            DJI_00015.JPG
+2026-05-18T21:25:08.987000+00:00 COLMAP[feature_extractor] I20260518 21:25:08.630792    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250
+2026-05-18T21:25:08.988000+00:00 COLMAP[feature_extractor] I20260518 21:25:08.630803    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL
+2026-05-18T21:25:08.988000+00:00 COLMAP[feature_extractor] I20260518 21:25:08.630815    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)
+2026-05-18T21:25:08.988000+00:00 COLMAP[feature_extractor] I20260518 21:25:08.630831    82 feature_extraction.cc:302]   Features:        10957 (SIFT)
+2026-05-18T21:25:08.988000+00:00 COLMAP[feature_extractor] I20260518 21:25:08.859344    82 feature_extraction.cc:316]   GPS:             LAT=40.522, LON=-111.892, ALT=1418.951
+2026-05-18T21:25:08.988000+00:00 COLMAP[feature_extractor] I20260518 21:25:08.859413    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000
+2026-05-18T21:25:08.988000+00:00 COLMAP[feature_extractor] I20260518 21:25:08.908938    82 feature_extraction.cc:280] Processed file [16/1710]
+2026-05-18T21:25:08.988000+00:00 COLMAP[feature_extractor] I20260518 21:25:08.908989    82 feature_extraction.cc:283]   Name:            DJI_00016.JPG
+2026-05-18T21:25:08.988000+00:00 COLMAP[feature_extractor] I20260518 21:25:08.909003    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250
+2026-05-18T21:25:08.988000+00:00 COLMAP[feature_extractor] I20260518 21:25:08.909013    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL
+2026-05-18T21:25:08.988000+00:00 COLMAP[feature_extractor] I20260518 21:25:08.909024    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)
+2026-05-18T21:25:08.988000+00:00 COLMAP[feature_extractor] I20260518 21:25:08.909039    82 feature_extraction.cc:302]   Features:        12147 (SIFT)
+2026-05-18T21:25:10.171000+00:00 COLMAP[feature_extractor] I20260518 21:25:09.231729    82 feature_extraction.cc:316]   GPS:             LAT=40.521, LON=-111.892, ALT=1418.751
+2026-05-18T21:25:10.171000+00:00 COLMAP[feature_extractor] I20260518 21:25:09.231777    82 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000
+2026-05-18T21:25:18.236000+00:00 COLMAP[feature_extractor] I20260518 21:25:16.827629    82 feature_extraction.cc:280] Processed file [17/1710]
+2026-05-18T21:25:18.236000+00:00 COLMAP[feature_extractor] I20260518 21:25:16.827683    82 feature_extraction.cc:283]   Name:            DJI_00017.JPG
+2026-05-18T21:25:18.236000+00:00 COLMAP[feature_extractor] I20260518 21:25:16.827697    82 feature_extraction.cc:292]   Dimensions:      4000 x 2250
+2026-05-18T21:25:18.236000+00:00 COLMAP[feature_extractor] I20260518 21:25:16.827706    82 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL
+2026-05-18T21:25:18.236000+00:00 COLMAP[feature_extractor] I20260518 21:25:16.827718    82 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)
+2026-05-18T21:25:18.236000+00:00 COLMAP[feature_extractor] I20260518 21:25:16.827733    82 feature_extraction.cc:302]   Features:        10711 (SIFT)
+2026-05-18T21:25:18.236000+00:00 COLMAP[feature_extractor] I20260518 21:25:16.969112    82 feature_extraction.cc:316]   GPS:             LAT=40.521, LON=-111.892, ALT=1418.851
