@@ -1,0 +1,44 @@
+{
+  "gate_id": "md1-r0v5full14-production-rung-operator-override-f2923ef0-20260519T1645Z",
+  "created_at_utc": "2026-05-19T16:45:00Z",
+  "branch": "agent-90742618-md1-geometry-consistency",
+  "submit_head": "f2923ef00417750f4efdfdc904c328645c168509",
+  "scope": "Allow one bounded full14 leaf-training fanout only. Merge, review, LOD, viewer smoke, and production promotion remain blocked until post-leaf artifact/preflight gates pass.",
+  "operator_override": {
+    "source": "user_chat_2026-05-19",
+    "instruction": "CV-HR SageMaker processing jobs are separate and must not block MD1 progress; continue toward production-ready output reliably.",
+    "cvhr_jobs_policy": "Record active CV-HR jobs as source evidence only. Do not stop or modify them."
+  },
+  "allow_full_14tile_submit": true,
+  "max_estimated_usd": 10.5,
+  "r0_status": "passed",
+  "r1_status": "accepted",
+  "r2_status": "accepted",
+  "r3_status": "accepted",
+  "rung_evidence": {
+    "r0": {
+      "summary_json": "logs/md1-r0-visual-sentinel-v5-density-relaxed-leaf-submit-head7527-wait-20260515.json",
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-20260515/tiles/tile_04/md1-r0vissent-v5relax-1778837840-tile-04/output/model.tar.gz",
+      "status_note": "Known-good v5 tile_04 leaf proof passed preflight with sidecars present and 1071554 splats, 1.121x the 956277 reference."
+    },
+    "r1": {
+      "summary_json": "logs/md1-r0v5relax-review-retry1-visual-qa-gate-with-ai-20260519T150801Z.json",
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-review-retry1-2bd90dd5-20260519T145514Z/outputs/r0v5relax-retry1-v18p24/md1-r1-r0v5relax-retry1-v18p24-1779202633-quality/output/model.tar.gz",
+      "status_note": "Frozen-camera review completed, but AI visual QA blocked promotion. This gate accepts the result only as evidence that single-tile promotion is insufficient and full14 leaf training is the next data-generation step."
+    },
+    "r2": {
+      "dry_run_summary": "logs/md1-r0v5full14-f2923ef0-20260519T1645Z-dryrun.json",
+      "status_note": "Corrected no-spend dry-run selects tile_00 through tile_13 with known-good v5 splatfacto-w-light settings, sidecar-producing export, 188 selected images, 6000 iterations, checkpointing, and tile_04 post-leaf gate."
+    },
+    "r3": {
+      "summary_json": "logs/locks/md1-budget.lock/md1-paid-budget-lock.json",
+      "test_log": "logs/agent-loop.log",
+      "status_note": "Budget remains under the $14 cap after prior debits. Exact-head f2923ef0 has green CDK Deploy 26107107781. Training, MD1 processing, Step Functions, and CodeBuild are idle before full14 leaf submit; CV-HR processing is non-blocking evidence only."
+    }
+  },
+  "hard_stop_after_this_gate": [
+    "Do not launch merge/review from full14 leaves until post-leaf preflight gates pass.",
+    "Do not launch LOD/viewer smoke/promotion from full14 leaves without a later explicit promotion gate.",
+    "Do not reuse the failed constrained repair profile from md1-r0v5repair-f2923-1779205460-1779205616-tile-04."
+  ]
+}

@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "Retry1 merge/preflight passed but frozen-camera visual QA blocks promotion; full14/LOD/viewer/promotion remain blocked until a repaired candidate passes visual QA.",
+  "blocked_promotion_reason": "Retry1 single-tile review failed AI visual QA, and the subsequent constrained repair leaf is blocked by preflight. Production-ready remains open; next eligible work is full14 no-spend readiness/dry-run using known-good v5 settings, then bounded full14 leaves if gates pass.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "branch agent-90742618-md1-geometry-consistency is at 2bd90dd551d22f97229bccec0e838864251796fa, a logs-only [skip ci] evidence head; last meaningful CDK Deploy is 26059422703 green for 00541502a6e5f246cca11f05f53f78f1ca80559d",
-  "current_exact_head_gate_status": "exact-head cf10e74e has no workflows because it is a logs-only [skip ci] commit; last meaningful exact-head 00541502 is green on CDK Deploy 26059422703.",
-  "current_live_compute_status": "CV-HR jobs are separate/non-blocking by user override. Retry1 review completed; no full14/LOD/viewer/promotion launched.",
-  "current_rung": "MD1_cost_reduction_retry1_review_visual_qa_blocked_gate_patch_and_fullscene_plan_2bd90dd5_1521",
+  "current_branch_head": "f2923ef00417750f4efdfdc904c328645c168509",
+  "current_exact_head_gate_status": "exact-head f2923ef00417750f4efdfdc904c328645c168509 has green CDK Deploy 26107107781.",
+  "current_live_compute_status": "SageMaker training idle; MD1-relevant processing idle; CV-HR processing jobs cvhr-secondary-20260518t2113z-sfm and cvhr-mtc-20260518T1729Z-sfm are separate/non-blocking and must not be stopped or modified; Step Functions br-8abcbd5662/main idle; spaceport-ml-containers latest build 04906e4b-fd21-4cca-a1bf-3c457be5e98f succeeded.",
+  "current_rung": "MD1_cost_reduction_full14_leaf_submit_reserved_f2923ef0",
   "evidence_events": [
     "md1_r0_visual_sentinel_v5_no_spend_merge_review_planning_head30d6_20260517",
     "md1_r0_visual_sentinel_v5_no_spend_merge_review_planning_head5984_20260517",
@@ -3730,7 +3730,41 @@
       "paid_compute_launched": false,
       "blocker": "processing_jobs_in_progress"
     },
-    "md1-r0v5relax-retry1-merge-preflight-passed-cf10e74e"
+    "md1-r0v5relax-retry1-merge-preflight-passed-cf10e74e",
+    {
+      "event": "md1-r0v5repair-leaf-preflight-blocked-f2923ef0",
+      "timestamp_utc": "20260519T161110Z",
+      "head": "f2923ef00417750f4efdfdc904c328645c168509",
+      "job_name": "md1-r0v5repair-f2923-1779205460-1779205616-tile-04",
+      "terminal_status": "Completed",
+      "runtime_seconds": 908,
+      "debited_usd": 0.252222,
+      "remaining_budget_usd": 13.43138,
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5repair-f2923ef0-20260519T154420Z/tiles/tile_04/md1-r0v5repair-f2923-1779205460-1779205616-tile-04/output/model.tar.gz",
+      "dry_run_json": "logs/md1-r0v5repair-f2923ef0-20260519T154420Z-leaf-dryrun.json",
+      "presubmit_readiness_json": "logs/md1-r0v5repair-presubmit-f2923ef0-20260519T154650Z-leaf-submit-readiness.json",
+      "final_describe_json": "logs/md1-r0v5repair-f2923ef0-20260519T154420Z-leaf-final-describe.json",
+      "cloudwatch_events_json": "logs/md1-r0v5repair-f2923ef0-20260519T154420Z-leaf-cloudwatch-events-final.json",
+      "output_s3_listing": "logs/md1-r0v5repair-f2923ef0-20260519T154420Z-leaf-output-s3-list.txt",
+      "checkpoint_s3_listing": "logs/md1-r0v5repair-f2923ef0-20260519T154420Z-leaf-checkpoints-s3-list.txt",
+      "preflight_json": "logs/md1-r0v5repair-f2923ef0-20260519T154420Z-tile_04-leaf-preflight.json",
+      "preflight_decision": "leaf_preflight_blocked",
+      "preflight_block_reasons": [
+        "leaf_required_paths_missing",
+        "splat_vertex_count_below_reference_ratio"
+      ],
+      "splat_vertex_count": 697466,
+      "reference_splat_count": 956277,
+      "observed_reference_ratio": 0.729356,
+      "missing_required_paths": [
+        "export_manifest.json",
+        "background_manifest.json",
+        "background_skybox.webp"
+      ],
+      "diagnosis": "Bad repair profile, not a production candidate: splatfacto export omitted viewer/background sidecars; constrained 64-image/2000-iteration/1.0-density run under-shot v5 tile_04 density. Do not reuse this profile for full14.",
+      "next": "Run no-spend full14 readiness/dry-run with prior known-good v5 splatfacto-w-light settings (sidecar-producing export, 188 images, 6000 iterations, 1.35 density ratio) and CV-HR processing ignored as non-blocking.",
+      "no_merge_review_full14_lod_viewer_promotion_launched_from_blocked_leaf": true
+    }
   ],
   "exact_head_gate_status": "exact-head b8c1b9c1370f64cebe4462a8a82e4ef29b2533f3 green on CDK Deploy 26046506709",
   "extracted_model_dir": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/extracted",
@@ -4057,7 +4091,7 @@
       "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26000210566"
     }
   ],
-  "last_updated": "20260519T151200Z",
+  "last_updated": "20260519T161110Z",
   "latest_bg10_merge_input_materialization_status": {
     "exact_head_workflows_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-exact-head-workflows-current-20260513.json",
     "input_materialization_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-input-materialization-current-20260513.json",
@@ -4264,7 +4298,7 @@
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
   "latest_boundary_responsible_tile_plan_status": "boundary primary tile_04/tile_10; horizon primary tile_04/tile_01; tile04 dryrun covers tile01/tile10 context support",
-  "latest_cost_control": "Failed original merge + retry1 merge + retry1 review total debited $0.316398; remaining budget $13.683602 in logs/locks/md1-budget.lock/md1-paid-budget-lock.json.",
+  "latest_cost_control": "Leaf visual repair job md1-r0v5repair-f2923-1779205460-1779205616-tile-04 completed in 908s and was debited $0.252222; total debited is $0.568620; budget remaining is $13.431380. Budget lock: logs/locks/md1-budget.lock/md1-paid-budget-lock.json.",
   "latest_evidence": [
     "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-headb578-postgreen-20260517T121321Z.json",
     "logs/md1-r0-visual-sentinel-v5-live-training-headb578-postgreen-20260517T121321Z.json",
@@ -4415,7 +4449,7 @@
     "pages_hash_url": "https://20660d91.v0-spaceport-website-preview2.pages.dev",
     "pages_run_id": 25107446761
   },
-  "latest_paid_steps": "Retry1 merge/preflight completed, then frozen-camera/V18 review md1-r1-r0v5relax-retry1-v18p24-1779202633-quality completed in 527s with review artifact s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-review-retry1-2bd90dd5-20260519T145514Z/outputs/r0v5relax-retry1-v18p24/md1-r1-r0v5relax-retry1-v18p24-1779202633-quality/output/model.tar.gz; AI visual QA blocked promotion.",
+  "latest_paid_steps": "Merge retry1 and V18 review completed; review was visually blocked. A bounded tile_04 repair leaf completed but failed preflight for missing sidecars and low density, so it is rejected and not promotable.",
   "latest_quality_strategy_gate_status": "tile04_boundary_horizon_leaf_dryrun_quality_gate_allowed; boundary_only_previous_dryrun_blocked_missing_horizon",
   "latest_review_comparison_path": "logs/md1-r4-soft-density-bg10-review-comparison-20260513.json",
   "latest_review_status": {
@@ -4553,7 +4587,7 @@
   "latest_testing": "python3 -m unittest tests.unit.test_tiled_merge_processing_planner passed; corrected payload has no BACKGROUND_SOURCE_TILE_ID",
   "latest_tile04_leaf_reuse_merge_dryrun_status": "R0 v5 density-relaxed tile_04 leaf passed post-leaf preflight/gate. On exact-head b83 and AWS idle, no-spend merge/review planning was rerun: merge_review_allowed, training_jobs_to_submit=0, local merge plan/payload dry-run generated, and submit readiness remains blocked only on merge_inputs_not_materialized.",
   "latest_tracked_sagemaker_evidence_spend_before_untracked_stop_usd": 14.8046,
-  "latest_training_cost_reduction_status": "Retry1 merge and frozen-camera review completed under budget, but AI visual QA blocked promotion; full14 remains blocked. CV-HR jobs are now codified as non-blocking MD1 evidence in leaf/merge readiness gates. Next paid step after exact-head green is a bounded leaf-level visual repair proof with early visual-smoke abort, not full14.",
+  "latest_training_cost_reduction_status": "Full14 leaf-only fanout reserved after CV-HR non-blocking override. Corrected dry-run selects all 14 tiles with known-good v5 splatfacto-w-light settings and max_tile_concurrency=2; merge/review/LOD/viewer promotion remain blocked pending post-leaf gates.",
   "latest_untracked_compute_stop": {
     "billable_time_seconds": 1956,
     "describe_json": "logs/md1-sample8-cpu-r4-1778646749-stopped-describe-20260513.json",
@@ -12953,7 +12987,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Commit/push the CV-HR non-blocking readiness gate patch and retry1 review evidence, watch exact-head workflows, then if green and AWS/CodeBuild/Step Functions are clear except CV-HR, submit only one bounded leaf-level visual repair proof with early visual-smoke abort.",
+  "next_unblocked_step": "Run full14 no-spend readiness/dry-run with known-good v5 splatfacto-w-light sidecar/density settings; if exact-head/build/AWS gates pass and budget lock reserves against the actual submit head, submit bounded full14 leaf training. Do not launch merge/review/LOD/viewer promotion until leaf artifacts pass post-leaf gates.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -13014,7 +13048,7 @@
     },
     "retained_delta_vs_strict_core": 0
   },
-  "owner_action_needed": "none for CV-HR jobs; production promotion needs a new/full-scene candidate that passes visual QA.",
+  "owner_action_needed": "none; CV-HR jobs are separate and no longer block MD1 progress.",
   "r1_candidate_reviews": {
     "baseline": {
       "bucket_medians": {
@@ -19047,7 +19081,7 @@
     "shared_assigned_fallback_pair_count": 2
   },
   "updated": "2026-05-19T04:29:16Z",
-  "updated_at": "20260519T151200Z",
+  "updated_at": "20260519T161110Z",
   "version": "1.0.0",
   "md1_r0_visual_sentinel_readiness_blocked_active_jobs_20260513": {
     "recorded_at": "2026-05-13T18:33:49Z",
@@ -29087,7 +29121,7 @@
     "no_review_full14_lod_viewer_promotion_launched": true,
     "next_required_action": "explicit gate required before frozen-camera review/visual QA/full14/LOD/viewer/promotion"
   },
-  "latest_visual_review": "Retry1 review mechanical visual QA assets passed 22/22 panels, but AI visual QA blocked promotion: severe color/exposure shift, missing/blurred geometry, incomplete p24 coverage, avg_psnr=11.36, avg_ssim=0.327, avg_lpips=0.870. Evidence: logs/md1-r0v5relax-review-retry1-visual-qa-gate-with-ai-20260519T150801Z.json.",
+  "latest_visual_review": "Retry1 mechanical QA passed but AI visual QA blocked promotion: severe color/exposure shift, missing/blurred terrain, incomplete p24 coverage, avg_psnr=11.36 avg_ssim=0.327 avg_lpips=0.870. The later repair leaf did not reach visual QA because preflight blocked it.",
   "md1_r0v5relax_retry1_review_visual_qa_blocked_2bd90dd5_20260519": {
     "status": "review_completed_visual_qa_blocked",
     "timestamp_utc": "20260519T151200Z",
@@ -29196,5 +29230,84 @@
       ]
     },
     "no_full14_lod_viewer_promotion_launched": true
-  }
+  },
+  "md1_r0v5repair_leaf_preflight_blocked_f2923ef0_20260519": {
+    "event": "md1-r0v5repair-leaf-preflight-blocked-f2923ef0",
+    "timestamp_utc": "20260519T161110Z",
+    "head": "f2923ef00417750f4efdfdc904c328645c168509",
+    "job_name": "md1-r0v5repair-f2923-1779205460-1779205616-tile-04",
+    "terminal_status": "Completed",
+    "runtime_seconds": 908,
+    "debited_usd": 0.252222,
+    "remaining_budget_usd": 13.43138,
+    "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5repair-f2923ef0-20260519T154420Z/tiles/tile_04/md1-r0v5repair-f2923-1779205460-1779205616-tile-04/output/model.tar.gz",
+    "dry_run_json": "logs/md1-r0v5repair-f2923ef0-20260519T154420Z-leaf-dryrun.json",
+    "presubmit_readiness_json": "logs/md1-r0v5repair-presubmit-f2923ef0-20260519T154650Z-leaf-submit-readiness.json",
+    "final_describe_json": "logs/md1-r0v5repair-f2923ef0-20260519T154420Z-leaf-final-describe.json",
+    "cloudwatch_events_json": "logs/md1-r0v5repair-f2923ef0-20260519T154420Z-leaf-cloudwatch-events-final.json",
+    "output_s3_listing": "logs/md1-r0v5repair-f2923ef0-20260519T154420Z-leaf-output-s3-list.txt",
+    "checkpoint_s3_listing": "logs/md1-r0v5repair-f2923ef0-20260519T154420Z-leaf-checkpoints-s3-list.txt",
+    "preflight_json": "logs/md1-r0v5repair-f2923ef0-20260519T154420Z-tile_04-leaf-preflight.json",
+    "preflight_decision": "leaf_preflight_blocked",
+    "preflight_block_reasons": [
+      "leaf_required_paths_missing",
+      "splat_vertex_count_below_reference_ratio"
+    ],
+    "splat_vertex_count": 697466,
+    "reference_splat_count": 956277,
+    "observed_reference_ratio": 0.729356,
+    "missing_required_paths": [
+      "export_manifest.json",
+      "background_manifest.json",
+      "background_skybox.webp"
+    ],
+    "diagnosis": "Bad repair profile, not a production candidate: splatfacto export omitted viewer/background sidecars; constrained 64-image/2000-iteration/1.0-density run under-shot v5 tile_04 density. Do not reuse this profile for full14.",
+    "next": "Run no-spend full14 readiness/dry-run with prior known-good v5 splatfacto-w-light settings (sidecar-producing export, 188 images, 6000 iterations, 1.35 density ratio) and CV-HR processing ignored as non-blocking.",
+    "no_merge_review_full14_lod_viewer_promotion_launched_from_blocked_leaf": true
+  },
+  "latest_full14_leaf_training_reservation_20260519": {
+    "checked_at_utc": "2026-05-19T16:55:00Z",
+    "head": "f2923ef00417750f4efdfdc904c328645c168509",
+    "user_override": "CV-HR processing jobs are separate/non-blocking for MD1; record only, do not stop or modify.",
+    "decision": "reserved_full14_leaf_training_only",
+    "dry_run_json": "logs/md1-r0v5full14-f2923ef0-20260519T1645Z-dryrun.json",
+    "production_rung_gate_json": "logs/md1-r0v5full14-production-rung-operator-override-f2923ef0-20260519T1645Z.json",
+    "presubmit_evidence_json": "logs/md1-r0v5full14-presubmit-f2923ef0-20260519T165500Z-summary.json",
+    "selected_tile_ids": [
+      "tile_00",
+      "tile_01",
+      "tile_02",
+      "tile_03",
+      "tile_04",
+      "tile_05",
+      "tile_06",
+      "tile_07",
+      "tile_08",
+      "tile_09",
+      "tile_10",
+      "tile_11",
+      "tile_12",
+      "tile_13"
+    ],
+    "max_tile_concurrency": 2,
+    "training_quota_ml_g4dn_xlarge": 2.0,
+    "estimated_usd": 10.304,
+    "full14_cap_usd": 10.5,
+    "budget_remaining_unreserved_after_reservation": 2.93138,
+    "scope": [
+      "full14 leaf training only",
+      "skip merge/review",
+      "post-leaf gates required before merge/review",
+      "no LOD/viewer/promotion under this gate"
+    ],
+    "known_bad_profile_excluded": "md1-r0v5repair-f2923-1779205460-1779205616-tile-04 splatfacto/64-image/2000-iteration repair profile failed preflight and must not be reused"
+  },
+  "agent_loop_events": [
+    {
+      "timestamp_utc": "2026-05-19T16:55:00Z",
+      "event": "md1-r0v5full14-leaf-fanout-reserved-f2923",
+      "summary": "Reserved bounded full14 leaf-only fanout under $10.50 cap after corrected 14-tile dry-run and CV-HR non-blocking override.",
+      "next": "Submit the reserved full14 fanout, monitor to terminal state, then run post-leaf artifact/preflight gates before any merge/review/LOD/viewer promotion."
+    }
+  ]
 }

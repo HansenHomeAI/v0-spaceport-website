@@ -1,0 +1,618 @@
+[
+    {
+        "id": "spaceport-ml-containers:04906e4b-fd21-4cca-a1bf-3c457be5e98f",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "60fcec4fe28e3ee73e4c44aa5eebcf4ade543c54",
+        "startTime": "2026-05-18T19:25:31.712000-06:00",
+        "endTime": "2026-05-18T19:38:55.923000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:40210393-c277-4eef-921e-06ab1dec9bbe",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "e2315457661b32e983d9e1317bd1aec1c300b774",
+        "startTime": "2026-05-18T13:57:10.599000-06:00",
+        "endTime": "2026-05-18T14:10:59.800000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:0109c1cb-3e72-4547-a2f7-9dde1a170f12",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "436b620ed69ac0b5ea7611488a73968e4717db28",
+        "startTime": "2026-05-18T13:24:44.046000-06:00",
+        "endTime": "2026-05-18T13:39:18.212000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:83ad3e50-5f3f-4802-8dd6-616183c072a2",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "cea64f7cda7ef960388bbbf43ae850909dcc6c28",
+        "startTime": "2026-05-18T13:10:43.407000-06:00",
+        "endTime": "2026-05-18T13:24:22.612000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:063b2f62-140d-4da2-9c60-3397899616cb",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "df57b678c025ed39fe27b7500d3e7a301b74b603",
+        "startTime": "2026-05-18T11:54:57.792000-06:00",
+        "endTime": "2026-05-18T12:13:50.495000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:531ba12a-75a3-42bf-b742-9351ed274d47",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "a24d3603537db9c28b9cdc50f4fc48db0bcadc27",
+        "startTime": "2026-05-18T11:28:24.528000-06:00",
+        "endTime": "2026-05-18T11:44:55.587000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:e2ac4bd6-5627-49fa-8007-1d57c634cb01",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "414560c5818ed5d5173936697924de4ac5cb2c7f",
+        "startTime": "2026-05-18T11:05:28.257000-06:00",
+        "endTime": "2026-05-18T11:18:24.606000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:7d8db46a-66d5-44fc-9316-1b7aa767dfbc",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "9e251de9f70c207e0190a6710686a0ecb8e6e3eb",
+        "startTime": "2026-05-15T20:39:05.228000-06:00",
+        "endTime": "2026-05-15T20:48:50.887000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:f2c51eac-e42c-46e9-a7a8-21349b3df38e",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "ecf6dbd732208d249783a723d7fa0734d41424f7",
+        "startTime": "2026-05-15T20:05:20.190000-06:00",
+        "endTime": "2026-05-15T20:19:56.597000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:d4691f87-0684-47fe-a235-3fa7c5c6e98d",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "5682b21363c305626706e4b40edcff49a7bd1fb2",
+        "startTime": "2026-05-15T03:40:25.899000-06:00",
+        "endTime": "2026-05-15T03:44:33.822000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:89e75620-0a6d-4b26-8fab-d0d3a7bdc76d",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "d87675864413b0de02b228669c2cb4470d870cb9",
+        "startTime": "2026-04-16T22:16:14.030000-06:00",
+        "endTime": "2026-04-16T22:32:33.427000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:2a5f280f-2ea8-467a-8f9f-20372ef3832a",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "bea5fb8b479a46d24cb5c5b802170422780aade2",
+        "startTime": "2026-04-16T08:18:26.756000-06:00",
+        "endTime": "2026-04-16T08:38:56.226000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:8692e692-6ddf-4287-8fb4-b0ee97a74dbd",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "ad20c2410b0307ac2ddf313947ca29ecc84c52fc",
+        "startTime": "2026-04-16T00:19:29.442000-06:00",
+        "endTime": "2026-04-16T00:29:57.191000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:45a21362-e659-4610-9fce-90aa03ebac2b",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "4e7564d225964dee4991fd4cebf8359d0b26231d",
+        "startTime": "2026-04-15T22:28:02.394000-06:00",
+        "endTime": "2026-04-15T22:41:59.126000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:e9d2ef75-6c7f-4361-868d-34fdb962890b",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "c0fab25ed02eacc0d7d37da37b5875a3baf11176",
+        "startTime": "2026-04-15T21:22:44.867000-06:00",
+        "endTime": "2026-04-15T21:33:28.163000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:11156307-2fd7-433d-8602-c1bd076790d0",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "ea69a4874d0196a1db2fa67b35c36fe8cafc9ebb",
+        "startTime": "2026-04-15T16:23:06.798000-06:00",
+        "endTime": "2026-04-15T16:37:25.162000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:ae0307cd-e0c9-4526-8bbb-12161c0f7f6b",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "1a0264fcbc638cbe20afb502d407774856c93e08",
+        "startTime": "2026-04-15T16:12:08.912000-06:00",
+        "endTime": "2026-04-15T16:22:43.417000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:065a9bba-31fc-43b7-8916-7fc134c7d1fc",
+        "buildStatus": "FAILED",
+        "sourceVersion": "505c46f9eb428d9aaa2929dc9290c91f393e7087",
+        "startTime": "2026-04-15T16:00:20.135000-06:00",
+        "endTime": "2026-04-15T16:00:56.408000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:b562e956-2790-4aef-bd17-9da27940e960",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "373580589b2fa339e003e47e4f0af806f5e6b421",
+        "startTime": "2026-04-15T14:04:15.993000-06:00",
+        "endTime": "2026-04-15T14:15:08.158000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:d950b4e2-512c-404f-a25a-82d3d30845c3",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "74dc368b4371b9d625344c673b84cc8e0d88343c",
+        "startTime": "2026-04-15T11:12:42.767000-06:00",
+        "endTime": "2026-04-15T11:23:53.560000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:294cc488-f0bb-44bf-9698-8eb74a96fabf",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "0f67143211d4c39005a5c2e9f1481d980563da24",
+        "startTime": "2026-04-09T09:00:02.039000-06:00",
+        "endTime": "2026-04-09T09:14:17.990000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:418b3bed-fb4d-4eb3-8a59-05b47dac4e1e",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "d224a09b7e1495fc15f11fcb2dbefe5f44217779",
+        "startTime": "2026-04-08T23:27:39.429000-06:00",
+        "endTime": "2026-04-08T23:41:59.878000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:6fcbf76b-1977-41a0-b522-b0a4a27f7c21",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "3dffed6e2ee456a981e5b177411c6ade69b5b8b7",
+        "startTime": "2026-04-08T22:40:21.347000-06:00",
+        "endTime": "2026-04-08T22:50:27.893000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:18ddcdb0-8ad3-42fb-babb-34edcedf2876",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "7ba2801bc915ad99e2a474b45f520846524a788d",
+        "startTime": "2026-04-08T22:27:02.023000-06:00",
+        "endTime": "2026-04-08T22:40:16.800000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:7db3c883-d9a9-4e00-969c-b0d91c9f481d",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "03f93315f360cb520828646217c86adc7247b713",
+        "startTime": "2026-04-08T22:15:32.151000-06:00",
+        "endTime": "2026-04-08T22:26:32.906000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:266c112d-f46c-4962-b343-13541af01aeb",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "3b9a3f4666f86517d11fb48eaa10abb6146a9b40",
+        "startTime": "2026-04-08T22:07:29.812000-06:00",
+        "endTime": "2026-04-08T22:15:18.337000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:6debff55-0ba6-4f56-b91c-b11b2ec4837e",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "dcdbe77af16984718155731fee1bae03e158f1b6",
+        "startTime": "2026-04-07T11:39:10.952000-06:00",
+        "endTime": "2026-04-07T11:47:55.392000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:1035feb8-5dfc-4840-9b24-ae0781d8c121",
+        "buildStatus": "FAILED",
+        "sourceVersion": "7492af88fe4f8b151937aed2259b4a13204f2a08",
+        "startTime": "2026-04-07T11:26:17.672000-06:00",
+        "endTime": "2026-04-07T11:35:45.063000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:d10742b0-b991-4220-83ea-44d8f75fbfe4",
+        "buildStatus": "FAILED",
+        "sourceVersion": "104cb5fe00fcc76d4d2924d567c6d3ab4706eb04",
+        "startTime": "2026-04-07T11:13:39.058000-06:00",
+        "endTime": "2026-04-07T11:23:58.078000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:471a14f3-f2a2-4264-831d-e5bffa3291b2",
+        "buildStatus": "FAILED",
+        "sourceVersion": "e4c836431e33da06d9175fdd6670705f7c2c375d",
+        "startTime": "2026-04-07T10:59:26.035000-06:00",
+        "endTime": "2026-04-07T11:08:59.818000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:edabc866-5356-47f2-b406-681121214171",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "4a5321671cca7adbdc849d896aada94bdca3c1e2",
+        "startTime": "2026-03-26T12:57:43.190000-06:00",
+        "endTime": "2026-03-26T13:06:42.496000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:8457abd7-7fa0-41ca-98e6-bc0b4762158d",
+        "buildStatus": "STOPPED",
+        "sourceVersion": "agent-26032611-replace-sfm-colmap-gpu",
+        "startTime": "2026-03-26T12:49:49.030000-06:00",
+        "endTime": "2026-03-26T13:19:10.428000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:e93d3a08-fd62-4b60-9acd-d9de7704676c",
+        "buildStatus": "FAILED",
+        "sourceVersion": "7c71171145c8b7c6db03a3327b99c50a9f8356d8",
+        "startTime": "2026-03-26T12:44:37.685000-06:00",
+        "endTime": "2026-03-26T12:51:57.438000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:8b4c5eaf-eee0-479e-80d3-25625b6c75f0",
+        "buildStatus": "FAILED",
+        "sourceVersion": "a1357ba93653ab7199e2d5e17228dea3b434b2f8",
+        "startTime": "2026-03-26T12:36:58.538000-06:00",
+        "endTime": "2026-03-26T12:44:20.593000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:8c9e2f4e-7817-4bad-9e36-6b740e308e51",
+        "buildStatus": "FAILED",
+        "sourceVersion": "42101187bce93950e4da4a94fb97e32dd1b544c2",
+        "startTime": "2026-03-26T12:29:38.293000-06:00",
+        "endTime": "2026-03-26T12:36:51.333000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:a716ab85-98da-43ca-b187-22f506ed4a14",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "f77c65ce2c9c24475722780abb5361ed292a26a7",
+        "startTime": "2026-03-26T12:21:09.182000-06:00",
+        "endTime": "2026-03-26T12:29:18.807000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:4c5b23de-61a8-42ca-bfe0-e411ac319230",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "f77c65ce2c9c24475722780abb5361ed292a26a7",
+        "startTime": "2026-03-26T12:11:02.667000-06:00",
+        "endTime": "2026-03-26T12:20:49.506000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:1c302d32-0e7d-4cc0-a063-a2f89ced385a",
+        "buildStatus": "STOPPED",
+        "sourceVersion": "c98df4183b989dd85210485979f27a461772723a",
+        "startTime": "2026-03-26T12:02:55.281000-06:00",
+        "endTime": "2026-03-26T12:11:02.614000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:2afe6bea-8b9d-47d4-89ad-dd988937513b",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "2ae36d6216143d5c5b85c128455986544c674d24",
+        "startTime": "2026-03-26T11:33:26.763000-06:00",
+        "endTime": "2026-03-26T11:46:00.345000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:1685a02c-2ab4-4d08-b8f0-6433c333188c",
+        "buildStatus": "FAILED",
+        "sourceVersion": null,
+        "startTime": "2026-03-26T09:17:52.695000-06:00",
+        "endTime": "2026-03-26T09:25:54.022000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:d01d092c-486e-424c-a0e4-84cc6b8a4975",
+        "buildStatus": "FAILED",
+        "sourceVersion": "dd9e1b40a0a9ebaf3670ed4fbf9893d256c5fd5a",
+        "startTime": "2025-12-02T17:19:17.887000-07:00",
+        "endTime": "2025-12-02T17:23:30.334000-07:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:11e9728c-104f-4e44-a07d-8e609def3481",
+        "buildStatus": "FAILED",
+        "sourceVersion": "f9ec45dc708ca973b5c1b4917c2408b5ba5fde90",
+        "startTime": "2025-12-02T16:33:47.434000-07:00",
+        "endTime": "2025-12-02T17:19:16.752000-07:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:549725e7-39fe-40c4-b8b2-f1b8d62c0125",
+        "buildStatus": "FAILED",
+        "sourceVersion": "f9ec45dc708ca973b5c1b4917c2408b5ba5fde90",
+        "startTime": "2025-12-02T15:48:07.919000-07:00",
+        "endTime": "2025-12-02T16:33:41.966000-07:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:318122ab-f631-4878-a17b-2e8cc6bfbb32",
+        "buildStatus": "FAILED",
+        "sourceVersion": "52c39b0579e27fbbfe216e61369ca338f4e16c69",
+        "startTime": "2025-12-02T15:30:07.874000-07:00",
+        "endTime": "2025-12-02T15:36:12.093000-07:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:983255a8-6776-4195-a77a-16f0ffce1295",
+        "buildStatus": "FAILED",
+        "sourceVersion": "52c39b0579e27fbbfe216e61369ca338f4e16c69",
+        "startTime": "2025-12-02T15:23:43.307000-07:00",
+        "endTime": "2025-12-02T15:29:42.405000-07:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:73af9b21-e55a-4071-a8b8-e5694d2c35e8",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "8a77d53059bd75e7462d3c7acd2a8ffbf5bc768a",
+        "startTime": "2025-12-02T14:53:52.566000-07:00",
+        "endTime": "2025-12-02T15:02:46.822000-07:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:ee877074-1456-480b-a3c8-f4af170a9fe8",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "64c5c94dbaf1435d009f9c8b86808c607caa68e7",
+        "startTime": "2025-12-02T11:06:27.332000-07:00",
+        "endTime": "2025-12-02T11:29:16.043000-07:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:9aa7334d-83b7-4a6f-af01-30efae17544f",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "1a7eb0fcd304a5fa7a2a4a77a6650775235734d1",
+        "startTime": "2025-11-19T18:46:51.633000-07:00",
+        "endTime": "2025-11-19T19:22:16.379000-07:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:f224ebf2-0b8b-4de4-a239-08a8ebf6664e",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "44a9bb51ebcf9a639e3bb899186deef689aa8b49",
+        "startTime": "2025-11-19T18:21:25.894000-07:00",
+        "endTime": "2025-11-19T18:31:22.725000-07:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:990b7a56-8262-4da2-92e8-525091daf1a5",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "4f83da626b193b99e6cdb347ecb8ebaf8c347dd2",
+        "startTime": "2025-11-19T16:24:05.930000-07:00",
+        "endTime": "2025-11-19T16:47:42.337000-07:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:5e4aa652-afb2-4d40-bfd0-4b2a70414bca",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "cb67a7d571c74a6dafb84039f00059eff0301fa9",
+        "startTime": "2025-08-16T15:13:58.209000-06:00",
+        "endTime": "2025-08-16T15:26:41.838000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:c35b6008-6828-4b59-b235-eadf8f711889",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "94aaf5db6e64d776b5e90fa0513fb9e189508066",
+        "startTime": "2025-08-16T14:46:25.551000-06:00",
+        "endTime": "2025-08-16T14:59:23.112000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:ddf24478-956b-44cd-b8dd-e0ebe053f402",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "6ebe5922f03bc98218bc9f18dbab47c1384d3726",
+        "startTime": "2025-08-16T12:29:22.221000-06:00",
+        "endTime": "2025-08-16T12:41:29.299000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:918c482c-ae2f-48d6-bc59-d4f9f90de6b9",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "0f08fff9e2ceaa1ff24531dd14c8efa190c40be4",
+        "startTime": "2025-08-16T12:25:08.677000-06:00",
+        "endTime": "2025-08-16T12:37:03.976000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:953a255c-5c95-47c9-9445-ea2ad186c850",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "3024d03c99d4cf074e6bac212ce808f302e6f86d",
+        "startTime": "2025-08-16T12:16:00.105000-06:00",
+        "endTime": "2025-08-16T12:26:07.902000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:4cc5f0e2-a4e8-41af-993b-82432cf150ec",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "bafae97b90a9398989444578366b8f555ee61f96",
+        "startTime": "2025-08-16T11:49:18.911000-06:00",
+        "endTime": "2025-08-16T12:01:11.349000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:b178722a-824f-477e-abb9-3f4adb1058f7",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "4a4b3a04b4bacebc36551ebbc819ba65b6481896",
+        "startTime": "2025-08-16T11:43:41.190000-06:00",
+        "endTime": "2025-08-16T11:54:03.656000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:fe53c5a9-1776-40b8-b181-e7f850545ec7",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "4a4b3a04b4bacebc36551ebbc819ba65b6481896",
+        "startTime": "2025-08-16T11:20:06.879000-06:00",
+        "endTime": "2025-08-16T11:33:16.861000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:eb052150-51d2-4cc2-b87b-c8406d93f806",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "e73721b02cdb02fc12226b3adc06068947677dcb",
+        "startTime": "2025-08-16T09:56:28.571000-06:00",
+        "endTime": "2025-08-16T10:14:58.042000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:e9814898-2dd6-4e2e-8c01-a310d6f09cc1",
+        "buildStatus": "FAILED",
+        "sourceVersion": "3b57133d",
+        "startTime": "2025-08-16T09:50:56.848000-06:00",
+        "endTime": "2025-08-16T09:54:51.213000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:ff19061b-809b-45d9-be50-846a89c01848",
+        "buildStatus": "FAILED",
+        "sourceVersion": "13104db58d9a4cc185e8ec387a83421e43c1d1ae",
+        "startTime": "2025-07-18T18:26:26.110000-06:00",
+        "endTime": "2025-07-18T18:31:52.689000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:486069aa-7cee-4b20-a88d-4dbb6343b876",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "e57c92af148c1fd158153f263121d25131d883fd",
+        "startTime": "2025-07-18T17:43:26.284000-06:00",
+        "endTime": "2025-07-18T17:56:16.393000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:7b1098a9-ef10-45f9-9262-f58f1fb89fd1",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "82b32883f5a5ff266bb59f035432cefe774b2dc5",
+        "startTime": "2025-07-18T16:17:06.695000-06:00",
+        "endTime": "2025-07-18T16:33:12.006000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:409418be-425a-4515-9a47-72d20001a2a3",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "d100e4aa0d20332c955eb215de4177deaf3f2245",
+        "startTime": "2025-07-17T23:40:47.300000-06:00",
+        "endTime": "2025-07-17T23:57:53.721000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:d6ec7c1a-99c5-4168-a8bb-4b03f630dc79",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "7b3d6456a1243f3213dd952705772470b7d630d1",
+        "startTime": "2025-07-16T21:39:21.495000-06:00",
+        "endTime": "2025-07-16T21:50:58.064000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:ed1e0919-416b-487a-a179-f9c6b8304d8b",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "7df4861fdc192cead0a57136e467c17ca8fd451b",
+        "startTime": "2025-07-16T21:17:45.263000-06:00",
+        "endTime": "2025-07-16T21:34:56.705000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:d1e9fd8d-fa32-48c1-8f5a-11f67918c458",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "b394ca0049aaa9f34ca8dd6fb5b640b9db951fcb",
+        "startTime": "2025-07-16T18:35:55.433000-06:00",
+        "endTime": "2025-07-16T18:57:12.360000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:de69f357-a660-4edf-b737-532c413f211b",
+        "buildStatus": "FAILED",
+        "sourceVersion": "fb1a966abd89bd01d5ef16311d68334657b19a86",
+        "startTime": "2025-07-16T17:24:52.219000-06:00",
+        "endTime": "2025-07-16T17:33:58.269000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:a14e7185-67f4-4fd1-8228-d5fa9a7686f3",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "ea6d903fb80bbc9e848abcf71b15328318d48a1e",
+        "startTime": "2025-07-16T16:43:23.889000-06:00",
+        "endTime": "2025-07-16T17:20:01.111000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:ddd7ebcf-b1db-4559-afde-ce038f77c4f0",
+        "buildStatus": "SUCCEEDED",
+        "sourceVersion": "e1be3e03d01ac219cd655ab884f769d6aa8c8e56",
+        "startTime": "2025-07-14T21:36:32.997000-06:00",
+        "endTime": "2025-07-14T21:57:42.482000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:d731d196-7e71-4268-a9f7-f484ace53c2b",
+        "buildStatus": "FAILED",
+        "sourceVersion": "7533c6af41a58a2f8515eadb495a3f00fd6f6f00",
+        "startTime": "2025-06-27T15:43:41.127000-06:00",
+        "endTime": "2025-06-27T15:45:43.774000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:3e5479d7-133e-4f66-8bd1-57a85b48c260",
+        "buildStatus": "FAILED",
+        "sourceVersion": "47e8c89d2b8e3119f3ac3c1461c520ad161a972e",
+        "startTime": "2025-06-27T15:07:24.009000-06:00",
+        "endTime": "2025-06-27T15:17:41.656000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:73cc048d-ee93-48a0-8a4e-1da35639d9ba",
+        "buildStatus": "FAILED",
+        "sourceVersion": "c4e7a2db53b97d74a391c760f45c204a1b8c6410",
+        "startTime": "2025-06-27T14:37:32.159000-06:00",
+        "endTime": "2025-06-27T14:38:21.985000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:6c876855-e0bf-41fc-aab3-6fcb143691da",
+        "buildStatus": "FAILED",
+        "sourceVersion": "aa66e2f55ee105ec69357ac37f6dcd646dbe7cb5",
+        "startTime": "2025-06-27T14:29:58.327000-06:00",
+        "endTime": "2025-06-27T14:32:03.213000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:b19c94b3-191c-47b8-88a6-88e4d7fda827",
+        "buildStatus": "FAILED",
+        "sourceVersion": "60699590a8936a87f4799a5b40cc38d869e545d1",
+        "startTime": "2025-06-27T13:18:31.595000-06:00",
+        "endTime": "2025-06-27T13:31:41.750000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:26a297bd-41ed-4a4c-9544-ccb44519ceee",
+        "buildStatus": "FAILED",
+        "sourceVersion": null,
+        "startTime": "2025-06-27T13:10:35.767000-06:00",
+        "endTime": "2025-06-27T13:10:52.183000-06:00",
+        "currentPhase": "COMPLETED"
+    },
+    {
+        "id": "spaceport-ml-containers:e6680e51-e6c9-4aa4-a172-89328d70dd49",
+        "buildStatus": "FAILED",
+        "sourceVersion": null,
+        "startTime": "2025-06-27T13:06:23.680000-06:00",
+        "endTime": "2025-06-27T13:06:41.787000-06:00",
+        "currentPhase": "COMPLETED"
+    }
+]

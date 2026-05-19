@@ -1,0 +1,55 @@
+{
+  "checked_at_utc": "2026-05-19T16:55:00Z",
+  "branch": "agent-90742618-md1-geometry-consistency",
+  "head": "f2923ef00417750f4efdfdc904c328645c168509",
+  "exact_head_workflow": {
+    "name": "CDK Deploy",
+    "run_id": 26107107781,
+    "conclusion": "success",
+    "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26107107781"
+  },
+  "aws_identity": {
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root"
+  },
+  "training_inprogress": [],
+  "processing_inprogress_non_blocking": [
+    {
+      "ProcessingJobName": "cvhr-secondary-20260518t2113z-sfm",
+      "ProcessingJobStatus": "InProgress"
+    },
+    {
+      "ProcessingJobName": "cvhr-mtc-20260518T1729Z-sfm",
+      "ProcessingJobStatus": "InProgress"
+    }
+  ],
+  "processing_inprogress_md1_blocking": [],
+  "stepfunctions_running": [],
+  "codebuild_latest": {
+    "id": "spaceport-ml-containers:04906e4b-fd21-4cca-a1bf-3c457be5e98f",
+    "status": "SUCCEEDED",
+    "currentPhase": "COMPLETED",
+    "complete": true,
+    "sourceVersion": "60fcec4fe28e3ee73e4c44aa5eebcf4ade543c54"
+  },
+  "duplicate_training_check": {
+    "name_contains": "md1-r0v5full14-f2923",
+    "matches": []
+  },
+  "service_quota": {
+    "ml.g4dn.xlarge_training_job_usage": 2.0,
+    "chosen_max_tile_concurrency": 2
+  },
+  "dry_run_json": "logs/md1-r0v5full14-f2923ef0-20260519T1645Z-dryrun.json",
+  "production_rung_gate_json": "logs/md1-r0v5full14-production-rung-operator-override-f2923ef0-20260519T1645Z.json",
+  "decision": "full14_leaf_submit_allowed_with_cvhr_non_blocking_and_v18_manifest",
+  "scope": "submit full14 leaf training only; skip merge/review; post-leaf preflight gates required before any later merge/review/LOD/viewer/promotion",
+  "v18_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review",
+  "submit_attempts": [
+    {
+      "attempted_at_utc": "2026-05-19T16:58:00Z",
+      "result": "blocked_before_submit_no_jobs",
+      "reason": "missing --v18-review-manifest-s3-uri"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "evaluated_gaussians": 697466,
+  "candidate_gaussians": 626131,
+  "removed_gaussians": 0,
+  "remaining_gaussians": 697466,
+  "sampled_views": 24,
+  "min_views": 6,
+  "top_region_ratio": 0.55,
+  "top_view_fraction": 0.45,
+  "min_sky_views": 2,
+  "sky_min_luminance": 0.3,
+  "sky_min_saturation": 0.08,
+  "sky_blue_dominance_margin": 0.02,
+  "max_opacity": 0.75,
+  "max_color_distance": 0.18,
+  "min_edge_support": 2,
+  "patch_size": 9
+}

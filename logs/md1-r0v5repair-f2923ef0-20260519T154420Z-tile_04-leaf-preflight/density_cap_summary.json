@@ -1,0 +1,11 @@
+{
+  "enabled": true,
+  "policy": "opacity_topk",
+  "max_gaussians": 956277,
+  "original_gaussians": 697466,
+  "kept_gaussians": 697466,
+  "removed_gaussians": 0,
+  "min_kept_opacity": 0.003945367410778999,
+  "max_removed_opacity": null,
+  "score_quantile_cutoff": null
+}
