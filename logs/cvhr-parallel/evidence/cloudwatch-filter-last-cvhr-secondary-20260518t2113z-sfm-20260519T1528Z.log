@@ -1,0 +1,60 @@
+2026-05-19T15:29:38.354000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:37.697383  6806 feature_matching.cc:217] in 0.688s
+2026-05-19T15:29:38.354000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:37.697436  6806 pairing.cc:631] Processing image [38/177]
+2026-05-19T15:29:38.354000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:37.908373  6806 feature_matching.cc:217] in 0.211s
+2026-05-19T15:29:38.354000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:37.908419  6806 pairing.cc:631] Processing image [39/177]
+2026-05-19T15:29:38.354000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:38.143541  6806 feature_matching.cc:217] in 0.235s
+2026-05-19T15:29:38.354000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:38.143592  6806 pairing.cc:631] Processing image [40/177]
+2026-05-19T15:29:39.354000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:38.393570  6806 feature_matching.cc:217] in 0.250s
+2026-05-19T15:29:39.354000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:38.393622  6806 pairing.cc:631] Processing image [41/177]
+2026-05-19T15:29:39.354000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:38.553287  6806 feature_matching.cc:217] in 0.160s
+2026-05-19T15:29:39.354000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:38.553332  6806 pairing.cc:631] Processing image [42/177]
+2026-05-19T15:29:39.354000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:38.683481  6806 feature_matching.cc:217] in 0.130s
+2026-05-19T15:29:39.355000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:38.683528  6806 pairing.cc:631] Processing image [43/177]
+2026-05-19T15:29:39.355000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:38.749272  6806 feature_matching.cc:217] in 0.066s
+2026-05-19T15:29:39.355000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:38.749311  6806 pairing.cc:631] Processing image [44/177]
+2026-05-19T15:29:39.355000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:38.836408  6806 feature_matching.cc:217] in 0.087s
+2026-05-19T15:29:39.355000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:38.836452  6806 pairing.cc:631] Processing image [45/177]
+2026-05-19T15:29:39.355000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:38.964993  6806 feature_matching.cc:217] in 0.129s
+2026-05-19T15:29:39.355000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:38.965039  6806 pairing.cc:631] Processing image [46/177]
+2026-05-19T15:29:39.355000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:39.124352  6806 feature_matching.cc:217] in 0.159s
+2026-05-19T15:29:39.355000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:39.124395  6806 pairing.cc:631] Processing image [47/177]
+2026-05-19T15:29:39.355000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:39.298182  6806 feature_matching.cc:217] in 0.174s
+2026-05-19T15:29:39.355000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:39.298228  6806 pairing.cc:631] Processing image [48/177]
+2026-05-19T15:29:40.355000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:39.490166  6806 feature_matching.cc:217] in 0.192s
+2026-05-19T15:29:40.355000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:39.490211  6806 pairing.cc:631] Processing image [49/177]
+2026-05-19T15:29:40.355000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:39.654057  6806 feature_matching.cc:217] in 0.164s
+2026-05-19T15:29:40.355000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:39.654101  6806 pairing.cc:631] Processing image [50/177]
+2026-05-19T15:29:40.355000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:40.070322  6806 feature_matching.cc:217] in 0.416s
+2026-05-19T15:29:40.355000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:40.070363  6806 pairing.cc:631] Processing image [51/177]
+2026-05-19T15:29:41.356000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:40.481231  6806 feature_matching.cc:217] in 0.411s
+2026-05-19T15:29:41.356000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:40.481284  6806 pairing.cc:631] Processing image [52/177]
+2026-05-19T15:29:41.356000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:41.166173  6806 feature_matching.cc:217] in 0.685s
+2026-05-19T15:29:41.356000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:41.166249  6806 pairing.cc:631] Processing image [53/177]
+2026-05-19T15:29:42.356000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:41.533528  6806 feature_matching.cc:217] in 0.367s
+2026-05-19T15:29:42.356000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:41.533577  6806 pairing.cc:631] Processing image [54/177]
+2026-05-19T15:29:42.356000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:41.900867  6806 feature_matching.cc:217] in 0.367s
+2026-05-19T15:29:42.356000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:41.900923  6806 pairing.cc:631] Processing image [55/177]
+2026-05-19T15:29:42.356000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:42.342231  6806 feature_matching.cc:217] in 0.441s
+2026-05-19T15:29:42.356000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:42.342283  6806 pairing.cc:631] Processing image [56/177]
+2026-05-19T15:29:43.356000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:42.712646  6806 feature_matching.cc:217] in 0.370s
+2026-05-19T15:29:43.357000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:42.712697  6806 pairing.cc:631] Processing image [57/177]
+2026-05-19T15:29:43.357000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:42.993476  6806 feature_matching.cc:217] in 0.281s
+2026-05-19T15:29:43.357000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:42.993528  6806 pairing.cc:631] Processing image [58/177]
+2026-05-19T15:29:44.357000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:43.521521  6806 feature_matching.cc:217] in 0.528s
+2026-05-19T15:29:44.357000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:43.521572  6806 pairing.cc:631] Processing image [59/177]
+2026-05-19T15:29:44.357000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:43.843278  6806 feature_matching.cc:217] in 0.322s
+2026-05-19T15:29:44.357000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:43.843323  6806 pairing.cc:631] Processing image [60/177]
+2026-05-19T15:29:44.357000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:44.010623  6806 feature_matching.cc:217] in 0.167s
+2026-05-19T15:29:44.357000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:44.010668  6806 pairing.cc:631] Processing image [61/177]
+2026-05-19T15:29:45.358000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:44.543045  6806 feature_matching.cc:217] in 0.532s
+2026-05-19T15:29:45.358000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:44.543097  6806 pairing.cc:631] Processing image [62/177]
+2026-05-19T15:29:46.409000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:46.172816  6806 feature_matching.cc:217] in 1.630s
+2026-05-19T15:29:46.410000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:46.172861  6806 pairing.cc:631] Processing image [63/177]
+2026-05-19T15:29:48.410000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:47.410040  6806 feature_matching.cc:217] in 1.237s
+2026-05-19T15:29:48.410000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:47.410089  6806 pairing.cc:631] Processing image [64/177]
+2026-05-19T15:29:49.411000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:48.636253  6806 feature_matching.cc:217] in 1.226s
+2026-05-19T15:29:49.411000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:48.636300  6806 pairing.cc:631] Processing image [65/177]
+2026-05-19T15:29:50.411000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:49.418911  6806 feature_matching.cc:217] in 0.783s
+2026-05-19T15:29:50.411000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:49.418965  6806 pairing.cc:631] Processing image [66/177]
+2026-05-19T15:29:50.411000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:50.118427  6806 feature_matching.cc:217] in 0.699s
+2026-05-19T15:29:50.411000+00:00 COLMAP[chunk_05_spatial_matcher] I20260519 15:29:50.118472  6806 pairing.cc:631] Processing image [67/177]
