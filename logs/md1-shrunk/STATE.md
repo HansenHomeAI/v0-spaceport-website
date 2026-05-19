@@ -7768,3 +7768,56 @@ skybox, compression, artifact handoff, and visual gates.
   - `logs/md1-shrunk/cloudwatch-stream-compression-md1-shrunk-prodspine-wlight-202605190027-20260519T0257Z.json`
   - `logs/md1-shrunk/s3-compressed-md1-shrunk-prodspine-wlight-202605190027-20260519T0257Z.txt`
   - `logs/md1-shrunk/cloudwatch-compression-md1-shrunk-prodspine-wlight-202605190027-20260519T0258Z.json`
+
+## 2026-05-19T03:42Z in-chat public bundle, viewer controls, and visual gate
+
+- Accountability mode:
+  - User asked to keep the automation in this chat. I am continuing the monitor/implementation loop directly in this thread, with no new scheduled automation card.
+- Verified terminal cloud state:
+  - AWS identity: `arn:aws:iam::975050048887:root`.
+  - Step Functions execution: `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-br-8abcbd5662:execution-md1-shrunk-prodspine-wlight-202605190027` -> `SUCCEEDED`.
+  - compression job: `md1-shrunk-prodspine-wlight-202605190027-compression` -> `ProcessingJobStatus=Completed`.
+  - latest exact-head CI before this code patch: branch head `3bdfaab239eeb6bc11267cfebf5d7575aa679237`; last meaningful exact-head `CDK Deploy` run `26052859100` was `success` for `1900964d7d3601733e6cb9d587a3128717749336`.
+- Public delivery fix:
+  - Staging bundle objects were KMS encrypted; unsigned browser `GET` failed with SigV4/KMS requirements.
+  - Public copy completed with AES256 to:
+    - `s3://spaceport-ml-processing/compressed/md1-shrunk-prodspine-wlight-202605190027/`
+  - Public manifest URL:
+    - `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+  - Public `HEAD`/`GET` succeeded for `meta.json`; public S3 listing shows the compressed bundle.
+- Viewer/control patches made locally:
+  - `/md1-viewer` control panel now has a visible collapse/expand button and supports `panel=collapsed` / `controls=collapsed`.
+  - viewer frame supports vector `sceneScale` and `flipY=1` for explicit Y-axis inversion.
+  - viewer frame supports `camUp=x,y,z`, so source-camera checks preserve camera roll/up instead of relying on default orbit up.
+  - camera-check harness fixed a proven bug: it no longer double-encodes `MD1_BUNDLE_URL`; the previous broken form made the viewer try to load `http://127.0.0.1:3033/https%3A...`.
+  - camera-check harness now requires the actual `gsplat` node before accepting readiness.
+- Local dev server:
+  - Running at `http://127.0.0.1:3033`.
+  - Current usable local output URL:
+    - `http://127.0.0.1:3033/md1-viewer?url=https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fmd1-shrunk-prodspine-wlight-202605190027%2Fsupersplat_bundle%2Fmeta.json&skybox=background_skybox.webp`
+- Local viewer smoke against the public bundle:
+  - command:
+    - `cd web && MD1_VIEWER_URL=http://127.0.0.1:3033 MD1_LOD_URL=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json MD1_EXPECT_ROOT_FILE=meta.json MD1_RUN_NO_SKY=1 node scripts/test-md1-production-viewer.mjs`
+  - result: passed desktop, mobile, and no-sky.
+  - first-frame times: desktop `4215.7ms`, mobile `4583.7ms`, desktop no-sky `4439.6ms`.
+  - evidence: `logs/md1-shrunk/md1-prodspine-wlight-public-local-viewer-smoke-20260519T0400Z.log`, `logs/md1-production-viewer-results.json`.
+- Input-vs-render visual proof:
+  - Raw COLMAP camera coordinates are not viewer coordinates. Direct raw-COLMAP camera checks missed the model because SOGS bounds are normalized (`means` roughly `[-3,3]`), while raw COLMAP camera centers are in the pre-NerfStudio frame.
+  - I derived the NerfStudio viewer-space camera for `DJI_01029.JPG` using COLMAP camera center, OpenGL camera convention, NerfStudio-style up-orient, pose centering, and max-abs auto-scale approximation.
+  - derived camera:
+    - `MD1_CAM_POS=0.550350,0.535033,-0.032677`
+    - `MD1_CAM_TARGET=0.810371,0.661083,-0.113302`
+    - `MD1_CAM_UP=0.228003,0.145459,0.962734`
+  - camera pose evidence: `logs/md1-shrunk/camera-pose-prodspine-DJI_01029-20260519T0352Z.json`.
+  - side-by-side evidence: `logs/md1-shrunk/side-by-side-prodspine-nscoord-camup-DJI_01029-20260519T0352Z.jpg`.
+  - visual assessment: the prod-spine run is recognizable from the same aerial viewpoint. Roads, valley terrain, neighborhood cluster, and ridgelines match the input composition. The no-sky render still has black/white sky-edge artifacts at the mountain horizon, so the core splat is usable but the final human experience still needs deployed-preview validation and horizon/skybox QA before I call it production-ready.
+- Build validation:
+  - initial `npm run build` failed only because this shell lacked `npm` on `PATH`.
+  - reran with bundled Node/npm:
+    - `PATH=/Users/gabrielhansen/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:/opt/homebrew/bin:$PATH npm run build`
+  - result: passed; warnings are pre-existing `no-img-element` and hook dependency warnings.
+  - evidence: `logs/md1-shrunk/npm-build-md1-viewer-camera-up-20260519T0402Z.log`.
+- Next:
+  - Stage a narrow commit with the viewer/harness fixes and concise evidence.
+  - Bump `web/trigger-dev-build.txt`, push, watch exact-head Pages/CDK workflows.
+  - Re-run the public bundle smoke and side-by-side visual gate against the exact deployed preview URL, with skybox and no-sky modes.

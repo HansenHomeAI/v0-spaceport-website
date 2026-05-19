@@ -1,0 +1,59 @@
+{
+  "source_images_txt_s3": "s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-sfm-20260518T1826Z/colmap/sparse/0/images.txt",
+  "image": "DJI_01029.JPG",
+  "image_id": 30,
+  "camera_id": 1,
+  "registered_images": 1456,
+  "derivation": "COLMAP world-to-camera -> OpenGL camera-to-world -> Nerfstudio default up-orient, poses-center, max-abs auto-scale approximation",
+  "raw_colmap": {
+    "qvec": [
+      0.8428474200986882,
+      0.019432321126680762,
+      -0.5202231352560008,
+      -0.13637632079298703
+    ],
+    "tvec": [
+      9.417027614445255,
+      1.5053793779541491,
+      -8.274506574331069
+    ],
+    "camera_center": [
+      3.619232,
+      -1.977585,
+      11.93333
+    ]
+  },
+  "nerfstudio_viewer": {
+    "scene_scale": null,
+    "cam_pos": [
+      0.55035,
+      0.535033,
+      -0.032677
+    ],
+    "cam_target": [
+      0.810371,
+      0.661083,
+      -0.113302
+    ],
+    "cam_up": [
+      0.228003,
+      0.145459,
+      0.962734
+    ],
+    "distance_to_target": 0.3
+  },
+  "normalization": {
+    "center": [
+      -6.993457,
+      -0.266961,
+      2.223227
+    ],
+    "average_up": [
+      0.018271,
+      -0.915456,
+      -0.24133
+    ],
+    "max_abs_after_center_orient": 18.85563986966,
+    "scale": 0.053034530088
+  }
+}

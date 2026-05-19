@@ -43,11 +43,41 @@
   backdrop-filter: blur(14px);
 }
 
+.md1-panel-collapsed {
+  width: auto;
+  min-width: 0;
+  padding: 6px;
+  overflow: visible;
+}
+
+.md1-panel-toggle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 6px;
+  background: #b4473f;
+  color: #fff;
+  font: 900 20px/1 ui-sans-serif, system-ui, sans-serif;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
+}
+
+.md1-panel-collapsed .md1-panel-toggle {
+  position: static;
+}
+
 .md1-title-row {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 14px;
+  gap: 48px;
+  padding-right: 44px;
 }
 
 .md1-title-row h1 {

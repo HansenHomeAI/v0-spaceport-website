@@ -26,6 +26,7 @@ const expectedChunkSubstring = process.env.MD1_EXPECT_CHUNK_SUBSTRING?.trim() ||
 const expectedRootFile =
   process.env.MD1_EXPECT_ROOT_FILE?.trim() || (lodUrl.includes("/lod-meta.json") ? "lod-meta.json" : "meta.json");
 const playwrightChannel = process.env.PLAYWRIGHT_CHANNEL?.trim() || "";
+const extraQuery = process.env.MD1_EXTRA_QUERY?.trim() || "";
 
 const scenarios = [
   { name: "desktop", viewport: { width: 1440, height: 960 }, query: "" },
@@ -287,7 +288,7 @@ async function runScenario(scenario) {
     });
 
     const encoded = encodeURIComponent(lodUrl);
-    const url = `${baseUrl}/md1-viewer?url=${encoded}${scenario.query}`;
+    const url = `${baseUrl}/md1-viewer?url=${encoded}${scenario.query}${extraQuery}`;
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 120000 });
     assert((await page.locator("header").count()) === 0, `${scenario.name}: md1-viewer should not render site header`);
     assert((await page.locator("footer").count()) === 0, `${scenario.name}: md1-viewer should not render site footer`);

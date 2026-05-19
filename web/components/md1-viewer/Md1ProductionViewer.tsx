@@ -52,10 +52,11 @@ type Vector3 = [number, number, number];
 type ViewerFrameOverrides = {
   scenePosition?: Vector3 | null;
   sceneRotation?: Vector3 | null;
-  sceneScale?: number | null;
+  sceneScale?: number | Vector3 | null;
   sceneFov?: number | null;
   cameraPosition?: Vector3 | null;
   cameraTarget?: Vector3 | null;
+  cameraUp?: Vector3 | null;
   cameraFov?: number | null;
 };
 
@@ -149,6 +150,26 @@ function formatVector(value: Vector3) {
   return value.map((entry) => Number(entry.toFixed(6))).join(",");
 }
 
+function formatScale(value: number | Vector3) {
+  return Array.isArray(value) ? formatVector(value) : String(value);
+}
+
+function readScaleParam(params: URLSearchParams): number | Vector3 | null {
+  const vector = readVectorParam(params, "sceneScale");
+  if (vector) {
+    return vector;
+  }
+  return readFloatParam(params, "sceneScale");
+}
+
+function readBooleanParam(params: URLSearchParams, key: string) {
+  const raw = params.get(key);
+  if (raw == null) {
+    return false;
+  }
+  return ["1", "true", "yes", "on"].includes(raw.trim().toLowerCase());
+}
+
 function readSkyboxOverride(params: URLSearchParams): string | null | undefined {
   const raw = params.get("skybox");
   if (raw == null) {
@@ -191,6 +212,7 @@ function buildAutoFrame(bounds: ResolvedSogsViewerBundle["summary"]): ViewerFram
 export default function Md1ProductionViewer() {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const [tab, setTab] = useState<Tab>("splat");
+  const [panelCollapsed, setPanelCollapsed] = useState(false);
   const [manifestUrl, setManifestUrl] = useState(MD1_V18_PRODUCTION_LOD_URL);
   const [activeManifestUrl, setActiveManifestUrl] = useState(MD1_V18_PRODUCTION_LOD_URL);
   const [iframeKey, setIframeKey] = useState(0);
@@ -259,7 +281,7 @@ export default function Md1ProductionViewer() {
       params.set("sceneRot", formatVector(customFrame.sceneRotation));
     }
     if (customFrame.sceneScale != null) {
-      params.set("sceneScale", String(customFrame.sceneScale));
+      params.set("sceneScale", formatScale(customFrame.sceneScale));
     }
     if (customFrame.sceneFov != null) {
       params.set("sceneFov", String(customFrame.sceneFov));
@@ -269,6 +291,9 @@ export default function Md1ProductionViewer() {
     }
     if (customFrame.cameraTarget) {
       params.set("camTarget", formatVector(customFrame.cameraTarget));
+    }
+    if (customFrame.cameraUp) {
+      params.set("camUp", formatVector(customFrame.cameraUp));
     }
     if (customFrame.cameraFov != null) {
       params.set("camFov", String(customFrame.cameraFov));
@@ -340,13 +365,15 @@ export default function Md1ProductionViewer() {
     setViewerFrameOverrides({
       scenePosition: readVectorParam(params, "scenePos"),
       sceneRotation: readVectorParam(params, "sceneRot"),
-      sceneScale: readFloatParam(params, "sceneScale"),
+      sceneScale: readScaleParam(params) ?? (readBooleanParam(params, "flipY") ? [1, -1, 1] : null),
       sceneFov: readFloatParam(params, "sceneFov"),
       cameraPosition: readVectorParam(params, "camPos"),
       cameraTarget: readVectorParam(params, "camTarget"),
+      cameraUp: readVectorParam(params, "camUp"),
       cameraFov: readFloatParam(params, "camFov"),
     });
     setExplicitSkybox(readSkyboxOverride(params));
+    setPanelCollapsed(params.get("panel") === "collapsed" || params.get("controls") === "collapsed");
     if (override) {
       setManifestUrl(override);
       loadManifest(override);
@@ -534,7 +561,19 @@ export default function Md1ProductionViewer() {
         ) : null}
       </div>
 
-      <aside className="md1-panel" aria-label="MD1 viewer controls">
+      <aside className={`md1-panel${panelCollapsed ? " md1-panel-collapsed" : ""}`} aria-label="MD1 viewer controls">
+        <button
+          type="button"
+          className="md1-panel-toggle"
+          aria-label={panelCollapsed ? "Expand MD1 viewer controls" : "Collapse MD1 viewer controls"}
+          aria-expanded={!panelCollapsed}
+          title={panelCollapsed ? "Expand controls" : "Collapse controls"}
+          onClick={() => setPanelCollapsed((current) => !current)}
+        >
+          {panelCollapsed ? "+" : "-"}
+        </button>
+        {panelCollapsed ? null : (
+          <>
         <div className="md1-title-row">
           <div>
             <h1>MD1 V18</h1>
@@ -642,6 +681,8 @@ export default function Md1ProductionViewer() {
           data-bounds-min={bundleSummary?.bounds ? bundleSummary.bounds.min.join(",") : ""}
           data-bounds-max={bundleSummary?.bounds ? bundleSummary.bounds.max.join(",") : ""}
         />
+          </>
+        )}
       </aside>
     </main>
   );

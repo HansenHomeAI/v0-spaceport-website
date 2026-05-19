@@ -219,17 +219,19 @@
             window.__sogsInitialScenePayload = (() => {
                 const position = parseVector(url.searchParams.get('scenePos'));
                 const rotation = parseVector(url.searchParams.get('sceneRot'));
-                if (!position || !rotation) {
+                const hasSceneOverride = position || rotation || url.searchParams.has('sceneScale') || url.searchParams.has('sceneFov');
+                if (!hasSceneOverride) {
                     return null;
                 }
                 const scaleRaw = url.searchParams.get('sceneScale');
-                const scale = scaleRaw == null ? null : Number.parseFloat(scaleRaw);
+                const scaleVector = parseVector(scaleRaw);
+                const scale = scaleVector ?? (scaleRaw == null ? null : Number.parseFloat(scaleRaw));
                 const fovRaw = url.searchParams.get('sceneFov');
                 const fov = fovRaw == null ? null : Number.parseFloat(fovRaw);
                 return {
-                    position,
-                    rotation,
-                    scale: Number.isFinite(scale) ? scale : null,
+                    position: position ?? [0, 0, 0],
+                    rotation: rotation ?? [0, 0, 0],
+                    scale: Array.isArray(scale) ? scale : Number.isFinite(scale) ? scale : null,
                     fov: Number.isFinite(fov) ? fov : null
                 };
             })();
@@ -237,6 +239,7 @@
             window.__sogsInitialCameraPose = (() => {
                 const position = parseVector(url.searchParams.get('camPos'));
                 const target = parseVector(url.searchParams.get('camTarget'));
+                const up = parseVector(url.searchParams.get('camUp'));
                 if (!position || !target) {
                     return null;
                 }
@@ -245,6 +248,7 @@
                 return {
                     position,
                     target,
+                    up,
                     fov: Number.isFinite(fov) ? fov : null
                 };
             })();

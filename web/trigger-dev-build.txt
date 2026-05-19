@@ -74,3 +74,4 @@
 2026-05-18T05:30:42Z md1-shrunk monitor: trigger Pages build for state-only commit (keep exact-head preview current)
 2026-05-18T05:42:55Z md1-shrunk monitor: record pages+cdk+viewer evidence (trigger new exact-head Pages)
 2026-05-18T17:03:43Z md1-shrunk prod-spine integration trigger
+2026-05-19T03:42:37Z md1-shrunk viewer collapse cam-up public bundle gate

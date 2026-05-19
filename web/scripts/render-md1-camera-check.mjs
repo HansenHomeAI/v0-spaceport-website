@@ -7,6 +7,7 @@
  *   MD1_BUNDLE_URL=https://.../meta.json \
  *   MD1_CAM_POS="x,y,z" \
  *   MD1_CAM_TARGET="x,y,z" \
+ *   MD1_CAM_UP="x,y,z" \
  *   MD1_SKYBOX="background_skybox.webp" \
  *   MD1_OUT="../logs/md1-camera-check.png" \
  *   node scripts/render-md1-camera-check.mjs
@@ -50,7 +51,7 @@ async function waitForFirstFrame(page) {
       }))
       .catch(() => null);
 
-    if (frameReady?.hasContext) {
+    if (frameReady?.hasContext && frameReady?.hasGsplat) {
       return { dataset, frameReady };
     }
 
@@ -63,7 +64,13 @@ const baseUrl = (process.env.MD1_VIEWER_URL ?? "").replace(/\/$/, "");
 const bundleUrl = process.env.MD1_BUNDLE_URL ?? "";
 const camPos = parseVector(process.env.MD1_CAM_POS);
 const camTarget = parseVector(process.env.MD1_CAM_TARGET);
+const camUp = parseVector(process.env.MD1_CAM_UP);
 const skybox = (process.env.MD1_SKYBOX ?? "").trim();
+const sceneScale = (process.env.MD1_SCENE_SCALE ?? "").trim();
+const flipY = ["1", "true", "yes", "on"].includes((process.env.MD1_FLIP_Y ?? "").trim().toLowerCase());
+const collapsePanel = ["1", "true", "yes", "on"].includes(
+  (process.env.MD1_COLLAPSE_PANEL ?? "").trim().toLowerCase(),
+);
 const outPath = process.env.MD1_OUT ?? "";
 
 assert(baseUrl, "MD1_VIEWER_URL is required");
@@ -74,14 +81,24 @@ assert(outPath, "MD1_OUT is required");
 
 await fs.mkdir(path.dirname(outPath), { recursive: true });
 
-const encoded = encodeURIComponent(bundleUrl);
 const params = new URLSearchParams({
-  url: encoded,
+  url: bundleUrl,
   camPos: camPos.join(","),
   camTarget: camTarget.join(","),
 });
+if (camUp) {
+  params.set("camUp", camUp.join(","));
+}
 if (skybox) {
   params.set("skybox", skybox);
+}
+if (sceneScale) {
+  params.set("sceneScale", sceneScale);
+} else if (flipY) {
+  params.set("flipY", "1");
+}
+if (collapsePanel) {
+  params.set("panel", "collapsed");
 }
 
 const url = `${baseUrl}/md1-viewer?${params.toString()}`;

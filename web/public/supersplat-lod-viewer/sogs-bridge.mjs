@@ -9,6 +9,7 @@ const { Color, CylinderGeometry, Entity, Mesh, MeshInstance, Quat, StandardMater
 /** Parent-driven camera (position + look-at). When `sogs:cameraMode` is `scripted`, orbit input is skipped. */
 const tmpFrom = new Vec3();
 const tmpTo = new Vec3();
+const tmpUp = new Vec3();
 /** Orbit focus point for `sogs:cameraPose` (parent overlays / Three.js projection). */
 const tmpFocus = new Vec3();
 
@@ -312,7 +313,14 @@ function applyScenePayload(app, payload) {
   if (Array.isArray(payload.rotation) && payload.rotation.length === 3) {
     gsplat.setLocalEulerAngles(payload.rotation[0], payload.rotation[1], payload.rotation[2]);
   }
-  if (typeof payload.scale === "number" && Number.isFinite(payload.scale)) {
+  if (Array.isArray(payload.scale) && payload.scale.length === 3) {
+    const sx = Number(payload.scale[0]);
+    const sy = Number(payload.scale[1]);
+    const sz = Number(payload.scale[2]);
+    if ([sx, sy, sz].every(Number.isFinite)) {
+      gsplat.setLocalScale(sx, sy, sz);
+    }
+  } else if (typeof payload.scale === "number" && Number.isFinite(payload.scale)) {
     gsplat.setLocalScale(payload.scale, payload.scale, payload.scale);
   }
   if (typeof payload.fov === "number" && Number.isFinite(payload.fov)) {
@@ -477,6 +485,20 @@ function setupCameraManagerBridge(cameraManager) {
     }
     postCameraPoseFromViewer(cameraManager);
   };
+}
+
+function applyScriptedCameraUp(app) {
+  const pose = window.__sogsCameraPose;
+  const camera = window.__sogsCtx?.camera;
+  if (!window.__sogsScriptedCamera || !camera || !pose?.position?.length || !pose?.target?.length || !pose?.up?.length) {
+    return;
+  }
+  tmpFrom.set(pose.position[0], pose.position[1], pose.position[2]);
+  tmpTo.set(pose.target[0], pose.target[1], pose.target[2]);
+  tmpUp.set(pose.up[0], pose.up[1], pose.up[2]);
+  camera.setPosition(tmpFrom);
+  camera.lookAt(tmpTo.x, tmpTo.y, tmpTo.z, tmpUp.x, tmpUp.y, tmpUp.z);
+  app.renderNextFrame = true;
 }
 
 function axisMaterial(rgb) {
@@ -683,6 +705,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       window.__sogsCameraPose = {
         position: initialCameraPose.position,
         target: initialCameraPose.target,
+        up: initialCameraPose.up ?? null,
         fov: initialCameraPose.fov ?? null,
       };
       window.__sogsScriptedCamera = true;
@@ -696,6 +719,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       installInitialCameraRelease(app);
       app.renderNextFrame = true;
     }
+    app.on("update", () => applyScriptedCameraUp(app));
     /** Primary pointer + pointermove pan was removed: it fought orbit/touch and caused bounce. */
     window.__sogsSplatXzDragReady = true;
 
@@ -729,6 +753,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         window.__sogsCameraPose = {
           position: d.position,
           target: d.target,
+          up: d.up ?? null,
           fov: d.fov,
         };
         app.renderNextFrame = true;
