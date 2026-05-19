@@ -875,6 +875,30 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/gh-run-list-agent-40136728-20260519T1931Z.json`
 - Next unblocked step: continue monitoring `cvhr-mtc-secondary-20260518t2113z-3dgs` until terminal. Do not rerun launch while this job exists. On completion, run the runner once with `--launch` to start pinned Montana compression.
 
+## 2026-05-19T19:38Z Post-Push Workflow + 3DGS Training Check
+
+- Exact-head workflow proof for code commit:
+  - Commit: `7b38bd43b956fbfa92700ae513c3b64afee62ec1`
+  - `CDK Deploy` run: `26120469998`
+  - Result: `completed` / `success`, updated `2026-05-19T19:37:26Z`.
+- 3DGS status command:
+  - `AWS_PAGER= aws sagemaker describe-training-job --training-job-name cvhr-mtc-secondary-20260518t2113z-3dgs --output json`
+  - Result: `TrainingJobStatus=InProgress`, no `FailureReason`; `TrainingTimeInSeconds=519`; stage advanced from `Downloading` to `Training` at `2026-05-19T13:33:20.429000-06:00`.
+- CloudWatch proof:
+  - Log stream exists: `cvhr-mtc-secondary-20260518t2113z-3dgs/algo-1-1779218957`.
+  - Logs prove the pinned Montana skybox 3DGS stack is active: `NerfStudio with splatfacto-w-light`, `enable_bg_model=True`, `enable_alpha_loss=True`, `enable_robust_mask=True`, `output.background_skybox.width=2048`, `output.background_skybox.height=1024`.
+  - COLMAP validation inside 3DGS passed again: `Cameras: 1`, `Images registered: 1693`, `Image files: 1710`, `3D points: 1329830`.
+  - TXT-to-BIN conversion succeeded with `cameras.bin`, `images.bin`, and `points3D.bin`; latest visible command is `ns-process-data images --data /opt/ml/input/data/training/images --output-dir /tmp/nerfstudio_training/converted_data --skip-colmap --colmap-model-path /tmp/nerfstudio_training/colmap_bin/0`.
+- S3 output status:
+  - `s3://spaceport-ml-processing-staging/3dgs/cvhr-mtc-secondary-20260518t2113z/` still `Total Objects: 0`, `Total Size: 0`, expected until SageMaker EndOfJob upload.
+- Evidence files:
+  - `logs/montana-time-capsule/gh-run-view-cdk-deploy-26120469998-20260519T1938Z.json`
+  - `logs/montana-time-capsule/sagemaker-describe-cvhr-mtc-secondary-20260518t2113z-3dgs-20260519T1938Z.json`
+  - `logs/montana-time-capsule/logstreams-cvhr-mtc-secondary-20260518t2113z-3dgs-20260519T1938Z.json`
+  - `logs/montana-time-capsule/cloudwatch-tail-cvhr-mtc-secondary-20260518t2113z-3dgs-20260519T1938Z.log`
+  - `logs/montana-time-capsule/s3-3dgs-cvhr-mtc-secondary-20260518t2113z-20260519T1938Z.txt`
+- Next unblocked step: continue monitoring `cvhr-mtc-secondary-20260518t2113z-3dgs` through training completion. If it succeeds, run the runner exactly once with `--launch` to start pinned Montana compression. If it fails, capture the exact SageMaker failure, CloudWatch tail, and S3 prefix before any patch or retry.
+
 ## 2026-05-19T17:43Z Heartbeat Monitor Pass
 
 - Branch/head/status command:
