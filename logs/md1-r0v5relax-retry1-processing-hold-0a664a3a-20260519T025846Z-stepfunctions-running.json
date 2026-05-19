@@ -1,0 +1,10 @@
+[
+  {
+    "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-br-8abcbd5662:execution-md1-shrunk-prodspine-wlight-202605190027",
+    "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-8abcbd5662",
+    "name": "execution-md1-shrunk-prodspine-wlight-202605190027",
+    "status": "RUNNING",
+    "startDate": "2026-05-18T18:28:13.202000-06:00",
+    "redriveCount": 0
+  }
+]
