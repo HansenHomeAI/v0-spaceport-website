@@ -3208,3 +3208,26 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - No active CV-HR training jobs owned by this automation.
   - Only unrelated active processing jobs matched `cvhr`: `cvhr-viscell-full-l09-1779233441` and `cvhr-viscell-full-l08-1779230706`; no action taken.
 - Detailed evidence is in the `2026-05-19T23:23Z Compression Complete, Hosted Viewer Verified` section above and in the `logs/montana-time-capsule/*20260519T2323Z*` artifacts.
+
+## 2026-05-19T23:46Z Post-Push Status Check
+
+- Commit/push completed:
+  - Commit: `ff6ed90e82cda1c723abbb9828a84e199a21c5af`
+  - Message: `chore: verify cv-hr time capsule viewer [skip ci]`
+  - Push: `git push origin agent-40136728-montana-time-capsule`
+- Exact-head workflow check:
+  - `gh run list --branch agent-40136728-montana-time-capsule --limit 20 --json databaseId,headSha,workflowName,status,conclusion,createdAt,updatedAt,url | jq --arg sha "$(git rev-parse HEAD)" '[.[] | select(.headSha==$sha)]'`
+  - Result: `[]`, expected because the commit is `[skip ci]`. The manual Pages deploy for prior exact head `4659864d4478963a49d4e4fc922d4ab687efff99` remains the hosted viewer proof.
+- Current git status after push:
+  - `git rev-parse HEAD && git status --short --branch`
+  - Result: head `ff6ed90e82cda1c723abbb9828a84e199a21c5af`, branch up to date with origin, with only the post-push evidence files pending when this line was written.
+- Current active CV-HR SageMaker sweep:
+  - `aws sagemaker list-training-jobs --status-equals InProgress --name-contains cvhr --max-results 20`: no active CV-HR training jobs.
+  - `aws sagemaker list-processing-jobs --status-equals InProgress --name-contains cvhr --max-results 20`: active jobs are `cvhr-secondary-20260518t2113z-compression`, `cvhr-viscell-full-l09-1779233441`, and `cvhr-viscell-full-l08-1779230706`.
+  - Action taken: none. These are not the canonical completed time-capsule run `cvhr-mtc-secondary-20260518t2113z`; `cvhr-secondary-20260518t2113z-compression` writes to `s3://spaceport-ml-processing-staging/compressed/cvhr-secondary-20260518t2113z/`, while the verified hosted output uses `s3://spaceport-ml-processing-staging/compressed/cvhr-mtc-secondary-20260518t2113z/`.
+- Evidence files:
+  - `logs/montana-time-capsule/gh-run-list-agent-40136728-20260519T2345Z-postpush.json`
+  - `logs/montana-time-capsule/gh-run-list-exact-head-20260519T2345Z-postpush.json`
+  - `logs/montana-time-capsule/sagemaker-list-processing-cvhr-active-20260519T2346Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-training-cvhr-active-20260519T2346Z.json`
+  - `logs/montana-time-capsule/sagemaker-describe-cvhr-secondary-20260518t2113z-compression-20260519T2346Z.json`
