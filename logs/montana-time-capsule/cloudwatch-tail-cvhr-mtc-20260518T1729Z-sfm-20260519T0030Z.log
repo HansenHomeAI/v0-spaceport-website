@@ -1,0 +1,200 @@
+2026-05-18T19:42:32 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:32.442066  8388 pairing.cc:631] Processing image [94/188]
+2026-05-18T19:42:32 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:32.652635  8388 feature_matching.cc:217] in 0.211s
+2026-05-18T19:42:32 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:32.652688  8388 pairing.cc:631] Processing image [95/188]
+2026-05-18T19:42:33 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:32.741777  8388 feature_matching.cc:217] in 0.089s
+2026-05-18T19:42:33 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:32.741822  8388 pairing.cc:631] Processing image [96/188]
+2026-05-18T19:42:33 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:32.742025  8388 feature_matching.cc:217] in 0.000s
+2026-05-18T19:42:33 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:32.742048  8388 pairing.cc:631] Processing image [97/188]
+2026-05-18T19:42:33 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:32.742265  8388 feature_matching.cc:217] in 0.000s
+2026-05-18T19:42:33 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:32.742287  8388 pairing.cc:631] Processing image [98/188]
+2026-05-18T19:42:33 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:33.106638  8388 feature_matching.cc:217] in 0.364s
+2026-05-18T19:42:33 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:33.106693  8388 pairing.cc:631] Processing image [99/188]
+2026-05-18T19:42:33 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:33.196887  8388 feature_matching.cc:217] in 0.090s
+2026-05-18T19:42:33 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:33.196939  8388 pairing.cc:631] Processing image [100/188]
+2026-05-18T19:42:33 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:33.600991  8388 feature_matching.cc:217] in 0.404s
+2026-05-18T19:42:33 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:33.601048  8388 pairing.cc:631] Processing image [101/188]
+2026-05-18T19:42:34 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:33.663300  8388 feature_matching.cc:217] in 0.062s
+2026-05-18T19:42:34 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:33.663355  8388 pairing.cc:631] Processing image [102/188]
+2026-05-18T19:42:34 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:33.856019  8388 feature_matching.cc:217] in 0.193s
+2026-05-18T19:42:34 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:33.856070  8388 pairing.cc:631] Processing image [103/188]
+2026-05-18T19:42:34 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:33.856288  8388 feature_matching.cc:217] in 0.000s
+2026-05-18T19:42:34 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:33.856312  8388 pairing.cc:631] Processing image [104/188]
+2026-05-18T19:42:34 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:33.856526  8388 feature_matching.cc:217] in 0.000s
+2026-05-18T19:42:34 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:33.856550  8388 pairing.cc:631] Processing image [105/188]
+2026-05-18T19:42:34 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:33.876446  8388 feature_matching.cc:217] in 0.020s
+2026-05-18T19:42:34 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:33.876489  8388 pairing.cc:631] Processing image [106/188]
+2026-05-18T19:42:34 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:34.452440  8388 feature_matching.cc:217] in 0.576s
+2026-05-18T19:42:34 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:34.452493  8388 pairing.cc:631] Processing image [107/188]
+2026-05-18T19:42:35 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:35.068719  8388 feature_matching.cc:217] in 0.616s
+2026-05-18T19:42:35 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:35.068773  8388 pairing.cc:631] Processing image [108/188]
+2026-05-18T19:42:35 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:35.578519  8388 feature_matching.cc:217] in 0.510s
+2026-05-18T19:42:35 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:35.578572  8388 pairing.cc:631] Processing image [109/188]
+2026-05-18T19:42:36 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:36.019488  8388 feature_matching.cc:217] in 0.441s
+2026-05-18T19:42:36 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:36.019541  8388 pairing.cc:631] Processing image [110/188]
+2026-05-18T19:42:36 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:36.552253  8388 feature_matching.cc:217] in 0.533s
+2026-05-18T19:42:36 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:36.552309  8388 pairing.cc:631] Processing image [111/188]
+2026-05-18T19:42:37 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:36.710831  8388 feature_matching.cc:217] in 0.159s
+2026-05-18T19:42:37 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:36.710884  8388 pairing.cc:631] Processing image [112/188]
+2026-05-18T19:42:37 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:37.218607  8388 feature_matching.cc:217] in 0.508s
+2026-05-18T19:42:37 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:37.218662  8388 pairing.cc:631] Processing image [113/188]
+2026-05-18T19:42:37 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:37.276997  8388 feature_matching.cc:217] in 0.058s
+2026-05-18T19:42:37 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:37.277050  8388 pairing.cc:631] Processing image [114/188]
+2026-05-18T19:42:37 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:37.311200  8388 feature_matching.cc:217] in 0.034s
+2026-05-18T19:42:37 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:37.311269  8388 pairing.cc:631] Processing image [115/188]
+2026-05-18T19:42:37 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:37.311532  8388 feature_matching.cc:217] in 0.000s
+2026-05-18T19:42:37 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:37.311563  8388 pairing.cc:631] Processing image [116/188]
+2026-05-18T19:42:37 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:37.370388  8388 feature_matching.cc:217] in 0.059s
+2026-05-18T19:42:37 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:37.370445  8388 pairing.cc:631] Processing image [117/188]
+2026-05-18T19:42:38 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:37.874634  8388 feature_matching.cc:217] in 0.504s
+2026-05-18T19:42:38 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:37.874689  8388 pairing.cc:631] Processing image [118/188]
+2026-05-18T19:42:38 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:37.915118  8388 feature_matching.cc:217] in 0.040s
+2026-05-18T19:42:38 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:37.915167  8388 pairing.cc:631] Processing image [119/188]
+2026-05-18T19:42:38 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:38.250119  8388 feature_matching.cc:217] in 0.335s
+2026-05-18T19:42:38 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:38.250171  8388 pairing.cc:631] Processing image [120/188]
+2026-05-18T19:42:39 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:38.691890  8388 feature_matching.cc:217] in 0.442s
+2026-05-18T19:42:39 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:38.691946  8388 pairing.cc:631] Processing image [121/188]
+2026-05-18T19:42:39 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:38.770253  8388 feature_matching.cc:217] in 0.078s
+2026-05-18T19:42:39 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:38.770303  8388 pairing.cc:631] Processing image [122/188]
+2026-05-18T19:42:39 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:38.770555  8388 feature_matching.cc:217] in 0.000s
+2026-05-18T19:42:39 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:38.770583  8388 pairing.cc:631] Processing image [123/188]
+2026-05-18T19:42:39 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:39.141980  8388 feature_matching.cc:217] in 0.371s
+2026-05-18T19:42:39 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:39.142035  8388 pairing.cc:631] Processing image [124/188]
+2026-05-18T19:42:39 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:39.330823  8388 feature_matching.cc:217] in 0.189s
+2026-05-18T19:42:39 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:39.330881  8388 pairing.cc:631] Processing image [125/188]
+2026-05-18T19:42:39 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:39.331117  8388 feature_matching.cc:217] in 0.000s
+2026-05-18T19:42:39 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:39.331143  8388 pairing.cc:631] Processing image [126/188]
+2026-05-18T19:42:40 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:39.718540  8388 feature_matching.cc:217] in 0.387s
+2026-05-18T19:42:40 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:39.718595  8388 pairing.cc:631] Processing image [127/188]
+2026-05-18T19:42:40 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:40.232513  8388 feature_matching.cc:217] in 0.514s
+2026-05-18T19:42:40 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:40.232569  8388 pairing.cc:631] Processing image [128/188]
+2026-05-18T19:42:40 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:40.232784  8388 feature_matching.cc:217] in 0.000s
+2026-05-18T19:42:40 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:40.232810  8388 pairing.cc:631] Processing image [129/188]
+2026-05-18T19:42:40 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:40.233114  8388 feature_matching.cc:217] in 0.000s
+2026-05-18T19:42:40 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:40.233140  8388 pairing.cc:631] Processing image [130/188]
+2026-05-18T19:42:40 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:40.233350  8388 feature_matching.cc:217] in 0.000s
+2026-05-18T19:42:40 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:40.233372  8388 pairing.cc:631] Processing image [131/188]
+2026-05-18T19:42:41 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:40.669225  8388 feature_matching.cc:217] in 0.436s
+2026-05-18T19:42:41 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:40.669281  8388 pairing.cc:631] Processing image [132/188]
+2026-05-18T19:42:41 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:41.463550  8388 feature_matching.cc:217] in 0.794s
+2026-05-18T19:42:41 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:41.463606  8388 pairing.cc:631] Processing image [133/188]
+2026-05-18T19:42:42 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:41.821940  8388 feature_matching.cc:217] in 0.358s
+2026-05-18T19:42:42 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:41.821987  8388 pairing.cc:631] Processing image [134/188]
+2026-05-18T19:42:42 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:42.254941  8388 feature_matching.cc:217] in 0.433s
+2026-05-18T19:42:42 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:42.254995  8388 pairing.cc:631] Processing image [135/188]
+2026-05-18T19:42:42 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:42.353494  8388 feature_matching.cc:217] in 0.099s
+2026-05-18T19:42:42 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:42.353546  8388 pairing.cc:631] Processing image [136/188]
+2026-05-18T19:42:42 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:42.535965  8388 feature_matching.cc:217] in 0.182s
+2026-05-18T19:42:42 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:42.536019  8388 pairing.cc:631] Processing image [137/188]
+2026-05-18T19:42:43 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:42.663139  8388 feature_matching.cc:217] in 0.127s
+2026-05-18T19:42:43 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:42.663192  8388 pairing.cc:631] Processing image [138/188]
+2026-05-18T19:42:43 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:43.004011  8388 feature_matching.cc:217] in 0.341s
+2026-05-18T19:42:43 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:43.004067  8388 pairing.cc:631] Processing image [139/188]
+2026-05-18T19:42:43 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:43.454612  8388 feature_matching.cc:217] in 0.451s
+2026-05-18T19:42:43 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:43.454667  8388 pairing.cc:631] Processing image [140/188]
+2026-05-18T19:42:44 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:44.012949  8388 feature_matching.cc:217] in 0.558s
+2026-05-18T19:42:44 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:44.013005  8388 pairing.cc:631] Processing image [141/188]
+2026-05-18T19:42:44 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:44.526580  8388 feature_matching.cc:217] in 0.514s
+2026-05-18T19:42:44 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:44.526635  8388 pairing.cc:631] Processing image [142/188]
+2026-05-18T19:42:45 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:45.035705  8388 feature_matching.cc:217] in 0.509s
+2026-05-18T19:42:45 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:45.035760  8388 pairing.cc:631] Processing image [143/188]
+2026-05-18T19:42:45 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:45.450106  8388 feature_matching.cc:217] in 0.414s
+2026-05-18T19:42:45 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:45.450186  8388 pairing.cc:631] Processing image [144/188]
+2026-05-18T19:42:46 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:46.028376  8388 feature_matching.cc:217] in 0.578s
+2026-05-18T19:42:46 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:46.028429  8388 pairing.cc:631] Processing image [145/188]
+2026-05-18T19:42:46 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:46.380594  8388 feature_matching.cc:217] in 0.352s
+2026-05-18T19:42:46 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:46.380646  8388 pairing.cc:631] Processing image [146/188]
+2026-05-18T19:42:46 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:46.610666  8388 feature_matching.cc:217] in 0.230s
+2026-05-18T19:42:46 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:46.610718  8388 pairing.cc:631] Processing image [147/188]
+2026-05-18T19:42:47 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:46.874858  8388 feature_matching.cc:217] in 0.264s
+2026-05-18T19:42:47 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:46.874909  8388 pairing.cc:631] Processing image [148/188]
+2026-05-18T19:42:47 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:47.512543  8388 feature_matching.cc:217] in 0.638s
+2026-05-18T19:42:47 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:47.512598  8388 pairing.cc:631] Processing image [149/188]
+2026-05-18T19:42:48 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:48.313503  8388 feature_matching.cc:217] in 0.801s
+2026-05-18T19:42:48 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:48.313556  8388 pairing.cc:631] Processing image [150/188]
+2026-05-18T19:42:49 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:48.711928  8388 feature_matching.cc:217] in 0.398s
+2026-05-18T19:42:49 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:48.711980  8388 pairing.cc:631] Processing image [151/188]
+2026-05-18T19:42:49 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:49.197763  8388 feature_matching.cc:217] in 0.486s
+2026-05-18T19:42:49 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:49.197817  8388 pairing.cc:631] Processing image [152/188]
+2026-05-18T19:42:49 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:49.480202  8388 feature_matching.cc:217] in 0.282s
+2026-05-18T19:42:49 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:49.480259  8388 pairing.cc:631] Processing image [153/188]
+2026-05-18T19:42:50 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:49.803339  8388 feature_matching.cc:217] in 0.323s
+2026-05-18T19:42:50 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:49.803395  8388 pairing.cc:631] Processing image [154/188]
+2026-05-18T19:42:50 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:50.043460  8388 feature_matching.cc:217] in 0.240s
+2026-05-18T19:42:50 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:50.043515  8388 pairing.cc:631] Processing image [155/188]
+2026-05-18T19:42:50 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:50.513589  8388 feature_matching.cc:217] in 0.470s
+2026-05-18T19:42:50 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:50.513646  8388 pairing.cc:631] Processing image [156/188]
+2026-05-18T19:42:51 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:51.138832  8388 feature_matching.cc:217] in 0.625s
+2026-05-18T19:42:51 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:51.138895  8388 pairing.cc:631] Processing image [157/188]
+2026-05-18T19:42:52 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:51.765393  8388 feature_matching.cc:217] in 0.627s
+2026-05-18T19:42:52 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:51.765450  8388 pairing.cc:631] Processing image [158/188]
+2026-05-18T19:42:52 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:52.430068  8388 feature_matching.cc:217] in 0.665s
+2026-05-18T19:42:52 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:52.430123  8388 pairing.cc:631] Processing image [159/188]
+2026-05-18T19:42:53 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:52.935599  8388 feature_matching.cc:217] in 0.506s
+2026-05-18T19:42:53 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:52.935655  8388 pairing.cc:631] Processing image [160/188]
+2026-05-18T19:42:53 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:53.228951  8388 feature_matching.cc:217] in 0.293s
+2026-05-18T19:42:53 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:53.229007  8388 pairing.cc:631] Processing image [161/188]
+2026-05-18T19:42:54 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:53.909902  8388 feature_matching.cc:217] in 0.681s
+2026-05-18T19:42:54 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:53.909965  8388 pairing.cc:631] Processing image [162/188]
+2026-05-18T19:42:54 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:54.538777  8388 feature_matching.cc:217] in 0.629s
+2026-05-18T19:42:54 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:54.538832  8388 pairing.cc:631] Processing image [163/188]
+2026-05-18T19:42:55 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:55.510764  8388 feature_matching.cc:217] in 0.972s
+2026-05-18T19:42:55 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:55.510823  8388 pairing.cc:631] Processing image [164/188]
+2026-05-18T19:42:56 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:56.114845  8388 feature_matching.cc:217] in 0.604s
+2026-05-18T19:42:56 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:56.114902  8388 pairing.cc:631] Processing image [165/188]
+2026-05-18T19:42:56 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:56.452955  8388 feature_matching.cc:217] in 0.338s
+2026-05-18T19:42:56 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:56.453011  8388 pairing.cc:631] Processing image [166/188]
+2026-05-18T19:42:57 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:56.824681  8388 feature_matching.cc:217] in 0.372s
+2026-05-18T19:42:57 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:56.824738  8388 pairing.cc:631] Processing image [167/188]
+2026-05-18T19:42:57 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:57.184242  8388 feature_matching.cc:217] in 0.360s
+2026-05-18T19:42:57 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:57.184298  8388 pairing.cc:631] Processing image [168/188]
+2026-05-18T19:42:57 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:57.617102  8388 feature_matching.cc:217] in 0.433s
+2026-05-18T19:42:57 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:57.617158  8388 pairing.cc:631] Processing image [169/188]
+2026-05-18T19:42:58 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:58.053365  8388 feature_matching.cc:217] in 0.436s
+2026-05-18T19:42:58 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:58.053424  8388 pairing.cc:631] Processing image [170/188]
+2026-05-18T19:42:58 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:58.449357  8388 feature_matching.cc:217] in 0.396s
+2026-05-18T19:42:58 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:58.449415  8388 pairing.cc:631] Processing image [171/188]
+2026-05-18T19:42:58 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:58.506968  8388 feature_matching.cc:217] in 0.058s
+2026-05-18T19:42:58 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:58.507020  8388 pairing.cc:631] Processing image [172/188]
+2026-05-18T19:42:58 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:58.584528  8388 feature_matching.cc:217] in 0.078s
+2026-05-18T19:42:58 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:58.584587  8388 pairing.cc:631] Processing image [173/188]
+2026-05-18T19:42:59 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:58.938943  8388 feature_matching.cc:217] in 0.354s
+2026-05-18T19:42:59 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:58.939000  8388 pairing.cc:631] Processing image [174/188]
+2026-05-18T19:42:59 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:59.167089  8388 feature_matching.cc:217] in 0.228s
+2026-05-18T19:42:59 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:59.167145  8388 pairing.cc:631] Processing image [175/188]
+2026-05-18T19:42:59 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:59.518407  8388 feature_matching.cc:217] in 0.351s
+2026-05-18T19:42:59 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:59.518464  8388 pairing.cc:631] Processing image [176/188]
+2026-05-18T19:43:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:59.870613  8388 feature_matching.cc:217] in 0.352s
+2026-05-18T19:43:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:42:59.870664  8388 pairing.cc:631] Processing image [177/188]
+2026-05-18T19:43:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:00.219106  8388 feature_matching.cc:217] in 0.348s
+2026-05-18T19:43:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:00.219162  8388 pairing.cc:631] Processing image [178/188]
+2026-05-18T19:43:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:00.355602  8388 feature_matching.cc:217] in 0.136s
+2026-05-18T19:43:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:00.355656  8388 pairing.cc:631] Processing image [179/188]
+2026-05-18T19:43:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:00.477358  8388 feature_matching.cc:217] in 0.122s
+2026-05-18T19:43:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:00.477418  8388 pairing.cc:631] Processing image [180/188]
+2026-05-18T19:43:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:00.506271  8388 feature_matching.cc:217] in 0.029s
+2026-05-18T19:43:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:00.506320  8388 pairing.cc:631] Processing image [181/188]
+2026-05-18T19:43:01 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:00.934780  8388 feature_matching.cc:217] in 0.428s
+2026-05-18T19:43:01 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:00.934832  8388 pairing.cc:631] Processing image [182/188]
+2026-05-18T19:43:01 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.509573  8388 feature_matching.cc:217] in 0.575s
+2026-05-18T19:43:01 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.509621  8388 pairing.cc:631] Processing image [183/188]
+2026-05-18T19:43:01 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.579879  8388 feature_matching.cc:217] in 0.070s
+2026-05-18T19:43:01 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.579941  8388 pairing.cc:631] Processing image [184/188]
+2026-05-18T19:43:01 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.653960  8388 feature_matching.cc:217] in 0.074s
+2026-05-18T19:43:01 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.654011  8388 pairing.cc:631] Processing image [185/188]
+2026-05-18T19:43:02 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.934916  8388 feature_matching.cc:217] in 0.281s
+2026-05-18T19:43:02 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.934994  8388 pairing.cc:631] Processing image [186/188]
+2026-05-18T19:43:02 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.965960  8388 feature_matching.cc:217] in 0.031s
+2026-05-18T19:43:02 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.966014  8388 pairing.cc:631] Processing image [187/188]
+2026-05-18T19:43:02 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.966246  8388 feature_matching.cc:217] in 0.000s
+2026-05-18T19:43:02 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:01.966269  8388 pairing.cc:631] Processing image [188/188]
+2026-05-18T19:43:02 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:02.039955  8388 feature_matching.cc:217] in 0.074s
+2026-05-18T19:43:02 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 19:43:02.040001  8388 timer.cc:90] Elapsed time: 1.186 [minutes]
+2026-05-18T19:43:02 2026-05-18 19:43:02,116 - INFO - chunk_03_spatial_matcher_recovery added 673 verified image pairs
+2026-05-18T19:43:02 2026-05-18 19:43:02,123 - INFO - Building a FAISS-compatible vocab tree with 8192 visual words from up to 100000 descriptors
+2026-05-18T19:43:02 2026-05-18 19:43:02,123 - INFO - [vocab_tree_builder] colmap vocab_tree_builder --database_path /tmp/colmap_sfm_rcnmny4o/chunk_03/database.db --vocab_tree_path /tmp/colmap_sfm_rcnmny4o/vocab_tree_faiss.bin --num_visual_words 8192 --max_num_images 40
+2026-05-18T19:43:02 COLMAP[vocab_tree_builder] E20260518 19:43:02.277236  8430 base_option_manager.cc:264] Failed to parse options - unrecognised option '--max_num_images'.
+2026-05-18T19:43:02 2026-05-18 19:43:02,291 - WARNING - vocab_tree_builder rejected --max_num_images; retrying with older COLMAP-compatible flags
+2026-05-18T19:43:02 2026-05-18 19:43:02,291 - INFO - [vocab_tree_builder] colmap vocab_tree_builder --database_path /tmp/colmap_sfm_rcnmny4o/chunk_03/database.db --vocab_tree_path /tmp/colmap_sfm_rcnmny4o/vocab_tree_faiss.bin --num_visual_words 8192
+2026-05-18T19:43:02 COLMAP[vocab_tree_builder] I20260518 19:43:02.443851  8438 vocab_tree.cc:85] Loading descriptors...
+2026-05-18T19:43:03 COLMAP[vocab_tree_builder] I20260518 19:43:03.309763  8438 vocab_tree.cc:88] => Loaded a total of 1904336 descriptors
+2026-05-18T19:43:03 COLMAP[vocab_tree_builder] I20260518 19:43:03.309823  8438 vocab_tree.cc:94] Building index for visual words...
