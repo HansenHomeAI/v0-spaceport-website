@@ -518,3 +518,15 @@ Montana time capsule run, without touching or advancing the existing
   - image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db`
 - Separate external job `cvhr-mtc-secondary-20260518t2113z-3dgs` remains `InProgress` and was not modified.
 - Details and evidence are recorded in `logs/cvhr-parallel/STATE.md`.
+
+## 2026-05-19T20:13Z Heartbeat Poll
+
+- Branch-owned 3DGS job `cvhr-secondary-20260518t2113z-3dgs` remains `InProgress`.
+- Direct SageMaker state: `Training`, started `2026-05-19T13:59:27.439000-06:00`, no failure reason.
+- CloudWatch stream `cvhr-secondary-20260518t2113z-3dgs/algo-1-1779220766` is live.
+- Latest fetched 3DGS evidence: COLMAP conversion succeeded, Nerfstudio matched `1693` images / `99.01%`, validated `1693` frames, and started `ns-train splatfacto-w-light` for `30000` iterations at `2026-05-19T20:08:26Z`.
+- No OOM, traceback, or SageMaker failure is visible in the fetched training logs.
+- 3DGS S3 output remains empty, expected while the training job is still running.
+- No duplicate secondary 3DGS or compression job was launched.
+- Separate external job `cvhr-mtc-secondary-20260518t2113z-3dgs` remains `InProgress` and was not modified.
+- Details and evidence are recorded in `logs/cvhr-parallel/STATE.md`.
