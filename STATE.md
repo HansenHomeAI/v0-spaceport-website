@@ -542,3 +542,15 @@ Montana time capsule run, without touching or advancing the existing
 - No duplicate secondary 3DGS or compression job was launched.
 - Separate external job `cvhr-mtc-secondary-20260518t2113z-3dgs` remains `InProgress` and was not modified.
 - Details and evidence are recorded in `logs/cvhr-parallel/STATE.md`.
+
+## 2026-05-19T20:53Z Heartbeat Poll
+
+- Branch-owned 3DGS job `cvhr-secondary-20260518t2113z-3dgs` remains `InProgress`.
+- Direct SageMaker state: `Training`, started `2026-05-19T13:59:27.439000-06:00`, no failure reason.
+- CloudWatch stream remains `cvhr-secondary-20260518t2113z-3dgs/algo-1-1779220766`.
+- Latest CloudWatch event remains `2026-05-19T20:08:26Z`, immediately after `ns-train splatfacto-w-light` started for `30000` iterations.
+- No OOM, traceback, or SageMaker failure is visible in fetched logs.
+- 3DGS S3 output remains empty, expected while the training job is still running.
+- No duplicate secondary 3DGS or compression job was launched.
+- Separate external job `cvhr-mtc-secondary-20260518t2113z-3dgs` remains `InProgress` and was not modified.
+- Details and evidence are recorded in `logs/cvhr-parallel/STATE.md`.
