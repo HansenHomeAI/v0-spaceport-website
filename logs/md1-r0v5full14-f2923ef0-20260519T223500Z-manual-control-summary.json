@@ -1,0 +1,462 @@
+{
+  "branch_head": "73e4df2a1b43876c8f53c17f2ae0777767b05a46",
+  "cvhr_policy": "cvhr-* jobs are non-blocking evidence only; do not stop or modify",
+  "event": "md1-r0v5full14-manual-control-tile12-complete-tile13-launched",
+  "evidence_files": {
+    "tile_10_describe": "logs/md1-r0v5full14-f2923ef0-20260519T223500Z-tile10-describe.json",
+    "tile_12_create_request": "logs/md1-r0v5full14-f2923ef0-20260519T2145Z-manual-tile_12-create-training-job.json",
+    "tile_12_describe": "logs/md1-r0v5full14-f2923ef0-20260519T223500Z-tile12-completed-describe.json",
+    "tile_12_s3_listing": "logs/md1-r0v5full14-f2923ef0-20260519T223500Z-tile12-output-s3-list.txt",
+    "tile_13_create_request": "logs/md1-r0v5full14-f2923ef0-20260519T2145Z-manual-tile_13-create-training-job.json",
+    "tile_13_describe": "logs/md1-r0v5full14-f2923ef0-20260519T223500Z-tile13-submitted-describe.json",
+    "training_inprogress": "logs/md1-r0v5full14-f2923ef0-20260519T223500Z-training-inprogress.json"
+  },
+  "last_meaningful_code_head": "f2923ef00417750f4efdfdc904c328645c168509",
+  "last_meaningful_exact_head_cdk": "26107107781 green",
+  "manual_reason": "original wrapper was pinned behind tile_10 SageMaker Uploading; local wrapper was terminated only after direct exact-name control was established; SageMaker jobs were not stopped",
+  "next": "monitor tile_13 to terminal state; continue recording tile_10 Uploading/artifact state; then run post-leaf artifact/preflight gates only",
+  "scope": "full14 leaf training only; no merge/review/LOD/viewer/promotion",
+  "tile_10": {
+    "AlgorithmSpecification": {
+      "EnableSageMakerMetricsTimeSeries": false,
+      "TrainingImage": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent90742618md1geometryconsistency",
+      "TrainingInputMode": "File"
+    },
+    "CheckpointConfig": {
+      "LocalPath": "/opt/ml/checkpoints",
+      "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/checkpoints/md1-r0v5full14-f2923-1779209514-tile-10"
+    },
+    "CreationTime": "2026-05-19T14:28:58.057000-06:00",
+    "EnableInterContainerTrafficEncryption": false,
+    "EnableManagedSpotTraining": false,
+    "EnableNetworkIsolation": false,
+    "Environment": {
+      "APPEARANCE_EMBED_DIM": "64",
+      "AWS_DEFAULT_REGION": "us-west-2",
+      "BG_SH_DEGREE": "2",
+      "BILATERAL_PROCESSING": "false",
+      "BOUNDARY_FROZEN_CAMERAS": "DJI_0067.JPG,DJI_0068.JPG,DJI_0069.JPG,DJI_0070.JPG",
+      "COMMERCIAL_LICENSE": "true",
+      "CONTEXT_SUPPORT_TILE_IDS": "tile_10,tile_13,tile_01",
+      "CUDA_HOME": "/usr/local/cuda",
+      "CULL_ALPHA_THRESH": "0.08",
+      "CULL_SCALE_THRESH": "0.50",
+      "ENABLE_ALPHA_LOSS": "true",
+      "ENABLE_BG_MODEL": "true",
+      "ENABLE_ROBUST_MASK": "true",
+      "FLOATER_PRUNING_ENABLED": "true",
+      "FLOATER_PRUNING_MAX_COLOR_DISTANCE": "0.18",
+      "FLOATER_PRUNING_MIN_EDGE_SUPPORT": "2",
+      "FLOATER_PRUNING_TOP_REGION_RATIO": "0.55",
+      "FLOATER_PRUNING_TOP_VIEW_FRACTION": "0.45",
+      "FRAMEWORK": "nerfstudio",
+      "GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT": "true",
+      "GLOBAL_SCAFFOLD_SOURCE_DIR": "/opt/ml/input/data/scaffold",
+      "HORIZON_FROZEN_CAMERAS": "DJI_0066.JPG,DJI_0073.JPG,DJI_0146.JPG,DJI_0147.JPG",
+      "LD_LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+      "LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+      "MAX_ITERATIONS": "6000",
+      "MERGE_MODE": "strict_core",
+      "METHODOLOGY": "spaceport_splatfacto_w_light_skybox",
+      "MODEL_VARIANT": "splatfacto-w-light",
+      "OUTPUT_FORMAT": "ply",
+      "PYTHONUNBUFFERED": "1",
+      "SAGEMAKER_PROGRAM": "train.py",
+      "SH_DEGREE": "1",
+      "SOGS_COMPATIBLE": "true",
+      "TILE_BUDGET_CLASS": "hard",
+      "TILE_ID": "tile_10",
+      "TILE_INPUT_HASH": "e5efc6cc891982e4b8d872f05b55c9f1decf20901b447ac3e40e55212fc589f5",
+      "TILE_MANIFEST_PATH": "/opt/ml/input/data/tile-selection/3dgs_tile_manifest.json",
+      "TORCH_CUDA_ARCH_LIST": "8.0 8.6",
+      "TRAINING_CHECKPOINT_DIR": "/opt/ml/checkpoints",
+      "TRAINING_CHECKPOINT_S3_URI": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/checkpoints/md1-r0v5full14-f2923-1779209514-tile-10",
+      "TRAINING_ENABLE_CHECKPOINTS": "true",
+      "TRAINING_MAX_GAUSS_RATIO": "1.35",
+      "TRAINING_MAX_SELECTED_IMAGES": "188",
+      "TRAINING_MODE": "leaf_tile",
+      "TRAINING_STEPS_PER_SAVE": "1500",
+      "TRAINING_STOP_SPLIT_AT": "5900",
+      "TRAINING_TIMEOUT_SECONDS": "3600",
+      "VIEW_BUCKET_MANIFEST_PATH": "/opt/ml/input/data/tile-selection/3dgs_view_buckets.json"
+    },
+    "InputDataConfig": [
+      {
+        "ChannelName": "training",
+        "CompressionType": "None",
+        "DataSource": {
+          "S3DataSource": {
+            "S3DataDistributionType": "FullyReplicated",
+            "S3DataType": "S3Prefix",
+            "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap"
+          }
+        },
+        "RecordWrapperType": "None"
+      },
+      {
+        "ChannelName": "tile-selection",
+        "CompressionType": "None",
+        "DataSource": {
+          "S3DataSource": {
+            "S3DataDistributionType": "FullyReplicated",
+            "S3DataType": "S3Prefix",
+            "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/inputs/tile-selection"
+          }
+        },
+        "RecordWrapperType": "None"
+      },
+      {
+        "ChannelName": "scaffold",
+        "CompressionType": "None",
+        "DataSource": {
+          "S3DataSource": {
+            "S3DataDistributionType": "FullyReplicated",
+            "S3DataType": "S3Prefix",
+            "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-teacher-r3base-r4h-tile00-factor4-v3-20260426201700/output/artifact/model.tar.gz"
+          }
+        },
+        "RecordWrapperType": "None"
+      }
+    ],
+    "LastModifiedTime": "2026-05-19T15:05:48.101000-06:00",
+    "OutputDataConfig": {
+      "CompressionType": "GZIP",
+      "KmsKeyId": "",
+      "S3OutputPath": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_10"
+    },
+    "ProfilingStatus": "Disabled",
+    "ResourceConfig": {
+      "InstanceCount": 1,
+      "InstanceType": "ml.g4dn.xlarge",
+      "VolumeSizeInGB": 100
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "SecondaryStatus": "Uploading",
+    "SecondaryStatusTransitions": [
+      {
+        "EndTime": "2026-05-19T14:29:39.360000-06:00",
+        "StartTime": "2026-05-19T14:28:58.057000-06:00",
+        "Status": "Starting",
+        "StatusMessage": "Preparing the instances for training"
+      },
+      {
+        "EndTime": "2026-05-19T14:32:51.632000-06:00",
+        "StartTime": "2026-05-19T14:29:39.360000-06:00",
+        "Status": "Downloading",
+        "StatusMessage": "Downloading the training image"
+      },
+      {
+        "EndTime": "2026-05-19T15:05:48.101000-06:00",
+        "StartTime": "2026-05-19T14:32:51.632000-06:00",
+        "Status": "Training",
+        "StatusMessage": "Training image download completed. Training in progress."
+      },
+      {
+        "StartTime": "2026-05-19T15:05:48.101000-06:00",
+        "Status": "Uploading",
+        "StatusMessage": "Uploading generated training model"
+      }
+    ],
+    "StoppingCondition": {
+      "MaxRuntimeInSeconds": 3600
+    },
+    "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-r0v5full14-f2923-1779209514-tile-10",
+    "TrainingJobName": "md1-r0v5full14-f2923-1779209514-tile-10",
+    "TrainingJobStatus": "InProgress",
+    "TrainingStartTime": "2026-05-19T14:29:39.360000-06:00",
+    "TrainingTimeInSeconds": 7502
+  },
+  "tile_12": {
+    "AlgorithmSpecification": {
+      "EnableSageMakerMetricsTimeSeries": false,
+      "TrainingImage": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent90742618md1geometryconsistency",
+      "TrainingInputMode": "File"
+    },
+    "BillableTimeInSeconds": 2439,
+    "CheckpointConfig": {
+      "LocalPath": "/opt/ml/checkpoints",
+      "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/checkpoints/md1-r0v5full14-f2923-1779209514-tile-12"
+    },
+    "CreationTime": "2026-05-19T15:51:52.892000-06:00",
+    "EnableInterContainerTrafficEncryption": false,
+    "EnableManagedSpotTraining": false,
+    "EnableNetworkIsolation": false,
+    "Environment": {
+      "APPEARANCE_EMBED_DIM": "64",
+      "AWS_DEFAULT_REGION": "us-west-2",
+      "BG_SH_DEGREE": "2",
+      "BILATERAL_PROCESSING": "false",
+      "BOUNDARY_FROZEN_CAMERAS": "DJI_0067.JPG,DJI_0068.JPG,DJI_0069.JPG,DJI_0070.JPG",
+      "COMMERCIAL_LICENSE": "true",
+      "CONTEXT_SUPPORT_TILE_IDS": "tile_10,tile_13,tile_01",
+      "CUDA_HOME": "/usr/local/cuda",
+      "CULL_ALPHA_THRESH": "0.08",
+      "CULL_SCALE_THRESH": "0.50",
+      "ENABLE_ALPHA_LOSS": "true",
+      "ENABLE_BG_MODEL": "true",
+      "ENABLE_ROBUST_MASK": "true",
+      "FLOATER_PRUNING_ENABLED": "true",
+      "FLOATER_PRUNING_MAX_COLOR_DISTANCE": "0.18",
+      "FLOATER_PRUNING_MIN_EDGE_SUPPORT": "2",
+      "FLOATER_PRUNING_TOP_REGION_RATIO": "0.55",
+      "FLOATER_PRUNING_TOP_VIEW_FRACTION": "0.45",
+      "FRAMEWORK": "nerfstudio",
+      "GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT": "true",
+      "GLOBAL_SCAFFOLD_SOURCE_DIR": "/opt/ml/input/data/scaffold",
+      "HORIZON_FROZEN_CAMERAS": "DJI_0066.JPG,DJI_0073.JPG,DJI_0146.JPG,DJI_0147.JPG",
+      "LD_LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+      "LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+      "MAX_ITERATIONS": "6000",
+      "MERGE_MODE": "strict_core",
+      "METHODOLOGY": "spaceport_splatfacto_w_light_skybox",
+      "MODEL_VARIANT": "splatfacto-w-light",
+      "OUTPUT_FORMAT": "ply",
+      "PYTHONUNBUFFERED": "1",
+      "SAGEMAKER_PROGRAM": "train.py",
+      "SH_DEGREE": "1",
+      "SOGS_COMPATIBLE": "true",
+      "TILE_BUDGET_CLASS": "hard",
+      "TILE_ID": "tile_12",
+      "TILE_INPUT_HASH": "d88c83b7209bcaa1aeff0d5203692d7bcc46c9a471c4155829dea15ae421b523",
+      "TILE_MANIFEST_PATH": "/opt/ml/input/data/tile-selection/3dgs_tile_manifest.json",
+      "TORCH_CUDA_ARCH_LIST": "8.0 8.6",
+      "TRAINING_CHECKPOINT_DIR": "/opt/ml/checkpoints",
+      "TRAINING_CHECKPOINT_S3_URI": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/checkpoints/md1-r0v5full14-f2923-1779209514-tile-12",
+      "TRAINING_ENABLE_CHECKPOINTS": "true",
+      "TRAINING_MAX_GAUSS_RATIO": "1.35",
+      "TRAINING_MAX_SELECTED_IMAGES": "188",
+      "TRAINING_MODE": "leaf_tile",
+      "TRAINING_STEPS_PER_SAVE": "1500",
+      "TRAINING_STOP_SPLIT_AT": "5900",
+      "TRAINING_TIMEOUT_SECONDS": "3600",
+      "VIEW_BUCKET_MANIFEST_PATH": "/opt/ml/input/data/tile-selection/3dgs_view_buckets.json"
+    },
+    "InputDataConfig": [
+      {
+        "ChannelName": "training",
+        "CompressionType": "None",
+        "DataSource": {
+          "S3DataSource": {
+            "S3DataDistributionType": "FullyReplicated",
+            "S3DataType": "S3Prefix",
+            "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap"
+          }
+        },
+        "RecordWrapperType": "None"
+      },
+      {
+        "ChannelName": "tile-selection",
+        "CompressionType": "None",
+        "DataSource": {
+          "S3DataSource": {
+            "S3DataDistributionType": "FullyReplicated",
+            "S3DataType": "S3Prefix",
+            "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/inputs/tile-selection"
+          }
+        },
+        "RecordWrapperType": "None"
+      },
+      {
+        "ChannelName": "scaffold",
+        "CompressionType": "None",
+        "DataSource": {
+          "S3DataSource": {
+            "S3DataDistributionType": "FullyReplicated",
+            "S3DataType": "S3Prefix",
+            "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-teacher-r3base-r4h-tile00-factor4-v3-20260426201700/output/artifact/model.tar.gz"
+          }
+        },
+        "RecordWrapperType": "None"
+      }
+    ],
+    "LastModifiedTime": "2026-05-19T16:33:25.327000-06:00",
+    "ModelArtifacts": {
+      "S3ModelArtifacts": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_12/md1-r0v5full14-f2923-1779209514-tile-12/output/model.tar.gz"
+    },
+    "OutputDataConfig": {
+      "CompressionType": "GZIP",
+      "KmsKeyId": "",
+      "S3OutputPath": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_12"
+    },
+    "ProfilingStatus": "Disabled",
+    "ResourceConfig": {
+      "InstanceCount": 1,
+      "InstanceType": "ml.g4dn.xlarge",
+      "VolumeSizeInGB": 100
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "SecondaryStatus": "Completed",
+    "SecondaryStatusTransitions": [
+      {
+        "EndTime": "2026-05-19T15:52:45.698000-06:00",
+        "StartTime": "2026-05-19T15:51:52.892000-06:00",
+        "Status": "Starting",
+        "StatusMessage": "Preparing the instances for training"
+      },
+      {
+        "EndTime": "2026-05-19T15:59:19.834000-06:00",
+        "StartTime": "2026-05-19T15:52:45.698000-06:00",
+        "Status": "Downloading",
+        "StatusMessage": "Downloading the training image"
+      },
+      {
+        "EndTime": "2026-05-19T16:29:26.195000-06:00",
+        "StartTime": "2026-05-19T15:59:19.834000-06:00",
+        "Status": "Training",
+        "StatusMessage": "Training image download completed. Training in progress."
+      },
+      {
+        "EndTime": "2026-05-19T16:33:24.998000-06:00",
+        "StartTime": "2026-05-19T16:29:26.195000-06:00",
+        "Status": "Uploading",
+        "StatusMessage": "Uploading generated training model"
+      },
+      {
+        "EndTime": "2026-05-19T16:33:24.998000-06:00",
+        "StartTime": "2026-05-19T16:33:24.998000-06:00",
+        "Status": "Completed",
+        "StatusMessage": "Training job completed"
+      }
+    ],
+    "StoppingCondition": {
+      "MaxRuntimeInSeconds": 3600
+    },
+    "TrainingEndTime": "2026-05-19T16:33:24.998000-06:00",
+    "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-r0v5full14-f2923-1779209514-tile-12",
+    "TrainingJobName": "md1-r0v5full14-f2923-1779209514-tile-12",
+    "TrainingJobStatus": "Completed",
+    "TrainingStartTime": "2026-05-19T15:52:45.698000-06:00",
+    "TrainingTimeInSeconds": 2439
+  },
+  "tile_13": {
+    "AlgorithmSpecification": {
+      "EnableSageMakerMetricsTimeSeries": false,
+      "TrainingImage": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent90742618md1geometryconsistency",
+      "TrainingInputMode": "File"
+    },
+    "CheckpointConfig": {
+      "LocalPath": "/opt/ml/checkpoints",
+      "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/checkpoints/md1-r0v5full14-f2923-1779209514-tile-13"
+    },
+    "CreationTime": "2026-05-19T16:34:07.398000-06:00",
+    "EnableInterContainerTrafficEncryption": false,
+    "EnableManagedSpotTraining": false,
+    "EnableNetworkIsolation": false,
+    "Environment": {
+      "APPEARANCE_EMBED_DIM": "64",
+      "AWS_DEFAULT_REGION": "us-west-2",
+      "BG_SH_DEGREE": "2",
+      "BILATERAL_PROCESSING": "false",
+      "BOUNDARY_FROZEN_CAMERAS": "DJI_0067.JPG,DJI_0068.JPG,DJI_0069.JPG,DJI_0070.JPG",
+      "COMMERCIAL_LICENSE": "true",
+      "CONTEXT_SUPPORT_TILE_IDS": "tile_10,tile_13,tile_01",
+      "CUDA_HOME": "/usr/local/cuda",
+      "CULL_ALPHA_THRESH": "0.08",
+      "CULL_SCALE_THRESH": "0.50",
+      "ENABLE_ALPHA_LOSS": "true",
+      "ENABLE_BG_MODEL": "true",
+      "ENABLE_ROBUST_MASK": "true",
+      "FLOATER_PRUNING_ENABLED": "true",
+      "FLOATER_PRUNING_MAX_COLOR_DISTANCE": "0.18",
+      "FLOATER_PRUNING_MIN_EDGE_SUPPORT": "2",
+      "FLOATER_PRUNING_TOP_REGION_RATIO": "0.55",
+      "FLOATER_PRUNING_TOP_VIEW_FRACTION": "0.45",
+      "FRAMEWORK": "nerfstudio",
+      "GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT": "true",
+      "GLOBAL_SCAFFOLD_SOURCE_DIR": "/opt/ml/input/data/scaffold",
+      "HORIZON_FROZEN_CAMERAS": "DJI_0066.JPG,DJI_0073.JPG,DJI_0146.JPG,DJI_0147.JPG",
+      "LD_LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+      "LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+      "MAX_ITERATIONS": "6000",
+      "MERGE_MODE": "strict_core",
+      "METHODOLOGY": "spaceport_splatfacto_w_light_skybox",
+      "MODEL_VARIANT": "splatfacto-w-light",
+      "OUTPUT_FORMAT": "ply",
+      "PYTHONUNBUFFERED": "1",
+      "SAGEMAKER_PROGRAM": "train.py",
+      "SH_DEGREE": "1",
+      "SOGS_COMPATIBLE": "true",
+      "TILE_BUDGET_CLASS": "hard",
+      "TILE_ID": "tile_13",
+      "TILE_INPUT_HASH": "7b4c774eddebf4109bb83163bb23a65dcc45ed868ba44c4a2783e826ebd6ecd2",
+      "TILE_MANIFEST_PATH": "/opt/ml/input/data/tile-selection/3dgs_tile_manifest.json",
+      "TORCH_CUDA_ARCH_LIST": "8.0 8.6",
+      "TRAINING_CHECKPOINT_DIR": "/opt/ml/checkpoints",
+      "TRAINING_CHECKPOINT_S3_URI": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/checkpoints/md1-r0v5full14-f2923-1779209514-tile-13",
+      "TRAINING_ENABLE_CHECKPOINTS": "true",
+      "TRAINING_MAX_GAUSS_RATIO": "1.35",
+      "TRAINING_MAX_SELECTED_IMAGES": "188",
+      "TRAINING_MODE": "leaf_tile",
+      "TRAINING_STEPS_PER_SAVE": "1500",
+      "TRAINING_STOP_SPLIT_AT": "5900",
+      "TRAINING_TIMEOUT_SECONDS": "3600",
+      "VIEW_BUCKET_MANIFEST_PATH": "/opt/ml/input/data/tile-selection/3dgs_view_buckets.json"
+    },
+    "InputDataConfig": [
+      {
+        "ChannelName": "training",
+        "CompressionType": "None",
+        "DataSource": {
+          "S3DataSource": {
+            "S3DataDistributionType": "FullyReplicated",
+            "S3DataType": "S3Prefix",
+            "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap"
+          }
+        },
+        "RecordWrapperType": "None"
+      },
+      {
+        "ChannelName": "tile-selection",
+        "CompressionType": "None",
+        "DataSource": {
+          "S3DataSource": {
+            "S3DataDistributionType": "FullyReplicated",
+            "S3DataType": "S3Prefix",
+            "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/inputs/tile-selection"
+          }
+        },
+        "RecordWrapperType": "None"
+      },
+      {
+        "ChannelName": "scaffold",
+        "CompressionType": "None",
+        "DataSource": {
+          "S3DataSource": {
+            "S3DataDistributionType": "FullyReplicated",
+            "S3DataType": "S3Prefix",
+            "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r4-teacher-r3base-r4h-tile00-factor4-v3-20260426201700/output/artifact/model.tar.gz"
+          }
+        },
+        "RecordWrapperType": "None"
+      }
+    ],
+    "LastModifiedTime": "2026-05-19T16:34:23.962000-06:00",
+    "OutputDataConfig": {
+      "CompressionType": "GZIP",
+      "KmsKeyId": "",
+      "S3OutputPath": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_13"
+    },
+    "ProfilingStatus": "Disabled",
+    "ResourceConfig": {
+      "InstanceCount": 1,
+      "InstanceType": "ml.g4dn.xlarge",
+      "VolumeSizeInGB": 100
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "SecondaryStatus": "Starting",
+    "SecondaryStatusTransitions": [
+      {
+        "StartTime": "2026-05-19T16:34:07.398000-06:00",
+        "Status": "Starting",
+        "StatusMessage": "Preparing the instances for training"
+      }
+    ],
+    "StoppingCondition": {
+      "MaxRuntimeInSeconds": 3600
+    },
+    "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-r0v5full14-f2923-1779209514-tile-13",
+    "TrainingJobName": "md1-r0v5full14-f2923-1779209514-tile-13",
+    "TrainingJobStatus": "InProgress"
+  },
+  "timestamp_utc": "20260519T223500Z"
+}
