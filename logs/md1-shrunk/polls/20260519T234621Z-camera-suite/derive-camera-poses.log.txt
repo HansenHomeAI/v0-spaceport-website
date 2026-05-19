@@ -1,0 +1,1 @@
+OK /Users/gabrielhansen/MD1-Baseline/logs/md1-shrunk/polls/20260519T234621Z-camera-suite/camera-poses.json selected=6 total=1456

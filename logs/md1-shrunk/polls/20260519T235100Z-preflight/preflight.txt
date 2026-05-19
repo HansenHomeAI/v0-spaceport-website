@@ -1,0 +1,92 @@
+# preflight 20260519T235100Z
+
+## git
+timestamp=20260519T235100Z
+branch=agent-113647-md1-baseline-e2e
+head=801a5f83ff55ad4b09eee23346403de9ebcff591
+status=3 changes
+
+## aws identity
+{
+    "UserId": "975050048887",
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root"
+}
+
+## step functions
+state_machine SpaceportMLPipeline-staging
+{
+    "executions": []
+}
+
+state_machine SpaceportMLPipeline-br-8abcbd5662
+{
+    "executions": []
+}
+
+## sagemaker
+# SageMaker processing InProgress
+{
+    "ProcessingJobSummaries": [
+        {
+            "ProcessingJobName": "cvhr-viscell-full-l10-1779234178",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/cvhr-viscell-full-l10-1779234178",
+            "CreationTime": "2026-05-19T17:42:59.761000-06:00",
+            "LastModifiedTime": "2026-05-19T17:45:30.905000-06:00",
+            "ProcessingJobStatus": "InProgress"
+        },
+        {
+            "ProcessingJobName": "cvhr-viscell-full-l09-1779233441",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/cvhr-viscell-full-l09-1779233441",
+            "CreationTime": "2026-05-19T17:30:42.803000-06:00",
+            "LastModifiedTime": "2026-05-19T17:33:14.032000-06:00",
+            "ProcessingJobStatus": "InProgress"
+        }
+    ],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTRGYhXdvVWj3dbcxWzdU2seUW9sgTAabpezr1qhjwVo0Zfl3e6MaLGBaXzBDVbWizc0m/zErRW4pYBXpPWHssQFU+TtYvoqDHu2Bpflm11CEVgGEOt6c7Zt1MGhjpVvjXRajvZKKBx78OwAi+WDGDgikfclxFxcIHG0T27PYd4yQJtOWVwW/jL1F4Id3RdULVbeEH/NQBZrX+q/lRT7wEdaqR6VNHqO0uOlEgxxNdUeF9fG4v7MhZN+nQGmOV5NtFwsqitftnZoe/r1lFjGpRE+rPREtGJwvwK0p3SPZdJeGDyjsna+rz3oAXllIDgg7xj+pBr55MuH6Am+eFf9VMEcHnZ7gP89yZMZntn/unKkJt3SgolQifoFwcoafbRkQZ75OTpRDDbMtSCmmUsKTviig6pGZecoCSA8UjenC0gNhLjNPAXLjV2I3JJl67Xk4HQTL4fY8zgPXU8afdUxdzxvrCvTyZBu4aUB1+Y3UB2FE+emrZCckzdv2jrzwC+sIQ"
+}
+
+# SageMaker training InProgress
+{
+    "TrainingJobSummaries": [],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTRGYhXdvVWj3dbcxWzdU2seUW9sgTAabpezr1qhjwVo0Zfl3e6MaLGBaXzBDVbWizc0m/zErRW4pYBXpPWHssQFU+TtYvoqDHu2Bpflm11CEVgGEOt6c7Zt1MGhjpVvjXRajvZKKBx78OwAi+WDGDgikfclxFxcIHG0T27PYd4yQJtOWVwW/jL1F4Id3RdULVbeEH/NQBZrX+q/lRT7wEdaqR6VNHqO0uOlEgxxNdUeF9fG4v7MhZN+nQGmOV5NtFwsqitftnZoe/r1lFjGpRE+rPREtGJwvwK0p3SPZdJeGDyjsna+rz3oAXllIDgg7xj+pBr55MuH6Am+eFf9VMEcHnZ7gMHG5ikXzIYVm27DgjcRLGfMuZIgbD4Xa3VXLFY6Y+lOBbxeCgTuQ0wElCwkzpYm3roc8OmhglLsDVNda4/jsiIbCPYZ/4yB93zBWuNWBbzKGMdK2DGdpB2xmu5SbQAwU31vEEcdK7EWqdkn2V3oH2H/4xMUzZzKiJS/VtU7hkSOU="
+}
+
+## local dev servers
+node      99831 gabrielhansen   13u  IPv4 0xec6636ec1a5ad700      0t0  TCP 127.0.0.1:3000 (LISTEN)
+
+## public s3 meta head
+HTTP/1.1 200 OK
+x-amz-id-2: Pu8Xf5hMiLWsjqPxjn3FOY6Bd2Fc9M5YNlFuSBuSZgN9K4edcqhKDSohINEdAvZesWAuKrKv8Mw=
+x-amz-request-id: 083WBTH5MMDF815W
+Date: Tue, 19 May 2026 23:51:08 GMT
+Last-Modified: Tue, 19 May 2026 03:14:11 GMT
+ETag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: lwCX4ptdSjx.9.5LMjn4a8Ervrln8HMA
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1421
+Server: AmazonS3
+
+
+## edge meta head
+HTTP/2 200 
+content-type: application/json
+content-length: 1421
+date: Tue, 19 May 2026 14:24:08 GMT
+last-modified: Tue, 19 May 2026 06:37:13 GMT
+etag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+cache-control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: vUW1wpcXNiVbn3gf6_kSkXCXdN6e83vX
+accept-ranges: bytes
+server: AmazonS3
+x-cache: Hit from cloudfront
+via: 1.1 00d27e43937ab924f4e5b4a79619d08a.cloudfront.net (CloudFront)
+x-amz-cf-pop: LAX53-P6
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: 2nRAi4IdZS1RQlLB5a4OggRV1HoJSfNpCz_WnjSNH1N1UunpVVN_zw==
+age: 34020
+vary: Origin
+

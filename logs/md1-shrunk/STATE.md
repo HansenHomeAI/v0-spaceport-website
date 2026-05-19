@@ -8559,3 +8559,29 @@ skybox, compression, artifact handoff, and visual gates.
   - `chore: record md1-shrunk heartbeat verification (20260519T231400Z) [skip ci]` -> `342ccda9`
   - GitHub Actions postpush snapshot (no new runs for `[skip ci]` head):
     - `logs/md1-shrunk/polls/20260519T232123Z-ci/postpush-final.txt`
+
+## 2026-05-19T23:51Z heartbeat verify (strict gates still PASS; no new jobs)
+
+- Preflight snapshot (read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260519T235100Z-preflight/preflight.txt`
+  - Step Functions (staging + `SpaceportMLPipeline-br-8abcbd5662`) RUNNING: `0`
+  - Known execution `execution-md1-shrunk-prodspine-wlight-202605190027` status: `SUCCEEDED`:
+    - `logs/md1-shrunk/polls/20260519T235100Z-preflight/stepfunctions-describe-execution-md1-shrunk-prodspine-wlight-202605190027.json`
+  - Public S3 meta.json HEAD -> `200`:
+    - `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+  - Edge meta.json HEAD -> `200` with browser-cache headers:
+    - `https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+  - SageMaker InProgress: external processing jobs present; left untouched
+  - Local dev server listeners: `port 3000 LISTEN` (see preflight file)
+- GitHub Actions snapshot (exact-head is logs-only `[skip ci]` -> no new runs; last green remains):
+  - `logs/md1-shrunk/polls/20260519T234440Z-ci/summary.txt`
+  - Pages success `26111270702` (sha `c3f52d2e`) + CDK Deploy success `26127221994` (sha `4df1a40c`)
+- Browser-readable public delivery automation (Lambda publish + strict browser header validation + HTML report):
+  - command: `logs/md1-shrunk/polls/20260519T235100Z-edge-publish-report/run.cmd.txt`
+  - report: `logs/md1-shrunk/polls/20260519T235100Z-edge-publish-report/publish-edge.report.html`
+  - edge meta.json: `https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+- Multi-camera input-vs-render checks (deployed preview; strict; baseline pose verification):
+  - command: `logs/md1-shrunk/polls/20260519T234621Z-camera-suite/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260519T234621Z-camera-suite/suite-summary.json` -> `decision=pass`
+  - report: `logs/md1-shrunk/polls/20260519T234621Z-camera-suite/report.html`
+  - reusable camera-pose verification: `pose_verification.max_delta=0.0` (baseline: `logs/md1-shrunk/polls/20260519T163352Z-camera-suite`)
