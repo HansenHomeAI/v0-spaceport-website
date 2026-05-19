@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-19T06:39:01Z
+updated: 2026-05-19T06:44:00Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -8019,3 +8019,14 @@ skybox, compression, artifact handoff, and visual gates.
   - panels:
     - `logs/md1-shrunk/polls/20260519T063343Z-camera-suite/panels/skybox/panel-skybox-DJI_02500.png`
     - `logs/md1-shrunk/polls/20260519T063343Z-camera-suite/panels/nosky/panel-nosky-DJI_02500.png`
+
+## 2026-05-19T06:44Z CI proof for evidence commit
+
+- Commit/push:
+  - `chore: record md1-shrunk horizon gate repro` -> `f5125521c1f09ad4365e8e6feb577d637eb22b1b`
+- Exact-head workflows:
+  - `CDK Deploy` run `26080845481` -> success:
+    - `logs/md1-shrunk/polls/20260519T064106Z-ci/gh-run-watch-cdk-26080845481.txt`
+    - `logs/md1-shrunk/polls/20260519T064106Z-ci/gh-run-list.json`
+  - `Deploy Next.js to Cloudflare Pages` did not trigger for this commit (logs-only change):
+    - `logs/md1-shrunk/polls/20260519T064106Z-ci/gh-pages-run-list.json`
