@@ -90,6 +90,8 @@ def main() -> int:
     args = parse_args()
     timestamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
     out_dir = Path(args.out_dir) if args.out_dir else REPO_ROOT / "logs" / "md1-shrunk" / "polls" / f"{timestamp}-camera-suite"
+    if not out_dir.is_absolute():
+        out_dir = (REPO_ROOT / out_dir).resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
 
     publish_out = out_dir / "publish-edge.json"
@@ -107,7 +109,7 @@ def main() -> int:
             args.compressed_output_s3_uri,
             "--output",
             str(publish_out),
-            "--validate-http",
+            "--require-browser-headers",
         ]
         publish_log = out_dir / "publish-edge.log.txt"
         publish_log.write_text(run(publish_cmd), encoding="utf-8")
@@ -220,6 +222,7 @@ def main() -> int:
                 "min_edge_retention": "0.25",
                 "max_top_band_rmse": "0.35",
                 "max_top_brightness_delta": "0.25",
+                "max_top_dark_on_bright_fraction": "0.03",
                 "max_bottom_band_rmse_p90": "0.28",
             }
         report_path = out_dir / f"diagnostics-{variant}.json"
@@ -238,6 +241,8 @@ def main() -> int:
             thresholds["max_top_band_rmse"],
             "--max-top-brightness-delta",
             thresholds["max_top_brightness_delta"],
+            "--max-top-dark-on-bright-fraction",
+            thresholds.get("max_top_dark_on_bright_fraction", "1.0"),
             "--max-bottom-band-rmse-p90",
             thresholds["max_bottom_band_rmse_p90"],
         ]

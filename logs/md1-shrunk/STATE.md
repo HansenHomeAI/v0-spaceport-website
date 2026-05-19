@@ -7970,3 +7970,28 @@ skybox, compression, artifact handoff, and visual gates.
     - `logs/md1-shrunk/polls/20260519T054912Z-ci/gh-run-watch-cdk-26078897888.txt`
     - `logs/md1-shrunk/polls/20260519T054912Z-ci/gh-run-watch-pages-26078897872.txt`
     - preview URL proof: `logs/md1-shrunk/polls/20260519T054912Z-ci/preview-url.txt`
+
+## 2026-05-19T06:18Z horizon black-band gate + camera-suite hardening
+
+- Preflight (read-only proof; no new jobs launched):
+  - `logs/md1-shrunk/polls/20260519T061835Z-preflight/preflight.txt`
+    - AWS identity: `arn:aws:iam::975050048887:root`
+    - Step Functions: `SpaceportMLPipeline-staging` and `SpaceportMLPipeline-br-8abcbd5662` -> no RUNNING executions
+    - execution `execution-md1-shrunk-prodspine-wlight-202605190027` -> `SUCCEEDED`
+    - public S3 meta.json HEAD -> `200`
+    - GitHub Actions (exact-head): `CDK Deploy` + `Deploy Next.js to Cloudflare Pages` resolved for current branch head
+- Explicit sky/horizon artifact gates:
+  - `scripts/sfm/diagnose_heldout_panels.py` now emits `top_dark_on_bright_fraction` and warns as `horizon_black_band`
+  - used by `scripts/sfm/run_md1_shrunk_camera_suite.py` (no-sky threshold: `max_top_dark_on_bright_fraction=0.03`)
+  - proof (old “passed but visibly black-banded” panel now warns):
+    - `logs/md1-shrunk/polls/20260519T054523Z-camera-suite/diagnostics-nosky.v2.json`
+    - panel: `logs/md1-shrunk/polls/20260519T054523Z-camera-suite/panels/nosky/panel-nosky-DJI_02500.png`
+- Multi-camera input-vs-render checks:
+  - multi-camera suite run (6 poses, skybox + no-sky):
+    - `logs/md1-shrunk/polls/20260519T060258Z-camera-suite/suite-summary.json` -> `decision=warning`
+      - warning is expected: no-sky horizon artifacts are still present and now reliably gated
+- Reusable camera-pose verification:
+  - camera-suite out-dir hardening:
+    - `scripts/sfm/run_md1_shrunk_camera_suite.py` now resolves relative `--out-dir` under repo root so Node render/panel outputs land in the intended `logs/` tree (prevents accidental `web/logs/...` spills)
+  - oneshot suite (DJI_02500 repro; relative out-dir) now succeeds and warns with `horizon_black_band`:
+    - `logs/md1-shrunk/polls/20260519T061445Z-camera-suite-oneshot/suite-summary.json`

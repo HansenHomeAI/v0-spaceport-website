@@ -179,6 +179,12 @@ def band(image: np.ndarray, start: float, end: float) -> np.ndarray:
     bottom = max(top + 1, int(round(image.shape[0] * end)))
     return image[top:bottom]
 
+def fraction_true(mask: np.ndarray) -> float:
+    total = int(mask.size)
+    if total <= 0:
+        return 0.0
+    return float(np.count_nonzero(mask)) / float(total)
+
 
 def diagnose_panel(path: Path, columns: int) -> dict[str, Any]:
     source, rendered = split_panel(read_png_rgb(path), columns)
@@ -189,6 +195,10 @@ def diagnose_panel(path: Path, columns: int) -> dict[str, Any]:
     top_render = band(rendered, 0.0, 0.2)
     bottom_source = band(source, 0.75, 1.0)
     bottom_render = band(rendered, 0.75, 1.0)
+    top_source_luma = gray(top_source)
+    top_render_luma = gray(top_render)
+    # Catch black horizon bands in no-sky mode: source sky is bright but render becomes near-black.
+    top_dark_on_bright_fraction = fraction_true((top_source_luma > 0.65) & (top_render_luma < 0.25))
     return {
         "panel": str(path),
         "width": int(source.shape[1]),
@@ -201,6 +211,7 @@ def diagnose_panel(path: Path, columns: int) -> dict[str, Any]:
         "edge_retention_ratio": round(render_edges / source_edges, 4) if source_edges > 1e-9 else None,
         "top_band_rmse": round(rmse(top_source, top_render), 4),
         "top_band_brightness_delta": round(float(np.mean(gray(top_render)) - np.mean(gray(top_source))), 4),
+        "top_dark_on_bright_fraction": round(top_dark_on_bright_fraction, 6),
         "bottom_band_rmse": round(rmse(bottom_source, bottom_render), 4),
         "bottom_band_brightness_delta": round(float(np.mean(gray(bottom_render)) - np.mean(gray(bottom_source))), 4),
     }
@@ -226,6 +237,7 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
             "edge_retention_ratio",
             "top_band_rmse",
             "top_band_brightness_delta",
+            "top_dark_on_bright_fraction",
             "bottom_band_rmse",
             "bottom_band_brightness_delta",
         ]
@@ -256,6 +268,15 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
                 "severity": "warning",
                 "category": "sky_horizon_brightness_shift",
                 "evidence": f"median top-band brightness delta {top_brightness} exceeds +/-{args.max_top_brightness_delta}",
+            }
+        )
+    top_dark_on_bright = metrics["top_dark_on_bright_fraction"]["median"]
+    if top_dark_on_bright is not None and top_dark_on_bright > args.max_top_dark_on_bright_fraction:
+        findings.append(
+            {
+                "severity": "warning",
+                "category": "horizon_black_band",
+                "evidence": f"median top_dark_on_bright_fraction {top_dark_on_bright} > {args.max_top_dark_on_bright_fraction}",
             }
         )
     bottom_rmse = metrics["bottom_band_rmse"]["p90"]
@@ -294,6 +315,7 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
             "min_edge_retention": args.min_edge_retention,
             "max_top_band_rmse": args.max_top_band_rmse,
             "max_top_brightness_delta": args.max_top_brightness_delta,
+            "max_top_dark_on_bright_fraction": args.max_top_dark_on_bright_fraction,
             "max_bottom_band_rmse_p90": args.max_bottom_band_rmse_p90,
         },
         "metrics": metrics,
@@ -318,6 +340,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--min-edge-retention", type=float, default=0.92)
     parser.add_argument("--max-top-band-rmse", type=float, default=0.20)
     parser.add_argument("--max-top-brightness-delta", type=float, default=0.12)
+    parser.add_argument("--max-top-dark-on-bright-fraction", type=float, default=0.02)
     parser.add_argument("--max-bottom-band-rmse-p90", type=float, default=0.22)
     return parser.parse_args()
 
