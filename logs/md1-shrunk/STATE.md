@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-19T16:18:00Z
+updated: 2026-05-19T17:35:32Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -8227,3 +8227,25 @@ skybox, compression, artifact handoff, and visual gates.
   - report: `logs/md1-shrunk/polls/20260519T165912Z-edge-publish-report/publish-edge.report.html`
 - Unit proof:
   - `logs/md1-shrunk/polls/20260519T165912Z-unit/unittest.txt`
+
+## 2026-05-19T17:35Z heartbeat verify (strict gates still PASS; no new jobs)
+
+- Preflight snapshot (read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260519T173532Z-preflight/preflight.txt`
+  - Step Functions (staging + `SpaceportMLPipeline-br-8abcbd5662`) RUNNING: `0`
+  - Known execution `execution-md1-shrunk-prodspine-wlight-202605190027` status: `SUCCEEDED`
+  - SageMaker InProgress: processing `0`; training external `md1-r0v5full14-f2923-1779209514-tile-00` + `md1-r0v5full14-f2923-1779209514-tile-01` (left untouched)
+  - Local dev server listeners: none on ports `3000/5173/8000/8080/8787/8788`
+  - Public S3 meta.json HEAD -> `200` (no browser headers expected)
+  - Edge meta.json HEAD -> `200` (browser-cache headers present)
+- Multi-camera input-vs-render checks (deployed preview; strict; baseline pose verification):
+  - command: `logs/md1-shrunk/polls/20260519T173532Z-camera-suite/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260519T173532Z-camera-suite/suite-summary.json` -> `decision=pass`
+  - report: `logs/md1-shrunk/polls/20260519T173532Z-camera-suite/report.html`
+  - reusable camera-pose verification: `pose_verification.max_delta=0.0` (baseline: `logs/md1-shrunk/polls/20260519T163352Z-camera-suite`)
+- Browser-readable public delivery automation (Lambda publish + strict browser header validation + HTML report):
+  - command: `logs/md1-shrunk/polls/20260519T173532Z-edge-publish-report/run.cmd.txt`
+  - report: `logs/md1-shrunk/polls/20260519T173532Z-edge-publish-report/publish-edge.report.html`
+  - edge meta.json: `https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+- GitHub Actions (exact-head): no new runs (this heartbeat is logs-only + `[skip ci]`); last green remains `c3f52d2e...`:
+  - `logs/md1-shrunk/polls/20260519T173532Z-ci/summary.txt`
