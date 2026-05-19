@@ -1,0 +1,36 @@
+{
+    "TrainingJobSummaries": [
+        {
+            "TrainingJobName": "md1-r0v5full14-f2923-1779209514-tile-12",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-r0v5full14-f2923-1779209514-tile-12",
+            "CreationTime": "2026-05-19T15:51:52.892000-06:00",
+            "LastModifiedTime": "2026-05-19T15:59:19.865000-06:00",
+            "TrainingJobStatus": "InProgress",
+            "SecondaryStatus": "Training"
+        },
+        {
+            "TrainingJobName": "md1-r0v5full14-f2923-1779209514-tile-10",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-r0v5full14-f2923-1779209514-tile-10",
+            "CreationTime": "2026-05-19T14:28:58.057000-06:00",
+            "LastModifiedTime": "2026-05-19T15:05:48.101000-06:00",
+            "TrainingJobStatus": "InProgress",
+            "SecondaryStatus": "Uploading"
+        },
+        {
+            "TrainingJobName": "cvhr-secondary-20260518t2113z-3dgs",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/cvhr-secondary-20260518t2113z-3dgs",
+            "CreationTime": "2026-05-19T13:58:33.853000-06:00",
+            "LastModifiedTime": "2026-05-19T14:03:34.810000-06:00",
+            "TrainingJobStatus": "InProgress",
+            "SecondaryStatus": "Training"
+        },
+        {
+            "TrainingJobName": "cvhr-mtc-secondary-20260518t2113z-3dgs",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/cvhr-mtc-secondary-20260518t2113z-3dgs",
+            "CreationTime": "2026-05-19T13:28:06.767000-06:00",
+            "LastModifiedTime": "2026-05-19T13:33:20.458000-06:00",
+            "TrainingJobStatus": "InProgress",
+            "SecondaryStatus": "Training"
+        }
+    ]
+}

@@ -2024,3 +2024,49 @@ as read-only context.
   - `logs/cvhr-parallel/evidence/cloudwatch-get-last-cvhr-secondary-20260518t2113z-3dgs-20260519T2153Z.json`
   - `logs/cvhr-parallel/evidence/cloudwatch-get-last-cvhr-secondary-20260518t2113z-3dgs-20260519T2153Z.log`
   - `logs/cvhr-parallel/evidence/runner-status-20260519T2153Z.json`
+
+## 2026-05-19T22:13Z Heartbeat Poll
+
+- Branch/head/status:
+  - branch: `agent-73910482-cvhr-parallel-splat`
+  - head: `9ff64441ce609f8e2d7652bdc6e2dbab0f99d505` (`[skip ci]` ledger commit)
+  - status before this poll: clean
+  - last meaningful exact-head workflow remains `CDK Deploy` run `26060892234` for code head `0b60d8bf9e7e4355bd46001dcd61387b327a8e5a`, conclusion `success`
+- AWS identity:
+  - account: `975050048887`
+  - ARN: `arn:aws:iam::975050048887:root`
+- Active SageMaker / Step Functions:
+  - branch-owned 3DGS direct describe: `cvhr-secondary-20260518t2113z-3dgs` -> `InProgress`, secondary status `Training`
+  - 3DGS start: `2026-05-19T13:59:27.439000-06:00`
+  - 3DGS failure reason: none
+  - external `cvhr-mtc-secondary-20260518t2113z-3dgs` direct describe: `InProgress`, secondary status `Training`, left untouched
+  - additional external training jobs observed: `md1-r0v5full14-f2923-1779209514-tile-12`, `md1-r0v5full14-f2923-1779209514-tile-10`
+  - in-progress processing job observed: `cvhr-viscell-full-l05-1779224497`
+  - running `SpaceportMLPipeline-staging` Step Functions executions: `0`
+- Branch-owned 3DGS progress:
+  - CloudWatch stream: `cvhr-secondary-20260518t2113z-3dgs/algo-1-1779220766`
+  - latest stream event timestamp remains `2026-05-19T20:08:26Z`
+  - latest fetched CloudWatch tail still ends immediately after `ns-train splatfacto-w-light` started with `30000` max iterations and log interval `100`
+  - same tail confirms COLMAP TXT to BIN conversion, COLMAP-to-Nerfstudio conversion, `1693` matched images, `99.01%` pose coverage, and `1693` frames in `transforms.json`
+  - no OOM, traceback, or SageMaker failure visible in fetched logs
+  - no PSNR/iteration lines yet in the fetched tail
+- S3 output:
+  - `s3://spaceport-ml-processing-staging/3dgs/cvhr-secondary-20260518t2113z/`
+  - `Total Objects: 0`
+  - `Total Size: 0`
+  - empty output is expected while the SageMaker training job is still running
+- State update:
+  - `logs/cvhr-parallel/cv-hr-state.json` reports `status=3dgs_running`, `sfm_status=Completed`, `3dgs_job_name=cvhr-secondary-20260518t2113z-3dgs`, `updated_at=2026-05-19T22:17:09Z`
+  - no compression job was launched
+- Evidence:
+  - `logs/cvhr-parallel/evidence/aws-sts-20260519T2213Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-describe-cvhr-secondary-20260518t2113z-3dgs-20260519T2213Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-describe-cvhr-mtc-secondary-20260518t2113z-3dgs-20260519T2213Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-training-inprogress-20260519T2213Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-processing-inprogress-20260519T2213Z.json`
+  - `logs/cvhr-parallel/evidence/stepfunctions-running-20260519T2213Z.json`
+  - `logs/cvhr-parallel/evidence/gh-runs-agent-73910482-20260519T2213Z.json`
+  - `logs/cvhr-parallel/evidence/s3-3dgs-cvhr-secondary-20260518t2113z-20260519T2213Z.txt`
+  - `logs/cvhr-parallel/evidence/logstreams-cvhr-secondary-20260518t2113z-3dgs-20260519T2213Z.json`
+  - `logs/cvhr-parallel/evidence/cloudwatch-tail-cvhr-secondary-20260518t2113z-3dgs-20260519T2213Z.log`
+  - `logs/cvhr-parallel/evidence/runner-status-20260519T2213Z.json`

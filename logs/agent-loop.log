@@ -48,3 +48,4 @@
 [2026-05-19T21:13:00Z] heartbeat poll -> branch-owned 3DGS still InProgress/Training, latest CloudWatch event remains ns-train startup at 2026-05-19T20:08:26Z, S3 output empty as expected -> continue monitoring
 [2026-05-19T21:33:00Z] heartbeat poll -> branch-owned 3DGS still InProgress/Training, latest CloudWatch event remains ns-train startup at 2026-05-19T20:08:26Z, S3 output empty as expected -> continue monitoring
 [2026-05-19T21:53:00Z] heartbeat poll -> branch-owned 3DGS still InProgress/Training, latest CloudWatch event remains ns-train startup at 2026-05-19T20:08:26Z, S3 output empty as expected -> continue monitoring
+[2026-05-19T22:13:00Z] heartbeat poll -> branch-owned 3DGS still InProgress/Training, CloudWatch tail remains at ns-train startup with 1693 validated frames and no failure, S3 output empty as expected -> continue monitoring
