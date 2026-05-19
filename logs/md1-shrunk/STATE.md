@@ -8030,3 +8030,27 @@ skybox, compression, artifact handoff, and visual gates.
     - `logs/md1-shrunk/polls/20260519T064106Z-ci/gh-run-list.json`
   - `Deploy Next.js to Cloudflare Pages` did not trigger for this commit (logs-only change):
     - `logs/md1-shrunk/polls/20260519T064106Z-ci/gh-pages-run-list.json`
+
+## 2026-05-19T14:28Z browser-readable edge delivery hardening (CORS + asset coverage)
+
+- Preflight (read-only proof; no jobs launched/stopped):
+  - `logs/md1-shrunk/polls/20260519T142449Z-preflight/preflight.txt`
+    - AWS identity: `arn:aws:iam::975050048887:root`
+    - Step Functions (`SpaceportMLPipeline-staging` + `SpaceportMLPipeline-br-8abcbd5662`) RUNNING: `0`
+    - public S3 bundle meta.json HEAD -> `200`
+    - edge meta.json HEAD -> `200`
+    - GitHub Actions: exact-head `CDK Deploy` succeeded for branch head `30fe4ec8...` (Pages last success still `26080154687` for `365aeaa0...`)
+- Browser-readable public delivery automation hardening:
+  - `scripts/publish_ml_bundle_to_edge.py` now:
+    - validates CORS using an explicit `Origin:` header (default `https://example.com`) and requires `access-control-allow-origin=*` (or exact origin echo)
+    - requires long-lived caching (`cache-control` includes `max-age` + `immutable`)
+    - downloads + persists `meta.json`, enumerates all referenced `files`, and validates each asset URL for CORS + caching
+- Validation run (known-good bundle; edge + assets all pass):
+  - command:
+    - `python3 scripts/publish_ml_bundle_to_edge.py --function-name Spaceport-MLPublishBundle-brc908ce627c --job-id md1-shrunk-prodspine-wlight-202605190027 --compressed-output-s3-uri s3://spaceport-ml-processing-staging/compressed/md1-shrunk-prodspine-wlight-202605190027/ --output logs/md1-shrunk/polls/20260519T142803Z-edge-validate/publish-edge.json --require-browser-headers`
+  - evidence:
+    - meta + asset coverage: `logs/md1-shrunk/polls/20260519T142803Z-edge-validate/publish-edge.meta.json`
+    - asset HEADs: `logs/md1-shrunk/polls/20260519T142803Z-edge-validate/publish-edge.assets.json`
+    - CORS+cache headers:
+      - `logs/md1-shrunk/polls/20260519T142803Z-edge-validate/publish-edge.curl-head.txt`
+      - `logs/md1-shrunk/polls/20260519T142803Z-edge-validate/publish-edge.curl-head-origin.txt`

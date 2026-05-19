@@ -1,0 +1,91 @@
+## git
+agent-113647-md1-baseline-e2e
+30fe4ec89c28d8e2cb18da8dbd02509139c34162
+## aws identity
+{
+    "UserId": "975050048887",
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root"
+}
+## stepfunctions running
+{
+    "executions": []
+}
+## stepfunctions br
+{
+    "executions": []
+}
+## sagemaker processing inprogress
+{
+    "ProcessingJobSummaries": [],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTRGYhXdvVWj3dbcxWzdU2seUW9sgTAabpezr1qhjwVo0Zfl3e6MaLGBaXzBDVbWizc0m/zErRW4pYBXpPWHssQFU+TtYvoqDHu2Bpflm11CEVgGEOt6c7Zt1MGhjpVvjXRajvZKKBx78OwAi+WDGDgikfclxFxcIHG0T27PYd4yQJtOWVwW/jL1F4Id3RdULVbeEH/NQBZrX+q/lRT7wEdaqR6VNHqO0uOlEgxxNdUeF9fG4v7MhZN+nQGmOV5NtFwsqitftnZoe/r1lFjGpRE+rPREtGJwvwK0p3SPZdJeGDyjsna+rz3oAXllIDgg7xj+pBr55MuH6Am+eFf9VMEcHm8m7hp5b21p5l9F63odTlq0XfehGlI+BKktnnV5xuIRMoRhixc8TumflM4+oWW26YkHLooLQWtYXhS4hVKVkdTh3IBJl/oZkJCNT6VbX0WJp4BthbDSkr+ZsgSoaNzUNXMr1s+9GUAR/NcFTCR8AZg3THR/V08cYST5E6GUU="
+}
+## sagemaker training inprogress
+{
+    "TrainingJobSummaries": [],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTRGYhXdvVWj3dbcxWzdU2seUW9sgTAabpezr1qhjwVo0Zfl3e6MaLGBaXzBDVbWizc0m/zErRW4pYBXpPWHssQFU+TtYvoqDHu2Bpflm11CEVgGEOt6c7Zt1MGhjpVvjXRajvZKKBx78OwAi+WDGDgikfclxFxcIHG0T27PYd4yQJtOWVwW/jL1F4Id3RdULVbeEH/NQBZrX+q/lRT7wEdaqR6VNHqO0uOlEgxxNdUeF9fG4v7MhZN+nQGmOV5NtFwsqitftnZoe/r1lFjGpRE+rPREtGJwvwK0p3SPZdJeGDyjsna+rz3oAXllIDgg7xj+pBr55MuH6Am+eFf9VMHQQ0oP2/h1Ovt8E7EUJ0kousYkqZLf6CDfW7rCPOBib4nXV0IsuJXHqZ6W6XOMQDMQEaQ8YEFTQUrghm2MfkLRftGwfBPHXpjhhoRJn/6EvwXPDWmkD8gc7zPZDrKTDO/0dKQJf8jU596oxKinbrl1yFV6hFZX1TdMy8K7RqQA=="
+}
+## s3 public meta head
+HTTP/1.1 200 OK
+x-amz-id-2: jCdmNRQ+7cwnrT0WvDpsYu9q/B4PEg3cukIfuidfRNmjuhfxwuqjL1PN/LONkw+7GQYFJvLYrng=
+x-amz-request-id: M2N5E6QR0FKNP3KC
+Date: Tue, 19 May 2026 14:24:08 GMT
+Last-Modified: Tue, 19 May 2026 03:14:11 GMT
+ETag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: lwCX4ptdSjx.9.5LMjn4a8Ervrln8HMA
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1421
+Server: AmazonS3
+
+## edge meta head
+HTTP/2 200 
+content-type: application/json
+content-length: 1421
+date: Tue, 19 May 2026 14:24:08 GMT
+last-modified: Tue, 19 May 2026 06:37:13 GMT
+etag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+cache-control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: vUW1wpcXNiVbn3gf6_kSkXCXdN6e83vX
+accept-ranges: bytes
+server: AmazonS3
+x-cache: Miss from cloudfront
+via: 1.1 dbd626954f29b2ea0ca9606b2848698c.cloudfront.net (CloudFront)
+x-amz-cf-pop: LAX53-P6
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: Wz6-9WkUoqAz-qfNf7FPAqugbgV56ioeTAh8vyX_YQQkMxKot8fPKg==
+vary: Origin
+
+## local listen
+COMMAND     PID          USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+rapportd    629 gabrielhansen   10u  IPv4 0xd43fe9904368dc77      0t0  TCP *:57108 (LISTEN)
+rapportd    629 gabrielhansen   11u  IPv6 0xe16a739ca4c9e001      0t0  TCP *:57108 (LISTEN)
+rapportd    629 gabrielhansen   20u  IPv6  0x9e31fe01f536617      0t0  TCP *:53106 (LISTEN)
+rapportd    629 gabrielhansen   23u  IPv6 0x440e221cb618b4b3      0t0  TCP *:53107 (LISTEN)
+ControlCe   671 gabrielhansen   10u  IPv4  0x1d6f516c03dbe78      0t0  TCP *:7000 (LISTEN)
+ControlCe   671 gabrielhansen   11u  IPv6 0x323b59c737344082      0t0  TCP *:7000 (LISTEN)
+ControlCe   671 gabrielhansen   12u  IPv4 0x15183ba995babbab      0t0  TCP *:5000 (LISTEN)
+ControlCe   671 gabrielhansen   13u  IPv6 0x74899407a6b44171      0t0  TCP *:5000 (LISTEN)
+sharingd    731 gabrielhansen   26u  IPv6 0xb8e1c62129f065f9      0t0  TCP *:8770 (LISTEN)
+node        990 gabrielhansen   15u  IPv4 0x3ba8349c576cb96a      0t0  TCP *:18789 (LISTEN)
+node        990 gabrielhansen   22u  IPv4 0xc30287d8799625c6      0t0  TCP 127.0.0.1:18792 (LISTEN)
+figma_age  1010 gabrielhansen    3u  IPv4  0x15caf79fc3a5872      0t0  TCP 127.0.0.1:44950 (LISTEN)
+figma_age  1010 gabrielhansen   14u  IPv4 0xa707bb1274999ca8      0t0  TCP 127.0.0.1:44960 (LISTEN)
+whisper-d 11840 gabrielhansen    3u  IPv4 0x54e8688f71e55e6c      0t0  TCP 127.0.0.1:44123 (LISTEN)
+whisper-s 11847 gabrielhansen    3u  IPv4 0x58134ae9f6f12888      0t0  TCP 127.0.0.1:8177 (LISTEN)
+Google    53437 gabrielhansen   30u  IPv6 0x7d6c05cbd748094b      0t0  TCP [::1]:7679 (LISTEN)
+## gh runs
+26081063367	CDK Deploy	30fe4ec89c28d8e2cb18da8dbd02509139c34162	completed	success	2026-05-19T06:46:13Z
+26080845481	CDK Deploy	f5125521c1f09ad4365e8e6feb577d637eb22b1b	completed	success	2026-05-19T06:40:47Z
+26080505088	CDK Deploy	fe552bf0c2c4513b11e701102117dbd2752fc7d7	completed	success	2026-05-19T06:32:09Z
+26080154676	CDK Deploy	365aeaa00cc74506a4f76dc3f8c6c34c47427555	completed	success	2026-05-19T06:23:16Z
+26080154687	Deploy Next.js to Cloudflare Pages	365aeaa00cc74506a4f76dc3f8c6c34c47427555	completed	success	2026-05-19T06:23:16Z
+26080036182	CDK Deploy	74483c2b89c704486f597ae9913b4deabc3a8428	completed	cancelled	2026-05-19T06:20:11Z
+26079242637	CDK Deploy	d419d79688265ce24aedfb7df04cf2ba3b364676	completed	success	2026-05-19T05:58:45Z
+26078897888	CDK Deploy	090cd434c5ad1bded1eb8c6d8515b94a45e67784	completed	success	2026-05-19T05:49:02Z
+26078897872	Deploy Next.js to Cloudflare Pages	090cd434c5ad1bded1eb8c6d8515b94a45e67784	completed	success	2026-05-19T05:49:02Z
+26078729691	CDK Deploy	1da3fa14c1bcb4d6df3ae4fde3d296b795fefe54	completed	success	2026-05-19T05:44:12Z
+26078491195	CDK Deploy	79b8d460f1821f9ec59d62abdfed94bb94bc5487	completed	success	2026-05-19T05:37:18Z
+26078491191	Deploy Next.js to Cloudflare Pages	79b8d460f1821f9ec59d62abdfed94bb94bc5487	completed	success	2026-05-19T05:37:18Z
