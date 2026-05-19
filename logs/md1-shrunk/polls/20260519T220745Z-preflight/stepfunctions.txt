@@ -1,0 +1,63 @@
+# Step Functions state machines
+RenderingPipelineStateMachine39265931-vs5WJJdof6SW	arn:aws:states:us-west-2:975050048887:stateMachine:RenderingPipelineStateMachine39265931-vs5WJJdof6SW
+SpaceportMLPipeline	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline
+SpaceportMLPipeline-agent90547182phase5densifyintervabfc2a7	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-agent90547182phase5densifyintervabfc2a7
+SpaceportMLPipeline-br-0468116023	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-0468116023
+SpaceportMLPipeline-br-0d01e63d2e	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-0d01e63d2e
+SpaceportMLPipeline-br-18df3f5daa	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-18df3f5daa
+SpaceportMLPipeline-br-1fcc870ee1	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-1fcc870ee1
+SpaceportMLPipeline-br-2efbf47a4f	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-2efbf47a4f
+SpaceportMLPipeline-br-3a0b78b344	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-3a0b78b344
+SpaceportMLPipeline-br-3a5b3005d7	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-3a5b3005d7
+SpaceportMLPipeline-br-421b38da81	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-421b38da81
+SpaceportMLPipeline-br-45ee130fef	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-45ee130fef
+SpaceportMLPipeline-br-487517c20a	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-487517c20a
+SpaceportMLPipeline-br-52804b744d	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-52804b744d
+SpaceportMLPipeline-br-590bef09e3	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-590bef09e3
+SpaceportMLPipeline-br-5ddffedc6c	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-5ddffedc6c
+SpaceportMLPipeline-br-5ff44d7162	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-5ff44d7162
+SpaceportMLPipeline-br-6134770281	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-6134770281
+SpaceportMLPipeline-br-647952f8ea	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-647952f8ea
+SpaceportMLPipeline-br-64f4abe549	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-64f4abe549
+SpaceportMLPipeline-br-679d519c73	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-679d519c73
+SpaceportMLPipeline-br-688d73ccbc	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-688d73ccbc
+SpaceportMLPipeline-br-6cd5762fc5	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-6cd5762fc5
+SpaceportMLPipeline-br-85a239485f	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-85a239485f
+SpaceportMLPipeline-br-8989f2959f	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-8989f2959f
+SpaceportMLPipeline-br-8abcbd5662	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-8abcbd5662
+SpaceportMLPipeline-br-91c590205a	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-91c590205a
+SpaceportMLPipeline-br-985396b507	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-985396b507
+SpaceportMLPipeline-br-98efe3a22f	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-98efe3a22f
+SpaceportMLPipeline-br-9f3bbb8f70	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-9f3bbb8f70
+SpaceportMLPipeline-br-a2a0178e1a	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-a2a0178e1a
+SpaceportMLPipeline-br-aa5ee4af80	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-aa5ee4af80
+SpaceportMLPipeline-br-ad3ac98348	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-ad3ac98348
+SpaceportMLPipeline-br-ada4c6fc3f	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-ada4c6fc3f
+SpaceportMLPipeline-br-af4b90ccd2	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-af4b90ccd2
+SpaceportMLPipeline-br-bbb91ce9a5	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-bbb91ce9a5
+SpaceportMLPipeline-br-bd4bf3a400	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-bd4bf3a400
+SpaceportMLPipeline-br-c55e953e52	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-c55e953e52
+SpaceportMLPipeline-br-c908ce627c	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-c908ce627c
+SpaceportMLPipeline-br-d659db0a49	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-d659db0a49
+SpaceportMLPipeline-br-dda7bdad32	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-dda7bdad32
+SpaceportMLPipeline-br-e043d7b48d	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-e043d7b48d
+SpaceportMLPipeline-br-e2b491c69d	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-e2b491c69d
+SpaceportMLPipeline-br-e7de77d9fd	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-e7de77d9fd
+SpaceportMLPipeline-br-e85ad62606	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-e85ad62606
+SpaceportMLPipeline-br-f9a9943d3b	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-f9a9943d3b
+SpaceportMLPipeline-br-fb273c6c47	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-fb273c6c47
+SpaceportMLPipeline-br-fb928a4f1c	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-fb928a4f1c
+SpaceportMLPipeline-staging	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging
+
+# Running executions (staging + branch)
+state_machine	SpaceportMLPipeline-staging	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging
+state_machine	SpaceportMLPipeline-br-8abcbd5662	arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-8abcbd5662
+
+# Known execution status
+describe_execution	SpaceportMLPipeline-br-8abcbd5662	arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-br-8abcbd5662:execution-md1-shrunk-prodspine-wlight-202605190027
+{
+  "name": "execution-md1-shrunk-prodspine-wlight-202605190027",
+  "status": "SUCCEEDED",
+  "startDate": "2026-05-18T18:28:13.202000-06:00",
+  "stopDate": "2026-05-18T21:03:39.663000-06:00"
+}

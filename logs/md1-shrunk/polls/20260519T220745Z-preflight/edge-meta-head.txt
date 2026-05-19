@@ -1,0 +1,7 @@
+status 200
+Content-Length: 1421
+Content-Type: application/json
+Last-Modified: Tue, 19 May 2026 06:37:13 GMT
+ETag: "948345d6cf5eca623bfe32fe46aa4f99"
+Cache-Control: public, max-age=31536000, s-maxage=31536000, immutable
+Vary: Origin

@@ -8469,3 +8469,28 @@ skybox, compression, artifact handoff, and visual gates.
   - edge meta.json: `https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
 - Unit proof:
   - `logs/md1-shrunk/polls/20260519T213925Z-unit/unittest.txt`
+
+## 2026-05-19T22:07Z heartbeat verify (strict gates still PASS; no new jobs)
+
+- Preflight snapshot (read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260519T220745Z-preflight/preflight.txt`
+  - Step Functions (staging + `SpaceportMLPipeline-br-8abcbd5662`) RUNNING: `0`
+  - Known execution `execution-md1-shrunk-prodspine-wlight-202605190027` status: `SUCCEEDED`
+  - Public S3 meta.json HEAD -> `200`:
+    - `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+  - Edge meta.json HEAD -> `200` with browser-cache headers:
+    - `https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+  - SageMaker InProgress: external jobs present (processing + training); left untouched
+  - Local dev server listeners: `port 3000 LISTEN` (see preflight file)
+  - GitHub Actions (exact-head): no new runs (current head is logs-only; `[skip ci]`); last green remains `c3f52d2e...`:
+    - `logs/md1-shrunk/polls/20260519T220745Z-ci/summary.txt`
+- Multi-camera input-vs-render checks (deployed preview; strict; baseline pose verification):
+  - command: `logs/md1-shrunk/polls/20260519T220745Z-camera-suite/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260519T220745Z-camera-suite/suite-summary.json` -> `decision=pass`
+  - report: `logs/md1-shrunk/polls/20260519T220745Z-camera-suite/report.html`
+  - reusable camera-pose verification: `pose_verification.max_delta=0.0` (baseline: `logs/md1-shrunk/polls/20260519T163352Z-camera-suite`)
+- Browser-readable public delivery automation (Lambda publish + strict browser header validation + HTML report):
+  - report: `logs/md1-shrunk/polls/20260519T220745Z-camera-suite/publish-edge.report.html`
+  - edge meta.json: `https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+- Unit proof:
+  - `logs/md1-shrunk/polls/20260519T220745Z-unit/unittest.txt`

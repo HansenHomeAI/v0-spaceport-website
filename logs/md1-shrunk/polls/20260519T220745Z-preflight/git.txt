@@ -1,0 +1,4 @@
+timestamp=20260519T220745Z
+branch=agent-113647-md1-baseline-e2e
+head=a759ad901975dfcbd4348dec7e3ab76cf5d04d1f
+status=1 changes
