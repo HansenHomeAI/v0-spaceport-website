@@ -774,6 +774,9 @@ class ColmapPipeline:
         self.visibility_point_jurisdiction_enabled = (
             os.environ.get("COLMAP_VISIBILITY_POINT_JURISDICTION", "1") != "0"
         )
+        self.visibility_track_owner_fallback_enabled = (
+            os.environ.get("COLMAP_VISIBILITY_TRACK_OWNER_FALLBACK", "1") != "0"
+        )
         self.graph_xy_neighbor_limit = int(os.environ.get("COLMAP_GRAPH_XY_NEIGHBOR_LIMIT", "60"))
         self.graph_xyz_neighbor_limit = int(os.environ.get("COLMAP_GRAPH_XYZ_NEIGHBOR_LIMIT", "20"))
         self.chunk_boundary_max_neighbors = int(
@@ -8693,11 +8696,25 @@ class ColmapPipeline:
         if not cell_votes:
             return True, "no_visibility_owner"
         ranked_cells = sorted(cell_votes.items(), key=lambda item: (-item[1], item[0]))
-        for cell_index, _ in ranked_cells:
+        selected_cells = set(self.only_chunk_indexes)
+        spatial_candidate_cells = [
+            (cell_index, vote_count)
+            for cell_index, vote_count in ranked_cells
+            if not selected_cells or cell_index in selected_cells
+        ]
+        if not spatial_candidate_cells:
+            spatial_candidate_cells = ranked_cells
+        for cell_index, _ in spatial_candidate_cells:
             jurisdiction = self.chunk_jurisdictions.get(cell_index) or {}
             bounds = jurisdiction.get("jurisdiction_bounds") or jurisdiction.get("bounds")
             if isinstance(bounds, dict) and self.point_inside_bounds(x, y, bounds):
                 return True, "inside_owner_jurisdiction"
+        if (
+            selected_cells
+            and self.visibility_track_owner_fallback_enabled
+            and ranked_cells[0][0] in selected_cells
+        ):
+            return True, "track_owner_jurisdiction_fallback"
         return False, f"outside_owner_jurisdiction:{ranked_cells[0][0]}"
 
     def write_filtered_sparse_model(self, *, source_text_dir: Path, output_dir: Path) -> dict[str, object]:
@@ -8727,6 +8744,7 @@ class ColmapPipeline:
         far_context_point_count = 0
         absurd_outlier_count = 0
         jurisdiction_rejected_count = 0
+        jurisdiction_track_owner_fallback_count = 0
         weak_far_context_rejected_count = 0
         kept_lines: List[str] = []
         for line in points_lines:
@@ -8738,13 +8756,15 @@ class ColmapPipeline:
             if max_abs_coordinate > outlier_limit:
                 absurd_outlier_count += 1
                 continue
-            jurisdiction_passed, _ = self.point_passes_visibility_jurisdiction(
+            jurisdiction_passed, jurisdiction_reason = self.point_passes_visibility_jurisdiction(
                 parts,
                 image_id_to_name=image_id_to_name,
             )
             if not jurisdiction_passed:
                 jurisdiction_rejected_count += 1
                 continue
+            if jurisdiction_reason == "track_owner_jurisdiction_fallback":
+                jurisdiction_track_owner_fallback_count += 1
             if (
                 track_len >= self.filtered_sparse_core_min_track_len
                 and reprojection_error <= self.filtered_sparse_core_max_reproj_error
@@ -8797,10 +8817,12 @@ class ColmapPipeline:
             "weak_far_context_points_rejected": weak_far_context_rejected_count,
             "absurd_outlier_points_removed": absurd_outlier_count,
             "jurisdiction_points_rejected": jurisdiction_rejected_count,
+            "jurisdiction_track_owner_fallback_points": jurisdiction_track_owner_fallback_count,
             "visibility_point_jurisdiction_enabled": (
                 self.chunk_planner == "visibility_cell_v1"
                 and self.visibility_point_jurisdiction_enabled
             ),
+            "visibility_track_owner_fallback_enabled": self.visibility_track_owner_fallback_enabled,
             "outlier_limit": round(outlier_limit, 3),
             "core_min_track_len": self.filtered_sparse_core_min_track_len,
             "core_max_reproj_error": self.filtered_sparse_core_max_reproj_error,

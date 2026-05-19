@@ -206,6 +206,72 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertFalse(far_ok)
             self.assertIn("outside_owner_jurisdiction", far_reason)
 
+    def test_visibility_cell_leaf_fallback_keeps_track_owned_points(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {
+                "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+                "COLMAP_CHUNK_PLANNER": "visibility_cell_v1",
+                "COLMAP_CHUNK_MIN_IMAGES": "2",
+                "COLMAP_LEAF_TARGET_IMAGES": "3",
+                "COLMAP_LEAF_HARD_CAP": "5",
+                "COLMAP_VISIBILITY_CELL_MIN_SCORE": "0.0",
+                "COLMAP_VISIBILITY_CELL_MAX_OVERLAP_CELLS": "2",
+                "COLMAP_VISIBILITY_CELL_OVERLAP_RATIO": "0.15",
+            },
+            clear=True,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            names = [f"IMG_{index:03d}.JPG" for index in range(9)]
+            pipeline.capture_ordered_names = names
+            pipeline.exif_records = {
+                name: self.make_visibility_exif_record(
+                    name,
+                    x=(index % 3) * 48.0,
+                    y=(index // 3) * 48.0,
+                    capture_time_s=float(index),
+                    heading_deg=0.0,
+                    pitch_deg=-58.0,
+                )
+                for index, name in enumerate(names)
+            }
+            pipeline.dataset_image_count = len(names)
+            pipeline.gps_image_count = len(names)
+            pipeline.orientation_prior_count = len(names)
+            pipeline.colmap_capabilities["supports_matches_importer"] = True
+            pipeline.image_list_path.write_text("\n".join(names) + "\n", encoding="utf-8")
+
+            chunks = pipeline.build_chunk_plans()
+            owner_name = chunks[0].core_names[0]
+            owner_cell = pipeline.primary_cell_id_by_image[owner_name]
+            far_cell = max(
+                pipeline.chunk_jurisdictions,
+                key=lambda index: abs(index - owner_cell),
+            )
+            far_bounds = pipeline.chunk_jurisdictions[far_cell]["bounds"]
+            far_point = [
+                "2",
+                str((far_bounds["min_x"] + far_bounds["max_x"]) / 2.0),
+                str((far_bounds["min_y"] + far_bounds["max_y"]) / 2.0),
+                "0",
+                "255",
+                "0",
+                "0",
+                "0.5",
+                "1",
+                "0",
+            ]
+
+            pipeline.only_chunk_indexes = {owner_cell}
+            ok, reason = pipeline.point_passes_visibility_jurisdiction(
+                far_point,
+                image_id_to_name={1: owner_name},
+            )
+
+            self.assertTrue(ok)
+            self.assertEqual(reason, "track_owner_jurisdiction_fallback")
+
     def test_unset_pipeline_mode_keeps_legacy_defaults(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(os.environ, {}, clear=True):
             root = Path(tmp)

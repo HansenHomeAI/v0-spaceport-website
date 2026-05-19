@@ -1,24 +1,47 @@
 reason: Continuing SfM-only visibility-cell production proof. The two-leaf MD1 canary passed filtered reducer, seam-overlap, quality, API, and browser-viewer gates, but it is not production-ready until the full 19-leaf fanout/reducer/viewer proof passes as one merged COLMAP sparse artifact.
-last_step: 2026-05-18T22:01Z: corrected reducer to prefer jurisdiction-filtered sparse/0 over sparse_raw/0 and added cross-leaf surface-overlap diagnostics. The repaired two-leaf canary merged chunks 1 and 8 into one COLMAP artifact with 626/626 registered images, 41,961 filtered points, 25 shared seam cameras, and 0/111 flagged cross-leaf overlap cells; local /pipeline-viewer API and browser canvas proof passed.
-next_unblocked_step: Commit/push reducer seam hardening, wait for exact-head CI/container proof, then launch the full 19-leaf visibility_cell_v1 MD1 fanout with max concurrency 2. After all leaves finish, merge into one COLMAP artifact, run sparse cleanliness/double-surface/seam diagnostics, and verify in /pipeline-viewer before claiming production-ready.
+last_step: 2026-05-19T01:23Z: patched the proven leaf06 blocker locally. Visibility-cell sparse filtering now falls back to track-owner jurisdiction for distributed leaves when COLMAP raw XY is not GPS-aligned, and run_sfm.sh count parsing no longer emits `0\n0`. No-spend replay of the failed leaf06 raw sparse retained 106,547 filtered points instead of 0.
+next_unblocked_step: Commit/push the leaf06 filter patch, wait exact-head SfM container rebuild, relaunch only leaf06 on the patched image, and continue fanout only after leaf06 passes. Keep monitoring active leaf07 to terminal without cancelling it.
 owner_action_needed: none
-active_jobs: []
+active_jobs: ["md1-viscell-full-l07-1779151432"]
 completed_jobs: ["md1-tile00-ds1000-r30-1778869168", "md1-tile01-ds1000-r30-1778869169", "md1-tile02-ds1000-r30-1778869170", "md1-tile03-ds1000-r30-1778869171", "md1-tile04-ds1000-r30-1778869172", "md1-tile00-split-r32-1778899939", "md1-tile00-h1i1lod-r40-1778978757", "md1-tile01-h1i1lod-r41-1778982712", "md1-tile02-h1i1lod-r41-1778982713", "md1-tile03-h1i1lod-r41-1778982714", "md1-tile04-h1i1lod-r41-1778982715"]
 failed_jobs: ["md1-tile00-split-r31-1778898254", "md1-tile00-sogs-r33-1778908626", "md1-tile00-sogs-r34-1778914593", "md1-tile00-lodonly-r38-1778950901", "md1-tile00-h0lod-r39-1778976307", "r41-remaining-tiles-viewer-visual-proof", "r41-viewer-unified-lod-false-idle"]
 held_jobs: []
 unrelated_active_jobs: []
 branch: agent-73948216-sfm-production-spine
-head: e2315457661b32e983d9e1317bd1aec1c300b774
-current_rung: SFM_VISIBILITY_CELL_V1_TWO_LEAF_CANARY_PASSED_FULL_FANOUT_PENDING
-project_final_decision: not_production_ready_sfm_full_fanout_pending
-project_level_unresolved_caveats: ["SfM-only production proof still needs full 19-leaf fanout on the visibility_cell_v1 manifest", "two-leaf canary is bounded evidence only", "downstream 3DGS/SOGS proof is separate from this SfM-only gate"]
+head: bf83051a513b0cb6b2be3380b9fc032797cc2cb1
+current_rung: SFM_VISIBILITY_CELL_V1_LEAF06_FILTER_PATCH_READY
+project_final_decision: not_production_ready_leaf06_filter_failure
+project_level_unresolved_caveats: ["SfM-only production proof still needs full 19-leaf fanout on the visibility_cell_v1 manifest", "leaf06 exposed a jurisdiction-filter failure that must be patched and reproven", "two-leaf canary is bounded evidence only", "downstream 3DGS/SOGS proof is separate from this SfM-only gate"]
 current_viewer_url: http://127.0.0.1:3000/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fmd1-visibility-cell-v1-canary-20260518T2025Z%2Fmerged-filtered-seam%2Fcolmap&maxPoints=160000
 two_leaf_filtered_reducer: logs/sfm-production-spine/md1_visibility_cell_v1_two_leaf_reducer_filtered_seam_20260518T2146Z.json
 two_leaf_quality: logs/sfm-production-spine/md1_visibility_cell_v1_two_leaf_quality_filtered_seam_viewer_20260518T2201Z.json
 two_leaf_viewer_api: logs/sfm-production-spine/md1_visibility_cell_v1_two_leaf_viewer_api_20260518T2154Z.json
 two_leaf_viewer_screenshot: logs/sfm-production-spine/md1_visibility_cell_v1_two_leaf_viewer_20260518T2200Z.png
 active_processing_jobs_proof: logs/sfm-production-spine/active-md1-processing-jobs-current-20260518T2128Z.json
-updated: 2026-05-18T22:01Z
+full_fanout_root: s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z
+full_fanout_launch_context: logs/sfm-production-spine/md1_visibility_cell_v1_full_run_20260518T2206Z.json
+full_fanout_manager_status: logs/sfm-production-spine/md1_visibility_cell_v1_full_fanout_manager_20260518T2206Z.json
+exact_head_cdk_run: 26063133849
+leaf06_failure_evidence:
+  job_name: md1-viscell-full-l06-1779150311
+  terminal_status: Failed
+  failure_reason: "AlgorithmError: , exit code: 1"
+  describe: logs/sfm-production-spine/md1-viscell-full-l06-1779150311_describe_poll_20260519T0118Z.json
+  cloudwatch: logs/sfm-production-spine/md1-viscell-full-l06-1779150311_cloudwatch_tail_20260519T0112Z.json
+  s3_listing: logs/sfm-production-spine/md1_visibility_cell_v1_full_leaf06_s3_poll_20260519T0114Z.txt
+  sfm_metadata: logs/sfm-production-spine/md1_visibility_cell_v1_full_leaf06_sfm_metadata_20260519T0115Z.json
+  raw_points_3d: 255656
+  filtered_points_3d: 0
+  jurisdiction_points_rejected: 255656
+leaf06_patch_evidence:
+  replay: logs/sfm-production-spine/md1_visibility_cell_v1_leaf06_filter_replay_after_patch_20260519T0121Z.json
+  replay_filtered_points_3d: 106547
+  replay_jurisdiction_track_owner_fallback_points: 123501
+  verification:
+    - python3 -m py_compile infrastructure/containers/sfm/run_colmap_sfm.py scripts/sfm/run_sfm_fanout_reducer.py scripts/sfm/evaluate_sfm_quality.py
+    - bash -n infrastructure/containers/sfm/run_sfm.sh
+    - PYTHONPATH=. python3 -m unittest tests.unit.test_colmap_gps_priors tests.unit.test_sfm_fanout_contract tests.unit.test_sfm_fanout_reducer tests.unit.test_sfm_reducer_canary tests.unit.test_sfm_quality_eval
+updated: 2026-05-19T01:23Z
 
 sfm_visibility_cell_v1_implementation:
   updated: 2026-05-18T17:41:04Z
