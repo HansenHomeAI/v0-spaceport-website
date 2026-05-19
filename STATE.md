@@ -366,3 +366,13 @@ Montana time capsule run, without touching or advancing the existing
 - No duplicate secondary CV-HR jobs were launched.
 - Existing `cvhr-mtc-20260518T1729Z-sfm` and other external jobs were left untouched.
 - Details and evidence are recorded in `logs/cvhr-parallel/STATE.md`.
+
+## 2026-05-19T15:48Z Heartbeat Poll
+
+- Secondary SfM job `cvhr-secondary-20260518t2113z-sfm` remains `InProgress` by direct SageMaker describe.
+- CloudWatch is still advancing: current observed stage is `chunk_05_mapper_recovery`.
+- Latest positive mapper progress: `num_reg_frames=70` at `2026-05-19T15:52:10Z`, followed by bundle-adjustment warnings that have been nonfatal in this run.
+- S3 output remains empty, expected before `S3UploadMode=EndOfJob`.
+- No duplicate secondary CV-HR jobs were launched.
+- Existing `cvhr-mtc-20260518T1729Z-sfm` and other external jobs were left untouched.
+- Details and evidence are recorded in `logs/cvhr-parallel/STATE.md`.

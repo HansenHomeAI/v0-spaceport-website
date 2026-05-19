@@ -1,0 +1,506 @@
+{
+    "events": [
+        {
+            "timestamp": 1779205800280,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:49:59.589112  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205804796
+        },
+        {
+            "timestamp": 1779205802284,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:01.463361  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205804796
+        },
+        {
+            "timestamp": 1779205803284,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:02.679996  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205804796
+        },
+        {
+            "timestamp": 1779205804284,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:03.710515  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205809843
+        },
+        {
+            "timestamp": 1779205805286,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:04.818050  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205809843
+        },
+        {
+            "timestamp": 1779205806286,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:05.468287  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205809843
+        },
+        {
+            "timestamp": 1779205807287,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:06.504482  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205809843
+        },
+        {
+            "timestamp": 1779205807287,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:06.753935  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205809843
+        },
+        {
+            "timestamp": 1779205808287,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:07.615849  8084 incremental_pipeline.cc:524] Registering image #542 (num_reg_frames=44)",
+            "ingestionTime": 1779205809843
+        },
+        {
+            "timestamp": 1779205808287,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:07.615896  8084 incremental_pipeline.cc:527] => Image sees 147 / 6834 points",
+            "ingestionTime": 1779205809843
+        },
+        {
+            "timestamp": 1779205808287,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:07.974686  8084 incremental_pipeline.cc:524] Registering image #541 (num_reg_frames=45)",
+            "ingestionTime": 1779205809843
+        },
+        {
+            "timestamp": 1779205808287,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:07.974740  8084 incremental_pipeline.cc:527] => Image sees 372 / 5420 points",
+            "ingestionTime": 1779205809843
+        },
+        {
+            "timestamp": 1779205809287,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:08.454973  8084 incremental_pipeline.cc:524] Registering image #543 (num_reg_frames=46)",
+            "ingestionTime": 1779205814871
+        },
+        {
+            "timestamp": 1779205809287,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:08.455027  8084 incremental_pipeline.cc:527] => Image sees 1925 / 6695 points",
+            "ingestionTime": 1779205814871
+        },
+        {
+            "timestamp": 1779205809288,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:09.134945  8084 incremental_pipeline.cc:524] Registering image #659 (num_reg_frames=47)",
+            "ingestionTime": 1779205814871
+        },
+        {
+            "timestamp": 1779205809288,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:09.134996  8084 incremental_pipeline.cc:527] => Image sees 243 / 6826 points",
+            "ingestionTime": 1779205814871
+        },
+        {
+            "timestamp": 1779205810288,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:09.707152  8084 incremental_pipeline.cc:524] Registering image #660 (num_reg_frames=48)",
+            "ingestionTime": 1779205814871
+        },
+        {
+            "timestamp": 1779205810288,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:09.707203  8084 incremental_pipeline.cc:527] => Image sees 280 / 5802 points",
+            "ingestionTime": 1779205814871
+        },
+        {
+            "timestamp": 1779205811288,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:10.387955  8084 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1779205814871
+        },
+        {
+            "timestamp": 1779205816335,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:16.070785  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205821975
+        },
+        {
+            "timestamp": 1779205817336,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:17.138844  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205821975
+        },
+        {
+            "timestamp": 1779205818336,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:17.385031  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205821975
+        },
+        {
+            "timestamp": 1779205818336,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:18.039028  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205821975
+        },
+        {
+            "timestamp": 1779205819336,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:18.693878  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205821975
+        },
+        {
+            "timestamp": 1779205820338,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:19.769229  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205821975
+        },
+        {
+            "timestamp": 1779205821342,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:21.252647  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205827018
+        },
+        {
+            "timestamp": 1779205828369,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:27.584514  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205834076
+        },
+        {
+            "timestamp": 1779205829372,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:28.652384  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205834076
+        },
+        {
+            "timestamp": 1779205829372,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:29.304723  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205834076
+        },
+        {
+            "timestamp": 1779205830373,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:29.967051  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205834076
+        },
+        {
+            "timestamp": 1779205830373,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:30.213003  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205834076
+        },
+        {
+            "timestamp": 1779205831378,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:30.867579  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205834076
+        },
+        {
+            "timestamp": 1779205831378,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:31.111863  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205834076
+        },
+        {
+            "timestamp": 1779205833379,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:32.578295  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205839100
+        },
+        {
+            "timestamp": 1779205833379,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:33.224538  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205839100
+        },
+        {
+            "timestamp": 1779205834394,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:33.875348  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205839100
+        },
+        {
+            "timestamp": 1779205834394,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:34.124091  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: Eigen failure. Unable to perform dense Cholesky factorization.",
+            "ingestionTime": 1779205839100
+        },
+        {
+            "timestamp": 1779205835394,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:35.063809  8084 incremental_pipeline.cc:524] Registering image #658 (num_reg_frames=49)",
+            "ingestionTime": 1779205839100
+        },
+        {
+            "timestamp": 1779205835394,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:35.063864  8084 incremental_pipeline.cc:527] => Image sees 1457 / 5689 points",
+            "ingestionTime": 1779205839100
+        },
+        {
+            "timestamp": 1779205836395,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:35.958004  8084 incremental_pipeline.cc:524] Registering image #657 (num_reg_frames=50)",
+            "ingestionTime": 1779205839100
+        },
+        {
+            "timestamp": 1779205836395,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:35.958055  8084 incremental_pipeline.cc:527] => Image sees 1877 / 5047 points",
+            "ingestionTime": 1779205839100
+        },
+        {
+            "timestamp": 1779205837395,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:36.805253  8084 incremental_pipeline.cc:524] Registering image #560 (num_reg_frames=51)",
+            "ingestionTime": 1779205839100
+        },
+        {
+            "timestamp": 1779205837395,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:36.805307  8084 incremental_pipeline.cc:527] => Image sees 917 / 6459 points",
+            "ingestionTime": 1779205839100
+        },
+        {
+            "timestamp": 1779205838395,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:37.476264  8084 incremental_pipeline.cc:524] Registering image #559 (num_reg_frames=52)",
+            "ingestionTime": 1779205844137
+        },
+        {
+            "timestamp": 1779205838395,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:37.476315  8084 incremental_pipeline.cc:527] => Image sees 1067 / 7420 points",
+            "ingestionTime": 1779205844137
+        },
+        {
+            "timestamp": 1779205838395,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:38.351907  8084 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1779205844137
+        },
+        {
+            "timestamp": 1779205844398,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:44.249442  8084 incremental_pipeline.cc:524] Registering image #558 (num_reg_frames=53)",
+            "ingestionTime": 1779205850186
+        },
+        {
+            "timestamp": 1779205844398,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:44.249492  8084 incremental_pipeline.cc:527] => Image sees 3216 / 7141 points",
+            "ingestionTime": 1779205850186
+        },
+        {
+            "timestamp": 1779205845399,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:45.372567  8084 incremental_pipeline.cc:524] Registering image #563 (num_reg_frames=54)",
+            "ingestionTime": 1779205850186
+        },
+        {
+            "timestamp": 1779205845399,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:45.372619  8084 incremental_pipeline.cc:527] => Image sees 2335 / 6900 points",
+            "ingestionTime": 1779205850186
+        },
+        {
+            "timestamp": 1779205847399,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:46.407491  8084 incremental_pipeline.cc:524] Registering image #564 (num_reg_frames=55)",
+            "ingestionTime": 1779205850186
+        },
+        {
+            "timestamp": 1779205847399,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:46.407541  8084 incremental_pipeline.cc:527] => Image sees 2698 / 6337 points",
+            "ingestionTime": 1779205850186
+        },
+        {
+            "timestamp": 1779205848400,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:47.465651  8084 incremental_pipeline.cc:524] Registering image #215 (num_reg_frames=56)",
+            "ingestionTime": 1779205850186
+        },
+        {
+            "timestamp": 1779205848400,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:47.465704  8084 incremental_pipeline.cc:527] => Image sees 1087 / 5195 points",
+            "ingestionTime": 1779205850186
+        },
+        {
+            "timestamp": 1779205848400,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:48.339722  8084 incremental_pipeline.cc:524] Registering image #209 (num_reg_frames=57)",
+            "ingestionTime": 1779205850186
+        },
+        {
+            "timestamp": 1779205848400,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:48.339778  8084 incremental_pipeline.cc:527] => Image sees 1190 / 4909 points",
+            "ingestionTime": 1779205850186
+        },
+        {
+            "timestamp": 1779205849400,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:49.201992  8084 incremental_pipeline.cc:524] Registering image #773 (num_reg_frames=58)",
+            "ingestionTime": 1779205855229
+        },
+        {
+            "timestamp": 1779205849400,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:49.202051  8084 incremental_pipeline.cc:527] => Image sees 785 / 5745 points",
+            "ingestionTime": 1779205855229
+        },
+        {
+            "timestamp": 1779205850401,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:50:50.053047  8084 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1779205855229
+        },
+        {
+            "timestamp": 1779205859485,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:50:58.635741  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: CHOLMOD warning: Matrix not positive definite.",
+            "ingestionTime": 1779205865383
+        },
+        {
+            "timestamp": 1779205861487,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:51:00.913676  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: CHOLMOD warning: Matrix not positive definite.",
+            "ingestionTime": 1779205865383
+        },
+        {
+            "timestamp": 1779205861487,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:51:01.215878  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: CHOLMOD warning: Matrix not positive definite.",
+            "ingestionTime": 1779205865383
+        },
+        {
+            "timestamp": 1779205862488,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:51:02.007712  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: CHOLMOD warning: Matrix not positive definite.",
+            "ingestionTime": 1779205865383
+        },
+        {
+            "timestamp": 1779205864495,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:51:03.771318  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: CHOLMOD warning: Matrix not positive definite.",
+            "ingestionTime": 1779205870441
+        },
+        {
+            "timestamp": 1779205891663,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:51:31.142177  8084 incremental_pipeline.cc:524] Registering image #775 (num_reg_frames=59)",
+            "ingestionTime": 1779205896801
+        },
+        {
+            "timestamp": 1779205891663,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:51:31.142254  8084 incremental_pipeline.cc:527] => Image sees 672 / 5368 points",
+            "ingestionTime": 1779205896801
+        },
+        {
+            "timestamp": 1779205892664,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:51:31.947463  8084 incremental_pipeline.cc:524] Registering image #774 (num_reg_frames=60)",
+            "ingestionTime": 1779205896801
+        },
+        {
+            "timestamp": 1779205892664,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:51:31.947512  8084 incremental_pipeline.cc:527] => Image sees 1268 / 5314 points",
+            "ingestionTime": 1779205896801
+        },
+        {
+            "timestamp": 1779205893664,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:51:32.763288  8084 incremental_pipeline.cc:524] Registering image #732 (num_reg_frames=61)",
+            "ingestionTime": 1779205896801
+        },
+        {
+            "timestamp": 1779205893664,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:51:32.763340  8084 incremental_pipeline.cc:527] => Image sees 1697 / 5254 points",
+            "ingestionTime": 1779205896801
+        },
+        {
+            "timestamp": 1779205893664,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:51:33.595294  8084 incremental_pipeline.cc:524] Registering image #731 (num_reg_frames=62)",
+            "ingestionTime": 1779205896801
+        },
+        {
+            "timestamp": 1779205893664,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:51:33.595345  8084 incremental_pipeline.cc:527] => Image sees 2151 / 6204 points",
+            "ingestionTime": 1779205896801
+        },
+        {
+            "timestamp": 1779205894665,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:51:34.509040  8084 incremental_pipeline.cc:524] Registering image #730 (num_reg_frames=63)",
+            "ingestionTime": 1779205896801
+        },
+        {
+            "timestamp": 1779205894665,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:51:34.509088  8084 incremental_pipeline.cc:527] => Image sees 2859 / 6418 points",
+            "ingestionTime": 1779205896801
+        },
+        {
+            "timestamp": 1779205895665,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:51:35.429977  8084 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1779205896801
+        },
+        {
+            "timestamp": 1779205904704,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:51:43.847819  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: CHOLMOD warning: Matrix not positive definite.",
+            "ingestionTime": 1779205909952
+        },
+        {
+            "timestamp": 1779205904704,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:51:44.130851  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: CHOLMOD warning: Matrix not positive definite.",
+            "ingestionTime": 1779205909952
+        },
+        {
+            "timestamp": 1779205906708,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:51:46.520941  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: CHOLMOD warning: Matrix not positive definite.",
+            "ingestionTime": 1779205909952
+        },
+        {
+            "timestamp": 1779205915787,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:51:55.464648  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: CHOLMOD warning: Matrix not positive definite.",
+            "ingestionTime": 1779205921185
+        },
+        {
+            "timestamp": 1779205924855,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:52:04.599066  8084 incremental_pipeline.cc:524] Registering image #729 (num_reg_frames=64)",
+            "ingestionTime": 1779205930331
+        },
+        {
+            "timestamp": 1779205924855,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:52:04.599148  8084 incremental_pipeline.cc:527] => Image sees 2850 / 5673 points",
+            "ingestionTime": 1779205930331
+        },
+        {
+            "timestamp": 1779205925855,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:52:05.651265  8084 incremental_pipeline.cc:524] Registering image #709 (num_reg_frames=65)",
+            "ingestionTime": 1779205930331
+        },
+        {
+            "timestamp": 1779205925856,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:52:05.651310  8084 incremental_pipeline.cc:527] => Image sees 1596 / 6496 points",
+            "ingestionTime": 1779205930331
+        },
+        {
+            "timestamp": 1779205926856,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:52:06.560631  8084 incremental_pipeline.cc:524] Registering image #710 (num_reg_frames=66)",
+            "ingestionTime": 1779205930331
+        },
+        {
+            "timestamp": 1779205926856,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:52:06.560683  8084 incremental_pipeline.cc:527] => Image sees 1593 / 6653 points",
+            "ingestionTime": 1779205930331
+        },
+        {
+            "timestamp": 1779205927856,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:52:07.475068  8084 incremental_pipeline.cc:524] Registering image #711 (num_reg_frames=67)",
+            "ingestionTime": 1779205930331
+        },
+        {
+            "timestamp": 1779205927856,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:52:07.475124  8084 incremental_pipeline.cc:527] => Image sees 2138 / 6947 points",
+            "ingestionTime": 1779205930331
+        },
+        {
+            "timestamp": 1779205928857,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:52:08.405690  8084 incremental_pipeline.cc:524] Registering image #712 (num_reg_frames=68)",
+            "ingestionTime": 1779205930331
+        },
+        {
+            "timestamp": 1779205928857,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:52:08.405745  8084 incremental_pipeline.cc:527] => Image sees 2157 / 6125 points",
+            "ingestionTime": 1779205930331
+        },
+        {
+            "timestamp": 1779205929857,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:52:09.326912  8084 incremental_pipeline.cc:524] Registering image #752 (num_reg_frames=69)",
+            "ingestionTime": 1779205935372
+        },
+        {
+            "timestamp": 1779205929857,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:52:09.326967  8084 incremental_pipeline.cc:527] => Image sees 2298 / 4634 points",
+            "ingestionTime": 1779205935372
+        },
+        {
+            "timestamp": 1779205930858,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:52:10.249544  8084 incremental_pipeline.cc:524] Registering image #751 (num_reg_frames=70)",
+            "ingestionTime": 1779205935372
+        },
+        {
+            "timestamp": 1779205930858,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:52:10.249594  8084 incremental_pipeline.cc:527] => Image sees 2720 / 4447 points",
+            "ingestionTime": 1779205935372
+        },
+        {
+            "timestamp": 1779205931858,
+            "message": "COLMAP[chunk_05_mapper_recovery] I20260519 15:52:11.104648  8084 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1779205935372
+        },
+        {
+            "timestamp": 1779205939941,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:52:19.561918  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: CHOLMOD warning: Matrix not positive definite.",
+            "ingestionTime": 1779205945474
+        },
+        {
+            "timestamp": 1779205940942,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:52:20.435412  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: CHOLMOD warning: Matrix not positive definite.",
+            "ingestionTime": 1779205945474
+        },
+        {
+            "timestamp": 1779205941979,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:52:21.839514  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: CHOLMOD warning: Matrix not positive definite.",
+            "ingestionTime": 1779205945474
+        },
+        {
+            "timestamp": 1779205942979,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:52:22.131913  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: CHOLMOD warning: Matrix not positive definite.",
+            "ingestionTime": 1779205945474
+        },
+        {
+            "timestamp": 1779205943981,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:52:22.984006  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: CHOLMOD warning: Matrix not positive definite.",
+            "ingestionTime": 1779205945474
+        },
+        {
+            "timestamp": 1779205943981,
+            "message": "COLMAP[chunk_05_mapper_recovery] W20260519 15:52:23.279954  8084 levenberg_marquardt_strategy.cc:123] Linear solver failure. Failed to compute a step: CHOLMOD warning: Matrix not positive definite.",
+            "ingestionTime": 1779205945474
+        }
+    ],
+    "nextForwardToken": "f/39677618412431430602823149405211870751494708951505436677/s",
+    "nextBackwardToken": "b/39677615207792044828774073173318534077863838419500597249/s"
+}

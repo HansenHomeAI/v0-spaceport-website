@@ -1,0 +1,12 @@
+{
+    "TrainingJobSummaries": [
+        {
+            "TrainingJobName": "md1-r0v5repair-f2923-1779205460-1779205616-tile-04",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-r0v5repair-f2923-1779205460-1779205616-tile-04",
+            "CreationTime": "2026-05-19T09:47:05.308000-06:00",
+            "LastModifiedTime": "2026-05-19T09:50:29.962000-06:00",
+            "TrainingJobStatus": "InProgress",
+            "SecondaryStatus": "Downloading"
+        }
+    ]
+}
