@@ -1,0 +1,20 @@
+{
+    "Tags": [
+        {
+            "Key": "Benchmark",
+            "Value": "true"
+        },
+        {
+            "Key": "Project",
+            "Value": "Spaceport"
+        },
+        {
+            "Key": "Component",
+            "Value": "SfM"
+        },
+        {
+            "Key": "Branch",
+            "Value": "agent-73948216-sfm-production-spine"
+        }
+    ]
+}
