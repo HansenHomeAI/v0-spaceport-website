@@ -456,6 +456,8 @@ jobs:
           echo "hash_url=$HASH_URL" >> $GITHUB_OUTPUT
           echo "alias_url=$ALIAS" >> $GITHUB_OUTPUT
           echo "Resolved: HASH=$HASH_URL ALIAS=${ALIAS:-<none>}"
+          PREVIEW_URL="${ALIAS:-$HASH_URL}"
+          echo "PREVIEW_URL=$PREVIEW_URL"
 
       - name: Verify preview alias and hash URL with retries
         env:

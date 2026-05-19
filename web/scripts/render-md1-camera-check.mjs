@@ -71,6 +71,7 @@ const flipY = ["1", "true", "yes", "on"].includes((process.env.MD1_FLIP_Y ?? "")
 const collapsePanel = ["1", "true", "yes", "on"].includes(
   (process.env.MD1_COLLAPSE_PANEL ?? "").trim().toLowerCase(),
 );
+const screenshotTarget = (process.env.MD1_SCREENSHOT_TARGET ?? "").trim().toLowerCase();
 const outPath = process.env.MD1_OUT ?? "";
 
 assert(baseUrl, "MD1_VIEWER_URL is required");
@@ -108,7 +109,11 @@ try {
   await page.goto(url, { waitUntil: "domcontentloaded", timeout: 120000 });
   const metrics = await waitForFirstFrame(page);
   await page.waitForTimeout(1200);
-  await page.screenshot({ path: outPath, fullPage: false });
+  if (screenshotTarget === "iframe") {
+    await page.locator("iframe.md1-frame").screenshot({ path: outPath });
+  } else {
+    await page.screenshot({ path: outPath, fullPage: false });
+  }
   console.log(`OK ${outPath}`);
   console.log(`metrics ${JSON.stringify(metrics)}`);
 } finally {

@@ -1,0 +1,230 @@
+{
+  "decision": "warning",
+  "bundle_url": "https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json",
+  "viewer_url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev",
+  "skybox": {
+    "artifact_kind": "heldout_panel_diagnostics",
+    "schema_version": 1,
+    "decision": "pass",
+    "panel_dir": "logs/md1-shrunk/polls/20260519T051911Z-camera-suite/panels/skybox",
+    "panel_count": 1,
+    "panel_columns": 2,
+    "thresholds": {
+      "min_edge_retention": 0.25,
+      "max_top_band_rmse": 0.6,
+      "max_top_brightness_delta": 0.5,
+      "max_bottom_band_rmse_p90": 0.28
+    },
+    "metrics": {
+      "rmse": {
+        "count": 1,
+        "min": 0.1569,
+        "p10": 0.1569,
+        "median": 0.1569,
+        "p90": 0.1569,
+        "p95": 0.1569,
+        "max": 0.1569
+      },
+      "mae": {
+        "count": 1,
+        "min": 0.1245,
+        "p10": 0.1245,
+        "median": 0.1245,
+        "p90": 0.1245,
+        "p95": 0.1245,
+        "max": 0.1245
+      },
+      "psnr": {
+        "count": 1,
+        "min": 16.0869,
+        "p10": 16.0869,
+        "median": 16.0869,
+        "p90": 16.0869,
+        "p95": 16.0869,
+        "max": 16.0869
+      },
+      "edge_retention_ratio": {
+        "count": 1,
+        "min": 0.308,
+        "p10": 0.308,
+        "median": 0.308,
+        "p90": 0.308,
+        "p95": 0.308,
+        "max": 0.308
+      },
+      "top_band_rmse": {
+        "count": 1,
+        "min": 0.1437,
+        "p10": 0.1437,
+        "median": 0.1437,
+        "p90": 0.1437,
+        "p95": 0.1437,
+        "max": 0.1437
+      },
+      "top_band_brightness_delta": {
+        "count": 1,
+        "min": -0.0587,
+        "p10": -0.0587,
+        "median": -0.0587,
+        "p90": -0.0587,
+        "p95": -0.0587,
+        "max": -0.0587
+      },
+      "bottom_band_rmse": {
+        "count": 1,
+        "min": 0.1646,
+        "p10": 0.1646,
+        "median": 0.1646,
+        "p90": 0.1646,
+        "p95": 0.1646,
+        "max": 0.1646
+      },
+      "bottom_band_brightness_delta": {
+        "count": 1,
+        "min": -0.0932,
+        "p10": -0.0932,
+        "median": -0.0932,
+        "p90": -0.0932,
+        "p95": -0.0932,
+        "max": -0.0932
+      }
+    },
+    "findings": [],
+    "comparison": null,
+    "per_panel": [
+      {
+        "panel": "logs/md1-shrunk/polls/20260519T051911Z-camera-suite/panels/skybox/panel-skybox-DJI_01000.png",
+        "width": 1440,
+        "height": 960,
+        "rmse": 0.1569,
+        "mae": 0.1245,
+        "psnr": 16.0869,
+        "source_edge_energy": 0.092166,
+        "render_edge_energy": 0.028389,
+        "edge_retention_ratio": 0.308,
+        "top_band_rmse": 0.1437,
+        "top_band_brightness_delta": -0.0587,
+        "bottom_band_rmse": 0.1646,
+        "bottom_band_brightness_delta": -0.0932
+      }
+    ]
+  },
+  "nosky": {
+    "artifact_kind": "heldout_panel_diagnostics",
+    "schema_version": 1,
+    "decision": "warning",
+    "panel_dir": "logs/md1-shrunk/polls/20260519T051911Z-camera-suite/panels/nosky",
+    "panel_count": 1,
+    "panel_columns": 2,
+    "thresholds": {
+      "min_edge_retention": 0.25,
+      "max_top_band_rmse": 0.35,
+      "max_top_brightness_delta": 0.25,
+      "max_bottom_band_rmse_p90": 0.28
+    },
+    "metrics": {
+      "rmse": {
+        "count": 1,
+        "min": 0.2844,
+        "p10": 0.2844,
+        "median": 0.2844,
+        "p90": 0.2844,
+        "p95": 0.2844,
+        "max": 0.2844
+      },
+      "mae": {
+        "count": 1,
+        "min": 0.1875,
+        "p10": 0.1875,
+        "median": 0.1875,
+        "p90": 0.1875,
+        "p95": 0.1875,
+        "max": 0.1875
+      },
+      "psnr": {
+        "count": 1,
+        "min": 10.9219,
+        "p10": 10.9219,
+        "median": 10.9219,
+        "p90": 10.9219,
+        "p95": 10.9219,
+        "max": 10.9219
+      },
+      "edge_retention_ratio": {
+        "count": 1,
+        "min": 0.324,
+        "p10": 0.324,
+        "median": 0.324,
+        "p90": 0.324,
+        "p95": 0.324,
+        "max": 0.324
+      },
+      "top_band_rmse": {
+        "count": 1,
+        "min": 0.5467,
+        "p10": 0.5467,
+        "median": 0.5467,
+        "p90": 0.5467,
+        "p95": 0.5467,
+        "max": 0.5467
+      },
+      "top_band_brightness_delta": {
+        "count": 1,
+        "min": -0.3851,
+        "p10": -0.3851,
+        "median": -0.3851,
+        "p90": -0.3851,
+        "p95": -0.3851,
+        "max": -0.3851
+      },
+      "bottom_band_rmse": {
+        "count": 1,
+        "min": 0.1648,
+        "p10": 0.1648,
+        "median": 0.1648,
+        "p90": 0.1648,
+        "p95": 0.1648,
+        "max": 0.1648
+      },
+      "bottom_band_brightness_delta": {
+        "count": 1,
+        "min": -0.0935,
+        "p10": -0.0935,
+        "median": -0.0935,
+        "p90": -0.0935,
+        "p95": -0.0935,
+        "max": -0.0935
+      }
+    },
+    "findings": [
+      {
+        "severity": "warning",
+        "category": "sky_horizon_instability",
+        "evidence": "median top-band RMSE 0.5467 > 0.35"
+      },
+      {
+        "severity": "warning",
+        "category": "sky_horizon_brightness_shift",
+        "evidence": "median top-band brightness delta -0.3851 exceeds +/-0.25"
+      }
+    ],
+    "comparison": null,
+    "per_panel": [
+      {
+        "panel": "logs/md1-shrunk/polls/20260519T051911Z-camera-suite/panels/nosky/panel-nosky-DJI_01000.png",
+        "width": 1440,
+        "height": 960,
+        "rmse": 0.2844,
+        "mae": 0.1875,
+        "psnr": 10.9219,
+        "source_edge_energy": 0.092166,
+        "render_edge_energy": 0.029865,
+        "edge_retention_ratio": 0.324,
+        "top_band_rmse": 0.5467,
+        "top_band_brightness_delta": -0.3851,
+        "bottom_band_rmse": 0.1648,
+        "bottom_band_brightness_delta": -0.0935
+      }
+    ]
+  }
+}

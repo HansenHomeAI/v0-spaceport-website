@@ -250,8 +250,12 @@ export default function Md1ProductionViewer() {
       buildMd1ViewerConfigPayload(MD1_STREAMING_CONFIG, isMobileViewport),
       streamingOverrides,
     );
+    const settingsPath =
+      explicitSkybox === null || resolvedBundle?.skyboxUrl === null
+        ? "/supersplat-lod-viewer/settings-nosky.json"
+        : "/supersplat-lod-viewer/settings.json";
     const params = new URLSearchParams({
-      settings: "/supersplat-lod-viewer/settings.json",
+      settings: settingsPath,
       content: activeContentUrl,
       noanim: "1",
       noui: "1",

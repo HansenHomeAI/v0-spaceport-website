@@ -1,0 +1,107 @@
+{
+  "artifact_kind": "heldout_panel_diagnostics",
+  "schema_version": 1,
+  "decision": "pass",
+  "panel_dir": "logs/md1-shrunk/polls/20260519T051911Z-camera-suite/panels/skybox",
+  "panel_count": 1,
+  "panel_columns": 2,
+  "thresholds": {
+    "min_edge_retention": 0.25,
+    "max_top_band_rmse": 0.6,
+    "max_top_brightness_delta": 0.5,
+    "max_bottom_band_rmse_p90": 0.28
+  },
+  "metrics": {
+    "rmse": {
+      "count": 1,
+      "min": 0.1569,
+      "p10": 0.1569,
+      "median": 0.1569,
+      "p90": 0.1569,
+      "p95": 0.1569,
+      "max": 0.1569
+    },
+    "mae": {
+      "count": 1,
+      "min": 0.1245,
+      "p10": 0.1245,
+      "median": 0.1245,
+      "p90": 0.1245,
+      "p95": 0.1245,
+      "max": 0.1245
+    },
+    "psnr": {
+      "count": 1,
+      "min": 16.0869,
+      "p10": 16.0869,
+      "median": 16.0869,
+      "p90": 16.0869,
+      "p95": 16.0869,
+      "max": 16.0869
+    },
+    "edge_retention_ratio": {
+      "count": 1,
+      "min": 0.308,
+      "p10": 0.308,
+      "median": 0.308,
+      "p90": 0.308,
+      "p95": 0.308,
+      "max": 0.308
+    },
+    "top_band_rmse": {
+      "count": 1,
+      "min": 0.1437,
+      "p10": 0.1437,
+      "median": 0.1437,
+      "p90": 0.1437,
+      "p95": 0.1437,
+      "max": 0.1437
+    },
+    "top_band_brightness_delta": {
+      "count": 1,
+      "min": -0.0587,
+      "p10": -0.0587,
+      "median": -0.0587,
+      "p90": -0.0587,
+      "p95": -0.0587,
+      "max": -0.0587
+    },
+    "bottom_band_rmse": {
+      "count": 1,
+      "min": 0.1646,
+      "p10": 0.1646,
+      "median": 0.1646,
+      "p90": 0.1646,
+      "p95": 0.1646,
+      "max": 0.1646
+    },
+    "bottom_band_brightness_delta": {
+      "count": 1,
+      "min": -0.0932,
+      "p10": -0.0932,
+      "median": -0.0932,
+      "p90": -0.0932,
+      "p95": -0.0932,
+      "max": -0.0932
+    }
+  },
+  "findings": [],
+  "comparison": null,
+  "per_panel": [
+    {
+      "panel": "logs/md1-shrunk/polls/20260519T051911Z-camera-suite/panels/skybox/panel-skybox-DJI_01000.png",
+      "width": 1440,
+      "height": 960,
+      "rmse": 0.1569,
+      "mae": 0.1245,
+      "psnr": 16.0869,
+      "source_edge_energy": 0.092166,
+      "render_edge_energy": 0.028389,
+      "edge_retention_ratio": 0.308,
+      "top_band_rmse": 0.1437,
+      "top_band_brightness_delta": -0.0587,
+      "bottom_band_rmse": 0.1646,
+      "bottom_band_brightness_delta": -0.0932
+    }
+  ]
+}
