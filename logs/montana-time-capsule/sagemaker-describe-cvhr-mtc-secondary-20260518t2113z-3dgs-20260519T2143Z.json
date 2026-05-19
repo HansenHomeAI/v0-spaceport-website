@@ -1,0 +1,123 @@
+{
+    "TrainingJobName": "cvhr-mtc-secondary-20260518t2113z-3dgs",
+    "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/cvhr-mtc-secondary-20260518t2113z-3dgs",
+    "TrainingJobStatus": "InProgress",
+    "SecondaryStatus": "Training",
+    "AlgorithmSpecification": {
+        "TrainingImage": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db",
+        "TrainingInputMode": "File",
+        "EnableSageMakerMetricsTimeSeries": false
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "InputDataConfig": [
+        {
+            "ChannelName": "training",
+            "DataSource": {
+                "S3DataSource": {
+                    "S3DataType": "S3Prefix",
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-secondary-20260518t2113z/colmap",
+                    "S3DataDistributionType": "FullyReplicated"
+                }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None"
+        }
+    ],
+    "OutputDataConfig": {
+        "KmsKeyId": "",
+        "S3OutputPath": "s3://spaceport-ml-processing-staging/3dgs/cvhr-mtc-secondary-20260518t2113z/",
+        "CompressionType": "GZIP"
+    },
+    "ResourceConfig": {
+        "InstanceType": "ml.g5.2xlarge",
+        "InstanceCount": 1,
+        "VolumeSizeInGB": 100
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 14400
+    },
+    "CreationTime": "2026-05-19T13:28:06.767000-06:00",
+    "TrainingStartTime": "2026-05-19T13:29:17.980000-06:00",
+    "LastModifiedTime": "2026-05-19T13:33:20.458000-06:00",
+    "SecondaryStatusTransitions": [
+        {
+            "Status": "Starting",
+            "StartTime": "2026-05-19T13:28:06.767000-06:00",
+            "EndTime": "2026-05-19T13:28:07.988000-06:00",
+            "StatusMessage": "Starting the training job"
+        },
+        {
+            "Status": "Pending",
+            "StartTime": "2026-05-19T13:28:07.988000-06:00",
+            "EndTime": "2026-05-19T13:29:17.980000-06:00",
+            "StatusMessage": "Preparing the instances for training"
+        },
+        {
+            "Status": "Downloading",
+            "StartTime": "2026-05-19T13:29:17.980000-06:00",
+            "EndTime": "2026-05-19T13:33:20.429000-06:00",
+            "StatusMessage": "Downloading the training image"
+        },
+        {
+            "Status": "Training",
+            "StartTime": "2026-05-19T13:33:20.429000-06:00",
+            "StatusMessage": "Training image download completed. Training in progress."
+        }
+    ],
+    "EnableNetworkIsolation": false,
+    "EnableInterContainerTrafficEncryption": false,
+    "EnableManagedSpotTraining": false,
+    "TrainingTimeInSeconds": 8081,
+    "ProfilingStatus": "Disabled",
+    "Environment": {
+        "APPEARANCE_EMBED_DIM": "64",
+        "AWS_DEFAULT_REGION": "us-west-2",
+        "BACKGROUND_APPEARANCE_MODE": "auto_camera",
+        "BACKGROUND_SELECTION_MAX_FRAMES": "32",
+        "BACKGROUND_SELECTION_STRIDE": "5",
+        "BACKGROUND_SKYBOX_HEIGHT": "1024",
+        "BACKGROUND_SKYBOX_QUALITY": "95",
+        "BACKGROUND_SKYBOX_WIDTH": "2048",
+        "BG_SH_DEGREE": "8",
+        "BILATERAL_PROCESSING": "false",
+        "COMMERCIAL_LICENSE": "true",
+        "CUDA_HOME": "/usr/local/cuda",
+        "CULL_ALPHA_THRESH": "0.12",
+        "CULL_SCALE_THRESH": "0.35",
+        "ENABLE_ALPHA_LOSS": "true",
+        "ENABLE_BG_MODEL": "true",
+        "ENABLE_ROBUST_MASK": "true",
+        "FLOATER_PRUNING_ENABLED": "true",
+        "FLOATER_PRUNING_MAX_COLOR_DISTANCE": "0.18",
+        "FLOATER_PRUNING_MAX_OPACITY": "0.75",
+        "FLOATER_PRUNING_MIN_EDGE_SUPPORT": "1",
+        "FLOATER_PRUNING_MIN_SKY_VIEWS": "2",
+        "FLOATER_PRUNING_MIN_VIEWS": "6",
+        "FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN": "0.02",
+        "FLOATER_PRUNING_SKY_MIN_LUMINANCE": "0.3",
+        "FLOATER_PRUNING_SKY_MIN_SATURATION": "0.08",
+        "FLOATER_PRUNING_TOP_REGION_RATIO": "0.35",
+        "FLOATER_PRUNING_TOP_VIEW_FRACTION": "0.9",
+        "FRAMEWORK": "nerfstudio",
+        "LD_LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+        "LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+        "LICENSE": "apache_2_0",
+        "LOG_INTERVAL": "100",
+        "MAX_ITERATIONS": "30000",
+        "MAX_NUM_GAUSSIANS": "1500000",
+        "MEMORY_OPTIMIZATION": "true",
+        "METHODOLOGY": "spaceport_splatfacto_w_light_skybox",
+        "MODEL_VARIANT": "splatfacto-w-light",
+        "NEVER_MASK_UPPER": "0.4",
+        "OUTPUT_FORMAT": "ply",
+        "PYTHONUNBUFFERED": "1",
+        "RASTERIZE_MODE": "classic",
+        "SAGEMAKER_PROGRAM": "train.py",
+        "SH_DEGREE": "3",
+        "SOGS_COMPATIBLE": "true",
+        "TARGET_PSNR": "35.0",
+        "TORCH_CUDA_ARCH_LIST": "8.0 8.6",
+        "TRAINING_TIMEOUT_SECONDS": "14400",
+        "USE_SCALE_REGULARIZATION": "true"
+    }
+}
