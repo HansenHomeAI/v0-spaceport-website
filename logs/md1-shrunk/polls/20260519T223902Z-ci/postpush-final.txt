@@ -1,0 +1,8 @@
+# postpush final 20260519T223902Z
+
+branch=agent-113647-md1-baseline-e2e
+head=029c5f57be7fe7bfeee5f2bed93d2dd14b077e8e
+
+No exact-head workflows expected when head commit is logs-only ([skip ci]).
+Last observed green Pages+CDK for branch: headSha=c3f52d2e (Pages run 26111270702, CDK run 26111270602).
+Latest CDK Deploy (non-head) also green: headSha=4df1a40c (run 26127221994).
