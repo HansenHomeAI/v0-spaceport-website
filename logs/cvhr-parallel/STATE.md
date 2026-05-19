@@ -1,6 +1,6 @@
 # CV-HR Parallel Splat Ledger
 
-updated: 2026-05-18T21:20:00Z
+updated: 2026-05-19T23:35:56Z
 branch: agent-73910482-cvhr-parallel-splat
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 
@@ -2209,3 +2209,70 @@ as read-only context.
   - `logs/cvhr-parallel/evidence/logstreams-cvhr-secondary-20260518t2113z-3dgs-20260519T2313Z.json`
   - `logs/cvhr-parallel/evidence/cloudwatch-tail-cvhr-secondary-20260518t2113z-3dgs-20260519T2313Z.log`
   - `logs/cvhr-parallel/evidence/runner-status-20260519T2313Z.json`
+
+## 2026-05-19T23:33Z Heartbeat Poll
+
+- Branch/head/status:
+  - branch: `agent-73910482-cvhr-parallel-splat`
+  - head: `a265121f0743a6b2bb36ac94a7b24610bc3323ea` (`[skip ci]` ledger commit)
+  - status before this poll: clean
+  - last meaningful exact-head workflow remains `CDK Deploy` run `26060892234` for code head `0b60d8bf9e7e4355bd46001dcd61387b327a8e5a`, conclusion `success`
+- AWS identity:
+  - account: `975050048887`
+  - ARN: `arn:aws:iam::975050048887:root`
+- Active SageMaker / Step Functions:
+  - branch-owned 3DGS direct describe: `cvhr-secondary-20260518t2113z-3dgs` -> `Completed`
+  - 3DGS started `2026-05-19T13:59:27.439000-06:00` and ended `2026-05-19T17:25:07.282000-06:00`
+  - branch-owned compression direct describe after guarded launch: `cvhr-secondary-20260518t2113z-compression` -> `InProgress`
+  - compression creation time: `2026-05-19T17:35:56.178000-06:00`
+  - compression start time was not yet present at first post-launch describe
+  - external `cvhr-mtc-secondary-20260518t2113z-3dgs` and `cvhr-mtc-secondary-20260518t2113z-compression` were observed only as read-only context and were not modified or used
+  - running `SpaceportMLPipeline-staging` Step Functions executions: `0`
+- 3DGS validation:
+  - model artifact: `s3://spaceport-ml-processing-staging/3dgs/cvhr-secondary-20260518t2113z/cvhr-secondary-20260518t2113z-3dgs/output/model.tar.gz`
+  - S3 artifact size: `104412084` bytes
+  - local validation copy: `/tmp/cvhr-secondary-20260518t2113z-model.tar.gz`
+  - artifact SHA256 recorded in evidence
+  - tar contents include `splat.ply`, `training_metadata.json`, `export_manifest.json`, `background_skybox.webp`, `background_manifest.json`, and `floater_pruning_summary.json`
+  - PLY header: `format binary_little_endian 1.0`, `element vertex 463720`
+  - CloudWatch training evidence shows iterations through `29999 (100.00%)`, `Training Finished`, successful SOGS-compatible PLY export, and `splat.ply (109.7 MB)`
+  - metadata confirms `training_completed=true`, `sogs_compatible=true`, and `playcanvas_ready=true`
+  - floater pruning evaluated `463726` points, removed `6`, and kept `463720`
+  - no OOM, traceback, or SageMaker failure was found in fetched logs
+- Guarded compression launch:
+  - command: `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip --run-id cvhr-secondary-20260518t2113z --state-file logs/cvhr-parallel/cv-hr-state.json --launch`
+  - branch-owned job: `cvhr-secondary-20260518t2113z-compression`
+  - input: `s3://spaceport-ml-processing-staging/3dgs/cvhr-secondary-20260518t2113z/cvhr-secondary-20260518t2113z-3dgs/output/model.tar.gz`
+  - output: `s3://spaceport-ml-processing-staging/compressed/cvhr-secondary-20260518t2113z/`
+  - image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab`
+  - instance: `ml.g4dn.xlarge`, volume `50` GB
+  - compressed S3 output at launch: `Total Objects: 0`, `Total Size: 0`, expected before `S3UploadMode=EndOfJob`
+  - compression log stream list was empty immediately after launch
+- State update:
+  - `logs/cvhr-parallel/cv-hr-state.json` reports `status=compression_started`, `sfm_status=Completed`, `3dgs_status=Completed`, `last_action=launched_compression`, `compression_job_name=cvhr-secondary-20260518t2113z-compression`, `updated_at=2026-05-19T23:35:56Z`
+- Evidence:
+  - `logs/cvhr-parallel/evidence/aws-sts-20260519T2333Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-describe-cvhr-secondary-20260518t2113z-3dgs-20260519T2333Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-describe-cvhr-mtc-secondary-20260518t2113z-3dgs-20260519T2333Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-training-inprogress-20260519T2333Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-processing-inprogress-20260519T2333Z.json`
+  - `logs/cvhr-parallel/evidence/stepfunctions-running-20260519T2333Z.json`
+  - `logs/cvhr-parallel/evidence/gh-runs-agent-73910482-20260519T2333Z.json`
+  - `logs/cvhr-parallel/evidence/s3-3dgs-cvhr-secondary-20260518t2113z-20260519T2333Z.txt`
+  - `logs/cvhr-parallel/evidence/logstreams-cvhr-secondary-20260518t2113z-3dgs-20260519T2333Z.json`
+  - `logs/cvhr-parallel/evidence/cloudwatch-tail-cvhr-secondary-20260518t2113z-3dgs-20260519T2333Z.log`
+  - `logs/cvhr-parallel/evidence/runner-status-20260519T2333Z.json`
+  - `logs/cvhr-parallel/evidence/model-artifact-local-20260519T2333Z.txt`
+  - `logs/cvhr-parallel/evidence/model-artifact-tar-list-20260519T2333Z.txt`
+  - `logs/cvhr-parallel/evidence/model-artifact-ply-header-20260519T2333Z.txt`
+  - `logs/cvhr-parallel/evidence/model-artifact-training-metadata-20260519T2333Z.json`
+  - `logs/cvhr-parallel/evidence/model-artifact-export-manifest-20260519T2333Z.json`
+  - `logs/cvhr-parallel/evidence/model-artifact-floater-pruning-20260519T2333Z.json`
+  - `logs/cvhr-parallel/evidence/model-artifact-sha256-20260519T2333Z.txt`
+  - `logs/cvhr-parallel/evidence/cloudwatch-training-signals-20260519T2333Z.log`
+  - `logs/cvhr-parallel/evidence/launch-compression-20260519T2333Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-describe-cvhr-secondary-20260518t2113z-compression-20260519T2333Z.json`
+  - `logs/cvhr-parallel/evidence/s3-compressed-cvhr-secondary-20260518t2113z-20260519T2333Z.txt`
+  - `logs/cvhr-parallel/evidence/logstreams-cvhr-secondary-20260518t2113z-compression-20260519T2333Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-processing-inprogress-post-compression-launch-20260519T2333Z.json`
+- Next gate: monitor `cvhr-secondary-20260518t2113z-compression`; when it completes, validate compressed bundle files and manifests, copy the bundle to the public processing bucket with non-KMS encryption, then run hosted viewer checks with skybox and `skybox=none`.

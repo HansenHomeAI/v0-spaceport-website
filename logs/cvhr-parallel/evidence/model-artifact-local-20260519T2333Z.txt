@@ -1,0 +1,1 @@
+-rw-r--r--@ 1 gabrielhansen  wheel   100M May 19 17:25 /tmp/cvhr-secondary-20260518t2113z-model.tar.gz

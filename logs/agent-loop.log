@@ -52,3 +52,4 @@
 [2026-05-19T22:33:00Z] heartbeat poll -> branch-owned 3DGS still InProgress/Training, CloudWatch tail remains at ns-train startup with 1693 validated frames and no failure, S3 output empty as expected -> continue monitoring
 [2026-05-19T22:53:00Z] heartbeat poll -> branch-owned 3DGS still InProgress/Training, CloudWatch tail remains at ns-train startup with 1693 validated frames and no failure, S3 output empty as expected -> continue monitoring
 [2026-05-19T23:13:00Z] heartbeat poll -> branch-owned 3DGS still InProgress/Training, CloudWatch tail remains at ns-train startup with 1693 validated frames and no failure, S3 output empty as expected -> continue monitoring
+[2026-05-19T23:33:00Z] heartbeat poll -> branch-owned 3DGS Completed, validated 104412084-byte model artifact, 463720-vertex SOGS-compatible PLY, training_completed/playcanvas_ready metadata, then launched compression cvhr-secondary-20260518t2113z-compression -> monitor compression

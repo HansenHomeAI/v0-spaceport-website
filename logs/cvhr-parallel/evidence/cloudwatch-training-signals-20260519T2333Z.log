@@ -1,0 +1,8 @@
+2026-05-19T20:03:40.344000+00:00 cvhr-secondary-20260518t2113z-3dgs/algo-1-1779220766 2026-05-19 20:03:38,189 - INFO - 📝 Override training.target_psnr = 35.0 (from TARGET_PSNR)
+2026-05-19T23:21:55.887000+00:00 cvhr-secondary-20260518t2113z-3dgs/algo-1-1779220766 2026-05-19 23:21:55,133 - INFO -    29999 (100.00%)                                                                                          #033[0m
+2026-05-19T23:21:55.887000+00:00 cvhr-secondary-20260518t2113z-3dgs/algo-1-1779220766 2026-05-19 23:21:55,133 - INFO -    ╭────────────────────────────────────────────── 🎉 Training Finished 🎉 ───────────────────────────────────────────────╮
+2026-05-19T23:24:32.335000+00:00 cvhr-secondary-20260518t2113z-3dgs/algo-1-1779220766 2026-05-19 23:24:31,957 - INFO - ✅ Model export completed successfully
+2026-05-19T23:24:32.335000+00:00 cvhr-secondary-20260518t2113z-3dgs/algo-1-1779220766 2026-05-19 23:24:31,957 - INFO - ✅ SOGS-compatible PLY format ready for compression
+2026-05-19T23:24:48.767000+00:00 cvhr-secondary-20260518t2113z-3dgs/algo-1-1779220766 2026-05-19 23:24:47,902 - INFO - 🎉 NERFSTUDIO TRAINING PIPELINE COMPLETED SUCCESSFULLY!
+2026-05-19T23:24:48.767000+00:00 cvhr-secondary-20260518t2113z-3dgs/algo-1-1779220766 2026-05-19 23:24:47,919 - INFO - ✅ SOGS-compatible PLY output generated
+2026-05-19T23:24:48.767000+00:00 cvhr-secondary-20260518t2113z-3dgs/algo-1-1779220766 2026-05-19 23:24:47,919 - INFO - ✅ Training pipeline completed successfully

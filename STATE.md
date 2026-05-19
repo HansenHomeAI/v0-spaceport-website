@@ -1,6 +1,6 @@
 # CV-HR Parallel Splat State
 
-updated: 2026-05-18T21:20:00Z
+updated: 2026-05-19T23:35:56Z
 branch: agent-73910482-cvhr-parallel-splat
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -642,3 +642,32 @@ Montana time capsule run, without touching or advancing the existing
 - No duplicate secondary 3DGS or compression job was launched.
 - Separate external job `cvhr-mtc-secondary-20260518t2113z-compression` is now visible as `InProgress`; it was not modified or used.
 - Details and evidence are recorded in `logs/cvhr-parallel/STATE.md`.
+
+## 2026-05-19T23:33Z 3DGS Complete, Compression Launched
+
+- Branch/head/status before this poll:
+  - branch: `agent-73910482-cvhr-parallel-splat`
+  - head: `a265121f0743a6b2bb36ac94a7b24610bc3323ea` (`[skip ci]` ledger commit)
+  - status before this poll: clean
+  - last meaningful exact-head workflow remains `CDK Deploy` run `26060892234` for code head `0b60d8bf9e7e4355bd46001dcd61387b327a8e5a`, conclusion `success`
+- 3DGS completed and was validated before advancing:
+  - job: `cvhr-secondary-20260518t2113z-3dgs`
+  - model artifact: `s3://spaceport-ml-processing-staging/3dgs/cvhr-secondary-20260518t2113z/cvhr-secondary-20260518t2113z-3dgs/output/model.tar.gz`
+  - S3 artifact size: `104412084` bytes
+  - CloudWatch showed real training progress through `29999 (100.00%)`, `Training Finished`, export success, and no OOM/traceback/failure.
+  - extracted tarball contains `splat.ply`, `training_metadata.json`, `export_manifest.json`, `background_skybox.webp`, `background_manifest.json`, and `floater_pruning_summary.json`
+  - PLY header: binary little endian, `element vertex 463720`
+  - metadata confirms `training_completed=true`, `sogs_compatible=true`, and `playcanvas_ready=true`
+- Guarded compression launch command run exactly once after validation:
+  - `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip --run-id cvhr-secondary-20260518t2113z --state-file logs/cvhr-parallel/cv-hr-state.json --launch`
+- Branch-owned compression job:
+  - name: `cvhr-secondary-20260518t2113z-compression`
+  - status at post-launch verification: `InProgress`
+  - input: `s3://spaceport-ml-processing-staging/3dgs/cvhr-secondary-20260518t2113z/cvhr-secondary-20260518t2113z-3dgs/output/model.tar.gz`
+  - output: `s3://spaceport-ml-processing-staging/compressed/cvhr-secondary-20260518t2113z/`
+  - image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab`
+  - compressed S3 output was empty at launch, expected before `S3UploadMode=EndOfJob`
+- State update:
+  - `logs/cvhr-parallel/cv-hr-state.json` reports `status=compression_started`, `last_action=launched_compression`, `3dgs_status=Completed`, `compression_job_name=cvhr-secondary-20260518t2113z-compression`, `updated_at=2026-05-19T23:35:56Z`
+- External `cvhr-mtc-secondary-*` jobs were observed as read-only context only and were not modified or used.
+- Next gate: monitor `cvhr-secondary-20260518t2113z-compression`; after it completes, validate compressed manifests/files, copy to the public processing bucket with non-KMS encryption, then run hosted viewer checks with skybox and `skybox=none`.
