@@ -184,10 +184,10 @@
   "run_id": "cvhr-mtc-secondary-20260518t2113z",
   "secondary_sfm_image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811",
   "secondary_sfm_job_name": "cvhr-secondary-20260518t2113z-sfm",
-  "secondary_sfm_observed_at": "2026-05-19T20:43:26Z",
+  "secondary_sfm_observed_at": "2026-05-19T19:23:25Z",
   "secondary_sfm_output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-secondary-20260518t2113z/colmap",
   "secondary_sfm_owner_branch": "agent-73910482-cvhr-parallel-splat",
-  "secondary_sfm_status": "Completed",
+  "secondary_sfm_status": "InProgress",
   "sfm_environment": {
     "AWS_DEFAULT_REGION": "us-west-2",
     "COLMAP_CHUNK_MIN_CORE_REGISTERED_RATIO": "0.90",
