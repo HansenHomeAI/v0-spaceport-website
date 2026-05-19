@@ -1,0 +1,300 @@
+2026-05-18T23:29:01.548000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:01.476833  7015 incremental_pipeline.cc:710] Keeping successful reconstruction
+2026-05-18T23:29:02.548000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:01.750698  7015 incremental_pipeline.cc:377] Finding good initial image pair
+2026-05-18T23:29:02.548000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:01.848178  7015 incremental_pipeline.cc:401] Registering initial image pair #692 and #693
+2026-05-18T23:29:02.548000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:01.866714  7015 incremental_pipeline.cc:419] Global bundle adjustment
+2026-05-18T23:29:02.548000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:02.448837  7015 incremental_pipeline.cc:524] Registering image #694 (num_reg_frames=2)
+2026-05-18T23:29:02.548000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:02.448895  7015 incremental_pipeline.cc:527] => Image sees 1646 / 8092 points
+2026-05-18T23:29:03.549000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:03.392424  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:29:04.549000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:03.786070  7015 incremental_pipeline.cc:524] Registering image #691 (num_reg_frames=3)
+2026-05-18T23:29:04.549000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:03.786124  7015 incremental_pipeline.cc:527] => Image sees 2884 / 7715 points
+2026-05-18T23:29:05.549000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:05.061885  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:29:06.550000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:05.619443  7015 incremental_pipeline.cc:524] Registering image #689 (num_reg_frames=4)
+2026-05-18T23:29:06.550000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:05.619493  7015 incremental_pipeline.cc:527] => Image sees 4319 / 7470 points
+2026-05-18T23:29:07.550000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:07.354403  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:29:08.559000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:08.216547  7015 incremental_pipeline.cc:524] Registering image #777 (num_reg_frames=5)
+2026-05-18T23:29:08.566000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:08.216602  7015 incremental_pipeline.cc:527] => Image sees 2456 / 6548 points
+2026-05-18T23:29:10.566000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:10.092165  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:29:11.567000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:11.499679  7015 incremental_pipeline.cc:524] Registering image #776 (num_reg_frames=6)
+2026-05-18T23:29:11.567000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:11.499732  7015 incremental_pipeline.cc:527] => Image sees 2523 / 5338 points
+2026-05-18T23:29:12.567000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:12.500234  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:29:13.567000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:13.556700  7015 incremental_pipeline.cc:524] Registering image #778 (num_reg_frames=7)
+2026-05-18T23:29:13.567000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:13.556756  7015 incremental_pipeline.cc:527] => Image sees 2814 / 6638 points
+2026-05-18T23:29:14.568000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:14.509044  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:29:15.568000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:15.197073  7015 incremental_pipeline.cc:524] Registering image #733 (num_reg_frames=8)
+2026-05-18T23:29:15.568000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:15.197125  7015 incremental_pipeline.cc:527] => Image sees 3364 / 6800 points
+2026-05-18T23:29:16.571000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:16.184551  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:29:18.579000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:17.600580  7015 incremental_pipeline.cc:524] Registering image #734 (num_reg_frames=9)
+2026-05-18T23:29:18.579000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:17.600634  7015 incremental_pipeline.cc:527] => Image sees 3647 / 6835 points
+2026-05-18T23:29:19.579000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:18.632556  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:29:19.579000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:19.427465  7015 incremental_pipeline.cc:524] Registering image #779 (num_reg_frames=10)
+2026-05-18T23:29:19.579000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:19.427510  7015 incremental_pipeline.cc:527] => Image sees 3317 / 5907 points
+2026-05-18T23:29:20.580000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:20.393383  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:29:21.585000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:21.253446  7015 incremental_pipeline.cc:524] Registering image #735 (num_reg_frames=11)
+2026-05-18T23:29:21.585000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:21.253501  7015 incremental_pipeline.cc:527] => Image sees 3648 / 6057 points
+2026-05-18T23:29:22.586000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:22.396070  7015 incremental_pipeline.cc:524] Registering image #707 (num_reg_frames=12)
+2026-05-18T23:29:22.586000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:22.396121  7015 incremental_pipeline.cc:527] => Image sees 2583 / 7549 points
+2026-05-18T23:29:23.597000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:23.331310  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:29:25.598000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:25.018589  7015 incremental_pipeline.cc:524] Registering image #705 (num_reg_frames=13)
+2026-05-18T23:29:25.598000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:25.018646  7015 incremental_pipeline.cc:527] => Image sees 2740 / 6822 points
+2026-05-18T23:29:26.599000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:26.228751  7015 incremental_pipeline.cc:524] Registering image #748 (num_reg_frames=14)
+2026-05-18T23:29:26.599000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:26.228801  7015 incremental_pipeline.cc:527] => Image sees 2863 / 4829 points
+2026-05-18T23:29:27.602000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:27.186733  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:29:30.616000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:30.140479  7015 incremental_pipeline.cc:524] Registering image #708 (num_reg_frames=15)
+2026-05-18T23:29:30.616000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:30.140558  7015 incremental_pipeline.cc:527] => Image sees 2530 / 6213 points
+2026-05-18T23:29:31.616000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:31.035539  7015 incremental_pipeline.cc:524] Registering image #750 (num_reg_frames=16)
+2026-05-18T23:29:31.616000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:31.035588  7015 incremental_pipeline.cc:527] => Image sees 2979 / 5328 points
+2026-05-18T23:29:32.616000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:31.875867  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:29:34.618000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:34.274308  7015 incremental_pipeline.cc:524] Registering image #749 (num_reg_frames=17)
+2026-05-18T23:29:34.618000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:34.274359  7015 incremental_pipeline.cc:527] => Image sees 2193 / 3702 points
+2026-05-18T23:29:35.619000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:35.145313  7015 incremental_pipeline.cc:524] Registering image #227 (num_reg_frames=18)
+2026-05-18T23:29:35.620000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:35.145376  7015 incremental_pipeline.cc:527] => Image sees 81 / 5740 points
+2026-05-18T23:29:35.620000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:35.152136  7015 incremental_pipeline.cc:550] => Could not register, trying another image.
+2026-05-18T23:29:35.620000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:35.152170  7015 incremental_pipeline.cc:524] Registering image #214 (num_reg_frames=18)
+2026-05-18T23:29:35.620000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:35.152180  7015 incremental_pipeline.cc:527] => Image sees 52 / 6618 points
+2026-05-18T23:29:35.620000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:35.157189  7015 incremental_pipeline.cc:550] => Could not register, trying another image.
+2026-05-18T23:29:35.620000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:35.157217  7015 incremental_pipeline.cc:524] Registering image #656 (num_reg_frames=18)
+2026-05-18T23:29:35.620000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:35.157225  7015 incremental_pipeline.cc:527] => Image sees 45 / 5250 points
+2026-05-18T23:29:35.620000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:35.162050  7015 incremental_pipeline.cc:550] => Could not register, trying another image.
+2026-05-18T23:29:35.620000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:35.162110  7015 incremental_pipeline.cc:524] Registering image #227 (num_reg_frames=18)
+2026-05-18T23:29:35.620000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:35.162132  7015 incremental_pipeline.cc:527] => Image sees 81 / 5740 points
+2026-05-18T23:29:35.620000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:35.162142  7015 incremental_pipeline.cc:533] Registering image with structure-less fallback
+2026-05-18T23:29:35.620000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:35.162151  7015 incremental_pipeline.cc:535] => Image sees 125 / 14317 correspondences
+2026-05-18T23:29:35.620000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:35.162858  7015 incremental_pipeline.cc:550] => Could not register, trying another image.
+2026-05-18T23:29:35.620000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:35.162881  7015 incremental_pipeline.cc:524] Registering image #214 (num_reg_frames=18)
+2026-05-18T23:29:35.620000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:35.162890  7015 incremental_pipeline.cc:527] => Image sees 52 / 6618 points
+2026-05-18T23:29:35.620000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:35.162897  7015 incremental_pipeline.cc:533] Registering image with structure-less fallback
+2026-05-18T23:29:35.620000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:35.162906  7015 incremental_pipeline.cc:535] => Image sees 104 / 14649 correspondences
+2026-05-18T23:29:35.620000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:35.163650  7015 incremental_pipeline.cc:550] => Could not register, trying another image.
+2026-05-18T23:29:35.620000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:35.163668  7015 incremental_pipeline.cc:524] Registering image #656 (num_reg_frames=18)
+2026-05-18T23:29:35.620000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:35.163676  7015 incremental_pipeline.cc:527] => Image sees 45 / 5250 points
+2026-05-18T23:29:35.620000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:35.163684  7015 incremental_pipeline.cc:533] Registering image with structure-less fallback
+2026-05-18T23:29:35.620000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:35.163692  7015 incremental_pipeline.cc:535] => Image sees 94 / 9818 correspondences
+2026-05-18T23:29:39.766000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:39.699764  7015 incremental_pipeline.cc:550] => Could not register, trying another image.
+2026-05-18T23:29:39.766000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:39.699920  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:29:40.767000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:40.672824  7015 incremental_pipeline.cc:524] Registering image #227 (num_reg_frames=18)
+2026-05-18T23:29:40.767000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:40.672886  7015 incremental_pipeline.cc:527] => Image sees 81 / 5740 points
+2026-05-18T23:29:40.767000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:40.679289  7015 incremental_pipeline.cc:550] => Could not register, trying another image.
+2026-05-18T23:29:40.767000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:40.679333  7015 incremental_pipeline.cc:524] Registering image #214 (num_reg_frames=18)
+2026-05-18T23:29:40.767000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:40.679344  7015 incremental_pipeline.cc:527] => Image sees 52 / 6618 points
+2026-05-18T23:29:40.767000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:40.684078  7015 incremental_pipeline.cc:550] => Could not register, trying another image.
+2026-05-18T23:29:40.767000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:40.684103  7015 incremental_pipeline.cc:524] Registering image #656 (num_reg_frames=18)
+2026-05-18T23:29:40.767000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:40.684113  7015 incremental_pipeline.cc:527] => Image sees 45 / 5250 points
+2026-05-18T23:29:40.767000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:40.688963  7015 incremental_pipeline.cc:550] => Could not register, trying another image.
+2026-05-18T23:29:40.767000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:40.689014  7015 incremental_pipeline.cc:524] Registering image #227 (num_reg_frames=18)
+2026-05-18T23:29:40.768000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:40.689033  7015 incremental_pipeline.cc:527] => Image sees 81 / 5740 points
+2026-05-18T23:29:40.768000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:40.689044  7015 incremental_pipeline.cc:533] Registering image with structure-less fallback
+2026-05-18T23:29:40.768000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:40.689055  7015 incremental_pipeline.cc:535] => Image sees 125 / 14317 correspondences
+2026-05-18T23:29:40.768000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:40.689736  7015 incremental_pipeline.cc:550] => Could not register, trying another image.
+2026-05-18T23:29:40.768000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:40.689781  7015 incremental_pipeline.cc:524] Registering image #214 (num_reg_frames=18)
+2026-05-18T23:29:40.768000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:40.689790  7015 incremental_pipeline.cc:527] => Image sees 52 / 6618 points
+2026-05-18T23:29:40.768000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:40.689798  7015 incremental_pipeline.cc:533] Registering image with structure-less fallback
+2026-05-18T23:29:40.768000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:40.689805  7015 incremental_pipeline.cc:535] => Image sees 104 / 14649 correspondences
+2026-05-18T23:29:40.768000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:40.690541  7015 incremental_pipeline.cc:550] => Could not register, trying another image.
+2026-05-18T23:29:40.768000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:40.690563  7015 incremental_pipeline.cc:524] Registering image #656 (num_reg_frames=18)
+2026-05-18T23:29:40.768000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:40.690572  7015 incremental_pipeline.cc:527] => Image sees 45 / 5250 points
+2026-05-18T23:29:40.768000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:40.690579  7015 incremental_pipeline.cc:533] Registering image with structure-less fallback
+2026-05-18T23:29:40.768000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:40.690586  7015 incremental_pipeline.cc:535] => Image sees 94 / 9818 correspondences
+2026-05-18T23:29:44.805000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:44.232224  7015 incremental_pipeline.cc:550] => Could not register, trying another image.
+2026-05-18T23:29:44.805000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:44.232362  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:29:45.805000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:45.038033  7015 incremental_pipeline.cc:710] Keeping successful reconstruction
+2026-05-18T23:29:45.805000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:45.079425  7015 incremental_pipeline.cc:377] Finding good initial image pair
+2026-05-18T23:29:45.805000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:45.314507  7015 incremental_pipeline.cc:401] Registering initial image pair #85 and #120
+2026-05-18T23:29:45.805000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:45.319212  7015 incremental_pipeline.cc:419] Global bundle adjustment
+2026-05-18T23:29:45.805000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:45.586000  7015 incremental_pipeline.cc:524] Registering image #119 (num_reg_frames=2)
+2026-05-18T23:29:45.805000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:45.586050  7015 incremental_pipeline.cc:527] => Image sees 213 / 4833 points
+2026-05-18T23:29:46.806000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:45.865640  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:29:46.806000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:46.114500  7015 incremental_pipeline.cc:524] Registering image #121 (num_reg_frames=3)
+2026-05-18T23:29:46.806000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:46.114552  7015 incremental_pipeline.cc:527] => Image sees 1073 / 5448 points
+2026-05-18T23:29:46.806000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:46.642355  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:29:47.806000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:46.856494  7015 incremental_pipeline.cc:524] Registering image #122 (num_reg_frames=4)
+2026-05-18T23:29:47.806000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:46.856544  7015 incremental_pipeline.cc:527] => Image sees 1845 / 5493 points
+2026-05-18T23:29:47.806000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:47.651180  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:29:48.807000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:48.075363  7015 incremental_pipeline.cc:524] Registering image #118 (num_reg_frames=5)
+2026-05-18T23:29:48.807000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:48.075439  7015 incremental_pipeline.cc:527] => Image sees 1373 / 3857 points
+2026-05-18T23:29:48.807000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:48.560142  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:29:49.807000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:48.887360  7015 incremental_pipeline.cc:524] Registering image #117 (num_reg_frames=6)
+2026-05-18T23:29:49.807000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:48.887434  7015 incremental_pipeline.cc:527] => Image sees 1515 / 3139 points
+2026-05-18T23:29:49.807000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:49.423655  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:29:49.807000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:49.785632  7015 incremental_pipeline.cc:524] Registering image #123 (num_reg_frames=7)
+2026-05-18T23:29:49.807000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:49.785686  7015 incremental_pipeline.cc:527] => Image sees 1322 / 3565 points
+2026-05-18T23:29:50.807000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:50.358361  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:29:51.808000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:51.317924  7015 incremental_pipeline.cc:524] Registering image #86 (num_reg_frames=8)
+2026-05-18T23:29:51.808000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:51.317975  7015 incremental_pipeline.cc:527] => Image sees 1129 / 4918 points
+2026-05-18T23:29:52.808000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:51.889820  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:29:52.808000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:52.353511  7015 incremental_pipeline.cc:524] Registering image #84 (num_reg_frames=9)
+2026-05-18T23:29:52.808000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:52.353566  7015 incremental_pipeline.cc:527] => Image sees 1963 / 7713 points
+2026-05-18T23:29:53.809000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:52.946722  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:29:53.809000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:53.645797  7015 incremental_pipeline.cc:524] Registering image #83 (num_reg_frames=10)
+2026-05-18T23:29:53.809000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:53.645855  7015 incremental_pipeline.cc:527] => Image sees 1355 / 7179 points
+2026-05-18T23:29:54.809000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:54.230640  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:29:55.809000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:55.488035  7015 incremental_pipeline.cc:524] Registering image #82 (num_reg_frames=11)
+2026-05-18T23:29:55.809000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:55.488085  7015 incremental_pipeline.cc:527] => Image sees 1191 / 7622 points
+2026-05-18T23:29:56.810000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:56.164381  7015 incremental_pipeline.cc:524] Registering image #81 (num_reg_frames=12)
+2026-05-18T23:29:56.810000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:56.164434  7015 incremental_pipeline.cc:527] => Image sees 652 / 6224 points
+2026-05-18T23:29:56.810000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:29:56.704787  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:30:01.813000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:01.228263  7015 incremental_pipeline.cc:524] Registering image #79 (num_reg_frames=13)
+2026-05-18T23:30:01.813000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:01.228317  7015 incremental_pipeline.cc:527] => Image sees 342 / 7117 points
+2026-05-18T23:30:02.824000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:01.959411  7015 incremental_pipeline.cc:524] Registering image #78 (num_reg_frames=14)
+2026-05-18T23:30:02.824000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:01.959576  7015 incremental_pipeline.cc:527] => Image sees 72 / 4378 points
+2026-05-18T23:30:02.824000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:01.968863  7015 incremental_pipeline.cc:550] => Could not register, trying another image.
+2026-05-18T23:30:02.824000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:01.968976  7015 incremental_pipeline.cc:524] Registering image #80 (num_reg_frames=14)
+2026-05-18T23:30:02.824000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:01.969022  7015 incremental_pipeline.cc:527] => Image sees 41 / 4511 points
+2026-05-18T23:30:02.824000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:01.976018  7015 incremental_pipeline.cc:550] => Could not register, trying another image.
+2026-05-18T23:30:02.824000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:01.976143  7015 incremental_pipeline.cc:524] Registering image #80 (num_reg_frames=14)
+2026-05-18T23:30:02.824000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:01.976181  7015 incremental_pipeline.cc:527] => Image sees 41 / 4511 points
+2026-05-18T23:30:02.824000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:01.976207  7015 incremental_pipeline.cc:533] Registering image with structure-less fallback
+2026-05-18T23:30:02.824000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:01.976230  7015 incremental_pipeline.cc:535] => Image sees 3825 / 6893 correspondences
+2026-05-18T23:30:02.824000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:02.446282  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:30:08.843000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:08.149432  7015 incremental_pipeline.cc:524] Registering image #78 (num_reg_frames=15)
+2026-05-18T23:30:08.843000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:08.149484  7015 incremental_pipeline.cc:527] => Image sees 67 / 4378 points
+2026-05-18T23:30:08.843000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:08.155405  7015 incremental_pipeline.cc:550] => Could not register, trying another image.
+2026-05-18T23:30:08.843000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:08.155462  7015 incremental_pipeline.cc:524] Registering image #78 (num_reg_frames=15)
+2026-05-18T23:30:08.843000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:08.155473  7015 incremental_pipeline.cc:527] => Image sees 67 / 4378 points
+2026-05-18T23:30:08.843000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:08.155493  7015 incremental_pipeline.cc:533] Registering image with structure-less fallback
+2026-05-18T23:30:08.843000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:08.155503  7015 incremental_pipeline.cc:535] => Image sees 6145 / 6145 correspondences
+2026-05-18T23:30:10.905000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:10.091506  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:30:18.909000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:17.991053  7015 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-18T23:30:20.910000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:19.919764  7015 incremental_pipeline.cc:710] Keeping successful reconstruction
+2026-05-18T23:30:20.910000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:19.950675  7015 incremental_pipeline.cc:377] Finding good initial image pair
+2026-05-18T23:30:20.910000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:19.998668  7015 incremental_pipeline.cc:381] => No good initial image pair found.
+2026-05-18T23:30:20.910000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:19.998698  7015 incremental_pipeline.cc:684] Discarding reconstruction due to no initial pair
+2026-05-18T23:30:20.910000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:19.999176  7015 incremental_pipeline.cc:341] => Relaxing the initialization constraints.
+2026-05-18T23:30:20.910000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:20.012171  7015 incremental_pipeline.cc:377] Finding good initial image pair
+2026-05-18T23:30:20.910000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:20.048628  7015 incremental_pipeline.cc:381] => No good initial image pair found.
+2026-05-18T23:30:20.910000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:20.048655  7015 incremental_pipeline.cc:684] Discarding reconstruction due to no initial pair
+2026-05-18T23:30:20.910000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:20.049113  7015 incremental_pipeline.cc:354] => Relaxing the initialization constraints.
+2026-05-18T23:30:20.910000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:20.061841  7015 incremental_pipeline.cc:377] Finding good initial image pair
+2026-05-18T23:30:20.910000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:20.098654  7015 incremental_pipeline.cc:381] => No good initial image pair found.
+2026-05-18T23:30:20.910000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:20.098678  7015 incremental_pipeline.cc:684] Discarding reconstruction due to no initial pair
+2026-05-18T23:30:20.910000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:20.099108  7015 incremental_pipeline.cc:341] => Relaxing the initialization constraints.
+2026-05-18T23:30:20.910000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:20.112094  7015 incremental_pipeline.cc:377] Finding good initial image pair
+2026-05-18T23:30:20.910000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:20.148413  7015 incremental_pipeline.cc:381] => No good initial image pair found.
+2026-05-18T23:30:20.910000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:20.148440  7015 incremental_pipeline.cc:684] Discarding reconstruction due to no initial pair
+2026-05-18T23:30:20.910000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:20.148921  7015 incremental_pipeline.cc:354] => Relaxing the initialization constraints.
+2026-05-18T23:30:20.910000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:20.162191  7015 incremental_pipeline.cc:377] Finding good initial image pair
+2026-05-18T23:30:20.910000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:20.198500  7015 incremental_pipeline.cc:381] => No good initial image pair found.
+2026-05-18T23:30:20.910000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:20.198531  7015 incremental_pipeline.cc:684] Discarding reconstruction due to no initial pair
+2026-05-18T23:30:20.910000+00:00 COLMAP[chunk_03_mapper_initial] I20260518 23:30:20.199177  7015 timer.cc:90] Elapsed time: 13.120 [minutes]
+2026-05-18T23:30:20.910000+00:00 2026-05-18 23:30:20,281 - INFO - [chunk_03_mapper_initial_model_converter_0] colmap model_converter --input_path /tmp/colmap_sfm_gefg0_n4/chunk_03/sparse_initial/0 --output_path /tmp/colmap_sfm_gefg0_n4/text_models/chunk_03_mapper_initial/0 --output_type TXT
+2026-05-18T23:30:24.911000+00:00 2026-05-18 23:30:23,972 - INFO - chunk_03_mapper_initial model 0 registered 150/187 images and 120029 points
+2026-05-18T23:30:24.912000+00:00 2026-05-18 23:30:23,972 - INFO - [chunk_03_mapper_initial_model_converter_1] colmap model_converter --input_path /tmp/colmap_sfm_gefg0_n4/chunk_03/sparse_initial/1 --output_path /tmp/colmap_sfm_gefg0_n4/text_models/chunk_03_mapper_initial/1 --output_type TXT
+2026-05-18T23:30:24.912000+00:00 2026-05-18 23:30:24,580 - INFO - chunk_03_mapper_initial model 1 registered 18/187 images and 18001 points
+2026-05-18T23:30:24.912000+00:00 2026-05-18 23:30:24,580 - INFO - [chunk_03_mapper_initial_model_converter_2] colmap model_converter --input_path /tmp/colmap_sfm_gefg0_n4/chunk_03/sparse_initial/2 --output_path /tmp/colmap_sfm_gefg0_n4/text_models/chunk_03_mapper_initial/2 --output_type TXT
+2026-05-18T23:30:25.912000+00:00 2026-05-18 23:30:25,093 - INFO - chunk_03_mapper_initial model 2 registered 16/187 images and 7718 points
+2026-05-18T23:30:25.912000+00:00 2026-05-18 23:30:25,365 - INFO - Chunk 3 registered 150/187 images (80.21%) with 135/156 core images (86.54%); running targeted boundary recovery. Missing core images: ['DJI_00690.JPG', 'DJI_00691.JPG', 'DJI_00692.JPG', 'DJI_00693.JPG', 'DJI_00694.JPG', 'DJI_00706.JPG', 'DJI_00707.JPG', 'DJI_00708.JPG', 'DJI_00733.JPG', 'DJI_00734.JPG', 'DJI_00735.JPG', 'DJI_00748.JPG', 'DJI_00749.JPG', 'DJI_00750.JPG', 'DJI_00776.JPG', 'DJI_00777.JPG', 'DJI_00778.JPG', 'DJI_00779.JPG', 'DJI_00793.JPG', 'DJI_00794.JPG', 'DJI_00795.JPG']
+2026-05-18T23:30:25.912000+00:00 2026-05-18 23:30:25,368 - INFO - [chunk_03_spatial_matcher_recovery] colmap spatial_matcher --database_path /tmp/colmap_sfm_gefg0_n4/chunk_03/database.db --FeatureMatching.use_gpu 1 --FeatureMatching.guided_matching 1 --SpatialMatching.ignore_z 0 --SpatialMatching.max_num_neighbors 18 --SpatialMatching.max_distance 300.0
+2026-05-18T23:30:25.912000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:25.558126  8349 feature_matching.cc:195] === Feature matching & geometric verification ===
+2026-05-18T23:30:25.912000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:25.638556  8356 feature_matching_utils.cc:80] Bind FeatureMatcherWorker to GPU device 0
+2026-05-18T23:30:25.912000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:25.638553  8350 feature_matching_utils.cc:80] Bind FeatureMatcherWorker to GPU device 0
+2026-05-18T23:30:25.912000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:25.639403  8356 sift.cc:1547] Creating SIFT GPU feature matcher
+2026-05-18T23:30:25.912000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:25.639405  8350 sift.cc:1547] Creating SIFT GPU feature matcher
+2026-05-18T23:30:25.912000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:25.642979  8349 pairing.cc:560] Generating spatial image pairs...
+2026-05-18T23:30:25.912000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:25.643010  8349 pairing.cc:565] Indexing images...
+2026-05-18T23:30:25.912000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:25.644466  8349 pairing.cc:570]  in 0.001s
+2026-05-18T23:30:25.912000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:25.644498  8349 pairing.cc:584] Building search index...
+2026-05-18T23:30:25.912000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:25.644520  8349 pairing.cc:589]  in 0.000s
+2026-05-18T23:30:25.912000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:25.644532  8349 pairing.cc:592] Searching for nearest neighbors...
+2026-05-18T23:30:25.913000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:25.655874  8349 pairing.cc:608]  in 0.011s
+2026-05-18T23:30:25.913000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:25.656237  8349 pairing.cc:631] Processing image [1/187]
+2026-05-18T23:30:26.914000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:26.141810  8349 feature_matching.cc:217] in 0.486s
+2026-05-18T23:30:26.914000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:26.141856  8349 pairing.cc:631] Processing image [2/187]
+2026-05-18T23:30:26.914000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:26.191583  8349 feature_matching.cc:217] in 0.050s
+2026-05-18T23:30:26.914000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:26.191627  8349 pairing.cc:631] Processing image [3/187]
+2026-05-18T23:30:26.914000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:26.191900  8349 feature_matching.cc:217] in 0.000s
+2026-05-18T23:30:26.914000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:26.191924  8349 pairing.cc:631] Processing image [4/187]
+2026-05-18T23:30:26.914000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:26.774926  8349 feature_matching.cc:217] in 0.583s
+2026-05-18T23:30:26.914000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:26.774976  8349 pairing.cc:631] Processing image [5/187]
+2026-05-18T23:30:27.940000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:27.369482  8349 feature_matching.cc:217] in 0.595s
+2026-05-18T23:30:27.940000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:27.369539  8349 pairing.cc:631] Processing image [6/187]
+2026-05-18T23:30:27.940000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:27.859012  8349 feature_matching.cc:217] in 0.490s
+2026-05-18T23:30:27.940000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:27.859061  8349 pairing.cc:631] Processing image [7/187]
+2026-05-18T23:30:28.940000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:28.394007  8349 feature_matching.cc:217] in 0.535s
+2026-05-18T23:30:28.940000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:28.394059  8349 pairing.cc:631] Processing image [8/187]
+2026-05-18T23:30:29.941000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:29.045732  8349 feature_matching.cc:217] in 0.652s
+2026-05-18T23:30:29.941000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:29.045786  8349 pairing.cc:631] Processing image [9/187]
+2026-05-18T23:30:29.941000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:29.640622  8349 feature_matching.cc:217] in 0.595s
+2026-05-18T23:30:29.941000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:29.640676  8349 pairing.cc:631] Processing image [10/187]
+2026-05-18T23:30:30.941000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:30.344328  8349 feature_matching.cc:217] in 0.704s
+2026-05-18T23:30:30.942000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:30.344379  8349 pairing.cc:631] Processing image [11/187]
+2026-05-18T23:30:31.942000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:31.327167  8349 feature_matching.cc:217] in 0.983s
+2026-05-18T23:30:31.942000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:31.327219  8349 pairing.cc:631] Processing image [12/187]
+2026-05-18T23:30:32.942000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:32.277209  8349 feature_matching.cc:217] in 0.950s
+2026-05-18T23:30:32.942000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:32.277266  8349 pairing.cc:631] Processing image [13/187]
+2026-05-18T23:30:32.942000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:32.721575  8349 feature_matching.cc:217] in 0.444s
+2026-05-18T23:30:32.943000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:32.721632  8349 pairing.cc:631] Processing image [14/187]
+2026-05-18T23:30:33.943000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:33.207737  8349 feature_matching.cc:217] in 0.486s
+2026-05-18T23:30:33.943000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:33.207790  8349 pairing.cc:631] Processing image [15/187]
+2026-05-18T23:30:33.943000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:33.341120  8349 feature_matching.cc:217] in 0.133s
+2026-05-18T23:30:33.943000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:33.341172  8349 pairing.cc:631] Processing image [16/187]
+2026-05-18T23:30:34.943000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:34.333958  8349 feature_matching.cc:217] in 0.993s
+2026-05-18T23:30:34.944000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:34.334009  8349 pairing.cc:631] Processing image [17/187]
+2026-05-18T23:30:35.944000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:34.962296  8349 feature_matching.cc:217] in 0.628s
+2026-05-18T23:30:35.944000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:34.962342  8349 pairing.cc:631] Processing image [18/187]
+2026-05-18T23:30:35.944000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:35.523264  8349 feature_matching.cc:217] in 0.561s
+2026-05-18T23:30:35.944000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:35.523310  8349 pairing.cc:631] Processing image [19/187]
+2026-05-18T23:30:36.944000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:36.080190  8349 feature_matching.cc:217] in 0.557s
+2026-05-18T23:30:36.944000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:36.080238  8349 pairing.cc:631] Processing image [20/187]
+2026-05-18T23:30:36.944000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:36.644004  8349 feature_matching.cc:217] in 0.564s
+2026-05-18T23:30:36.944000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:36.644050  8349 pairing.cc:631] Processing image [21/187]
+2026-05-18T23:30:37.945000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:37.091007  8349 feature_matching.cc:217] in 0.447s
+2026-05-18T23:30:37.945000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:37.091056  8349 pairing.cc:631] Processing image [22/187]
+2026-05-18T23:30:37.945000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:37.607630  8349 feature_matching.cc:217] in 0.517s
+2026-05-18T23:30:37.945000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:37.607677  8349 pairing.cc:631] Processing image [23/187]
+2026-05-18T23:30:38.948000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:38.156926  8349 feature_matching.cc:217] in 0.549s
+2026-05-18T23:30:38.948000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:38.156976  8349 pairing.cc:631] Processing image [24/187]
+2026-05-18T23:30:38.948000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:38.704162  8349 feature_matching.cc:217] in 0.547s
+2026-05-18T23:30:38.948000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:38.704211  8349 pairing.cc:631] Processing image [25/187]
+2026-05-18T23:30:39.951000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:39.251214  8349 feature_matching.cc:217] in 0.547s
+2026-05-18T23:30:39.959000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:39.251262  8349 pairing.cc:631] Processing image [26/187]
+2026-05-18T23:30:39.959000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:39.803064  8349 feature_matching.cc:217] in 0.552s
+2026-05-18T23:30:39.959000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:39.803108  8349 pairing.cc:631] Processing image [27/187]
+2026-05-18T23:30:40.969000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:40.353173  8349 feature_matching.cc:217] in 0.550s
+2026-05-18T23:30:40.969000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:40.353219  8349 pairing.cc:631] Processing image [28/187]
+2026-05-18T23:30:40.969000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:40.887902  8349 feature_matching.cc:217] in 0.535s
+2026-05-18T23:30:40.969000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:40.887945  8349 pairing.cc:631] Processing image [29/187]
+2026-05-18T23:30:41.970000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:41.409935  8349 feature_matching.cc:217] in 0.522s
+2026-05-18T23:30:41.970000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:41.409982  8349 pairing.cc:631] Processing image [30/187]
+2026-05-18T23:30:41.970000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:41.828140  8349 feature_matching.cc:217] in 0.418s
+2026-05-18T23:30:41.970000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:41.828184  8349 pairing.cc:631] Processing image [31/187]
+2026-05-18T23:30:42.970000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:42.250622  8349 feature_matching.cc:217] in 0.422s
+2026-05-18T23:30:42.970000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:42.250677  8349 pairing.cc:631] Processing image [32/187]
+2026-05-18T23:30:42.970000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:42.725616  8349 feature_matching.cc:217] in 0.475s
+2026-05-18T23:30:42.970000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:42.725666  8349 pairing.cc:631] Processing image [33/187]
+2026-05-18T23:30:43.971000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:43.083110  8349 feature_matching.cc:217] in 0.357s
+2026-05-18T23:30:43.971000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:43.083156  8349 pairing.cc:631] Processing image [34/187]
+2026-05-18T23:30:43.971000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:43.474969  8349 feature_matching.cc:217] in 0.392s
+2026-05-18T23:30:43.971000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:43.475021  8349 pairing.cc:631] Processing image [35/187]
+2026-05-18T23:30:44.972000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:44.128433  8349 feature_matching.cc:217] in 0.653s
+2026-05-18T23:30:44.972000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:44.128479  8349 pairing.cc:631] Processing image [36/187]
+2026-05-18T23:30:45.972000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:45.215129  8349 feature_matching.cc:217] in 1.087s
+2026-05-18T23:30:45.972000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:45.215178  8349 pairing.cc:631] Processing image [37/187]
+2026-05-18T23:30:46.972000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:46.187991  8349 feature_matching.cc:217] in 0.973s
+2026-05-18T23:30:46.972000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:46.188043  8349 pairing.cc:631] Processing image [38/187]
+2026-05-18T23:30:47.973000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:47.122756  8349 feature_matching.cc:217] in 0.935s
+2026-05-18T23:30:47.973000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:47.122800  8349 pairing.cc:631] Processing image [39/187]
+2026-05-18T23:30:48.973000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:48.080032  8349 feature_matching.cc:217] in 0.957s
+2026-05-18T23:30:48.973000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:48.080077  8349 pairing.cc:631] Processing image [40/187]
+2026-05-18T23:30:48.973000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:48.915359  8349 feature_matching.cc:217] in 0.835s
+2026-05-18T23:30:48.973000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:48.915416  8349 pairing.cc:631] Processing image [41/187]
+2026-05-18T23:30:49.974000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:49.952039  8349 feature_matching.cc:217] in 1.037s
+2026-05-18T23:30:49.974000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:49.952088  8349 pairing.cc:631] Processing image [42/187]
+2026-05-18T23:30:50.974000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:50.929184  8349 feature_matching.cc:217] in 0.977s
+2026-05-18T23:30:50.974000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:50.929230  8349 pairing.cc:631] Processing image [43/187]
+2026-05-18T23:30:51.975000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:51.475572  8349 feature_matching.cc:217] in 0.546s
+2026-05-18T23:30:51.975000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:51.475620  8349 pairing.cc:631] Processing image [44/187]
+2026-05-18T23:30:52.975000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:52.120774  8349 feature_matching.cc:217] in 0.645s
+2026-05-18T23:30:52.976000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:52.120820  8349 pairing.cc:631] Processing image [45/187]
+2026-05-18T23:30:52.976000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:52.521798  8349 feature_matching.cc:217] in 0.401s
+2026-05-18T23:30:52.976000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:52.521844  8349 pairing.cc:631] Processing image [46/187]
+2026-05-18T23:30:52.976000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:52.522079  8349 feature_matching.cc:217] in 0.000s
+2026-05-18T23:30:52.976000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:52.522119  8349 pairing.cc:631] Processing image [47/187]
+2026-05-18T23:30:52.976000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:52.522346  8349 feature_matching.cc:217] in 0.000s
+2026-05-18T23:30:52.976000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:52.522363  8349 pairing.cc:631] Processing image [48/187]
+2026-05-18T23:30:52.976000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:52.522596  8349 feature_matching.cc:217] in 0.000s
+2026-05-18T23:30:52.976000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:52.522629  8349 pairing.cc:631] Processing image [49/187]
+2026-05-18T23:30:52.976000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:52.878191  8349 feature_matching.cc:217] in 0.356s
+2026-05-18T23:30:52.976000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:52.878240  8349 pairing.cc:631] Processing image [50/187]
+2026-05-18T23:30:52.976000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:52.878448  8349 feature_matching.cc:217] in 0.000s
+2026-05-18T23:30:52.976000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:52.878466  8349 pairing.cc:631] Processing image [51/187]
+2026-05-18T23:30:53.977000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:53.544127  8349 feature_matching.cc:217] in 0.666s
+2026-05-18T23:30:53.977000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:30:53.544178  8349 pairing.cc:631] Processing image [52/187]
