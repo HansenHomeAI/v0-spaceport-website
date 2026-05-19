@@ -8171,3 +8171,35 @@ skybox, compression, artifact handoff, and visual gates.
   - PREVIEW_URL extract (same Pages run):
     - `logs/md1-shrunk/polls/20260519T160919Z-ci/pages-preview-url-clean.txt`
     - `PREVIEW_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+
+## 2026-05-19T16:47Z baseline/pose verification + edge HTML delivery report
+
+- Implemented additional production-readiness hardening (reusable + browser-readable):
+  - `scripts/sfm/run_md1_shrunk_camera_suite.py`
+    - `--poses-json` lets the suite reuse a fixed pose set (no COLMAP derive drift).
+    - `--baseline-suite-dir` enables baseline comparisons (skybox + no-sky) and camera-pose drift verification.
+    - Baseline pose drift is gated via `--pose-diff-tolerance` and reported in `suite-summary.json` + `report.html`.
+  - `scripts/publish_ml_bundle_to_edge.py`
+    - `--html-report` writes a browser-readable delivery summary (edge meta.json + assets).
+  - `.gitignore` ignores the large, reproducible camera-suite artifacts (`inputs/`, `renders/`, `panels/`, `*.png`) so commits stay bounded.
+- Unit proof:
+  - `python3 -m unittest tests.unit.test_sfm_heldout_panel_diagnostics -v`
+- Camera-suite strict PASS (deployed preview; skybox + no-sky; poses reused from prior suite; baseline comparisons enabled):
+  - suite dir: `logs/md1-shrunk/polls/20260519T163352Z-camera-suite`
+  - `logs/md1-shrunk/polls/20260519T163352Z-camera-suite/suite-summary.json` -> `decision=pass`
+  - `logs/md1-shrunk/polls/20260519T163352Z-camera-suite/report.html`
+- Edge delivery automation (browser-readable HTML report):
+  - `logs/md1-shrunk/polls/20260519T163651Z-edge-publish-report/publish-edge.report.html`
+  - edge meta.json: `https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+- Preflight snapshot (read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260519T162823Z-preflight/preflight.txt`
+- Commit/push:
+  - `feat: harden md1-shrunk camera suite baselines` -> `c3f52d2e`
+- GitHub workflows (exact-head `c3f52d2e...`):
+  - `CDK Deploy` run `26111270602` -> success
+    - `logs/md1-shrunk/polls/20260519T163924Z-ci/gh-run-watch-cdk-26111270602.txt`
+  - `Deploy Next.js to Cloudflare Pages` run `26111270702` -> success
+    - `logs/md1-shrunk/polls/20260519T163924Z-ci/gh-run-watch-pages-26111270702.txt`
+  - PREVIEW_URL extract (same Pages run):
+    - `logs/md1-shrunk/polls/20260519T163924Z-ci/pages-preview-url-clean.txt`
+    - `PREVIEW_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
