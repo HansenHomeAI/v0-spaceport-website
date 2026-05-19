@@ -1,0 +1,44 @@
+{
+  "timestamp_utc": "20260519T145514Z",
+  "branch": "agent-90742618-md1-geometry-consistency",
+  "head": "2bd90dd551d22f97229bccec0e838864251796fa",
+  "exact_head_workflows": "absent_intentionally_skip_ci",
+  "last_meaningful_exact_head": "00541502a6e5f246cca11f05f53f78f1ca80559d",
+  "last_meaningful_cdk_run": "26059422703",
+  "decision": "sentinel_review_submit_allowed",
+  "user_override": "CV-HR SageMaker processing jobs are separate/non-blocking for this MD1 review gate; do not stop or modify them.",
+  "live_state": {
+    "training_in_progress_count": 0,
+    "processing_total_count": 2,
+    "processing_names": [
+      "cvhr-secondary-20260518t2113z-sfm",
+      "cvhr-mtc-20260518T1729Z-sfm"
+    ],
+    "md1_relevant_processing_count": 0,
+    "stepfunctions_running_count": 0,
+    "codebuild_active_count": 0
+  },
+  "duplicate_check": {
+    "job_name": "md1-r1-r0v5relax-retry1-v18p24-1779202633-quality",
+    "describe_absent_error": "logs/md1-r0v5relax-review-retry1-duplicate-describe-2bd90dd5-20260519T145514Z.err"
+  },
+  "review_plan": {
+    "candidate_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/model.tar.gz",
+    "output_root_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-review-retry1-2bd90dd5-20260519T145514Z",
+    "baseline_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review",
+    "execution_mode": "training",
+    "instance_type": "ml.g4dn.xlarge",
+    "max_runtime_seconds": 1800,
+    "render_settings": {
+      "render_scale": 0.25,
+      "max_gaussians_per_view": 500000,
+      "cull_margin": 0.5,
+      "min_gaussians_on_oom": 75000,
+      "tile_ids": "tile_04"
+    },
+    "payload_json": "logs/md1-r0v5relax-review-retry1-payload-2bd90dd5-20260519T145514Z.json",
+    "budget_stage": "sentinel_review",
+    "budget_cap_usd": 0.75
+  },
+  "next": "submit exactly one bounded frozen-camera/V18 review job, monitor to terminal state, debit budget, extract/evaluate visual QA assets"
+}

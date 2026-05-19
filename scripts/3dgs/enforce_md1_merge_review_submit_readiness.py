@@ -11,6 +11,7 @@ from typing import Any
 
 
 SUPPORTED_PROTECTED_OVERLAP_MODES = {"", "none", "off", "retain_all"}
+DEFAULT_IGNORED_PROCESSING_JOB_PREFIXES = ("cvhr-", "cvhr_")
 
 
 def load_json(path: str) -> dict[str, Any]:
@@ -41,6 +42,34 @@ def ordered_unique(values: list[str]) -> list[str]:
             seen.add(value)
             result.append(value)
     return result
+
+
+def processing_job_name(job: Any) -> str:
+    if isinstance(job, dict):
+        for key in ("ProcessingJobName", "processing_job_name", "job_name", "name"):
+            value = job.get(key)
+            if value:
+                return str(value)
+        arn = str(job.get("ProcessingJobArn") or job.get("processing_job_arn") or "")
+        if arn:
+            return arn.rsplit("/", 1)[-1]
+        return ""
+    return str(job)
+
+
+def split_processing_jobs(
+    jobs: list[Any],
+    ignored_prefixes: list[str],
+) -> tuple[list[Any], list[Any]]:
+    blocking: list[Any] = []
+    ignored: list[Any] = []
+    for job in jobs:
+        name = processing_job_name(job)
+        if name and any(name.startswith(prefix) for prefix in ignored_prefixes):
+            ignored.append(job)
+        else:
+            blocking.append(job)
+    return blocking, ignored
 
 
 def nested_dict(payload: dict[str, Any], key: str) -> dict[str, Any]:
@@ -187,6 +216,7 @@ def evaluate_gate(
     max_merge_runtime_seconds: int,
     max_review_estimated_usd: float,
     max_review_runtime_seconds: int,
+    ignored_processing_job_prefixes: list[str] | None = None,
 ) -> dict[str, Any]:
     block_reasons: list[str] = []
     required_tiles = ordered_unique(required_tile_ids)
@@ -197,6 +227,13 @@ def evaluate_gate(
     merge_estimated = numeric_value(merge, "max_estimated_usd")
     merge_runtime = numeric_value(merge, "max_runtime_seconds")
     unsupported_env = unsupported_payload_merge_env(payload)
+    ignored_prefixes = ordered_unique(
+        list(ignored_processing_job_prefixes or DEFAULT_IGNORED_PROCESSING_JOB_PREFIXES)
+    )
+    blocking_processing_jobs, ignored_processing_jobs = split_processing_jobs(
+        processing_jobs_in_progress,
+        ignored_prefixes,
+    )
 
     if git_head != exact_head:
         block_reasons.append("git_head_not_exact_head")
@@ -204,7 +241,7 @@ def evaluate_gate(
         block_reasons.append("exact_head_workflow_not_green")
     if training_jobs_in_progress:
         block_reasons.append("training_jobs_in_progress")
-    if processing_jobs_in_progress:
+    if blocking_processing_jobs:
         block_reasons.append("processing_jobs_in_progress")
     if leaf_reuse_summary.get("submitted_jobs") not in ([], None):
         block_reasons.append("leaf_reuse_summary_has_submitted_jobs")
@@ -260,7 +297,10 @@ def evaluate_gate(
         "git_head": git_head,
         "workflow_conclusion": workflow_conclusion,
         "training_jobs_in_progress": training_jobs_in_progress,
-        "processing_jobs_in_progress": processing_jobs_in_progress,
+        "processing_jobs_in_progress": blocking_processing_jobs,
+        "processing_jobs_observed": processing_jobs_in_progress,
+        "processing_jobs_ignored_non_blocking": ignored_processing_jobs,
+        "ignored_processing_job_prefixes": ignored_prefixes,
         "required_tile_ids": required_tiles,
         "leaf_reuse_summary_tile_ids": summary_tiles,
         "merge_plan_tile_ids": plan_tiles,
@@ -294,6 +334,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--workflow-conclusion", required=True)
     parser.add_argument("--training-jobs-json", default="[]")
     parser.add_argument("--processing-jobs-json", default="[]")
+    parser.add_argument(
+        "--ignore-processing-job-prefix",
+        action="append",
+        default=[],
+        help="Additional active SageMaker processing job name prefix to record but not block on.",
+    )
     parser.add_argument("--max-merge-estimated-usd", type=float, required=True)
     parser.add_argument("--max-merge-runtime-seconds", type=int, required=True)
     parser.add_argument("--max-review-estimated-usd", type=float, required=True)
@@ -316,6 +362,9 @@ def main() -> int:
         workflow_conclusion=args.workflow_conclusion,
         training_jobs_in_progress=parse_json_list(args.training_jobs_json),
         processing_jobs_in_progress=parse_json_list(args.processing_jobs_json),
+        ignored_processing_job_prefixes=ordered_unique(
+            list(DEFAULT_IGNORED_PROCESSING_JOB_PREFIXES) + args.ignore_processing_job_prefix
+        ),
         max_merge_estimated_usd=args.max_merge_estimated_usd,
         max_merge_runtime_seconds=args.max_merge_runtime_seconds,
         max_review_estimated_usd=args.max_review_estimated_usd,

@@ -1,0 +1,115 @@
+{
+    "TrainingJobName": "md1-r1-r0v5relax-retry1-v18p24-1779202633-quality",
+    "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-r1-r0v5relax-retry1-v18p24-1779202633-quality",
+    "TrainingJobStatus": "InProgress",
+    "SecondaryStatus": "Downloading",
+    "AlgorithmSpecification": {
+        "TrainingImage": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent90742618md1geometryconsistency",
+        "TrainingInputMode": "File",
+        "EnableSageMakerMetricsTimeSeries": false,
+        "ContainerEntrypoint": [
+            "python3",
+            "/opt/ml/code/run_tiled_quality_review.py"
+        ]
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "InputDataConfig": [
+        {
+            "ChannelName": "model",
+            "DataSource": {
+                "S3DataSource": {
+                    "S3DataType": "S3Prefix",
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/model.tar.gz",
+                    "S3DataDistributionType": "FullyReplicated"
+                }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None"
+        },
+        {
+            "ChannelName": "colmap",
+            "DataSource": {
+                "S3DataSource": {
+                    "S3DataType": "S3Prefix",
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1p27eba1k-1776107310/colmap",
+                    "S3DataDistributionType": "FullyReplicated"
+                }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None"
+        },
+        {
+            "ChannelName": "review-manifest",
+            "DataSource": {
+                "S3DataSource": {
+                    "S3DataType": "S3Prefix",
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-review-retry1-2bd90dd5-20260519T145514Z/review-input",
+                    "S3DataDistributionType": "FullyReplicated"
+                }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None"
+        },
+        {
+            "ChannelName": "baseline-review",
+            "DataSource": {
+                "S3DataSource": {
+                    "S3DataType": "S3Prefix",
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-cost-reduction-v18-reference-20260501/v18-promotion-review",
+                    "S3DataDistributionType": "FullyReplicated"
+                }
+            },
+            "CompressionType": "None",
+            "RecordWrapperType": "None"
+        }
+    ],
+    "OutputDataConfig": {
+        "KmsKeyId": "",
+        "S3OutputPath": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-review-retry1-2bd90dd5-20260519T145514Z/outputs/r0v5relax-retry1-v18p24",
+        "CompressionType": "GZIP"
+    },
+    "ResourceConfig": {
+        "InstanceType": "ml.g4dn.xlarge",
+        "InstanceCount": 1,
+        "VolumeSizeInGB": 100
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 1800
+    },
+    "CreationTime": "2026-05-19T08:58:32.637000-06:00",
+    "TrainingStartTime": "2026-05-19T08:59:14.989000-06:00",
+    "LastModifiedTime": "2026-05-19T08:59:15.411000-06:00",
+    "SecondaryStatusTransitions": [
+        {
+            "Status": "Starting",
+            "StartTime": "2026-05-19T08:58:32.637000-06:00",
+            "EndTime": "2026-05-19T08:59:14.989000-06:00",
+            "StatusMessage": "Preparing the instances for training"
+        },
+        {
+            "Status": "Downloading",
+            "StartTime": "2026-05-19T08:59:14.989000-06:00",
+            "StatusMessage": "Downloading input data"
+        }
+    ],
+    "EnableNetworkIsolation": false,
+    "EnableInterContainerTrafficEncryption": false,
+    "EnableManagedSpotTraining": false,
+    "TrainingTimeInSeconds": 224,
+    "ProfilingStatus": "Disabled",
+    "Environment": {
+        "BASELINE_REVIEW_MANIFEST": "/opt/ml/input/data/baseline-review/quality_review_manifest.json",
+        "COLMAP_INPUT_DIR": "/opt/ml/input/data/colmap",
+        "FROZEN_REVIEW_CAMERA_MANIFEST": "/opt/ml/input/data/review-manifest/review_camera_manifest.json",
+        "MODEL_INPUT_DIR": "/opt/ml/input/data/model",
+        "OUTPUT_DIR": "/opt/ml/model",
+        "PYTHONUNBUFFERED": "1",
+        "QUALITY_REVIEW_CAMERA_SET": "frozen-promotion-p24",
+        "QUALITY_REVIEW_CULL_MARGIN": "0.5",
+        "QUALITY_REVIEW_MAX_GAUSSIANS_PER_VIEW": "500000",
+        "QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET": "8",
+        "QUALITY_REVIEW_MIN_GAUSSIANS_ON_OOM": "75000",
+        "QUALITY_REVIEW_RENDER_SCALE": "0.25",
+        "QUALITY_REVIEW_TILE_IDS": "tile_04"
+    }
+}

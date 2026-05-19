@@ -1,0 +1,38 @@
+{
+  "timestamp_utc": "20260519T151200Z",
+  "head": "2bd90dd551d22f97229bccec0e838864251796fa",
+  "job_name": "md1-r1-r0v5relax-retry1-v18p24-1779202633-quality",
+  "terminal_status": "Completed",
+  "runtime_seconds": 527,
+  "debited_usd_conservative": 0.146389,
+  "pricing_basis": "conservative ml.g4dn.xlarge $1.00/hr",
+  "review_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-review-retry1-2bd90dd5-20260519T145514Z/outputs/r0v5relax-retry1-v18p24/md1-r1-r0v5relax-retry1-v18p24-1779202633-quality/output/model.tar.gz",
+  "final_describe_json": "logs/md1-r0v5relax-review-retry1-describe-poll-20260519T150801Z.json",
+  "cloudwatch_events_json": "logs/md1-r0v5relax-review-retry1-cloudwatch-events-20260519T150801Z.json",
+  "s3_listing": "logs/md1-r0v5relax-review-retry1-s3-list-20260519T150801Z.txt",
+  "visual_qa_extract_json": "logs/md1-r0v5relax-review-retry1-visual-qa-extract-20260519T150801Z.json",
+  "visual_qa_gate_no_ai_json": "logs/md1-r0v5relax-review-retry1-visual-qa-gate-no-ai-20260519T150801Z.json",
+  "ai_visual_review_json": "logs/md1-r0v5relax-review-retry1-ai-visual-review-20260519T150801Z.json",
+  "visual_qa_gate_with_ai_json": "logs/md1-r0v5relax-review-retry1-visual-qa-gate-with-ai-20260519T150801Z.json",
+  "mechanical_visual_qa": {
+    "decision": "visual_qa_ready",
+    "view_count": 22,
+    "panel_count": 22,
+    "panel_ratio": 1.0,
+    "missing_assets": 0,
+    "missing_files": 0
+  },
+  "ai_visual_qa": {
+    "decision": "visual_qa_blocked",
+    "block_reasons": [
+      "ai_visual_review_blocking_defects",
+      "ai_visual_review_blocking_view_findings",
+      "ai_visual_review_status_block"
+    ],
+    "avg_psnr": 11.364401072838978,
+    "avg_ssim": 0.3273109644651413,
+    "avg_lpips": 0.8698732988400892
+  },
+  "promotion_decision": "blocked",
+  "next_required_action": "do not promote retry1 single-tile candidate; production path requires a new/full-scene quality candidate with passing visual QA before LOD/viewer promotion"
+}

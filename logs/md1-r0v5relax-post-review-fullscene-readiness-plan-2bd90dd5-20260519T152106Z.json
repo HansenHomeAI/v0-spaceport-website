@@ -1,0 +1,90 @@
+{
+  "checked_at": "2026-05-19T15:21:06Z",
+  "base_head_before_gate_patch": "2bd90dd551d22f97229bccec0e838864251796fa",
+  "user_override": "CV-HR SageMaker processing jobs are separate and must not block MD1 retry/review/fullscene readiness; they remain source evidence only and must not be stopped or modified.",
+  "current_result": "retry1 merge and frozen-camera review completed, but visual QA blocks promotion",
+  "production_ready": false,
+  "retry1_evidence": {
+    "merge_job": "md1-r0v5relax-merge-retry1-8fdaa86f-20260518T170629Z",
+    "merge_status": "Completed",
+    "merge_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/model.tar.gz",
+    "merge_preflight": "logs/md1-r0v5relax-merge-retry1-preflight-20260519T144459Z.json",
+    "review_job": "md1-r1-r0v5relax-retry1-v18p24-1779202633-quality",
+    "review_status": "Completed",
+    "review_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-review-retry1-2bd90dd5-20260519T145514Z/outputs/r0v5relax-retry1-v18p24/md1-r1-r0v5relax-retry1-v18p24-1779202633-quality/output/model.tar.gz",
+    "mechanical_visual_gate": "logs/md1-r0v5relax-review-retry1-visual-qa-gate-no-ai-20260519T150801Z.json",
+    "ai_visual_gate": "logs/md1-r0v5relax-review-retry1-visual-qa-gate-with-ai-20260519T150801Z.json",
+    "visual_metrics": {
+      "view_count": 22,
+      "avg_psnr": 11.36,
+      "avg_ssim": 0.327,
+      "avg_lpips": 0.87
+    },
+    "visual_blockers": [
+      "severe magenta/green color-exposure shift",
+      "missing or blurred terrain/scene geometry",
+      "incomplete intended p24 review coverage"
+    ]
+  },
+  "code_gate_change": {
+    "status": "implemented_in_worktree",
+    "scripts": [
+      "scripts/3dgs/enforce_md1_merge_review_submit_readiness.py",
+      "scripts/3dgs/enforce_md1_leaf_submit_readiness.py"
+    ],
+    "behavior": "Active processing jobs whose names start with cvhr- or cvhr_ are recorded as processing_jobs_ignored_non_blocking and are excluded from processing_jobs_in_progress blockers for MD1 readiness gates.",
+    "tests": [
+      "python3 -m py_compile scripts/3dgs/enforce_md1_merge_review_submit_readiness.py scripts/3dgs/enforce_md1_leaf_submit_readiness.py",
+      "python3 -m unittest tests.unit.test_enforce_md1_merge_review_submit_readiness tests.unit.test_enforce_md1_leaf_submit_readiness"
+    ]
+  },
+  "full14_gate_decision": "blocked",
+  "full14_gate_reasons": [
+    "retry1 single-tile candidate failed frozen-camera AI visual QA",
+    "production rung guard requires accepted/passed R0/R1/R2/R3 evidence and allow_full_14tile_submit before full 14-tile spend",
+    "running full14 from a visually blocked single-tile candidate would spend more without proving the blocker is fixed"
+  ],
+  "next_compute_decision": "do_not_launch_full14_yet",
+  "next_unblocked_paid_step_after_exact_head_green": "one bounded leaf-level visual repair proof with early visual-smoke abort, not merge/review/full14/LOD/viewer promotion",
+  "recommended_candidate_source": "logs/audit/md1-1k-full-r2/audit_manifest.json key md1_r4_hardcap_quality_repair_early_visual_smoke_objective_20260513",
+  "recommended_candidate_shape": {
+    "name": "r0_color_calibrated_visual_sentinel_leaf_repair_refresh",
+    "tiles": [
+      "tile_04",
+      "tile_10"
+    ],
+    "order": "tile_04 first; only run tile_10 if tile_04 visual smoke passes",
+    "cost_cap_usd": 0.75,
+    "runtime_cap_seconds": 2400,
+    "max_iterations": 2000,
+    "hard_abort_reasons": [
+      "magenta_green_color_cast",
+      "full_frame_diff_saturation",
+      "horizon_band_regression",
+      "near_detail_texture_smearing"
+    ],
+    "required_before_submit": [
+      "exact-head workflows green for gate patch commit",
+      "AWS training idle",
+      "MD1-relevant SageMaker processing idle while CV-HR remains non-blocking evidence",
+      "relevant Step Functions idle",
+      "spaceport-ml-containers CodeBuild idle",
+      "duplicate job absent",
+      "budget lock reserved against submit head"
+    ]
+  },
+  "promotion_path_after_leaf_success": [
+    "post-leaf preflight gate for each successful repair tile",
+    "no-training merge with corrected background-source guard",
+    "frozen-camera V18 review",
+    "mechanical and AI visual QA pass",
+    "then full14 production rung gate with explicit allow flag and budget",
+    "after full14 passes: LOD, viewer smoke, and promotion only under the next allowed gate"
+  ],
+  "explicit_non_actions": [
+    "Do not promote retry1 single-tile artifact",
+    "Do not launch full14 from the visually blocked candidate",
+    "Do not stop or modify CV-HR jobs",
+    "Do not stage the 102 MB extracted visual QA directory"
+  ]
+}

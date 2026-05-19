@@ -1,0 +1,22 @@
+{
+  "stage": "sentinel_review",
+  "cap_usd": 0.75,
+  "status": "completed_debited",
+  "lock_dir": "logs/locks/sentinel_review-md1-r1-r0v5relax-retry1-v18p24-1779202633-quality-2bd90dd5.lock",
+  "job_name": "md1-r1-r0v5relax-retry1-v18p24-1779202633-quality",
+  "payload_json": "logs/md1-r0v5relax-review-retry1-payload-2bd90dd5-20260519T145514Z.json",
+  "payload_sha256": "214a5630cb731d3c63cc8a67c1a7d1a2cbee8151606dec423b62df60eff06527",
+  "reserved_at_utc": "20260519T145514Z",
+  "submit_head": "2bd90dd551d22f97229bccec0e838864251796fa",
+  "output_root_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-review-retry1-2bd90dd5-20260519T145514Z",
+  "presubmit_evidence_json": "logs/md1-r0v5relax-review-presubmit-2bd90dd5-20260519T145514Z-summary.json",
+  "user_override": "CV-HR SageMaker jobs are separate/non-blocking for this MD1 review gate; do not stop or modify them.",
+  "submitted_at_utc": "20260519T145514Z",
+  "terminal_status": "Completed",
+  "final_describe_json": "logs/md1-r0v5relax-review-retry1-describe-poll-20260519T150801Z.json",
+  "review_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-review-retry1-2bd90dd5-20260519T145514Z/outputs/r0v5relax-retry1-v18p24/md1-r1-r0v5relax-retry1-v18p24-1779202633-quality/output/model.tar.gz",
+  "runtime_seconds": 527,
+  "debited_usd": 0.146389,
+  "terminal_at_utc": "20260519T151200Z",
+  "visual_qa_gate_with_ai_json": "logs/md1-r0v5relax-review-retry1-visual-qa-gate-with-ai-20260519T150801Z.json"
+}

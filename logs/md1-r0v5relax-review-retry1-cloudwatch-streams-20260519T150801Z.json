@@ -1,0 +1,14 @@
+{
+    "logStreams": [
+        {
+            "logStreamName": "md1-r1-r0v5relax-retry1-v18p24-1779202633-quality/algo-1-1779202754",
+            "creationTime": 1779203090133,
+            "firstEventTimestamp": 1779203083818,
+            "lastEventTimestamp": 1779203083818,
+            "lastIngestionTime": 1779203090146,
+            "uploadSequenceToken": "49039859672675001076563735978421920705072735711587417992",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/TrainingJobs:log-stream:md1-r1-r0v5relax-retry1-v18p24-1779202633-quality/algo-1-1779202754",
+            "storedBytes": 0
+        }
+    ]
+}

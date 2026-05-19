@@ -1,0 +1,21 @@
+{
+  "decision": "visual_qa_blocked",
+  "block_reasons": [
+    "ai_visual_review_blocking_defects",
+    "ai_visual_review_blocking_view_findings",
+    "ai_visual_review_status_block"
+  ],
+  "warnings": [],
+  "view_count": 22,
+  "panel_count": 22,
+  "panel_ratio": 1.0,
+  "missing_assets": [],
+  "missing_files": [],
+  "ai_review_summary": {
+    "overall_status": "block",
+    "blocking_defect_count": 4,
+    "blocking_view_finding_count": 3,
+    "confidence": "high",
+    "recommended_next_action": "Do not promote this retry1 single-tile candidate. Treat it as a successful merge/preflight mechanics proof only; production readiness requires full-scene/full14 reconstruction and review before LOD/viewer promotion."
+  }
+}

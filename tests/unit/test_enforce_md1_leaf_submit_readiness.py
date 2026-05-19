@@ -119,6 +119,30 @@ class EnforceMd1LeafSubmitReadinessTests(unittest.TestCase):
         self.assertEqual(summary["decision"], "leaf_submit_blocked")
         self.assertIn("training_jobs_in_progress", summary["block_reasons"])
 
+    def test_cvhr_processing_jobs_are_recorded_but_do_not_block(self):
+        summary = allowed_summary(
+            processing_jobs_in_progress=[
+                {"ProcessingJobName": "cvhr-mtc-20260518T1729Z-sfm"},
+                "cvhr-secondary-20260518t2113z-sfm",
+            ]
+        )
+
+        self.assertEqual(summary["decision"], "leaf_submit_allowed")
+        self.assertEqual(summary["processing_jobs_in_progress"], [])
+        self.assertEqual(len(summary["processing_jobs_ignored_non_blocking"]), 2)
+
+    def test_non_cvhr_processing_job_still_blocks_with_cvhr_present(self):
+        summary = allowed_summary(
+            processing_jobs_in_progress=[
+                "cvhr-secondary-20260518t2113z-sfm",
+                {"ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-active"},
+            ]
+        )
+
+        self.assertEqual(summary["decision"], "leaf_submit_blocked")
+        self.assertIn("processing_jobs_in_progress", summary["block_reasons"])
+        self.assertEqual(summary["processing_jobs_in_progress"], [{"ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-active"}])
+
     def test_parse_json_list_accepts_aws_summary_file(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             temp_path = Path(tmpdir) / "training-jobs.json"

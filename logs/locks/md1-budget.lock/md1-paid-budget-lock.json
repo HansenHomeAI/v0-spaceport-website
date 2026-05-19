@@ -4,7 +4,7 @@
   "head": "c40c156fcdeed96036744e22000d51343bc07bcf",
   "currency": "USD",
   "starting_remaining_after_tile04": 14.0,
-  "remaining_reserved_or_available": 13.829991,
+  "remaining_reserved_or_available": 13.683602,
   "stage_caps": {
     "sentinel_merge": 0.5,
     "sentinel_review": 0.75,
@@ -61,6 +61,27 @@
       "debited_usd": 0.094737,
       "terminal_at_utc": "20260519T144700Z",
       "user_override": "CV-HR SageMaker jobs are separate/non-blocking for this MD1 retry gate; do not stop or modify them."
+    },
+    {
+      "stage": "sentinel_review",
+      "cap_usd": 0.75,
+      "status": "completed_debited",
+      "lock_dir": "logs/locks/sentinel_review-md1-r1-r0v5relax-retry1-v18p24-1779202633-quality-2bd90dd5.lock",
+      "job_name": "md1-r1-r0v5relax-retry1-v18p24-1779202633-quality",
+      "output_root_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-review-retry1-2bd90dd5-20260519T145514Z",
+      "payload_sha256": "214a5630cb731d3c63cc8a67c1a7d1a2cbee8151606dec423b62df60eff06527",
+      "reserved_at_utc": "20260519T145514Z",
+      "submit_head": "2bd90dd551d22f97229bccec0e838864251796fa",
+      "presubmit_evidence_json": "logs/md1-r0v5relax-review-presubmit-2bd90dd5-20260519T145514Z-summary.json",
+      "user_override": "CV-HR SageMaker jobs are separate/non-blocking for this MD1 review gate; do not stop or modify them.",
+      "submitted_at_utc": "20260519T145514Z",
+      "terminal_status": "Completed",
+      "final_describe_json": "logs/md1-r0v5relax-review-retry1-describe-poll-20260519T150801Z.json",
+      "review_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-review-retry1-2bd90dd5-20260519T145514Z/outputs/r0v5relax-retry1-v18p24/md1-r1-r0v5relax-retry1-v18p24-1779202633-quality/output/model.tar.gz",
+      "runtime_seconds": 527,
+      "debited_usd": 0.146389,
+      "terminal_at_utc": "20260519T151200Z",
+      "visual_qa_gate_with_ai_json": "logs/md1-r0v5relax-review-retry1-visual-qa-gate-with-ai-20260519T150801Z.json"
     }
   ],
   "debits": [
@@ -83,13 +104,23 @@
       "pricing_basis": "conservative ml.g4dn.xlarge $1.00/hr",
       "debited_at_utc": "20260519T144700Z",
       "final_describe_json": "logs/md1-r0v5relax-merge-retry1-describe-poll-20260519T144459Z.json"
+    },
+    {
+      "stage": "sentinel_review",
+      "job_name": "md1-r1-r0v5relax-retry1-v18p24-1779202633-quality",
+      "terminal_status": "Completed",
+      "runtime_seconds": 527,
+      "debited_usd": 0.146389,
+      "pricing_basis": "conservative ml.g4dn.xlarge $1.00/hr",
+      "debited_at_utc": "20260519T151200Z",
+      "final_describe_json": "logs/md1-r0v5relax-review-retry1-describe-poll-20260519T150801Z.json"
     }
   ],
   "pricing_basis": {
     "ml.g4dn.xlarge_usd_per_hour": 1.0,
     "source": "conservative fallback until current AWS pricing is fetched"
   },
-  "last_updated_utc": "20260519T144700Z",
-  "latest_live_state_evidence": "logs/md1-r0v5relax-merge-retry1-terminal-summary-20260519T144700Z.json",
-  "notes": "sentinel merge failed before preflight/review and was debited; retry1 completed and passed artifact/preflight under the user-approved MD1-only gate where CV-HR jobs are separate/non-blocking; no review/full14/LOD/viewer/promotion launched"
+  "last_updated_utc": "20260519T151200Z",
+  "latest_live_state_evidence": "logs/md1-r0v5relax-review-retry1-terminal-summary-20260519T151200Z.json",
+  "notes": "sentinel merge retry1 passed preflight; sentinel frozen/V18 review completed but visual QA blocked, so no LOD/viewer/promotion"
 }

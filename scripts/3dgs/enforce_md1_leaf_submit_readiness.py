@@ -10,6 +10,9 @@ from pathlib import Path
 from typing import Any
 
 
+DEFAULT_IGNORED_PROCESSING_JOB_PREFIXES = ("cvhr-", "cvhr_")
+
+
 def load_json(path: str) -> dict[str, Any]:
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
@@ -57,6 +60,34 @@ def ordered_unique(values: list[str]) -> list[str]:
             seen.add(value)
             result.append(value)
     return result
+
+
+def processing_job_name(job: Any) -> str:
+    if isinstance(job, dict):
+        for key in ("ProcessingJobName", "processing_job_name", "job_name", "name"):
+            value = job.get(key)
+            if value:
+                return str(value)
+        arn = str(job.get("ProcessingJobArn") or job.get("processing_job_arn") or "")
+        if arn:
+            return arn.rsplit("/", 1)[-1]
+        return ""
+    return str(job)
+
+
+def split_processing_jobs(
+    jobs: list[Any],
+    ignored_prefixes: list[str],
+) -> tuple[list[Any], list[Any]]:
+    blocking: list[Any] = []
+    ignored: list[Any] = []
+    for job in jobs:
+        name = processing_job_name(job)
+        if name and any(name.startswith(prefix) for prefix in ignored_prefixes):
+            ignored.append(job)
+        else:
+            blocking.append(job)
+    return blocking, ignored
 
 
 def cost_estimate(strategy: dict[str, Any]) -> float | None:
@@ -218,6 +249,7 @@ def evaluate_gate(
     training_jobs_in_progress: list[Any],
     processing_jobs_in_progress: list[Any],
     max_estimated_usd: float,
+    ignored_processing_job_prefixes: list[str] | None = None,
     v18_review_manifest_s3_uri: str = "",
     prior_leaf_gates: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
@@ -229,6 +261,13 @@ def evaluate_gate(
     covered_required_tiles = ordered_unique(selected_tiles + passing_prior_tiles)
     missing_leaf_summary_tiles = [tile_id for tile_id in required_tile_ids if tile_id not in passing_prior_tiles]
     cost = cost_estimate(strategy)
+    ignored_prefixes = ordered_unique(
+        list(ignored_processing_job_prefixes or DEFAULT_IGNORED_PROCESSING_JOB_PREFIXES)
+    )
+    blocking_processing_jobs, ignored_processing_jobs = split_processing_jobs(
+        processing_jobs_in_progress,
+        ignored_prefixes,
+    )
 
     if git_head != exact_head:
         block_reasons.append("git_head_not_exact_head")
@@ -236,7 +275,7 @@ def evaluate_gate(
         block_reasons.append("exact_head_workflow_not_green")
     if training_jobs_in_progress:
         block_reasons.append("training_jobs_in_progress")
-    if processing_jobs_in_progress:
+    if blocking_processing_jobs:
         block_reasons.append("processing_jobs_in_progress")
     if strategy.get("submitted_jobs") not in ([], None):
         block_reasons.append("strategy_not_dry_run")
@@ -301,7 +340,10 @@ def evaluate_gate(
         "viewer_smoke_plan_present": viewer_smoke_plan_present,
         "early_visual_smoke_abort_plan_present": early_visual_smoke_abort_plan_present,
         "training_jobs_in_progress": training_jobs_in_progress,
-        "processing_jobs_in_progress": processing_jobs_in_progress,
+        "processing_jobs_in_progress": blocking_processing_jobs,
+        "processing_jobs_observed": processing_jobs_in_progress,
+        "processing_jobs_ignored_non_blocking": ignored_processing_jobs,
+        "ignored_processing_job_prefixes": ignored_prefixes,
         "required_tile_ids": required_tile_ids,
         "selected_tile_ids": selected_tiles,
         "stage_tile_ids": stage_tiles,
@@ -342,6 +384,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--prior-leaf-gate-json", action="append", default=[])
     parser.add_argument("--training-jobs-json", default="[]")
     parser.add_argument("--processing-jobs-json", default="[]")
+    parser.add_argument(
+        "--ignore-processing-job-prefix",
+        action="append",
+        default=[],
+        help="Additional active SageMaker processing job name prefix to record but not block on.",
+    )
     parser.add_argument("--max-estimated-usd", type=float, required=True)
     parser.add_argument("--summary-json-output", required=True)
     return parser.parse_args()
@@ -363,6 +411,9 @@ def main() -> int:
         prior_leaf_gates=[load_json(path) for path in args.prior_leaf_gate_json],
         training_jobs_in_progress=parse_json_list(args.training_jobs_json),
         processing_jobs_in_progress=parse_json_list(args.processing_jobs_json),
+        ignored_processing_job_prefixes=ordered_unique(
+            list(DEFAULT_IGNORED_PROCESSING_JOB_PREFIXES) + args.ignore_processing_job_prefix
+        ),
         max_estimated_usd=args.max_estimated_usd,
     )
     output_path = Path(args.summary_json_output)

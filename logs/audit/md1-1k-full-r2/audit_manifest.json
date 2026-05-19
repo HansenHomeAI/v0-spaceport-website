@@ -95,7 +95,7 @@
       "ssim": 0.3586304187774658
     }
   },
-  "blocked_promotion_reason": "Retry1 merge and artifact preflight passed, but production promotion is not complete until frozen-camera review/visual QA, full14, LOD, viewer smoke, and promotion gates pass.",
+  "blocked_promotion_reason": "Retry1 merge/preflight passed but frozen-camera visual QA blocks promotion; full14/LOD/viewer/promotion remain blocked until a repaired candidate passes visual QA.",
   "candidate_metrics": {
     "boundary": {
       "lpips": 0.8332172930240631,
@@ -589,10 +589,10 @@
       ]
     }
   ],
-  "current_branch_head": "branch agent-90742618-md1-geometry-consistency at cf10e74ed69591fd0b1ffc7958d2a09304d0d8ab; latest evidence records user-approved CV-HR non-blocking override plus completed retry1 merge/preflight.",
+  "current_branch_head": "branch agent-90742618-md1-geometry-consistency is at 2bd90dd551d22f97229bccec0e838864251796fa, a logs-only [skip ci] evidence head; last meaningful CDK Deploy is 26059422703 green for 00541502a6e5f246cca11f05f53f78f1ca80559d",
   "current_exact_head_gate_status": "exact-head cf10e74e has no workflows because it is a logs-only [skip ci] commit; last meaningful exact-head 00541502 is green on CDK Deploy 26059422703.",
-  "current_live_compute_status": "Retry1 md1-r0v5relax-merge-retry1-8fdaa86f-20260518T170629Z completed; artifact preflight passed. CV-HR jobs are separate/non-blocking by user override and were not stopped/modified. No review/full14/LOD/viewer/promotion launched.",
-  "current_rung": "MD1_cost_reduction_retry1_merge_preflight_passed_cf10_1447",
+  "current_live_compute_status": "CV-HR jobs are separate/non-blocking by user override. Retry1 review completed; no full14/LOD/viewer/promotion launched.",
+  "current_rung": "MD1_cost_reduction_retry1_review_visual_qa_blocked_gate_patch_and_fullscene_plan_2bd90dd5_1521",
   "evidence_events": [
     "md1_r0_visual_sentinel_v5_no_spend_merge_review_planning_head30d6_20260517",
     "md1_r0_visual_sentinel_v5_no_spend_merge_review_planning_head5984_20260517",
@@ -4057,7 +4057,7 @@
       "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26000210566"
     }
   ],
-  "last_updated": "20260518T172310Z",
+  "last_updated": "20260519T151200Z",
   "latest_bg10_merge_input_materialization_status": {
     "exact_head_workflows_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-exact-head-workflows-current-20260513.json",
     "input_materialization_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-input-materialization-current-20260513.json",
@@ -4264,7 +4264,7 @@
   "latest_boundary_paired_strategy_status": "logs/md1-cost-reduction-r4-boundary-paired-tile04-tile10-dryrun-20260506.json plans only tile_04 and tile_10 as hard leaf stages, targets boundary_no_required_improvement with DJI_0067.JPG-DJI_0070.JPG, emits per-leaf preflight gates, submits no jobs, and passes logs/md1-cost-reduction-r4-quality-strategy-gate-boundary-paired-tile04-tile10-20260506.json under the $4.00 cap.",
   "latest_boundary_quality_strategy_status": "logs/md1-cost-reduction-r4-boundary-quality-strategy-20260506.json recommends hold_paid_retry for the constrained tile_10 proof because the active blocker is boundary_no_required_improvement and the planned proof does not target it.",
   "latest_boundary_responsible_tile_plan_status": "boundary primary tile_04/tile_10; horizon primary tile_04/tile_01; tile04 dryrun covers tile01/tile10 context support",
-  "latest_cost_control": "Sentinel merge debited conservative runtime $0.075272 for 270.979 seconds; remaining budget $13.924728; unused reservation released",
+  "latest_cost_control": "Failed original merge + retry1 merge + retry1 review total debited $0.316398; remaining budget $13.683602 in logs/locks/md1-budget.lock/md1-paid-budget-lock.json.",
   "latest_evidence": [
     "logs/md1-r0-visual-sentinel-v5-exact-head-workflows-headb578-postgreen-20260517T121321Z.json",
     "logs/md1-r0-visual-sentinel-v5-live-training-headb578-postgreen-20260517T121321Z.json",
@@ -4415,7 +4415,7 @@
     "pages_hash_url": "https://20660d91.v0-spaceport-website-preview2.pages.dev",
     "pages_run_id": 25107446761
   },
-  "latest_paid_steps": "R0 v5 density-relaxed tile_04 leaf md1-r0vissent-v5relax-1778837840-tile-04 completed in 2313 billable seconds/about $0.473 with artifact s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-20260515/tiles/tile_04/md1-r0vissent-v5relax-1778837840-tile-04/output/model.tar.gz; post-leaf preflight/gate passed with 1071554 splats, 1.121x reference, hard min/max 765021/1290973, filtered scaffold, and required sidecars. No merge/review/full14/LOD/viewer smoke/promotion launched.",
+  "latest_paid_steps": "Retry1 merge/preflight completed, then frozen-camera/V18 review md1-r1-r0v5relax-retry1-v18p24-1779202633-quality completed in 527s with review artifact s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-review-retry1-2bd90dd5-20260519T145514Z/outputs/r0v5relax-retry1-v18p24/md1-r1-r0v5relax-retry1-v18p24-1779202633-quality/output/model.tar.gz; AI visual QA blocked promotion.",
   "latest_quality_strategy_gate_status": "tile04_boundary_horizon_leaf_dryrun_quality_gate_allowed; boundary_only_previous_dryrun_blocked_missing_horizon",
   "latest_review_comparison_path": "logs/md1-r4-soft-density-bg10-review-comparison-20260513.json",
   "latest_review_status": {
@@ -4553,7 +4553,7 @@
   "latest_testing": "python3 -m unittest tests.unit.test_tiled_merge_processing_planner passed; corrected payload has no BACKGROUND_SOURCE_TILE_ID",
   "latest_tile04_leaf_reuse_merge_dryrun_status": "R0 v5 density-relaxed tile_04 leaf passed post-leaf preflight/gate. On exact-head b83 and AWS idle, no-spend merge/review planning was rerun: merge_review_allowed, training_jobs_to_submit=0, local merge plan/payload dry-run generated, and submit readiness remains blocked only on merge_inputs_not_materialized.",
   "latest_tracked_sagemaker_evidence_spend_before_untracked_stop_usd": 14.8046,
-  "latest_training_cost_reduction_status": "Evidence/untracked spend remains about $17.100. Soft-density tile_04 passed leaf and merge structural gates but failed V18 and AI visual QA; no-spend planner now records soft_density_quality_regression and blocks repeating that objective. No full14/LOD/promotion/viewer smoke launched.",
+  "latest_training_cost_reduction_status": "Retry1 merge and frozen-camera review completed under budget, but AI visual QA blocked promotion; full14 remains blocked. CV-HR jobs are now codified as non-blocking MD1 evidence in leaf/merge readiness gates. Next paid step after exact-head green is a bounded leaf-level visual repair proof with early visual-smoke abort, not full14.",
   "latest_untracked_compute_stop": {
     "billable_time_seconds": 1956,
     "describe_json": "logs/md1-sample8-cpu-r4-1778646749-stopped-describe-20260513.json",
@@ -12953,7 +12953,7 @@
   },
   "model_tarball": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/model/model.tar.gz",
   "model_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-1k-full-r2-1776194089/3dgs/T2_tiled_pipeline/md1-1k-full-r2-1776194089-tiled/output/model.tar.gz",
-  "next_unblocked_step": "Wait for all active SageMaker processing jobs to reach terminal state without stopping them, then rerun exact-head/AWS/CodeBuild/duplicate/readiness/budget checks against the latest committed head before any paid submit.",
+  "next_unblocked_step": "Commit/push the CV-HR non-blocking readiness gate patch and retry1 review evidence, watch exact-head workflows, then if green and AWS/CodeBuild/Step Functions are clear except CV-HR, submit only one bounded leaf-level visual repair proof with early visual-smoke abort.",
   "offline_merge_comparisons": {
     "merge_root": "/Users/gabrielhansen/worktrees/agent-90742618-md1-geometry-consistency/logs/audit/md1-1k-full-r2/offline_merges",
     "promotion_note": "R1 cannot promote on retention statistics alone; render LPIPS/SSIM/PSNR comparison must recover at least 50% of the strict_core boundary LPIPS gap.",
@@ -13014,7 +13014,7 @@
     },
     "retained_delta_vs_strict_core": 0
   },
-  "owner_action_needed": "none",
+  "owner_action_needed": "none for CV-HR jobs; production promotion needs a new/full-scene candidate that passes visual QA.",
   "r1_candidate_reviews": {
     "baseline": {
       "bucket_medians": {
@@ -19047,7 +19047,7 @@
     "shared_assigned_fallback_pair_count": 2
   },
   "updated": "2026-05-19T04:29:16Z",
-  "updated_at": "2026-05-19T04:29:16Z",
+  "updated_at": "20260519T151200Z",
   "version": "1.0.0",
   "md1_r0_visual_sentinel_readiness_blocked_active_jobs_20260513": {
     "recorded_at": "2026-05-13T18:33:49Z",
@@ -29086,5 +29086,115 @@
     },
     "no_review_full14_lod_viewer_promotion_launched": true,
     "next_required_action": "explicit gate required before frozen-camera review/visual QA/full14/LOD/viewer/promotion"
+  },
+  "latest_visual_review": "Retry1 review mechanical visual QA assets passed 22/22 panels, but AI visual QA blocked promotion: severe color/exposure shift, missing/blurred geometry, incomplete p24 coverage, avg_psnr=11.36, avg_ssim=0.327, avg_lpips=0.870. Evidence: logs/md1-r0v5relax-review-retry1-visual-qa-gate-with-ai-20260519T150801Z.json.",
+  "md1_r0v5relax_retry1_review_visual_qa_blocked_2bd90dd5_20260519": {
+    "status": "review_completed_visual_qa_blocked",
+    "timestamp_utc": "20260519T151200Z",
+    "head": "2bd90dd551d22f97229bccec0e838864251796fa",
+    "user_override": "CV-HR jobs are separate/non-blocking for MD1 retry/review decisions; do not stop or modify them.",
+    "presubmit_summary": "logs/md1-r0v5relax-review-presubmit-2bd90dd5-20260519T145514Z-summary.json",
+    "terminal_summary": "logs/md1-r0v5relax-review-retry1-terminal-summary-20260519T151200Z.json",
+    "review_job_name": "md1-r1-r0v5relax-retry1-v18p24-1779202633-quality",
+    "terminal_status": "Completed",
+    "review_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-review-retry1-2bd90dd5-20260519T145514Z/outputs/r0v5relax-retry1-v18p24/md1-r1-r0v5relax-retry1-v18p24-1779202633-quality/output/model.tar.gz",
+    "runtime_seconds": 527,
+    "debited_usd": 0.146389,
+    "mechanical_visual_qa": {
+      "decision": "visual_qa_ready",
+      "view_count": 22,
+      "panel_count": 22,
+      "missing_assets": 0,
+      "missing_files": 0
+    },
+    "ai_visual_qa": {
+      "decision": "visual_qa_blocked",
+      "block_reasons": [
+        "ai_visual_review_blocking_defects",
+        "ai_visual_review_blocking_view_findings",
+        "ai_visual_review_status_block"
+      ],
+      "avg_psnr": 11.364401072838978,
+      "avg_ssim": 0.3273109644651413,
+      "avg_lpips": 0.8698732988400892
+    },
+    "promotion_decision": "blocked",
+    "no_full14_lod_viewer_promotion_launched": true,
+    "next_required_action": "no-spend full-scene/full14 readiness planning; do not promote retry1 single-tile artifact"
+  },
+  "md1_r0v5relax_post_review_fullscene_readiness_plan_2bd90dd5_20260519": {
+    "status": "no_spend_plan_complete_full14_blocked_by_visual_qa",
+    "checked_at": "2026-05-19T15:21:06Z",
+    "base_head_before_gate_patch": "2bd90dd551d22f97229bccec0e838864251796fa",
+    "plan_json": "logs/md1-r0v5relax-post-review-fullscene-readiness-plan-2bd90dd5-20260519T152106Z.json",
+    "cvhr_gate_policy": "cvhr-* processing is separate/non-blocking evidence for MD1 gates; do not stop or modify CV-HR jobs",
+    "code_gate_change": {
+      "status": "implemented_in_worktree",
+      "scripts": [
+        "scripts/3dgs/enforce_md1_merge_review_submit_readiness.py",
+        "scripts/3dgs/enforce_md1_leaf_submit_readiness.py"
+      ],
+      "behavior": "Active processing jobs whose names start with cvhr- or cvhr_ are recorded as processing_jobs_ignored_non_blocking and are excluded from processing_jobs_in_progress blockers for MD1 readiness gates.",
+      "tests": [
+        "python3 -m py_compile scripts/3dgs/enforce_md1_merge_review_submit_readiness.py scripts/3dgs/enforce_md1_leaf_submit_readiness.py",
+        "python3 -m unittest tests.unit.test_enforce_md1_merge_review_submit_readiness tests.unit.test_enforce_md1_leaf_submit_readiness"
+      ]
+    },
+    "retry1_review_result": {
+      "merge_job": "md1-r0v5relax-merge-retry1-8fdaa86f-20260518T170629Z",
+      "merge_status": "Completed",
+      "merge_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/model.tar.gz",
+      "merge_preflight": "logs/md1-r0v5relax-merge-retry1-preflight-20260519T144459Z.json",
+      "review_job": "md1-r1-r0v5relax-retry1-v18p24-1779202633-quality",
+      "review_status": "Completed",
+      "review_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-review-retry1-2bd90dd5-20260519T145514Z/outputs/r0v5relax-retry1-v18p24/md1-r1-r0v5relax-retry1-v18p24-1779202633-quality/output/model.tar.gz",
+      "mechanical_visual_gate": "logs/md1-r0v5relax-review-retry1-visual-qa-gate-no-ai-20260519T150801Z.json",
+      "ai_visual_gate": "logs/md1-r0v5relax-review-retry1-visual-qa-gate-with-ai-20260519T150801Z.json",
+      "visual_metrics": {
+        "view_count": 22,
+        "avg_psnr": 11.36,
+        "avg_ssim": 0.327,
+        "avg_lpips": 0.87
+      },
+      "visual_blockers": [
+        "severe magenta/green color-exposure shift",
+        "missing or blurred terrain/scene geometry",
+        "incomplete intended p24 review coverage"
+      ]
+    },
+    "full14_gate_decision": "blocked",
+    "full14_gate_reasons": [
+      "retry1 single-tile candidate failed frozen-camera AI visual QA",
+      "production rung guard requires accepted/passed R0/R1/R2/R3 evidence and allow_full_14tile_submit before full 14-tile spend",
+      "running full14 from a visually blocked single-tile candidate would spend more without proving the blocker is fixed"
+    ],
+    "next_unblocked_paid_step_after_exact_head_green": "one bounded leaf-level visual repair proof with early visual-smoke abort, not merge/review/full14/LOD/viewer promotion",
+    "recommended_candidate_shape": {
+      "name": "r0_color_calibrated_visual_sentinel_leaf_repair_refresh",
+      "tiles": [
+        "tile_04",
+        "tile_10"
+      ],
+      "order": "tile_04 first; only run tile_10 if tile_04 visual smoke passes",
+      "cost_cap_usd": 0.75,
+      "runtime_cap_seconds": 2400,
+      "max_iterations": 2000,
+      "hard_abort_reasons": [
+        "magenta_green_color_cast",
+        "full_frame_diff_saturation",
+        "horizon_band_regression",
+        "near_detail_texture_smearing"
+      ],
+      "required_before_submit": [
+        "exact-head workflows green for gate patch commit",
+        "AWS training idle",
+        "MD1-relevant SageMaker processing idle while CV-HR remains non-blocking evidence",
+        "relevant Step Functions idle",
+        "spaceport-ml-containers CodeBuild idle",
+        "duplicate job absent",
+        "budget lock reserved against submit head"
+      ]
+    },
+    "no_full14_lod_viewer_promotion_launched": true
   }
 }

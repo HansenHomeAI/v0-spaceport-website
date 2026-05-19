@@ -1,0 +1,56 @@
+{
+  "overall_status": "block",
+  "confidence": "high",
+  "reviewed_at_utc": "20260519T151100Z",
+  "review_basis": [
+    "logs/md1-r0v5relax-review-retry1-visual-qa-contact-sheets-20260519T150801Z/boundary.png",
+    "logs/md1-r0v5relax-review-retry1-visual-qa-contact-sheets-20260519T150801Z/horizon.png",
+    "logs/md1-r0v5relax-review-retry1-visual-qa-contact-sheets-20260519T150801Z/near_detail.png",
+    "logs/md1-r0v5relax-review-retry1-visual-qa-20260519T150801Z/visual_qa_manifest.json"
+  ],
+  "metric_summary": {
+    "view_count": 22,
+    "avg_psnr": 11.364401072838978,
+    "min_psnr": 7.145016007214061,
+    "avg_ssim": 0.3273109644651413,
+    "min_ssim": 0.2481365203857422,
+    "avg_lpips": 0.8698732988400892,
+    "max_lpips": 0.9276736974716187
+  },
+  "blocking_defects": [
+    {
+      "defect": "severe_color_exposure_shift",
+      "evidence": "Most candidate renders show strong magenta/green color cast and haze relative to the reference panels."
+    },
+    {
+      "defect": "missing_or_blurred_scene_geometry",
+      "evidence": "Boundary, horizon, and near-detail panels show smeared terrain, sparse detail, and large areas without reliable reconstructed structure."
+    },
+    {
+      "defect": "v18_non_regression_failed",
+      "evidence": "Metrics are far below promotion-quality expectations: avg_psnr 11.36, avg_ssim 0.327, avg_lpips 0.870 across 22 views."
+    },
+    {
+      "defect": "review_coverage_incomplete",
+      "evidence": "The review emitted 22 panels instead of the intended 24 because two near-detail images had no converted frame mapping."
+    }
+  ],
+  "per_view_findings": [
+    {
+      "bucket": "boundary",
+      "severity": "blocking",
+      "finding": "Repeated strong haze/color shift and loss of terrain detail across all boundary panels."
+    },
+    {
+      "bucket": "horizon",
+      "severity": "blocking",
+      "finding": "Horizon and road geometry are heavily blurred or absent, with widespread magenta cast."
+    },
+    {
+      "bucket": "near_detail",
+      "severity": "blocking",
+      "finding": "Near-detail views show poor color, incomplete geometry, and only 6 of the intended 8 panels."
+    }
+  ],
+  "recommended_next_action": "Do not promote this retry1 single-tile candidate. Treat it as a successful merge/preflight mechanics proof only; production readiness requires full-scene/full14 reconstruction and review before LOD/viewer promotion."
+}

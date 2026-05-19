@@ -1,0 +1,2 @@
+2026-05-19 09:07:55  101.2 MiB manual-validations/md1-r0v5densityrelaxed-review-retry1-2bd90dd5-20260519T145514Z/outputs/r0v5relax-retry1-v18p24/md1-r1-r0v5relax-retry1-v18p24-1779202633-quality/output/model.tar.gz
+2026-05-19 08:57:14    1.4 KiB manual-validations/md1-r0v5densityrelaxed-review-retry1-2bd90dd5-20260519T145514Z/review-input/review_camera_manifest.json
