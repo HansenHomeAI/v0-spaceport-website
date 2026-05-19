@@ -1,0 +1,20 @@
+2026-05-18T23:31:38.128000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:31:37.152859  8349 pairing.cc:631] Processing image [183/187]
+2026-05-18T23:31:38.128000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:31:37.282599  8349 feature_matching.cc:217] in 0.130s
+2026-05-18T23:31:38.129000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:31:37.282644  8349 pairing.cc:631] Processing image [184/187]
+2026-05-18T23:31:38.129000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:31:37.530339  8349 feature_matching.cc:217] in 0.248s
+2026-05-18T23:31:38.129000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:31:37.530381  8349 pairing.cc:631] Processing image [185/187]
+2026-05-18T23:31:38.129000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:31:37.562546  8349 feature_matching.cc:217] in 0.032s
+2026-05-18T23:31:38.129000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:31:37.562582  8349 pairing.cc:631] Processing image [186/187]
+2026-05-18T23:31:38.129000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:31:37.605578  8349 feature_matching.cc:217] in 0.043s
+2026-05-18T23:31:38.129000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:31:37.605612  8349 pairing.cc:631] Processing image [187/187]
+2026-05-18T23:31:38.129000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:31:37.685470  8349 feature_matching.cc:217] in 0.080s
+2026-05-18T23:31:38.129000+00:00 COLMAP[chunk_03_spatial_matcher_recovery] I20260518 23:31:37.685500  8349 timer.cc:90] Elapsed time: 1.202 [minutes]
+2026-05-18T23:31:38.129000+00:00 2026-05-18 23:31:37,770 - INFO - chunk_03_spatial_matcher_recovery added 682 verified image pairs
+2026-05-18T23:31:38.129000+00:00 2026-05-18 23:31:37,774 - INFO - Building a FAISS-compatible vocab tree with 8192 visual words from up to 100000 descriptors
+2026-05-18T23:31:38.129000+00:00 2026-05-18 23:31:37,774 - INFO - [vocab_tree_builder] colmap vocab_tree_builder --database_path /tmp/colmap_sfm_gefg0_n4/chunk_03/database.db --vocab_tree_path /tmp/colmap_sfm_gefg0_n4/vocab_tree_faiss.bin --num_visual_words 8192 --max_num_images 40
+2026-05-18T23:31:38.129000+00:00 COLMAP[vocab_tree_builder] E20260518 23:31:37.925699  8390 base_option_manager.cc:264] Failed to parse options - unrecognised option '--max_num_images'.
+2026-05-18T23:31:38.129000+00:00 2026-05-18 23:31:37,938 - WARNING - vocab_tree_builder rejected --max_num_images; retrying with older COLMAP-compatible flags
+2026-05-18T23:31:38.129000+00:00 2026-05-18 23:31:37,938 - INFO - [vocab_tree_builder] colmap vocab_tree_builder --database_path /tmp/colmap_sfm_gefg0_n4/chunk_03/database.db --vocab_tree_path /tmp/colmap_sfm_gefg0_n4/vocab_tree_faiss.bin --num_visual_words 8192
+2026-05-18T23:31:38.129000+00:00 COLMAP[vocab_tree_builder] I20260518 23:31:38.086290  8398 vocab_tree.cc:85] Loading descriptors...
+2026-05-18T23:31:39.156000+00:00 COLMAP[vocab_tree_builder] I20260518 23:31:38.931420  8398 vocab_tree.cc:88] => Loaded a total of 1893703 descriptors
+2026-05-18T23:31:39.156000+00:00 COLMAP[vocab_tree_builder] I20260518 23:31:38.931711  8398 vocab_tree.cc:94] Building index for visual words...
