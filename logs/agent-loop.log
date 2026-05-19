@@ -49,3 +49,4 @@
 [2026-05-19T16:02Z] md1-shrunk: calibrated camera-suite edge retention threshold; strict 6-pose suite now decision=pass (skybox+nosky) -> next: commit/push + watch exact-head CI
 [2026-05-19T16:18Z] md1-shrunk: pushed e16881d0 + a73a4adb; exact-head Pages 26109660239 + CDK 26109660240 green; PREVIEW_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev -> next: record CI proof logs
 [2026-05-19T16:47Z] md1-shrunk: baseline-suite compare + pose drift verification + edge HTML delivery report landed; camera-suite strict PASS; exact-head c3f52d2e Pages 26111270702 + CDK 26111270602 green (PREVIEW_URL unchanged) -> next: keep monitoring only if new regressions appear
+[2026-05-19T17:02Z] md1-shrunk: heartbeat verify 20260519T165912Z -> strict camera-suite PASS + edge publish report PASS + Step Functions RUNNING=0 -> idle

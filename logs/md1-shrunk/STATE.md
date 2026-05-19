@@ -8203,3 +8203,25 @@ skybox, compression, artifact handoff, and visual gates.
   - PREVIEW_URL extract (same Pages run):
     - `logs/md1-shrunk/polls/20260519T163924Z-ci/pages-preview-url-clean.txt`
     - `PREVIEW_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+
+## 2026-05-19T16:59Z heartbeat verify (strict gates still PASS; no new jobs)
+
+- Preflight snapshot (read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260519T165912Z-preflight/preflight.txt`
+  - Step Functions RUNNING: `0` for `SpaceportMLPipeline-staging` and `SpaceportMLPipeline-br-8abcbd5662`
+  - Public S3 bundle meta.json HEAD -> `200`:
+    - `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+  - Edge meta.json HEAD -> `200` with browser-readable headers:
+    - `https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+  - SageMaker InProgress: external `md1-r0v5full14-f2923-1779209514-tile-00` + `md1-r0v5full14-f2923-1779209514-tile-01` (training); left untouched
+  - Local dev server listeners: none on ports `3000/5173/5180/5181/8000/8080/8787`
+- Multi-camera input-vs-render checks (deployed preview; strict):
+  - command: `logs/md1-shrunk/polls/20260519T165912Z-camera-suite/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260519T165912Z-camera-suite/suite-summary.json` -> `decision=pass`
+  - report: `logs/md1-shrunk/polls/20260519T165912Z-camera-suite/report.html`
+  - reusable camera-pose verification: `pose_verification.max_delta=0.0` (baseline: `logs/md1-shrunk/polls/20260519T163352Z-camera-suite`)
+- Browser-readable public delivery automation (Lambda publish + strict browser header validation + HTML report):
+  - output: `logs/md1-shrunk/polls/20260519T165912Z-edge-publish-report/publish-edge.json`
+  - report: `logs/md1-shrunk/polls/20260519T165912Z-edge-publish-report/publish-edge.report.html`
+- Unit proof:
+  - `logs/md1-shrunk/polls/20260519T165912Z-unit/unittest.txt`
