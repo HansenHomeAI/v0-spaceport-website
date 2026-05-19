@@ -615,6 +615,45 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/gh-run-list-exact-head-20260518T2242Z.json`
 - Next unblocked step: continue monitoring canonical `cvhr-mtc-20260518T1729Z-sfm` to terminal. If it completes, run `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip --launch` exactly once to start pinned Montana 3DGS. Keep recording the non-canonical secondary job but do not stop it unless clearly proven orphaned.
 
+## 2026-05-19T17:43Z Heartbeat Monitor Pass
+
+- Branch/head/status command:
+  - `git branch --show-current && git rev-parse HEAD && git status --short --branch`
+  - Result: branch `agent-40136728-montana-time-capsule`, head `d08683c7b4cbaedfc61c6dfc094e5958c67ecee1`, clean before this heartbeat pass.
+- AWS identity command:
+  - `AWS_PAGER= aws sts get-caller-identity --output json`
+  - Result: account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+- Canonical CV-HR SfM status command:
+  - `AWS_PAGER= aws sagemaker describe-processing-job --processing-job-name cvhr-mtc-20260518T1729Z-sfm --output json`
+  - Result: `ProcessingJobStatus=InProgress`, no `FailureReason` or `ExitMessage`; pinned SfM image remains `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811`; `ProcessingStartTime=2026-05-18T11:30:29.702000-0600`; `MaxRuntimeInSeconds=86400`. A post-log recheck still returned `InProgress`, so no 3DGS launch was allowed.
+- Active CV-HR job guard:
+  - `AWS_PAGER= aws sagemaker list-processing-jobs --status-equals InProgress --max-results 50 --output json`
+  - Result: canonical `cvhr-mtc-20260518T1729Z-sfm` and non-canonical `cvhr-secondary-20260518t2113z-sfm` both remain active; secondary job env still identifies owner branch `agent-73910482-cvhr-parallel-splat`; no new CV-HR jobs launched from this heartbeat and no jobs stopped.
+- S3 output commands:
+  - `AWS_PAGER= aws s3 ls s3://spaceport-ml-processing-staging/manual-validations/cvhr-mtc-20260518T1729Z/colmap/ --recursive --summarize`
+  - `AWS_PAGER= aws s3api list-objects-v2 --bucket spaceport-ml-processing-staging --prefix manual-validations/cvhr-mtc-20260518T1729Z/colmap/ --output json`
+  - Result: canonical prefix still `Total Objects: 0`, `Total Size: 0`; still expected while SageMaker is `InProgress` with `S3UploadMode=EndOfJob`.
+- CloudWatch proof commands:
+  - `AWS_PAGER= aws logs tail /aws/sagemaker/ProcessingJobs --since 260m --log-stream-name-prefix cvhr-mtc-20260518T1729Z-sfm --format short`
+  - `AWS_PAGER= aws logs describe-log-streams --log-group-name /aws/sagemaker/ProcessingJobs --log-stream-name-prefix cvhr-mtc-20260518T1729Z-sfm --output json`
+  - Result: canonical SfM remains inside `chunk_bundle_adjuster` global bundle adjustment after merged reconstruction `Images: 1694`, `Points: 1325268`. Repeated COLMAP warnings continued: `Linear solver failure. Failed to compute a finite step.` at `2026-05-19T17:14:17Z`, `17:17:23Z`, `17:20:31Z`, `17:23:55Z`, `17:27:05Z`, `17:30:23Z`, and `17:34:23Z`. No terminal SageMaker failure, OOM, timeout reason, or S3 EndOfJob upload is visible yet.
+- GitHub exact-head workflow command:
+  - `gh run list --branch agent-40136728-montana-time-capsule --limit 50 --json databaseId,headSha,workflowName,status,conclusion,createdAt,updatedAt,url | jq --arg sha "$(git rev-parse HEAD)" '[.[] | select(.headSha==$sha)]'`
+  - Result: `[]` for logs-only `[skip ci]` head `d08683c7b4cbaedfc61c6dfc094e5958c67ecee1`; last meaningful non-skip `CDK Deploy` remains green on head `1b264bc2ac6be3bf34ca06582895f7f750e9a442`, run `26049509375`.
+- Evidence files:
+  - `logs/montana-time-capsule/aws-sts-20260519T1743Z.json`
+  - `logs/montana-time-capsule/sagemaker-describe-cvhr-mtc-20260518T1729Z-sfm-20260519T1743Z.json`
+  - `logs/montana-time-capsule/sagemaker-describe-cvhr-secondary-20260518t2113z-sfm-20260519T1743Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-all-inprogress-20260519T1743Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-cvhr-active-filtered-20260519T1743Z.json`
+  - `logs/montana-time-capsule/s3-colmap-cvhr-mtc-20260518T1729Z-20260519T1743Z.txt`
+  - `logs/montana-time-capsule/s3api-colmap-cvhr-mtc-20260518T1729Z-20260519T1743Z.json`
+  - `logs/montana-time-capsule/cloudwatch-tail-cvhr-mtc-20260518T1729Z-sfm-20260519T1743Z.log`
+  - `logs/montana-time-capsule/logstreams-cvhr-mtc-20260518T1729Z-sfm-20260519T1743Z.json`
+  - `logs/montana-time-capsule/gh-run-list-agent-40136728-20260519T1743Z.json`
+  - `logs/montana-time-capsule/gh-run-list-exact-head-20260519T1743Z.json`
+- Next unblocked step: continue monitoring the final bundle adjustment and SageMaker terminal status. If SfM reaches `Completed`, immediately run `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip --launch` exactly once to launch pinned Montana 3DGS. If SfM reaches `Failed` or times out, capture exact failure describe/log/S3 output before any patch or smallest-stage retry.
+
 ## 2026-05-19T17:23Z Heartbeat Monitor Pass
 
 - Branch/head/status command:
